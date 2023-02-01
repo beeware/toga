@@ -2,6 +2,7 @@ import sys
 import unittest
 from unittest.mock import Mock
 
+import pytest
 from travertino.declaration import BaseStyle
 from travertino.layout import BaseBox
 from travertino.size import BaseIntrinsicSize
@@ -168,11 +169,10 @@ _MODULES = {}
 
 
 def log_action(module, action, **data):
-    """Record that an action function was invoked.
+    """Record that an module level action was invoked.
 
-    Args:
-        action: The action that was performed
-        data: Any data associated with the action.
+    :param action: The action that was performed
+    :param data: Any data associated with the action.
     """
     _MODULES.setdefault(module, LoggedObject())._action(action, **data)
 
@@ -188,9 +188,294 @@ class TestStyle(BaseStyle):
         pass
 
 
+###########################################################################
+# Pytest widget assertion helpers
+#
+# These helpers are written so that they can be used as:
+#     assert action_not_performed(...)
+#
+# The functions all return True on success, but raise assertions on failure.
+# This allows the methods to have helpful context-sensitive failure messages,
+# while preserving the pytest "assert" syntax.
+###############################################################################
+
+
+def module_action_not_performed(_module, _action):
+    """Determine that the module-level action was *not* performed.
+
+    :param _module: The module with the action that should not have been performed.
+    :param _action: The name of the action to check
+    :returns: True if the action was not performed.
+    """
+    try:
+        assert not (
+            _action in _MODULES[_module]._actions
+        ), f"Action {_action!r} unexpectedly performed by {_module}."
+    except AttributeError:
+        pytest.fail(f"Module {_module} is not a logged object")
+    return True
+
+
+def module_action_performed(_module, _action):
+    """Determine that a module-level action was performed.
+
+    :param _module: The module with the action that should have been performed.
+    :param _action: The name of the action to check
+    :returns: True if the action was performed
+    """
+    try:
+        assert _action in _MODULES[_module]._actions, (
+            f"Action {_action!r} from {_module} not performed. "
+            f"Actions were: {sorted(_MODULES[_module]._actions.keys())}"
+        )
+    except AttributeError:
+        pytest.fail(f"Module {_module} is not a logged object")
+    return True
+
+
+def module_action_performed_with(_module, _action, **test_data):
+    """Determine if the module-level action was performed with specific test data.
+
+    :param _module: The module with the action that should have been performed.
+    :param _action: The name of the action to check
+    :param test_data: The arguments that should have been passed to the action.
+    :returns: True if a matching action was performed.
+    """
+    try:
+        found = True
+        # Iterate over every action that was performed on
+        # this object.
+        for _, data in _MODULES[_module]._actions[_action].items():
+            # Iterate over every key and value in the test
+            # data. If the value in the recorded action
+            # doesn't match the requested value, then this isn't
+            # a match.
+            for key, value in test_data.items():
+                try:
+                    if data[key] != value:
+                        found = False
+                except KeyError:
+                    found = False
+
+            # Default behavior is to be found; so if we're
+            # still in a "found" state, this action is a match
+            # for the test data. Otherwise, reset, and try again
+            # with the next recorded action.
+            if found:
+                return True
+            else:
+                found = True
+
+        # None of the recorded actions match the test data.
+        actual_actions = sorted(_MODULES[_module]._actions.keys())
+        pytest.fail(
+            f"Action {_action!r} not performed by {_module} with {test_data}. "
+            f"Actions were: {actual_actions}"
+        )
+    except KeyError:
+        # The action wasn't performed
+        actual_actions = sorted(_MODULES[_module]._actions.keys())
+        pytest.fail(
+            f"Action {_action!r} not performed by {_module}. "
+            f"Actions were: {actual_actions}"
+        )
+    except AttributeError:
+        pytest.fail(f"Module {_module} is not a logged object")
+
+
+def attribute_value(_widget, _attr):
+    """Retrieve the current value of a widget property.
+
+    :param _widget: The interface of the widget to check
+    :param _attr: The attribute to retrieve.
+    :returns: The current value of the attribute
+    """
+    try:
+        return _widget._impl._sets[_attr][-1]
+    except KeyError:
+        set_attributes = ", ".join(f"{a!r}" for a in sorted(_widget._impl._sets.keys()))
+        pytest.fail(
+            f"Widget {_widget} did not have the attribute {_attr!r} set; "
+            f"set attributes were {set_attributes}."
+        )
+    except AttributeError:
+        pytest.fail(f"Widget {_widget} is not a logged object")
+
+
+def attribute_values(_widget, _attr):
+    """Retrieve the list of values that the property has been set to.
+
+    :param _widget: The interface of the widget to check
+    :param _attr: The attribute to retrieve.
+    :returns: The list of values to which the attribute has been set.
+    """
+    try:
+        return _widget._impl._sets[_attr]
+    except KeyError:
+        known_attributes = ",".join(
+            f"{a!r}" for a in sorted(_widget._impl._sets.keys())
+        )
+        pytest.fail(
+            f"Widget {_widget} did not have the attribute {_attr!r} set; "
+            f"known attributes were {known_attributes}."
+        )
+    except AttributeError:
+        pytest.fail(f"Widget {_widget} is not a logged object")
+
+
+def attribute_retrieved(_widget, _attr):
+    """Determine that the widget implementation attempted to retrieve an attribute.
+
+    :param _widget: The interface of the widget to check
+    :param _attr: The attribute to check.
+    :returns: True if the attribute was retrieved
+    """
+    try:
+        known_attributes = ",".join(f"{a!r}" for a in sorted(_widget._impl._gets))
+        assert _attr in _widget._impl._gets, (
+            f"Widget {_widget} did not retrieve the attribute {_attr!r}; "
+            f"retrieved attributes were {known_attributes}."
+        )
+    except AttributeError:
+        pytest.fail(f"Widget {_widget} is not a logged object")
+    return True
+
+
+def attribute_not_retrieved(_widget, _attr):
+    """Determine that the widget implementation did not attempt to retrieve an attribute.
+
+    :param _widget: The interface of the widget to check
+    :param _attr: The attribute to check.
+    :returns: True if the
+    """
+    try:
+        assert (
+            _attr not in _widget._impl._gets
+        ), f"Widget {_widget} unexpectedly retrieved the attribute {_attr!r}."
+    except AttributeError:
+        pytest.fail(f"Widget {_widget} is not a logged object")
+    return True
+
+
+def attribute_not_set(_widget, _attr):
+    """Determine that the widget implementation did not attempt to set an attribute.
+
+    :param _widget: The interface of the widget to check
+    :param _attr: The attribute to check.
+    :returns: True if the attribute was not set
+    """
+    try:
+        assert (
+            _attr not in _widget._impl._sets
+        ), f"Widget {_widget} unexpectedly set the attribute {_attr!r}."
+    except AttributeError:
+        pytest.fail(f"Widget {_widget} is not a logged object")
+    return True
+
+
+def action_not_performed(_widget, _action):
+    """Determine that the named action was *not* performed by a widget.
+
+    :param _widget: The interface of the widget to check
+    :param _action: The action to check.
+    :returns: True if the action was not performed
+    """
+    try:
+        assert (
+            _action not in _widget._impl._actions
+        ), f"Action {_action!r} unexpectedly performed by {_widget}."
+    except AttributeError:
+        pytest.fail(f"Widget {_widget} is not a logged object")
+    return True
+
+
+def action_performed(_widget, _action):
+    """Determine that the named action was performed by a widget.
+
+    :param _widget: The interface of the widget to check
+    :param _action: The action to check.
+    :returns: True if the action was performed
+    """
+    try:
+        assert _action in _widget._impl._actions, (
+            f"Action {_action!r} not performed by {_widget}. "
+            f"Actions were: {sorted(_widget._impl._actions.keys())}"
+        )
+    except AttributeError:
+        pytest.fail(f"Widget {_widget} is not a logged object")
+    return True
+
+
+def action_performed_with(_widget, _action, **test_data):
+    """Determine if an action was performed with specific test data.
+
+    :param _widget: The interface of the widget to check
+    :param _action: The action to check.
+    :param test_data: The arguments that should have been passed to the action.
+    :returns: True if the action was performed
+    """
+    try:
+        found = True
+        # Iterate over every action that was performed on
+        # this object.
+        for _, data in _widget._impl._actions[_action].items():
+            # Iterate over every key and value in the test
+            # data. If the value in the recorded action
+            # doesn't match the requested value, then this isn't
+            # a match.
+            for key, value in test_data.items():
+                try:
+                    try:
+                        # Look for a `_raw` attribute, as that will be the
+                        # directly comparable object
+                        raw = data[key]._raw
+                        # If the _raw attribute is a mock, it doesn't actually exist
+                        if isinstance(data[key]._raw, Mock):
+                            raise AttributeError()
+
+                        if raw != value:
+                            found = False
+                    except AttributeError:
+                        # No raw attribute; use the provided value as-is
+                        if data[key] != value:
+                            found = False
+                except KeyError:
+                    found = False
+
+            # Default behavior is to be found; so if we're
+            # still in a "found" state, this action is a match
+            # for the test data. Otherwise, reset, and try again
+            # with the next recorded action.
+            if found:
+                return True
+            else:
+                found = True
+
+        # None of the recorded actions match the test data.
+        pytest.fail(
+            f"Action {_action!r} not performed by {_widget} with {test_data}. "
+            f"Actions were: {sorted(_widget._impl._actions[_action].items())}"
+        )
+    except KeyError:
+        # The action wasn't performed
+        pytest.fail(
+            f"Action {_action!r} not performed by {_widget}. "
+            f"Actions were: {sorted(_widget._impl._actions.keys())}"
+        )
+    except AttributeError:
+        pytest.fail(f"Widget {_widget} is not a logged object")
+
+
+###########################################################################
+# Unittest widget assertions
+#
+# These have been (re)written in terms of Pytest assertions; this base
+# class is deprecated and should not be used for new tests.
+############################################################################
 class TestCase(unittest.TestCase):
     def setUp(self):
         EventLog.reset()
+
         # We use the existence of a __main__ module as a proxy for being in test
         # conditions. This isn't *great*, but the __main__ module isn't meaningful
         # during tests, and removing it allows us to avoid having explicit "if
@@ -201,41 +486,31 @@ class TestCase(unittest.TestCase):
     def reset_event_log(self):
         EventLog.reset()
 
-    def assertFunctionNotPerformed(self, _module, action):
+    def pytest_assert(self, assertion, *args, **kwargs):
+        try:
+            return assertion(*args, **kwargs)
+        except AssertionError as e:
+            self.fail(str(e))
+
+    def assertFunctionNotPerformed(self, _module, _action):
         """Assert that the action function from module was *not* performed.
 
         Args:
             _module: The module with the action that should not have been performed.
-            action: The name of the action to check
+            _action: The name of the action to check
         """
-        try:
-            self.assertNotIn(
-                action,
-                _MODULES[_module]._actions,
-                f"Action {action} unexpectedly performed by {_module}.",
-            )
-        except AttributeError:
-            self.fail(f"Module {_module} is not a logged object")
+        self.pytest_assert(module_action_not_performed, _module, _action)
 
-    def assertFunctionPerformed(self, _module, action):
+    def assertFunctionPerformed(self, _module, _action):
         """Assert that the action function from module was performed.
 
         Args:
             _module: The module with the action that should have been performed.
-            action: The name of the action to check
+            _action: The name of the action to check
         """
-        try:
-            self.assertIn(
-                action,
-                _MODULES[_module]._actions,
-                "Action {} from {} not performed. Actions were: {}".format(
-                    action, _module, sorted(_MODULES[_module]._actions.keys())
-                ),
-            )
-        except AttributeError:
-            self.fail(f"Module {_module} is not a logged object")
+        self.pytest_assert(module_action_performed, _module, _action)
 
-    def assertFunctionPerformedWith(self, _module, action, **test_data):
+    def assertFunctionPerformedWith(self, _module, _action, **test_data):
         """Confirm that the action function form module was performed with
         specific test data.
 
@@ -248,242 +523,75 @@ class TestCase(unittest.TestCase):
             If a matching action was performed, the full data of
             the performed action if. False otherwise.
         """
-        try:
-            found = True
-            # Iterate over every action that was performed on
-            # this object.
-            for sequence, data in _MODULES[_module]._actions[action].items():
-                # Iterate over every key and value in the test
-                # data. If the value in the recorded action
-                # doesn't match the requested value, then this isn't
-                # a match.
-                for key, value in test_data.items():
-                    try:
-                        if data[key] != value:
-                            found = False
-                    except KeyError:
-                        found = False
-
-                # Default behavior is to be found; so if we're
-                # still in a "found" state, this action is a match
-                # for the test data. Otherwise, reset, and try again
-                # with the next recorded action.
-                if found:
-                    return data
-                else:
-                    found = True
-
-            # None of the recorded actions match the test data.
-            self.fail(
-                "Action {} not performed by {} with {}. Actions were: {}".format(
-                    action,
-                    _module,
-                    test_data,
-                    sorted(_MODULES[_module]._actions[action].items()),
-                )
-            )
-        except KeyError:
-            # The action wasn't performed
-            self.fail(
-                "Action {} not performed by {}. Actions were: {}".format(
-                    action, _module, sorted(_MODULES[_module]._actions.keys())
-                )
-            )
-        except AttributeError:
-            self.fail(f"Widget {_module} is not a logged object")
+        self.pytest_assert(module_action_performed_with, _module, _action, **test_data)
 
     #####
 
-    def assertValueSet(self, _widget, attr, value):
+    def assertValueSet(self, _widget, _attr, value):
         """Assert that the widget implementation has set an attribute to a
         value.
 
         Args:
             _widget: The interface of the widget to check
-            attr: The attribute that should have been set
+            _attr: The attribute that should have been set
             value: The value that the attribute have been set to.
         """
-        try:
-            self.assertEqual(
-                _widget._impl._sets[attr][-1],
-                value,
-                "Widget {} has not had attribute {!r} set to {!r}; got {!r}.".format(
-                    _widget, attr, value, _widget._impl._sets[attr][-1]
-                ),
-            )
-        except KeyError:
-            self.fail(
-                "Widget {} did not have the attribute {!r} set; set attributes were {}.".format(
-                    _widget,
-                    attr,
-                    ", ".join(f"{a!r}" for a in sorted(_widget._impl._sets.keys())),
-                )
-            )
-        except AttributeError:
-            self.fail(f"Widget {_widget} is not a logged object")
+        self.assertEqual(self.pytest_assert(attribute_value, _widget, _attr), value)
 
-    def assertValuesSet(self, _widget, attr, values):
+    def assertValuesSet(self, _widget, _attr, values):
         """Assert that the widget implementation has been set to multiple
         values.
 
         Args:
             _widget: The interface of the widget to check
-            attr: The attribute that should have been set
+            _attr: The attribute that should have been set
             value: The values that the attribute have been set to.
         """
-        try:
-            self.assertEqual(
-                _widget._impl._sets[attr],
-                values,
-                "Widget {} has not had attribute {!r} set to the values {}; got {}.".format(
-                    _widget,
-                    attr,
-                    ", ".join(f"{v!r}" for v in values),
-                    ", ".join(f"{v!r}" for v in _widget._impl._sets[attr]),
-                ),
-            )
-        except KeyError:
-            self.fail(
-                "Widget {} did not have the attribute {!r} set; set attributes were {}.".format(
-                    _widget,
-                    attr,
-                    ",".join(f"{a!r}" for a in sorted(_widget._impl._sets.keys())),
-                )
-            )
-        except AttributeError:
-            self.fail(f"Widget {_widget} is not a logged object")
+        self.assertEqual(self.pytest_assert(attribute_values, _widget, _attr), values)
 
-    def assertValueGet(self, _widget, attr):
+    def assertValueGet(self, _widget, _attr):
         """Assert that the widget implementation attempted to retrieve an
         attribute.
 
         Args:
             _widget: The interface of the widget to check
-            attr: The attribute that should have been retrieved
+            _attr: The attribute that should have been retrieved
         """
-        try:
-            self.assertIn(
-                attr,
-                _widget._impl._gets,
-                "Widget {} did not retrieve the attribute {!r}; retrieved attributes were {}.".format(
-                    _widget,
-                    attr,
-                    ",".join(f"{a!r}" for a in sorted(_widget._impl._gets)),
-                ),
-            )
-        except AttributeError:
-            self.fail(f"Widget {_widget} is not a logged object")
+        self.pytest_assert(attribute_retrieved, _widget, _attr)
 
-    def assertValueNotGet(self, _widget, attr):
-        self.assertTrue(
-            attr not in _widget._impl._gets,
-            msg=f"Expected {attr} not to be get, but it was.",
-        )
+    def assertValueNotGet(self, _widget, _attr):
+        self.pytest_assert(attribute_not_retrieved, _widget, _attr)
 
-    def assertValueNotSet(self, _widget, attr):
-        self.assertTrue(
-            attr not in _widget._impl._sets,
-            msg=f"Expected {attr} not to be set, but it was.",
-        )
+    def assertValueNotSet(self, _widget, _attr):
+        self.pytest_assert(attribute_not_set, _widget, _attr)
 
-    def assertActionNotPerformed(self, _widget, action):
+    def assertActionNotPerformed(self, _widget, _action):
         """Assert that the named action was *not* performed by a widget.
 
         Args:
             _widget: The interface of the widget that should not have performed the action.
-            action: The name of the action to check
+            _action: The name of the action to check
         """
-        try:
-            self.assertNotIn(
-                action,
-                _widget._impl._actions,
-                f"Action {action} unexpectedly performed by {_widget}.",
-            )
-        except AttributeError:
-            self.fail(f"Widget {_widget} is not a logged object")
+        self.pytest_assert(action_not_performed, _widget, _action)
 
-    def assertActionPerformed(self, _widget, action):
+    def assertActionPerformed(self, _widget, _action):
         """Assert that the named action performed by a widget.
-
         Args:
             _widget: The interface of the widget that should have performed the action.
-            action: The name of the action to check
+            _action: The name of the action to check
         """
-        try:
-            self.assertIn(
-                action,
-                _widget._impl._actions,
-                "Action {} not performed by {}. Actions were: {}".format(
-                    action, _widget, sorted(_widget._impl._actions.keys())
-                ),
-            )
-        except AttributeError:
-            self.fail(f"Widget {_widget} is not a logged object")
+        self.pytest_assert(action_performed, _widget, _action)
 
-    def assertActionPerformedWith(self, _widget, action, **test_data):
+    def assertActionPerformedWith(self, _widget, _action, **test_data):
         """Was the action performed with specific test data.
 
         Args:
             _widget: The interface of the widget that should have performed the action.
-            action: The name of the action to check.
+            _action: The name of the action to check.
             **test_data: The arguments that should have been passed to the action.
 
         Returns:
             If a matching action was performed, the full data of
             the performed action if. False otherwise.
         """
-        try:
-            found = True
-            # Iterate over every action that was performed on
-            # this object.
-            for sequence, data in _widget._impl._actions[action].items():
-                # Iterate over every key and value in the test
-                # data. If the value in the recorded action
-                # doesn't match the requested value, then this isn't
-                # a match.
-                for key, value in test_data.items():
-                    try:
-                        try:
-                            # Look for a `_raw` attribute, as that will be the
-                            # directly comparable object
-                            raw = data[key]._raw
-                            # If the _raw attribute is a mock, it doesn't actually exist
-                            if isinstance(data[key]._raw, Mock):
-                                raise AttributeError()
-
-                            if raw != value:
-                                found = False
-                        except AttributeError:
-                            # No raw attribute; use the provided value as-is
-                            if data[key] != value:
-                                found = False
-                    except KeyError:
-                        found = False
-
-                # Default behavior is to be found; so if we're
-                # still in a "found" state, this action is a match
-                # for the test data. Otherwise, reset, and try again
-                # with the next recorded action.
-                if found:
-                    return data
-                else:
-                    found = True
-
-            # None of the recorded actions match the test data.
-            self.fail(
-                "Action {} not performed by {} with {}. Actions were: {}".format(
-                    action,
-                    _widget,
-                    test_data,
-                    sorted(_widget._impl._actions[action].items()),
-                )
-            )
-        except KeyError:
-            # The action wasn't performed
-            self.fail(
-                "Action {} not performed by {}. Actions were: {}".format(
-                    action, _widget, sorted(_widget._impl._actions.keys())
-                )
-            )
-        except AttributeError:
-            self.fail(f"Widget {_widget} is not a logged object")
+        self.pytest_assert(action_performed_with, _widget, _action, **test_data)
