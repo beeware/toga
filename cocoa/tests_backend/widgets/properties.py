@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from travertino.fonts import Font
 
 from toga.colors import rgba
 from toga.fonts import FANTASY, NORMAL, SYSTEM
@@ -23,15 +23,6 @@ def toga_color(color):
         return None
 
 
-@dataclass
-class Font:
-    family: str
-    size: int
-    style: str = NORMAL
-    variant: str = NORMAL
-    weight: str = NORMAL
-
-
 def toga_font(font):
     return Font(
         family={
@@ -39,6 +30,9 @@ def toga_font(font):
             "Papyrus": FANTASY,
         }.get(str(font.familyName), str(font.familyName)),
         size=font.pointSize,
+        style=NORMAL,  # TODO: ITALIC if..., SMALL_CAPS if ...
+        variant=NORMAL,
+        weight=NORMAL,  # TODO: BOLD if ...
     )
 
 

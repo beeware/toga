@@ -1,6 +1,10 @@
 from System import EventArgs, Object
+from System.Drawing import SystemColors
 
-from .properties import toga_color
+from toga.colors import TRANSPARENT
+from toga.style.pack import JUSTIFY, LEFT
+
+from .properties import toga_color, toga_font
 
 
 class SimpleProbe:
@@ -17,9 +21,19 @@ class SimpleProbe:
         else:
             raise ValueError(f"cannot find {self.native} in {container_native}")
 
+    def alignment_equivalent(self, actual, expected):
+        # Winforms doesn't have a "Justified" alignment; it falls back to LEFT
+        if expected == JUSTIFY:
+            assert actual == LEFT
+        else:
+            assert actual == expected
+        return True
+
     async def redraw(self):
         """Request a redraw of the app, waiting until that redraw has completed."""
-        # Refresh the layout
+        # TODO: Travertino/Pack doesn't force a layout refresh
+        # when properties such as flex or width are altered.
+        # For now, do a manual refresh.
         self.widget.window.content.refresh()
 
     @property
@@ -27,12 +41,22 @@ class SimpleProbe:
         return self.native.Enabled
 
     @property
-    def background_color(self):
-        return toga_color(self.native.BackColor)
+    def color(self):
+        if self.native.ForeColor == SystemColors.WindowText:
+            return None
+        else:
+            return toga_color(self.native.ForeColor)
 
     @property
-    def color(self):
-        return toga_color(self.native.ForeColor)
+    def background_color(self):
+        if self.native.BackColor == SystemColors.Control:
+            return TRANSPARENT
+        else:
+            return toga_color(self.native.BackColor)
+
+    @property
+    def font(self):
+        return toga_font(self.native.Font)
 
     @property
     def hidden(self):

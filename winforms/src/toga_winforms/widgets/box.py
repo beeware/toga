@@ -1,6 +1,3 @@
-from travertino.constants import TRANSPARENT
-
-from toga_winforms.colors import native_color
 from toga_winforms.libs import Point, Size, WinForms
 
 from .base import Widget
@@ -19,6 +16,9 @@ class Box(Widget):
                 vertical_shift = (
                     self.frame.vertical_shift - self.interface.style.padding_top
                 )
+                # The outermost widget assumes the size of the viewport
+                width = self.viewport.width
+                height = self.viewport.height
             except AttributeError:
                 vertical_shift = self.interface.style.padding_top
             horizontal_shift = self.interface.style.padding_left
@@ -30,9 +30,3 @@ class Box(Widget):
                 width + horizontal_size_adjustment, height + vertical_size_adjustment
             )
             self.native.Location = Point(x - horizontal_shift, y + vertical_shift)
-
-    def set_background_color(self, value):
-        if value:
-            self.native.BackColor = native_color(value)
-        else:
-            self.native.BackColor = native_color(TRANSPARENT)

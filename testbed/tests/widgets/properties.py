@@ -73,7 +73,7 @@ async def test_color(widget, probe):
 
 
 @mark.skipif(
-    current_platform in {"android", "windows"},
+    current_platform in {"android"},
     reason="color resets don't work",
 )
 async def test_color_reset(widget, probe):
@@ -111,10 +111,7 @@ async def test_background_color_reset(widget, probe):
     assert_color(probe.background_color, original)
 
 
-@mark.skipif(
-    current_platform == "windows",
-    reason="TRANSPARENT not implemented",
-)
 async def test_background_color_transparent(widget, probe):
+    "Background transparency is treated as a color reset"
     widget.style.background_color = TRANSPARENT
     assert_color(probe.background_color, TRANSPARENT)

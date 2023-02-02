@@ -1,7 +1,7 @@
 import System.Windows.Forms
-from pytest import skip
 
 from .base import SimpleProbe
+from .properties import toga_alignment
 
 
 class LabelProbe(SimpleProbe):
@@ -12,9 +12,5 @@ class LabelProbe(SimpleProbe):
         return self.native.Text
 
     @property
-    def font(self):
-        skip("Font probe not implemented")
-
-    @property
     def alignment(self):
-        skip("Alignment probe not implemented")
+        return toga_alignment(self.native.TextAlign)
