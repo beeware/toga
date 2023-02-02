@@ -1,1 +1,0 @@
-Added a missing quote mark to box.rst.

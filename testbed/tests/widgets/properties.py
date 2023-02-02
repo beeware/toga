@@ -16,7 +16,7 @@ async def test_text(widget, probe):
 
 
 @mark.skipif(
-    current_platform in {"android"},
+    current_platform in {"android", "iOS"},
     reason="text width resizes don't work",
 )
 async def test_text_width_change(widget, probe):

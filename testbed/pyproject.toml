@@ -37,6 +37,9 @@ test_sources = [
 ]
 
 [tool.briefcase.app.testbed.linux]
+test_sources = [
+    "../gtk/tests_backend",
+]
 requires = [
     "../gtk",
 ]
@@ -70,6 +73,9 @@ requires = [
 
 # Mobile deployments
 [tool.briefcase.app.testbed.iOS]
+test_sources = [
+    "../iOS/tests_backend",
+]
 requires = [
     "../iOS",
     "std-nslog~=1.0.0",
@@ -82,9 +88,8 @@ test_sources = [
 requires = [
     "../android"
 ]
-
-# TODO: replace with extractPackages
-build_gradle_extra_content = "android.defaultConfig.python.pyc.src false"
+# Coverage requires access to individual .py files.
+build_gradle_extra_content = "android.defaultConfig.python.extractPackages 'toga_android'"
 
 [tool.briefcase.app.testbed.web]
 requires = [

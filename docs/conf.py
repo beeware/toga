@@ -11,8 +11,8 @@
 # serve to show the default.
 
 import os
-import re
 import sys
+from importlib.metadata import version as metadata_version
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -53,17 +53,9 @@ copyright = "2013, Russell Keith-Magee"
 # |version| and |release|, also used in various other places throughout the
 # built documents.
 #
-# The full version, including alpha/beta/rc tags.
-with open("../core/src/toga/__init__.py", encoding="utf8") as version_file:
-    version_match = re.search(
-        r"^__version__ = ['\"]([^'\"]*)['\"]", version_file.read(), re.M
-    )
-    if version_match:
-        release = version_match.group(1)
-    else:
-        raise RuntimeError("Unable to find version string.")
-
-# The short X.Y version.
+# The full version, including alpha/beta/rc tags
+release = metadata_version("toga-core")
+# The short X.Y version
 version = ".".join(release.split(".")[:2])
 
 # Fix the autodoc import issues
@@ -119,7 +111,7 @@ pygments_style = "sphinx"
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
-# html_title = None
+html_title = f"Toga {release}"
 
 # A shorter title for the navigation bar.  Default is the same as html_title.
 # html_short_title = None

@@ -1,9 +1,15 @@
-from toga_iOS.libs import UIApplication, UIScreen, UIViewController, UIWindow
+from toga_iOS.libs import (
+    UIApplication,
+    UINavigationController,
+    UIScreen,
+    UIViewController,
+    UIWindow,
+)
 
 
 class iOSViewport:
-    def __init__(self, view):
-        self.view = view
+    def __init__(self, widget):
+        self.widget = widget
         # iOS renders everything at 96dpi.
         self.dpi = 96
         self.baseline_dpi = self.dpi
@@ -18,14 +24,33 @@ class iOSViewport:
         return UIApplication.sharedApplication.statusBarFrame.size.height
 
     @property
+    def navbar_height(self):
+        try:
+            return (
+                self.widget.controller.navigationController.navigationBar.frame.size.height
+            )
+        except AttributeError:
+            return 0
+
+    @property
+    def top_offset(self):
+        return self.statusbar_height + self.navbar_height
+
+    @property
+    def bottom_offset(self):
+        return self.kb_height
+
+    @property
     def width(self):
-        return self.view.bounds.size.width
+        return self.widget.native.bounds.size.width
 
     @property
     def height(self):
         # Remove the height of the keyboard and the titlebar
         # from the available viewport height
-        return self.view.bounds.size.height - self.kb_height - self.statusbar_height
+        return (
+            self.widget.native.bounds.size.height - self.bottom_offset - self.top_offset
+        )
 
 
 class Window:
@@ -35,6 +60,15 @@ class Window:
 
         self.native = UIWindow.alloc().initWithFrame(UIScreen.mainScreen.bounds)
 
+        # The window has a UINavigationController to provide the navigation bar,
+        # and provide a stack of navigable content; this is initialized with a
+        # UIViewController to contain the actual content
+        self.controller = UIViewController.alloc().init()
+        self.navigation_controller = (
+            UINavigationController.alloc().initWithRootViewController(self.controller)
+        )
+        self.native.rootViewController = self.navigation_controller
+
         self.set_title(title)
 
     def clear_content(self):
@@ -43,26 +77,25 @@ class Window:
                 child._impl.container = None
 
     def set_content(self, widget):
-        widget.viewport = iOSViewport(self.native)
+        widget.viewport = iOSViewport(self)
 
         # Add all children to the content widget.
         for child in widget.interface.children:
             child._impl.container = widget
 
-        if getattr(widget, "controller", None):
-            self.controller = widget.controller
-        else:
-            self.controller = UIViewController.alloc().init()
-
-        self.native.rootViewController = self.controller
+        # Set the controller's view to be the new content widget
         self.controller.view = widget.native
 
+        # The main window content needs to use the autoresizing mask so
+        # that it fills all the available space in the view.
+        widget.native.translatesAutoresizingMaskIntoConstraints = True
+
     def get_title(self):
-        self.interface.factory.not_implemented("Window.get_title()")
-        return "?"
+        return str(self.navigation_controller.title)
 
     def set_title(self, title):
-        self.interface.factory.not_implemented("Window.set_title()")
+        # The title is set on the controller of the topmost content
+        self.navigation_controller.topViewController.title = title
 
     def get_position(self):
         return (0, 0)

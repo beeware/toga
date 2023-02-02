@@ -5,7 +5,7 @@
 Toga
 ====
 
-.. image:: https://img.shields.io/badge/python-3.7%20|%203.8%20|%203.9%20|%203.10-blue.svg
+.. image:: https://img.shields.io/pypi/pyversions/toga.svg
     :target: https://pypi.python.org/pypi/toga
     :alt: Python Versions
 
@@ -19,7 +19,7 @@ Toga
 
 .. image:: https://img.shields.io/pypi/l/toga.svg
     :target: https://github.com/beeware/toga/blob/main/LICENSE
-    :alt: License
+    :alt: BSD License
 
 .. image:: https://github.com/beeware/toga/workflows/CI/badge.svg?branch=main
    :target: https://github.com/beeware/toga/actions
@@ -64,7 +64,7 @@ Quickstart
 
 To get a demonstration of the capabilities of Toga, run the following::
 
-    $ pip install --pre toga-demo
+    $ pip install toga-demo
     $ toga-demo
 
 This will pop up a GUI window with some sample widgets.

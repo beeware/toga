@@ -39,7 +39,7 @@ class TogaStepper(NSStepper):
     @objc_method
     def controlTextDidChange_(self, notification) -> None:
         try:
-            value = str(self._impl.input.stringValue)
+            value = str(self.impl.input.stringValue)
             # Try to convert to a decimal. If the value isn't a number,
             # this will raise InvalidOperation
             Decimal(value)
@@ -205,6 +205,10 @@ class NumberInput(Widget):
             # should only execute if we know the raw value can be
             # converted to a Decimal.
             self.input.stringValue = value
+
+    def set_enabled(self, value):
+        self.input.enabled = value
+        self.stepper.enabled = value
 
     def rehint(self):
         # Height of a text input is known and fixed.

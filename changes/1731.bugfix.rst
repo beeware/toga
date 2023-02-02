@@ -1,1 +1,0 @@
-The way dependency versions are specified has been modified to make Toga as accomodating as possible with end-user environments, but as stable as possible for development environments.
