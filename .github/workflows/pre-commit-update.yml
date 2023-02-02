@@ -1,0 +1,12 @@
+name: Update pre-commit
+
+on:
+  schedule:
+    - cron: "0 20 * * SUN" # Sunday @ 2000 UTC
+  workflow_dispatch:
+
+jobs:
+  pre-commit-update:
+    name: Update pre-commit
+    uses: beeware/.github/.github/workflows/pre-commit-update.yml@main
+    secrets: inherit
