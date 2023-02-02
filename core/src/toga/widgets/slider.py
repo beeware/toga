@@ -30,7 +30,6 @@ class Slider(Widget):
         range=None,
         tick_count=None,
         on_change=None,
-        on_slide=None,  # DEPRECATED!
         on_press=None,
         on_release=None,
         enabled=True,
