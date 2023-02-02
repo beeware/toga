@@ -211,34 +211,3 @@ class SliderTests(TestCase):
         self.assertEqual(self.slider.max, max_val)
         self.assertEqual(self.slider.range, (min_val, max_val))
         self.assertValueSet(self.slider, "range", (min_val, max_val))
-
-    ######################################################################
-    # 2022-07: Backwards compatibility
-    ######################################################################
-
-    def test_init_with_deprecated(self):
-        # default is a deprecated argument
-        with self.assertWarns(DeprecationWarning):
-            my_slider = toga.Slider(
-                default=self.value,
-                range=self.range,
-                on_change=self.on_change,
-                enabled=self.enabled,
-                tick_count=self.tick_count,
-            )
-        self.assertEqual(my_slider.value, self.value)
-
-        # can't specify both default *and* value
-        with self.assertRaises(ValueError):
-            toga.Slider(
-                default=self.value,
-                value=self.value,
-                range=self.range,
-                on_change=self.on_change,
-                enabled=self.enabled,
-                tick_count=self.tick_count,
-            )
-
-    ######################################################################
-    # End backwards compatibility.
-    ######################################################################

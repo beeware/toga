@@ -1,4 +1,3 @@
-import warnings
 from contextlib import contextmanager
 
 from toga.handlers import wrapped_handler
@@ -35,46 +34,14 @@ class Slider(Widget):
         on_press=None,
         on_release=None,
         enabled=True,
-        factory=None,  # DEPRECATED!
-        default=None,  # DEPRECATED!
     ):
         super().__init__(id=id, style=style)
-
-        ######################################################################
-        # 2022-09: Backwards compatibility
-        ######################################################################
-        # factory no longer used
-        if factory:
-            warnings.warn("The factory argument is no longer used.", DeprecationWarning)
-        ######################################################################
-        # End backwards compatibility.
-        ######################################################################
 
         # Needed for _impl initialization
         self._tick_count = None
         self._on_change = None
 
         self._impl = self.factory.Slider(interface=self)
-
-        ##################################################################
-        # 2022-07: Backwards compatibility
-        ##################################################################
-
-        # default replaced with value
-        if default is not None:
-            if value is not None:
-                raise ValueError(
-                    "Cannot specify both `default` and `value`; "
-                    "`default` has been deprecated, use `value`"
-                )
-            else:
-                warnings.warn("`default` has been renamed `value`", DeprecationWarning)
-            value = default
-
-        ##################################################################
-        # End backwards compatibility.
-        ##################################################################
-
         self._sync_suppressed = False
         self._value = None
         self.range = range
@@ -84,10 +51,7 @@ class Slider(Widget):
         # call it in constructor. Please do not move it from here.
         self.value = value
 
-        if on_slide:
-            self.on_slide = on_slide
-        else:
-            self.on_change = on_change
+        self.on_change = on_change
         self.enabled = enabled
         self.on_press = on_press
         self.on_release = on_release
@@ -258,24 +222,3 @@ class Slider(Widget):
     def on_release(self, handler):
         self._on_release = wrapped_handler(self, handler)
         self._impl.set_on_release(self._on_release)
-
-    @property
-    def on_slide(self):
-        """The function for when the value of the slider is changed.
-
-        **DEPRECATED: renamed as on_change**
-
-        Returns:
-            The ``callable`` that is executed on slide.
-        """
-        warnings.warn(
-            "Slider.on_slide has been renamed Slider.on_change", DeprecationWarning
-        )
-        return self._on_change
-
-    @on_slide.setter
-    def on_slide(self, handler):
-        warnings.warn(
-            "Slider.on_slide has been renamed Slider.on_change", DeprecationWarning
-        )
-        self.on_change = handler
