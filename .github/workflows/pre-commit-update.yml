@@ -10,3 +10,5 @@ jobs:
     name: Update pre-commit
     uses: beeware/.github/.github/workflows/pre-commit-update.yml@main
     secrets: inherit
+    with:
+      pre-commit-source: './core[dev]'
