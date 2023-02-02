@@ -9,7 +9,7 @@ class TogaApplicator:
         self.widget.refresh()
 
     def set_bounds(self):
-        # print("APPLY LAYOUT", self.widget, self.widget.layout)
+        # print("  APPLY LAYOUT", self.widget, self.widget.layout)
         self.widget._impl.set_bounds(
             self.widget.layout.absolute_content_left,
             self.widget.layout.absolute_content_top,
@@ -27,8 +27,11 @@ class TogaApplicator:
         self.widget._impl.set_hidden(hidden)
 
     def set_font(self, font):
+        # Changing the font of a widget can make the widget change size,
+        # which in turn means we need to do a re-layout
         self.widget._impl.set_font(font)
         self.widget._impl.rehint()
+        self.widget.refresh()
 
     def set_color(self, color):
         self.widget._impl.set_color(color)

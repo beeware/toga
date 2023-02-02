@@ -18,6 +18,7 @@ class WinFormsViewport:
 
     @property
     def height(self):
+        # Treat `native=None` as a 0x0 viewport
         if self.native is None:
             return 0
         # Subtract any vertical shift of the frame. This is to allow

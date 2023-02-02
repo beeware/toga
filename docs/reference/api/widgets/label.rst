@@ -27,6 +27,12 @@ Usage
 
     label = toga.Label('Hello world')
 
+Notes
+-----
+
+* Winforms does not support an alignment value of ``JUSTIFIED``. If this
+  alignment value is used, the label will default left alignment.
+
 Reference
 ---------
 

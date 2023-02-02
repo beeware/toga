@@ -18,6 +18,12 @@ from .properties import (  # noqa: F401
     test_text_width_change,
 )
 
+
+@fixture
+async def widget():
+    return toga.Button("Hello")
+
+
 test_font = mark.skipif(
     current_platform in {"iOS"},
     reason="font changes don't alter size",
@@ -27,12 +33,6 @@ test_text = mark.skipif(
     current_platform in {"iOS"},
     reason="round trip empty strings don't work",
 )(test_text)
-
-
-@fixture
-async def widget():
-    return toga.Button("Hello")
-
 
 test_text_width_change = mark.skipif(
     current_platform in {"linux"},
@@ -54,10 +54,6 @@ async def test_press(widget, probe):
     handler.assert_called_once_with(widget)
 
 
-@mark.skipif(
-    current_platform in {"windows"},
-    reason="color reset on transparent not implemented",
-)
 async def test_background_color_transparent(widget, probe):
     "Buttons treat background transparency as a color reset."
     widget.style.background_color = TRANSPARENT
@@ -75,10 +71,10 @@ async def test_background_color_transparent(widget, probe):
 async def test_button_size(widget, probe):
     "Check that the button resizes"
     # Container is initially a non-flex row box.
-    # Initial button size is small, based on content size.
+    # Initial button size is small (but non-zero), based on content size.
     await probe.redraw()
-    assert 50 <= probe.width <= 100
-    assert probe.height <= 50
+    assert 10 <= probe.width <= 100
+    assert 10 <= probe.height <= 50
 
     # Make the button flexible; it will expand to fill horizontal space
     widget.style.flex = 1

@@ -140,7 +140,10 @@ class Switch(Widget):
         else:
             self._text = str(value)
         self._impl.set_text(value)
+        # Changing the text will probably cause the size of the switch to change
+        # so we need to rehint, then recompute layout.
         self._impl.rehint()
+        self.refresh()
 
     @property
     def on_change(self):
