@@ -69,4 +69,3 @@ Reference
 .. autoclass:: toga.widgets.box.Box
    :members:
    :undoc-members:
-   :inherited-members:

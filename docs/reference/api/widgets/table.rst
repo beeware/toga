@@ -38,4 +38,3 @@ Reference
 .. autoclass:: toga.widgets.table.Table
    :members:
    :undoc-members:
-   :inherited-members:

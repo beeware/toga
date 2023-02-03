@@ -31,4 +31,3 @@ Reference
 .. autoclass:: toga.widgets.activityindicator.ActivityIndicator
    :members:
    :undoc-members:
-   :inherited-members:

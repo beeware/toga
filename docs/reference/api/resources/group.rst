@@ -22,4 +22,3 @@ Reference
 .. autoclass:: toga.command.Group
    :members:
    :undoc-members:
-   :inherited-members:

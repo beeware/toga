@@ -1,0 +1,1 @@
+Remove :inherited-members: from most classes, and add :undoc-members:

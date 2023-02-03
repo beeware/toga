@@ -51,3 +51,4 @@ Reference
 
 .. autoclass:: toga.widgets.button.Button
    :members:
+   :undoc-members:

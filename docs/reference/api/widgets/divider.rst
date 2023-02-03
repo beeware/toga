@@ -41,4 +41,3 @@ Reference
 .. autoclass:: toga.widgets.divider.Divider
    :members:
    :undoc-members:
-   :inherited-members:

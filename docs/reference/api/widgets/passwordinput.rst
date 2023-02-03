@@ -21,4 +21,3 @@ Reference
 .. autoclass:: toga.widgets.passwordinput.PasswordInput
    :members:
    :undoc-members:
-   :inherited-members:

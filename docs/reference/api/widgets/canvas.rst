@@ -73,7 +73,6 @@ Main Interface
 .. autoclass:: toga.widgets.canvas.Canvas
    :members:
    :undoc-members:
-   :inherited-members:
    :exclude-members: canvas, add_draw_obj
 
 Lower-Level Classes
@@ -81,4 +80,5 @@ Lower-Level Classes
 
 .. automodule:: toga.widgets.canvas
    :members:
+   :undoc-members:
    :exclude-members: Canvas, add_draw_obj

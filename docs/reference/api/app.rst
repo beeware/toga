@@ -57,4 +57,3 @@ Reference
 .. autoclass:: toga.app.App
    :members:
    :undoc-members:
-   :inherited-members:

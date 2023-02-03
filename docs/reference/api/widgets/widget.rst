@@ -18,4 +18,5 @@ Reference
 
 .. autoclass:: toga.widgets.base.Widget
    :members:
+   :undoc-members:
    :inherited-members:

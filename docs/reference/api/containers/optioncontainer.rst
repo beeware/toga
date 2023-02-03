@@ -37,4 +37,3 @@ Reference
 .. autoclass:: toga.widgets.optioncontainer.OptionContainer
    :members:
    :undoc-members:
-   :inherited-members:

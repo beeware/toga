@@ -21,4 +21,3 @@ Reference
 .. autoclass:: toga.command.Command
    :members:
    :undoc-members:
-   :inherited-members:

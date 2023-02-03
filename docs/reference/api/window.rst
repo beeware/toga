@@ -50,4 +50,3 @@ Reference
 .. autoclass:: toga.window.Window
    :members:
    :undoc-members:
-   :inherited-members:

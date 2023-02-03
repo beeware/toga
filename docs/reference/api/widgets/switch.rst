@@ -30,4 +30,3 @@ Reference
 .. autoclass:: toga.widgets.switch.Switch
    :members:
    :undoc-members:
-   :inherited-members:

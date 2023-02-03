@@ -22,4 +22,3 @@ Reference
 .. autoclass:: toga.widgets.detailedlist.DetailedList
    :members:
    :undoc-members:
-   :inherited-members:
