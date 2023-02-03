@@ -1,3 +1,5 @@
+import asyncio
+
 # From UIControl.h
 UIControlEventTouchDown = 1 << 0
 UIControlEventTouchDownRepeat = 1 << 1
@@ -53,6 +55,10 @@ class SimpleProbe:
 
         # Force a repaint
         self.widget.window.content._impl.native.layer.displayIfNeeded()
+
+        # If we're running slow, wait for a second
+        if self.widget.app.run_slow:
+            await asyncio.sleep(1)
 
     @property
     def enabled(self):

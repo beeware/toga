@@ -1,3 +1,5 @@
+import asyncio
+
 from System import EventArgs, Object
 from System.Drawing import SystemColors
 
@@ -35,6 +37,10 @@ class SimpleProbe:
         # when properties such as flex or width are altered.
         # For now, do a manual refresh.
         self.widget.window.content.refresh()
+
+        # If we're running slow, wait for a second
+        if self.widget.app.run_slow:
+            await asyncio.sleep(1)
 
     @property
     def enabled(self):

@@ -1,6 +1,6 @@
 from pytest import mark
 
-from toga.colors import TRANSPARENT
+from toga.colors import RED, TRANSPARENT, color as named_color
 from toga.fonts import FANTASY
 from toga.platform import current_platform
 
@@ -12,6 +12,7 @@ async def test_text(widget, probe):
     "The text displayed on a widget can be changed"
     for text in TEXTS:
         assert_set_get(widget, "text", text)
+        await probe.redraw()
         assert probe.text == text
 
 
@@ -69,6 +70,7 @@ async def test_color(widget, probe):
     "The foreground color of a widget can be changed"
     for color in COLORS:
         widget.style.color = color
+        await probe.redraw()
         assert_color(probe.color, color)
 
 
@@ -82,11 +84,13 @@ async def test_color_reset(widget, probe):
     original = probe.color
 
     # Set the color to something different
-    widget.style.color = COLORS[0]
-    assert_color(probe.color, COLORS[0])
+    widget.style.color = RED
+    await probe.redraw()
+    assert_color(probe.color, named_color(RED))
 
     # Reset the color, and check that it has been restored to the original
     widget.style.color = None
+    await probe.redraw()
     assert_color(probe.color, original)
 
 
@@ -94,6 +98,7 @@ async def test_background_color(widget, probe):
     "The background color of a widget can be set"
     for color in COLORS:
         widget.style.background_color = color
+        await probe.redraw()
         assert_color(probe.background_color, color)
 
 
@@ -103,15 +108,18 @@ async def test_background_color_reset(widget, probe):
     original = probe.background_color
 
     # Set the background color to something different
-    widget.style.background_color = COLORS[0]
-    assert_color(probe.background_color, COLORS[0])
+    widget.style.background_color = RED
+    await probe.redraw()
+    assert_color(probe.background_color, named_color(RED))
 
     # Reset the background color, and check that it has been restored to the original
     widget.style.background_color = None
+    await probe.redraw()
     assert_color(probe.background_color, original)
 
 
 async def test_background_color_transparent(widget, probe):
     "Background transparency is treated as a color reset"
     widget.style.background_color = TRANSPARENT
+    await probe.redraw()
     assert_color(probe.background_color, TRANSPARENT)

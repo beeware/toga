@@ -53,6 +53,7 @@ async def test_multiline(widget, probe):
 async def test_alignment(widget, probe):
     # Initial alignment is LEFT, initial direction is LTR
     widget.parent.style.direction = COLUMN
+    await probe.redraw()
     assert probe.alignment == LEFT
 
     for alignment in [RIGHT, CENTER, JUSTIFY]:
