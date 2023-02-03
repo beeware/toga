@@ -1,1 +1,1 @@
-API support tables now distinguish stable vs beta status on each platform.
+API support tables now distinguish partial vs full support on each platform.
