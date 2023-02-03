@@ -51,12 +51,14 @@ async def test_press(widget, probe):
     # https://github.com/beeware/toga/pull/804 may be relevant.
     setattr(widget, "on_press", handler)
     probe.press()
+    await probe.redraw()
     handler.assert_called_once_with(widget)
 
 
 async def test_background_color_transparent(widget, probe):
     "Buttons treat background transparency as a color reset."
     widget.style.background_color = TRANSPARENT
+    await probe.redraw()
     assert_color(probe.background_color, None)
 
 

@@ -1,3 +1,5 @@
+import asyncio
+
 from pytest import skip
 
 from toga_gtk.libs import Gtk
@@ -27,6 +29,10 @@ class SimpleProbe:
         # Force a repaint
         while self.impl.container.needs_redraw or Gtk.events_pending():
             Gtk.main_iteration_do(blocking=False)
+
+        # If we're running slow, wait for a second
+        if self.widget.app.run_slow:
+            await asyncio.sleep(1)
 
     @property
     def enabled(self):

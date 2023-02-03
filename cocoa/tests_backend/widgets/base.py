@@ -1,3 +1,6 @@
+import asyncio
+
+
 class SimpleProbe:
     def __init__(self, widget):
         self.widget = widget
@@ -25,6 +28,10 @@ class SimpleProbe:
 
         # Force a repaint
         self.widget.window.content._impl.native.displayIfNeeded()
+
+        # If we're running slow, wait for a second
+        if self.widget.app.run_slow:
+            await asyncio.sleep(1)
 
     @property
     def enabled(self):
