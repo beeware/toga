@@ -49,4 +49,3 @@ Reference
 .. autoclass:: toga.widgets.webview.WebView
    :members:
    :undoc-members:
-   :inherited-members:

@@ -29,4 +29,3 @@ Reference
 .. autoclass:: toga.app.MainWindow
    :members:
    :undoc-members:
-   :inherited-members:

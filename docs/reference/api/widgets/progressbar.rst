@@ -68,4 +68,3 @@ Reference
 .. autoclass:: toga.widgets.progressbar.ProgressBar
    :members:
    :undoc-members:
-   :inherited-members:

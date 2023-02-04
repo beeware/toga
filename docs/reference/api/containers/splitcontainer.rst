@@ -47,4 +47,3 @@ Reference
 .. autoclass:: toga.widgets.splitcontainer.SplitContainer
    :members:
    :undoc-members:
-   :inherited-members:

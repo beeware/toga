@@ -25,4 +25,3 @@ Reference
 .. autoclass:: toga.widgets.imageview.ImageView
    :members:
    :undoc-members:
-   :inherited-members:

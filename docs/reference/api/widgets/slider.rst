@@ -19,4 +19,3 @@ Reference
 .. autoclass:: toga.widgets.slider.Slider
    :members:
    :undoc-members:
-   :inherited-members:

@@ -25,4 +25,3 @@ Reference
 .. autoclass:: toga.widgets.multilinetextinput.MultilineTextInput
    :members:
    :undoc-members:
-   :inherited-members:

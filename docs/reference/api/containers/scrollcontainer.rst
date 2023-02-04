@@ -46,4 +46,3 @@ Reference
 .. autoclass:: toga.widgets.scrollcontainer.ScrollContainer
    :members:
    :undoc-members:
-   :inherited-members:

@@ -28,4 +28,3 @@ Reference
 .. autoclass:: toga.widgets.numberinput.NumberInput
    :members:
    :undoc-members:
-   :inherited-members:

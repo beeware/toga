@@ -34,4 +34,3 @@ Reference
 .. autoclass:: toga.images.Image
    :members:
    :undoc-members:
-   :inherited-members:

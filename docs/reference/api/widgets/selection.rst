@@ -28,4 +28,3 @@ Reference
 .. autoclass:: toga.widgets.selection.Selection
    :members:
    :undoc-members:
-   :inherited-members:

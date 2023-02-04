@@ -39,4 +39,3 @@ Reference
 .. autoclass:: toga.icons.Icon
    :members:
    :undoc-members:
-   :inherited-members:

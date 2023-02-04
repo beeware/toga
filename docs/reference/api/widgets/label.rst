@@ -27,3 +27,4 @@ Reference
 
 .. autoclass:: toga.widgets.label.Label
    :members:
+   :undoc-members:
