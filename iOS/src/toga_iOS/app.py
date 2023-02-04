@@ -99,7 +99,7 @@ class App:
         App.app = self  # Add a reference for the PythonAppDelegate class to use.
 
         asyncio.set_event_loop_policy(EventLoopPolicy())
-        self.loop = asyncio.new_event_loop()
+        self.loop = asyncio.get_event_loop_policy().get_event_loop()
 
     def create(self):
         """Calls the startup method on the interface."""
