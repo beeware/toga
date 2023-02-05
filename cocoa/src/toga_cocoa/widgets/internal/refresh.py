@@ -35,7 +35,6 @@ HEADER_HEIGHT = 45.0
 
 
 class RefreshableClipView(NSClipView):
-
     interface = objc_property(object, weak=True)
     impl = objc_property(object, weak=True)
 
@@ -73,7 +72,6 @@ class RefreshableClipView(NSClipView):
 
 
 class RefreshableScrollView(NSScrollView):
-
     interface = objc_property(object, weak=True)
     impl = objc_property(object, weak=True)
 

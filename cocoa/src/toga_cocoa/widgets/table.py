@@ -21,7 +21,6 @@ from .internal.cells import TogaIconView
 
 
 class TogaTable(NSTableView):
-
     interface = objc_property(object, weak=True)
     impl = objc_property(object, weak=True)
 
@@ -155,7 +154,6 @@ class TogaTable(NSTableView):
 
 class Table(Widget):
     def create(self):
-
         self._view_for_row = dict()
 
         # Create a table view, and put it in a scroll view.

@@ -26,7 +26,6 @@ from toga_cocoa.widgets.internal.data import TogaData
 
 
 class TogaTree(NSOutlineView):
-
     interface = objc_property(object, weak=True)
     impl = objc_property(object, weak=True)
 
@@ -73,7 +72,6 @@ class TogaTree(NSOutlineView):
 
     @objc_method
     def outlineView_viewForTableColumn_item_(self, tree, column, item):
-
         col_identifier = str(column.identifier)
 
         try:
@@ -133,7 +131,6 @@ class TogaTree(NSOutlineView):
 
     @objc_method
     def outlineView_heightOfRowByItem_(self, tree, item) -> float:
-
         default_row_height = self.rowHeight
 
         if item is self:
@@ -229,7 +226,6 @@ class Tree(Widget):
         for i, (heading, accessor) in enumerate(
             zip(self.interface.headings, self.interface._accessors)
         ):
-
             column_identifier = at(accessor)
             self.column_identifiers[id(column_identifier)] = accessor
             column = NSTableColumn.alloc().initWithIdentifier(column_identifier)

@@ -49,7 +49,6 @@ class CocoaViewport:
 
 
 class WindowDelegate(NSObject):
-
     interface = objc_property(object, weak=True)
     impl = objc_property(object, weak=True)
 

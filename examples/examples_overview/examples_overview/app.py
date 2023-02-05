@@ -14,7 +14,6 @@ examples_dir = Path(__file__).parents[3]
 class ExampleExamplesOverviewApp(toga.App):
     # Button callback functions
     def run(self, widget, **kwargs):
-
         row = self.table.selection
 
         env = os.environ.copy()
@@ -23,7 +22,6 @@ class ExampleExamplesOverviewApp(toga.App):
         subprocess.run([sys.executable, "-m", row.name], env=env)
 
     def open(self, widget, **kwargs):
-
         row = self.table.selection
 
         if platform.system() == "Windows":
@@ -34,7 +32,6 @@ class ExampleExamplesOverviewApp(toga.App):
             subprocess.run(["xdg-open", row.path])
 
     def on_example_selected(self, widget, row):
-
         readme_path = row.path / "README.rst"
 
         try:
@@ -46,7 +43,6 @@ class ExampleExamplesOverviewApp(toga.App):
         self.info_view.value = readme_text
 
     def startup(self):
-
         # ==== Set up main window ======================================================
 
         self.main_window = toga.MainWindow(title=self.name)

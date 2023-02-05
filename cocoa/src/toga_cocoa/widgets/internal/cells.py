@@ -120,7 +120,6 @@ class TogaIconView(NSTableCellView):
 
     @objc_method
     def setImage_(self, image):
-
         if not self.imageView:
             self.setup()
 
@@ -139,7 +138,6 @@ class TogaIconView(NSTableCellView):
 
     @objc_method
     def setText_(self, text):
-
         if not self.imageView:
             self.setup()
 

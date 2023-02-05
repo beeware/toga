@@ -38,7 +38,6 @@ class Window:
         factory=None,  # DEPRECATED !
         on_close=None,
     ):
-
         ######################################################################
         # 2022-09: Backwards compatibility
         ######################################################################
@@ -145,7 +144,6 @@ class Window:
 
     @content.setter
     def content(self, widget):
-
         # Set window of old content to None
         if self._content:
             self._content.window = None
