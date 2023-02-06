@@ -190,18 +190,11 @@ class TestStyle(BaseStyle):
 
 ###########################################################################
 # Pytest widget assertion helpers
-#
-# These helpers are written so that they can be used as:
-#     assert action_not_performed(...)
-#
-# The functions all return True on success, but raise assertions on failure.
-# This allows the methods to have helpful context-sensitive failure messages,
-# while preserving the pytest "assert" syntax.
 ###############################################################################
 
 
-def module_action_not_performed(_module, _action):
-    """Determine that the module-level action was *not* performed.
+def assert_module_action_not_performed(_module, _action):
+    """Assert that the module-level action was *not* performed.
 
     :param _module: The module with the action that should not have been performed.
     :param _action: The name of the action to check
@@ -213,11 +206,10 @@ def module_action_not_performed(_module, _action):
         ), f"Action {_action!r} unexpectedly performed by {_module}."
     except AttributeError:
         pytest.fail(f"Module {_module} is not a logged object")
-    return True
 
 
-def module_action_performed(_module, _action):
-    """Determine that a module-level action was performed.
+def assert_module_action_performed(_module, _action):
+    """Assert that a module-level action was performed.
 
     :param _module: The module with the action that should have been performed.
     :param _action: The name of the action to check
@@ -230,11 +222,10 @@ def module_action_performed(_module, _action):
         )
     except AttributeError:
         pytest.fail(f"Module {_module} is not a logged object")
-    return True
 
 
-def module_action_performed_with(_module, _action, **test_data):
-    """Determine if the module-level action was performed with specific test data.
+def assert_module_action_performed_with(_module, _action, **test_data):
+    """Assert if the module-level action was performed with specific test data.
 
     :param _module: The module with the action that should have been performed.
     :param _action: The name of the action to check
@@ -242,10 +233,10 @@ def module_action_performed_with(_module, _action, **test_data):
     :returns: True if a matching action was performed.
     """
     try:
-        found = True
         # Iterate over every action that was performed on
         # this object.
         for _, data in _MODULES[_module]._actions[_action].items():
+            found = True
             # Iterate over every key and value in the test
             # data. If the value in the recorded action
             # doesn't match the requested value, then this isn't
@@ -259,12 +250,10 @@ def module_action_performed_with(_module, _action, **test_data):
 
             # Default behavior is to be found; so if we're
             # still in a "found" state, this action is a match
-            # for the test data. Otherwise, reset, and try again
+            # for the test data. Otherwise, try again
             # with the next recorded action.
             if found:
-                return True
-            else:
-                found = True
+                return
 
         # None of the recorded actions match the test data.
         actual_actions = sorted(_MODULES[_module]._actions.keys())
@@ -323,8 +312,8 @@ def attribute_values(_widget, _attr):
         pytest.fail(f"Widget {_widget} is not a logged object")
 
 
-def attribute_retrieved(_widget, _attr):
-    """Determine that the widget implementation attempted to retrieve an attribute.
+def assert_attribute_retrieved(_widget, _attr):
+    """Assert that the widget implementation attempted to retrieve an attribute.
 
     :param _widget: The interface of the widget to check
     :param _attr: The attribute to check.
@@ -338,11 +327,10 @@ def attribute_retrieved(_widget, _attr):
         )
     except AttributeError:
         pytest.fail(f"Widget {_widget} is not a logged object")
-    return True
 
 
-def attribute_not_retrieved(_widget, _attr):
-    """Determine that the widget implementation did not attempt to retrieve an attribute.
+def assert_attribute_not_retrieved(_widget, _attr):
+    """Assert that the widget implementation did not attempt to retrieve an attribute.
 
     :param _widget: The interface of the widget to check
     :param _attr: The attribute to check.
@@ -354,11 +342,10 @@ def attribute_not_retrieved(_widget, _attr):
         ), f"Widget {_widget} unexpectedly retrieved the attribute {_attr!r}."
     except AttributeError:
         pytest.fail(f"Widget {_widget} is not a logged object")
-    return True
 
 
-def attribute_not_set(_widget, _attr):
-    """Determine that the widget implementation did not attempt to set an attribute.
+def assert_attribute_not_set(_widget, _attr):
+    """Assert that the widget implementation did not attempt to set an attribute.
 
     :param _widget: The interface of the widget to check
     :param _attr: The attribute to check.
@@ -370,11 +357,10 @@ def attribute_not_set(_widget, _attr):
         ), f"Widget {_widget} unexpectedly set the attribute {_attr!r}."
     except AttributeError:
         pytest.fail(f"Widget {_widget} is not a logged object")
-    return True
 
 
-def action_not_performed(_widget, _action):
-    """Determine that the named action was *not* performed by a widget.
+def assert_action_not_performed(_widget, _action):
+    """Assert that the named action was *not* performed by a widget.
 
     :param _widget: The interface of the widget to check
     :param _action: The action to check.
@@ -386,11 +372,10 @@ def action_not_performed(_widget, _action):
         ), f"Action {_action!r} unexpectedly performed by {_widget}."
     except AttributeError:
         pytest.fail(f"Widget {_widget} is not a logged object")
-    return True
 
 
-def action_performed(_widget, _action):
-    """Determine that the named action was performed by a widget.
+def assert_action_performed(_widget, _action):
+    """Assert that the named action was performed by a widget.
 
     :param _widget: The interface of the widget to check
     :param _action: The action to check.
@@ -403,11 +388,10 @@ def action_performed(_widget, _action):
         )
     except AttributeError:
         pytest.fail(f"Widget {_widget} is not a logged object")
-    return True
 
 
-def action_performed_with(_widget, _action, **test_data):
-    """Determine if an action was performed with specific test data.
+def assert_action_performed_with(_widget, _action, **test_data):
+    """Assert if an action was performed with specific test data.
 
     :param _widget: The interface of the widget to check
     :param _action: The action to check.
@@ -415,10 +399,10 @@ def action_performed_with(_widget, _action, **test_data):
     :returns: True if the action was performed
     """
     try:
-        found = True
         # Iterate over every action that was performed on
         # this object.
         for _, data in _widget._impl._actions[_action].items():
+            found = True
             # Iterate over every key and value in the test
             # data. If the value in the recorded action
             # doesn't match the requested value, then this isn't
@@ -447,9 +431,7 @@ def action_performed_with(_widget, _action, **test_data):
             # for the test data. Otherwise, reset, and try again
             # with the next recorded action.
             if found:
-                return True
-            else:
-                found = True
+                return
 
         # None of the recorded actions match the test data.
         pytest.fail(
@@ -499,7 +481,7 @@ class TestCase(unittest.TestCase):
             _module: The module with the action that should not have been performed.
             _action: The name of the action to check
         """
-        self.pytest_assert(module_action_not_performed, _module, _action)
+        self.pytest_assert(assert_module_action_not_performed, _module, _action)
 
     def assertFunctionPerformed(self, _module, _action):
         """Assert that the action function from module was performed.
@@ -508,7 +490,7 @@ class TestCase(unittest.TestCase):
             _module: The module with the action that should have been performed.
             _action: The name of the action to check
         """
-        self.pytest_assert(module_action_performed, _module, _action)
+        self.pytest_assert(assert_module_action_performed, _module, _action)
 
     def assertFunctionPerformedWith(self, _module, _action, **test_data):
         """Confirm that the action function form module was performed with
@@ -523,7 +505,9 @@ class TestCase(unittest.TestCase):
             If a matching action was performed, the full data of
             the performed action if. False otherwise.
         """
-        self.pytest_assert(module_action_performed_with, _module, _action, **test_data)
+        self.pytest_assert(
+            assert_module_action_performed_with, _module, _action, **test_data
+        )
 
     #####
 
@@ -557,13 +541,13 @@ class TestCase(unittest.TestCase):
             _widget: The interface of the widget to check
             _attr: The attribute that should have been retrieved
         """
-        self.pytest_assert(attribute_retrieved, _widget, _attr)
+        self.pytest_assert(assert_attribute_retrieved, _widget, _attr)
 
     def assertValueNotGet(self, _widget, _attr):
-        self.pytest_assert(attribute_not_retrieved, _widget, _attr)
+        self.pytest_assert(assert_attribute_not_retrieved, _widget, _attr)
 
     def assertValueNotSet(self, _widget, _attr):
-        self.pytest_assert(attribute_not_set, _widget, _attr)
+        self.pytest_assert(assert_attribute_not_set, _widget, _attr)
 
     def assertActionNotPerformed(self, _widget, _action):
         """Assert that the named action was *not* performed by a widget.
@@ -572,7 +556,7 @@ class TestCase(unittest.TestCase):
             _widget: The interface of the widget that should not have performed the action.
             _action: The name of the action to check
         """
-        self.pytest_assert(action_not_performed, _widget, _action)
+        self.pytest_assert(assert_action_not_performed, _widget, _action)
 
     def assertActionPerformed(self, _widget, _action):
         """Assert that the named action performed by a widget.
@@ -580,7 +564,7 @@ class TestCase(unittest.TestCase):
             _widget: The interface of the widget that should have performed the action.
             _action: The name of the action to check
         """
-        self.pytest_assert(action_performed, _widget, _action)
+        self.pytest_assert(assert_action_performed, _widget, _action)
 
     def assertActionPerformedWith(self, _widget, _action, **test_data):
         """Was the action performed with specific test data.
@@ -594,4 +578,4 @@ class TestCase(unittest.TestCase):
             If a matching action was performed, the full data of
             the performed action if. False otherwise.
         """
-        self.pytest_assert(action_performed_with, _widget, _action, **test_data)
+        self.pytest_assert(assert_action_performed_with, _widget, _action, **test_data)

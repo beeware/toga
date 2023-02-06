@@ -3,8 +3,8 @@ import pytest
 import toga
 from toga_dummy.utils import (
     EventLog,
-    action_performed,
-    action_performed_with,
+    assert_action_performed,
+    assert_action_performed_with,
     attribute_value,
 )
 
@@ -18,7 +18,7 @@ def test_widget_created(button):
     """A button can be created."""
     # Round trip the impl/interface
     assert button._impl.interface == button
-    assert action_performed(button, "create Button")
+    assert_action_performed(button, "create Button")
 
 
 @pytest.mark.parametrize(
@@ -43,7 +43,7 @@ def test_button_text(button, value, expected):
     assert attribute_value(button, "text") == expected
 
     # A rehint was performed
-    assert action_performed(button, "rehint")
+    assert_action_performed(button, "rehint")
 
 
 def test_button_on_press(button):
@@ -66,6 +66,6 @@ def test_button_on_press(button):
     button.on_press(button, a=1)
 
     # Callback was invoked
-    assert action_performed_with(
+    assert_action_performed_with(
         button, "callback invoked", widget=button, extra={"a": 1}
     )
