@@ -20,9 +20,8 @@ class SimpleProbe:
         else:
             raise ValueError(f"cannot find {self.native} in {container_native}")
 
-    def alignment_equivalent(self, actual, expected):
+    def assert_alignment_equivalent(self, actual, expected):
         assert actual == expected
-        return True
 
     async def redraw(self):
         """Request a redraw of the app, waiting until that redraw has completed."""
