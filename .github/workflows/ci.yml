@@ -21,7 +21,7 @@ jobs:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4.5.0
         with:
-          python-version: ${{ env.min_python_version }}
+          python-version: "3.X"
       - uses: pre-commit/action@v3.0.0
 
   towncrier:
@@ -37,7 +37,7 @@ jobs:
         fetch-depth: 0
     - uses: actions/setup-python@v4.5.0
       with:
-        python-version: ${{ env.min_python_version }}
+        python-version: "3.X"
     - name: Install dev dependencies
       run: |
         # We don't actually want to install toga-core;

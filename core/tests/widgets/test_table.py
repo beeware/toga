@@ -131,7 +131,6 @@ class TableTests(TestCase):
         self.assertEqual(self.table.headings, expecting_headings)
 
     def test_add_columns_accessor_in_use(self):
-
         new_heading = "Heading 4"
         accessor = "heading_2"
 

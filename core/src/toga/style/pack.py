@@ -123,7 +123,6 @@ class Pack(BaseStyle):
                 )
 
     def layout(self, node, viewport):
-
         # Precompute `scale_factor` by providing it as a default param.
         def scale(value, scale_factor=viewport.dpi / viewport.baseline_dpi):
             return int(value * scale_factor)

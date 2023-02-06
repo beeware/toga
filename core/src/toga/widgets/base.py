@@ -115,7 +115,6 @@ class Widget(Node):
         """
         for child in children:
             if child.parent is not self:
-
                 # remove from old parent
                 if child.parent:
                     child.parent.remove(child)
@@ -146,7 +145,6 @@ class Widget(Node):
         :param child: The child to insert as a child of this node.
         """
         if child.parent is not self:
-
             # remove from old parent
             if child.parent:
                 child.parent.remove(child)
