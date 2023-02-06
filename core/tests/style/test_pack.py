@@ -26,11 +26,14 @@ class TestNode(Node):
         super().__init__(
             style=style, children=children, applicator=TogaApplicator(self)
         )
+
         self.name = name
         self._impl = Mock()
         if size:
             self.intrinsic.width = size[0]
             self.intrinsic.height = size[1]
+
+        self.refresh = Mock()
 
     def __repr__(self):
         return f"<{self.name} at {id(self)}>"
@@ -97,6 +100,7 @@ class TestPackStyleApply(TestCase):
         root._impl.set_font.assert_called_with(
             Font("Roboto", 12, "normal", "small-caps", "bold")
         )
+        root.refresh.assert_called_with()
 
     def test_set_visibility_hidden(self):
         root = TestNode("app", style=Pack(visibility=HIDDEN))
