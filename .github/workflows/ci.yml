@@ -5,6 +5,10 @@ on:
     branches:
       - main
   workflow_call:
+    outputs:
+      artifact-name:
+        description: "Name of the uploaded artifact; use for artifact retrieval."
+        value: ${{ jobs.package.outputs.artifact-name }}
 
 env:
   min_python_version: "3.7"
@@ -16,81 +20,53 @@ defaults:
 
 jobs:
   pre-commit:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4.5.0
-        with:
-          python-version: "3.X"
-      - uses: pre-commit/action@v3.0.0
+    name: Pre-commit checks
+    uses: beeware/.github/.github/workflows/pre-commit-run.yml@main
+    with:
+      pre-commit-source: "./core[dev]"
 
   towncrier:
-    runs-on: ubuntu-latest
-    steps:
-    # Fetch main branch for comparison, then check out current branch.
-    - uses: actions/checkout@v3
-      with:
-        fetch-depth: 0
-        ref: main
-    - uses: actions/checkout@v3
-      with:
-        fetch-depth: 0
-    - uses: actions/setup-python@v4.5.0
-      with:
-        python-version: "3.X"
-    - name: Install dev dependencies
-      run: |
-        # We don't actually want to install toga-core;
-        # we just want the dev extras so we have a known version of tox
-        python -m pip install ./core[dev]
-    - name: Run towncrier check
-      run: tox -e towncrier-check
+    name: Check towncrier
+    uses: beeware/.github/.github/workflows/towncrier-run.yml@main
+    with:
+      tox-source: "./core[dev]"
 
   package:
+    name: Python Package
+    uses: beeware/.github/.github/workflows/python-package-create.yml@main
+    with:
+      tox-source: "./core[dev]"
+      build-subdirectory: ${{ matrix.subdir }}
+      distribution-path: "*/dist/*"
     strategy:
       matrix:
-        subdir: ["android", "cocoa", "core", "demo", "dummy", "gtk", "iOS", "toga",
-                 "web", "winforms"]
-    runs-on: ubuntu-latest
-    steps:
-    # Fetch all refs so setuptools_scm can generate the correct version number.
-    - uses: actions/checkout@v3
-      with:
-        fetch-depth: 0
-    - uses: actions/setup-python@v4.5.0
-      with:
-        python-version: ${{ env.min_python_version }}
-    - name: Install dev dependencies
-      run: |
-        # We don't actually want to install toga-core;
-        # we just want the dev extras so we have a known version of tox
-        python -m pip install ./core[dev]
-    - name: Build wheels
-      run: tox -e package -- ${{ matrix.subdir }}
-    - uses: actions/upload-artifact@v3
-      with:
-        name: packages
-        # There will only be one dist directory for each matrix sub-job, but using a
-        # leading wildcard preserves the directory structure.
-        path: "*/dist/*"
-        if-no-files-found: error
+        subdir:
+        - "android"
+        - "cocoa"
+        - "core"
+        - "demo"
+        - "dummy"
+        - "gtk"
+        - "iOS"
+        - "toga"
+        - "web"
+        - "winforms"
 
   core:
+    runs-on: ${{ matrix.platform }}-latest
     needs: [pre-commit, towncrier, package]
+    continue-on-error: ${{ matrix.experimental }}
     strategy:
       matrix:
-        platform: ['macos', 'ubuntu', 'windows']
-        python-version: ["3.7", "3.8", "3.9", "3.10", "3.11", "3.12-dev"]
+        platform: [ "macos", "ubuntu", "windows" ]
+        python-version: [ "3.7", "3.8", "3.9", "3.10", "3.11", "3.12-dev" ]
         include:
           - experimental: false
 
           - python-version: "3.12-dev"
             experimental: true
-
-    runs-on: ${{ matrix.platform }}-latest
-    continue-on-error: ${{ matrix.experimental }}
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v3.3.0
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v4.5.0
       with:
@@ -101,9 +77,9 @@ jobs:
         # we just want the dev extras so we have a known version of tox and coverage
         python -m pip install ./core[dev]
     - name: Get packages
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v3.0.2
       with:
-        name: packages
+        name: ${{ needs.package.outputs.artifact-name }}
     - name: Test
       run: |
         # The $(ls ...) shell expansion is done in the Github environment;
@@ -113,7 +89,7 @@ jobs:
         cd core
         mv .coverage .coverage.${{ matrix.platform }}.${{ matrix.python-version }}
     - name: Store coverage data
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v3.1.2
       with:
         name: core-coverage-data
         path: "core/.coverage.*"
@@ -124,7 +100,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: core
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v3.3.0
       with:
         fetch-depth: 0
     - uses: actions/setup-python@v4.5.0
@@ -137,7 +113,7 @@ jobs:
         # we just want the dev extras so we have a known version of coverage
         python -m pip install ./core[dev]
     - name: Retrieve coverage data
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v3.0.2
       with:
         name: core-coverage-data
         path: core
@@ -148,17 +124,18 @@ jobs:
         python -m coverage html --skip-covered --skip-empty
         python -m coverage report --rcfile ../pyproject.toml # --fail-under=100
     - name: Upload HTML report if check failed.
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v3.1.2
       with:
         name: html-coverage-report
         path: core/htmlcov
       if: ${{ failure() }}
 
   backend:
-    needs: core
+    runs-on: ${{ matrix.runs-on }}
+    needs: [package, core]
     strategy:
       matrix:
-        backend: [android, cocoa, gtk, iOS, web, winforms]
+        backend: [ "android", "cocoa", "gtk", "iOS", "web", "winforms" ]
         include:
           - runs-on: ubuntu-latest
           - python-version: "3.7"  # Should be env.min_python_version (https://github.com/actions/runner/issues/480)
@@ -178,17 +155,16 @@ jobs:
             # Py3.9 is the first Python version for which
             # a wheel of pythonnet isn't available on PyPI.
             python-version: "3.9"
-    runs-on: ${{ matrix.runs-on }}
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v3.3.0
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v4.5.0
       with:
         python-version: ${{ matrix.python-version }}
     - name: Get packages
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v3.0.2
       with:
-        name: packages
+        name: ${{ needs.package.outputs.artifact-name }}
     - name: Install dev dependencies
       run: |
         ${{ matrix.pre-command }}
@@ -203,11 +179,12 @@ jobs:
         TOGA_INSTALL_COMMAND="python -m pip install ../$(ls core/dist/toga_core-*.whl)[dev] ../$(ls dummy/dist/toga_dummy-*.whl) ../$(ls ${{ matrix.backend }}/dist/toga_${{ matrix.backend }}-*.whl)" tox -e py-${{ matrix.backend }}
 
   testbed:
+    runs-on: ${{ matrix.runs-on }}
     needs: core
     strategy:
       fail-fast: false
       matrix:
-        backend: ["macOS", "windows", "linux", "android", "iOS"]
+        backend: [ "macOS", "windows", "linux", "android", "iOS" ]
         include:
           - pre-command:
             briefcase-run-prefix:
@@ -231,8 +208,6 @@ jobs:
           - backend: android
             runs-on: macos-12
             briefcase-run-args: " -d '{\"avd\":\"beePhone\"}' --Xemulator=-no-window --Xemulator=-no-snapshot --Xemulator=-no-audio --Xemulator=-no-boot-anim --shutdown-on-exit"
-
-    runs-on: ${{ matrix.runs-on }}
     steps:
     - uses: actions/checkout@v3.1.0
       with:
@@ -250,8 +225,8 @@ jobs:
       run: |
         cd testbed
         ${{ matrix.briefcase-run-prefix }} briefcase run ${{ matrix.backend }} --test ${{ matrix.briefcase-run-args }}
-    - uses: actions/upload-artifact@v3
-      name: Upload logs
+    - name: Upload logs
+      uses: actions/upload-artifact@v3.1.2
       if: failure()
       with:
         name: testbed-failure-logs-${{ matrix.backend }}
