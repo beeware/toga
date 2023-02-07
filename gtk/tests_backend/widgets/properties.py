@@ -1,27 +1,26 @@
-from dataclasses import dataclass
+from travertino.fonts import Font
 
-from toga.fonts import NORMAL
+from toga.colors import rgba
 from toga.style.pack import CENTER, JUSTIFY, LEFT, RIGHT
 from toga_gtk.libs import Gtk, Pango
 
 
 def toga_color(color):
-    return color
-
-
-@dataclass
-class Font:
-    family: str
-    size: int
-    style: str = NORMAL
-    variant: str = NORMAL
-    weight: str = NORMAL
+    if color:
+        return rgba(
+            int(color.red * 255),
+            int(color.green * 255),
+            int(color.blue * 255),
+            color.alpha,
+        )
+    else:
+        return None
 
 
 def toga_font(font):
     return Font(
         family=font.get_family(),
-        size=font.get_size() / Pango.SCALE,
+        size=int(font.get_size() / Pango.SCALE),
     )
 
 

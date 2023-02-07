@@ -4,6 +4,8 @@ from pytest import skip
 
 from toga_gtk.libs import Gtk
 
+from .properties import toga_color, toga_font
+
 
 class SimpleProbe:
     def __init__(self, widget):
@@ -48,3 +50,18 @@ class SimpleProbe:
     @property
     def height(self):
         return self.native.get_allocation().height
+
+    @property
+    def color(self):
+        sc = self.native.get_style_context()
+        return toga_color(sc.get_property("color", sc.get_state()))
+
+    @property
+    def background_color(self):
+        sc = self.native.get_style_context()
+        return toga_color(sc.get_property("background-color", sc.get_state()))
+
+    @property
+    def font(self):
+        sc = self.native.get_style_context()
+        return toga_font(sc.get_property("font", sc.get_state()))

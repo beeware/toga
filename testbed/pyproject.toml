@@ -42,6 +42,8 @@ test_sources = [
 ]
 requires = [
     "../gtk",
+    # PyGObject #119 breaks the test suite; we need to use a PR version.
+    "git+https://gitlab.gnome.org/monnerat/pygobject.git@issue119",
 ]
 
 [tool.briefcase.app.testbed.linux.appimage]

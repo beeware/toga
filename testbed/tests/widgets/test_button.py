@@ -66,10 +66,6 @@ async def test_background_color_transparent(widget, probe):
     current_platform in {"android", "iOS"},
     reason="await redraw() not implemented",
 )
-@mark.skipif(
-    current_platform in {"linux"},
-    reason="resizes not applying correctly",
-)
 async def test_button_size(widget, probe):
     "Check that the button resizes"
     # Container is initially a non-flex row box.
