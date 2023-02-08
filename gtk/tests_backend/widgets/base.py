@@ -1,8 +1,9 @@
 import asyncio
+import warnings
 
 from pytest import skip
 
-from toga_gtk.libs import Gtk
+from toga_gtk.libs import Gio, Gtk
 
 from .properties import toga_color, toga_font
 
@@ -13,6 +14,16 @@ class SimpleProbe:
         self.impl = widget._impl
         self.native = widget._impl.native
         assert isinstance(self.native, self.native_class)
+
+        # Check if GTK UI animations are enabled.
+        settings = Gio.Settings(schema="org.gnome.desktop.interface")
+        if settings.get_boolean("enable-animations"):
+            warnings.warn(
+                "GTK UI animations are enabled; any tests failures are likely "
+                "caused by this. Run `gsettings set org.gnome.desktop.interface "
+                "enable-animations false` to disable animations.",
+                RuntimeWarning,
+            )
 
     def assert_container(self, container):
         container_native = container._impl.container
