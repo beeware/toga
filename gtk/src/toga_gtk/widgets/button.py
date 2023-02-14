@@ -23,7 +23,7 @@ class Button(Widget):
         # No special handling required
         pass
 
-    def rehint(self):
+    def gtk_rehint(self):
         # print("REHINT", self, self.native.get_preferred_width(), self.native.get_preferred_height())
         width = self.native.get_preferred_width()
         height = self.native.get_preferred_height()

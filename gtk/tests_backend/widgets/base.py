@@ -11,7 +11,7 @@ class SimpleProbe:
         assert isinstance(self.native, self.native_class)
 
     def assert_container(self, container):
-        container_native = container._impl.native
+        container_native = container._impl.container
         for control in container_native.get_children():
             if control == self.native:
                 break
@@ -23,9 +23,12 @@ class SimpleProbe:
         # Refresh the layout
         self.widget.window.content.refresh()
 
+        self.impl.container.queue_resize()
+
         # Force a repaint
-        while Gtk.events_pending():
-            Gtk.main_iteration_do(blocking=False)
+        while self.impl.container.dirty:
+            while Gtk.events_pending():
+                Gtk.main_iteration_do(blocking=False)
 
     @property
     def enabled(self):
