@@ -128,14 +128,14 @@ class Pack(BaseStyle):
         def scale(value, scale_factor=viewport.dpi / viewport.baseline_dpi):
             return int(value * scale_factor)
 
-        self._layout_node(node, viewport.width, viewport.height, scale)
+        self._layout_node(node, viewport.width, viewport.height, scale, root=True)
         node.layout.content_top = node.style.padding_top
         node.layout.content_bottom = node.style.padding_bottom
 
         node.layout.content_left = node.style.padding_left
         node.layout.content_right = node.style.padding_right
 
-    def _layout_node(self, node, alloc_width, alloc_height, scale):
+    def _layout_node(self, node, alloc_width, alloc_height, scale, root=False):
         self.__class__._depth += 1
         # self._debug("COMPUTE LAYOUT for", node, "available", alloc_width, alloc_height)
 
@@ -197,6 +197,11 @@ class Pack(BaseStyle):
                 width, height = self._layout_row_children(
                     node, available_width, available_height, scale
                 )
+
+            if root:
+                # self._debug("ROOT NODE")
+                width = max(width, available_width)
+                height = max(height, available_height)
 
         else:
             # self._debug("NO CHILDREN", available_width)
@@ -527,6 +532,56 @@ class Pack(BaseStyle):
 
     def __css__(self):
         css = []
+        # display
+        if self.display == NONE:
+            css.append("display: none;")
+        else:
+            # if self.display != NONE, it must be pack; it will inherit
+            # the pack definition from the Toga stylesheet.
+            pass
+
+        # visibility
+        if self.visibility != VISIBLE:
+            css.append(f"visibility: {self.visibility}")
+
+        # direction
+        css.append(f"flex-direction: {self.direction.lower()};")
+
+        # alignment
+        if self.direction == ROW:
+            if self.alignment:
+                if self.alignment == LEFT:
+                    css.append("align-items: start;")
+                elif self.alignment == RIGHT:
+                    css.append("align-items: end;")
+                elif self.alignment == CENTER:
+                    css.append("align-items: center;")
+        else:
+            if self.alignment:
+                if self.alignment == TOP:
+                    css.append("align-items: start;")
+                elif self.alignment == BOTTOM:
+                    css.append("align-items: end;")
+                elif self.alignment == CENTER:
+                    css.append("align-items: center;")
+
+        # width
+        if self.width:
+            css.append(f"width: {self.width}px;")
+        elif self.direction == ROW and not self.flex:
+            css.append("flex: 0 0 0%;")
+
+        # height
+        if self.height:
+            css.append(f"width: {self.width}px;")
+        elif self.direction == COLUMN and not self.flex:
+            css.append("flex: 0 0 0%;")
+
+        # flex
+        if self.flex:
+            css.append(f"flex: {self.flex} 0 0%;")
+
+        # padding_*
         if self.padding_top:
             css.append(f"margin-top: {self.padding_top}px;")
         if self.padding_bottom:
@@ -535,15 +590,34 @@ class Pack(BaseStyle):
             css.append(f"margin-left: {self.padding_left}px;")
         if self.padding_right:
             css.append(f"margin-right: {self.padding_right}px;")
-        if self.width:
-            css.append(f"width: {self.width}px;")
-        else:
-            if self.flex:
-                css.append(f"flex: {self.flex} 0 0%;")
-            else:
-                css.append("flex: 0 0 0%;")
-        if self.direction:
-            css.append(f"flex-direction: {self.direction.lower()};")
+
+        # color
+        if self.color:
+            css.append(f"color: {self.color};")
+
+        # background_color
+        if self.background_color:
+            css.append(f"background-color: {self.background_color};")
+
+        # text_align
+        if self.text_align:
+            css.append(f"text-align: {self.text_align}")
+
+        # text_direction
+        if self.text_direction != LTR:
+            css.append(f"text-direction: {self.text_direction}")
+
+        # font-*
+        if self.font_family != SYSTEM:
+            css.append(f"font-family: {self.font_family};")
+        if self.font_size != SYSTEM_DEFAULT_FONT_SIZE:
+            css.append(f"font-size: {self.font_size};")
+        if self.font_weight != NORMAL:
+            css.append(f"font-weight: {self.font_weight};")
+        if self.font_style != NORMAL:
+            css.append(f"font-style: {self.font_style};")
+        if self.font_variant != NORMAL:
+            css.append(f"font-variant: {self.font_variant};")
 
         return " ".join(css)
 

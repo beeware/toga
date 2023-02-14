@@ -272,13 +272,6 @@ specifying the allocated width and allocated height.
 
 3. **Layout children**
 
-   If the element has no children, the final width of the element is set to
-   the available width, and the final height of the element is set to the
-   available height.
-
-   Otherwise, the element is a parent element, the final width is set to 0,
-   and the children are laid out.
-
    If the parent element has a ``display`` value of ``row``, it is a **row
    box**, and child layout occurs as follows:
 
@@ -448,3 +441,86 @@ specifying the allocated width and allocated height.
       If the parent element has an ``alignment`` value of ``center``, the
       horizontal position of the child is set to 1/2 of the extra width,
       relative to the parent.
+
+4. **Evaluate final width and height**
+
+   If the element has no children, the final width of the element is set to
+   the available width, and the final height of the element is set to the
+   available height.
+
+   Otherwise, the computed width and height of the element is set to width and
+   height of the box that contains all the children and their padding.
+
+   If the element is the root element of a layout, and the final width and height
+   are less than the available view width and height, the final width and height
+   are expanded to match the available view width and height.
+
+The relationship between Pack and CSS
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Pack aims to be a functional subset of CSS. Any Pack layout can be converted
+into an equivalent CSS layout. After applying this conversion, the CSS layout
+should be considered a "reference implementation". Any disagreement between the
+rendering of a converted Pack layout in a browser, and the layout produced by
+the Toga implementation of Pack should be considered to be either a bug in Toga,
+or a bug in the mapping.
+
+The mapping that can be used to establish the reference implementation is:
+
+* The root element of the Pack layout can be mapped to the ``<body>`` element
+  of a HTML document. The rendering area of the browser window becomes the
+  view area that Pack will fill.
+
+* All other elements in the DOM tree are ``<div>`` elements.
+
+* The document has a default CSS stylesheet of::
+
+      body {
+         overflow: hidden
+         display: flex;
+         margin: 0;
+      }
+      div {
+         display: inline-flex;
+         margin: 0;
+      }
+
+* The following Pack declarations can be mapped to equivalent CSS declarations:
+
+   ============================= ===================================================
+   Pack property                 CSS property
+   ============================= ===================================================
+   ``alignment: top``            ``align-items: start`` if ``direction == row``;
+                                 otherwise ignored.
+   ``alignment: bottom``         ``align-items: end`` if ``direction == row``;
+                                 otherwise ignored.
+   ``alignment: left``           ``align-items: start`` if ``direction == column``;
+                                 otherwise ignored.
+   ``alignment: right``          ``align-items: end`` if ``direction == column``;
+                                 otherwise ignored.
+   ``alignment: center``         ``align-items: center``
+   ``direction: <str>``          ``flex-direction: <str>``
+   ``display: pack``             ``display: flex`` on the root element of a layout;
+                                 ``display: inline-flex`` on all other elements.
+   ``flex: <int>``               If ``direction = row`` and ``width`` is set,
+                                 or ``direction = column`` and ``height`` is set,
+                                 ignore. Otherwise, ``flex: <int> 0 0%``.
+   ``font_size: <int>``          ``font-size: <int>pt``
+   ``height: <int>``             ``height: <int>px``
+   ``padding_top: <int>``        ``margin-top: <int>px``
+   ``padding_bottom: <int>``     ``margin-bottom: <int>px``
+   ``padding_left: <int>``       ``margin-left: <int>px``
+   ``padding_right: <int>``      ``margin-right: <int>px``
+   ``text_direction: <str>``     ``direction: <str>``
+   ``width: <int>``              ``width: <int>px``
+   ============================= ===================================================
+
+* If ``direction = row``, and is neither ``width`` nor ``flex`` is set, the
+  element assumes a CSS definition of ``flex: 0 0 0%``.
+
+* If ``direction = column``, and is neither ``height`` nor ``flex`` is set, the
+  element assumes a CSS definition of ``flex: 0 0 0%``.
+
+* All other Pack declarations should be used as-is as CSS declarations, with
+  underscores being converted to dashes (e.g., ``background_color`` becomes
+  ``background-color``).
