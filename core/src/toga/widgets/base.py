@@ -281,7 +281,8 @@ class Widget(Node):
             self._root.refresh()
         else:
             self.refresh_sublayouts()
-            super().refresh(self._impl.viewport)
+            if self._impl.viewport:
+                super().refresh(self._impl.viewport)
 
     def refresh_sublayouts(self):
         for child in self.children:
