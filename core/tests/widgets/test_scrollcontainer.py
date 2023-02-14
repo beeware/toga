@@ -48,10 +48,6 @@ class ScrollContainerTests(TestCase):
         self.assertEqual(self.sc._content, new_content)
         self.assertActionPerformedWith(self.sc, "set content", widget=new_content._impl)
 
-        self.assertActionPerformedWith(
-            new_content, "set bounds", x=0, y=0, width=0, height=0
-        )
-
     def test_set_content_with_None(self):
         new_content = None
         self.assertEqual(self.sc.content, new_content)

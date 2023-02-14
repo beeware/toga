@@ -123,17 +123,16 @@ class Pack(BaseStyle):
                 )
 
     def layout(self, node, viewport):
-
         # Precompute `scale_factor` by providing it as a default param.
         def scale(value, scale_factor=viewport.dpi / viewport.baseline_dpi):
             return int(value * scale_factor)
 
         self._layout_node(node, viewport.width, viewport.height, scale, root=True)
-        node.layout.content_top = node.style.padding_top
-        node.layout.content_bottom = node.style.padding_bottom
+        node.layout.content_top = scale(node.style.padding_top)
+        node.layout.content_bottom = scale(node.style.padding_bottom)
 
-        node.layout.content_left = node.style.padding_left
-        node.layout.content_right = node.style.padding_right
+        node.layout.content_left = scale(node.style.padding_left)
+        node.layout.content_right = scale(node.style.padding_right)
 
     def _layout_node(self, node, alloc_width, alloc_height, scale, root=False):
         self.__class__._depth += 1

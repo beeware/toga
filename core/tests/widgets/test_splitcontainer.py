@@ -36,13 +36,6 @@ class SplitContainerTests(TestCase):
             self.split, "add content", position=1, widget=new_content[1]._impl
         )
 
-        self.assertActionPerformedWith(
-            new_content[0], "set bounds", x=0, y=0, width=0, height=0
-        )
-        self.assertActionPerformedWith(
-            new_content[1], "set bounds", x=0, y=0, width=0, height=0
-        )
-
     def test_direction_property_default(self):
         self.assertEqual(self.split.direction, True)
 
@@ -124,24 +117,3 @@ class SplitContainerTests(TestCase):
         self.assertEqual(self.split.app, app)
         for content in self.content:
             self.assertEqual(content.app, app)
-
-    def test_refresh_without_content(self):
-        self.split.refresh()
-        self.assertActionPerformedWith(
-            self.split, "set bounds", x=0, y=0, width=0, height=0
-        )
-
-    def test_refresh_with_content(self):
-        for content in self.content:
-            self.assertActionNotPerformed(content, "set bound")
-
-        self.split.content = self.content
-
-        self.split.refresh()
-        self.assertActionPerformedWith(
-            self.split, "set bounds", x=0, y=0, width=0, height=0
-        )
-        for content in self.content:
-            self.assertActionPerformedWith(
-                content, "set bounds", x=0, y=0, width=0, height=0
-            )
