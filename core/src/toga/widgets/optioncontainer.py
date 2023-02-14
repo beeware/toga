@@ -303,11 +303,11 @@ class OptionContainer(Widget):
         # End backwards compatibility.
         ######################################################################
 
+        self._content = OptionList(self)
         self._on_select = None
         self._impl = self.factory.OptionContainer(interface=self)
 
         self.on_select = on_select
-        self._content = OptionList(self)
         if content:
             for text, widget in content:
                 self.add(text, widget)
@@ -318,11 +318,11 @@ class OptionContainer(Widget):
 
     @property
     def content(self):
-        """The sub layouts of the `SplitContainer`.
+        """The sub layouts of the `OptionContainer`.
 
         Returns:
             A OptionList ``list`` of :class:`~toga.OptionItem`. Each element of the list
-            is a sub layout of the `SplitContainer`
+            is a sub layout of the `OptionContainer`
 
         Raises:
             ValueError: If the list is less than two elements long.
