@@ -149,12 +149,31 @@ class Canvas(Box):
     def redraw(self):
         self.native.Invalidate()
 
-    def create_pen(self, color=None, line_width=None, line_dash=None):
+    def create_pen(self, color=None, line_width=None, line_dash=None, line_cap=None, line_join=None):
         pen = Pen(native_color(color))
         if line_width is not None:
             pen.Width = line_width
         if line_dash is not None:
             pen.DashPattern = tuple(map(float, line_dash))
+        if line_cap is not None:
+            line_cap = str(line_cap).lower()
+            if line_cap in ("butt", "flat"):
+                pen.set_StartCap(pen.StartCap.Flat)
+                pen.set_EndCap(pen.EndCap.Flat)
+            elif line_cap == "round":
+                pen.set_StartCap(pen.StartCap.Round)
+                pen.set_EndCap(pen.EndCap.Round)
+            elif line_cap == "square":
+                pen.set_StartCap(pen.StartCap.Square)
+                pen.set_EndCap(pen.EndCap.Square)
+        if line_join is not None:
+            line_join = str(line_join).lower()
+            if line_join == "miter":
+                pen.set_LineJoin(pen.LineJoin.Miter)
+            elif line_join == "round":
+                pen.set_LineJoin(pen.LineJoin.Round)
+            elif line_join == "bevel":
+                pen.set_LineJoin(pen.LineJoin.Bevel)
         return pen
 
     def create_brush(self, color):
@@ -278,7 +297,9 @@ class Canvas(Box):
         return None
 
     def stroke(self, color, line_width, line_dash, draw_context, *args, **kwargs):
-        pen = self.create_pen(color=color, line_width=line_width, line_dash=line_dash)
+        pen = self.create_pen(color=color, line_width=line_width, line_dash=line_dash,
+                              line_cap=kwargs.get("line_cap", None), line_join=kwargs.get("line_join", None))
+
         for path in draw_context.paths:
             if draw_context.matrix is not None:
                 path.Transform(draw_context.matrix)
