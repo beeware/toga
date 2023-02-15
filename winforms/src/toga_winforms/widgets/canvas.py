@@ -149,7 +149,7 @@ class Canvas(Box):
     def redraw(self):
         self.native.Invalidate()
 
-    def create_pen(self, color=None, line_width=None, line_dash=None, line_cap=None, line_join=None):
+    def create_pen(self, color=None, line_width=None, line_dash=None, line_cap=None, line_join=None, miter_limit=None):
         pen = Pen(native_color(color))
         if line_width is not None:
             pen.Width = line_width
@@ -174,6 +174,8 @@ class Canvas(Box):
                 pen.set_LineJoin(pen.LineJoin.Round)
             elif line_join == "bevel":
                 pen.set_LineJoin(pen.LineJoin.Bevel)
+        if miter_limit is not None:
+            pen.set_MiterLimit(float(miter_limit))
         return pen
 
     def create_brush(self, color):
@@ -298,7 +300,8 @@ class Canvas(Box):
 
     def stroke(self, color, line_width, line_dash, draw_context, *args, **kwargs):
         pen = self.create_pen(color=color, line_width=line_width, line_dash=line_dash,
-                              line_cap=kwargs.get("line_cap", None), line_join=kwargs.get("line_join", None))
+                              line_cap=kwargs.get("line_cap", None), line_join=kwargs.get("line_join", None),
+                              miter_limit=kwargs.get("miter_limit", None))
 
         for path in draw_context.paths:
             if draw_context.matrix is not None:
