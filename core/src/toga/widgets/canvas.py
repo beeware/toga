@@ -149,7 +149,7 @@ class Context:
         self.redraw()
 
     @contextmanager
-    def stroke(self, color=BLACK, line_width=2.0, line_dash=None):
+    def stroke(self, color=BLACK, line_width=2.0, line_dash=None, line_cap=None, line_join=None):
         """Constructs and yields a :class:`Stroke`.
 
         Args:
@@ -161,7 +161,7 @@ class Context:
         Yields:
             :class:`Stroke` object.
         """
-        stroke = Stroke(color, line_width, line_dash)
+        stroke = Stroke(color, line_width, line_dash, line_cap, line_join)
         stroke.canvas = self.canvas
         yield self.add_draw_obj(stroke)
         self.redraw()
@@ -428,12 +428,14 @@ class Stroke(Context):
         line_dash (array of floats, optional): Stroke line dash pattern, default is None.
     """
 
-    def __init__(self, color=BLACK, line_width=2.0, line_dash=None):
+    def __init__(self, color=BLACK, line_width=2.0, line_dash=None, line_cap=None, line_join=None):
         super().__init__()
         self._color = None
         self.color = color
         self.line_width = line_width
         self.line_dash = line_dash
+        self.line_cap = line_cap
+        self.line_join = line_join
 
     def __repr__(self):
         return "{}(color={}, line_width={}, line_dash={})".format(
@@ -446,6 +448,8 @@ class Stroke(Context):
             kwargs["stroke_color"] = self.color
             kwargs["text_line_width"] = self.line_width
             kwargs["text_line_dash"] = self.line_dash
+            kwargs["line_cap"] = self.line_cap
+            kwargs["line_join"] = self.line_join
             obj._draw(impl, *args, **kwargs)
         impl.stroke(self.color, self.line_width, self.line_dash, *args, **kwargs)
 
@@ -523,6 +527,7 @@ class Canvas(Context, Widget):
         on_alt_drag=None,
         factory=None,  # DEPRECATED!
     ):
+
         super().__init__(id=id, style=style)
         ######################################################################
         # 2022-09: Backwards compatibility
