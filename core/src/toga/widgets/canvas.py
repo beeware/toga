@@ -149,7 +149,7 @@ class Context:
         self.redraw()
 
     @contextmanager
-    def stroke(self, color=BLACK, line_width=2.0, line_dash=None, line_cap=None, line_join=None):
+    def stroke(self, color=BLACK, line_width=2.0, line_dash=None, line_cap=None, line_join=None, miter_limit=None):
         """Constructs and yields a :class:`Stroke`.
 
         Args:
@@ -161,7 +161,7 @@ class Context:
         Yields:
             :class:`Stroke` object.
         """
-        stroke = Stroke(color, line_width, line_dash, line_cap, line_join)
+        stroke = Stroke(color, line_width, line_dash, line_cap, line_join, miter_limit)
         stroke.canvas = self.canvas
         yield self.add_draw_obj(stroke)
         self.redraw()
@@ -428,7 +428,7 @@ class Stroke(Context):
         line_dash (array of floats, optional): Stroke line dash pattern, default is None.
     """
 
-    def __init__(self, color=BLACK, line_width=2.0, line_dash=None, line_cap=None, line_join=None):
+    def __init__(self, color=BLACK, line_width=2.0, line_dash=None, line_cap=None, line_join=None, miter_limit=None):
         super().__init__()
         self._color = None
         self.color = color
@@ -436,6 +436,7 @@ class Stroke(Context):
         self.line_dash = line_dash
         self.line_cap = line_cap
         self.line_join = line_join
+        self.miter_limit = miter_limit
 
     def __repr__(self):
         return "{}(color={}, line_width={}, line_dash={})".format(
@@ -450,6 +451,7 @@ class Stroke(Context):
             kwargs["text_line_dash"] = self.line_dash
             kwargs["line_cap"] = self.line_cap
             kwargs["line_join"] = self.line_join
+            kwargs["miter_limit"] = self.miter_limit
             obj._draw(impl, *args, **kwargs)
         impl.stroke(self.color, self.line_width, self.line_dash, *args, **kwargs)
 
