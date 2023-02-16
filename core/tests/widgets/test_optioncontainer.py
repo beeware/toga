@@ -1,4 +1,4 @@
-from unittest import expectedFailure, mock
+from unittest import mock
 
 import toga
 from toga_dummy.utils import TestCase, TestStyle
@@ -36,15 +36,11 @@ class OptionContainerTests(TestCase):
         self.assertEqual(self.op_container._impl.interface, self.op_container)
         self.assertActionPerformed(self.op_container, "create OptionContainer")
 
-    # This isn't a good test as it asserts behavior performed during setUp
-    @expectedFailure
     def test_adding_container_invokes_add_content(self):
         self.assertActionPerformedWith(
             self.op_container, "add content", text=self.text, widget=self.widget._impl
         )
 
-    # This isn't a good test as it asserts behavior performed during setUp
-    @expectedFailure
     def test_widget_refresh_sublayouts(self):
         # Clear event log to verify new set bounds for refresh
         self.reset_event_log()
