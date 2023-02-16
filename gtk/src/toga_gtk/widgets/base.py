@@ -72,9 +72,9 @@ class Widget:
     ######################################################################
 
     def set_bounds(self, x, y, width, height):
-        # No implementation required here; the new sizing will be picked up
-        # by the box's allocation handler.
-        pass
+        # If the bounds have changed, we need to queue a resize on the container
+        if self.container:
+            self.container.make_dirty()
 
     def set_alignment(self, alignment):
         # By default, alignment can't be changed
@@ -119,7 +119,7 @@ class Widget:
         # Instead, put the widget onto a dirty list to be rehinted before the
         # next layout.
         if self.container:
-            self.container.dirty.add(self)
+            self.container.make_dirty(self)
 
     def gtk_rehint(self):
         # Perform the actual GTK rehint.

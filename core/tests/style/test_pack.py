@@ -35,6 +35,12 @@ class TestNode(Node):
     def __repr__(self):
         return f"<{self.name} at {id(self)}>"
 
+    def refresh(self):
+        # We're directly modifying sytles and computing layouts for specific
+        # viewports, so we don't need to trigger layout changes when a style is
+        # changed.
+        pass
+
 
 class TestViewport:
     def __init__(self, width, height, dpi=96, baseline_dpi=96):

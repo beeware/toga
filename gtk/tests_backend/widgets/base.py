@@ -20,15 +20,9 @@ class SimpleProbe:
 
     async def redraw(self):
         """Request a redraw of the app, waiting until that redraw has completed."""
-        # Refresh the layout
-        self.widget.window.content.refresh()
-
-        self.impl.container.queue_resize()
-
         # Force a repaint
-        while self.impl.container.dirty:
-            while Gtk.events_pending():
-                Gtk.main_iteration_do(blocking=False)
+        while self.impl.container.needs_redraw or Gtk.events_pending():
+            Gtk.main_iteration_do(blocking=False)
 
     @property
     def enabled(self):

@@ -14,6 +14,11 @@ class WebViewport:
     def height(self):
         return 768
 
+    def make_dirty(self, widget=None):
+        # TODO: This won't be required once we complete the refactor
+        # making container a separate impl concept.
+        pass
+
 
 class Window:
     def __init__(self, interface, title, position, size):

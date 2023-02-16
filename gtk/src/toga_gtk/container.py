@@ -19,24 +19,63 @@ class TogaContainer(Gtk.Fixed):
         self.dpi = 96
         self.baseline_dpi = self.dpi
 
-        self.dirty = set()
+        # The dirty widgets are the set of widgets that are known to need
+        # re-hinting before any redraw occurs.
+        self._dirty_widgets = set()
+
+        # A flag that can be used to explicitly flag that a redraw is required.
+        self._needs_redraw = True
+
+    @property
+    def needs_redraw(self):
+        """Does the container need a redraw?"""
+        return self._needs_redraw or bool(self._dirty_widgets)
+
+    def make_dirty(self, widget=None):
+        """Mark the container (or a specific widget in the container) as dirty.
+
+        :param widget: Optional; if provided, the widget that is now dirty. If
+            not provided, the entire container is considered dirty.
+        """
+        if widget is None:
+            self._needs_redraw = True
+            self.queue_resize()
+        else:
+            self._dirty_widgets.add(widget)
+            widget.native.queue_resize()
 
     @property
     def width(self):
-        # Treat `native=None` as a 0x0 viewport.
+        """The display width of the container.
+
+        If the container doesn't have any content yet, the width is 0.
+        """
         if self._content is None:
             return 0
         return self.get_allocated_width()
 
     @property
     def height(self):
-        # Treat `native=None` as a 0x0 viewport.
+        """The display height of the container.
+
+        If the container doesn't have any content yet, the height is 0.
+        """
         if self._content is None:
             return 0
         return self.get_allocated_height()
 
     @property
     def content(self):
+        """The Toga implementation widget that is the root content of this
+        container.
+
+        All children of the root content will also be added to the container as
+        a result of assigning content.
+
+        If the container already has content, the old content will be replaced.
+        The old root content and all it's children will be removed from the
+        container.
+        """
         return self._content
 
     @content.setter
@@ -49,12 +88,17 @@ class TogaContainer(Gtk.Fixed):
             widget.container = self
 
     def recompute(self):
-        if self._content and self.dirty:
+        """Rehint and re-layout the container's content, if necessary.
+
+        Any widgets known to be dirty will be rehinted. The minimum
+        possible layout size for the container will also be recomputed.
+        """
+        if self._content and self.needs_redraw:
             # If any of the widgets have been marked as dirty,
             # recompute their bounds, and re-evaluate the minimum
             # allowed size fo the layout.
-            while self.dirty:
-                widget = self.dirty.pop()
+            while self._dirty_widgets:
+                widget = self._dirty_widgets.pop()
                 widget.gtk_rehint()
 
             # Compute the layout using a 0-size container
@@ -67,7 +111,16 @@ class TogaContainer(Gtk.Fixed):
             self.min_height = self._content.interface.layout.height
 
     def do_get_preferred_width(self):
-        # Calculate the minimum and natural width of the container.
+        """Return (recomputing if necessary) the preferred width for the
+        container.
+
+        The preferred size of the container is it's minimum size. This
+        preference will be overridden with the layout size when the layout is
+        applied.
+
+        If the container does not yet have content, the minimum width is set to
+        0.
+        """
         # print("GET PREFERRED WIDTH", self._content)
         if self._content is None:
             return 0, 0
@@ -80,7 +133,16 @@ class TogaContainer(Gtk.Fixed):
         return self.min_width, self.min_width
 
     def do_get_preferred_height(self):
-        # Calculate the minimum and natural height of the container.
+        """Return (recomputing if necessary) the preferred height for the
+        container.
+
+        The preferred size of the container is it's minimum size. This
+        preference will be overridden with the layout size when the
+        layout is applied.
+
+        If the container does not yet have content, the minimum height
+        is set to 0.
+        """
         # print("GET PREFERRED HEIGHT", self._content)
         if self._content is None:
             return 0, 0
@@ -93,6 +155,14 @@ class TogaContainer(Gtk.Fixed):
         return self.min_height, self.min_height
 
     def do_size_allocate(self, allocation):
+        """Perform the actual layout for the widget, and all it's children.
+
+        The container will assume whatever size it has been given by GTK -
+        usually the full space of the window that holds the container.
+        The layout will then be re-computed based on this new available size,
+        and that new geometry will be applied to all child widgets of the
+        container.
+        """
         # print(self._content, f"Container layout {allocation.width}x{allocation.height} @ {allocation.x}x{allocation.y}")
 
         # The container will occupy the full space it has been allocated.
@@ -124,3 +194,6 @@ class TogaContainer(Gtk.Fixed):
                     widget_allocation.height = widget.interface.layout.content_height
 
                     widget.size_allocate(widget_allocation)
+
+        # The layout has been redrawn
+        self._needs_redraw = False

@@ -93,7 +93,7 @@ class Pack(BaseStyle):
                     else:
                         value = LEFT
                 self._applicator.set_text_alignment(value)
-            if prop == "text_direction":
+            elif prop == "text_direction":
                 if self.text_align is None:
                     self._applicator.set_text_alignment(RIGHT if value == RTL else LEFT)
             elif prop == "color":
@@ -101,10 +101,7 @@ class Pack(BaseStyle):
             elif prop == "background_color":
                 self._applicator.set_background_color(value)
             elif prop == "visibility":
-                hidden = False
-                if value == HIDDEN:
-                    hidden = True
-                self._applicator.set_hidden(hidden)
+                self._applicator.set_hidden(value == HIDDEN)
             elif prop in (
                 "font_family",
                 "font_size",
@@ -121,6 +118,10 @@ class Pack(BaseStyle):
                         weight=self.font_weight,
                     )
                 )
+            else:
+                # Any other style change will cause a change in layout geometry,
+                # so perform a refresh.
+                self._applicator.refresh()
 
     def layout(self, node, viewport):
         # Precompute `scale_factor` by providing it as a default param.
