@@ -1,4 +1,4 @@
-from unittest import expectedFailure, mock
+from unittest import mock
 
 import toga
 from toga_dummy.utils import TestCase, TestStyle
@@ -37,8 +37,6 @@ class ScrollContainerTests(TestCase):
         self.assertEqual(self.sc.horizontal_position, 0)
         self.assertEqual(self.sc.vertical_position, vertical_position)
 
-    # This isn't a good test as it asserts behavior performed during setUp
-    @expectedFailure
     def test_set_content_with_widget(self):
         self.assertEqual(
             self.sc.content, None, "The default value of content should be None"
