@@ -1,18 +1,24 @@
 from travertino.fonts import Font
 
-from toga.colors import rgba
+from toga.colors import TRANSPARENT, rgba
 from toga.style.pack import CENTER, JUSTIFY, LEFT, RIGHT
 from toga_gtk.libs import Gtk, Pango
 
 
 def toga_color(color):
     if color:
-        return rgba(
+        c = rgba(
             int(color.red * 255),
             int(color.green * 255),
             int(color.blue * 255),
             color.alpha,
         )
+
+        # Background color of rgba(0,0,0,0.0) is TRANSPARENT.
+        if c.r == 0 and c.g == 0 and c.b == 0 and c.a == 0.0:
+            return TRANSPARENT
+        else:
+            return c
     else:
         return None
 
