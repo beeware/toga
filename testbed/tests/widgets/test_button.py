@@ -34,11 +34,6 @@ test_text = mark.skipif(
     reason="round trip empty strings don't work",
 )(test_text)
 
-test_text_width_change = mark.skipif(
-    current_platform in {"linux"},
-    reason="resizes not applying correctly",
-)(test_text_width_change)
-
 
 async def test_press(widget, probe):
     # Press the button before installing a handler
