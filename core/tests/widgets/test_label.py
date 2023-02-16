@@ -19,7 +19,7 @@ class LabelTests(TestCase):
         self.label.text = new_text
         self.assertEqual(self.label.text, new_text)
         self.assertValueSet(self.label, "text", new_text)
-        self.assertActionPerformed(self.label, "rehint Label")
+        self.assertActionPerformed(self.label, "rehint")
 
         self.label.text = None
         self.assertEqual(self.label.text, "")

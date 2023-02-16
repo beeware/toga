@@ -14,8 +14,5 @@ class Switch(Widget):
     def get_value(self):
         return self._get_value("value")
 
-    def rehint(self):
-        self._action("rehint Switch")
-
     def set_on_change(self, handler):
         self._set_value("on_change", handler)

@@ -9,7 +9,7 @@ class Divider(Widget):
         self.native = Gtk.Separator()
         self.native.interface = self.interface
 
-    def rehint(self):
+    def gtk_rehint(self):
         width = self.native.get_preferred_width()
         height = self.native.get_preferred_height()
 
