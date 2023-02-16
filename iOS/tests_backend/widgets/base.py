@@ -47,11 +47,6 @@ class SimpleProbe:
 
     async def redraw(self):
         """Request a redraw of the app, waiting until that redraw has completed."""
-        # TODO: Travertino/Pack doesn't force a layout refresh
-        # when properties such as flex or width are altered.
-        # For now, do a manual refresh.
-        self.widget.window.content.refresh()
-
         # Force a repaint
         self.widget.window.content._impl.native.layer.displayIfNeeded()
 
