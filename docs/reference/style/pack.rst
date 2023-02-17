@@ -196,6 +196,15 @@ A value of ``SERIF``, ``SANS_SERIF``, ``CURSIVE``, ``FANTASY``, or ``MONOSPACE``
 
 Otherwise, any font name can be specified. If the font name cannot be resolved, the system font will be used.
 
+``font_style``
+----------------
+
+**Values:** ``NORMAL`` | ``ITALIC`` | ``OBLIQUE``
+
+**Initial value:** ``NORMAL``
+
+The style of the font to be used.
+
 ``font_variant``
 ----------------
 
