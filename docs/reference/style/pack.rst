@@ -17,9 +17,9 @@ Pack style properties
 ``display``
 -----------
 
-**Values:** ``pack`` | ``none``
+**Values:** ``PACK`` | ``none``
 
-**Initial value:** ``pack``
+**Initial value:** ``PACK``
 
 Used to define the how to display the element. A value of ``pack`` will apply
 the pack layout algorithm to this node and its descendents. A value of
@@ -30,9 +30,9 @@ visible.
 ``visibility``
 --------------
 
-**Values:** ``visible`` | ``none``
+**Values:** ``VISIBLE`` | ``none``
 
-**Initial value:** ``visible``
+**Initial value:** ``VISIBLE``
 
 Used to define whether the element should be drawn. A value of ``visible``
 means the element will be displayed. A value of ``none`` removes the element,
@@ -41,9 +41,9 @@ but still allocates space for the element as if it were in the element tree.
 ``direction``
 -------------
 
-**Values:** ``row`` | ``column``
+**Values:** ``ROW`` | ``COLUMN``
 
-**Initial value:** ``row``
+**Initial value:** ``ROW``
 
 The packing direction for children of the box. A value of ``column`` indicates
 children will be stacked vertically, from top to bottom. A value of ``row``
@@ -53,16 +53,16 @@ indicates children will be packed horizontally; left-to-right if
 ``alignment``
 -------------
 
-**Values:** ``top`` | ``bottom`` | ``left`` | ``right`` | ``center``
+**Values:** ``TOP`` | ``BOTTOM`` | ``LEFT`` | ``RIGHT`` | ``CENTER``
 
-**Initial value:** ``top`` if direction is ``row``; ``left`` if direction is ``column``
+**Initial value:** ``TOP`` if direction is ``ROW``; ``LEFT`` if direction is ``COLUMN``
 
 The alignment of children relative to the outside of the packed box.
 
-If the box is a ``column`` box, only the values ``left``, ``right`` and
-``center`` are honored.
+If the box is a ``COLUMN`` box, only the values ``LEFT``, ``RIGHT`` and
+``CENTER`` are honored.
 
-If the box is a ``row`` box, only the values ``top``, ``bottom`` and ``center``
+If the box is a ``ROW`` box, only the values ``TOP``, ``BOTTOM`` and ``CENTER``
 are honored.
 
 If a value is provided, but the value isn't honored, the alignment
@@ -154,7 +154,7 @@ Some objects may not use the value.
 ``background_color``
 --------------------
 
-**Values:** ``<color>`` | ``transparent``
+**Values:** ``<color>`` | ``TRANSPARENT``
 
 **Initial value:** The platform default background color
 
@@ -165,52 +165,52 @@ Some objects may not use the value.
 ``text_align``
 --------------
 
-**Values:** ``left`` | ``right`` | ``center`` | ``justify``
+**Values:** ``LEFT`` | ``RIGHT`` | ``CENTER`` | ``JUSTIFY``
 
-**Initial value:** ``left`` if ``text_direction`` is ``ltr``; ``right`` if ``text_direction`` is ``rtl``
+**Initial value:** ``LEFT`` if ``text_direction`` is ``LTR``; ``RIGHT`` if ``text_direction`` is ``RTL``
 
 Defines the alignment of text in the object being rendered.
 
 ``text_direction``
 ------------------
 
-**Values:** ``rtl`` | ``ltr``
+**Values:** ``RTL`` | ``LTR``
 
-**Initial value:** ``rtl``
+**Initial value:** ``LTR``
 
 Defines the natural direction of horizontal content.
 
 ``font_family``
 ---------------
 
-**Values:** ``system`` | ``serif``| ``sans-serif`` | ``cursive`` | ``fantasy`` | ``monospace`` | ``<string>``
+**Values:** ``SYSTEM`` | ``SERIF``| ``SANS_SERIF`` | ``CURSIVE`` | ``FANTASY`` | ``MONOSPACE`` | ``<string>``
 
-**Initial value:** ``system``
+**Initial value:** ``SYSTEM``
 
 The font family to be used.
 
-A value of ``system`` indicates that whatever is a system-appropriate font
+A value of ``SYSTEM`` indicates that whatever is a system-appropriate font
 should be used.
 
-A value of ``serif``, ``sans-serif``, ``cursive``, ``fantasy``, or ``monospace`` will use a system defined font that matches the description (e.g.,"Times New Roman" for ``serif``, "Courier New" for ``monospace``).
+A value of ``SERIF``, ``SANS_SERIF``, ``CURSIVE``, ``FANTASY``, or ``MONOSPACE`` will use a system defined font that matches the description (e.g.,"Times New Roman" for ``SERIF``, "Courier New" for ``MONOSPACE``).
 
 Otherwise, any font name can be specified. If the font name cannot be resolved, the system font will be used.
 
 ``font_variant``
 ----------------
 
-**Values:** ``normal`` | ``small_caps``
+**Values:** ``NORMAL`` | ``SMALL_CAPS``
 
-**Initial value:** ``normal``
+**Initial value:** ``NORMAL``
 
 The variant of the font to be used.
 
 ``font_weight``
 ---------------
 
-**Values:** ``normal`` | ``bold``
+**Values:** ``NORMAL`` | ``BOLD``
 
-**Initial value:** ``normal``
+**Initial value:** ``NORMAL``
 
 The weight of the font to be used.
 
