@@ -17,7 +17,7 @@ Pack style properties
 ``display``
 -----------
 
-**Values:** ``PACK`` | ``none``
+**Values:** ``PACK`` | ``NONE``
 
 **Initial value:** ``PACK``
 
@@ -30,7 +30,7 @@ visible.
 ``visibility``
 --------------
 
-**Values:** ``VISIBLE`` | ``none``
+**Values:** ``VISIBLE`` | ``HIDDEN`` | ``NONE``
 
 **Initial value:** ``VISIBLE``
 
@@ -72,9 +72,9 @@ reverts to the default for the direction.
 ``width``
 ---------
 
-**Values:** ``<integer>`` | ``none``
+**Values:** ``<integer>`` | ``NONE``
 
-**Initial value:** ``none``
+**Initial value:** ``NONE``
 
 Specify a fixed width for the box.
 
@@ -84,9 +84,9 @@ fit inside the specified space.
 ``height``
 ----------
 
-**Values:** ``<integer>`` | ``none``
+**Values:** ``<integer>`` | ``NONE``
 
-**Initial value:** ``none``
+**Initial value:** ``NONE``
 
 Specify a fixed height for the box.
 
