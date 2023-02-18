@@ -28,3 +28,24 @@ Reference
 .. autoclass:: toga.widgets.textinput.TextInput
    :members:
    :undoc-members:
+
+Valid Pack style properties
+----------------------------
+
+``font_family``: The font family to use for the text input.
+
+``font_size``: The font size to use for the text input.
+
+``color``: The color of the text in the input box.
+
+``background_color``: The background color of the input box.
+
+``border_color``: The color of the input box border.
+
+``border_width``: The width of the input box border.
+
+``border_radius``: The radius of the input box corners.
+
+``padding``: The padding within the input box.
+
+``margin``: The margin around the input box.
