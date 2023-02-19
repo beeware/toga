@@ -11,8 +11,13 @@ properties exist to control color, text alignment and so on.
 It is similar in some ways to the CSS Flexbox algorithm; but dramatically
 simplified, as there is no allowance for overflowing boxes.
 
-**NOTE:** The value for different Pack style properties should be passed as string. For example:
-``style=Pack(direction="column")``
+.. admonition::
+
+   The string values defined here are the string literals that the Pack
+   algorithm accepts. These values are also pre-defined as Python constants in
+   the ``toga.style.pack`` module with the same name; however, following Python
+   style, the constants use upper case. For example, the Python constant
+   ``toga.style.pack.COLUMN`` evaluates as the string literal ``"column"``.
 
 Pack style properties
 ~~~~~~~~~~~~~~~~~~~~~
