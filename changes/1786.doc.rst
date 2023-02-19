@@ -1,0 +1,1 @@
+Some missing settings and constant values were added to the documentation of Pack.
