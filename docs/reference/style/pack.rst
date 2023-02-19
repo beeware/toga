@@ -467,23 +467,41 @@ or a bug in the mapping.
 
 The mapping that can be used to establish the reference implementation is:
 
-* The root element of the Pack layout can be mapped to the ``<body>`` element
-  of a HTML document. The rendering area of the browser window becomes the
-  view area that Pack will fill.
+* The reference HTML layout document is rendered in `standards mode
+  <https://developer.mozilla.org/en-US/docs/Web/API/Document/compatMode>`__,
+  with a default CSS stylesheet:
 
-* All other elements in the DOM tree are ``<div>`` elements.
+  .. code-block:: html
 
-* The document has a default CSS stylesheet of::
+      <!DOCTYPE html>
+      <html>
+         <head>
+           <meta charset="UTF-8" />
+            <title>Pack layout testbed</title>
+            <style>
+               html, body {
+                  height: 100%;
+                  white-space: nowrap;
+               }
+               body {
+                  overflow: hidden;
+                  display: flex;
+                  margin: 0;
+               }
+               div {
+                  display: inline-flex;
+                  margin: 0;
+               }
+            </style>
+         </head>
+         <body></body>
+      </html>
 
-      body {
-         overflow: hidden
-         display: flex;
-         margin: 0;
-      }
-      div {
-         display: inline-flex;
-         margin: 0;
-      }
+* The root element of the Pack layout can be mapped to the ``<body>`` element of
+  the HTML reference document. The rendering area of the browser window becomes
+  the view area that Pack will fill.
+
+* All other elements in the DOM tree are mapped to ``<div>`` elements.
 
 * The following Pack declarations can be mapped to equivalent CSS declarations:
 
