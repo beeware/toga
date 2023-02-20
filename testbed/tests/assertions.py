@@ -22,6 +22,12 @@ def assert_color(actual, expected):
     if expected in [None, TRANSPARENT]:
         assert expected == actual
     else:
-        for component in ["r", "g", "b"]:
-            assert getattr(actual, component) == getattr(expected, component)
-        assert actual.a == approx(expected.a, abs=(1 / 255))
+        if actual in [None, TRANSPARENT]:
+            assert expected == actual
+        else:
+            assert (actual.r, actual.g, actual.b, actual.a) == (
+                expected.r,
+                expected.g,
+                expected.b,
+                approx(expected.a, abs=(1 / 255)),
+            )
