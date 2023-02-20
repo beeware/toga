@@ -1,14 +1,18 @@
-div.body table.widget-descriptions td p
-{
-    text-align: center;
+/* Draw lines around table edges. */
+table.docutils {
+    border: 1px solid var(--color-background-border);
 }
-div.body table.widget-support th p,
-div.body table.widget-support td p {
+
+.widget-descriptions td p,
+.widget-support td p {
     text-align: center;
 }
 
-div.body table.widget-descriptions td:first-of-type p,
-div.body table.widget-descriptions th:first-of-type p
-{
+.widget-descriptions th:first-of-type p {
     text-align: left;
+}
+
+.widget-support caption {
+    font-size: var(--font-size--normal);
+    font-weight: bold;
 }

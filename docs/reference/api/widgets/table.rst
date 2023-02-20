@@ -2,14 +2,11 @@ Table
 =====
 
 .. rst-class:: widget-support
-.. csv-filter::
+.. csv-filter:: Availability (:ref:`Key <api-status-key>`)
    :header-rows: 1
    :file: ../../data/widgets_by_platform.csv
    :included_cols: 4,5,6,7,8,9
    :exclude: {0: '(?!^(Table|Component)$)'}
-
-.. |y| image:: /_static/yes.png
-    :width: 16
 
 The table widget is a widget for displaying tabular data. It can be instantiated with the list of headings and then data rows
 can be added.
@@ -38,4 +35,3 @@ Reference
 .. autoclass:: toga.widgets.table.Table
    :members:
    :undoc-members:
-   :inherited-members:

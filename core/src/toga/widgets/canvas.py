@@ -523,7 +523,6 @@ class Canvas(Context, Widget):
         on_alt_drag=None,
         factory=None,  # DEPRECATED!
     ):
-
         super().__init__(id=id, style=style)
         ######################################################################
         # 2022-09: Backwards compatibility

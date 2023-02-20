@@ -48,7 +48,6 @@ class MainWindow(Window):
 
 
 class AppDelegate(NSObject):
-
     interface = objc_property(object, weak=True)
     impl = objc_property(object, weak=True)
 

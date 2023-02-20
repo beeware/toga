@@ -14,7 +14,6 @@ class App:
         self.interface._impl = self
 
     def create(self):
-
         # self.resource_path = os.path.dirname(os.path.dirname(NSBundle.mainBundle.bundlePath))
 
         formal_name = self.interface.formal_name

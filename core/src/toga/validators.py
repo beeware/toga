@@ -338,7 +338,6 @@ class ContainsSpecial(CountValidator):
 
 
 class Integer(MatchRegex):
-
     INTEGER_REGEX = r"^\d+$"
 
     def __init__(self, error_message: Optional[str] = None, allow_empty: bool = True):
@@ -350,7 +349,6 @@ class Integer(MatchRegex):
 
 
 class Number(MatchRegex):
-
     NUMBER_REGEX = r"^[-+]?(\d+\.|\d*\.?\d+)([eE][-+]?\d+)?$"
 
     def __init__(self, error_message: Optional[str] = None, allow_empty: bool = True):
@@ -362,7 +360,6 @@ class Number(MatchRegex):
 
 
 class Email(MatchRegex):
-
     EMAIL_REGEX = (
         r"^[a-zA-Z][a-zA-Z0-9\.]*[a-zA-Z0-9]@[a-zA-Z][a-zA-Z0-9]*(\.[a-zA-Z0-9]+)+$"
     )

@@ -16,7 +16,6 @@ from .base import Widget
 
 
 class TogaButton(NSButton):
-
     interface = objc_property(object, weak=True)
     impl = objc_property(object, weak=True)
 

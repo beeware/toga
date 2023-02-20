@@ -47,7 +47,6 @@ bee_movies = [
 
 
 class ExampleTreeApp(toga.App):
-
     # Table callback functions
     def on_select_handler(self, widget, node):
         if node is not None and node.title:

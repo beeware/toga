@@ -44,7 +44,6 @@ class ImageView(Widget):
 
     @image.setter
     def image(self, image):
-
         if isinstance(image, str):
             self._image = Image(image)
         else:

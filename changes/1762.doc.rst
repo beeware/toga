@@ -1,0 +1,1 @@
+API support tables now distinguish partial vs full support on each platform.

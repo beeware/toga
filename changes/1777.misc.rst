@@ -1,0 +1,1 @@
+The documentation is now available as a PDF on readthedocs.

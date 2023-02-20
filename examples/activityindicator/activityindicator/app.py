@@ -6,7 +6,6 @@ from toga.style import Pack
 class ExampleActivityIndicatorApp(toga.App):
     # Button callback functions
     def do_stuff(self, widget, **kwargs):
-
         if self.spinner.is_running:
             self.spinner.stop()
             self.button.text = "Start"

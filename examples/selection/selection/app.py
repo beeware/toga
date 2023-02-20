@@ -109,7 +109,6 @@ class SelectionApp(toga.App):
         self.selection.value = self.THULIUM
 
     def my_on_select(self, selection):
-
         # get the current value of the slider with `selection.value`
 
         print(f"The selection widget changed to {selection.value}")
