@@ -38,6 +38,7 @@ class MultilineTextInput(Widget):
         self.text.selectable = True
         self.text.verticallyResizable = True
         self.text.horizontallyResizable = False
+        self.text.usesAdaptiveColorMappingForDarkAppearance = True
 
         self.text.autoresizingMask = NSViewWidthSizable
 
