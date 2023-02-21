@@ -12,7 +12,6 @@ from .base import Widget
 
 
 class TogaSlider(NSSlider):
-
     interface = objc_property(object, weak=True)
     impl = objc_property(object, weak=True)
 

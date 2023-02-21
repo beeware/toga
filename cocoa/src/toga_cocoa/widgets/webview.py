@@ -98,7 +98,6 @@ class WebView(Widget):
         future = loop.create_future()
 
         def completion_handler(res: objc_id, error: objc_id) -> None:
-
             if error:
                 error = py_from_ns(error)
                 exc = RuntimeError(str(error))

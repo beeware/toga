@@ -5,7 +5,6 @@ from toga.style import Pack
 
 class ExampleLayoutApp(toga.App):
     def startup(self):
-
         self.button_hide = toga.Button(
             text="Hide label",
             style=Pack(padding=10, width=120),

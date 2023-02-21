@@ -11,6 +11,14 @@ properties exist to control color, text alignment and so on.
 It is similar in some ways to the CSS Flexbox algorithm; but dramatically
 simplified, as there is no allowance for overflowing boxes.
 
+.. admonition::
+
+   The string values defined here are the string literals that the Pack
+   algorithm accepts. These values are also pre-defined as Python constants in
+   the ``toga.style.pack`` module with the same name; however, following Python
+   style, the constants use upper case. For example, the Python constant
+   ``toga.style.pack.COLUMN`` evaluates as the string literal ``"column"``.
+
 Pack style properties
 ~~~~~~~~~~~~~~~~~~~~~
 
@@ -30,7 +38,7 @@ visible.
 ``visibility``
 --------------
 
-**Values:** ``visible`` | ``none``
+**Values:** ``hidden`` | ``visible`` | ``none``
 
 **Initial value:** ``visible``
 
@@ -183,7 +191,7 @@ Defines the natural direction of horizontal content.
 ``font_family``
 ---------------
 
-**Values:** ``system`` | ``serif``| ``sans-serif`` | ``cursive`` | ``fantasy`` | ``monospace`` | ``<string>``
+**Values:** ``system`` | ``serif`` | ``sans-serif`` | ``cursive`` | ``fantasy`` | ``monospace`` | ``<string>``
 
 **Initial value:** ``system``
 
@@ -195,6 +203,15 @@ should be used.
 A value of ``serif``, ``sans-serif``, ``cursive``, ``fantasy``, or ``monospace`` will use a system defined font that matches the description (e.g.,"Times New Roman" for ``serif``, "Courier New" for ``monospace``).
 
 Otherwise, any font name can be specified. If the font name cannot be resolved, the system font will be used.
+
+``font_style``
+----------------
+
+**Values:** ``normal`` | ``italic`` | ``oblique``
+
+**Initial value:** ``normal``
+
+The style of the font to be used.
 
 ``font_variant``
 ----------------

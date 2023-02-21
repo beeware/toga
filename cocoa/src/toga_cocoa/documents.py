@@ -4,7 +4,6 @@ from toga_cocoa.libs import NSURL, NSDocument, objc_method, objc_property
 
 
 class TogaDocument(NSDocument):
-
     interface = objc_property(object, weak=True)
     impl = objc_property(object, weak=True)
 

@@ -26,7 +26,6 @@ from .box import TogaView
 
 
 class TogaStepper(NSStepper):
-
     interface = objc_property(object, weak=True)
     impl = objc_property(object, weak=True)
 

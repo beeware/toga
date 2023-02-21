@@ -6,7 +6,6 @@ from toga_iOS.widgets.base import Widget
 
 
 class TogaView(UIView):
-
     interface = objc_property(object, weak=True)
     impl = objc_property(object, weak=True)
 

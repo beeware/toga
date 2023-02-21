@@ -6,7 +6,6 @@ from .base import Widget
 
 
 class TogaPopupButton(NSPopUpButton):
-
     interface = objc_property(object, weak=True)
     impl = objc_property(object, weak=True)
 
