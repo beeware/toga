@@ -15,7 +15,6 @@ def button_for_action(callback):
 
 
 class TogaNavigationController(UINavigationController):
-
     interface = objc_property(object, weak=True)
     impl = objc_property(object, weak=True)
 

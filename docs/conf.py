@@ -98,6 +98,12 @@ pygments_style = "sphinx"
 # A list of ignored prefixes for module index sorting.
 # modindex_common_prefix = []
 
+# API status indicators.
+rst_prolog = """
+.. |y| replace:: ●
+.. |b| replace:: ○
+"""
+
 
 # -- Options for HTML output ---------------------------------------------------
 

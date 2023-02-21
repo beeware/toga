@@ -123,7 +123,6 @@ class TestWindow(TestCase):
         self.assertEqual(content.app, self.app)
 
     def test_set_app_adds_window_widgets_to_app(self):
-
         id0, id1, id2, id3 = "id0", "id1", "id2", "id3"
         widget1, widget2, widget3 = (
             toga.Label(id=id1, text="label 1"),

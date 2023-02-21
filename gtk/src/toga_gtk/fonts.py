@@ -17,7 +17,6 @@ class Font:
         try:
             font = _FONT_CACHE[self.interface]
         except KeyError:
-
             # Initialize font with properties 'None NORMAL NORMAL NORMAL 0'
             font = Pango.FontDescription()
 

@@ -19,11 +19,14 @@ jobs:
       - name: Set build variables
         run: |
           echo "VERSION=${GITHUB_REF_NAME#v}" >> $GITHUB_ENV
+
       - name: Get packages
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v3.0.2
         with:
-          name: packages
-      - uses: ncipollo/release-action@v1.12.0
+          name: ${{ needs.ci.outputs.artifact-name }}
+
+      - name: Create release
+        uses: ncipollo/release-action@v1.12.0
         with:
           name: ${{ env.VERSION }}
           draft: true
@@ -31,21 +34,33 @@ jobs:
           artifactErrorsFailBuild: true
 
   deploy-test:
+    name: Publish to TestPyPI
+    runs-on: ubuntu-latest
     needs: release
     strategy:
       matrix:
-        package: ["toga", "toga_android", "toga_cocoa", "toga_core", "toga_demo",
-                  "toga_dummy", "toga_gtk", "toga_iOS", "toga_web", "toga_winforms"]
-    runs-on: ubuntu-latest
+        package:
+        - "toga"
+        - "toga_android"
+        - "toga_cocoa"
+        - "toga_core"
+        - "toga_demo"
+        - "toga_dummy"
+        - "toga_gtk"
+        - "toga_iOS"
+        - "toga_web"
+        - "toga_winforms"
     steps:
       - name: Get packages
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v3.0.2
         with:
-          name: packages
+          name: ${{ needs.ci.outputs.artifact-name }}
+
       - name: Extract ${{ matrix.package }}
         run: |
           mkdir dist
           mv */dist/$(echo ${{ matrix.package }} | sed 's/_/?/')-[0-9]* dist
+
       - name: Publish to TestPyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         with:

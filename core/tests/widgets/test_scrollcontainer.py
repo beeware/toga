@@ -89,7 +89,6 @@ class ScrollContainerTests(TestCase):
             self.sc.vertical_position = 0.5
 
     def test_set_app(self):
-
         new_content = toga.Box(style=TestStyle())
         self.sc.content = new_content
         self.assertIsNone(new_content.app)

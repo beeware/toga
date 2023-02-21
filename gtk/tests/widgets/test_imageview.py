@@ -24,7 +24,6 @@ from toga_gtk.widgets.imageview import ImageView
 )
 class TestGtkImageView(unittest.TestCase):
     def test_resize_max(self):
-
         # Scale up height bound
         self.assertEqual((500, 500), ImageView._resize_max(250, 250, 500, 1000))
 

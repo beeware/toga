@@ -1,0 +1,1 @@
+Updated GitHub workflow that updates ``pre-commit`` hooks to specify how to install ``pre-commit``.
