@@ -24,17 +24,6 @@ async def widget():
     return toga.Button("Hello")
 
 
-test_font = mark.skipif(
-    current_platform in {"iOS"},
-    reason="font changes don't alter size",
-)(test_font)
-
-test_text = mark.skipif(
-    current_platform in {"iOS"},
-    reason="round trip empty strings don't work",
-)(test_text)
-
-
 async def test_press(widget, probe):
     # Press the button before installing a handler
     probe.press()

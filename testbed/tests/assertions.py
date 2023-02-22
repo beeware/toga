@@ -19,10 +19,10 @@ def assert_set_get(obj, name, value):
 
 
 def assert_color(actual, expected):
-    if expected in [None, TRANSPARENT]:
+    if expected in {None, TRANSPARENT}:
         assert expected == actual
     else:
-        if actual in [None, TRANSPARENT]:
+        if actual in {None, TRANSPARENT}:
             assert expected == actual
         else:
             assert (actual.r, actual.g, actual.b, actual.a) == (

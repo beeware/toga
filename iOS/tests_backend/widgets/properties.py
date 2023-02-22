@@ -1,7 +1,6 @@
 from ctypes import byref
 from dataclasses import dataclass
 
-from pytest import skip
 from rubicon.objc import CGFloat
 
 from toga.colors import rgba
@@ -17,7 +16,6 @@ from toga_iOS.libs import (
 
 def toga_color(color):
     if color:
-        skip("Can't convert UIColor to toga color yet")
         red = CGFloat()
         green = CGFloat()
         blue = CGFloat()

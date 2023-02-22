@@ -1,6 +1,8 @@
 from rubicon.objc import SEL, CGSize, objc_method, objc_property
 from travertino.size import at_least
 
+from toga.colors import TRANSPARENT
+from toga_iOS.colors import native_color
 from toga_iOS.libs import (
     UIButton,
     UIColor,
@@ -47,6 +49,23 @@ class Button(Widget):
     def set_on_press(self, handler):
         # No special handling required.
         pass
+
+    def set_color(self, color):
+        if color is None:
+            self.native.setTitleColor(
+                self.native.tintColor, forState=UIControlStateNormal
+            )
+        else:
+            self.native.setTitleColor(
+                native_color(color), forState=UIControlStateNormal
+            )
+
+    def set_background_color(self, color):
+        # By default, background color can't be changed
+        if color == TRANSPARENT or color is None:
+            self.native.backgroundColor = None
+        else:
+            self.native.backgroundColor = native_color(color)
 
     def rehint(self):
         fitting_size = self.native.systemLayoutSizeFittingSize(CGSize(0, 0))
