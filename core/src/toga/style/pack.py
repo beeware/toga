@@ -565,21 +565,17 @@ class Pack(BaseStyle):
                 elif self.alignment == CENTER:
                     css.append("align-items: center;")
 
-        # width
+        # width/flex
         if self.width:
             css.append(f"width: {self.width}px;")
         elif self.direction == ROW and not self.flex:
-            css.append("flex: 0 0 0%;")
+            css.append(f"flex: {self.flex} 0 0;")
 
-        # height
+        # height/flex
         if self.height:
             css.append(f"width: {self.width}px;")
-        elif self.direction == COLUMN and not self.flex:
-            css.append("flex: 0 0 0%;")
-
-        # flex
-        if self.flex:
-            css.append(f"flex: {self.flex} 0 0%;")
+        elif self.direction == COLUMN:
+            css.append(f"flex: {self.flex} 0 0;")
 
         # padding_*
         if self.padding_top:
