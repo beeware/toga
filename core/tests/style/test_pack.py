@@ -36,7 +36,7 @@ class TestNode(Node):
         return f"<{self.name} at {id(self)}>"
 
     def refresh(self):
-        # We're directly modifying sytles and computing layouts for specific
+        # We're directly modifying styles and computing layouts for specific
         # viewports, so we don't need to trigger layout changes when a style is
         # changed.
         pass
@@ -52,14 +52,14 @@ class TestViewport:
 
 class TestPackStyleApply(TestCase):
     def test_set_default_right_textalign_when_rtl(self):
-        root = TestNode("app", style=Pack(text_align=None, text_direction=RTL))
+        root = TestNode("app", style=Pack(text_direction=RTL))
         root.style.reapply()
         # Two calls; one caused by text_align, one because text_direction
         # implies a change to text alignment.
         assert root._impl.set_alignment.mock_calls == [call(RIGHT), call(RIGHT)]
 
     def test_set_default_left_textalign_when_no_rtl(self):
-        root = TestNode("app", style=Pack(text_align=None))
+        root = TestNode("app", style=Pack())
         root.style.reapply()
         # Two calls; one caused by text_align, one because text_direction
         # implies a change to text alignment.
