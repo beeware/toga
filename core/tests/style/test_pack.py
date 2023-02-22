@@ -320,7 +320,36 @@ class PackLayoutTests(TestCase):
             ],
         )
 
-        # # Minimum size÷å
+        # Minimum size
+        root.style.layout(root, TestViewport(0, 0, dpi=96))
+        self.assertLayout(
+            root,
+            (380, 120),
+            {
+                "origin": (0, 10),
+                "content": (380, 110),
+                "children": [
+                    {
+                        "origin": (5, 15),
+                        "content": (370, 15),
+                        "children": [
+                            {"origin": (165, 15), "content": (100, 15)},
+                            {"origin": (275, 15), "content": (100, 10)},
+                        ],
+                    },
+                    {
+                        "origin": (5, 40),
+                        "content": (370, 15),
+                        "children": [
+                            {"origin": (5, 40), "content": (150, 10)},
+                            {"origin": (165, 40), "content": (100, 15)},
+                            {"origin": (275, 40), "content": (100, 10)},
+                        ],
+                    },
+                    {"origin": (15, 75), "content": (120, 30)},
+                ],
+            },
+        )
 
         # Normal size
         root.style.layout(root, TestViewport(640, 480, dpi=96))
