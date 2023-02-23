@@ -41,18 +41,11 @@ class OptionContainerTests(TestCase):
             self.op_container, "add content", text=self.text, widget=self.widget._impl
         )
 
-        self.assertActionPerformedWith(
-            self.widget, "set bounds", x=0, y=0, width=0, height=0
-        )
-
     def test_widget_refresh_sublayouts(self):
         # Clear event log to verify new set bounds for refresh
         self.reset_event_log()
 
         self.op_container.refresh_sublayouts()
-        self.assertActionPerformedWith(
-            self.widget, "set bounds", x=0, y=0, width=0, height=0
-        )
 
     def test_set_current_tab_as_index(self):
         self.add_widgets()

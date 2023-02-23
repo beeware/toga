@@ -4,8 +4,12 @@ class TogaApplicator:
     def __init__(self, widget):
         self.widget = widget
 
+    def refresh(self):
+        # print("RE-EVALUATE LAYOUT", self.widget)
+        self.widget.refresh()
+
     def set_bounds(self):
-        # print("LAYOUT", self.widget, self.widget.layout)
+        # print("APPLY LAYOUT", self.widget, self.widget.layout)
         self.widget._impl.set_bounds(
             self.widget.layout.absolute_content_left,
             self.widget.layout.absolute_content_top,

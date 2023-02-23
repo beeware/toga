@@ -17,8 +17,5 @@ class TimePicker(Widget):
     def set_max_time(self, value):
         return self._set_value("max time", value)
 
-    def rehint(self):
-        self._action("rehint TimePicker")
-
     def set_on_change(self, handler):
         self._set_value("on_change", handler)

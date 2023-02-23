@@ -19,6 +19,3 @@ class Selection(Widget):
 
     def set_on_select(self, handler):
         self._set_value("on_select", handler)
-
-    def rehint(self):
-        self._action("rehint Selection")

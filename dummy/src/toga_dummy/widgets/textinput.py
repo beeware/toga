@@ -23,9 +23,6 @@ class TextInput(Widget):
     def set_alignment(self, value):
         self._set_value("alignment", value)
 
-    def rehint(self):
-        self._action("rehint TextInput")
-
     def set_on_change(self, handler):
         self._set_value("on_change", handler)
 

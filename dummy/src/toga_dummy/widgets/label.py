@@ -10,6 +10,3 @@ class Label(Widget):
 
     def set_text(self, value):
         self._set_value("text", self.interface._text)
-
-    def rehint(self):
-        self._action("rehint Label")

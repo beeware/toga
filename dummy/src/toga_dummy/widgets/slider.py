@@ -17,9 +17,6 @@ class Slider(Widget):
     def set_tick_count(self, tick_count):
         self._set_value("tick_count", tick_count)
 
-    def rehint(self):
-        self._action("rehint Slider")
-
     def set_on_change(self, handler):
         self._set_value("on_change", handler)
 
