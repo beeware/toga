@@ -316,12 +316,6 @@ The mapping that can be used to establish the reference implementation is:
    ``width: <int>``              ``width: <int>px``
    ============================= ===================================================
 
-* If ``direction = row``, and neither ``width`` nor ``flex`` is set, the element
-  assumes a CSS definition of ``flex: 0 0 0``.
-
-* If ``direction = column``, and neither ``height`` nor ``flex`` is set, the
-  element assumes a CSS definition of ``flex: 0 0 0``.
-
 * All other Pack declarations should be used as-is as CSS declarations, with
   underscores being converted to dashes (e.g., ``background_color`` becomes
   ``background-color``).

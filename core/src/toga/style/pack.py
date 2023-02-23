@@ -568,7 +568,7 @@ class Pack(BaseStyle):
         # width/flex
         if self.width:
             css.append(f"width: {self.width}px;")
-        elif self.direction == ROW and not self.flex:
+        elif self.direction == ROW:
             css.append(f"flex: {self.flex} 0 0;")
 
         # height/flex
