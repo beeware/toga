@@ -1,5 +1,5 @@
-from ..container import TogaContainer
 from ..libs import Gtk
+from ..window import GtkViewport
 from .base import Widget
 
 
@@ -15,13 +15,21 @@ class ScrollContainer(Widget):
         self.native.set_overlay_scrolling(True)
         self.native.interface = self.interface
 
-        self.inner_container = TogaContainer()
-        self.native.add(self.inner_container)
-
     def set_content(self, widget):
-        self.inner_container.content = widget
+        self.inner_container = widget
 
-        # Force the display of the new content
+        widget.viewport = GtkViewport(self.native)
+
+        # Add all children to the content widget.
+        for child in widget.interface.children:
+            child._impl.container = widget
+
+        # Remove the old widget before add the new one
+        if self.native.get_child():
+            self.native.get_child().destroy()
+
+        # Add the widget to ScrolledWindow as a scrollable widget
+        self.native.add(self.inner_container.native)
         self.native.show_all()
 
     def set_app(self, app):

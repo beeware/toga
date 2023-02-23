@@ -18,7 +18,7 @@ class ImageView(Widget):
         # rehint to update scaling of pixbuf
         self.rehint()
 
-    def gtk_rehint(self):
+    def rehint(self):
         if self._pixbuf:
             height, width = self._resize_max(
                 original_height=self._pixbuf.get_height(),

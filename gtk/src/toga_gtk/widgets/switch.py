@@ -35,7 +35,7 @@ class Switch(Widget):
     def set_value(self, value):
         self.switch.set_active(value)
 
-    def gtk_rehint(self):
+    def rehint(self):
         # print("REHINT", self, self.native.get_preferred_width(), self.native.get_preferred_height())
         width = self.native.get_preferred_width()
         height = self.native.get_preferred_height()

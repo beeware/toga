@@ -11,7 +11,7 @@ class SimpleProbe:
         assert isinstance(self.native, self.native_class)
 
     def assert_container(self, container):
-        container_native = container._impl.container
+        container_native = container._impl.native
         for control in container_native.get_children():
             if control == self.native:
                 break
@@ -20,8 +20,11 @@ class SimpleProbe:
 
     async def redraw(self):
         """Request a redraw of the app, waiting until that redraw has completed."""
+        # Refresh the layout
+        self.widget.window.content.refresh()
+
         # Force a repaint
-        while self.impl.container.needs_redraw or Gtk.events_pending():
+        while Gtk.events_pending():
             Gtk.main_iteration_do(blocking=False)
 
     @property
