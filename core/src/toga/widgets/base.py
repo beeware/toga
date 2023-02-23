@@ -282,6 +282,8 @@ class Widget(Node):
             # We can't compute a layout until we have a viewport
             if self._impl.viewport:
                 super().refresh(self._impl.viewport)
+                # Refreshing the layout means the viewport needs a redraw.
+                self._impl.viewport.make_dirty()
 
     def refresh_sublayouts(self):
         for child in self.children:

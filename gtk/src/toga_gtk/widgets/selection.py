@@ -32,7 +32,7 @@ class Selection(Widget):
     def get_selected_item(self):
         return self.native.get_active_text()
 
-    def rehint(self):
+    def gtk_rehint(self):
         # width = self.native.get_preferred_width()
         height = self.native.get_preferred_height()
 

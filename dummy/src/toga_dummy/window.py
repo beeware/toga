@@ -16,6 +16,11 @@ class Viewport:
     def height(self):
         return self.window.get_size()[1]
 
+    def make_dirty(self, widget=None):
+        # TODO: This won't be required once we complete the refactor
+        # making container a separate impl concept.
+        pass
+
 
 class Window(LoggedObject):
     def __init__(self, interface, title, position, size):

@@ -60,7 +60,7 @@ class NumberInput(Widget):
     def set_font(self, font):
         self.interface.factory.not_implemented("NumberInput.set_font()")
 
-    def rehint(self):
+    def gtk_rehint(self):
         width = self.native.get_preferred_width()
         height = self.native.get_preferred_height()
         if width and height:

@@ -41,6 +41,11 @@ class AndroidViewport(ViewTreeObserver__OnGlobalLayoutListener):
     def height(self):
         return self.native.getHeight()
 
+    def make_dirty(self, widget=None):
+        # TODO: This won't be required once we complete the refactor
+        # making container a separate impl concept.
+        pass
+
 
 class Window:
     def __init__(self, interface, title, position, size):
