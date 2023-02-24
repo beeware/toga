@@ -1,6 +1,7 @@
 from rubicon.objc import CGSize
 from travertino.size import at_least
 
+from toga.colors import TRANSPARENT
 from toga_iOS.colors import native_color
 from toga_iOS.libs import NSLineBreakByWordWrapping, NSTextAlignment, UILabel
 from toga_iOS.widgets.base import Widget
@@ -19,12 +20,16 @@ class Label(Widget):
             self.native.textAlignment = NSTextAlignment(value)
 
     def set_color(self, value):
-        if value:
-            self.native.textColor = native_color(value)
+        self.native.textColor = native_color(value)
+
+    def set_background_color(self, color):
+        if color is TRANSPARENT:
+            self.native.backgroundColor = None
+        else:
+            self.native.backgroundColor = native_color(color)
 
     def set_font(self, font):
-        if font:
-            self.native.font = font._impl.native
+        self.native.font = font._impl.native
 
     def set_text(self, value):
         self.native.text = self.interface.text

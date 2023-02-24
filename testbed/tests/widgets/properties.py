@@ -4,20 +4,22 @@ from toga.colors import RED, TRANSPARENT, color as named_color
 from toga.fonts import FANTASY
 from toga.platform import current_platform
 
-from ..assertions import assert_color, assert_set_get
+from ..assertions import assert_color
 from ..data import COLORS, TEXTS
 
 
 async def test_text(widget, probe):
     "The text displayed on a widget can be changed"
     for text in TEXTS:
-        assert_set_get(widget, "text", text)
+        widget.text = text
         await probe.redraw()
+
+        assert widget.text == text
         assert probe.text == text
 
 
 @mark.skipif(
-    current_platform in {"android", "iOS"},
+    current_platform in {"android"},
     reason="text width resizes don't work",
 )
 async def test_text_width_change(widget, probe):

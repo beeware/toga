@@ -41,7 +41,7 @@ class Button(Widget):
         self.add_constraints()
 
     def get_text(self):
-        return str(self.native.title)
+        return str(self.native.titleForState(UIControlStateNormal))
 
     def set_text(self, text):
         self.native.setTitle(text, forState=UIControlStateNormal)
@@ -67,7 +67,11 @@ class Button(Widget):
         else:
             self.native.backgroundColor = native_color(color)
 
+    def set_font(self, font):
+        self.native.titleLabel.font = font._impl.native
+
     def rehint(self):
         fitting_size = self.native.systemLayoutSizeFittingSize(CGSize(0, 0))
+        # print(f"REHINT BUTTON {fitting_size.width}x{fitting_size.height}")
         self.interface.intrinsic.width = at_least(fitting_size.width)
         self.interface.intrinsic.height = fitting_size.height

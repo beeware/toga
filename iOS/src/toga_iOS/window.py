@@ -69,6 +69,7 @@ class Window:
         # and provide a stack of navigable content; this is initialized with a
         # UIViewController to contain the actual content
         self.controller = UIViewController.alloc().init()
+
         self.navigation_controller = (
             UINavigationController.alloc().initWithRootViewController(self.controller)
         )

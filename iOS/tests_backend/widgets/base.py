@@ -1,5 +1,7 @@
 import asyncio
 
+from toga_iOS.libs import NSRunLoop
+
 # From UIControl.h
 UIControlEventTouchDown = 1 << 0
 UIControlEventTouchDownRepeat = 1 << 1
@@ -53,6 +55,10 @@ class SimpleProbe:
         # If we're running slow, wait for a second
         if self.widget.app.run_slow:
             await asyncio.sleep(1)
+        else:
+            # Running at "normal" speed, we need to release to the event loop
+            # for at least one iteration. `runUntilDate:None` does this.
+            NSRunLoop.currentRunLoop.runUntilDate(None)
 
     @property
     def enabled(self):

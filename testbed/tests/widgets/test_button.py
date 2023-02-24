@@ -30,10 +30,7 @@ async def test_press(widget, probe):
 
     # Set up a mock handler, and press the button again.
     handler = Mock()
-    # TODO: can't use assert_set_get, because getattr returns the wrapped handler, which
-    # is an implementation detail that we shouldn't expose.
-    # https://github.com/beeware/toga/pull/804 may be relevant.
-    setattr(widget, "on_press", handler)
+    widget.on_press = handler
     probe.press()
     await probe.redraw()
     handler.assert_called_once_with(widget)
@@ -47,7 +44,7 @@ async def test_background_color_transparent(widget, probe):
 
 
 @mark.skipif(
-    current_platform in {"android", "iOS"},
+    current_platform in {"android"},
     reason="await redraw() not implemented",
 )
 async def test_button_size(widget, probe):
@@ -63,7 +60,7 @@ async def test_button_size(widget, probe):
 
     # Button has expanded width, but has the same height.
     await probe.redraw()
-    assert probe.width > 600
+    assert probe.width > 350
     assert probe.height <= 50
 
     # Make the container a flexible column box
@@ -73,7 +70,7 @@ async def test_button_size(widget, probe):
     # Button is still the width of the screen
     # and the height hasn't changed
     await probe.redraw()
-    assert probe.width > 600
+    assert probe.width > 350
     assert probe.height <= 50
 
     # Set an explicit height and width

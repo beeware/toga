@@ -9,7 +9,7 @@ class ButtonProbe(SimpleProbe):
 
     @property
     def text(self):
-        return str(self.native.title)
+        return str(self.native.titleForState(UIControlStateNormal))
 
     @property
     def color(self):
@@ -17,7 +17,7 @@ class ButtonProbe(SimpleProbe):
 
     @property
     def font(self):
-        return toga_font(self.native.font)
+        return toga_font(self.native.titleLabel.font)
 
     @property
     def background_color(self):

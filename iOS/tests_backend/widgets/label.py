@@ -1,5 +1,4 @@
-from pytest import skip
-
+from toga.color import TRANSPARENT
 from toga_iOS.libs import UILabel
 
 from .base import SimpleProbe
@@ -19,7 +18,10 @@ class LabelProbe(SimpleProbe):
 
     @property
     def background_color(self):
-        skip("Can't set background color")
+        if self.native.backgroundColor is None:
+            return TRANSPARENT
+        else:
+            return toga_color(self.native.backgroundColor)
 
     @property
     def font(self):
