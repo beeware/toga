@@ -24,6 +24,7 @@ class Box(Widget):
         self.native.updateViewLayout(widget.native, layout_params)
 
     def set_background_color(self, value):
-        self.native.setBackgroundColor(
-            native_color(TRANSPARENT if (value is None) else value)
-        )
+        if value is None:
+            self.native.setBackgroundColor(native_color(TRANSPARENT))
+        else:
+            self.native.setBackgroundColor(native_color(value))

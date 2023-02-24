@@ -1,8 +1,9 @@
 from travertino.size import at_least
 
+from toga.colors import TRANSPARENT
 from toga_android.colors import native_color
 
-from ..libs.android.graphics import PorterDuff__Mode
+from ..libs.android.content.res import ColorStateList
 from ..libs.android.util import TypedValue
 from ..libs.android.view import OnClickListener, View__MeasureSpec
 from ..libs.android.widget import Button as A_Button
@@ -42,14 +43,20 @@ class Button(Widget):
         pass
 
     def set_color(self, value):
-        if value:
+        if value is None:
+            pass
+            # TODO: set to system foreground
+            # self.native.setTextColor(native_color(value))
+        else:
             self.native.setTextColor(native_color(value))
 
     def set_background_color(self, value):
-        if value:
+        if value is None or value == TRANSPARENT:
+            self.native.setBackgroundTintList(None)
+        else:
             # do not use self.native.setBackgroundColor - this messes with the button style!
-            self.native.getBackground().setColorFilter(
-                native_color(value), PorterDuff__Mode.MULTIPLY
+            self.native.setBackgroundTintList(
+                ColorStateList.valueOf(native_color(value))
             )
 
     def rehint(self):

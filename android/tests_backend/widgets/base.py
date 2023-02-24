@@ -7,6 +7,12 @@ class SimpleProbe:
     def __init__(self, widget):
         self.widget = widget
         self.native = widget._impl.native
+
+        # Store the device DPI, as it will be needed to scale some values
+        self.dpi = (
+            self.native.getContext().getResources().getDisplayMetrics().densityDpi
+        )
+
         assert isinstance(self.native, self.native_class)
 
     def assert_container(self, container):

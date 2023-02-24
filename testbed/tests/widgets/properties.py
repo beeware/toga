@@ -1,8 +1,5 @@
-from pytest import mark
-
 from toga.colors import RED, TRANSPARENT, color as named_color
 from toga.fonts import FANTASY
-from toga.platform import current_platform
 
 from ..assertions import assert_color
 from ..data import COLORS, TEXTS
@@ -18,10 +15,6 @@ async def test_text(widget, probe):
         assert probe.text == text
 
 
-@mark.skipif(
-    current_platform in {"android"},
-    reason="text width resizes don't work",
-)
 async def test_text_width_change(widget, probe):
     "If the widget text is changed, the width of the widget changes"
     orig_width = probe.width
@@ -76,10 +69,6 @@ async def test_color(widget, probe):
         assert_color(probe.color, color)
 
 
-@mark.skipif(
-    current_platform in {"android"},
-    reason="color resets don't work",
-)
 async def test_color_reset(widget, probe):
     "The foreground color of a widget can be reset"
     # Get the original color
