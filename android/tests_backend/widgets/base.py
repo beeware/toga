@@ -1,12 +1,29 @@
 import asyncio
 
+from java import dynamic_proxy
 from pytest import skip
+
+from android.view import ViewTreeObserver
+
+
+class LayoutListener(dynamic_proxy(ViewTreeObserver.OnGlobalLayoutListener)):
+    def __init__(self):
+        super().__init__()
+        self.event = asyncio.Event()
+
+    def onGlobalLayout(self):
+        self.event.set()
+        self.event.clear()
 
 
 class SimpleProbe:
     def __init__(self, widget):
         self.widget = widget
         self.native = widget._impl.native
+        self.layout_listener = LayoutListener()
+        self.native.getViewTreeObserver().addOnGlobalLayoutListener(
+            self.layout_listener
+        )
 
         # Store the device DPI, as it will be needed to scale some values
         self.dpi = (
@@ -14,6 +31,11 @@ class SimpleProbe:
         )
 
         assert isinstance(self.native, self.native_class)
+
+    def __del__(self):
+        self.native.getViewTreeObserver().removeOnGlobalLayoutListener(
+            self.layout_listener
+        )
 
     def assert_container(self, container):
         container_native = container._impl.native
@@ -29,8 +51,8 @@ class SimpleProbe:
 
     async def redraw(self):
         """Request a redraw of the app, waiting until that redraw has completed."""
-        # TODO: Wait for redraws to complete
-        pass
+        self.native.requestLayout()
+        await self.layout_listener.event.wait()
 
         # If we're running slow, wait for a second
         if self.widget.app.run_slow:
