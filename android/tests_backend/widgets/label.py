@@ -22,7 +22,11 @@ class LabelProbe(SimpleProbe):
 
     @property
     def font(self):
-        return toga_font(self.native.getTypeface(), self.native.getTextSize(), self.dpi)
+        return toga_font(
+            self.native.getTypeface(),
+            self.native.getTextSize(),
+            self.native.getResources(),
+        )
 
     @property
     def alignment(self):
