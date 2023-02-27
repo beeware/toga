@@ -72,9 +72,9 @@ class Widget:
     ######################################################################
 
     def set_bounds(self, x, y, width, height):
-        # If the bounds have changed, we need to queue a resize on the container
-        if self.container:
-            self.container.make_dirty()
+        # Any position changes are applied by GTK container during its
+        # layout pass.
+        pass
 
     def set_alignment(self, alignment):
         # By default, alignment can't be changed
