@@ -29,6 +29,7 @@ class SimpleProbe:
         self.dpi = (
             self.native.getContext().getResources().getDisplayMetrics().densityDpi
         )
+        self.scale_factor = self.dpi / 160
 
         assert isinstance(self.native, self.native_class)
 
@@ -76,11 +77,13 @@ class SimpleProbe:
 
     @property
     def width(self):
-        return self.native.getWidth()
+        # Return the value in SP
+        return self.native.getWidth() / self.scale_factor
 
     @property
     def height(self):
-        return self.native.getHeight()
+        # Return the value in SP
+        return self.native.getHeight() / self.scale_factor
 
     def press(self):
         self.native.performClick()

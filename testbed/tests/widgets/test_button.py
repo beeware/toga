@@ -1,10 +1,9 @@
 from unittest.mock import Mock
 
-from pytest import fixture, mark
+from pytest import fixture
 
 import toga
 from toga.colors import TRANSPARENT
-from toga.platform import current_platform
 from toga.style.pack import COLUMN
 
 from ..assertions import assert_color
@@ -43,17 +42,13 @@ async def test_background_color_transparent(widget, probe):
     assert_color(probe.background_color, None)
 
 
-@mark.skipif(
-    current_platform in {"android"},
-    reason="await redraw() not implemented",
-)
 async def test_button_size(widget, probe):
     "Check that the button resizes"
     # Container is initially a non-flex row box.
     # Initial button size is small (but non-zero), based on content size.
     await probe.redraw()
-    assert 10 <= probe.width <= 100
-    assert 10 <= probe.height <= 50
+    assert 10 <= probe.width <= 150, f"Width ({probe.width}) not in range (10, 150)"
+    assert 10 <= probe.height <= 50, f"Height ({probe.height}) not in range (10, 50)"
 
     # Make the button flexible; it will expand to fill horizontal space
     widget.style.flex = 1
@@ -80,5 +75,7 @@ async def test_button_size(widget, probe):
     # Button is approximately the requested size
     # (Definitely less than the window size)
     await probe.redraw()
-    assert 300 <= probe.width <= 350
-    assert 200 <= probe.height <= 250
+    assert 290 <= probe.width <= 330, f"Width ({probe.width}) not in range (290, 330)"
+    assert (
+        190 <= probe.height <= 230
+    ), f"Height ({probe.height}) not in range (190, 230)"
