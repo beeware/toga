@@ -31,6 +31,12 @@ A button has a text label. A handler can be associated with button press events.
 
 Notes
 -----
+* Any "truthy" object (i.e, object that evaluates as ``True``) can be provided
+  as the text for the button; if the object is not a string, it will be
+  automatically converted to a string using ``str()``.
+
+* The button text cannot contain newlines. Any content after the first newline
+  will be ignored.
 
 * A background color of ``TRANSPARENT`` will be treated as a reset of the button
   to the default system color.
