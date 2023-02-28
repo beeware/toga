@@ -1,8 +1,6 @@
 from travertino.size import at_least
 
-from toga.colors import TRANSPARENT
-from toga_winforms.colors import native_color
-from toga_winforms.libs import SystemColors, WinForms
+from toga_winforms.libs import WinForms
 
 from .base import Widget
 
@@ -26,12 +24,6 @@ class Button(Widget):
 
     def set_font(self, font):
         self.native.Font = font._impl.native
-
-    def set_background_color(self, color):
-        if color is None or color == TRANSPARENT:
-            self.native.BackColor = SystemColors.Control
-        else:
-            self.native.BackColor = native_color(color)
 
     def set_enabled(self, value):
         self.native.Enabled = self.interface._enabled
