@@ -4,7 +4,6 @@ from toga.colors import TRANSPARENT
 from toga_android.colors import native_color
 
 from ..libs.android.graphics import PorterDuff__Mode, PorterDuffColorFilter
-from ..libs.android.util import TypedValue
 from ..libs.android.view import OnClickListener, View__MeasureSpec
 from ..libs.android.widget import Button as A_Button
 from .base import Widget
@@ -35,7 +34,7 @@ class Button(Widget):
         self.native.setEnabled(value)
 
     def set_font(self, font):
-        self.native.setTextSize(TypedValue.COMPLEX_UNIT_PT, font._impl.get_size())
+        self.native.setTextSize(*font._impl.get_size())
         self.native.setTypeface(font._impl.get_typeface(), font._impl.get_style())
 
     def set_on_press(self, handler):

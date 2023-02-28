@@ -3,7 +3,6 @@ from decimal import Decimal, InvalidOperation
 from travertino.size import at_least
 
 from ..libs.android.text import InputType, TextWatcher
-from ..libs.android.util import TypedValue
 from ..libs.android.view import Gravity, View__MeasureSpec
 from ..libs.android.widget import EditText
 from .base import Widget, align
@@ -71,9 +70,8 @@ class NumberInput(Widget):
         self.native.setGravity(Gravity.CENTER_VERTICAL | align(value))
 
     def set_font(self, font):
-        if font:
-            self.native.setTextSize(TypedValue.COMPLEX_UNIT_SP, font._impl.get_size())
-            self.native.setTypeface(font._impl.get_typeface(), font._impl.get_style())
+        self.native.setTextSize(*font._impl.get_size())
+        self.native.setTypeface(font._impl.get_typeface(), font._impl.get_style())
 
     def set_value(self, value):
         # Store a string in the Android widget. The `afterTextChanged` method

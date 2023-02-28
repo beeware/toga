@@ -3,7 +3,6 @@ from travertino.size import at_least
 from toga.colors import TRANSPARENT
 from toga_android.colors import native_color
 
-from ..libs.android.util import TypedValue
 from ..libs.android.view import Gravity, View__MeasureSpec
 from ..libs.android.widget import TextView
 from .base import Widget, align
@@ -17,7 +16,7 @@ class Label(Widget):
         self.native.setText(value)
 
     def set_font(self, font):
-        self.native.setTextSize(TypedValue.COMPLEX_UNIT_PT, font._impl.get_size())
+        self.native.setTextSize(*font._impl.get_size())
         self.native.setTypeface(font._impl.get_typeface(), font._impl.get_style())
 
     def set_color(self, color):

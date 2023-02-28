@@ -35,12 +35,17 @@ async def test_font(widget, probe):
     orig_font = probe.font
 
     # Set the font to double it's original size
-    widget.style.font_size = orig_font.size * 2
+    widget.style.font_size = orig_font.size * 3
     await probe.redraw()
 
     # Widget has a new font size
     new_size_font = probe.font
-    assert new_size_font.size == orig_font.size * 2
+    # Font size in points is an integer; however, some platforms
+    # perform rendering in pixels (or device independent pixels,
+    # so round-tripping points->pixels->points through the probe
+    # can result in rounding errors. Check that the font size is
+    # definitely larger than the original.
+    assert new_size_font.size > orig_font.size * 2.5
 
     # Widget should be taller and wider
     assert probe.width > orig_width
@@ -55,7 +60,7 @@ async def test_font(widget, probe):
     assert new_family_font.family == FANTASY
 
     # Font size hasn't changed
-    assert new_family_font.size == orig_font.size * 2
+    assert new_family_font.size > orig_font.size * 2.5
     # Button should still be taller and wider than the original
     assert probe.width > orig_width
     assert probe.height > orig_height

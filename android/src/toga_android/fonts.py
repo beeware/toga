@@ -13,6 +13,7 @@ from toga.fonts import (
     SYSTEM_DEFAULT_FONT_SIZE,
 )
 from toga_android.libs.android.graphics import Typeface
+from toga_android.libs.android.util import TypedValue
 
 _FONT_CACHE = {}
 
@@ -22,13 +23,11 @@ class Font:
         self.interface = interface
 
     def get_size(self):
-        # Default system font size on Android is 14sp (sp = dp, but is separately
-        # scalable in user settings). For what it's worth, Toga's default is 12pt.
         if self.interface.size == SYSTEM_DEFAULT_FONT_SIZE:
-            font_size = 14
+            # Default system font size on Android is 14sp.
+            return TypedValue.COMPLEX_UNIT_SP, 14.0
         else:
-            font_size = self.interface.size
-        return float(font_size)
+            return TypedValue.COMPLEX_UNIT_PT, float(self.interface.size)
 
     def get_style(self):
         if self.interface.weight == BOLD:
