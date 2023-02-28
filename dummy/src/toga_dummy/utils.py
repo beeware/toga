@@ -86,6 +86,13 @@ class EventLog:
 
     @classmethod
     def values(cls, instance, attr):
+        """Return all values that an attribute on an instance has had.
+
+        :param instance: The widget instance
+        :param attr: The attribute name to inspect
+        :return: A list of all values that have been assigned to the attribute.
+            Raises AttributeError if the attribute has not been set on the instance.
+        """
         attrs = set()
         values = []
         for entry in cls._log:
@@ -109,6 +116,13 @@ class EventLog:
 
     @classmethod
     def value(cls, instance, attr):
+        """Return the current value of an attribute on an instance.
+
+        :param instance: The widget instance
+        :param attr: The attribute name to inspect
+        :return: The current value of the attribute on the instance. Raises
+            AttributeError if the attribute has not been set on the instance.
+        """
         attrs = set()
         for entry in cls._log[-1::-1]:
             if entry.logtype == cls.SET_VALUE and entry.instance == instance._impl:
@@ -128,6 +142,17 @@ class EventLog:
 
     @classmethod
     def retrieved(cls, instance, attr):
+        """Determine if an attempt has been made to retrieve the value of an
+        attribute.
+
+        This only includes "normal" attribute access; retrievals made for test
+        purposes are *not* included.
+
+        :param instance: The widget instance
+        :param attr: The attribute name to inspect
+        :return: True if the attribute has been retrieved. Raises AttributeError
+            if no attempt to retrieve the attribute has been made.
+        """
         attrs = set()
         for entry in cls._log:
             if entry.logtype == cls.GET_VALUE and entry.instance == instance._impl:
@@ -146,12 +171,21 @@ class EventLog:
             raise AttributeError(f"No attributes were retrieved on {instance} ")
 
     @classmethod
-    def performed_actions(cls, instance, action):
+    def performed_actions(cls, instance, action=None):
+        """Return the details of all actions performed on an instance.
+
+        :param instance: The widget instance
+        :param action: (Optional) If provided, the list of actions will be
+            filtered to *only* include the named action.
+        :return: A list of individual actions that have been performed. Each
+            entry is a dictionary consisting of the attributes used to invoke
+            the action.
+        """
         actions = set()
         details = []
         for entry in cls._log:
             if entry.logtype == cls.ACTION and entry.instance == instance._impl:
-                if entry.context["action"] == action:
+                if action is None or entry.context["action"] == action:
                     details.append(entry.context)
                 else:
                     actions.add(entry.context["action"])
@@ -188,6 +222,11 @@ class LogEntry:
         return f"<LogEntry: {self.logtype} on {self.instance}"
 
 
+# A constant that can be used to differentiate between a value not being
+# provided, and a value assuming a default value of None.
+NOT_PROVIDED = object()
+
+
 class LoggedObject:
     """A base class for objects on the dummy backend whose activity will be
     logged.
@@ -206,7 +245,7 @@ class LoggedObject:
         """
         EventLog.log(EventLog.SET_VALUE, instance=self, attr=attr, value=value)
 
-    def _get_value(self, attr, default=None):
+    def _get_value(self, attr, default=NOT_PROVIDED):
         """Get a value on the dummy object.
 
         Logs the request for the attribute, and returns the most recent value
@@ -215,7 +254,6 @@ class LoggedObject:
         :param attr: The name of the attribute to get
         :param default: The default value for the attribute if it hasn't already
             been set.
-
         :returns: The value of the attribute, or ``default`` if the value has
             not been set.
         """
@@ -223,6 +261,8 @@ class LoggedObject:
         try:
             return EventLog.value(instance=self.interface, attr=attr)
         except AttributeError:
+            if default is NOT_PROVIDED:
+                raise
             return default
 
     def _action(self, action, **data):
@@ -232,15 +272,6 @@ class LoggedObject:
         :param data: Any data associated with the action.
         """
         EventLog.log(EventLog.ACTION, instance=self, action=action, **data)
-
-
-def log_action(module, action, **data):
-    """Record that an module level action was invoked.
-
-    :param action: The action that was performed
-    :param data: Any data associated with the action.
-    """
-    EventLog.log(EventLog.ACTION, instance=module, action=action, **data)
 
 
 class TestStyle(BaseStyle):
@@ -425,39 +456,6 @@ class TestCase(unittest.TestCase):
             return assertion(*args, **kwargs)
         except AssertionError as e:
             self.fail(str(e))
-
-    def assertFunctionNotPerformed(self, _module, _action):
-        """Assert that the action function from module was *not* performed.
-
-        Args:
-            _module: The module with the action that should not have been performed.
-            _action: The name of the action to check
-        """
-        self.pytest_assert(assert_action_not_performed, _module, _action)
-
-    def assertFunctionPerformed(self, _module, _action):
-        """Assert that the action function from module was performed.
-
-        Args:
-            _module: The module with the action that should have been performed.
-            _action: The name of the action to check
-        """
-        self.pytest_assert(assert_action_performed, _module, _action)
-
-    def assertFunctionPerformedWith(self, _module, _action, **test_data):
-        """Confirm that the action function form module was performed with
-        specific test data.
-
-        Args:
-            _module: The module with the action function that should have been performed.
-            action: The name of the action to check.
-            **test_data: The arguments that should have been passed to the action.
-
-        Returns:
-            If a matching action was performed, the full data of
-            the performed action if. False otherwise.
-        """
-        self.pytest_assert(assert_action_performed_with, _module, _action, **test_data)
 
     #####
 
