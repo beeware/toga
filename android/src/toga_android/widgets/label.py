@@ -12,6 +12,9 @@ class Label(Widget):
     def create(self):
         self.native = TextView(self._native_activity)
 
+        # Cache the system defaults that can't be easily derived
+        self._default_text_color = self.native.getCurrentTextColor()
+
     def set_text(self, value):
         self.native.setText(value)
 
@@ -21,9 +24,7 @@ class Label(Widget):
 
     def set_color(self, color):
         if color is None:
-            pass
-            # TODO: set to system foreground
-            # self.native.setTextColor(native_color(value))
+            self.native.setTextColor(self._default_text_color)
         else:
             self.native.setTextColor(native_color(color))
 

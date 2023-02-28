@@ -14,7 +14,7 @@ class LabelProbe(SimpleProbe):
 
     @property
     def background_color(self):
-        return toga_color(self.native.getBackgroundColor())
+        return toga_color(self.native.getBackground().getColor())
 
     @property
     def text(self):

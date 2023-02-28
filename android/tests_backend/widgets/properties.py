@@ -3,7 +3,7 @@ from travertino.fonts import Font
 
 from android.graphics import Color, Typeface
 from android.util import TypedValue
-from toga.colors import rgba
+from toga.colors import TRANSPARENT, rgba
 from toga.fonts import (
     BOLD,
     ITALIC,
@@ -15,12 +15,15 @@ from toga.fonts import (
 def toga_color(color_int):
     # Select the `int` overloads rather than the `long` ones.
     color_int = jint(color_int)
-    return rgba(
-        Color.red(color_int),
-        Color.green(color_int),
-        Color.blue(color_int),
-        Color.alpha(color_int) / 255,
-    )
+    if color_int == 0:
+        return TRANSPARENT
+    else:
+        return rgba(
+            Color.red(color_int),
+            Color.green(color_int),
+            Color.blue(color_int),
+            Color.alpha(color_int) / 255,
+        )
 
 
 DECLARED_FONTS = None
