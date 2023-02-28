@@ -109,7 +109,7 @@ async def test_background_color_reset(widget, probe):
     assert_color(probe.background_color, named_color(RED))
 
     # Reset the background color, and check that it has been restored to the original
-    widget.style.background_color = None
+    del widget.style.background_color
     await probe.redraw()
     assert_color(probe.background_color, original)
 
