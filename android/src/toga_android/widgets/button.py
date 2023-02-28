@@ -24,6 +24,9 @@ class Button(Widget):
         self.native = A_Button(self._native_activity)
         self.native.setOnClickListener(TogaOnClickListener(button_impl=self))
 
+        # Cache the system defaults that can't be easily derived
+        self._default_text_color = self.native.getCurrentTextColor()
+
     def get_text(self):
         return str(self.native.getText())
 
@@ -43,14 +46,12 @@ class Button(Widget):
 
     def set_color(self, value):
         if value is None:
-            pass
-            # TODO: set to system foreground
-            # self.native.setTextColor(native_color(value))
+            self.native.setTextColor(self._default_text_color)
         else:
             self.native.setTextColor(native_color(value))
 
     def set_background_color(self, value):
-        # do not use self.native.setBackgroundColor - this messes with the button style!
+        # Do not use self.native.setBackgroundColor - this messes with the button style!
         self.native.getBackground().setColorFilter(
             None
             if value is None or value == TRANSPARENT
