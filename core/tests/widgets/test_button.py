@@ -3,8 +3,10 @@ import pytest
 import toga
 from toga_dummy.utils import (
     EventLog,
+    assert_action_not_performed,
     assert_action_performed,
     assert_action_performed_with,
+    assert_attribute_not_set,
     attribute_value,
 )
 
@@ -25,7 +27,6 @@ def test_widget_created(button):
     "value, expected",
     [
         ("New Text", "New Text"),
-        (None, ""),
         (12345, "12345"),
         ("Contains\nnewline", "Contains"),
     ],
@@ -45,6 +46,30 @@ def test_button_text(button, value, expected):
 
     # A rehint was performed
     assert_action_performed(button, "rehint")
+
+
+@pytest.mark.parametrize(
+    "value",
+    [
+        None,
+        "",
+    ],
+)
+def test_empty_button_text(button, value):
+    """The button label cannot be set to empty text."""
+    assert button.text == "Test Button"
+
+    # Clear the event log
+    EventLog.reset()
+
+    with pytest.raises(ValueError, match=r"Button must have a label"):
+        button.text = value
+
+    # test backend has not changed value
+    assert_attribute_not_set(button, "text")
+
+    # No rehint was performed
+    assert_action_not_performed(button, "rehint")
 
 
 def test_button_on_press(button):

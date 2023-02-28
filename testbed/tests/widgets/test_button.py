@@ -35,7 +35,6 @@ async def test_text(widget, probe):
         assert widget.text == text.split("\n")[0]
         assert probe.text == text.split("\n")[0]
 
-        # Changing the text doesn't change the height
         assert probe.height == initial_height
 
 

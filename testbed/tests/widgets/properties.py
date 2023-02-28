@@ -15,6 +15,30 @@ async def test_text(widget, probe):
         assert probe.text == text
 
 
+async def test_text_empty(widget, probe):
+    "The text displayed on a widget can be empty"
+    # Set the text to the empty string
+    widget.text = ""
+    await probe.redraw()
+
+    assert widget.text == ""
+    assert probe.text == ""
+
+    # Reset back to "actual" content
+    widget.text = "Hello"
+    await probe.redraw()
+
+    assert widget.text == "Hello"
+    assert probe.text == "Hello"
+
+    # Set the text to None; renders as an empty string
+    widget.text = None
+    await probe.redraw()
+
+    assert widget.text == ""
+    assert probe.text == ""
+
+
 async def test_text_width_change(widget, probe):
     "If the widget text is changed, the width of the widget changes"
     orig_width = probe.width

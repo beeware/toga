@@ -42,14 +42,12 @@ class Button(Widget):
 
     @text.setter
     def text(self, value):
-        if value is None:
-            value = ""
-        else:
-            value = str(value)
+        if not value:
+            raise ValueError("Button must have a label")
 
         # Button text can't include line breaks. Strip any content
         # after a line break (if provided)
-        value = value.split("\n")[0]
+        value = str(value).split("\n")[0]
 
         self._impl.set_text(value)
         # Changing the text will probably cause the size of the button to change
