@@ -7,13 +7,13 @@ from toga.colors import TRANSPARENT
 from toga.style.pack import COLUMN
 
 from ..assertions import assert_color
+from ..data import TEXTS
 from .properties import (  # noqa: F401
     test_background_color,
     test_background_color_reset,
     test_color,
     test_color_reset,
     test_font,
-    test_text,
     test_text_width_change,
 )
 
@@ -21,6 +21,22 @@ from .properties import (  # noqa: F401
 @fixture
 async def widget():
     return toga.Button("Hello")
+
+
+async def test_text(widget, probe):
+    "The text displayed on a button can be changed"
+    initial_height = probe.height
+
+    for text in TEXTS:
+        widget.text = text
+        await probe.redraw()
+
+        # Text after a newline will be stripped.
+        assert widget.text == text.split("\n")[0]
+        assert probe.text == text.split("\n")[0]
+
+        # Changing the text doesn't change the height
+        assert probe.height == initial_height
 
 
 async def test_press(widget, probe):

@@ -46,6 +46,11 @@ class Button(Widget):
             value = ""
         else:
             value = str(value)
+
+        # Button text can't include line breaks. Strip any content
+        # after a line break (if provided)
+        value = value.split("\n")[0]
+
         self._impl.set_text(value)
         # Changing the text will probably cause the size of the button to change
         # so we need to rehint, then recompute layout.
