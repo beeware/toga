@@ -1,7 +1,10 @@
 from travertino.size import at_least
 
+from toga.constants import JUSTIFY
 from toga_android.colors import native_color
 
+from ..libs.android.graphics import LineBreaker
+from ..libs.android.os import Build
 from ..libs.android.view import Gravity, View__MeasureSpec
 from ..libs.android.widget import TextView
 from .base import Widget, align
@@ -50,12 +53,16 @@ class Label(Widget):
         self.interface.intrinsic.width = at_least(self.native.getMeasuredWidth())
 
     def set_alignment(self, value):
-        # Refuse to set alignment if create() has not been called.
-        if self.native is None:
-            return
         # Refuse to set alignment if widget has no container.
         # On Android, calling setGravity() when the widget has no LayoutParams
         # results in a NullPointerException.
         if not self.native.getLayoutParams():
             return
-        self.native.setGravity(Gravity.CENTER_VERTICAL | align(value))
+
+        # Justified text wasn't added until Android O (SDK 26)
+        if value == JUSTIFY and Build.VERSION.SDK_INT >= Build.VERSION_CODES.O:
+            self.native.setJustificationMode(LineBreaker.JUSTIFICATION_MODE_INTER_WORD)
+            self.native.setGravity(Gravity.CENTER_VERTICAL)
+        else:
+            self.native.setJustificationMode(LineBreaker.JUSTIFICATION_MODE_NONE)
+            self.native.setGravity(Gravity.CENTER_VERTICAL | align(value))

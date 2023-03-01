@@ -2,8 +2,11 @@ from java import jint
 from travertino.fonts import Font
 
 from android.graphics import Color, Typeface
+from android.graphics.text import LineBreaker
 from android.util import TypedValue
+from android.view import Gravity
 from toga.colors import TRANSPARENT, rgba
+from toga.constants import CENTER, JUSTIFY, LEFT, RIGHT
 from toga.fonts import (
     BOLD,
     ITALIC,
@@ -57,3 +60,13 @@ def toga_font(typeface, size, resources):
         variant=NORMAL,
         weight=BOLD if typeface.isBold() else NORMAL,
     )
+
+
+def toga_alignment(alignment, justification_mode):
+    if justification_mode == LineBreaker.JUSTIFICATION_MODE_INTER_WORD:
+        return JUSTIFY
+    return {
+        Gravity.LEFT: LEFT,
+        Gravity.RIGHT: RIGHT,
+        Gravity.CENTER_HORIZONTAL: CENTER,
+    }[alignment & Gravity.HORIZONTAL_GRAVITY_MASK]
