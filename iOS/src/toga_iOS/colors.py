@@ -1,6 +1,7 @@
+from toga.colors import TRANSPARENT
 from toga_iOS.libs import UIColor
 
-CACHE = {}
+CACHE = {TRANSPARENT: UIColor.clearColor}
 
 
 def native_color(c):

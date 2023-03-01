@@ -10,21 +10,21 @@ from toga_iOS.widgets.base import Widget
 class Label(Widget):
     def create(self):
         self.native = UILabel.new()
+        # Word wrap the text inside the allocated space
         self.native.lineBreakMode = NSLineBreakByWordWrapping
 
         # Add the layout constraints
         self.add_constraints()
 
     def set_alignment(self, value):
-        if value:
-            self.native.textAlignment = NSTextAlignment(value)
+        self.native.textAlignment = NSTextAlignment(value)
 
     def set_color(self, value):
         self.native.textColor = native_color(value)
 
     def set_background_color(self, color):
-        if color is TRANSPARENT:
-            self.native.backgroundColor = None
+        if color == TRANSPARENT or color is None:
+            self.native.backgroundColor = native_color(TRANSPARENT)
         else:
             self.native.backgroundColor = native_color(color)
 
@@ -33,10 +33,11 @@ class Label(Widget):
 
     def set_text(self, value):
         self.native.text = self.interface.text
+        # Tell the text layout algorithm how many lines are allowed
+        self.native.numberOfLines = len(self.interface.text.split("\n"))
 
     def rehint(self):
-        # Width & height of a label is known and fixed.
-        # print("REHINT label", self, self.native.fittingSize().width, self.native.fittingSize().height)
         fitting_size = self.native.systemLayoutSizeFittingSize(CGSize(0, 0))
+        # print("REHINT label", self, fitting_size.width, fitting_size.height)
         self.interface.intrinsic.width = at_least(fitting_size.width)
         self.interface.intrinsic.height = fitting_size.height
