@@ -72,9 +72,9 @@ class Widget:
     ######################################################################
 
     def set_bounds(self, x, y, width, height):
-        # Any position changes are applied by GTK container during its
-        # layout pass.
-        pass
+        # Any position changes are applied by the container during do_size_allocate.
+        if self.container:
+            self.container.make_dirty()
 
     def set_alignment(self, alignment):
         # By default, alignment can't be changed

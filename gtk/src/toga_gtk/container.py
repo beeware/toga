@@ -26,23 +26,15 @@ class TogaContainer(Gtk.Fixed):
         # A flag that can be used to explicitly flag that a redraw is required.
         self._needs_redraw = True
 
-    @property
-    def needs_redraw(self):
-        """Does the container need a redraw?"""
-        return self._needs_redraw or bool(self._dirty_widgets)
-
     def make_dirty(self, widget=None):
         """Mark the container (or a specific widget in the container) as dirty.
 
-        :param widget: Optional; if provided, the widget that is now dirty. If
-            not provided, the entire container is considered dirty.
+        :param widget: If provided, this widget will be rehinted before the next layout.
         """
-        if widget is None:
-            self._needs_redraw = True
-            self.queue_resize()
-        else:
+        self._needs_redraw = True
+        if widget is not None:
             self._dirty_widgets.add(widget)
-            widget.native.queue_resize()
+        self.queue_resize()
 
     @property
     def width(self):
@@ -93,7 +85,7 @@ class TogaContainer(Gtk.Fixed):
         Any widgets known to be dirty will be rehinted. The minimum
         possible layout size for the container will also be recomputed.
         """
-        if self._content and self.needs_redraw:
+        if self._content and self._needs_redraw:
             # If any of the widgets have been marked as dirty,
             # recompute their bounds, and re-evaluate the minimum
             # allowed size fo the layout.
@@ -166,9 +158,12 @@ class TogaContainer(Gtk.Fixed):
         # print(self._content, f"Container layout {allocation.width}x{allocation.height} @ {allocation.x}x{allocation.y}")
 
         # The container will occupy the full space it has been allocated.
+        resized = (allocation.width, allocation.height) != (self.width, self.height)
         self.set_allocation(allocation)
 
-        if self._content:
+        # This function may be called in response to irrelevant events like button clicks,
+        # so only refresh if we really need to.
+        if self._content and (resized or self._needs_redraw):
             # Re-evaluate the layout using the allocation size as the basis for geometry
             # print("REFRESH LAYOUT", allocation.width, allocation.height)
             self._content.interface.refresh()
