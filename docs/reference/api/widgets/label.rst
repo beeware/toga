@@ -20,13 +20,17 @@ Usage
 
     import toga
 
-    label = toga.Label('Hello world')
+    label = toga.Label("Hello world")
 
 Notes
 -----
 
+* Any object can be provided as the text for the label. If the object is
+  ``None``, this will be converted into the empty string; any other non-string
+  object will be automatically converted to a string using ``str()``.
+
 * Winforms does not support an alignment value of ``JUSTIFIED``. If this
-  alignment value is used, the label will default left alignment.
+  alignment value is used, the label will default to left alignment.
 
 Reference
 ---------
