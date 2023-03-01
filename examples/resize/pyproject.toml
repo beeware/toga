@@ -1,0 +1,55 @@
+[build-system]
+requires = ["briefcase"]
+
+[tool.briefcase]
+project_name = "Resize Test"
+bundle = "org.beeware"
+version = "0.0.1"
+url = "https://beeware.org"
+license = "BSD license"
+author = 'Tiberius Yak'
+author_email = "tiberius@beeware.org"
+
+[tool.briefcase.app.resize]
+formal_name = "Resize Test"
+description = "A testing app"
+sources = ['src/resize']
+requires = [
+    '../../core',
+]
+
+
+[tool.briefcase.app.resize.macOS]
+requires = [
+    '../../cocoa',
+    'std-nslog>=1.0.0',
+]
+
+[tool.briefcase.app.resize.linux]
+requires = [
+    '../../gtk',
+]
+
+[tool.briefcase.app.resize.windows]
+requires = [
+    '../../winforms',
+]
+
+# Mobile deployments
+[tool.briefcase.app.resize.iOS]
+requires = [
+    '../../iOS',
+    'std-nslog>=1.0.0',
+]
+
+[tool.briefcase.app.resize.android]
+requires = [
+    '../../android',
+]
+
+# Web deployment
+[tool.briefcase.app.resize.web]
+requires = [
+    '../../web',
+]
+style_framework = "Bootstrap v4.6"
