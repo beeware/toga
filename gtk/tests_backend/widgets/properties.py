@@ -1,3 +1,4 @@
+import pytest
 from travertino.fonts import Font
 
 from toga.colors import TRANSPARENT, rgba
@@ -30,10 +31,16 @@ def toga_font(font):
     )
 
 
-def toga_alignment(alignment):
-    return {
-        (0.0, Gtk.Justification.LEFT): LEFT,
-        (1.0, Gtk.Justification.RIGHT): RIGHT,
-        (0.5, Gtk.Justification.CENTER): CENTER,
-        (0.0, Gtk.Justification.FILL): JUSTIFY,
-    }[alignment]
+def toga_alignment(xalign, yalign, justify):
+    if yalign != 0.5:
+        pytest.fail("Y-alignment should be 0.5")
+
+    try:
+        return {
+            (0.0, Gtk.Justification.LEFT): LEFT,
+            (1.0, Gtk.Justification.RIGHT): RIGHT,
+            (0.5, Gtk.Justification.CENTER): CENTER,
+            (0.0, Gtk.Justification.FILL): JUSTIFY,
+        }[(xalign, justify)]
+    except KeyError:
+        pytest.fail(f"Can't interpret GTK x alignment {xalign} with justify {justify}")
