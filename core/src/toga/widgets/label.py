@@ -1,5 +1,3 @@
-import warnings
-
 from .base import Widget
 
 
@@ -9,7 +7,6 @@ class Label(Widget):
         text,
         id=None,
         style=None,
-        factory=None,  # DEPRECATED!
     ):
         """A text label.
 
@@ -19,19 +16,8 @@ class Label(Widget):
         :param id: The ID for the widget.
         :param style: A style object. If no style is provided, a default style
             will be applied to the widget.
-        :param factory: *Deprecated*
         """
         super().__init__(id=id, style=style)
-
-        ######################################################################
-        # 2022-09: Backwards compatibility
-        ######################################################################
-        # factory no longer used
-        if factory:
-            warnings.warn("The factory argument is no longer used.", DeprecationWarning)
-        ######################################################################
-        # End backwards compatibility.
-        ######################################################################
 
         # Create a platform specific implementation of a Label
         self._impl = self.factory.Label(interface=self)
@@ -49,5 +35,6 @@ class Label(Widget):
             self._text = ""
         else:
             self._text = str(value)
+
         self._impl.set_text(value)
         self.refresh()

@@ -1,27 +1,45 @@
+import pytest
+
 import toga
-from toga_dummy.utils import TestCase
+from toga_dummy.utils import (
+    EventLog,
+    assert_action_performed,
+    attribute_value,
+)
 
 
-class LabelTests(TestCase):
-    def setUp(self):
-        super().setUp()
+@pytest.fixture
+def label():
+    return toga.Label("Test Label")
 
-        self.text = "test text"
 
-        self.label = toga.Label(self.text)
+def test_label_created(label):
+    "A label can be created."
+    # Round trip the impl/interface
+    assert label._impl.interface == label
+    assert_action_performed(label, "create Label")
 
-    def test_widget_created(self):
-        self.assertEqual(self.label._impl.interface, self.label)
-        self.assertActionPerformed(self.label, "create Label")
 
-    def test_update_label_text(self):
-        new_text = "updated text"
-        self.label.text = new_text
-        self.assertEqual(self.label.text, new_text)
-        self.assertValueSet(self.label, "text", new_text)
-        self.assertActionPerformed(self.label, "refresh")
+@pytest.mark.parametrize(
+    "value, expected",
+    [
+        ("New Text", "New Text"),
+        (12345, "12345"),
+        (None, ""),
+        ("Contains\nsome\nnewlines", "Contains\nsome\nnewlines"),
+    ],
+)
+def test_update_label_text(label, value, expected):
+    assert label.text == "Test Label"
 
-        self.label.text = None
-        self.assertEqual(self.label.text, "")
+    # Clear the event log
+    EventLog.reset()
 
-        self.assertValueSet(self.label, "text", "")
+    label.text = value
+    assert label.text == expected
+
+    # test backend has the right value
+    assert attribute_value(label, "text") == expected
+
+    # A rehint was performed
+    assert_action_performed(label, "refresh")
