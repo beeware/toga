@@ -4,39 +4,39 @@ from toga.style.pack import COLUMN, ROW
 
 
 class SizeButton(toga.Button):
-    INITIAL_SIZE = 1
-    MAX_SIZE = 6
-
-    def __init__(self, text, *, on_press):
-        self.value = self.INITIAL_SIZE
+    def __init__(self, text, *, value, max, on_press):
+        self.value = value
+        self.max = max
         self.on_press_impl = on_press
         super().__init__(text, on_press=self.on_press_wrapper)
 
     def on_press_wrapper(self, button):
-        self.value = (self.value + 1) % (self.MAX_SIZE + 1)
+        self.value = (self.value + 1) % (self.max + 1)
         self.on_press_impl(button)
 
 
 class SizePanel(toga.Box):
     def __init__(self, title, *, on_change):
         self.on_change = on_change
-        self.width_button, self.height_button = (
-            SizeButton(text, on_press=self.on_press) for text in ["Width", "Height"]
+        self.width, self.height = (
+            SizeButton(text, value=1, max=6, on_press=self.on_press)
+            for text in ["W", "H"]
         )
+        self.flex = SizeButton("F", value=0, max=3, on_press=self.on_press)
         super().__init__(
             style=Pack(direction=COLUMN, alignment="center"),
             children=[
                 toga.Label(title.upper(), style=Pack(font_weight="bold")),
                 toga.Box(
                     style=Pack(direction=ROW),
-                    children=[self.width_button, self.height_button],
+                    children=[self.width, self.height, self.flex],
                 ),
             ],
         )
         self.on_press(None)
 
     def on_press(self, button):
-        self.on_change(self, self.width_button.value, self.height_button.value)
+        self.on_change(self, self.width.value, self.height.value, self.flex.value)
 
 
 class Resize(toga.App):
@@ -73,16 +73,24 @@ class Resize(toga.App):
         self.main_window.content = main_box
         self.main_window.show()
 
-    def on_change_text(self, panel, width, height):
-        self.text_label.text = "\n".join(
-            " ".join("X" for i in range(width)) for j in range(height)
-        )
+    def on_change_text(self, panel, width, height, flex):
+        text = "\n".join(" ".join("X" for i in range(width)) for j in range(height))
+        setattr_if_changed(self.text_label, "text", text)
+        setattr_if_changed(self.text_label.style, "flex", flex)
 
-    def on_change_style(self, panel, width, height):
+    def on_change_style(self, panel, width, height, flex):
         INCREMENT = 50
-        self.style_label.style.update(
-            width=width * INCREMENT, height=height * INCREMENT
-        )
+        setattr_if_changed(self.style_label.style, "width", width * INCREMENT)
+        setattr_if_changed(self.style_label.style, "height", height * INCREMENT)
+        setattr_if_changed(self.style_label.style, "flex", flex)
+
+
+def setattr_if_changed(obj, name, value):
+    """Ensure that each button click only changes one thing."""
+
+    old_value = getattr(obj, name)
+    if old_value != value:
+        setattr(obj, name, value)
 
 
 def main():
