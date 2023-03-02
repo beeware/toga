@@ -1,4 +1,6 @@
+from toga_iOS.colors import native_color
 from toga_iOS.constraints import Constraints
+from toga_iOS.libs import UIColor
 
 
 class Widget:
@@ -100,6 +102,16 @@ class Widget:
         # By default, background color can't be changed
         pass
 
+    # TODO: check if it's safe to make this the default implementation.
+    def set_background_color_simple(self, value):
+        if value:
+            self.native.backgroundColor = native_color(value)
+        else:
+            try:
+                self.native.backgroundColor = UIColor.systemBackgroundColor()  # iOS 13+
+            except AttributeError:
+                self.native.backgroundColor = UIColor.whiteColor
+
     # INTERFACE
 
     def add_child(self, child):
@@ -118,6 +130,9 @@ class Widget:
     def add_constraints(self):
         self.constraints = Constraints(self)
         self.native.translatesAutoresizingMaskIntoConstraints = False
+
+    def refresh(self):
+        self.rehint()
 
     def rehint(self):
         pass
