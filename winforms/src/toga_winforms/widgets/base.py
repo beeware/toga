@@ -124,5 +124,8 @@ class Widget:
     def remove_child(self, child):
         child.container = None
 
+    def refresh(self):
+        self.rehint()
+
     def rehint(self):
         pass
