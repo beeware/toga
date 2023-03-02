@@ -9,7 +9,7 @@ class Button(Widget):
         self.native = Gtk.Button()
         self.native.interface = self.interface
 
-        self.native.connect("show", lambda event: self.rehint())
+        self.native.connect("show", lambda event: self.refresh())
         self.native.connect("clicked", self.gtk_on_press)
 
     def set_text(self, text):
@@ -22,7 +22,7 @@ class Button(Widget):
         # No special handling required
         pass
 
-    def gtk_rehint(self):
+    def rehint(self):
         # print("REHINT", self, self.native.get_preferred_width(), self.native.get_preferred_height())
         width = self.native.get_preferred_width()
         height = self.native.get_preferred_height()

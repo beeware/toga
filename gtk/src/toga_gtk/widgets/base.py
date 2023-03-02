@@ -114,14 +114,14 @@ class Widget:
     def remove_child(self, child):
         child.container = None
 
-    def rehint(self):
+    def refresh(self):
         # GTK doesn't/can't immediately evaluate the hinted size of the widget.
         # Instead, put the widget onto a dirty list to be rehinted before the
         # next layout.
         if self.container:
             self.container.make_dirty(self)
 
-    def gtk_rehint(self):
+    def rehint(self):
         # Perform the actual GTK rehint.
         # print("REHINT", self, self.native.get_preferred_width(), self.native.get_preferred_height())
         width = self.native.get_preferred_width()

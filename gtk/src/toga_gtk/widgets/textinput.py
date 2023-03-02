@@ -8,7 +8,7 @@ class TextInput(Widget):
     def create(self):
         self.native = Gtk.Entry()
         self.native.interface = self.interface
-        self.native.connect("show", lambda event: self.rehint())
+        self.native.connect("show", lambda event: self.refresh())
         self.native.connect("changed", self.gtk_on_change)
 
     def gtk_on_change(self, entry):
@@ -33,7 +33,7 @@ class TextInput(Widget):
     def set_value(self, value):
         self.native.set_text(value)
 
-    def gtk_rehint(self):
+    def rehint(self):
         # print("REHINT", self,
         #     self._impl.get_preferred_width(), self._impl.get_preferred_height(),
         #     getattr(self, '_fixed_height', False), getattr(self, '_fixed_width', False)

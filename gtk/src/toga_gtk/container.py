@@ -91,7 +91,7 @@ class TogaContainer(Gtk.Fixed):
             # allowed size fo the layout.
             while self._dirty_widgets:
                 widget = self._dirty_widgets.pop()
-                widget.gtk_rehint()
+                widget.rehint()
 
             # Compute the layout using a 0-size container
             self._content.interface.style.layout(
