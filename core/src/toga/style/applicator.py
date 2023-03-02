@@ -28,7 +28,7 @@ class TogaApplicator:
 
     def set_font(self, font):
         self.widget._impl.set_font(font)
-        self.widget._impl.rehint()
+        self.widget.refresh()
 
     def set_color(self, color):
         self.widget._impl.set_color(color)

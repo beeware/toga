@@ -114,7 +114,7 @@ class MultilineTextInput(Widget):
     def value(self, value):
         cleaned_value = "" if value is None else str(value)
         self._impl.set_value(cleaned_value)
-        self._impl.rehint()
+        self.refresh()
 
     def clear(self):
         """Clears the text from the widget."""
