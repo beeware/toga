@@ -24,14 +24,14 @@ class TogaContainer(Gtk.Fixed):
         self._dirty_widgets = set()
 
         # A flag that can be used to explicitly flag that a redraw is required.
-        self._needs_redraw = True
+        self.needs_redraw = True
 
     def make_dirty(self, widget=None):
         """Mark the container (or a specific widget in the container) as dirty.
 
         :param widget: If provided, this widget will be rehinted before the next layout.
         """
-        self._needs_redraw = True
+        self.needs_redraw = True
         if widget is not None:
             self._dirty_widgets.add(widget)
         self.queue_resize()
@@ -85,7 +85,7 @@ class TogaContainer(Gtk.Fixed):
         Any widgets known to be dirty will be rehinted. The minimum
         possible layout size for the container will also be recomputed.
         """
-        if self._content and self._needs_redraw:
+        if self._content and self.needs_redraw:
             # If any of the widgets have been marked as dirty,
             # recompute their bounds, and re-evaluate the minimum
             # allowed size fo the layout.
@@ -163,7 +163,7 @@ class TogaContainer(Gtk.Fixed):
 
         # This function may be called in response to irrelevant events like button clicks,
         # so only refresh if we really need to.
-        if self._content and (resized or self._needs_redraw):
+        if self._content and (resized or self.needs_redraw):
             # Re-evaluate the layout using the allocation size as the basis for geometry
             # print("REFRESH LAYOUT", allocation.width, allocation.height)
             self._content.interface.refresh()
@@ -191,4 +191,4 @@ class TogaContainer(Gtk.Fixed):
                     widget.size_allocate(widget_allocation)
 
         # The layout has been redrawn
-        self._needs_redraw = False
+        self.needs_redraw = False
