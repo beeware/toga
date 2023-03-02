@@ -10,8 +10,6 @@ class Selection(Widget):
         self.native.interface = self.interface
         self.native.connect("changed", self.gtk_on_select)
 
-        self.rehint()
-
     def gtk_on_select(self, widget):
         if self.interface.on_select:
             self.interface.on_select(widget)

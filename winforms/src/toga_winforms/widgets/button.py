@@ -20,7 +20,6 @@ class Button(Widget):
 
     def set_text(self, text):
         self.native.Text = self.interface.text
-        self.rehint()
 
     def set_font(self, font):
         if font:

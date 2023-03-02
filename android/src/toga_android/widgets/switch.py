@@ -32,7 +32,6 @@ class Switch(Widget):
         # is required to get the text to truly **use** one single line!
         self.native.setSingleLine(False)
         self.native.setText(str(self.interface.text))
-        self.rehint()
 
     def set_value(self, value):
         self.native.setChecked(bool(value))
