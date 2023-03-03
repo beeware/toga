@@ -72,4 +72,4 @@ class Widget(LoggedObject):
         self._action("add constraints")
 
     def refresh(self):
-        self._action("rehint")
+        self._action("refresh")
