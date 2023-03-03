@@ -43,6 +43,7 @@ requires = [
 ]
 
 [tool.briefcase.app.selection.android]
+template = 'c:\Projects\Python\briefcase-android-gradle-template'
 requires = [
     '../../android',
 ]
