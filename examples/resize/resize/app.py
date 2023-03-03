@@ -96,4 +96,4 @@ def setattr_if_changed(obj, name, value):
 
 
 def main():
-    return Resize()
+    return Resize("Resize", "org.beeware.resize")
