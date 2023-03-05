@@ -1,7 +1,7 @@
 from rubicon.objc import objc_method, objc_property
+from travertino.size import at_least
 
-from toga_iOS.colors import native_color
-from toga_iOS.libs import UIColor, UIView
+from toga_iOS.libs import UIView
 from toga_iOS.widgets.base import Widget
 
 
@@ -30,10 +30,8 @@ class Box(Widget):
         self.add_constraints()
 
     def set_background_color(self, value):
-        if value:
-            self.native.backgroundColor = native_color(value)
-        else:
-            try:
-                self.native.backgroundColor = UIColor.systemBackgroundColor()  # iOS 13+
-            except AttributeError:
-                self.native.backgroundColor = UIColor.whiteColor
+        self.set_background_color_simple(value)
+
+    def rehint(self):
+        self.interface.intrinsic.width = at_least(0)
+        self.interface.intrinsic.height = at_least(0)

@@ -44,8 +44,8 @@ def test_button_text(button, value, expected):
     # test backend has the right value
     assert attribute_value(button, "text") == expected
 
-    # A rehint was performed
-    assert_action_performed(button, "rehint")
+    # A refresh was performed
+    assert_action_performed(button, "refresh")
 
 
 @pytest.mark.parametrize(
@@ -68,8 +68,8 @@ def test_empty_button_text(button, value):
     # test backend has not changed value
     assert_attribute_not_set(button, "text")
 
-    # No rehint was performed
-    assert_action_not_performed(button, "rehint")
+    # No refresh was performed
+    assert_action_not_performed(button, "refresh")
 
 
 def test_button_on_press(button):

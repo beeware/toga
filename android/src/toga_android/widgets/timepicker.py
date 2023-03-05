@@ -62,6 +62,3 @@ class TimePicker(PickerBase):
             True,
         )
         self._dialog.show()
-
-    def rehint(self):
-        return super().rehint()

@@ -44,7 +44,6 @@ class Switch(Widget):
 
     def set_text(self, text):
         self.native_label.text = str(self.interface.text)
-        self.rehint()
 
     def set_value(self, value):
         self.native_switch.setOn_animated_(value, True)

@@ -18,8 +18,6 @@ class NumberInput(Widget):
 
         self.native.connect("changed", self.gtk_on_change)
 
-        self.rehint()
-
     def gtk_on_change(self, widget):
         value = widget.get_text().replace(",", ".") or 0
         self.interface._value = Decimal(value).quantize(self.interface.step)
@@ -60,7 +58,7 @@ class NumberInput(Widget):
     def set_font(self, font):
         self.interface.factory.not_implemented("NumberInput.set_font()")
 
-    def gtk_rehint(self):
+    def rehint(self):
         width = self.native.get_preferred_width()
         height = self.native.get_preferred_height()
         if width and height:

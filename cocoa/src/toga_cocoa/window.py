@@ -47,11 +47,6 @@ class CocoaViewport:
     def height(self):
         return 0 if self.view is None else self.view.frame.size.height
 
-    def make_dirty(self, widget=None):
-        # TODO: This won't be required once we complete the refactor
-        # making container a separate impl concept.
-        pass
-
 
 class WindowDelegate(NSObject):
     interface = objc_property(object, weak=True)

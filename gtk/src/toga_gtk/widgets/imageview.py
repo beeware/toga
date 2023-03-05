@@ -16,9 +16,9 @@ class ImageView(Widget):
     def set_bounds(self, x, y, width, height):
         super().set_bounds(x, y, width, height)
         # rehint to update scaling of pixbuf
-        self.rehint()
+        self.refresh()
 
-    def gtk_rehint(self):
+    def rehint(self):
         if self._pixbuf:
             height, width = self._resize_max(
                 original_height=self._pixbuf.get_height(),

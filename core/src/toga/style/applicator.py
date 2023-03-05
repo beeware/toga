@@ -30,7 +30,6 @@ class TogaApplicator:
         # Changing the font of a widget can make the widget change size,
         # which in turn means we need to do a re-layout
         self.widget._impl.set_font(font)
-        self.widget._impl.rehint()
         self.widget.refresh()
 
     def set_color(self, color):

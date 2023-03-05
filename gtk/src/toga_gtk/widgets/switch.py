@@ -17,7 +17,7 @@ class Switch(Widget):
 
         self.native.pack_start(self.label, True, True, 0)
         self.native.pack_start(self.switch, False, False, 0)
-        self.native.connect("show", lambda event: self.rehint())
+        self.native.connect("show", lambda event: self.refresh())
 
     def gtk_on_change(self, widget, state):
         if self.interface.on_change:
@@ -35,7 +35,7 @@ class Switch(Widget):
     def set_value(self, value):
         self.switch.set_active(value)
 
-    def gtk_rehint(self):
+    def rehint(self):
         # print("REHINT", self, self.native.get_preferred_width(), self.native.get_preferred_height())
         width = self.native.get_preferred_width()
         height = self.native.get_preferred_height()

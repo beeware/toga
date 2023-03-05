@@ -16,7 +16,6 @@ class ActivityIndicator(Widget):
 
         # Add the layout constraints
         self.add_constraints()
-        self.rehint()
 
     def start(self):
         self.native.startAnimation(self.native)

@@ -14,7 +14,7 @@ class Label(Widget):
 
         self.native.interface = self.interface
 
-        self.native.connect("show", lambda event: self.rehint())
+        self.native.connect("show", lambda event: self.refresh())
 
     def set_alignment(self, value):
         xalign, justify = gtk_alignment(value)
@@ -29,7 +29,7 @@ class Label(Widget):
         # corner and only jumps back at its place after resizing the window.
         self.native.set_text(self.interface._text)
 
-    def gtk_rehint(self):
+    def rehint(self):
         # print("REHINT", self,
         #     self.native.get_preferred_width(), self.native.get_preferred_height(),
         #     getattr(self, '_fixed_height', False), getattr(self, '_fixed_width', False)

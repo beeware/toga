@@ -74,6 +74,3 @@ class DatePicker(PickerBase):
         self.set_min_date(self.interface._min_date)
         self.set_max_date(self.interface._max_date)
         self._dialog.show()
-
-    def rehint(self):
-        return super().rehint()

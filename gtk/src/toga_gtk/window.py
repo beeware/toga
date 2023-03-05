@@ -36,16 +36,15 @@ class Window:
         self.toolbar_native = None
         self.toolbar_items = None
 
-        # Set up the basic layout of the Window
-        self.layout = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
-
-        # Add a Container to store the window's content.
-        self.container = TogaContainer()
-        self.layout.pack_end(self.container, True, True, 0)
-
         # The GTK window's content is the layout; any user content is placed
         # into the container, which is the bottom widget in the layout. The
         # toolbar (if required) will be added at the top of the layout.
+        #
+        # Because expand and fill are True, the container will fill the available
+        # space, and will get a size_allocate callback if the window is resized.
+        self.layout = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+        self.container = TogaContainer()
+        self.layout.pack_end(self.container, expand=True, fill=True, padding=0)
         self.native.add(self.layout)
 
     def get_title(self):
@@ -61,9 +60,9 @@ class Window:
         if self.toolbar_items is None:
             self.toolbar_native = Gtk.Toolbar()
             self.toolbar_items = {}
-
-            # Add the toolbar to the layout
-            self.layout.pack_start(self.toolbar_native, False, False, 0)
+            self.layout.pack_start(
+                self.toolbar_native, expand=False, fill=False, padding=0
+            )
         else:
             for cmd, item_impl in self.toolbar_items.items():
                 self.toolbar_native.remove(item_impl)

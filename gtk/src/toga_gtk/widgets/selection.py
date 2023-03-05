@@ -10,8 +10,6 @@ class Selection(Widget):
         self.native.interface = self.interface
         self.native.connect("changed", self.gtk_on_select)
 
-        self.rehint()
-
     def gtk_on_select(self, widget):
         if self.interface.on_select:
             self.interface.on_select(widget)
@@ -32,7 +30,7 @@ class Selection(Widget):
     def get_selected_item(self):
         return self.native.get_active_text()
 
-    def gtk_rehint(self):
+    def rehint(self):
         # width = self.native.get_preferred_width()
         height = self.native.get_preferred_height()
 

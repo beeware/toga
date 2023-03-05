@@ -68,7 +68,7 @@ class MultilineTextInput(Widget):
             )  # make the placeholder text gray.
         return False
 
-    def gtk_rehint(self):
+    def rehint(self):
         self.interface.intrinsic.width = at_least(self.interface.MIN_WIDTH)
         self.interface.intrinsic.height = at_least(self.interface.MIN_HEIGHT)
 

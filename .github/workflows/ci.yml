@@ -209,7 +209,7 @@ jobs:
             runs-on: macos-12
             briefcase-run-args: " -d '{\"avd\":\"beePhone\"}' --Xemulator=-no-window --Xemulator=-no-snapshot --Xemulator=-no-audio --Xemulator=-no-boot-anim --shutdown-on-exit"
     steps:
-    - uses: actions/checkout@v3.1.0
+    - uses: actions/checkout@v3.3.0
       with:
         fetch-depth: 0
     - name: Set up Python

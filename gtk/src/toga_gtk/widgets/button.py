@@ -13,7 +13,7 @@ class Button(Widget):
         self.native.get_style_context().add_class("toga")
         self.native.interface = self.interface
 
-        self.native.connect("show", lambda event: self.rehint())
+        self.native.connect("show", lambda event: self.refresh())
         self.native.connect("clicked", self.gtk_on_press)
 
     def get_text(self):
@@ -21,7 +21,6 @@ class Button(Widget):
 
     def set_text(self, text):
         self.native.set_label(text)
-        self.rehint()
 
     def set_enabled(self, value):
         self.native.set_sensitive(value)
@@ -36,7 +35,7 @@ class Button(Widget):
             color = None
         super().set_background_color(color)
 
-    def gtk_rehint(self):
+    def rehint(self):
         # print("REHINT", self, self.native.get_preferred_width(), self.native.get_preferred_height())
         width = self.native.get_preferred_width()
         height = self.native.get_preferred_height()

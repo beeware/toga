@@ -1,6 +1,5 @@
 from travertino.size import at_least
 
-from toga.colors import TRANSPARENT
 from toga_android.colors import native_color
 
 from ..libs.android.view import Gravity, View__MeasureSpec
@@ -22,17 +21,14 @@ class Label(Widget):
         self.native.setTextSize(*font._impl.get_size())
         self.native.setTypeface(font._impl.get_typeface(), font._impl.get_style())
 
+    def set_background_color(self, value):
+        self.set_background_color_simple(value)
+
     def set_color(self, color):
         if color is None:
             self.native.setTextColor(self._default_text_color)
         else:
             self.native.setTextColor(native_color(color))
-
-    def set_background_color(self, value):
-        if value is None:
-            self.native.setBackgroundColor(native_color(TRANSPARENT))
-        else:
-            self.native.setBackgroundColor(native_color(value))
 
     def rehint(self):
         # Refuse to rehint an Android TextView if it has no LayoutParams yet.

@@ -96,6 +96,6 @@ class WebView(Widget):
         # Invoke the javascript without a callback.
         self.native.run_javascript(javascript, None, None)
 
-    def gtk_rehint(self):
+    def rehint(self):
         self.interface.intrinsic.width = at_least(self.interface.MIN_WIDTH)
         self.interface.intrinsic.height = at_least(self.interface.MIN_HEIGHT)
