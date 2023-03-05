@@ -98,7 +98,7 @@ class Button(Widget):
         else:
             self._text = str(value)
         self._impl.set_text(value)
-        self._impl.rehint()
+        self.refresh()
 
     @property
     def on_press(self):

@@ -8,10 +8,14 @@ class Widget:
         self.interface = interface
         self.interface._impl = self
         self._container = None
-        self.viewport = None
         self.native = None
         self.create()
         self.interface.style.reapply()
+
+    @property
+    def viewport(self):
+        # TODO: Remove the use of viewport
+        return self._container
 
     def create(self):
         pass
@@ -38,12 +42,12 @@ class Widget:
                 # so removing a widget from its container can cause that widget to be
                 # destroyed. If you want to use widget again, you should add a
                 # reference to it.
-                self._container.native.remove(self.native)
+                self._container.remove(self.native)
                 self._container = None
         elif container:
             # setting container, adding self to container.native
             self._container = container
-            self._container.native.add(self.native)
+            self._container.add(self.native)
             self.native.show_all()
 
         for child in self.interface.children:
@@ -68,9 +72,9 @@ class Widget:
     ######################################################################
 
     def set_bounds(self, x, y, width, height):
-        # No implementation required here; the new sizing will be picked up
-        # by the box's allocation handler.
-        pass
+        # Any position changes are applied by the container during do_size_allocate.
+        if self.container:
+            self.container.make_dirty()
 
     def set_alignment(self, alignment):
         # By default, alignment can't be changed
@@ -102,11 +106,7 @@ class Widget:
     ######################################################################
 
     def add_child(self, child):
-        if self.viewport:
-            # we are the the top level container
-            child.container = self
-        else:
-            child.container = self.container
+        child.container = self.container
 
     def insert_child(self, index, child):
         self.add_child(child)
@@ -114,7 +114,15 @@ class Widget:
     def remove_child(self, child):
         child.container = None
 
+    def refresh(self):
+        # GTK doesn't/can't immediately evaluate the hinted size of the widget.
+        # Instead, put the widget onto a dirty list to be rehinted before the
+        # next layout.
+        if self.container:
+            self.container.make_dirty(self)
+
     def rehint(self):
+        # Perform the actual GTK rehint.
         # print("REHINT", self, self.native.get_preferred_width(), self.native.get_preferred_height())
         width = self.native.get_preferred_width()
         height = self.native.get_preferred_height()

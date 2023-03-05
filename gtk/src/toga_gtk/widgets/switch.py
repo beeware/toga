@@ -17,7 +17,7 @@ class Switch(Widget):
 
         self.native.pack_start(self.label, True, True, 0)
         self.native.pack_start(self.switch, False, False, 0)
-        self.native.connect("show", lambda event: self.rehint())
+        self.native.connect("show", lambda event: self.refresh())
 
     def gtk_on_change(self, widget, state):
         if self.interface.on_change:

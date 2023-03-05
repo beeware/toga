@@ -20,6 +20,9 @@ class Label(Widget):
             self.native.setTextSize(TypedValue.COMPLEX_UNIT_SP, font._impl.get_size())
             self.native.setTypeface(font._impl.get_typeface(), font._impl.get_style())
 
+    def set_background_color(self, value):
+        self.set_background_color_simple(value)
+
     def set_color(self, color):
         if color:
             self.native.setTextColor(native_color(color))

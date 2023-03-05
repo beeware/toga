@@ -274,6 +274,8 @@ class Widget(Node):
         self._impl.set_enabled(value)
 
     def refresh(self):
+        self._impl.refresh()
+
         # Refresh the layout
         if self._root:
             self._root.refresh()

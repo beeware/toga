@@ -1,0 +1,1 @@
+Issues with reducing the size of windows on GTK have been resolved.

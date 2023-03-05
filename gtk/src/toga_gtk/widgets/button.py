@@ -9,12 +9,11 @@ class Button(Widget):
         self.native = Gtk.Button()
         self.native.interface = self.interface
 
-        self.native.connect("show", lambda event: self.rehint())
+        self.native.connect("show", lambda event: self.refresh())
         self.native.connect("clicked", self.gtk_on_press)
 
     def set_text(self, text):
         self.native.set_label(self.interface.text)
-        self.rehint()
 
     def set_enabled(self, value):
         self.native.set_sensitive(value)

@@ -114,5 +114,8 @@ class Widget:
         self.native.translatesAutoresizingMaskIntoConstraints = False
         self.constraints = Constraints(self)
 
+    def refresh(self):
+        self.rehint()
+
     def rehint(self):
         pass

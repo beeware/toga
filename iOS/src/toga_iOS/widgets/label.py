@@ -18,6 +18,9 @@ class Label(Widget):
         if value:
             self.native.textAlignment = NSTextAlignment(value)
 
+    def set_background_color(self, value):
+        self.set_background_color_simple(value)
+
     def set_color(self, value):
         if value:
             self.native.textColor = native_color(value)

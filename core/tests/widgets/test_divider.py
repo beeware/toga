@@ -16,4 +16,4 @@ class DividerTests(TestCase):
         self.divider.direction = new_direction
         self.assertEqual(self.divider.direction, new_direction)
         self.assertValueSet(self.divider, "direction", new_direction)
-        self.assertActionPerformed(self.divider, "rehint")
+        self.assertActionPerformed(self.divider, "refresh")

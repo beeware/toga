@@ -8,7 +8,7 @@ class TextInput(Widget):
     def create(self):
         self.native = Gtk.Entry()
         self.native.interface = self.interface
-        self.native.connect("show", lambda event: self.rehint())
+        self.native.connect("show", lambda event: self.refresh())
         self.native.connect("changed", self.gtk_on_change)
 
     def gtk_on_change(self, entry):

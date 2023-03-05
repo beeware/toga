@@ -55,4 +55,4 @@ class Divider(Widget):
     def direction(self, value):
         self._direction = value
         self._impl.set_direction(value)
-        self._impl.rehint()
+        self.refresh()

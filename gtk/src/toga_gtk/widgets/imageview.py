@@ -16,7 +16,7 @@ class ImageView(Widget):
     def set_bounds(self, x, y, width, height):
         super().set_bounds(x, y, width, height)
         # rehint to update scaling of pixbuf
-        self.rehint()
+        self.refresh()
 
     def rehint(self):
         if self._pixbuf:
