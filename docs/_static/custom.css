@@ -16,3 +16,10 @@ table.docutils {
     font-size: var(--font-size--normal);
     font-weight: bold;
 }
+
+span.beta, span.stable {
+    /* Use fonts where the black and white circles have consistent size and alignment. */
+    font-family: Arial, "Lucida Grande", sans-serif;
+    font-size: x-large;
+    line-height: 1;
+}

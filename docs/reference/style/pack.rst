@@ -11,7 +11,7 @@ properties exist to control color, text alignment and so on.
 It is similar in some ways to the CSS Flexbox algorithm; but dramatically
 simplified, as there is no allowance for overflowing boxes.
 
-.. admonition::
+.. note::
 
    The string values defined here are the string literals that the Pack
    algorithm accepts. These values are also pre-defined as Python constants in
