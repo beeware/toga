@@ -38,7 +38,7 @@ class Window:
         factory=None,  # DEPRECATED !
         on_close=None,
         show_toolbar=True,
-        show_title_bar=True
+        show_title_bar=True,
     ):
         ######################################################################
         # 2022-09: Backwards compatibility
@@ -69,7 +69,7 @@ class Window:
             position=position,
             size=size,
             show_toolbar=show_toolbar,
-            show_title_bar=show_title_bar
+            show_title_bar=show_title_bar,
         )
 
         self._toolbar = CommandSet(widget=self, on_change=self._impl.create_toolbar)
@@ -83,13 +83,14 @@ class Window:
 
     @property
     def show_title_bar(self):
-        if hasattr(self._impl, 'show_title_bar'):
+        if hasattr(self._impl, "show_title_bar"):
             return self._impl.show_title_bar
         else:
             return True
+
     @show_title_bar.setter
     def show_title_bar(self, value):
-        if hasattr(self._impl, 'show_title_bar'):
+        if hasattr(self._impl, "show_title_bar"):
             self._impl.show_title_bar = value
             return self._impl.show_title_bar
         else:
@@ -97,13 +98,14 @@ class Window:
 
     @property
     def show_toolbar(self):
-        if hasattr(self._impl, 'show_toolbar'):
+        if hasattr(self._impl, "show_toolbar"):
             return self._impl.show_toolbar
         else:
             return True
+
     @show_toolbar.setter
     def show_toolbar(self, value):
-        if hasattr(self._impl, '_show_toolbar'):
+        if hasattr(self._impl, "_show_toolbar"):
             self._impl.show_toolbar = value
             return self.show_toolbar
         else:

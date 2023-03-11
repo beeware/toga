@@ -33,7 +33,9 @@ class WinFormsViewport:
 
 
 class Window:
-    def __init__(self, interface, title, position, size, show_toolbar, show_title_bar, **kwargs):
+    def __init__(
+        self, interface, title, position, size, show_toolbar, show_title_bar, **kwargs
+    ):
         self._show_title_bar = show_title_bar
         self._show_toolbar = show_toolbar
         self._show_toolbar_has_been_modified = False
@@ -68,65 +70,73 @@ class Window:
             self.native.MaximizeBox = False
 
         import asyncio
+
         try:
             eventLoop = asyncio.get_running_loop()
-        except:
-            eventLoop = asyncio.new_event_loop() # If theres no event loop, create one
-        
-        def delayed(): # We need to wait until the window has finished initializing until we can clear menu bar controls that get added seemingly automatically.
-                       # If we clear immediatly, new controls gets added afterwards (undesired).
+        except Exception:
+            eventLoop = asyncio.new_event_loop()  # If theres no event loop, create one
+
+        def delayed():  # We need to wait until the window has finished initializing until we can clear menu bar controls that get added seemingly automatically.
+            # If we clear immediatly, new controls gets added afterwards (undesired).
             import time
+
             time.sleep(0.25)
             self._show_toolbar_force_update = True
             self.show_toolbar = self.show_toolbar
             self._show_toolbar_force_update = False
 
-
         eventLoop.run_in_executor(None, delayed)
-        
-        self._show_toolbar  = show_toolbar
+
+        self._show_toolbar = show_toolbar
         self.show_title_bar = show_title_bar
 
-    
     @property
     def show_title_bar(self):
         return self._show_title_bar
+
     @show_title_bar.setter
     def show_title_bar(self, value):
         if self._show_title_bar != value:
             if value:
-                
                 self.native.set_ControlBox(True)
                 self.native.set_Text(str(self._title))
             else:
-                
                 # Hide the title bar (the bar above the menu bar at the very top of the window)
-                self.native.set_Text("")          # This alone removes the titlebar text.
-                self.native.set_ControlBox(False) # This alone only hides the minimize, expand & close btns.
+                self.native.set_Text("")  # This alone removes the titlebar text.
+                self.native.set_ControlBox(
+                    False
+                )  # This alone only hides the minimize, expand & close btns.
             self._show_title_bar = value
         return self._show_title_bar
 
     _controls = []
+
     @property
     def show_toolbar(self):
         return self._show_toolbar
+
     _show_toolbar_force_update = False
+
     @show_toolbar.setter
     def show_toolbar(self, value):
         if value:
-            if not self._show_toolbar: # We only want to add the controls if the value is different from previous
+            if (
+                not self._show_toolbar
+            ):  # We only want to add the controls if the value is different from previous
                 print("NewValIsTrue")
                 for control in self._controls:
                     print("Adding")
                     self.native.Controls.Add(control)
         else:
-            if self._show_toolbar or self._show_toolbar_force_update: # We only want to backup the controls if the new value is different from previus
+            if (
+                self._show_toolbar or self._show_toolbar_force_update
+            ):  # We only want to backup the controls if the new value is different from previus
                 self._controls.clear()
                 print("Clear!")
                 for control in self.native.Controls:
                     print("Backup!")
                     self._controls.append(control)
-            self.native.Controls.Clear() # self.native.Controls are the items in the menu bar, .Clear() removes all items permanently.
+            self.native.Controls.Clear()  # self.native.Controls are the items in the menu bar, .Clear() removes all items permanently.
         self._show_toolbar = value
         return self._show_toolbar
 
