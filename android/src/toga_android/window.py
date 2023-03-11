@@ -43,7 +43,7 @@ class AndroidViewport(ViewTreeObserver__OnGlobalLayoutListener):
 
 
 class Window:
-    def __init__(self, interface, title, position, size):
+    def __init__(self, interface, title, position, size, **kwargs):
         super().__init__()
         self.interface = interface
         self.interface._impl = self

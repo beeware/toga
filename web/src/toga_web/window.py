@@ -16,7 +16,7 @@ class WebViewport:
 
 
 class Window:
-    def __init__(self, interface, title, position, size):
+    def __init__(self, interface, title, position, size, **kwargs):
         self.interface = interface
         self.interface._impl = self
 

@@ -18,7 +18,7 @@ class Viewport:
 
 
 class Window(LoggedObject):
-    def __init__(self, interface, title, position, size):
+    def __init__(self, interface, title, position, size, **kwargs):
         super().__init__()
         self.interface = interface
 

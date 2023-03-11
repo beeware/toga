@@ -144,7 +144,7 @@ class TogaWindow(NSWindow):
 
 
 class Window:
-    def __init__(self, interface, title, position, size):
+    def __init__(self, interface, title, position, size, **kwargs):
         self.interface = interface
         self.interface._impl = self
 
