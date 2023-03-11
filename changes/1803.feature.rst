@@ -1,0 +1,9 @@
+Adds support for hiding the tool &  titlebar on Windows via new parameters & attributes "show_toolbar" & " show_title_bar" on the Window class.
+
+To allow the arguments from being passed down to Window._impl in toga/core/window.py without upsetting other implementations, Ive added **kwargs at the end of all other implementation's Window class.
+
+See demo project:
+https://youtu.be/C91bQ8CU4-w
+https://pastebin.com/JFUBYPLv
+
+Would solve https://github.com/beeware/toga/issues/733 & https://github.com/beeware/toga/discussions/1792 for the Windows platform & create a standardized pattern (via the "show_toolbar" & "show_title_bar")  for other platforms to implement the same functionality
