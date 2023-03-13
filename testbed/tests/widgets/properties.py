@@ -1,5 +1,5 @@
 from toga.colors import RED, TRANSPARENT, color as named_color
-from toga.fonts import FANTASY
+from toga.fonts import FANTASY, SYSTEM
 
 from ..assertions import assert_color
 from ..data import COLORS, TEXTS
@@ -57,6 +57,7 @@ async def test_font(widget, probe):
     orig_height = probe.height
     orig_width = probe.width
     orig_font = probe.font
+    assert orig_font.family == SYSTEM
 
     # Set the font to double it's original size
     widget.style.font_size = orig_font.size * 3
@@ -88,6 +89,14 @@ async def test_font(widget, probe):
     # Button should still be taller and wider than the original
     assert probe.width > orig_width
     assert probe.height > orig_height
+
+    # Reset to original family and size.
+    del widget.style.font_family
+    del widget.style.font_size
+    await probe.redraw()
+    assert probe.font == orig_font
+    assert probe.height == orig_height
+    assert probe.width == orig_width
 
 
 async def test_color(widget, probe):

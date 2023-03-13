@@ -7,28 +7,31 @@ from ..libs.android.widget import TextView
 from .base import Widget, align
 
 
-class Label(Widget):
+class TextViewWidget(Widget):
+    def cache_textview_defaults(self):
+        self._default_text_color = self.native.getCurrentTextColor()
+        self._default_text_size = self.native.getTextSize()
+
+    def set_font(self, font):
+        font._impl.apply(self.native, self._default_text_size)
+
+    def set_color(self, value):
+        if value is None:
+            self.native.setTextColor(self._default_text_color)
+        else:
+            self.native.setTextColor(native_color(value))
+
+
+class Label(TextViewWidget):
     def create(self):
         self.native = TextView(self._native_activity)
-
-        # Cache the system defaults that can't be easily derived
-        self._default_text_color = self.native.getCurrentTextColor()
+        self.cache_textview_defaults()
 
     def set_text(self, value):
         self.native.setText(value)
 
-    def set_font(self, font):
-        self.native.setTextSize(*font._impl.get_size())
-        self.native.setTypeface(font._impl.get_typeface(), font._impl.get_style())
-
     def set_background_color(self, value):
         self.set_background_color_simple(value)
-
-    def set_color(self, color):
-        if color is None:
-            self.native.setTextColor(self._default_text_color)
-        else:
-            self.native.setTextColor(native_color(color))
 
     def rehint(self):
         # Refuse to rehint an Android TextView if it has no LayoutParams yet.

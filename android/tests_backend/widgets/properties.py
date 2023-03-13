@@ -39,9 +39,10 @@ def load_fontmap():
 
 
 def toga_font(typeface, size, resources):
-    # Android provides font details in pixels; that size needs to be converted to points.
-    pixels_per_point = TypedValue.applyDimension(
-        TypedValue.COMPLEX_UNIT_PT, 1, resources.getDisplayMetrics()
+    # Android provides font details in pixels; that size needs to be converted to SP (see
+    # notes in toga_android/fonts.py).
+    pixels_per_sp = TypedValue.applyDimension(
+        TypedValue.COMPLEX_UNIT_SP, 1, resources.getDisplayMetrics()
     )
 
     # Ensure we have a map of typeface to font names
@@ -50,9 +51,7 @@ def toga_font(typeface, size, resources):
 
     return Font(
         family=SYSTEM if typeface == Typeface.DEFAULT else DECLARED_FONTS[typeface],
-        # Use round to ensure that we get a "generous" interpretation
-        # partial font sizes in points
-        size=round(size / pixels_per_point),
+        size=round(size / pixels_per_sp),
         style=ITALIC if typeface.isItalic() else NORMAL,
         variant=NORMAL,
         weight=BOLD if typeface.isBold() else NORMAL,

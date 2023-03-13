@@ -22,25 +22,20 @@ class Font:
     def __init__(self, interface):
         self.interface = interface
 
-    def get_size(self):
+    def apply(self, tv, default_size):
+        """Apply the font to the given native widget.
+
+        :param tv: A native instance of TextView, or one of its subclasses.
+        """
         if self.interface.size == SYSTEM_DEFAULT_FONT_SIZE:
-            # Default system font size on Android is 14sp.
-            return TypedValue.COMPLEX_UNIT_SP, 14.0
+            tv.setTextSize(TypedValue.COMPLEX_UNIT_PX, default_size)
         else:
-            return TypedValue.COMPLEX_UNIT_PT, float(self.interface.size)
+            # The default size for most widgets is 14sp, so mapping 1 Toga "point" to 1sp
+            # will give relative sizes that are consistent with desktop platforms. It also
+            # means font sizes will all change proportionately if the user adjusts the
+            # text size in the system settings.
+            tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, self.interface.size)
 
-    def get_style(self):
-        if self.interface.weight == BOLD:
-            if self.interface.style == ITALIC:
-                return Typeface.BOLD_ITALIC
-            else:
-                return Typeface.BOLD
-        elif self.interface.style == ITALIC:
-            return Typeface.ITALIC
-        else:
-            return Typeface.NORMAL
-
-    def get_typeface(self):
         try:
             family = _FONT_CACHE[self.interface]
         except KeyError:
@@ -83,9 +78,21 @@ class Font:
                 else:
                     family = Typeface.create(self.interface.family, Typeface.NORMAL)
 
-            family = (
-                family.__global__()
-            )  # store a JNI global reference to prevent objects from becoming stale
+            native_style = 0
+            if self.interface.weight == BOLD:
+                native_style = set_bits(native_style, Typeface.BOLD)
+            if self.interface.style == ITALIC:
+                native_style = set_bits(native_style, Typeface.ITALIC)
+            family = Typeface.create(family, native_style)
+
             _FONT_CACHE[self.interface] = family
 
-        return family
+        tv.setTypeface(family)
+
+
+def set_bits(input, mask, enable=True):
+    if enable:
+        output = input | mask
+    else:
+        output = input & ~mask
+    return output

@@ -5,7 +5,7 @@ from ..libs.android.widget import (
     CompoundButton__OnCheckedChangeListener,
     Switch as A_Switch,
 )
-from .base import Widget
+from .label import TextViewWidget
 
 
 class OnCheckedChangeListener(CompoundButton__OnCheckedChangeListener):
@@ -18,10 +18,11 @@ class OnCheckedChangeListener(CompoundButton__OnCheckedChangeListener):
             self._impl.interface.on_change(widget=self._impl.interface)
 
 
-class Switch(Widget):
+class Switch(TextViewWidget):
     def create(self):
         self.native = A_Switch(self._native_activity)
         self.native.setOnCheckedChangeListener(OnCheckedChangeListener(self))
+        self.cache_textview_defaults()
 
     def set_text(self, text):
         # When changing the text, Android needs a `setSingleLine(False)` call in order
@@ -37,10 +38,6 @@ class Switch(Widget):
 
     def get_value(self):
         return self.native.isChecked()
-
-    def set_font(self, font):
-        self.native.setTextSize(*font._impl.get_size())
-        self.native.setTypeface(font._impl.get_typeface(), font._impl.get_style())
 
     def set_on_change(self, handler):
         # No special handling required
