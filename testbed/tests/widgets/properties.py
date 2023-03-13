@@ -109,7 +109,7 @@ async def test_color_reset(widget, probe):
     assert_color(probe.color, named_color(RED))
 
     # Reset the color, and check that it has been restored to the original
-    widget.style.color = None
+    del widget.style.color
     await probe.redraw()
     assert_color(probe.color, original)
 

@@ -63,7 +63,7 @@ async def test_alignment(widget, probe):
         probe.assert_alignment_equivalent(probe.alignment, alignment)
 
     # Clearing the alignment reverts to default alignment of LEFT
-    widget.style.text_align = None
+    del widget.style.text_align
     await probe.redraw()
     assert probe.alignment == LEFT
 
