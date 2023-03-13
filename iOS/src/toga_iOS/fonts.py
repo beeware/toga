@@ -61,7 +61,7 @@ class Font:
                 if font is None:
                     print(f"Unable to load font: {self.interface.size}pt {full_name}")
                 else:
-                    _FONT_CACHE[self.interface] = font
+                    _FONT_CACHE[self.interface] = font.retain()
 
         self.native = font
 

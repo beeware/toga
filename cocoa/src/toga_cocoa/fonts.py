@@ -98,7 +98,7 @@ class Font:
                         )
                     )
                 else:
-                    _FONT_CACHE[self.interface] = font
+                    _FONT_CACHE[self.interface] = font.retain()
 
         self.native = font
 
