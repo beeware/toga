@@ -43,15 +43,7 @@ Minimum requirements
 
 * If you're on Linux, you need to have GTK+ 3.10 or newer. This is the version
   that ships starting with Ubuntu 14.04 and Fedora 20. You also need to install
-  the Python 3 bindings and development files for GTK+.
-
-  * **Ubuntu 16.04 / Debian 9** ``sudo apt-get install python3-dev python3-gi python3-gi-cairo libgirepository1.0-dev libcairo2-dev libpango1.0-dev libwebkitgtk-3.0-0 gir1.2-webkit2-3.0``
-
-  * **Ubuntu 18.04, 20.04 / Debian 10, 11** ``sudo apt-get install python3-dev python3-gi python3-gi-cairo libgirepository1.0-dev libcairo2-dev libpango1.0-dev libwebkit2gtk-4.0-37 gir1.2-webkit2-4.0``
-
-  * **Fedora** ``sudo dnf install pygobject3 python3-gobject python3-cairo-devel cairo-gobject-devel gobject-introspection-devel pywebkitgtk``
-
-  * **Arch / Manjaro** ``sudo pacman -Syu git pkgconf cairo python-cairo pango gobject-introspection gobject-introspection-runtime python-gobject webkit2gtk``
+  the system packages listed in docs/tutorial/tutorial-0.rst.
 
 * If you're on Windows, you'll need Windows 10 or newer. If you are using
   Windows 10 and want to use a WebView to display web content, you will also
