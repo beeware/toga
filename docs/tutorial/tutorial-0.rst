@@ -66,6 +66,9 @@ Next, install Toga into your virtual environment:
     These instructions are different on almost every version of Linux; here are
     some of the common alternatives:
 
+    ..
+      The package list should be the same as in ci.yml.
+
     .. code-block:: bash
 
       # Ubuntu 16.04 / Debian 9
@@ -74,7 +77,7 @@ Next, install Toga into your virtual environment:
 
       # Ubuntu 18.04+ / Debian 10+
       (venv) $ sudo apt-get update
-      (venv) $ sudo apt-get install python3-dev python3-gi python3-gi-cairo libgirepository1.0-dev libcairo2-dev libpango1.0-dev libwebkit2gtk-4.0-37 gir1.2-webkit2-4.0
+      (venv) $ sudo apt-get install python3-dev python3-cairo-dev python3-gi-cairo libgirepository1.0-dev libcairo2-dev libpango1.0-dev gir1.2-webkit2-4.0 pkg-config libfuse2
 
       # Fedora
       (venv) $ sudo dnf install pkg-config python3-devel gobject-introspection-devel cairo-devel cairo-gobject-devel pango-devel webkitgtk3
