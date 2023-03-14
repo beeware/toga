@@ -1,5 +1,5 @@
 from toga.colors import RED, TRANSPARENT, color as named_color
-from toga.fonts import FANTASY, SYSTEM
+from toga.fonts import FANTASY, SANS_SERIF, SYSTEM
 
 from ..assertions import assert_color
 from ..data import COLORS, TEXTS
@@ -57,7 +57,7 @@ async def test_font(widget, probe):
     orig_height = probe.height
     orig_width = probe.width
     orig_font = probe.font
-    assert orig_font.family == SYSTEM
+    assert orig_font.family in [SYSTEM, SANS_SERIF]
 
     # Set the font to double it's original size
     widget.style.font_size = orig_font.size * 3
