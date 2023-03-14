@@ -189,18 +189,19 @@ jobs:
           - pre-command:
             briefcase-run-prefix:
             briefcase-run-args:
-            python-version: "3.x"
+            setup-python: true
 
           - backend: macOS
             runs-on: macos-12
 
-          # We use a fixed Ubuntu version rather than `-latest`, to allow us to specify
-          # the corresponding system Python version.
+          # We use a fixed Ubuntu version rather than `-latest` because at some point,
+          # `-latest` will be updated, but it will be a soft changeover, which would cause
+          # the system Python version to become inconsistent from run to run.
           - backend: linux
             runs-on: ubuntu-22.04
             pre-command: "sudo apt-get update -y && sudo apt-get install -y python3-gi python3-gi-cairo gir1.2-gtk-3.0 python3-dev libgirepository1.0-dev libcairo2-dev pkg-config libfuse2"
             briefcase-run-prefix: 'xvfb-run -a -s "-screen 0 2048x1536x24"'
-            python-version: "3.10"
+            setup-python: false  # Use the system Python packages.
 
           - backend: windows
             runs-on: windows-latest
@@ -218,8 +219,9 @@ jobs:
         fetch-depth: 0
     - name: Set up Python
       uses: actions/setup-python@v4.5.0
+      if: ${{ matrix.setup-python }}
       with:
-        python-version: "${{ matrix.python-version }}"
+        python-version: "3.X"
     - name: Install dependencies
       run: |
         ${{ matrix.pre-command }}
