@@ -43,12 +43,12 @@ Minimum requirements
 
 * If you're on Linux, you need to have GTK+ 3.10 or newer. This is the version
   that ships starting with Ubuntu 14.04 and Fedora 20. You also need to install
-  the system packages listed in docs/tutorial/tutorial-0.rst.
+  the system packages listed in `Tutorial 0 <docs/tutorial/tutorial-0.rst>`__.
 
 * If you're on Windows, you'll need Windows 10 or newer. If you are using
   Windows 10 and want to use a WebView to display web content, you will also
-  need to install the [Edge WebView2 Evergreen
-  Runtime.](https://developer.microsoft.com/en-us/microsoft-edge/webview2/#download-section)
+  need to install the `Edge WebView2 Evergreen
+  Runtime. <https://developer.microsoft.com/en-us/microsoft-edge/webview2/#download-section>`__
   Windows 11 has this runtime installed by default.
 
 Quickstart
