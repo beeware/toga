@@ -61,7 +61,6 @@ class Button(Widget):
             )
 
     def set_background_color(self, color):
-        # By default, background color can't be changed
         if color == TRANSPARENT or color is None:
             self.native.backgroundColor = None
         else:

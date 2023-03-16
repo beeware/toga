@@ -124,9 +124,14 @@ class Table(Widget):
             text_view = TextView(MainActivity.singletonThis)
             text_view.setText(self.interface.headings[col_index])
             if self._font_impl:
-                self._font_impl.apply(text_view, text_view.getTextSize())
+                self._font_impl.apply(
+                    text_view, text_view.getTextSize(), text_view.getTypeface()
+                )
             text_view.setTypeface(
-                Typeface.create(text_view.getTypeface(), Typeface.BOLD)
+                Typeface.create(
+                    text_view.getTypeface(),
+                    text_view.getTypeface().getStyle() | Typeface.BOLD,
+                )
             )
             text_view_params = TableRow__Layoutparams(
                 TableRow__Layoutparams.MATCH_PARENT, TableRow__Layoutparams.WRAP_CONTENT
@@ -152,7 +157,9 @@ class Table(Widget):
             text_view = TextView(MainActivity.singletonThis)
             text_view.setText(self.get_data_value(row_index, col_index))
             if self._font_impl:
-                self._font_impl.apply(text_view, text_view.getTextSize())
+                self._font_impl.apply(
+                    text_view, text_view.getTextSize(), text_view.getTypeface()
+                )
             text_view_params = TableRow__Layoutparams(
                 TableRow__Layoutparams.MATCH_PARENT, TableRow__Layoutparams.WRAP_CONTENT
             )

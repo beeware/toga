@@ -1,10 +1,11 @@
 from travertino.fonts import Font
 
 from toga.colors import rgba
-from toga.fonts import FANTASY, NORMAL, SYSTEM
+from toga.fonts import BOLD, ITALIC, NORMAL
 from toga.style.pack import CENTER, JUSTIFY, LEFT, RIGHT
 from toga_cocoa.libs.appkit import (
     NSCenterTextAlignment,
+    NSFontMask,
     NSJustifiedTextAlignment,
     NSLeftTextAlignment,
     NSRightTextAlignment,
@@ -24,15 +25,13 @@ def toga_color(color):
 
 
 def toga_font(font):
+    traits = font.fontDescriptor.symbolicTraits
     return Font(
-        family={
-            ".AppleSystemUIFont": SYSTEM,
-            "Papyrus": FANTASY,
-        }.get(str(font.familyName), str(font.familyName)),
+        family=str(font.familyName),
         size=font.pointSize,
-        style=NORMAL,  # TODO: ITALIC if..., SMALL_CAPS if ...
+        style=ITALIC if traits & NSFontMask.Italic else NORMAL,
         variant=NORMAL,
-        weight=NORMAL,  # TODO: BOLD if ...
+        weight=BOLD if traits & NSFontMask.Bold else NORMAL,
     )
 
 

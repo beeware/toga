@@ -23,8 +23,8 @@ class Label(Widget):
         self.native.textColor = native_color(value)
 
     def set_background_color(self, color):
-        if color is TRANSPARENT:
-            self.native.backgroundColor = None
+        if color == TRANSPARENT or color is None:
+            self.native.backgroundColor = native_color(TRANSPARENT)
         else:
             self.native.backgroundColor = native_color(color)
 

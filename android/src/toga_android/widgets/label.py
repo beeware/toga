@@ -11,9 +11,10 @@ class TextViewWidget(Widget):
     def cache_textview_defaults(self):
         self._default_text_color = self.native.getCurrentTextColor()
         self._default_text_size = self.native.getTextSize()
+        self._default_typeface = self.native.getTypeface()
 
     def set_font(self, font):
-        font._impl.apply(self.native, self._default_text_size)
+        font._impl.apply(self.native, self._default_text_size, self._default_typeface)
 
     def set_color(self, value):
         if value is None:
