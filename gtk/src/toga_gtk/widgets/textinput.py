@@ -52,16 +52,21 @@ class TextInput(Widget):
         pass
 
     def set_on_gain_focus(self, handler):
-        self.interface.factory.not_implemented("TextInput.set_on_gain_focus()")
+        # No special handling required
+        pass
 
     def set_on_lose_focus(self, handler):
-        self.interface.factory.not_implemented("TextInput.set_on_lose_focus()")
+        # No special handling required
+        pass
 
     def set_error(self, error_message):
-        self.interface.factory.not_implemented("TextInput.set_error()")
+        # No special handling required
+        pass
 
     def clear_error(self):
-        self.interface.factory.not_implemented("TextInput.clear_error()")
+        # No special handling required
+        pass
 
     def is_valid(self):
-        self.interface.factory.not_implemented("TextInput.is_valid()")
+        # No special handling required
+        pass
