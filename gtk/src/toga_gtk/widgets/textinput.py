@@ -10,10 +10,20 @@ class TextInput(Widget):
         self.native.interface = self.interface
         self.native.connect("show", lambda event: self.refresh())
         self.native.connect("changed", self.gtk_on_change)
+        self.native.connect("focus-in-event", self.gtk_focus_in_event)
+        self.native.connect("focus-out-event", self.gtk_focus_in_event)
 
     def gtk_on_change(self, entry):
         if self.interface.on_change:
             self.interface.on_change(self.interface)
+
+    def gtk_focus_in_event(self, entry, user_data):
+        if self.interface.on_gain_focus:
+            self.interface.on_gain_focus(self.interface)
+
+    def gtk_focus_out_event(self, entry, user_data):
+        if self.interface.on_lose_focus:
+            self.interface.on_lose_focus(self.interface)
 
     def set_readonly(self, value):
         self.native.set_property("editable", not value)
@@ -60,13 +70,10 @@ class TextInput(Widget):
         pass
 
     def set_error(self, error_message):
-        # No special handling required
-        pass
+        self.interface.factory.not_implemented("TextInput.set_error()")
 
     def clear_error(self):
-        # No special handling required
-        pass
+        self.interface.factory.not_implemented("TextInput.clear_error()")
 
     def is_valid(self):
-        # No special handling required
-        pass
+        self.interface.factory.not_implemented("TextInput.is_valid()")
