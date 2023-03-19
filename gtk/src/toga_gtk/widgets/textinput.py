@@ -1,6 +1,6 @@
 from travertino.size import at_least
 
-from ..libs import Gtk
+from ..libs import Gtk, gtk_alignment
 from .base import Widget
 
 
@@ -22,7 +22,10 @@ class TextInput(Widget):
         self.native.set_placeholder_text(value)
 
     def set_alignment(self, value):
-        self.interface.factory.not_implemented("TextInput.set_alignment()")
+        xalign, justify = gtk_alignment(value)
+        self.native.set_alignment(
+            xalign
+        )  # Aligns the whole text block within the widget.
 
     def set_font(self, font):
         super().set_font(font)
