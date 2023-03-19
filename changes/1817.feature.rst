@@ -1,0 +1,1 @@
+Added set_alignment, set_on_gain_focus, set_on_lose_focus, set_error, clear_error, is_valid to text input
