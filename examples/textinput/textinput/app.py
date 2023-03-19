@@ -14,6 +14,7 @@ class TextInputApp(toga.App):
         # Disable all the text inputs
         self.text_input.enabled = False
         self.text_input_placeholder.enabled = False
+        self.right_aligned_input.enabled = False
         self.password_input.enabled = False
         self.number_input.enabled = False
 
@@ -43,6 +44,7 @@ class TextInputApp(toga.App):
         # Renable the inputs again.
         self.text_input.enabled = True
         self.text_input_placeholder.enabled = True
+        self.right_aligned_input.enabled = True
         self.password_input.enabled = True
         self.number_input.enabled = True
 
@@ -53,9 +55,6 @@ class TextInputApp(toga.App):
         # Labels to show responses.
         self.label = toga.Label(
             "Enter some values and press extract.", style=Pack(padding=10)
-        )
-        self.right_aligned_input_label = toga.Label(
-            "Right Alignment Input Test", style=Pack(padding=10)
         )
         self.text_label = toga.Label("Ready.", style=Pack(padding=10))
         self.password_label = toga.Label("Ready.", style=Pack(padding=10))
@@ -73,8 +72,9 @@ class TextInputApp(toga.App):
         self.text_input_placeholder = toga.TextInput(
             placeholder="Type something...", style=Pack(padding=10)
         )
-        self.right_aligned_input = toga.TextInput(placeholder="Right aligned text")
-        self.right_aligned_input.style.text_align = RIGHT
+        self.right_aligned_input = toga.TextInput(
+            placeholder="Right aligned text", style=Pack(padding=10, text_align=RIGHT)
+        )
         self.password_input = toga.PasswordInput(
             placeholder="Password...",
             style=Pack(padding=10),
@@ -104,7 +104,6 @@ class TextInputApp(toga.App):
             children=[
                 self.label,
                 self.text_input,
-                self.right_aligned_input_label,
                 self.right_aligned_input,
                 self.text_input_placeholder,
                 self.password_input,
