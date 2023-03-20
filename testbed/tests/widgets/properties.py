@@ -1,7 +1,7 @@
 from toga.colors import RED, TRANSPARENT, color as named_color
 from toga.fonts import BOLD, FANTASY, ITALIC, NORMAL, SERIF, SYSTEM
 
-from ..assertions import assert_color, assert_font_family
+from ..assertions import assert_color
 from ..data import COLORS, TEXTS
 
 
@@ -57,7 +57,7 @@ async def test_font(widget, probe):
     orig_height = probe.height
     orig_width = probe.width
     orig_font = probe.font
-    assert_font_family(orig_font.family, SYSTEM)
+    probe.assert_font_family(SYSTEM)
 
     # Set the font to larger than its original size
     widget.style.font_size = orig_font.size * 3
@@ -81,7 +81,7 @@ async def test_font(widget, probe):
 
     # Font family has been changed
     new_family_font = probe.font
-    assert_font_family(new_family_font.family, FANTASY)
+    probe.assert_font_family(FANTASY)
 
     # Font size hasn't changed
     assert new_family_font.size == new_size_font.size
@@ -110,7 +110,7 @@ async def test_font_attrs(widget, probe):
             for style in [NORMAL, ITALIC]:
                 widget.style.font_style = style
                 await probe.redraw()
-                assert_font_family(probe.font.family, family)
+                probe.assert_font_family(family)
                 assert probe.font.weight == weight
                 assert probe.font.style == style
 
