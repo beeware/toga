@@ -1,9 +1,10 @@
 import asyncio
 
 from System import EventArgs, Object
-from System.Drawing import SystemColors
+from System.Drawing import FontFamily, SystemColors, SystemFonts
 
 from toga.colors import TRANSPARENT
+from toga.fonts import CURSIVE, FANTASY, MONOSPACE, SANS_SERIF, SERIF, SYSTEM
 from toga.style.pack import JUSTIFY, LEFT
 
 from .properties import toga_color, toga_font
@@ -29,6 +30,16 @@ class SimpleProbe:
             assert actual == LEFT
         else:
             assert actual == expected
+
+    def assert_font_family(self, expected):
+        assert self.font.family == {
+            CURSIVE: "Comic Sans MS",
+            FANTASY: "Impact",
+            MONOSPACE: FontFamily.GenericMonospace.Name,
+            SANS_SERIF: FontFamily.GenericSansSerif.Name,
+            SERIF: FontFamily.GenericSerif.Name,
+            SYSTEM: SystemFonts.DefaultFont.FontFamily.Name,
+        }.get(expected, expected)
 
     async def redraw(self):
         """Request a redraw of the app, waiting until that redraw has completed."""
