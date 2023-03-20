@@ -36,7 +36,7 @@ class ActivityIndicatorTests(TestCase):
         # Forget that `stop` was performed so it can be checked again
         EventLog.reset()
 
-        # Already started, no action performed
+        # Already stopped, no action performed
         self.activityindicator.stop()
         self.assertActionNotPerformed(self.activityindicator, "stop ActivityIndicator")
 
