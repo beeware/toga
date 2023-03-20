@@ -72,6 +72,8 @@ class Font:
             if self.interface.variant == SMALL_CAPS:
                 attributes_mask |= NSFontMask.SmallCaps.value
             if attributes_mask:
+                # If there is no font with the requested traits, this returns the original
+                # font unchanged.
                 font = NSFontManager.sharedFontManager.convertFont(
                     font, toHaveTrait=attributes_mask
                 )
