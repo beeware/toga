@@ -57,6 +57,9 @@ class TextInputApp(toga.App):
         self.right_aligned_input_label = toga.Label(
             "Right Alignment Input Test", style=Pack(padding=10)
         )
+        self.right_aligned_number_input_label = toga.Label(
+            "Right aligned number input test", style=Pack(padding=10)
+        )
         self.text_label = toga.Label("Ready.", style=Pack(padding=10))
         self.password_label = toga.Label("Ready.", style=Pack(padding=10))
         self.password_content_label = toga.Label(
@@ -98,7 +101,9 @@ class TextInputApp(toga.App):
             on_press=self.do_extract_values,
             style=Pack(flex=1),
         )
-
+        self.right_aligned_number_input = toga.NumberInput(style=Pack(padding=10))
+        self.right_aligned_number_input.style.text_align = RIGHT
+        # self.right_aligned_number_input._impl.native.set_alignment(1)
         # Outermost box
         box = toga.Box(
             children=[
@@ -110,6 +115,8 @@ class TextInputApp(toga.App):
                 self.password_input,
                 self.password_content_label,
                 self.email_input,
+                self.right_aligned_number_input_label,
+                self.right_aligned_number_input,
                 self.number_input,
                 self.text_label,
                 self.password_label,
