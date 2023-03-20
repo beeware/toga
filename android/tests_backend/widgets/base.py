@@ -3,7 +3,6 @@ import asyncio
 from java import dynamic_proxy
 from pytest import skip
 
-import toga
 from android.view import ViewTreeObserver
 from toga.fonts import SYSTEM
 
@@ -55,11 +54,7 @@ class SimpleProbe:
     def assert_font_family(self, expected):
         actual = self.font.family
         if expected == SYSTEM:
-            assert actual == (
-                "sans-serif-medium"
-                if isinstance(self.widget, toga.Button)
-                else "sans-serif"
-            )
+            assert actual == "sans-serif"
         else:
             assert actual == expected
 
