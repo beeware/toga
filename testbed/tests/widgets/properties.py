@@ -1,8 +1,8 @@
 from toga.colors import RED, TRANSPARENT, color as named_color
-from toga.fonts import FANTASY
+from toga.fonts import BOLD, FANTASY, ITALIC, NORMAL, SERIF, SYSTEM
 from toga.style.pack import COLUMN
 
-from ..assertions import assert_color
+from ..assertions import assert_color, assert_font_family
 from ..data import COLORS, TEXTS
 
 
@@ -53,13 +53,14 @@ async def test_text_width_change(widget, probe):
 
 
 async def test_font(widget, probe):
-    "Changes in font cause changes in layout size."
+    "The font size and family of a widget can be changed."
     # Capture the original size and font of the widget
     orig_height = probe.height
     orig_width = probe.width
     orig_font = probe.font
+    assert_font_family(orig_font.family, SYSTEM)
 
-    # Set the font to double it's original size
+    # Set the font to larger than its original size
     widget.style.font_size = orig_font.size * 3
     await probe.redraw()
 
@@ -68,9 +69,8 @@ async def test_font(widget, probe):
     # Font size in points is an integer; however, some platforms
     # perform rendering in pixels (or device independent pixels,
     # so round-tripping points->pixels->points through the probe
-    # can result in rounding errors. Check that the font size is
-    # definitely larger than the original.
-    assert new_size_font.size > orig_font.size * 2.5
+    # can result in rounding errors.
+    assert (orig_font.size * 2.5) < new_size_font.size < (orig_font.size * 3.5)
 
     # Widget should be taller and wider
     assert probe.width > orig_width
@@ -82,13 +82,38 @@ async def test_font(widget, probe):
 
     # Font family has been changed
     new_family_font = probe.font
-    assert new_family_font.family == FANTASY
+    assert_font_family(new_family_font.family, FANTASY)
 
     # Font size hasn't changed
-    assert new_family_font.size > orig_font.size * 2.5
-    # Button should still be taller and wider than the original
+    assert new_family_font.size == new_size_font.size
+    # Widget should still be taller and wider than the original
     assert probe.width > orig_width
     assert probe.height > orig_height
+
+    # Reset to original family and size.
+    del widget.style.font_family
+    del widget.style.font_size
+    await probe.redraw()
+    assert probe.font == orig_font
+    assert probe.height == orig_height
+    assert probe.width == orig_width
+
+
+async def test_font_attrs(widget, probe):
+    "The font weight and style of a widget can be changed."
+    assert probe.font.weight == NORMAL
+    assert probe.font.style == NORMAL
+
+    for family in [SYSTEM, SERIF]:
+        widget.style.font_family = family
+        for weight in [NORMAL, BOLD]:
+            widget.style.font_weight = weight
+            for style in [NORMAL, ITALIC]:
+                widget.style.font_style = style
+                await probe.redraw()
+                assert_font_family(probe.font.family, family)
+                assert probe.font.weight == weight
+                assert probe.font.style == style
 
 
 async def test_color(widget, probe):
@@ -110,7 +135,7 @@ async def test_color_reset(widget, probe):
     assert_color(probe.color, named_color(RED))
 
     # Reset the color, and check that it has been restored to the original
-    widget.style.color = None
+    del widget.style.color
     await probe.redraw()
     assert_color(probe.color, original)
 

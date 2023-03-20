@@ -386,7 +386,7 @@ NSFont = ObjCClass("NSFont")
 NSFontManager = ObjCClass("NSFontManager")
 
 
-class NSFontMask(Enum):
+class NSFontMask(IntEnum):
     Italic = 0x01
     Bold = 0x02
     Unbold = 0x04

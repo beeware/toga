@@ -2,6 +2,7 @@ import pytest
 from travertino.fonts import Font
 
 from toga.colors import TRANSPARENT, rgba
+from toga.fonts import BOLD, ITALIC, NORMAL
 from toga.style.pack import CENTER, JUSTIFY, LEFT, RIGHT
 from toga_gtk.libs import Gtk, Pango
 
@@ -28,6 +29,8 @@ def toga_font(font):
     return Font(
         family=font.get_family(),
         size=int(font.get_size() / Pango.SCALE),
+        style=ITALIC if font.get_style() == Pango.Style.ITALIC else NORMAL,
+        weight=BOLD if font.get_weight() == Pango.Weight.BOLD else NORMAL,
     )
 
 

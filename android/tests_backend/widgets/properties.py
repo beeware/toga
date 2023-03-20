@@ -11,7 +11,6 @@ from toga.fonts import (
     BOLD,
     ITALIC,
     NORMAL,
-    SYSTEM,
 )
 
 
@@ -29,33 +28,39 @@ def toga_color(color_int):
         )
 
 
-DECLARED_FONTS = None
+DECLARED_FONTS = {}
 
 
 def load_fontmap():
-    global DECLARED_FONTS
     field = Typeface.getClass().getDeclaredField("sSystemFontMap")
     field.setAccessible(True)
-
     fontmap = field.get(None)
-    DECLARED_FONTS = {fontmap.get(key): key for key in fontmap.keySet().toArray()}
+
+    for name in fontmap.keySet().toArray():
+        typeface = fontmap.get(name)
+        DECLARED_FONTS[typeface] = name
+        for native_style in [
+            Typeface.BOLD,
+            Typeface.ITALIC,
+            Typeface.BOLD | Typeface.ITALIC,
+        ]:
+            DECLARED_FONTS[Typeface.create(typeface, native_style)] = name
 
 
 def toga_font(typeface, size, resources):
-    # Android provides font details in pixels; that size needs to be converted to points.
-    pixels_per_point = TypedValue.applyDimension(
-        TypedValue.COMPLEX_UNIT_PT, 1, resources.getDisplayMetrics()
+    # Android provides font details in pixels; that size needs to be converted to SP (see
+    # notes in toga_android/fonts.py).
+    pixels_per_sp = TypedValue.applyDimension(
+        TypedValue.COMPLEX_UNIT_SP, 1, resources.getDisplayMetrics()
     )
 
     # Ensure we have a map of typeface to font names
-    if DECLARED_FONTS is None:
+    if not DECLARED_FONTS:
         load_fontmap()
 
     return Font(
-        family=SYSTEM if typeface == Typeface.DEFAULT else DECLARED_FONTS[typeface],
-        # Use round to ensure that we get a "generous" interpretation
-        # partial font sizes in points
-        size=round(size / pixels_per_point),
+        family=DECLARED_FONTS[typeface],
+        size=round(size / pixels_per_sp),
         style=ITALIC if typeface.isItalic() else NORMAL,
         variant=NORMAL,
         weight=BOLD if typeface.isBold() else NORMAL,

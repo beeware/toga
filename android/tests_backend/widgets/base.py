@@ -77,12 +77,12 @@ class SimpleProbe:
 
     @property
     def width(self):
-        # Return the value in SP
+        # Return the value in DP
         return self.native.getWidth() / self.scale_factor
 
     @property
     def height(self):
-        # Return the value in SP
+        # Return the value in DP
         return self.native.getHeight() / self.scale_factor
 
     def press(self):
