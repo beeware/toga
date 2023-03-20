@@ -37,19 +37,26 @@ class Button(Widget):
 
     @property
     def text(self):
-        """The text displayed on the button."""
-        return self._impl.get_text()
+        """The text displayed on the button.
+
+        ``None`` will be displayed as an empty string. Any other object will be converted
+        to a string using ``str()``.
+
+        Only one line of text can be displayed. Any content after the first newline will
+        be ignored.
+        """
+        return self._text
 
     @text.setter
     def text(self, value):
-        if not value:
-            raise ValueError("Button must have a label")
+        if value is None:
+            self._text = ""
+        else:
+            # Button text can't include line breaks. Strip any content
+            # after a line break (if provided)
+            self._text = str(value).split("\n")[0]
 
-        # Button text can't include line breaks. Strip any content
-        # after a line break (if provided)
-        value = str(value).split("\n")[0]
-
-        self._impl.set_text(value)
+        self._impl.set_text(self._text)
         self.refresh()
 
     @property

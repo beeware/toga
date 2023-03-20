@@ -33,8 +33,17 @@ async def test_text(widget, probe):
         await probe.redraw()
 
         # Text after a newline will be stripped.
-        assert widget.text == text.split("\n")[0]
-        assert probe.text == text.split("\n")[0]
+        expected = text.split("\n")[0]
+        assert widget.text == expected
+        try:
+            assert probe.text == expected
+        except AssertionError:
+            if probe.text == " " and expected == "":
+                # The Winforms backend avoids empty labels to prevent the widget height
+                # from collapsing.
+                pass
+            else:
+                raise
 
         assert probe.height == initial_height
 
