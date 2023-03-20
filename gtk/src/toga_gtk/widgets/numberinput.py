@@ -54,7 +54,7 @@ class NumberInput(Widget):
 
     def set_alignment(self, value):
         xalign, justify = gtk_alignment(value)
-        super().set_alignment(xalign)
+        self.native.set_alignment(xalign)
 
     def set_font(self, font):
         super().set_font(font)
