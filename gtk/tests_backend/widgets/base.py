@@ -29,6 +29,9 @@ class SimpleProbe:
     def assert_alignment_equivalent(self, actual, expected):
         assert actual == expected
 
+    def assert_font_family(self, expected):
+        assert self.font.family == expected
+
     async def redraw(self):
         """Request a redraw of the app, waiting until that redraw has completed."""
         # Force a repaint
