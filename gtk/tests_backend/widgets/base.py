@@ -1,7 +1,5 @@
 import asyncio
 
-from pytest import skip
-
 from toga_gtk.libs import Gtk
 
 from .properties import toga_color, toga_font
@@ -41,14 +39,6 @@ class SimpleProbe:
         # If we're running slow, wait for a second
         if self.widget.app.run_slow:
             await asyncio.sleep(1)
-
-    @property
-    def enabled(self):
-        skip("enabled probe not implemented")
-
-    @property
-    def hidden(self):
-        skip("hidden probe not implemented")
 
     @property
     def width(self):

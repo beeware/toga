@@ -1,7 +1,6 @@
 import asyncio
 
 from java import dynamic_proxy
-from pytest import skip
 
 from android.view import ViewTreeObserver
 from toga.fonts import SYSTEM
@@ -70,18 +69,6 @@ class SimpleProbe:
     @property
     def enabled(self):
         return self.native.isEnabled()
-
-    @property
-    def background_color(self):
-        skip("not implemented: background_color")
-
-    @property
-    def color(self):
-        skip("not implemented: color")
-
-    @property
-    def hidden(self):
-        skip("not implemented: hidden")
 
     @property
     def width(self):
