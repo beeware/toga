@@ -29,8 +29,8 @@ A button has a text label. A handler can be associated with button press events.
 
     button = toga.Button('Click me', on_press=my_callback)
 
-Styles
-------
+Notes
+-----
 
 * A background color of ``TRANSPARENT`` will be treated as a reset of the button
   to the default system color.
