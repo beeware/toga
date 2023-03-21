@@ -275,6 +275,8 @@ class LoggedObject:
 
 
 class TestStyle(BaseStyle):
+    __test__ = False
+
     class IntrinsicSize(BaseIntrinsicSize):
         pass
 
