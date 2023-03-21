@@ -1,11 +1,14 @@
-from pytest import fixture
+import pytest
 
 import toga
 
 
-@fixture
+@pytest.fixture
 async def widget():
-    return toga.ActivityIndicator()
+    try:
+        return toga.ActivityIndicator()
+    except AttributeError:
+        pytest.skip("Platform doesn't implement the ActivityIndicator widget")
 
 
 async def test_start_stop(widget, probe):
