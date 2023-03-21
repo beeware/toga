@@ -1,1 +1,0 @@
-Label widgets now correctly resize after a change in label text.
