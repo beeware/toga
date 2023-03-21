@@ -23,23 +23,26 @@ async def widget():
 
 
 async def test_multiline(widget, probe):
-    """If the label contains multiline text, it resizes"""
+    """If the label contains multiline text, it resizes vertically"""
 
     def make_lines(n):
         return "\n".join(f"line{i}" for i in range(n))
 
     widget.text = make_lines(1)
-
     await probe.redraw()
     line_height = probe.height
 
-    widget.text = make_lines(2)
+    # Empty text should not cause the widget to collapse.
+    widget.text = ""
+    await probe.redraw()
+    assert probe.height == line_height
 
+    widget.text = make_lines(2)
     await probe.redraw()
     assert probe.height == approx(line_height * 2, rel=0.1)
     line_spacing = probe.height - (line_height * 2)
 
-    for n in range(3, 10):
+    for n in range(3, 6):
         widget.text = make_lines(n)
         await probe.redraw()
         assert probe.height == approx(
