@@ -39,24 +39,25 @@ class Button(Widget):
     def text(self):
         """The text displayed on the button.
 
-        ``None`` will be displayed as an empty string. Any other object will be converted
-        to a string using ``str()``.
+        ``None``, and the Unicode codepoint U+200B (ZERO WIDTH SPACE) will be
+        interpreted and returned as an empty string. Any other object will be
+        converted to a string using ``str()``.
 
-        Only one line of text can be displayed. Any content after the first newline will
-        be ignored.
+        Only one line of text can be displayed. Any content after the first
+        newline will be ignored.
         """
-        return self._text
+        return self._impl.get_text()
 
     @text.setter
     def text(self, value):
-        if value is None:
-            self._text = ""
+        if value is None or value == "\u0200":
+            value = ""
         else:
             # Button text can't include line breaks. Strip any content
             # after a line break (if provided)
-            self._text = str(value).split("\n")[0]
+            value = str(value).split("\n")[0]
 
-        self._impl.set_text(self._text)
+        self._impl.set_text(value)
         self.refresh()
 
     @property

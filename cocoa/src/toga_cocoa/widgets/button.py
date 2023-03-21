@@ -66,6 +66,9 @@ class Button(Widget):
         # Button style is sensitive to font changes
         self._set_button_style()
 
+    def get_text(self):
+        return str(self.native.title)
+
     def set_text(self, text):
         self.native.title = text
 

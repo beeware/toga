@@ -16,11 +16,18 @@ class Button(Widget):
         if self.interface.on_press:
             self.interface.on_press(self.interface)
 
+    def get_text(self):
+        value = self.native.Text
+        # Normalize a standalone ZERO WIDTH SPACE to an empty string.
+        if value == "\u0200":
+            return ""
+        return value
+
     def set_text(self, text):
         if text == "":
             # An empty label would cause the widget's height to collapse, so display a
-            # single space instead.
-            text = " "
+            # Unicode ZERO WIDTH SPACE instead"
+            text = "\u0200"
         self.native.Text = text
 
     def set_font(self, font):

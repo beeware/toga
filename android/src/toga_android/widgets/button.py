@@ -25,6 +25,9 @@ class Button(TextViewWidget):
         self.native.setOnClickListener(TogaOnClickListener(button_impl=self))
         self.cache_textview_defaults()
 
+    def get_text(self):
+        return str(self.native.getText())
+
     def set_text(self, text):
         self.native.setText(text)
 
