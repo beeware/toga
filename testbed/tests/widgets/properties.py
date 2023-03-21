@@ -1,3 +1,5 @@
+from pytest import approx
+
 from toga.colors import RED, TRANSPARENT, color as named_color
 from toga.fonts import BOLD, FANTASY, ITALIC, NORMAL, SERIF, SYSTEM
 from toga.style.pack import COLUMN
@@ -154,8 +156,9 @@ async def test_flex_widget_size(widget, probe):
     await probe.redraw()
 
     # Check the initial widget size
-    assert probe.width == 100
-    assert probe.height == 100
+    # Match isn't exact because of pixel scaling on some platforms
+    assert probe.width == approx(100, rel=0.01)
+    assert probe.height == approx(100, rel=0.01)
 
     # Drop the fixed height, and make the widget flexible
     widget.style.flex = 1
@@ -163,7 +166,7 @@ async def test_flex_widget_size(widget, probe):
 
     # Widget should now be 100 pixels wide, but as tall as the container.
     await probe.redraw()
-    assert probe.width == 100
+    assert probe.width == approx(100, rel=0.01)
     assert probe.height > 300
 
     # Make the parent a COLUMN box
@@ -180,14 +183,14 @@ async def test_flex_widget_size(widget, probe):
 
     await probe.redraw()
     assert probe.width > 300
-    assert probe.height == 150
+    assert probe.height == approx(150, rel=0.01)
 
     # Revert to fixed width
     widget.style.width = 150
 
     await probe.redraw()
-    assert probe.width == 150
-    assert probe.height == 150
+    assert probe.width == approx(150, rel=0.01)
+    assert probe.height == approx(150, rel=0.01)
 
 
 async def test_flex_horizontal_widget_size(widget, probe):
