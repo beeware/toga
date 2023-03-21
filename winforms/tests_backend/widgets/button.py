@@ -11,7 +11,7 @@ class ButtonProbe(SimpleProbe):
     @property
     def text(self):
         # Normalize the zero width space to the empty string.
-        if self.native.Text == "\u0200":
+        if self.native.Text == "\u200B":
             return ""
         return self.native.Text
 
