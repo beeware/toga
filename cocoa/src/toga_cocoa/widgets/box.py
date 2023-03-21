@@ -11,11 +11,6 @@ class TogaView(NSView):
         # Default Cocoa coordinate frame is around the wrong way.
         return True
 
-    @objc_method
-    def display(self) -> None:
-        self.layer.needsDisplay = True
-        self.layer.displayIfNeeded()
-
 
 class Box(Widget):
     def create(self):

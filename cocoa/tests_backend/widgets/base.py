@@ -1,6 +1,9 @@
 import asyncio
 
+from toga.colors import TRANSPARENT
 from toga.fonts import CURSIVE, FANTASY, MONOSPACE, SANS_SERIF, SERIF, SYSTEM
+
+from .properties import toga_color
 
 
 class SimpleProbe:
@@ -54,6 +57,16 @@ class SimpleProbe:
     @property
     def height(self):
         return self.native.frame.size.height
+
+    @property
+    def background_color(self):
+        if self.native.drawsBackground:
+            if self.native.backgroundColor:
+                return toga_color(self.native.backgroundColor)
+            else:
+                return None
+        else:
+            return TRANSPARENT
 
     def press(self):
         self.native.performClick(None)

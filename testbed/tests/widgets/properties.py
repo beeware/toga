@@ -147,6 +147,49 @@ async def test_background_color_transparent(widget, probe):
     assert_color(probe.background_color, TRANSPARENT)
 
 
+async def test_flex_widget_size(widget, probe):
+    "The widget can expand in either axis."
+    # Container is initially a non-flex row box. Paint it red so we can see it.
+    widget.style.background_color = RED
+    await probe.redraw()
+
+    # Check the initial widget size
+    assert probe.width == 100
+    assert probe.height == 100
+
+    # Drop the fixed height, and make the widget flexible
+    widget.style.flex = 1
+    del widget.style.height
+
+    # Widget should now be 100 pixels wide, but as tall as the container.
+    await probe.redraw()
+    assert probe.width == 100
+    assert probe.height > 300
+
+    # Make the parent a COLUMN box
+    del widget.style.width
+    widget.parent.style.direction = COLUMN
+
+    # Widget should now be the size of the container
+    await probe.redraw()
+    assert probe.width > 300
+    assert probe.height > 300
+
+    # Revert to fixed height
+    widget.style.height = 150
+
+    await probe.redraw()
+    assert probe.width > 300
+    assert probe.height == 150
+
+    # Revert to fixed width
+    widget.style.width = 150
+
+    await probe.redraw()
+    assert probe.width == 150
+    assert probe.height == 150
+
+
 async def test_flex_horizontal_widget_size(widget, probe):
     "Check that a widget that is flexible in the horizontal axis resizes as expected"
     # Container is initially a non-flex row box.
