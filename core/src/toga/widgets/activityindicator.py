@@ -1,64 +1,48 @@
-import warnings
-
 from .base import Widget
 
 
 class ActivityIndicator(Widget):
-    def __init__(
-        self,
-        id=None,
-        style=None,
-        running=False,
-        factory=None,  # DEPRECATED !
-    ):
+    def __init__(self, id=None, style=None, running=False):
         """
+        Create a new ActivityIndicator widget.
 
-        Args:
-            id (str):  An identifier for this widget.
-            style (:obj:`Style`): An optional style object. If no style is provided then a
-                new one will be created for the widget.
-            running (bool):  Set the initial running mode. Defaults to False
-            hide_when_stopped (bool):  Hide the indicator when not running. Defaults to
-                True.
+        Inherits from :class:`~toga.widgets.base.Widget`.
+
+        :param id: The ID for the widget.
+        :param style: A style object. If no style is provided, a default style
+            will be applied to the widget.
+        :param running: Describes whether the indicator is running at the
+            time it is created.
         """
-        ######################################################################
-        # 2022-09: Backwards compatibility
-        ######################################################################
-        # factory no longer used
-        if factory:
-            warnings.warn("The factory argument is no longer used.", DeprecationWarning)
-        ######################################################################
-        # End backwards compatibility.
-        ######################################################################
         super().__init__(id=id, style=style)
-
-        self._is_running = False
 
         self._impl = self.factory.ActivityIndicator(interface=self)
 
         if running:
             self.start()
-        else:
-            self.stop()
 
     @property
     def is_running(self):
-        """Use ``start()`` and ``stop()`` to change the running state.
+        """Determine if the activity indicator is currently running.
 
-        Returns:
-            True if this activity indicator is running
-            False otherwise
+        Use ``start()`` and ``stop()`` to change the running state.
+
+        :returns: True if this activity indicator is running; False otherwise.
         """
-        return self._is_running
+        return self._impl.is_running()
 
     def start(self):
-        """Start this activity indicator."""
+        """Start the activity indicator.
+
+        If the activity indicator is already started, this is a no-op.
+        """
         if not self.is_running:
             self._impl.start()
-        self._is_running = True
 
     def stop(self):
-        """Stop this activity indicator (if not already stopped)."""
+        """Stop the activity indicator.
+
+        If the activity indicator is already stopped, this is a no-op.
+        """
         if self.is_running:
             self._impl.stop()
-        self._is_running = False
