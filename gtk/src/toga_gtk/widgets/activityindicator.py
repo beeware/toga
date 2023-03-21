@@ -5,6 +5,8 @@ from .base import Widget
 class ActivityIndicator(Widget):
     def create(self):
         self.native = Gtk.Spinner()
+        self.native.set_name(f"toga-{self.interface.id}")
+        self.native.get_style_context().add_class("toga")
         self.native.interface = self.interface
 
     def is_running(self):
