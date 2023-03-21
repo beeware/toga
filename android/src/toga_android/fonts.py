@@ -26,13 +26,15 @@ class Font:
         """Apply the font to the given native widget.
 
         :param tv: A native instance of TextView, or one of its subclasses.
+        :param default_size: The default font size of this widget, in pixels.
+        :param default_typeface: The default Typeface of this widget.
         """
         if self.interface.size == SYSTEM_DEFAULT_FONT_SIZE:
             tv.setTextSize(TypedValue.COMPLEX_UNIT_PX, default_size)
         else:
             # The default size for most widgets is 14sp, so mapping 1 Toga "point" to 1sp
-            # will give relative sizes that are consistent with desktop platforms. It also
-            # means font sizes will all change proportionately if the user adjusts the
+            # will give relative sizes that are consistent with desktop platforms. Using
+            # SP means font sizes will all change proportionately if the user adjusts the
             # text size in the system settings.
             tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, self.interface.size)
 

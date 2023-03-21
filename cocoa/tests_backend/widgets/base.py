@@ -1,5 +1,7 @@
 import asyncio
 
+from toga.fonts import CURSIVE, FANTASY, MONOSPACE, SANS_SERIF, SERIF, SYSTEM
+
 
 class SimpleProbe:
     def __init__(self, widget):
@@ -17,6 +19,16 @@ class SimpleProbe:
 
     def assert_alignment_equivalent(self, actual, expected):
         assert actual == expected
+
+    def assert_font_family(self, expected):
+        assert self.font.family == {
+            CURSIVE: "Apple Chancery",
+            FANTASY: "Papyrus",
+            MONOSPACE: "Courier New",
+            SANS_SERIF: "Helvetica",
+            SERIF: "Times",
+            SYSTEM: ".AppleSystemUIFont",
+        }.get(expected, expected)
 
     async def redraw(self):
         """Request a redraw of the app, waiting until that redraw has completed."""

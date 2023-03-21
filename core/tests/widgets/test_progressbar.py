@@ -62,7 +62,7 @@ class ProgressBarTests(TestCase):
         # Forget that `stop` was performed so it can be checked again
         EventLog.reset()
 
-        # Already started, no action performed
+        # Already stopped, no action performed
         self.progress_bar.stop()
         self.assertActionNotPerformed(self.progress_bar, "stop")
 

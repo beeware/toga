@@ -22,6 +22,8 @@ from toga.style.pack import (
 
 
 class TestNode(Node):
+    __test__ = False
+
     def __init__(self, name, style, size=None, children=None):
         super().__init__(
             style=style, children=children, applicator=TogaApplicator(self)
@@ -46,6 +48,8 @@ class TestNode(Node):
 
 
 class TestViewport:
+    __test__ = False
+
     def __init__(self, width, height, dpi=96, baseline_dpi=96):
         self.height = height
         self.width = width

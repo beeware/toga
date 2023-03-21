@@ -1,6 +1,6 @@
 from toga.colors import rgba
 
-TEXTS = [" ", "a", "ab", "abc", "hello world", "hello\nworld", "你好, wørłd!"]
+TEXTS = ["", " ", "a", "ab", "abc", "hello world", "hello\nworld", "你好, wørłd!"]
 
 
 COLORS = [

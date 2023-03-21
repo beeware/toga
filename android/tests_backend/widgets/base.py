@@ -4,6 +4,7 @@ from java import dynamic_proxy
 from pytest import skip
 
 from android.view import ViewTreeObserver
+from toga.fonts import SYSTEM
 
 
 class LayoutListener(dynamic_proxy(ViewTreeObserver.OnGlobalLayoutListener)):
@@ -49,6 +50,13 @@ class SimpleProbe:
 
     def assert_alignment_equivalent(self, actual, expected):
         assert actual == expected
+
+    def assert_font_family(self, expected):
+        actual = self.font.family
+        if expected == SYSTEM:
+            assert actual == "sans-serif"
+        else:
+            assert actual == expected
 
     async def redraw(self):
         """Request a redraw of the app, waiting until that redraw has completed."""

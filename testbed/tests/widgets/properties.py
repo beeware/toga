@@ -2,7 +2,7 @@ from toga.colors import RED, TRANSPARENT, color as named_color
 from toga.fonts import BOLD, FANTASY, ITALIC, NORMAL, SERIF, SYSTEM
 from toga.style.pack import COLUMN
 
-from ..assertions import assert_color, assert_font_family
+from ..assertions import assert_color
 from ..data import COLORS, TEXTS
 
 
@@ -14,30 +14,6 @@ async def test_text(widget, probe):
 
         assert widget.text == text
         assert probe.text == text
-
-
-async def test_text_empty(widget, probe):
-    "The text displayed on a widget can be empty"
-    # Set the text to the empty string
-    widget.text = ""
-    await probe.redraw()
-
-    assert widget.text == ""
-    assert probe.text == ""
-
-    # Reset back to "actual" content
-    widget.text = "Hello"
-    await probe.redraw()
-
-    assert widget.text == "Hello"
-    assert probe.text == "Hello"
-
-    # Set the text to None; renders as an empty string
-    widget.text = None
-    await probe.redraw()
-
-    assert widget.text == ""
-    assert probe.text == ""
 
 
 async def test_text_width_change(widget, probe):
@@ -58,7 +34,7 @@ async def test_font(widget, probe):
     orig_height = probe.height
     orig_width = probe.width
     orig_font = probe.font
-    assert_font_family(orig_font.family, SYSTEM)
+    probe.assert_font_family(SYSTEM)
 
     # Set the font to larger than its original size
     widget.style.font_size = orig_font.size * 3
@@ -82,7 +58,7 @@ async def test_font(widget, probe):
 
     # Font family has been changed
     new_family_font = probe.font
-    assert_font_family(new_family_font.family, FANTASY)
+    probe.assert_font_family(FANTASY)
 
     # Font size hasn't changed
     assert new_family_font.size == new_size_font.size
@@ -111,7 +87,7 @@ async def test_font_attrs(widget, probe):
             for style in [NORMAL, ITALIC]:
                 widget.style.font_style = style
                 await probe.redraw()
-                assert_font_family(probe.font.family, family)
+                probe.assert_font_family(family)
                 assert probe.font.weight == weight
                 assert probe.font.style == style
 
