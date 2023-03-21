@@ -1,3 +1,5 @@
+from math import ceil
+
 from rubicon.objc import CGSize
 from travertino.size import at_least
 
@@ -39,5 +41,5 @@ class Label(Widget):
     def rehint(self):
         fitting_size = self.native.systemLayoutSizeFittingSize(CGSize(0, 0))
         # print("REHINT label", self, fitting_size.width, fitting_size.height)
-        self.interface.intrinsic.width = at_least(fitting_size.width)
-        self.interface.intrinsic.height = fitting_size.height
+        self.interface.intrinsic.width = at_least(ceil(fitting_size.width))
+        self.interface.intrinsic.height = ceil(fitting_size.height)
