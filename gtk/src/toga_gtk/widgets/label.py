@@ -7,6 +7,9 @@ from .base import Widget
 class Label(Widget):
     def create(self):
         self.native = Gtk.Label()
+        self.native.set_name(f"toga-{self.interface.id}")
+        self.native.get_style_context().add_class("toga")
+
         self.native.set_line_wrap(False)
 
         self.native.interface = self.interface

@@ -1,6 +1,13 @@
-from System import EventArgs, Object
+import asyncio
 
-from .properties import toga_color
+from System import EventArgs, Object
+from System.Drawing import FontFamily, SystemColors, SystemFonts
+
+from toga.colors import TRANSPARENT
+from toga.fonts import CURSIVE, FANTASY, MONOSPACE, SANS_SERIF, SERIF, SYSTEM
+from toga.style.pack import JUSTIFY, LEFT
+
+from .properties import toga_color, toga_font
 
 
 class SimpleProbe:
@@ -17,22 +24,52 @@ class SimpleProbe:
         else:
             raise ValueError(f"cannot find {self.native} in {container_native}")
 
+    def assert_alignment_equivalent(self, actual, expected):
+        # Winforms doesn't have a "Justified" alignment; it falls back to LEFT
+        if expected == JUSTIFY:
+            assert actual == LEFT
+        else:
+            assert actual == expected
+
+    def assert_font_family(self, expected):
+        assert self.font.family == {
+            CURSIVE: "Comic Sans MS",
+            FANTASY: "Impact",
+            MONOSPACE: FontFamily.GenericMonospace.Name,
+            SANS_SERIF: FontFamily.GenericSansSerif.Name,
+            SERIF: FontFamily.GenericSerif.Name,
+            SYSTEM: SystemFonts.DefaultFont.FontFamily.Name,
+        }.get(expected, expected)
+
     async def redraw(self):
         """Request a redraw of the app, waiting until that redraw has completed."""
-        # Refresh the layout
-        self.widget.window.content.refresh()
+        # Winforms style changes always take effect immediately.
+
+        # If we're running slow, wait for a second
+        if self.widget.app.run_slow:
+            await asyncio.sleep(1)
 
     @property
     def enabled(self):
         return self.native.Enabled
 
     @property
-    def background_color(self):
-        return toga_color(self.native.BackColor)
+    def color(self):
+        if self.native.ForeColor == SystemColors.WindowText:
+            return None
+        else:
+            return toga_color(self.native.ForeColor)
 
     @property
-    def color(self):
-        return toga_color(self.native.ForeColor)
+    def background_color(self):
+        if self.native.BackColor == SystemColors.Control:
+            return TRANSPARENT
+        else:
+            return toga_color(self.native.BackColor)
+
+    @property
+    def font(self):
+        return toga_font(self.native.Font)
 
     @property
     def hidden(self):

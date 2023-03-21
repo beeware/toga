@@ -1,3 +1,8 @@
+import asyncio
+
+from toga.fonts import CURSIVE, FANTASY, MONOSPACE, SANS_SERIF, SERIF, SYSTEM
+
+
 class SimpleProbe:
     def __init__(self, widget):
         self.widget = widget
@@ -12,12 +17,27 @@ class SimpleProbe:
         else:
             raise ValueError(f"cannot find {self.native} in {container_native}")
 
+    def assert_alignment_equivalent(self, actual, expected):
+        assert actual == expected
+
+    def assert_font_family(self, expected):
+        assert self.font.family == {
+            CURSIVE: "Apple Chancery",
+            FANTASY: "Papyrus",
+            MONOSPACE: "Courier New",
+            SANS_SERIF: "Helvetica",
+            SERIF: "Times",
+            SYSTEM: ".AppleSystemUIFont",
+        }.get(expected, expected)
+
     async def redraw(self):
         """Request a redraw of the app, waiting until that redraw has completed."""
-        # Refresh the layout
-        self.widget.window.content.refresh()
         # Force a repaint
         self.widget.window.content._impl.native.displayIfNeeded()
+
+        # If we're running slow, wait for a second
+        if self.widget.app.run_slow:
+            await asyncio.sleep(1)
 
     @property
     def enabled(self):

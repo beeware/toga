@@ -1,6 +1,7 @@
 import asyncio
 import re
 import sys
+import threading
 
 import toga
 from toga import Key
@@ -225,6 +226,11 @@ class App:
                     print(line)
 
     def run_app(self):
+        # Enable coverage tracing on this non-Python-created thread
+        # (https://github.com/nedbat/coveragepy/issues/686).
+        if threading._trace_hook:
+            sys.settrace(threading._trace_hook)
+
         try:
             self.create()
 

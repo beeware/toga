@@ -22,15 +22,20 @@ from toga.style.pack import (
 
 
 class TestNode(Node):
+    __test__ = False
+
     def __init__(self, name, style, size=None, children=None):
         super().__init__(
             style=style, children=children, applicator=TogaApplicator(self)
         )
+
         self.name = name
         self._impl = Mock()
         if size:
             self.intrinsic.width = size[0]
             self.intrinsic.height = size[1]
+
+        self.refresh = Mock()
 
     def __repr__(self):
         return f"<{self.name} at {id(self)}>"
@@ -43,6 +48,8 @@ class TestNode(Node):
 
 
 class TestViewport:
+    __test__ = False
+
     def __init__(self, width, height, dpi=96, baseline_dpi=96):
         self.height = height
         self.width = width
@@ -97,6 +104,7 @@ class TestPackStyleApply(TestCase):
         root._impl.set_font.assert_called_with(
             Font("Roboto", 12, "normal", "small-caps", "bold")
         )
+        root.refresh.assert_called_with()
 
     def test_set_visibility_hidden(self):
         root = TestNode("app", style=Pack(visibility=HIDDEN))

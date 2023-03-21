@@ -1,0 +1,54 @@
+[build-system]
+requires = ["briefcase"]
+
+[tool.briefcase]
+project_name = "Font size test"
+bundle = "org.beeware"
+version = "0.0.1"
+url = "https://beeware.org"
+license = "BSD license"
+author = 'Tiberius Yak'
+author_email = "tiberius@beeware.org"
+
+[tool.briefcase.app.font_size]
+formal_name = "Font size Test"
+description = "A testing app"
+sources = ['font_size']
+requires = [
+    '../../core',
+]
+
+[tool.briefcase.app.font_size.macOS]
+requires = [
+    '../../cocoa',
+    'std-nslog>=1.0.0',
+]
+
+[tool.briefcase.app.font_size.linux]
+requires = [
+    '../../gtk',
+]
+
+[tool.briefcase.app.font_size.windows]
+requires = [
+    '../../winforms',
+]
+
+# Mobile deployments
+[tool.briefcase.app.font_size.iOS]
+requires = [
+    '../../iOS',
+    'std-nslog>=1.0.0',
+]
+
+[tool.briefcase.app.font_size.android]
+requires = [
+    '../../android',
+]
+
+# Web deployment
+[tool.briefcase.app.font_size.web]
+requires = [
+    '../../web',
+]
+style_framework = "Bootstrap v4.6"

@@ -1,26 +1,16 @@
-import warnings
-
 from toga.handlers import wrapped_handler
 
 from .base import Widget
-
-# BACKWARDS COMPATIBILITY: a token object that can be used to differentiate
-# between an explicitly provided ``None``, and a unspecified value falling
-# back to a default.
-NOT_PROVIDED = object()
 
 
 class Button(Widget):
     def __init__(
         self,
-        text=NOT_PROVIDED,  # BACKWARDS COMPATIBILITY: The default value
-        # can be removed when the handling for `label` is removed
+        text,
         id=None,
         style=None,
         on_press=None,
         enabled=True,
-        factory=None,  # DEPRECATED!
-        label=None,  # DEPRECATED!
     ):
         """Create a new button widget.
 
@@ -34,52 +24,11 @@ class Button(Widget):
             pressed.
         :param enabled: Is the button enabled (i.e., can it be pressed?).
             Optional; by default, buttons are created in an enabled state.
-        :param factory: *Deprecated*
-        :param label: *Deprecated*; renamed ``text``.
         """
         super().__init__(id=id, style=style, enabled=enabled)
 
-        ######################################################################
-        # 2022-09: Backwards compatibility
-        ######################################################################
-        # factory no longer used
-        if factory:
-            warnings.warn("The factory argument is no longer used.", DeprecationWarning)
-        ######################################################################
-        # End backwards compatibility.
-        ######################################################################
-
         # Create a platform specific implementation of a Button
         self._impl = self.factory.Button(interface=self)
-
-        ##################################################################
-        # 2022-07: Backwards compatibility
-        ##################################################################
-        # When deleting this block, also delete the NOT_PROVIDED
-        # placeholder, and replace its usage in default values.
-
-        # label replaced with text
-        if label is not None:
-            if text is not NOT_PROVIDED:
-                raise ValueError(
-                    "Cannot specify both `label` and `text`; "
-                    "`label` has been deprecated, use `text`"
-                )
-            else:
-                warnings.warn(
-                    "Button.label has been renamed Button.text", DeprecationWarning
-                )
-                text = label
-        elif text is NOT_PROVIDED:
-            # This would be raised by Python itself; however, we need to use a placeholder
-            # value as part of the migration from text->value.
-            raise TypeError(
-                "Button.__init__ missing 1 required positional argument: 'text'"
-            )
-
-        ##################################################################
-        # End backwards compatibility.
-        ##################################################################
 
         # Set all the properties
         self.text = text
@@ -88,15 +37,26 @@ class Button(Widget):
 
     @property
     def text(self):
-        """The text displayed on the button."""
-        return self._text
+        """The text displayed on the button.
+
+        ``None``, and the Unicode codepoint U+200B (ZERO WIDTH SPACE), will be
+        interpreted and returned as an empty string. Any other object will be
+        converted to a string using ``str()``.
+
+        Only one line of text can be displayed. Any content after the first
+        newline will be ignored.
+        """
+        return self._impl.get_text()
 
     @text.setter
     def text(self, value):
-        if value is None:
-            self._text = ""
+        if value is None or value == "\u200B":
+            value = ""
         else:
-            self._text = str(value)
+            # Button text can't include line breaks. Strip any content
+            # after a line break (if provided)
+            value = str(value).split("\n")[0]
+
         self._impl.set_text(value)
         self.refresh()
 
@@ -109,26 +69,3 @@ class Button(Widget):
     def on_press(self, handler):
         self._on_press = wrapped_handler(self, handler)
         self._impl.set_on_press(self._on_press)
-
-    ######################################################################
-    # 2022-07: Backwards compatibility
-    ######################################################################
-    # label replaced with text
-    @property
-    def label(self):
-        """The text label displayed on the button.
-
-        :deprecated: :py:attr:`label` has been renamed :py:attr:`~text`.
-        """
-
-        warnings.warn("Button.label has been renamed Button.text", DeprecationWarning)
-        return self.text
-
-    @label.setter
-    def label(self, label):
-        warnings.warn("Button.label has been renamed Button.text", DeprecationWarning)
-        self.text = label
-
-    ######################################################################
-    # End backwards compatibility.
-    ######################################################################

@@ -1,5 +1,5 @@
 import toga
-from toga_dummy.utils import TestCase
+from toga_dummy.utils import EventLog, TestCase
 
 # ### ProgressBar truth table
 #
@@ -43,12 +43,11 @@ class ProgressBarTests(TestCase):
         self.assertActionPerformed(self.progress_bar, "start")
 
         # Forget that `start` was performed so it can be checked again
-        del self.progress_bar._impl._actions["start"]
+        EventLog.reset()
 
         # Already started, no action performed
-        with self.assertRaises(AssertionError):
-            self.progress_bar.start()
-            self.assertActionPerformed(self.progress_bar, "start")
+        self.progress_bar.start()
+        self.assertActionNotPerformed(self.progress_bar, "start")
 
     def test_stop(self):
         # Start the progress bar
@@ -61,12 +60,11 @@ class ProgressBarTests(TestCase):
         self.assertActionPerformed(self.progress_bar, "stop")
 
         # Forget that `stop` was performed so it can be checked again
-        del self.progress_bar._impl._actions["stop"]
+        EventLog.reset()
 
-        # Already started, no action performed
-        with self.assertRaises(AssertionError):
-            self.progress_bar.stop()
-            self.assertActionPerformed(self.progress_bar, "stop")
+        # Already stopped, no action performed
+        self.progress_bar.stop()
+        self.assertActionNotPerformed(self.progress_bar, "stop")
 
     def test_set_value_to_number_less_than_max(self):
         new_value = self.progress_bar.max / 2

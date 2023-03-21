@@ -37,7 +37,7 @@ class OptionContainer(Widget):
         self._items[index].enabled = enabled
 
     def is_option_enabled(self, index):
-        self._get_value(f"option_{index}_enabled")
+        self._get_value(f"option_{index}_enabled", None)
         return self._items[index].enabled
 
     def set_option_text(self, index, value):
@@ -45,7 +45,7 @@ class OptionContainer(Widget):
         self._items[index].text = value
 
     def get_option_text(self, index):
-        self._get_value(f"option_{index}_text")
+        self._get_value(f"option_{index}_text", None)
         return self._items[index].text
 
     def set_current_tab_index(self, current_tab_index):
