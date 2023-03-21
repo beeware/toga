@@ -48,8 +48,8 @@ class SimpleProbe:
         else:
             raise AssertionError(f"cannot find {self.native} in {container_native}")
 
-    def assert_alignment_equivalent(self, actual, expected):
-        assert actual == expected
+    def assert_alignment(self, expected):
+        assert self.alignment == expected
 
     def assert_font_family(self, expected):
         actual = self.font.family

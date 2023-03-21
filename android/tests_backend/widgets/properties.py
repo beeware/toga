@@ -67,11 +67,18 @@ def toga_font(typeface, size, resources):
     )
 
 
-def toga_alignment(alignment, justification_mode):
-    if justification_mode == LineBreaker.JUSTIFICATION_MODE_INTER_WORD:
+def toga_alignment(gravity, justification_mode):
+    horizontal_gravity = gravity & Gravity.HORIZONTAL_GRAVITY_MASK
+    if (
+        justification_mode == LineBreaker.JUSTIFICATION_MODE_INTER_WORD
+        and horizontal_gravity == Gravity.LEFT
+    ):
         return JUSTIFY
-    return {
-        Gravity.LEFT: LEFT,
-        Gravity.RIGHT: RIGHT,
-        Gravity.CENTER_HORIZONTAL: CENTER,
-    }[alignment & Gravity.HORIZONTAL_GRAVITY_MASK]
+    elif justification_mode == LineBreaker.JUSTIFICATION_MODE_NONE:
+        return {
+            Gravity.LEFT: LEFT,
+            Gravity.RIGHT: RIGHT,
+            Gravity.CENTER_HORIZONTAL: CENTER,
+        }[horizontal_gravity]
+    else:
+        raise ValueError(f"unknown combination: {gravity=}, {justification_mode=}")

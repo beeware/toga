@@ -66,7 +66,6 @@ class Label(TextViewWidget):
         # Justified text wasn't added until Android O (SDK 26)
         if value == JUSTIFY and Build.VERSION.SDK_INT >= Build.VERSION_CODES.O:
             self.native.setJustificationMode(LineBreaker.JUSTIFICATION_MODE_INTER_WORD)
-            self.native.setGravity(Gravity.CENTER_VERTICAL)
         else:
             self.native.setJustificationMode(LineBreaker.JUSTIFICATION_MODE_NONE)
-            self.native.setGravity(Gravity.CENTER_VERTICAL | align(value))
+        self.native.setGravity(Gravity.CENTER_VERTICAL | align(value))
