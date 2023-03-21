@@ -1,7 +1,10 @@
 import asyncio
 
+from toga.colors import TRANSPARENT
 from toga.fonts import CURSIVE, FANTASY, MONOSPACE, SANS_SERIF, SERIF, SYSTEM
-from toga_iOS.libs import NSRunLoop
+from toga_iOS.libs import NSRunLoop, UIColor
+
+from .properties import toga_color
 
 # From UIControl.h
 UIControlEventTouchDown = 1 << 0
@@ -86,6 +89,13 @@ class SimpleProbe:
     @property
     def height(self):
         return self.native.frame.size.height
+
+    @property
+    def background_color(self):
+        if self.native.backgroundColor == UIColor.clearColor:
+            return TRANSPARENT
+        else:
+            return toga_color(self.native.backgroundColor)
 
     def press(self):
         self.native.sendActionsForControlEvents(UIControlEventTouchDown)
