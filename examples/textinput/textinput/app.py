@@ -30,11 +30,14 @@ class TextInputApp(toga.App):
             self.password_input.value,
         )
 
-        number = self.number_input.value + self.right_aligned_number_input.value
-        if number > 0:
-            self.number_label.text = f"Double the number is: {number * 2}"
-        else:
-            self.number_label.text = "Pick some numbers that add up to more than zero"
+        try:
+            number = self.number_input.value + self.right_aligned_number_input.value
+            self.number_label.text = (
+                f"The sum of {self.number_input.value} and "
+                f"{self.right_aligned_number_input.value} number is: {number}"
+            )
+        except TypeError:
+            self.number_label.text = "Please enter a number in each number input."
 
         # Wait 5 seconds
         for i in range(5, 0, -1):
