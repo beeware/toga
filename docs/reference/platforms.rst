@@ -128,8 +128,8 @@ Eventually, the Toga project would like to provide support for the following pla
  * Curses (for console)
 
 If you are interested in these platforms and would like to contribute, please
-get in touch on `Twitter <https://twitter.com/pybeeware>`__ or
-`Discord <https://beeware.org/bee/chat/>`__).
+get in touch on `Mastodon <https://fosstodon.org/@beeware>`__ or
+`Discord <https://beeware.org/bee/chat/>`__.
 
 
 Unofficial platform support
