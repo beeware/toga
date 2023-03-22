@@ -34,15 +34,17 @@ class Label(Widget):
         self.native.font = font._impl.native
 
     def get_text(self):
-        return self.native.text
+        return str(self.native.text)
 
     def set_text(self, value):
+        if value == "":
+            value = "\u200B"
         self.native.text = value
         # Tell the text layout algorithm how many lines are allowed
         self.native.numberOfLines = len(self.interface.text.split("\n"))
 
     def rehint(self):
         fitting_size = self.native.systemLayoutSizeFittingSize(CGSize(0, 0))
-        # print("REHINT label", self, fitting_size.width, fitting_size.height)
+        # print(f"REHINT label {self} {self.get_text()!r} {fitting_size.width} {fitting_size.height}")
         self.interface.intrinsic.width = at_least(ceil(fitting_size.width))
         self.interface.intrinsic.height = ceil(fitting_size.height)

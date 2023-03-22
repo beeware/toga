@@ -27,7 +27,7 @@ class Label(Widget):
         self.native.font = font._impl.native
 
     def get_text(self):
-        return self.native.stringValue
+        return str(self.native.stringValue)
 
     def set_text(self, value):
         self.native.stringValue = value
