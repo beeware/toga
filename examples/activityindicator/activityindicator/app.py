@@ -17,7 +17,7 @@ class ExampleActivityIndicatorApp(toga.App):
         # Set up main window
         self.main_window = toga.MainWindow(title=self.name)
 
-        self.spinner = toga.ActivityIndicator(style=Pack(padding_left=10, height=16))
+        self.spinner = toga.ActivityIndicator(style=Pack(padding_left=10))
         self.button = toga.Button(
             "Start", on_press=self.do_stuff, style=Pack(padding_right=10)
         )

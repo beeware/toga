@@ -2,7 +2,7 @@ Component,Type,Component,Description,macOS,GTK,Windows,iOS,Android,Web
 Application,Core Component,:class:`~toga.app.App`,The application itself,|b|,|b|,|b|,|b|,|b|,|b|
 Window,Core Component,:class:`~toga.window.Window`,Window object,|b|,|b|,|b|,|b|,|b|,|b|
 MainWindow,Core Component,:class:`~toga.app.MainWindow`,Main window of the application,|b|,|b|,|b|,|b|,|b|,|b|
-ActivityIndicator,Core Component,:class:`~toga.widgets.activityindicator.ActivityIndicator`,A spinning activity animation,|b|,|b|,,,,
+ActivityIndicator,General Widget,:class:`~toga.widgets.activityindicator.ActivityIndicator`,A spinning activity animation,|y|,|y|,,,,
 Button,General Widget,:class:`~toga.widgets.button.Button`,Basic clickable Button,|y|,|y|,|y|,|y|,|y|,|b|
 Canvas,General Widget,:class:`~toga.widgets.canvas.Canvas`,Area you can draw on,|b|,|b|,|b|,|b|,,
 DatePicker,General Widget,:class:`~toga.widgets.datepicker.DatePicker`,An input for dates,,,|b|,,|b|,
