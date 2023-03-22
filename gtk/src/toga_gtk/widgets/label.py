@@ -21,8 +21,11 @@ class Label(Widget):
             justify
         )  # Aligns multiple lines relative to each other.
 
+    def get_text(self):
+        return self.native.get_text()
+
     def set_text(self, value):
-        self.native.set_text(self.interface._text)
+        self.native.set_text(value)
 
     def rehint(self):
         # print("REHINT", self,

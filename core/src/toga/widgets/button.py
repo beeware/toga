@@ -39,7 +39,7 @@ class Button(Widget):
     def text(self):
         """The text displayed on the button.
 
-        ``None``, and the Unicode codepoint U+200B (ZERO WIDTH SPACE) will be
+        ``None``, and the Unicode codepoint U+200B (ZERO WIDTH SPACE), will be
         interpreted and returned as an empty string. Any other object will be
         converted to a string using ``str()``.
 
@@ -50,7 +50,7 @@ class Button(Widget):
 
     @text.setter
     def text(self, value):
-        if value is None or value == "\u0200":
+        if value is None or value == "\u200B":
             value = ""
         else:
             # Button text can't include line breaks. Strip any content
