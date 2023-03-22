@@ -11,11 +11,10 @@ class Divider(Widget):
         style=None,
         direction=HORIZONTAL,
     ):
-        """Create a new text label.
+        """Create a new divider line.
 
         Inherits from :class:`~toga.widgets.base.Widget`.
 
-        :param text: Text of the label.
         :param id: The ID for the widget.
         :param style: A style object. If no style is provided, a default style
             will be applied to the widget.
@@ -38,6 +37,5 @@ class Divider(Widget):
 
     @direction.setter
     def direction(self, value):
-        self._direction = value
         self._impl.set_direction(value)
         self.refresh()
