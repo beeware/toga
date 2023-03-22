@@ -34,7 +34,10 @@ class Label(Widget):
         self.native.font = font._impl.native
 
     def get_text(self):
-        return str(self.native.text)
+        value = str(self.native.text)
+        if value == "\u200B":
+            return ""
+        return value
 
     def set_text(self, value):
         if value == "":
