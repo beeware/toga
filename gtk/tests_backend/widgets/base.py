@@ -1,7 +1,5 @@
 import asyncio
 
-from pytest import skip
-
 from toga_gtk.libs import Gtk
 
 from .properties import toga_color, toga_font
@@ -26,8 +24,8 @@ class SimpleProbe:
         else:
             raise ValueError(f"cannot find {self.native} in {container_native}")
 
-    def assert_alignment_equivalent(self, actual, expected):
-        assert actual == expected
+    def assert_alignment(self, expected):
+        assert self.alignment == expected
 
     def assert_font_family(self, expected):
         assert self.font.family == expected
@@ -41,14 +39,6 @@ class SimpleProbe:
         # If we're running slow, wait for a second
         if self.widget.app.run_slow:
             await asyncio.sleep(1)
-
-    @property
-    def enabled(self):
-        skip("enabled probe not implemented")
-
-    @property
-    def hidden(self):
-        skip("hidden probe not implemented")
 
     @property
     def width(self):

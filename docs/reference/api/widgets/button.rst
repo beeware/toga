@@ -27,7 +27,7 @@ A button has a text label. A handler can be associated with button press events.
         # handle event
         pass
 
-    button = toga.Button('Click me', on_press=my_callback)
+    button = toga.Button("Click me", on_press=my_callback)
 
 Notes
 -----

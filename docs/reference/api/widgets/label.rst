@@ -20,7 +20,7 @@ Usage
 
     import toga
 
-    label = toga.Label('Hello world')
+    label = toga.Label("Hello world")
 
 Notes
 -----

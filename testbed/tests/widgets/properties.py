@@ -1,5 +1,6 @@
 from toga.colors import RED, TRANSPARENT, color as named_color
 from toga.fonts import BOLD, FANTASY, ITALIC, NORMAL, SERIF, SYSTEM
+from toga.style.pack import COLUMN
 
 from ..assertions import assert_color
 from ..data import COLORS, TEXTS
@@ -144,3 +145,42 @@ async def test_background_color_transparent(widget, probe):
     widget.style.background_color = TRANSPARENT
     await probe.redraw()
     assert_color(probe.background_color, TRANSPARENT)
+
+
+async def test_flex_horizontal_widget_size(widget, probe):
+    "Check that a widget that is flexible in the horizontal axis resizes as expected"
+    # Container is initially a non-flex row box.
+    # Initial widget size is small (but non-zero), based on content size.
+    await probe.redraw()
+    assert 10 <= probe.width <= 150, f"Width ({probe.width}) not in range (10, 150)"
+    assert 10 <= probe.height <= 50, f"Height ({probe.height}) not in range (10, 50)"
+
+    # Make the widget flexible; it will expand to fill horizontal space
+    widget.style.flex = 1
+
+    # widget has expanded width, but has the same height.
+    await probe.redraw()
+    assert probe.width > 350
+    assert probe.height <= 50
+
+    # Make the container a flexible column box
+    # This will make the height the flexible axis
+    widget.parent.style.direction = COLUMN
+
+    # Widget is still the width of the screen
+    # and the height hasn't changed
+    await probe.redraw()
+    assert probe.width > 350
+    assert probe.height <= 50
+
+    # Set an explicit height and width
+    widget.style.width = 300
+    widget.style.height = 200
+
+    # Widget is approximately the requested size
+    # (Definitely less than the window size)
+    await probe.redraw()
+    assert 290 <= probe.width <= 330, f"Width ({probe.width}) not in range (290, 330)"
+    assert (
+        190 <= probe.height <= 230
+    ), f"Height ({probe.height}) not in range (190, 230)"

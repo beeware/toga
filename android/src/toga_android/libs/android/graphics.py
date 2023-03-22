@@ -13,3 +13,5 @@ PorterDuff__Mode = JavaClass("android/graphics/PorterDuff$Mode")
 PorterDuffColorFilter = JavaClass("android/graphics/PorterDuffColorFilter")
 Rect = JavaClass("android/graphics/Rect")
 Typeface = JavaClass("android/graphics/Typeface")
+
+LineBreaker = JavaClass("android/graphics/text/LineBreaker")

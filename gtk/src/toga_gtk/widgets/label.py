@@ -9,12 +9,9 @@ class Label(Widget):
         self.native = Gtk.Label()
         self.native.set_name(f"toga-{self.interface.id}")
         self.native.get_style_context().add_class("toga")
-
-        self.native.set_line_wrap(False)
-
         self.native.interface = self.interface
 
-        self.native.connect("show", lambda event: self.refresh())
+        self.native.set_line_wrap(False)
 
     def set_alignment(self, value):
         xalign, justify = gtk_alignment(value)
@@ -24,10 +21,11 @@ class Label(Widget):
             justify
         )  # Aligns multiple lines relative to each other.
 
+    def get_text(self):
+        return self.native.get_text()
+
     def set_text(self, value):
-        # FIXME after setting the label the label jumps to the top left
-        # corner and only jumps back at its place after resizing the window.
-        self.native.set_text(self.interface._text)
+        self.native.set_text(value)
 
     def rehint(self):
         # print("REHINT", self,

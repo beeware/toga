@@ -9,7 +9,7 @@ DatePicker,General Widget,:class:`~toga.widgets.datepicker.DatePicker`,An input 
 DetailedList,General Widget,:class:`~toga.widgets.detailedlist.DetailedList`,A list of complex content,|b|,|b|,,|b|,|b|,
 Divider,General Widget,:class:`~toga.widgets.divider.Divider`,A horizontal or vertical line,|b|,|b|,|b|,,,
 ImageView,General Widget,:class:`~toga.widgets.imageview.ImageView`,Image Viewer,|b|,|b|,|b|,|b|,|b|,
-Label,General Widget,:class:`~toga.widgets.label.Label`,Text label,|b|,|b|,|b|,|b|,|b|,|b|
+Label,General Widget,:class:`~toga.widgets.label.Label`,Text label,|y|,|y|,|y|,|y|,|y|,|b|
 MultilineTextInput,General Widget,:class:`~toga.widgets.multilinetextinput.MultilineTextInput`,Multi-line Text Input field,|b|,|b|,|b|,|b|,|b|,
 NumberInput,General Widget,:class:`~toga.widgets.numberinput.NumberInput`,Number Input field,|b|,|b|,|b|,|b|,|b|,
 PasswordInput,General Widget,:class:`~toga.widgets.passwordinput.PasswordInput`,A text input that hides it’s input,|b|,|b|,|b|,|b|,|b|,

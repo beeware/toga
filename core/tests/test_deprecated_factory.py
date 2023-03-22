@@ -118,12 +118,6 @@ class DeprecatedFactoryTests(TestCase):
         self.assertEqual(widget._impl.interface, widget)
         self.assertNotEqual(widget.factory, self.factory)
 
-    def test_label_created(self):
-        with self.assertWarns(DeprecationWarning):
-            widget = toga.Label("Test", factory=self.factory)
-        self.assertEqual(widget._impl.interface, widget)
-        self.assertNotEqual(widget.factory, self.factory)
-
     def test_multiline_text_input_created(self):
         with self.assertWarns(DeprecationWarning):
             widget = toga.MultilineTextInput(factory=self.factory)
