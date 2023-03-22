@@ -5,15 +5,15 @@ from travertino.size import at_least
 
 from toga.colors import TRANSPARENT
 from toga_iOS.colors import native_color
-from toga_iOS.libs import NSLineBreakByWordWrapping, NSTextAlignment, UILabel
+from toga_iOS.libs import NSLineBreakByClipping, NSTextAlignment, UILabel
 from toga_iOS.widgets.base import Widget
 
 
 class Label(Widget):
     def create(self):
         self.native = UILabel.new()
-        # Word wrap the text inside the allocated space
-        self.native.lineBreakMode = NSLineBreakByWordWrapping
+        # We shouldn't ever word wrap; if faced with that option, clip.
+        self.native.lineBreakMode = NSLineBreakByClipping
 
         # Add the layout constraints
         self.add_constraints()
@@ -47,6 +47,17 @@ class Label(Widget):
         self.native.numberOfLines = len(self.interface.text.split("\n"))
 
     def rehint(self):
+        # iOS text layout is an interplay between the layout constraints and the
+        # text layout algorithm. If the layout constraints fix the width, this
+        # can cause the text layout algorithm to try word wrapping to make text
+        # fit. To avoid this, temporarily relax the width and height constraint
+        # on the widget to "effectively infinite" values; they will be
+        # re-applied as part of the application of the newly hinted layout.
+        if self.constraints:
+            if self.constraints.width_constraint:
+                self.constraints.width_constraint.constant = 100000
+            if self.constraints.height_constraint:
+                self.constraints.height_constraint.constant = 100000
         fitting_size = self.native.systemLayoutSizeFittingSize(CGSize(0, 0))
         # print(f"REHINT label {self} {self.get_text()!r} {fitting_size.width} {fitting_size.height}")
         self.interface.intrinsic.width = at_least(ceil(fitting_size.width))

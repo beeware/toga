@@ -1,15 +1,17 @@
 toga-django
 ===========
 
-A `Django <https://djangoproject.com>`__ backend for the `Toga widget toolkit
-<https://beeware.org/toga>`__.
+A `Django <https://djangoproject.com>`__ backend for the `Toga widget toolkit`_.
 
 This package isn't much use by itself; it needs to be combined with `the core
-Toga library <https://pypi.python.org/pypi/toga-core>`__ and `the Toga Web
-library <https://pypi.python.org/pypi/toga-web>`__.
+Toga library`_ and `the Toga Web library`_.
 
-For more details, see the `Toga project on Github
-<https://github.com/beeware/toga>`__.
+For more details, see the `Toga project on Github`_.
+
+.. _Toga widget toolkit: http://beeware.org/toga
+.. _the core Toga library: https://pypi.python.org/pypi/toga-core
+.. _the Toga Web library: https://pypi.python.org/pypi/toga-web
+.. _Toga project on Github: https://github.com/beeware/toga
 
 Prerequisites
 ~~~~~~~~~~~~~
@@ -52,19 +54,27 @@ submodule `app.py` that defines a `main()` method.
 Community
 ---------
 
-Toga is part of the `BeeWare suite <http://beeware.org>`__. You can talk to the
-community through:
+Toga is part of the `BeeWare suite`_. You can talk to the community through:
 
-* `@pybeeware on Twitter <https://twitter.com/pybeeware>`__
+* `@beeware@fosstodon.org on Mastodon`_
+* `Discord`_
+* The Toga `Github Discussions forum`_
 
-* `Discord <https://beeware.org/bee/chat/>`__
+We foster a welcoming and respectful community as described in our
+`BeeWare Community Code of Conduct`_.
 
-* The Toga `Github Discussions forum <https://github.com/beeware/toga/discussions>`__
+.. _BeeWare suite: http://beeware.org
+.. _@beeware@fosstodon.org on Mastodon: https://fosstodon.org/@beeware
+.. _Discord: https://beeware.org/bee/chat/
+.. _Github Discussions forum: https://github.com/beeware/toga/discussions
+.. _BeeWare Community Code of Conduct: http://beeware.org/community/behavior/
 
 Contributing
 ------------
 
-If you experience problems with this backend, `log them on GitHub
-<https://github.com/beeware/toga/issues>`_. If you want to contribute code,
-please `fork the code <https://github.com/beeware/toga>`__ and `submit a pull
-request <https://github.com/beeware/toga/pulls>`_.
+If you experience problems with this backend, `log them on GitHub`_. If you
+want to contribute code, please `fork the code`_ and `submit a pull request`_.
+
+.. _log them on Github: https://github.com/beeware/toga/issues
+.. _fork the code: https://github.com/beeware/toga
+.. _submit a pull request: https://github.com/beeware/toga/pulls
