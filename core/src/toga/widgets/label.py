@@ -8,7 +8,7 @@ class Label(Widget):
         id=None,
         style=None,
     ):
-        """A text label.
+        """Create a new text label.
 
         Inherits from :class:`~toga.widgets.base.Widget`.
 
