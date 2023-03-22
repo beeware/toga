@@ -7,7 +7,7 @@ Button,General Widget,:class:`~toga.widgets.button.Button`,Basic clickable Butto
 Canvas,General Widget,:class:`~toga.widgets.canvas.Canvas`,Area you can draw on,|b|,|b|,|b|,|b|,,
 DatePicker,General Widget,:class:`~toga.widgets.datepicker.DatePicker`,An input for dates,,,|b|,,|b|,
 DetailedList,General Widget,:class:`~toga.widgets.detailedlist.DetailedList`,A list of complex content,|b|,|b|,,|b|,|b|,
-Divider,General Widget,:class:`~toga.widgets.divider.Divider`,A horizontal or vertical line,|b|,|b|,|b|,,,
+Divider,General Widget,:class:`~toga.widgets.divider.Divider`,A horizontal or vertical line,|y|,|y|,|y|,,,
 ImageView,General Widget,:class:`~toga.widgets.imageview.ImageView`,Image Viewer,|b|,|b|,|b|,|b|,|b|,
 Label,General Widget,:class:`~toga.widgets.label.Label`,Text label,|y|,|y|,|y|,|y|,|y|,|b|
 MultilineTextInput,General Widget,:class:`~toga.widgets.multilinetextinput.MultilineTextInput`,Multi-line Text Input field,|b|,|b|,|b|,|b|,|b|,
