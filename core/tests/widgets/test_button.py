@@ -27,7 +27,7 @@ def test_widget_created(button):
         ("New Text", "New Text"),
         ("", ""),
         (None, ""),
-        ("\u0200", ""),
+        ("\u200B", ""),
         (12345, "12345"),
         ("Contains\nnewline", "Contains"),
     ],

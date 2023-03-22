@@ -24,8 +24,9 @@ class SimpleProbe:
         else:
             raise ValueError(f"cannot find {self.native} in {container_native}")
 
-    def assert_alignment_equivalent(self, actual, expected):
+    def assert_alignment(self, expected):
         # Winforms doesn't have a "Justified" alignment; it falls back to LEFT
+        actual = self.alignment
         if expected == JUSTIFY:
             assert actual == LEFT
         else:

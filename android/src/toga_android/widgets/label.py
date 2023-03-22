@@ -31,6 +31,9 @@ class Label(TextViewWidget):
         self.native = TextView(self._native_activity)
         self.cache_textview_defaults()
 
+    def get_text(self):
+        return self.native.getText()
+
     def set_text(self, value):
         self.native.setText(value)
 
@@ -66,7 +69,6 @@ class Label(TextViewWidget):
         # Justified text wasn't added until Android O (SDK 26)
         if value == JUSTIFY and Build.VERSION.SDK_INT >= Build.VERSION_CODES.O:
             self.native.setJustificationMode(LineBreaker.JUSTIFICATION_MODE_INTER_WORD)
-            self.native.setGravity(Gravity.CENTER_VERTICAL)
         else:
             self.native.setJustificationMode(LineBreaker.JUSTIFICATION_MODE_NONE)
-            self.native.setGravity(Gravity.CENTER_VERTICAL | align(value))
+        self.native.setGravity(Gravity.CENTER_VERTICAL | align(value))

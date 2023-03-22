@@ -1,10 +1,11 @@
 import asyncio
 
 from java import dynamic_proxy
-from pytest import skip
 
 from android.view import ViewTreeObserver
 from toga.fonts import SYSTEM
+
+from .properties import toga_color
 
 
 class LayoutListener(dynamic_proxy(ViewTreeObserver.OnGlobalLayoutListener)):
@@ -48,8 +49,8 @@ class SimpleProbe:
         else:
             raise AssertionError(f"cannot find {self.native} in {container_native}")
 
-    def assert_alignment_equivalent(self, actual, expected):
-        assert actual == expected
+    def assert_alignment(self, expected):
+        assert self.alignment == expected
 
     def assert_font_family(self, expected):
         actual = self.font.family
@@ -72,18 +73,6 @@ class SimpleProbe:
         return self.native.isEnabled()
 
     @property
-    def background_color(self):
-        skip("not implemented: background_color")
-
-    @property
-    def color(self):
-        skip("not implemented: color")
-
-    @property
-    def hidden(self):
-        skip("not implemented: hidden")
-
-    @property
     def width(self):
         # Return the value in DP
         return self.native.getWidth() / self.scale_factor
@@ -92,6 +81,10 @@ class SimpleProbe:
     def height(self):
         # Return the value in DP
         return self.native.getHeight() / self.scale_factor
+
+    @property
+    def background_color(self):
+        return toga_color(self.native.getBackground().getColor())
 
     def press(self):
         self.native.performClick()

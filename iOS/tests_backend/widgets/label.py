@@ -9,7 +9,10 @@ class LabelProbe(SimpleProbe):
 
     @property
     def text(self):
-        return str(self.native.text)
+        value = str(self.native.text)
+        if value == "\u200B":
+            return ""
+        return value
 
     @property
     def color(self):

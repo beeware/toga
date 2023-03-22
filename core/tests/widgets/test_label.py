@@ -26,6 +26,7 @@ def test_label_created(label):
         ("New Text", "New Text"),
         (12345, "12345"),
         (None, ""),
+        ("\u200B", ""),
         ("Contains\nsome\nnewlines", "Contains\nsome\nnewlines"),
     ],
 )
