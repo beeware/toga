@@ -44,14 +44,18 @@ Community
 
 Toga is part of the `BeeWare suite`_. You can talk to the community through:
 
-* `@pybeeware on Twitter <https://twitter.com/pybeeware>`__
+* `@beeware@fosstodon.org on Mastodon`_
+* `Discord`_
+* The Toga `Github Discussions forum`_
 
-* `Discord <https://beeware.org/bee/chat/>`__
-
-* The Toga `Github Discussions forum <https://github.com/beeware/toga/discussions>`__
+We foster a welcoming and respectful community as described in our
+`BeeWare Community Code of Conduct`_.
 
 .. _BeeWare suite: http://beeware.org
-.. _Read The Docs: https://toga.readthedocs.io
+.. _@beeware@fosstodon.org on Mastodon: https://fosstodon.org/@beeware
+.. _Discord: https://beeware.org/bee/chat/
+.. _Github Discussions forum: https://github.com/beeware/toga/discussions
+.. _BeeWare Community Code of Conduct: http://beeware.org/community/behavior/
 
 
 .. toctree::
