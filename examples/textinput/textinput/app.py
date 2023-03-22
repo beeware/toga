@@ -34,9 +34,7 @@ class TextInputApp(toga.App):
         if number > 0:
             self.number_label.text = f"Double the number is: {number * 2}"
         else:
-            self.number_label.text = (
-                "Pick some other numbers that won't add up to zero."
-            )
+            self.number_label.text = "Pick some numbers that add up to more than zero"
 
         # Wait 5 seconds
         for i in range(5, 0, -1):
