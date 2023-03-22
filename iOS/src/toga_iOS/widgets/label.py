@@ -33,8 +33,11 @@ class Label(Widget):
     def set_font(self, font):
         self.native.font = font._impl.native
 
+    def get_text(self):
+        return self.native.text
+
     def set_text(self, value):
-        self.native.text = self.interface.text
+        self.native.text = value
         # Tell the text layout algorithm how many lines are allowed
         self.native.numberOfLines = len(self.interface.text.split("\n"))
 

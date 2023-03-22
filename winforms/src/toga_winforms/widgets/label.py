@@ -13,8 +13,11 @@ class Label(Widget):
     def set_alignment(self, value):
         self.native.TextAlign = TextAlignment(value)
 
+    def get_text(self):
+        return self.native.Text
+
     def set_text(self, value):
-        self.native.Text = self.interface._text
+        self.native.Text = value
 
     def set_font(self, font):
         self.native.Font = font._impl.native

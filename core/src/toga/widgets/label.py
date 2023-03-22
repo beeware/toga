@@ -26,15 +26,21 @@ class Label(Widget):
 
     @property
     def text(self):
-        """The text displayed by the label."""
-        return self._text
+        """The text displayed by the label.
+
+        ``None``, and the Unicode codepoint U+200B (ZERO WIDTH SPACE), will be
+        interpreted and returned as an empty string. Any other object will be
+        converted to a string using ``str()``.
+
+        """
+        return self._impl.get_text()
 
     @text.setter
     def text(self, value):
-        if value is None:
-            self._text = ""
+        if value is None or value == "\u200B":
+            text = ""
         else:
-            self._text = str(value)
+            text = str(value)
 
-        self._impl.set_text(value)
+        self._impl.set_text(text)
         self.refresh()

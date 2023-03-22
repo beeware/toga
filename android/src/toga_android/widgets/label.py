@@ -31,6 +31,9 @@ class Label(TextViewWidget):
         self.native = TextView(self._native_activity)
         self.cache_textview_defaults()
 
+    def get_text(self):
+        return self.native.getText()
+
     def set_text(self, value):
         self.native.setText(value)
 
