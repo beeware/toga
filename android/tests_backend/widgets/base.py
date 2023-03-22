@@ -5,6 +5,8 @@ from java import dynamic_proxy
 from android.view import ViewTreeObserver
 from toga.fonts import SYSTEM
 
+from .properties import toga_color
+
 
 class LayoutListener(dynamic_proxy(ViewTreeObserver.OnGlobalLayoutListener)):
     def __init__(self):
@@ -79,6 +81,10 @@ class SimpleProbe:
     def height(self):
         # Return the value in DP
         return self.native.getHeight() / self.scale_factor
+
+    @property
+    def background_color(self):
+        return toga_color(self.native.getBackground().getColor())
 
     def press(self):
         self.native.performClick()

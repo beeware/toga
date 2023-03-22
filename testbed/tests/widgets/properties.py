@@ -1,3 +1,5 @@
+from pytest import approx
+
 from toga.colors import RED, TRANSPARENT, color as named_color
 from toga.fonts import BOLD, FANTASY, ITALIC, NORMAL, SERIF, SYSTEM
 from toga.style.pack import COLUMN
@@ -145,6 +147,50 @@ async def test_background_color_transparent(widget, probe):
     widget.style.background_color = TRANSPARENT
     await probe.redraw()
     assert_color(probe.background_color, TRANSPARENT)
+
+
+async def test_flex_widget_size(widget, probe):
+    "The widget can expand in either axis."
+    # Container is initially a non-flex row box. Paint it red so we can see it.
+    widget.style.background_color = RED
+    await probe.redraw()
+
+    # Check the initial widget size
+    # Match isn't exact because of pixel scaling on some platforms
+    assert probe.width == approx(100, rel=0.01)
+    assert probe.height == approx(100, rel=0.01)
+
+    # Drop the fixed height, and make the widget flexible
+    widget.style.flex = 1
+    del widget.style.height
+
+    # Widget should now be 100 pixels wide, but as tall as the container.
+    await probe.redraw()
+    assert probe.width == approx(100, rel=0.01)
+    assert probe.height > 300
+
+    # Make the parent a COLUMN box
+    del widget.style.width
+    widget.parent.style.direction = COLUMN
+
+    # Widget should now be the size of the container
+    await probe.redraw()
+    assert probe.width > 300
+    assert probe.height > 300
+
+    # Revert to fixed height
+    widget.style.height = 150
+
+    await probe.redraw()
+    assert probe.width > 300
+    assert probe.height == approx(150, rel=0.01)
+
+    # Revert to fixed width
+    widget.style.width = 150
+
+    await probe.redraw()
+    assert probe.width == approx(150, rel=0.01)
+    assert probe.height == approx(150, rel=0.01)
 
 
 async def test_flex_horizontal_widget_size(widget, probe):

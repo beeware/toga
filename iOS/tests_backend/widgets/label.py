@@ -1,5 +1,4 @@
-from toga.colors import TRANSPARENT
-from toga_iOS.libs import UIColor, UILabel
+from toga_iOS.libs import UILabel
 
 from .base import SimpleProbe
 from .properties import toga_alignment, toga_color, toga_font
@@ -18,13 +17,6 @@ class LabelProbe(SimpleProbe):
     @property
     def color(self):
         return toga_color(self.native.textColor)
-
-    @property
-    def background_color(self):
-        if self.native.backgroundColor == UIColor.clearColor:
-            return TRANSPARENT
-        else:
-            return toga_color(self.native.backgroundColor)
 
     @property
     def font(self):

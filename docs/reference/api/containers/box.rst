@@ -1,6 +1,8 @@
 Box
 ===
 
+A generic container for other widgets. Used to construct layouts.
+
 .. rst-class:: widget-support
 .. csv-filter:: Availability (:ref:`Key <api-status-key>`)
    :header-rows: 1
@@ -8,57 +10,40 @@ Box
    :included_cols: 4,5,6,7,8,9
    :exclude: {0: '(?!(Box|Component))'}
 
-The box is a generic container for widgets, allowing you to construct layouts.
-
 Usage
 -----
 
-A box can be instantiated with no children and the children added later:
+An empty Box can be constructed without any children, with children added to the
+box after construction:
 
 .. code-block:: Python
 
     import toga
 
-    box = toga.Box('box1')
+    box = toga.Box()
 
-    button = toga.Button('Hello world', on_press=button_handler)
-    box.add(button)
+    label1 = toga.Label('Hello')
+    label2 = toga.Label('World')
 
-To create boxes within boxes, use the children argument:
+    box.add(label1)
+    box.add(label2)
 
-.. code-block:: Python
-
-    import toga
-
-    box_a = toga.Box('box_a')
-    box_b = toga.Box('box_b')
-
-    box = toga.Box('box', children=[box_a, box_b])
-
-Box Styling
------------
-
-Styling of boxes can be done during instantiation of the Box:
+Alternatively, children can be specified at the time the box is constructed:
 
 .. code-block:: Python
 
     import toga
-    from toga.style import Pack
-    from toga.style.pack import COLUMN
 
-    box = toga.Box(id='box', style=Pack(direction=COLUMN, padding_top=10))
+    label1 = toga.Label('Hello')
+    label2 = toga.Label('World')
 
-Styles can be also be updated on an existing instance:
+    box = toga.Box(children=[label1, label2])
 
-.. code-block:: Python
-
-    import toga
-    from toga.style import Pack
-    from toga.style.pack import COLUMN
-
-    box = toga.Box(id='box', style=Pack(direction=COLUMN))
-
-    box.style.update(padding_top=10)
+In most apps, a layout is constructed by building a tree of boxes inside boxes,
+with concrete widgets (such as :class:`~toga.widgets.label.Label` or
+:class:`~toga.widgets.button.Button`) forming the leaf nodes of the tree. Style
+directives can be applied to enforce padding around the outside of the box,
+direction of child stacking inside the box, and background color of the box.
 
 Reference
 ---------
