@@ -3,7 +3,7 @@ from unittest import mock
 from pytest import fixture, raises
 
 import toga
-from toga_dummy.utils import action_performed, attribute_value
+from toga_dummy.utils import assert_action_performed, attribute_value
 
 INITIAL_VALUE = 50
 INITIAL_MIN = 0
@@ -31,7 +31,7 @@ def slider(on_change):
 
 def test_widget_created(slider, on_change):
     assert slider._impl.interface == slider
-    assert action_performed(slider, "create Slider")
+    assert_action_performed(slider, "create Slider")
 
 
 def test_set_value_between_min_and_max(slider, on_change):
@@ -215,7 +215,7 @@ def test_set_tick_count_too_small(slider, on_change):
 
 def test_focus(slider, on_change):
     slider.focus()
-    assert action_performed(slider, "focus")
+    assert_action_performed(slider, "focus")
 
 
 def test_set_on_press(slider, on_change):

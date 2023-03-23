@@ -66,6 +66,9 @@ def get_platform_factory(factory=None):
     ######################################################################
 
     toga_backends = entry_points(group="toga.backends")
+    if not toga_backends:
+        raise RuntimeError("No Toga backend could be loaded.")
+
     backend_value = os.environ.get("TOGA_BACKEND")
     if backend_value:
         try:
@@ -79,9 +82,6 @@ def get_platform_factory(factory=None):
                 f"could not be loaded. It should be one of: {toga_backends_values}."
             )
     else:
-        if not toga_backends:
-            raise RuntimeError("No Toga backend could be loaded.")
-
         # As of Setuptools 65.5, entry points are returned duplicated if the
         # package is installed editable. Use a set to ensure that each entry point
         # is only returned once.
