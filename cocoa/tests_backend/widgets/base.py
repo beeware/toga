@@ -1,3 +1,11 @@
+import asyncio
+
+from toga.colors import TRANSPARENT
+from toga.fonts import CURSIVE, FANTASY, MONOSPACE, SANS_SERIF, SERIF, SYSTEM
+
+from .properties import toga_color
+
+
 class SimpleProbe:
     def __init__(self, widget):
         self.widget = widget
@@ -12,12 +20,27 @@ class SimpleProbe:
         else:
             raise ValueError(f"cannot find {self.native} in {container_native}")
 
+    def assert_alignment(self, expected):
+        assert self.alignment == expected
+
+    def assert_font_family(self, expected):
+        assert self.font.family == {
+            CURSIVE: "Apple Chancery",
+            FANTASY: "Papyrus",
+            MONOSPACE: "Courier New",
+            SANS_SERIF: "Helvetica",
+            SERIF: "Times",
+            SYSTEM: ".AppleSystemUIFont",
+        }.get(expected, expected)
+
     async def redraw(self):
         """Request a redraw of the app, waiting until that redraw has completed."""
-        # Refresh the layout
-        self.widget.window.content.refresh()
         # Force a repaint
         self.widget.window.content._impl.native.displayIfNeeded()
+
+        # If we're running slow, wait for a second
+        if self.widget.app.run_slow:
+            await asyncio.sleep(1)
 
     @property
     def enabled(self):
@@ -34,6 +57,16 @@ class SimpleProbe:
     @property
     def height(self):
         return self.native.frame.size.height
+
+    @property
+    def background_color(self):
+        if self.native.drawsBackground:
+            if self.native.backgroundColor:
+                return toga_color(self.native.backgroundColor)
+            else:
+                return None
+        else:
+            return TRANSPARENT
 
     def press(self):
         self.native.performClick(None)

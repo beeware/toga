@@ -1,12 +1,15 @@
 from importlib import import_module
 
-from pytest import skip
+import pytest
 
 
 def get_probe(widget):
     name = type(widget).__name__
+
     try:
         module = import_module(f"tests_backend.widgets.{name.lower()}")
-    except ModuleNotFoundError as e:
-        skip(f"No probe module for {name} ({e})")
-    return getattr(module, f"{name}Probe")(widget)
+        return getattr(module, f"{name}Probe")(widget)
+    except ModuleNotFoundError:
+        pytest.skip(f"No platform probe module found for widget {name!r}")
+    except AttributeError:
+        pytest.skip(f"No platform probe found for widget {name!r}")

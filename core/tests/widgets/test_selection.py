@@ -7,7 +7,6 @@ class SelectionTests(TestCase):
         super().setUp()
 
         self.items = [f"item_{x}" for x in range(0, 3)]
-        self.selection = toga.Selection()
         self.selection = toga.Selection(items=self.items)
 
     def test_widget_created(self):

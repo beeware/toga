@@ -1,5 +1,5 @@
+from ..container import TogaContainer
 from ..libs import Gtk
-from ..window import GtkViewport
 from .base import Widget
 
 
@@ -29,6 +29,8 @@ class TogaSplitContainer(Gtk.Paned):
 class SplitContainer(Widget):
     def create(self):
         self.native = TogaSplitContainer(self)
+        self.native.set_wide_handle(True)
+
         # Use Paned widget rather than VPaned and HPaned deprecated widgets
         # Note that orientation in toga behave unlike Gtk
         if self.interface.direction == self.interface.VERTICAL:
@@ -41,25 +43,17 @@ class SplitContainer(Widget):
         self.native.interface = self.interface
 
     def add_content(self, position, widget, flex):
-        widget.viewport = GtkViewport(self.native)
-
         # Add all children to the content widget.
-        for child in widget.interface.children:
-            child._impl.container = widget
+        sub_container = TogaContainer()
+        sub_container.content = widget
 
         if position >= 2:
             raise ValueError("SplitContainer content must be a 2-tuple")
 
         if position == 0:
-            self.native.set_wide_handle(True)
-            widget_frame = Gtk.Frame()
-            widget_frame.add(widget.native)
-            self.native.pack1(widget_frame, flex, False)
+            self.native.pack1(sub_container, flex, False)
         elif position == 1:
-            self.native.set_wide_handle(True)
-            widget_frame = Gtk.Frame()
-            widget_frame.add(widget.native)
-            self.native.pack2(widget_frame, flex, False)
+            self.native.pack2(sub_container, flex, False)
 
     def set_app(self, app):
         if self.interface.content:

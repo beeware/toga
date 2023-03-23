@@ -5,7 +5,6 @@ from toga.fonts import (
     ITALIC,
     MESSAGE,
     MONOSPACE,
-    NORMAL,
     SANS_SERIF,
     SERIF,
     SMALL_CAPS,
@@ -37,10 +36,7 @@ class Font:
                 font_size = self.interface.size
 
             if self.interface.family == SYSTEM:
-                if self.interface.weight == BOLD:
-                    font = NSFont.boldSystemFontOfSize(font_size)
-                else:
-                    font = NSFont.systemFontOfSize(font_size)
+                font = NSFont.systemFontOfSize(font_size)
             elif self.interface.family == MESSAGE:
                 font = NSFont.messageFontOfSize(font_size)
             else:
@@ -65,40 +61,24 @@ class Font:
                             self.interface.size, family
                         )
                     )
+                    font = NSFont.systemFontOfSize(font_size)
 
-                # Convert the base font definition into a font with all the desired traits.
-                attributes_mask = 0
-                if self.interface.weight == BOLD:
-                    attributes_mask |= NSFontMask.Bold.value
-
-                if self.interface.style == ITALIC:
-                    attributes_mask |= NSFontMask.Italic.value
-                elif self.interface.style == SMALL_CAPS:
-                    attributes_mask |= NSFontMask.SmallCaps.value
-
-                if attributes_mask:
-                    font = NSFontManager.sharedFontManager.convertFont(
-                        font, toHaveTrait=attributes_mask
-                    )
-
-                full_name = "{family}{weight}{style}".format(
-                    family=family,
-                    weight=(" " + self.interface.weight.title())
-                    if self.interface.weight is not NORMAL
-                    else "",
-                    style=(" " + self.interface.style.title())
-                    if self.interface.style is not NORMAL
-                    else "",
+            # Convert the base font definition into a font with all the desired traits.
+            attributes_mask = 0
+            if self.interface.weight == BOLD:
+                attributes_mask |= NSFontMask.Bold.value
+            if self.interface.style == ITALIC:
+                attributes_mask |= NSFontMask.Italic.value
+            if self.interface.variant == SMALL_CAPS:
+                attributes_mask |= NSFontMask.SmallCaps.value
+            if attributes_mask:
+                # If there is no font with the requested traits, this returns the original
+                # font unchanged.
+                font = NSFontManager.sharedFontManager.convertFont(
+                    font, toHaveTrait=attributes_mask
                 )
 
-                if font is None:
-                    print(
-                        "Unable to load font: {}pt {}".format(
-                            self.interface.size, full_name
-                        )
-                    )
-                else:
-                    _FONT_CACHE[self.interface] = font
+            _FONT_CACHE[self.interface] = font.retain()
 
         self.native = font
 

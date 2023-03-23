@@ -81,7 +81,7 @@ class ScrollContainer(Widget):
             self._content = widget
 
             self._impl.set_content(widget._impl)
-            self._impl.rehint()
+            self.refresh()
 
             widget.refresh()
 

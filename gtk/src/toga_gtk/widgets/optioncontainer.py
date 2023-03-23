@@ -1,5 +1,5 @@
+from ..container import TogaContainer
 from ..libs import Gtk
-from ..window import GtkViewport
 from .base import Widget
 
 
@@ -17,13 +17,10 @@ class OptionContainer(Widget):
             )
 
     def add_content(self, index, text, widget):
-        widget.viewport = GtkViewport(widget.native)
+        sub_container = TogaContainer()
+        sub_container.content = widget
 
-        # Add all children to the content widget.
-        for child in widget.interface.children:
-            child._impl.container = widget
-
-        self.native.insert_page(widget.native, Gtk.Label(label=text), index)
+        self.native.insert_page(sub_container, Gtk.Label(label=text), index)
 
         # Tabs aren't visible by default;
         # tell the notebook to show all content.

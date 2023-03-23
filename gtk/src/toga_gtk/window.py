@@ -1,30 +1,8 @@
 from toga.command import GROUP_BREAK, SECTION_BREAK
 from toga.handlers import wrapped_handler
 
+from .container import TogaContainer
 from .libs import Gtk
-
-
-class GtkViewport:
-    def __init__(self, native):
-        self.native = native
-        # GDK/GTK always renders at 96dpi. When HiDPI mode is enabled, it is
-        # managed at the compositor level. See
-        # https://wiki.archlinux.org/index.php/HiDPI#GDK_3_(GTK_3) for details
-        self.dpi = 96
-        self.baseline_dpi = self.dpi
-
-    @property
-    def width(self):
-        # Treat `native=None` as a 0x0 viewport.
-        if self.native is None:
-            return 0
-        return self.native.get_allocated_width()
-
-    @property
-    def height(self):
-        if self.native is None:
-            return 0
-        return self.native.get_allocated_height()
 
 
 class Window:
@@ -42,6 +20,7 @@ class Window:
         self.native._impl = self
 
         self.native.connect("delete-event", self.gtk_delete_event)
+
         self.native.set_default_size(size[0], size[1])
 
         self.set_title(title)
@@ -57,6 +36,17 @@ class Window:
         self.toolbar_native = None
         self.toolbar_items = None
 
+        # The GTK window's content is the layout; any user content is placed
+        # into the container, which is the bottom widget in the layout. The
+        # toolbar (if required) will be added at the top of the layout.
+        #
+        # Because expand and fill are True, the container will fill the available
+        # space, and will get a size_allocate callback if the window is resized.
+        self.layout = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+        self.container = TogaContainer()
+        self.layout.pack_end(self.container, expand=True, fill=True, padding=0)
+        self.native.add(self.layout)
+
     def get_title(self):
         return self.native.get_title()
 
@@ -70,6 +60,9 @@ class Window:
         if self.toolbar_items is None:
             self.toolbar_native = Gtk.Toolbar()
             self.toolbar_items = {}
+            self.layout.pack_start(
+                self.toolbar_native, expand=False, fill=False, padding=0
+            )
         else:
             for cmd, item_impl in self.toolbar_items.items():
                 self.toolbar_native.remove(item_impl)
@@ -95,53 +88,14 @@ class Window:
             self.toolbar_native.insert(item_impl, -1)
 
     def clear_content(self):
-        if self.interface.content:
-            for child in self.interface.content.children:
-                child._impl.container = None
+        pass
 
     def set_content(self, widget):
-        # Construct the top-level layout, and set the window's view to
-        # the be the widget's native object.
-        # Start by purging any existing content from the existing layout.
-        if self.layout:
-            if self.toolbar_native:
-                self.layout.remove(self.toolbar_native)
-            self.native.remove(self.layout)
-
-        self.layout = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
-
-        if self.toolbar_native:
-            self.layout.pack_start(self.toolbar_native, False, False, 0)
-        self.layout.pack_start(widget.native, True, True, 0)
-
-        self.native.add(self.layout)
-
-        # Make the window sensitive to size changes
-        widget.native.connect("size-allocate", self.gtk_size_allocate)
-
-        # Set the widget's viewport to be based on the window's content.
-        widget.viewport = GtkViewport(widget.native)
-
-        # Add all children to the content widget.
-        for child in widget.interface.children:
-            child._impl.container = widget
-
-        # If the window is visible, call show() to force a redisplay of window
-        # content.
-        if self.get_visible():
-            self.show()
+        # Set the new widget to be the container's content
+        self.container.content = widget
 
     def show(self):
         self.native.show_all()
-
-        # Now that the content is visible, we can do our initial hinting,
-        # and use that as the basis for setting the minimum window size.
-        self.interface.content._impl.rehint()
-        self.interface.content.style.layout(
-            self.interface.content, GtkViewport(native=None)
-        )
-        self.interface.content._impl.min_width = self.interface.content.layout.width
-        self.interface.content._impl.min_height = self.interface.content.layout.height
 
     def hide(self):
         self.native.hide()
@@ -165,10 +119,6 @@ class Window:
         return not should_close
 
     def set_on_close(self, handler):
-        pass
-
-    def gtk_size_allocate(self, widget, allocation):
-        #  ("ON WINDOW SIZE ALLOCATION", allocation.width, allocation.height)
         pass
 
     def close(self):

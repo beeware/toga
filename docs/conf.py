@@ -100,8 +100,10 @@ pygments_style = "sphinx"
 
 # API status indicators.
 rst_prolog = """
-.. |y| replace:: ●
-.. |b| replace:: ○
+.. role:: stable
+.. role:: beta
+.. |y| replace:: :stable:`●`
+.. |b| replace:: :beta:`○`
 """
 
 

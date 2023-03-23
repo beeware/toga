@@ -3,7 +3,7 @@ from decimal import Decimal
 
 from travertino.size import at_least
 
-from ..libs import Gtk
+from ..libs import Gtk, gtk_alignment
 from .base import Widget
 
 
@@ -17,8 +17,6 @@ class NumberInput(Widget):
         self.native.set_numeric(True)
 
         self.native.connect("changed", self.gtk_on_change)
-
-        self.rehint()
 
     def gtk_on_change(self, widget):
         value = widget.get_text().replace(",", ".") or 0
@@ -55,7 +53,8 @@ class NumberInput(Widget):
             self.native.set_value(self.interface.value)
 
     def set_alignment(self, value):
-        self.interface.factory.not_implemented("NumberInput.set_alignment()")
+        xalign, justify = gtk_alignment(value)
+        self.native.set_alignment(xalign)
 
     def set_font(self, font):
         self.interface.factory.not_implemented("NumberInput.set_font()")

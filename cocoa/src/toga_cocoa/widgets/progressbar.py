@@ -13,7 +13,6 @@ class ProgressBar(Widget):
 
         # Add the layout constraints
         self.add_constraints()
-        self.rehint()
 
     def set_value(self, value):
         self.native.doubleValue = self.interface.value

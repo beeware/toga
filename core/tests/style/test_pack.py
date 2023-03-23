@@ -22,21 +22,34 @@ from toga.style.pack import (
 
 
 class TestNode(Node):
+    __test__ = False
+
     def __init__(self, name, style, size=None, children=None):
         super().__init__(
             style=style, children=children, applicator=TogaApplicator(self)
         )
+
         self.name = name
         self._impl = Mock()
         if size:
             self.intrinsic.width = size[0]
             self.intrinsic.height = size[1]
 
+        self.refresh = Mock()
+
     def __repr__(self):
         return f"<{self.name} at {id(self)}>"
 
+    def refresh(self):
+        # We're directly modifying styles and computing layouts for specific
+        # viewports, so we don't need to trigger layout changes when a style is
+        # changed.
+        pass
+
 
 class TestViewport:
+    __test__ = False
+
     def __init__(self, width, height, dpi=96, baseline_dpi=96):
         self.height = height
         self.width = width
@@ -46,14 +59,14 @@ class TestViewport:
 
 class TestPackStyleApply(TestCase):
     def test_set_default_right_textalign_when_rtl(self):
-        root = TestNode("app", style=Pack(text_align=None, text_direction=RTL))
+        root = TestNode("app", style=Pack(text_direction=RTL))
         root.style.reapply()
         # Two calls; one caused by text_align, one because text_direction
         # implies a change to text alignment.
         assert root._impl.set_alignment.mock_calls == [call(RIGHT), call(RIGHT)]
 
     def test_set_default_left_textalign_when_no_rtl(self):
-        root = TestNode("app", style=Pack(text_align=None))
+        root = TestNode("app", style=Pack())
         root.style.reapply()
         # Two calls; one caused by text_align, one because text_direction
         # implies a change to text alignment.
@@ -91,6 +104,7 @@ class TestPackStyleApply(TestCase):
         root._impl.set_font.assert_called_with(
             Font("Roboto", 12, "normal", "small-caps", "bold")
         )
+        root.refresh.assert_called_with()
 
     def test_set_visibility_hidden(self):
         root = TestNode("app", style=Pack(visibility=HIDDEN))
@@ -153,10 +167,10 @@ class PackLayoutTests(TestCase):
         root.style.layout(root, TestViewport(640, 480, dpi=96))
         self.assertLayout(
             root,
-            (640, 130),
+            (640, 480),
             {
                 "origin": (0, 0),
-                "content": (640, 130),
+                "content": (640, 480),
                 "children": [{"origin": (50, 50), "content": (540, 30)}],
             },
         )
@@ -165,10 +179,10 @@ class PackLayoutTests(TestCase):
         root.style.layout(root, TestViewport(640, 480, dpi=144))
         self.assertLayout(
             root,
-            (640, 180),
+            (640, 480),
             {
                 "origin": (0, 0),
-                "content": (640, 180),
+                "content": (640, 480),
                 "children": [{"origin": (75, 75), "content": (490, 30)}],
             },
         )
@@ -201,10 +215,10 @@ class PackLayoutTests(TestCase):
         root.style.layout(root, TestViewport(480, 640, dpi=96))
         self.assertLayout(
             root,
-            (130, 640),
+            (480, 640),
             {
                 "origin": (0, 0),
-                "content": (130, 640),
+                "content": (480, 640),
                 "children": [{"origin": (50, 50), "content": (30, 540)}],
             },
         )
@@ -213,10 +227,10 @@ class PackLayoutTests(TestCase):
         root.style.layout(root, TestViewport(480, 640, dpi=144))
         self.assertLayout(
             root,
-            (180, 640),
+            (480, 640),
             {
                 "origin": (0, 0),
-                "content": (180, 640),
+                "content": (480, 640),
                 "children": [{"origin": (75, 75), "content": (30, 490)}],
             },
         )
@@ -248,10 +262,10 @@ class PackLayoutTests(TestCase):
         root.style.layout(root, TestViewport(640, 480, dpi=160, baseline_dpi=160))
         self.assertLayout(
             root,
-            (640, 130),
+            (640, 480),
             {
                 "origin": (0, 0),
-                "content": (640, 130),
+                "content": (640, 480),
                 "children": [{"origin": (50, 50), "content": (540, 30)}],
             },
         )
@@ -260,10 +274,10 @@ class PackLayoutTests(TestCase):
         root.style.layout(root, TestViewport(640, 480, dpi=240, baseline_dpi=160))
         self.assertLayout(
             root,
-            (640, 180),
+            (640, 480),
             {
                 "origin": (0, 0),
-                "content": (640, 180),
+                "content": (640, 480),
                 "children": [{"origin": (75, 75), "content": (490, 30)}],
             },
         )
@@ -349,10 +363,10 @@ class PackLayoutTests(TestCase):
         root.style.layout(root, TestViewport(640, 480, dpi=96))
         self.assertLayout(
             root,
-            (640, 120),
+            (640, 480),
             {
                 "origin": (0, 10),
-                "content": (640, 110),
+                "content": (640, 470),
                 "children": [
                     {
                         "origin": (5, 15),
@@ -375,34 +389,33 @@ class PackLayoutTests(TestCase):
                 ],
             },
         )
-
         # HiDPI Normal size
         root.style.layout(root, TestViewport(640, 480, dpi=144))
         self.assertLayout(
             root,
-            (640, 142),
+            (640, 480),
             {
-                "origin": (0, 10),
-                "content": (640, 132),
+                "origin": (0, 15),
+                "content": (640, 465),
                 "children": [
                     {
-                        "origin": (7, 17),
+                        "origin": (7, 22),
                         "content": (626, 15),
                         "children": [
-                            {"origin": (247, 17), "content": (221, 15)},
-                            {"origin": (483, 17), "content": (150, 10)},
+                            {"origin": (247, 22), "content": (221, 15)},
+                            {"origin": (483, 22), "content": (150, 10)},
                         ],
                     },
                     {
-                        "origin": (7, 46),
+                        "origin": (7, 51),
                         "content": (626, 15),
                         "children": [
-                            {"origin": (7, 46), "content": (225, 10)},
-                            {"origin": (247, 46), "content": (221, 15)},
-                            {"origin": (483, 46), "content": (150, 10)},
+                            {"origin": (7, 51), "content": (225, 10)},
+                            {"origin": (247, 51), "content": (221, 15)},
+                            {"origin": (483, 51), "content": (150, 10)},
                         ],
                     },
-                    {"origin": (22, 90), "content": (596, 30)},
+                    {"origin": (22, 95), "content": (596, 30)},
                 ],
             },
         )
@@ -909,10 +922,10 @@ class PackLayoutTests(TestCase):
         root.style.layout(root, TestViewport(640, 480, dpi=96))
         self.assertLayout(
             root,
-            (540, 300),
+            (640, 300),
             {
                 "origin": (0, 0),
-                "content": (540, 300),
+                "content": (640, 300),
                 "children": [
                     {"origin": (0, 0), "content": (540, 100)},
                     {
@@ -998,10 +1011,10 @@ class PackLayoutTests(TestCase):
         root.style.layout(root, TestViewport(640, 480, dpi=96))
         self.assertLayout(
             root,
-            (540, 300),
+            (640, 300),
             {
                 "origin": (0, 0),
-                "content": (540, 300),
+                "content": (640, 300),
                 "children": [
                     {"origin": (0, 0), "content": (540, 100)},
                     {
@@ -1087,10 +1100,10 @@ class PackLayoutTests(TestCase):
         root.style.layout(root, TestViewport(640, 480, dpi=96))
         self.assertLayout(
             root,
-            (540, 300),
+            (640, 300),
             {
                 "origin": (0, 0),
-                "content": (540, 300),
+                "content": (640, 300),
                 "children": [
                     {"origin": (0, 0), "content": (540, 100)},
                     {
@@ -1211,10 +1224,10 @@ class PackLayoutTests(TestCase):
         root.style.layout(root, TestViewport(640, 480, dpi=96))
         self.assertLayout(
             root,
-            (540, 300),
+            (640, 300),
             {
                 "origin": (0, 0),
-                "content": (540, 300),
+                "content": (640, 300),
                 "children": [
                     {"origin": (0, 0), "content": (540, 100)},
                     {"origin": (50, 100), "content": (440, 200)},
@@ -1290,10 +1303,10 @@ class PackLayoutTests(TestCase):
         root.style.layout(root, TestViewport(640, 480, dpi=96))
         self.assertLayout(
             root,
-            (310, 430),
+            (640, 480),
             {
                 "origin": (0, 0),
-                "content": (310, 430),
+                "content": (640, 480),
                 "children": [
                     {"origin": (0, 0), "content": (100, 430)},
                     {
@@ -1312,10 +1325,10 @@ class PackLayoutTests(TestCase):
         root.style.layout(root, TestViewport(640, 480, dpi=144))
         self.assertLayout(
             root,
-            (465, 645),
+            (640, 645),
             {
                 "origin": (0, 0),
-                "content": (465, 645),
+                "content": (640, 645),
                 "children": [
                     {"origin": (0, 0), "content": (150, 645)},
                     {
@@ -1383,10 +1396,10 @@ class PackLayoutTests(TestCase):
         root.style.layout(root, TestViewport(640, 480, dpi=96))
         self.assertLayout(
             root,
-            (430, 310),
+            (640, 480),
             {
                 "origin": (0, 0),
-                "content": (430, 310),
+                "content": (640, 480),
                 "children": [
                     {"origin": (0, 0), "content": (430, 100)},
                     {
@@ -1405,10 +1418,10 @@ class PackLayoutTests(TestCase):
         root.style.layout(root, TestViewport(640, 480, dpi=144))
         self.assertLayout(
             root,
-            (645, 465),
+            (645, 480),
             {
                 "origin": (0, 0),
-                "content": (645, 465),
+                "content": (645, 480),
                 "children": [
                     {"origin": (0, 0), "content": (645, 150)},
                     {
@@ -1458,10 +1471,10 @@ class PackLayoutTests(TestCase):
         root.style.layout(root, TestViewport(640, 480, dpi=96))
         self.assertLayout(
             root,
-            (210, 100),
+            (640, 480),
             {
                 "origin": (0, 0),
-                "content": (210, 100),
+                "content": (640, 480),
                 "children": [
                     {"origin": (146, 0), "content": (30, 100)},
                     {"origin": (38, 0), "content": (36, 100)},
@@ -1473,10 +1486,10 @@ class PackLayoutTests(TestCase):
         root.style.layout(root, TestViewport(640, 480, dpi=144))
         self.assertLayout(
             root,
-            (315, 150),
+            (640, 480),
             {
                 "origin": (0, 0),
-                "content": (315, 150),
+                "content": (640, 480),
                 "children": [
                     {"origin": (219, 0), "content": (45, 150)},
                     {"origin": (57, 0), "content": (54, 150)},
@@ -1519,10 +1532,10 @@ class PackLayoutTests(TestCase):
         root.style.layout(root, TestViewport(640, 480, dpi=96))
         self.assertLayout(
             root,
-            (100, 210),
+            (640, 480),
             {
                 "origin": (0, 0),
-                "content": (100, 210),
+                "content": (640, 480),
                 "children": [
                     {"origin": (0, 32), "content": (100, 30)},
                     {"origin": (0, 134), "content": (100, 36)},
@@ -1534,10 +1547,10 @@ class PackLayoutTests(TestCase):
         root.style.layout(root, TestViewport(640, 480, dpi=144))
         self.assertLayout(
             root,
-            (150, 315),
+            (640, 480),
             {
                 "origin": (0, 0),
-                "content": (150, 315),
+                "content": (640, 480),
                 "children": [
                     {"origin": (0, 48), "content": (150, 45)},
                     {"origin": (0, 201), "content": (150, 54)},
@@ -1574,10 +1587,10 @@ class PackLayoutTests(TestCase):
         root.style.layout(root, TestViewport(640, 480, dpi=96))
         self.assertLayout(
             root,
-            (60, 100),
+            (640, 480),
             {
                 "origin": (0, 0),
-                "content": (60, 100),
+                "content": (640, 480),
                 "children": [
                     {"origin": (30, 0), "content": (30, 100)},
                     {"origin": (0, 0), "content": (30, 30)},
@@ -1589,10 +1602,10 @@ class PackLayoutTests(TestCase):
         root.style.layout(root, TestViewport(640, 480, dpi=144))
         self.assertLayout(
             root,
-            (90, 150),
+            (640, 480),
             {
                 "origin": (0, 0),
-                "content": (90, 150),
+                "content": (640, 480),
                 "children": [
                     {"origin": (45, 0), "content": (45, 150)},
                     {"origin": (0, 0), "content": (45, 45)},
@@ -1629,10 +1642,10 @@ class PackLayoutTests(TestCase):
         root.style.layout(root, TestViewport(640, 480, dpi=96))
         self.assertLayout(
             root,
-            (60, 100),
+            (640, 480),
             {
                 "origin": (0, 0),
-                "content": (60, 100),
+                "content": (640, 480),
                 "children": [
                     {"origin": (30, 0), "content": (30, 100)},
                     {"origin": (0, 70), "content": (30, 30)},
@@ -1644,10 +1657,10 @@ class PackLayoutTests(TestCase):
         root.style.layout(root, TestViewport(640, 480, dpi=144))
         self.assertLayout(
             root,
-            (90, 150),
+            (640, 480),
             {
                 "origin": (0, 0),
-                "content": (90, 150),
+                "content": (640, 480),
                 "children": [
                     {"origin": (45, 0), "content": (45, 150)},
                     {"origin": (0, 105), "content": (45, 45)},
@@ -1684,10 +1697,10 @@ class PackLayoutTests(TestCase):
         root.style.layout(root, TestViewport(640, 480, dpi=96))
         self.assertLayout(
             root,
-            (100, 60),
+            (640, 480),
             {
                 "origin": (0, 0),
-                "content": (100, 60),
+                "content": (640, 480),
                 "children": [
                     {"origin": (0, 0), "content": (100, 30)},
                     {"origin": (0, 30), "content": (30, 30)},
@@ -1699,10 +1712,10 @@ class PackLayoutTests(TestCase):
         root.style.layout(root, TestViewport(640, 480, dpi=144))
         self.assertLayout(
             root,
-            (150, 90),
+            (640, 480),
             {
                 "origin": (0, 0),
-                "content": (150, 90),
+                "content": (640, 480),
                 "children": [
                     {"origin": (0, 0), "content": (150, 45)},
                     {"origin": (0, 45), "content": (45, 45)},
@@ -1739,10 +1752,10 @@ class PackLayoutTests(TestCase):
         root.style.layout(root, TestViewport(640, 480, dpi=96))
         self.assertLayout(
             root,
-            (100, 60),
+            (640, 480),
             {
                 "origin": (0, 0),
-                "content": (100, 60),
+                "content": (640, 480),
                 "children": [
                     {"origin": (0, 0), "content": (100, 30)},
                     {"origin": (70, 30), "content": (30, 30)},
@@ -1754,10 +1767,10 @@ class PackLayoutTests(TestCase):
         root.style.layout(root, TestViewport(640, 480, dpi=144))
         self.assertLayout(
             root,
-            (150, 90),
+            (640, 480),
             {
                 "origin": (0, 0),
-                "content": (150, 90),
+                "content": (640, 480),
                 "children": [
                     {"origin": (0, 0), "content": (150, 45)},
                     {"origin": (105, 45), "content": (45, 45)},

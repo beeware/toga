@@ -10,5 +10,8 @@ Path = JavaClass("android/graphics/Path")
 Path__Direction = JavaClass("android/graphics/Path$Direction")
 Paint__Style = JavaClass("android/graphics/Paint$Style")
 PorterDuff__Mode = JavaClass("android/graphics/PorterDuff$Mode")
+PorterDuffColorFilter = JavaClass("android/graphics/PorterDuffColorFilter")
 Rect = JavaClass("android/graphics/Rect")
 Typeface = JavaClass("android/graphics/Typeface")
+
+LineBreaker = JavaClass("android/graphics/text/LineBreaker")

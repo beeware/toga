@@ -1,5 +1,5 @@
 import toga
-from toga.constants import BOLD, COLUMN, ITALIC, MONOSPACE, ROW
+from toga.constants import BOLD, COLUMN, ITALIC, MONOSPACE, NORMAL, ROW
 from toga.style import Pack
 
 
@@ -9,6 +9,18 @@ class ExampleFontExampleApp(toga.App):
     # Button callback functions
     def do_clear(self, widget, **kwargs):
         self.textpanel.value = ""
+
+    def do_weight(self, widget, **kwargs):
+        if widget.style.font_weight == NORMAL:
+            widget.style.font_weight = BOLD
+        else:
+            widget.style.font_weight = NORMAL
+
+    def do_style(self, widget, **kwargs):
+        if widget.style.font_style == NORMAL:
+            widget.style.font_style = ITALIC
+        else:
+            widget.style.font_style = NORMAL
 
     def do_monospace_button(self, widget):
         self.textpanel.value += widget.text + "\n"
@@ -36,8 +48,15 @@ class ExampleFontExampleApp(toga.App):
         )
 
         # Buttons
-        btn_style = Pack(flex=1)
-        btn_clear = toga.Button("Clear", on_press=self.do_clear, style=btn_style)
+        btn_box1 = toga.Box(
+            style=Pack(direction=ROW, padding_bottom=10),
+            children=[
+                toga.Button("Clear", on_press=self.do_clear),
+                toga.Button("Weight", on_press=self.do_weight),
+                toga.Button("Style", on_press=self.do_style),
+            ],
+        )
+
         btn1 = toga.Button(
             "Monospace",
             on_press=self.do_monospace_button,
@@ -61,9 +80,12 @@ class ExampleFontExampleApp(toga.App):
             on_press=self.do_icon_button,
             style=Pack(font_family="awesome-free-solid", font_size=14, width=50),
         )
-        btn_box = toga.Box(
-            children=[btn_clear, btn1, btn2, btn3, btn4], style=Pack(direction=ROW)
+        btn_box2 = toga.Box(
+            style=Pack(direction=ROW, padding_bottom=10),
+            children=[btn1, btn2, btn3, btn4],
         )
+
+        # Labels
         lbl1 = toga.Label("Endor", style=Pack(font_family="Endor", font_size=14))
         lbl2 = toga.Label(
             "Endor bold",
@@ -103,9 +125,20 @@ class ExampleFontExampleApp(toga.App):
                 font_style=ITALIC,
             ),
         )
-        lbl9 = toga.Label(
-            "Unknown font", style=Pack(font_family="Unknown", font_size=14)
+
+        unknown_style = dict(font_family="Unknown", font_size=14)
+        lbl_u = toga.Label("Unknown", style=Pack(**unknown_style))
+        lbl_ub = toga.Label(
+            "Unknown bold", style=Pack(font_weight=BOLD, **unknown_style)
         )
+        lbl_ui = toga.Label(
+            "Unknown italic", style=Pack(font_style=ITALIC, **unknown_style)
+        )
+        lbl_ubi = toga.Label(
+            "Unknown bold italic",
+            style=Pack(font_weight=BOLD, font_style=ITALIC, **unknown_style),
+        )
+
         self.textpanel = toga.MultilineTextInput(
             readonly=False, style=Pack(flex=1), placeholder="Ready."
         )
@@ -113,7 +146,8 @@ class ExampleFontExampleApp(toga.App):
         # Outermost box
         outer_box = toga.Box(
             children=[
-                btn_box,
+                btn_box1,
+                btn_box2,
                 lbl1,
                 lbl2,
                 lbl3,
@@ -122,7 +156,10 @@ class ExampleFontExampleApp(toga.App):
                 lbl6,
                 lbl7,
                 lbl8,
-                lbl9,
+                lbl_u,
+                lbl_ub,
+                lbl_ui,
+                lbl_ubi,
                 self.textpanel,
             ],
             style=Pack(flex=1, direction=COLUMN, padding=10),

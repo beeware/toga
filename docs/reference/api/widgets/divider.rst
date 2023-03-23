@@ -1,6 +1,11 @@
 Divider
 =======
 
+A separator used to visually distinguish two sections of content in a layout.
+
+.. figure:: /reference/images/Divider.jpeg
+    :align: center
+
 .. rst-class:: widget-support
 .. csv-filter:: Availability (:ref:`Key <api-status-key>`)
    :header-rows: 1
@@ -8,12 +13,10 @@ Divider
    :included_cols: 4,5,6,7,8,9
    :exclude: {0: '(?!(Divider|Component))'}
 
-The divider is used to visually separate sections of a user layout with a line.
-
 Usage
 -----
 
-Simple usage to separate two labels in a column:
+To separate two labels stacked vertically with a horizontal line:
 
 .. code-block:: Python
 
@@ -29,8 +32,8 @@ Simple usage to separate two labels in a column:
         style=Pack(direction=COLUMN, flex=1, padding=10)
     )
 
-The direction (horizontal or vertical) can be given as an argument. If not specified, it
-will default to horizontal.
+The direction (horizontal or vertical) can be given as an argument. If not
+specified, it will default to horizontal.
 
 Reference
 ---------

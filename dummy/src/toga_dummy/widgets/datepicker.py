@@ -17,8 +17,5 @@ class DatePicker(Widget):
     def set_max_date(self, value):
         return self._set_value("max date", value)
 
-    def rehint(self):
-        self._action("rehint DatePicker")
-
     def set_on_change(self, handler):
         self._set_value("on_change", handler)

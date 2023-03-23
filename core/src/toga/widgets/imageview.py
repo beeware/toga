@@ -51,7 +51,7 @@ class ImageView(Widget):
 
         if self._image is not None:
             self._impl.set_image(image)
-            self._impl.rehint()
+            self.refresh()
 
         # @property
         # def alignment(self):

@@ -262,6 +262,8 @@ UIControlStateReserved = 0xFF000000
 ######################################################################
 # UIFont.h
 UIFont = ObjCClass("UIFont")
+UIFontDescriptorTraitItalic = 1 << 0
+UIFontDescriptorTraitBold = 1 << 1
 
 ######################################################################
 # UIGraphics.h

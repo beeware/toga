@@ -11,7 +11,7 @@ properties exist to control color, text alignment and so on.
 It is similar in some ways to the CSS Flexbox algorithm; but dramatically
 simplified, as there is no allowance for overflowing boxes.
 
-.. admonition::
+.. note::
 
    The string values defined here are the string literals that the Pack
    algorithm accepts. These values are also pre-defined as Python constants in
@@ -238,230 +238,84 @@ The weight of the font to be used.
 
 **Initial value:** System default
 
-``font``
---------
 
-A shorthand value
-
-
-The Pack algorithm
-~~~~~~~~~~~~~~~~~~
-
-The pack algorithm is applied to the root of a layout tree, with a box
-specifying the allocated width and allocated height.
-
-1. **Establish the available width**
-
-   If the element has a ``width`` specified, the available width is set to
-   that width.
-
-   Otherwise, the adjusted view width is set to the view width, less the
-   amount of ``padding_left`` and ``padding_right``. If this results in a
-   value less than 0, the adjusted view width is set to 0.
-
-   If the element has a fixed intrinsic width, the available width is set to
-   the intrinsic width.
-
-   If the element has a minimum intrinsic width, the available width is fixed
-   to the maximum of the adjusted view width and the intrinsic minimum width.
-
-   If the element does not have an intrinsic width, the available width is set
-   to the adjusted view width.
-
-2. **Establish the available height**
-
-   If the element has a ``height`` specified, the available height is set to
-   that height.
-
-   Otherwise, the adjusted view height is set to the view height, less the
-   amount of ``padding_top`` and ``padding_bottom``. If this results in a
-   value less than 0, the adjusted view height is set to 0.
-
-   If the element has a fixed intrinsic height, the available height is set to
-   the intrinsic height.
-
-   If the element has a minimum intrinsic height, the available height is
-   fixed to the maximum of the adjusted view height and the intrinsic minimum
-   height.
-
-   If the element does not have an intrinsic height, the available height is
-   set to the adjusted view height.
-
-3. **Layout children**
-
-   If the element has no children, the final width of the element is set to
-   the available width, and the final height of the element is set to the
-   available height.
-
-   Otherwise, the element is a parent element, the final width is set to 0,
-   and the children are laid out.
-
-   If the parent element has a ``display`` value of ``row``, it is a **row
-   box**, and child layout occurs as follows:
-
-   1. **Allocated fixed width elements**
-
-      This step is performed on every child, in definition order.
-
-      If the child has:
-
-      * an explicitly specified ``width``; or
-      * a fixed intrinsic width; or
-      * a ``flex`` value of 0
-
-      then the child is then laid out using a recursive call to this
-      algorithm, using the current available width and available height.
-
-      The child's full width is then evaluated as the content width allocated
-      by the recursive layout call, plus the ``padding_left`` and
-      ``padding_right`` of the child. The final width of the parent element
-      is increased by the child's full width; the available width of the
-      parent element is decreased by the child's full width.
-
-   2. **Evaluate flex quantum value**
-
-      The flex total is set to the sum of the ``flex`` value for every element
-      that *wasnt'* laid out in substep 1.
-
-      If the available width is less than 0, or the flex total is 0, the flex
-      quantum is set to 0. Otherwise, the flex quantum is set to the available
-      width divided by the flex total.
-
-   3. **Evaluate the flexible width elements**
-
-      This step is performed on every child, in definition order.
-
-      If the child was laid out in step 1, no layout is required, and this
-      step can be skipped.
-
-      Otherwise, the child's flex allocation is the product of the flex quantum
-      and the child's ``flex`` value.
-
-      If the child has a minimum intrinsic width, the child's allocated width
-      is set to the maximum of the flex allocation and the minimum intrinsic width.
-
-      Otherwise, the child's allocated width is set to the flex allocation.
-
-      The child is then laid out using a recursive call to this algorithm,
-      using the child's allocated width and the available height.
-
-      The child's full width is then evaluated as the content width allocated by
-      the recursive layout call, plus the ``padding_left`` and
-      ``padding_right`` of the child. The overall width of the parent element
-      is increased by the child's full width.
-
-   4. **Evaluate row height, and set the horizontal position of each element**.
-
-      The current horizontal offset is set to 0, and then this step is
-      performed on every child, in definition order.
-
-      If the ``text_direction`` of parent element is ``ltr``, the left
-      position of the child element is set to the current horizontal offset
-      plus the child's ``padding_left``. The current horizontal offset is then
-      increased by the child's content width plus the child's ``padding_right``.
-
-      If the ``text_direction`` of the parent element is ``rtl``, the right
-      position of the child element is set to the parent's final width, less
-      the offset, less the child's ``padding_right``. The current horizontal
-      offset is then increased by the child's content width plus the
-      child's ``padding_left``.
-
-   5. **Set the vertical position of each child inside the row**
-
-      This step is performed on every child, in definition order.
-
-      The extra height for a child is defined as the difference between the
-      parent elements final height and the child's full height.
-
-      If the parent element has an ``alignment`` value of ``top``, the
-      vertical position of the child is set to 0, relative to the parent.
-
-      If the parent element has an ``alignment`` value of ``bottom``, the
-      vertical position of the child is set to the extra height, relative to
-      the parent.
-
-      If the parent element has an ``alignment`` value of ``center``, the
-      vertical position of the child is set to 1/2 of the extra height,
-      relative to the parent.
-
-   If the parent element has a ``display`` value of ``column``, it is a
-   **column box**, and child layout occurs as follows:
-
-   1. **Allocated fixed height elements**
-
-      This step is performed on every child, in definition order.
-
-      If the child has:
-
-      * an explicitly specified ``height``; or
-      * a fixed intrinsic height; or
-      * a ``flex`` value of 0
-
-      then the child is then laid out using a recursive call to this
-      algorithm, using the current available width and available height.
-
-      The child's full height is then evaluated as the content height allocated
-      by the recursive layout call, plus the ``padding_top`` and
-      ``padding_bottom`` of the child. The final height of the parent element
-      is increased by the child's full height; the available height of the
-      parent element is decreased by the child's full height.
-
-   2. **Evaluate flex quantum value**
-
-      The flex total is set to the sum of the ``flex`` value for every element
-      that *wasn't* laid out in substep 1.
-
-      If the available height is less than 0, or the flex total is 0, the flex
-      quantum is set to 0. Otherwise, the flex quantum is set to the available
-      height divided by the flex total.
-
-   3. **Evaluate the flexible height elements**
-
-      This step is performed on every child, in definition order.
-
-      If the child was laid out in step 1, no layout is required, and this
-      step can be skipped.
-
-      Otherwise, the child's flex allocation is the product of the flex quantum
-      and the child's ``flex`` value.
-
-      If the child has a minimum intrinsic height, the child's allocated height
-      is set to the maximum of the flex allocation and the minimum intrinsic height.
-
-      Otherwise, the child's allocated height is set to the flex allocation.
-
-      The child is then laid out using a recursive call to this algorithm,
-      using the child's allocated height and the available width.
-
-      The child's full height is then evaluated as the content height allocated by
-      the recursive layout call, plus the ``padding_top`` and
-      ``padding_bottom`` of the child. The overall height of the parent element
-      is increased by the child's full height.
-
-   4. **Evaluate column width, and set the vertical position of each element**.
-
-      The current vertical offset is set to 0, and then this step is
-      performed on every child, in definition order.
-
-      The top position of the child element is set to the current vertical
-      offset plus the child's ``padding_top``. The current vertical offset is
-      then increased by the child's content height plus the child's
-      ``padding_bottom``.
-
-   5. **Set the horizontal position of each child inside the column**
-
-      This step is performed on every child, in definition order.
-
-      The extra width for a child is defined as the difference between the
-      parent element's final width and the child's full width.
-
-      If the parent element has an ``alignment`` value of ``left``, the
-      horizontal position of the child is set to 0, relative to the parent.
-
-      If the parent element has an ``alignment`` value of ``right``, the
-      horizontal position of the child is set to the extra width, relative to
-      the parent.
-
-      If the parent element has an ``alignment`` value of ``center``, the
-      horizontal position of the child is set to 1/2 of the extra width,
-      relative to the parent.
+The relationship between Pack and CSS
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Pack aims to be a functional subset of CSS. Any Pack layout can be converted
+into an equivalent CSS layout. After applying this conversion, the CSS layout
+should be considered a "reference implementation". Any disagreement between the
+rendering of a converted Pack layout in a browser, and the layout produced by
+the Toga implementation of Pack should be considered to be either a bug in Toga,
+or a bug in the mapping.
+
+The mapping that can be used to establish the reference implementation is:
+
+* The reference HTML layout document is rendered in `no-quirks mode
+  <https://developer.mozilla.org/en-US/docs/Web/HTML/Quirks_Mode_and_Standards_Mode>`__,
+  with a default CSS stylesheet:
+
+  .. code-block:: html
+
+      <!DOCTYPE html>
+      <html>
+         <head>
+            <meta charset="UTF-8" />
+            <title>Pack layout testbed</title>
+            <style>
+               html, body {
+                  height: 100%;
+               }
+               body {
+                  overflow: hidden;
+                  display: flex;
+                  margin: 0;
+                  white-space: pre;
+               }
+               div {
+                  display: flex;
+                  white-space: pre;
+               }
+            </style>
+         </head>
+         <body></body>
+      </html>
+
+* The root element of the Pack layout can be mapped to the ``<body>`` element of
+  the HTML reference document. The rendering area of the browser window becomes
+  the view area that Pack will fill.
+
+* All other elements in the DOM tree are mapped to ``<div>`` elements.
+
+* The following Pack declarations can be mapped to equivalent CSS declarations:
+
+   ============================= ===================================================
+   Pack property                 CSS property
+   ============================= ===================================================
+   ``alignment: top``            ``align-items: start`` if ``direction == row``;
+                                 otherwise ignored.
+   ``alignment: bottom``         ``align-items: end`` if ``direction == row``;
+                                 otherwise ignored.
+   ``alignment: left``           ``align-items: start`` if ``direction == column``;
+                                 otherwise ignored.
+   ``alignment: right``          ``align-items: end`` if ``direction == column``;
+                                 otherwise ignored.
+   ``alignment: center``         ``align-items: center``
+   ``direction: <str>``          ``flex-direction: <str>``
+   ``display: pack``             ``display: flex``
+   ``flex: <int>``               If ``direction = row`` and ``width`` is set,
+                                 or ``direction = column`` and ``height`` is set,
+                                 ignore. Otherwise, ``flex: <int> 0 0``.
+   ``font_size: <int>``          ``font-size: <int>pt``
+   ``height: <int>``             ``height: <int>px``
+   ``padding_top: <int>``        ``margin-top: <int>px``
+   ``padding_bottom: <int>``     ``margin-bottom: <int>px``
+   ``padding_left: <int>``       ``margin-left: <int>px``
+   ``padding_right: <int>``      ``margin-right: <int>px``
+   ``text_direction: <str>``     ``direction: <str>``
+   ``width: <int>``              ``width: <int>px``
+   ============================= ===================================================
+
+* All other Pack declarations should be used as-is as CSS declarations, with
+  underscores being converted to dashes (e.g., ``background_color`` becomes
+  ``background-color``).

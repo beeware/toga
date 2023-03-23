@@ -1,4 +1,5 @@
-from toga_winforms.libs import Point, Size
+from toga_winforms.colors import native_color
+from toga_winforms.libs import Point, Size, SystemColors
 
 
 class Widget:
@@ -100,12 +101,16 @@ class Widget:
         pass
 
     def set_color(self, color):
-        # By default, color can't be changed
-        pass
+        if color is None:
+            self.native.ForeColor = SystemColors.WindowText
+        else:
+            self.native.ForeColor = native_color(color)
 
     def set_background_color(self, color):
-        # By default, background color can't be changed.
-        pass
+        if color is None:
+            self.native.BackColor = SystemColors.Control
+        else:
+            self.native.BackColor = native_color(color)
 
     # INTERFACE
 
@@ -123,6 +128,9 @@ class Widget:
 
     def remove_child(self, child):
         child.container = None
+
+    def refresh(self):
+        self.rehint()
 
     def rehint(self):
         pass

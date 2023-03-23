@@ -1,13 +1,12 @@
 from travertino.size import at_least
 
 from toga.constants import LEFT
-from toga_android.colors import native_color
 
 from ..libs.android.text import InputType, TextWatcher
-from ..libs.android.util import TypedValue
 from ..libs.android.view import Gravity
 from ..libs.android.widget import EditText
-from .base import Widget, align
+from .base import align
+from .label import TextViewWidget
 
 
 class TogaTextWatcher(TextWatcher):
@@ -27,7 +26,7 @@ class TogaTextWatcher(TextWatcher):
         pass
 
 
-class MultilineTextInput(Widget):
+class MultilineTextInput(TextViewWidget):
     def create(self):
         self._textChangedListener = None
         self.native = EditText(self._native_activity)
@@ -36,6 +35,7 @@ class MultilineTextInput(Widget):
         )
         # Set default alignment
         self.set_alignment(LEFT)
+        self.cache_textview_defaults()
 
     def get_value(self):
         return self.native.getText().toString()
@@ -54,15 +54,6 @@ class MultilineTextInput(Widget):
         if not self.native.getLayoutParams():
             return
         self.native.setGravity(Gravity.TOP | align(value))
-
-    def set_color(self, color):
-        if color:
-            self.native.setTextColor(native_color(color))
-
-    def set_font(self, font):
-        if font:
-            self.native.setTextSize(TypedValue.COMPLEX_UNIT_SP, font._impl.get_size())
-            self.native.setTypeface(font._impl.get_typeface(), font._impl.get_style())
 
     def set_value(self, value):
         self.native.setText(value)
