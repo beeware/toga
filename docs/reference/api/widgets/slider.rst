@@ -1,6 +1,12 @@
 Slider
 ======
 
+A widget for selecting a value within a range, displayed as a horizontal line.
+
+.. figure:: /reference/images/Slider.png
+    :align: center
+    :width: 300
+
 .. rst-class:: widget-support
 .. csv-filter:: Availability (:ref:`Key <api-status-key>`)
    :header-rows: 1
@@ -9,9 +15,18 @@ Slider
    :exclude: {0: '(?!^(Slider|Component)$)'}
 
 
-
 Usage
 -----
+
+.. code-block:: Python
+
+    import toga
+
+    def my_callback(slider):
+        print(slider.value)
+
+    slider = toga.Slider(value=5, range=(-10, 10), on_change=my_callback)
+
 
 Reference
 ---------

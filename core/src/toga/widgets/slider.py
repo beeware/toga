@@ -1,4 +1,5 @@
 from contextlib import contextmanager
+from typing import Optional, Tuple
 
 from toga.handlers import wrapped_handler
 
@@ -6,34 +7,33 @@ from .base import Widget
 
 
 class Slider(Widget):
-    """Slider widget, displays a range of values.
-
-    Args:
-        id: An identifier for this widget.
-        style (:obj:`Style`):
-        value (float): Initial value of the slider
-        range (``tuple``): Min and max values of the slider in this form (min, max).
-        tick_count (``int``): How many ticks in range. if None, slider is continuous.
-        on_change (``callable``): The handler to invoke when the slider value changes.
-        on_press (``callable``): The handler to invoke when the slider has been
-            pressed.
-        on_release (``callable``): The handler to invoke when the slider has been
-            released.
-        enabled (bool): Whether user interaction is possible or not.
-    """
-
     def __init__(
         self,
         id=None,
         style=None,
         value=None,
-        range=None,
+        range=(0, 1),
         tick_count=None,
         on_change=None,
         on_press=None,
         on_release=None,
         enabled=True,
     ):
+        """Create a new slider widget.
+
+        Inherits from :class:`~toga.widgets.base.Widget`.
+
+        :param id: The ID for the widget.
+        :param style: A style object. If no style is provided, a default style
+            will be applied to the widget.
+        :param value: Initial :any:`value`: defaults to the mid-point of the range.
+        :param range: Initial :any:`range`: defaults to (0, 1).
+        :param tick_count: Initial :any:`tick_count`.
+        :param on_change: Initial :any:`on_change` handler.
+        :param on_press: Initial :any:`on_press` handler.
+        :param on_release: Initial :any:`on_release` handler.
+        :param enabled: Whether the user can interact with the widget.
+        """
         super().__init__(id=id, style=style)
 
         # Needed for _impl initialization
@@ -55,7 +55,7 @@ class Slider(Widget):
         self.on_press = on_press
         self.on_release = on_release
 
-    MIN_WIDTH = 100
+    _MIN_WIDTH = 100
 
     # Normally we would use the native widget as the single source of truth for any
     # user-modifiable state. However, some of the native widgets are based on ints or
@@ -63,14 +63,10 @@ class Slider(Widget):
     # accuracy. So we store the value in the interface instead, and require the
     # implementation to call _sync_value whenever it's changed by the user.
     @property
-    def value(self):
-        """Current slider value.
+    def value(self) -> float:
+        """Current value.
 
-        Returns:
-            The current slider value as a ``float``.
-
-        Raises:
-            ValueError: If the new value is not in the range of min and max.
+        :raises ValueError: If set to a value which is outside of the :any:`range`.
         """
         return self._value
 
@@ -105,18 +101,16 @@ class Slider(Widget):
                 self.on_change(self)
 
     @property
-    def range(self):
-        """Range composed of min and max slider value.
+    def range(self) -> Tuple[float]:
+        """Range of allowed values, in the form (min, max).
 
-        Returns:
-            Returns the range in a ``tuple`` like this (min, max)
+        :raises ValueError: If the min is not strictly less than the max.
         """
         return self.min, self.max
 
     @range.setter
     def range(self, range):
-        default_range = (0.0, 1.0)
-        _min, _max = default_range if range is None else range
+        _min, _max = range
         if _min > _max or _min == _max:
             raise ValueError("Range min value has to be smaller than max value.")
         self._min = _min
@@ -137,15 +131,32 @@ class Slider(Widget):
             self.on_change(self)
 
     @property
-    def min(self):
+    def min(self) -> float:
+        """Minimum allowed value.
+
+        This property is read-only, and depends on the value of :any:`range`.
+        """
         return self._min
 
     @property
-    def max(self):
+    def max(self) -> float:
+        """Maximum allowed value.
+
+        This property is read-only, and depends on the value of :any:`range`.
+        """
         return self._max
 
     @property
-    def tick_count(self):
+    def tick_count(self) -> Optional[int]:
+        """Number of tick marks to display on the slider.
+
+        * If this is ``None``, the slider will be continuous.
+        * Otherwise, the slider will be discrete, and will have the given number of
+          possible values, equally spaced within the :any:`range`.
+
+        :raises ValueError: If set to a count which is not at least 2 (for the min and
+            max).
+        """
         return self._tick_count
 
     @tick_count.setter
@@ -156,17 +167,26 @@ class Slider(Widget):
         self._impl.set_tick_count(tick_count)
 
     @property
-    def tick_step(self):
+    def tick_step(self) -> float:
+        """Difference in value between two adjacent ticks, or ``None`` if the
+        slider is continuous.
+
+        This property is read-only, and depends on the values of :any:`tick_count` and
+        :any:`range`.
+        """
         if self.tick_count is None:
             return None
         return (self.max - self.min) / (self.tick_count - 1)
 
     @property
-    def tick_value(self):
-        """The value of the slider, measured in ticks.
+    def tick_value(self) -> Optional[int]:
+        """Value of the slider, measured in ticks.
 
-        If tick count is not None, a value between 1 and tick count.
-        Otherwise, None.
+        * If the slider is continuous, this property returns ``None``.
+        * Otherwise, it returns an integer between 1 (representing :any:`min`) and
+          :any:`tick_count` (representing :any:`max`).
+
+        :raises ValueError: If set to anything inconsistent with the rules above.
         """
         if self.tick_count is not None and self.value is not None:
             return round((self.value - self.min) / self.tick_step) + 1
@@ -181,11 +201,9 @@ class Slider(Widget):
             self.value = self.min + (tick_value - 1) * self.tick_step
 
     @property
-    def on_change(self):
-        """The function for when the value of the slider is changed.
-
-        Returns:
-            The ``callable`` that is executed when the value changes.
+    def on_change(self) -> callable:
+        """Handler to invoke when the value of the slider is changed, either by the user
+        or programmatically.
         """
         return self._on_change
 
@@ -195,12 +213,8 @@ class Slider(Widget):
         self._impl.set_on_change(self._on_change)
 
     @property
-    def on_press(self):
-        """The function for when the user click the slider before sliding it.
-
-        Returns:
-            The ``callable`` that is executed when the slider is clicked.
-        """
+    def on_press(self) -> callable:
+        """Handler to invoke when when the user presses the slider before changing it."""
         return self._on_press
 
     @on_press.setter
@@ -209,12 +223,8 @@ class Slider(Widget):
         self._impl.set_on_press(self._on_press)
 
     @property
-    def on_release(self):
-        """The function for when the user release the slider after sliding it.
-
-        Returns:
-            The ``callable`` that is executed when the slider is released.
-        """
+    def on_release(self) -> callable:
+        """Handler to invoke when the user releases the slider after changing it."""
         return self._on_release
 
     @on_release.setter

@@ -61,7 +61,7 @@ class Slider(Widget):
     def rehint(self):
         content_size = self.native.intrinsicContentSize()
         self.interface.intrinsic.height = content_size.height
-        self.interface.intrinsic.width = at_least(self.interface.MIN_WIDTH)
+        self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
 
     def set_on_change(self, handler):
         pass

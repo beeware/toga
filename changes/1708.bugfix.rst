@@ -1,1 +1,1 @@
-Fixed several bugs in Slider.
+The Slider widget now has 100% test coverage, and complete API documentation.
