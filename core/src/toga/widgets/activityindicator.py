@@ -27,7 +27,7 @@ class ActivityIndicator(Widget):
 
         Use ``start()`` and ``stop()`` to change the running state.
 
-        :returns: True if this activity indicator is running; False otherwise.
+        True if this activity indicator is running; False otherwise.
         """
         return self._impl.is_running()
 
