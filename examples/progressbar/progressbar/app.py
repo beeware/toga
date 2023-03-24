@@ -71,15 +71,15 @@ class ProgressBarApp(toga.App):
                 toga.Box(
                     style=row_box_style,
                     children=[
-                        toga.Label("Non-running", style=label_style),
-                        toga.ProgressBar(value=0.5, running=False, style=pbar_style),
+                        toga.Label("Running determinate", style=label_style),
+                        toga.ProgressBar(value=0.5, running=True, style=pbar_style),
                     ],
                 ),
                 toga.Box(
                     style=row_box_style,
                     children=[
-                        toga.Label("Running", style=label_style),
-                        toga.ProgressBar(value=0.5, running=True, style=pbar_style),
+                        toga.Label("Stopped determinate", style=label_style),
+                        toga.ProgressBar(value=0.5, running=False, style=pbar_style),
                     ],
                 ),
                 toga.Box(
@@ -92,7 +92,7 @@ class ProgressBarApp(toga.App):
                 toga.Box(
                     style=row_box_style,
                     children=[
-                        toga.Label("Non-running indeterminate", style=label_style),
+                        toga.Label("Stopped indeterminate", style=label_style),
                         toga.ProgressBar(max=None, running=False, style=pbar_style),
                     ],
                 ),
