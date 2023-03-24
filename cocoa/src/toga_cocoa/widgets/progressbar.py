@@ -16,6 +16,7 @@ class ProgressBar(Widget):
         self.native = NSProgressIndicator.new()
         self.native.style = NSProgressIndicatorBarStyle
         self.native.displayedWhenStopped = True
+        self.native.usesThreadedAnimation = False
 
         # Add the layout constraints
         self.add_constraints()
@@ -48,7 +49,12 @@ class ProgressBar(Widget):
 
     def set_max(self, value):
         if value is None:
+            self.native.doubleValue = 0.0
             self.native.indeterminate = True
+            if self.is_running():
+                self.start()
+            else:
+                self.stop()
         else:
             self.native.indeterminate = False
             self.native.maxValue = value

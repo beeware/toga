@@ -53,6 +53,7 @@ class ProgressBar(Widget):
     def _stop_indeterminate(self):
         if self._task:
             self._task.cancel()
+            self._task = None
         self.native.setProgress(0.0, animated=False)
 
     def start(self):
@@ -72,11 +73,10 @@ class ProgressBar(Widget):
         return self.native.progress * self._max
 
     def set_value(self, value):
-        if self._max is not None:
-            self.native.setProgress(
-                value / self._max,
-                animated=True,
-            )
+        self.native.setProgress(
+            value / self._max,
+            animated=True,
+        )
 
     def get_max(self):
         return self._max
