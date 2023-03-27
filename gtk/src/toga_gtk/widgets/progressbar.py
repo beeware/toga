@@ -21,7 +21,6 @@ from .base import Widget
 
 async def pulse(progressbar):
     "A background task to animate running indeterminate progress bars"
-    print("START PULSE")
     while True:
         progressbar.native.pulse()
         await asyncio.sleep(0.1)
@@ -47,33 +46,39 @@ class ProgressBar(Widget):
         return self.native.get_fraction() * self._max
 
     def set_value(self, value):
-        if self.get_max() is not None:
-            self.native.set_fraction(value / self._max)
+        self.native.set_fraction(value / self._max)
 
     def get_max(self):
         return self._max
 
-    def set_max(self, value):
-        self._max = value
-        if self._max is None:
-            if self._task is None:
-                self._task = asyncio.create_task(pulse(self))
-        else:
-            if self._task:
-                self._task.cancel()
-                self._task = None
+    def _start_indeterminate(self):
+        self._task = asyncio.create_task(pulse(self))
 
-    def start(self):
-        self._running = True
-        if self._max is None:
-            self._task = asyncio.create_task(pulse(self))
-
-    def stop(self):
-        self._running = False
+    def _stop_indeterminate(self):
         if self._task:
             self._task.cancel()
             self._task = None
             self.native.set_fraction(0.0)
+
+    def set_max(self, value):
+        self._max = value
+        if self._max is None:
+            self.native.set_fraction(0.0)
+            if self.is_running():
+                self._start_indeterminate()
+            else:
+                self._stop_indeterminate()
+        else:
+            self._stop_indeterminate()
+
+    def start(self):
+        self._running = True
+        if self._max is None:
+            self._start_indeterminate()
+
+    def stop(self):
+        self._running = False
+        self._stop_indeterminate()
 
     def rehint(self):
         # print("REHINT", self, self.native.get_preferred_width(), self.native.get_preferred_height())
