@@ -45,8 +45,10 @@ class ProgressBar(Widget):
     def set_max(self, value):
         if value is None:
             self.native.Maximum = 1000
+            self.native.Value = 0
             self._determinate = False
         else:
+            self.native.Minimum = 0
             self.native.Maximum = int(value * self.TOGA_SCALE)
             self._determinate = True
 
@@ -71,8 +73,7 @@ class ProgressBar(Widget):
         return float(self.native.Value / self.TOGA_SCALE)
 
     def set_value(self, value):
-        if self._determinate:
-            self.native.Value = int(value * self.TOGA_SCALE)
+        self.native.Value = int(value * self.TOGA_SCALE)
 
     def rehint(self):
         # Height must be non-zero
