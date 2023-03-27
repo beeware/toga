@@ -12,9 +12,4 @@ class ProgressBarProbe(SimpleProbe):
 
     @property
     def is_animating_indeterminate(self):
-        # Cocoa doesn't require any explicit animation flags required
         return not self.is_determinate and self.widget._impl._running
-
-    @property
-    def value_ratio(self):
-        return self.native.get_fraction()
