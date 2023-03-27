@@ -1,5 +1,7 @@
 import warnings
 
+import manimpango
+
 # Use the Travertino font definitions as-is
 from travertino import constants  # noqa: F401
 from travertino.constants import ITALIC  # noqa: F401
@@ -71,6 +73,8 @@ class Font(BaseFont):
             variant (str): The font variant: Font.NORMAL (default) or a value
                 from Font.FONT_VARIANTS
         """
+        # registers fonts from file path
+        manimpango.register_font(path)
         font_key = Font.registered_font_key(
             family, weight=weight, style=style, variant=variant
         )
