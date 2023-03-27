@@ -72,16 +72,23 @@ class ProgressBar(Widget):
             # If we're already running, put the bar into
             # indeterminate animation mode.
             if self._running:
-                self.native.setIndeterminate(True)
+                self.start()
+            else:
+                self.stop()
         else:
+            # Make sure we're not in indeterminate mode. Android's
+            # indeterminate mode is really an "is animating indeterminate",
+            # so we don't care whether we're running or not.
+            self.native.setIndeterminate(False)
             self.native.setMax(int(value * self.TOGA_SCALE))
 
     def get_value(self):
+        if self.native.getMax() == 0:
+            return None
         return float(self.native.getProgress() / self.TOGA_SCALE)
 
     def set_value(self, value):
-        if value is not None:
-            self.native.setProgress(int(value * self.TOGA_SCALE))
+        self.native.setProgress(int(value * self.TOGA_SCALE))
 
     def rehint(self):
         # Android can crash when rendering some widgets until
@@ -93,4 +100,4 @@ class ProgressBar(Widget):
             View__MeasureSpec.UNSPECIFIED,
         )
         self.interface.intrinsic.width = at_least(self.native.getMeasuredWidth())
-        self.interface.intrinsic.height = at_least(self.native.getMeasuredHeight())
+        self.interface.intrinsic.height = self.native.getMeasuredHeight()
