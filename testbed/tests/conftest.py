@@ -2,7 +2,7 @@ import asyncio
 import inspect
 from dataclasses import dataclass
 
-from pytest import fixture, register_assert_rewrite
+from pytest import fixture, register_assert_rewrite, skip
 
 import toga
 
@@ -11,6 +11,12 @@ import toga
 register_assert_rewrite("tests.assertions")
 register_assert_rewrite("tests.widgets")
 register_assert_rewrite("tests_backend")
+
+
+def skip_on_platforms(*platforms):
+    current_platform = toga.platform.current_platform
+    if current_platform in platforms:
+        skip(f"not applicable on {current_platform}")
 
 
 @fixture(scope="session")

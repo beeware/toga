@@ -3,13 +3,13 @@ import pytest
 import toga
 from toga.style.pack import COLUMN, ROW
 
+from ..conftest import skip_on_platforms
+
 
 @pytest.fixture
 async def widget():
-    try:
-        return toga.Divider()
-    except AttributeError:
-        pytest.skip("Platform doesn't implement the Divider widget")
+    skip_on_platforms("android", "iOS")
+    return toga.Divider()
 
 
 async def test_directions(widget, probe):
