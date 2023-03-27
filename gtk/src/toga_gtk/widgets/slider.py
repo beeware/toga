@@ -9,7 +9,6 @@ class Slider(Widget):
         self.adj = Gtk.Adjustment()
 
         self.native = Gtk.Scale.new(Gtk.Orientation.HORIZONTAL, self.adj)
-        self.native.interface = self.interface
         self.native.connect("value-changed", self.gtk_on_change)
 
     def gtk_on_change(self, widget):

@@ -7,7 +7,6 @@ from .base import Widget
 class Switch(Widget):
     def create(self):
         self.native = Gtk.Box()
-        self.native.interface = self.interface
 
         self.label = Gtk.Label(xalign=0)
         self.label.set_line_wrap(True)

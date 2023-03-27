@@ -8,7 +8,6 @@ class ImageView(Widget):
         self._image = Gtk.Image()
         self._pixbuf = None
         self.native.add(self._image)
-        self.native.interface = self.interface
 
     def set_image(self, image):
         self._pixbuf = image._impl.native
