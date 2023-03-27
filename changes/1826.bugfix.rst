@@ -1,0 +1,1 @@
+GTK widgets that involve animation (such as Switch or ProgressBar) are now redrawn correctly.

@@ -161,12 +161,13 @@ class TogaContainer(Gtk.Fixed):
         resized = (allocation.width, allocation.height) != (self.width, self.height)
         self.set_allocation(allocation)
 
-        # This function may be called in response to irrelevant events like button clicks,
-        # so only refresh if we really need to.
-        if self._content and (resized or self.needs_redraw):
-            # Re-evaluate the layout using the allocation size as the basis for geometry
-            # print("REFRESH LAYOUT", allocation.width, allocation.height)
-            self._content.interface.refresh()
+        if self._content:
+            # This function may be called in response to irrelevant events like button clicks,
+            # so only refresh if we really need to.
+            if resized or self.needs_redraw:
+                # Re-evaluate the layout using the allocation size as the basis for geometry
+                # print("REFRESH LAYOUT", allocation.width, allocation.height)
+                self._content.interface.refresh()
 
             # WARNING! This is the list of children of the *container*, not
             # the Toga widget. Toga maintains a tree of children; all nodes
