@@ -312,13 +312,19 @@ def test_focus(slider, on_change):
     assert_action_performed(slider, "focus")
 
 
-def test_set_on_press(slider, on_change):
+def test_set_on_change():
+    on_change = mock.Mock()
+    slider = toga.Slider(on_change=on_change)
+    assert slider.on_change._raw == on_change
+
+
+def test_set_on_press():
     on_press = mock.Mock()
     slider = toga.Slider(on_press=on_press)
     assert slider.on_press._raw == on_press
 
 
-def test_set_on_release(slider, on_change):
+def test_set_on_release():
     on_release = mock.Mock()
     slider = toga.Slider(on_release=on_release)
     assert slider.on_release._raw == on_release

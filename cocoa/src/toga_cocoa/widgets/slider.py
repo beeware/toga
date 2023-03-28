@@ -1,5 +1,6 @@
 from travertino.size import at_least
 
+import toga
 from toga_cocoa.libs import (
     SEL,
     NSEventType,
@@ -29,7 +30,7 @@ class TogaSlider(NSSlider):
             self.interface.on_change(self.interface)
 
 
-class Slider(Widget):
+class Slider(Widget, toga.widgets.slider.SliderImpl):
     def create(self):
         self.native = TogaSlider.alloc().init()
         self.native.interface = self.interface
@@ -72,12 +73,3 @@ class Slider(Widget):
         content_size = self.native.intrinsicContentSize()
         self.interface.intrinsic.height = content_size.height
         self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
-
-    def set_on_change(self, handler):
-        pass
-
-    def set_on_press(self, handler):
-        pass
-
-    def set_on_release(self, handler):
-        pass
