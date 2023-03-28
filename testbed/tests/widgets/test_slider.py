@@ -164,3 +164,26 @@ async def test_value_with_ticks(widget, probe, on_change):
         else:
             on_change.assert_called_once_with(widget)
         prev_value = value_out
+
+
+async def test_range_with_ticks(widget, probe, on_change):
+    widget.tick_count = 5
+    widget.range = (0, 10)
+    widget.value = prev_value = 5
+
+    for min, max, value in [
+        (0, 9, 4.5),
+        (0, 10, 5),
+        (1, 9, 5),
+        (1, 10, 5.5),
+    ]:
+        on_change.reset_mock()
+        widget.range = (min, max)
+        assert widget.value == value
+        assert probe.position == approx((value - min) / (max - min), abs=ACCURACY)
+
+        if value == prev_value:
+            on_change.assert_not_called()
+        else:
+            on_change.assert_called_once_with(widget)
+        prev_value = value

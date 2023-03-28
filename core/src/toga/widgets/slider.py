@@ -1,3 +1,4 @@
+from abc import ABC, abstractmethod
 from contextlib import contextmanager
 from typing import Optional, Tuple
 
@@ -229,3 +230,105 @@ class Slider(Widget):
     def on_release(self, handler):
         self._on_release = wrapped_handler(self, handler)
         self._impl.set_on_release(self._on_release)
+
+
+class SliderImpl(ABC):
+    @abstractmethod
+    def get_value(self):
+        ...
+
+    @abstractmethod
+    def set_value(self, value):
+        ...
+
+    @abstractmethod
+    def get_range(self):
+        ...
+
+    @abstractmethod
+    def set_range(self, range):
+        ...
+
+    @abstractmethod
+    def get_tick_count(self):
+        ...
+
+    @abstractmethod
+    def set_tick_count(self, tick_count):
+        ...
+
+    def set_on_change(self, handler):
+        pass
+
+    def set_on_press(self, handler):
+        pass
+
+    def set_on_release(self, handler):
+        pass
+
+
+class IntSliderImpl(SliderImpl):
+    """Base class for implementations which use integer values."""
+
+    # Number of steps to use to approximate a continuous slider.
+    CONTINUOUS_MAX = 10000
+
+    def __init__(self):
+        super().__init__()
+
+        # Dummy values used during initialization.
+        self.value = 0
+        self.discrete = False
+
+    def get_value(self):
+        return self.value
+
+    def on_change(self):
+        span = self.max - self.min
+        self.value = self.min + (self.get_int_value() / self.get_int_max() * span)
+        if self.interface.on_change:
+            self.interface.on_change(self.interface)
+
+    def set_value(self, value):
+        span = self.max - self.min
+        self.set_int_value(round((value - self.min) / span * self.get_int_max()))
+        self.value = value  # Cache the original value so we can round-trip it.
+
+    def get_range(self):
+        return (self.min, self.max)
+
+    def set_range(self, range):
+        self.min, self.max = range
+        # The interface layer will follow this up with a call to set_value.
+
+    def get_tick_count(self):
+        return (self.get_int_max() + 1) if self.discrete else None
+
+    def set_tick_count(self, tick_count):
+        if tick_count is None:
+            self.discrete = False
+            self.set_int_max(self.CONTINUOUS_MAX)
+        else:
+            self.discrete = True
+            self.set_int_max(tick_count - 1)
+        self.set_ticks_visible(self.discrete)
+
+    @abstractmethod
+    def get_int_value(self):
+        ...
+
+    @abstractmethod
+    def set_int_value(self, value):
+        ...
+
+    @abstractmethod
+    def get_int_max(self):
+        ...
+
+    @abstractmethod
+    def set_int_max(self, max):
+        ...
+
+    @abstractmethod
+    def set_ticks_visible(self, visible):
+        ...
