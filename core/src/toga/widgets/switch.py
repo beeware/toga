@@ -1,118 +1,34 @@
-import warnings
-
 from toga.handlers import wrapped_handler
 
 from .base import Widget
 
-# BACKWARDS COMPATIBILITY: a token object that can be used to differentiate
-# between an explicitly provided ``None``, and a unspecified value falling
-# back to a default.
-NOT_PROVIDED = object()
-
 
 class Switch(Widget):
-    """Switch widget, a clickable button with two stable states, True (on,
-    checked) and False (off, unchecked).
-
-    Args:
-        text (str): Text to be shown next to the switch.
-        id (str): AN identifier for this widget.
-        style (:obj:`Style`): An optional style object.
-            If no style is provided then a new one will be created for the widget.
-        on_change (``callable``): Function to execute when pressed.
-        value (bool): Current on or off state of the switch.
-        enabled (bool): Whether or not interaction with the button is possible, defaults to `True`.
-    """
-
     def __init__(
         self,
-        text=NOT_PROVIDED,  # BACKWARDS COMPATIBILITY: The default value
-        # can be removed when the handling for
-        # `label` is removed
+        text,
         id=None,
         style=None,
         on_change=None,
-        value=NOT_PROVIDED,  # BACKWARDS COMPATIBILITY: The default value
-        # *should* be False, but we use a temp value
-        # and overwrite to detect the specification
-        # of both value *and* is_on
+        value=False,
         enabled=True,
-        factory=None,  # DEPRECATED!
-        label=None,  # DEPRECATED!
-        on_toggle=None,  # DEPRECATED!
-        is_on=None,  # DEPRECATED!
     ):
+        """Create a new Switch widget.
+
+        Inherits from :class:`~toga.widgets.base.Widget`.
+
+        :param text: The text to display beside the switch.
+        :param id: The ID for the widget.
+        :param style: A style object. If no style is provided, a default style
+            will be applied to the widget.
+        :param on_change: A handler that will be invoked when the switch changes
+            value.
+        :param enabled: Is the switch enabled (i.e., can it be pressed?).
+            Optional; by default, switches are created in an enabled state.
+        """
         super().__init__(id=id, style=style)
 
-        ######################################################################
-        # 2022-09: Backwards compatibility
-        ######################################################################
-        # factory no longer used
-        if factory:
-            warnings.warn("The factory argument is no longer used.", DeprecationWarning)
-        ######################################################################
-        # End backwards compatibility.
-        ######################################################################
-
         self._impl = self.factory.Switch(interface=self)
-
-        ##################################################################
-        # 2022-07: Backwards compatibility
-        ##################################################################
-        # When deleting this block, also delete the NOT_PROVIDED
-        # placeholder, and replace its usage in default values.
-
-        # label replaced with text
-        if label is not None:
-            if text is not NOT_PROVIDED:
-                raise ValueError(
-                    "Cannot specify both `label` and `text`; "
-                    "`label` has been deprecated, use `text`"
-                )
-            else:
-                warnings.warn(
-                    "Switch.label has been renamed Switch.text", DeprecationWarning
-                )
-                text = label
-        elif text is NOT_PROVIDED:
-            # This would be raised by Python itself; however, we need to use a placeholder
-            # value as part of the migration from text->value.
-            raise TypeError(
-                "Switch.__init__ missing 1 required positional argument: 'text'"
-            )
-
-        # on_toggle replaced with on_change
-        if on_toggle:
-            if on_change:
-                raise ValueError(
-                    "Cannot specify both `on_toggle` and `on_change`; "
-                    "`on_toggle` has been deprecated, use `on_change`"
-                )
-            else:
-                warnings.warn(
-                    "Switch.on_toggle has been renamed Switch.on_change",
-                    DeprecationWarning,
-                )
-                on_change = on_toggle
-
-        # is_on replaced with value
-        if is_on is not None:
-            if value is not NOT_PROVIDED:
-                raise ValueError(
-                    "Cannot specify both `is_on` and `value`; "
-                    "`is_on` has been deprecated, use `value`"
-                )
-            else:
-                warnings.warn(
-                    "Switch.is_on has been renamed Switch.value", DeprecationWarning
-                )
-            value = is_on
-        elif value is NOT_PROVIDED:
-            value = False
-
-        ##################################################################
-        # End backwards compatibility.
-        ##################################################################
 
         self.text = text
 
@@ -126,19 +42,26 @@ class Switch(Widget):
 
     @property
     def text(self):
-        """Accompanying text label of the Switch.
+        """The text label for the Switch.
 
-        Returns:
-            The label text of the widget as a ``str``.
+        ``None``, and the Unicode codepoint U+200B (ZERO WIDTH SPACE), will be
+        interpreted and returned as an empty string. Any other object will be
+        converted to a string using ``str()``.
+
+        Only one line of text can be displayed. Any content after the first
+        newline will be ignored.
         """
-        return self._text
+        return self._impl.get_text()
 
     @text.setter
     def text(self, value):
-        if value is None:
-            self._text = ""
+        if value is None or value == "\u200B":
+            value = ""
         else:
-            self._text = str(value)
+            # Switch text can't include line breaks. Strip any content
+            # after a line break (if provided)
+            value = str(value).split("\n")[0]
+
         self._impl.set_text(value)
         self.refresh()
 
@@ -158,85 +81,16 @@ class Switch(Widget):
 
     @property
     def value(self):
-        """Button Off/On state.
+        """The current state of the button, as a boolean.
 
-        Returns:
-            ``True`` if on and ``False`` if the switch is off.
+        Any non-bool value will be converted to a bool.
         """
         return self._impl.get_value()
 
     @value.setter
     def value(self, value):
-        if not isinstance(value, bool):
-            raise ValueError("Switch.value can only be set to true or false")
-        self._impl.set_value(value)
+        self._impl.set_value(bool(value))
 
     def toggle(self):
-        """Reverse the value of `Switch.value` property from true to false and
-        vice versa."""
+        """Reverse the current value the switch."""
         self.value = not self.value
-
-    ######################################################################
-    # 2022-07: Backwards compatibility
-    ######################################################################
-    # label replaced with text
-    @property
-    def label(self):
-        """Button Off/On state.
-
-        **DEPRECATED: renamed as text**
-
-        Returns:
-            ``True`` if on and ``False`` if the switch is off.
-        """
-        warnings.warn("Switch.label has been renamed Switch.text", DeprecationWarning)
-        return self.text
-
-    @label.setter
-    def label(self, label):
-        warnings.warn("Switch.label has been renamed Switch.text", DeprecationWarning)
-        self.text = label
-
-    # on_toggle replaced with on_change
-    @property
-    def on_toggle(self):
-        """The callable function for when the switch is pressed.
-
-        **DEPRECATED: renamed as on_change**
-
-        Returns:
-            The ``callable`` on_toggle function.
-        """
-        warnings.warn(
-            "Switch.on_toggle has been renamed Switch.on_change", DeprecationWarning
-        )
-        return self.on_change
-
-    @on_toggle.setter
-    def on_toggle(self, handler):
-        warnings.warn(
-            "Switch.on_toggle has been renamed Switch.on_change", DeprecationWarning
-        )
-        self.on_change = handler
-
-    # is_on replaced with value
-    @property
-    def is_on(self):
-        """Button Off/On state.
-
-        **DEPRECATED: renamed as value**
-
-        Returns:
-            ``True`` if on and ``False`` if the switch is off.
-        """
-        warnings.warn("Switch.is_on has been renamed Switch.value", DeprecationWarning)
-        return self.value
-
-    @is_on.setter
-    def is_on(self, value):
-        warnings.warn("Switch.is_on has been renamed Switch.value", DeprecationWarning)
-        self.value = value
-
-    ######################################################################
-    # End backwards compatibility.
-    ######################################################################

@@ -1,185 +1,123 @@
+from unittest.mock import MagicMock, call
+
+import pytest
+
 import toga
-from toga_dummy.utils import TestCase
+from toga_dummy.utils import (
+    EventLog,
+    assert_action_performed,
+    attribute_value,
+)
 
 
-class SwitchTests(TestCase):
-    def setUp(self):
-        super().setUp()
+@pytest.fixture
+def switch():
+    return toga.Switch("Test Switch")
 
-        self.text = "Test Label"
 
-        def callback(widget):
-            pass
+def test_widget_created(switch):
+    """A switch can be created."""
+    # Round trip the impl/interface
+    assert switch._impl.interface == switch
+    assert_action_performed(switch, "create Switch")
 
-        self.on_change = callback
-        self.value = True
-        self.enabled = True
-        self.switch = toga.Switch(
-            self.text,
-            on_change=self.on_change,
-            value=self.value,
-            enabled=self.enabled,
-        )
+    assert switch.text == "Test Switch"
+    assert not switch.value
+    assert switch.on_change is None
+    assert switch.enabled
 
-    def test_widget_created(self):
-        self.assertEqual(self.switch._impl.interface, self.switch)
-        self.assertActionPerformed(self.switch, "create Switch")
 
-    def test_arguments_are_all_set_properly(self):
-        self.assertEqual(self.switch.text, self.text)
-        self.assertEqual(self.switch._text, self.text)
-        self.assertEqual(self.switch.on_change._raw, self.on_change)
-        self.assertEqual(self.switch.enabled, self.enabled)
+def test_widget_created_explicit(switch):
+    """Explicit arguments at construction are stored"""
 
-    def test_text_with_None(self):
-        self.switch.text = None
-        self.assertEqual(self.switch.text, "")
-        self.assertEqual(self.switch._text, "")
+    def change_handler(widget, *args, **kwargs):
+        pass
 
-    def test_setting_text_invokes_impl_method(self):
-        new_text = "New Label"
-        self.switch.text = new_text
-        self.assertValueSet(self.switch, "text", new_text)
+    switch = toga.Switch(
+        "Explicit Switch",
+        value=True,
+        enabled=False,
+        on_change=change_handler,
+    )
 
-    def test_setting_value_invokes_impl_method(self):
-        new_value = False
-        self.switch.value = new_value
-        self.assertValueSet(self.switch, "value", False)
+    assert switch.text == "Explicit Switch"
+    assert switch.on_change._raw == change_handler
+    assert not switch.enabled
 
-    def test_getting_value_invokes_impl_method(self):
-        self.switch.value
-        self.assertValueGet(self.switch, "value")
 
-    def test_focus(self):
-        self.switch.focus()
-        self.assertActionPerformed(self.switch, "focus")
+@pytest.mark.parametrize(
+    "value, expected",
+    [
+        ("New Text", "New Text"),
+        ("", ""),
+        (None, ""),
+        ("\u200B", ""),
+        (12345, "12345"),
+        ("Contains\nnewline", "Contains"),
+    ],
+)
+def test_label_text(switch, value, expected):
+    "The switch's label can be modified."
+    assert switch.text == "Test Switch"
 
-    def test_toggle_from_true_to_false(self):
-        self.switch.value = True
-        self.switch.toggle()
-        self.assertValueSet(self.switch, "value", False)
+    # Clear the event log
+    EventLog.reset()
 
-    def test_toggle_from_false_to_true(self):
-        self.switch.value = False
-        self.switch.toggle()
-        self.assertValueSet(self.switch, "value", True)
+    switch.text = value
+    assert switch.text == expected
 
-    def test_set_value_with_non_boolean(self):
-        with self.assertRaises(ValueError):
-            self.switch.value = "on"
-        with self.assertRaises(ValueError):
-            self.switch.value = None
+    # test backend has the right value
+    assert attribute_value(switch, "text") == expected
 
-    def test_on_change(self):
-        def my_callback(widget):
-            pass  # pragma: no
+    # A refresh was performed
+    assert_action_performed(switch, "refresh")
 
-        self.switch.on_change = my_callback
-        self.assertEqual(self.switch.on_change._raw, my_callback)
 
-    def test_no_args(self):
-        "A text label must be provided"
-        with self.assertRaises(TypeError):
-            toga.Switch()
+@pytest.mark.parametrize(
+    "value, expected",
+    [
+        ("A value", True),
+        ("False", True),  # bool("False") - The literal string False evaluates as True
+        ("", False),
+        (None, False),
+        (1234, True),
+        (0, False),
+    ],
+)
+def test_value_change(switch, value, expected):
+    "The value of the switch can be set from almost any value."
+    switch.value = value
+    assert switch.value == expected
 
-    def test_default_value(self):
-        "The switch value defaults to False"
-        switch = toga.Switch("My Switch")
-        self.assertEqual(switch.value, False)
 
-    ######################################################################
-    # 2022-07: Backwards compatibility
-    ######################################################################
+def test_toggle(switch):
+    "Toggle can be used to change the value"
+    assert not switch.value
 
-    def test_set_is_on(self):
-        new_value = False
-        with self.assertWarns(DeprecationWarning):
-            self.switch.is_on = new_value
-        self.assertValueSet(self.switch, "value", new_value)
+    switch.toggle()
+    assert switch.value
 
-    def test_get_is_on(self):
-        with self.assertWarns(DeprecationWarning):
-            self.switch.is_on
-        self.assertValueGet(self.switch, "value")
+    switch.toggle()
+    assert not switch.value
 
-    def test_on_toggle(self):
-        def my_callback(widget):
-            pass
 
-        with self.assertWarns(DeprecationWarning):
-            self.switch.on_toggle = my_callback
+def test_on_change(switch):
+    "The on_change handler is invoked whenever the value is changed."
+    handler = MagicMock()
+    switch.on_change = handler
 
-        with self.assertWarns(DeprecationWarning):
-            self.assertEqual(self.switch.on_toggle._raw, my_callback)
+    # Reset the mock; installing the mock causes it to be evaluated as a bool()
+    handler.reset_mock()
 
-        self.assertEqual(self.switch.on_change._raw, my_callback)
+    # Set the value explicitly using a non-bool value
+    switch.value = 100
+    assert handler.mock_calls == [call(switch)]
 
-    def test_label_deprecated(self):
-        new_text = "New Label"
-        with self.assertWarns(DeprecationWarning):
-            self.switch.label = new_text
-        with self.assertWarns(DeprecationWarning):
-            self.assertEqual(self.switch.label, new_text)
-        self.assertValueSet(self.switch, "text", new_text)
+    # Set the value explicitly using a boolean that is the same;
+    # no signal as a result.
+    switch.value = True
+    assert handler.mock_calls == [call(switch)]
 
-    def test_init_with_deprecated(self):
-        # label is a deprecated argument
-        with self.assertWarns(DeprecationWarning):
-            toga.Switch(
-                label=self.text,
-                on_change=self.on_change,
-                value=self.value,
-                enabled=self.enabled,
-            )
-
-        # can't specify both label *and* text
-        with self.assertRaises(ValueError):
-            toga.Switch(
-                label=self.text,
-                text=self.text,
-                on_change=self.on_change,
-                value=self.value,
-                enabled=self.enabled,
-            )
-
-        # on_toggle is deprecated
-        with self.assertWarns(DeprecationWarning):
-            toga.Switch(
-                self.text,
-                on_toggle=self.on_change,
-                value=self.value,
-                enabled=self.enabled,
-            )
-
-        # can't specify both on_toggle *and* on_change
-        with self.assertRaises(ValueError):
-            toga.Switch(
-                self.text,
-                on_change=self.on_change,
-                on_toggle=self.on_change,
-                value=self.value,
-                enabled=self.enabled,
-            )
-
-        # is_on is deprecated
-        with self.assertWarns(DeprecationWarning):
-            toga.Switch(
-                self.text,
-                on_change=self.on_change,
-                is_on=self.value,
-                enabled=self.enabled,
-            )
-
-        # If is_on and value are both specified, warn about is_on;
-        with self.assertRaises(ValueError):
-            toga.Switch(
-                self.text,
-                on_change=self.on_change,
-                value=self.value,
-                is_on=self.value,
-                enabled=self.enabled,
-            )
-
-    ######################################################################
-    # End backwards compatibility.
-    ######################################################################
+    # Toggle the switch
+    switch.toggle()
+    assert handler.mock_calls == [call(switch), call(switch)]
