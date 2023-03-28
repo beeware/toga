@@ -24,7 +24,9 @@ class TogaSlider(NSSlider):
         elif event_type == NSEventType.LeftMouseUp:
             if self.interface.on_release:
                 self.interface.on_release(self.interface)
-        self.interface._sync_value()
+
+        if self.interface.on_change:
+            self.interface.on_change(self.interface)
 
 
 class Slider(Widget):
@@ -36,9 +38,14 @@ class Slider(Widget):
         self.native.target = self.native
         self.native.action = SEL("onSlide:")
 
-        self.set_tick_count(self.interface.tick_count)
-
         self.add_constraints()
+
+    def get_tick_count(self):
+        return (
+            self.native.numberOfTickMarks
+            if self.native.allowsTickMarkValuesOnly
+            else None
+        )
 
     def set_tick_count(self, tick_count):
         if tick_count is None:
@@ -54,9 +61,12 @@ class Slider(Widget):
     def set_value(self, value):
         self.native.doubleValue = value
 
+    def get_range(self):
+        return (self.native.minValue, self.native.maxValue)
+
     def set_range(self, range):
-        self.native.minValue = self.interface.range[0]
-        self.native.maxValue = self.interface.range[1]
+        self.native.minValue = range[0]
+        self.native.maxValue = range[1]
 
     def rehint(self):
         content_size = self.native.intrinsicContentSize()

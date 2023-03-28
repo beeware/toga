@@ -18,13 +18,15 @@ SCALES = [0.0001, 0.1, 1, pi, 10000]
 
 
 @fixture
-async def widget(on_change):
-    return toga.Slider(on_change=on_change)
+async def widget():
+    return toga.Slider()
 
 
 @fixture
-def on_change():
-    return Mock()
+def on_change(widget):
+    handler = Mock()
+    widget.on_change = handler
+    return handler
 
 
 async def test_init(widget, probe, on_change):
@@ -40,9 +42,21 @@ async def test_value(widget, probe, on_change):
         widget.range = (0, scale)
         for position in POSITIONS:
             on_change.reset_mock()
-            assert_set_get(widget, "value", position * scale)
+            assert_set_value(widget, position * scale)
             assert probe.position == approx(position, abs=ACCURACY)
             on_change.assert_called_once_with(widget)
+
+    on_change.reset_mock()
+    widget.on_change = None
+    widget.value = 42
+    on_change.assert_not_called()
+
+
+def assert_set_value(widget, value_in, value_out=None):
+    if value_out is None:
+        value_out = value_in
+    value_out = assert_set_get(widget, "value", value_in, value_out)
+    assert isinstance(value_out, float)
 
 
 async def test_change(widget, probe, on_change):
@@ -54,12 +68,17 @@ async def test_change(widget, probe, on_change):
             assert widget.value == approx(position * scale, abs=(ACCURACY * scale))
             on_change.assert_called_once_with(widget)
 
+    on_change.reset_mock()
+    widget.on_change = None
+    probe.change(0.42)
+    on_change.assert_not_called()
+
 
 # Bounds checks and the `min` property are covered by the core tests.
 async def test_min(widget, probe, on_change):
     for min in POSITIONS[:-1]:
         on_change.reset_mock()
-        assert_set_get(widget, "range", (min, 1))
+        assert_set_range(widget, min, 1)
 
         if min <= 0.5:
             # The existing value is in the range, so it should not change.
@@ -78,7 +97,7 @@ async def test_max(widget, probe, on_change):
     # If the existing value is in the range, it should not change.
     for max in POSITIONS[-1:0:-1]:
         on_change.reset_mock()
-        assert_set_get(widget, "range", (0, max))
+        assert_set_range(widget, 0, max)
 
         if max >= 0.5:
             # The existing value is in the range, so it should not change.
@@ -92,8 +111,56 @@ async def test_max(widget, probe, on_change):
             on_change.assert_called_once_with(widget)
 
 
-# All other tick functionality is covered by the core tests.
-async def test_ticks(widget, probe):
-    for tick_count in [2, None, 10]:
-        widget.tick_count = tick_count
+def assert_set_range(widget, min_in, max_in):
+    min_out, max_out = assert_set_get(widget, "range", (min_in, max_in))
+    assert isinstance(min_out, float)
+    assert isinstance(max_out, float)
+
+
+# Bounds checks and all other tick functionality are covered by the core tests.
+async def test_ticks(widget, probe, on_change):
+    widget.value = prev_value = 0.6
+
+    for tick_count, value in [
+        (4, 0.6666666),  # Round up
+        (5, 0.75),  # Round up again
+        (9, 0.75),
+        (None, 0.75),
+        (2, 1.0),  # Round up to the maximum
+    ]:
+        on_change.reset_mock()
+        assert_set_get(widget, "tick_count", tick_count)
         assert probe.tick_count == tick_count
+        assert widget.value == approx(value)
+        assert probe.position == approx(value, abs=ACCURACY)
+
+        if value == prev_value:
+            on_change.assert_not_called()
+        else:
+            on_change.assert_called_once_with(widget)
+        prev_value = value
+
+
+async def test_value_with_ticks(widget, probe, on_change):
+    widget.tick_count = 5
+    widget.range = (0, 10)
+    widget.value = prev_value = 5
+
+    for value_in, value_out in [
+        (0, 0),
+        (1, 0),
+        (2, 2.5),
+        (2.5, 2.5),
+        (3, 2.5),
+        (4, 5),
+        (9, 10),
+    ]:
+        on_change.reset_mock()
+        assert_set_value(widget, value_in, value_out)
+        assert probe.position == approx(value_out / 10, abs=ACCURACY)
+
+        if value_out == prev_value:
+            on_change.assert_not_called()
+        else:
+            on_change.assert_called_once_with(widget)
+        prev_value = value_out

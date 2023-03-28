@@ -56,11 +56,15 @@ class Slider(Widget):
     # Backends are inconsistent about when they produce events for programmatic changes,
     # so we deal with those in the interface layer.
     @contextmanager
-    def _suppress_change(self):
+    def _programmatic_change(self):
+        old_value = self.value
         on_change = self._on_change
         self._on_change = None
-        yield
+        yield old_value
+
         self._on_change = on_change
+        if on_change and (self.value != old_value):
+            on_change(self)
 
     @property
     def value(self) -> float:
@@ -76,16 +80,14 @@ class Slider(Widget):
     def value(self, value):
         if not (self.min <= value <= self.max):
             raise ValueError(f"value {value} is not in range {self.min} - {self.max}")
-        old_value = self.value
 
         step = self.tick_step
         if step is not None:
+            # Round to the nearest tick.
             value = self.min + round((value - self.min) / step) * step
 
-        with self._suppress_change():
+        with self._programmatic_change():
             self._impl.set_value(float(value))
-        if self.on_change and (value != old_value):
-            self.on_change(self)
 
     @property
     def range(self) -> Tuple[float]:
@@ -104,15 +106,11 @@ class Slider(Widget):
         if _min >= _max:
             raise ValueError(f"min value {_min} is not smaller than max value {_max}")
 
-        with self._suppress_change():
+        with self._programmatic_change() as old_value:
+            # Some backends will clip the current value within the range automatically,
+            # but do it ourselves to be certain.
             self._impl.set_range((float(_min), float(_max)))
-
-            # Clip the value within the new range.
-            old_value = self.value
             self.value = max(_min, min(_max, old_value))
-
-        if self.on_change and (self.value != old_value):
-            self.on_change(self)
 
     @property
     def min(self) -> float:
@@ -150,10 +148,11 @@ class Slider(Widget):
     def tick_count(self, tick_count):
         if (tick_count is not None) and (tick_count < 2):
             raise ValueError("tick count must be at least 2")
-        old_value = self.value
-        with self._suppress_change():
+        with self._programmatic_change() as old_value:
+            # Some backends will round the current value to the nearest tick
+            # automatically, but do it ourselves to be certain.
             self._impl.set_tick_count(tick_count)
-        self.value = old_value  # Round if necessary.
+            self.value = old_value
 
     @property
     def tick_step(self) -> float:
