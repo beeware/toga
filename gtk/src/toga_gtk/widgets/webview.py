@@ -17,7 +17,6 @@ class WebView(Widget):
             )
 
         self.native = WebKit2.WebView()
-        self.native.interface = self.interface
 
         settings = self.native.get_settings()
         settings.set_property("enable-developer-extras", True)

@@ -40,8 +40,6 @@ class SplitContainer(Widget):
         else:
             raise ValueError("Allowed orientation is VERTICAL or HORIZONTAL")
 
-        self.native.interface = self.interface
-
     def add_content(self, position, widget, flex):
         # Add all children to the content widget.
         sub_container = TogaContainer()
