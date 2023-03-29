@@ -40,11 +40,7 @@ class Switch(TextViewWidget):
         return self.native.isChecked()
 
     def set_value(self, value):
-        old_value = self.native.isChecked()
         self.native.setChecked(bool(value))
-
-        if self.interface.on_change and old_value != value:
-            self._impl.interface.on_change(widget=self.interface)
 
     def set_on_change(self, handler):
         # No special handling required
