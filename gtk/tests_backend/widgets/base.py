@@ -48,6 +48,16 @@ class SimpleProbe:
     def height(self):
         return self.native.get_allocation().height
 
+    def assert_width(self, min_width, max_width):
+        assert (
+            min_width <= self.width <= max_width
+        ), f"Width ({self.width}) not in range ({min_width}, {max_width})"
+
+    def assert_height(self, min_height, max_height):
+        assert (
+            min_height <= self.height <= max_height
+        ), f"Height ({self.height}) not in range ({min_height}, {max_height})"
+
     @property
     def color(self):
         sc = self.native.get_style_context()

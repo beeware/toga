@@ -7,6 +7,9 @@ from toga.style.pack import COLUMN
 from ..assertions import assert_color
 from ..data import COLORS, TEXTS
 
+# An upper bound for widths
+MAX_WIDTH = 2000
+
 
 async def test_text(widget, probe):
     "The text displayed on a widget can be changed"
@@ -198,14 +201,16 @@ async def test_flex_horizontal_widget_size(widget, probe):
     # Container is initially a non-flex row box.
     # Initial widget size is small (but non-zero), based on content size.
     await probe.redraw()
-    assert 10 <= probe.width <= 150, f"Width ({probe.width}) not in range (10, 150)"
-    assert 10 <= probe.height <= 50, f"Height ({probe.height}) not in range (10, 50)"
+    probe.assert_width(10, 150)
+    probe.assert_height(10, 50)
 
     # Make the widget flexible; it will expand to fill horizontal space
     widget.style.flex = 1
 
     # widget has expanded width, but has the same height.
     await probe.redraw()
+    probe.assert_width(350, MAX_WIDTH)
+    probe.assert_height(2, 50)
     assert probe.width > 350
     assert probe.height <= 50
 
@@ -217,7 +222,8 @@ async def test_flex_horizontal_widget_size(widget, probe):
     # and the height hasn't changed
     await probe.redraw()
     assert probe.width > 350
-    assert probe.height <= 50
+    probe.assert_width(350, MAX_WIDTH)
+    probe.assert_height(2, 50)
 
     # Set an explicit height and width
     widget.style.width = 300
@@ -226,7 +232,5 @@ async def test_flex_horizontal_widget_size(widget, probe):
     # Widget is approximately the requested size
     # (Definitely less than the window size)
     await probe.redraw()
-    assert 290 <= probe.width <= 330, f"Width ({probe.width}) not in range (290, 330)"
-    assert (
-        190 <= probe.height <= 230
-    ), f"Height ({probe.height}) not in range (190, 230)"
+    probe.assert_width(290, 330)
+    probe.assert_height(190, 230)

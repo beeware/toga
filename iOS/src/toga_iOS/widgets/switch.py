@@ -46,7 +46,7 @@ class Switch(Widget):
         # Add the layout constraints
         self.add_constraints()
 
-    def get_text(self, text):
+    def get_text(self):
         return str(self.native_label.text)
 
     def set_text(self, text):
@@ -80,6 +80,7 @@ class Switch(Widget):
         self.native_label.textColor = native_color(value)
 
     def rehint(self):
-        fitting_size = self.native.systemLayoutSizeFittingSize(CGSize(0, 0))
-        self.interface.intrinsic.width = at_least(fitting_size.width)
-        self.interface.intrinsic.height = fitting_size.height
+        label_size = self.native_label.systemLayoutSizeFittingSize(CGSize(0, 0))
+        switch_size = self.native_switch.systemLayoutSizeFittingSize(CGSize(0, 0))
+        self.interface.intrinsic.width = at_least(label_size.width + switch_size.width)
+        self.interface.intrinsic.height = max(label_size.height, switch_size.height)
