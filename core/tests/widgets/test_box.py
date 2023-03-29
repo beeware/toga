@@ -31,3 +31,17 @@ def test_create_box_with_children():
 
     # But the box will have children.
     assert box.children == [child1, child2]
+
+
+def test_disable_no_op():
+    "Box doesn't have a disabled state"
+    box = toga.Box()
+
+    # Enabled by default
+    assert box.enabled
+
+    # Try to disable the widget
+    box.enabled = False
+
+    # Still enabled.
+    assert box.enabled

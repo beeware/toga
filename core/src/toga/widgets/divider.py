@@ -27,6 +27,11 @@ class Divider(Widget):
         self._impl = self.factory.Divider(interface=self)
         self.direction = direction
 
+    @Widget.enabled.setter
+    def enabled(self, value):
+        # Box doesn't have a "disabled" state
+        pass
+
     @property
     def direction(self):
         """The direction in which the visual separator will be drawn.

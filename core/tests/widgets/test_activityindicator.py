@@ -20,6 +20,18 @@ def test_widget_created(activity_indicator):
     assert_action_performed(activity_indicator, "create ActivityIndicator")
 
 
+def test_disable_no_op(activity_indicator):
+    "ActivityIndicator doesn't have a disabled state"
+    # Enabled by default
+    assert activity_indicator.enabled
+
+    # Try to disable the widget
+    activity_indicator.enabled = False
+
+    # Still enabled.
+    assert activity_indicator.enabled
+
+
 def test_start(activity_indicator):
     "An activity indicator can be started"
     # Not running initially

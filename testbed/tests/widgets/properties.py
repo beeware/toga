@@ -11,6 +11,27 @@ from ..data import COLORS, TEXTS
 MAX_WIDTH = 2000
 
 
+async def test_enabled(widget, probe):
+    "The widget can be enabled and disabled"
+    # Widget is initially enabled
+    assert widget.enabled
+    assert probe.enabled
+
+    # Disable the widget
+    widget.enabled = False
+    await probe.redraw()
+
+    assert not widget.enabled
+    assert not probe.enabled
+
+    # Enable the widget
+    widget.enabled = True
+    await probe.redraw()
+
+    assert widget.enabled
+    assert probe.enabled
+
+
 async def test_text(widget, probe):
     "The text displayed on a widget can be changed"
     for text in TEXTS:

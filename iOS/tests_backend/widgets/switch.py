@@ -13,6 +13,10 @@ class SwitchProbe(SimpleProbe):
         self.native_switch = widget._impl.native_switch
 
     @property
+    def enabled(self):
+        return self.native_label.isEnabled() and self.native_switch.isEnabled()
+
+    @property
     def text(self):
         return str(self.native_label.text)
 

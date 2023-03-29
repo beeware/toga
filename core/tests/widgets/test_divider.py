@@ -32,6 +32,20 @@ def test_divider_created_explicit(direction):
     assert divider.direction == direction
 
 
+def test_disable_no_op():
+    "Divider doesn't have a disabled state"
+    divider = toga.Divider()
+
+    # Enabled by default
+    assert divider.enabled
+
+    # Try to disable the widget
+    divider.enabled = False
+
+    # Still enabled.
+    assert divider.enabled
+
+
 def test_update_direction():
     "The direction of the divider can be altered."
     divider = toga.Divider(direction=toga.Divider.HORIZONTAL)

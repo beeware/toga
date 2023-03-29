@@ -76,7 +76,7 @@ class SimpleProbe:
 
     @property
     def enabled(self):
-        return self.native.enabled
+        return self.native.isEnabled()
 
     @property
     def hidden(self):
