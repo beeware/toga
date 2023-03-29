@@ -41,6 +41,10 @@ class SimpleProbe:
             await asyncio.sleep(1)
 
     @property
+    def enabled(self):
+        return self.native.get_sensitive()
+
+    @property
     def width(self):
         return self.native.get_allocation().width
 

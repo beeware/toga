@@ -15,20 +15,24 @@ class Switch(Widget):
             self.interface.on_change(self.interface)
 
     def get_text(self):
-        return self.native.Text
+        value = self.native.Text
+        # Normalize a standalone ZERO WIDTH SPACE to an empty string.
+        if value == "\u200B":
+            return ""
+        return value
 
     def set_text(self, text):
+        if text == "":
+            # An empty label would cause the widget's height to collapse, so display a
+            # Unicode ZERO WIDTH SPACE instead.
+            text = "\u200B"
         self.native.Text = text
 
     def get_value(self):
         return self.native.Checked
 
     def set_value(self, value):
-        old_value = self.native.Checked
         self.native.Checked = value
-
-        if self.interface.on_change and old_value != value:
-            self.interface.on_change(self.interface)
 
     def set_on_change(self, handler):
         pass

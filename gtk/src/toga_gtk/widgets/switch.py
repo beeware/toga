@@ -5,45 +5,50 @@ from .base import Widget
 
 
 class Switch(Widget):
+    SPACING = 10
+
     def create(self):
-        self.native = Gtk.Box()
+        self.native = Gtk.Box(spacing=self.SPACING)
 
-        self.label = Gtk.Label(xalign=0)
-        self.label.set_name(f"toga-{self.interface.id}-label")
-        self.label.get_style_context().add_class("toga")
-        self.label.set_line_wrap(True)
+        self.native_label = Gtk.Label(xalign=0)
+        self.native_label.set_name(f"toga-{self.interface.id}-label")
+        self.native_label.get_style_context().add_class("toga")
+        self.native_label.set_line_wrap(False)
 
-        self.switch = Gtk.Switch()
-        self.switch.set_name(f"toga-{self.interface.id}-switch")
-        self.switch.get_style_context().add_class("toga")
-        self.switch.connect("notify::active", self.gtk_on_change)
+        self.native_switch = Gtk.Switch()
+        self.native_switch.set_name(f"toga-{self.interface.id}-switch")
+        self.native_switch.get_style_context().add_class("toga")
+        self.native_switch.connect("notify::active", self.gtk_notify_active)
 
-        self.native.pack_start(self.label, True, True, 0)
-        self.native.pack_start(self.switch, False, False, 0)
+        self.native.pack_start(self.native_label, True, True, 0)
+        self.native.pack_start(self.native_switch, False, False, 0)
         self.native.connect("show", lambda event: self.refresh())
 
-    def gtk_on_change(self, widget, state):
+    def gtk_notify_active(self, widget, state):
         if self.interface.on_change:
             self.interface.on_change(self.interface)
 
     def set_on_change(self, handler):
         pass
 
+    def get_enabled(self):
+        return self.native_switch.get_sensitive()
+
+    def set_enabled(self, value):
+        self.native_label.set_sensitive(value)
+        self.native_switch.set_sensitive(value)
+
     def get_text(self):
-        return self.label.get_text()
+        return self.native_label.get_text()
 
     def set_text(self, text):
-        self.label.set_text(text)
+        self.native_label.set_text(text)
 
     def get_value(self):
-        return self.switch.get_active()
+        return self.native_switch.get_active()
 
     def set_value(self, value):
-        old_value = self.switch.get_active()
-        self.switch.set_active(value)
-
-        if self.interface.on_change and old_value != value:
-            self.interface.on_change(self.interface)
+        self.native_switch.set_active(value)
 
     def set_color(self, color):
         self.apply_css("color", get_color_css(color), native=self.native_label)
@@ -53,10 +58,15 @@ class Switch(Widget):
 
     def rehint(self):
         # print("REHINT", self, self.native.get_preferred_width(), self.native.get_preferred_height())
-        width = self.native.get_preferred_width()
-        height = self.native.get_preferred_height()
+        label_width = self.native_label.get_preferred_width()
+        label_height = self.native_label.get_preferred_height()
+
+        switch_width = self.native_switch.get_preferred_width()
+        switch_height = self.native_switch.get_preferred_height()
 
         # Set intrinsic width to at least the minimum width
-        self.interface.intrinsic.width = at_least(width[0])
+        self.interface.intrinsic.width = at_least(
+            label_width[0] + self.SPACING + switch_width[0]
+        )
         # Set intrinsic height to the natural height
-        self.interface.intrinsic.height = height[1]
+        self.interface.intrinsic.height = max(label_height[1], switch_height[1])

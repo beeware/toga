@@ -67,8 +67,11 @@ class Widget:
 
         self.rehint()
 
+    def get_enabled(self):
+        return self.native.get_sensitive()
+
     def set_enabled(self, value):
-        self.native.set_sensitive(self.interface.enabled)
+        self.native.set_sensitive(value)
 
     def focus(self):
         self.native.grab_focus()

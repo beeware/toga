@@ -62,9 +62,11 @@ class Widget:
     def set_tab_index(self, tab_index):
         self.native.TabIndex = tab_index
 
+    def get_enabled(self):
+        return self.native.Enabled
+
     def set_enabled(self, value):
-        if self.native:
-            self.native.Enabled = self.interface.enabled
+        self.native.Enabled = value
 
     def focus(self):
         if self.native:

@@ -9,7 +9,7 @@ from .base import Widget
 class Button(Widget):
     def create(self):
         self.native = Gtk.Button()
-        self.native.connect("clicked", self.gtk_on_press)
+        self.native.connect("clicked", self.gtk_clicked)
 
     def get_text(self):
         return self.native.get_label()
@@ -38,6 +38,6 @@ class Button(Widget):
         self.interface.intrinsic.width = at_least(width[0])
         self.interface.intrinsic.height = height[1]
 
-    def gtk_on_press(self, event):
+    def gtk_clicked(self, event):
         if self.interface.on_press:
             self.interface.on_press(self.interface)
