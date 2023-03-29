@@ -11,7 +11,7 @@ class Canvas(Widget):
             )
 
         self.native = Gtk.DrawingArea()
-        self.native.interface = self.interface
+
         self.native.connect("draw", self.gtk_draw_callback)
         self.native.connect("size-allocate", self.gtk_on_size_allocate)
         self.native.connect("button-press-event", self.mouse_down)

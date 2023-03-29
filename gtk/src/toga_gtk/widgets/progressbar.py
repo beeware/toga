@@ -29,9 +29,6 @@ async def pulse(progressbar):
 class ProgressBar(Widget):
     def create(self):
         self.native = Gtk.ProgressBar()
-        self.native.set_name(f"toga-{self.interface.id}")
-        self.native.get_style_context().add_class("toga")
-        self.native.interface = self.interface
 
         self._max = 1.0
         self._running = False

@@ -7,7 +7,6 @@ from .base import Widget
 class Selection(Widget):
     def create(self):
         self.native = Gtk.ComboBoxText.new()
-        self.native.interface = self.interface
         self.native.connect("changed", self.gtk_on_select)
 
     def gtk_on_select(self, widget):

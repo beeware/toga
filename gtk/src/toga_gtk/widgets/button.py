@@ -9,10 +9,6 @@ from .base import Widget
 class Button(Widget):
     def create(self):
         self.native = Gtk.Button()
-        self.native.set_name(f"toga-{self.interface.id}")
-        self.native.get_style_context().add_class("toga")
-        self.native.interface = self.interface
-
         self.native.connect("clicked", self.gtk_on_press)
 
     def get_text(self):

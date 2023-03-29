@@ -2,13 +2,13 @@ import pytest
 
 import toga
 
+from ..conftest import skip_on_platforms
+
 
 @pytest.fixture
 async def widget():
-    try:
-        return toga.ActivityIndicator()
-    except AttributeError:
-        pytest.skip("Platform doesn't implement the ActivityIndicator widget")
+    skip_on_platforms("android", "iOS", "windows")
+    return toga.ActivityIndicator()
 
 
 async def test_start_stop(widget, probe):

@@ -7,7 +7,6 @@ from .base import Widget
 class Divider(Widget):
     def create(self):
         self.native = Gtk.Separator()
-        self.native.interface = self.interface
 
     def rehint(self):
         width = self.native.get_preferred_width()
