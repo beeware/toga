@@ -7,6 +7,7 @@ from toga_iOS.libs import (
     UILabel,
     UILayoutConstraintAxis,
     UIStackView,
+    UIStackViewAlignment,
     UISwitch,
 )
 from toga_iOS.widgets.base import Widget
@@ -23,11 +24,15 @@ class TogaSwitch(UISwitch):
 
 
 class Switch(Widget):
+    SPACING = 10
+
     def create(self):
         self.native = UIStackView.alloc().init()
         self.native.interface = self.interface
         self.native.impl = self
         self.native.axis = UILayoutConstraintAxis.Horizontal
+        self.native.alignment = UIStackViewAlignment.Center
+        self.native.spacing = self.SPACING
 
         self.native_label = UILabel.alloc().init()
 
@@ -82,5 +87,7 @@ class Switch(Widget):
     def rehint(self):
         label_size = self.native_label.systemLayoutSizeFittingSize(CGSize(0, 0))
         switch_size = self.native_switch.systemLayoutSizeFittingSize(CGSize(0, 0))
-        self.interface.intrinsic.width = at_least(label_size.width + switch_size.width)
+        self.interface.intrinsic.width = at_least(
+            label_size.width + self.SPACING + switch_size.width
+        )
         self.interface.intrinsic.height = max(label_size.height, switch_size.height)
