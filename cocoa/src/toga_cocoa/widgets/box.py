@@ -20,6 +20,10 @@ class Box(Widget):
         # Add the layout constraints
         self.add_constraints()
 
+    def get_enabled(self):
+        # A box is always enabled
+        return True
+
     def rehint(self):
         content_size = self.native.intrinsicContentSize()
         self.interface.intrinsic.width = at_least(content_size.width)
