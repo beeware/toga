@@ -58,11 +58,8 @@ def test_button_on_press(button):
 
     assert button.on_press._raw == handler
 
-    # Backend has the wrapped version
-    assert attribute_value(button, "on_press") == button._on_press
-
     # Invoke the callback
-    button.on_press(a=1)
+    button._impl.simulate_press()
 
     # Callback was invoked
-    handler.assert_called_once_with(button, a=1)
+    handler.assert_called_once_with(button)

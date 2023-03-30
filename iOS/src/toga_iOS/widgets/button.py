@@ -19,7 +19,7 @@ class TogaButton(UIButton):
 
     @objc_method
     def onPress_(self, obj) -> None:
-        self.interface.on_press()
+        self.interface.on_press(None)
 
 
 class Button(Widget):
@@ -44,10 +44,6 @@ class Button(Widget):
 
     def set_text(self, text):
         self.native.setTitle(text, forState=UIControlStateNormal)
-
-    def set_on_press(self, handler):
-        # No special handling required.
-        pass
 
     def set_color(self, color):
         if color is None:

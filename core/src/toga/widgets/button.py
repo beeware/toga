@@ -71,4 +71,3 @@ class Button(Widget):
     @on_press.setter
     def on_press(self, handler):
         self._on_press = wrapped_handler(self, handler)
-        self._impl.set_on_press(self._on_press)

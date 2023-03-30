@@ -55,7 +55,7 @@ def wrapped_handler(interface, handler, cleanup=None):
         if isinstance(handler, NativeHandler):
             return handler.native
 
-        def _handler(*args, **kwargs):
+        def _handler(widget, *args, **kwargs):
             if asyncio.iscoroutinefunction(handler):
                 asyncio.ensure_future(
                     handler_with_cleanup(handler, cleanup, interface, *args, **kwargs)
@@ -77,7 +77,7 @@ def wrapped_handler(interface, handler, cleanup=None):
 
     else:
         # A dummy no-op handler
-        def _handler(*args, **kwargs):
+        def _handler(widget, *args, **kwargs):
             pass
 
         _handler._raw = None

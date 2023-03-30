@@ -118,9 +118,10 @@ class MainWindow(Window):
         Args:
             handler (:obj:`callable`): The handler passed.
         """
-        raise AttributeError(
-            "Cannot set on_close handler for the main window. Use the app on_exit handler instead"
-        )
+        if handler:
+            raise AttributeError(
+                "Cannot set on_close handler for the main window. Use the app on_exit handler instead"
+            )
 
 
 class App:
@@ -551,7 +552,7 @@ class App:
 
     def exit(self):
         """Quit the application gracefully."""
-        self.on_exit()
+        self.on_exit(None)
 
     @property
     def on_exit(self):
@@ -579,7 +580,6 @@ class App:
                 app._impl.exit()
 
         self._on_exit = wrapped_handler(self, handler, cleanup=cleanup)
-        self._impl.set_on_exit(self._on_exit)
 
     def add_background_task(self, handler):
         """Schedule a task to run in the background.
@@ -592,7 +592,7 @@ class App:
 
         :param handler: A coroutine, generator or callable.
         """
-        self._impl.loop.call_soon_threadsafe(wrapped_handler(self, handler))
+        self._impl.loop.call_soon_threadsafe(wrapped_handler(self, handler), None)
 
 
 class DocumentApp(App):

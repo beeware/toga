@@ -626,7 +626,7 @@ class CanvasTests(TestCase):
         self.testing_canvas.on_resize = callback
         self.assertEqual(self.testing_canvas.on_resize._raw, callback)
         self.assertEqual(
-            self.testing_canvas.on_resize(a=1),
+            self.testing_canvas.on_resize(None, a=1),
             "called <class 'toga.widgets.canvas.Canvas'> with {'a': 1}",
         )
         self.assertValueSet(
@@ -644,7 +644,7 @@ class CanvasTests(TestCase):
         self.testing_canvas.on_press = callback
         self.assertEqual(self.testing_canvas.on_press._raw, callback)
         self.assertEqual(
-            self.testing_canvas.on_press(a=1),
+            self.testing_canvas.on_press(None, a=1),
             "called <class 'toga.widgets.canvas.Canvas'> with {'a': 1}",
         )
         self.assertValueSet(
@@ -662,7 +662,7 @@ class CanvasTests(TestCase):
         self.testing_canvas.on_release = callback
         self.assertEqual(self.testing_canvas.on_release._raw, callback)
         self.assertEqual(
-            self.testing_canvas.on_release(a=1),
+            self.testing_canvas.on_release(None, a=1),
             "called <class 'toga.widgets.canvas.Canvas'> with {'a': 1}",
         )
         self.assertValueSet(
@@ -680,7 +680,7 @@ class CanvasTests(TestCase):
         self.testing_canvas.on_drag = callback
         self.assertEqual(self.testing_canvas.on_drag._raw, callback)
         self.assertEqual(
-            self.testing_canvas.on_drag(a=1),
+            self.testing_canvas.on_drag(None, a=1),
             "called <class 'toga.widgets.canvas.Canvas'> with {'a': 1}",
         )
         self.assertValueSet(self.testing_canvas, "on_drag", self.testing_canvas.on_drag)
@@ -696,7 +696,7 @@ class CanvasTests(TestCase):
         self.testing_canvas.on_alt_press = callback
         self.assertEqual(self.testing_canvas.on_alt_press._raw, callback)
         self.assertEqual(
-            self.testing_canvas.on_alt_press(a=1),
+            self.testing_canvas.on_alt_press(None, a=1),
             "called <class 'toga.widgets.canvas.Canvas'> with {'a': 1}",
         )
         self.assertValueSet(
@@ -714,7 +714,7 @@ class CanvasTests(TestCase):
         self.testing_canvas.on_alt_release = callback
         self.assertEqual(self.testing_canvas.on_alt_release._raw, callback)
         self.assertEqual(
-            self.testing_canvas.on_alt_release(a=1),
+            self.testing_canvas.on_alt_release(None, a=1),
             "called <class 'toga.widgets.canvas.Canvas'> with {'a': 1}",
         )
         self.assertValueSet(
@@ -732,7 +732,7 @@ class CanvasTests(TestCase):
         self.testing_canvas.on_alt_drag = callback
         self.assertEqual(self.testing_canvas.on_alt_drag._raw, callback)
         self.assertEqual(
-            self.testing_canvas.on_alt_drag(a=1),
+            self.testing_canvas.on_alt_drag(None, a=1),
             "called <class 'toga.widgets.canvas.Canvas'> with {'a': 1}",
         )
         self.assertValueSet(

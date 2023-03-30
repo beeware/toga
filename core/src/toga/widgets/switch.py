@@ -155,7 +155,6 @@ class Switch(Widget):
     @on_change.setter
     def on_change(self, handler):
         self._on_change = wrapped_handler(self, handler)
-        self._impl.set_on_change(self._on_change)
 
     @property
     def value(self):
