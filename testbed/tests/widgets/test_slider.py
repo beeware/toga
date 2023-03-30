@@ -1,6 +1,7 @@
 from math import pi
 from unittest.mock import Mock
 
+import pytest
 from pytest import approx, fixture
 
 import toga
@@ -130,7 +131,11 @@ async def test_ticks(widget, probe, on_change):
     ]:
         on_change.reset_mock()
         assert_set_get(widget, "tick_count", tick_count)
-        assert probe.tick_count == tick_count
+        try:
+            assert probe.tick_count == tick_count
+        except NotImplementedError:
+            pass
+
         assert widget.value == approx(value)
         assert probe.position == approx(value, abs=ACCURACY)
 
@@ -187,3 +192,17 @@ async def test_range_with_ticks(widget, probe, on_change):
         else:
             on_change.assert_called_once_with(widget)
         prev_value = value
+
+
+@pytest.mark.parametrize("event", ["press", "release"])
+async def test_press_release(widget, probe, event):
+    handler = Mock()
+    setattr(widget, f"on_{event}", handler)
+    handler.assert_not_called()
+    getattr(probe, event)()
+    handler.assert_called_once_with(widget)
+
+    handler.reset_mock()
+    setattr(widget, f"on_{event}", None)
+    getattr(probe, event)()
+    handler.assert_not_called()

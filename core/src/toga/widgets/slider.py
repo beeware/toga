@@ -82,13 +82,15 @@ class Slider(Widget):
         if not (self.min <= value <= self.max):
             raise ValueError(f"value {value} is not in range {self.min} - {self.max}")
 
+        with self._programmatic_change():
+            self._impl.set_value(self._round_value(float(value)))
+
+    def _round_value(self, value):
         step = self.tick_step
         if step is not None:
             # Round to the nearest tick.
             value = self.min + round((value - self.min) / step) * step
-
-        with self._programmatic_change():
-            self._impl.set_value(float(value))
+        return value
 
     @property
     def range(self) -> Tuple[float]:
@@ -142,6 +144,11 @@ class Slider(Widget):
 
         :raises ValueError: If set to a count which is not at least 2 (for the min and
             max).
+
+        .. note::
+
+            On GTK and iOS, tick marks are not currently displayed, but discrete mode
+            will otherwise work correctly.
         """
         return self._impl.get_tick_count()
 
@@ -209,7 +216,6 @@ class Slider(Widget):
     @on_change.setter
     def on_change(self, handler):
         self._on_change = wrapped_handler(self, handler)
-        self._impl.set_on_change(self._on_change)
 
     @property
     def on_press(self) -> callable:
@@ -219,7 +225,6 @@ class Slider(Widget):
     @on_press.setter
     def on_press(self, handler):
         self._on_press = wrapped_handler(self, handler)
-        self._impl.set_on_press(self._on_press)
 
     @property
     def on_release(self) -> callable:
@@ -229,7 +234,6 @@ class Slider(Widget):
     @on_release.setter
     def on_release(self, handler):
         self._on_release = wrapped_handler(self, handler)
-        self._impl.set_on_release(self._on_release)
 
 
 class SliderImpl(ABC):
@@ -257,14 +261,17 @@ class SliderImpl(ABC):
     def set_tick_count(self, tick_count):
         ...
 
-    def set_on_change(self, handler):
-        pass
+    def on_change(self):
+        if self.interface.on_change:
+            self.interface.on_change(self.interface)
 
-    def set_on_press(self, handler):
-        pass
+    def on_press(self):
+        if self.interface.on_press:
+            self.interface.on_press(self.interface)
 
-    def set_on_release(self, handler):
-        pass
+    def on_release(self):
+        if self.interface.on_release:
+            self.interface.on_release(self.interface)
 
 
 class IntSliderImpl(SliderImpl):
@@ -282,12 +289,6 @@ class IntSliderImpl(SliderImpl):
 
     def get_value(self):
         return self.value
-
-    def on_change(self):
-        span = self.max - self.min
-        self.value = self.min + (self.get_int_value() / self.get_int_max() * span)
-        if self.interface.on_change:
-            self.interface.on_change(self.interface)
 
     def set_value(self, value):
         span = self.max - self.min
@@ -313,6 +314,11 @@ class IntSliderImpl(SliderImpl):
             self.set_int_max(tick_count - 1)
         self.set_ticks_visible(self.discrete)
 
+    def on_change(self):
+        span = self.max - self.min
+        self.value = self.min + (self.get_int_value() / self.get_int_max() * span)
+        super().on_change()
+
     @abstractmethod
     def get_int_value(self):
         ...
@@ -331,4 +337,47 @@ class IntSliderImpl(SliderImpl):
 
     @abstractmethod
     def set_ticks_visible(self, visible):
+        ...
+
+
+class ContinuousSliderImpl(SliderImpl):
+    """Base class for implementations which don't support discrete mode. The slider
+    thumb is allowed to move continuously, but the reported value is rounded to the
+    closest tick, as is the thumb itself after it's released.
+    """
+
+    def __init__(self):
+        super().__init__()
+
+        # Dummy values used during initialization.
+        self.value = 0
+        self.tick_count = None
+
+    def get_value(self):
+        return self.value
+
+    def set_value(self, value):
+        self.value = value
+        self.set_continuous_value(value)
+
+    def get_tick_count(self):
+        return self.tick_count
+
+    def set_tick_count(self, tick_count):
+        self.tick_count = tick_count
+
+    def on_change(self):
+        self.value = self.interface._round_value(self.get_continuous_value())
+        super().on_change()
+
+    def on_release(self):
+        self.set_continuous_value(self.value)
+        super().on_release()
+
+    @abstractmethod
+    def get_continuous_value(self):
+        ...
+
+    @abstractmethod
+    def set_continuous_value(self, value):
         ...
