@@ -53,12 +53,20 @@ class ScrollContainer(Widget):
         self.content = content
         self.on_scroll = on_scroll
 
-    def _set_app(self, app):
+    @Widget.app.setter
+    def app(self, app):
+        # Invoke the superclass property setter
+        Widget.app.fset(self, app)
+
         # Also assign the app to the content in the container
         if self.content:
             self.content.app = app
 
-    def _set_window(self, window):
+    @Widget.window.setter
+    def window(self, window):
+        # Invoke the superclass property setter
+        Widget.window.fset(self, window)
+
         # Also assign the window to the content in the container
         if self._content:
             self._content.window = window

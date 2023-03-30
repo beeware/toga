@@ -1,4 +1,4 @@
-from ..utils import LoggedObject, not_required_on
+from ..utils import LoggedObject
 
 
 class Widget(LoggedObject):
@@ -10,21 +10,13 @@ class Widget(LoggedObject):
         self.create()
 
     def create(self):
-        pass
+        self._action("create Widget")
 
     def set_app(self, app):
         self._set_value("app", app)
 
     def set_window(self, window):
         self._set_value("window", window)
-
-    @property
-    def container(self):
-        return self._get_value("container")
-
-    @container.setter
-    def container(self, container):
-        self._set_value("container", container)
 
     def get_enabled(self):
         return self._get_value("enabled", True)
@@ -36,10 +28,10 @@ class Widget(LoggedObject):
         self._action("focus")
 
     def get_tab_index(self):
-        return self._get_value("tab_index")
+        return self._get_value("tab_index", None)
 
     def set_tab_index(self, tab_index):
-        return self._set_value("tab_index", tab_index)
+        self._set_value("tab_index", tab_index)
 
     ######################################################################
     # APPLICATOR
@@ -69,10 +61,6 @@ class Widget(LoggedObject):
 
     def remove_child(self, child):
         self._action("remove child", child=child)
-
-    @not_required_on("gtk", "winforms", "android", "web")
-    def add_constraints(self):
-        self._action("add constraints")
 
     def refresh(self):
         self._action("refresh")

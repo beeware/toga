@@ -1,4 +1,3 @@
-import warnings
 from builtins import id as identifier
 
 from travertino.node import Node
@@ -18,7 +17,7 @@ class WidgetRegistry(dict):
     def __setitem__(self, key, value):
         # We do not want to allow setting items directly but to use the "add"
         # method instead.
-        raise RuntimeError("WidgetRegistry does not allow using item settings directly")
+        raise RuntimeError("Widgets cannot be directly added to a registry")
 
     def update(self, widgets):
         for widget in widgets:
@@ -28,7 +27,7 @@ class WidgetRegistry(dict):
         if widget.id in self:
             # Prevent from adding the same widget twice
             # or adding 2 widgets with the same id
-            raise KeyError(f'There is already a widget with "{widget.id}" id')
+            raise KeyError(f"There is already a widget with the id {widget.id!r}")
         super().__setitem__(widget.id, widget)
 
     def remove(self, id):
@@ -39,39 +38,19 @@ class WidgetRegistry(dict):
 
 
 class Widget(Node):
-    """This is the base widget implementation that all widgets in Toga derive
-    from.
-
-    It defines the interface for core functionality for children, styling,
-    layout and ownership by specific App and Window.
-
-    Apart from the above, this is an abstract implementation which must
-    be made concrete by some platform-specific code for the _apply_layout
-    method.
-
-    Args:
-        id (str): An identifier for this widget.
-        enabled (bool): Whether or not interaction with the button is possible, defaults to `True`.
-        style: An optional style object.
-            If no style is provided then a new one will be created for the widget.
-    """
-
     def __init__(
         self,
         id=None,
-        enabled=True,
         style=None,
-        factory=None,  # DEPRECATED !
     ):
-        ######################################################################
-        # 2022-09: Backwards compatibility
-        ######################################################################
-        # factory no longer used
-        if factory:
-            warnings.warn("The factory argument is no longer used.", DeprecationWarning)
-        ######################################################################
-        # End backwards compatibility.
-        ######################################################################
+        """Create a base Toga widget.
+
+        This is an abstract base class; it cannot be instantiated.
+
+        :param id: The ID for the widget.
+        :param style: A style object. If no style is provided, a default style
+            will be applied to the widget.
+        """
         super().__init__(
             style=style if style else Pack(), applicator=TogaApplicator(self)
         )
@@ -88,8 +67,7 @@ class Widget(Node):
 
     @property
     def id(self):
-        """The node identifier. This id can be used to target styling
-        directives."""
+        """The unique identifier for the widget."""
         return self._id
 
     @property
@@ -104,8 +82,9 @@ class Widget(Node):
     def add(self, *children):
         """Add the provided widgets as children of this widget.
 
-        If a node already has a different parent, it will be moved over. This
-        does nothing if a node already is a child of this node.
+        If a child widget already has parent, it will be re-parented as a child
+        of this widget. If the child widget is already a child of this widget,
+        there is no change.
 
         Raises ``ValueError`` if this widget cannot have children.
 
@@ -124,8 +103,7 @@ class Widget(Node):
                 child.app = self.app
                 child.window = self.window
 
-                if self._impl:
-                    self._impl.add_child(child._impl)
+                self._impl.add_child(child._impl)
 
         if self.window:
             self.window.content.refresh()
@@ -133,8 +111,9 @@ class Widget(Node):
     def insert(self, index, child):
         """Insert a widget as a child of this widget.
 
-        If the node already has a parent, ownership of the widget will be
-        transferred.
+        If a child widget already has parent, it will be re-parented as a child
+        of this widget. If the child widget is already a child of this widget,
+        there is no change.
 
         Raises ``ValueError`` if this node cannot have children.
 
@@ -154,8 +133,7 @@ class Widget(Node):
             child.app = self.app
             child.window = self.window
 
-            if self._impl:
-                self._impl.insert_child(index, child._impl)
+            self._impl.insert_child(index, child._impl)
 
         if self.window:
             self.window.content.refresh()
@@ -163,9 +141,10 @@ class Widget(Node):
     def remove(self, *children):
         """Remove the provided widgets as children of this node.
 
-        This does nothing if a given node is not a child of this node.
+        Any nominated child widget that is not a child of this widget will
+        not have any change in parentage.
 
-        Raises ``ValueError`` if this node is a leaf, and cannot have children.
+        Raises ``ValueError`` if this widget cannot have children.
 
         :param children: The child nodes to remove.
         """
@@ -176,8 +155,7 @@ class Widget(Node):
                 child.app = None
                 child.window = None
 
-                if self._impl:
-                    self._impl.remove_child(child._impl)
+                self._impl.remove_child(child._impl)
 
         if self.window:
             self.window.content.refresh()
@@ -196,35 +174,23 @@ class Widget(Node):
 
     @app.setter
     def app(self, app):
-        # If the widget is already assigned to an app,
+        # If the widget is already assigned to an app
         if self._app:
-            if app is None:
-                # Deregister the widget.
-                self._app.widgets.remove(self.id)
-            elif self._app != app:
-                # raise an error when we already have an app and attempt to override it
-                # with a different app
-                raise ValueError("Widget %s is already associated with an App" % self)
-            else:
+            if self._app == app:
                 # If app is the same as the previous app, return
                 return
 
-        if self._impl:
-            self._app = app
-            self._impl.set_app(app)
-            for child in self.children:
-                child.app = app
+            # Deregister the widget from the old app
+            self._app.widgets.remove(self.id)
+
+        self._app = app
+        self._impl.set_app(app)
+        for child in self.children:
+            child.app = app
 
         if app is not None:
             # Add this widget to the application widget registry
             app.widgets.add(self)
-
-        # Provide an extension point for widgets with
-        # more complex widget heirarchies
-        self._set_app(app)
-
-    def _set_app(self, app):
-        pass
 
     @property
     def window(self):
@@ -242,23 +208,14 @@ class Widget(Node):
             self.window.widgets.remove(self.id)
 
         self._window = window
-        if self._impl:
-            self._impl.set_window(window)
+        self._impl.set_window(window)
 
-        if self._children is not None:
-            for child in self._children:
-                child.window = window
+        for child in self.children:
+            child.window = window
 
         if window is not None:
             # Add this widget to the window's widget registry
             window.widgets.add(self)
-
-        # Provide an extension point for widgets with
-        # more complex widget heirarchies
-        self._set_window(window)
-
-    def _set_window(self, window):
-        pass
 
     @property
     def enabled(self):
@@ -275,6 +232,8 @@ class Widget(Node):
 
         # Refresh the layout
         if self._root:
+            # We're not the root of the node heirarchy;
+            # defer the refresh call to the root node.
             self._root.refresh()
         else:
             self.refresh_sublayouts()
@@ -287,6 +246,5 @@ class Widget(Node):
             child.refresh_sublayouts()
 
     def focus(self):
-        """Set this widget to have the current input focus."""
-        if self._impl is not None:
-            self._impl.focus()
+        """Give this widget to have the input focus."""
+        self._impl.focus()

@@ -1,92 +1,132 @@
-from unittest.mock import Mock
+import pytest
 
+import toga
 from toga.widgets.base import WidgetRegistry
-from toga_dummy.utils import TestCase
 
 
-def widget_mock(id):
-    widget = Mock()
-    widget.id = id
-    widget.__repr__ = Mock(return_value=f"Widget(id={id})")
-    return widget
+@pytest.fixture
+def widget_registry():
+    return WidgetRegistry()
 
 
-class TestWidgetsRegistry(TestCase):
-    def setUp(self):
-        super().setUp()
-        self.widget_registry = WidgetRegistry()
+# Create the simplest possible widget with a concrete implementation
+class TestWidget(toga.Widget):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._impl = self.factory.Widget(self)
 
-    def test_empty_registry(self):
-        self.assertEqual(len(self.widget_registry), 0)
-        self.assertEqual(list(self.widget_registry), [])
-        self.assertEqual(str(self.widget_registry), "{}")
+    def __repr__(self):
+        return f"Widget(id={self.id!r})"
 
-    def test_add_widget(self):
-        id1 = 1234
-        widget = widget_mock(id1)
-        self.widget_registry.add(widget)
 
-        self.assertEqual(len(self.widget_registry), 1)
-        self.assertEqual(list(self.widget_registry), [widget])
-        self.assertEqual(str(self.widget_registry), "{1234: Widget(id=1234)}")
-        self.assertEqual(self.widget_registry[id1], widget)
+def test_empty_registry(widget_registry):
+    assert len(widget_registry) == 0
+    assert list(widget_registry) == []
+    assert str(widget_registry) == "{}"
 
-    def test_add_two_widgets(self):
-        id1, id2 = 1234, 6789
-        widget1, widget2 = widget_mock(id1), widget_mock(id2)
-        self.widget_registry.add(widget1)
-        self.widget_registry.add(widget2)
 
-        self.assertEqual(len(self.widget_registry), 2)
-        self.assertEqual(set(self.widget_registry), {widget1, widget2})
-        self.assertEqual(self.widget_registry[id1], widget1)
-        self.assertEqual(self.widget_registry[id2], widget2)
+def test_add_widget(widget_registry):
+    "Widgets can be added to the registry"
+    # Add a widget to the registry
+    widget1 = TestWidget(id="widget-1")
+    widget_registry.add(widget1)
 
-    def test_update_widgets(self):
-        id1, id2, id3 = 1234, 6789, 9821
-        widget1, widget2, widget3 = widget_mock(id1), widget_mock(id2), widget_mock(id3)
-        self.widget_registry.update({widget1, widget2, widget3})
+    assert len(widget_registry) == 1
+    assert list(widget_registry) == [widget1]
+    assert str(widget_registry) == "{'widget-1': Widget(id='widget-1')}"
+    assert widget_registry["widget-1"] == widget1
 
-        self.assertEqual(len(self.widget_registry), 3)
-        self.assertEqual(set(self.widget_registry), {widget1, widget2, widget3})
-        self.assertEqual(self.widget_registry[id1], widget1)
-        self.assertEqual(self.widget_registry[id2], widget2)
-        self.assertEqual(self.widget_registry[id3], widget3)
+    # Add a second widget
+    widget2 = TestWidget(id="widget-2")
+    widget_registry.add(widget2)
 
-    def test_remove_widget(self):
-        id1, id2, id3 = 1234, 6789, 9821
-        widget1, widget2, widget3 = widget_mock(id1), widget_mock(id2), widget_mock(id3)
-        self.widget_registry.update({widget1, widget2, widget3})
-        self.widget_registry.remove(id2)
+    assert len(widget_registry) == 2
+    assert widget_registry["widget-1"] == widget1
+    assert widget_registry["widget-2"] == widget2
 
-        self.assertEqual(len(self.widget_registry), 2)
-        self.assertEqual(set(self.widget_registry), {widget1, widget3})
-        self.assertEqual(self.widget_registry[id1], widget1)
-        self.assertEqual(self.widget_registry[id3], widget3)
 
-    def test_add_same_widget_twice(self):
-        id1 = 1234
-        widget = widget_mock(id1)
-        self.widget_registry.add(widget)
-        self.assertRaises(KeyError, self.widget_registry.add, widget)
+def test_update_widgets(widget_registry):
+    "The registry can be bulk updated"
+    # Add a widget to the registry
+    widget1 = TestWidget(id="widget-1")
+    widget_registry.add(widget1)
 
-        self.assertEqual(len(self.widget_registry), 1)
-        self.assertEqual(list(self.widget_registry), [widget])
-        self.assertEqual(str(self.widget_registry), "{1234: Widget(id=1234)}")
-        self.assertEqual(self.widget_registry[id1], widget)
+    widget2 = TestWidget(id="widget-2")
+    widget3 = TestWidget(id="widget-3")
+    widget4 = TestWidget(id="widget-4")
+    widget_registry.update({widget2, widget3, widget4})
 
-    def test_two_widgets_with_same_name(self):
-        id1 = 1234
-        widget1, widget2 = widget_mock(id1), widget_mock(id1)
-        self.widget_registry.add(widget1)
-        self.assertRaises(KeyError, self.widget_registry.add, widget2)
+    assert len(widget_registry) == 4
+    assert widget_registry["widget-1"] == widget1
+    assert widget_registry["widget-2"] == widget2
+    assert widget_registry["widget-3"] == widget3
+    assert widget_registry["widget-4"] == widget4
 
-        self.assertEqual(len(self.widget_registry), 1)
-        self.assertEqual(list(self.widget_registry), [widget1])
-        self.assertEqual(str(self.widget_registry), "{1234: Widget(id=1234)}")
-        self.assertEqual(self.widget_registry[id1], widget1)
 
-    def test_using_setitem_directly(self):
-        id1 = 1234
-        widget = widget_mock(id1)
-        self.assertRaises(RuntimeError, self.widget_registry.__setitem__, id1, widget)
+def test_remove_widget(widget_registry):
+    "A widget can be removed from the repository"
+    "Widgets can be added to the registry"
+    # Add a widget to the registry
+    widget1 = TestWidget(id="widget-1")
+    widget2 = TestWidget(id="widget-2")
+    widget_registry.update({widget1, widget2})
+
+    assert len(widget_registry) == 2
+
+    widget_registry.remove("widget-2")
+
+    assert widget_registry["widget-1"] == widget1
+    assert "widget-2" not in widget_registry
+
+
+def test_add_same_widget_twice(widget_registry):
+    "A widget cannot be added to the same registry twice"
+    # Add a widget to the registry
+    widget1 = TestWidget(id="widget-1")
+    widget_registry.add(widget1)
+
+    assert len(widget_registry) == 1
+
+    # Add the widget again; this raises an error
+    with pytest.raises(
+        KeyError,
+        match=r"There is already a widget with the id 'widget-1'",
+    ):
+        widget_registry.add(widget1)
+
+    # Widget is still there
+    assert len(widget_registry) == 1
+    assert widget_registry["widget-1"] == widget1
+
+
+def test_add_duplicate_id(widget_registry):
+    "A widget cannot be added to the same registry twice"
+    # Add a widget to the registry
+    widget1 = TestWidget(id="widget-1")
+    widget_registry.add(widget1)
+
+    assert len(widget_registry) == 1
+
+    new_widget = TestWidget(id="widget-1")
+
+    # Add the widget again; this raises an error
+    with pytest.raises(
+        KeyError,
+        match=r"There is already a widget with the id 'widget-1'",
+    ):
+        widget_registry.add(new_widget)
+
+    # Widget is still there
+    assert len(widget_registry) == 1
+    assert widget_registry["widget-1"] == widget1
+
+
+def test_setitem(widget_registry):
+    "Widgets cannot be directly assigned to the registry"
+    widget1 = TestWidget(id="widget-1")
+
+    with pytest.raises(
+        RuntimeError,
+        match=r"Widgets cannot be directly added to a registry",
+    ):
+        widget_registry["new is"] = widget1

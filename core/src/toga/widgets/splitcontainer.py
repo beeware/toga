@@ -102,13 +102,21 @@ class SplitContainer(Widget):
             self._impl.add_content(position, widget._impl, flex)
             widget.refresh()
 
-    def _set_app(self, app):
+    @Widget.app.setter
+    def app(self, app):
+        # Invoke the superclass property setter
+        Widget.app.fset(self, app)
+
         # Also assign the app to the content in the container
         if self.content:
             for content in self.content:
                 content.app = app
 
-    def _set_window(self, window):
+    @Widget.window.setter
+    def window(self, window):
+        # Invoke the superclass property setter
+        Widget.window.fset(self, window)
+
         # Also assign the window to the content in the container
         if self._content:
             for content in self._content:

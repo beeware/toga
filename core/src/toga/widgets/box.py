@@ -20,12 +20,12 @@ class Box(Widget):
         """
         super().__init__(id=id, style=style)
 
+        # Create a platform specific implementation of a Box
+        self._impl = self.factory.Box(interface=self)
+
         self._children = []
         if children:
             self.add(*children)
-
-        # Create a platform specific implementation of a Box
-        self._impl = self.factory.Box(interface=self)
 
     @Widget.enabled.setter
     def enabled(self, value):
