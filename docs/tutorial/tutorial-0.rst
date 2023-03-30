@@ -34,7 +34,7 @@ start coding. To set up a virtual environment, run:
       $ python3 -m venv venv
       $ source venv/bin/activate
 
-  .. group-tab:: Linux
+  .. group-tab:: Unix-like
 
     .. code-block:: bash
 
@@ -60,7 +60,7 @@ Next, install Toga into your virtual environment:
 
       (venv) $ python -m pip install toga
 
-  .. group-tab:: Linux
+  .. group-tab:: Unix-like
 
     Before you install toga, you'll need to install some system packages.
     These instructions are different on almost every version of Linux; here are
@@ -70,6 +70,10 @@ Next, install Toga into your virtual environment:
       The package list should be the same as in ci.yml, and the BeeWare tutorial.
 
     .. code-block:: bash
+
+      # Freebsd13
+      (venv) $ sudo pkg update
+      (venv) $ sudo pkg install gtk3 gobject-introspection cairo webkit2-gtk3
 
       # Ubuntu 16.04 / Debian 9
       (venv) $ sudo apt-get update
@@ -226,7 +230,7 @@ Here is the command to run for your platform from your working directory:
 
       (venv) $ python -m helloworld
 
-  .. group-tab:: Linux
+  .. group-tab:: Unix-like
 
     .. code-block:: bash
 

@@ -31,7 +31,7 @@ First thing is to ensure that you have Python 3 and pip installed. To do this ru
       $ python3 --version
       $ pip3 --version
 
-  .. group-tab:: Linux
+  .. group-tab:: Unix-like
 
     .. code-block:: bash
 
@@ -58,7 +58,7 @@ start coding. To set up a virtual environment, run:
       $ python3 -m venv venv
       $ source venv/bin/activate
 
-  .. group-tab:: Linux
+  .. group-tab:: Unix-like
 
     .. code-block:: bash
 
@@ -82,9 +82,13 @@ Next, install any additional dependencies for your operating system:
 
     No additional dependencies
 
-  .. group-tab:: Linux
+  .. group-tab:: Unix-like
 
     .. code-block:: bash
+
+      # Freebsd13
+      (venv) $ sudo pkg update
+      (venv) $ sudo pkg install gtk3 gobject-introspection cairo webkit2-gtk3
 
       # Ubuntu 16.04, Debian 9
       (venv) $ sudo apt-get update
@@ -118,7 +122,7 @@ to clone using the command line:
 
     (substituting your Github username)
 
-  .. group-tab:: Linux
+  .. group-tab:: Unix-like
 
     Fork the Toga repository, and then::
 
@@ -153,7 +157,7 @@ specific order:
       (venv) $ pip install -e ./dummy
       (venv) $ pip install -e ./cocoa
 
-  .. group-tab:: Linux
+  .. group-tab:: Unix-like
 
     .. code-block:: bash
 
@@ -185,7 +189,7 @@ git commit. To enable pre-commit, run:
       (venv) $ pre-commit install
       pre-commit installed at .git/hooks/pre-commit
 
-  .. group-tab:: Linux
+  .. group-tab:: Unix-like
 
     .. code-block:: bash
 
@@ -231,7 +235,7 @@ pre-commit will make the changes needed to correct the problems it has found:
       pyupgrade................................................................Passed
       docformatter.............................................................Passed
 
-  .. group-tab:: Linux
+  .. group-tab:: Unix-like
 
     .. code-block:: bash
 
@@ -308,7 +312,7 @@ and re-commit the change.
       [bugfix e3e0f73] Minor change
       1 file changed, 4 insertions(+), 2 deletions(-)
 
-  .. group-tab:: Linux
+  .. group-tab:: Unix-like
 
     .. code-block:: bash
 
@@ -363,7 +367,7 @@ To run the core test suite:
 
       (venv) $ tox -e py-core
 
-  .. group-tab:: Linux
+  .. group-tab:: Unix-like
 
     .. code-block:: bash
 
