@@ -10,8 +10,7 @@ class Button(Widget):
         self.native.onclick = self.dom_onclick
 
     def dom_onclick(self, event):
-        if self.interface.on_press:
-            self.interface.on_press(self.interface)
+        self.interface.on_press()
 
     def get_text(self):
         return self.native.innerHTML

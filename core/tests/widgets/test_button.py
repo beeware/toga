@@ -1,12 +1,9 @@
+from unittest.mock import Mock
+
 import pytest
 
 import toga
-from toga_dummy.utils import (
-    EventLog,
-    assert_action_performed,
-    assert_action_performed_with,
-    attribute_value,
-)
+from toga_dummy.utils import EventLog, assert_action_performed, attribute_value
 
 
 @pytest.fixture
@@ -52,23 +49,20 @@ def test_button_text(button, value, expected):
 def test_button_on_press(button):
     """The on_press handler can be invoked."""
     # No handler initially
-    assert button._on_press is None
+    assert button._on_press._raw is None
 
     # Define and set a new callback
-    def callback(widget, **extra):
-        widget._impl._action("callback invoked", widget=widget, extra=extra)
+    handler = Mock()
 
-    button.on_press = callback
+    button.on_press = handler
 
-    assert button.on_press._raw == callback
+    assert button.on_press._raw == handler
 
     # Backend has the wrapped version
     assert attribute_value(button, "on_press") == button._on_press
 
     # Invoke the callback
-    button.on_press(button, a=1)
+    button.on_press(a=1)
 
     # Callback was invoked
-    assert_action_performed_with(
-        button, "callback invoked", widget=button, extra={"a": 1}
-    )
+    handler.assert_called_once_with(button, a=1)

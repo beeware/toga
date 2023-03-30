@@ -14,8 +14,7 @@ class OnCheckedChangeListener(CompoundButton__OnCheckedChangeListener):
         self._impl = impl
 
     def onCheckedChanged(self, _button, _checked):
-        if self._impl.interface.on_change:
-            self._impl.interface.on_change(widget=self._impl.interface)
+        self._impl.interface.on_change()
 
 
 class Switch(TextViewWidget):

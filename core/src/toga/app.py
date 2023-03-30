@@ -339,7 +339,6 @@ class App:
         # the + and += operators); adding a window to TogaApp.windows
         # would assign the window to the app.
         self.windows = WindowSet(self, windows)
-        self._on_exit = None
 
         self._full_screen_windows = None
 
@@ -552,10 +551,7 @@ class App:
 
     def exit(self):
         """Quit the application gracefully."""
-        if self.on_exit:
-            self.on_exit(self)
-        else:
-            self._impl.exit()
+        self.on_exit()
 
     @property
     def on_exit(self):
@@ -573,6 +569,10 @@ class App:
         Args:
             handler (:obj:`callable`): The handler to invoke before the app exits.
         """
+        if handler is None:
+
+            def handler(app, *args, **kwargs):
+                app._impl.exit()
 
         def cleanup(app, should_exit):
             if should_exit:
@@ -592,7 +592,7 @@ class App:
 
         :param handler: A coroutine, generator or callable.
         """
-        self._impl.loop.call_soon_threadsafe(wrapped_handler(self, handler), self)
+        self._impl.loop.call_soon_threadsafe(wrapped_handler(self, handler))
 
 
 class DocumentApp(App):

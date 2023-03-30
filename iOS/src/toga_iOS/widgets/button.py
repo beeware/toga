@@ -19,8 +19,7 @@ class TogaButton(UIButton):
 
     @objc_method
     def onPress_(self, obj) -> None:
-        if self.interface.on_press:
-            self.interface.on_press(self.interface)
+        self.interface.on_press()
 
 
 class Button(Widget):

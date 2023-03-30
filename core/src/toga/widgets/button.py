@@ -30,8 +30,11 @@ class Button(Widget):
         # Create a platform specific implementation of a Button
         self._impl = self.factory.Button(interface=self)
 
-        # Set all the properties
+        # Set a dummy handler before installing the actual on_press, because we do not want
+        # on_press triggered by the initial value being set
+        self.on_press = None
         self.text = text
+
         self.on_press = on_press
         self.enabled = enabled
 

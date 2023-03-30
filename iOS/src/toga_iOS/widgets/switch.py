@@ -17,8 +17,7 @@ class TogaSwitch(UISwitch):
 
     @objc_method
     def onPress_(self, obj) -> None:
-        if self.interface.on_change:
-            self.interface.on_change(self.interface)
+        self.interface.on_change()
 
 
 class Switch(Widget):

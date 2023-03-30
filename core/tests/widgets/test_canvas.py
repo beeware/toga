@@ -617,7 +617,7 @@ class CanvasTests(TestCase):
         )
 
     def test_on_resize(self):
-        self.assertIsNone(self.testing_canvas._on_resize)
+        self.assertIsNone(self.testing_canvas.on_resize._raw)
 
         # set a new callback
         def callback(widget, **extra):
@@ -626,7 +626,7 @@ class CanvasTests(TestCase):
         self.testing_canvas.on_resize = callback
         self.assertEqual(self.testing_canvas.on_resize._raw, callback)
         self.assertEqual(
-            self.testing_canvas.on_resize("widget", a=1),
+            self.testing_canvas.on_resize(a=1),
             "called <class 'toga.widgets.canvas.Canvas'> with {'a': 1}",
         )
         self.assertValueSet(
@@ -635,7 +635,7 @@ class CanvasTests(TestCase):
 
     def test_on_press(self):
         """Check on_press handler being invoked."""
-        self.assertIsNone(self.testing_canvas._on_press)
+        self.assertIsNone(self.testing_canvas.on_press._raw)
 
         # set a new callback
         def callback(widget, **extra):
@@ -644,7 +644,7 @@ class CanvasTests(TestCase):
         self.testing_canvas.on_press = callback
         self.assertEqual(self.testing_canvas.on_press._raw, callback)
         self.assertEqual(
-            self.testing_canvas.on_press("widget", a=1),
+            self.testing_canvas.on_press(a=1),
             "called <class 'toga.widgets.canvas.Canvas'> with {'a': 1}",
         )
         self.assertValueSet(
@@ -653,7 +653,7 @@ class CanvasTests(TestCase):
 
     def test_on_release(self):
         """Check on_release handler being invoked."""
-        self.assertIsNone(self.testing_canvas._on_release)
+        self.assertIsNone(self.testing_canvas.on_release._raw)
 
         # set a new callback
         def callback(widget, **extra):
@@ -662,7 +662,7 @@ class CanvasTests(TestCase):
         self.testing_canvas.on_release = callback
         self.assertEqual(self.testing_canvas.on_release._raw, callback)
         self.assertEqual(
-            self.testing_canvas.on_release("widget", a=1),
+            self.testing_canvas.on_release(a=1),
             "called <class 'toga.widgets.canvas.Canvas'> with {'a': 1}",
         )
         self.assertValueSet(
@@ -671,7 +671,7 @@ class CanvasTests(TestCase):
 
     def test_on_drag(self):
         """Check on_drag handler being invoked."""
-        self.assertIsNone(self.testing_canvas._on_drag)
+        self.assertIsNone(self.testing_canvas.on_drag._raw)
 
         # set a new callback
         def callback(widget, **extra):
@@ -680,14 +680,14 @@ class CanvasTests(TestCase):
         self.testing_canvas.on_drag = callback
         self.assertEqual(self.testing_canvas.on_drag._raw, callback)
         self.assertEqual(
-            self.testing_canvas.on_drag("widget", a=1),
+            self.testing_canvas.on_drag(a=1),
             "called <class 'toga.widgets.canvas.Canvas'> with {'a': 1}",
         )
         self.assertValueSet(self.testing_canvas, "on_drag", self.testing_canvas.on_drag)
 
     def test_on_alt_press(self):
         """Check on_alt_press handler being invoked."""
-        self.assertIsNone(self.testing_canvas._on_alt_press)
+        self.assertIsNone(self.testing_canvas.on_alt_press._raw)
 
         # set a new callback
         def callback(widget, **extra):
@@ -696,7 +696,7 @@ class CanvasTests(TestCase):
         self.testing_canvas.on_alt_press = callback
         self.assertEqual(self.testing_canvas.on_alt_press._raw, callback)
         self.assertEqual(
-            self.testing_canvas.on_alt_press("widget", a=1),
+            self.testing_canvas.on_alt_press(a=1),
             "called <class 'toga.widgets.canvas.Canvas'> with {'a': 1}",
         )
         self.assertValueSet(
@@ -705,7 +705,7 @@ class CanvasTests(TestCase):
 
     def test_on_alt_release(self):
         """Check on_alt_release handler being invoked."""
-        self.assertIsNone(self.testing_canvas._on_alt_release)
+        self.assertIsNone(self.testing_canvas.on_alt_release._raw)
 
         # set a new callback
         def callback(widget, **extra):
@@ -714,7 +714,7 @@ class CanvasTests(TestCase):
         self.testing_canvas.on_alt_release = callback
         self.assertEqual(self.testing_canvas.on_alt_release._raw, callback)
         self.assertEqual(
-            self.testing_canvas.on_alt_release("widget", a=1),
+            self.testing_canvas.on_alt_release(a=1),
             "called <class 'toga.widgets.canvas.Canvas'> with {'a': 1}",
         )
         self.assertValueSet(
@@ -723,7 +723,7 @@ class CanvasTests(TestCase):
 
     def test_on_alt_drag(self):
         """Check on_alt_dragged handler being invoked."""
-        self.assertIsNone(self.testing_canvas._on_alt_drag)
+        self.assertIsNone(self.testing_canvas.on_alt_drag._raw)
 
         # set a new callback
         def callback(widget, **extra):
@@ -732,7 +732,7 @@ class CanvasTests(TestCase):
         self.testing_canvas.on_alt_drag = callback
         self.assertEqual(self.testing_canvas.on_alt_drag._raw, callback)
         self.assertEqual(
-            self.testing_canvas.on_alt_drag("widget", a=1),
+            self.testing_canvas.on_alt_drag(a=1),
             "called <class 'toga.widgets.canvas.Canvas'> with {'a': 1}",
         )
         self.assertValueSet(

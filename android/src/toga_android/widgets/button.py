@@ -15,8 +15,7 @@ class TogaOnClickListener(OnClickListener):
         self.button_impl = button_impl
 
     def onClick(self, _view):
-        if self.button_impl.interface.on_press:
-            self.button_impl.interface.on_press(widget=self.button_impl.interface)
+        self.button_impl.interface.on_press()
 
 
 class Button(TextViewWidget):

@@ -13,8 +13,7 @@ class Button(Widget):
         self.set_enabled(self.interface._enabled)
 
     def winforms_click(self, sender, event):
-        if self.interface.on_press:
-            self.interface.on_press(self.interface)
+        self.interface.on_press(self.interface)
 
     def get_text(self):
         value = self.native.Text

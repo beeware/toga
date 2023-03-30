@@ -11,9 +11,7 @@ class Switch(Widget):
         self.native.CheckedChanged += self.winforms_checked_changed
 
     def winforms_checked_changed(self, sender, event):
-        if self.container:
-            if self.interface.on_change:
-                self.interface.on_change(self.interface)
+        self.interface.on_change()
 
     def set_text(self, text):
         self.native.Text = self.interface.text
