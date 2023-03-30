@@ -22,7 +22,6 @@ class Switch(Widget):
 
         self.native.pack_start(self.native_label, True, True, 0)
         self.native.pack_start(self.native_switch, False, False, 0)
-        self.native.connect("show", lambda event: self.refresh())
 
     def gtk_notify_active(self, widget, state):
         if self.interface.on_change:
