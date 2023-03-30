@@ -199,10 +199,10 @@ async def test_press_release(widget, probe, event):
     handler = Mock()
     setattr(widget, f"on_{event}", handler)
     handler.assert_not_called()
-    getattr(probe, event)()
+    await getattr(probe, event)()
     handler.assert_called_once_with(widget)
 
     handler.reset_mock()
     setattr(widget, f"on_{event}", None)
-    getattr(probe, event)()
+    await getattr(probe, event)()
     handler.assert_not_called()

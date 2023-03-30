@@ -624,7 +624,9 @@ NSProgressIndicatorSpinningStyle = 1
 ######################################################################
 # NSRunLoop.h
 
-NSDefaultRunLoopMode = c_void_p.in_dll(appkit, "NSDefaultRunLoopMode")
+NSRunLoop = ObjCClass("NSRunLoop")
+NSRunLoop.declare_class_property("currentRunLoop")
+NSDefaultRunLoopMode = NSString(c_void_p.in_dll(appkit, "NSDefaultRunLoopMode"))
 
 ######################################################################
 # NSRunningApplication.h
