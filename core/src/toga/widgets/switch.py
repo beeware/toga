@@ -67,11 +67,7 @@ class Switch(Widget):
 
     @property
     def on_change(self):
-        """The callable function for when the switch is pressed.
-
-        Returns:
-            The ``callable`` on_change function.
-        """
+        """The handler to invoke when the value of the switch changes."""
         return self._on_change
 
     @on_change.setter
