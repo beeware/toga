@@ -1,4 +1,4 @@
-from rubicon.objc import NSPoint
+from rubicon.objc import SEL, NSPoint
 
 from toga_cocoa.libs import NSEvent, NSEventType, NSSlider
 
@@ -37,6 +37,7 @@ class SliderProbe(SimpleProbe):
 
     async def release(self):
         await self.mouse_event(NSEventType.LeftMouseUp)
+        self.native.sendAction(SEL("onSlide:"), to=self.native)
 
     async def mouse_event(self, event_type):
         await self.post_event(
