@@ -35,22 +35,19 @@ class Slider(Widget):
         self.set_tick_count(self.interface.tick_count)
 
     def winforms_scroll(self, sender, event):
-        if self.container and self.interface.on_change:
-            self.interface.on_change(self.interface)
+        self.interface.on_change(None)
 
     def winforms_mouse_down(self, sender, event):
         """Since picking and releasing the slider is also a change, calling the
         on_change method."""
-        if self.container and self.interface.on_press:
-            self.interface.on_press(self.interface)
+        self.interface.on_press(None)
         self.winforms_scroll(sender, event)
 
     def winforms_mouse_up(self, sender, event):
         """Since picking and releasing the slider is also a change, calling the
         on_change method."""
         self.winforms_scroll(sender, event)
-        if self.container and self.interface.on_release:
-            self.interface.on_release(self.interface)
+        self.interface.on_release(None)
 
     def get_value(self):
         actual_value = self.native.Value
@@ -80,12 +77,3 @@ class Slider(Widget):
         else:
             self.native.TickStyle = BOTTOM_RIGHT_TICK_STYLE
             self.native.Maximum = tick_count - 1
-
-    def set_on_change(self, handler):
-        pass
-
-    def set_on_press(self, handler):
-        pass
-
-    def set_on_release(self, handler):
-        pass

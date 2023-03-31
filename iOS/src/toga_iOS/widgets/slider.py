@@ -11,8 +11,7 @@ class TogaSlider(UISlider):
 
     @objc_method
     def onSlide_(self, obj) -> None:
-        if self.interface.on_change:
-            self.interface.on_change(self.interface)
+        self.interface.on_change(None)
 
 
 class Slider(Widget):
@@ -48,13 +47,3 @@ class Slider(Widget):
         fitting_size = self.native.systemLayoutSizeFittingSize_(CGSize(0, 0))
         self.interface.intrinsic.width = at_least(fitting_size.width)
         self.interface.intrinsic.height = fitting_size.height
-
-    def set_on_change(self, handler):
-        # No special handling required
-        pass
-
-    def set_on_press(self, handler):
-        self.interface.factory.not_implemented("Slider.set_on_press()")
-
-    def set_on_release(self, handler):
-        self.interface.factory.not_implemented("Slider.set_on_release()")

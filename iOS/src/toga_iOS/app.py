@@ -124,6 +124,3 @@ class App:
 
     def exit(self):
         pass
-
-    def set_on_exit(self, value):
-        pass
