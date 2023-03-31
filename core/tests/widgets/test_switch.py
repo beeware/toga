@@ -23,7 +23,7 @@ def test_widget_created(switch):
 
     assert switch.text == "Test Switch"
     assert not switch.value
-    assert switch.on_change is None
+    assert switch.on_change._raw is None
     assert switch.enabled
 
 
