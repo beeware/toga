@@ -32,10 +32,11 @@ class Switch(Widget):
 
         self.text = text
 
-        # Set the actual value before on_change, because we do not want on_change triggered by it
-        # However, we need to prime the handler property in case it is accessed.
-        self._on_change = None
+        # Set a dummy handler before installing the actual on_change, because we do not want
+        # on_change triggered by the initial value being set
+        self.on_change = None
         self.value = value
+
         self.on_change = on_change
 
         self.enabled = enabled
@@ -73,7 +74,6 @@ class Switch(Widget):
     @on_change.setter
     def on_change(self, handler):
         self._on_change = wrapped_handler(self, handler)
-        self._impl.set_on_change(self._on_change)
 
     @property
     def value(self):

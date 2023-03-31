@@ -19,14 +19,11 @@ class TogaSlider(NSSlider):
     def onSlide_(self, sender) -> None:
         event_type = sender.window.currentEvent().type
         if event_type == NSEventType.LeftMouseDown:
-            if self.interface.on_press:
-                self.interface.on_press(self.interface)
+            self.interface.on_press(None)
         elif event_type == NSEventType.LeftMouseUp:
-            if self.interface.on_release:
-                self.interface.on_release(self.interface)
+            self.interface.on_release(None)
 
-        if self.interface.on_change:
-            self.interface.on_change(self.interface)
+        self.interface.on_change(None)
 
 
 class Slider(Widget):
@@ -63,12 +60,3 @@ class Slider(Widget):
         content_size = self.native.intrinsicContentSize()
         self.interface.intrinsic.height = content_size.height
         self.interface.intrinsic.width = at_least(self.interface.MIN_WIDTH)
-
-    def set_on_change(self, handler):
-        pass
-
-    def set_on_press(self, handler):
-        pass
-
-    def set_on_release(self, handler):
-        pass

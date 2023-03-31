@@ -14,8 +14,7 @@ class OnCheckedChangeListener(CompoundButton__OnCheckedChangeListener):
         self._impl = impl
 
     def onCheckedChanged(self, _button, _checked):
-        if self._impl.interface.on_change:
-            self._impl.interface.on_change(widget=self._impl.interface)
+        self._impl.interface.on_change(None)
 
 
 class Switch(TextViewWidget):
@@ -41,10 +40,6 @@ class Switch(TextViewWidget):
 
     def set_value(self, value):
         self.native.setChecked(bool(value))
-
-    def set_on_change(self, handler):
-        # No special handling required
-        pass
 
     def rehint(self):
         if not self.native.getLayoutParams():

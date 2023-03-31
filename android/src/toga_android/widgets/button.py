@@ -15,8 +15,7 @@ class TogaOnClickListener(OnClickListener):
         self.button_impl = button_impl
 
     def onClick(self, _view):
-        if self.button_impl.interface.on_press:
-            self.button_impl.interface.on_press(widget=self.button_impl.interface)
+        self.button_impl.interface.on_press(None)
 
 
 class Button(TextViewWidget):
@@ -33,10 +32,6 @@ class Button(TextViewWidget):
 
     def set_enabled(self, value):
         self.native.setEnabled(value)
-
-    def set_on_press(self, handler):
-        # No special handling required
-        pass
 
     def set_background_color(self, value):
         # Do not use self.native.setBackgroundColor - this messes with the button style!

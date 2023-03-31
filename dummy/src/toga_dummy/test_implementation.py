@@ -221,7 +221,9 @@ class DefinitionExtractor:
                 class_node = self._classes[class_name]
                 for node in ast.walk(class_node):
                     if isinstance(node, ast.FunctionDef):
-                        if self.is_required_for_platform(node):
+                        if self.is_required_for_platform(
+                            node
+                        ) and not node.name.startswith("simulate_"):
                             methods.append(node.name)
         return methods
 

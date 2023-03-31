@@ -17,9 +17,8 @@ class Switch(Widget):
     def set_value(self, value):
         old_value = self._get_value("value", None)
         self._set_value("value", value)
+        if value != old_value:
+            self.interface.on_change(None)
 
-        if self.interface.on_change and value != old_value:
-            self.interface.on_change(self.interface)
-
-    def set_on_change(self, handler):
-        self._set_value("on_change", handler)
+    def simulate_toggle(self):
+        self.interface.on_change(None)

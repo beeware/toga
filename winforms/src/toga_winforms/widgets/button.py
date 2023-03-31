@@ -12,8 +12,7 @@ class Button(Widget):
         self.native.Click += self.winforms_click
 
     def winforms_click(self, sender, event):
-        if self.interface.on_press:
-            self.interface.on_press(self.interface)
+        self.interface.on_press(None)
 
     def get_text(self):
         value = self.native.Text
@@ -31,10 +30,6 @@ class Button(Widget):
 
     def set_font(self, font):
         self.native.Font = font._impl.native
-
-    def set_on_press(self, handler):
-        # No special handling required
-        pass
 
     def rehint(self):
         # self.native.Size = Size(0, 0)

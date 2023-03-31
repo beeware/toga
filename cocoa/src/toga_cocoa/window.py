@@ -213,7 +213,7 @@ class Window:
         # bigger. If the window is resizable, using >= allows the window to
         # be dragged larged; if not resizable, it enforces the smallest
         # size that can be programmattically set on the window.
-        self._min_width_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(  # NOQA: E501
+        self._min_width_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(  # noqa: E501
             widget.native,
             NSLayoutAttributeRight,
             NSLayoutRelationGreaterThanOrEqual,
@@ -224,7 +224,7 @@ class Window:
         )
         widget.native.addConstraint(self._min_width_constraint)
 
-        self._min_height_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(  # NOQA: E501
+        self._min_height_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(  # noqa: E501
             widget.native,
             NSLayoutAttributeBottom,
             NSLayoutRelationGreaterThanOrEqual,
@@ -309,9 +309,6 @@ class Window:
 
     def set_full_screen(self, is_full_screen):
         self.interface.factory.not_implemented("Window.set_full_screen()")
-
-    def set_on_close(self, handler):
-        pass
 
     def cocoa_windowShouldClose(self):
         if self.interface.on_close:
