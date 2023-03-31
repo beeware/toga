@@ -20,10 +20,6 @@ class Button(Widget):
     def set_enabled(self, value):
         self.native.set_sensitive(value)
 
-    def set_on_press(self, handler):
-        # No special handling required
-        pass
-
     def set_background_color(self, color):
         # Buttons interpret TRANSPARENT backgrounds as a reset
         if color == TRANSPARENT:
@@ -39,5 +35,4 @@ class Button(Widget):
         self.interface.intrinsic.height = height[1]
 
     def gtk_on_press(self, event):
-        if self.interface.on_press:
-            self.interface.on_press(self.interface)
+        self.interface.on_press(None)

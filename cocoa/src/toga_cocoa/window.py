@@ -310,9 +310,6 @@ class Window:
     def set_full_screen(self, is_full_screen):
         self.interface.factory.not_implemented("Window.set_full_screen()")
 
-    def set_on_close(self, handler):
-        pass
-
     def cocoa_windowShouldClose(self):
         if self.interface.on_close:
             # The on_close handler has a cleanup method that will enforce

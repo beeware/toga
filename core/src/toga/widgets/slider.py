@@ -77,8 +77,9 @@ class Slider(Widget):
         self.range = range
         self.tick_count = tick_count
 
-        # IMPORTANT NOTE: Setting value before on_change in order to not
-        # call it in constructor. Please do not move it from here.
+        # Set a dummy handler before installing the actual on_change, because we do not want
+        # on_change triggered by the initial value being set
+        self.on_change = None
         self.value = value
 
         if on_slide:
@@ -116,8 +117,7 @@ class Slider(Widget):
                 )
             )
         self._impl.set_value(final)
-        if self.on_change:
-            self.on_change(self)
+        self.on_change(self)
 
     @property
     def range(self):
@@ -192,7 +192,6 @@ class Slider(Widget):
     @on_change.setter
     def on_change(self, handler):
         self._on_change = wrapped_handler(self, handler)
-        self._impl.set_on_change(self._on_change)
 
     @property
     def on_press(self):
@@ -206,7 +205,6 @@ class Slider(Widget):
     @on_press.setter
     def on_press(self, handler):
         self._on_press = wrapped_handler(self, handler)
-        self._impl.set_on_press(self._on_press)
 
     @property
     def on_release(self):
@@ -220,7 +218,6 @@ class Slider(Widget):
     @on_release.setter
     def on_release(self, handler):
         self._on_release = wrapped_handler(self, handler)
-        self._impl.set_on_release(self._on_release)
 
     @property
     def on_slide(self):

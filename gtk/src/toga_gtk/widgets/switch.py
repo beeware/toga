@@ -19,11 +19,7 @@ class Switch(Widget):
         self.native.connect("show", lambda event: self.refresh())
 
     def gtk_on_change(self, widget, state):
-        if self.interface.on_change:
-            self.interface.on_change(self.interface)
-
-    def set_on_change(self, handler):
-        pass
+        self.interface.on_change(None)
 
     def set_text(self, text):
         self.label.set_text(self.interface.text)

@@ -11,8 +11,7 @@ class TogaOnSeekBarChangeListener(SeekBar__OnSeekBarChangeListener):
         self.impl = impl
 
     def onProgressChanged(self, _view, _progress, _from_user):
-        if self.impl.interface.on_change:
-            self.impl.interface.on_change(widget=self.impl.interface)
+        self.impl.interface.on_change(None)
 
     # Add two unused methods so that the Java interface is completely implemented.
     def onStartTrackingTouch(self, native_seekbar):
@@ -73,13 +72,3 @@ class Slider(Widget):
         )
         self.interface.intrinsic.width = at_least(self.native.getMeasuredWidth())
         self.interface.intrinsic.height = self.native.getMeasuredHeight()
-
-    def set_on_change(self, handler):
-        # No special handling required
-        pass
-
-    def set_on_press(self, handler):
-        self.interface.factory.not_implemented("Slider.set_on_press()")
-
-    def set_on_release(self, handler):
-        self.interface.factory.not_implemented("Slider.set_on_release()")
