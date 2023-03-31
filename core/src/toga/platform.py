@@ -20,8 +20,8 @@ _TOGA_PLATFORMS = {
     "android": "android",
     "darwin": "macOS",
     "ios": "iOS",
-    "linux": "UnixLike",
-    "freebsd13": "UnixLike",
+    "linux": "linux",
+    "freebsd": "freeBSD",
     "tvos": "tvOS",
     "watchos": "watchOS",
     "wearos": "wearOS",
@@ -38,7 +38,10 @@ except KeyError:
     if hasattr(sys, "getandroidapilevel"):
         current_platform = "android"
     else:
-        current_platform = _TOGA_PLATFORMS.get(sys.platform)
+        if sys.platform.startswith("freebsd"):
+            current_platform = "freeBSD"
+        else:
+            current_platform = _TOGA_PLATFORMS.get(sys.platform)
 
 
 @lru_cache(maxsize=1)
