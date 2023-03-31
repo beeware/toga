@@ -18,6 +18,11 @@ defaults:
   run:
     shell: bash
 
+# Cancel active CI runs for a PR before starting another run
+concurrency:
+  group: ${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   pre-commit:
     name: Pre-commit checks
