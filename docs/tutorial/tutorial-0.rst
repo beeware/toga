@@ -34,7 +34,7 @@ start coding. To set up a virtual environment, run:
       $ python3 -m venv venv
       $ source venv/bin/activate
 
-  .. group-tab:: Unix-like
+  .. group-tab:: linux
 
     .. code-block:: bash
 
@@ -60,7 +60,7 @@ Next, install Toga into your virtual environment:
 
       (venv) $ python -m pip install toga
 
-  .. group-tab:: Unix-like
+  .. group-tab:: linux
 
     Before you install toga, you'll need to install some system packages.
     These instructions are different on almost every version of Linux; here are
@@ -70,10 +70,6 @@ Next, install Toga into your virtual environment:
       The package list should be the same as in ci.yml, and the BeeWare tutorial.
 
     .. code-block:: bash
-
-      # Freebsd13
-      (venv) $ sudo pkg update
-      (venv) $ sudo pkg install gtk3 gobject-introspection cairo webkit2-gtk3
 
       # Ubuntu 16.04 / Debian 9
       (venv) $ sudo apt-get update
@@ -88,6 +84,10 @@ Next, install Toga into your virtual environment:
 
       # Arch / Manjaro
       (venv) $ sudo pacman -Syu git pkgconf cairo python-cairo pango gobject-introspection gobject-introspection-runtime python-gobject webkit2gtk
+
+      # FreeBSD
+      (venv) $ sudo pkg update
+      (venv) $ sudo pkg install py39-cairo py39-gobject py39-evdev py39-pyudev gtk3 gobject-introspection cairo webkit2-gtk3
 
     If you're not using one of these, you'll need to work out how to install
     the developer libraries for python3, cairo, pango, and
@@ -230,7 +230,7 @@ Here is the command to run for your platform from your working directory:
 
       (venv) $ python -m helloworld
 
-  .. group-tab:: Unix-like
+  .. group-tab:: linux
 
     .. code-block:: bash
 
@@ -274,8 +274,9 @@ at the top of this guide.
 
     * If you're on macOS, you need to be on 10.10 (Yosemite) or newer.
 
-    * If you're on Linux, you need to have GTK+ 3.10 or newer. This is the
-      version that ships starting with Ubuntu 14.04 and Fedora 20.
+    * If you're on Linux (or another Unix-based operating system), you need to
+      have GTK+ 3.10 or newer. This is the version that ships starting with
+      Ubuntu 14.04 and Fedora 20.
 
     * If you're on Windows, you need to have Windows 10 or newer.
 

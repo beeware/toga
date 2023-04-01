@@ -37,11 +37,10 @@ except KeyError:
     # https://github.com/beeware/Python-Android-support/issues/8
     if hasattr(sys, "getandroidapilevel"):
         current_platform = "android"
+    elif sys.platform.startswith("freebsd"):
+        current_platform = "freeBSD"
     else:
-        if sys.platform.startswith("freebsd"):
-            current_platform = "freeBSD"
-        else:
-            current_platform = _TOGA_PLATFORMS.get(sys.platform)
+        current_platform = _TOGA_PLATFORMS.get(sys.platform)
 
 
 @lru_cache(maxsize=1)
