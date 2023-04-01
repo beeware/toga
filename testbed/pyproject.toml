@@ -63,14 +63,6 @@ flatpak_runtime = "org.gnome.Platform"
 flatpak_runtime_version = "42"
 flatpak_sdk = "org.gnome.Sdk"
 
-[tool.briefcase.app.testbed.freeBSD]
-test_sources = [
-    "../gtk/tests_backend",
-]
-requires = [
-    "../gtk",
-]
-
 [tool.briefcase.app.testbed.windows]
 test_sources = [
     "../winforms/tests_backend",
