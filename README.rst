@@ -43,7 +43,7 @@ Minimum requirements
 
 * If you're on Linux (or another Unix-based operating system), you need to have
   GTK+ 3.10 or newer. This is the version that ships starting with Ubuntu 14.04
-  and Fedora 20. You also need to install the system packages listed 
+  and Fedora 20. You also need to install the system packages listed
   in `Tutorial 0 <docs/tutorial/tutorial-0.rst>`__.
 
 * If you're on Windows, you'll need Windows 10 or newer. If you are using
