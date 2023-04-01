@@ -34,7 +34,7 @@ start coding. To set up a virtual environment, run:
       $ python3 -m venv venv
       $ source venv/bin/activate
 
-  .. group-tab:: linux
+  .. group-tab:: Linux
 
     .. code-block:: bash
 
@@ -60,7 +60,7 @@ Next, install Toga into your virtual environment:
 
       (venv) $ python -m pip install toga
 
-  .. group-tab:: linux
+  .. group-tab:: Linux
 
     Before you install toga, you'll need to install some system packages.
     These instructions are different on almost every version of Linux; here are
@@ -230,7 +230,7 @@ Here is the command to run for your platform from your working directory:
 
       (venv) $ python -m helloworld
 
-  .. group-tab:: linux
+  .. group-tab:: Linux
 
     .. code-block:: bash
 
