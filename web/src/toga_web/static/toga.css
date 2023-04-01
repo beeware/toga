@@ -17,8 +17,8 @@ html, body {
  **********************************************************************/
 
 header.toga {
-    background-color: var(--sl-color-primary-200);
-    color: var(--sl-color-neutral-900);
+    background-color: var(--sl-color-primary-800);
+    color: var(--sl-color-neutral-50);
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -52,17 +52,17 @@ header.toga nav.menubar:last-of-type {
 /***** Menubar ********************************************************/
 
 header.toga nav.menubar .menu {
-    color: var(--sl-color-neutral-800);
+    color: var(--sl-color-neutral-200);
     padding: 0.5em;
 }
 
 header.toga nav.menubar .menu:hover {
-    background-color: var(--sl-color-primary-300);
-    color: var(--sl-color-primary-700);
+    background-color: var(--sl-color-primary-700);
+    color: var(--sl-color-primary-300);
 }
 
 header.toga nav.menubar .app {
-    color: var(--sl-color-neutral-900);
+    color: var(--sl-color-neutral-50);
     font-weight: var(--sl-font-weight-bold);
 }
 

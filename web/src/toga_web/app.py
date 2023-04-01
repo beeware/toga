@@ -51,7 +51,6 @@ class App:
                 ),
                 create_element(
                     "sl-menu",
-                    classes=["sl-theme-light"],
                     children=items,
                 ),
             ],
@@ -104,7 +103,7 @@ class App:
 
         self.menubar = create_element(
             "header",
-            classes=["toga", "sl-theme-dark"],
+            classes=["toga"],
             children=[
                 create_element(
                     "a",
