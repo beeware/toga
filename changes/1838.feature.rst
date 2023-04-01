@@ -1,0 +1,1 @@
+The Web backend now uses Shoelace to provide web components.
