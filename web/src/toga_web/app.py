@@ -1,3 +1,5 @@
+import asyncio
+
 import toga
 from toga_web.libs import create_element, js
 from toga_web.window import Window
@@ -15,6 +17,7 @@ class App:
 
     def create(self):
         # self.resource_path = os.path.dirname(os.path.dirname(NSBundle.mainBundle.bundlePath))
+        self.native = js.document.getElementById("app-placeholder")
 
         formal_name = self.interface.formal_name
 
@@ -108,12 +111,14 @@ class App:
                 create_element(
                     "a",
                     classes=["brand"],
-                    content=(
-                        '<img src="static/logo-32.png" '
-                        'class="d-inline-block align-top" '
-                        f'alt="{self.interface.formal_name} logo" '
-                        'loading="lazy">'
-                    ),
+                    children=[
+                        create_element(
+                            "img",
+                            src="static/logo-32.png",
+                            alt=f"{self.interface.formal_name} logo",
+                            loading="lazy",
+                        )
+                    ],
                 ),
                 menu_container,
                 help_menu_container,
@@ -121,8 +126,7 @@ class App:
         )
 
         # Menubar exists at the app level.
-        app_placeholder = js.document.getElementById("app-placeholder")
-        app_placeholder.appendChild(self.menubar)
+        self.native.appendChild(self.menubar)
 
     def main_loop(self):
         self.create()
@@ -131,17 +135,46 @@ class App:
         pass
 
     def show_about_dialog(self):
-        about_text = f"{self.interface.formal_name}"
+        name_and_version = f"{self.interface.formal_name}"
 
         if self.interface.version is not None:
-            about_text += f" v{self.interface.version}"
+            name_and_version += f" v{self.interface.version}"
 
         if self.interface.author is not None:
-            about_text += "\n\nCopyright © {author}".format(
-                author=self.interface.author
-            )
+            copyright = f"\n\nCopyright © {self.interface.author}"
 
-        js.alert(about_text)
+        close_button = create_element(
+            "sl-button", slot="footer", variant="primary", content="Ok"
+        )
+        about_dialog = create_element(
+            "sl-dialog",
+            id="toga-about-dialog",
+            label="About",
+            children=[
+                create_element("p", content=name_and_version),
+                create_element("p", content=copyright),
+                close_button,
+            ],
+        )
+
+        # Create a button handler to capture the close,
+        # and destroy the dialog
+        def dialog_close(event):
+            about_dialog.hide()
+            self.native.removeChild(about_dialog)
+
+        close_button.onclick = dialog_close
+
+        # Add the dialog to the DOM.
+        self.native.appendChild(about_dialog)
+
+        # The dialog needs to fully render in the DOM, so we can't
+        # call show() immediately. Create a task to show the dialog,
+        # and queue it to be run "later".
+        async def show_dialog():
+            about_dialog.show()
+
+        asyncio.create_task(show_dialog())
 
     def exit(self):
         pass

@@ -57,6 +57,10 @@ class Widget:
         pass
 
     @property
+    def viewport(self):
+        return self._container
+
+    @property
     def container(self):
         return self._container
 
@@ -122,7 +126,7 @@ class Widget:
         child.container = None
 
     def refresh(self):
-        self.rehint()
+        self._reapply_style()
 
     def rehint(self):
         pass
