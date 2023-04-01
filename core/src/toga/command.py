@@ -263,7 +263,7 @@ class Command:
         self.factory = get_platform_factory()
         self._impl = self.factory.Command(interface=self)
 
-        self.enabled = enabled and self.action is not None
+        self.enabled = enabled and self.action._raw is not None
 
     @property
     def key(self):
