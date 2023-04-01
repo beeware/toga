@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <title>First App</title>
+
+        <link rel="icon" type="image/png" href="/static/logo-32.png">
+
+        <!--script defer="" src="https://pyscript.net/latest/pyscript.js"></script-->
+        <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css">
+
+
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.3.0/dist/themes/light.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.3.0/dist/themes/dark.css">
+        <script type="module" src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.3.0/dist/shoelace-autoloader.js"></script>
+<style>
+* {
+    box-sizing: border-box;
+    line-height: 1;
+}
+
+html, body {
+    height: 100%;
+    margin: 0;
+}
+
+header.toga {
+    background-color: var(--sl-color-primary-200);
+    color: var(--sl-color-neutral-900);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+header.toga a.brand {
+    margin: 8px 1em;
+}
+header.toga a.brand img {
+    width: 32px;
+}
+
+header.toga nav {
+    display: inline-block;
+}
+header.toga nav.menubar {
+    flex-grow: 1;
+    font-family: var(--sl-font-sans);
+    font-size: var(--sl-font-size-large);
+}
+header.toga nav.menubar:last-of-type {
+    flex-grow: 0;
+    padding-right: 1em;
+}
+header.toga nav.menubar .menu {
+    color: var(--sl-color-neutral-700);
+    padding: 0.5em;
+}
+header.toga nav.menubar .menu:hover {
+    background-color: var(--sl-color-primary-300);
+    color: var(--sl-color-primary-600);
+}
+
+header.toga nav.menubar .app {
+    color: var(--sl-color-neutral-900);
+    font-weight: var(--sl-font-weight-bold);
+}
+
+main.toga.window {
+    overflow: hidden;
+    display: flex;
+}
+main.toga.window > .container {
+    flex-grow: 1 !important;
+}
+.toga .container {
+    display: flex;
+}
+
+</style>
+    </head>
+    <body id="app-placeholder">
+        <header class="toga sl-theme-dark">
+            <a class="brand"><img src="static/logo-32.png" alt="First App logo" loading="lazy"></a>
+            <nav class="menubar">
+                <span slot="trigger" class="app">First App</span>
+                <sl-dropdown>
+                    <span slot="trigger" class="menu">File</span>
+                    <sl-menu class="sl-theme-light">
+                        <sl-menu-item>About</sl-menu-item>
+                        <sl-menu-item>Preferences</sl-menu-item>
+                    </sl-menu>
+                </sl-dropdown>
+                <sl-dropdown>
+                    <span slot="trigger" class="menu">Command</span>
+                    <sl-menu class="sl-theme-light">
+                        <sl-menu-item>About</sl-menu-item>
+                        <sl-menu-item>Preferences</sl-menu-item>
+                    </sl-menu>
+                </sl-dropdown>
+            </nav>
+            <nav class="menubar">
+                <sl-dropdown>
+                    <span slot="trigger" class="menu">Help</span>
+                    <sl-menu class="sl-theme-light">
+                        <sl-menu-item>About</sl-menu-item>
+                        <sl-menu-item>Preferences</sl-menu-item>
+                    </sl-menu>
+                </sl-dropdown>
+            </nav>
+        </header>
+        <main class="toga window container">
+            <div id="toga_19512792" class="box container" style="flex-direction: row; flex: 0 0 0px;">
+                <sl-button id="toga_18434560" class="button" style="flex-direction: row; flex: 1 0 0px; margin:50px;">Hello world</sl-button>
+            </div>
+        </main>
+    </body>
+</html>

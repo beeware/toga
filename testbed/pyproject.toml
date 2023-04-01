@@ -97,4 +97,4 @@ build_gradle_extra_content = "android.defaultConfig.python.extractPackages 'toga
 requires = [
     "../web"
 ]
-style_framework = "Bootstrap v4.6"
+style_framework = "Shoelace v2.3"

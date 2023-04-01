@@ -40,25 +40,18 @@ class App:
 
     def _create_submenu(self, group, items):
         submenu = create_element(
-            "li",
-            classes=["nav-item", "dropdown"],
+            "sl-dropdown",
             children=[
                 create_element(
-                    "a",
+                    "span",
                     id=f"menu-{id(group)}",
-                    classes=[
-                        "nav-link",
-                        "dropdown-toggle",
-                    ],
-                    data_toggle="dropdown",
-                    aria_haspopup="true",
-                    aria_expanded="false",
+                    classes=["menu"],
+                    slot="trigger",
                     content=group.text,
                 ),
                 create_element(
-                    "div",
-                    classes=["dropdown-menu"],
-                    aria_labelledby=f"menu-{id(group)}",
+                    "sl-menu",
+                    classes=["sl-theme-light"],
                     children=items,
                 ),
             ],
@@ -81,22 +74,26 @@ class App:
                 submenu = self._menu_groups.setdefault(cmd.group, [])
 
                 menu_item = create_element(
-                    "a",
-                    classes=["dropdown-item"] + ([] if cmd.enabled else ["disabled"]),
+                    "sl-menu-item",
                     content=cmd.text,
+                    disabled=not cmd.enabled,
                 )
                 menu_item.onclick = cmd.action
 
                 submenu.append(menu_item)
 
-        menu_container = create_element(
-            "ul",
-            classes=["navbar-nav", "mr-auto"],
-        )
-        help_menu_container = create_element(
-            "ul",
-            classes=["navbar-nav", "ml-auto"],
-        )
+        menu_container = create_element("nav", classes=["menubar"])
+        help_menu_container = create_element("nav", classes=["menubar"])
+
+        # If there isn't an explicit app menu group, add an inert placeholder
+        if toga.Group.APP not in self._menu_groups:
+            menu_container.appendChild(
+                create_element(
+                    "span",
+                    classes=["app"],
+                    content=self.interface.formal_name,
+                )
+            )
 
         for group, items in self._menu_groups.items():
             submenu = self._create_submenu(group, items)
@@ -107,60 +104,20 @@ class App:
 
         self.menubar = create_element(
             "header",
+            classes=["toga", "sl-theme-dark"],
             children=[
                 create_element(
-                    "nav",
-                    classes=[
-                        "navbar",
-                        "fixed-top",
-                        "navbar-expand-lg",
-                        "navbar-dark",
-                        "bg-dark",
-                    ],
-                    children=[
-                        create_element(
-                            "div",
-                            classes=["container"],
-                            children=[
-                                create_element(
-                                    "a",
-                                    classes=["navbar-brand"],
-                                    content=f"""
-                                        <img src="static/logo-32.png"
-                                             class="d-inline-block align-top"
-                                             alt="{self.interface.formal_name} logo"
-                                             loading="lazy">
-                                        {self.interface.formal_name}
-                                    """,
-                                ),
-                                create_element(
-                                    "button",
-                                    classes=["navbar-toggler"],
-                                    type="button",
-                                    data_toggle="collapse",
-                                    data_target="#navbarsExample07",
-                                    aria_controls="navbarsExample07",
-                                    aria_expanded="false",
-                                    aria_label="Toggle navigation",
-                                    children=[
-                                        create_element(
-                                            "span", classes=["navbar-toggler-icon"]
-                                        )
-                                    ],
-                                ),
-                                create_element(
-                                    "div",
-                                    id="navbarsExample07",
-                                    classes=["collapse", "navbar-collapse"],
-                                    children=[
-                                        menu_container,
-                                        help_menu_container,
-                                    ],
-                                ),
-                            ],
-                        )
-                    ],
-                )
+                    "a",
+                    classes=["brand"],
+                    content=(
+                        '<img src="static/logo-32.png" '
+                        'class="d-inline-block align-top" '
+                        f'alt="{self.interface.formal_name} logo" '
+                        'loading="lazy">'
+                    ),
+                ),
+                menu_container,
+                help_menu_container,
             ],
         )
 
