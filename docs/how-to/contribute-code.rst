@@ -99,7 +99,7 @@ Next, install any additional dependencies for your operating system:
 
       # FreeBSD
       (venv) $ sudo pkg update
-      (venv) $ sudo pkg install py39-cairo py39-gobject py39-evdev py39-pyudev gtk3 gobject-introspection cairo webkit2-gtk3
+      (venv) $ sudo pkg install gtk3 pango gobject-introspection cairo webkit2-gtk3
 
   .. group-tab:: Windows
 

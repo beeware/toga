@@ -87,7 +87,7 @@ Next, install Toga into your virtual environment:
 
       # FreeBSD
       (venv) $ sudo pkg update
-      (venv) $ sudo pkg install py39-cairo py39-gobject py39-evdev py39-pyudev gtk3 gobject-introspection cairo webkit2-gtk3
+      (venv) $ sudo pkg install gtk3 pango gobject-introspection cairo webkit2-gtk3
 
     If you're not using one of these, you'll need to work out how to install
     the developer libraries for python3, cairo, pango, and
