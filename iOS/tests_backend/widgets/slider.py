@@ -26,5 +26,5 @@ class SliderProbe(SimpleProbe):
     def _max(self):
         return self.native.maximumValue
 
-    def release(self):
+    async def release(self):
         self.native.sendActionsForControlEvents(UIControlEventTouchUpInside)

@@ -99,5 +99,5 @@ class SimpleProbe:
         else:
             return TRANSPARENT
 
-    def press(self):
+    async def press(self):
         self.native.performClick(None)

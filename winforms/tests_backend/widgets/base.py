@@ -84,5 +84,5 @@ class SimpleProbe:
     def height(self):
         return self.native.Height
 
-    def press(self):
+    async def press(self):
         self.native.OnClick(EventArgs.Empty)

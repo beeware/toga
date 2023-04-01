@@ -1,4 +1,4 @@
-from rubicon.objc import SEL, NSPoint
+from rubicon.objc import NSPoint
 
 from toga_cocoa.libs import NSEvent, NSEventType, NSSlider
 
@@ -14,7 +14,7 @@ class SliderProbe(SimpleProbe):
 
     def change(self, position):
         self.native.doubleValue = self._min + (position * (self._max - self._min))
-        self.native.performClick(None)
+        self.native.performClick(None)  # Setting the value doesn't trigger the action.
 
     @property
     def tick_count(self):
@@ -37,7 +37,10 @@ class SliderProbe(SimpleProbe):
 
     async def release(self):
         await self.mouse_event(NSEventType.LeftMouseUp)
-        self.native.sendAction(SEL("onSlide:"), to=self.native)
+
+        # Synthesizing this event doesn't trigger the action, even though a real event
+        # does (https://github.com/beeware/toga/pull/1708#issuecomment-1490964061).
+        self.native.performClick(None)
 
     async def mouse_event(self, event_type):
         await self.post_event(
