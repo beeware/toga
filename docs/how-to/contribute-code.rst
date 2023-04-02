@@ -86,16 +86,15 @@ Next, install any additional dependencies for your operating system:
 
     .. code-block:: bash
 
-      # Ubuntu 16.04, Debian 9
-      (venv) $ sudo apt-get update
-      (venv) $ sudo apt-get install python3-dev libgirepository1.0-dev libcairo2-dev libpango1.0-dev libwebkitgtk-3.0-0 gir1.2-webkit-3.0
-
-      # Ubuntu 20.04, Ubuntu 18.04, Debian 10
+      # Ubuntu 18.04+, Debian 10+
       (venv) $ sudo apt-get update
       (venv) $ sudo apt-get install python3-dev libgirepository1.0-dev libcairo2-dev libpango1.0-dev libwebkit2gtk-4.0-37 gir1.2-webkit2-4.0
 
       # Fedora
       (venv) $ sudo dnf install pkg-config python3-devel gobject-introspection-devel cairo-devel cairo-gobject-devel pango-devel webkitgtk3
+
+      # Arch / Manjaro
+      (venv) $ sudo pacman -Syu git pkgconf cairo python-cairo pango gobject-introspection gobject-introspection-runtime python-gobject webkit2gtk
 
       # FreeBSD
       (venv) $ sudo pkg update
