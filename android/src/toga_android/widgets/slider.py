@@ -16,12 +16,11 @@ class TogaOnSeekBarChangeListener(SeekBar__OnSeekBarChangeListener):
     def onProgressChanged(self, _view, _progress, _from_user):
         self.impl.on_change()
 
-    # Add two unused methods so that the Java interface is completely implemented.
     def onStartTrackingTouch(self, native_seekbar):
-        pass
+        self.impl.interface.on_press(None)
 
     def onStopTrackingTouch(self, native_seekbar):
-        pass
+        self.impl.interface.on_release(None)
 
 
 TICK_DRAWABLE = None
