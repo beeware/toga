@@ -1,4 +1,4 @@
-from toga_gtk.libs import Gtk
+from toga_gtk.libs import Gdk, Gtk
 
 from .base import SimpleProbe
 
@@ -8,10 +8,17 @@ class SliderProbe(SimpleProbe):
 
     @property
     def position(self):
+        assert self.native.get_draw_value() is False
         return (self.native.get_value() - self._min) / (self._max - self._min)
 
     def change(self, position):
-        self.native.set_value(self._min + round(position * (self._max - self._min)))
+        self.native.set_value(self._min + (position * (self._max - self._min)))
+
+    @property
+    def tick_count(self):
+        # There is no get_marks method, nor any other way of getting that information as
+        # far as I can see.
+        raise NotImplementedError()
 
     @property
     def _min(self):
@@ -20,3 +27,9 @@ class SliderProbe(SimpleProbe):
     @property
     def _max(self):
         return self.impl.adj.get_upper()
+
+    async def press(self):
+        self.native.emit("button-press-event", Gdk.Event())
+
+    async def release(self):
+        self.native.emit("button-release-event", Gdk.Event())

@@ -2,8 +2,8 @@ import toga
 from toga.constants import COLUMN, ROW
 from toga.style import Pack
 
-MIN_VAL = -5
-MAX_VAL = 15
+MIN_VAL = -2
+MAX_VAL = 12
 
 
 class SliderApp(toga.App):
@@ -21,6 +21,9 @@ class SliderApp(toga.App):
             on_change=self.my_continuous_on_change, style=slider_style
         )
 
+        self.disabled_label = toga.Label("Disabled", style=label_style)
+        self.disabled_slider = toga.Slider(enabled=False, style=slider_style)
+
         self.discrete_label = toga.Label("Discrete\n(with commands)", style=label_style)
         self.discrete_slider = toga.Slider(
             on_change=self.my_discrete_on_change,
@@ -28,9 +31,6 @@ class SliderApp(toga.App):
             tick_count=MAX_VAL - MIN_VAL + 1,
             style=slider_style,
         )
-
-        self.disabled_label = toga.Label("Disabled", style=label_style)
-        self.disabled_slider = toga.Slider(enabled=False, style=slider_style)
 
         self.scared_label = toga.Label("Try to catch me!", style=label_style)
         self.scared_slider = toga.Slider(
@@ -47,11 +47,11 @@ class SliderApp(toga.App):
                 ),
                 toga.Box(
                     style=box_style,
-                    children=[self.discrete_label, self.discrete_slider],
+                    children=[self.disabled_label, self.disabled_slider],
                 ),
                 toga.Box(
                     style=box_style,
-                    children=[self.disabled_label, self.disabled_slider],
+                    children=[self.discrete_label, self.discrete_slider],
                 ),
                 toga.Box(
                     style=box_style,

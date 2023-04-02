@@ -44,7 +44,7 @@ class Slider(Widget):
         self.range = range
         self.tick_count = tick_count
         if value is None:
-            value = (self.min + self.max) / 2
+            value = (range[0] + range[1]) / 2
         self.value = value
 
         self.on_change = on_change
@@ -111,7 +111,8 @@ class Slider(Widget):
 
         with self._programmatic_change() as old_value:
             # Some backends will clip the current value within the range automatically,
-            # but do it ourselves to be certain.
+            # but do it ourselves to be certain. In discrete mode, setting self.value also
+            # rounds to the new positions of the ticks.
             self._impl.set_range((float(_min), float(_max)))
             self.value = max(_min, min(_max, old_value))
 
@@ -147,8 +148,8 @@ class Slider(Widget):
 
         .. note::
 
-            On GTK and iOS, tick marks are not currently displayed, but discrete mode
-            will otherwise work correctly.
+            On iOS, tick marks are not currently displayed, but discrete mode will
+            otherwise work correctly.
         """
         return self._impl.get_tick_count()
 
@@ -160,7 +161,8 @@ class Slider(Widget):
             # Some backends will round the current value to the nearest tick
             # automatically, but do it ourselves to be certain.
             self._impl.set_tick_count(tick_count)
-            self.value = old_value
+            if tick_count is not None:
+                self.value = old_value
 
     @property
     def tick_step(self) -> float:
