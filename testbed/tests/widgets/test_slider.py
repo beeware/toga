@@ -30,11 +30,20 @@ def on_change(widget):
     return handler
 
 
-async def test_init(widget, probe, on_change):
+async def test_init(widget, probe):
     assert widget.value == 0.5
     assert widget.range == (0, 1)
+    assert widget.tick_count is None
     assert probe.position == approx(0.5, abs=ACCURACY)
-    on_change.assert_not_called()
+
+
+async def test_init_handlers():
+    handlers = {
+        name: Mock(name=name) for name in ["on_change", "on_press", "on_release"]
+    }
+    toga.Slider(**handlers)
+    for handler in handlers.values():
+        handler.assert_not_called()
 
 
 # Bounds checks are covered by core tests.

@@ -264,15 +264,6 @@ class SliderImpl(ABC):
     def set_tick_count(self, tick_count):
         ...
 
-    def on_change(self):
-        self.interface.on_change(None)
-
-    def on_press(self):
-        self.interface.on_press(None)
-
-    def on_release(self):
-        self.interface.on_release(None)
-
 
 class IntSliderImpl(SliderImpl):
     """Base class for implementations which use integer values."""
@@ -316,7 +307,7 @@ class IntSliderImpl(SliderImpl):
     def on_change(self):
         span = self.max - self.min
         self.value = self.min + (self.get_int_value() / self.get_int_max() * span)
-        super().on_change()
+        self.interface.on_change(None)
 
     @abstractmethod
     def get_int_value(self):
@@ -367,11 +358,14 @@ class ContinuousSliderImpl(SliderImpl):
 
     def on_change(self):
         self.value = self.interface._round_value(self.get_continuous_value())
-        super().on_change()
+        self.interface.on_change(None)
+
+    def on_press(self):
+        self.interface.on_press(None)
 
     def on_release(self):
         self.set_continuous_value(self.value)
-        super().on_release()
+        self.interface.on_release(None)
 
     @abstractmethod
     def get_continuous_value(self):

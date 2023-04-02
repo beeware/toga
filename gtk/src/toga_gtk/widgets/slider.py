@@ -11,10 +11,17 @@ class Slider(Widget, toga.widgets.slider.SliderImpl):
         self.adj = Gtk.Adjustment()
         self.native = Gtk.Scale.new(Gtk.Orientation.HORIZONTAL, self.adj)
 
-        self.native.connect("value-changed", lambda native: self.on_change())
-        self.native.connect("button-press-event", lambda native, event: self.on_press())
         self.native.connect(
-            "button-release-event", lambda native, event: self.on_release()
+            "value-changed",
+            lambda native: self.interface.on_change(None),
+        )
+        self.native.connect(
+            "button-press-event",
+            lambda native, event: self.interface.on_press(None),
+        )
+        self.native.connect(
+            "button-release-event",
+            lambda native, event: self.interface.on_release(None),
         )
 
         # Despite what the set_digits documentation says, set_round_digits has no effect
