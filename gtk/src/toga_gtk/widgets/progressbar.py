@@ -7,7 +7,6 @@ PROGRESSBAR_TICK_INTERVAL = 100  # ms per tick
 class ProgressBar(Widget):
     def create(self):
         self.native = Gtk.ProgressBar()
-        self.native.interface = self.interface
 
     def _render_disabled(self):
         self.native.set_fraction(0)

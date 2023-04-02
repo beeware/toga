@@ -10,7 +10,6 @@ class Slider(Widget, toga.widgets.slider.SliderImpl):
     def create(self):
         self.adj = Gtk.Adjustment()
         self.native = Gtk.Scale.new(Gtk.Orientation.HORIZONTAL, self.adj)
-        self.native.interface = self.interface
 
         self.native.connect("value-changed", lambda native: self.on_change())
         self.native.connect("button-press-event", lambda native, event: self.on_press())

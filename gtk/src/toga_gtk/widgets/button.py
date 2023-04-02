@@ -9,10 +9,6 @@ from .base import Widget
 class Button(Widget):
     def create(self):
         self.native = Gtk.Button()
-        self.native.set_name(f"toga-{self.interface.id}")
-        self.native.get_style_context().add_class("toga")
-        self.native.interface = self.interface
-
         self.native.connect("clicked", self.gtk_on_press)
 
     def get_text(self):
@@ -23,10 +19,6 @@ class Button(Widget):
 
     def set_enabled(self, value):
         self.native.set_sensitive(value)
-
-    def set_on_press(self, handler):
-        # No special handling required
-        pass
 
     def set_background_color(self, color):
         # Buttons interpret TRANSPARENT backgrounds as a reset
@@ -43,5 +35,4 @@ class Button(Widget):
         self.interface.intrinsic.height = height[1]
 
     def gtk_on_press(self, event):
-        if self.interface.on_press:
-            self.interface.on_press(self.interface)
+        self.interface.on_press(None)

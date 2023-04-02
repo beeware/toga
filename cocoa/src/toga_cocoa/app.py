@@ -367,9 +367,6 @@ class App:
     def exit(self):
         self.loop.stop()
 
-    def set_on_exit(self, value):
-        pass
-
     def current_window(self):
         return self.native.keyWindow
 

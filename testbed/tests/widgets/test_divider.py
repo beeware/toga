@@ -3,13 +3,13 @@ import pytest
 import toga
 from toga.style.pack import COLUMN, ROW
 
+from ..conftest import skip_on_platforms
+
 
 @pytest.fixture
 async def widget():
-    try:
-        return toga.Divider()
-    except AttributeError:
-        pytest.skip("Platform doesn't implement the Divider widget")
+    skip_on_platforms("android", "iOS")
+    return toga.Divider()
 
 
 async def test_directions(widget, probe):
@@ -17,7 +17,7 @@ async def test_directions(widget, probe):
     # Widget should be initially horizontal.
     # Container is initially a row box, so the divider will be
     # both narrow and short
-    assert probe.direction == toga.Divider.HORIZONTAL
+    assert widget.direction == toga.Divider.HORIZONTAL
     assert probe.height < 10
     assert probe.width < 10
 
@@ -26,7 +26,7 @@ async def test_directions(widget, probe):
     await probe.redraw()
 
     # The divider will now be wide, but short.
-    assert probe.direction == toga.Divider.HORIZONTAL
+    assert widget.direction == toga.Divider.HORIZONTAL
     assert probe.height < 10
     assert probe.width > 100
 
@@ -35,7 +35,7 @@ async def test_directions(widget, probe):
     await probe.redraw()
 
     # In a column box, a vertical divider will be narrow and short.
-    assert probe.direction == toga.Divider.VERTICAL
+    assert widget.direction == toga.Divider.VERTICAL
     assert probe.height < 10
     assert probe.width < 10
 
@@ -44,6 +44,6 @@ async def test_directions(widget, probe):
     await probe.redraw()
 
     # In a row box, a vertical divider will be narrow and tall.
-    assert probe.direction == toga.Divider.VERTICAL
+    assert widget.direction == toga.Divider.VERTICAL
     assert probe.height > 100
     assert probe.width < 10

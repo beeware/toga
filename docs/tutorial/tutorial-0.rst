@@ -71,10 +71,6 @@ Next, install Toga into your virtual environment:
 
     .. code-block:: bash
 
-      # Ubuntu 16.04 / Debian 9
-      (venv) $ sudo apt-get update
-      (venv) $ sudo apt-get install python3-dev python3-gi python3-gi-cairo libgirepository1.0-dev libcairo2-dev libpango1.0-dev libwebkitgtk-3.0-0 gir1.2-webkit2-3.0
-
       # Ubuntu 18.04+ / Debian 10+
       (venv) $ sudo apt-get update
       (venv) $ sudo apt-get install python3-dev python3-cairo-dev python3-gi-cairo libgirepository1.0-dev libcairo2-dev libpango1.0-dev gir1.2-webkit2-4.0 pkg-config
@@ -84,6 +80,10 @@ Next, install Toga into your virtual environment:
 
       # Arch / Manjaro
       (venv) $ sudo pacman -Syu git pkgconf cairo python-cairo pango gobject-introspection gobject-introspection-runtime python-gobject webkit2gtk
+
+      # FreeBSD
+      (venv) $ sudo pkg update
+      (venv) $ sudo pkg install gtk3 pango gobject-introspection cairo webkit2-gtk3
 
     If you're not using one of these, you'll need to work out how to install
     the developer libraries for python3, cairo, pango, and
@@ -270,8 +270,9 @@ at the top of this guide.
 
     * If you're on macOS, you need to be on 10.10 (Yosemite) or newer.
 
-    * If you're on Linux, you need to have GTK+ 3.10 or newer. This is the
-      version that ships starting with Ubuntu 14.04 and Fedora 20.
+    * If you're on Linux (or another Unix-based operating system), you need to
+      have GTK+ 3.10 or newer. This is the version that ships starting with
+      Ubuntu 14.04 and Fedora 20.
 
     * If you're on Windows, you need to have Windows 10 or newer.
 

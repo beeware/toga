@@ -45,7 +45,7 @@ class SelectionTests(TestCase):
             self.selection.value = "not in items"
 
     def test_on_select(self):
-        on_select = self.selection.on_select
+        on_select = self.selection.on_select._raw
         self.assertEqual(on_select, None)
 
     def test_focus(self):

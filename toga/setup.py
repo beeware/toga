@@ -9,6 +9,7 @@ setup(
         # Automatically installed platform backends
         ':sys_platform=="win32"': ["toga-winforms==%s" % version],
         ':sys_platform=="linux"': ["toga-gtk==%s" % version],
+        ':"freebsd" in sys_platform': ["toga-gtk==%s" % version],
         ':sys_platform=="darwin"': ["toga-cocoa==%s" % version],
     },
 )

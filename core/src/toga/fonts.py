@@ -1,7 +1,7 @@
 import warnings
 
 # Use the Travertino font definitions as-is
-from travertino import constants  # noqa: F401
+from travertino import constants
 from travertino.constants import ITALIC  # noqa: F401
 from travertino.constants import (  # noqa: F401
     BOLD,
@@ -17,7 +17,7 @@ from travertino.constants import (  # noqa: F401
     SYSTEM,
 )
 from travertino.fonts import font  # noqa: F401
-from travertino.fonts import Font as BaseFont  # noqa: F401
+from travertino.fonts import Font as BaseFont
 
 from toga.platform import get_platform_factory
 

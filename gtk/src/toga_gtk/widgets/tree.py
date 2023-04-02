@@ -33,7 +33,6 @@ class Tree(Widget):
             self.treeview.append_column(column)
 
         self.native = Gtk.ScrolledWindow()
-        self.native.interface = self.interface
         self.native.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
         self.native.add(self.treeview)
         self.native.set_min_content_width(200)

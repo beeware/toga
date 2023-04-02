@@ -70,9 +70,7 @@ class Window:
 
         self._toolbar = CommandSet(widget=self, on_change=self._impl.create_toolbar)
 
-        self._on_close = None
-        if on_close is not None:
-            self.on_close = on_close
+        self.on_close = on_close
 
     @property
     def id(self):
@@ -255,7 +253,6 @@ class Window:
                 window.close()
 
         self._on_close = wrapped_handler(self, handler, cleanup=cleanup)
-        self._impl.set_on_close(self._on_close)
 
     def close(self):
         self.app.windows -= self

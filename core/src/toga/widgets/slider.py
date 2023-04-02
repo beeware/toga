@@ -36,11 +36,11 @@ class Slider(Widget):
         :param enabled: Whether the user can interact with the widget.
         """
         super().__init__(id=id, style=style)
-
-        # Needed for _impl initialization
-        self._on_change = None
-
         self._impl = self.factory.Slider(interface=self)
+
+        # Set a dummy handler before installing the actual on_change, because we do not want
+        # on_change triggered by the initial value being set
+        self.on_change = None
         self.range = range
         self.tick_count = tick_count
         if value is None:
@@ -60,12 +60,12 @@ class Slider(Widget):
     def _programmatic_change(self):
         old_value = self.value
         on_change = self._on_change
-        self._on_change = None
+        self.on_change = None
         yield old_value
 
         self._on_change = on_change
-        if on_change and (self.value != old_value):
-            on_change(self)
+        if self.value != old_value:
+            on_change(None)
 
     @property
     def value(self) -> float:
@@ -265,16 +265,13 @@ class SliderImpl(ABC):
         ...
 
     def on_change(self):
-        if self.interface.on_change:
-            self.interface.on_change(self.interface)
+        self.interface.on_change(None)
 
     def on_press(self):
-        if self.interface.on_press:
-            self.interface.on_press(self.interface)
+        self.interface.on_press(None)
 
     def on_release(self):
-        if self.interface.on_release:
-            self.interface.on_release(self.interface)
+        self.interface.on_release(None)
 
 
 class IntSliderImpl(SliderImpl):

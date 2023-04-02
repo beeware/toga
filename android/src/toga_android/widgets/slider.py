@@ -66,9 +66,3 @@ class Slider(Widget, toga.widgets.slider.IntSliderImpl):
         )
         self.interface.intrinsic.width = at_least(self.native.getMeasuredWidth())
         self.interface.intrinsic.height = self.native.getMeasuredHeight()
-
-    def set_on_press(self, handler):
-        self.interface.factory.not_implemented("Slider.set_on_press()")
-
-    def set_on_release(self, handler):
-        self.interface.factory.not_implemented("Slider.set_on_release()")

@@ -209,9 +209,6 @@ class App:
     def exit(self):
         pass
 
-    def set_on_exit(self, value):
-        pass
-
     async def intent_result(self, intent):
         """Calls an Intent and waits for its result.
 

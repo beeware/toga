@@ -12,6 +12,17 @@ class Widget:
         self.native = None
         self.style_providers = {}
         self.create()
+
+        # Ensure the native widget has links to the interface and impl
+        self.native.interface = self.interface
+        self.native._impl = self
+
+        # Ensure the native widget has GTK CSS style attributes; create() should
+        # ensure any other widgets are also styled appropriately.
+        self.native.set_name(f"toga-{self.interface.id}")
+        self.native.get_style_context().add_class("toga")
+
+        # Ensure initial styles are applied.
         self.interface.style.reapply()
 
     @property
