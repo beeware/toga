@@ -1,4 +1,4 @@
-from unittest import mock
+from unittest.mock import Mock
 
 import pytest
 from pytest import approx, fixture, raises
@@ -16,7 +16,7 @@ INITIAL_ENABLED = True
 
 @fixture
 def on_change():
-    return mock.Mock()
+    return Mock()
 
 
 @fixture
@@ -313,19 +313,19 @@ def test_focus(slider, on_change):
 
 
 def test_set_on_change():
-    on_change = mock.Mock()
+    on_change = Mock()
     slider = toga.Slider(on_change=on_change)
     assert slider.on_change._raw == on_change
 
 
 def test_set_on_press():
-    on_press = mock.Mock()
+    on_press = Mock()
     slider = toga.Slider(on_press=on_press)
     assert slider.on_press._raw == on_press
 
 
 def test_set_on_release():
-    on_release = mock.Mock()
+    on_release = Mock()
     slider = toga.Slider(on_release=on_release)
     assert slider.on_release._raw == on_release
 
@@ -339,3 +339,131 @@ def assert_value(slider, on_change, value, *, tick_value=None, change_count=0):
     assert attribute_value(slider, "value") == value
 
     assert on_change.call_count == change_count
+
+
+def test_int_impl():
+    class Impl(toga.widgets.slider.IntSliderImpl):
+        def __init__(self):
+            super().__init__()
+            self.interface = Mock()
+
+        def get_int_value(self):
+            return self.int_value
+
+        def set_int_value(self, value):
+            self.int_value = value
+
+        def get_int_max(self):
+            return self.int_max
+
+        def set_int_max(self, max):
+            self.int_max = max
+
+        def set_ticks_visible(self, visible):
+            self.ticks_visible = visible
+
+    impl = Impl()
+    assert impl.get_value() == 0
+
+    # Continuous mode
+    impl.set_range((0, 1))
+    assert impl.get_range() == (0, 1)
+    impl.set_tick_count(None)
+    assert impl.get_tick_count() is None
+    assert impl.int_max == 10000
+    assert impl.ticks_visible is False
+
+    for value, int_value in [
+        (0, 0),
+        (0.5, 5000),
+        (1, 10000),
+        (0.00004, 0),
+        (0.00006, 1),
+        (0.0001, 1),
+    ]:
+        impl.set_value(value)
+        assert impl.int_value == int_value
+        assert impl.get_value() == value
+
+    impl.set_range((-0.4, 0.6))
+    assert impl.get_range() == (-0.4, 0.6)
+    impl.set_value(0.5)
+    assert impl.get_value() == 0.5
+    assert impl.int_value == 9000
+
+    # Discrete mode
+    impl.set_range((0, 1))
+    impl.set_tick_count(9)
+    assert impl.get_tick_count() == 9
+    assert impl.int_max == 8
+    assert impl.ticks_visible is True
+
+    for value, int_value in [
+        (0, 0),
+        (1, 8),
+        (0.1, 1),
+        (0.2, 2),
+        (0.3, 2),
+        (0.4, 3),
+    ]:
+        impl.set_value(value)
+        assert impl.get_value() == value
+        assert impl.int_value == int_value
+
+    # Event handler
+    for value, int_value in [
+        (0, 0),
+        (1, 8),
+        (0.125, 1),
+        (0.250, 2),
+    ]:
+        impl.interface.reset_mock()
+        impl.int_value = int_value
+        impl.on_change()
+        assert impl.get_value() == approx(value)
+        impl.interface.on_change.assert_called_once_with(None)
+
+
+def test_continuous_impl():
+    class Impl(toga.widgets.slider.ContinuousSliderImpl):
+        def __init__(self):
+            super().__init__()
+            self.interface = Mock()
+
+        def get_continuous_value(self):
+            return self.continuous_value
+
+        def set_continuous_value(self, value):
+            self.continuous_value = value
+
+        def get_range(self):
+            pass
+
+        def set_range(self, range):
+            pass
+
+    impl = Impl()
+    assert impl.get_value() == 0
+    assert impl.tick_count is None
+
+    impl.set_tick_count(7)
+    assert impl.get_tick_count() == 7
+
+    impl.set_value(1.23)
+    assert impl.get_value() == 1.23
+    assert impl.continuous_value == 1.23
+
+    impl.on_press()
+    impl.interface.on_press.assert_called_once_with(None)
+    assert impl.continuous_value == 1.23
+
+    impl.continuous_value = 4.54
+    impl.interface._round_value.return_value = 4.5
+    impl.on_change()
+    assert impl.get_value() == 4.5
+    assert impl.continuous_value == 4.54
+    impl.interface.on_change.assert_called_once_with(None)
+
+    impl.on_release()
+    assert impl.continuous_value == 4.5
+    impl.interface.on_release.assert_called_once_with(None)
