@@ -18,28 +18,11 @@ class Slider(Widget, toga.widgets.slider.IntSliderImpl):
 
         # Unlike Scroll, ValueChanged also fires when the value is changed
         # programmatically, such as via the testbed probe.
-        self.native.ValueChanged += self.winforms_scroll
-        self.native.MouseDown += self.winforms_mouse_down
-        self.native.MouseUp += self.winforms_mouse_up
+        self.native.ValueChanged += lambda sender, event: self.on_change()
+        self.native.MouseDown += lambda sender, event: self.on_press()
+        self.native.MouseUp += lambda sender, event: self.on_release()
 
         self.set_enabled(self.interface._enabled)
-
-    def winforms_scroll(self, sender, event):
-        self.on_change()
-
-    def winforms_mouse_down(self, sender, event):
-        """Since picking and releasing the slider is also a change, calling the
-        on_change method."""
-        if self.container and self.interface.on_press:
-            self.interface.on_press(self.interface)
-        self.winforms_scroll(sender, event)
-
-    def winforms_mouse_up(self, sender, event):
-        """Since picking and releasing the slider is also a change, calling the
-        on_change method."""
-        self.winforms_scroll(sender, event)
-        if self.container and self.interface.on_release:
-            self.interface.on_release(self.interface)
 
     def get_int_value(self):
         return self.native.Value

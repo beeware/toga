@@ -26,7 +26,6 @@ def run_tests(app, cov, args, report_coverage, run_slow):
                 "-vv",
                 "--no-header",
                 "--tb=native",
-                "-rP",  # Show stdout from all tests, even if they passed.
                 "--color=no",
                 # Run all async tests and fixtures using pytest-asyncio.
                 "--asyncio-mode=auto",

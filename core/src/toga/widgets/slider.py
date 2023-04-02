@@ -159,10 +159,11 @@ class Slider(Widget):
             raise ValueError("tick count must be at least 2")
         with self._programmatic_change() as old_value:
             # Some backends will round the current value to the nearest tick
-            # automatically, but do it ourselves to be certain.
+            # automatically, but do it ourselves to be certain. Some backends also require
+            # the value to be refreshed when moving between discrete and continuous mode,
+            # because this causes a change in the native range.
             self._impl.set_tick_count(tick_count)
-            if tick_count is not None:
-                self.value = old_value
+            self.value = old_value
 
     @property
     def tick_step(self) -> float:
@@ -302,7 +303,6 @@ class IntSliderImpl(SliderImpl):
 
     def set_range(self, range):
         self.min, self.max = range
-        # The interface layer will follow this up with a call to set_value.
 
     def get_tick_count(self):
         return (self.get_int_max() + 1) if self.discrete else None
