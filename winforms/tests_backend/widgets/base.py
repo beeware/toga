@@ -84,5 +84,15 @@ class SimpleProbe:
     def height(self):
         return self.native.Height
 
+    def assert_width(self, min_width, max_width):
+        assert (
+            min_width <= self.width <= max_width
+        ), f"Width ({self.width}) not in range ({min_width}, {max_width})"
+
+    def assert_height(self, min_height, max_height):
+        assert (
+            min_height <= self.height <= max_height
+        ), f"Height ({self.height}) not in range ({min_height}, {max_height})"
+
     async def press(self):
         self.native.OnClick(EventArgs.Empty)

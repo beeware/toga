@@ -15,7 +15,6 @@ class Widget:
         self.native = None
         self.create()
         self.interface.style.reapply()
-        self.set_enabled(self.interface.enabled)
 
     def create(self):
         pass
@@ -61,8 +60,11 @@ class Widget:
     def viewport(self, viewport):
         self._viewport = viewport
 
+    def get_enabled(self):
+        return self.native.isEnabled()
+
     def set_enabled(self, value):
-        self.native.enabled = self.interface.enabled
+        self.native.enabled = value
 
     def focus(self):
         self.interface.factory.not_implemented("Widget.focus()")

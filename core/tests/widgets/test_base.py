@@ -33,11 +33,11 @@ class WidgetTests(TestCase):
         self.assertTrue(isinstance(widget.style, Pack))
 
     def test_enabled_with_None(self):
-        # Using a Box for test because we need a concrete implementation to use this property.
-        box = toga.Box()
-        box.enabled = None
-        self.assertFalse(box.enabled)
-        self.assertActionPerformedWith(box, "set enabled", value=None)
+        # Using a Button for test because we need a concrete implementation to use this property.
+        widget = toga.Button("Hello")
+        widget.enabled = None
+        self.assertFalse(widget.enabled)
+        self.assertValueSet(widget, "enabled", False)
 
     def test_adding_child(self):
         self.assertIsNone(self.widget.app)

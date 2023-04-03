@@ -22,8 +22,6 @@ class Slider(Widget, toga.widgets.slider.IntSliderImpl):
         self.native.MouseDown += lambda sender, event: self.interface.on_press(None)
         self.native.MouseUp += lambda sender, event: self.interface.on_release(None)
 
-        self.set_enabled(self.interface._enabled)
-
     def get_int_value(self):
         return self.native.Value
 

@@ -21,6 +21,11 @@ class ActivityIndicator(Widget):
         if running:
             self.start()
 
+    @Widget.enabled.setter
+    def enabled(self, value):
+        # ActivityIndicator doesn't have a "disabled" state
+        pass
+
     @property
     def is_running(self):
         """Determine if the activity indicator is currently running.

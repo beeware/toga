@@ -4,6 +4,9 @@ import toga
 from toga.style.pack import COLUMN, ROW
 
 from ..conftest import skip_on_platforms
+from .properties import (  # noqa: F401
+    test_enable_noop,
+)
 
 
 @pytest.fixture

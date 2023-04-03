@@ -26,3 +26,8 @@ class Box(Widget):
 
         # Create a platform specific implementation of a Box
         self._impl = self.factory.Box(interface=self)
+
+    @Widget.enabled.setter
+    def enabled(self, value):
+        # Box doesn't have a "disabled" state
+        pass

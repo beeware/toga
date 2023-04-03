@@ -12,6 +12,7 @@ from .properties import (  # noqa: F401
     test_background_color_reset,
     test_color,
     test_color_reset,
+    test_enabled,
     test_flex_horizontal_widget_size,
     test_font,
     test_font_attrs,

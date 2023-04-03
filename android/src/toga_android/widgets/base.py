@@ -75,6 +75,9 @@ class Widget:
 
         self.rehint()
 
+    def get_enabled(self):
+        return self.native.isEnabled()
+
     def set_enabled(self, value):
         self.native.setEnabled(value)
 
