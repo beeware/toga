@@ -31,6 +31,7 @@ class Constraints:
     @container.setter
     def container(self, value):
         if value is None and self.container:
+            # print("Remove constraints for", self.widget, 'in', self.container)
             self.container.native.removeConstraint(self.width_constraint)
             self.container.native.removeConstraint(self.height_constraint)
             self.container.native.removeConstraint(self.left_constraint)
@@ -84,9 +85,8 @@ class Constraints:
             self.container.native.addConstraint(self.height_constraint)
 
     def update(self, x, y, width, height):
-        # print("UPDATE", self.widget, 'in', self.container, 'to', x, y, width, height)
         if self.container:
-            # print("IN CONTAINER")
+            # print("UPDATE", self.widget, 'in', self.container, 'to', x, y, width, height)
             self.left_constraint.constant = x
             self.top_constraint.constant = y
 

@@ -1,11 +1,44 @@
-from pytest import skip
+import asyncio
+
+from java import dynamic_proxy
+
+from android.view import ViewTreeObserver
+from toga.fonts import SYSTEM
+
+from .properties import toga_color
+
+
+class LayoutListener(dynamic_proxy(ViewTreeObserver.OnGlobalLayoutListener)):
+    def __init__(self):
+        super().__init__()
+        self.event = asyncio.Event()
+
+    def onGlobalLayout(self):
+        self.event.set()
+        self.event.clear()
 
 
 class SimpleProbe:
     def __init__(self, widget):
         self.widget = widget
         self.native = widget._impl.native
+        self.layout_listener = LayoutListener()
+        self.native.getViewTreeObserver().addOnGlobalLayoutListener(
+            self.layout_listener
+        )
+
+        # Store the device DPI, as it will be needed to scale some values
+        self.dpi = (
+            self.native.getContext().getResources().getDisplayMetrics().densityDpi
+        )
+        self.scale_factor = self.dpi / 160
+
         assert isinstance(self.native, self.native_class)
+
+    def __del__(self):
+        self.native.getViewTreeObserver().removeOnGlobalLayoutListener(
+            self.layout_listener
+        )
 
     def assert_container(self, container):
         container_native = container._impl.native
@@ -16,34 +49,42 @@ class SimpleProbe:
         else:
             raise AssertionError(f"cannot find {self.native} in {container_native}")
 
+    def assert_alignment(self, expected):
+        assert self.alignment == expected
+
+    def assert_font_family(self, expected):
+        actual = self.font.family
+        if expected == SYSTEM:
+            assert actual == "sans-serif"
+        else:
+            assert actual == expected
+
     async def redraw(self):
         """Request a redraw of the app, waiting until that redraw has completed."""
-        # Refresh the layout
-        self.widget.window.content.refresh()
+        self.native.requestLayout()
+        await self.layout_listener.event.wait()
+
+        # If we're running slow, wait for a second
+        if self.widget.app.run_slow:
+            await asyncio.sleep(1)
 
     @property
     def enabled(self):
         return self.native.isEnabled()
 
     @property
-    def background_color(self):
-        skip("not implemented: background_color")
-
-    @property
-    def color(self):
-        skip("not implemented: color")
-
-    @property
-    def hidden(self):
-        skip("not implemented: hidden")
-
-    @property
     def width(self):
-        return self.native.getWidth()
+        # Return the value in DP
+        return self.native.getWidth() / self.scale_factor
 
     @property
     def height(self):
-        return self.native.getHeight()
+        # Return the value in DP
+        return self.native.getHeight() / self.scale_factor
+
+    @property
+    def background_color(self):
+        return toga_color(self.native.getBackground().getColor())
 
     def press(self):
         self.native.performClick()

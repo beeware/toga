@@ -1,12 +1,11 @@
 from travertino.size import at_least
 
-from ..libs.android.util import TypedValue
 from ..libs.android.view import View__MeasureSpec
 from ..libs.android.widget import (
     CompoundButton__OnCheckedChangeListener,
     Switch as A_Switch,
 )
-from .base import Widget
+from .label import TextViewWidget
 
 
 class OnCheckedChangeListener(CompoundButton__OnCheckedChangeListener):
@@ -15,14 +14,14 @@ class OnCheckedChangeListener(CompoundButton__OnCheckedChangeListener):
         self._impl = impl
 
     def onCheckedChanged(self, _button, _checked):
-        if self._impl.interface.on_change:
-            self._impl.interface.on_change(widget=self._impl.interface)
+        self._impl.interface.on_change(None)
 
 
-class Switch(Widget):
+class Switch(TextViewWidget):
     def create(self):
         self.native = A_Switch(self._native_activity)
         self.native.setOnCheckedChangeListener(OnCheckedChangeListener(self))
+        self.cache_textview_defaults()
 
     def set_text(self, text):
         # When changing the text, Android needs a `setSingleLine(False)` call in order
@@ -38,15 +37,6 @@ class Switch(Widget):
 
     def get_value(self):
         return self.native.isChecked()
-
-    def set_font(self, font):
-        if font:
-            self.native.setTextSize(TypedValue.COMPLEX_UNIT_SP, font._impl.get_size())
-            self.native.setTypeface(font._impl.get_typeface(), font._impl.get_style())
-
-    def set_on_change(self, handler):
-        # No special handling required
-        pass
 
     def rehint(self):
         if not self.native.getLayoutParams():

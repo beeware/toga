@@ -118,9 +118,6 @@ class Window:
         # closing the window) should be performed.
         return not should_close
 
-    def set_on_close(self, handler):
-        pass
-
     def close(self):
         self._is_closing = True
         self.native.close()

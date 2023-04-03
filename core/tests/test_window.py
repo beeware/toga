@@ -204,7 +204,7 @@ class TestWindow(TestCase):
     def test_on_close(self):
         with patch.object(self.window, "_impl"):
             self.app.windows += self.window
-            self.assertIsNone(self.window._on_close)
+            self.assertIsNone(self.window.on_close._raw)
 
             # set a new callback
             def callback(window, **extra):
@@ -213,7 +213,7 @@ class TestWindow(TestCase):
             self.window.on_close = callback
             self.assertEqual(self.window.on_close._raw, callback)
             self.assertEqual(
-                self.window.on_close("widget", a=1),
+                self.window.on_close(None, a=1),
                 "called <class 'toga.window.Window'> with {'a': 1}",
             )
 
@@ -226,7 +226,7 @@ class TestWindow(TestCase):
 
         self.assertEqual(window.on_close._raw, callback)
         self.assertEqual(
-            window.on_close("widget", a=1),
+            window.on_close(None, a=1),
             "called <class 'toga.window.Window'> with {'a': 1}",
         )
 

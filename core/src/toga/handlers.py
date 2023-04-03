@@ -75,4 +75,11 @@ def wrapped_handler(interface, handler, cleanup=None):
 
         _handler._raw = handler
 
-        return _handler
+    else:
+        # A dummy no-op handler
+        def _handler(widget, *args, **kwargs):
+            pass
+
+        _handler._raw = None
+
+    return _handler

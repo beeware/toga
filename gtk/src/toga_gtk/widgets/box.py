@@ -7,5 +7,3 @@ class Box(Widget):
         self.min_width = None
         self.min_height = None
         self.native = Gtk.Box()
-        self.native._impl = self
-        self.native.interface = self.interface

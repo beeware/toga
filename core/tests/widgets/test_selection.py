@@ -7,7 +7,6 @@ class SelectionTests(TestCase):
         super().setUp()
 
         self.items = [f"item_{x}" for x in range(0, 3)]
-        self.selection = toga.Selection()
         self.selection = toga.Selection(items=self.items)
 
     def test_widget_created(self):
@@ -46,7 +45,7 @@ class SelectionTests(TestCase):
             self.selection.value = "not in items"
 
     def test_on_select(self):
-        on_select = self.selection.on_select
+        on_select = self.selection.on_select._raw
         self.assertEqual(on_select, None)
 
     def test_focus(self):

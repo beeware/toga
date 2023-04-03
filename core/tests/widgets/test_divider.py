@@ -1,19 +1,50 @@
+import pytest
+
 import toga
-from toga_dummy.utils import TestCase
+from toga_dummy.utils import (
+    EventLog,
+    assert_action_performed,
+)
 
 
-class DividerTests(TestCase):
-    def setUp(self):
-        super().setUp()
-        self.divider = toga.Divider()
+def test_divider_created():
+    "A divider can be created."
+    divider = toga.Divider()
 
-    def test_widget_created(self):
-        self.assertEqual(self.divider._impl.interface, self.divider)
-        self.assertActionPerformed(self.divider, "create Divider")
+    # Round trip the impl/interface
+    assert divider._impl.interface == divider
+    assert_action_performed(divider, "create Divider")
 
-    def test_update_direction(self):
-        new_direction = toga.Divider.HORIZONTAL
-        self.divider.direction = new_direction
-        self.assertEqual(self.divider.direction, new_direction)
-        self.assertValueSet(self.divider, "direction", new_direction)
-        self.assertActionPerformed(self.divider, "refresh")
+    # Default direction is honored
+    assert divider.direction == toga.Divider.HORIZONTAL
+
+
+@pytest.mark.parametrize("direction", [toga.Divider.HORIZONTAL, toga.Divider.VERTICAL])
+def test_divider_created_explicit(direction):
+    "A divider can be created."
+    divider = toga.Divider(direction=direction)
+
+    # Round trip the impl/interface
+    assert divider._impl.interface == divider
+    assert_action_performed(divider, "create Divider")
+
+    # Default direction is honored
+    assert divider.direction == direction
+
+
+def test_update_direction():
+    "The direction of the divider can be altered."
+    divider = toga.Divider(direction=toga.Divider.HORIZONTAL)
+
+    # Initial direction is as expected
+    assert divider.direction == toga.Divider.HORIZONTAL
+
+    # Reset the event log.
+    EventLog.reset()
+
+    # Change the direction.
+    divider.direction = toga.Divider.VERTICAL
+
+    # The direction has been changed, and a refresh requested
+    assert divider.direction == toga.Divider.VERTICAL
+    assert_action_performed(divider, "refresh")

@@ -1,6 +1,7 @@
 import asyncio
 import re
 import sys
+import threading
 
 import toga
 from toga import Key
@@ -225,6 +226,11 @@ class App:
                     print(line)
 
     def run_app(self):
+        # Enable coverage tracing on this non-Python-created thread
+        # (https://github.com/nedbat/coveragepy/issues/686).
+        if threading._trace_hook:
+            sys.settrace(threading._trace_hook)
+
         try:
             self.create()
 
@@ -282,9 +288,6 @@ class App:
 
     def set_main_window(self, window):
         self.app_context.MainForm = window._impl.native
-
-    def set_on_exit(self, value):
-        pass
 
     def current_window(self):
         self.interface.factory.not_implemented("App.current_window()")

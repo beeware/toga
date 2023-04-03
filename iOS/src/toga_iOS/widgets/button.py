@@ -1,6 +1,8 @@
 from rubicon.objc import SEL, CGSize, objc_method, objc_property
 from travertino.size import at_least
 
+from toga.colors import TRANSPARENT
+from toga_iOS.colors import native_color
 from toga_iOS.libs import (
     UIButton,
     UIColor,
@@ -17,8 +19,7 @@ class TogaButton(UIButton):
 
     @objc_method
     def onPress_(self, obj) -> None:
-        if self.interface.on_press:
-            self.interface.on_press(self.interface)
+        self.interface.on_press(None)
 
 
 class Button(Widget):
@@ -38,14 +39,33 @@ class Button(Widget):
         # Add the layout constraints
         self.add_constraints()
 
-    def set_text(self, text):
-        self.native.setTitle(self.interface.text, forState=UIControlStateNormal)
+    def get_text(self):
+        return str(self.native.titleForState(UIControlStateNormal))
 
-    def set_on_press(self, handler):
-        # No special handling required.
-        pass
+    def set_text(self, text):
+        self.native.setTitle(text, forState=UIControlStateNormal)
+
+    def set_color(self, color):
+        if color is None:
+            self.native.setTitleColor(
+                self.native.tintColor, forState=UIControlStateNormal
+            )
+        else:
+            self.native.setTitleColor(
+                native_color(color), forState=UIControlStateNormal
+            )
+
+    def set_background_color(self, color):
+        if color == TRANSPARENT or color is None:
+            self.native.backgroundColor = None
+        else:
+            self.native.backgroundColor = native_color(color)
+
+    def set_font(self, font):
+        self.native.titleLabel.font = font._impl.native
 
     def rehint(self):
         fitting_size = self.native.systemLayoutSizeFittingSize(CGSize(0, 0))
+        # print(f"REHINT BUTTON {fitting_size.width}x{fitting_size.height}")
         self.interface.intrinsic.width = at_least(fitting_size.width)
         self.interface.intrinsic.height = fitting_size.height

@@ -116,9 +116,10 @@ class Widget:
     # a default implementation because it often overwrites other aspects of the widget's
     # appearance.
     def set_background_color_simple(self, value):
-        self.native.setBackgroundColor(
-            native_color(TRANSPARENT if (value is None) else value)
-        )
+        if value is None:
+            self.native.setBackgroundColor(native_color(TRANSPARENT))
+        else:
+            self.native.setBackgroundColor(native_color(value))
 
     def set_alignment(self, alignment):
         pass  # If appropriate, a widget subclass will implement this.

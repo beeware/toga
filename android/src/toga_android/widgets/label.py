@@ -1,31 +1,44 @@
 from travertino.size import at_least
 
+from toga.constants import JUSTIFY
 from toga_android.colors import native_color
 
-from ..libs.android.util import TypedValue
+from ..libs.android.graphics import LineBreaker
+from ..libs.android.os import Build
 from ..libs.android.view import Gravity, View__MeasureSpec
 from ..libs.android.widget import TextView
 from .base import Widget, align
 
 
-class Label(Widget):
+class TextViewWidget(Widget):
+    def cache_textview_defaults(self):
+        self._default_text_color = self.native.getCurrentTextColor()
+        self._default_text_size = self.native.getTextSize()
+        self._default_typeface = self.native.getTypeface()
+
+    def set_font(self, font):
+        font._impl.apply(self.native, self._default_text_size, self._default_typeface)
+
+    def set_color(self, value):
+        if value is None:
+            self.native.setTextColor(self._default_text_color)
+        else:
+            self.native.setTextColor(native_color(value))
+
+
+class Label(TextViewWidget):
     def create(self):
         self.native = TextView(self._native_activity)
+        self.cache_textview_defaults()
+
+    def get_text(self):
+        return self.native.getText()
 
     def set_text(self, value):
         self.native.setText(value)
 
-    def set_font(self, font):
-        if font:
-            self.native.setTextSize(TypedValue.COMPLEX_UNIT_SP, font._impl.get_size())
-            self.native.setTypeface(font._impl.get_typeface(), font._impl.get_style())
-
     def set_background_color(self, value):
         self.set_background_color_simple(value)
-
-    def set_color(self, color):
-        if color:
-            self.native.setTextColor(native_color(color))
 
     def rehint(self):
         # Refuse to rehint an Android TextView if it has no LayoutParams yet.
@@ -47,12 +60,15 @@ class Label(Widget):
         self.interface.intrinsic.width = at_least(self.native.getMeasuredWidth())
 
     def set_alignment(self, value):
-        # Refuse to set alignment if create() has not been called.
-        if self.native is None:
-            return
         # Refuse to set alignment if widget has no container.
         # On Android, calling setGravity() when the widget has no LayoutParams
         # results in a NullPointerException.
         if not self.native.getLayoutParams():
             return
+
+        # Justified text wasn't added until Android O (SDK 26)
+        if value == JUSTIFY and Build.VERSION.SDK_INT >= Build.VERSION_CODES.O:
+            self.native.setJustificationMode(LineBreaker.JUSTIFICATION_MODE_INTER_WORD)
+        else:
+            self.native.setJustificationMode(LineBreaker.JUSTIFICATION_MODE_NONE)
         self.native.setGravity(Gravity.CENTER_VERTICAL | align(value))

@@ -11,9 +11,7 @@ class Switch(Widget):
         self.native.CheckedChanged += self.winforms_checked_changed
 
     def winforms_checked_changed(self, sender, event):
-        if self.container:
-            if self.interface.on_change:
-                self.interface.on_change(self.interface)
+        self.interface.on_change(None)
 
     def set_text(self, text):
         self.native.Text = self.interface.text
@@ -26,9 +24,6 @@ class Switch(Widget):
 
     def get_value(self):
         return self.native.Checked
-
-    def set_on_change(self, handler):
-        pass
 
     def rehint(self):
         self.interface.intrinsic.width = at_least(self.native.PreferredSize.Width)

@@ -1,0 +1,1 @@
+NumberInput now supports changing alignment on GTK.

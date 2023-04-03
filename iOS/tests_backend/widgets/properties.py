@@ -1,23 +1,23 @@
 from ctypes import byref
-from dataclasses import dataclass
 
-from pytest import skip
 from rubicon.objc import CGFloat
+from travertino.fonts import Font
 
 from toga.colors import rgba
-from toga.fonts import FANTASY, NORMAL, SYSTEM
+from toga.fonts import BOLD, ITALIC, NORMAL
 from toga.style.pack import CENTER, JUSTIFY, LEFT, RIGHT
 from toga_iOS.libs import (
     NSCenterTextAlignment,
     NSJustifiedTextAlignment,
     NSLeftTextAlignment,
     NSRightTextAlignment,
+    UIFontDescriptorTraitBold,
+    UIFontDescriptorTraitItalic,
 )
 
 
 def toga_color(color):
     if color:
-        skip("Can't convert UIColor to toga color yet")
         red = CGFloat()
         green = CGFloat()
         blue = CGFloat()
@@ -30,22 +30,14 @@ def toga_color(color):
         return None
 
 
-@dataclass
-class Font:
-    family: str
-    size: int
-    style: str = NORMAL
-    variant: str = NORMAL
-    weight: str = NORMAL
-
-
 def toga_font(font):
+    traits = font.fontDescriptor.symbolicTraits
     return Font(
-        family={
-            ".AppleSystemUIFont": SYSTEM,
-            "Papyrus": FANTASY,
-        }.get(str(font.familyName), str(font.familyName)),
+        family=str(font.familyName),
         size=font.pointSize,
+        style=ITALIC if traits & UIFontDescriptorTraitItalic else NORMAL,
+        variant=NORMAL,
+        weight=BOLD if traits & UIFontDescriptorTraitBold else NORMAL,
     )
 
 

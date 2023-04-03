@@ -155,18 +155,19 @@ class TogaContainer(Gtk.Fixed):
         and that new geometry will be applied to all child widgets of the
         container.
         """
-        # print(self._content, f"Container layout {allocation.width}x{allocation.height} @ {allocation.x}x{allocation.y}")
+        # print(self._content, f"Container layout {allocation.width}x{allocation.height} @ {allocation.x}x{allocation.y}")  # noqa: E501
 
         # The container will occupy the full space it has been allocated.
         resized = (allocation.width, allocation.height) != (self.width, self.height)
         self.set_allocation(allocation)
 
-        # This function may be called in response to irrelevant events like button clicks,
-        # so only refresh if we really need to.
-        if self._content and (resized or self.needs_redraw):
-            # Re-evaluate the layout using the allocation size as the basis for geometry
-            # print("REFRESH LAYOUT", allocation.width, allocation.height)
-            self._content.interface.refresh()
+        if self._content:
+            # This function may be called in response to irrelevant events like button clicks,
+            # so only refresh if we really need to.
+            if resized or self.needs_redraw:
+                # Re-evaluate the layout using the allocation size as the basis for geometry
+                # print("REFRESH LAYOUT", allocation.width, allocation.height)
+                self._content.interface.refresh()
 
             # WARNING! This is the list of children of the *container*, not
             # the Toga widget. Toga maintains a tree of children; all nodes

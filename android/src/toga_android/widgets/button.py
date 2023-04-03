@@ -1,12 +1,12 @@
 from travertino.size import at_least
 
+from toga.colors import TRANSPARENT
 from toga_android.colors import native_color
 
-from ..libs.android.graphics import PorterDuff__Mode
-from ..libs.android.util import TypedValue
+from ..libs.android.graphics import PorterDuff__Mode, PorterDuffColorFilter
 from ..libs.android.view import OnClickListener, View__MeasureSpec
 from ..libs.android.widget import Button as A_Button
-from .base import Widget
+from .label import TextViewWidget
 
 
 class TogaOnClickListener(OnClickListener):
@@ -15,40 +15,31 @@ class TogaOnClickListener(OnClickListener):
         self.button_impl = button_impl
 
     def onClick(self, _view):
-        if self.button_impl.interface.on_press:
-            self.button_impl.interface.on_press(widget=self.button_impl.interface)
+        self.button_impl.interface.on_press(None)
 
 
-class Button(Widget):
+class Button(TextViewWidget):
     def create(self):
         self.native = A_Button(self._native_activity)
         self.native.setOnClickListener(TogaOnClickListener(button_impl=self))
+        self.cache_textview_defaults()
+
+    def get_text(self):
+        return str(self.native.getText())
 
     def set_text(self, text):
-        self.native.setText(self.interface.text)
+        self.native.setText(text)
 
     def set_enabled(self, value):
         self.native.setEnabled(value)
 
-    def set_font(self, font):
-        if font:
-            self.native.setTextSize(TypedValue.COMPLEX_UNIT_SP, font._impl.get_size())
-            self.native.setTypeface(font._impl.get_typeface(), font._impl.get_style())
-
-    def set_on_press(self, handler):
-        # No special handling required
-        pass
-
-    def set_color(self, value):
-        if value:
-            self.native.setTextColor(native_color(value))
-
     def set_background_color(self, value):
-        if value:
-            # do not use self.native.setBackgroundColor - this messes with the button style!
-            self.native.getBackground().setColorFilter(
-                native_color(value), PorterDuff__Mode.MULTIPLY
-            )
+        # Do not use self.native.setBackgroundColor - this messes with the button style!
+        self.native.getBackground().setColorFilter(
+            None
+            if value is None or value == TRANSPARENT
+            else PorterDuffColorFilter(native_color(value), PorterDuff__Mode.SRC_IN)
+        )
 
     def rehint(self):
         # Like other text-viewing widgets, Android crashes when rendering

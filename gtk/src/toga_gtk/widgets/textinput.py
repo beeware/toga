@@ -7,7 +7,6 @@ from .base import Widget
 class TextInput(Widget):
     def create(self):
         self.native = Gtk.Entry()
-        self.native.interface = self.interface
         self.native.connect("show", lambda event: self.refresh())
         self.native.connect("changed", self.gtk_on_change)
         self.native.connect("focus-in-event", self.gtk_focus_in_event)

@@ -3,7 +3,6 @@ from travertino.size import at_least
 from ..libs.activity import MainActivity
 from ..libs.android import R__attr
 from ..libs.android.graphics import Typeface
-from ..libs.android.util import TypedValue
 from ..libs.android.view import Gravity, OnClickListener, View__MeasureSpec
 from ..libs.android.widget import (
     HorizontalScrollView,
@@ -125,12 +124,15 @@ class Table(Widget):
             text_view = TextView(MainActivity.singletonThis)
             text_view.setText(self.interface.headings[col_index])
             if self._font_impl:
-                text_view.setTextSize(
-                    TypedValue.COMPLEX_UNIT_SP, self._font_impl.get_size()
+                self._font_impl.apply(
+                    text_view, text_view.getTextSize(), text_view.getTypeface()
                 )
-                text_view.setTypeface(self._font_impl.get_typeface(), Typeface.BOLD)
-            else:
-                text_view.setTypeface(text_view.getTypeface(), Typeface.BOLD)
+            text_view.setTypeface(
+                Typeface.create(
+                    text_view.getTypeface(),
+                    text_view.getTypeface().getStyle() | Typeface.BOLD,
+                )
+            )
             text_view_params = TableRow__Layoutparams(
                 TableRow__Layoutparams.MATCH_PARENT, TableRow__Layoutparams.WRAP_CONTENT
             )
@@ -155,11 +157,8 @@ class Table(Widget):
             text_view = TextView(MainActivity.singletonThis)
             text_view.setText(self.get_data_value(row_index, col_index))
             if self._font_impl:
-                text_view.setTextSize(
-                    TypedValue.COMPLEX_UNIT_SP, self._font_impl.get_size()
-                )
-                text_view.setTypeface(
-                    self._font_impl.get_typeface(), self._font_impl.get_style()
+                self._font_impl.apply(
+                    text_view, text_view.getTextSize(), text_view.getTypeface()
                 )
             text_view_params = TableRow__Layoutparams(
                 TableRow__Layoutparams.MATCH_PARENT, TableRow__Layoutparams.WRAP_CONTENT
@@ -221,8 +220,7 @@ class Table(Widget):
         self._deleted_column = None
 
     def set_font(self, font):
-        if font:
-            self._font_impl = font._impl
+        self._font_impl = font._impl
         if self.interface.data is not None:
             self.change_source(self.interface.data)
 
