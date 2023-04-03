@@ -72,8 +72,7 @@ class Widget:
         pass
 
     def set_hidden(self, hidden):
-        if self.native:
-            self.native.setHidden(hidden)
+        self.native.setHidden(hidden)
 
     def set_font(self, font):
         pass
@@ -92,10 +91,10 @@ class Widget:
         self.interface.window._impl.native.makeFirstResponder(self.native)
 
     def get_tab_index(self):
-        self.interface.factory.not_implementated("Widget.get_tab_index()")
+        self.interface.factory.not_implemented("Widget.get_tab_index()")
 
     def set_tab_index(self, tab_index):
-        self.interface.factory.not_implementated("Widget.set_tab_index()")
+        self.interface.factory.not_implemented("Widget.set_tab_index()")
 
     # INTERFACE
 
