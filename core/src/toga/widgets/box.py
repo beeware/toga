@@ -32,3 +32,7 @@ class Box(Widget):
     def enabled(self, value):
         # Box doesn't have a "disabled" state
         pass
+
+    def focus(self):
+        "No-op; ActivityIndicator cannot accept input focus"
+        pass

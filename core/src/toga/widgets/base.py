@@ -247,5 +247,5 @@ class Widget(Node):
             child.refresh_sublayouts()
 
     def focus(self):
-        """Give this widget to have the input focus."""
+        """Give this widget the input focus."""
         self._impl.focus()

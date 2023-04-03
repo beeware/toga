@@ -21,6 +21,9 @@ class SplitContainer(Widget):
             flex (boolean): Should the content expand when the widget is resized. (optional)
     """
 
+    _MIN_HEIGHT = 100
+    _MIN_WIDTH = 100
+
     HORIZONTAL = False
     VERTICAL = True
 

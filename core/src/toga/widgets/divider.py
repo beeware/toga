@@ -32,6 +32,10 @@ class Divider(Widget):
         # Divider doesn't have a "disabled" state
         pass
 
+    def focus(self):
+        "No-op; Divider cannot accept input focus"
+        pass
+
     @property
     def direction(self):
         """The direction in which the visual separator will be drawn.

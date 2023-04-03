@@ -1,3 +1,5 @@
+from travertino.size import at_least
+
 from toga_cocoa.libs import NSObject, NSTabView, NSTabViewItem, objc_method
 from toga_cocoa.window import CocoaViewport
 
@@ -112,3 +114,7 @@ class OptionContainer(Widget):
 
     def set_current_tab_index(self, current_tab_index):
         self.native.selectTabViewItemAtIndex(current_tab_index)
+
+    def rehint(self):
+        self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
+        self.interface.intrinsic.height = at_least(self.interface._MIN_HEIGHT)

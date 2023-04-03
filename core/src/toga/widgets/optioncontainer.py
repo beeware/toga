@@ -270,6 +270,9 @@ class OptionList:
 
 
 class OptionContainer(Widget):
+    _MIN_WIDTH = 100
+    _MIN_HEIGHT = 100
+
     """The option container widget.
 
     Args:
