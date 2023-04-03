@@ -1,7 +1,5 @@
 import warnings
 
-import manimpango
-
 # Use the Travertino font definitions as-is
 from travertino import constants
 from travertino.constants import ITALIC  # noqa: F401
@@ -21,6 +19,7 @@ from travertino.constants import (  # noqa: F401
 from travertino.fonts import font  # noqa: F401
 from travertino.fonts import Font as BaseFont
 
+import toga.fontconfig as fc
 from toga.platform import get_platform_factory
 
 SYSTEM_DEFAULT_FONT_SIZE = -1
@@ -49,7 +48,7 @@ class Font(BaseFont):
         passed, NORMAL will be used.
 
         When a font file includes multiple font weight/style/etc, each variant
-        must be registerered separately:
+        must be registered separately:
 
             # Register a simple regular font
             Font.register("Font Awesome 5 Free Solid", "resources/Font Awesome 5 Free-Solid-900.otf")
@@ -73,8 +72,11 @@ class Font(BaseFont):
             variant (str): The font variant: Font.NORMAL (default) or a value
                 from Font.FONT_VARIANTS
         """
-        # registers fonts from file path
-        manimpango.register_font(path)
+        # registers fonts from file path for linux
+        config = fc.Config.get_current()
+        config.app_font_add_file(path)
+        config.set_current()
+
         font_key = Font.registered_font_key(
             family, weight=weight, style=style, variant=variant
         )
