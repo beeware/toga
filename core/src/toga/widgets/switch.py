@@ -77,7 +77,7 @@ class Switch(Widget):
 
     @property
     def value(self):
-        """The current state of the button, as a boolean.
+        """The current state of the switch, as a boolean.
 
         Any non-bool value will be converted to a bool.
         """
@@ -88,5 +88,5 @@ class Switch(Widget):
         self._impl.set_value(bool(value))
 
     def toggle(self):
-        """Reverse the current value the switch."""
+        """Reverse the current value of the switch."""
         self.value = not self.value

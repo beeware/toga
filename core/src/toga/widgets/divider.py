@@ -29,7 +29,7 @@ class Divider(Widget):
 
     @Widget.enabled.setter
     def enabled(self, value):
-        # Box doesn't have a "disabled" state
+        # Divider doesn't have a "disabled" state
         pass
 
     @property

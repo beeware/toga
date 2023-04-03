@@ -29,5 +29,5 @@ class Box(Widget):
 
     @Widget.enabled.setter
     def enabled(self, value):
-        # ActivityIndicator doesn't have a "disabled" state
+        # Box doesn't have a "disabled" state
         pass
