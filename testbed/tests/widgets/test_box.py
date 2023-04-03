@@ -6,6 +6,7 @@ from toga.style import Pack
 from .properties import (  # noqa: F401
     test_background_color,
     test_background_color_reset,
+    test_enable_noop,
     test_flex_widget_size,
 )
 

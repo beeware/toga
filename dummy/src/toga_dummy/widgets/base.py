@@ -26,8 +26,11 @@ class Widget(LoggedObject):
     def container(self, container):
         self._set_value("container", container)
 
+    def get_enabled(self):
+        return self._get_value("enabled", True)
+
     def set_enabled(self, value):
-        self._action("set enabled", value=value)
+        self._set_value("enabled", value)
 
     def focus(self):
         self._action("focus")
