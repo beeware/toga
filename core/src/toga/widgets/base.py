@@ -52,7 +52,8 @@ class Widget(Node):
             will be applied to the widget.
         """
         super().__init__(
-            style=style if style else Pack(), applicator=TogaApplicator(self)
+            style=style if style else Pack(),
+            applicator=TogaApplicator(self),
         )
 
         self._id = str(id) if id else str(identifier(self))

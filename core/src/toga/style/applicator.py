@@ -17,8 +17,7 @@ class TogaApplicator:
             self.widget.layout.content_height,
         )
         for child in self.widget.children:
-            if child.applicator:
-                child.applicator.set_bounds()
+            child.applicator.set_bounds()
 
     def set_text_alignment(self, alignment):
         self.widget._impl.set_alignment(alignment)

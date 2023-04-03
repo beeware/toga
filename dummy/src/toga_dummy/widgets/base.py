@@ -40,11 +40,17 @@ class Widget(LoggedObject):
     def set_bounds(self, x, y, width, height):
         self._action("set bounds", x=x, y=y, width=width, height=height)
 
+    def set_alignment(self, alignment):
+        self._action("set alignment", alignment=alignment)
+
     def set_hidden(self, hidden):
         self._action("set hidden", hidden=hidden)
 
     def set_font(self, font):
         self._action("set font", font=font)
+
+    def set_color(self, color):
+        self._action("set color", color=color)
 
     def set_background_color(self, color):
         self._action("set background color", color=color)

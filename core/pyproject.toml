@@ -9,7 +9,7 @@ relative_files = true
 
 # See notes in the root pyproject.toml file.
 source = ["src"]
-source_pkgs = ["toga", "toga_dummy"]
+source_pkgs = ["toga"]
 
 [tool.coverage.paths]
 source = [
