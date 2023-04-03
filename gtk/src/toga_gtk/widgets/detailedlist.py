@@ -32,8 +32,8 @@ class DetailedList(Widget):
         self.scrolled_window = Gtk.ScrolledWindow()
 
         self.scrolled_window.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
-        self.scrolled_window.set_min_content_width(self.interface.MIN_WIDTH)
-        self.scrolled_window.set_min_content_height(self.interface.MIN_HEIGHT)
+        self.scrolled_window.set_min_content_width(self.interface._MIN_WIDTH)
+        self.scrolled_window.set_min_content_height(self.interface._MIN_HEIGHT)
 
         self.scrolled_window.add(self.list_box)
 

@@ -1,4 +1,5 @@
 from rubicon.objc import CGSizeMake
+from travertino.size import at_least
 
 from toga_iOS.libs import (
     NSLayoutAttributeBottom,
@@ -123,6 +124,9 @@ class ScrollContainer(Widget):
     def rehint(self):
         if self.interface.content:
             self.update_content_size()
+
+        self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
+        self.interface.intrinsic.height = at_least(self.interface._MIN_HEIGHT)
 
     def set_on_scroll(self, on_scroll):
         self.interface.factory.not_implemented("ScrollContainer.set_on_scroll()")

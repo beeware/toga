@@ -95,7 +95,7 @@ class TextInput(Widget):
         # print("REHINT TextInput", self,
         #     self._impl.intrinsicContentSize().width, self._impl.intrinsicContentSize().height
         # )
-        self.interface.intrinsic.width = at_least(self.interface.MIN_WIDTH)
+        self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
         self.interface.intrinsic.height = self.native.intrinsicContentSize().height
 
     def set_on_change(self, handler):

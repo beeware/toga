@@ -27,8 +27,6 @@ class NumberInput(Widget):
         **ex:
     """
 
-    MIN_WIDTH = 100
-
     def __init__(
         self,
         id=None,

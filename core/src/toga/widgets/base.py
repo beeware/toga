@@ -38,6 +38,9 @@ class WidgetRegistry(dict):
 
 
 class Widget(Node):
+    _MIN_WIDTH = 100
+    _MIN_HEIGHT = 100
+
     def __init__(
         self,
         id=None,

@@ -1,3 +1,5 @@
+from abc import abstractmethod
+
 from toga.colors import TRANSPARENT
 from toga_iOS.colors import native_color
 from toga_iOS.constraints import Constraints
@@ -31,13 +33,12 @@ class Widget:
     @container.setter
     def container(self, container):
         if self.container:
-            if container:
-                raise RuntimeError("Already have a container")
-            else:
-                # existing container should be removed
-                self.constraints = None
-                self._container = None
-                self.native.removeFromSuperview()
+            assert container is None, "Widget already has a container"
+
+            # Existing container should be removed
+            self.constraints = None
+            self._container = None
+            self.native.removeFromSuperview()
         elif container:
             # setting container
             self._container = container
@@ -66,13 +67,13 @@ class Widget:
         self.native.enabled = value
 
     def focus(self):
-        self.interface.factory.not_implemented("Widget.focus()")
+        self.native.becomeFirstResponder()
 
     def get_tab_index(self):
-        self.interface.factory.not_implementated("Widget.get_tab_index()")
+        self.interface.factory.not_implemented("Widget.get_tab_index()")
 
     def set_tab_index(self, tab_index):
-        self.interface.factory.not_implementated("Widget.set_tab_index()")
+        self.interface.factory.not_implemented("Widget.set_tab_index()")
 
     # APPLICATOR
 
@@ -137,5 +138,6 @@ class Widget:
     def refresh(self):
         self.rehint()
 
+    @abstractmethod
     def rehint(self):
-        pass
+        ...

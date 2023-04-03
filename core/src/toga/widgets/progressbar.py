@@ -6,8 +6,6 @@ from .base import Widget
 class ProgressBar(Widget):
     """"""
 
-    MIN_WIDTH = 100
-
     def __init__(
         self,
         id=None,

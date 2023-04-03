@@ -56,8 +56,8 @@ class ScrollContainer(Widget):
             self.interface.refresh()
 
     def rehint(self):
-        self.interface.intrinsic.width = at_least(self.interface.MIN_WIDTH)
-        self.interface.intrinsic.height = at_least(self.interface.MIN_HEIGHT)
+        self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
+        self.interface.intrinsic.height = at_least(self.interface._MIN_HEIGHT)
 
     def set_on_scroll(self, on_scroll):
         self.interface.factory.not_implemented("ScrollContainer.set_on_scroll()")
