@@ -7,6 +7,10 @@ from pytest import approx, fixture
 import toga
 
 from ..assertions import assert_set_get
+from .properties import (  # noqa: F401
+    test_enabled,
+    test_flex_horizontal_widget_size,
+)
 
 # To ensure less than 1 pixel of error, the slider must be able to distinguish at least
 # 10,000 positions in continuous mode.
