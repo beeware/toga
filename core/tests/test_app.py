@@ -165,7 +165,7 @@ class AppTests(TestCase):
             self.app,
             "loop:call_soon_threadsafe",
             handler=test_handler,
-            args=(self.app,),
+            args=(None,),
         )
 
 

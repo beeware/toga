@@ -106,7 +106,7 @@ def test_add_child_without_app(widget):
     assert child.window is None
 
     # The impl's add_child has been invoked
-    assert_action_performed_with(widget, "add child", child=child)
+    assert_action_performed_with(widget, "add child", child=child._impl)
 
 
 def test_add_child(widget):
@@ -143,7 +143,7 @@ def test_add_child(widget):
     assert child.window == window
 
     # The impl's add_child has been invoked
-    assert_action_performed_with(widget, "add child", child=child)
+    assert_action_performed_with(widget, "add child", child=child._impl)
 
     # The window layout has been refreshed
     window.content.refresh.assert_called_once_with()
@@ -200,9 +200,9 @@ def test_add_multiple_children(widget):
     assert child3.window == window
 
     # The impl's add_child has been invoked 3 time
-    assert_action_performed_with(widget, "add child", child=child1)
-    assert_action_performed_with(widget, "add child", child=child2)
-    assert_action_performed_with(widget, "add child", child=child3)
+    assert_action_performed_with(widget, "add child", child=child1._impl)
+    assert_action_performed_with(widget, "add child", child=child2._impl)
+    assert_action_performed_with(widget, "add child", child=child3._impl)
 
     # The window layout has been refreshed
     window.content.refresh.assert_called_once_with()
@@ -236,7 +236,7 @@ def test_reparent_child(widget):
     assert other.children == []
 
     # The impl's add_child has been invoked
-    assert_action_performed_with(widget, "add child", child=child)
+    assert_action_performed_with(widget, "add child", child=child._impl)
 
 
 def test_reparent_child_to_self(widget):
@@ -306,7 +306,7 @@ def test_insert_child_without_app(widget):
     assert child.window is None
 
     # The impl's insert_child has been invoked
-    assert_action_performed_with(widget, "insert child", child=child)
+    assert_action_performed_with(widget, "insert child", child=child._impl)
 
 
 def test_insert_child(widget):
@@ -343,7 +343,7 @@ def test_insert_child(widget):
     assert child.window == window
 
     # The impl's insert_child has been invoked
-    assert_action_performed_with(widget, "insert child", child=child)
+    assert_action_performed_with(widget, "insert child", child=child._impl)
 
     # The window layout has been refreshed
     window.content.refresh.assert_called_once_with()
@@ -402,9 +402,9 @@ def test_insert_position(widget):
     assert child3.window == window
 
     # The impl's insert_child has been invoked 3 time
-    assert_action_performed_with(widget, "insert child", child=child1)
-    assert_action_performed_with(widget, "insert child", child=child2)
-    assert_action_performed_with(widget, "insert child", child=child3)
+    assert_action_performed_with(widget, "insert child", child=child1._impl)
+    assert_action_performed_with(widget, "insert child", child=child2._impl)
+    assert_action_performed_with(widget, "insert child", child=child3._impl)
 
     # The window layout has been refreshed on each insertion
     assert window.content.refresh.mock_calls == [call()] * 3
@@ -452,7 +452,7 @@ def test_insert_bad_position(widget):
     assert child.window == window
 
     # The impl's insert_child has been invoked
-    assert_action_performed_with(widget, "insert child", child=child)
+    assert_action_performed_with(widget, "insert child", child=child._impl)
 
     # The window layout has been refreshed
     window.content.refresh.assert_called_once_with()
@@ -484,7 +484,7 @@ def test_insert_reparent_child(widget):
     assert other.children == []
 
     # The impl's insert_child has been invoked
-    assert_action_performed_with(widget, "insert child", child=child)
+    assert_action_performed_with(widget, "insert child", child=child._impl)
 
 
 def test_insert_reparent_child_to_self(widget):
@@ -534,7 +534,7 @@ def test_remove_child_without_app(widget):
     assert child.window is None
 
     # The impl's remove_child has been invoked
-    assert_action_performed_with(widget, "remove child", child=child)
+    assert_action_performed_with(widget, "remove child", child=child._impl)
 
 
 def test_remove_child(widget):
@@ -565,7 +565,7 @@ def test_remove_child(widget):
     assert child.window is None
 
     # The impl's remove_child has been invoked
-    assert_action_performed_with(widget, "remove child", child=child)
+    assert_action_performed_with(widget, "remove child", child=child._impl)
 
     # The window layout has been refreshed
     window.content.refresh.assert_called_once_with()
@@ -610,8 +610,8 @@ def test_remove_multiple_children(widget):
     assert child3.window is None
 
     # The impl's remove_child has been invoked twice
-    assert_action_performed_with(widget, "remove child", child=child1)
-    assert_action_performed_with(widget, "remove child", child=child3)
+    assert_action_performed_with(widget, "remove child", child=child1._impl)
+    assert_action_performed_with(widget, "remove child", child=child3._impl)
 
     # The window layout has been refreshed once
     window.content.refresh.assert_called_once_with()

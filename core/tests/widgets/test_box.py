@@ -26,8 +26,8 @@ def test_create_box_with_children():
     assert box._impl.interface == box
 
     assert_action_performed(box, "create Box")
-    assert_action_performed_with(box, "add child", child=child1)
-    assert_action_performed_with(box, "add child", child=child2)
+    assert_action_performed_with(box, "add child", child=child1._impl)
+    assert_action_performed_with(box, "add child", child=child2._impl)
 
     # But the box will have children.
     assert box.children == [child1, child2]
