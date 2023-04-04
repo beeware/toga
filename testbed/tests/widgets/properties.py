@@ -55,15 +55,17 @@ async def test_enable_noop(widget, probe):
 async def test_focus(widget, probe):
     "The widget can be given focus"
     # Add a separate widget that can take take focus
-    other = toga.Button("Other")
+    other = toga.TextInput()
     widget.parent.add(other)
     other_probe = get_probe(other)
 
     other.focus()
+    await probe.redraw()
     assert not probe.has_focus()
     assert other_probe.has_focus()
 
     widget.focus()
+    await probe.redraw()
     assert probe.has_focus()
     assert not other_probe.has_focus()
 
@@ -71,16 +73,18 @@ async def test_focus(widget, probe):
 async def test_focus_noop(widget, probe):
     "The widget cannot be given focus"
     # Add a separate widget that can take take focus
-    other = toga.Button("Other")
+    other = toga.TextInput()
     widget.parent.add(other)
     other_probe = get_probe(other)
 
     other.focus()
+    await probe.redraw()
     assert not probe.has_focus()
     assert other_probe.has_focus()
 
     # Widget has *not* taken focus
     widget.focus()
+    await probe.redraw()
     assert not probe.has_focus()
     assert other_probe.has_focus()
 

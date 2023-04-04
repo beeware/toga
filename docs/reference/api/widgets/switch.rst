@@ -42,6 +42,9 @@ Notes
 * On macOS, the text color of the label cannot be set directly; any `color` style
   directive will be ignored.
 
+* On iOS, a Switch cannot be given focus. Any call to ``switch.focus()`` will
+  be ignored.
+
 Reference
 ---------
 

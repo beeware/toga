@@ -17,8 +17,9 @@ class Widget:
         self.create()
         self.interface.style.reapply()
 
+    @abstractmethod
     def create(self):
-        pass
+        ...
 
     def set_app(self, app):
         pass
@@ -36,15 +37,13 @@ class Widget:
             assert container is None, "Widget already has a container"
 
             # Existing container should be removed
-            self.constraints = None
+            self.constraints.container = None
             self._container = None
             self.native.removeFromSuperview()
         elif container:
             # setting container
             self._container = container
             self._container.native.addSubview(self.native)
-            if not self.constraints:
-                self.add_constraints()
             self.constraints.container = container
 
         for child in self.interface.children:
@@ -78,6 +77,7 @@ class Widget:
     # APPLICATOR
 
     def set_bounds(self, x, y, width, height):
+        # print("SET BOUNDS", self, x, y, width, height, self.constraints)
         offset_y = 0
         if self.container:
             offset_y = self.container.viewport.top_offset
@@ -89,10 +89,7 @@ class Widget:
         pass
 
     def set_hidden(self, hidden):
-        if self.container:
-            for view in self.container._impl.subviews:
-                if view._impl:
-                    view.setHidden(hidden)
+        self.native.setHidden(hidden)
 
     def set_font(self, font):
         # By default, font can't be changed
@@ -112,8 +109,10 @@ class Widget:
             self.native.backgroundColor = native_color(value)
         else:
             try:
-                self.native.backgroundColor = UIColor.systemBackgroundColor()  # iOS 13+
-            except AttributeError:
+                # systemBackgroundColor() was introduced in iOS 13
+                # We don't test on iOS 12, so mark the other branch as nocover
+                self.native.backgroundColor = UIColor.systemBackgroundColor()
+            except AttributeError:  # pragma: no cover
                 self.native.backgroundColor = UIColor.whiteColor
 
     # INTERFACE

@@ -14,11 +14,16 @@ from .properties import (  # noqa: F401
     test_color_reset,
     test_enabled,
     test_flex_horizontal_widget_size,
-    test_focus,
     test_font,
     test_font_attrs,
     test_text_width_change,
 )
+
+# Buttons can't be given focus on iOS
+if toga.platform.current_platform in {"iOS"}:
+    from .properties import test_focus_noop  # noqa: F401
+else:
+    from .properties import test_focus  # noqa: F401
 
 
 @fixture

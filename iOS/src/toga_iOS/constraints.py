@@ -25,6 +25,16 @@ class Constraints:
         self.left_constraint = None
         self.top_constraint = None
 
+    def __del__(self):
+        if self.width_constraint:
+            self.width_constraint.release()
+        if self.height_constraint:
+            self.height_constraint.release()
+        if self.left_constraint:
+            self.left_constraint.release()
+        if self.top_constraint:
+            self.top_constraint.release()
+
     @property
     def container(self):
         return self._container
@@ -32,7 +42,7 @@ class Constraints:
     @container.setter
     def container(self, value):
         if value is None and self.container:
-            # print("Remove constraints")
+            # print(f"Remove constraints for {self.widget} in {self.container}")
             self.container.native.removeConstraint(self.width_constraint)
             self.container.native.removeConstraint(self.height_constraint)
             self.container.native.removeConstraint(self.left_constraint)
@@ -40,7 +50,7 @@ class Constraints:
             self._container = value
         else:
             self._container = value
-            # print("Add constraints for", self.widget, "in", self.container, self.widget.interface.layout)
+            # print(f"Add constraints for {self.widget} in {self.container} {self.widget.interface.layout})
             self.left_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(  # noqa: E501
                 self.widget.native,
                 NSLayoutAttributeLeft,
@@ -49,7 +59,7 @@ class Constraints:
                 NSLayoutAttributeLeft,
                 1.0,
                 10,  # Use a dummy, non-zero value for now
-            )
+            ).retain()
             self.container.native.addConstraint(self.left_constraint)
 
             self.top_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(  # noqa: E501
@@ -60,7 +70,7 @@ class Constraints:
                 NSLayoutAttributeTop,
                 1.0,
                 5,  # Use a dummy, non-zero value for now
-            )
+            ).retain()
             self.container.native.addConstraint(self.top_constraint)
 
             self.width_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(  # noqa: E501
@@ -71,7 +81,7 @@ class Constraints:
                 NSLayoutAttributeLeft,
                 1.0,
                 50,  # Use a dummy, non-zero value for now
-            )
+            ).retain()
             self.container.native.addConstraint(self.width_constraint)
 
             self.height_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(  # noqa: E501
@@ -82,12 +92,12 @@ class Constraints:
                 NSLayoutAttributeTop,
                 1.0,
                 30,  # Use a dummy, non-zero value for now
-            )
+            ).retain()
             self.container.native.addConstraint(self.height_constraint)
 
     def update(self, x, y, width, height):
         if self.container:
-            # print(f"UPDATE CONSTRAINTS {self.widget} {width}x{height}@{x},{y}")
+            # print(f"UPDATE CONSTRAINTS {self.widget} in {self.container} {width}x{height}@{x},{y}")
             self.left_constraint.constant = x
             self.top_constraint.constant = y
 
