@@ -31,6 +31,9 @@ class Canvas(Widget):
         )
         self.native.setDrawHandler(DrawHandler(self.interface))
 
+    def set_hidden(self, hidden):
+        self.interface.factory.not_implemented("Canvas.set_hidden()")
+
     def redraw(self):
         pass
 

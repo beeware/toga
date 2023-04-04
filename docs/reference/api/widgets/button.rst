@@ -39,8 +39,8 @@ Notes
   directive will be ignored. The text color is automatically selected by
   the platform to contrast with the background color of the button.
 
-* On iOS, a Button cannot be given focus. Any call to ``button.focus()`` will be
-  ignored.
+* On mobile platforms, a Button cannot be given focus. Any call to
+  ``button.focus()`` will be ignored.
 
 Reference
 ---------
