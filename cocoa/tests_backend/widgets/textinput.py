@@ -6,6 +6,7 @@ from .base import SimpleProbe
 class TextInputProbe(SimpleProbe):
     native_class = NSTextField
 
+    @property
     def has_focus(self):
         # When the NSTextField gets focus, a field editor is created, and that editor
         # has the original widget as the delegate. The first responder is the Field Editor.

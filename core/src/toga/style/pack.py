@@ -42,7 +42,7 @@ PACK = "pack"
 ######################################################################
 
 DISPLAY_CHOICES = Choices(PACK, NONE)
-VISIBILITY_CHOICES = Choices(VISIBLE, HIDDEN, NONE)
+VISIBILITY_CHOICES = Choices(VISIBLE, HIDDEN)
 DIRECTION_CHOICES = Choices(ROW, COLUMN)
 ALIGNMENT_CHOICES = Choices(LEFT, RIGHT, TOP, BOTTOM, CENTER, default=True)
 

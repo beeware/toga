@@ -96,5 +96,10 @@ class SimpleProbe:
     def press(self):
         self.native.performClick(None)
 
+    @property
+    def is_hidden(self):
+        return self.native.isHidden()
+
+    @property
     def has_focus(self):
         return self.native.window.firstResponder == self.native

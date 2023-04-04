@@ -2,7 +2,7 @@ import asyncio
 
 from toga.colors import TRANSPARENT
 from toga.fonts import CURSIVE, FANTASY, MONOSPACE, SANS_SERIF, SERIF, SYSTEM
-from toga_iOS.libs import NSRunLoop, UIColor
+from toga_iOS.libs import NSRunLoop, UIApplication, UIColor
 
 from .properties import toga_color
 
@@ -101,7 +101,16 @@ class SimpleProbe:
 
         # size and position is as expected.
         assert (self.native.frame.size.width, self.native.frame.size.height) == size
-        assert (self.native.frame.origin.x, self.native.frame.origin.y - 98) == position
+
+        # Allow for the status bar and navigation bar in vertical position
+        statusbar_frame = UIApplication.sharedApplication.statusBarFrame
+        navbar = self.widget.window._impl.controller.navigationController
+        navbar_frame = navbar.navigationBar.frame
+        offset = statusbar_frame.size.height + navbar_frame.size.height
+        assert (
+            self.native.frame.origin.x,
+            self.native.frame.origin.y - offset,
+        ) == position
 
     def assert_width(self, min_width, max_width):
         assert (
@@ -123,5 +132,10 @@ class SimpleProbe:
     def press(self):
         self.native.sendActionsForControlEvents(UIControlEventTouchDown)
 
+    @property
+    def is_hidden(self):
+        return self.native.isHidden()
+
+    @property
     def has_focus(self):
         return self.native.isFirstResponder

@@ -61,13 +61,13 @@ async def test_focus(widget, probe):
 
     other.focus()
     await probe.redraw()
-    assert not probe.has_focus()
-    assert other_probe.has_focus()
+    assert not probe.has_focus
+    assert other_probe.has_focus
 
     widget.focus()
     await probe.redraw()
-    assert probe.has_focus()
-    assert not other_probe.has_focus()
+    assert probe.has_focus
+    assert not other_probe.has_focus
 
 
 async def test_focus_noop(widget, probe):
@@ -79,14 +79,14 @@ async def test_focus_noop(widget, probe):
 
     other.focus()
     await probe.redraw()
-    assert not probe.has_focus()
-    assert other_probe.has_focus()
+    assert not probe.has_focus
+    assert other_probe.has_focus
 
     # Widget has *not* taken focus
     widget.focus()
     await probe.redraw()
-    assert not probe.has_focus()
-    assert other_probe.has_focus()
+    assert not probe.has_focus
+    assert other_probe.has_focus
 
 
 async def test_text(widget, probe):

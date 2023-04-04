@@ -24,6 +24,8 @@ class TogaApplicator:
 
     def set_hidden(self, hidden):
         self.widget._impl.set_hidden(hidden)
+        for child in self.widget.children:
+            child.applicator.set_hidden(hidden)
 
     def set_font(self, font):
         # Changing the font of a widget can make the widget change size,
