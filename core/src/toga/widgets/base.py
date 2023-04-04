@@ -76,7 +76,13 @@ class Widget(Node):
 
     @property
     def tab_index(self):
-        """The position of the widget in the focus chain for the window."""
+        """The position of the widget in the focus chain for the window.
+
+        .. note::
+
+            This is a beta feature. The ``tab_index`` API may change in
+            future.
+        """
         return self._impl.get_tab_index()
 
     @tab_index.setter
