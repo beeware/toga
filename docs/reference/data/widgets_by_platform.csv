@@ -22,7 +22,7 @@ TextInput,General Widget,:class:`~toga.widgets.textinput.TextInput`,Text Input f
 TimePicker,General Widget,:class:`~toga.widgets.timepicker.TimePicker`,An input for times,,,|b|,,|b|,
 Tree,General Widget,:class:`~toga.widgets.tree.Tree`,Tree of data,|b|,|b|,|b|,,,
 WebView,General Widget,:class:`~toga.widgets.webview.WebView`,A panel for displaying HTML,|b|,|b|,|b|,|b|,|b|,
-Widget,General Widget,:class:`~toga.widgets.base.Widget`,The base widget,|b|,|b|,|b|,|b|,|b|,|b|
+Widget,General Widget,:class:`~toga.widgets.base.Widget`,The base widget,|y|,|y|,|y|,|y|,|y|,|b|
 Box,Layout Widget,:class:`~toga.widgets.box.Box`,Container for components,|y|,|y|,|y|,|y|,|y|,|b|
 ScrollContainer,Layout Widget,:class:`~toga.widgets.scrollcontainer.ScrollContainer`,Scrollable Container,|b|,|b|,|b|,|b|,|b|,
 SplitContainer,Layout Widget,:class:`~toga.widgets.splitcontainer.SplitContainer`,Split Container,|b|,|b|,|b|,,,
