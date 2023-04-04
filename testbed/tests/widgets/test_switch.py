@@ -15,8 +15,8 @@ from .properties import (  # noqa: F401
     test_text_width_change,
 )
 
-# Switches can't be given focus on mobile
-if toga.platform.current_platform in {"android", "iOS"}:
+# Switches can't be given focus on mobile, or on GTK
+if toga.platform.current_platform in {"android", "iOS", "linux"}:
     from .properties import test_focus_noop  # noqa: F401
 else:
     from .properties import test_focus  # noqa: F401

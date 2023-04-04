@@ -24,6 +24,10 @@ class SimpleProbe:
         else:
             raise ValueError(f"cannot find {self.native} in {container_native}")
 
+    def assert_not_contained(self):
+        assert self.widget._impl.container is None
+        assert self.native.get_parent() is None
+
     def assert_alignment(self, expected):
         assert self.alignment == expected
 
@@ -52,6 +56,24 @@ class SimpleProbe:
     def height(self):
         return self.native.get_allocation().height
 
+    def assert_layout(self, size, position):
+        # Widget is contained and in a window.
+        assert self.widget._impl.container is not None
+        assert self.native.get_parent() is not None
+
+        # Measurements are relative to the container as an origin.
+        origin = self.widget._impl.container.get_allocation()
+
+        # size and position is as expected.
+        assert (
+            self.native.get_allocation().width,
+            self.native.get_allocation().height,
+        ) == size
+        assert (
+            self.native.get_allocation().x - origin.x,
+            self.native.get_allocation().y - origin.y,
+        ) == position
+
     def assert_width(self, min_width, max_width):
         assert (
             min_width <= self.width <= max_width
@@ -76,3 +98,11 @@ class SimpleProbe:
     def font(self):
         sc = self.native.get_style_context()
         return toga_font(sc.get_property("font", sc.get_state()))
+
+    @property
+    def is_hidden(self):
+        return not self.native.get_visible()
+
+    @property
+    def has_focus(self):
+        return self.native.has_focus()
