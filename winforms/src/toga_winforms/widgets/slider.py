@@ -30,7 +30,6 @@ class Slider(Widget):
         self.native.Scroll += self.winforms_scroll
         self.native.MouseDown += self.winforms_mouse_down
         self.native.MouseUp += self.winforms_mouse_up
-        self.set_enabled(self.interface._enabled)
         self.native.Minimum = 0
         self.set_tick_count(self.interface.tick_count)
 

@@ -23,6 +23,9 @@ class Switch(TextViewWidget):
         self.native.setOnCheckedChangeListener(OnCheckedChangeListener(self))
         self.cache_textview_defaults()
 
+    def get_text(self):
+        return str(self.native.getText())
+
     def set_text(self, text):
         # When changing the text, Android needs a `setSingleLine(False)` call in order
         # to be willing to recompute the width of the text. Without the call, it will
@@ -30,13 +33,13 @@ class Switch(TextViewWidget):
         # in unnecessary creation of new lines. In other words, `setSingleLine(False)`
         # is required to get the text to truly **use** one single line!
         self.native.setSingleLine(False)
-        self.native.setText(str(self.interface.text))
-
-    def set_value(self, value):
-        self.native.setChecked(bool(value))
+        self.native.setText(str(text))
 
     def get_value(self):
         return self.native.isChecked()
+
+    def set_value(self, value):
+        self.native.setChecked(bool(value))
 
     def rehint(self):
         if not self.native.getLayoutParams():

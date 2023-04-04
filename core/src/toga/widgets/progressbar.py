@@ -40,6 +40,19 @@ class ProgressBar(Widget):
             self.start()
 
     @property
+    def enabled(self):
+        """Is the widget currently enabled? i.e., can the user interact with the
+        widget?
+
+        ProgressBar widgets cannot be disabled; this property will always
+        return True; any attempt to modify it will be ignored."""
+        return True
+
+    @enabled.setter
+    def enabled(self, value):
+        pass
+
+    @property
     def is_running(self):
         """Determine if the activity indicator is currently running.
 

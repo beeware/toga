@@ -28,6 +28,20 @@ class Divider(Widget):
         self.direction = direction
 
     @property
+    def enabled(self):
+        """Is the widget currently enabled? i.e., can the user interact with the
+        widget?
+
+        Divider widgets cannot be disabled; this property will always
+        return True; any attempt to modify it will be ignored."""
+        return True
+
+    @enabled.setter
+    def enabled(self, value):
+        # ActivityIndicator doesn't have a "disabled" state
+        pass
+
+    @property
     def direction(self):
         """The direction in which the visual separator will be drawn.
 

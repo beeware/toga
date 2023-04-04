@@ -16,7 +16,7 @@ PasswordInput,General Widget,:class:`~toga.widgets.passwordinput.PasswordInput`,
 ProgressBar,General Widget,:class:`~toga.widgets.progressbar.ProgressBar`,Progress Bar,|y|,|y|,|y|,|y|,|y|,
 Selection,General Widget,:class:`~toga.widgets.selection.Selection`,Selection,|b|,|b|,|b|,|b|,|b|,
 Slider,General Widget,:class:`~toga.widgets.slider.Slider`,Slider,|b|,|b|,|b|,|b|,|b|,
-Switch,General Widget,:class:`~toga.widgets.switch.Switch`,Switch,|b|,|b|,|b|,|b|,|b|,
+Switch,General Widget,:class:`~toga.widgets.switch.Switch`,Switch,|y|,|y|,|y|,|y|,|y|,
 Table,General Widget,:class:`~toga.widgets.table.Table`,Table of data,|b|,|b|,|b|,,|b|,
 TextInput,General Widget,:class:`~toga.widgets.textinput.TextInput`,Text Input field,|b|,|b|,|b|,|b|,|b|,|b|
 TimePicker,General Widget,:class:`~toga.widgets.timepicker.TimePicker`,An input for times,,,|b|,,|b|,

@@ -23,6 +23,10 @@ class ProgressBar(Widget):
 
         self._is_running = False
 
+    def get_enabled(self):
+        # An activity indicator is always enabled
+        return True
+
     def is_running(self):
         return self._is_running
 
