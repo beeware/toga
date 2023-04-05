@@ -23,10 +23,9 @@ class TogaOnSeekBarChangeListener(SeekBar__OnSeekBarChangeListener):
         self.impl.interface.on_release(None)
 
 
-TICK_DRAWABLE = None
-
-
 class Slider(Widget, toga.widgets.slider.IntSliderImpl):
+    TICK_DRAWABLE = None
+
     def create(self):
         self.native = SeekBar(self._native_activity)
         self.native.setOnSeekBarChangeListener(TogaOnSeekBarChangeListener(self))
@@ -45,18 +44,17 @@ class Slider(Widget, toga.widgets.slider.IntSliderImpl):
 
     def set_ticks_visible(self, visible):
         if visible:
-            if TICK_DRAWABLE is None:
+            if Slider.TICK_DRAWABLE is None:
                 self._load_tick_drawable()
-            self.native.setTickMark(TICK_DRAWABLE)
+            self.native.setTickMark(Slider.TICK_DRAWABLE)
         else:
             self.native.setTickMark(None)
 
     def _load_tick_drawable(self):
-        global TICK_DRAWABLE
         attrs = self._native_activity.obtainStyledAttributes(
             R__style.Widget_Material_SeekBar_Discrete, [R__attr.tickMark]
         )
-        TICK_DRAWABLE = attrs.getDrawable(0)
+        Slider.TICK_DRAWABLE = attrs.getDrawable(0)
         attrs.recycle()
 
     def rehint(self):
