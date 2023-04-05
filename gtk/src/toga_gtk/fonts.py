@@ -6,8 +6,9 @@ from toga.constants import (
     SYSTEM,
     SYSTEM_DEFAULT_FONT_SIZE,
 )
+from toga.fonts import _REGISTERED_FONT_CACHE
 
-from .libs import Pango
+from .libs import FontConfig, Pango
 
 _FONT_CACHE = {}
 
@@ -24,10 +25,27 @@ class Font:
         try:
             font = _FONT_CACHE[self.interface]
         except KeyError:
+            font_key = self.interface.registered_font_key(
+                self.interface.family,
+                weight=self.interface.weight,
+                style=self.interface.style,
+                variant=self.interface.variant,
+            )
+            try:
+                font_path = str(
+                    self.interface.factory.paths.app / _REGISTERED_FONT_CACHE[font_key]
+                )
+                try:
+                    FontConfig.add_font_file(font_path)
+                except ValueError as e:
+                    print(f"Registered font {font_key} could not be loaded: {e}")
+            except KeyError:
+                # Not a pre-registered font
+                pass
+
             # Initialize font with properties 'None NORMAL NORMAL NORMAL 0'
             font = Pango.FontDescription()
 
-            # Set font family
             family = self.interface.family
             if family != SYSTEM:
                 family = f"{family}, {SYSTEM}"  # Default to system
