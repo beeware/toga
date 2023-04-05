@@ -118,6 +118,4 @@ class ProgressBar(Widget):
         elif float(value) > 0.0:
             self._impl.set_max(float(value))
         else:
-            raise ValueError(
-                "ProgressBar max value must be None, or a numerical value > 0"
-            )
+            raise ValueError("max value must be None, or a numerical value > 0")

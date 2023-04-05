@@ -1,3 +1,5 @@
+import sys
+
 import pytest
 
 import toga
@@ -91,19 +93,45 @@ def test_set_max(progressbar, value, actual, determinate):
 
 
 @pytest.mark.parametrize(
-    "value, error",
+    "value, error, msg",
     [
-        ("not a number", ValueError),  # String, but not a float
-        (object(), TypeError),  # Non-coercible to float
-        (-42, ValueError),  # Negative integer
-        (-1.234, ValueError),  # Negative float
-        (0, ValueError),  # Non-positive integer
-        (0.0, ValueError),  # Non-positive float
+        (
+            "not a number",
+            ValueError,
+            r"could not convert string to float",
+        ),  # String, but not a float
+        (
+            object(),
+            TypeError,
+            r"must be a string or a number"
+            if sys.version_info < (3, 10)
+            else r"must be a string or a real number",
+        ),  # Non-coercible to float
+        (
+            -42,
+            ValueError,
+            r"max value must be None, or a numerical value > 0",
+        ),  # Negative integer
+        (
+            -1.234,
+            ValueError,
+            r"max value must be None, or a numerical value > 0",
+        ),  # Negative float
+        (
+            0,
+            ValueError,
+            r"max value must be None, or a numerical value > 0",
+        ),  # Non-positive integer
+        (
+            0.0,
+            ValueError,
+            r"max value must be None, or a numerical value > 0",
+        ),  # Non-positive float
     ],
 )
-def test_invalid_max(progressbar, value, error):
+def test_invalid_max(progressbar, value, error, msg):
     "A max value that isn't positive raises an error"
-    with pytest.raises(error):
+    with pytest.raises(error, match=msg):
         progressbar.max = value
 
 
