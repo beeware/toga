@@ -38,7 +38,6 @@ class Divider(Widget):
 
     @enabled.setter
     def enabled(self, value):
-        # ActivityIndicator doesn't have a "disabled" state
         pass
 
     @property

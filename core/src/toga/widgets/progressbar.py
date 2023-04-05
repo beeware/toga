@@ -16,15 +16,14 @@ class ProgressBar(Widget):
 
         Inherits from :class:`~toga.widgets.base.Widget`.
 
-        :param text: Text of the label.
         :param id: The ID for the widget.
         :param style: A style object. If no style is provided, a default style
             will be applied to the widget.
-        :param max: The value that represents 100% completion on the task. Must
+        :param max: The value that represents completion of the task. Must
             be > 0.0; defaults to 1.0. A value of ``None`` indicates that the task
             length is indeterminate.
         :param value: The current progress against the maximum value. Must be
-            > 0.0, and less than ``max``; any value outside this range will be
+            between 0.0 and ``max``; any value outside this range will be
             clipped. Defaults to 0.0.
         :param running: Describes whether the indicator is running at the time
             it is created. Default is False.
@@ -54,7 +53,7 @@ class ProgressBar(Widget):
 
     @property
     def is_running(self):
-        """Determine if the activity indicator is currently running.
+        """Describe if the activity indicator is currently running.
 
         Use ``start()`` and ``stop()`` to change the running state.
 
@@ -64,7 +63,7 @@ class ProgressBar(Widget):
 
     @property
     def is_determinate(self):
-        """Describe whether the progress bar has a known or indeterminate maprogress.
+        """Describe whether the progress bar has a known or indeterminate maximum.
 
         True if the progress bar has determinate length; False otherwise.
         """
@@ -73,7 +72,7 @@ class ProgressBar(Widget):
     def start(self):
         """Start the progress bar.
 
-        If the activity indicator is already started, this is a no-op.
+        If the progress bar is already started, this is a no-op.
         """
         if not self.is_running:
             self._impl.start()
@@ -81,7 +80,7 @@ class ProgressBar(Widget):
     def stop(self):
         """Stop the progress bar.
 
-        If the activity indicator is already stopped, this is a no-op.
+        If the progress bar is already stopped, this is a no-op.
         """
         if self.is_running:
             self._impl.stop()
@@ -106,7 +105,7 @@ class ProgressBar(Widget):
 
     @property
     def max(self):
-        """The value indicating 100% completion of the task being monitored.
+        """The value indicating completion of the task being monitored.
 
         Must be a number > 0, or ``None`` for a task of indeterminate length.
         """

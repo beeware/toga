@@ -62,9 +62,6 @@ Notes
   will try to provide a visual distinction between running and not-running
   determinate progress bars, but this cannot be guaranteed.
 
-* iOS does not support indeterminate progress bars. On iOS, a running
-  indeterminate progress bar will display as a constant 25% progress.
-
 Reference
 ---------
 

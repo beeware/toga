@@ -15,10 +15,10 @@ from .base import Widget
 #
 # * Android ProgressBar has an "indeterminate" mode, but that's really a proxy
 #   for "am I animating", not "am I an indeterminate progress bar". The
-#   setDeterminate() API essentially needs to be used as "start/stop
+#   setIndeterminate() API essentially needs to be used as "start/stop
 #   indeterminate animation". This needs to be invoked on start/stop, but also
 #   when we move into an indeterminate state when already running.
-#   setDeterminate(False) can be safely called on non-determinate progress bars.
+#   setIndeterminate(False) can be safely called on non-determinate progress bars.
 #
 # * There's no native way to identify a stopped indeterminate progress bar. We
 #   use a max value of 0 as a marker for an indeterminate progress bar. This
