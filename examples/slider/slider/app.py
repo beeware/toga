@@ -34,6 +34,8 @@ class SliderApp(toga.App):
 
         self.scared_label = toga.Label("Try to catch me!", style=label_style)
         self.scared_slider = toga.Slider(
+            range=(100, 300.5),
+            value=123.4,
             on_press=self.scared_on_press,
             on_release=self.scared_on_release,
             style=slider_style,
