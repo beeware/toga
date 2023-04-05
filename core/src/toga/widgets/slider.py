@@ -304,6 +304,8 @@ class IntSliderImpl(SliderImpl):
             self.set_int_max(tick_count - 1)
         self.set_ticks_visible(self.discrete)
 
+    # Instead of calling the event handler directly, implementations should call this
+    # method.
     def on_change(self):
         span = self.max - self.min
         self.value = self.min + (self.get_int_value() / self.get_int_max() * span)

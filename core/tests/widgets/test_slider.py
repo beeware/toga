@@ -131,7 +131,6 @@ def test_tick_value_without_tick_count(slider, on_change):
 
 def test_set_tick_value_to_none(slider, on_change):
     slider.tick_count = None
-    slider.tick_value = None
     assert_value(slider, on_change, INITIAL_VALUE, tick_value=None)
 
 
@@ -143,6 +142,7 @@ def test_set_tick_value_to_none_with_tick_count(slider, on_change):
 
 
 def test_increasing_by_value(slider, on_change):
+    """Slider.value supports += syntax."""
     delta = 20
     tick_delta = 2
     slider.value += delta
@@ -156,6 +156,7 @@ def test_increasing_by_value(slider, on_change):
 
 
 def test_decreasing_by_value(slider, on_change):
+    """Slider.value supports -= syntax."""
     delta = 20
     tick_delta = 2
     slider.value -= delta
@@ -169,6 +170,7 @@ def test_decreasing_by_value(slider, on_change):
 
 
 def test_increasing_by_ticks(slider, on_change):
+    """Slider.tick_value supports += syntax"""
     delta = 20
     tick_delta = 2
     slider.tick_value += tick_delta
@@ -182,6 +184,7 @@ def test_increasing_by_ticks(slider, on_change):
 
 
 def test_decreasing_by_ticks(slider, on_change):
+    """Slider.tick_value supports -= syntax"""
     delta = 20
     tick_delta = 2
     slider.tick_value -= tick_delta
@@ -206,6 +209,7 @@ def test_decreasing_by_ticks(slider, on_change):
     ],
 )
 def test_range(slider, on_change, min, max, value):
+    """Setting the range clamps the existing value."""
     slider.tick_count = None
     slider.range = (min, max)
     assert isinstance(slider.range[0], float)
@@ -258,6 +262,7 @@ TICK_PARAM_VALUES = [
 
 @pytest.mark.parametrize(TICK_PARAM_NAMES, TICK_PARAM_VALUES)
 def test_set_tick_count(slider, on_change, tick_count, tick_step, tick_value, value):
+    """Setting the tick count rounds the existing value to the nearest tick."""
     slider.range = TICK_RANGE
     slider.tick_count = tick_count
     assert slider.tick_count == tick_count
@@ -282,6 +287,7 @@ def test_set_tick_count(slider, on_change, tick_count, tick_step, tick_value, va
 def test_set_value_with_tick_count(
     slider, on_change, tick_count, tick_step, tick_value, value
 ):
+    """Setting the value rounds it to the nearest tick."""
     slider.range = TICK_RANGE
     slider.tick_count = tick_count
     slider.value = TICK_RANGE[1]
@@ -341,31 +347,31 @@ def assert_value(slider, on_change, value, *, tick_value=None, change_count=0):
     assert on_change.call_count == change_count
 
 
-def test_int_impl():
-    class Impl(toga.widgets.slider.IntSliderImpl):
-        def __init__(self):
-            super().__init__()
-            self.interface = Mock()
+class DummyIntImpl(toga.widgets.slider.IntSliderImpl):
+    def __init__(self):
+        super().__init__()
+        self.interface = Mock()
 
-        def get_int_value(self):
-            return self.int_value
+    def get_int_value(self):
+        return self.int_value
 
-        def set_int_value(self, value):
-            self.int_value = value
+    def set_int_value(self, value):
+        self.int_value = value
 
-        def get_int_max(self):
-            return self.int_max
+    def get_int_max(self):
+        return self.int_max
 
-        def set_int_max(self, max):
-            self.int_max = max
+    def set_int_max(self, max):
+        self.int_max = max
 
-        def set_ticks_visible(self, visible):
-            self.ticks_visible = visible
+    def set_ticks_visible(self, visible):
+        self.ticks_visible = visible
 
-    impl = Impl()
+
+def test_int_impl_continuous():
+    impl = DummyIntImpl()
     assert impl.get_value() == 0
 
-    # Continuous mode
     impl.set_range((0, 1))
     assert impl.get_range() == (0, 1)
     impl.set_tick_count(None)
@@ -373,6 +379,7 @@ def test_int_impl():
     assert impl.int_max == 10000
     assert impl.ticks_visible is False
 
+    # Values should be converted into ints on a scale of 0 to 10000.
     for value, int_value in [
         (0, 0),
         (0.5, 5000),
@@ -381,42 +388,71 @@ def test_int_impl():
         (0.00006, 1),
         (0.0001, 1),
     ]:
+        # At this level, the value should be round-tripped, not rounded.
         impl.set_value(value)
         assert impl.int_value == int_value
         assert impl.get_value() == value
 
+    # Check a range that doesn't start at zero.
     impl.set_range((-0.4, 0.6))
     assert impl.get_range() == (-0.4, 0.6)
     impl.set_value(0.5)
     assert impl.get_value() == 0.5
     assert impl.int_value == 9000
 
-    # Discrete mode
+
+def test_int_impl_discrete():
+    impl = DummyIntImpl()
+    assert impl.get_value() == 0
+
     impl.set_range((0, 1))
     impl.set_tick_count(9)
     assert impl.get_tick_count() == 9
     assert impl.int_max == 8
     assert impl.ticks_visible is True
 
+    # Values should be converted into ints on a scale of one int per tick, rounding to
+    # the nearest one.
     for value, int_value in [
-        (0, 0),
-        (1, 8),
-        (0.1, 1),
-        (0.2, 2),
-        (0.3, 2),
-        (0.4, 3),
+        (0, 0),  # 0.000
+        (1, 8),  # 1.000
+        (0.1, 1),  # 0.125
+        (0.2, 2),  # 0.250
+        (0.3, 2),  # 0.250
+        (0.4, 3),  # 0.375
     ]:
+        # At this level, the value should be round-tripped, not rounded.
         impl.set_value(value)
         assert impl.get_value() == value
         assert impl.int_value == int_value
 
-    # Event handler
-    for value, int_value in [
-        (0, 0),
-        (1, 8),
-        (0.125, 1),
-        (0.250, 2),
-    ]:
+    # Check a range that doesn't start at zero.
+    impl.set_range((-0.4, 0.6))
+    assert impl.get_range() == (-0.4, 0.6)
+    impl.set_value(0.5)
+    assert impl.get_value() == 0.5
+    assert impl.int_value == 7
+
+
+@pytest.mark.parametrize(
+    "tick_count, data",
+    [
+        (
+            None,
+            [(0, 0), (1, 10000), (0.0001, 1), (0.5, 5000)],
+        ),
+        (
+            9,
+            [(0, 0), (1, 8), (0.125, 1), (0.250, 2)],
+        ),
+    ],
+)
+def test_int_impl_on_change(tick_count, data):
+    """Ints should be converted into values correctly."""
+    impl = DummyIntImpl()
+    impl.set_range((0, 1))
+    impl.set_tick_count(tick_count)
+    for value, int_value in data:
         impl.interface.reset_mock()
         impl.int_value = int_value
         impl.on_change()
