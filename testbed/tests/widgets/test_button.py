@@ -48,6 +48,7 @@ async def test_press(widget, probe):
     handler = Mock()
     widget.on_press = handler
     await probe.press()
+    await probe.redraw()
     handler.assert_called_once_with(widget)
 
 
