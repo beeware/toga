@@ -131,6 +131,7 @@ def test_tick_value_without_tick_count(slider, on_change):
 
 def test_set_tick_value_to_none(slider, on_change):
     slider.tick_count = None
+    slider.tick_value = None
     assert_value(slider, on_change, INITIAL_VALUE, tick_value=None)
 
 
