@@ -1,5 +1,3 @@
-import warnings
-
 # Use the Travertino font definitions as-is
 from travertino import constants
 from travertino.constants import ITALIC  # noqa: F401
@@ -41,23 +39,17 @@ class Font(BaseFont):
         style = f" {self.style}" if self.style != NORMAL else ""
         return f"{self.family} {size}{weight}{variant}{style}"
 
-    def bind(self, factory=None):
-        warnings.warn(
-            "Fonts no longer need to be explicitly bound.", DeprecationWarning
-        )
-        return self._impl
-
     def measure(self, text, dpi, tight=False):
         return self._impl.measure(text, dpi=dpi, tight=tight)
 
     @staticmethod
     def register(family, path, weight=NORMAL, style=NORMAL, variant=NORMAL):
         """Registers a file-based font with it's family name, style, variant
-        and weight. When invalid values for style, variant or weight are
-        passed, NORMAL will be used.
+        and weight. When invalid values for style, variant or weight are passed,
+        ``NORMAL`` will be used.
 
         When a font file includes multiple font weight/style/etc, each variant
-        must be registerered separately:
+        must be registerered separately::
 
             # Register a simple regular font
             Font.register("Font Awesome 5 Free Solid", "resources/Font Awesome 5 Free-Solid-900.otf")
@@ -66,20 +58,18 @@ class Font(BaseFont):
             Font.register("Roboto", "resources/Roboto-Regular.ttf")
             Font.register("Roboto", "resources/Roboto-Bold.ttf", weight=Font.BOLD)
 
-            # Register a single font file that contains both a regular and bold weight
+            # Register a single font file that contains both
+            # a regular and bold weight
             Font.register("Bahnschrift", "resources/Bahnschrift.ttf")
             Font.register("Bahnschrift", "resources/Bahnschrift.ttf", weight=Font.BOLD)
 
-        Args:
-            family (str): The font family name. This is the name that can be
-                referenced in style definitions.
-            path (str): The path to the font file.
-            weight (str): The font weight: Font.NORMAL (default) or a value
-                from Font.FONT_WEIGHTS
-            style (str): The font style: Font.NORMAL (default) or a value from
-                Font.FONT_STYLES
-            variant (str): The font variant: Font.NORMAL (default) or a value
-                from Font.FONT_VARIANTS
+        :param family: The font family name. This is the name that can be
+            referenced in style definitions.
+        :param path: The path to the font file.
+        :param weight: The font weight; ``NORMAL`` (default) or ``BOLD``
+        :param style: The font style; ``NORMAL`` (default), ``ITALIC`` or
+            ``OBLIQUE``
+        :param variant: The font variant; ``NORMAL`` (default) or ``SMALL_CAPS``
         """
         font_key = Font.registered_font_key(
             family, weight=weight, style=style, variant=variant
@@ -93,14 +83,11 @@ class Font(BaseFont):
         If weight, style or variant contain an invalid value, Font.NORMAL is
         used instead.
 
-        Args:
-            family (str):  The font family name
-            weight (str):  The font weight: Font.NORMAL (default) or a value from Font.FONT_WEIGHTS
-            style (str):   The font style: Font.NORMAL (default) or a value from Font.FONT_STYLES
-            variant (str): The font variant: Font.NORMAL (default) or a value from Font.FONT_VARIANTS
-
-        Returns:
-            The font key (str)
+        :param family: The font family name
+        :param weight: The font weight: Font.NORMAL (default) or a value from Font.FONT_WEIGHTS
+        :param style: The font style: Font.NORMAL (default) or a value from Font.FONT_STYLES
+        :param variant: The font variant: Font.NORMAL (default) or a value from Font.FONT_VARIANTS
+        :returns: The font key
         """
         if weight not in constants.FONT_WEIGHTS:
             weight = NORMAL

@@ -586,7 +586,7 @@ class CanvasTests(TestCase):
         )
         self.assertEqual(
             repr(write_text),
-            "WriteText(text=test text, x=0, y=0, font=<Font: system default size system>)",
+            "WriteText(text='test text', x=0, y=0, font=<Font: system default size system>)",
         )
 
     def test_write_text_modify(self):
@@ -613,7 +613,7 @@ class CanvasTests(TestCase):
         write_text = self.testing_canvas.write_text("hello", x=10, y=-4.2, font=font)
         self.assertEqual(
             repr(write_text),
-            "WriteText(text=hello, x=10, y=-4.2, font=<Font: 4pt serif>)",
+            "WriteText(text='hello', x=10, y=-4.2, font=<Font: 4pt serif>)",
         )
 
     def test_on_resize(self):

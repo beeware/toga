@@ -374,8 +374,9 @@ class Fill(Context):
         self.preserve = preserve
 
     def __repr__(self):
-        return "{}(color={}, fill_rule={}, preserve={})".format(
-            self.__class__.__name__, self.color, self.fill_rule, self.preserve
+        return (
+            f"{self.__class__.__name__}(color={self.color!r}, "
+            f"fill_rule={self.fill_rule}, preserve={self.preserve!r})"
         )
 
     def _draw(self, impl, *args, **kwargs):
@@ -436,8 +437,9 @@ class Stroke(Context):
         self.line_dash = line_dash
 
     def __repr__(self):
-        return "{}(color={}, line_width={}, line_dash={})".format(
-            self.__class__.__name__, self.color, self.line_width, self.line_dash
+        return (
+            f"{self.__class__.__name__}(color={self.color!r}, "
+            f"line_width={self.line_width}, line_dash={self.line_dash!r})"
         )
 
     def _draw(self, impl, *args, **kwargs):
@@ -842,14 +844,10 @@ class BezierCurveTo:
         self.y = y
 
     def __repr__(self):
-        return "{}(cp1x={}, cp1y={}, cp2x={}, cp2y={}, x={}, y={})".format(
-            self.__class__.__name__,
-            self.cp1x,
-            self.cp1y,
-            self.cp2x,
-            self.cp2y,
-            self.x,
-            self.y,
+        return (
+            f"{self.__class__.__name__}(cp1x={self.cp1x}, cp1y={self.cp1y}, "
+            f"cp2x={self.cp2x}, cp2y={self.cp2y}, "
+            f"x={self.x}, y={self.y})"
         )
 
     def _draw(self, impl, *args, **kwargs):
@@ -882,9 +880,7 @@ class QuadraticCurveTo:
         self.y = y
 
     def __repr__(self):
-        return "{}(cpx={}, cpy={}, x={}, y={})".format(
-            self.__class__.__name__, self.cpx, self.cpy, self.x, self.y
-        )
+        return f"{self.__class__.__name__}(cpx={self.cpx}, cpy={self.cpy}, x={self.x}, y={self.y})"
 
     def _draw(self, impl, *args, **kwargs):
         """Draw the drawing object using the implementation."""
@@ -934,18 +930,10 @@ class Ellipse:
 
     def __repr__(self):
         return (
-            "{}(x={}, y={}, radiusx={}, radiusy={}, "
-            "rotation={}, startangle={}, endangle={}, anticlockwise={})".format(
-                self.__class__.__name__,
-                self.x,
-                self.y,
-                self.radiusx,
-                self.radiusy,
-                self.rotation,
-                self.startangle,
-                self.endangle,
-                self.anticlockwise,
-            )
+            f"{self.__class__.__name__}(x={self.x}, y={self.y}, "
+            f"radiusx={self.radiusx}, radiusy={self.radiusy}, "
+            f"rotation={self.rotation}, startangle={self.startangle}, endangle={self.endangle}, "
+            f"anticlockwise={self.anticlockwise})"
         )
 
     def _draw(self, impl, *args, **kwargs):
@@ -996,14 +984,10 @@ class Arc:
         self.anticlockwise = anticlockwise
 
     def __repr__(self):
-        return "{}(x={}, y={}, radius={}, startangle={}, endangle={}, anticlockwise={})".format(
-            self.__class__.__name__,
-            self.x,
-            self.y,
-            self.radius,
-            self.startangle,
-            self.endangle,
-            self.anticlockwise,
+        return (
+            f"{self.__class__.__name__}(x={self.x}, y={self.y}, "
+            f"radius={self.radius}, startangle={self.startangle}, "
+            f"endangle={self.endangle}, anticlockwise={self.anticlockwise})"
         )
 
     def _draw(self, impl, *args, **kwargs):
@@ -1042,8 +1026,9 @@ class Rect:
         self.height = height
 
     def __repr__(self):
-        return "{}(x={}, y={}, width={}, height={})".format(
-            self.__class__.__name__, self.x, self.y, self.width, self.height
+        return (
+            f"{self.__class__.__name__}(x={self.x}, y={self.y}, "
+            f"width={self.width}, height={self.height})"
         )
 
     def _draw(self, impl, *args, **kwargs):
@@ -1154,9 +1139,7 @@ class WriteText:
         self.font = font
 
     def __repr__(self):
-        return "{}(text={}, x={}, y={}, font={})".format(
-            self.__class__.__name__, self.text, self.x, self.y, self.font
-        )
+        return f"{self.__class__.__name__}(text={self.text!r}, x={self.x}, y={self.y}, font={self.font!r})"
 
     def _draw(self, impl, *args, **kwargs):
         """Draw the drawing object using the implementation."""
