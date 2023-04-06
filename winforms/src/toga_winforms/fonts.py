@@ -1,5 +1,5 @@
 from toga.fonts import _REGISTERED_FONT_CACHE, SYSTEM, SYSTEM_DEFAULT_FONTS
-from toga_winforms.libs import WinFont, WinForms, win_font_family
+from toga_winforms.libs import WinFont, win_font_family
 from toga_winforms.libs.fonts import win_font_size, win_font_style
 from toga_winforms.libs.winforms import (
     ExternalException,
@@ -64,10 +64,3 @@ class Font:
             _FONT_CACHE[self.interface] = font
 
         self.native = font
-
-    def measure(self, text, dpi, tight=False):
-        size = WinForms.TextRenderer.MeasureText(text, self.native)
-        return (
-            points_to_pixels(size.Width, dpi),
-            points_to_pixels(size.Height, dpi),
-        )

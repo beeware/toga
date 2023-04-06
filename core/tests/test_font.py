@@ -153,18 +153,3 @@ def test_register_font_variant():
         _REGISTERED_FONT_CACHE[("Custom Font", BOLD, NORMAL, NORMAL)]
         == "/path/to/custom/font-bold.otf"
     )
-
-
-@pytest.mark.parametrize(
-    "dpi, tight, expected",
-    [
-        (96, False, 21),
-        (144, False, 31),
-        (96, True, 17),
-        (144, True, 26),
-    ],
-)
-def test_measure(dpi, tight, expected):
-    font = toga.Font(SYSTEM, 14, BOLD)
-
-    assert font.measure("Hello world", dpi=dpi, tight=tight) == expected

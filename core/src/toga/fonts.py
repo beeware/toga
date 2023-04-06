@@ -39,9 +39,6 @@ class Font(BaseFont):
         style = f" {self.style}" if self.style != NORMAL else ""
         return f"{self.family} {size}{weight}{variant}{style}"
 
-    def measure(self, text, dpi, tight=False):
-        return self._impl.measure(text, dpi=dpi, tight=tight)
-
     @staticmethod
     def register(family, path, weight=NORMAL, style=NORMAL, variant=NORMAL):
         """Registers a file-based font with it's family name, style, variant
