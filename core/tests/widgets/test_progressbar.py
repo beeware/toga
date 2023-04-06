@@ -1,126 +1,241 @@
+import sys
+
+import pytest
+
 import toga
-from toga_dummy.utils import EventLog, TestCase
-
-# ### ProgressBar truth table
-#
-# | max     | running   | Behavior                |
-# |---------|-----------|-------------------------|
-# | None    | False     | disabled                |
-# | None    | True      | indeterminate anim.     |
-# | number  | False     | show percentage         |
-# | number  | True      | show %, working anim.   |
-#
-# Note: if ``value`` is None, the widget will render as if the value were zero.
+from toga_dummy.utils import (
+    EventLog,
+    assert_action_not_performed,
+    assert_action_performed,
+    assert_attribute_not_set,
+)
 
 
-class ProgressBarTests(TestCase):
-    def setUp(self):
-        super().setUp()
+@pytest.fixture
+def progressbar():
+    return toga.ProgressBar()
 
-        self.progress_bar = toga.ProgressBar()
 
-    def test_widget_created(self):
-        self.assertEqual(self.progress_bar._impl.interface, self.progress_bar)
-        self.assertActionPerformed(self.progress_bar, "create ProgressBar")
+def test_progressbar_created(progressbar):
+    "A progressbar can be created."
+    # Round trip the impl/interface
+    assert progressbar._impl.interface == progressbar
+    assert_action_performed(progressbar, "create ProgressBar")
 
-    def test_set_max_to_number(self):
-        new_max = 100
-        self.progress_bar.max = new_max
-        self.assertEqual(self.progress_bar.max, new_max)
-        self.assertValueSet(self.progress_bar, "max", value=new_max)
-        self.assertTrue(self.progress_bar.is_determinate)
+    # Assert the default state of the progress bar.
+    assert progressbar.max == pytest.approx(1.0)
+    assert progressbar.value == pytest.approx(0.0)
+    assert progressbar.is_determinate
+    assert not progressbar.is_running
 
-    def test_set_max_to_none(self):
-        self.progress_bar.max = None
-        self.assertEqual(self.progress_bar._max, None)
-        self.assertValueSet(self.progress_bar, "max", value=None)
-        self.assertFalse(self.progress_bar.is_determinate)
 
-    def test_start(self):
-        # Start the progress bar
-        self.progress_bar.start()
-        self.assertEqual(self.progress_bar.is_running, True)
-        self.assertActionPerformed(self.progress_bar, "start")
+@pytest.mark.parametrize(
+    "value, actual",
+    [
+        (3, 3.0),  # Integer, in range
+        (7.4, 7.4),  # Float, in range
+        (15, 10.0),  # Integer, above max
+        (-1, 0.0),  # Integer, below min
+        (12.0, 10.0),  # Float, above max
+        (-42.0, 0.0),  # Float, below min
+    ],
+)
+def test_set_value_determinate(progressbar, value, actual):
+    "The value of a determinite progressbar can be set"
+    # Set the max value
+    progressbar.max = 10
 
-        # Forget that `start` was performed so it can be checked again
-        EventLog.reset()
+    # Confirm this makes the progress bar determinate
+    assert progressbar.is_determinate
 
-        # Already started, no action performed
-        self.progress_bar.start()
-        self.assertActionNotPerformed(self.progress_bar, "start")
+    # Set the value of the
+    progressbar.value = value
 
-    def test_stop(self):
-        # Start the progress bar
-        self.progress_bar.start()
-        self.assertEqual(self.progress_bar.is_running, True)
-        self.assertActionPerformed(self.progress_bar, "start")
+    # Value is clipped and converted to float
+    assert progressbar.value == pytest.approx(actual)
 
-        self.progress_bar.stop()
-        self.assertEqual(self.progress_bar.is_running, False)
-        self.assertActionPerformed(self.progress_bar, "stop")
 
-        # Forget that `stop` was performed so it can be checked again
-        EventLog.reset()
+def test_set_value_indeterminate(progressbar):
+    "Setting the value of an indeterminate progressbar is a no-op"
 
-        # Already stopped, no action performed
-        self.progress_bar.stop()
-        self.assertActionNotPerformed(self.progress_bar, "stop")
+    # Make the progressbar indeterminate
+    progressbar.max = None
 
-    def test_set_value_to_number_less_than_max(self):
-        new_value = self.progress_bar.max / 2
-        self.progress_bar.value = new_value
-        self.assertEqual(self.progress_bar.value, new_value)
-        self.assertValueSet(self.progress_bar, "value", value=new_value)
+    # Confirm this makes the progress bar indeterminate
+    assert not progressbar.is_determinate
 
-    def test_set_value_to_number_greater_than_max(self):
-        new_value = self.progress_bar.max + 1
-        self.progress_bar.value = new_value
-        self.assertEqual(self.progress_bar.value, self.progress_bar.max)
-        self.assertValueSet(self.progress_bar, "value", value=new_value)
+    # Clear the event log
+    EventLog.reset()
 
-    def test_set_value_to_none(self):
-        self.progress_bar.value = None
-        self.assertEqual(self.progress_bar.value, 0)  # 0 is clean value for None
-        self.assertValueSet(self.progress_bar, "value", value=None)
+    # Set the value
+    progressbar.value = 5
 
-    def test_disabled_cases(self):
-        # Start with a default progress bar
-        self.progress_bar = toga.ProgressBar()
-        self.assertTrue(self.progress_bar.enabled)
+    # No call was made to set the value on the impl.
+    assert_attribute_not_set(progressbar, "value")
 
-        # It should be disabled if it is stopped and max is None
 
-        self.progress_bar.max = None
-        self.progress_bar.stop()
-        self.progress_bar.value = 0
-        self.assertFalse(self.progress_bar.enabled)
+@pytest.mark.parametrize(
+    "value, actual, determinate",
+    [
+        (None, None, False),  # Non-determinate
+        (42, 42.0, True),  # Integer
+        (12.345, 12.345, True),  # Float
+        ("37.42", 37.42, True),  # Float, but specified as a string.
+    ],
+)
+def test_set_max(progressbar, value, actual, determinate):
+    "The max value can be set."
+    progressbar.max = value
 
-        # Starting the progress bar should enable it again
+    # The maximum value has been applied, and has altered the determinate state.
+    assert progressbar.max == pytest.approx(actual)
+    assert progressbar.is_determinate == determinate
 
-        # self.progress_bar.max = None
-        self.progress_bar.start()
-        # self.progress_bar.value = 0
-        self.assertTrue(self.progress_bar.enabled)
 
-        # Stopping AND providing a max will cause it to display the percentage.
+@pytest.mark.parametrize(
+    "value, error, msg",
+    [
+        (
+            "not a number",
+            ValueError,
+            r"could not convert string to float",
+        ),  # String, but not a float
+        (
+            object(),
+            TypeError,
+            r"must be a string or a number"
+            if sys.version_info < (3, 10)
+            else r"must be a string or a real number",
+        ),  # Non-coercible to float
+        (
+            -42,
+            ValueError,
+            r"max value must be None, or a numerical value > 0",
+        ),  # Negative integer
+        (
+            -1.234,
+            ValueError,
+            r"max value must be None, or a numerical value > 0",
+        ),  # Negative float
+        (
+            0,
+            ValueError,
+            r"max value must be None, or a numerical value > 0",
+        ),  # Non-positive integer
+        (
+            0.0,
+            ValueError,
+            r"max value must be None, or a numerical value > 0",
+        ),  # Non-positive float
+    ],
+)
+def test_invalid_max(progressbar, value, error, msg):
+    "A max value that isn't positive raises an error"
+    with pytest.raises(error, match=msg):
+        progressbar.max = value
 
-        self.progress_bar.max = 1
-        self.progress_bar.stop()
-        # self.progress_bar.value = 0
-        self.assertTrue(self.progress_bar.enabled)
 
-    def test_already_running(self):
-        # Creating a new progress bar with running=True so it is already running
-        self.progress_bar = toga.ProgressBar(running=True)
+def test_start(progressbar):
+    "An activity indicator can be started"
+    # Not running initially
+    assert not progressbar.is_running
 
-        # Asserting that start() function is invoked on the underlying widget
-        self.assertActionPerformed(self.progress_bar, "start")
+    # Assert that start was not invoked on the impl as part of creation.
+    assert_action_not_performed(progressbar, "start ProgressBar")
 
-        # The constructor which is __init__ function will call the function start if running=True
-        # which will make enabled=True
+    # Start running
+    progressbar.start()
 
-        # Asserting is_running to be True
-        self.assertTrue(self.progress_bar.is_running)
+    # The indicator is now running
+    assert progressbar.is_running
 
-        # Asserting enabled to be True
-        self.assertTrue(self.progress_bar.enabled)
+    # The impl was triggered.
+    assert_action_performed(progressbar, "start ProgressBar")
+
+
+def test_already_started(progressbar):
+    "If an activity indicator is already started, starting again is a no-op"
+    # Start the activity indicator
+    progressbar.start()
+
+    # Reset the event log so we can detect new events
+    EventLog.reset()
+
+    # Start the indicator again
+    progressbar.start()
+
+    # The indicator is still running
+    assert progressbar.is_running
+
+    # No action was performed.
+    assert_action_not_performed(progressbar, "start ProgressBar")
+
+
+def test_stop(progressbar):
+    "An indicator can be stopped"
+    # Start running
+    progressbar.start()
+
+    # The indicator is running
+    assert progressbar.is_running
+
+    # Stop running
+    progressbar.stop()
+
+    # The indicator is no longer running
+    assert not progressbar.is_running
+
+    # The impl has been stopped
+    assert_action_performed(progressbar, "stop ProgressBar")
+
+
+def test_already_stopped(progressbar):
+    "If an indicator is already stopped, stopping again is a no-op"
+    # The indicator is not running initially
+    assert not progressbar.is_running
+
+    # Stop running
+    progressbar.stop()
+
+    # The indicator is still not running
+    assert not progressbar.is_running
+
+    # No stop action was performed.
+    assert_action_not_performed(progressbar, "stop ProgressBar")
+
+
+def test_initially_running():
+    "An activity indicator can be created in a started state"
+    # Creating a new progress bar with running=True so it is already running
+    progressbar = toga.ProgressBar(running=True)
+
+    # Indicator is running
+    assert progressbar.is_running
+
+    # Assert that start was invoked on the impl as part of creation.
+    assert_action_performed(progressbar, "start ProgressBar")
+
+
+def test_determinate_switch(progressbar):
+    "A progressbar can switch between determinate and indeterminate"
+    # Set initial max and value
+    progressbar.max = 10
+    progressbar.value = 5
+
+    # State of progress bar is determinate
+    assert progressbar.is_determinate
+    assert progressbar.value == pytest.approx(5.0)
+
+    # Make the progress bar indeterminate
+    progressbar.max = None
+
+    # State of progress bar is indeterminate
+    assert not progressbar.is_determinate
+    assert progressbar.value is None
+
+    # Switch back to determinate
+    progressbar.max = 15
+
+    # State of progress bar is determinate
+    assert progressbar.is_determinate
+    assert progressbar.value == pytest.approx(5.0)

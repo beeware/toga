@@ -5,8 +5,3 @@ from .base import SimpleProbe
 
 class ActivityIndicatorProbe(SimpleProbe):
     native_class = Gtk.Spinner
-
-    @property
-    def enabled(self):
-        # An ActivityIndicator is always enabled.
-        return True
