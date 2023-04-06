@@ -36,12 +36,6 @@ class TestFontImplementation(unittest.TestCase):
         self.font_family = SYSTEM
         self.font_size = 12
 
-    def test_font_bind(self):
-        font = toga.Font(self.font_family, self.font_size)
-        font_impl = font.bind()
-
-        self.assertEqual(font._impl, font_impl)
-
     def test_font_default_has_all_attr_set(self):
         font = toga.Font(self.font_family, self.font_size)
         native = font._impl.native
