@@ -5,6 +5,16 @@ import toga
 from ..libs import Gtk
 from .base import Widget
 
+# Implementation notes
+# ====================
+#
+# We implement discrete mode as follows:
+#   * Display ticks at each of the possible values.
+#   * Intercept the change-value event, and round the value to the nearest tick.
+#
+# From GTK's point of view, these two features are independent, but we arrange for them
+# to line up at the same values.
+
 
 class Slider(Widget, toga.widgets.slider.SliderImpl):
     def create(self):

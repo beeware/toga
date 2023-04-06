@@ -5,10 +5,15 @@ from toga_winforms.libs import WinForms
 
 from .base import Widget
 
-# This is a patch related to python: "None" is a saved word in python,
-# which means we cannot use WinForms.TickStyle.None directly. Therefore, we use getattr
-NONE_TICK_STYLE = getattr(WinForms.TickStyle, "None")
+# Implementation notes
+# ====================
+#
+# The native widget represents values as integers, so the IntSliderImpl base class is
+# used to convert between integers and floats.
 
+
+# "None" is a reserved word in Python, so we can't write WinForms.TickStyle.None.
+NONE_TICK_STYLE = getattr(WinForms.TickStyle, "None")
 BOTTOM_RIGHT_TICK_STYLE = WinForms.TickStyle.BottomRight
 
 

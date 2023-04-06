@@ -7,6 +7,12 @@ from ..libs.android.view import View__MeasureSpec
 from ..libs.android.widget import SeekBar, SeekBar__OnSeekBarChangeListener
 from .base import Widget
 
+# Implementation notes
+# ====================
+#
+# The native widget represents values as integers, so the IntSliderImpl base class is
+# used to convert between integers and floats.
+
 
 class TogaOnSeekBarChangeListener(SeekBar__OnSeekBarChangeListener):
     def __init__(self, impl):
