@@ -13,3 +13,7 @@ class ProgressBarProbe(SimpleProbe):
     @property
     def is_animating_indeterminate(self):
         return self.widget._impl._task is not None
+
+    @property
+    def position(self):
+        return self.native.progress

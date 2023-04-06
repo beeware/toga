@@ -14,3 +14,7 @@ class ProgressBarProbe(SimpleProbe):
     def is_animating_indeterminate(self):
         # The Android "isIndeterminate" attribute encompasses animation status
         return self.native.isIndeterminate()
+
+    @property
+    def position(self):
+        return self.native.getProgress() / self.native.getMax()

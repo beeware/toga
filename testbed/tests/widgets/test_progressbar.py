@@ -86,6 +86,16 @@ async def test_start_stop_indeterminate(widget, probe):
     assert widget.value is None
     assert probe.is_animating_indeterminate
 
+    # Start the progress bar again. This should be a no-op.
+    widget.start()
+    await probe.redraw()
+
+    # Probe is still running; value doesn't change
+    assert widget.is_running
+    assert widget.max is None
+    assert widget.value is None
+    assert probe.is_animating_indeterminate
+
     # Stop the progress bar
     widget.stop()
     await probe.redraw()
@@ -125,3 +135,26 @@ async def test_animation_starts_on_max_change(widget, probe):
 
     # The determinate value of the progressbar has been lost.
     assert widget.value == pytest.approx(0.0)
+
+
+async def test_position_change_on_max_change(widget, probe):
+    "If the max value changes in determinate mode, the position displayed will change"
+    # Set the progress bar to 20%, on a maximum of 100
+    widget.max = 100
+    widget.value = 60
+
+    # Start the animation
+    widget.start()
+    await probe.redraw()
+
+    # Widget has a value of 60, and shows 60%
+    assert widget.value == pytest.approx(60, abs=0.001)
+    assert probe.position == pytest.approx(0.6, abs=0.001)
+
+    # Change the maximum to 200
+    widget.max = 200
+    await probe.redraw()
+
+    # The value hasn't changed, but the position has changed to 30%
+    assert widget.value == pytest.approx(60, abs=0.001)
+    assert probe.position == pytest.approx(0.3, abs=0.001)
