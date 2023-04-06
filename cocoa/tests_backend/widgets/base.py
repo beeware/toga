@@ -1,12 +1,18 @@
 import asyncio
+from ctypes import c_void_p
 
-from rubicon.objc import SEL, NSArray, NSObject, objc_method
+from rubicon.objc import SEL, NSArray, NSObject, ObjCClass, objc_method
+from rubicon.objc.api import NSString
 
 from toga.colors import TRANSPARENT
 from toga.fonts import CURSIVE, FANTASY, MONOSPACE, SANS_SERIF, SERIF, SYSTEM
-from toga_cocoa.libs import NSDefaultRunLoopMode, NSRunLoop
+from toga_cocoa.libs.appkit import appkit
 
 from .properties import toga_color
+
+NSRunLoop = ObjCClass("NSRunLoop")
+NSRunLoop.declare_class_property("currentRunLoop")
+NSDefaultRunLoopMode = NSString(c_void_p.in_dll(appkit, "NSDefaultRunLoopMode"))
 
 
 class EventListener(NSObject):
