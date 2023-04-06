@@ -13,3 +13,7 @@ class ProgressBarProbe(SimpleProbe):
     @property
     def is_animating_indeterminate(self):
         return not self.is_determinate and self.widget._impl._running
+
+    @property
+    def position(self):
+        return self.native.get_fraction()

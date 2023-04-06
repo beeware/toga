@@ -16,3 +16,7 @@ class ProgressBarProbe(SimpleProbe):
     def is_animating_indeterminate(self):
         # We can use the winforms style to identify animating indeterminates
         return self.native.Style == System.Windows.Forms.ProgressBarStyle.Marquee
+
+    @property
+    def position(self):
+        return self.native.Value / self.native.Maximum

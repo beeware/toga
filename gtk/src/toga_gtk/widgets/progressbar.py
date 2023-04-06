@@ -58,14 +58,23 @@ class ProgressBar(Widget):
             self.native.set_fraction(0.0)
 
     def set_max(self, value):
-        self._max = value
-        if self._max is None:
+        if value is None:
+            self._max = None
             self.native.set_fraction(0.0)
             if self.is_running():
                 self._start_indeterminate()
             else:
                 self._stop_indeterminate()
         else:
+            if self._max is None:
+                # Switching from indeterminate to determinate mode.
+                # Any value will be non-sensical, so set the current value
+                # to 0.
+                self.native.set_fraction(0.0)
+            else:
+                # Adjust the displayed fraction to reflect the new max.
+                self.native.set_fraction(self.native.get_fraction() * self._max / value)
+            self._max = value
             self._stop_indeterminate()
 
     def start(self):

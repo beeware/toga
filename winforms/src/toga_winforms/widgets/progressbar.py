@@ -7,9 +7,6 @@ from .base import Widget
 # Implementation notes
 # ====================
 #
-# * Inactive Winforms ProgressBars have a distinct style. We use that style as an
-#   indicator for whether the ProgressBar is running.
-#
 # * ProgressBar uses an integer to track for progress. Toga's values are
 #   floats; so we multiply the Toga value by 1000 so that we get 3dp of
 #   functional progress fidelity.
@@ -17,6 +14,9 @@ from .base import Widget
 # * There's no native way to identify an indeterminate progress bar. We can't
 #   use a max value of 0 as a marker, because a max value of 0 causes the the
 #   animation to stop. Therefore, we track indeterminate status independently.
+#
+# * Winforms progress bars are *always* animating; there's no "non-running"
+#   state. Therefore, we track running status independently.
 
 
 class ProgressBar(Widget):
@@ -26,15 +26,18 @@ class ProgressBar(Widget):
         self.native = WinForms.ProgressBar()
         self.set_stopping_style()
 
+        self._running = False
         self._determinate = True
 
     def is_running(self):
-        return self.native.Style != WinForms.ProgressBarStyle.Continuous
+        return self._running
 
     def start(self):
+        self._running = True
         self.set_running_style()
 
     def stop(self):
+        self._running = False
         self.set_stopping_style()
 
     def get_max(self):
@@ -58,10 +61,10 @@ class ProgressBar(Widget):
             self.set_stopping_style()
 
     def set_running_style(self):
-        if not self._determinate:
+        if not self._determinate and self._running:
             self.native.Style = WinForms.ProgressBarStyle.Marquee
         else:
-            self.native.Style = WinForms.ProgressBarStyle.Blocks
+            self.native.Style = WinForms.ProgressBarStyle.Continuous
 
     def set_stopping_style(self):
         self.native.Style = WinForms.ProgressBarStyle.Continuous
