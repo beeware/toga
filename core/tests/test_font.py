@@ -145,6 +145,16 @@ def test_register_font():
     )
 
 
+def test_register_font_variant():
+    "A custom font can be registered as a variant"
+    toga.Font.register("Custom Font", "/path/to/custom/font-bold.otf", weight=BOLD)
+
+    assert (
+        _REGISTERED_FONT_CACHE[("Custom Font", BOLD, NORMAL, NORMAL)]
+        == "/path/to/custom/font-bold.otf"
+    )
+
+
 @pytest.mark.parametrize(
     "dpi, tight, expected",
     [
