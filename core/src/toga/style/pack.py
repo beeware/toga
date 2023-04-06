@@ -1,4 +1,4 @@
-from travertino.constants import (
+from travertino.constants import (  # noqa: F401
     BOLD,
     BOTTOM,
     CENTER,
@@ -29,7 +29,7 @@ from travertino.declaration import BaseStyle, Choices
 from travertino.layout import BaseBox
 from travertino.size import BaseIntrinsicSize
 
-from toga.fonts import SYSTEM_DEFAULT_FONT_SIZE, Font
+from toga.fonts import SYSTEM_DEFAULT_FONT_SIZE, SYSTEM_DEFAULT_FONTS, Font
 
 ######################################################################
 # Display
@@ -57,10 +57,7 @@ TEXT_DIRECTION_CHOICES = Choices(RTL, LTR)
 COLOR_CHOICES = Choices(color=True, default=True)
 BACKGROUND_COLOR_CHOICES = Choices(TRANSPARENT, color=True, default=True)
 
-FONT_FAMILY_CHOICES = Choices(
-    SYSTEM, SERIF, SANS_SERIF, CURSIVE, FANTASY, MONOSPACE, string=True
-)
-# FONT_FAMILY_CHOICES = Choices(SERIF, SANS_SERIF, CURSIVE, FANTASY, MONOSPACE, string=True, default=True)
+FONT_FAMILY_CHOICES = Choices(*SYSTEM_DEFAULT_FONTS, string=True)
 FONT_STYLE_CHOICES = Choices(NORMAL, ITALIC, OBLIQUE)
 FONT_VARIANT_CHOICES = Choices(NORMAL, SMALL_CAPS)
 FONT_WEIGHT_CHOICES = Choices(NORMAL, BOLD)

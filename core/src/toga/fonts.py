@@ -21,6 +21,7 @@ from travertino.fonts import Font as BaseFont
 
 from toga.platform import get_platform_factory
 
+SYSTEM_DEFAULT_FONTS = {SYSTEM, MESSAGE, SERIF, SANS_SERIF, CURSIVE, FANTASY, MONOSPACE}
 SYSTEM_DEFAULT_FONT_SIZE = -1
 _REGISTERED_FONT_CACHE = {}
 
@@ -30,6 +31,15 @@ class Font(BaseFont):
         super().__init__(family, size, style, variant, weight)
         self.factory = get_platform_factory()
         self._impl = self.factory.Font(self)
+
+    def __str__(self):
+        size = (
+            "system size" if self.size == SYSTEM_DEFAULT_FONT_SIZE else f"{self.size}pt"
+        )
+        weight = f" {self.weight}" if self.weight != NORMAL else ""
+        variant = f" {self.variant}" if self.variant != NORMAL else ""
+        style = f" {self.style}" if self.style != NORMAL else ""
+        return f"{self.family} {size}{weight}{variant}{style}"
 
     def bind(self, factory=None):
         warnings.warn(

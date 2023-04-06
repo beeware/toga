@@ -1,4 +1,4 @@
-from toga.fonts import _REGISTERED_FONT_CACHE
+from toga.fonts import _REGISTERED_FONT_CACHE, SYSTEM, SYSTEM_DEFAULT_FONTS
 from toga_winforms.libs import WinFont, WinForms, win_font_family
 from toga_winforms.libs.fonts import win_font_size, win_font_style
 from toga_winforms.libs.winforms import (
@@ -36,16 +36,23 @@ class Font:
                     self._pfc = PrivateFontCollection()
                     self._pfc.AddFontFile(font_path)
                     font_family = self._pfc.Families[0]
-                except FileNotFoundException as e:
-                    print(f"Registered font path {font_path!r} could not be found: {e}")
+                except FileNotFoundException:
+                    print(f"Font file {font_path} could not be found")
                 except ExternalException as e:
+                    print(f"Font '{self.interface}' could not be loaded: {e}")
+                except IndexError:
                     print(
-                        f"Registered font path {font_path!r} could not be loaded: {e}"
+                        f"Font '{self.interface}' does not have a family in the collection"
                     )
-                except IndexError as e:
-                    print(f"Registered font {font_key} could not be loaded: {e}")
             except KeyError:
-                font_family = win_font_family(self.interface.family)
+                if self.interface.family not in SYSTEM_DEFAULT_FONTS:
+                    print(
+                        f"Unknown font '{self.interface}'; "
+                        "falling back to system font"
+                    )
+                    font_family = win_font_family(SYSTEM)
+                else:
+                    font_family = win_font_family(self.interface.family)
 
             font_style = win_font_style(
                 self.interface.weight,
