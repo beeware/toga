@@ -15,6 +15,7 @@ class SimpleProbe:
         self.widget = widget
         self.native = widget._impl.native
         assert isinstance(self.native, self.native_class)
+        self.scale_factor = self.native.CreateGraphics().DpiX / 96
 
     def assert_container(self, container):
         container_native = container._impl.native
@@ -78,11 +79,11 @@ class SimpleProbe:
 
     @property
     def width(self):
-        return self.native.Width
+        return self.native.Width / self.scale_factor
 
     @property
     def height(self):
-        return self.native.Height
+        return self.native.Height / self.scale_factor
 
     def assert_width(self, min_width, max_width):
         assert (

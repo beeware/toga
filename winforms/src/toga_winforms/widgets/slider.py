@@ -20,6 +20,7 @@ BOTTOM_RIGHT_TICK_STYLE = WinForms.TickStyle.BottomRight
 class Slider(Widget, toga.widgets.slider.IntSliderImpl):
     def create(self):
         self.native = WinForms.TrackBar()
+        self.native.AutoSize = False
 
         # Unlike Scroll, ValueChanged also fires when the value is changed
         # programmatically, such as via the testbed probe.
