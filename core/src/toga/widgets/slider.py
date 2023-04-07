@@ -27,9 +27,12 @@ class Slider(Widget):
         :param id: The ID for the widget.
         :param style: A style object. If no style is provided, a default style
             will be applied to the widget.
-        :param value: Initial :any:`value`: defaults to the mid-point of the range.
-        :param range: Initial :any:`range`: defaults to (0, 1).
-        :param tick_count: Initial :any:`tick_count`.
+        :param value: Initial :any:`value` of the slider. Defaults to the
+            mid-point of the range.
+        :param range: Initial :any:`range` range of the slider. Defaults to ``(0,
+            1)``.
+        :param tick_count: Initial :any:`tick_count` for the slider. If ``None``,
+            the slider will be continuous.
         :param on_change: Initial :any:`on_change` handler.
         :param on_press: Initial :any:`on_press` handler.
         :param on_release: Initial :any:`on_release` handler.
@@ -48,9 +51,10 @@ class Slider(Widget):
         self.value = value
 
         self.on_change = on_change
-        self.enabled = enabled
         self.on_press = on_press
         self.on_release = on_release
+
+        self.enabled = enabled
 
     _MIN_WIDTH = 100
 
