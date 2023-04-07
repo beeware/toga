@@ -622,11 +622,6 @@ NSProgressIndicatorBarStyle = 0
 NSProgressIndicatorSpinningStyle = 1
 
 ######################################################################
-# NSRunLoop.h
-
-NSDefaultRunLoopMode = c_void_p.in_dll(appkit, "NSDefaultRunLoopMode")
-
-######################################################################
 # NSRunningApplication.h
 
 NSApplicationActivationPolicyRegular = 0

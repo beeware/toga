@@ -1,8 +1,27 @@
 from rubicon.objc import SEL, CGSize, objc_method, objc_property
 from travertino.size import at_least
 
-from toga_iOS.libs import UIControlEventValueChanged, UISlider
+from toga_iOS.libs import (
+    UIControlEventTouchCancel,
+    UIControlEventTouchDown,
+    UIControlEventTouchUpInside,
+    UIControlEventTouchUpOutside,
+    UIControlEventValueChanged,
+    UISlider,
+)
 from toga_iOS.widgets.base import Widget
+
+# Implementation notes
+# ====================
+#
+# UISlider is based on 32-bit floats, so we need to cache the value to allow
+# round-tripping. We also need to cache the range, otherwise setting the max to 0.1, and
+# then setting the value to 0.1, would fail with "0.1 is not in range 0.0 -
+# 9.999999747378752e-02".
+#
+# UISlider does not support discrete mode. We simulate it by rounding the reported value
+# to the closest tick, and resetting the thumb to that position after it's released.
+# Ticks are not currently visible.
 
 
 class TogaSlider(UISlider):
@@ -11,7 +30,17 @@ class TogaSlider(UISlider):
 
     @objc_method
     def onSlide_(self, obj) -> None:
+        self.impl.value = self.interface._round_value(self.value)
         self.interface.on_change(None)
+
+    @objc_method
+    def onPress_(self, obj) -> None:
+        self.interface.on_press(None)
+
+    @objc_method
+    def onRelease_(self, obj) -> None:
+        self.impl.set_value(self.impl.value)
+        self.interface.on_release(None)
 
 
 class Slider(Widget):
@@ -20,28 +49,51 @@ class Slider(Widget):
         self.native.interface = self.interface
         self.native.impl = self
 
-        self.native.continuous = True
+        # Dummy values used during initialization.
+        self.value = 0
+        self.tick_count = None
+
         self.native.addTarget(
             self.native,
             action=SEL("onSlide:"),
             forControlEvents=UIControlEventValueChanged,
+        )
+        self.native.addTarget(
+            self.native,
+            action=SEL("onPress:"),
+            forControlEvents=UIControlEventTouchDown,
+        )
+        self.native.addTarget(
+            self.native,
+            action=SEL("onRelease:"),
+            forControlEvents=UIControlEventTouchUpInside
+            | UIControlEventTouchUpOutside
+            | UIControlEventTouchCancel,
         )
 
         # Add the layout constraints
         self.add_constraints()
 
     def get_value(self):
-        return self.native.value
+        return self.value
 
     def set_value(self, value):
-        self.native.setValue_animated_(value, True)
+        self.value = value
+        self.native.setValue(value, animated=True)
+
+    def get_range(self):
+        return self.range
 
     def set_range(self, range):
         self.native.minimumValue = range[0]
         self.native.maximumValue = range[1]
+        self.range = range
+
+    def get_tick_count(self):
+        return self.tick_count
 
     def set_tick_count(self, tick_count):
-        self.interface.factory.not_implemented("Slider.tick_count()")
+        self.tick_count = tick_count
 
     def rehint(self):
         fitting_size = self.native.systemLayoutSizeFittingSize_(CGSize(0, 0))

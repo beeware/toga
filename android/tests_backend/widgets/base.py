@@ -96,5 +96,5 @@ class SimpleProbe:
     def background_color(self):
         return toga_color(self.native.getBackground().getColor())
 
-    def press(self):
+    async def press(self):
         self.native.performClick()

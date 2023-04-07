@@ -107,5 +107,5 @@ class SimpleProbe:
         else:
             return toga_color(self.native.backgroundColor)
 
-    def press(self):
+    async def press(self):
         self.native.sendActionsForControlEvents(UIControlEventTouchDown)

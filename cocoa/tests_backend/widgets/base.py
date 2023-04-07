@@ -1,9 +1,30 @@
 import asyncio
+from ctypes import c_void_p
+
+from rubicon.objc import SEL, NSArray, NSObject, ObjCClass, objc_method
+from rubicon.objc.api import NSString
 
 from toga.colors import TRANSPARENT
 from toga.fonts import CURSIVE, FANTASY, MONOSPACE, SANS_SERIF, SERIF, SYSTEM
+from toga_cocoa.libs.appkit import appkit
 
 from .properties import toga_color
+
+NSRunLoop = ObjCClass("NSRunLoop")
+NSRunLoop.declare_class_property("currentRunLoop")
+NSDefaultRunLoopMode = NSString(c_void_p.in_dll(appkit, "NSDefaultRunLoopMode"))
+
+
+class EventListener(NSObject):
+    @objc_method
+    def init(self):
+        self.event = asyncio.Event()
+        return self
+
+    @objc_method
+    def onEvent(self):
+        self.event.set()
+        self.event.clear()
 
 
 class SimpleProbe:
@@ -11,6 +32,22 @@ class SimpleProbe:
         self.widget = widget
         self.native = widget._impl.native
         assert isinstance(self.native, self.native_class)
+
+        self.event_listener = EventListener.alloc().init()
+
+    async def post_event(self, event):
+        self.native.window.postEvent(event, atStart=False)
+
+        # Add another event to the queue behind the original event, to notify us once
+        # it's been processed.
+        NSRunLoop.currentRunLoop.performSelector(
+            SEL("onEvent"),
+            target=self.event_listener,
+            argument=None,
+            order=0,
+            modes=NSArray.arrayWithObject(NSDefaultRunLoopMode),
+        )
+        await self.event_listener.event.wait()
 
     def assert_container(self, container):
         container_native = container._impl.native
@@ -78,5 +115,5 @@ class SimpleProbe:
         else:
             return TRANSPARENT
 
-    def press(self):
+    async def press(self):
         self.native.performClick(None)

@@ -30,6 +30,7 @@ extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.napoleon",
     "sphinx.ext.todo",
+    "sphinx_autodoc_typehints",
     "sphinx_tabs.tabs",
     "crate.sphinx.csv",
 ]
