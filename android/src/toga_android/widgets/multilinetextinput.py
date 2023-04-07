@@ -48,11 +48,6 @@ class MultilineTextInput(TextViewWidget):
         self.native.setHint(value if value is not None else "")
 
     def set_alignment(self, value):
-        # Refuse to set alignment unless widget has been added to a container.
-        # This is because Android EditText requires LayoutParams before
-        # setGravity() can be called.
-        if not self.native.getLayoutParams():
-            return
         self.native.setGravity(Gravity.TOP | align(value))
 
     def set_value(self, value):
