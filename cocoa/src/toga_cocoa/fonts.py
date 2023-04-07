@@ -32,6 +32,15 @@ _POSTSCRIPT_NAMES = {
     FANTASY: "Papyrus",
     MONOSPACE: "Courier New",
 }
+SYSTEM_DEFAULT_FONTS = {
+    CURSIVE,
+    FANTASY,
+    MESSAGE,
+    MONOSPACE,
+    SANS_SERIF,
+    SERIF,
+    SYSTEM,
+}
 
 
 class Font:
@@ -49,31 +58,43 @@ class Font:
                 variant=self.interface.variant,
             )
 
+            # Font isn't a built-in system font, has been registered, but hasn't
+            # been loaded previously.
+            # FIXME this doesn't handle when there are multiple fonts in a file,
+            # or multiple font registrations for a single file.
+            if (
+                self.interface.family not in SYSTEM_DEFAULT_FONTS
+                and font_key in _REGISTERED_FONT_CACHE
+                and self.interface.family not in _POSTSCRIPT_NAMES
+            ):
+                font_path = (
+                    self.interface.factory.paths.app / _REGISTERED_FONT_CACHE[font_key]
+                )
+                if font_path.is_file():
+                    font_url = NSURL.fileURLWithPath(str(font_path))
+                    success = core_text.CTFontManagerRegisterFontsForURL(
+                        font_url, kCTFontManagerScopeProcess, None
+                    )
+                    if success:
+                        # FIXME - this naming needs to be dynamically determined from the font,
+                        # rather than hard-coded
+                        _POSTSCRIPT_NAMES[self.interface.family] = {
+                            "awesome-free-solid": "Font Awesome 5 Free",
+                            "Endor": "ENDOR",
+                        }.get(self.interface.family, self.interface.family)
+                    else:
+                        print(f"Font '{self.interface}' could not be loaded")
+                else:
+                    print(f"Font file {font_path} could not be found")
+
             # Default system font size on Cocoa is 12pt
             if self.interface.size == SYSTEM_DEFAULT_FONT_SIZE:
                 font_size = NSFont.systemFontSize
             else:
                 font_size = self.interface.size
 
-            if font_key in _REGISTERED_FONT_CACHE:
-                # print("LOAD", font_key, _REGISTERED_FONT_CACHE[font_key])
-                font_path = str(
-                    self.interface.factory.paths.app / _REGISTERED_FONT_CACHE[font_key]
-                )
-
-                font_url = NSURL.fileURLWithPath(font_path)
-                success = core_text.CTFontManagerRegisterFontsForURL(
-                    font_url, kCTFontManagerScopeProcess, None
-                )
-                if success:
-                    # FIXME - this naming needs to be dynamically determined from the font,
-                    # rather than hard-coded
-                    _POSTSCRIPT_NAMES[family] = {
-                        "awesome-free-solid": "Font Awesome 5 Free",
-                        "Endor": "ENDOR",
-                    }.get(family, family)
-
-            if family == SYSTEM:
+            # Construct the NSFont
+            if self.interface.family == SYSTEM:
                 font = NSFont.systemFontOfSize(font_size)
             elif family == MESSAGE:
                 font = NSFont.messageFontOfSize(font_size)
@@ -83,14 +104,11 @@ class Font:
                         _POSTSCRIPT_NAMES[family], size=font_size
                     )
                 except KeyError:
-                    pass
-
-            if font is None:
-                print(
-                    f"Unknown font '{self.interface}'; "
-                    "using system font as a fallback"
-                )
-                font = NSFont.systemFontOfSize(font_size)
+                    print(
+                        f"Unknown font '{self.interface}'; "
+                        "using system font as a fallback"
+                    )
+                    font = NSFont.systemFontOfSize(font_size)
 
             # Convert the base font definition into a font with all the desired traits.
             attributes_mask = 0
