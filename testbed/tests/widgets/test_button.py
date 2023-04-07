@@ -12,6 +12,7 @@ from .properties import (  # noqa: F401
     test_background_color_reset,
     test_color,
     test_color_reset,
+    test_enabled,
     test_flex_horizontal_widget_size,
     test_font,
     test_font_attrs,
@@ -41,12 +42,12 @@ async def test_text(widget, probe):
 
 async def test_press(widget, probe):
     # Press the button before installing a handler
-    probe.press()
+    await probe.press()
 
     # Set up a mock handler, and press the button again.
     handler = Mock()
     widget.on_press = handler
-    probe.press()
+    await probe.press()
     await probe.redraw()
     handler.assert_called_once_with(widget)
 

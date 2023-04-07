@@ -81,8 +81,6 @@ class Widget(Node):
         self._app = None
         self._impl = None
 
-        self._enabled = enabled
-
         self.factory = get_platform_factory()
 
     def __repr__(self):
@@ -266,12 +264,11 @@ class Widget(Node):
     def enabled(self):
         """Is the widget currently enabled? i.e., can the user interact with the
         widget?"""
-        return self._enabled
+        return self._impl.get_enabled()
 
     @enabled.setter
     def enabled(self, value):
-        self._enabled = bool(value)
-        self._impl.set_enabled(value)
+        self._impl.set_enabled(bool(value))
 
     def refresh(self):
         self._impl.refresh()

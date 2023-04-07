@@ -37,29 +37,25 @@ class Switch(Widget):
         # Add the layout constraints
         self.add_constraints()
 
+    def get_text(self):
+        return str(self.native.title)
+
     def set_text(self, text):
-        self.native.title = self.interface.text
+        self.native.title = text
 
     def set_font(self, font):
-        if font:
-            self.native.font = font._impl.native
-
-    def set_value(self, value):
-        if value is True:
-            self.native.state = NSOnState
-        elif value is False:
-            self.native.state = NSOffState
+        self.native.font = font._impl.native
 
     def get_value(self):
-        value = self.native.state
-        if value == 1:
-            return True
-        elif value == 0:
-            return False
-        else:
-            raise Exception(f"Undefined value for value of {__class__}")
+        return self.native.state == NSOnState
+
+    def set_value(self, value):
+        old_value = self.native.state == NSOnState
+        self.native.state = NSOnState if value else NSOffState
+        if self.interface.on_change and value != old_value:
+            self.interface.on_change(self.interface)
 
     def rehint(self):
         content_size = self.native.intrinsicContentSize()
-        self.interface.intrinsic.height = content_size.height
         self.interface.intrinsic.width = at_least(content_size.width)
+        self.interface.intrinsic.height = content_size.height

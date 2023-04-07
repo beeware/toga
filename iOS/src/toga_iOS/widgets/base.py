@@ -6,6 +6,7 @@ from toga_iOS.libs import UIColor
 
 class Widget:
     def __init__(self, interface):
+        super().__init__()
         self.interface = interface
         self.interface._impl = self
         self._container = None
@@ -14,7 +15,6 @@ class Widget:
         self.native = None
         self.create()
         self.interface.style.reapply()
-        self.set_enabled(self.interface.enabled)
 
     def create(self):
         pass
@@ -60,8 +60,11 @@ class Widget:
     def viewport(self, viewport):
         self._viewport = viewport
 
+    def get_enabled(self):
+        return self.native.isEnabled()
+
     def set_enabled(self, value):
-        self.native.enabled = self.interface.enabled
+        self.native.enabled = value
 
     def focus(self):
         self.interface.factory.not_implemented("Widget.focus()")

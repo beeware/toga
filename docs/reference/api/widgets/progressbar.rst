@@ -1,6 +1,12 @@
 Progress Bar
 ============
 
+Displays task progress on a horizontal graphical bar. The task being monitored
+can be of known or indeterminate length.
+
+.. figure:: /reference/images/ProgressBar.jpeg
+    :align: center
+
 .. rst-class:: widget-support
 .. csv-filter:: Availability (:ref:`Key <api-status-key>`)
    :header-rows: 1
@@ -8,10 +14,14 @@ Progress Bar
    :included_cols: 4,5,6,7,8,9
    :exclude: {0: '(?!^(ProgressBar|Component)$)'}
 
-The progress bar is a simple widget for showing a percentage progress for task completion.
-
 Usage
 -----
+
+If a progress bar has a ``max`` value, it is a *determinate* progress bar. The
+value of the progress bar can be altered over time, indicating progress on a
+task. The visual indicator of the progress bar will be filled indicating the
+proportion of ``value`` relative to ``max``. ``max`` can be any positive
+numerical value.
 
 .. code-block:: Python
 
@@ -19,48 +29,38 @@ Usage
 
     progress = toga.ProgressBar(max=100, value=1)
 
-    # Update progress
+    # Start progress animation
+    progress.start()
+
+    # Update progress to 10%
     progress.value = 10
 
-A progress bar can be in one of four visual states, determined by its ``max`` properties, and with the ``start()`` and ``stop()`` methods.
-Calling the ``start()`` method will make the progress bar enter running mode, and calling ``stop()`` will exit running mode.
-See the table below:
+    # Stop progress animation
+    progress.stop()
 
-======= ============== ===================================
-``max`` ``is_running`` Behavior
-======= ============== ===================================
-None    False          disabled
-None    True           indeterminate (continuous animation)
-number  False          show percentage
-number  True           show percentage and busy animation
-======= ============== ===================================
-
-If a progress bar is indeterminate, it is communicating that it has no exact percentage to report, but that work is still begin done. It may communicate this by continuously pulsing back and forth, for example.
-
-A second type of animation occurs when a percentage is displayed and the application wants to signal that progress is still "busy". Such an animation might involve gradually altering a lighting gradient on the progress bar.
-
-**Note**: Not every platform may support these animations.
-
-ProgressBar state examples:
+If a progress bar does *not* have a ``max`` value (i.e., ``max == None``), it is
+an *indeterminate* progress bar. Any change to the value of an indeterminate
+progress bar will be ignored. When started, an indeterminate progress bar
+animates as a throbbing or "ping pong" animation.
 
 .. code-block:: Python
 
-    # use indeterminate mode
-    progress.max = None
-    print(progress.is_determinate) #  => False
+    import toga
+
+    progress = toga.ProgressBar(max=None)
+
+    # Start progress animation
     progress.start()
-    print(progress.is_running) #  => True
 
-    # show percentage and busy animation (if supported)
-    progress.max = 100
-    print(progress.is_determinate) #  => True
-
-    # signal that no work is begin done with the disabled state
-    progress.max = None
-    print(progress.is_determinate) #  => False
+    # Stop progress animation
     progress.stop()
-    print(progress.is_running) #  => False
 
+Notes
+=====
+
+* The visual appearance of progress bars varies from platform to platform. Toga
+  will try to provide a visual distinction between running and not-running
+  determinate progress bars, but this cannot be guaranteed.
 
 Reference
 ---------

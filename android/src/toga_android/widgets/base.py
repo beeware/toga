@@ -27,6 +27,7 @@ def _get_activity(_cache=[]):
 
 class Widget:
     def __init__(self, interface):
+        super().__init__()
         self.interface = interface
         self.interface._impl = self
         self._container = None
@@ -73,6 +74,9 @@ class Widget:
             child._impl.container = container
 
         self.rehint()
+
+    def get_enabled(self):
+        return self.native.isEnabled()
 
     def set_enabled(self, value):
         self.native.setEnabled(value)

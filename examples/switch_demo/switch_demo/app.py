@@ -1,4 +1,5 @@
 import toga
+from toga.colors import REBECCAPURPLE
 from toga.constants import COLUMN
 from toga.style import Pack
 
@@ -20,12 +21,13 @@ class SwitchApp(toga.App):
                 toga.Switch("Disabled", enabled=False, style=Pack(padding_top=24)),
                 # Switch with a big font
                 toga.Switch(
-                    "Big font",
+                    "Big and colorful",
                     style=Pack(
                         padding_top=24,
                         font_family="serif",
                         font_size=20,
                         font_weight="bold",
+                        color=REBECCAPURPLE,
                     ),
                 ),
             ],

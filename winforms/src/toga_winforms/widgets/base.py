@@ -4,6 +4,7 @@ from toga_winforms.libs import Point, Size, SystemColors
 
 class Widget:
     def __init__(self, interface):
+        super().__init__()
         self.interface = interface
         self.interface._impl = self
 
@@ -62,9 +63,11 @@ class Widget:
     def set_tab_index(self, tab_index):
         self.native.TabIndex = tab_index
 
+    def get_enabled(self):
+        return self.native.Enabled
+
     def set_enabled(self, value):
-        if self.native:
-            self.native.Enabled = self.interface.enabled
+        self.native.Enabled = value
 
     def focus(self):
         if self.native:

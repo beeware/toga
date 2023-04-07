@@ -71,8 +71,11 @@ class Widget:
         for child in self.interface.children:
             child._impl.container = container
 
+    def get_enabled(self):
+        return not self.native.disabled
+
     def set_enabled(self, value):
-        self.native.set_sensitive(self.interface.enabled)
+        self.native.disabled = not value
 
     def focus(self):
         self.interface.factory.not_implemented("Widget.focus()")

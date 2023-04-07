@@ -5,6 +5,7 @@ from ..libs import Gtk, get_background_color_css, get_color_css, get_font_css
 
 class Widget:
     def __init__(self, interface):
+        super().__init__()
         self.interface = interface
         self.interface._impl = self
         self._container = None
@@ -67,8 +68,11 @@ class Widget:
 
         self.rehint()
 
+    def get_enabled(self):
+        return self.native.get_sensitive()
+
     def set_enabled(self, value):
-        self.native.set_sensitive(self.interface.enabled)
+        self.native.set_sensitive(value)
 
     def focus(self):
         self.native.grab_focus()
@@ -83,7 +87,7 @@ class Widget:
     # CSS tools
     ######################################################################
 
-    def apply_css(self, property, css):
+    def apply_css(self, property, css, native=None):
         """Apply a CSS style controlling a specific property type.
 
         GTK controls appearance with CSS; each GTK widget can have
@@ -102,9 +106,14 @@ class Widget:
         :param css: A dictionary of string key-value pairs, describing
             the new CSS for the given property. If ``None``, the Toga
             style for that property will be reset
+        :param native: The native widget to which the style should be
+            applied. Defaults to `self.native`.
         """
-        style_context = self.native.get_style_context()
-        style_provider = self.style_providers.pop(property, None)
+        if native is None:
+            native = self.native
+
+        style_context = native.get_style_context()
+        style_provider = self.style_providers.pop((property, id(native)), None)
 
         # If there was a previous style provider for the given property, remove
         # it from the GTK widget
@@ -125,7 +134,7 @@ class Widget:
                 Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION,
             )
             # Store the provider so it can be removed later
-            self.style_providers[property] = style_provider
+            self.style_providers[(property, id(native))] = style_provider
 
     ######################################################################
     # APPLICATOR

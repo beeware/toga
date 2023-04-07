@@ -10,7 +10,6 @@ class Button(Widget):
         self.native = WinForms.Button()
         self.native.AutoSizeMode = WinForms.AutoSizeMode.GrowAndShrink
         self.native.Click += self.winforms_click
-        self.set_enabled(self.interface._enabled)
 
     def winforms_click(self, sender, event):
         self.interface.on_press(None)
@@ -31,9 +30,6 @@ class Button(Widget):
 
     def set_font(self, font):
         self.native.Font = font._impl.native
-
-    def set_enabled(self, value):
-        self.native.Enabled = self.interface._enabled
 
     def rehint(self):
         # self.native.Size = Size(0, 0)
