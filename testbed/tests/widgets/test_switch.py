@@ -44,14 +44,14 @@ async def test_text(widget, probe):
 
 async def test_press(widget, probe):
     # Press the button before installing a handler
-    probe.press()
+    await probe.press()
     await probe.redraw()
 
     # Set up a mock handler, and press the button again.
     handler = Mock()
     widget.on_change = handler
 
-    probe.press()
+    await probe.press()
     await probe.redraw()
     handler.assert_called_once_with(widget)
 

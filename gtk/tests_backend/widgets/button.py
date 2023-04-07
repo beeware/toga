@@ -19,5 +19,5 @@ class ButtonProbe(SimpleProbe):
             return None
         return color
 
-    def press(self):
+    async def press(self):
         self.native.clicked()

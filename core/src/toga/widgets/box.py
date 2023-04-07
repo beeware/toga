@@ -28,9 +28,17 @@ class Box(Widget):
         if children:
             self.add(*children)
 
-    @Widget.enabled.setter
+    @property
+    def enabled(self):
+        """Is the widget currently enabled? i.e., can the user interact with the
+        widget?
+
+        Box widgets cannot be disabled; this property will always return True;
+        any attempt to modify it will be ignored."""
+        return True
+
+    @enabled.setter
     def enabled(self, value):
-        # Box doesn't have a "disabled" state
         pass
 
     def focus(self):

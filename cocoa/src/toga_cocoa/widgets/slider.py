@@ -1,5 +1,6 @@
 from travertino.size import at_least
 
+import toga
 from toga_cocoa.libs import (
     SEL,
     NSEventType,
@@ -26,7 +27,7 @@ class TogaSlider(NSSlider):
         self.interface.on_change(None)
 
 
-class Slider(Widget):
+class Slider(Widget, toga.widgets.slider.SliderImpl):
     def create(self):
         self.native = TogaSlider.alloc().init()
         self.native.interface = self.interface
@@ -35,13 +36,19 @@ class Slider(Widget):
         self.native.target = self.native
         self.native.action = SEL("onSlide:")
 
-        self.set_tick_count(self.interface.tick_count)
-
         self.add_constraints()
+
+    def get_tick_count(self):
+        return (
+            self.native.numberOfTickMarks
+            if self.native.allowsTickMarkValuesOnly
+            else None
+        )
 
     def set_tick_count(self, tick_count):
         if tick_count is None:
             self.native.allowsTickMarkValuesOnly = False
+            self.native.numberOfTickMarks = 0
         else:
             self.native.allowsTickMarkValuesOnly = True
             self.native.numberOfTickMarks = tick_count
@@ -52,9 +59,12 @@ class Slider(Widget):
     def set_value(self, value):
         self.native.doubleValue = value
 
+    def get_range(self):
+        return (self.native.minValue, self.native.maxValue)
+
     def set_range(self, range):
-        self.native.minValue = self.interface.range[0]
-        self.native.maxValue = self.interface.range[1]
+        self.native.minValue = range[0]
+        self.native.maxValue = range[1]
 
     def rehint(self):
         content_size = self.native.intrinsicContentSize()

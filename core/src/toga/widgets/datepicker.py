@@ -15,6 +15,8 @@ class DatePicker(Widget):
             a new one will be created for the widget.
     """
 
+    _MIN_WIDTH = 200
+
     def __init__(
         self,
         id=None,

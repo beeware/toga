@@ -61,7 +61,7 @@ class SwitchProbe(SimpleProbe):
             min_height <= switch_height <= max_height
         ), f"Switch height ({switch_height}) not in range ({min_height}, {max_height})"
 
-    def press(self):
+    async def press(self):
         # This isn't really a "click" - it's just changing the value.
         # However, Gtk doesn't seem to have a way to send a click to a switch,
         # and the underlying event on Gtk *is* a value change event.

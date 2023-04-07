@@ -1,6 +1,7 @@
-from ..utils import LoggedObject
+from ..utils import LoggedObject, not_required
 
 
+@not_required  # Testbed coverage is complete for this widget.
 class Widget(LoggedObject):
     def __init__(self, interface):
         super().__init__()
