@@ -1,19 +1,28 @@
 from travertino.size import at_least
 
-from ..libs import Gtk
+from ..libs import Gtk, gtk_alignment
 from .base import Widget
 
 
 class TextInput(Widget):
     def create(self):
         self.native = Gtk.Entry()
-        self.native.interface = self.interface
         self.native.connect("show", lambda event: self.refresh())
         self.native.connect("changed", self.gtk_on_change)
+        self.native.connect("focus-in-event", self.gtk_focus_in_event)
+        self.native.connect("focus-out-event", self.gtk_focus_in_event)
 
     def gtk_on_change(self, entry):
         if self.interface.on_change:
             self.interface.on_change(self.interface)
+
+    def gtk_focus_in_event(self, entry, user_data):
+        if self.interface.on_gain_focus:
+            self.interface.on_gain_focus(self.interface)
+
+    def gtk_focus_out_event(self, entry, user_data):
+        if self.interface.on_lose_focus:
+            self.interface.on_lose_focus(self.interface)
 
     def set_readonly(self, value):
         self.native.set_property("editable", not value)
@@ -22,7 +31,10 @@ class TextInput(Widget):
         self.native.set_placeholder_text(value)
 
     def set_alignment(self, value):
-        self.interface.factory.not_implemented("TextInput.set_alignment()")
+        xalign, justify = gtk_alignment(value)
+        self.native.set_alignment(
+            xalign
+        )  # Aligns the whole text block within the widget.
 
     def set_font(self, font):
         super().set_font(font)
@@ -49,10 +61,12 @@ class TextInput(Widget):
         pass
 
     def set_on_gain_focus(self, handler):
-        self.interface.factory.not_implemented("TextInput.set_on_gain_focus()")
+        # No special handling required
+        pass
 
     def set_on_lose_focus(self, handler):
-        self.interface.factory.not_implemented("TextInput.set_on_lose_focus()")
+        # No special handling required
+        pass
 
     def set_error(self, error_message):
         self.interface.factory.not_implemented("TextInput.set_error()")

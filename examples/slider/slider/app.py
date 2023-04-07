@@ -2,8 +2,8 @@ import toga
 from toga.constants import COLUMN, ROW
 from toga.style import Pack
 
-MIN_VAL = -5
-MAX_VAL = 15
+MIN_VAL = -2
+MAX_VAL = 12
 
 
 class SliderApp(toga.App):
@@ -16,78 +16,48 @@ class SliderApp(toga.App):
         box_style = Pack(direction=ROW, padding=10)
         slider_style = Pack(flex=1)
 
-        self.discrete_slider_value_label = toga.Label(
-            'Slide me or use "ctrl" + "+/-"', style=label_style
-        )
-        self.continuous_slider_value_label = toga.Label(
-            "Default Slider is a continuous range between 0 to 1", style=label_style
+        self.continuous_label = toga.Label("Continuous", style=label_style)
+        self.continuous_slider = toga.Slider(
+            on_change=self.my_continuous_on_change, style=slider_style
         )
 
-        # Add the content on the main window
+        self.disabled_label = toga.Label("Disabled", style=label_style)
+        self.disabled_slider = toga.Slider(enabled=False, style=slider_style)
+
+        self.discrete_label = toga.Label("Discrete\n(with commands)", style=label_style)
         self.discrete_slider = toga.Slider(
             on_change=self.my_discrete_on_change,
             range=(MIN_VAL, MAX_VAL),
             tick_count=MAX_VAL - MIN_VAL + 1,
             style=slider_style,
         )
+
         self.scared_label = toga.Label("Try to catch me!", style=label_style)
+        self.scared_slider = toga.Slider(
+            range=(100, 300.5),
+            value=123.4,
+            on_press=self.scared_on_press,
+            on_release=self.scared_on_release,
+            style=slider_style,
+        )
+
         self.main_window.content = toga.Box(
             children=[
                 toga.Box(
                     style=box_style,
-                    children=[
-                        self.continuous_slider_value_label,
-                        toga.Slider(
-                            on_change=self.my_continuous_on_change, style=slider_style
-                        ),
-                    ],
+                    children=[self.continuous_label, self.continuous_slider],
                 ),
                 toga.Box(
                     style=box_style,
-                    children=[
-                        toga.Label(
-                            "On a scale of 1 to 10, how easy is building a Toga GUI?",
-                            style=label_style,
-                        ),
-                        toga.Slider(
-                            range=(1, 10),
-                            value=10,
-                            style=Pack(width=150),
-                            tick_count=10,
-                        ),
-                    ],
+                    children=[self.disabled_label, self.disabled_slider],
                 ),
                 toga.Box(
                     style=box_style,
-                    children=[
-                        toga.Label("Sliders can be disabled", style=label_style),
-                        toga.Slider(enabled=False, style=slider_style),
-                    ],
+                    children=[self.discrete_label, self.discrete_slider],
                 ),
                 toga.Box(
                     style=box_style,
-                    children=[
-                        toga.Label("Give a Slider some style!", style=label_style),
-                        toga.Slider(style=slider_style),
-                    ],
-                ),
-                toga.Box(
-                    style=box_style,
-                    children=[
-                        self.discrete_slider_value_label,
-                        self.discrete_slider,
-                    ],
-                ),
-                toga.Box(
-                    style=box_style,
-                    children=[
-                        self.scared_label,
-                        toga.Slider(
-                            on_press=self.scared_on_press,
-                            on_release=self.scared_on_release,
-                            style=slider_style,
-                        ),
-                    ],
+                    children=[self.scared_label, self.scared_slider],
                 ),
             ],
             style=Pack(direction=COLUMN, padding=24),
@@ -111,22 +81,17 @@ class SliderApp(toga.App):
         self.main_window.show()
 
     def my_continuous_on_change(self, slider):
-        # get the current value of the slider with `slider.value`
-        self.continuous_slider_value_label.text = (
-            f"The slider value changed to {slider.value}"
-        )
+        self.continuous_label.text = f"Value = {slider.value:.4f}"
+        self.disabled_slider.value = slider.value
 
     def my_discrete_on_change(self, slider):
-        # get the current value of the slider with `slider.value`
-        self.discrete_slider_value_label.text = "The slider value changed to {}".format(
-            slider.value
-        )
+        self.discrete_label.text = f"Value = {slider.value}"
 
     def scared_on_press(self, slider):
-        self.scared_label.text = "Oh no! they got me!"
+        self.scared_label.text = "They got me!"
 
     def scared_on_release(self, slider):
-        self.scared_label.text = f"I am free! Changed to {slider.value}"
+        self.scared_label.text = f"Value = {slider.value:.4f}"
 
     def increase_discrete_slider(self, widget):
         if self.discrete_slider.tick_value != self.discrete_slider.tick_count:

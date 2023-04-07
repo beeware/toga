@@ -42,9 +42,6 @@ class App(LoggedObject):
     def exit(self):
         self._action("exit")
 
-    def set_on_exit(self, value):
-        self._set_value("on_exit", value)
-
     @not_required_on("mobile")
     def current_window(self):
         self._action("current_window")

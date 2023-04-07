@@ -1,17 +1,24 @@
 from rubicon.objc import NSMutableDictionary
 
 from toga.fonts import (
+    BOLD,
     CURSIVE,
     FANTASY,
+    ITALIC,
     MESSAGE,
     MONOSPACE,
-    NORMAL,
     SANS_SERIF,
     SERIF,
     SYSTEM,
     SYSTEM_DEFAULT_FONT_SIZE,
 )
-from toga_iOS.libs import NSAttributedString, NSFontAttributeName, UIFont
+from toga_iOS.libs import (
+    NSAttributedString,
+    NSFontAttributeName,
+    UIFont,
+    UIFontDescriptorTraitBold,
+    UIFontDescriptorTraitItalic,
+)
 
 _FONT_CACHE = {}
 
@@ -47,21 +54,26 @@ class Font:
                 else:
                     family = self.interface.family
 
-                full_name = "{family}{weight}{style}".format(
-                    family=family,
-                    weight=(" " + self.interface.weight.title())
-                    if self.interface.weight is not NORMAL
-                    else "",
-                    style=(" " + self.interface.style.title())
-                    if self.interface.style is not NORMAL
-                    else "",
-                )
-                font = UIFont.fontWithName(full_name, size=size)
-
+                font = UIFont.fontWithName(family, size=size)
                 if font is None:
-                    print(f"Unable to load font: {self.interface.size}pt {full_name}")
-                else:
-                    _FONT_CACHE[self.interface] = font
+                    print(f"Unable to load font: {size}pt {family}")
+                    font = UIFont.systemFontOfSize(size)
+
+            # Convert the base font definition into a font with all the desired traits.
+            traits = 0
+            if self.interface.weight == BOLD:
+                traits |= UIFontDescriptorTraitBold
+            if self.interface.style == ITALIC:
+                traits |= UIFontDescriptorTraitItalic
+            if traits:
+                # If there is no font with the requested traits, this returns the original
+                # font unchanged.
+                font = UIFont.fontWithDescriptor(
+                    font.fontDescriptor.fontDescriptorWithSymbolicTraits(traits),
+                    size=size,
+                )
+
+            _FONT_CACHE[self.interface] = font.retain()
 
         self.native = font
 

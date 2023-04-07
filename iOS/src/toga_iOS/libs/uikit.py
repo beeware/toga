@@ -262,6 +262,8 @@ UIControlStateReserved = 0xFF000000
 ######################################################################
 # UIFont.h
 UIFont = ObjCClass("UIFont")
+UIFontDescriptorTraitItalic = 1 << 0
+UIFontDescriptorTraitBold = 1 << 1
 
 ######################################################################
 # UIGraphics.h
@@ -321,6 +323,18 @@ UISlider = ObjCClass("UISlider")
 ######################################################################
 # UIStackView.h
 UIStackView = ObjCClass("UIStackView")
+
+
+class UIStackViewAlignment(Enum):
+    Fill = 0
+    Leading = 1
+    Top = 1
+    FirstBaseline = 2
+    Center = 3
+    Trailing = 4
+    Bottom = 4
+    LastBaseline = 5
+
 
 ######################################################################
 # UISwitch.h

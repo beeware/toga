@@ -13,17 +13,25 @@ class Divider(Widget):
         # Add the layout constraints
         self.add_constraints()
 
+        # Set the initial direction
+        self._direction = self.interface.HORIZONTAL
+
+    def get_enabled(self):
+        # A Divider is always enabled
+        return True
+
     def rehint(self):
         content_size = self.native.intrinsicContentSize()
 
-        if self.interface.direction == self.interface.VERTICAL:
+        if self._direction == self.interface.VERTICAL:
             self.interface.intrinsic.width = content_size.width
             self.interface.intrinsic.height = at_least(content_size.height)
         else:
             self.interface.intrinsic.width = at_least(content_size.width)
             self.interface.intrinsic.height = content_size.height
 
+    def get_direction(self):
+        return self._direction
+
     def set_direction(self, value):
-        # other implementations might need to change
-        # the width or height of the box here
-        pass
+        self._direction = value

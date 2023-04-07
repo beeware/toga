@@ -1,8 +1,10 @@
-from toga_winforms.libs import Point, Size
+from toga_winforms.colors import native_color
+from toga_winforms.libs import Point, Size, SystemColors
 
 
 class Widget:
     def __init__(self, interface):
+        super().__init__()
         self.interface = interface
         self.interface._impl = self
 
@@ -61,9 +63,11 @@ class Widget:
     def set_tab_index(self, tab_index):
         self.native.TabIndex = tab_index
 
+    def get_enabled(self):
+        return self.native.Enabled
+
     def set_enabled(self, value):
-        if self.native:
-            self.native.Enabled = self.interface.enabled
+        self.native.Enabled = value
 
     def focus(self):
         if self.native:
@@ -100,12 +104,16 @@ class Widget:
         pass
 
     def set_color(self, color):
-        # By default, color can't be changed
-        pass
+        if color is None:
+            self.native.ForeColor = SystemColors.WindowText
+        else:
+            self.native.ForeColor = native_color(color)
 
     def set_background_color(self, color):
-        # By default, background color can't be changed.
-        pass
+        if color is None:
+            self.native.BackColor = SystemColors.Control
+        else:
+            self.native.BackColor = native_color(color)
 
     # INTERFACE
 

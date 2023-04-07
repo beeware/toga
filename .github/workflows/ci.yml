@@ -18,6 +18,11 @@ defaults:
   run:
     shell: bash
 
+# Cancel active CI runs for a PR before starting another run
+concurrency:
+  group: ${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   pre-commit:
     name: Pre-commit checks
@@ -66,7 +71,7 @@ jobs:
           - python-version: "3.12-dev"
             experimental: true
     steps:
-    - uses: actions/checkout@v3.3.0
+    - uses: actions/checkout@v3.5.0
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v4.5.0
       with:
@@ -100,7 +105,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: core
     steps:
-    - uses: actions/checkout@v3.3.0
+    - uses: actions/checkout@v3.5.0
       with:
         fetch-depth: 0
     - uses: actions/setup-python@v4.5.0
@@ -156,7 +161,7 @@ jobs:
             # a wheel of pythonnet isn't available on PyPI.
             python-version: "3.9"
     steps:
-    - uses: actions/checkout@v3.3.0
+    - uses: actions/checkout@v3.5.0
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v4.5.0
       with:
@@ -189,14 +194,21 @@ jobs:
           - pre-command:
             briefcase-run-prefix:
             briefcase-run-args:
+            setup-python: true
 
           - backend: macOS
             runs-on: macos-12
 
+          # We use a fixed Ubuntu version rather than `-latest` because at some point,
+          # `-latest` will be updated, but it will be a soft changeover, which would cause
+          # the system Python version to become inconsistent from run to run.
           - backend: linux
-            runs-on: ubuntu-latest
-            pre-command: "sudo apt-get update -y && sudo apt-get install -y python3-gi python3-gi-cairo gir1.2-gtk-3.0 python3-dev libgirepository1.0-dev libcairo2-dev pkg-config libfuse2"
+            runs-on: ubuntu-22.04
+            # The package list should be the same as in tutorial-0.rst, and the BeeWare
+            # tutorial.
+            pre-command: "sudo apt-get update -y && sudo apt-get install -y python3-dev python3-cairo-dev python3-gi-cairo libgirepository1.0-dev libcairo2-dev libpango1.0-dev gir1.2-webkit2-4.0 pkg-config"
             briefcase-run-prefix: 'xvfb-run -a -s "-screen 0 2048x1536x24"'
+            setup-python: false  # Use the system Python packages.
 
           - backend: windows
             runs-on: windows-latest
@@ -209,11 +221,12 @@ jobs:
             runs-on: macos-12
             briefcase-run-args: " -d '{\"avd\":\"beePhone\"}' --Xemulator=-no-window --Xemulator=-no-snapshot --Xemulator=-no-audio --Xemulator=-no-boot-anim --shutdown-on-exit"
     steps:
-    - uses: actions/checkout@v3.3.0
+    - uses: actions/checkout@v3.5.0
       with:
         fetch-depth: 0
     - name: Set up Python
       uses: actions/setup-python@v4.5.0
+      if: ${{ matrix.setup-python }}
       with:
         python-version: "3.X"
     - name: Install dependencies

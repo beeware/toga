@@ -1,9 +1,7 @@
-from pytest import skip, xfail
-
-from toga_iOS.libs import UIButton
+from toga_iOS.libs import UIButton, UIControlStateNormal
 
 from .base import SimpleProbe
-from .properties import toga_font
+from .properties import toga_color, toga_font
 
 
 class ButtonProbe(SimpleProbe):
@@ -11,16 +9,16 @@ class ButtonProbe(SimpleProbe):
 
     @property
     def text(self):
-        return str(self.native.title)
+        return str(self.native.titleForState(UIControlStateNormal))
 
     @property
     def color(self):
-        xfail("Can't get/set the text color of a button on iOS")
+        return toga_color(self.native.titleColorForState(UIControlStateNormal))
 
     @property
     def font(self):
-        return toga_font(self.native.font)
+        return toga_font(self.native.titleLabel.font)
 
     @property
     def background_color(self):
-        skip("Background color not supported yet")
+        return toga_color(self.native.backgroundColor)

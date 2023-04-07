@@ -386,7 +386,7 @@ NSFont = ObjCClass("NSFont")
 NSFontManager = ObjCClass("NSFontManager")
 
 
-class NSFontMask(Enum):
+class NSFontMask(IntEnum):
     Italic = 0x01
     Bold = 0x02
     Unbold = 0x04
@@ -620,11 +620,6 @@ NSProgressIndicator = ObjCClass("NSProgressIndicator")
 
 NSProgressIndicatorBarStyle = 0
 NSProgressIndicatorSpinningStyle = 1
-
-######################################################################
-# NSRunLoop.h
-
-NSDefaultRunLoopMode = c_void_p.in_dll(appkit, "NSDefaultRunLoopMode")
 
 ######################################################################
 # NSRunningApplication.h

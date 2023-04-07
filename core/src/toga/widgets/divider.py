@@ -1,19 +1,7 @@
-import warnings
-
 from .base import Widget
 
 
 class Divider(Widget):
-    """A visual divider line.
-
-    Args:
-        id (str): An identifier for this widget.
-        style (:obj:`Style`): An optional style object. If no style is provided then
-            a new one will be created for the widget.
-        direction: The direction for divider, either ``Divider.HORIZONTAL``
-            or ``Divider.VERTICAL``. Defaults to `Divider.HORIZONTAL``
-    """
-
     HORIZONTAL = 0
     VERTICAL = 1
 
@@ -22,37 +10,45 @@ class Divider(Widget):
         id=None,
         style=None,
         direction=HORIZONTAL,
-        factory=None,  # DEPRECATED!
     ):
+        """Create a new divider line.
+
+        Inherits from :class:`~toga.widgets.base.Widget`.
+
+        :param id: The ID for the widget.
+        :param style: A style object. If no style is provided, a default style
+            will be applied to the widget.
+        :param direction: The direction in which the divider will be drawn.
+            Defaults to ``Divider.HORIZONTAL``
+        """
         super().__init__(id=id, style=style)
-
-        ######################################################################
-        # 2022-09: Backwards compatibility
-        ######################################################################
-        # factory no longer used
-        if factory:
-            warnings.warn("The factory argument is no longer used.", DeprecationWarning)
-        ######################################################################
-        # End backwards compatibility.
-        ######################################################################
-
-        self._direction = direction
 
         # Create a platform specific implementation of a Divider
         self._impl = self.factory.Divider(interface=self)
         self.direction = direction
 
     @property
-    def direction(self):
-        """The direction of the split.
+    def enabled(self):
+        """Is the widget currently enabled? i.e., can the user interact with the
+        widget?
 
-        Returns:
-            0 for vertical, 1 for horizontal.
+        Divider widgets cannot be disabled; this property will always
+        return True; any attempt to modify it will be ignored."""
+        return True
+
+    @enabled.setter
+    def enabled(self, value):
+        pass
+
+    @property
+    def direction(self):
+        """The direction in which the visual separator will be drawn.
+
+        :returns: ``Divider.HORIZONTAL`` or ``Divider.VERTICAL``
         """
-        return self._direction
+        return self._impl.get_direction()
 
     @direction.setter
     def direction(self, value):
-        self._direction = value
         self._impl.set_direction(value)
         self.refresh()

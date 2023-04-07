@@ -61,7 +61,7 @@ class TestDetailedList(TestCase):
         self.assertValueSet(self.dlist, "scroll to", len(self.dlist.data) - 1)
 
     def test_on_delete(self):
-        self.assertIsNone(self.dlist._on_delete)
+        self.assertIsNone(self.dlist.on_delete._raw)
 
         # set a new callback
         def callback(widget, **extra):
@@ -70,13 +70,13 @@ class TestDetailedList(TestCase):
         self.dlist.on_delete = callback
         self.assertEqual(self.dlist.on_delete._raw, callback)
         self.assertEqual(
-            self.dlist.on_delete("widget", a=1),
+            self.dlist.on_delete(None, a=1),
             "called <class 'toga.widgets.detailedlist.DetailedList'> with {'a': 1}",
         )
         self.assertValueSet(self.dlist, "on_delete", self.dlist.on_delete)
 
     def test_on_refresh(self):
-        self.assertIsNone(self.dlist._on_refresh)
+        self.assertIsNone(self.dlist.on_refresh._raw)
 
         # set a new callback
         def callback(widget, **extra):
@@ -85,13 +85,13 @@ class TestDetailedList(TestCase):
         self.dlist.on_refresh = callback
         self.assertEqual(self.dlist.on_refresh._raw, callback)
         self.assertEqual(
-            self.dlist.on_refresh("widget", a=1),
+            self.dlist.on_refresh(None, a=1),
             "called <class 'toga.widgets.detailedlist.DetailedList'> with {'a': 1}",
         )
         self.assertValueSet(self.dlist, "on_refresh", self.dlist.on_refresh)
 
     def test_on_select(self):
-        self.assertIsNone(self.dlist._on_select)
+        self.assertIsNone(self.dlist._on_select._raw)
 
         # set a new callback
         def callback(widget, **extra):
@@ -100,7 +100,7 @@ class TestDetailedList(TestCase):
         self.dlist.on_select = callback
         self.assertEqual(self.dlist.on_select._raw, callback)
         self.assertEqual(
-            self.dlist.on_select("widget", a=1),
+            self.dlist.on_select(None, a=1),
             "called <class 'toga.widgets.detailedlist.DetailedList'> with {'a': 1}",
         )
         self.assertValueSet(self.dlist, "on_select", self.dlist.on_select)

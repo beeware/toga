@@ -1,7 +1,6 @@
 Button
 ======
 
-
 A widget that can be pressed or clicked to cause an action in an application.
 
 .. figure:: /reference/images/Button.jpeg
@@ -28,7 +27,7 @@ A button has a text label. A handler can be associated with button press events.
         # handle event
         pass
 
-    button = toga.Button('Click me', on_press=my_callback)
+    button = toga.Button("Click me", on_press=my_callback)
 
 Notes
 -----

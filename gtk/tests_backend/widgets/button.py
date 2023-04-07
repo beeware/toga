@@ -1,5 +1,4 @@
-from pytest import skip
-
+from toga.colors import TRANSPARENT
 from toga_gtk.libs import Gtk
 
 from .base import SimpleProbe
@@ -13,13 +12,12 @@ class ButtonProbe(SimpleProbe):
         return self.native.get_label()
 
     @property
-    def color(self):
-        skip("color probe not implemented")
-
-    @property
-    def font(self):
-        skip("font probe not implemented")
-
-    @property
     def background_color(self):
-        skip("background color probe not implemented")
+        color = super().background_color
+        # Background color of TRANSPARENT is treated as a reset.
+        if color == TRANSPARENT:
+            return None
+        return color
+
+    async def press(self):
+        self.native.clicked()

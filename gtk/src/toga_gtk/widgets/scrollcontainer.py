@@ -13,7 +13,6 @@ class ScrollContainer(Widget):
         self.native.set_min_content_height(self.interface.MIN_HEIGHT)
 
         self.native.set_overlay_scrolling(True)
-        self.native.interface = self.interface
 
         self.inner_container = TogaContainer()
         self.native.add(self.inner_container)

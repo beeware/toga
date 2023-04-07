@@ -190,9 +190,6 @@ class App:
     def exit(self):
         pass
 
-    def set_on_exit(self, value):
-        pass
-
     def current_window(self):
         self.interface.factory.not_implemented("App.current_window()")
 

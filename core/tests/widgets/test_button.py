@@ -1,81 +1,65 @@
+from unittest.mock import Mock
+
+import pytest
+
 import toga
-from toga_dummy.utils import TestCase
+from toga_dummy.utils import EventLog, assert_action_performed, attribute_value
 
 
-class ButtonTests(TestCase):
-    def setUp(self):
-        super().setUp()
+@pytest.fixture
+def button():
+    return toga.Button("Test Button")
 
-        # Create a button with the dummy factory
-        self.initial_text = "Test Button"
-        self.btn = toga.Button(self.initial_text)
 
-    def test_widget_created(self):
-        self.assertEqual(self.btn._impl.interface, self.btn)
-        self.assertActionPerformed(self.btn, "create Button")
+def test_widget_created(button):
+    """A button can be created."""
+    # Round trip the impl/interface
+    assert button._impl.interface == button
+    assert_action_performed(button, "create Button")
 
-    def test_button_text(self):
-        self.assertEqual(self.btn._text, self.initial_text)
-        self.btn.text = "New Text"
-        self.assertEqual(self.btn.text, "New Text")
 
-        # test if backend gets called with the right text
-        self.assertValueSet(self.btn, "text", "New Text")
+@pytest.mark.parametrize(
+    "value, expected",
+    [
+        ("New Text", "New Text"),
+        ("", ""),
+        (None, ""),
+        ("\u200B", ""),
+        (12345, "12345"),
+        ("Contains\nnewline", "Contains"),
+    ],
+)
+def test_button_text(button, value, expected):
+    """The button label can be modified."""
+    assert button.text == "Test Button"
 
-    def test_button_text_with_None(self):
-        self.btn.text = None
-        self.assertEqual(self.btn.text, "")
-        self.assertValueSet(self.btn, "text", "")
+    # Clear the event log
+    EventLog.reset()
 
-    def test_button_on_press(self):
-        self.assertIsNone(self.btn._on_press)
+    button.text = value
+    assert button.text == expected
 
-        # set a new callback
-        def callback(widget, **extra):
-            return f"called {type(widget)} with {extra}"
+    # test backend has the right value
+    assert attribute_value(button, "text") == expected
 
-        self.btn.on_press = callback
-        self.assertEqual(self.btn.on_press._raw, callback)
-        self.assertEqual(
-            self.btn.on_press(self.btn, a=1),
-            "called <class 'toga.widgets.button.Button'> with {'a': 1}",
-        )
-        self.assertValueSet(self.btn, "on_press", self.btn._on_press)
+    # A refresh was performed
+    assert_action_performed(button, "refresh")
 
-    def test_focus(self):
-        self.btn.focus()
-        self.assertActionPerformed(self.btn, "focus")
 
-    ######################################################################
-    # 2022-07: Backwards compatibility
-    ######################################################################
+def test_button_on_press(button):
+    """The on_press handler can be invoked."""
+    # No handler initially
+    assert button._on_press._raw is None
 
-    def test_label_deprecated(self):
-        new_text = "New Label"
-        with self.assertWarns(DeprecationWarning):
-            self.btn.label = new_text
-        with self.assertWarns(DeprecationWarning):
-            self.assertEqual(self.btn.label, new_text)
-        self.assertValueSet(self.btn, "text", new_text)
+    # Define and set a new callback
+    handler = Mock()
 
-    def test_init_with_deprecated(self):
-        # label is a deprecated argument
-        with self.assertWarns(DeprecationWarning):
-            toga.Button(
-                label="Test Button",
-            )
+    button.on_press = handler
 
-        # can't specify both label *and* text
-        with self.assertRaises(ValueError):
-            toga.Button(
-                label="Test Button",
-                text="Test Button",
-            )
+    assert button.on_press._raw == handler
 
-        # label/text is mandatory
-        with self.assertRaises(TypeError):
-            toga.Button()
+    # Invoke the callback
+    button._impl.simulate_press()
 
-    ######################################################################
-    # End backwards compatibility.
-    ######################################################################
+    # Callback was invoked
+    handler.assert_called_once_with(button)

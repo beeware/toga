@@ -1,5 +1,3 @@
-from pytest import skip
-
 from toga_iOS.libs import UILabel
 
 from .base import SimpleProbe
@@ -11,15 +9,14 @@ class LabelProbe(SimpleProbe):
 
     @property
     def text(self):
-        return str(self.native.text)
+        value = str(self.native.text)
+        if value == "\u200B":
+            return ""
+        return value
 
     @property
     def color(self):
         return toga_color(self.native.textColor)
-
-    @property
-    def background_color(self):
-        skip("Can't set background color")
 
     @property
     def font(self):

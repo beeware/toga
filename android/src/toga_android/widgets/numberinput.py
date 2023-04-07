@@ -3,10 +3,10 @@ from decimal import Decimal, InvalidOperation
 from travertino.size import at_least
 
 from ..libs.android.text import InputType, TextWatcher
-from ..libs.android.util import TypedValue
 from ..libs.android.view import Gravity, View__MeasureSpec
 from ..libs.android.widget import EditText
-from .base import Widget, align
+from .base import align
+from .label import TextViewWidget
 
 
 def decimal_from_string(s):
@@ -48,7 +48,7 @@ class TogaNumberInputWatcher(TextWatcher):
         pass
 
 
-class NumberInput(Widget):
+class NumberInput(TextViewWidget):
     def create(self):
         self.native = EditText(self._native_activity)
         self.native.addTextChangedListener(TogaNumberInputWatcher(self))
@@ -59,6 +59,7 @@ class NumberInput(Widget):
             | InputType.TYPE_NUMBER_FLAG_DECIMAL
             | InputType.TYPE_NUMBER_FLAG_SIGNED
         )
+        self.cache_textview_defaults()
 
     def set_readonly(self, value):
         self.native.setFocusable(not value)
@@ -69,11 +70,6 @@ class NumberInput(Widget):
 
     def set_alignment(self, value):
         self.native.setGravity(Gravity.CENTER_VERTICAL | align(value))
-
-    def set_font(self, font):
-        if font:
-            self.native.setTextSize(TypedValue.COMPLEX_UNIT_SP, font._impl.get_size())
-            self.native.setTypeface(font._impl.get_typeface(), font._impl.get_style())
 
     def set_value(self, value):
         # Store a string in the Android widget. The `afterTextChanged` method

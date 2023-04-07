@@ -84,9 +84,11 @@ class DefinitionExtractor:
             if isinstance(node, ast.ClassDef):
                 if self.is_required_for_platform(node):
                     self._classes[node.name] = node  # use the class name as the key
-            elif isinstance(node, ast.Assign):
-                # Allow a class with no new methods to be defined by assigning from an
-                # existing class.
+            elif isinstance(node, ast.Assign) and node.col_offset == 0:
+                # Allow a class with no new methods to be defined by assigning
+                # from an existing class. The col_offset means we only pay
+                # attention to assignments at the top level of a module, not
+                # assignments inside method bodies.
                 for target in node.targets:
                     if isinstance(target, ast.Name):
                         self._classes[target.id] = node
@@ -219,7 +221,9 @@ class DefinitionExtractor:
                 class_node = self._classes[class_name]
                 for node in ast.walk(class_node):
                     if isinstance(node, ast.FunctionDef):
-                        if self.is_required_for_platform(node):
+                        if self.is_required_for_platform(
+                            node
+                        ) and not node.name.startswith("simulate_"):
                             methods.append(node.name)
         return methods
 

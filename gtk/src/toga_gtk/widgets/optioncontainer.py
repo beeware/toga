@@ -7,7 +7,6 @@ class OptionContainer(Widget):
     def create(self):
         # We want a single unified widget; the vbox is the representation of that widget.
         self.native = Gtk.Notebook()
-        self.native.interface = self.interface
         self.native.connect("switch-page", self.gtk_on_switch_page)
 
     def gtk_on_switch_page(self, widget, page, page_num):

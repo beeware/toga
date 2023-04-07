@@ -2,7 +2,7 @@ from string import ascii_lowercase, ascii_uppercase, digits
 
 import toga
 from toga import validators
-from toga.constants import COLUMN
+from toga.constants import COLUMN, RIGHT
 from toga.style import Pack
 
 EMPTY_PASSWORD = "Empty password"
@@ -14,8 +14,10 @@ class TextInputApp(toga.App):
         # Disable all the text inputs
         self.text_input.enabled = False
         self.text_input_placeholder.enabled = False
+        self.right_aligned_input.enabled = False
         self.password_input.enabled = False
         self.number_input.enabled = False
+        self.right_aligned_number_input.enabled = False
 
         # Update the labels with the extracted values
         self.text_label.text = "Text content: {}; {}".format(
@@ -28,11 +30,14 @@ class TextInputApp(toga.App):
             self.password_input.value,
         )
 
-        number = self.number_input.value
-        if number:
-            self.number_label.text = f"Double the number is: {number * 2}"
-        else:
-            self.number_label.text = "You didn't enter a number"
+        try:
+            number = self.number_input.value + self.right_aligned_number_input.value
+            self.number_label.text = (
+                f"The sum of {self.number_input.value} and "
+                f"{self.right_aligned_number_input.value} number is: {number}"
+            )
+        except TypeError:
+            self.number_label.text = "Please enter a number in each number input."
 
         # Wait 5 seconds
         for i in range(5, 0, -1):
@@ -43,8 +48,10 @@ class TextInputApp(toga.App):
         # Renable the inputs again.
         self.text_input.enabled = True
         self.text_input_placeholder.enabled = True
+        self.right_aligned_input.enabled = True
         self.password_input.enabled = True
         self.number_input.enabled = True
+        self.right_aligned_number_input.enabled = True
 
     def startup(self):
         # Set up main window
@@ -69,6 +76,12 @@ class TextInputApp(toga.App):
         )
         self.text_input_placeholder = toga.TextInput(
             placeholder="Type something...", style=Pack(padding=10)
+        )
+        self.right_aligned_input = toga.TextInput(
+            placeholder="Right aligned text", style=Pack(padding=10, text_align=RIGHT)
+        )
+        self.right_aligned_number_input = toga.NumberInput(
+            style=Pack(padding=10, text_align=RIGHT)
         )
         self.password_input = toga.PasswordInput(
             placeholder="Password...",
@@ -99,11 +112,13 @@ class TextInputApp(toga.App):
             children=[
                 self.label,
                 self.text_input,
+                self.right_aligned_input,
                 self.text_input_placeholder,
                 self.password_input,
                 self.password_content_label,
                 self.email_input,
                 self.number_input,
+                self.right_aligned_number_input,
                 self.text_label,
                 self.password_label,
                 self.number_label,

@@ -118,13 +118,14 @@ class MainWindow(Window):
         Args:
             handler (:obj:`callable`): The handler passed.
         """
-        raise AttributeError(
-            "Cannot set on_close handler for the main window. Use the app on_exit handler instead"
-        )
+        if handler:
+            raise AttributeError(
+                "Cannot set on_close handler for the main window. Use the app on_exit handler instead"
+            )
 
 
 class App:
-    """The App is the top level of any GUI program. It is the manager of all
+    """The App is xx the top level of any GUI program. It is the manager of all
     the other bits of the GUI app: the main window and events that window
     generates like user input.
 
@@ -339,7 +340,6 @@ class App:
         # the + and += operators); adding a window to TogaApp.windows
         # would assign the window to the app.
         self.windows = WindowSet(self, windows)
-        self._on_exit = None
 
         self._full_screen_windows = None
 
@@ -552,10 +552,7 @@ class App:
 
     def exit(self):
         """Quit the application gracefully."""
-        if self.on_exit:
-            self.on_exit(self)
-        else:
-            self._impl.exit()
+        self.on_exit(None)
 
     @property
     def on_exit(self):
@@ -573,13 +570,16 @@ class App:
         Args:
             handler (:obj:`callable`): The handler to invoke before the app exits.
         """
+        if handler is None:
+
+            def handler(app, *args, **kwargs):
+                app._impl.exit()
 
         def cleanup(app, should_exit):
             if should_exit:
                 app._impl.exit()
 
         self._on_exit = wrapped_handler(self, handler, cleanup=cleanup)
-        self._impl.set_on_exit(self._on_exit)
 
     def add_background_task(self, handler):
         """Schedule a task to run in the background.
@@ -592,7 +592,7 @@ class App:
 
         :param handler: A coroutine, generator or callable.
         """
-        self._impl.loop.call_soon_threadsafe(wrapped_handler(self, handler), self)
+        self._impl.loop.call_soon_threadsafe(wrapped_handler(self, handler), None)
 
 
 class DocumentApp(App):

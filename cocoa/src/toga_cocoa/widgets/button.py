@@ -21,8 +21,7 @@ class TogaButton(NSButton):
 
     @objc_method
     def onPress_(self, obj) -> None:
-        if self.interface.on_press:
-            self.interface.on_press(self.interface)
+        self.interface.on_press(None)
 
 
 class Button(Widget):
@@ -66,12 +65,11 @@ class Button(Widget):
         # Button style is sensitive to font changes
         self._set_button_style()
 
-    def set_text(self, text):
-        self.native.title = self.interface.text
+    def get_text(self):
+        return str(self.native.title)
 
-    def set_on_press(self, handler):
-        # No special handling required
-        pass
+    def set_text(self, text):
+        self.native.title = text
 
     def set_background_color(self, color):
         if color == TRANSPARENT or color is None:

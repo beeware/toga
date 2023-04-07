@@ -1,4 +1,10 @@
-from pytest import skip
+import asyncio
+
+from toga.colors import TRANSPARENT
+from toga.fonts import CURSIVE, FANTASY, MONOSPACE, SANS_SERIF, SERIF, SYSTEM
+from toga_iOS.libs import NSRunLoop, UIColor
+
+from .properties import toga_color
 
 # From UIControl.h
 UIControlEventTouchDown = 1 << 0
@@ -42,17 +48,35 @@ class SimpleProbe:
         else:
             raise ValueError(f"cannot find {self.native} in {container_native}")
 
+    def assert_alignment(self, expected):
+        assert self.alignment == expected
+
+    def assert_font_family(self, expected):
+        assert self.font.family == {
+            CURSIVE: "Apple Chancery",
+            FANTASY: "Papyrus",
+            MONOSPACE: "Courier New",
+            SANS_SERIF: "Helvetica",
+            SERIF: "Times New Roman",
+            SYSTEM: ".AppleSystemUIFont",
+        }.get(expected, expected)
+
     async def redraw(self):
         """Request a redraw of the app, waiting until that redraw has completed."""
-        # Refresh the layout
-        self.widget.window.content.refresh()
         # Force a repaint
-        #        self.widget.window.content._impl.native.layer.setNeedsDisplay_(True)
         self.widget.window.content._impl.native.layer.displayIfNeeded()
+
+        # If we're running slow, wait for a second
+        if self.widget.app.run_slow:
+            await asyncio.sleep(1)
+        else:
+            # Running at "normal" speed, we need to release to the event loop
+            # for at least one iteration. `runUntilDate:None` does this.
+            NSRunLoop.currentRunLoop.runUntilDate(None)
 
     @property
     def enabled(self):
-        return self.native.enabled
+        return self.native.isEnabled()
 
     @property
     def hidden(self):
@@ -66,6 +90,22 @@ class SimpleProbe:
     def height(self):
         return self.native.frame.size.height
 
-    def press(self):
-        skip("Can't simulate button presses yet")
-        # ?? self.native.sendActionsForControlEvents(UIControlEventTouchUpInside)
+    def assert_width(self, min_width, max_width):
+        assert (
+            min_width <= self.width <= max_width
+        ), f"Width ({self.width}) not in range ({min_width}, {max_width})"
+
+    def assert_height(self, min_height, max_height):
+        assert (
+            min_height <= self.height <= max_height
+        ), f"Height ({self.height}) not in range ({min_height}, {max_height})"
+
+    @property
+    def background_color(self):
+        if self.native.backgroundColor == UIColor.clearColor:
+            return TRANSPARENT
+        else:
+            return toga_color(self.native.backgroundColor)
+
+    async def press(self):
+        self.native.sendActionsForControlEvents(UIControlEventTouchDown)

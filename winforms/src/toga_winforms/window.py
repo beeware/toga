@@ -18,6 +18,7 @@ class WinFormsViewport:
 
     @property
     def height(self):
+        # Treat `native=None` as a 0x0 viewport
         if self.native is None:
             return 0
         # Subtract any vertical shift of the frame. This is to allow
@@ -198,9 +199,6 @@ class Window:
 
     def set_full_screen(self, is_full_screen):
         self.interface.factory.not_implemented("Window.set_full_screen()")
-
-    def set_on_close(self, handler):
-        pass
 
     def close(self):
         self._is_closing = True

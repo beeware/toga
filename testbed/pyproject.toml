@@ -22,7 +22,7 @@ requires = [
     "../core",
 ]
 test_requires = [
-    "coverage==7.0.5",
+    "coverage==7.2.0",
     "pytest==7.2.0",
     "pytest-asyncio==0.20.3",
 ]
@@ -42,6 +42,8 @@ test_sources = [
 ]
 requires = [
     "../gtk",
+    # PyGObject #119 breaks the test suite; we need to use a PR version.
+    "git+https://gitlab.gnome.org/monnerat/pygobject.git@issue119",
 ]
 
 [tool.briefcase.app.testbed.linux.appimage]
@@ -86,7 +88,7 @@ test_sources = [
     "../android/tests_backend",
 ]
 requires = [
-    "../android"
+    "../android",
 ]
 # Coverage requires access to individual .py files.
 build_gradle_extra_content = "android.defaultConfig.python.extractPackages 'toga_android'"

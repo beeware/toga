@@ -27,6 +27,7 @@ def _get_activity(_cache=[]):
 
 class Widget:
     def __init__(self, interface):
+        super().__init__()
         self.interface = interface
         self.interface._impl = self
         self._container = None
@@ -74,6 +75,9 @@ class Widget:
 
         self.rehint()
 
+    def get_enabled(self):
+        return self.native.isEnabled()
+
     def set_enabled(self, value):
         self.native.setEnabled(value)
 
@@ -116,9 +120,10 @@ class Widget:
     # a default implementation because it often overwrites other aspects of the widget's
     # appearance.
     def set_background_color_simple(self, value):
-        self.native.setBackgroundColor(
-            native_color(TRANSPARENT if (value is None) else value)
-        )
+        if value is None:
+            self.native.setBackgroundColor(native_color(TRANSPARENT))
+        else:
+            self.native.setBackgroundColor(native_color(value))
 
     def set_alignment(self, alignment):
         pass  # If appropriate, a widget subclass will implement this.

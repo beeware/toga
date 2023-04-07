@@ -1,7 +1,6 @@
-from pytest import approx, fixture, mark
+from pytest import approx, fixture
 
 import toga
-from toga.platform import current_platform
 from toga.style.pack import CENTER, COLUMN, JUSTIFY, LEFT, LTR, RIGHT, RTL
 
 from .properties import (  # noqa: F401
@@ -10,7 +9,10 @@ from .properties import (  # noqa: F401
     test_background_color_transparent,
     test_color,
     test_color_reset,
+    test_enabled,
+    test_flex_horizontal_widget_size,
     test_font,
+    test_font_attrs,
     test_text,
     test_text_width_change,
 )
@@ -18,59 +20,69 @@ from .properties import (  # noqa: F401
 
 @fixture
 async def widget():
-    return toga.Label("hello")
+    return toga.Label("hello, this is a label")
 
 
-test_text_width_change = mark.skipif(
-    current_platform in {"linux"},
-    reason="resizes not applying correctly",
-)(test_text_width_change)
-
-
-# TODO: a `width` test, for any widget whose width depends on its text.
-@mark.skip("changing text does not trigger a refresh (#1289)")
 async def test_multiline(widget, probe):
+    """If the label contains multiline text, it resizes vertically"""
+
     def make_lines(n):
-        return "\n".join(f"line{i}" for i in range(n))
+        return "\n".join(f"This is line {i}" for i in range(n))
 
     widget.text = make_lines(1)
-    # TODO: Android at least will need an `await` after each text change, to give the
-    # native layout a chance to update.
+    await probe.redraw()
     line_height = probe.height
 
+    # Label should have a signficant width.
+    assert probe.width > 50
+
+    # Empty text should not cause the widget to collapse.
+    widget.text = ""
+    await probe.redraw()
+    assert probe.height == line_height
+    # Label should have almost 0 width
+    assert probe.width < 10
+
     widget.text = make_lines(2)
+    await probe.redraw()
     assert probe.height == approx(line_height * 2, rel=0.1)
     line_spacing = probe.height - (line_height * 2)
 
-    for n in range(3, 10):
+    for n in range(3, 6):
         widget.text = make_lines(n)
+        await probe.redraw()
+        # Label height should reflect the number of lines
         assert probe.height == approx(
             (line_height * n) + (line_spacing * (n - 1)),
             rel=0.1,
         )
+        # Label should have a signficant width.
+        assert probe.width > 50
 
 
 async def test_alignment(widget, probe):
-    # Initial alignment is LEFT
+    """Labels honor alignment settings"""
+    # Initial alignment is LEFT, initial direction is LTR
     widget.parent.style.direction = COLUMN
-    assert probe.alignment == LEFT
+    await probe.redraw()
+    probe.assert_alignment(LEFT)
 
     for alignment in [RIGHT, CENTER, JUSTIFY]:
         widget.style.text_align = alignment
         await probe.redraw()
-        assert probe.alignment == alignment
+        probe.assert_alignment(alignment)
 
     # Clearing the alignment reverts to default alignment of LEFT
-    widget.style.text_align = None
+    del widget.style.text_align
     await probe.redraw()
-    assert probe.alignment == LEFT
+    probe.assert_alignment(LEFT)
 
     # If text direction is RTL, default alignment is RIGHT
     widget.style.text_direction = RTL
     await probe.redraw()
-    assert probe.alignment == RIGHT
+    probe.assert_alignment(RIGHT)
 
     # If text direction is expliclty LTR, default alignment is LEFT
     widget.style.text_direction = LTR
     await probe.redraw()
-    assert probe.alignment == LEFT
+    probe.assert_alignment(LEFT)

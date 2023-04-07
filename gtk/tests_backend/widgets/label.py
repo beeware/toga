@@ -1,8 +1,7 @@
-from pytest import skip
-
 from toga_gtk.libs import Gtk
 
 from .base import SimpleProbe
+from .properties import toga_alignment
 
 
 class LabelProbe(SimpleProbe):
@@ -13,17 +12,9 @@ class LabelProbe(SimpleProbe):
         return self.native.get_label()
 
     @property
-    def color(self):
-        skip("color probe not implemented")
-
-    @property
-    def background_color(self):
-        skip("background color probe not implemented")
-
-    @property
-    def font(self):
-        skip("font probe not implemented")
-
-    @property
     def alignment(self):
-        skip("alignment probe not implemented")
+        return toga_alignment(
+            self.native.get_xalign(),
+            self.native.get_yalign(),
+            self.native.get_justify(),
+        )

@@ -48,8 +48,6 @@ class DetailedList(Widget):
         self.refresh_button.overlay_over(self.native)
         self.scroll_button.overlay_over(self.native)
 
-        self.native.interface = self.interface
-
         self.gtk_on_select_signal_handler = self.list_box.connect(
             "row-selected", self.gtk_on_row_selected
         )
