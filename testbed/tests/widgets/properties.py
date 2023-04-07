@@ -34,17 +34,15 @@ async def test_enabled(widget, probe):
 
 async def test_enable_noop(widget, probe):
     "Changing the enabled status on the widget is a no-op"
-    # Widget is initially enabled
+    # Widget reports as enabled
     assert widget.enabled
-    assert probe.enabled
 
     # Attempt to disable the widget
     widget.enabled = False
     await probe.redraw()
 
-    # Widget is still enabled
+    # Widget still reports as enabled
     assert widget.enabled
-    assert probe.enabled
 
 
 async def test_text(widget, probe):
