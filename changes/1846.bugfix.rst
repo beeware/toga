@@ -1,0 +1,1 @@
+Fixed an issue where black bars would display at the sides when resizing a webview on winforms.
