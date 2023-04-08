@@ -1,0 +1,1 @@
+Fixed an issue where calling window._impl.set_position() in a fast succession could result in a crash on winforms.
