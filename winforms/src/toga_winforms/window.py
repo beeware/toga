@@ -84,7 +84,7 @@ class Window:
         return (self.native.Location.X, self.native.Location.Y)
 
     def set_position(self, position):
-        self.native.Location = Point(*position)
+        self.native.set_Location(Point(*position))
 
     def get_size(self):
         return (self.native.ClientSize.Width, self.native.ClientSize.Height)
