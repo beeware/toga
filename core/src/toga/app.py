@@ -19,7 +19,6 @@ except ImportError:
     # Backwards compatibility - imporlib.metadata was added in Python 3.8
     import importlib_metadata
 
-
 # Make sure deprecation warnings are shown by default
 warnings.filterwarnings("default", category=DeprecationWarning)
 
@@ -78,16 +77,16 @@ class MainWindow(Window):
     _WINDOW_CLASS = "MainWindow"
 
     def __init__(
-        self,
-        id=None,
-        title=None,
-        position=(100, 100),
-        size=(640, 480),
-        toolbar=None,
-        resizeable=True,
-        minimizable=True,
-        factory=None,  # DEPRECATED !
-        on_close=None,
+            self,
+            id=None,
+            title=None,
+            position=(100, 100),
+            size=(640, 480),
+            toolbar=None,
+            resizeable=True,
+            minimizable=True,
+            factory=None,  # DEPRECATED !
+            on_close=None,
     ):
         ######################################################################
         # 2022-09: Backwards compatibility
@@ -178,20 +177,20 @@ class App:
     app = None
 
     def __init__(
-        self,
-        formal_name=None,
-        app_id=None,
-        app_name=None,
-        id=None,
-        icon=None,
-        author=None,
-        version=None,
-        home_page=None,
-        description=None,
-        startup=None,
-        windows=None,
-        on_exit=None,
-        factory=None,  # DEPRECATED !
+            self,
+            formal_name=None,
+            app_id=None,
+            app_name=None,
+            id=None,
+            icon=None,
+            author=None,
+            version=None,
+            home_page=None,
+            description=None,
+            startup=None,
+            windows=None,
+            on_exit=None,
+            factory=None,  # DEPRECATED !
     ):
         ######################################################################
         # 2022-09: Backwards compatibility
@@ -321,7 +320,7 @@ class App:
 
         # Get a platform factory, and a paths instance from the factory.
         self.factory = get_platform_factory()
-        self.paths = self.factory.paths
+        self._paths = self.factory.paths
 
         # If an icon (or icon name) has been explicitly provided, use it;
         # otherwise, the icon will be based on the app name.
@@ -348,6 +347,27 @@ class App:
 
     def _create_impl(self):
         return self.factory.App(interface=self)
+
+    @property
+    def paths(self):
+        """
+        Paths for known safe system locations. Using paths makes sure you have a consistent and known location to store
+        files for your app. Also, some platforms do not allow arbitrary file access to any location on disk. On Android,
+        there are many limitations when it comes to accessing file locations and the apis you can use to read from those
+        locations.
+
+        PROPERTIES:
+            **App**: Location of where the apps code is run.
+
+            **Data**: System appropriate location to store user data.
+
+            **Cache**: System cache location. Files stored in this location may be able to be accessed quicker than normal locations.
+
+            **Logs**: Location of toga log files.
+
+            **Toga**: Returns a path to a Toga system resources.
+        """
+        return self._paths
 
     @property
     def name(self):
@@ -571,7 +591,6 @@ class App:
             handler (:obj:`callable`): The handler to invoke before the app exits.
         """
         if handler is None:
-
             def handler(app, *args, **kwargs):
                 app._impl.exit()
 
@@ -605,20 +624,20 @@ class DocumentApp(App):
     """
 
     def __init__(
-        self,
-        formal_name=None,
-        app_id=None,
-        app_name=None,
-        id=None,
-        icon=None,
-        author=None,
-        version=None,
-        home_page=None,
-        description=None,
-        startup=None,
-        document_types=None,
-        on_exit=None,
-        factory=None,  # DEPRECATED !
+            self,
+            formal_name=None,
+            app_id=None,
+            app_name=None,
+            id=None,
+            icon=None,
+            author=None,
+            version=None,
+            home_page=None,
+            description=None,
+            startup=None,
+            document_types=None,
+            on_exit=None,
+            factory=None,  # DEPRECATED !
     ):
         ######################################################################
         # 2022-09: Backwards compatibility
