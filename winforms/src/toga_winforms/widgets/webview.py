@@ -16,6 +16,7 @@ from toga_winforms.libs import (
     WebView2,
     WebView2RuntimeNotFoundException,
     WinForms,
+    Color
 )
 
 from .base import Widget
@@ -43,6 +44,7 @@ class WebView(Widget):
 
         # Trigger the configuration of the webview
         self.native.EnsureCoreWebView2Async(None)
+        self.native.DefaultBackgroundColor = Color.Transparent
 
     def winforms_initialization_completed(self, sender, args):
         # The WebView2 widget has an "internal" widget (CoreWebView2) that is
