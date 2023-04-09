@@ -204,7 +204,7 @@ class App:
         ######################################################################
 
         # Initialize empty widgets registry
-        self.widgets = WidgetRegistry()
+        self._widgets = WidgetRegistry()
 
         # Keep an accessible copy of the app instance
         App.app = self
@@ -453,6 +453,18 @@ class App:
             self._icon = icon_or_name
         else:
             self._icon = Icon(icon_or_name)
+
+    @property
+    def widgets(self):
+        """The widgets collection of the entire app.
+
+        Can be used to lookup widgets over the entire app through widget
+        id or manually iterating through it.
+        Example: ``app.widgets["my_id"]``
+
+        :returns: The reference to the widgets collection of the entire app.
+        """
+        return self._widgets
 
     @property
     def main_window(self):
