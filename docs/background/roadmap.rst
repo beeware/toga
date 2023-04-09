@@ -1,5 +1,5 @@
-Toga Roadmap
-============
+Roadmap
+=======
 
 Toga is a new project - we have lots of things that we'd like to do. If
 you'd like to contribute, you can provide a patch for one of these features.
@@ -40,14 +40,6 @@ Inputs are mechanisms for displaying and editing input provided by the user.
     - Cocoa: NSColorWell
     - GTK: Gtk.ColorButton or Gtk.ColorSelection
     - iOS: ?
-    - Winforms: ?
-    - Android: ?
-
-* SliderInput (H & V) - A widget for selecting a value from a range.
-
-    - Cocoa: NSSlider
-    - GTK: Done
-    - iOS: UISlider
     - Winforms: ?
     - Android: ?
 
@@ -111,19 +103,6 @@ Containers are widgets that can contain other widgets.
     - Winforms: ?
     - Android: ?
 
-* SectionContainer - (suggestions for better name welcome)
-
-    A container view that holds a small number of subviews,
-    only one of which is visible at any given time.
-    Each "section" has a name and icon.
-    Examples of use: top level navigation in Safari's preferences panel.
-
-    - Cocoa: NSTabView
-    - GTK: ?
-    - iOS: ?
-    - Winforms: ?
-    - Android: ?
-
 * NavigationContainer - A container view that holds a navigable tree of subviews
 
     Essentially a view that has a "back" button to return to the previous view
@@ -133,21 +112,6 @@ Containers are widgets that can contain other widgets.
     - Cocoa: No native control
     - GTK: No native control; Gtk.HeaderBar in 3.10+
     - iOS: UINavigationBar + NavigationController
-    - Winforms: ?
-    - Android: ?
-
-Dialogs and windows
-~~~~~~~~~~~~~~~~~~~
-
-GUIs aren't all about widgets - sometimes you need to pop up a dialog to query
-the user. Info, Error, Question, Confirm, StackTrace and Save File Dialogs have been
-implemented.
-
-* File Open - a mechanism for finding and specifying a file on disk.
-
-    - Cocoa:
-    - GTK: Gtk.FileChooserDialog
-    - iOS:
     - Winforms: ?
     - Android: ?
 
