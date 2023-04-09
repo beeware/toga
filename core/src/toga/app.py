@@ -16,7 +16,7 @@ from toga.window import Window
 try:
     from importlib import metadata as importlib_metadata
 except ImportError:
-    # Backwards compatibility - imporlib.metadata was added in Python 3.8
+    # Backwards compatibility - importlib.metadata was added in Python 3.8
     import importlib_metadata
 
 
@@ -170,9 +170,9 @@ class App:
         derived from packaging metadata if not provided.
     :param startup: The callback method before starting the app, typically to
         add the components. Must be a ``callable`` that expects a single
-        argument of :class:`~toga.App`.
-    :param windows: An iterable with objects of :class:`~toga.Window` that will
-        be the app's secondary windows.
+        argument of :class:`~toga.app.App`.
+    :param windows: An iterable with objects of :class:`~toga.window.Window`
+        that will be the app's secondary windows.
     """
 
     app = None
@@ -242,7 +242,7 @@ class App:
             if self._app_name is None and app_id:
                 self._app_name = app_id.split(".")[-1]
 
-        # Load the app metdata (if it is available)
+        # Load the app metadata (if it is available)
         # Apps packaged with Briefcase will have this metadata.
         try:
             self.metadata = importlib_metadata.metadata(self.module_name)
@@ -279,7 +279,7 @@ class App:
             raise RuntimeError("Toga application must have a formal name")
 
         # If an app_id has been provided, use it; otherwise, look to
-        # the module metadata. However, an app_id *must* be provied
+        # the module metadata. However, an app_id *must* be provided
         if app_id:
             self._app_id = app_id
         else:
@@ -390,7 +390,7 @@ class App:
     def app_id(self):
         """The identifier for the app.
 
-        This is a reversed domain name, often used for targetting resources,
+        This is a reversed domain name, often used for targeting resources,
         etc.
 
         :returns: The identifier as a ``str``.
@@ -409,7 +409,7 @@ class App:
     def version(self):
         """The version number of the app.
 
-        :returns: The version numberof the app, as a ``str``.
+        :returns: The version number of the app, as a ``str``.
         """
         return self._version
 

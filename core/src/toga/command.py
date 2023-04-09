@@ -5,7 +5,7 @@ from toga.icons import Icon
 from toga.platform import get_platform_factory
 
 # BACKWARDS COMPATIBILITY: a token object that can be used to differentiate
-# between an explicitly provided ``None``, and a unspecified value falling
+# between an explicitly provided ``None``, and an unspecified value falling
 # back to a default.
 NOT_PROVIDED = object()
 
@@ -125,7 +125,7 @@ class Group:
 
     @property
     def key(self):
-        "A unique tuple describing the path to this group"
+        """A unique tuple describing the path to this group"""
         self_tuple = (self.section, self.order, self.text)
         if self.parent is None:
             return tuple([self_tuple])
@@ -133,7 +133,7 @@ class Group:
 
     @property
     def path(self):
-        "A list containing the chain of groups that contain this group"
+        """A list containing the chain of groups that contain this group"""
         if self.parent is None:
             return [self]
         return [*self.parent.path, self]
@@ -267,7 +267,7 @@ class Command:
 
     @property
     def key(self):
-        "A unique tuple describing the path to this command"
+        """A unique tuple describing the path to this command"""
         return tuple([*self.group.key, (self.section, self.order, self.text)])
 
     def bind(self, factory=None):

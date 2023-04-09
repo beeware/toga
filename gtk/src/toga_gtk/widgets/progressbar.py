@@ -20,7 +20,7 @@ from .base import Widget
 
 
 async def pulse(progressbar):
-    "A background task to animate running indeterminate progress bars"
+    """A background task to animate running indeterminate progress bars"""
     while True:
         progressbar.native.pulse()
         await asyncio.sleep(0.1)
@@ -68,7 +68,7 @@ class ProgressBar(Widget):
         else:
             if self._max is None:
                 # Switching from indeterminate to determinate mode.
-                # Any value will be non-sensical, so set the current value
+                # Any value will be nonsensical, so set the current value
                 # to 0.
                 self.native.set_fraction(0.0)
             else:

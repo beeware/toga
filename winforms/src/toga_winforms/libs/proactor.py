@@ -29,7 +29,7 @@ class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
         # Remember the application context.
         self.app_context = app_context
 
-        # Setup the Proactor.
+        # Set up the Proactor.
         # The code between the following markers should be exactly the same as
         # the official CPython implementation, up to the start of the
         # `while True:` part of run_forever() (see BaseEventLoop.run_forever()

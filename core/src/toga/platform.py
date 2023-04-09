@@ -114,7 +114,7 @@ def get_platform_factory(factory=None):
                     ]
                 )
                 raise RuntimeError(
-                    f"Multiple candidiate toga backends found: ({toga_backends_string}). "
+                    f"Multiple candidate toga backends found: ({toga_backends_string}). "
                     "Uninstall the backends you don't require, or use "
                     "TOGA_BACKEND to specify a backend."
                 )

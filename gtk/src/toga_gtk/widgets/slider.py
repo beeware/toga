@@ -59,7 +59,7 @@ class Slider(Widget, toga.widgets.slider.SliderImpl):
         self.adj.set_upper(range[1])
 
     def get_range(self):
-        return (self.adj.get_lower(), self.adj.get_upper())
+        return self.adj.get_lower(), self.adj.get_upper()
 
     def set_tick_count(self, tick_count):
         self.tick_count = tick_count

@@ -134,10 +134,10 @@ class Context:
         fill rule, (each sub-path is implicitly closed before being filled).
 
         Args:
-            fill_rule (str, optional): 'nonzero' is the non-zero winding rule and
+            fill_rule (str, Optional): 'nonzero' is the non-zero winding rule and
                                        'evenodd' is the even-odd winding rule.
-            preserve (bool, optional): Preserves the path within the Context.
-            color (str, optional): color value in any valid color format,
+            preserve (bool, Optional): Preserves the path within the Context.
+            color (str, Optional): color value in any valid color format,
                 default to black.
 
         Yields:
@@ -153,10 +153,10 @@ class Context:
         """Constructs and yields a :class:`Stroke`.
 
         Args:
-            color (str, optional): color value in any valid color format,
+            color (str, Optional): color value in any valid color format,
                 default to black.
-            line_width (float, optional): stroke line width, default is 2.0.
-            line_dash (array of floats, optional): stroke line dash pattern, default is None.
+            line_width (float, Optional): stroke line width, default is 2.0.
+            line_dash (array of floats, Optional): stroke line dash pattern, default is None.
 
         Yields:
             :class:`Stroke` object.
@@ -241,7 +241,7 @@ class Context:
         return self.add_draw_obj(bezier_curve_to)
 
     def quadratic_curve_to(self, cpx, cpy, x, y):
-        """Constructs and returns a :class:`QuadraticCurveTo.`.
+        """Constructs and returns a :class:`QuadraticCurveTo`.
 
         Args:
             cpx (float): The x axis of the coordinate for the control point.
@@ -262,12 +262,12 @@ class Context:
             x (float): The x coordinate of the arc's center.
             y (float): The y coordinate of the arc's center.
             radius (float): The arc's radius.
-            startangle (float, optional): The angle (in radians) at which the
+            startangle (float, Optional): The angle (in radians) at which the
                 arc starts, measured clockwise from the positive x axis,
                 default 0.0.
-            endangle (float, optional): The angle (in radians) at which the arc ends,
+            endangle (float, Optional): The angle (in radians) at which the arc ends,
                 measured clockwise from the positive x axis, default 2*pi.
-            anticlockwise (bool, optional): If true, causes the arc to be drawn
+            anticlockwise (bool, Optional): If true, causes the arc to be drawn
                 counter-clockwise between the two angles instead of clockwise,
                 default false.
 
@@ -295,12 +295,12 @@ class Context:
             y (float): The y axis of the coordinate for the ellipse's center.
             radiusx (float): The ellipse's major-axis radius.
             radiusy (float): The ellipse's minor-axis radius.
-            rotation (float, optional): The rotation for this ellipse, expressed in radians, default 0.0.
-            startangle (float, optional): The starting point in radians, measured from the x
+            rotation (float, Optional): The rotation for this ellipse, expressed in radians, default 0.0.
+            startangle (float, Optional): The starting point in radians, measured from the x
                 axis, from which it will be drawn, default 0.0.
-            endangle (float, optional): The end ellipse's angle in radians to which it will
+            endangle (float, Optional): The end ellipse's angle in radians to which it will
                 be drawn, default 2*pi.
-            anticlockwise (bool, optional): If true, draws the ellipse
+            anticlockwise (bool, Optional): If true, draws the ellipse
                 anticlockwise (counter-clockwise) instead of clockwise, default false.
 
         Returns:
@@ -339,10 +339,10 @@ class Context:
         or use the default font if there is no font assigned.
 
         Args:
-            text (string): The text to fill.
-            x (float, optional): The x coordinate of the text. Default to 0.
-            y (float, optional): The y coordinate of the text. Default to 0.
-            font (:class:`~toga.Font`, optional): The font to write with.
+            text (str): The text to fill.
+            x (float, Optional): The x coordinate of the text. Default to 0.
+            y (float, Optional): The y coordinate of the text. Default to 0.
+            font (:class:`~toga.fonts.Font`, Optional): The font to write with.
 
         Returns:
             :class:`WriteText` object.
@@ -360,11 +360,11 @@ class Fill(Context):
     fill rule, (each sub-path is implicitly closed before being filled).
 
     Args:
-        color (str, optional): Color value in any valid color format,
+        color (str, Optional): Color value in any valid color format,
             default to black.
-        fill_rule (str, optional): 'nonzero' if the non-zero winding rule and
+        fill_rule (str, Optional): 'nonzero' if the non-zero winding rule and
                                    'evenodd' if the even-odd winding rule.
-        preserve (bool, optional): Preserves the path within the Context.
+        preserve (bool, Optional): Preserves the path within the Context.
     """
 
     def __init__(self, color=BLACK, fill_rule=FillRule.NONZERO, preserve=False):
@@ -422,10 +422,10 @@ class Stroke(Context):
     current line style settings.
 
     Args:
-        color (str, optional): Color value in any valid color format,
+        color (str, Optional): Color value in any valid color format,
             default to black.
-        line_width (float, optional): Stroke line width, default is 2.0.
-        line_dash (array of floats, optional): Stroke line dash pattern, default is None.
+        line_width (float, Optional): Stroke line width, default is 2.0.
+        line_dash (array of floats, Optional): Stroke line dash pattern, default is None.
     """
 
     def __init__(self, color=BLACK, line_width=2.0, line_dash=None):
@@ -495,18 +495,18 @@ class Canvas(Context, Widget):
         id (str):  An identifier for this widget.
         style (:obj:`Style`): An optional style object. If no
             style is provided then a new one will be created for the widget.
-        on_resize (:obj:`callable`): Handler to invoke when the canvas is resized.
-        on_press (:obj:`callable`): Handler to invoke when the primary
+        on_resize (:obj:`Callable`): Handler to invoke when the canvas is resized.
+        on_press (:obj:`Callable`): Handler to invoke when the primary
             (usually the left) button is pressed.
-        on_release (:obj:`callable`): Handler to invoke when the primary
+        on_release (:obj:`Callable`): Handler to invoke when the primary
             (usually the left) button is released.
-        on_drag (:obj:`callable`): Handler to invoke when cursor is dragged with
+        on_drag (:obj:`Callable`): Handler to invoke when cursor is dragged with
             the primary (usually the left) button pressed.
-        on_alt_press (:obj:`callable`): Handler to invoke when the alternate
+        on_alt_press (:obj:`Callable`): Handler to invoke when the alternate
             (usually the right) button pressed.
-        on_alt_release (:obj:`callable`): Handler to invoke when the alternate
+        on_alt_release (:obj:`Callable`): Handler to invoke when the alternate
             (usually the right) button released
-        on_alt_drag (:obj:`callable`): Handler to invoke when the cursor is
+        on_alt_drag (:obj:`Callable`): Handler to invoke when the cursor is
             dragged with the alternate (usually the right) button pressed.
     """
 
@@ -562,7 +562,7 @@ class Canvas(Context, Widget):
         """Set the handler to invoke when the canvas is resized.
 
         Args:
-            handler (:obj:`callable`): The handler to invoke when the canvas is resized.
+            handler (:obj:`Callable`): The handler to invoke when the canvas is resized.
         """
         self._on_resize = wrapped_handler(self, handler)
         self._impl.set_on_resize(self._on_resize)
@@ -583,7 +583,7 @@ class Canvas(Context, Widget):
         button is pressed.
 
         Args:
-            handler (:obj:`callable`): The handler to invoke when the
+            handler (:obj:`Callable`): The handler to invoke when the
             primary mouse button is pressed.
         """
         self._on_press = wrapped_handler(self, handler)
@@ -605,7 +605,7 @@ class Canvas(Context, Widget):
         button is released.
 
         Args:
-            handler (:obj:`callable`): The handler to invoke when the
+            handler (:obj:`Callable`): The handler to invoke when the
             primary mouse button is released.
         """
         self._on_release = wrapped_handler(self, handler)
@@ -628,7 +628,7 @@ class Canvas(Context, Widget):
         primary (usually the left) button pressed.
 
         Args:
-            handler (:obj:`callable`): The handler to invoke when the
+            handler (:obj:`Callable`): The handler to invoke when the
             mouse is dragged with the primary button pressed.
         """
         self._on_drag = wrapped_handler(self, handler)
@@ -650,7 +650,7 @@ class Canvas(Context, Widget):
         mouse button is pressed.
 
         Args:
-            handler (:obj:`callable`): The handler to invoke when the
+            handler (:obj:`Callable`): The handler to invoke when the
             alternate mouse button is pressed.
         """
         self._on_alt_press = wrapped_handler(self, handler)
@@ -672,7 +672,7 @@ class Canvas(Context, Widget):
         mouse button is released.
 
         Args:
-            handler (:obj:`callable`): The handler to invoke when the
+            handler (:obj:`Callable`): The handler to invoke when the
             alternate mouse button is released.
         """
         self._on_alt_release = wrapped_handler(self, handler)
@@ -695,7 +695,7 @@ class Canvas(Context, Widget):
         alternate (usually the right) button pressed.
 
         Args:
-            handler (:obj:`callable`): The handler to invoke when the
+            handler (:obj:`Callable`): The handler to invoke when the
             mouse is dragged with the alternate button pressed.
         """
         self._on_alt_drag = wrapped_handler(self, handler)
@@ -903,12 +903,12 @@ class Ellipse:
         y (float): The y axis of the coordinate for the ellipse's center.
         radiusx (float): The ellipse's major-axis radius.
         radiusy (float): The ellipse's minor-axis radius.
-        rotation (float, optional): The rotation for this ellipse, expressed in radians, default 0.0.
-        startangle (float, optional): The starting point in radians, measured from the x
+        rotation (float, Optional): The rotation for this ellipse, expressed in radians, default 0.0.
+        startangle (float, Optional): The starting point in radians, measured from the x
             axis, from which it will be drawn, default 0.0.
-        endangle (float, optional): The end ellipse's angle in radians to which it will
+        endangle (float, Optional): The end ellipse's angle in radians to which it will
             be drawn, default 2*pi.
-        anticlockwise (bool, optional): If true, draws the ellipse anticlockwise
+        anticlockwise (bool, Optional): If true, draws the ellipse anticlockwise
             (counter-clockwise) instead of clockwise, default false.
     """
 
@@ -975,12 +975,12 @@ class Arc:
         x (float): The x coordinate of the arc's center.
         y (float): The y coordinate of the arc's center.
         radius (float): The arc's radius.
-        startangle (float, optional): The angle (in radians) at which the
+        startangle (float, Optional): The angle (in radians) at which the
             arc starts, measured clockwise from the positive x axis,
             default 0.0.
-        endangle (float, optional): The angle (in radians) at which the arc ends,
+        endangle (float, Optional): The angle (in radians) at which the arc ends,
             measured clockwise from the positive x axis, default 2*pi.
-        anticlockwise (bool, optional): If true, causes the arc to be drawn
+        anticlockwise (bool, Optional): If true, causes the arc to be drawn
             counter-clockwise between the two angles instead of clockwise,
             default false.
     """
@@ -1141,10 +1141,10 @@ class WriteText:
     or use the default font if there is no font assigned.
 
     Args:
-        text (string): The text to fill.
-        x (float, optional): The x coordinate of the text. Default to 0.
-        y (float, optional): The y coordinate of the text. Default to 0.
-        font (:class:`toga.Font`, optional): The font to write with.
+        text (str): The text to fill.
+        x (float, Optional): The x coordinate of the text. Default to 0.
+        y (float, Optional): The y coordinate of the text. Default to 0.
+        font (:class:`toga.fonts.Font`, Optional): The font to write with.
     """
 
     def __init__(self, text, x, y, font):

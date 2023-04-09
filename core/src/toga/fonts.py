@@ -42,12 +42,12 @@ class Font(BaseFont):
 
     @staticmethod
     def register(family, path, weight=NORMAL, style=NORMAL, variant=NORMAL):
-        """Registers a file-based font with it's family name, style, variant
+        """Registers a file-based font with its family name, style, variant
         and weight. When invalid values for style, variant or weight are
         passed, NORMAL will be used.
 
-        When a font file includes multiple font weight/style/etc, each variant
-        must be registerered separately:
+        When a font file includes multiple font weight/style/etc., each variant
+        must be registered separately:
 
             # Register a simple regular font
             Font.register("Font Awesome 5 Free Solid", "resources/Font Awesome 5 Free-Solid-900.otf")
@@ -99,4 +99,4 @@ class Font(BaseFont):
         if variant not in constants.FONT_VARIANTS:
             variant = NORMAL
 
-        return (family, weight, style, variant)
+        return family, weight, style, variant

@@ -262,7 +262,7 @@ We strongly suggest that you **don't** do this. We'd suggest creating a `virtual
 environment`_ first, and installing toga in that virtual environment as directed
 at the top of this guide.
 
-.. _virtual environment: http://docs.python-guide.org/en/latest/dev/virtualenvs/
+.. _virtual environment: https://docs.python-guide.org/dev/virtualenvs/
 
 .. note:: Minimum versions
 

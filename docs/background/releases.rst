@@ -25,7 +25,7 @@ Bugfixes
 0.2.15
 ======
 
-* Added more widgets and cross-plaform support, especially for GTK+ and Winforms
+* Added more widgets and cross-platform support, especially for GTK+ and Winforms
 
 0.2.14
 ======

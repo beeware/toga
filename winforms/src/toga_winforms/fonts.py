@@ -16,7 +16,7 @@ def points_to_pixels(points, dpi):
 
 class Font:
     def __init__(self, interface):
-        self._pfc = None  # this needs to be a instance variable, otherwise we might get Winforms exceptions later
+        self._pfc = None  # this needs to be an instance variable, otherwise we might get Winforms exceptions later
         self.interface = interface
         try:
             font = _FONT_CACHE[self.interface]

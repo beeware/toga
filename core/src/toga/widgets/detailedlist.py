@@ -8,16 +8,16 @@ from .base import Widget
 
 class DetailedList(Widget):
     """A widget to hold data in a list form. Rows are selectable and can be
-    deleted. A updated function can be invoked by pulling the list down.
+    deleted. An updated function can be invoked by pulling the list down.
 
     Args:
         id (str): An identifier for this widget.
         data (list of `dict`): List of dictionaries with required 'icon', 'title', and
             'subtitle' keys as well as optional custom keys to store additional
             info like 'pk' for a database primary key (think django ORM)
-        on_delete (``callable``): Function that is invoked on row deletion.
-        on_refresh (``callable``): Function that is invoked on user initialised refresh.
-        on_select (``callable``): Function that is invoked on row selection.
+        on_delete (``Callable``): Function that is invoked on row deletion.
+        on_refresh (``Callable``): Function that is invoked on user initialised refresh.
+        on_select (``Callable``): Function that is invoked on row selection.
         style (:obj:`Style`): An optional style object. If no style is provided then
             a new one will be created for the widget.
 
@@ -78,7 +78,7 @@ class DetailedList(Widget):
     @property
     def data(self):
         """The data source of the widget. It accepts data in the form of
-        ``list`` of ``dict`` or :obj:`ListSource`
+        ``list`` of ``dict`` or :class:`ListSource`
 
         Returns:
             Returns a (:obj:`ListSource`).

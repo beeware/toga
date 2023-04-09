@@ -60,7 +60,7 @@ class Slider(Widget, toga.widgets.slider.SliderImpl):
         self.native.doubleValue = value
 
     def get_range(self):
-        return (self.native.minValue, self.native.maxValue)
+        return self.native.minValue, self.native.maxValue
 
     def set_range(self, range):
         self.native.minValue = range[0]
