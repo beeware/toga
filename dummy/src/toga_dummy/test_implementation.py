@@ -47,7 +47,7 @@ class DefinitionExtractor:
     """The DefinitionExtractor consumes a .py file and extracts information,
     with the help of the 'ast' module from it.
 
-    Non existing files result in a empty DefinitionExtractor, this means the
+    Non-existing files result in an empty DefinitionExtractor, this means the
     all properties return empty lists or dicts.
 
     Args:
@@ -277,7 +277,7 @@ def get_required_files(platform_category, path_to_backend):
 
 
 def create_impl_tests(root):
-    """Calling this function with a the path to a Toga backend will return the
+    """Calling this function with the path to a Toga backend will return the
     implementation tests for this backend.
 
     Args:

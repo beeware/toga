@@ -7,9 +7,12 @@ version: 2
 
 # Set the version of Python and other tools you might need
 build:
-  os: ubuntu-20.04
+  os: ubuntu-22.04
   tools:
-    python: "3.9"
+    python: "3"
+  jobs:
+    pre_build:
+      - tox -e docs-lint
 
 # Build documentation in the docs/ directory with Sphinx
 sphinx:
@@ -27,4 +30,5 @@ python:
   - method: pip
     path: core
     extra_requirements:
-    - docs
+      - docs
+      - dev

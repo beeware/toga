@@ -90,7 +90,7 @@ class Key(Enum):
     # Preserve the platform precedence behind generic naming.
     MOD_1 = "<mod 1>"  # CMD on macOS, CTRL on Linux/Windows
     MOD_2 = "<mod 2>"  # OPT on macOS, ALT on Linux/Windows
-    MOD_3 = "<mod 3>"  # CTRL on macOs, Flag on Windows, Tux on Linux
+    MOD_3 = "<mod 3>"  # CTRL on macOS, Flag on Windows, Tux on Linux
 
     F1 = "<F1>"
     F2 = "<F2>"

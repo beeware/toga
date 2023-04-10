@@ -23,8 +23,8 @@ class TogaMultilineTextView(UITextView):
         # To keep consistency with non-mobile platforms, we'll resign the
         # responder status when you tap somewhere else outside this view
         # (except the keyboard)
-        within_x = point.x > 0 and point.x < self.frame.size.width
-        within_y = point.y > 0 and point.y < self.frame.size.height
+        within_x = 0 < point.x < self.frame.size.width
+        within_y = 0 < point.y < self.frame.size.height
         in_view = within_x and within_y
         if not in_view:
             self.resignFirstResponder()

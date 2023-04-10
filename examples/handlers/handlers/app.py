@@ -16,14 +16,14 @@ class HandlerApp(toga.App):
         self.async_label.text = "Ready."
 
     def do_function(self, widget, **kwargs):
-        "A normal functional handler."
+        """A normal functional handler."""
         # This handler is invoked, and returns immediately
         self.function_label.text = "Here's a random number: {}".format(
             random.randint(0, 100)
         )
 
     def do_generator(self, widget, **kwargs):
-        "A generator-based handler"
+        """A generator-based handler"""
         # The generator yields a number; that number is the number of seconds
         # to yield to the main event loop before processing is resumed.
         widget.enabled = False
@@ -34,7 +34,7 @@ class HandlerApp(toga.App):
         widget.enabled = True
 
     async def do_async(self, widget, **kwargs):
-        "An async handler"
+        """An async handler"""
         # This handler is integrated with the main event loop; every call to
         # await yields control so that other OS events can be processed.
         widget.enabled = False
@@ -45,7 +45,7 @@ class HandlerApp(toga.App):
         widget.enabled = True
 
     async def do_background_task(self, widget, **kwargs):
-        "A background task"
+        """A background task"""
         # This task runs in the background, without blocking the main event loop
         while True:
             self.counter += 1

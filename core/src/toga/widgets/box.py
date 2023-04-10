@@ -12,7 +12,6 @@ class Box(Widget):
 
         Inherits from :class:`~toga.widgets.base.Widget`.
 
-        :param text: The text to display on the button.
         :param id: The ID for the widget.
         :param style: A style object. If no style is provided, a default style
             will be applied to the widget.

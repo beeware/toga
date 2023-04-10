@@ -20,7 +20,7 @@ class MultilineTextInput(Widget):
         self._placeholder = ""
         self.textview.connect("focus-in-event", self.gtk_on_focus_in)
         self.textview.connect("focus-out-event", self.gtk_on_focus_out)
-        self.tag_placholder = self.buffer.create_tag("placeholder", foreground="gray")
+        self.tag_placeholder = self.buffer.create_tag("placeholder", foreground="gray")
 
     def set_value(self, value):
         self.buffer.set_text(value)
@@ -45,7 +45,7 @@ class MultilineTextInput(Widget):
             self._placeholder = value
             self.buffer.set_text(self.interface.value)
             self.buffer.apply_tag(
-                self.tag_placholder,
+                self.tag_placeholder,
                 self.buffer.get_start_iter(),
                 self.buffer.get_end_iter(),
             )  # make the placeholder text gray.
@@ -61,7 +61,7 @@ class MultilineTextInput(Widget):
         if self.get_value() == "":
             self.buffer.set_text(self.interface.placeholder)
             self.buffer.apply_tag(
-                self.tag_placholder,
+                self.tag_placeholder,
                 self.buffer.get_start_iter(),
                 self.buffer.get_end_iter(),
             )  # make the placeholder text gray.

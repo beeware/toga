@@ -77,9 +77,9 @@ class Switch(Widget):
 
     @property
     def value(self):
-        """The current state of the switch, as a boolean.
+        """The current state of the switch, as a Boolean.
 
-        Any non-bool value will be converted to a bool.
+        Any non-Boolean value will be converted to a Boolean.
         """
         return self._impl.get_value()
 

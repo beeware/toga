@@ -124,14 +124,14 @@ class Window:
 
     def get_position(self):
         pos = self.native.get_position()
-        return (pos.root_x, pos.root_y)
+        return pos.root_x, pos.root_y
 
     def set_position(self, position):
         self.native.move(position[0], position[1])
 
     def get_size(self):
         size = self.native.get_size()
-        return (size.width, size.height)
+        return size.width, size.height
 
     def set_size(self, size):
         self.native.resize(size[0], size[1])

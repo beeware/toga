@@ -78,14 +78,14 @@ class Window:
         self.interface.factory.not_implemented("Window.close()")
 
     def get_position(self):
-        return (0, 0)
+        return 0, 0
 
     def set_position(self, position):
         # Does nothing on web
         pass
 
     def get_size(self):
-        return (self.content.viewport.width, self.content.viewport.height)
+        return self.content.viewport.width, self.content.viewport.height
 
     def set_size(self, size):
         # Does nothing on web

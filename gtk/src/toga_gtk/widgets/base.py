@@ -104,7 +104,7 @@ class Widget:
         It is assumed that every Toga widget will have the class
         ``toga``.
 
-        :param name: The style property to modify
+        :param property: The style property to modify
         :param css: A dictionary of string key-value pairs, describing
             the new CSS for the given property. If ``None``, the Toga
             style for that property will be reset

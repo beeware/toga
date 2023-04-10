@@ -26,7 +26,7 @@ class DetailedList(Widget):
         self.store = Gio.ListStore()
         # We need to provide a function that transforms whatever is in the store into
         # a `Gtk.ListBoxRow`, but the items in the store already are `Gtk.ListBoxRow` thus
-        # the indentity function.
+        # the identity function.
         self.list_box.bind_model(self.store, lambda a: a)
 
         self.scrolled_window = Gtk.ScrolledWindow()
@@ -80,7 +80,7 @@ class DetailedList(Widget):
             self.store.append(self.row_factory(item))
 
         # We can't know the dimensions of each row (and thus of the list) until gtk allocates
-        # space for it. Gtk does emit `size-allocate` after allocation but I couldn't find any
+        # space for it. Gtk does emit `size-allocate` after allocation, but I couldn't find any
         # guarantees that the rows have their sizes allocated in the order they are inserted
         # in the `ListStore` and in my opinion that's unlikely to be the case.
 

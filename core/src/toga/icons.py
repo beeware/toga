@@ -101,7 +101,7 @@ class Icon:
                 if icon_path.exists():
                     return icon_path
 
-                # look for a icon file without a size in the filename
+                # look for an icon file without a size in the filename
                 icon_path = resource_path / f"{basename}{extension}"
                 if icon_path.exists():
                     return icon_path
