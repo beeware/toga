@@ -86,8 +86,8 @@ Next, install Toga into your virtual environment:
       (venv) $ sudo pkg install gtk3 pango gobject-introspection cairo webkit2-gtk3
 
     If you're not using one of these, you'll need to work out how to install
-    the developer libraries for python3, cairo, pango, and
-    gobject-introspection (and please let us know so we can improve this
+    the developer libraries for ``python3``, ``cairo``, ``pango``, and
+    ``gobject-introspection`` (and please let us know so we can improve this
     documentation!)
 
     Then, install toga:

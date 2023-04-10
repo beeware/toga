@@ -6,12 +6,12 @@ more and help us out!
 
 First of all, you should check the `Restructured Text (reST) and Sphinx
 CheatSheet <http://thomas-cokelaer.info/tutorials/sphinx/rest_syntax.html>`_ to
-learn how to write your .rst file.
+learn how to write your ``.rst`` file.
 
-Create a .rst file
----------------------
+Create a ``.rst`` file
+----------------------
 
-Look at the structure and choose the best category to put your .rst file. Make
+Look at the structure and choose the best category to put your ``.rst`` file. Make
 sure that it is referenced in the index of the corresponding category, so it
 will show on in the documentation. If you have no idea how to do this, study
 the other index files for clues.

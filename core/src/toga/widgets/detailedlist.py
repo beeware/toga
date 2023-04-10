@@ -14,9 +14,9 @@ class DetailedList(Widget):
         id (str): An identifier for this widget.
         data (list of `dict`): List of dictionaries with required 'icon', 'title', and
             'subtitle' keys as well as optional custom keys to store additional
-            info like 'pk' for a database primary key (think django ORM)
+            info like 'pk' for a database primary key (think Django ORM)
         on_delete (``Callable``): Function that is invoked on row deletion.
-        on_refresh (``Callable``): Function that is invoked on user initialised refresh.
+        on_refresh (``Callable``): Function that is invoked on user initialized refresh.
         on_select (``Callable``): Function that is invoked on row selection.
         style (:obj:`Style`): An optional style object. If no style is provided then
             a new one will be created for the widget.
@@ -144,7 +144,7 @@ class DetailedList(Widget):
     def on_refresh(self):
         """
         Returns:
-            The function to be invoked on user initialised refresh.
+            The function to be invoked on user initialized refresh.
         """
         return self._on_refresh
 

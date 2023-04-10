@@ -79,7 +79,6 @@ class Tree(Widget):
     def data(self):
         """
         :returns: The data source of the tree
-        :rtype: ``dict``
         """
         return self._data
 
