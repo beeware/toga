@@ -45,3 +45,11 @@ def test_disable_no_op():
 
     # Still enabled.
     assert box.enabled
+
+
+def test_focus_noop():
+    "Focus is a no-op."
+    box = toga.Box()
+
+    box.focus()
+    assert_action_not_performed(box, "focus")

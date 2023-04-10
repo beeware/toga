@@ -3,6 +3,7 @@ import pytest
 import toga
 from toga_dummy.utils import (
     EventLog,
+    assert_action_not_performed,
     assert_action_performed,
     attribute_value,
 )
@@ -44,3 +45,10 @@ def test_update_label_text(label, value, expected):
 
     # A rehint was performed
     assert_action_performed(label, "refresh")
+
+
+def test_focus_noop(label):
+    "Focus is a no-op."
+
+    label.focus()
+    assert_action_not_performed(label, "focus")
