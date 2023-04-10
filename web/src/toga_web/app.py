@@ -1,5 +1,3 @@
-import asyncio
-
 import toga
 from toga_web.libs import create_element, js
 from toga_web.window import Window
@@ -168,13 +166,15 @@ class App:
         # Add the dialog to the DOM.
         self.native.appendChild(about_dialog)
 
-        # The dialog needs to fully render in the DOM, so we can't
-        # call show() immediately. Create a task to show the dialog,
-        # and queue it to be run "later".
-        async def show_dialog():
+        # If this is the first time a dialog is being shown, the Shoelace
+        # autoloader needs to construct the Dialog custom element. We can't
+        # display the dialog until that element has been fully loaded and
+        # cosntructed. Only show the dialog when the promise of <sl-dialog>
+        # element construction has been fulfilled.
+        def show_dialog(promise):
             about_dialog.show()
 
-        asyncio.create_task(show_dialog())
+        js.customElements.whenDefined("sl-dialog").then(show_dialog)
 
     def exit(self):
         pass

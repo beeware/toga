@@ -12,6 +12,11 @@ html, body {
     margin: 0;
 }
 
+/* If a custom element hasn't been defined yet, hide it from rendering */
+:not(:defined) {
+    visibility: hidden;
+}
+
 /**********************************************************************
  * Application header
  **********************************************************************/
