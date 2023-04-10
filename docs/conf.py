@@ -33,6 +33,7 @@ extensions = [
     "sphinx_autodoc_typehints",
     "sphinx_tabs.tabs",
     "crate.sphinx.csv",
+    "sphinx.ext.intersphinx",
 ]
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
@@ -107,6 +108,11 @@ rst_prolog = """
 .. |b| replace:: :beta:`○`
 """
 
+intersphinx_mapping = {"python": ("https://docs.python.org/3", None)}
+
+# -- Options for link checking -------------------------------------------------
+# GitHub generates anchors in javascript
+linkcheck_ignore = [r"https://github.com/.*#"]
 
 # -- Options for HTML output ---------------------------------------------------
 

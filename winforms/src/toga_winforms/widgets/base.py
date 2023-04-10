@@ -119,7 +119,7 @@ class Widget:
 
     def add_child(self, child):
         if self.viewport:
-            # we are the the top level container
+            # we are the top level container
             child.container = self
         else:
             child.container = self.container

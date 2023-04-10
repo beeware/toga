@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from contextlib import contextmanager
-from typing import Optional, Tuple
+from typing import Callable, Optional, Tuple
 
 from toga.handlers import wrapped_handler
 
@@ -170,10 +170,10 @@ class Slider(Widget):
             self.value = old_value
 
     @property
-    def tick_step(self) -> float:
+    def tick_step(self) -> Optional[float]:
         """Step between adjacent ticks.
 
-        * If the slider is continous, this property returns ``None``
+        * If the slider is continuous, this property returns ``None``
         * If the slider is discrete, it returns the difference in value between adjacent
           ticks.
 
@@ -212,7 +212,7 @@ class Slider(Widget):
             self.value = self.min + (tick_value - 1) * self.tick_step
 
     @property
-    def on_change(self) -> callable:
+    def on_change(self) -> Callable:
         """Handler to invoke when the value of the slider is changed, either by the user
         or programmatically.
 
@@ -225,8 +225,8 @@ class Slider(Widget):
         self._on_change = wrapped_handler(self, handler)
 
     @property
-    def on_press(self) -> callable:
-        """Handler to invoke when when the user presses the slider before changing it."""
+    def on_press(self) -> Callable:
+        """Handler to invoke when the user presses the slider before changing it."""
         return self._on_press
 
     @on_press.setter
@@ -234,7 +234,7 @@ class Slider(Widget):
         self._on_press = wrapped_handler(self, handler)
 
     @property
-    def on_release(self) -> callable:
+    def on_release(self) -> Callable:
         """Handler to invoke when the user releases the slider after changing it."""
         return self._on_release
 
@@ -291,7 +291,7 @@ class IntSliderImpl(SliderImpl):
         self.value = value  # Cache the original value so we can round-trip it.
 
     def get_range(self):
-        return (self.min, self.max)
+        return self.min, self.max
 
     def set_range(self, range):
         self.min, self.max = range

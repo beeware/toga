@@ -91,7 +91,7 @@ class App:
                 group=toga.Group.HELP,
             ),
             Command(None, "Preferences", group=toga.Group.APP),
-            # Quit should always be the last item, in a section on it's own
+            # Quit should always be the last item, in a section on its own
             Command(
                 lambda _: self.interface.exit(),
                 "Quit " + self.interface.name,

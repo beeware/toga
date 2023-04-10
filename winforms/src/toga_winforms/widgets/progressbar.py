@@ -12,7 +12,7 @@ from .base import Widget
 #   functional progress fidelity.
 #
 # * There's no native way to identify an indeterminate progress bar. We can't
-#   use a max value of 0 as a marker, because a max value of 0 causes the the
+#   use a max value of 0 as a marker, because a max value of 0 causes the
 #   animation to stop. Therefore, we track indeterminate status independently.
 #
 # * Winforms progress bars are *always* animating; there's no "non-running"
