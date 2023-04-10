@@ -25,7 +25,9 @@ class Constraints:
         self.left_constraint = None
         self.top_constraint = None
 
-    def __del__(self):
+    # Deletion isn't an event we can programatically invoke; deletion
+    # of constraints can take several iterations before it occurs.
+    def __del__(self):  # pragma: nocover
         if self.width_constraint:
             self.width_constraint.release()
         if self.height_constraint:
