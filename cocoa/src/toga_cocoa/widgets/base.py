@@ -17,8 +17,9 @@ class Widget:
         self.create()
         self.interface.style.reapply()
 
+    @abstractmethod
     def create(self):
-        raise NotImplementedError()
+        ...
 
     def set_app(self, app):
         pass

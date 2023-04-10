@@ -3,7 +3,7 @@ import pytest
 import toga
 from toga.colors import REBECCAPURPLE
 from toga.fonts import FANTASY
-from toga.style.pack import RIGHT
+from toga.style.pack import RIGHT, VISIBLE
 from toga_dummy.utils import assert_action_performed_with
 
 
@@ -72,11 +72,15 @@ def test_text_alignment(widget):
     assert_action_performed_with(widget, "set alignment", alignment=RIGHT)
 
 
-def test_set_hidden(widget):
+def test_set_hidden(widget, child):
     "Visibility can be set on a widget"
     widget.applicator.set_hidden(True)
 
     assert_action_performed_with(widget, "set hidden", hidden=True)
+    # The hide is applied transitively to the child
+    assert_action_performed_with(child, "set hidden", hidden=True)
+    # However, the style property of the child hasn't changed.
+    assert child.style.visibility == VISIBLE
 
 
 def test_set_font(widget):

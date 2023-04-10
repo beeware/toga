@@ -42,5 +42,5 @@ class Box(Widget):
         pass
 
     def focus(self):
-        "No-op; ActivityIndicator cannot accept input focus"
+        """No-op; Box cannot accept input focus"""
         pass

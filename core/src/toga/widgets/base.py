@@ -92,9 +92,9 @@ class Widget(Node):
     def add(self, *children):
         """Add the provided widgets as children of this widget.
 
-        If a child widget already has parent, it will be re-parented as a child
-        of this widget. If the child widget is already a child of this widget,
-        there is no change.
+        If a child widget already has a parent, it will be re-parented as a
+        child of this widget. If the child widget is already a child of this
+        widget, there is no change.
 
         Raises ``ValueError`` if this widget cannot have children.
 
@@ -121,9 +121,9 @@ class Widget(Node):
     def insert(self, index, child):
         """Insert a widget as a child of this widget.
 
-        If a child widget already has parent, it will be re-parented as a child
-        of this widget. If the child widget is already a child of this widget,
-        there is no change.
+        If a child widget already has a parent, it will be re-parented as a
+        child of this widget. If the child widget is already a child of this
+        widget, there is no change.
 
         Raises ``ValueError`` if this node cannot have children.
 
@@ -256,5 +256,12 @@ class Widget(Node):
             child.refresh_sublayouts()
 
     def focus(self):
-        """Give this widget the input focus."""
+        """Give this widget the input focus.
+
+        This method is a no-op if the widget can't accept focus. The ability of
+        a widget to accept focus is platform-dependent; in general, widgets on
+        mobile platforms only accept focus if they require keyboard input. On
+        desktop platforms, focus isn't directly tied to keyboard input, but
+        there are still some widgets that can't accept focus.
+        """
         self._impl.focus()

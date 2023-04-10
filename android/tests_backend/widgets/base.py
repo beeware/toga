@@ -126,7 +126,4 @@ class SimpleProbe:
 
     @property
     def has_focus(self):
-        print(
-            f"NATIVE {self.native} FOCUS {self.widget.app._impl.native.getCurrentFocus()}"
-        )
         return self.widget.app._impl.native.getCurrentFocus() == self.native
