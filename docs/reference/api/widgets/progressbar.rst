@@ -56,7 +56,7 @@ animates as a throbbing or "ping pong" animation.
     progress.stop()
 
 Notes
-=====
+-----
 
 * The visual appearance of progress bars varies from platform to platform. Toga
   will try to provide a visual distinction between running and not-running

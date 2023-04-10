@@ -125,7 +125,7 @@ class MainWindow(Window):
 
 
 class App:
-    """The App is xx the top level of any GUI program. It is the manager of all
+    """The App is the top level of any GUI program. It is the manager of all
     the other bits of the GUI app: the main window and events that window
     generates like user input.
 
