@@ -38,10 +38,12 @@ class InfoDialog(BaseDialog):
         # Add the dialog to the DOM.
         window.app._impl.native.appendChild(self.native)
 
-        # The dialog needs to fully render in the DOM, so we can't
-        # call show() immediately. Create a task to show the dialog,
-        # and queue it to be run "later".
-        asyncio.create_task(self.show_dialog())
+        # If this is the first time a dialog is being shown, the Shoelace
+        # autoloader needs to construct the Dialog custom element. We can't
+        # display the dialog until that element has been fully loaded and
+        # cosntructed. Only show the dialog when the promise of <sl-dialog>
+        # element construction has been fulfilled.
+        js.customElements.whenDefined("sl-dialog").then(self.show_dialog)
 
     def create_buttons(self):
         close_button = create_element(
@@ -52,7 +54,7 @@ class InfoDialog(BaseDialog):
 
         return [close_button]
 
-    async def show_dialog(self):
+    def show_dialog(self, promise):
         self.native.show()
 
     def dialog_close(self, event):
