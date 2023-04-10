@@ -77,7 +77,7 @@ class WindowDelegate(NSObject):
 
     @objc_method
     def toolbarAllowedItemIdentifiers_(self, toolbar):
-        "Determine the list of available toolbar items"
+        """Determine the list of available toolbar items"""
         # This method is required by the Cocoa API, but isn't actually invoked,
         # because customizable toolbars are no longer a thing.
         allowed = NSMutableArray.alloc().init()
@@ -87,7 +87,7 @@ class WindowDelegate(NSObject):
 
     @objc_method
     def toolbarDefaultItemIdentifiers_(self, toolbar):
-        "Determine the list of toolbar items that will display by default"
+        """Determine the list of toolbar items that will display by default"""
         default = NSMutableArray.alloc().init()
         for item in self.interface.toolbar:
             default.addObject_(toolbar_identifier(item))
@@ -97,7 +97,7 @@ class WindowDelegate(NSObject):
     def toolbar_itemForItemIdentifier_willBeInsertedIntoToolbar_(
         self, toolbar, identifier, insert: bool
     ):
-        "Create the requested toolbar button"
+        """Create the requested toolbar button"""
         native = NSToolbarItem.alloc().initWithItemIdentifier_(identifier)
         try:
             item = self.impl._toolbar_items[str(identifier)]
@@ -124,7 +124,7 @@ class WindowDelegate(NSObject):
 
     @objc_method
     def validateToolbarItem_(self, item) -> bool:
-        "Confirm if the toolbar item should be enabled"
+        """Confirm if the toolbar item should be enabled"""
         return self.impl._toolbar_items[str(item.itemIdentifier)].enabled
 
     ######################################################################
@@ -133,7 +133,7 @@ class WindowDelegate(NSObject):
 
     @objc_method
     def onToolbarButtonPress_(self, obj) -> None:
-        "Invoke the action tied to the toolbar button"
+        """Invoke the action tied to the toolbar button"""
         item = self.impl._toolbar_items[str(obj.itemIdentifier)]
         item.action(obj)
 
@@ -198,7 +198,7 @@ class Window:
                 child._impl.container = None
 
     def set_content(self, widget):
-        # Set the window's view to the be the widget's native object.
+        # Set the window's view to be the widget's native object.
         self.native.contentView = widget.native
 
         # Set the widget's viewport to be based on the window's content.
@@ -211,8 +211,8 @@ class Window:
         # Enforce a minimum size based on the content size.
         # This is enforcing the *minimum* size; the window might actually be
         # bigger. If the window is resizable, using >= allows the window to
-        # be dragged larged; if not resizable, it enforces the smallest
-        # size that can be programmattically set on the window.
+        # be dragged larger; if not resizable, it enforces the smallest
+        # size that can be programmatically set on the window.
         self._min_width_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(  # noqa: E501
             widget.native,
             NSLayoutAttributeRight,
@@ -244,7 +244,7 @@ class Window:
     def get_position(self):
         # If there is no active screen, we can't get a position
         if len(NSScreen.screens) == 0:
-            return (0, 0)
+            return 0, 0
 
         # The "primary" screen has index 0 and origin (0, 0).
         primary_screen = NSScreen.screens[0].frame
@@ -275,7 +275,7 @@ class Window:
 
     def get_size(self):
         frame = self.native.frame
-        return (frame.size.width, frame.size.height)
+        return frame.size.width, frame.size.height
 
     def set_size(self, size):
         frame = self.native.frame

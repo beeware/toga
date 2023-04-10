@@ -106,7 +106,7 @@ class TogaContainer(Gtk.Fixed):
         """Return (recomputing if necessary) the preferred width for the
         container.
 
-        The preferred size of the container is it's minimum size. This
+        The preferred size of the container is its minimum size. This
         preference will be overridden with the layout size when the layout is
         applied.
 
@@ -128,7 +128,7 @@ class TogaContainer(Gtk.Fixed):
         """Return (recomputing if necessary) the preferred height for the
         container.
 
-        The preferred size of the container is it's minimum size. This
+        The preferred size of the container is its minimum size. This
         preference will be overridden with the layout size when the
         layout is applied.
 

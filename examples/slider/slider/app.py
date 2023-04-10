@@ -11,7 +11,7 @@ class SliderApp(toga.App):
         # Main window of the application with title and size
         self.main_window = toga.MainWindow(title=self.name, size=(1000, 500))
 
-        # set up common styls
+        # set up common styles
         label_style = Pack(flex=1, padding_right=24)
         box_style = Pack(direction=ROW, padding=10)
         slider_style = Pack(flex=1)

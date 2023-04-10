@@ -220,7 +220,7 @@ class Widget(Node):
             app.widgets.add(self)
 
         # Provide an extension point for widgets with
-        # more complex widget heirarchies
+        # more complex widget hierarchies
         self._set_app(app)
 
     def _set_app(self, app):
@@ -254,7 +254,7 @@ class Widget(Node):
             window.widgets.add(self)
 
         # Provide an extension point for widgets with
-        # more complex widget heirarchies
+        # more complex widget hierarchies
         self._set_window(window)
 
     def _set_window(self, window):

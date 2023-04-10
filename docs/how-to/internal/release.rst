@@ -54,7 +54,7 @@ The procedure for cutting a new release is as follows:
    b. Something else fails in the build process. If the problem can be fixed
       without a code change to the Toga repository (e.g., a transient
       problem with build machines not being available), you can re-run the
-      action that failed through the Github Actions GUI. If the fix requires a
+      action that failed through the GitHub Actions GUI. If the fix requires a
       code change, delete the old tag, make the code change, and re-tag the
       release.
 

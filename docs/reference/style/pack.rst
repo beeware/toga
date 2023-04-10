@@ -30,7 +30,7 @@ Pack style properties
 **Initial value:** ``pack``
 
 Used to define the how to display the element. A value of ``pack`` will apply
-the pack layout algorithm to this node and its descendents. A value of
+the pack layout algorithm to this node and its descendants. A value of
 ``none`` removes the element from the layout entirely. Space will be allocated
 for the element as if it were there, but the element itself will not be
 visible.

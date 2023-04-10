@@ -13,7 +13,7 @@ class TogaTabViewDelegate(NSObject):
     def tabView_didSelectTabViewItem_(self, view, item) -> None:
         # If the widget is part of a visible layout, and a resize event has
         # occurred while the tab wasn't visible, the layout of *this* tab won't
-        # reflect the new availalble size. Refresh the layout.
+        # reflect the new available size. Refresh the layout.
         if self.interface.window:
             self.interface.refresh()
 
@@ -35,7 +35,7 @@ class OptionContainer(Widget):
 
         # Cocoa doesn't provide an explicit (public) API for tracking
         # tab enabled/disabled status; it's handled by the delegate returning
-        # if a specific tab should be enabled/disabled. Keep the set set of
+        # if a specific tab should be enabled/disabled. Keep the set of
         # currently disabled tabs for reference purposes.
         self._disabled_tabs = set()
 

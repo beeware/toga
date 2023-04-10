@@ -74,7 +74,7 @@ class EventLog:
     def log(cls, logtype, instance, **context):
         """Add an entry to the event log.
 
-        :param logtype: The type of object being logged (SET_VALUE, etc)
+        :param logtype: The type of object being logged (SET_VALUE, etc.)
         :param instance: The instance that generated loggable activity
         :param context: A dictionary of data related to the event. The contents
             of the dictionary will depend on the event that occurred.
@@ -206,7 +206,7 @@ class EventLog:
 class LogEntry:
     """An entry in the event log.
 
-    :param logtype: The type of object being logged (SET_VALUE, etc)
+    :param logtype: The type of object being logged (SET_VALUE, etc.)
     :param instance: The instance that generated loggable activity
     :param context: A dictionary of data related to the event. The contents of
         the dictionary will depend on the event that occurred.
@@ -479,7 +479,7 @@ class TestCase(unittest.TestCase):
         Args:
             _widget: The interface of the widget to check
             _attr: The attribute that should have been set
-            value: The values that the attribute have been set to.
+            values: The values that the attribute have been set to.
         """
         self.assertEqual(self.pytest_assert(attribute_values, _widget, _attr), values)
 

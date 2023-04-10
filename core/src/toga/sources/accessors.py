@@ -50,7 +50,7 @@ def build_accessors(headings, accessors):
          - Otherwise, a final list of ready-to-use accessors.
 
     Returns:
-        A finalized list of accessors.
+        A finalised list of accessors.
     """
     if accessors:
         if isinstance(accessors, dict):

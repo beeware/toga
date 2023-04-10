@@ -82,19 +82,19 @@ class GoodMovieSource(Source):
     def index(self, entry):
         return self._filtered().index(entry)
 
-    # A listener that passes on all notifications, but only if the apply
+    # A listener that passes on all notifications, but only if they apply
     # to the filtered data source
     def insert(self, index, item):
-        # If the item exists in the filtered list, propegate the notification
+        # If the item exists in the filtered list, propagate the notification
         for i, filtered_item in enumerate(self._filtered()):
             if filtered_item == item:
-                # Propegate the insertion, with the position in the
+                # Propagate the insertion, with the position in the
                 # *filtered* list.
                 self._notify("insert", index=i, item=item)
 
     def pre_remove(self, index, item):
         # If the item exists in the filtered list, track that it is being
-        # removed; but don't propegate the removal notification until it has
+        # removed; but don't propagate the removal notification until it has
         # been removed from the base data source
         for i, filtered_item in enumerate(self._filtered()):
             if filtered_item == item:
@@ -103,7 +103,7 @@ class GoodMovieSource(Source):
 
     def remove(self, index, item):
         # If the removed item previously existed in the filtered data source,
-        # propegate the removal notification.
+        # propagate the removal notification.
         try:
             i = self._removals.pop(item)
             self._notify("remove", index=i, item=item)

@@ -9,14 +9,14 @@ from toga.widgets.base import WidgetRegistry
 
 
 class Window:
-    """The top level container of a application.
+    """The top level container of an application.
 
     Args:
         id (str): The ID of the window (optional).
         title (str): Title for the window (optional).
         position (``tuple`` of (int, int)): Position of the window, as x,y coordinates.
         size (``tuple`` of (int, int)):  Size of the window, as (width, height) sizes, in pixels.
-        toolbar (``list`` of :class:`~toga.Widget`): A list of widgets to add to a toolbar
+        toolbar (``list`` of :class:`~toga.widgets.base.Widget`): A list of widgets to add to a toolbar
         resizeable (bool): Toggle if the window is resizable by the user, defaults to `True`.
         closeable (bool): Toggle if the window is closable by the user, defaults to `True`.
         minimizable (bool): Toggle if the window is minimizable by the user, defaults to `True`.
@@ -84,10 +84,10 @@ class Window:
 
     @property
     def app(self):
-        """Instance of the :class:`toga.App` that this window belongs to.
+        """Instance of the :class:`toga.app.App` that this window belongs to.
 
         Returns:
-            The app that it belongs to :class:`toga.App`.
+            The app that it belongs to :class:`toga.app.App`.
 
         Raises:
             Exception: If the window already is associated with another app.
@@ -126,7 +126,7 @@ class Window:
         """Toolbar for the window.
 
         Returns:
-            A ``list`` of :class:`~toga.Widget`
+            A ``list`` of :class:`~toga.widgets.base.Widget`
         """
         return self._toolbar
 
@@ -136,7 +136,7 @@ class Window:
         app as the window and to the same app.
 
         Returns:
-            A :class:`~toga.Widget`
+            A :class:`~toga.widgets.base.Widget`
         """
         return self._content
 
@@ -336,7 +336,7 @@ class Window:
         :param title: The title of the dialog window.
         :param message: Contextual information about the source of the stack trace.
         :param content: The stack trace, pre-formatted as a multi-line string.
-        :param retry: A boolean; if True, the user will be given the a "Retry" and
+        :param retry: A boolean; if True, the user will be given a "Retry" and
             "Quit" option; if False, a single option to acknowledge the error will
             be displayed.
         :param on_result: A callback that will be invoked when the user
@@ -363,7 +363,7 @@ class Window:
 
         This opens a native dialog where the user can select a place to save a file.
         It is possible to suggest a filename and force the user to use a specific file extension.
-        If no path is returned (eg. dialog is canceled), a ValueError is raised.
+        If no path is returned (e.g. dialog is canceled), a ValueError is raised.
 
         :param title: The title of the dialog window
         :param suggested_filename: A default filename

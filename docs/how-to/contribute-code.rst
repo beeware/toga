@@ -11,7 +11,7 @@ also find `this presentation by BeeWare team member Dan Yeaw
 overview of Toga, as well as providing a guide to the process of adding new
 widgets.
 
-.. _log them on Github: https://github.com/beeware/toga/issues
+.. _log them on GitHub: https://github.com/beeware/toga/issues
 .. _fork the code: https://github.com/beeware/toga
 .. _submit a pull request: https://github.com/beeware/toga/pulls
 
@@ -104,10 +104,10 @@ Next, install any additional dependencies for your operating system:
 
     No additional dependencies
 
-Next, go to `the Toga page on Github <https://github.com/beeware/toga>`__, and
+Next, go to `the Toga page on GitHub <https://github.com/beeware/toga>`__, and
 fork the repository into your own account, and then clone a copy of that
 repository onto your computer by clicking on "Clone or Download". If you
-have the Github desktop application installed on your computer, you can
+have the GitHub desktop application installed on your computer, you can
 select "Open in Desktop"; otherwise, copy the URL provided, and use it
 to clone using the command line:
 
@@ -119,7 +119,7 @@ to clone using the command line:
 
       (venv) $ git clone https://github.com/<your username>/toga.git
 
-    (substituting your Github username)
+    (substituting your GitHub username)
 
   .. group-tab:: Linux
 
@@ -127,7 +127,7 @@ to clone using the command line:
 
       (venv) $ git clone https://github.com/<your username>/toga.git
 
-    (substituting your Github username)
+    (substituting your GitHub username)
 
   .. group-tab:: Windows
 
@@ -137,7 +137,7 @@ to clone using the command line:
 
       (venv) C:\...>git clone https://github.com/<your username>/toga.git
 
-    (substituting your Github username)
+    (substituting your GitHub username)
 
 Now that you have the source code, you can install Toga into your development
 environment. The Toga source repository contains multiple packages. Since
@@ -389,9 +389,9 @@ Although the tests should all pass, the test suite itself is still
 incomplete. There are many aspects of the Toga Core API that aren't currently
 tested (or aren't tested thoroughly). To work out what *isn't* tested, we're
 going to use a tool called `coverage
-<http://coverage.readthedocs.io/en/coverage-4.4.1/>`__. Coverage allows you to
-check which lines of code have (and haven't) been executed - which then gives
-you an idea of what code has (and hasn't) been tested.
+<https://coverage.readthedocs.io/>`__. Coverage allows you to check which lines
+of code have (and haven't) been executed - which then gives you an idea of what
+code has (and hasn't) been tested.
 
 At the end of the test output there should be a report of the coverage data that
 was gathered::
@@ -457,7 +457,8 @@ The corresponding change note would read something like:
 
     Date widgets can now accept US-style MM-DD-YYYY format.
 
-See `News Fragments <https://pypi.org/project/towncrier/#news-fragments>`__
+See `News Fragments
+<https://towncrier.readthedocs.io/en/stable/tutorial.html#creating-news-fragments>`__
 for more details on the types of news fragments you can add. You can also see
 existing examples of news fragments in the ``changes/`` folder. Name the file
 using the number of the issue that your pull request is addressing. When there

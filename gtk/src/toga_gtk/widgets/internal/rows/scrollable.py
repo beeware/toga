@@ -15,7 +15,7 @@ class ScrollableRow(Gtk.ListBoxRow):
         super().__init__(*args, **kwargs)
         # We need to wait until this widget is allocated to scroll it in,
         # for that we use signals and callbacks. The handler_is of the
-        # signal is used to disconnect and we store it here.
+        # signal is used to disconnect, and we store it here.
         self._gtk_scroll_handler_id_value = None
 
         # The animation function will use this variable to control whether the animation is
@@ -61,7 +61,7 @@ class ScrollableRow(Gtk.ListBoxRow):
         return True
 
     def gtk_do_scroll_to_position(self, position):
-        # Disconnect the from the signal that called us
+        # Disconnect from the signal that called us
         self._gtk_scroll_handler_id = None
 
         list_box = self.get_parent()
@@ -102,7 +102,7 @@ class ScrollableRow(Gtk.ListBoxRow):
 
     def gtk_animate_scroll_to_position(self, final):
         # If this function returns True it is executed again.
-        # If this function returns False is is not executed anymore.
+        # If this function returns False, it is not executed anymore.
         # Set self._animation_control to None after the animation is over.
         list_box = self.get_parent()
         adj = list_box.get_adjustment()

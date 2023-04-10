@@ -3,7 +3,7 @@ import re
 
 from setuptools import setup
 
-# Version handline needs to be programatic because
+# Version handline needs to be programmatic because
 # we can't import toga_watchOS to compute the version;
 # and to support versioned subpackage dependencies
 with open('toga_watchOS/__init__.py', encoding='utf8') as version_file:
