@@ -248,7 +248,7 @@ class Command:
         ##################################################################
         # End backwards compatibility.
         ##################################################################
-
+        orig_action = action
         self.action = wrapped_handler(self, action)
         self.text = text
 
@@ -263,7 +263,7 @@ class Command:
         self.factory = get_platform_factory()
         self._impl = self.factory.Command(interface=self)
 
-        self.enabled = enabled and self.action is not None
+        self.enabled = enabled and orig_action is not None
 
     @property
     def key(self):

@@ -3,7 +3,7 @@ from .base import Widget
 
 class TextInput(Widget):
     def create(self):
-        self.native = self._create_native_widget("input", classes=["btn-block"])
+        self.native = self._create_native_widget("sl-input")
 
     def set_readonly(self, value):
         self.native.readOnly = value

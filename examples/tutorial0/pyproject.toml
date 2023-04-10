@@ -52,4 +52,6 @@ requires = [
 requires = [
     '../../web',
 ]
-style_framework = "Bootstrap v4.6"
+style_framework = "Shoelace v2.3"
+
+template = "../../../templates/briefcase-web-static-template"
