@@ -89,7 +89,7 @@ Once your development environment is set up, run:
 
     .. code-block:: powershell
 
-      C:\...>tox -e docs
+      (venv) C:\...>tox -e docs
 
 The output of the file should be in the ``docs/_build/html`` folder. If there
 are any markup problems, they'll raise an error.
@@ -118,7 +118,7 @@ documentation:
 
     .. code-block:: powershell
 
-      C:\...>tox -e docs-lint
+      (venv) C:\...>tox -e docs-lint
 
 This will validate the documentation does not contain:
 
@@ -147,19 +147,22 @@ SSL root certificate:
 
     .. code-block:: bash
 
-      (venv) $ pip install certifi
+      (venv) $ python -m pip install certifi
       (venv) $ export SSL_CERT_FILE=$(python -m certifi)
 
   .. group-tab:: Linux
 
     .. code-block:: bash
 
-      (venv) $ pip install certifi
+      (venv) $ python -m pip install certifi
       (venv) $ export SSL_CERT_FILE=$(python -m certifi)
 
   .. group-tab:: Windows
 
-    ???
+    .. code-block:: powershell
+
+      (venv) C:\...>python -m pip install certifi
+      (venv) C:\...>FOR /f "delims=" %i IN ('python -m certifi') DO SET SSL_CERT_FILE=%i
 
 Rebuilding all documentation
 ----------------------------
@@ -184,7 +187,7 @@ To force a rebuild for all of the documentation:
 
     .. code-block:: powershell
 
-      C:\...>tox -e docs-all
+      (venv) C:\...>tox -e docs-all
 
 The documentation should be fully rebuilt in the ``docs/_build/html`` folder.
 If there are any markup problems, they'll raise an error.
