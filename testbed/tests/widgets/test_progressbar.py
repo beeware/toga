@@ -9,6 +9,12 @@ from .properties import (  # noqa: F401
     test_flex_horizontal_widget_size,
 )
 
+# Progressbar can't be given focus on mobile
+if toga.platform.current_platform in {"android", "iOS"}:
+    from .properties import test_focus_noop  # noqa: F401
+else:
+    from .properties import test_focus  # noqa: F401
+
 
 @pytest.fixture
 async def widget():

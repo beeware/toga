@@ -34,6 +34,10 @@ class ActivityIndicator(Widget):
     def enabled(self, value):
         pass
 
+    def focus(self):
+        "No-op; ActivityIndicator cannot accept input focus"
+        pass
+
     @property
     def is_running(self):
         """Determine if the activity indicator is currently running.

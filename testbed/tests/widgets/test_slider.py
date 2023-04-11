@@ -12,6 +12,13 @@ from .properties import (  # noqa: F401
     test_flex_horizontal_widget_size,
 )
 
+# Slider can't be given focus on mobile
+if toga.platform.current_platform in {"android", "iOS"}:
+    from .properties import test_focus_noop  # noqa: F401
+else:
+    from .properties import test_focus  # noqa: F401
+
+
 # To ensure less than 1 pixel of error, the slider must be able to distinguish at least
 # 10,000 positions in continuous mode.
 #

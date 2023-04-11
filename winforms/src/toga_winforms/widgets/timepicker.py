@@ -45,7 +45,7 @@ class TimePicker(Widget):
     def rehint(self):
         # Height of a date input is known and fixed.
         # Width must be > 100
-        self.interface.intrinsic.width = at_least(self.interface.MIN_WIDTH)
+        self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
         self.interface.intrinsic.height = self.native.PreferredSize.Height
 
     def set_on_change(self, handler):

@@ -80,7 +80,7 @@ class WebView(Widget):
         self.native.setGravity(Gravity.CENTER_VERTICAL | align(value))
 
     def rehint(self):
-        self.interface.intrinsic.width = at_least(self.interface.MIN_WIDTH)
+        self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
         # Refuse to call measure() if widget has no container, i.e., has no LayoutParams.
         # Android's measure() throws NullPointerException if the widget has no LayoutParams.
         if not self.native.getLayoutParams():

@@ -1,3 +1,5 @@
+from abc import abstractmethod
+
 from toga.colors import TRANSPARENT
 from toga_cocoa.colors import native_color
 from toga_cocoa.constraints import Constraints
@@ -15,8 +17,9 @@ class Widget:
         self.create()
         self.interface.style.reapply()
 
+    @abstractmethod
     def create(self):
-        raise NotImplementedError()
+        ...
 
     def set_app(self, app):
         pass
@@ -31,13 +34,12 @@ class Widget:
     @container.setter
     def container(self, container):
         if self.container:
-            if container:
-                raise RuntimeError("Already have a container")
-            else:
-                # existing container should be removed
-                self.constraints.container = None
-                self._container = None
-                self.native.removeFromSuperview()
+            assert container is None, "Widget already has a container"
+
+            # Existing container should be removed
+            self.constraints.container = None
+            self._container = None
+            self.native.removeFromSuperview()
         elif container:
             # setting container
             self._container = container
@@ -73,8 +75,7 @@ class Widget:
         pass
 
     def set_hidden(self, hidden):
-        if self.native:
-            self.native.setHidden(hidden)
+        self.native.setHidden(hidden)
 
     def set_font(self, font):
         pass
@@ -93,10 +94,10 @@ class Widget:
         self.interface.window._impl.native.makeFirstResponder(self.native)
 
     def get_tab_index(self):
-        self.interface.factory.not_implementated("Widget.get_tab_index()")
+        self.interface.factory.not_implemented("Widget.get_tab_index()")
 
     def set_tab_index(self, tab_index):
-        self.interface.factory.not_implementated("Widget.set_tab_index()")
+        self.interface.factory.not_implemented("Widget.set_tab_index()")
 
     # INTERFACE
 
@@ -120,5 +121,6 @@ class Widget:
     def refresh(self):
         self.rehint()
 
+    @abstractmethod
     def rehint(self):
-        pass
+        ...

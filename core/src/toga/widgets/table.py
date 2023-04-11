@@ -47,9 +47,6 @@ class Table(Widget):
         >>> data = ['item 1', 'item 2', 'item 3']
     """
 
-    MIN_WIDTH = 100
-    MIN_HEIGHT = 100
-
     def __init__(
         self,
         headings,
