@@ -31,10 +31,10 @@ class TogaApplicator:
             # grandchildren.
             #
             # parent hidden child hidden style child final hidden state
-            # ============= ================== ======================== 
+            # ============= ================== ========================
             # True          True               True
             # True          False              True
-            # False         True               True 
+            # False         True               True
             # False         False              False
             child.applicator.set_hidden(hidden or child.style._hidden)
 
