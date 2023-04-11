@@ -1,0 +1,1 @@
+Added support for set_full_screen so that both enter_full_screen and exit_full_screen works in WinForms.
