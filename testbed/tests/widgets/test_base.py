@@ -80,6 +80,13 @@ async def test_parenting(widget, probe):
     other_probe.assert_layout(position=(100, 0), size=(100, 200))
     child_probe.assert_layout(position=(0, 0), size=(50, 75))
 
+    # Re-add child to the *same* widget
+    widget.add(child)
+    await probe.redraw()
+    probe.assert_layout(position=(0, 0), size=(100, 200))
+    other_probe.assert_layout(position=(100, 0), size=(100, 200))
+    child_probe.assert_layout(position=(0, 0), size=(50, 75))
+
     # Reparent child to other without removing first
     other.add(child)
     await probe.redraw()

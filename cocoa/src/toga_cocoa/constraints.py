@@ -28,13 +28,19 @@ class Constraints:
     # Deletion isn't an event we can programatically invoke; deletion
     # of constraints can take several iterations before it occurs.
     def __del__(self):  # pragma: nocover
-        if self.width_constraint:
+        self._remove_constraints()
+
+    def _remove_constraints(self):
+        if self.container:
+            # print(f"Remove constraints for {self.widget} in {self.container}")
+            self.container.native.removeConstraint(self.width_constraint)
+            self.container.native.removeConstraint(self.height_constraint)
+            self.container.native.removeConstraint(self.left_constraint)
+            self.container.native.removeConstraint(self.top_constraint)
+
             self.width_constraint.release()
-        if self.height_constraint:
             self.height_constraint.release()
-        if self.left_constraint:
             self.left_constraint.release()
-        if self.top_constraint:
             self.top_constraint.release()
 
     @property
@@ -43,15 +49,12 @@ class Constraints:
 
     @container.setter
     def container(self, value):
-        if value is None and self.container:
-            # print(f"Remove constraints for {self.widget} in {self.container}")
-            self.container.native.removeConstraint(self.width_constraint)
-            self.container.native.removeConstraint(self.height_constraint)
-            self.container.native.removeConstraint(self.left_constraint)
-            self.container.native.removeConstraint(self.top_constraint)
-            self._container = value
-        else:
-            self._container = value
+        # This will *always* remove and then add constraints. It relies on the base widget to
+        # *not* invoke this setter unless the container is actually changing.
+
+        self._remove_constraints()
+        self._container = value
+        if value is not None:
             # print(f"Add constraints for {self.widget} in {self.container} {self.widget.interface.layout})
             self.left_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(  # noqa: E501
                 self.widget.native,

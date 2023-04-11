@@ -53,9 +53,8 @@ class Label(Widget):
         # fit. To avoid this, temporarily relax the width and height constraint
         # on the widget to "effectively infinite" values; they will be
         # re-applied as part of the application of the newly hinted layout.
-        if self.constraints.width_constraint:
+        if self.constraints.container:
             self.constraints.width_constraint.constant = 100000
-        if self.constraints.height_constraint:
             self.constraints.height_constraint.constant = 100000
         fitting_size = self.native.systemLayoutSizeFittingSize(CGSize(0, 0))
         # print(f"REHINT label {self} {self.get_text()!r} {fitting_size.width} {fitting_size.height}")
