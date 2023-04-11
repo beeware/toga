@@ -42,14 +42,15 @@ visible.
 
 **Initial value:** ``visible``
 
-Used to define whether the element should be drawn. A value of ``visible``
-means the element will be displayed. A value of ``none`` removes the element,
-but still allocates space for the element as if it were in the element tree.
+Used to define whether the element should be drawn. A value of ``visible`` means
+the element will be displayed. A value of ``hidden`` removes the element from
+view, but allocates space for the element as if it were still in the layout.
 
-If an element with children is hidden, all it's children will be implicitly
-removed from view. However, if one of those children is to a parent that is
-*not* hidden, it will become visible again unless that widget has been
-*explicitly* marked as `hidden`.
+Any children of a hidden element are implicitly removed from view.
+
+If a previously hidden element is made visible, any children of the element with
+a visibility of ``hidden`` will remain hidden. Any descendants of the hidden
+child will also remain hidden, regardless of their visibility.
 
 ``direction``
 -------------

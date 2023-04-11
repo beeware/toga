@@ -15,8 +15,12 @@ async def widget():
 
 async def test_visibility(widget, probe):
     "A widget (and it's children) can be made invisible"
-    child = toga.Button("Hello")
+    child = toga.Box(style=Pack(width=75, height=100, background_color=GREEN))
     child_probe = get_probe(child)
+
+    grandchild = toga.Button("Hello")
+    grandchild_probe = get_probe(grandchild)
+    child.add(grandchild)
 
     other = toga.Box(style=Pack(width=100, height=200, background_color=BLUE))
     other_probe = get_probe(other)
@@ -29,6 +33,7 @@ async def test_visibility(widget, probe):
     # Widgets are all visible an in place
     assert not probe.is_hidden
     assert not child_probe.is_hidden
+    assert not grandchild_probe.is_hidden
     probe.assert_layout(position=(0, 0), size=(100, 200))
     other_probe.assert_layout(position=(100, 0), size=(100, 200))
 
@@ -36,9 +41,10 @@ async def test_visibility(widget, probe):
     widget.style.visibility = HIDDEN
     await probe.redraw()
 
-    # Widget and child are no longer visible.
+    # Widgets are no longer visible.
     assert probe.is_hidden
     assert child_probe.is_hidden
+    assert grandchild_probe.is_hidden
     # Making the widget invisible doesn't affect layout
     probe.assert_layout(position=(0, 0), size=(100, 200))
     other_probe.assert_layout(position=(100, 0), size=(100, 200))
@@ -47,11 +53,49 @@ async def test_visibility(widget, probe):
     widget.style.visibility = VISIBLE
     await probe.redraw()
 
-    # Widgets and child are visible and in place again.
+    # Widgets are all visible and in place again.
     assert not probe.is_hidden
     assert not child_probe.is_hidden
+    assert not grandchild_probe.is_hidden
     probe.assert_layout(position=(0, 0), size=(100, 200))
     other_probe.assert_layout(position=(100, 0), size=(100, 200))
+
+    # Hide the widget again
+    widget.style.visibility = HIDDEN
+    await probe.redraw()
+
+    # Widgets are no longer visible.
+    assert probe.is_hidden
+    assert child_probe.is_hidden
+    assert grandchild_probe.is_hidden
+
+    # Mark the child style as visible.
+    child.style.visibility = VISIBLE
+    await probe.redraw()
+
+    # Root widget isn't visible, so neither descendent is visible.
+    assert probe.is_hidden
+    assert child_probe.is_hidden
+    assert grandchild_probe.is_hidden
+
+    # Explicitly mark the child style as hidden.
+    child.style.visibility = HIDDEN
+    await probe.redraw()
+
+    # Root widget isn't visible, so neither descendent is visible.
+    assert probe.is_hidden
+    assert child_probe.is_hidden
+    assert grandchild_probe.is_hidden
+
+    # Mark the root widget as visible again.
+    widget.style.visibility = VISIBLE
+    await probe.redraw()
+
+    # Root widget is visible again but the child is explicitly hidden,
+    # so it and the grandchild are still hidden
+    assert not probe.is_hidden
+    assert child_probe.is_hidden
+    assert grandchild_probe.is_hidden
 
 
 async def test_parenting(widget, probe):

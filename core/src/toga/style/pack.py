@@ -81,8 +81,13 @@ class Pack(BaseStyle):
 
     _depth = -1
 
-    def _debug(self, *args):
+    def _debug(self, *args):  # pragma: no cover
         print("    " * self.__class__._depth, *args)
+
+    @property
+    def _hidden(self):
+        "Does this style declaration define a object that should be hidden"
+        return self.visibility == HIDDEN
 
     def apply(self, prop, value):
         if self._applicator:
