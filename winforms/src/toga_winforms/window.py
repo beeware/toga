@@ -197,8 +197,13 @@ class Window:
                 self.interface.on_close(self)
                 event.Cancel = True
 
-    def set_full_screen(self, is_full_screen):
-        self.interface.factory.not_implemented("Window.set_full_screen()")
+    def set_full_screen(self, set_full_screen):
+        if set_full_screen:
+            self.native.FormBorderStyle = WinForms.FormBorderStyle(0)
+            self.native.WindowState = WinForms.FormWindowState.Maximized
+        else:
+            self.native.FormBorderStyle = WinForms.FormBorderStyle(1)
+            self.native.WindowState = WinForms.FormWindowState.Normal
 
     def close(self):
         self._is_closing = True
