@@ -19,12 +19,13 @@ class Box(Widget):
         """
         super().__init__(id=id, style=style)
 
+        # Create a platform specific implementation of a Box
+        self._impl = self.factory.Box(interface=self)
+
+        # Children need to be added *after* the impl has been created.
         self._children = []
         if children:
             self.add(*children)
-
-        # Create a platform specific implementation of a Box
-        self._impl = self.factory.Box(interface=self)
 
     @property
     def enabled(self):
@@ -37,4 +38,8 @@ class Box(Widget):
 
     @enabled.setter
     def enabled(self, value):
+        pass
+
+    def focus(self):
+        """No-op; Box cannot accept input focus"""
         pass

@@ -251,8 +251,8 @@ class Table(Widget):
         self.table.scrollRowToVisible(row)
 
     def rehint(self):
-        self.interface.intrinsic.width = at_least(self.interface.MIN_WIDTH)
-        self.interface.intrinsic.height = at_least(self.interface.MIN_HEIGHT)
+        self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
+        self.interface.intrinsic.height = at_least(self.interface._MIN_HEIGHT)
 
     def _add_column(self, heading, accessor):
         column_identifier = at(accessor)

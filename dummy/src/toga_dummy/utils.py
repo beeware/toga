@@ -397,7 +397,8 @@ def assert_action_performed_with(_widget, _action, **test_data):
     try:
         # Iterate over every action that was performed on
         # this object.
-        for data in EventLog.performed_actions(_widget, _action):
+        actions_performed = EventLog.performed_actions(_widget, _action)
+        for data in actions_performed:
             found = True
             # Iterate over every key and value in the test
             # data. If the value in the recorded action
@@ -428,6 +429,13 @@ def assert_action_performed_with(_widget, _action, **test_data):
             # with the next recorded action.
             if found:
                 return
+
+        # None of the recorded actions match the test data.
+        pytest.fail(
+            f"Widget {_widget} did not perform action {_action!r} "
+            f"with data {test_data!r}; "
+            f"actions performed were {actions_performed!r}"
+        )
     except AttributeError as e:
         # None of the recorded actions match the test data.
         pytest.fail(str(e))

@@ -55,6 +55,12 @@ def run_tests(app, cov, args, report_coverage, run_slow):
         if app.returncode == 0:
             cov.stop()
             if report_coverage:
+                # Exclude some patterns of lines that can't have coverage
+                cov.exclude("pragma: no cover")
+                cov.exclude("@(abc\\.)?abstractmethod")
+                cov.exclude("NotImplementedError")
+                cov.exclude("\\.not_implemented\\(")
+
                 total = cov.report(
                     precision=1,
                     skip_covered=True,

@@ -1,3 +1,5 @@
+from abc import abstractmethod
+
 from travertino.size import at_least
 
 from ..libs import Gtk, get_background_color_css, get_color_css, get_font_css
@@ -30,8 +32,9 @@ class Widget:
         # TODO: Remove the use of viewport
         return self._container
 
+    @abstractmethod
     def create(self):
-        pass
+        ...
 
     def set_app(self, app):
         pass
@@ -46,17 +49,16 @@ class Widget:
     @container.setter
     def container(self, container):
         if self.container:
-            if container:
-                raise RuntimeError("Already have a container")
-            else:
-                # container is set to None, removing self from the container.native
-                # Note from pygtk documentation: Note that the container will own a
-                # reference to widget, and that this may be the last reference held;
-                # so removing a widget from its container can cause that widget to be
-                # destroyed. If you want to use widget again, you should add a
-                # reference to it.
-                self._container.remove(self.native)
-                self._container = None
+            assert container is None, "Widget Already have a container"
+
+            # container is set to None, removing self from the container.native
+            # Note from pygtk documentation: Note that the container will own a
+            # reference to widget, and that this may be the last reference held;
+            # so removing a widget from its container can cause that widget to be
+            # destroyed. If you want to use widget again, you should add a
+            # reference to it.
+            self._container.remove(self.native)
+            self._container = None
         elif container:
             # setting container, adding self to container.native
             self._container = container
@@ -78,10 +80,10 @@ class Widget:
         self.native.grab_focus()
 
     def get_tab_index(self):
-        self.interface.factory.not_implementated("Widget.get_tab_index()")
+        self.interface.factory.not_implemented("Widget.get_tab_index()")
 
     def set_tab_index(self, tab_index):
-        self.interface.factory.not_implementated("Widget.set_tab_index()")
+        self.interface.factory.not_implemented("Widget.set_tab_index()")
 
     ######################################################################
     # CSS tools
@@ -142,15 +144,14 @@ class Widget:
 
     def set_bounds(self, x, y, width, height):
         # Any position changes are applied by the container during do_size_allocate.
-        if self.container:
-            self.container.make_dirty()
+        self.container.make_dirty()
 
     def set_alignment(self, alignment):
         # By default, alignment can't be changed
         pass
 
     def set_hidden(self, hidden):
-        return not self.native.set_visible(not hidden)
+        self.native.set_visible(not hidden)
 
     def set_color(self, color):
         self.apply_css("color", get_color_css(color))

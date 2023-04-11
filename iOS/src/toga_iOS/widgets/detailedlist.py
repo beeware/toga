@@ -1,4 +1,5 @@
 from rubicon.objc import SEL, objc_method, objc_property
+from travertino.size import at_least
 
 from toga_iOS.libs import (
     NSIndexPath,
@@ -151,3 +152,7 @@ class DetailedList(Widget):
             atScrollPosition=UITableViewScrollPositionNone,
             animated=False,
         )
+
+    def rehint(self):
+        self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
+        self.interface.intrinsic.height = at_least(self.interface._MIN_HEIGHT)

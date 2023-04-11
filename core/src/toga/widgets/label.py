@@ -24,6 +24,10 @@ class Label(Widget):
 
         self.text = text
 
+    def focus(self):
+        "No-op; Label cannot accept input focus"
+        pass
+
     @property
     def text(self):
         """The text displayed by the label.

@@ -1,8 +1,9 @@
 import asyncio
 
 from java import dynamic_proxy
+from pytest import approx
 
-from android.view import ViewTreeObserver
+from android.view import View, ViewTreeObserver
 from toga.fonts import SYSTEM
 
 from .properties import toga_color
@@ -49,6 +50,10 @@ class SimpleProbe:
         else:
             raise AssertionError(f"cannot find {self.native} in {container_native}")
 
+    def assert_not_contained(self):
+        assert self.widget._impl.container is None
+        assert self.native.getParent() is None
+
     def assert_alignment(self, expected):
         assert self.alignment == expected
 
@@ -92,9 +97,33 @@ class SimpleProbe:
             min_height <= self.height <= max_height
         ), f"Height ({self.height}) not in range ({min_height}, {max_height})"
 
+    def assert_layout(self, size, position):
+        # Widget is contained
+        assert self.widget._impl.container is not None
+        assert self.native.getParent() is not None
+
+        # Size and position is as expected. Values must be scaled from DP, and
+        # compared inexactly due to pixel scaling
+        assert (
+            approx(self.native.getWidth() / self.scale_factor, rel=0.01),
+            approx(self.native.getHeight() / self.scale_factor, rel=0.01),
+        ) == size
+        assert (
+            approx(self.native.getLeft() / self.scale_factor, rel=0.01),
+            approx(self.native.getTop() / self.scale_factor, rel=0.01),
+        ) == position
+
     @property
     def background_color(self):
         return toga_color(self.native.getBackground().getColor())
 
     async def press(self):
         self.native.performClick()
+
+    @property
+    def is_hidden(self):
+        return self.native.getVisibility() == View.INVISIBLE
+
+    @property
+    def has_focus(self):
+        return self.widget.app._impl.native.getCurrentFocus() == self.native

@@ -22,9 +22,6 @@ class WebView(Widget):
     :type  on_webview_load: ``callable``
     """
 
-    MIN_WIDTH = 100
-    MIN_HEIGHT = 100
-
     def __init__(
         self,
         id=None,

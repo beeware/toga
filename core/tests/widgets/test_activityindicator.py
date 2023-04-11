@@ -111,3 +111,10 @@ def test_initially_running():
 
     # Assert that start was invoked on the impl as part of creation.
     assert_action_performed(activity_indicator, "start ActivityIndicator")
+
+
+def test_focus_noop(activity_indicator):
+    "Focus is a no-op."
+
+    activity_indicator.focus()
+    assert_action_not_performed(activity_indicator, "focus")

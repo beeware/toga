@@ -239,3 +239,15 @@ def test_determinate_switch(progressbar):
     # State of progress bar is determinate
     assert progressbar.is_determinate
     assert progressbar.value == pytest.approx(5.0)
+
+
+def test_disable_no_op(progressbar):
+    """ProgressBar doesn't have a disabled state"""
+    # Enabled by default
+    assert progressbar.enabled
+
+    # Try to disable the widget
+    progressbar.enabled = False
+
+    # Still enabled.
+    assert progressbar.enabled

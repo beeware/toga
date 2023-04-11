@@ -25,7 +25,7 @@ class Button(Widget):
         :param enabled: Is the button enabled (i.e., can it be pressed?).
             Optional; by default, buttons are created in an enabled state.
         """
-        super().__init__(id=id, style=style, enabled=enabled)
+        super().__init__(id=id, style=style)
 
         # Create a platform specific implementation of a Button
         self._impl = self.factory.Button(interface=self)

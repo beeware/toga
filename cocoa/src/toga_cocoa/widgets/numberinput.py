@@ -214,7 +214,7 @@ class NumberInput(Widget):
         stepper_size = self.input.intrinsicContentSize()
         input_size = self.input.intrinsicContentSize()
 
-        self.interface.intrinsic.width = at_least(self.interface.MIN_WIDTH)
+        self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
         self.interface.intrinsic.height = max(input_size.height, stepper_size.height)
 
     def set_on_change(self, handler):

@@ -42,7 +42,7 @@ PACK = "pack"
 ######################################################################
 
 DISPLAY_CHOICES = Choices(PACK, NONE)
-VISIBILITY_CHOICES = Choices(VISIBLE, HIDDEN, NONE)
+VISIBILITY_CHOICES = Choices(VISIBLE, HIDDEN)
 DIRECTION_CHOICES = Choices(ROW, COLUMN)
 ALIGNMENT_CHOICES = Choices(LEFT, RIGHT, TOP, BOTTOM, CENTER, default=True)
 
@@ -81,8 +81,13 @@ class Pack(BaseStyle):
 
     _depth = -1
 
-    def _debug(self, *args):
+    def _debug(self, *args):  # pragma: no cover
         print("    " * self.__class__._depth, *args)
+
+    @property
+    def _hidden(self):
+        "Does this style declaration define a object that should be hidden"
+        return self.visibility == HIDDEN
 
     def apply(self, prop, value):
         if self._applicator:
@@ -197,16 +202,24 @@ class Pack(BaseStyle):
                 width, height = self._layout_row_children(
                     node, available_width, available_height, scale
                 )
-
-            if root:
-                # self._debug("ROOT NODE")
-                width = max(width, available_width)
-                height = max(height, available_height)
-
         else:
             # self._debug("NO CHILDREN", available_width)
             width = available_width
             height = available_height
+
+        if root:
+            # A root node always expands to all available width and height,
+            # no matter how much space the child layout requires.
+            # self._debug("ROOT NODE")
+            width = max(width, available_width)
+            height = max(height, available_height)
+        else:
+            # If an explicit width/height was given, that specification
+            # overrides the width/height evaluated by the layout of children
+            if self.width:
+                width = scale(self.width)
+            if self.height:
+                height = scale(self.height)
 
         # self._debug("FINAL SIZE", width, height)
         node.layout.content_width = int(width)
@@ -280,9 +293,10 @@ class Pack(BaseStyle):
                     width += child_width
                     available_width -= child_width
 
-        available_width = max(0, available_width)
+            available_width = max(0, available_width)
+
         if full_flex:
-            # self._debug("q =",available_width, full_flex, available_width / full_flex)
+            # self._debug("q =", available_width, full_flex, available_width / full_flex)
             quantum = available_width / full_flex
         else:
             quantum = 0

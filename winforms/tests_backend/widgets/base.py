@@ -25,6 +25,10 @@ class SimpleProbe:
         else:
             raise ValueError(f"cannot find {self.native} in {container_native}")
 
+    def assert_not_contained(self):
+        assert self.widget._impl.container is None
+        assert self.native.Parent is None
+
     def assert_alignment(self, expected):
         # Winforms doesn't have a "Justified" alignment; it falls back to LEFT
         actual = self.alignment
@@ -95,5 +99,25 @@ class SimpleProbe:
             min_height <= self.height <= max_height
         ), f"Height ({self.height}) not in range ({min_height}, {max_height})"
 
+    def assert_layout(self, size, position):
+        # Widget is contained and in a window.
+        assert self.widget._impl.container is not None
+        assert self.native.Parent is not None
+
+        # size and position is as expected.
+        assert (self.native.Width, self.native.Height) == size
+        assert (
+            self.native.Left,
+            self.native.Top - self.widget._impl.container.vertical_shift,
+        ) == position
+
     async def press(self):
         self.native.OnClick(EventArgs.Empty)
+
+    @property
+    def is_hidden(self):
+        return not self.native.Visible
+
+    @property
+    def has_focus(self):
+        return self.native.ContainsFocus

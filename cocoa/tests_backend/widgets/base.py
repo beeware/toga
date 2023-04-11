@@ -57,6 +57,11 @@ class SimpleProbe:
         else:
             raise ValueError(f"cannot find {self.native} in {container_native}")
 
+    def assert_not_contained(self):
+        assert self.widget._impl.container is None
+        assert self.native.superview is None
+        assert self.native.window is None
+
     def assert_alignment(self, expected):
         assert self.alignment == expected
 
@@ -95,6 +100,16 @@ class SimpleProbe:
     def height(self):
         return self.native.frame.size.height
 
+    def assert_layout(self, size, position):
+        # Widget is contained and in a window.
+        assert self.widget._impl.container is not None
+        assert self.native.superview is not None
+        assert self.native.window is not None
+
+        # size and position is as expected.
+        assert (self.native.frame.size.width, self.native.frame.size.height) == size
+        assert (self.native.frame.origin.x, self.native.frame.origin.y) == position
+
     def assert_width(self, min_width, max_width):
         assert (
             min_width <= self.width <= max_width
@@ -117,3 +132,11 @@ class SimpleProbe:
 
     async def press(self):
         self.native.performClick(None)
+
+    @property
+    def is_hidden(self):
+        return self.native.isHidden()
+
+    @property
+    def has_focus(self):
+        return self.native.window.firstResponder == self.native

@@ -96,6 +96,6 @@ class Slider(Widget):
         self.tick_count = tick_count
 
     def rehint(self):
-        fitting_size = self.native.systemLayoutSizeFittingSize_(CGSize(0, 0))
+        fitting_size = self.native.systemLayoutSizeFittingSize(CGSize(0, 0))
         self.interface.intrinsic.width = at_least(fitting_size.width)
         self.interface.intrinsic.height = fitting_size.height
