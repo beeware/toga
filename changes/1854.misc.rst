@@ -1,1 +1,0 @@
-New ``tox`` environments were added for documentation linting and rebuilding as well as running linting prior to RTD CI builds.

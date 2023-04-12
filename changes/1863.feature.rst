@@ -1,1 +1,0 @@
-Winforms apps can now go full screen.

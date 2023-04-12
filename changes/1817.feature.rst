@@ -1,1 +1,0 @@
-TextInput now supports focus handlers and changing alignment on GTK.

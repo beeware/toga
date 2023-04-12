@@ -1,1 +1,0 @@
-A workaround for linting docs on M1 machines was documented.

@@ -6,6 +6,56 @@ Release History
 
 .. towncrier release notes start
 
+0.3.1 (2023-04-12)
+==================
+
+Features
+--------
+
+* The Button widget now has 100% test coverage, and complete API documentation. (`#1761 <https://github.com/beeware/toga/issues/1761>`__)
+* The mapping between Pack layout and HTML/CSS has been formalized. (`#1778 <https://github.com/beeware/toga/issues/1778>`__)
+* The Label widget now has 100% test coverage, and complete API documentation. (`#1799 <https://github.com/beeware/toga/issues/1799>`__)
+* TextInput now supports focus handlers and changing alignment on GTK. (`#1817 <https://github.com/beeware/toga/issues/1817>`__)
+* The ActivityIndicator widget now has 100% test coverage, and complete API documentation. (`#1819 <https://github.com/beeware/toga/issues/1819>`__)
+* The Box widget now has 100% test coverage, and complete API documentation. (`#1820 <https://github.com/beeware/toga/issues/1820>`__)
+* NumberInput now supports changing alignment on GTK. (`#1821 <https://github.com/beeware/toga/issues/1821>`__)
+* The Divider widget now has 100% test coverage, and complete API documentation. (`#1823 <https://github.com/beeware/toga/issues/1823>`__)
+* The ProgressBar widget now has 100% test coverage, and complete API documentation. (`#1825 <https://github.com/beeware/toga/issues/1825>`__)
+* The Switch widget now has 100% test coverage, and complete API documentation. (`#1832 <https://github.com/beeware/toga/issues/1832>`__)
+* Event handlers have been internally modified to simplify their definition and use on backends. (`#1833 <https://github.com/beeware/toga/issues/1833>`__)
+* The base Toga Widget now has 100% test coverage, and complete API documentation. (`#1834 <https://github.com/beeware/toga/issues/1834>`__)
+* Support for FreeBSD was added. (`#1836 <https://github.com/beeware/toga/issues/1836>`__)
+* The Web backend now uses Shoelace to provide web components. (`#1838 <https://github.com/beeware/toga/issues/1838>`__)
+* Winforms apps can now go full screen. (`#1863 <https://github.com/beeware/toga/issues/1863>`__)
+
+
+Bugfixes
+--------
+
+* Issues with reducing the size of windows on GTK have been resolved. (`#1205 <https://github.com/beeware/toga/issues/1205>`__)
+* iOS now supports newlines in Labels. (`#1501 <https://github.com/beeware/toga/issues/1501>`__)
+* The Slider widget now has 100% test coverage, and complete API documentation. (`#1708 <https://github.com/beeware/toga/issues/1708>`__)
+* The GTK backend no longer raises a warning about the use of a deprecated ``set_wmclass`` API. (`#1718 <https://github.com/beeware/toga/issues/1718>`__)
+* MultilineTextInput now correctly adapts to Dark Mode on macOS. (`#1783 <https://github.com/beeware/toga/issues/1783>`__)
+* The handling of GTK layouts has been modified to reduce the frequency and increase the accuracy of layout results. (`#1794 <https://github.com/beeware/toga/issues/1794>`__)
+* The text alignment of MultilineTextInput on Android has been fixed to be TOP aligned. (`#1808 <https://github.com/beeware/toga/issues/1808>`__)
+* GTK widgets that involve animation (such as Switch or ProgressBar) are now redrawn correctly. (`#1826 <https://github.com/beeware/toga/issues/1826>`__)
+
+
+Improved Documentation
+----------------------
+
+* API support tables now distinguish partial vs full support on each platform. (`#1762 <https://github.com/beeware/toga/issues/1762>`__)
+* Some missing settings and constant values were added to the documentation of Pack. (`#1786 <https://github.com/beeware/toga/issues/1786>`__)
+* Added documentation for `toga.App.widgets`. (`#1852 <https://github.com/beeware/toga/issues/1852>`__)
+
+
+Misc
+----
+
+* `#1750 <https://github.com/beeware/toga/issues/1750>`__, `#1764 <https://github.com/beeware/toga/issues/1764>`__, `#1765 <https://github.com/beeware/toga/issues/1765>`__, `#1766 <https://github.com/beeware/toga/issues/1766>`__, `#1770 <https://github.com/beeware/toga/issues/1770>`__, `#1771 <https://github.com/beeware/toga/issues/1771>`__, `#1777 <https://github.com/beeware/toga/issues/1777>`__, `#1797 <https://github.com/beeware/toga/issues/1797>`__, `#1802 <https://github.com/beeware/toga/issues/1802>`__, `#1813 <https://github.com/beeware/toga/issues/1813>`__, `#1818 <https://github.com/beeware/toga/issues/1818>`__, `#1822 <https://github.com/beeware/toga/issues/1822>`__, `#1829 <https://github.com/beeware/toga/issues/1829>`__, `#1830 <https://github.com/beeware/toga/issues/1830>`__, `#1835 <https://github.com/beeware/toga/issues/1835>`__, `#1839 <https://github.com/beeware/toga/issues/1839>`__, `#1854 <https://github.com/beeware/toga/issues/1854>`__, `#1861 <https://github.com/beeware/toga/issues/1861>`__
+
+
 0.3.0 (2023-01-30)
 ==================
 
