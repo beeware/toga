@@ -8,6 +8,7 @@ from toga import Key
 
 from .keys import toga_to_winforms_key
 from .libs import (
+    Point,
     SecurityProtocolType,
     ServicePointManager,
     Threading,
@@ -48,6 +49,8 @@ class App:
         # made to exit the native app. This flag can be used to shortcut any
         # window-level close handling.
         self._is_exiting = False
+
+        self._cursor_visible = True
 
         self.loop = WinformsProactorEventLoop()
         asyncio.set_event_loop(self.loop)
@@ -301,13 +304,17 @@ class App:
             window._impl.set_full_screen(False)
 
     def set_cursor(self, value):
-        self.interface.factory.not_implemented("App.set_cursor()")
+        WinForms.Cursor.Position = Point(*value)
 
     def show_cursor(self):
-        self.interface.factory.not_implemented("App.show_cursor()")
+        if not self._cursor_visible:
+            WinForms.Cursor.Show()
+        self._cursor_visible = True
 
     def hide_cursor(self):
-        self.interface.factory.not_implemented("App.hide_cursor()")
+        if self._cursor_visible:
+            WinForms.Cursor.Hide()
+        self._cursor_visible = False
 
 
 class DocumentApp(App):

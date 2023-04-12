@@ -516,6 +516,10 @@ class App:
             self._impl.exit_full_screen(self._full_screen_windows)
             self._full_screen_windows = None
 
+    def set_cursor(self, value):
+        """Set cursor position."""
+        self._impl.set_cursor(value)
+
     def show_cursor(self):
         """Show cursor."""
         self._impl.show_cursor()

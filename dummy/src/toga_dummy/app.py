@@ -62,6 +62,10 @@ class App(LoggedObject):
     def hide_cursor(self):
         self._action("hide_cursor")
 
+    @not_required_on("mobile")
+    def set_cursor(self, value):
+        self._action("set_cursor", value=value)
+
 
 @not_required_on("mobile", "web")
 class DocumentApp(App):
