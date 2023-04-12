@@ -1,1 +1,0 @@
-The usage of the deprecated ``set_wmclass`` API by the GTK backend has been removed.
