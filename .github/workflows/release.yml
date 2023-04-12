@@ -36,7 +36,7 @@ jobs:
   deploy-test:
     name: Publish to TestPyPI
     runs-on: ubuntu-latest
-    needs: release
+    needs: [ci, release]
     strategy:
       matrix:
         package:

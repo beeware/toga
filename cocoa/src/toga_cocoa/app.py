@@ -388,6 +388,7 @@ class App:
             # about its Toga representations.
             window.content._impl.native.window._impl = window._impl
             window.content._impl.native.window.interface = window
+            window.content.refresh()
 
     def exit_full_screen(self, windows):
         opts = NSMutableDictionary.alloc().init()
@@ -397,6 +398,7 @@ class App:
 
         for window in windows:
             window.content._impl.native.exitFullScreenModeWithOptions(opts)
+            window.content.refresh()
 
     def show_cursor(self):
         if not self._cursor_visible:

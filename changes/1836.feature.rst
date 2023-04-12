@@ -1,1 +1,0 @@
-Support for FreeBSD was added.
