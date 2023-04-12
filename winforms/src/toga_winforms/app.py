@@ -304,6 +304,9 @@ class App:
             window._impl.set_full_screen(False)
 
     def set_cursor(self, value):
+        if len(value) != 2:
+            print("Error! Invalid cursor position value.")
+            return
         WinForms.Cursor.Position = Point(*value)
 
     def show_cursor(self):
