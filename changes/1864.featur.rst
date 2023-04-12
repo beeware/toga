@@ -1,1 +1,0 @@
-Added Suppor for all `cursor` functions in WinForms.
