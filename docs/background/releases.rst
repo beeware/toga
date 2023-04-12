@@ -47,7 +47,7 @@ Improved Documentation
 
 * API support tables now distinguish partial vs full support on each platform. (`#1762 <https://github.com/beeware/toga/issues/1762>`__)
 * Some missing settings and constant values were added to the documentation of Pack. (`#1786 <https://github.com/beeware/toga/issues/1786>`__)
-* Added documentation for `toga.App.widgets`. (`#1852 <https://github.com/beeware/toga/issues/1852>`__)
+* Added documentation for ``toga.App.widgets``. (`#1852 <https://github.com/beeware/toga/issues/1852>`__)
 
 
 Misc
