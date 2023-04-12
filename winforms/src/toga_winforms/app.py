@@ -293,10 +293,12 @@ class App:
         self.interface.factory.not_implemented("App.current_window()")
 
     def enter_full_screen(self, windows):
-        self.interface.factory.not_implemented("App.enter_full_screen()")
+        for window in windows:
+            window._impl.set_full_screen(True)
 
     def exit_full_screen(self, windows):
-        self.interface.factory.not_implemented("App.exit_full_screen()")
+        for window in windows:
+            window._impl.set_full_screen(False)
 
     def set_cursor(self, value):
         self.interface.factory.not_implemented("App.set_cursor()")
