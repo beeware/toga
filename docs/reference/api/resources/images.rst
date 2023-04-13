@@ -19,7 +19,7 @@ the implementation is created.
 The path specified for an Image can be:
 
 1. A path relative to the module that defines your Toga application.
-2. An absolute filesystem path
+2. An absolute file system path
 3. A URL. The content of the URL will be loaded in the background.
 
 If the path specified does not exist, or cannot be loaded, a

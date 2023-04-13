@@ -336,7 +336,7 @@ class Window:
         :param title: The title of the dialog window.
         :param message: Contextual information about the source of the stack trace.
         :param content: The stack trace, pre-formatted as a multi-line string.
-        :param retry: A boolean; if True, the user will be given a "Retry" and
+        :param retry: A Boolean; if True, the user will be given a "Retry" and
             "Quit" option; if False, a single option to acknowledge the error will
             be displayed.
         :param on_result: A callback that will be invoked when the user
@@ -413,7 +413,7 @@ class Window:
         :param on_result: A callback that will be invoked when the user
             selects an option on the dialog.
         :returns: An awaitable Dialog object. The Dialog object returns
-            a list of ``Path`` objects if multiselect is ``True``, or a single
+            a list of ``Path`` objects if ``multiselect`` is ``True``, or a single
             ``Path`` otherwise. Returns ``None`` if the open operation is
             cancelled by the user.
         """
@@ -442,7 +442,7 @@ class Window:
         :param on_result: A callback that will be invoked when the user
             selects an option on the dialog.
         :returns: An awaitable Dialog object. The Dialog object returns
-            a list of ``Path`` objects if multiselect is ``True``, or a single
+            a list of ``Path`` objects if ``multiselect`` is ``True``, or a single
             ``Path`` otherwise. Returns ``None`` if the open operation is
             cancelled by the user.
         """
