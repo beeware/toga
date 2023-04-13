@@ -29,10 +29,6 @@ class Icon:
     """
     A representation of an Icon image.
 
-    Icon is a deferred resource - it's impl isn't available until it the icon
-    is assigned to perform a role in an app. At the point at which the Icon is
-    used, the Icon is bound to a factory, and the implementation is created.
-
     :param path: The path to the icon file, relative to the application's
         module directory.
     :param system: Is this a system resource? Set to ``True`` if the icon is
