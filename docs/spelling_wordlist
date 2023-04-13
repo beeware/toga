@@ -4,6 +4,7 @@ amongst
 App
 apps
 awaitable
+backend
 backends
 BeeWare
 Bézier
@@ -59,3 +60,10 @@ viewport
 watchOS
 WebKit
 Winforms
+validators
+platformer
+coroutine
+iterable
+namespace
+Towncrier
+runtime
