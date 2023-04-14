@@ -235,33 +235,23 @@ class App:
         for window in windows:
             window._impl.set_full_screen(False)
 
-    @property
-    def cursor_position(self):
-        """Return the cursor position with respect to the whole app."""
-        self.interface.factory.not_implemented("App.cursor_position")
+    def get_cursor_position(self):
+        self.interface.factory.not_implemented("App.get_cursor_position")
 
-    @cursor_position.setter
-    def cursor_position(self, value: tuple[int, int]):
-        """Set the cursor position with respect to the whole app."""
-        self.interface.factory.not_implemented("App.cursor_position")
+    def set_cursor_position(self, cursor_position):
+        self.interface.factory.not_implemented("App.set_cursor_position")
 
-    @property
-    def cursor_visible(self):
-        """Return the status of cursor visibility for the whole app."""
-        self.interface.factory.not_implemented("App.cursor_visible")
+    def is_cursor_visible(self):
+        self.interface.factory.not_implemented("App.is_cursor_visible")
 
-    @cursor_visible.setter
-    def cursor_visible(self, value: bool):
-        """Set the cursor visibility for the whole app."""
-        self.interface.factory.not_implemented("App.cursor_visible")
+    def set_cursor_visible(self, condition: bool):
+        self.interface.factory.not_implemented("App.set_cursor_visible")
 
-    def show_cursor(self):
-        """Show cursor for the whole app."""
-        self.interface.factory.not_implemented("App.show_cursor()")
+    def show_cursor(self, windows):
+        self.interface.factory.not_implemented("App.show_cursor")
 
-    def hide_cursor(self):
-        """Hide cursor from view for the whole app."""
-        self.interface.factory.not_implemented("App.hide_cursor()")
+    def hide_cursor(self, windows):
+        self.interface.factory.not_implemented("App.hide_cursor")
 
 
 class DocumentApp(App):

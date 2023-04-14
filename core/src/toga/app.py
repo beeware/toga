@@ -5,6 +5,7 @@ import webbrowser
 from builtins import id as identifier
 from collections.abc import MutableSet
 from email.message import Message
+from typing import Tuple  # Added for type hinting
 
 from toga.command import CommandSet
 from toga.handlers import wrapped_handler
@@ -522,7 +523,7 @@ class App:
         return self._impl.get_cursor_position()
 
     @cursor_position.setter
-    def cursor_position(self, value: tuple[int, int]):
+    def cursor_position(self, value: Tuple[int, int]):
         """Set the cursor position with respect to the whole app."""
         if not isinstance(value, tuple) or len(value) != 2:
             print("Error! Invalid cursor position value or type.")

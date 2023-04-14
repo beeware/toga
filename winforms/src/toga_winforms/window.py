@@ -222,13 +222,13 @@ class Window:
         )
         return (relative_cursor_position.X, relative_cursor_position.Y)
 
-    def set_cursor_position(self, cursor_position: tuple[int, int]):
+    def set_cursor_position(self, cursor_position):
         self.native.Cursor.Position = self.native.PointToScreen(Point(*cursor_position))
 
     def is_cursor_visible(self):
         return self._cursor_visible
 
-    def set_cursor_visible(self, condition: bool):
+    def set_cursor_visible(self, condition):
         if condition and not self._cursor_visible:
             self.native.Cursor.Show()
             self._cursor_visible = True

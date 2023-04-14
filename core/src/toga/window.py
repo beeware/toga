@@ -1,6 +1,7 @@
 import warnings
 from builtins import id as identifier
 from pathlib import Path
+from typing import Tuple  # Added for type hinting
 
 from toga.command import CommandSet
 from toga.handlers import wrapped_handler
@@ -264,7 +265,7 @@ class Window:
         return self._impl.get_cursor_position()
 
     @cursor_position.setter
-    def cursor_position(self, value: tuple[int, int]):
+    def cursor_position(self, value: Tuple[int, int]):
         """Set the cursor position with respect to the specified window."""
         if not isinstance(value, tuple) or len(value) != 2:
             print("Error! Invalid cursor position value or type.")

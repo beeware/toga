@@ -306,13 +306,13 @@ class App:
     def get_cursor_position(self):
         return (WinForms.Cursor.Position.X, WinForms.Cursor.Position.Y)
 
-    def set_cursor_position(self, cursor_position: tuple[int, int]):
+    def set_cursor_position(self, cursor_position):
         WinForms.Cursor.Position = Point(*cursor_position)
 
     def is_cursor_visible(self):
         return self._cursor_visible
 
-    def set_cursor_visible(self, condition: bool):
+    def set_cursor_visible(self, condition):
         if condition and not self._cursor_visible:
             WinForms.Cursor.Show()
             self._cursor_visible = True
