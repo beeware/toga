@@ -82,21 +82,19 @@ class Window(LoggedObject):
 
     @not_required_on("mobile")
     def get_cursor_position(self):
-        self._get_value("cursor_position")
+        self._get_value("get_cursor_position")
 
     @not_required_on("mobile")
-    def set_cursor_position(self, value):
-        self._action("cursor_position", value=value)
-        self._set_value("cursor_position", value)
+    def set_cursor_position(self, cursor_position):
+        self._action("set_cursor_position", cursor_position=cursor_position)
 
     @not_required_on("mobile")
-    def get_cursor_visibility(self):
-        self._get_value("cursor_visible")
+    def is_cursor_visible(self):
+        self._action("is_cursor_visible")
 
     @not_required_on("mobile")
-    def set_cursor_visibility(self, value):
-        self._action("cursor_visible", value=value)
-        self._set_value("cursor_visible", value)
+    def set_cursor_visible(self, condition):
+        self._action("set_cursor_visible", condition=condition)
 
     @not_required_on("mobile")
     def show_cursor(self):
