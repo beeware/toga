@@ -258,6 +258,40 @@ class Window:
         self.app.windows -= self
         self._impl.close()
 
+    @property
+    def cursor_position(self):
+        """Return the cursor position with respect to the specified window."""
+        return self._impl.get_cursor_position()
+
+    @cursor_position.setter
+    def cursor_position(self, value: tuple[int, int]):
+        """Set the cursor position with respect to the specified window."""
+        if not isinstance(value, tuple) or len(value) != 2:
+            print("Error! Invalid cursor position value or type.")
+            return
+        self._impl.set_cursor_position(value)
+
+    @property
+    def cursor_visible(self):
+        """Return the status of cursor visibility for the specified window."""
+        return self._impl.is_cursor_visible()
+
+    @cursor_visible.setter
+    def cursor_visible(self, value: bool):
+        """Set the cursor visibility for the specified window."""
+        if not isinstance(value, bool):
+            print("Error! Invalid cursor visible value.")
+            return
+        self._impl.set_cursor_visible(value)
+
+    def show_cursor(self):
+        """Show cursor for the specified window."""
+        self._impl.show_cursor()
+
+    def hide_cursor(self):
+        """Hide cursor from view for the specified window."""
+        self._impl.hide_cursor()
+
     ############################################################
     # Dialogs
     ############################################################

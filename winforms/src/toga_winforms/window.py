@@ -45,6 +45,8 @@ class Window:
         # window is in the process of closing.
         self._is_closing = False
 
+        self._cursor_visible = True
+
         self.native = WinForms.Form()
         self.native.interface = self.interface
         self.native.FormClosing += self.winforms_FormClosing
@@ -213,3 +215,29 @@ class Window:
         if self.interface.content:
             # Re-layout the content
             self.interface.content.refresh()
+
+    def get_cursor_position(self):
+        relative_cursor_position = self.native.PointToScreen(
+            self.native.Cursor.Position
+        )
+        return (relative_cursor_position.X, relative_cursor_position.Y)
+
+    def set_cursor_position(self, cursor_position: tuple[int, int]):
+        self.native.Cursor.Position = self.native.PointToScreen(Point(*cursor_position))
+
+    def is_cursor_visible(self):
+        return self._cursor_visible
+
+    def set_cursor_visible(self, condition: bool):
+        if condition and not self._cursor_visible:
+            self.native.Cursor.Show()
+            self._cursor_visible = True
+        elif not condition and self._cursor_visible:
+            self.native.Cursor.Hide()
+            self._cursor_visible = False
+
+    def show_cursor(self):
+        self.set_cursor_visible(True)
+
+    def hide_cursor(self):
+        self.set_cursor_visible(False)

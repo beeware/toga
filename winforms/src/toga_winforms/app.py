@@ -303,20 +303,31 @@ class App:
         for window in windows:
             window._impl.set_full_screen(False)
 
-    def set_cursor(self, value):
-        if len(value) != 2:
-            print("Error! Invalid cursor position value.")
-            return
-        WinForms.Cursor.Position = Point(*value)
+    def get_cursor_position(self):
+        return (WinForms.Cursor.Position.X, WinForms.Cursor.Position.Y)
 
-    def show_cursor(self):
-        if not self._cursor_visible:
+    def set_cursor_position(self, cursor_position: tuple[int, int]):
+        WinForms.Cursor.Position = Point(*cursor_position)
+
+    def is_cursor_visible(self):
+        return self._cursor_visible
+
+    def set_cursor_visible(self, condition: bool):
+        if condition and not self._cursor_visible:
             WinForms.Cursor.Show()
+            self._cursor_visible = True
+        elif not condition and self._cursor_visible:
+            WinForms.Cursor.Hide()
+            self._cursor_visible = False
+
+    def show_cursor(self, windows):
+        for window in windows:
+            window._impl.set_cursor_visible(True)
         self._cursor_visible = True
 
-    def hide_cursor(self):
-        if self._cursor_visible:
-            WinForms.Cursor.Hide()
+    def hide_cursor(self, windows):
+        for window in windows:
+            window._impl.set_cursor_visible(False)
         self._cursor_visible = False
 
 

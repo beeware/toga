@@ -516,17 +516,39 @@ class App:
             self._impl.exit_full_screen(self._full_screen_windows)
             self._full_screen_windows = None
 
-    def set_cursor(self, value):
-        """Set cursor position."""
-        self._impl.set_cursor(value)
+    @property
+    def cursor_position(self):
+        """Return the cursor position with respect to the whole app."""
+        return self._impl.get_cursor_position()
+
+    @cursor_position.setter
+    def cursor_position(self, value: tuple[int, int]):
+        """Set the cursor position with respect to the whole app."""
+        if not isinstance(value, tuple) or len(value) != 2:
+            print("Error! Invalid cursor position value or type.")
+            return
+        self._impl.set_cursor_position(value)
+
+    @property
+    def cursor_visible(self):
+        """Return the status of cursor visibility for the whole app."""
+        return self._impl.is_cursor_visible()
+
+    @cursor_visible.setter
+    def cursor_visible(self, value: bool):
+        """Set the cursor visibility for the whole app."""
+        if not isinstance(value, bool):
+            print("Error! Invalid cursor visible value.")
+            return
+        self._impl.set_cursor_visible(value)
 
     def show_cursor(self):
-        """Show cursor."""
-        self._impl.show_cursor()
+        """Show cursor for the whole app."""
+        self._impl.show_cursor(self.windows)
 
     def hide_cursor(self):
-        """Hide cursor from view."""
-        self._impl.hide_cursor()
+        """Hide cursor from view for the whole app."""
+        self._impl.hide_cursor(self.windows)
 
     def startup(self):
         """Create and show the main window for the application."""
