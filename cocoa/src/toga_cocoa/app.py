@@ -400,6 +400,26 @@ class App:
             window.content._impl.native.exitFullScreenModeWithOptions(opts)
             window.content.refresh()
 
+    @property
+    def cursor_position(self):
+        """Return the cursor position with respect to the whole app."""
+        self.interface.factory.not_implemented("App.cursor_position")
+
+    @cursor_position.setter
+    def cursor_position(self, value: tuple[int, int]):
+        """Set the cursor position with respect to the whole app."""
+        self.interface.factory.not_implemented("App.cursor_position")
+
+    @property
+    def cursor_visible(self):
+        """Return the status of cursor visibility for the whole app."""
+        self.interface.factory.not_implemented("App.cursor_visible")
+
+    @cursor_visible.setter
+    def cursor_visible(self, value: bool):
+        """Set the cursor visibility for the whole app."""
+        self.interface.factory.not_implemented("App.cursor_visible")
+
     def show_cursor(self):
         if not self._cursor_visible:
             NSCursor.unhide()

@@ -322,3 +322,31 @@ class Window:
 
     def close(self):
         self.native.close()
+
+    @property
+    def cursor_position(self):
+        """Return the cursor position with respect to the specified window."""
+        self.interface.factory.not_implemented("Window.cursor_position")
+
+    @cursor_position.setter
+    def cursor_position(self, value: tuple[int, int]):
+        """Set the cursor position with respect to the specified window."""
+        self.interface.factory.not_implemented("Window.cursor_position")
+
+    @property
+    def cursor_visible(self):
+        """Return the status of cursor visibility for the specified window."""
+        self.interface.factory.not_implemented("Window.cursor_visible")
+
+    @cursor_visible.setter
+    def cursor_visible(self, value: bool):
+        """Set the cursor visibility for the specified window."""
+        self.interface.factory.not_implemented("Window.cursor_visible")
+
+    def show_cursor(self):
+        """Show cursor for the specified window."""
+        self.interface.factory.not_implemented("Window.show_cursor()")
+
+    def hide_cursor(self):
+        """Hide cursor from view for the specified window."""
+        self.interface.factory.not_implemented("Window.hide_cursor()")
