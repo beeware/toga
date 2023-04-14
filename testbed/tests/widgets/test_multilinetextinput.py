@@ -1,10 +1,9 @@
 from unittest.mock import Mock, call
 
-from pytest import fixture
 import pytest
+from pytest import fixture
 
 import toga
-
 
 if toga.platform.current_platform not in {"macOS", "iOS"}:
     pytest.skip("tests are not implemented for platform", allow_module_level=True)
