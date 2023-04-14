@@ -55,16 +55,30 @@ class App(LoggedObject):
         self._action("exit_full_screen", windows=windows)
 
     @not_required_on("mobile")
+    def get_cursor_position(self):
+        self._get_value("cursor_position")
+
+    @not_required_on("mobile")
+    def set_cursor_position(self, value: tuple[int, int]):
+        self._action("cursor_position", value=value)
+        self._set_value("cursor_position", value)
+
+    @not_required_on("mobile")
+    def get_cursor_visibility(self):
+        self._get_value("cursor_visible")
+
+    @not_required_on("mobile")
+    def set_cursor_visibility(self, value: bool):
+        self._action("cursor_visible", value=value)
+        self._set_value("cursor_visible", value)
+
+    @not_required_on("mobile")
     def show_cursor(self):
         self._action("show_cursor")
 
     @not_required_on("mobile")
     def hide_cursor(self):
         self._action("hide_cursor")
-
-    @not_required_on("mobile")
-    def set_cursor(self, value):
-        self._action("set_cursor", value=value)
 
 
 @not_required_on("mobile", "web")

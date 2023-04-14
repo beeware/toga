@@ -79,3 +79,29 @@ class Window(LoggedObject):
     @not_required
     def toga_on_close(self):
         self._action("handle Window on_close")
+
+    @not_required_on("mobile")
+    def get_cursor_position(self):
+        self._get_value("cursor_position")
+
+    @not_required_on("mobile")
+    def set_cursor_position(self, value: tuple[int, int]):
+        self._action("cursor_position", value=value)
+        self._set_value("cursor_position", value)
+
+    @not_required_on("mobile")
+    def get_cursor_visibility(self):
+        self._get_value("cursor_visible")
+
+    @not_required_on("mobile")
+    def set_cursor_visibility(self, value: bool):
+        self._action("cursor_visible", value=value)
+        self._set_value("cursor_visible", value)
+
+    @not_required_on("mobile")
+    def show_cursor(self):
+        self._action("show_cursor")
+
+    @not_required_on("mobile")
+    def hide_cursor(self):
+        self._action("hide_cursor")
