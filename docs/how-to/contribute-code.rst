@@ -7,9 +7,9 @@ How to contribute code to Toga
 If you experience problems with Toga, `log them on GitHub`_. If you want to
 contribute code, please `fork the code`_ and `submit a pull request`_.  You may
 also find `this presentation by BeeWare team member Dan Yeaw
-<https://youtu.be/sWt_sEZUiY8>`__ helpful. This talk gives an architectural
-overview of Toga, as well as providing a guide to the process of adding new
-widgets.
+<https://www.youtube.com/watch?v=sWt_sEZUiY8>`__ helpful. This talk gives an
+architectural overview of Toga, as well as providing a guide to the process of
+adding new widgets.
 
 .. _log them on GitHub: https://github.com/beeware/toga/issues
 .. _fork the code: https://github.com/beeware/toga
@@ -355,7 +355,7 @@ What should I do?
 =================
 
 Start by running the core test suite. Toga uses
-`tox <https://tox.readthedocs.io/en/latest/>`__ to manage the testing process.
+`tox <https://tox.wiki/en/latest/>`__ to manage the testing process.
 To run the core test suite:
 
 .. tabs::
@@ -385,13 +385,12 @@ the patch. If you do find a test error or failure, either there's something
 odd in your test environment, or you've found an edge case that we haven't
 seen before - either way, let us know!
 
-Although the tests should all pass, the test suite itself is still
-incomplete. There are many aspects of the Toga Core API that aren't currently
-tested (or aren't tested thoroughly). To work out what *isn't* tested, we're
-going to use a tool called `coverage
-<https://coverage.readthedocs.io/>`__. Coverage allows you to check which lines
-of code have (and haven't) been executed - which then gives you an idea of what
-code has (and hasn't) been tested.
+Although the tests should all pass, the test suite itself is still incomplete.
+There are many aspects of the Toga Core API that aren't currently tested (or
+aren't tested thoroughly). To work out what *isn't* tested, we're going to use a
+tool called `coverage <https://coverage.readthedocs.io/en/latest>`__. Coverage
+allows you to check which lines of code have (and haven't) been executed - which
+then gives you an idea of what code has (and hasn't) been tested.
 
 At the end of the test output there should be a report of the coverage data that
 was gathered::

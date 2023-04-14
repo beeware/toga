@@ -133,15 +133,11 @@ class Context:
         A drawing operator that fills the current path according to the current
         fill rule, (each sub-path is implicitly closed before being filled).
 
-        Args:
-            fill_rule (str, Optional): 'nonzero' is the non-zero winding rule and
-                                       'evenodd' is the even-odd winding rule.
-            preserve (bool, Optional): Preserves the path within the Context.
-            color (str, Optional): color value in any valid color format,
-                default to black.
-
-        Yields:
-            :class:`Fill` object.
+        :param fill_rule: `nonzero` is the non-zero winding rule; `evenodd` is
+            the even-odd winding rule.
+        :param preserve: Preserve the path within the Context.
+        :param color: color value in any valid color format, default to black.
+        :yields: :class:`Fill` object.
         """
         fill = Fill(color, fill_rule, preserve)
         fill.canvas = self.canvas
@@ -360,8 +356,8 @@ class Fill(Context):
     Args:
         color (str, Optional): Color value in any valid color format,
             default to black.
-        fill_rule (str, Optional): 'nonzero' if the non-zero winding rule and
-                                   'evenodd' if the even-odd winding rule.
+        fill_rule (str, Optional): `nonzero` if the non-zero winding rule and
+                                   `evenodd` if the even-odd winding rule.
         preserve (bool, Optional): Preserves the path within the Context.
     """
 
@@ -718,12 +714,9 @@ class Canvas(Context, Widget):
     def scale(self, sx, sy):
         """Constructs and returns a :class:`Scale`.
 
-        Args:
-            sx (float): scale factor for the X dimension.
-            sy (float): scale factor for the Y dimension.
-
-        Returns:
-            :class:`Scale` object.
+        :param sx: scale factor for the X dimension.
+        :param sy: scale factor for the Y dimension.
+        :returns: :class:`Scale` object.
         """
         scale = Scale(sx, sy)
         return self.add_draw_obj(scale)
@@ -731,12 +724,10 @@ class Canvas(Context, Widget):
     def translate(self, tx, ty):
         """Constructs and returns a :class:`Translate`.
 
-        Args:
-            tx (float): X value of coordinate.
-            ty (float): Y value of coordinate.
 
-        Returns:
-            :class:`Translate` object.
+        :param tx: X value of coordinate.
+        :param ty: Y value of coordinate.
+        :returns: :class:`Translate` object.
         """
         translate = Translate(tx, ty)
         return self.add_draw_obj(translate)
@@ -1071,11 +1062,11 @@ class Rotate:
 class Scale:
     """A user-created :class:`Scale` to add canvas scaling.
 
-    Modifies the canvas by scaling the X and Y canvas axes by sx and sy.
+    Modifies the canvas by scaling the X and Y canvas axes by ``sx`` and ``sy``
+    respectively.
 
-    Args:
-        sx (float): scale factor for the X dimension.
-        sy (float): scale factor for the Y dimension.
+    :param sx: scale factor for the X dimension.
+    :param sy: scale factor for the Y dimension.
     """
 
     def __init__(self, sx, sy):
@@ -1093,11 +1084,10 @@ class Scale:
 class Translate:
     """A user-created :class:`Translate` to translate the canvas.
 
-    Modifies the canvas by translating the canvas origin by (tx, ty).
+    Modifies the canvas by translating the canvas origin by ``(tx, ty)``.
 
-    Args:
-        tx (float): X value of coordinate.
-        ty (float): Y value of coordinate.
+    :param tx: X value of coordinate.
+    :param ty: Y value of coordinate.
     """
 
     def __init__(self, tx, ty):

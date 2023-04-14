@@ -18,7 +18,7 @@ class SplitContainer(Widget):
             in the following order:
             widget (:class:`~toga.widgets.base.Widget`): The widget that will be added.
             weight (float): Specifying the weighted splits.
-            flex (boolean): Should the content expand when the widget is resized. (optional)
+            flex (Boolean): Should the content expand when the widget is resized. (optional)
     """
 
     HORIZONTAL = False

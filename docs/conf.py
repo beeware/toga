@@ -282,8 +282,6 @@ spelling_lang = "en_US"
 # Location of word list.
 spelling_word_list_filename = "spelling_wordlist"
 
-spelling_ignore_pypi_package_names = True
-
 # -- Options for Todos -------------------------------------------
 
 # If this is True, todo and todolist produce output, else they produce nothing. The default is False.
