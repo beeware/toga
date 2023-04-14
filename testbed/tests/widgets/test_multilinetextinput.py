@@ -1,5 +1,3 @@
-from unittest.mock import Mock, call
-
 import pytest
 from pytest import fixture
 
