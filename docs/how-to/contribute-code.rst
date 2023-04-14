@@ -632,8 +632,10 @@ specific test, using `pytest specifiers
 
       (venv) C:\...>tox -e py-core -- tests/path_to_test_file/test_some_test.py
 
-These tests paths are relative to the ``core`` directory. You won't get a
-coverage report when you run a subset of the tests.
+These tests paths are relative to the ``core`` directory. You'll still get a
+coverage report when running a part of the test suite - but the coverage results
+will only report the lines of code that were executed by the specific tests you
+ran.
 
 .. _run-testbed:
 
