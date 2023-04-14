@@ -1,0 +1,3 @@
+Corrected line length
+Changed definition listed for cache and toga properties
+Updated formating to use ReST styles
