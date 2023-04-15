@@ -29,3 +29,14 @@ async def test_readonly_on_init(widget, probe, readonly):
 
     assert widget.readonly == readonly
     assert probe.enabled == (not readonly)
+
+
+@pytest.mark.parametrize(
+    "readonly, new_readonly",
+    [(True, False), (False, True), (None, True)])
+async def test_readonly_change(widget, probe, readonly, new_readonly):
+    "Setting `readonly` parameter updates the widget state"
+    widget.readonly = new_readonly
+
+    assert widget.readonly == new_readonly
+    assert probe.enabled == (not new_readonly)
