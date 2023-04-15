@@ -29,6 +29,7 @@ initializer
 instantiation
 iOS
 iterable
+KDE
 linters
 macOS
 minimizable
@@ -37,9 +38,13 @@ namespace
 OpenStreetMap
 OTF
 Pango
+parameterization
 platformer
 pre
 programmatically
+pytest
+Pygame
+PyScript
 Quickstart
 radiusx
 radiusy
@@ -48,12 +53,16 @@ rehint
 rehinted
 Ren
 resizable
+reStructuredText
 runtime
 scrollable
 scrollers
 selectable
 Stimpy
 stylesheet
+testbed
+triaged
+Triaging
 Todo
 toolbar
 toolbars
@@ -63,6 +72,7 @@ Towncrier
 tvOS
 Ubuntu
 validators
+verbing
 viewport
 watchOS
 WebKit
