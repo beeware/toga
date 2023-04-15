@@ -351,22 +351,26 @@ class App:
     @property
     def paths(self):
         """
-        Paths for known safe system locations. Using paths makes sure you have a consistent and known location to store
-        files for your app. Also, some platforms do not allow arbitrary file access to any location on disk.
-        On Android, there are many limitations when it comes to accessing file locations and the apis
-        you can use to read from those locations.
+        Paths for platform appropriate locations. Using paths makes sure you have
+        a consistent location to store files for your app. Also, some platforms
+        do not allow arbitrary file access to any location on disk.
+
+        ``paths`` has properties to make it possible to easily obtain the needed
+        path location for a given need.
 
         :PROPERTIES:
             * **app** – Location of where the apps code is run.
 
             * **data** – System appropriate location to store user data.
 
-            * **cache** – File location for temporary files that may be removed by the system or user and
-                can be obtained again by the program.
+            * **cache** – File location for temporary files that may be removed
+              by the system or user and can be obtained again by the program.
 
             * **logs** – Location of toga log files.
 
             * **toga** – Location of the Toga core module.
+
+        :return: The requested path as a ``Pathlib``
 
         """
         return self._paths
