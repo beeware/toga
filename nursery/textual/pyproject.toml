@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools==66.1.1", "setuptools_scm[toml]==7.0.5"]
+build-backend = "setuptools.build_meta"
+
+[tool.coverage.run]
+parallel = true
+branch = true
+relative_files = true
+
+# See notes in the root pyproject.toml file.
+source = ["src"]
+source_pkgs = ["toga_textual"]
+
+[tool.coverage.paths]
+source = [
+    "src/toga_textual",
+    "**/toga_textual",
+]

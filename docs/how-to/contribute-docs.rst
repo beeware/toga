@@ -1,26 +1,21 @@
-Contributing to the documentation
-=================================
+====================================
+Contributing to Toga's documentation
+====================================
 
-Here are some tips for working on this documentation. You're welcome to add
-more and help us out!
+You might have the best software in the world - but if nobody knows how to use
+it, what's the point? Documentation can always be improved - and we need need
+your help!
 
-First of all, you should check the `Restructured Text (reST) and Sphinx
-CheatSheet <http://thomas-cokelaer.info/tutorials/sphinx/rest_syntax.html>`_ to
-learn how to write your ``.rst`` file.
+Toga's documentation is written using `Sphinx and reStructuredText
+<https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html>`__. We
+aim to follow the `Diataxis <https://diataxis.fr>`__ framework for structuring
+documentation.
 
-Create a ``.rst`` file
-----------------------
+Building Toga's documentation
+=============================
 
-Look at the structure and choose the best category to put your ``.rst`` file. Make
-sure that it is referenced in the index of the corresponding category, so it
-will show on in the documentation. If you have no idea how to do this, study
-the other index files for clues.
-
-Build documentation locally
----------------------------
-
-To build the documentation locally, :ref:`set up a development environment
-<setup-dev-environment>`.
+To build Toga's documentation, start by :ref:`setting up a development
+environment <setup-dev-environment>`.
 
 You'll also need to install the Enchant spell checking library.
 
@@ -69,6 +64,9 @@ You'll also need to install the Enchant spell checking library.
     Enchant is installed automatically when you set up your development
     environment.
 
+Build documentation locally
+---------------------------
+
 Once your development environment is set up, run:
 
 .. tabs::
@@ -97,8 +95,8 @@ are any markup problems, they'll raise an error.
 Documentation linting
 ---------------------
 
-Before committing and pushing documentation updates, run linting for the
-documentation:
+The build process will identify reStructuredText problems, but Toga performs some
+additional "lint" checks. To run the lint checks:
 
 .. tabs::
 
@@ -116,19 +114,25 @@ documentation:
 
   .. group-tab:: Windows
 
-    .. code-block:: powershell
+    .. code-block:: doscon
 
       (venv) C:\...>tox -e docs-lint
 
 This will validate the documentation does not contain:
 
-* invalid syntax and markup
 * dead hyperlinks
 * misspelled words
 
 If a valid spelling of a word is identified as misspelled, then add the word to
 the list in ``docs/spelling_wordlist``. This will add the word to the
-spellchecker's dictionary.
+spellchecker's dictionary. When adding to this list, remember:
+
+* We prefer US spelling, with some liberties for programming-specific
+  colloquialism (e.g., "apps") and verbing of nouns (e.g., "scrollable")
+* Any reference to a product name should use the product's preferred
+  capitalization. (e.g., "macOS", "GTK", "pytest", "Pygame", "PyScript").
+* If a term is being used "as code", then it should be quoted as a literal
+  rather than being added to the dictionary.
 
 Rebuilding all documentation
 ----------------------------
@@ -157,3 +161,16 @@ To force a rebuild for all of the documentation:
 
 The documentation should be fully rebuilt in the ``docs/_build/html`` folder.
 If there are any markup problems, they'll raise an error.
+
+What to work on?
+================
+
+If you're looking for specific areas to improve, there are `tickets tagged
+"documentation"
+<https://github.com/beeware/toga/issues?q=is%3Aopen+is%3Aissue+label%3Adocumentation>`__
+in Toga's issue tracker.
+
+However, you don't need to be constrained by these tickets. If you can identify
+a gap in Toga's documentation, or an improvement that can be made, start
+writing! Anything that improves the experience of the end user is a welcome
+change.
