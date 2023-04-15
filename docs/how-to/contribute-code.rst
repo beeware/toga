@@ -392,8 +392,8 @@ reproduce the problem. Use the information provided in the bug report to try and
 reproduce the problem. If you can't reproduce the problem, report what you have
 found as a comment on the ticket, and pick another ticket.
 
-If a bug report has no comments from anyone other that the original reporter,
-the issue needs need to be triaged. Triaging a bug involves taking the
+If a bug report has no comments from anyone other than the original reporter,
+the issue needs to be triaged. Triaging a bug involves taking the
 information provided by the reporter, and trying to reproduce it. Again, if you
 can't reproduce the problem, report what you have found as a comment on the
 ticket, and pick another ticket.
@@ -458,7 +458,7 @@ isn't implemented on your platform of choice, implement that interface. The
 :doc:`supported widgets by platform </reference/widgets_by_platform>` table can
 show you the widgets that are missing on various platforms. You can also look
 for log messages in a running app (or the direct ``factory.not_implemented()``
-function calls that produce those log messages). At present, the web backend is
+function calls that produce those log messages). At present, the web backend
 has a lot of missing widgets, so if you have web skills, or would like to learn
 more about `PyScript <https://pyscript.net>`__ and `Shoelace
 <https://shoelace.style>`__, this could be a good place to contribute.
@@ -554,7 +554,7 @@ To run the core test suite:
 
       (venv) C:\...>tox -e py-core
 
-You should get some output indicating that tests have been run. You may seek
+You should get some output indicating that tests have been run. You may see
 ``SKIPPED`` tests, but shouldn't ever get any ``FAIL`` or ``ERROR`` test
 results. We run our full test suite before merging every patch. If that process
 discovers any problems, we don't merge the patch. If you do find a test error or
@@ -632,7 +632,7 @@ specific test, using `pytest specifiers
 
       (venv) C:\...>tox -e py-core -- tests/path_to_test_file/test_some_test.py
 
-These tests paths are relative to the ``core`` directory. You'll still get a
+These test paths are relative to the ``core`` directory. You'll still get a
 coverage report when running a part of the test suite - but the coverage results
 will only report the lines of code that were executed by the specific tests you
 ran.
@@ -909,7 +909,7 @@ change note with the assigned number.
 It's not just about coverage!
 -----------------------------
 
-Although we're always trying to improve test coverage is always the goal, the
+Although we're always trying to improve test coverage, the
 task isn't *just* about increasing the numerical coverage value. Part of the
 task is to audit the code as you go. You could write a comprehensive set of
 tests for a concrete life jacket... but a concrete life jacket would still be

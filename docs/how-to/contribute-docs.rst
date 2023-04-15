@@ -129,9 +129,9 @@ spellchecker's dictionary. When adding to this list, remember:
 
 * We prefer US spelling, with some liberties for programming-specific
   colloquialism (e.g., "apps") and verbing of nouns (e.g., "scrollable")
-* Any reference to an product name should use the product's preferred
-  capitalization. (e.g,, "macOS", "GTK", "pytest", "Pygame", "PyScript").
-* If a terms is being used "as code", then it should be quoted as a literal
+* Any reference to a product name should use the product's preferred
+  capitalization. (e.g., "macOS", "GTK", "pytest", "Pygame", "PyScript").
+* If a term is being used "as code", then it should be quoted as a literal
   rather than being added to the dictionary.
 
 Rebuilding all documentation
