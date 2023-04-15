@@ -8,6 +8,12 @@ if toga.platform.current_platform not in {"macOS", "iOS"}:
 
 
 @fixture
+def readonly():
+    """Provide default value for `readonly`"""
+    return None
+
+
+@fixture
 async def widget(readonly):
     kwargs = {}
     if readonly is not None:
