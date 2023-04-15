@@ -32,8 +32,7 @@ async def test_readonly_on_init(widget, probe, readonly):
 
 
 @pytest.mark.parametrize(
-    "readonly, new_readonly",
-    [(True, False), (False, True), (None, True)])
+    "readonly, new_readonly", [(True, False), (False, True), (None, True)])
 async def test_readonly_change(widget, probe, readonly, new_readonly):
     "Setting `readonly` parameter updates the widget state"
     widget.readonly = new_readonly
