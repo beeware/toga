@@ -528,7 +528,7 @@ class App:
     @property
     def is_full_screen(self):  # Only for backwards compatibility
         """Is the app currently in full screen mode?"""
-        return self._full_screen_windows is not None
+        return self.full_screen
 
     def set_full_screen(self, *windows):  # Only for backwards compatibility
         """Make one or more windows full screen.
