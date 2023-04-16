@@ -1,11 +1,20 @@
 import warnings
 from builtins import id as identifier
+from enum import Enum, auto, unique
 from pathlib import Path
 
 from toga.command import CommandSet
 from toga.handlers import wrapped_handler
 from toga.platform import get_platform_factory
 from toga.widgets.base import WidgetRegistry
+
+
+@unique
+class WindowStates(Enum):
+    NORMAL = auto()
+    MAXIMIZED = auto()
+    MINIMIZED = auto()
+    FULLSCREEN = auto()
 
 
 class Window:
@@ -54,7 +63,6 @@ class Window:
         self._impl = None
         self._app = None
         self._content = None
-        self._is_full_screen = False
 
         self.resizeable = resizeable
         self.closeable = closeable
@@ -210,13 +218,40 @@ class Window:
         self._impl.hide()
 
     @property
+    def maximized(self):
+        return self._impl.maximized
+
+    @maximized.setter
+    def maximized(self, value: bool):
+        if value:
+            self._impl.set_maximize_screen()
+        else:
+            self._impl.set_normal_screen()
+
+    @property
+    def minimized(self):
+        return self._impl.minimized
+
+    @minimized.setter
+    def minimized(self, condition: bool):
+        if condition:
+            self._impl.set_minimize_screen()
+        else:
+            self._impl.set_normal_screen()
+
+    def set_normal_screen(self):
+        self._impl.set_normal_screen()
+
+    @property
     def full_screen(self):
-        return self._is_full_screen
+        return self._impl.full_screen
 
     @full_screen.setter
-    def full_screen(self, is_full_screen):
-        self._is_full_screen = is_full_screen
-        self._impl.set_full_screen(is_full_screen)
+    def full_screen(self, condition):
+        if condition:
+            self._impl.set_full_screen(True)
+        else:
+            self._impl.set_normal_screen()
 
     @property
     def visible(self):

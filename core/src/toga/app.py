@@ -486,11 +486,51 @@ class App:
         return self._impl.current_window().interface
 
     @property
-    def is_full_screen(self):
+    def maximized(self):
+        """Returns True if any of the app's windows are maximized."""
+        return any(window.maximized for window in self.windows)
+
+    @maximized.setter
+    def maximized(self, condition: bool):
+        if condition:
+            self._impl.set_maximize_screen(self.windows)
+        else:
+            self._impl.set_normal_screen(self.windows)
+
+    @property
+    def minimized(self):
+        """Returns True only if all of the app's windows are minimized."""
+        return all(window.minimized for window in self.windows)
+
+    @minimized.setter
+    def minimized(self, condition: bool):
+        if condition:
+            self._impl.set_minimize_screen(self.windows)
+        else:
+            self._impl.set_normal_screen(self.windows)
+
+    @property
+    def full_screen(self):
+        """Return True if any of the app's window are in full screen."""
+        return any(window.full_screen for window in self.windows)
+
+    @full_screen.setter
+    def full_screen(self, condition):
+        if condition:
+            self._impl.set_full_screen(self.windows)
+        else:
+            self._impl.set_normal_screen(self.windows)
+
+    def set_normal_screen(self):
+        """Sets the app's windows in normal state"""
+        self._impl.set_normal_screen(self.windows)
+
+    @property
+    def is_full_screen(self):  # Only for backwards compatibility
         """Is the app currently in full screen mode?"""
         return self._full_screen_windows is not None
 
-    def set_full_screen(self, *windows):
+    def set_full_screen(self, *windows):  # Only for backwards compatibility
         """Make one or more windows full screen.
 
         Full screen is not the same as "maximized"; full screen mode
@@ -510,7 +550,7 @@ class App:
             self._impl.enter_full_screen(windows)
             self._full_screen_windows = windows
 
-    def exit_full_screen(self):
+    def exit_full_screen(self):  # Only for backwards compatibility
         """Exit full screen mode."""
         if self.is_full_screen:
             self._impl.exit_full_screen(self._full_screen_windows)

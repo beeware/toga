@@ -227,6 +227,18 @@ class App:
     def current_window(self):
         return self.native.get_active_window()._impl
 
+    def set_maximize_screen(self, windows):
+        self.interface.factory.not_implemented("App.set_maximize_screen()")
+
+    def set_minimize_screen(self, windows):
+        self.interface.factory.not_implemented("App.set_maximize_screen()")
+
+    def set_normal_screen(self, windows):
+        self.interface.factory.not_implemented("App.set_maximize_screen()")
+
+    def set_full_screen(self, windows):
+        self.interface.factory.not_implemented("App.set_full_screen()")
+
     def enter_full_screen(self, windows):
         for window in windows:
             window._impl.set_full_screen(True)

@@ -136,8 +136,29 @@ class Window:
     def set_size(self, size):
         self.native.resize(size[0], size[1])
 
+    def set_normal_screen(self):
+        self.interface.factory.not_implemented("Window.set_normal_screen()")
+
+    def set_maximize_screen(self):
+        self.interface.factory.not_implemented("Window.set_maximize_screen()")
+
+    def set_minimize_screen(self):
+        self.interface.factory.not_implemented("Window.set_minimize_screen()")
+
     def set_full_screen(self, is_full_screen):
         if is_full_screen:
             self.native.fullscreen()
         else:
             self.native.unfullscreen()
+
+    @property
+    def maximized(self):
+        self.interface.factory.not_implemented("Window.maximized")
+
+    @property
+    def minimized(self):
+        self.interface.factory.not_implemented("Window.minimized")
+
+    @property
+    def full_screen(self):
+        self.interface.factory.not_implemented("Window.full_screen")

@@ -47,6 +47,22 @@ class App(LoggedObject):
         self._action("current_window")
 
     @not_required_on("mobile")
+    def set_maximize_screen(self, windows):
+        self._action("set_maximize_screen", windows=windows)
+
+    @not_required_on("mobile")
+    def set_minimize_screen(self, windows):
+        self._action("set_minimize_screen", windows=windows)
+
+    @not_required_on("mobile")
+    def set_normal_screen(self, windows):
+        self._action("set_normal_screen", windows=windows)
+
+    @not_required_on("mobile")
+    def set_full_screen(self, windows):
+        self._action("set_full_screen", windows=windows)
+
+    @not_required_on("mobile")
     def enter_full_screen(self, windows):
         self._action("enter_full_screen", windows=windows)
 

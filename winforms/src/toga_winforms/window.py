@@ -1,4 +1,5 @@
 from toga import GROUP_BREAK, SECTION_BREAK
+from toga.window import WindowStates
 
 from .libs import Point, Size, WinForms
 
@@ -50,6 +51,8 @@ class Window:
         self.native.FormClosing += self.winforms_FormClosing
 
         self.native.MinimizeBox = self.native.interface.minimizable
+
+        self._window_state = WindowStates.NORMAL
 
         self.set_title(title)
         self.set_size(size)
@@ -197,13 +200,56 @@ class Window:
                 self.interface.on_close(self)
                 event.Cancel = True
 
-    def set_full_screen(self, is_full_screen):
-        if is_full_screen:
+    def get_window_state(self):
+        return self._window_state
+
+    def set_window_state(self, window_state):
+        if window_state == WindowStates.NORMAL:
+            self.native.FormBorderStyle = WinForms.FormBorderStyle.FixedSingle
+            self.native.WindowState = WinForms.FormWindowState.Normal
+            self._window_state = WindowStates.NORMAL
+
+        elif window_state == WindowStates.MAXIMIZED:
+            self.native.FormBorderStyle = WinForms.FormBorderStyle.FixedSingle
+            self.native.WindowState = WinForms.FormWindowState.Maximized
+            self._window_state = WindowStates.MAXIMIZED
+
+        elif window_state == WindowStates.MINIMIZED:
+            self.native.FormBorderStyle = WinForms.FormBorderStyle.FixedSingle
+            self.native.WindowState = WinForms.FormWindowState.Minimized
+            self._window_state = WindowStates.MINIMIZED
+
+        elif window_state == WindowStates.FULLSCREEN:
             self.native.FormBorderStyle = WinForms.FormBorderStyle(0)
             self.native.WindowState = WinForms.FormWindowState.Maximized
+            self._window_state = WindowStates.FULLSCREEN
         else:
-            self.native.FormBorderStyle = WinForms.FormBorderStyle(1)
-            self.native.WindowState = WinForms.FormWindowState.Normal
+            return
+
+    def set_normal_screen(self):
+        self.set_window_state(WindowStates.NORMAL)
+
+    def set_maximize_screen(self):
+        self.set_window_state(WindowStates.MAXIMIZED)
+
+    def set_minimize_screen(self):
+        self.set_window_state(WindowStates.MINIMIZED)
+
+    def set_full_screen(self, is_full_screen):
+        # is_full_screen only for core API compatibility
+        self.set_window_state(WindowStates.FULLSCREEN)
+
+    @property
+    def maximized(self):
+        return True if self._window_state == WindowStates.MAXIMIZED else False
+
+    @property
+    def minimized(self):
+        return True if self._window_state == WindowStates.MINIMIZED else False
+
+    @property
+    def full_screen(self):
+        return True if self._window_state == WindowStates.FULLSCREEN else False
 
     def close(self):
         self._is_closing = True
