@@ -532,9 +532,11 @@ class App:
 
     def set_full_screen(self, *windows):
         """Make one or more windows full screen.
+
         Full screen is not the same as "maximized"; full screen mode
         is when all window borders and other chrome is no longer
         visible.
+
         Args:
             windows: The list of windows to go full screen,
                 in order of allocation to screens. If the number of
