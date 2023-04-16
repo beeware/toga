@@ -86,15 +86,15 @@ class Window(LoggedObject):
 
     @not_required_on("mobile")
     def maximized(self):
-        self._get_value("maximized")
+        return self._get_value("maximized") or False
 
     @not_required_on("mobile")
     def minimized(self):
-        self._get_value("minimized")
+        return self._get_value("minimized") or False
 
     @not_required_on("mobile")
     def full_screen(self):
-        self._get_value("full_screen")
+        return self._get_value("full_screen") or False
 
     @not_required_on("mobile")
     def set_full_screen(self, is_full_screen):
