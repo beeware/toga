@@ -310,11 +310,11 @@ class App:
 
     def enter_full_screen(self, windows):  # For compatibility with core API
         for window in windows:
-            window._impl.set_full_screen(windows)
+            window._impl.set_full_screen(True)
 
     def exit_full_screen(self, windows):  # For compatibility with core API
         for window in windows:
-            window._impl.set_normal_screen(windows)
+            window._impl.set_normal_screen()
 
     def set_cursor(self, value):
         self.interface.factory.not_implemented("App.set_cursor()")

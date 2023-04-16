@@ -526,17 +526,15 @@ class App:
         self._impl.set_normal_screen(self.windows)
 
     @property
-    def is_full_screen(self):  # Only for backwards compatibility
+    def is_full_screen(self):
         """Is the app currently in full screen mode?"""
-        return self.full_screen
+        return self._full_screen_windows is not None
 
-    def set_full_screen(self, *windows):  # Only for backwards compatibility
+    def set_full_screen(self, *windows):
         """Make one or more windows full screen.
-
         Full screen is not the same as "maximized"; full screen mode
         is when all window borders and other chrome is no longer
         visible.
-
         Args:
             windows: The list of windows to go full screen,
                 in order of allocation to screens. If the number of
@@ -550,7 +548,7 @@ class App:
             self._impl.enter_full_screen(windows)
             self._full_screen_windows = windows
 
-    def exit_full_screen(self):  # Only for backwards compatibility
+    def exit_full_screen(self):
         """Exit full screen mode."""
         if self.is_full_screen:
             self._impl.exit_full_screen(self._full_screen_windows)
