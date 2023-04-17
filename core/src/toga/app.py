@@ -19,7 +19,6 @@ except ImportError:
     # Backwards compatibility - importlib.metadata was added in Python 3.8
     import importlib_metadata
 
-
 # Make sure deprecation warnings are shown by default
 warnings.filterwarnings("default", category=DeprecationWarning)
 
@@ -321,7 +320,7 @@ class App:
 
         # Get a platform factory, and a paths instance from the factory.
         self.factory = get_platform_factory()
-        self.paths = self.factory.paths
+        self._paths = self.factory.paths
 
         # If an icon (or icon name) has been explicitly provided, use it;
         # otherwise, the icon will be based on the app name.
@@ -348,6 +347,42 @@ class App:
 
     def _create_impl(self):
         return self.factory.App(interface=self)
+
+    @property
+    def paths(self):
+        """
+        Paths for platform appropriate locations on the user's filesystem.
+
+        Some platforms do not allow arbitrary file access to any location on
+        disk; even when arbitrary filesystem access is allowed, there are
+        "preferred" locations for some types of content.
+
+        The ``paths`` object has a set of sub-properties that return
+        ``pathlib.Path`` instances of platform-appropriate paths on the
+        filesystem.
+
+        :PROPERTIES:
+            * **app** – The directory containing the app's ``__main__`` module.
+              This location should be considered read-only, and only used to
+              retrieve app-specific resources (e.g., resource files bundled with
+              the app).
+
+            * **data** – Platform-appropriate location for user data (e.g., user
+              settings)
+
+            * **cache** – Platform-appropriate location for temporary files. It
+              should be assumed that the operating system will purge the
+              contents of this directory without warning if it needs to recover
+              disk space.
+
+            * **logs** – Platform-appropriate location for log files for this
+              app.
+
+            * **toga** – The path of the ``toga`` core module. This location
+              should be considered read-only.
+
+        """
+        return self._paths
 
     @property
     def name(self):
