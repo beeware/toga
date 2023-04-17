@@ -352,15 +352,15 @@ class App:
     @property
     def paths(self):
         """
-        Paths for platform appropriate locations on the user's filesystem.
+        Paths for platform appropriate locations on the user's file system.
 
         Some platforms do not allow arbitrary file access to any location on
-        disk; even when arbitrary filesystem access is allowed, there are
+        disk; even when arbitrary file system access is allowed, there are
         "preferred" locations for some types of content.
 
         The ``paths`` object has a set of sub-properties that return
         ``pathlib.Path`` instances of platform-appropriate paths on the
-        filesystem.
+        file system.
 
         :PROPERTIES:
             * **app** – The directory containing the app's ``__main__`` module.
