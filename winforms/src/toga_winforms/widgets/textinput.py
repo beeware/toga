@@ -117,5 +117,5 @@ class TextInput(Widget):
     def winforms_double_click(self, sender, event):
         self.native.SelectAll()
 
-    def set_on_return(self):
+    def set_on_return(self, handler):
         self.interface.factory.not_implemented("TextInput.on_return()")

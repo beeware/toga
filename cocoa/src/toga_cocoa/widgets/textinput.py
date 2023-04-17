@@ -119,5 +119,5 @@ class TextInput(Widget):
         # Cocoa TextInput can't ever be in an invalid state, so it is always valid
         return True
 
-    def set_on_return(self):
+    def set_on_return(self, handler):
         self.interface.factory.not_implemented("TextInput.on_return()")

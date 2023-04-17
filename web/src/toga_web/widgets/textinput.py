@@ -46,5 +46,5 @@ class TextInput(Widget):
         self.interface.factory.not_implemented("TextInput.is_valid()")
         return True
 
-    def set_on_return(self):
+    def set_on_return(self, handler):
         self.interface.factory.not_implemented("TextInput.on_return()")
