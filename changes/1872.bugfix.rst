@@ -1,0 +1,1 @@
+A window without an ``on_close`` handler can now be closed using the window frame close button.
