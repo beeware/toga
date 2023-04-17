@@ -325,12 +325,14 @@ class Window:
 
     def get_cursor_position(self):
         self.interface.factory.not_implemented("Window.get_cursor_position")
+        return (0, 0)
 
     def set_cursor_position(self, cursor_position):
         self.interface.factory.not_implemented("Window.set_cursor_position")
 
     def is_cursor_visible(self):
         self.interface.factory.not_implemented("Window.is_cursor_visible")
+        return True
 
     def set_cursor_visible(self, condition):
         self.interface.factory.not_implemented("Window.set_cursor_visible")

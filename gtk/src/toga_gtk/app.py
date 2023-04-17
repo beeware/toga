@@ -236,22 +236,24 @@ class App:
             window._impl.set_full_screen(False)
 
     def get_cursor_position(self):
-        self.interface.factory.not_implemented("App.get_cursor_position")
+        self.interface.factory.not_implemented("App.get_cursor_position()")
+        return (0, 0)
 
     def set_cursor_position(self, cursor_position):
-        self.interface.factory.not_implemented("App.set_cursor_position")
+        self.interface.factory.not_implemented("App.set_cursor_position()")
 
     def is_cursor_visible(self):
-        self.interface.factory.not_implemented("App.is_cursor_visible")
+        self.interface.factory.not_implemented("App.is_cursor_visible()")
+        return True
 
     def set_cursor_visible(self, condition: bool):
-        self.interface.factory.not_implemented("App.set_cursor_visible")
+        self.interface.factory.not_implemented("App.set_cursor_visible()")
 
     def show_cursor(self, windows):
-        self.interface.factory.not_implemented("App.show_cursor")
+        self.interface.factory.not_implemented("App.show_cursor()")
 
     def hide_cursor(self, windows):
-        self.interface.factory.not_implemented("App.hide_cursor")
+        self.interface.factory.not_implemented("App.hide_cursor()")
 
 
 class DocumentApp(App):

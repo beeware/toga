@@ -320,13 +320,13 @@ class App:
             WinForms.Cursor.Hide()
             self._cursor_visible = False
 
-    def show_cursor(self, windows):
-        for window in windows:
+    def show_cursor(self):
+        for window in self.interface.windows:
             window._impl.set_cursor_visible(True)
         self._cursor_visible = True
 
-    def hide_cursor(self, windows):
-        for window in windows:
+    def hide_cursor(self):
+        for window in self.interface.windows:
             window._impl.set_cursor_visible(False)
         self._cursor_visible = False
 

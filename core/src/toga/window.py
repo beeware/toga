@@ -268,8 +268,7 @@ class Window:
     def cursor_position(self, value: Tuple[int, int]):
         """Set the cursor position with respect to the specified window."""
         if not isinstance(value, tuple) or len(value) != 2:
-            print("Error! Invalid cursor position value or type.")
-            return
+            raise ValueError("Cursor position must be an (x,y) tuple")
         self._impl.set_cursor_position(value)
 
     @property
@@ -278,12 +277,11 @@ class Window:
         return self._impl.is_cursor_visible()
 
     @cursor_visible.setter
-    def cursor_visible(self, value: bool):
+    def cursor_visible(self, condition: bool):
         """Set the cursor visibility for the specified window."""
-        if not isinstance(value, bool):
-            print("Error! Invalid cursor visible value.")
-            return
-        self._impl.set_cursor_visible(value)
+        if not isinstance(condition, bool):
+            raise ValueError("Cursor visible must be True/False bool.")
+        self._impl.set_cursor_visible(condition)
 
     def show_cursor(self):
         """Show cursor for the specified window."""

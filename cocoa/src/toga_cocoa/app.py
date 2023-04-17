@@ -401,16 +401,17 @@ class App:
             window.content.refresh()
 
     def get_cursor_position(self):
-        self.interface.factory.not_implemented("App.get_cursor_position")
+        self.interface.factory.not_implemented("App.get_cursor_position()")
+        return (0, 0)
 
     def set_cursor_position(self, cursor_position):
-        self.interface.factory.not_implemented("App.set_cursor_position")
+        self.interface.factory.not_implemented("App.set_cursor_position()")
 
     def is_cursor_visible(self):
         return self._cursor_visible
 
     def set_cursor_visible(self, condition: bool):
-        self.interface.factory.not_implemented("App.set_cursor_visible")
+        self.interface.factory.not_implemented("App.set_cursor_visible()")
 
     def show_cursor(self):
         if not self._cursor_visible:
