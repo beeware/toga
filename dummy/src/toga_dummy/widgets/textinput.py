@@ -39,3 +39,6 @@ class TextInput(Widget):
 
     def is_valid(self):
         return self._get_value("valid")
+
+    def set_on_return(self):
+        self.interface.factory.not_implemented("TextInput.on_return()")

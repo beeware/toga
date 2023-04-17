@@ -13,3 +13,4 @@ View__OnTouchListener = JavaInterface("android/view/View$OnTouchListener")
 ViewTreeObserver__OnGlobalLayoutListener = JavaInterface(
     "android/view/ViewTreeObserver$OnGlobalLayoutListener"
 )
+OnKeyListener = JavaInterface("android/view/View$OnKeyListener")
