@@ -1,4 +1,5 @@
 from toga.command import Command as BaseCommand
+from toga.window import WindowState
 from toga_cocoa.libs import (
     SEL,
     NSBackingStoreBuffered,
@@ -169,6 +170,8 @@ class Window:
         self.native.interface = self.interface
         self.native.impl = self
 
+        self._window_state = WindowState.NORMAL
+
         self.set_title(title)
         self.set_size(size)
         self.set_position(position)
@@ -307,29 +310,11 @@ class Window:
     def get_visible(self):
         return bool(self.native.isVisible)
 
-    def set_normal_screen(self):
-        self.interface.factory.not_implemented("Window.set_normal_screen()")
+    def get_window_state(self):
+        return self._window_state
 
-    def set_maximize_screen(self):
-        self.interface.factory.not_implemented("Window.set_maximize_screen()")
-
-    def set_minimize_screen(self):
-        self.interface.factory.not_implemented("Window.set_minimize_screen()")
-
-    def set_full_screen(self, is_full_screen):
-        self.interface.factory.not_implemented("Window.set_full_screen()")
-
-    @property
-    def maximized(self):
-        self.interface.factory.not_implemented("Window.maximized")
-
-    @property
-    def minimized(self):
-        self.interface.factory.not_implemented("Window.minimized")
-
-    @property
-    def full_screen(self):
-        self.interface.factory.not_implemented("Window.full_screen")
+    def set_window_state(self, window_state):
+        self.interface.factory.not_implemented("Window.set_window_state()")
 
     def cocoa_windowShouldClose(self):
         if self.interface.on_close:

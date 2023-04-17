@@ -1,5 +1,6 @@
 from toga.command import GROUP_BREAK, SECTION_BREAK
 from toga.handlers import wrapped_handler
+from toga.window import WindowState
 
 from .container import TogaContainer
 from .libs import Gtk
@@ -22,6 +23,8 @@ class Window:
         self.native.connect("delete-event", self.gtk_delete_event)
 
         self.native.set_default_size(size[0], size[1])
+
+        self._window_state = WindowState.NORMAL
 
         self.set_title(title)
         self.set_position(position)
@@ -136,29 +139,14 @@ class Window:
     def set_size(self, size):
         self.native.resize(size[0], size[1])
 
-    def set_normal_screen(self):
-        self.interface.factory.not_implemented("Window.set_normal_screen()")
+    def get_window_state(self):
+        return self._window_state
 
-    def set_maximize_screen(self):
-        self.interface.factory.not_implemented("Window.set_maximize_screen()")
-
-    def set_minimize_screen(self):
-        self.interface.factory.not_implemented("Window.set_minimize_screen()")
+    def set_window_state(self, window_state):
+        self.interface.factory.not_implemented("Window.set_window_state()")
 
     def set_full_screen(self, is_full_screen):
         if is_full_screen:
             self.native.fullscreen()
         else:
             self.native.unfullscreen()
-
-    @property
-    def maximized(self):
-        self.interface.factory.not_implemented("Window.maximized")
-
-    @property
-    def minimized(self):
-        self.interface.factory.not_implemented("Window.minimized")
-
-    @property
-    def full_screen(self):
-        self.interface.factory.not_implemented("Window.full_screen")

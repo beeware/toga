@@ -10,7 +10,7 @@ from toga.widgets.base import WidgetRegistry
 
 
 @unique
-class WindowStates(Enum):
+class WindowState(Enum):
     NORMAL = auto()
     MAXIMIZED = auto()
     MINIMIZED = auto()
@@ -219,39 +219,41 @@ class Window:
 
     @property
     def maximized(self):
-        return self._impl.maximized
+        return True if self._impl.get_window_state() == WindowState.MAXIMIZED else False
 
     @maximized.setter
-    def maximized(self, value: bool):
-        if value:
-            self._impl.set_maximize_screen()
+    def maximized(self, maximize: bool):
+        if maximize:
+            self._impl.set_window_state(WindowState.MAXIMIZED)
         else:
-            self._impl.set_normal_screen()
+            self._impl.set_window_state(WindowState.NORMAL)
 
     @property
     def minimized(self):
-        return self._impl.minimized
+        return True if self._impl.get_window_state() == WindowState.MINIMIZED else False
 
     @minimized.setter
-    def minimized(self, condition: bool):
-        if condition:
-            self._impl.set_minimize_screen()
+    def minimized(self, minimize: bool):
+        if minimize:
+            self._impl.set_window_state(WindowState.MINIMIZED)
         else:
-            self._impl.set_normal_screen()
+            self._impl.set_window_state(WindowState.NORMAL)
 
     def set_normal_screen(self):
-        self._impl.set_normal_screen()
+        self._impl.set_window_state(WindowState.NORMAL)
 
     @property
     def full_screen(self):
-        return self._impl.full_screen
+        return (
+            True if self._impl.get_window_state() == WindowState.FULLSCREEN else False
+        )
 
     @full_screen.setter
-    def full_screen(self, condition):
-        if condition:
-            self._impl.set_full_screen(True)
+    def full_screen(self, full_screen):
+        if full_screen:
+            self._impl.set_window_state(WindowState.FULLSCREEN)
         else:
-            self._impl.set_normal_screen()
+            self._impl.set_window_state(WindowState.NORMAL)
 
     @property
     def visible(self):

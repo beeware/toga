@@ -370,18 +370,6 @@ class App:
     def current_window(self):
         return self.native.keyWindow
 
-    def set_maximize_screen(self, windows):
-        self.interface.factory.not_implemented("App.set_maximize_screen()")
-
-    def set_minimize_screen(self, windows):
-        self.interface.factory.not_implemented("App.set_maximize_screen()")
-
-    def set_normal_screen(self, windows):
-        self.interface.factory.not_implemented("App.set_maximize_screen()")
-
-    def set_full_screen(self, windows):
-        self.interface.factory.not_implemented("App.set_full_screen()")
-
     def enter_full_screen(self, windows):
         # If we're already in full screen mode, exit so that
         # we can re-assign windows to screens.

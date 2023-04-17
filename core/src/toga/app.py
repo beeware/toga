@@ -526,11 +526,13 @@ class App:
         return any(window.maximized for window in self.windows)
 
     @maximized.setter
-    def maximized(self, condition: bool):
-        if condition:
-            self._impl.set_maximize_screen(self.windows)
+    def maximized(self, maximize: bool):
+        if maximize:
+            for window in self.windows:
+                window.maximized = True
         else:
-            self._impl.set_normal_screen(self.windows)
+            for window in self.windows:
+                window.maximized = False
 
     @property
     def minimized(self):
@@ -538,11 +540,13 @@ class App:
         return all(window.minimized for window in self.windows)
 
     @minimized.setter
-    def minimized(self, condition: bool):
-        if condition:
-            self._impl.set_minimize_screen(self.windows)
+    def minimized(self, minimize: bool):
+        if minimize:
+            for window in self.windows:
+                window.minimized = True
         else:
-            self._impl.set_normal_screen(self.windows)
+            for window in self.windows:
+                window.minimized = False
 
     @property
     def full_screen(self):
@@ -550,21 +554,26 @@ class App:
         return any(window.full_screen for window in self.windows)
 
     @full_screen.setter
-    def full_screen(self, condition):
-        if condition:
-            self._impl.set_full_screen(self.windows)
+    def full_screen(self, full_screen):
+        if full_screen:
+            for window in self.windows:
+                window.full_screen = True
         else:
-            self._impl.set_normal_screen(self.windows)
+            for window in self.windows:
+                window.full_screen = False
 
     def set_normal_screen(self):
         """Sets the app's windows in normal state"""
-        self._impl.set_normal_screen(self.windows)
+        for window in self.windows:
+            window.set_normal_screen()
 
+    # For backwards compatibility in core API
     @property
     def is_full_screen(self):
         """Is the app currently in full screen mode?"""
         return self._full_screen_windows is not None
 
+    # For backwards compatibility in core API
     def set_full_screen(self, *windows):
         """Make one or more windows full screen.
 
@@ -585,6 +594,7 @@ class App:
             self._impl.enter_full_screen(windows)
             self._full_screen_windows = windows
 
+    # For backwards compatibility in core API
     def exit_full_screen(self):
         """Exit full screen mode."""
         if self.is_full_screen:

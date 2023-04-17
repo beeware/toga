@@ -72,29 +72,13 @@ class Window(LoggedObject):
     def close(self):
         self._action("close")
 
-    @not_required_on("mobile")
-    def set_normal_screen(self):
-        self._action("set_normal_screen")
+    @not_required_on("mobile", "web")
+    def get_window_state(self):
+        self._get_value("get_window_state")
 
-    @not_required_on("mobile")
-    def set_maximize_screen(self):
-        self._action("set_maximize_screen")
-
-    @not_required_on("mobile")
-    def set_minimize_screen(self):
-        self._action("set_minimize_screen")
-
-    @not_required_on("mobile")
-    def maximized(self):
-        self._get_value("maximized")
-
-    @not_required_on("mobile")
-    def minimized(self):
-        self._get_value("minimized")
-
-    @not_required_on("mobile")
-    def full_screen(self):
-        self._get_value("full_screen")
+    @not_required_on("mobile", "web")
+    def set_window_state(self, window_state):
+        self._action("set_window_state", window_state=window_state)
 
     @not_required_on("mobile")
     def set_full_screen(self, is_full_screen):
