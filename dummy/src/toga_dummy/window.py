@@ -74,7 +74,7 @@ class Window(LoggedObject):
 
     @not_required_on("mobile", "web")
     def get_window_state(self):
-        self._get_value("get_window_state")
+        self._action("get_window_state")
 
     @not_required_on("mobile", "web")
     def set_window_state(self, window_state):
