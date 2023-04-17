@@ -289,8 +289,9 @@ class App:
     def set_main_window(self, window):
         self.app_context.MainForm = window._impl.native
 
+    @property
     def current_window(self):
-        self.interface.factory.not_implemented("App.current_window()")
+        return WinForms.Form.ActiveForm._impl
 
     def enter_full_screen(self, windows):
         for window in windows:
