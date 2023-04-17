@@ -351,26 +351,35 @@ class App:
     @property
     def paths(self):
         """
-        Paths for platform appropriate locations. Using paths makes sure you have
-        a consistent location to store files for your app. Also, some platforms
-        do not allow arbitrary file access to any location on disk.
+        Paths for platform appropriate locations on the user's filesystem.
 
-        ``paths`` has properties to make it possible to easily obtain the needed
-        path location for a given need.
+        Some platforms do not allow arbitrary file access to any location on
+        disk; even when arbitrary filesystem access is allowed, there are
+        "preferred" locations for some types of content.
+
+        The ``paths`` object has a set of sub-properties that return
+        ``pathlib.Path`` instances of platform-appropriate paths on the
+        filesystem.
 
         :PROPERTIES:
-            * **app** – Location of where the apps code is run.
+            * **app** – The directory containing the app's ``__main__`` module.
+              This location should be considered read-only, and only used to
+              retrieve app-specific resources (e.g., resource files bundled with
+              the app).
 
-            * **data** – System appropriate location to store user data.
+            * **data** – Platform-appropriate location for user data (e.g., user
+              settings)
 
-            * **cache** – File location for temporary files that may be removed
-              by the system or user and can be obtained again by the program.
+            * **cache** – Platform-appropriate location for temporary files. It
+              should be assumed that the operating system will purge the
+              contents of this directory without warning if it needs to recover
+              disk space.
 
-            * **logs** – Location of toga log files.
+            * **logs** – Platform-appropriate location for log files for this
+              app.
 
-            * **toga** – Location of the Toga core module.
-
-        :return: The requested path as a ``Pathlib``
+            * **toga** – The path of the ``toga`` core module. This location
+              should be considered read-only.
 
         """
         return self._paths
