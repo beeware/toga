@@ -64,6 +64,8 @@ class Window:
         self._app = None
         self._content = None
 
+        self.window_state = WindowState.NORMAL
+
         self.resizeable = resizeable
         self.closeable = closeable
         self.minimizable = minimizable
@@ -219,7 +221,7 @@ class Window:
 
     @property
     def maximized(self):
-        return True if self._impl.get_window_state() == WindowState.MAXIMIZED else False
+        return True if self.window_state == WindowState.MAXIMIZED else False
 
     @maximized.setter
     def maximized(self, maximize: bool):
@@ -230,7 +232,7 @@ class Window:
 
     @property
     def minimized(self):
-        return True if self._impl.get_window_state() == WindowState.MINIMIZED else False
+        return True if self.window_state == WindowState.MINIMIZED else False
 
     @minimized.setter
     def minimized(self, minimize: bool):
@@ -244,9 +246,7 @@ class Window:
 
     @property
     def full_screen(self):
-        return (
-            True if self._impl.get_window_state() == WindowState.FULLSCREEN else False
-        )
+        return True if self.window_state == WindowState.FULLSCREEN else False
 
     @full_screen.setter
     def full_screen(self, full_screen):

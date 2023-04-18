@@ -52,8 +52,6 @@ class Window:
 
         self.native.MinimizeBox = self.native.interface.minimizable
 
-        self._window_state = WindowState.NORMAL
-
         self.set_title(title)
         self.set_size(size)
         self.set_position(position)
@@ -200,29 +198,26 @@ class Window:
                 self.interface.on_close(self)
                 event.Cancel = True
 
-    def get_window_state(self):
-        return self._window_state
-
     def set_window_state(self, window_state):
         if window_state == WindowState.NORMAL:
             self.native.FormBorderStyle = WinForms.FormBorderStyle.FixedSingle
             self.native.WindowState = WinForms.FormWindowState.Normal
-            self._window_state = WindowState.NORMAL
+            self.interface.window_state = WindowState.NORMAL
 
         elif window_state == WindowState.MAXIMIZED:
             self.native.FormBorderStyle = WinForms.FormBorderStyle.FixedSingle
             self.native.WindowState = WinForms.FormWindowState.Maximized
-            self._window_state = WindowState.MAXIMIZED
+            self.interface.window_state = WindowState.MAXIMIZED
 
         elif window_state == WindowState.MINIMIZED:
             self.native.FormBorderStyle = WinForms.FormBorderStyle.FixedSingle
             self.native.WindowState = WinForms.FormWindowState.Minimized
-            self._window_state = WindowState.MINIMIZED
+            self.interface.window_state = WindowState.MINIMIZED
 
         elif window_state == WindowState.FULLSCREEN:
             self.native.FormBorderStyle = WinForms.FormBorderStyle(0)
             self.native.WindowState = WinForms.FormWindowState.Maximized
-            self._window_state = WindowState.FULLSCREEN
+            self.interface.window_state = WindowState.FULLSCREEN
         else:
             return
 

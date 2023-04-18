@@ -75,9 +75,6 @@ class Window:
         # Does nothing on web
         pass
 
-    def get_window_state(self):
-        self.interface.factory.not_implemented("Window.set_window_state()")
-
     def set_window_state(self, window_state):
         self.interface.factory.not_implemented("Window.set_window_state()")
 

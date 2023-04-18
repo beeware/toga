@@ -4,6 +4,7 @@ from unittest.mock import MagicMock, Mock, call, patch
 import toga
 from toga.command import CommandSet
 from toga.widgets.base import WidgetRegistry
+from toga.window import WindowState
 from toga_dummy.utils import TestCase
 
 
@@ -198,8 +199,10 @@ class TestWindow(TestCase):
         self.assertFalse(self.window.full_screen)
         with patch.object(self.window, "_impl"):
             self.window.full_screen = True
-            self.assertTrue(self.window.full_screen)
-            self.window._impl.set_full_screen.assert_called_once_with(True)
+            self.assertTrue(self.window._impl.full_screen)
+            self.window._impl.set_window_state.assert_called_once_with(
+                WindowState.FULLSCREEN
+            )
 
     def test_on_close(self):
         with patch.object(self.window, "_impl"):
