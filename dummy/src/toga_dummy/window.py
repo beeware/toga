@@ -76,10 +76,6 @@ class Window(LoggedObject):
     def set_window_state(self, window_state):
         self._set_value("window_state", window_state)
 
-    @not_required_on("mobile")
-    def set_full_screen(self, is_full_screen):
-        self._set_value("is_full_screen", is_full_screen)
-
     @not_required
     def toga_on_close(self):
         self._action("handle Window on_close")
