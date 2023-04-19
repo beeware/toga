@@ -7,5 +7,5 @@ class MultilineTextInputProbe(SimpleProbe):
     native_class = UITextView
 
     @property
-    def enabled(self):
-        return self.native.isEditable()
+    def readonly(self):
+        return not self.native.isEditable()

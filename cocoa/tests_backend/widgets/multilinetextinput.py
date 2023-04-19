@@ -7,5 +7,5 @@ class MultilineTextInputProbe(SimpleProbe):
     native_class = NSScrollView
 
     @property
-    def enabled(self):
-        return self.native.documentView.isEditable()
+    def readonly(self):
+        return not self.native.documentView.isEditable()
