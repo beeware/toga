@@ -26,7 +26,7 @@ class TogaTextWatcher(TextWatcher):
         pass
 
 
-class TogaReturnListener(OnKeyListener):
+class TogaKeyListener(OnKeyListener):
     def __init__(self, impl):
         super().__init__()
         self.impl = impl
@@ -50,8 +50,8 @@ class TextInput(TextViewWidget):
         self.native = EditText(self._native_activity)
         self.native.setInputType(InputType.TYPE_CLASS_TEXT)
         self.cache_textview_defaults()
-        self._ReturnListener = TogaReturnListener(self)
-        self.native.setOnKeyListener(self._ReturnListener)
+        self._on_key_listener = TogaKeyListener(self)
+        self.native.setOnKeyListener(self._on_key_listener)
 
     def get_value(self):
         return self.native.getText().toString()
