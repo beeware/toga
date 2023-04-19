@@ -1,7 +1,24 @@
 from travertino.size import at_least
 
+from toga_gtk.keys import toga_key
+
 from ..libs import Gtk, gtk_alignment
 from .base import Widget
+
+
+class TogaConfirmListener:
+    def __init__(self, impl):
+        super().__init__()
+        self.impl = impl
+        self.interface = impl.interface
+
+    def onConfirm(self, _event, _user_data):
+        try:
+            key_pressed = toga_key(_user_data)["key"].value
+            if key_pressed == "<enter>" or key_pressed == "numpad:enter":
+                self.interface.on_confirm(None)
+        except TypeError:
+            pass
 
 
 class TextInput(Widget):
@@ -11,7 +28,8 @@ class TextInput(Widget):
         self.native.connect("changed", self.gtk_on_change)
         self.native.connect("focus-in-event", self.gtk_focus_in_event)
         self.native.connect("focus-out-event", self.gtk_focus_in_event)
-        self.native.connect("key-release-event", self.gtk_key_release_event)
+        self._togaConfirmListener = TogaConfirmListener(self)
+        self.native.connect("key-release-event", self._togaConfirmListener.onConfirm)
 
     def gtk_on_change(self, entry):
         if self.interface.on_change:
@@ -24,11 +42,6 @@ class TextInput(Widget):
     def gtk_focus_out_event(self, entry, user_data):
         if self.interface.on_lose_focus:
             self.interface.on_lose_focus(self.interface)
-
-    def gtk_key_release_event(self, key, user_data):
-        if user_data.keyval == 65293 or user_data.keyval == 65421:
-            if self.interface.on_return:
-                self.interface.on_return(self.interface)
 
     def set_readonly(self, value):
         self.native.set_property("editable", not value)
@@ -63,10 +76,6 @@ class TextInput(Widget):
         self.interface.intrinsic.height = height[1]
 
     def set_on_change(self, handler):
-        # No special handling required
-        pass
-
-    def set_on_return(self, handler):
         # No special handling required
         pass
 

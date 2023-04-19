@@ -16,11 +16,11 @@ class TextInput(Widget):
         placeholder (str): If no input is present this text is shown.
         readonly (bool):  Whether a user can write into the text input, defaults to `False`.
         on_change (Callable): Method to be called when text is changed in text box
-        on_return (Callable): Method to be called when return is pressed
+        on_confirm (Callable): Method to be called when return is pressed
         validators (list): list of validators to run on the value of the text box. Should
             return None is value is valid and an error message if not.
         on_change (``callable``): The handler to invoke when the text changes.
-        on_return (``callable``): The handler to invoke when return is pressed.
+        on_confirm (``callable``): The handler to invoke when return is pressed.
         on_gain_focus (:obj:`callable`): Function to execute when get focused.
         on_lose_focus (:obj:`callable`): Function to execute when lose focus.
     """
@@ -36,7 +36,7 @@ class TextInput(Widget):
         placeholder=None,
         readonly=False,
         on_change=None,
-        on_return=None,
+        on_confirm=None,
         on_gain_focus=None,
         on_lose_focus=None,
         validators=None,
@@ -82,11 +82,11 @@ class TextInput(Widget):
         # Set the actual value before on_change, because we do not want on_change triggered by it
         # However, we need to prime the handler property in case it is accessed.
         self._on_change = None
-        self._on_return = None
+        self._on_confirm = None
         self.value = value
 
         self.on_change = on_change
-        self.on_return = on_return
+        self.on_confirm = on_confirm
         self.validators = validators
         self.on_lose_focus = on_lose_focus
         self.on_gain_focus = on_gain_focus
@@ -224,20 +224,10 @@ class TextInput(Widget):
             return False
 
     @property
-    def on_return(self):
-        """The handler to invoke when return is pressed.
+    def on_confirm(self):
+        """The handler to invoke when return is pressed."""
+        return self._on_confirm
 
-        Returns:
-            The function ``callable`` that is called when return is pressed.
-        """
-        return self._on_return
-
-    @on_return.setter
-    def on_return(self, handler):
-        """Set the handler to invoke when return is pressed.
-
-        Args:
-            handler (:obj:`callable`): The handler to invoke when return is pressed.
-        """
-        self._on_return = wrapped_handler(self, handler)
-        self._impl.set_on_return(self._on_return)
+    @on_confirm.setter
+    def on_confirm(self, handler):
+        self._on_confirm = wrapped_handler(self, handler)

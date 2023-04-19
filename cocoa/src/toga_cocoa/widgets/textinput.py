@@ -119,5 +119,6 @@ class TextInput(Widget):
         # Cocoa TextInput can't ever be in an invalid state, so it is always valid
         return True
 
+    # Not sure on how to alert that on_confirm is not implimented, guidance needed.
     def set_on_return(self, handler):
         self.interface.factory.not_implemented("TextInput.on_return()")

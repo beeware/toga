@@ -1,5 +1,7 @@
 from travertino.size import at_least
 
+from toga_android.keys import toga_key
+
 from ..libs.android.text import InputType, TextWatcher
 from ..libs.android.view import Gravity, OnKeyListener, View__MeasureSpec
 from ..libs.android.widget import EditText
@@ -31,9 +33,15 @@ class TogaReturnListener(OnKeyListener):
         self.interface = impl.interface
 
     def onKey(self, _view, _key, _event):
-        if (int(_key) == 66 or int(_key) == 160) and int(_event.getAction()) == 1:
-            self.interface.on_return(None)
-        return False
+        try:
+            key_pressed = toga_key(_event)["key"].value
+            if (key_pressed == "<enter>" or key_pressed == "numpad:enter") and int(
+                _event.getAction()
+            ) == 1:
+                self.interface.on_confirm(None)
+            return False
+        except TypeError:
+            return False
 
 
 class TextInput(TextViewWidget):
@@ -42,6 +50,8 @@ class TextInput(TextViewWidget):
         self.native = EditText(self._native_activity)
         self.native.setInputType(InputType.TYPE_CLASS_TEXT)
         self.cache_textview_defaults()
+        self._ReturnListener = TogaReturnListener(self)
+        self.native.setOnKeyListener(self._ReturnListener)
 
     def get_value(self):
         return self.native.getText().toString()
@@ -63,10 +73,6 @@ class TextInput(TextViewWidget):
 
     def set_value(self, value):
         self.native.setText(value)
-
-    def set_on_return(self, handler):
-        self._ReturnListener = TogaReturnListener(self)
-        self.native.setOnKeyListener(self._ReturnListener)
 
     def set_on_change(self, handler):
         if self._textChangedListener:

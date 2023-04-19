@@ -39,6 +39,3 @@ class TextInput(Widget):
 
     def is_valid(self):
         return self._get_value("valid")
-
-    def set_on_return(self, handler):
-        self._set_value("on_return", handler)

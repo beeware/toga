@@ -129,6 +129,7 @@ GDK_KEYS = {
     Gdk.KEY_Right: Key.RIGHT,
     Gdk.KEY_Up: Key.UP,
     Gdk.KEY_Down: Key.DOWN,
+    Gdk.KEY_KP_Enter: Key.NUMPAD_ENTER,
 }
 
 # TODO: Confirm these codes are all correct - especially the special keys.
