@@ -11,6 +11,8 @@ from .base import Widget
 
 
 class TextInput(Widget):
+    IMPLEMENTS_ON_CONFIRM = False
+
     def create(self):
         self.native = WinForms.TextBox()
         self.native.Multiline = False
@@ -116,7 +118,3 @@ class TextInput(Widget):
 
     def winforms_double_click(self, sender, event):
         self.native.SelectAll()
-
-    # Not sure on how to alert that on_confirm is not implimented, guidance needed.
-    def set_on_return(self, handler):
-        self.interface.factory.not_implemented("TextInput.on_return()")

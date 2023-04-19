@@ -21,6 +21,8 @@ class TogaTextField(UITextField):
 
 
 class TextInput(Widget):
+    IMPLEMENTS_ON_CONFIRM = False
+
     def create(self):
         self.native = TogaTextField.new()
         self.native.interface = self.interface
@@ -81,7 +83,3 @@ class TextInput(Widget):
 
     def is_valid(self):
         self.interface.factory.not_implemented("TextInput.is_valid()")
-
-    # Not sure on how to alert that on_confirm is not implimented, guidance needed.
-    def set_on_return(self, handler):
-        self.interface.factory.not_implemented("TextInput.on_return()")

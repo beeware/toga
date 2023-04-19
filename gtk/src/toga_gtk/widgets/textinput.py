@@ -6,21 +6,6 @@ from ..libs import Gtk, gtk_alignment
 from .base import Widget
 
 
-class TogaConfirmListener:
-    def __init__(self, impl):
-        super().__init__()
-        self.impl = impl
-        self.interface = impl.interface
-
-    def onConfirm(self, _event, _user_data):
-        try:
-            key_pressed = toga_key(_user_data)["key"].value
-            if key_pressed == "<enter>" or key_pressed == "numpad:enter":
-                self.interface.on_confirm(None)
-        except TypeError:
-            pass
-
-
 class TextInput(Widget):
     def create(self):
         self.native = Gtk.Entry()
@@ -28,8 +13,7 @@ class TextInput(Widget):
         self.native.connect("changed", self.gtk_on_change)
         self.native.connect("focus-in-event", self.gtk_focus_in_event)
         self.native.connect("focus-out-event", self.gtk_focus_in_event)
-        self._togaConfirmListener = TogaConfirmListener(self)
-        self.native.connect("key-release-event", self._togaConfirmListener.onConfirm)
+        self.native.connect("key-release-event", self.gtk_key_release_event)
 
     def gtk_on_change(self, entry):
         if self.interface.on_change:
@@ -42,6 +26,14 @@ class TextInput(Widget):
     def gtk_focus_out_event(self, entry, user_data):
         if self.interface.on_lose_focus:
             self.interface.on_lose_focus(self.interface)
+
+    def gtk_key_release_event(self, entry, user_data):
+        try:
+            key_pressed = toga_key(user_data)["key"].value
+            if key_pressed == "<enter>" or key_pressed == "numpad:enter":
+                self.interface.on_confirm(None)
+        except TypeError:
+            pass
 
     def set_readonly(self, value):
         self.native.set_property("editable", not value)

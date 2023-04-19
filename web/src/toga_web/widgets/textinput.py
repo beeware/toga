@@ -3,7 +3,13 @@ from .base import Widget
 
 class TextInput(Widget):
     def create(self):
+        self._return_listener = None
         self.native = self._create_native_widget("sl-input")
+        self.native.onkeyup = self.dom_keyup
+
+    def dom_keyup(self, event):
+        if event.key == "Enter":
+            self.interface.on_confirm(None)
 
     def set_readonly(self, value):
         self.native.readOnly = value
@@ -45,6 +51,3 @@ class TextInput(Widget):
     def is_valid(self):
         self.interface.factory.not_implemented("TextInput.is_valid()")
         return True
-
-    def set_on_return(self):
-        self.interface.factory.not_implemented("TextInput.on_return()")
