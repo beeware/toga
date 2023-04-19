@@ -11,6 +11,8 @@ from .base import Widget
 
 
 class TextInput(Widget):
+    IMPLEMENTS_ON_CONFIRM = False
+
     def create(self):
         self.native = WinForms.TextBox()
         self.native.Multiline = False
