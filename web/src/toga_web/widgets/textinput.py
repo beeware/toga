@@ -1,25 +1,8 @@
-from pyodide.ffi.wrappers import add_event_listener, remove_event_listener
-
 from .base import Widget
-
-
-class ReturnHandler:
-    def __init__(self, impl):
-        self.impl = impl
-
-    def onReturn(self, handler):
-        def runHandler(keyPressed):
-            self.impl.interface.on_confirm(handler)
-
-        # print(args[0].key)
-        # print(args)
-        return runHandler
-        # print(self.impl.interface.on_confirm(None))
 
 
 class TextInput(Widget):
     def create(self):
-        self._return_listener = None
         self.native = self._create_native_widget("sl-input")
 
     def set_readonly(self, value):
@@ -63,14 +46,5 @@ class TextInput(Widget):
         self.interface.factory.not_implemented("TextInput.is_valid()")
         return True
 
-    def set_on_confirm(self, handler):
-        # self.native.addEventListener("sl-change", handler)
-        # print("Hello")
-        print(self.native.id)
-        if self._return_listener:
-            remove_event_listener(self.native, "keyup", listener=self._return_listener)
-        self._return_listener = ReturnHandler(self)
-        add_event_listener(
-            self.native, "keyup", self._return_listener.onReturn(handler)
-        )
-        # self.interface.factory.not_implemented("TextInput.on_confirm()")
+    def set_on_return(self):
+        self.interface.factory.not_implemented("TextInput.on_return()")
