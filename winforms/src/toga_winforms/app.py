@@ -50,8 +50,6 @@ class App:
         # window-level close handling.
         self._is_exiting = False
 
-        self._cursor_visible = True
-
         self.loop = WinformsProactorEventLoop()
         asyncio.set_event_loop(self.loop)
 
@@ -311,25 +309,15 @@ class App:
         WinForms.Cursor.Position = Point(*cursor_position)
 
     def is_cursor_visible(self):
-        return self._cursor_visible
+        return any(window.cursor_visible for window in self.interface.windows)
 
     def set_cursor_visible(self, condition):
-        if condition and not self._cursor_visible:
-            WinForms.Cursor.Show()
-            self._cursor_visible = True
-        elif not condition and self._cursor_visible:
-            WinForms.Cursor.Hide()
-            self._cursor_visible = False
-
-    def show_cursor(self):
-        for window in self.interface.windows:
-            window._impl.set_cursor_visible(True)
-        self._cursor_visible = True
-
-    def hide_cursor(self):
-        for window in self.interface.windows:
-            window._impl.set_cursor_visible(False)
-        self._cursor_visible = False
+        if condition and not self.is_cursor_visible():
+            for window in self.interface.windows:
+                window.cursor_visible = True
+        elif not condition and self.is_cursor_visible():
+            for window in self.interface.windows:
+                window.cursor_visible = False
 
 
 class DocumentApp(App):

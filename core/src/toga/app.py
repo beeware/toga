@@ -578,11 +578,19 @@ class App:
 
     def show_cursor(self):
         """Show cursor for the whole app."""
-        self._impl.show_cursor()
+        warnings.warn(
+            "The show_cursor method is marked for deprecation. Use the cursor_visible property instead.",
+            DeprecationWarning,
+        )
+        self.cursor_visible = True
 
     def hide_cursor(self):
         """Hide cursor from view for the whole app."""
-        self._impl.hide_cursor()
+        warnings.warn(
+            "The hide_cursor method is marked for deprecation. Use the cursor_visible property instead.",
+            DeprecationWarning,
+        )
+        self.cursor_visible = False
 
     def startup(self):
         """Create and show the main window for the application."""

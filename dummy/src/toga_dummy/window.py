@@ -90,16 +90,8 @@ class Window(LoggedObject):
 
     @not_required_on("mobile")
     def is_cursor_visible(self):
-        self._action("is_cursor_visible")
+        self._get_value("is_cursor_visible")
 
     @not_required_on("mobile")
     def set_cursor_visible(self, condition):
         self._action("set_cursor_visible", condition=condition)
-
-    @not_required_on("mobile")
-    def show_cursor(self):
-        self._action("show_cursor")
-
-    @not_required_on("mobile")
-    def hide_cursor(self):
-        self._action("hide_cursor")

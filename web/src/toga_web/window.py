@@ -91,9 +91,3 @@ class Window:
 
     def set_cursor_visible(self, condition):
         self.interface.factory.not_implemented("Window.set_cursor_visible()")
-
-    def show_cursor(self):
-        self.interface.factory.not_implemented("Window.show_cursor()")
-
-    def hide_cursor(self):
-        self.interface.factory.not_implemented("Window.hide_cursor()")

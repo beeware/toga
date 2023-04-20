@@ -411,19 +411,12 @@ class App:
         return self._cursor_visible
 
     def set_cursor_visible(self, condition: bool):
-        self.interface.factory.not_implemented("App.set_cursor_visible()")
-
-    def show_cursor(self):
-        if not self._cursor_visible:
+        if condition and not self._cursor_visible:
             NSCursor.unhide()
-
-        self._cursor_visible = True
-
-    def hide_cursor(self):
-        if self._cursor_visible:
+            self._cursor_visible = True
+        elif not condition and self._cursor_visible:
             NSCursor.hide()
-
-        self._cursor_visible = False
+            self._cursor_visible = False
 
     def open_document(self, fileURL):
         """No-op when the app is not a ``DocumentApp``."""

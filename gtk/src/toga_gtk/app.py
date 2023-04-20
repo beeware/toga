@@ -249,12 +249,6 @@ class App:
     def set_cursor_visible(self, condition: bool):
         self.interface.factory.not_implemented("App.set_cursor_visible()")
 
-    def show_cursor(self, windows):
-        self.interface.factory.not_implemented("App.show_cursor()")
-
-    def hide_cursor(self, windows):
-        self.interface.factory.not_implemented("App.hide_cursor()")
-
 
 class DocumentApp(App):
     def _create_app_commands(self):

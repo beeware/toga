@@ -283,14 +283,6 @@ class Window:
             raise ValueError("Cursor visible must be True/False bool.")
         self._impl.set_cursor_visible(condition)
 
-    def show_cursor(self):
-        """Show cursor for the specified window."""
-        self._impl.show_cursor()
-
-    def hide_cursor(self):
-        """Hide cursor from view for the specified window."""
-        self._impl.hide_cursor()
-
     ############################################################
     # Dialogs
     ############################################################

@@ -56,7 +56,7 @@ class App(LoggedObject):
 
     @not_required_on("mobile")
     def get_cursor_position(self):
-        self._action("get_cursor_position")
+        self._get_value("get_cursor_position")
 
     @not_required_on("mobile")
     def set_cursor_position(self, cursor_position):
@@ -64,19 +64,11 @@ class App(LoggedObject):
 
     @not_required_on("mobile")
     def is_cursor_visible(self):
-        self._action("is_cursor_visible")
+        self._get_value("is_cursor_visible")
 
     @not_required_on("mobile")
     def set_cursor_visible(self, condition):
         self._action("set_cursor_visible", condition=condition)
-
-    @not_required_on("mobile")
-    def show_cursor(self):
-        self._action("show_cursor")
-
-    @not_required_on("mobile")
-    def hide_cursor(self):
-        self._action("hide_cursor")
 
 
 @not_required_on("mobile", "web")

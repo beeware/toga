@@ -1,1 +1,1 @@
-Added Support for all `cursor` functions in WinForms.
+More APIs for controlling the position and visibility of cursors have been added.

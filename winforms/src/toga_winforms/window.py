@@ -235,9 +235,3 @@ class Window:
         elif not condition and self._cursor_visible:
             self.native.Cursor.Hide()
             self._cursor_visible = False
-
-    def show_cursor(self):
-        self.set_cursor_visible(True)
-
-    def hide_cursor(self):
-        self.set_cursor_visible(False)
