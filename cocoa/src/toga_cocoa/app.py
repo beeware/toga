@@ -2,6 +2,7 @@ import asyncio
 import inspect
 import os
 import sys
+from collections import defaultdict
 from urllib.parse import unquote, urlparse
 
 from rubicon.objc.eventloop import CocoaLifecycle, EventLoopPolicy
@@ -369,6 +370,16 @@ class App:
 
     def current_window(self):
         return self.native.keyWindow
+
+    def get_window_state(self):
+        window_groups_by_state = defaultdict(list)
+        for window in self.interface.windows:
+            window_groups_by_state[window.state].append(window)
+        return window_groups_by_state
+
+    def set_window_state(self, window_state):
+        for window in self.interface.windows:
+            window.state = window_state
 
     def enter_full_screen(self, windows):
         # If we're already in full screen mode, exit so that

@@ -196,10 +196,10 @@ class TestWindow(TestCase):
         self.assertValueGet(self.window, "position")
 
     def test_full_screen_set(self):
-        self.assertFalse(self.window.full_screen)
+        self.assertFalse(self.window.state == WindowState.FULLSCREEN)
         with patch.object(self.window, "_impl"):
-            self.window.full_screen = True
-            self.assertTrue(self.window._impl.full_screen)
+            self.window.state = WindowState.FULLSCREEN
+            self.assertTrue(self.window.state == WindowState.FULLSCREEN)
             self.window._impl.set_window_state.assert_called_once_with(
                 WindowState.FULLSCREEN
             )

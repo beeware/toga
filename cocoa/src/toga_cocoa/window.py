@@ -1,8 +1,11 @@
 from toga.command import Command as BaseCommand
+from toga.window import WindowState
 from toga_cocoa.libs import (
     SEL,
+    CGRectContainsRect,
     NSBackingStoreBuffered,
     NSClosableWindowMask,
+    NSFullScreenWindowMask,
     NSLayoutAttributeBottom,
     NSLayoutAttributeLeft,
     NSLayoutAttributeRight,
@@ -12,6 +15,8 @@ from toga_cocoa.libs import (
     NSMakeRect,
     NSMiniaturizableWindowMask,
     NSMutableArray,
+    NSMutableDictionary,
+    NSNumber,
     NSObject,
     NSPoint,
     NSResizableWindowMask,
@@ -21,6 +26,7 @@ from toga_cocoa.libs import (
     NSToolbar,
     NSToolbarItem,
     NSWindow,
+    NSWindowZoomed,
     objc_method,
     objc_property,
 )
@@ -173,6 +179,8 @@ class Window:
         self.set_size(size)
         self.set_position(position)
 
+        self._window_state = WindowState.NORMAL
+
         self.delegate = WindowDelegate.alloc().init()
         self.delegate.interface = self.interface
         self.delegate.impl = self
@@ -307,8 +315,59 @@ class Window:
     def get_visible(self):
         return bool(self.native.isVisible)
 
+    def get_window_state(self):
+        return self._window_state
+
     def set_window_state(self, window_state):
-        self.interface.factory.not_implemented("Window.set_window_state()")
+        if window_state == WindowState.NORMAL:
+            # Deminiaturize the window to restore it to its previous state
+            if self.native.isMiniaturized():
+                self.native.deminiaturize()
+
+            # If the window is in full-screen mode, exit full-screen mode
+            if self.native.styleMask() & NSFullScreenWindowMask:
+                self.native.toggleFullScreen(None)
+
+            # If the window is maximized, restore it to its normal size
+            if self.native.styleMask() & NSWindowZoomed:
+                self.native.zoom(None)
+            self._window_state = WindowState.NORMAL
+
+        elif window_state == WindowState.MAXIMIZED:
+            self.interface.factory.not_implemented(
+                "Window.set_window_state(WindowState.MAXIMIZED)"
+            )
+
+        elif window_state == WindowState.MINIMIZED:
+            self.interface.factory.not_implemented(
+                "Window.set_window_state(WindowState.MINIMIZED)"
+            )
+
+        elif window_state == WindowState.FULLSCREEN:
+            opts = NSMutableDictionary.alloc().init()
+            opts.setObject(
+                NSNumber.numberWithBool(True), forKey="NSFullScreenModeAllScreens"
+            )
+
+            # Find the screen on which the window is present
+            window_screen = None
+            for screen in NSScreen.screens:
+                if CGRectContainsRect(screen.frame(), self.native.frame):
+                    window_screen = screen
+
+            # Set the window to full screen mode
+            self.native.enterFullScreenMode(window_screen, withOptions=opts)
+            # Going full screen causes the window content to be re-homed
+            # in a NSFullScreenWindow; teach the new parent window
+            # about its Toga representations.
+            self.interface.content._impl.native.window._impl = self.interface._impl
+            self.interface.content._impl.native.window.interface = self.interface
+            self.interface.content.refresh()
+
+            self._window_state = WindowState.FULLSCREEN
+
+        else:
+            return
 
     def cocoa_windowShouldClose(self):
         if self.interface.on_close:

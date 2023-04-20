@@ -1,3 +1,5 @@
+from toga.window import WindowState
+
 from .utils import LoggedObject, not_required, not_required_on
 
 
@@ -25,6 +27,10 @@ class Window(LoggedObject):
         self.set_title(title)
         self.set_position(position)
         self.set_size(size)
+
+        # Set an initial window state value as there is no realtime state status is in dummy
+        self.state = WindowState.NORMAL
+        self._set_value("state", self.state)
 
     def create_toolbar(self):
         self._action("create toolbar")
@@ -73,8 +79,14 @@ class Window(LoggedObject):
         self._action("close")
 
     @not_required_on("mobile")
-    def set_window_state(self, window_state):
-        self._set_value("window_state", window_state)
+    def get_window_state(self):
+        self._get_value("state")
+
+    @not_required_on("mobile")
+    def set_window_state(self, state):
+        self.state = state
+        self._action("set_window_state", state=self.state)
+        self._set_value("state", self.state)
 
     @not_required
     def toga_on_close(self):

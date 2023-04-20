@@ -64,8 +64,6 @@ class Window:
         self._app = None
         self._content = None
 
-        self.window_state = WindowState.NORMAL
-
         self.resizeable = resizeable
         self.closeable = closeable
         self.minimizable = minimizable
@@ -220,40 +218,17 @@ class Window:
         self._impl.hide()
 
     @property
-    def maximized(self):
-        return True if self.window_state == WindowState.MAXIMIZED else False
+    def state(self):
+        """Returns the current state of the specified window as a a WindowState Enum class value."""
+        return self._impl.get_window_state()
 
-    @maximized.setter
-    def maximized(self, maximize: bool):
-        if maximize:
-            self._impl.set_window_state(WindowState.MAXIMIZED)
-        else:
-            self._impl.set_window_state(WindowState.NORMAL)
-
-    @property
-    def minimized(self):
-        return True if self.window_state == WindowState.MINIMIZED else False
-
-    @minimized.setter
-    def minimized(self, minimize: bool):
-        if minimize:
-            self._impl.set_window_state(WindowState.MINIMIZED)
-        else:
-            self._impl.set_window_state(WindowState.NORMAL)
-
-    def set_normal_screen(self):
-        self._impl.set_window_state(WindowState.NORMAL)
-
-    @property
-    def full_screen(self):
-        return True if self.window_state == WindowState.FULLSCREEN else False
-
-    @full_screen.setter
-    def full_screen(self, full_screen):
-        if full_screen:
-            self._impl.set_window_state(WindowState.FULLSCREEN)
-        else:
-            self._impl.set_window_state(WindowState.NORMAL)
+    @state.setter
+    def state(self, state: WindowState):
+        if not isinstance(state, WindowState):
+            raise ValueError(
+                "Window state must be a valid value of WindowState Enum Class"
+            )
+        self._impl.set_window_state(state)
 
     @property
     def visible(self):

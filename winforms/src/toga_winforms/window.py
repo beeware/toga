@@ -198,26 +198,66 @@ class Window:
                 self.interface.on_close(self)
                 event.Cancel = True
 
-    def set_window_state(self, window_state):
-        if window_state == WindowState.NORMAL:
+    def get_window_state(self):
+        window_state = self.native.WindowState
+        window_border_style = self.native.FormBorderStyle
+
+        if (
+            window_state == WinForms.FormWindowState.Normal
+            and window_border_style != WinForms.FormBorderStyle(0)
+        ):
+            return WindowState.NORMAL
+        elif (
+            window_state == WinForms.FormWindowState.Maximized
+            and window_border_style != WinForms.FormBorderStyle(0)
+        ):
+            return WindowState.MAXIMIZED
+        elif (
+            window_state == WinForms.FormWindowState.Minimized
+            and window_border_style != WinForms.FormBorderStyle(0)
+        ):
+            return WindowState.MINIMIZED
+        elif (
+            window_state == WinForms.FormWindowState.Maximized
+            and window_border_style == WinForms.FormBorderStyle(0)
+        ):
+            return WindowState.FULLSCREEN
+        else:
+            return None
+
+    def set_window_state(self, state):
+        if state == WindowState.NORMAL:
             self.native.FormBorderStyle = WinForms.FormBorderStyle.FixedSingle
             self.native.WindowState = WinForms.FormWindowState.Normal
-            self.interface.window_state = WindowState.NORMAL
+            self.native.StartPosition = WinForms.FormStartPosition.Manual
+            self.native.Location = WinForms.Screen.FromControl(
+                self.native
+            ).WorkingArea.Location
 
-        elif window_state == WindowState.MAXIMIZED:
+        elif state == WindowState.MAXIMIZED:
             self.native.FormBorderStyle = WinForms.FormBorderStyle.FixedSingle
             self.native.WindowState = WinForms.FormWindowState.Maximized
-            self.interface.window_state = WindowState.MAXIMIZED
+            self.native.StartPosition = WinForms.FormStartPosition.Manual
+            self.native.Location = WinForms.Screen.FromControl(
+                self.native
+            ).WorkingArea.Location
 
-        elif window_state == WindowState.MINIMIZED:
+        elif state == WindowState.MINIMIZED:
             self.native.FormBorderStyle = WinForms.FormBorderStyle.FixedSingle
             self.native.WindowState = WinForms.FormWindowState.Minimized
-            self.interface.window_state = WindowState.MINIMIZED
+            self.native.StartPosition = WinForms.FormStartPosition.Manual
+            self.native.Location = WinForms.Screen.FromControl(
+                self.native
+            ).WorkingArea.Location
 
-        elif window_state == WindowState.FULLSCREEN:
+        elif state == WindowState.FULLSCREEN:
             self.native.FormBorderStyle = WinForms.FormBorderStyle(0)
             self.native.WindowState = WinForms.FormWindowState.Maximized
-            self.interface.window_state = WindowState.FULLSCREEN
+            self.native.StartPosition = WinForms.FormStartPosition.Manual
+            self.native.Location = WinForms.Screen.FromControl(
+                self.native
+            ).WorkingArea.Location
+
         else:
             return
 

@@ -11,7 +11,7 @@ from toga.handlers import wrapped_handler
 from toga.icons import Icon
 from toga.platform import get_platform_factory
 from toga.widgets.base import WidgetRegistry
-from toga.window import Window
+from toga.window import Window, WindowState
 
 try:
     from importlib import metadata as importlib_metadata
@@ -521,51 +521,17 @@ class App:
         return self._impl.current_window().interface
 
     @property
-    def maximized(self):
-        """Returns True if any of the app's windows are maximized."""
-        return any(window.maximized for window in self.windows)
+    def window_state(self):
+        """Returns a dictionary of the app's windows as values and WindowState Enum Class values as keys."""
+        return self._impl.get_window_state()
 
-    @maximized.setter
-    def maximized(self, maximize: bool):
-        if maximize:
-            for window in self.windows:
-                window.maximized = True
-        else:
-            for window in self.windows:
-                window.maximized = False
-
-    @property
-    def minimized(self):
-        """Returns True only if all of the app's windows are minimized."""
-        return all(window.minimized for window in self.windows)
-
-    @minimized.setter
-    def minimized(self, minimize: bool):
-        if minimize:
-            for window in self.windows:
-                window.minimized = True
-        else:
-            for window in self.windows:
-                window.minimized = False
-
-    @property
-    def full_screen(self):
-        """Return True if any of the app's window are in full screen."""
-        return any(window.full_screen for window in self.windows)
-
-    @full_screen.setter
-    def full_screen(self, full_screen):
-        if full_screen:
-            for window in self.windows:
-                window.full_screen = True
-        else:
-            for window in self.windows:
-                window.full_screen = False
-
-    def set_normal_screen(self):
-        """Sets the app's windows in normal state"""
-        for window in self.windows:
-            window.set_normal_screen()
+    @window_state.setter
+    def window_state(self, window_state: WindowState):
+        if not isinstance(window_state, WindowState):
+            raise ValueError(
+                "Window state must be a valid value of WindowState Enum Class"
+            )
+        self._impl.set_window_state(window_state)
 
     # For backwards compatibility in core API
     @property

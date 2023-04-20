@@ -1,8 +1,9 @@
 from toga.command import GROUP_BREAK, SECTION_BREAK
 from toga.handlers import wrapped_handler
+from toga.window import WindowState
 
 from .container import TogaContainer
-from .libs import Gtk
+from .libs import Gdk, Gtk
 
 
 class Window:
@@ -136,8 +137,56 @@ class Window:
     def set_size(self, size):
         self.native.resize(size[0], size[1])
 
-    def set_window_state(self, window_state):
-        self.interface.factory.not_implemented("Window.set_window_state()")
+    def get_window_state(self):
+        state = self.native.get_window_state()
+        if state & Gdk.WindowState.MAXIMIZED:
+            return WindowState.MAXIMIZED
+        elif state & Gdk.WindowState.ICONIFIED:
+            return WindowState.MINIMIZED
+        elif state & Gdk.WindowState.FULLSCREEN:
+            return WindowState.FULLSCREEN
+        else:
+            return WindowState.NORMAL
+
+    def set_window_state(self, state):
+        if state == WindowState.NORMAL:
+            current_state = self.get_window_state()
+            if current_state == WindowState.MAXIMIZED:
+                self.native.unmaximize()
+            elif current_state == WindowState.MINIMIZED:
+                self.native.deiconify()
+            elif current_state == WindowState.FULLSCREEN:
+                self.native.unfullscreen()
+
+        elif state == WindowState.MAXIMIZED:
+            screen = self.native.get_screen()
+            monitor = screen.get_monitor_at_window(self.native)
+            geometry = screen.get_monitor_geometry(monitor)
+
+            self.native.move(geometry.x, geometry.y)
+            self.native.set_size_request(geometry.width, geometry.height)
+            self.native.maximize()
+
+        elif state == WindowState.MINIMIZED:
+            screen = self.native.get_screen()
+            monitor = screen.get_monitor_at_window(self.native)
+            geometry = screen.get_monitor_geometry(monitor)
+
+            self.native.move(geometry.x, geometry.y)
+            self.native.set_size_request(geometry.width, geometry.height)
+            self.native.iconify()
+
+        elif state == WindowState.FULLSCREEN:
+            screen = self.native.get_screen()
+            monitor = screen.get_monitor_at_window(self.native)
+            geometry = screen.get_monitor_geometry(monitor)
+
+            self.native.move(geometry.x, geometry.y)
+            self.native.set_size_request(geometry.width, geometry.height)
+            self.native.fullscreen()
+
+        else:
+            return
 
     def set_full_screen(self, is_full_screen):
         if is_full_screen:

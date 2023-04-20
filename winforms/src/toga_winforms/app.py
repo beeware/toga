@@ -2,6 +2,7 @@ import asyncio
 import re
 import sys
 import threading
+from collections import defaultdict
 
 import toga
 from toga import Key
@@ -292,6 +293,16 @@ class App:
     @property
     def current_window(self):
         return WinForms.Form.ActiveForm._impl
+
+    def get_window_state(self):
+        window_groups_by_state = defaultdict(list)
+        for window in self.interface.windows:
+            window_groups_by_state[window.state].append(window)
+        return window_groups_by_state
+
+    def set_window_state(self, window_state):
+        for window in self.interface.windows:
+            window.state = window_state
 
     # For backwards compatibility with core API
     def enter_full_screen(self, windows):

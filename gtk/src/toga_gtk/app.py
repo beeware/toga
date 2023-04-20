@@ -3,6 +3,7 @@ import os
 import os.path
 import signal
 import sys
+from collections import defaultdict
 from urllib.parse import unquote, urlparse
 
 import gbulb
@@ -226,6 +227,16 @@ class App:
 
     def current_window(self):
         return self.native.get_active_window()._impl
+
+    def get_window_state(self):
+        window_groups_by_state = defaultdict(list)
+        for window in self.interface.windows:
+            window_groups_by_state[window.state].append(window)
+        return window_groups_by_state
+
+    def set_window_state(self, window_state):
+        for window in self.interface.windows:
+            window.state = window_state
 
     def enter_full_screen(self, windows):
         for window in windows:
