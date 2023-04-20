@@ -73,6 +73,7 @@ class TextInputApp(toga.App):
             value="Initial value",
             placeholder="Type something...",
             style=Pack(padding=10),
+            on_confirm=self.do_extract_values,
         )
         self.text_input_placeholder = toga.TextInput(
             placeholder="Type something...", style=Pack(padding=10)

@@ -1,0 +1,1 @@
+A handler has been added for users confirming the contents of a TextInput by pressing Enter/Return.

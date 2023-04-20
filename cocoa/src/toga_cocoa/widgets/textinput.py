@@ -54,6 +54,8 @@ class TogaTextField(NSTextField):
 
 
 class TextInput(Widget):
+    IMPLEMENTS_ON_CONFIRM = False
+
     def create(self):
         self.native = TogaTextField.new()
         self.native.interface = self.interface
