@@ -8,9 +8,9 @@ from ..libs.android.view import Gravity, View
 
 
 def _get_activity(_cache=[]):
-    """Android Toga widgets need a reference to the current activity to pass it
-    as `context` when creating Android native widgets. This may be useful at
-    any time, so we retain a global JNI ref.
+    """Android Toga widgets need a reference to the current activity to pass it as
+    `context` when creating Android native widgets. This may be useful at any time, so
+    we retain a global JNI ref.
 
     :param _cache: List that is either empty or contains 1 item, the cached global JNI ref
     """

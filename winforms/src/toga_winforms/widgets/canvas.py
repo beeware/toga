@@ -95,8 +95,8 @@ class Canvas(Box):
         self.interface._draw(self, draw_context=context)
 
     def winforms_resize(self, *args):
-        """Called on widget resize, and calls the handler set on the interface,
-        if any."""
+        """Called on widget resize, and calls the handler set on the interface, if
+        any."""
         if self.interface.on_resize:
             self.interface.on_resize(self.interface)
 

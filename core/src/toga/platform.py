@@ -45,8 +45,8 @@ except KeyError:
 
 @lru_cache(maxsize=1)
 def get_platform_factory(factory=None):
-    """This function figures out what the current host platform is and imports
-    the adequate factory. The factory is the interface to all platform specific
+    """This function figures out what the current host platform is and imports the
+    adequate factory. The factory is the interface to all platform specific
     implementations.
 
     If the TOGA_BACKEND environment variable is set, the factory will be loaded

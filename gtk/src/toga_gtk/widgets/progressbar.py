@@ -20,7 +20,7 @@ from .base import Widget
 
 
 async def pulse(progressbar):
-    """A background task to animate running indeterminate progress bars"""
+    """A background task to animate running indeterminate progress bars."""
     while True:
         progressbar.native.pulse()
         await asyncio.sleep(0.1)

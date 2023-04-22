@@ -26,9 +26,8 @@ warnings.filterwarnings("default", category=DeprecationWarning)
 class WindowSet(MutableSet):
     """This class represents windows of a toga app.
 
-    A window can be added to app by using
-    `app.windows.add(toga.Window(...))` or `app.windows +=
-    toga.Window(...)` notations. Adding a window to app automatically
+    A window can be added to app by using `app.windows.add(toga.Window(...))` or
+    `app.windows += toga.Window(...)` notations. Adding a window to app automatically
     sets `window.app` property to the app.
     """
 
@@ -111,8 +110,8 @@ class MainWindow(Window):
 
     @Window.on_close.setter
     def on_close(self, handler):
-        """Raise an exception: on_exit for the app should be used instead of
-        on_close on main window.
+        """Raise an exception: on_exit for the app should be used instead of on_close on
+        main window.
 
         Args:
             handler (:obj:`callable`): The handler passed.
@@ -124,9 +123,9 @@ class MainWindow(Window):
 
 
 class App:
-    """The App is the top level of any GUI program. It is the manager of all
-    the other bits of the GUI app: the main window and events that window
-    generates like user input.
+    """The App is the top level of any GUI program. It is the manager of all the other
+    bits of the GUI app: the main window and events that window generates like user
+    input.
 
     When you create an App you need to provide it a name, an id for uniqueness
     (by convention, the identifier is a reversed domain name.) and an
@@ -350,8 +349,7 @@ class App:
 
     @property
     def paths(self):
-        """
-        Paths for platform appropriate locations on the user's file system.
+        """Paths for platform appropriate locations on the user's file system.
 
         Some platforms do not allow arbitrary file access to any location on
         disk; even when arbitrary file system access is allowed, there are
@@ -380,7 +378,6 @@ class App:
 
             * **toga** – The path of the ``toga`` core module. This location
               should be considered read-only.
-
         """
         return self._paths
 
@@ -571,17 +568,15 @@ class App:
     def about(self):
         """Display the About dialog for the app.
 
-        Default implementation shows a platform-appropriate about dialog
-        using app metadata. Override if you want to display a custom
-        About dialog.
+        Default implementation shows a platform-appropriate about dialog using app
+        metadata. Override if you want to display a custom About dialog.
         """
         self._impl.show_about_dialog()
 
     def visit_homepage(self):
         """Open the application's homepage in the default browser.
 
-        If the application metadata doesn't define a homepage, this is a
-        no-op.
+        If the application metadata doesn't define a homepage, this is a no-op.
         """
         if self.home_page is not None:
             webbrowser.open(self.home_page)
@@ -589,8 +584,7 @@ class App:
     def main_loop(self):
         """Invoke the application to handle user input.
 
-        This method typically only returns once the application is
-        exiting.
+        This method typically only returns once the application is exiting.
         """
         # Modify signal handlers to make sure Ctrl-C is caught and handled.
         signal.signal(signal.SIGINT, signal.SIG_DFL)

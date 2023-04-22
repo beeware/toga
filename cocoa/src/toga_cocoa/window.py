@@ -77,7 +77,7 @@ class WindowDelegate(NSObject):
 
     @objc_method
     def toolbarAllowedItemIdentifiers_(self, toolbar):
-        """Determine the list of available toolbar items"""
+        """Determine the list of available toolbar items."""
         # This method is required by the Cocoa API, but isn't actually invoked,
         # because customizable toolbars are no longer a thing.
         allowed = NSMutableArray.alloc().init()
@@ -87,7 +87,7 @@ class WindowDelegate(NSObject):
 
     @objc_method
     def toolbarDefaultItemIdentifiers_(self, toolbar):
-        """Determine the list of toolbar items that will display by default"""
+        """Determine the list of toolbar items that will display by default."""
         default = NSMutableArray.alloc().init()
         for item in self.interface.toolbar:
             default.addObject_(toolbar_identifier(item))
@@ -97,7 +97,7 @@ class WindowDelegate(NSObject):
     def toolbar_itemForItemIdentifier_willBeInsertedIntoToolbar_(
         self, toolbar, identifier, insert: bool
     ):
-        """Create the requested toolbar button"""
+        """Create the requested toolbar button."""
         native = NSToolbarItem.alloc().initWithItemIdentifier_(identifier)
         try:
             item = self.impl._toolbar_items[str(identifier)]
@@ -124,7 +124,7 @@ class WindowDelegate(NSObject):
 
     @objc_method
     def validateToolbarItem_(self, item) -> bool:
-        """Confirm if the toolbar item should be enabled"""
+        """Confirm if the toolbar item should be enabled."""
         return self.impl._toolbar_items[str(item.itemIdentifier)].enabled
 
     ######################################################################
@@ -133,7 +133,7 @@ class WindowDelegate(NSObject):
 
     @objc_method
     def onToolbarButtonPress_(self, obj) -> None:
-        """Invoke the action tied to the toolbar button"""
+        """Invoke the action tied to the toolbar button."""
         item = self.impl._toolbar_items[str(obj.itemIdentifier)]
         item.action(obj)
 

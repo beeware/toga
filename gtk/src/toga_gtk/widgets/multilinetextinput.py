@@ -37,9 +37,8 @@ class MultilineTextInput(Widget):
     def set_placeholder(self, value):
         """Set the placeholder text of the widget.
 
-        GTK.TextView does not have a placeholder option by default so we
-        have to create one. We do this with the two helper functions
-        `on_focus_in` and `on_focus_out`.
+        GTK.TextView does not have a placeholder option by default so we have to create
+        one. We do this with the two helper functions `on_focus_in` and `on_focus_out`.
         """
         if self.get_value() == self._placeholder:
             self._placeholder = value

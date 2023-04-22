@@ -9,8 +9,8 @@ from travertino.size import BaseIntrinsicSize
 
 
 def not_required(method_or_class):
-    """This decorator function is used to mark methods or classes that they are
-    not required for interface compliance.
+    """This decorator function is used to mark methods or classes that they are not
+    required for interface compliance.
 
     :param method_or_class: The method or class to decorate
     :returns: The method or class being decorated
@@ -19,9 +19,9 @@ def not_required(method_or_class):
 
 
 def not_required_on(*args):
-    """This decorator function is used to mark methods or classes that they are
-    not required on certain platforms. This is only used by the implementation
-    checks creation mechanism.
+    """This decorator function is used to mark methods or classes that they are not
+    required on certain platforms. This is only used by the implementation checks
+    creation mechanism.
 
     Examples:
         >>> # Marks the function as only required on platforms that are not "mobile".
@@ -142,8 +142,7 @@ class EventLog:
 
     @classmethod
     def retrieved(cls, instance, attr):
-        """Determine if an attempt has been made to retrieve the value of an
-        attribute.
+        """Determine if an attempt has been made to retrieve the value of an attribute.
 
         This only includes "normal" attribute access; retrievals made for test
         purposes are *not* included.
@@ -228,11 +227,10 @@ NOT_PROVIDED = object()
 
 
 class LoggedObject:
-    """A base class for objects on the dummy backend whose activity will be
-    logged.
+    """A base class for objects on the dummy backend whose activity will be logged.
 
-    Objects specified in the dummy backend should extend this class, and
-    log any activity they perform using the methods on this object.
+    Objects specified in the dummy backend should extend this class, and log any
+    activity they perform using the methods on this object.
     """
 
     def _set_value(self, attr, value):
@@ -470,8 +468,7 @@ class TestCase(unittest.TestCase):
     #####
 
     def assertValueSet(self, _widget, _attr, value):
-        """Assert that the widget implementation has set an attribute to a
-        value.
+        """Assert that the widget implementation has set an attribute to a value.
 
         Args:
             _widget: The interface of the widget to check
@@ -481,8 +478,7 @@ class TestCase(unittest.TestCase):
         self.assertEqual(self.pytest_assert(attribute_value, _widget, _attr), value)
 
     def assertValuesSet(self, _widget, _attr, values):
-        """Assert that the widget implementation has been set to multiple
-        values.
+        """Assert that the widget implementation has been set to multiple values.
 
         Args:
             _widget: The interface of the widget to check
@@ -492,8 +488,7 @@ class TestCase(unittest.TestCase):
         self.assertEqual(self.pytest_assert(attribute_values, _widget, _attr), values)
 
     def assertValueGet(self, _widget, _attr):
-        """Assert that the widget implementation attempted to retrieve an
-        attribute.
+        """Assert that the widget implementation attempted to retrieve an attribute.
 
         Args:
             _widget: The interface of the widget to check
@@ -518,6 +513,7 @@ class TestCase(unittest.TestCase):
 
     def assertActionPerformed(self, _widget, _action):
         """Assert that the named action performed by a widget.
+
         Args:
             _widget: The interface of the widget that should have performed the action.
             _action: The name of the action to check

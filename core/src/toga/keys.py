@@ -148,8 +148,7 @@ class Key(Enum):
         return not (self.value.startswith("<") and self.value.endswith(">"))
 
     def __add__(self, other):
-        """Allow two Keys to be concatenated, or a string to be concatenated to
-        a Key.
+        """Allow two Keys to be concatenated, or a string to be concatenated to a Key.
 
         Produces a single string definition.
 

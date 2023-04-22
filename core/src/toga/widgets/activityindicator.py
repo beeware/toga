@@ -3,8 +3,7 @@ from .base import Widget
 
 class ActivityIndicator(Widget):
     def __init__(self, id=None, style=None, running=False):
-        """
-        Create a new ActivityIndicator widget.
+        """Create a new ActivityIndicator widget.
 
         Inherits from :class:`~toga.widgets.base.Widget`.
 
@@ -23,11 +22,11 @@ class ActivityIndicator(Widget):
 
     @property
     def enabled(self):
-        """Is the widget currently enabled? i.e., can the user interact with the
-        widget?
+        """Is the widget currently enabled? i.e., can the user interact with the widget?
 
-        ActivityIndicator widgets cannot be disabled; this property will always
-        return True; any attempt to modify it will be ignored."""
+        ActivityIndicator widgets cannot be disabled; this property will always return
+        True; any attempt to modify it will be ignored.
+        """
         return True
 
     @enabled.setter

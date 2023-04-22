@@ -132,8 +132,8 @@ class Window:
 
     @property
     def content(self):
-        """Content of the window. On setting, the content is added to the same
-        app as the window and to the same app.
+        """Content of the window. On setting, the content is added to the same app as
+        the window and to the same app.
 
         Returns:
             A :class:`~toga.widgets.base.Widget`
@@ -330,8 +330,8 @@ class Window:
         )
 
     def stack_trace_dialog(self, title, message, content, retry=False, on_result=None):
-        """Open a dialog that allows to display a large text body, such as a
-        stack trace.
+        """Open a dialog that allows to display a large text body, such as a stack
+        trace.
 
         :param title: The title of the dialog window.
         :param message: Contextual information about the source of the stack trace.

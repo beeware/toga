@@ -4,8 +4,8 @@ from toga_gtk.libs import GObject, Gtk
 
 
 class SourceTreeModel(GObject.Object, Gtk.TreeModel):
-    """A full Gtk.TreeModel implementation backed by a toga.source.ListSource
-    or toga.source.TreeSource.
+    """A full Gtk.TreeModel implementation backed by a toga.source.ListSource or
+    toga.source.TreeSource.
 
     It stores a reference to every node in the source.
     TODO: If the source is a TreeSource, it uses the Node._parent attribute.

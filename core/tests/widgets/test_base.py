@@ -37,7 +37,7 @@ def widget():
 
 
 def test_simple_widget():
-    """A simple widget can be created"""
+    """A simple widget can be created."""
     widget = TestWidget()
 
     # Round trip the impl/interface

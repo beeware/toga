@@ -108,9 +108,8 @@ class Tree(Widget):
     def selection(self):
         """The current selection of the table.
 
-        A value of None indicates no selection. If the tree allows
-        multiple selection, returns a list of selected data nodes.
-        Otherwise, returns a single data node.
+        A value of None indicates no selection. If the tree allows multiple selection,
+        returns a list of selected data nodes. Otherwise, returns a single data node.
         """
         return self._impl.get_selection()
 

@@ -26,8 +26,7 @@ class cachedicon:
 
 
 class Icon:
-    """
-    A representation of an Icon image.
+    """A representation of an Icon image.
 
     :param path: The path to the icon file, relative to the application's
         module directory.

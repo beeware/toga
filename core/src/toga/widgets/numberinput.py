@@ -7,11 +7,11 @@ from .base import Widget
 
 
 class NumberInput(Widget):
-    """A `NumberInput` widget specifies a fixed range of possible numbers. The
-    user has two buttons to increment/decrement the value by a step size. Step,
-    min and max can be integers, floats, or Decimals; They can also be
-    specified as strings, which will be converted to Decimals internally. The
-    value of the widget will be evaluated as a Decimal.
+    """A `NumberInput` widget specifies a fixed range of possible numbers. The user has
+    two buttons to increment/decrement the value by a step size. Step, min and max can
+    be integers, floats, or Decimals; They can also be specified as strings, which will
+    be converted to Decimals internally. The value of the widget will be evaluated as a
+    Decimal.
 
     Args:
         id (str): An identifier for this widget.

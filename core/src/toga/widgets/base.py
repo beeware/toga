@@ -229,8 +229,7 @@ class Widget(Node):
 
     @property
     def enabled(self):
-        """Is the widget currently enabled? i.e., can the user interact with the
-        widget?"""
+        """Is the widget currently enabled? i.e., can the user interact with the widget?"""
         return self._impl.get_enabled()
 
     @enabled.setter
@@ -258,10 +257,10 @@ class Widget(Node):
     def focus(self):
         """Give this widget the input focus.
 
-        This method is a no-op if the widget can't accept focus. The ability of
-        a widget to accept focus is platform-dependent. In general, on desktop
-        platforms you can focus any widget that can accept user input, while
-        on mobile platforms focus is limited to widgets that accept text input
-        (i.e., widgets that cause the virtual keyboard to appear).
+        This method is a no-op if the widget can't accept focus. The ability of a widget
+        to accept focus is platform-dependent. In general, on desktop platforms you can
+        focus any widget that can accept user input, while on mobile platforms focus is
+        limited to widgets that accept text input (i.e., widgets that cause the virtual
+        keyboard to appear).
         """
         self._impl.focus()

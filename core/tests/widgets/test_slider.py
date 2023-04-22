@@ -171,7 +171,7 @@ def test_decreasing_by_value(slider, on_change):
 
 
 def test_increasing_by_ticks(slider, on_change):
-    """Slider.tick_value supports += syntax"""
+    """Slider.tick_value supports += syntax."""
     delta = 20
     tick_delta = 2
     slider.tick_value += tick_delta
@@ -185,7 +185,7 @@ def test_increasing_by_ticks(slider, on_change):
 
 
 def test_decreasing_by_ticks(slider, on_change):
-    """Slider.tick_value supports -= syntax"""
+    """Slider.tick_value supports -= syntax."""
     delta = 20
     tick_delta = 2
     slider.tick_value -= tick_delta
@@ -339,8 +339,7 @@ def test_set_on_release():
 
 def assert_value(slider, on_change, value, *, tick_value=None, change_count=0):
     """Asserts that the slider's `value` and `tick_value` attributes have the given
-    values, and that `on_change` has been called `change_count` times.
-    """
+    values, and that `on_change` has been called `change_count` times."""
     assert isinstance(slider.tick_value, (int, type(None)))
     assert slider.tick_value == tick_value
 

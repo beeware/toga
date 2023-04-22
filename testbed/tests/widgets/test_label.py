@@ -25,7 +25,7 @@ async def widget():
 
 
 async def test_multiline(widget, probe):
-    """If the label contains multiline text, it resizes vertically"""
+    """If the label contains multiline text, it resizes vertically."""
 
     def make_lines(n):
         return "\n".join(f"This is line {i}" for i in range(n))
@@ -62,7 +62,7 @@ async def test_multiline(widget, probe):
 
 
 async def test_alignment(widget, probe):
-    """Labels honor alignment settings"""
+    """Labels honor alignment settings."""
     # Initial alignment is LEFT, initial direction is LTR
     widget.parent.style.direction = COLUMN
     await probe.redraw()

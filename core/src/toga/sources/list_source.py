@@ -20,8 +20,7 @@ class Row:
 
 
 class ListSource(Source):
-    """A data source to store a list of multiple data values, in a row-like
-    fashion.
+    """A data source to store a list of multiple data values, in a row-like fashion.
 
     Args:
         data (`list`): The data in the list. Each entry in the list should have the

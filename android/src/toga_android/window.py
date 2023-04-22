@@ -24,8 +24,7 @@ class AndroidViewport(ViewTreeObserver__OnGlobalLayoutListener):
     def onGlobalLayout(self):
         """This listener is run after each native layout pass.
 
-        If any view's size or position has changed, the new values will
-        be visible here.
+        If any view's size or position has changed, the new values will be visible here.
         """
         new_size = (self.width, self.height)
         if self.last_size != new_size:

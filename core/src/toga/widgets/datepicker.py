@@ -92,8 +92,8 @@ class DatePicker(Widget):
 
     @property
     def min_date(self):
-        """The minimum allowable date for the widget. All dates prior to the
-        minimum date will be blanked out.
+        """The minimum allowable date for the widget. All dates prior to the minimum
+        date will be blanked out.
 
         :return: The minimum date specified. Returns None if min_date not specified
         """
@@ -110,8 +110,8 @@ class DatePicker(Widget):
 
     @property
     def max_date(self):
-        """The maximum allowable date for the widget. All dates prior to the
-        minimum date will be blanked out.
+        """The maximum allowable date for the widget. All dates prior to the minimum
+        date will be blanked out.
 
         :return: The maximum date specified. Returns None if max_date not specified
         """

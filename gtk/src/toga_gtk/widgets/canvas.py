@@ -28,18 +28,17 @@ class Canvas(Widget):
     def gtk_draw_callback(self, canvas, gtk_context):
         """Creates a draw callback.
 
-        Gtk+ uses a drawing callback to draw on a DrawingArea.
-        Assignment of the callback function creates a Gtk+ canvas and
-        Gtk+ context automatically using the canvas and gtk_context
-        function arguments. This method calls the draw method on the
-        interface Canvas to draw the objects.
+        Gtk+ uses a drawing callback to draw on a DrawingArea. Assignment of the
+        callback function creates a Gtk+ canvas and Gtk+ context automatically using the
+        canvas and gtk_context function arguments. This method calls the draw method on
+        the interface Canvas to draw the objects.
         """
         self.original_transform_matrix = gtk_context.get_matrix()
         self.interface._draw(self, draw_context=gtk_context)
 
     def gtk_on_size_allocate(self, widget, allocation):
-        """Called on widget resize, and calls the handler set on the interface,
-        if any."""
+        """Called on widget resize, and calls the handler set on the interface, if
+        any."""
         if self.interface.on_resize:
             self.interface.on_resize(self.interface)
 

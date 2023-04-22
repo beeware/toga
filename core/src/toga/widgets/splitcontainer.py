@@ -4,8 +4,8 @@ from .base import Widget
 
 
 class SplitContainer(Widget):
-    """A SplitContainer displays two widgets vertically or horizontally next to
-    each other with a movable divider.
+    """A SplitContainer displays two widgets vertically or horizontally next to each
+    other with a movable divider.
 
     Args:
         id (str):  An identifier for this widget.

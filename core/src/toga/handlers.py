@@ -36,20 +36,20 @@ async def handler_with_cleanup(handler, cleanup, interface, *args, **kwargs):
 def wrapped_handler(interface, handler, cleanup=None):
     """Wrap a handler provided by the user so it can be invoked.
 
-    If the handler is a NativeHandler, return the handler object
-        contained in the NativeHandler.
-    If the handler is a bound method, or function, invoke it as it,
-        and return the result.
-    If the handler is a generator, invoke it asynchronously, with
-        the yield values from the generator representing the duration
-        to sleep between iterations.
-    If the handler is a coroutine, install it on the asynchronous
-        event loop.
+    If the handler is a NativeHandler, return the handler object contained in the
+    NativeHandler.
 
-    Returns either the native handler, or a wrapped function that will
-    invoke the handler, using the interface as context. If a non-native
-    handler, the wrapper function is annotated with the original handler
-    function on the `_raw` attribute.
+    If the handler is a bound method, or function, invoke it as it, and return the
+    result.
+
+    If the handler is a generator, invoke it asynchronously, with the yield values from
+    the generator representing the duration to sleep between iterations.
+
+    If the handler is a coroutine, install it on the asynchronous event loop.
+
+    Returns either the native handler, or a wrapped function that will invoke the
+    handler, using the interface as context. If a non-native handler, the wrapper
+    function is annotated with the original handler function on the `_raw` attribute.
     """
     if handler:
         if isinstance(handler, NativeHandler):

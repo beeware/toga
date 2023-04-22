@@ -35,8 +35,8 @@ def to_accessor(heading):
 
 
 def build_accessors(headings, accessors):
-    """Convert a list of headings (with accessor overrides) to a finalised list
-    of accessors.
+    """Convert a list of headings (with accessor overrides) to a finalised list of
+    accessors.
 
     Args:
         headings: a list of strings to be used as headings

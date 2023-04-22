@@ -309,11 +309,10 @@ class App:
     def _submenu(self, group, menubar):
         """Obtain the submenu representing the command group.
 
-        This will create the submenu if it doesn't exist. It will call
-        itself recursively to build the full path to menus inside
-        submenus, returning the "leaf" node in the submenu path. Once
-        created, it caches the menu that has been created for future
-        lookup.
+        This will create the submenu if it doesn't exist. It will call itself
+        recursively to build the full path to menus inside submenus, returning the
+        "leaf" node in the submenu path. Once created, it caches the menu that has been
+        created for future lookup.
         """
         try:
             return self._menu_groups[group]
