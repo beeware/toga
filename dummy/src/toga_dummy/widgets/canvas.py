@@ -109,8 +109,8 @@ class Canvas(Widget):
     # Image
 
     def get_image_data(self):
-        """
-        Return a dummy uuid string as the "native" image.
+        """Return a dummy uuid string as the "native" image.
+
         This has no effect
         """
         self._action("get image data")

@@ -22,8 +22,8 @@ from toga_iOS.widgets.base import Widget
 async def indeterminate_animator(progressbar):
     """A workaround for the lack of an indeterminate progressbar.
 
-    A background task that animates between a value of 0.95 and 0.05
-    on a 1 second period.
+    A background task that animates between a value of 0.95 and 0.05 on a 1 second
+    period.
     """
     value = 0.95
     while True:

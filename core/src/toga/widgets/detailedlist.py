@@ -7,8 +7,8 @@ from .base import Widget
 
 
 class DetailedList(Widget):
-    """A widget to hold data in a list form. Rows are selectable and can be
-    deleted. An updated function can be invoked by pulling the list down.
+    """A widget to hold data in a list form. Rows are selectable and can be deleted. An
+    updated function can be invoked by pulling the list down.
 
     Args:
         id (str): An identifier for this widget.
@@ -98,8 +98,7 @@ class DetailedList(Widget):
         self._impl.change_source(source=self._data)
 
     def scroll_to_top(self):
-        """Scroll the view so that the top of the list (first row) is
-        visible."""
+        """Scroll the view so that the top of the list (first row) is visible."""
         self.scroll_to_row(0)
 
     def scroll_to_row(self, row):
@@ -116,15 +115,14 @@ class DetailedList(Widget):
             self._impl.scroll_to_row(len(self.data) + row)
 
     def scroll_to_bottom(self):
-        """Scroll the view so that the bottom of the list (last row) is
-        visible."""
+        """Scroll the view so that the bottom of the list (last row) is visible."""
         self.scroll_to_row(-1)
 
     @property
     def on_delete(self):
-        """The function invoked on row deletion. The delete handler must accept
-        two arguments. The first is a ref. to the widget and the second the row
-        that is about to be deleted.
+        """The function invoked on row deletion. The delete handler must accept two
+        arguments. The first is a ref. to the widget and the second the row that is
+        about to be deleted.
 
         Examples:
             >>> def delete_handler(widget, row):

@@ -29,11 +29,11 @@ class Box(Widget):
 
     @property
     def enabled(self):
-        """Is the widget currently enabled? i.e., can the user interact with the
-        widget?
+        """Is the widget currently enabled? i.e., can the user interact with the widget?
 
-        Box widgets cannot be disabled; this property will always return True;
-        any attempt to modify it will be ignored."""
+        Box widgets cannot be disabled; this property will always return True; any
+        attempt to modify it will be ignored.
+        """
         return True
 
     @enabled.setter
@@ -41,5 +41,5 @@ class Box(Widget):
         pass
 
     def focus(self):
-        """No-op; Box cannot accept input focus"""
+        """No-op; Box cannot accept input focus."""
         pass

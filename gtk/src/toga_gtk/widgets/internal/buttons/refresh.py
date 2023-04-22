@@ -66,11 +66,11 @@ class RefreshButtonWidget(Gtk.Revealer):
 
 
 class RefreshButton(ParentPosition):
-    """Shows a refresh button at the top of a list when the user is at the
-    bottom of the list. Shows a refresh button at the bottom of a list when the
-    user is at the top of the list. When there is not enough content to scroll,
-    show the button at the bottom and have a side button to move it to the top.
-    After moving the button to the top, show a button to move it to the bottom.
+    """Shows a refresh button at the top of a list when the user is at the bottom of the
+    list. Shows a refresh button at the bottom of a list when the user is at the top of
+    the list. When there is not enough content to scroll, show the button at the bottom
+    and have a side button to move it to the top. After moving the button to the top,
+    show a button to move it to the bottom.
 
     Example:
      -------------

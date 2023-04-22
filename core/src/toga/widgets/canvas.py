@@ -17,11 +17,11 @@ class FillRule(Enum):
 
 
 class Context:
-    """The user-created :class:`Context` drawing object to populate a drawing
-    with visual context.
+    """The user-created :class:`Context` drawing object to populate a drawing with
+    visual context.
 
-    The top left corner of the canvas must be painted at the origin of
-    the context and is sized using the rehint() method.
+    The top left corner of the canvas must be painted at the origin of the context and
+    is sized using the rehint() method.
     """
 
     def __init__(self, *args, **kwargs):  # kwargs used to support multiple inheritance
@@ -35,9 +35,9 @@ class Context:
     def _draw(self, impl, *args, **kwargs):
         """Draw all drawing objects that are on the context or canvas.
 
-        This method is used by the implementation to tell the interface
-        canvas to draw all objects on it, and used by a context to draw
-        all the objects that are on the context.
+        This method is used by the implementation to tell the interface canvas to draw
+        all objects on it, and used by a context to draw all the objects that are on the
+        context.
         """
         for obj in self.drawing_objects:
             obj._draw(impl, *args, **kwargs)
@@ -81,9 +81,8 @@ class Context:
     def redraw(self):
         """Force a redraw of the Canvas.
 
-        The Canvas will be automatically redrawn after adding or remove
-        a drawing object. If you modify a drawing object, this method is
-        used to force a redraw.
+        The Canvas will be automatically redrawn after adding or remove a drawing
+        object. If you modify a drawing object, this method is used to force a redraw.
         """
         self.canvas._impl.redraw()
 
@@ -456,8 +455,7 @@ class Stroke(Context):
 
 
 class ClosedPath(Context):
-    """A user-created :class:`ClosedPath` drawing object for a closed path
-    context.
+    """A user-created :class:`ClosedPath` drawing object for a closed path context.
 
     Creates a new path and then closes it.
 
@@ -563,8 +561,8 @@ class Canvas(Context, Widget):
 
     @property
     def on_press(self):
-        """Return the handler invoked when the primary (usually the left) mouse
-        button is pressed.
+        """Return the handler invoked when the primary (usually the left) mouse button
+        is pressed.
 
         Returns:
             The handler that is invoked when the primary mouse button is pressed.
@@ -573,8 +571,8 @@ class Canvas(Context, Widget):
 
     @on_press.setter
     def on_press(self, handler):
-        """Set the handler to invoke when the primary (usually the left) mouse
-        button is pressed.
+        """Set the handler to invoke when the primary (usually the left) mouse button is
+        pressed.
 
         Args:
             handler (:obj:`Callable`): The handler to invoke when the
@@ -585,8 +583,8 @@ class Canvas(Context, Widget):
 
     @property
     def on_release(self):
-        """Return the handler invoked when the primary (usually the left) mouse
-        button is released.
+        """Return the handler invoked when the primary (usually the left) mouse button
+        is released.
 
         Returns:
             The handler that is invoked when the primary mouse button is released.
@@ -595,8 +593,8 @@ class Canvas(Context, Widget):
 
     @on_release.setter
     def on_release(self, handler):
-        """Set the handler to invoke when the primary (usually the left) mouse
-        button is released.
+        """Set the handler to invoke when the primary (usually the left) mouse button is
+        released.
 
         Args:
             handler (:obj:`Callable`): The handler to invoke when the
@@ -607,8 +605,8 @@ class Canvas(Context, Widget):
 
     @property
     def on_drag(self):
-        """Return the handler invoked when the mouse is dragged with the
-        primary (usually the left) mouse button is pressed.
+        """Return the handler invoked when the mouse is dragged with the primary
+        (usually the left) mouse button is pressed.
 
         Returns:
             The handler that is invoked when the mouse is dragged with
@@ -618,8 +616,8 @@ class Canvas(Context, Widget):
 
     @on_drag.setter
     def on_drag(self, handler):
-        """Set the handler to invoke when the mouse button is dragged with the
-        primary (usually the left) button pressed.
+        """Set the handler to invoke when the mouse button is dragged with the primary
+        (usually the left) button pressed.
 
         Args:
             handler (:obj:`Callable`): The handler to invoke when the
@@ -630,8 +628,8 @@ class Canvas(Context, Widget):
 
     @property
     def on_alt_press(self):
-        """Return the handler to invoke when the alternate (usually the right)
-        mouse button is pressed.
+        """Return the handler to invoke when the alternate (usually the right) mouse
+        button is pressed.
 
         Returns:
             The handler that is invoked when the alternate mouse button is pressed.
@@ -640,8 +638,8 @@ class Canvas(Context, Widget):
 
     @on_alt_press.setter
     def on_alt_press(self, handler):
-        """Set the handler to invoke when the alternate (usually the right)
-        mouse button is pressed.
+        """Set the handler to invoke when the alternate (usually the right) mouse button
+        is pressed.
 
         Args:
             handler (:obj:`Callable`): The handler to invoke when the
@@ -652,8 +650,8 @@ class Canvas(Context, Widget):
 
     @property
     def on_alt_release(self):
-        """Return the handler to invoke when the alternate (usually the right)
-        mouse button is released.
+        """Return the handler to invoke when the alternate (usually the right) mouse
+        button is released.
 
         Returns:
             The handler that is invoked when the alternate mouse button is released.
@@ -662,8 +660,8 @@ class Canvas(Context, Widget):
 
     @on_alt_release.setter
     def on_alt_release(self, handler):
-        """Set the handler to invoke when the alternate (usually the right)
-        mouse button is released.
+        """Set the handler to invoke when the alternate (usually the right) mouse button
+        is released.
 
         Args:
             handler (:obj:`Callable`): The handler to invoke when the
@@ -674,8 +672,8 @@ class Canvas(Context, Widget):
 
     @property
     def on_alt_drag(self):
-        """Return the handler to invoke when the mouse is dragged while the
-        alternate (usually the right) mouse button is pressed.
+        """Return the handler to invoke when the mouse is dragged while the alternate
+        (usually the right) mouse button is pressed.
 
         Returns:
             The handler that is invoked when the mouse is dragged with
@@ -685,8 +683,8 @@ class Canvas(Context, Widget):
 
     @on_alt_drag.setter
     def on_alt_drag(self, handler):
-        """Set the handler to invoke when the mouse is dragged with the
-        alternate (usually the right) button pressed.
+        """Set the handler to invoke when the mouse is dragged with the alternate
+        (usually the right) button pressed.
 
         Args:
             handler (:obj:`Callable`): The handler to invoke when the
@@ -724,7 +722,6 @@ class Canvas(Context, Widget):
     def translate(self, tx, ty):
         """Constructs and returns a :class:`Translate`.
 
-
         :param tx: X value of coordinate.
         :param ty: Y value of coordinate.
         :returns: :class:`Translate` object.
@@ -757,8 +754,8 @@ class Canvas(Context, Widget):
 
 
 class MoveTo:
-    """A user-created :class:`MoveTo` drawing object which moves the start of
-    the next operation to a point.
+    """A user-created :class:`MoveTo` drawing object which moves the start of the next
+    operation to a point.
 
     Moves the starting point of a new sub-path to the (x, y) coordinates.
 
@@ -781,8 +778,7 @@ class MoveTo:
 
 
 class LineTo:
-    """A user-created :class:`LineTo` drawing object which draws a line to a
-    point.
+    """A user-created :class:`LineTo` drawing object which draws a line to a point.
 
     Connects the last point in the sub-path to the (x, y) coordinates
     with a straight line (but does not actually draw it).
@@ -805,8 +801,7 @@ class LineTo:
 
 
 class BezierCurveTo:
-    """A user-created :class:`BezierCurveTo` drawing object which adds a Bézier
-    curve.
+    """A user-created :class:`BezierCurveTo` drawing object which adds a Bézier curve.
 
     It requires three points. The first two points are control points
     and the third one is the end point. The starting point is the last
@@ -849,8 +844,8 @@ class BezierCurveTo:
 
 
 class QuadraticCurveTo:
-    """A user-created :class:`QuadraticCurveTo` drawing object which adds a
-    quadratic curve.
+    """A user-created :class:`QuadraticCurveTo` drawing object which adds a quadratic
+    curve.
 
     It requires two points. The first point is a control point and the
     second one is the end point. The starting point is the last point in the
@@ -1105,8 +1100,7 @@ class Translate:
 class ResetTransform:
     """A user-created :class:`ResetTransform` to reset the canvas.
 
-    Resets the canvas by setting it equal to the canvas with no
-    transformations.
+    Resets the canvas by setting it equal to the canvas with no transformations.
     """
 
     def __repr__(self):

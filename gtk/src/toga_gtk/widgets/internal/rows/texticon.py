@@ -9,8 +9,8 @@ from .base import HiddenButtonsRow
 class TextIconRow(HiddenButtonsRow):
     """Create a TextIconRow from a toga.sources.Row.
 
-    A reference to the original row is kept in self.toga_row, this is
-    useful for comparisons.
+    A reference to the original row is kept in self.toga_row, this is useful for
+    comparisons.
     """
 
     def __init__(self, factory: callable, *args, **kwargs):

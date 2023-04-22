@@ -100,10 +100,9 @@ class TimePicker(Widget):
 
     @property
     def min_time(self):
-        """The minimum allowable time for the widget. The widget will not allow
-        the user to enter at time less than the min time. If initial time set
-        is less than the minimum time, the minimum time will be used as the
-        initial value.
+        """The minimum allowable time for the widget. The widget will not allow the user
+        to enter at time less than the min time. If initial time set is less than the
+        minimum time, the minimum time will be used as the initial value.
 
         :return: The minimum time specified. Returns None if min_time not specified
         """
@@ -119,10 +118,9 @@ class TimePicker(Widget):
 
     @property
     def max_time(self):
-        """The maximum allowable time for the widget. The widget will not allow
-        the user to enter at time greater than the max time. If initial time
-        set is greater than the maximum time, the maximum time will be used as
-        the initial value.
+        """The maximum allowable time for the widget. The widget will not allow the user
+        to enter at time greater than the max time. If initial time set is greater than
+        the maximum time, the maximum time will be used as the initial value.
 
         :return: The maximum time specified. Returns None if max_time not specified
         """

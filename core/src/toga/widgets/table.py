@@ -8,8 +8,7 @@ from .base import Widget
 
 
 class Table(Widget):
-    """A Table Widget allows the display of data in the form of columns and
-    rows.
+    """A Table Widget allows the display of data in the form of columns and rows.
 
     Args:
         headings (``list`` of ``str``): The list of headings for the table.
@@ -122,17 +121,18 @@ class Table(Widget):
         """The current selection of the table.
 
         A value of None indicates no selection.
-        If the table allows multiple selection, returns a list of
-        selected data nodes. Otherwise, returns a single data node.
 
-        The value of a column of the selection can be accessed with selection.accessor_name
-        (for single selection) and with selection[x].accessor_name (for multiple selection)
+        If the table allows multiple selection, returns a list of selected data nodes.
+        Otherwise, returns a single data node.
+
+        The value of a column of the selection can be accessed with
+        selection.accessor_name (for single selection) and with
+        selection[x].accessor_name (for multiple selection)
         """
         return self._impl.get_selection()
 
     def scroll_to_top(self):
-        """Scroll the view so that the top of the list (first row) is
-        visible."""
+        """Scroll the view so that the top of the list (first row) is visible."""
         self.scroll_to_row(0)
 
     def scroll_to_row(self, row):
@@ -149,8 +149,7 @@ class Table(Widget):
             self._impl.scroll_to_row(len(self.data) + row)
 
     def scroll_to_bottom(self):
-        """Scroll the view so that the bottom of the list (last row) is
-        visible."""
+        """Scroll the view so that the bottom of the list (last row) is visible."""
         self.scroll_to_row(-1)
 
     @property

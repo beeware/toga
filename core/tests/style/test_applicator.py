@@ -118,7 +118,7 @@ def test_set_hidden(
     child_hidden,
     grandchild_hidden,
 ):
-    """Widget visibility can be controlled, and is transitive into children"""
+    """Widget visibility can be controlled, and is transitive into children."""
     # Set the explicit visibility of the child and grandchild
     child.style.visibility = child_visibility
     grandchild.style.visibility = grandchild_visibility

@@ -2,13 +2,12 @@ from toga_gtk.libs import GLib, Gtk
 
 
 class ScrollableRow(Gtk.ListBoxRow):
-    """You can use and inherit from this class as if it were Gtk.ListBoxRow,
-    nothing from the original implementation is changed.
+    """You can use and inherit from this class as if it were Gtk.ListBoxRow, nothing
+    from the original implementation is changed.
 
-    There are three new public methods: scroll_to_top(),
-    scroll_to_center() and scroll_to_bottom(). 'top', 'center' and
-    'bottom' are with respect to where in the visible region the row
-    will move to.
+    There are three new public methods: scroll_to_top(), scroll_to_center() and
+    scroll_to_bottom(). 'top', 'center' and 'bottom' are with respect to where in the
+    visible region the row will move to.
     """
 
     def __init__(self, *args, **kwargs):
@@ -34,8 +33,7 @@ class ScrollableRow(Gtk.ListBoxRow):
         self.scroll_to_position("BOTTOM")
 
     def scroll_to_position(self, position):
-        """Scrolls the parent Gtk.ListBox until child is in the center of the
-        view.
+        """Scrolls the parent Gtk.ListBox until child is in the center of the view.
 
         `position` is one of "TOP", "CENTER" or "BOTTOM"
         """

@@ -10,9 +10,8 @@ from toga_iOS.libs import (
 
 class Constraints:
     def __init__(self, widget):
-        """
-        A wrapper object storing the constraints required to position a widget
-        at a precise location in its container.
+        """A wrapper object storing the constraints required to position a widget at a
+        precise location in its container.
 
         :param widget: The Widget implementation to be constrained.
         """
