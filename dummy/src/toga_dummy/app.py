@@ -62,6 +62,15 @@ class App(LoggedObject):
     def hide_cursor(self):
         self._action("hide_cursor")
 
+    def send_push_notification(self, title, text, timeout, on_press=None):
+        self._action(
+            "send_push_notification",
+            title=title,
+            text=text,
+            timeout=timeout,
+            on_press=on_press,
+        )
+
 
 @not_required_on("mobile", "web")
 class DocumentApp(App):

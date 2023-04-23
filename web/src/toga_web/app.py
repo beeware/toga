@@ -193,3 +193,6 @@ class App:
 
     def hide_cursor(self):
         self.interface.factory.not_implemented("App.hide_cursor()")
+
+    def send_push_notification(self, title, text, timeout, on_press=None):
+        self.interface.factory.not_implemented("App.send_push_notification()")

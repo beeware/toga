@@ -556,6 +556,10 @@ class App:
         """Hide cursor from view."""
         self._impl.hide_cursor()
 
+    def send_push_notification(self, title, text, timeout, on_press=None):
+        "Send a push notification to the user."
+        self._impl.send_push_notification(title, text, timeout, on_press)
+
     def startup(self):
         """Create and show the main window for the application."""
         self.main_window = MainWindow(title=self.formal_name)

@@ -209,6 +209,9 @@ class App:
     def exit(self):
         pass
 
+    def send_push_notification(self, title, text, timeout, on_press=None):
+        self.interface.factory.not_implemented("App.send_push_notification()")
+
     async def intent_result(self, intent):
         """Calls an Intent and waits for its result.
 

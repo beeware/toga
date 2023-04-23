@@ -12,6 +12,7 @@ from .libs import (
     ServicePointManager,
     Threading,
     WinForms,
+    WinIcon,
     shcore,
     user32,
     win_version,
@@ -309,6 +310,19 @@ class App:
 
     def hide_cursor(self):
         self.interface.factory.not_implemented("App.hide_cursor()")
+
+    def send_push_notification(self, title, text, timeout, on_press=None):
+        # Create a notify icon
+        icon = WinForms.NotifyIcon()
+        icon.Icon = WinIcon(
+            f"{self.interface.paths.app}/resources/{self.interface.app_name}.ico"
+        )
+        icon.Visible = True
+        if on_press is not None:
+            icon.BalloonTipClicked += lambda sender, event: on_press()
+
+        # Show the notification
+        icon.ShowBalloonTip(timeout, title, text, WinForms.ToolTipIcon(0))
 
 
 class DocumentApp(App):

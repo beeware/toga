@@ -411,6 +411,9 @@ class App:
 
         self._cursor_visible = False
 
+    def send_push_notification(self, title, text, timeout, on_press=None):
+        self.interface.factory.not_implemented("App.send_push_notification()")
+
     def open_document(self, fileURL):
         """No-op when the app is not a ``DocumentApp``."""
 
