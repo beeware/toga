@@ -224,8 +224,11 @@ class App:
     def set_on_exit(self, value):
         pass
 
-    def current_window(self):
+    def get_current_window(self):
         return self.native.get_active_window()._impl
+
+    def set_current_window(self, window):
+        self.interface.factory.not_implemented("App.set_current_window()")
 
     def enter_full_screen(self, windows):
         for window in windows:

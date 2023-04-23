@@ -515,7 +515,12 @@ class App:
     @property
     def current_window(self):
         """Return the currently active content window."""
-        return self._impl.current_window().interface
+        return self._impl.get_current_window().interface
+
+    @current_window.setter
+    def current_window(self, window):
+        """Set a window into current active focus."""
+        self._impl.set_current_window(window)
 
     @property
     def is_full_screen(self):
