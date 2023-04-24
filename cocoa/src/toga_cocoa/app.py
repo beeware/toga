@@ -370,7 +370,7 @@ class App:
         return self.native.keyWindow
 
     def set_current_window(self, window):
-        window.native.makeKeyAndFront()
+        window._impl.native.makeKeyAndOrderFront(window._impl.native)
 
     def enter_full_screen(self, windows):
         # If we're already in full screen mode, exit so that
