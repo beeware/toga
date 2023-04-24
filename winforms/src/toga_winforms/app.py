@@ -49,6 +49,8 @@ class App:
         # window-level close handling.
         self._is_exiting = False
 
+        self._cursor_visible = True
+
         self.loop = WinformsProactorEventLoop()
         asyncio.set_event_loop(self.loop)
 
@@ -303,14 +305,15 @@ class App:
         for window in windows:
             window._impl.set_full_screen(False)
 
-    def set_cursor(self, value):
-        self.interface.factory.not_implemented("App.set_cursor()")
-
     def show_cursor(self):
-        self.interface.factory.not_implemented("App.show_cursor()")
+        if not self._cursor_visible:
+            WinForms.Cursor.Show()
+        self._cursor_visible = True
 
     def hide_cursor(self):
-        self.interface.factory.not_implemented("App.hide_cursor()")
+        if self._cursor_visible:
+            WinForms.Cursor.Hide()
+        self._cursor_visible = False
 
 
 class DocumentApp(App):
