@@ -33,7 +33,7 @@ async def test_text(widget, probe):
 
     for text in TEXTS:
         widget.text = text
-        await probe.redraw()
+        await probe.redraw(message="Switch text should be %s" % text)
 
         # Text after a newline will be stripped.
         expected = text.split("\n")[0]
@@ -45,14 +45,14 @@ async def test_text(widget, probe):
 async def test_press(widget, probe):
     # Press the button before installing a handler
     await probe.press()
-    await probe.redraw()
+    await probe.redraw(message="Switch should be pressed")
 
     # Set up a mock handler, and press the button again.
     handler = Mock()
     widget.on_change = handler
 
     await probe.press()
-    await probe.redraw()
+    await probe.redraw(message="Switch should be pressed again")
     handler.assert_called_once_with(widget)
 
 
@@ -66,20 +66,20 @@ async def test_change_value(widget, probe):
 
     # Set the value of the switch
     widget.value = True
-    await probe.redraw()
+    await probe.redraw(message="Switch value should be True")
     assert handler.mock_calls == [call(widget)]
 
     # Set the value of the switch to the same value
     widget.value = True
-    await probe.redraw()
+    await probe.redraw(message="Switch value should be True again")
     assert handler.mock_calls == [call(widget)]
 
     # Set the value of the switch to a different value
     widget.value = False
-    await probe.redraw()
+    await probe.redraw(message="Switch value should be changed to False")
     assert handler.mock_calls == [call(widget)] * 2
 
     # Toggle the switch value
     widget.toggle()
-    await probe.redraw()
+    await probe.redraw(message="Switch value should be toggled")
     assert handler.mock_calls == [call(widget)] * 3

@@ -19,14 +19,14 @@ async def test_readonly(widget, probe):
 
     # Change to readonly
     widget.readonly = True
-    await probe.redraw()
+    await probe.redraw(message="Multiline Text Input should be read only")
 
     assert widget.readonly
     assert probe.readonly
 
     # Change back to writable
     widget.readonly = False
-    await probe.redraw()
+    await probe.redraw(message="Multiline Text Input should be writable")
 
     assert not widget.readonly
     assert not probe.readonly

@@ -66,13 +66,13 @@ async def test_value(widget, probe, on_change):
             assert_set_value(widget, position * scale)
             assert probe.position == approx(position, abs=ACCURACY)
             on_change.assert_called_once_with(widget)
-            await probe.redraw()
+            await probe.redraw(message="Slider scale should be %s" % scale)
 
     on_change.reset_mock()
     widget.on_change = None
     widget.value = 42
     on_change.assert_not_called()
-    await probe.redraw()
+    await probe.redraw(message="Slider scale should be reset")
 
 
 def assert_set_value(widget, value_in, value_out=None):
@@ -90,13 +90,13 @@ async def test_change(widget, probe, on_change):
             probe.change(position)
             assert widget.value == approx(position * scale, abs=(ACCURACY * scale))
             on_change.assert_called_once_with(widget)
-            await probe.redraw()
+            await probe.redraw(message="Slider scale should be %s" % scale)
 
     on_change.reset_mock()
     widget.on_change = None
     probe.change(0.42)
     on_change.assert_not_called()
-    await probe.redraw()
+    await probe.redraw(message="Slider scale should be reset")
 
 
 # Bounds checks and the `min` property are covered by the core tests.
@@ -115,7 +115,7 @@ async def test_min(widget, probe, on_change):
             assert widget.value == min
             assert probe.position == 0
             on_change.assert_called_once_with(widget)
-        await probe.redraw()
+        await probe.redraw(message="Slider min property should be %s" % min)
 
 
 # Bounds checks and the `max` property are covered by the core tests.
@@ -135,7 +135,7 @@ async def test_max(widget, probe, on_change):
             assert widget.value == max
             assert probe.position == 1
             on_change.assert_called_once_with(widget)
-        await probe.redraw()
+        await probe.redraw(message="Slider max property should be %s" % max)
 
 
 def assert_set_range(widget, min_in, max_in):
@@ -170,7 +170,7 @@ async def test_ticks(widget, probe, on_change):
         else:
             on_change.assert_called_once_with(widget)
         prev_value = value
-        await probe.redraw()
+        await probe.redraw(message=f"Slider tick should be {tick_count}, {value}")
 
 
 async def test_value_with_ticks(widget, probe, on_change):
@@ -196,7 +196,11 @@ async def test_value_with_ticks(widget, probe, on_change):
         else:
             on_change.assert_called_once_with(widget)
         prev_value = value_out
-        await probe.redraw()
+        await probe.redraw(
+            message="Slider value with tick should be {}, {}".format(
+                value_in, value_out
+            )
+        )
 
 
 async def test_range_with_ticks(widget, probe, on_change):
@@ -220,7 +224,11 @@ async def test_range_with_ticks(widget, probe, on_change):
         else:
             on_change.assert_called_once_with(widget)
         prev_value = value
-        await probe.redraw()
+        await probe.redraw(
+            message="Slider range with tick should be {}, {}, {}".format(
+                min, max, value
+            )
+        )
 
 
 @pytest.mark.parametrize("event", ["press", "release"])

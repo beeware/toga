@@ -30,7 +30,7 @@ async def test_start_stop_determinate(widget, probe):
 
     # Start the progress bar
     widget.start()
-    await probe.redraw()
+    await probe.redraw(message="Determinate progress bar should be started")
 
     # Widget should now be started
     assert widget.is_running
@@ -40,7 +40,7 @@ async def test_start_stop_determinate(widget, probe):
     # Change the progress bar values
     for value in [20, 40, 60.5, 85]:
         widget.value = value
-        await probe.redraw()
+        await probe.redraw(message="Widget value should be %s" % value)
 
         # Probe is still running; value has been updated
         assert widget.is_running
@@ -50,7 +50,7 @@ async def test_start_stop_determinate(widget, probe):
 
     # Stop the progress bar
     widget.stop()
-    await probe.redraw()
+    await probe.redraw(message="Progress bar should be stopped")
 
     # Widget should now be stopped
     assert not widget.is_running
@@ -84,7 +84,7 @@ async def test_start_stop_indeterminate(widget, probe):
 
     # Try to change the progress bar value
     widget.value = 0.37
-    await probe.redraw()
+    await probe.redraw(message="Progress bar should be changed to 0.37")
 
     # Probe is still running; value doesn't change
     assert widget.is_running
@@ -94,7 +94,7 @@ async def test_start_stop_indeterminate(widget, probe):
 
     # Start the progress bar again. This should be a no-op.
     widget.start()
-    await probe.redraw()
+    await probe.redraw(message="Progress bar should be started again")
 
     # Probe is still running; value doesn't change
     assert widget.is_running
@@ -104,7 +104,7 @@ async def test_start_stop_indeterminate(widget, probe):
 
     # Stop the progress bar
     widget.stop()
-    await probe.redraw()
+    await probe.redraw(message="Progress bar should be stopped again")
 
     # Widget should now be stopped
     assert not widget.is_running
@@ -117,7 +117,7 @@ async def test_animation_starts_on_max_change(widget, probe):
     "Changing between determinate and indeterminate starts and stops the animation"
     # Start the animation
     widget.start()
-    await probe.redraw()
+    await probe.redraw(message="Progress bar animation should be started")
 
     # Widget is running, but there's no animation
     assert widget.is_running
@@ -125,7 +125,7 @@ async def test_animation_starts_on_max_change(widget, probe):
 
     # Switch to indeterminate
     widget.max = None
-    await probe.redraw()
+    await probe.redraw(message="Progress bar should be switched to indeterminate")
 
     # Widget is still running, animation has started
     assert widget.is_running
@@ -133,7 +133,7 @@ async def test_animation_starts_on_max_change(widget, probe):
 
     # Switch back to determinate
     widget.max = 50
-    await probe.redraw()
+    await probe.redraw(message="Progress bar should be switched to determinate")
 
     # Widget is still running, animation has stopped
     assert widget.is_running
@@ -151,7 +151,7 @@ async def test_position_change_on_max_change(widget, probe):
 
     # Start the animation
     widget.start()
-    await probe.redraw()
+    await probe.redraw(message="Progress bar animation should be started")
 
     # Widget has a value of 60, and shows 60%
     assert widget.value == pytest.approx(60, abs=0.001)
@@ -159,7 +159,7 @@ async def test_position_change_on_max_change(widget, probe):
 
     # Change the maximum to 200
     widget.max = 200
-    await probe.redraw()
+    await probe.redraw(message="Maximum of progress bar should be 200")
 
     # The value hasn't changed, but the position has changed to 30%
     assert widget.value == pytest.approx(60, abs=0.001)

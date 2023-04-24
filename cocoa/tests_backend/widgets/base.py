@@ -75,13 +75,17 @@ class SimpleProbe:
             SYSTEM: ".AppleSystemUIFont",
         }.get(expected, expected)
 
-    async def redraw(self):
+    async def redraw(self, message=None):
         """Request a redraw of the app, waiting until that redraw has completed."""
         # Force a repaint
         self.widget.window.content._impl.native.displayIfNeeded()
 
         # If we're running slow, wait for a second
         if self.widget.app.run_slow:
+            if not (message is None):
+                if message == "":
+                    message = "Waiting for redraw"
+                print("\n%s" % message)
             await asyncio.sleep(1)
 
     @property

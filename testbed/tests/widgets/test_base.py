@@ -28,7 +28,7 @@ async def test_visibility(widget, probe):
     widget.parent.add(other)
     widget.add(child)
 
-    await probe.redraw()
+    await probe.redraw(message="Widget should be visible")
 
     # Widgets are all visible an in place
     assert not probe.is_hidden
@@ -39,7 +39,7 @@ async def test_visibility(widget, probe):
 
     # Hide the widget
     widget.style.visibility = HIDDEN
-    await probe.redraw()
+    await probe.redraw(message="Widget should be hidden")
 
     # Widgets are no longer visible.
     assert probe.is_hidden
@@ -51,7 +51,7 @@ async def test_visibility(widget, probe):
 
     # Make widget visible again
     widget.style.visibility = VISIBLE
-    await probe.redraw()
+    await probe.redraw(message="Widget should be visible again")
 
     # Widgets are all visible and in place again.
     assert not probe.is_hidden
@@ -62,7 +62,7 @@ async def test_visibility(widget, probe):
 
     # Hide the widget again
     widget.style.visibility = HIDDEN
-    await probe.redraw()
+    await probe.redraw(message="Widget should be hidden again")
 
     # Widgets are no longer visible.
     assert probe.is_hidden
@@ -71,7 +71,7 @@ async def test_visibility(widget, probe):
 
     # Mark the child style as visible.
     child.style.visibility = VISIBLE
-    await probe.redraw()
+    await probe.redraw(message="Child style of widget should be visible")
 
     # Root widget isn't visible, so neither descendent is visible.
     assert probe.is_hidden
@@ -80,7 +80,7 @@ async def test_visibility(widget, probe):
 
     # Explicitly mark the child style as hidden.
     child.style.visibility = HIDDEN
-    await probe.redraw()
+    await probe.redraw(message="Child style of widget should be hidden")
 
     # Root widget isn't visible, so neither descendent is visible.
     assert probe.is_hidden
@@ -89,7 +89,7 @@ async def test_visibility(widget, probe):
 
     # Mark the root widget as visible again.
     widget.style.visibility = VISIBLE
-    await probe.redraw()
+    await probe.redraw(message="Child style of widget should be visible again")
 
     # Root widget is visible again but the child is explicitly hidden,
     # so it and the grandchild are still hidden
@@ -112,42 +112,44 @@ async def test_parenting(widget, probe):
     # Layout has the test widget, plus other, horizontally laid out.
     # Child isn't in the layout yet.
     box.add(other)
-    await probe.redraw()
+    await probe.redraw(message="Child should not in layout yet")
     probe.assert_layout(position=(0, 0), size=(100, 200))
     other_probe.assert_layout(position=(100, 0), size=(100, 200))
     child_probe.assert_not_contained()
 
     # Add child to widget.
     widget.add(child)
-    await probe.redraw()
+    await probe.redraw(message="Child should be added to layout")
     probe.assert_layout(position=(0, 0), size=(100, 200))
     other_probe.assert_layout(position=(100, 0), size=(100, 200))
     child_probe.assert_layout(position=(0, 0), size=(50, 75))
 
     # Re-add child to the *same* widget
     widget.add(child)
-    await probe.redraw()
+    await probe.redraw(message="Child should be re-added to the same widget")
     probe.assert_layout(position=(0, 0), size=(100, 200))
     other_probe.assert_layout(position=(100, 0), size=(100, 200))
     child_probe.assert_layout(position=(0, 0), size=(50, 75))
 
     # Reparent child to other without removing first
     other.add(child)
-    await probe.redraw()
+    await probe.redraw(
+        message="Child should be reparent to other without removing first"
+    )
     probe.assert_layout(position=(0, 0), size=(100, 200))
     other_probe.assert_layout(position=(100, 0), size=(100, 200))
     child_probe.assert_layout(position=(125, 0), size=(50, 75))
 
     # Remove child from the layout entirely
     other.remove(child)
-    await probe.redraw()
+    await probe.redraw(message="Child should be removed from the layout entirely")
     probe.assert_layout(position=(0, 0), size=(100, 200))
     other_probe.assert_layout(position=(100, 0), size=(100, 200))
     child_probe.assert_not_contained()
 
     # Insert the child into the root layout
     box.insert(1, child)
-    await probe.redraw()
+    await probe.redraw(message="Child should be inserted to the root layout")
     probe.assert_layout(position=(0, 0), size=(100, 200))
     other_probe.assert_layout(position=(150, 0), size=(100, 200))
     child_probe.assert_layout(position=(100, 0), size=(50, 75))

@@ -21,13 +21,13 @@ async def test_start_stop(widget, probe):
     assert not widget.is_running
 
     widget.start()
-    await probe.redraw()
+    await probe.redraw(message="Activity Indicator should be started")
 
     # Widget should now be started
     assert widget.is_running
 
     widget.stop()
-    await probe.redraw()
+    await probe.redraw(message="Activity Indicator should be stopped")
 
     # Widget should now be stopped
     assert not widget.is_running
@@ -44,7 +44,9 @@ async def test_fixed_square_widget_size(widget, probe):
     assert 10 < initial_width < 50
 
     widget.start()
-    await probe.redraw()
+    await probe.redraw(
+        message="Activity Indicator should be a square in reasonable size"
+    )
 
     # Widget hasn't changed size as a result of being started
     assert probe.height == initial_height
@@ -52,7 +54,7 @@ async def test_fixed_square_widget_size(widget, probe):
 
     # Give the widget flexible sizing
     widget.style.flex = 1
-    await probe.redraw()
+    await probe.redraw(message="Activity Indicator sizing should be flexible")
 
     # Widget hasn't changed size as a result of being made flexible
     assert probe.height == initial_height
