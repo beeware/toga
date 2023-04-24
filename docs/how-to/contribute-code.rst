@@ -66,7 +66,7 @@ start coding. To set up a virtual environment, run:
     .. code-block:: doscon
 
       C:\...>python3 -m venv venv
-      C:\...>venv/Scripts/activate
+      C:\...>venv\Scripts\activate
 
 Your prompt should now have a ``(venv)`` prefix in front of it.
 
@@ -80,19 +80,29 @@ Next, install any additional dependencies for your operating system:
 
   .. group-tab:: Linux
 
+    Ubuntu 18.04+, Debian 10+
+
     .. code-block:: console
 
-      # Ubuntu 18.04+, Debian 10+
       (venv) $ sudo apt-get update
       (venv) $ sudo apt-get install python3-dev libgirepository1.0-dev libcairo2-dev libpango1.0-dev libwebkit2gtk-4.0-37 gir1.2-webkit2-4.0
 
-      # Fedora
+    Fedora
+
+    .. code-block:: console
+
       (venv) $ sudo dnf install pkg-config python3-devel gobject-introspection-devel cairo-devel cairo-gobject-devel pango-devel webkitgtk3
 
-      # Arch / Manjaro
+    Arch / Manjaro
+
+    .. code-block:: console
+
       (venv) $ sudo pacman -Syu git pkgconf cairo python-cairo pango gobject-introspection gobject-introspection-runtime python-gobject webkit2gtk
 
-      # FreeBSD
+    FreeBSD
+
+    .. code-block:: console
+
       (venv) $ sudo pkg update
       (venv) $ sudo pkg install gtk3 pango gobject-introspection cairo webkit2-gtk3
 
