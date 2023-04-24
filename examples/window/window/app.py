@@ -1,3 +1,4 @@
+import asyncio
 from datetime import datetime
 
 import toga
@@ -68,10 +69,11 @@ class WindowDemoApp(toga.App):
         self.app.windows += no_close_handler_window
         no_close_handler_window.show()
 
-    def do_current_window_cycling(self, widget, **kwargs):
+    async def do_current_window_cycling(self, widget, **kwargs):
         for window in self.windows:
             self.current_window = window
-            self.label = self.current_window
+            self.label.text = f"Current window is {self.current_window.id}"
+            await asyncio.sleep(1)
 
     def do_report(self, widget, **kwargs):
         self.label.text = (
