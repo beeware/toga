@@ -617,6 +617,53 @@ def test_remove_multiple_children(widget):
     window.content.refresh.assert_called_once_with()
 
 
+def test_clear_all_children(widget):
+    "All children can be simultaneously removed from a widget"
+    # Add children to the widget
+    child1 = TestLeafWidget(id="child1_id")
+    child2 = TestLeafWidget(id="child2_id")
+    child3 = TestLeafWidget(id="child3_id")
+    widget.add(child1, child2, child3)
+
+    app = toga.App("Test", "com.example.test")
+    window = Mock()
+    widget.app = app
+    widget.window = window
+
+    assert widget.children == [child1, child2, child3]
+    for child in widget.children:
+        assert child.parent == widget
+        assert child.app == app
+        assert child.window == window
+
+    # Remove children
+    widget.clear()
+
+    # Parent doesn't know about the removed children, and vice versa
+    assert widget.children == []
+    assert child1.parent is None
+    assert child2.parent is None
+    assert child3.parent is None
+
+    # App and window have been reset on the removed widgets
+    assert child1.app is None
+    assert child1.window is None
+
+    assert child2.app is None
+    assert child2.window is None
+
+    assert child3.app is None
+    assert child3.window is None
+
+    # The impl's remove_child has been invoked twice
+    assert_action_performed_with(widget, "remove child", child=child1._impl)
+    assert_action_performed_with(widget, "remove child", child=child2._impl)
+    assert_action_performed_with(widget, "remove child", child=child3._impl)
+
+    # The window layout has been refreshed once
+    window.content.refresh.assert_called_once_with()
+
+
 def test_remove_from_non_parent(widget):
     "Trying to remove a child from a widget other than it's parent is a no-op"
     # Create a second parent widget, and add a child to it
