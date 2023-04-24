@@ -170,6 +170,13 @@ class Widget(Node):
         if self.window:
             self.window.content.refresh()
 
+    def clear(self):
+        """Remove all child widgets of this node.
+
+        Raises ``ValueError`` if this widget cannot have children.
+        """
+        self.remove(*self.children)
+
     @property
     def app(self):
         """The App to which this widget belongs.
