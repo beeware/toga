@@ -22,7 +22,7 @@ Usage
 A slider can either be continuous (allowing any value within the range), or discrete
 (allowing a fixed number of equally-spaced values). For example:
 
-.. code-block:: Python
+.. code-block:: python
 
     import toga
 

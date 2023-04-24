@@ -8,34 +8,44 @@ Actions to formally publish releases.
 This guide assumes that you have an ``upstream`` remote configured on your
 local clone of the Toga repository, pointing at the official repository.
 If all you have is a checkout of a personal fork of the Toga repository,
-you can configure that checkout by running::
+you can configure that checkout by running:
+
+.. code-block:: console
 
     $ git remote add upstream https://github.com/beeware/toga.git
 
 The procedure for cutting a new release is as follows:
 
-#. Check the contents of the upstream repository's main branch::
+#. Check the contents of the upstream repository's main branch:
 
-    $ git fetch upstream
-    $ git checkout --detach upstream/main
+   .. code-block:: console
+
+       $ git fetch upstream
+       $ git checkout --detach upstream/main
 
    Check that the HEAD of release now matches upstream/main.
 
-#. Ensure that the release notes are up to date. Run::
+#. Ensure that the release notes are up to date. Run:
 
-         $ tox -e towncrier -- --draft
+   .. code-block:: console
 
-   to review the release notes that will be included, and then::
+     $ tox -e towncrier -- --draft
 
-         $ tox -e towncrier
+   to review the release notes that will be included, and then:
+
+   .. code-block:: console
+
+     $ tox -e towncrier
 
    to generate the updated release notes.
 
-#. Tag the release, and push the branch and tag upstream::
+#. Tag the release, and push the branch and tag upstream:
 
-    $ git tag v1.2.3
-    $ git push upstream HEAD:main
-    $ git push upstream v1.2.3
+   .. code-block:: console
+
+     $ git tag v1.2.3
+     $ git push upstream HEAD:main
+     $ git push upstream v1.2.3
 
 #. Pushing the tag will start a workflow to create a draft release on GitHub.
    You can `follow the progress of the workflow on GitHub

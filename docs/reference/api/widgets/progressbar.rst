@@ -23,7 +23,7 @@ task. The visual indicator of the progress bar will be filled indicating the
 proportion of ``value`` relative to ``max``. ``max`` can be any positive
 numerical value.
 
-.. code-block:: Python
+.. code-block:: python
 
     import toga
 
@@ -43,7 +43,7 @@ an *indeterminate* progress bar. Any change to the value of an indeterminate
 progress bar will be ignored. When started, an indeterminate progress bar
 animates as a throbbing or "ping pong" animation.
 
-.. code-block:: Python
+.. code-block:: python
 
     import toga
 

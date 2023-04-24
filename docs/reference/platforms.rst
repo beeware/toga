@@ -15,7 +15,9 @@ macOS
 
 The backend for macOS is named `toga-cocoa`_. It supports macOS 10.10 (Yosemite)
 and later. It is installed automatically on macOS machines (machines that
-report ``sys.platform == 'darwin'``), or can be manually installed by invoking::
+report ``sys.platform == 'darwin'``), or can be manually installed by invoking:
+
+.. code-block:: console
 
     $ pip install toga-cocoa
 
@@ -33,7 +35,9 @@ Linux
 The backend for Linux platforms is named `toga-gtk`_. It supports GTK 3.4
 and later. It is installed automatically on Linux machines (machines that
 report ``sys.platform == 'linux'``), or can be manually installed by
-invoking::
+invoking:
+
+.. code-block:: console
 
     $ pip install toga-gtk
 
@@ -50,7 +54,9 @@ Windows
 The backend for Windows is named `toga-winforms`_. It supports Windows 10 with
 .NET 4 installed. It is installed automatically on Windows machines
 (machines that report ``sys.platform == 'win32'``), or can be manually
-installed by invoking::
+installed by invoking:
+
+.. code-block:: console
 
     $ pip install toga-winforms
 
@@ -69,7 +75,9 @@ iOS
 The backend for iOS is named `toga-iOS`_. It supports iOS 6 or later. It
 must be manually installed into an iOS Python project (such as one that has
 been developed using the `Python-iOS-template cookiecutter`_). It can be
-manually installed by invoking::
+manually installed by invoking:
+
+.. code-block:: console
 
     $ pip install toga-iOS
 
@@ -83,7 +91,9 @@ Android
 ~~~~~~~
 
 The backend for Android is named `toga-android`_. It can be manually installed
-by invoking::
+by invoking:
+
+.. code-block:: console
 
     $ pip install toga-android
 
@@ -98,7 +108,9 @@ Web
 ---
 
 The Web backend is named `toga-web`_. It can be manually installed
-by invoking::
+by invoking:
+
+.. code-block:: console
 
     $ pip install toga-web
 

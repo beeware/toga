@@ -16,7 +16,7 @@ The Selection widget is a simple control for allowing the user to choose between
 Usage
 -----
 
-.. code-block:: Python
+.. code-block:: python
 
     import toga
 

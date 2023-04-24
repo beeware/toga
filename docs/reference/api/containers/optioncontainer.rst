@@ -16,7 +16,7 @@ The Option Container widget is a user-selection control for choosing from a pre-
 Usage
 -----
 
-.. code-block:: Python
+.. code-block:: python
 
     import toga
 
