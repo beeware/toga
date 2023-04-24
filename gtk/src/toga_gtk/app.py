@@ -228,7 +228,7 @@ class App:
         return self.native.get_active_window()._impl
 
     def set_current_window(self, window):
-        window.native.present()
+        window._impl.native.present()
 
     def enter_full_screen(self, windows):
         for window in windows:
