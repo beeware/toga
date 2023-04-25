@@ -290,7 +290,9 @@ class App:
         self.app_context.MainForm = window._impl.native
 
     def get_current_window(self):
-        return WinForms.Form.ActiveForm._impl
+        for window in self.interface.windows:
+            if WinForms.Form.ActiveForm == window._impl.native:
+                return window._impl.native
 
     def set_current_window(self, window):
         window._impl.native.Activate()

@@ -1,0 +1,1 @@
+Modified to properly implement `current_window` on windows platform.
