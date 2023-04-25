@@ -23,7 +23,7 @@ lightweight web server instead.
 Usage
 -----
 
-.. code-block:: Python
+.. code-block:: python
 
     import toga
 
@@ -38,11 +38,13 @@ default on some platforms. To enable WebView debugging:
 
 * macOS
 
-    Run the following at the terminal::
+    Run the following at the terminal:
+
+.. code-block:: console
 
         $ defaults write com.example.appname WebKitDeveloperExtras -bool true
 
-    substituting `com.example.appname` with the bundle ID for your app.
+    substituting ``com.example.appname`` with the bundle ID for your app.
 
 
 Reference

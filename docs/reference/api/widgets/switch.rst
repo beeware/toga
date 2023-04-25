@@ -18,7 +18,7 @@ unchecked). The button has a text label.
 Usage
 -----
 
-.. code-block:: Python
+.. code-block:: python
 
     import toga
 
@@ -39,7 +39,7 @@ Notes
   as a switch, the label will be left-aligned, and the switch will be
   right-aligned.
 
-* On macOS, the text color of the label cannot be set directly; any `color` style
+* On macOS, the text color of the label cannot be set directly; any ``color`` style
   directive will be ignored.
 
 Reference

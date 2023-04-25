@@ -16,7 +16,7 @@ Usage
 An empty Box can be constructed without any children, with children added to the
 box after construction:
 
-.. code-block:: Python
+.. code-block:: python
 
     import toga
 
@@ -30,7 +30,7 @@ box after construction:
 
 Alternatively, children can be specified at the time the box is constructed:
 
-.. code-block:: Python
+.. code-block:: python
 
     import toga
 
