@@ -1,1 +1,1 @@
-Modified to properly implement `current_window` on windows platform.
+The implementation of ``current_window`` on Winforms was corrected.
