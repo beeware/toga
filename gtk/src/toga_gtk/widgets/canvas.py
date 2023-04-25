@@ -228,7 +228,18 @@ class Canvas(Widget):
             y += height
 
     def measure_text(self, text, font, tight=False):
-        return font._impl.measure(text, widget=self.native, tight=tight)
+        layout = self.native.create_pango_layout(text)
+
+        layout.set_font_description(self.native)
+        ink, logical = layout.get_extents()
+        if tight:
+            width = (ink.width / Pango.SCALE) - (ink.width * 0.2) / Pango.SCALE
+            height = ink.height / Pango.SCALE
+        else:
+            width = (logical.width / Pango.SCALE) - (logical.width * 0.2) / Pango.SCALE
+            height = logical.height / Pango.SCALE
+
+        return width, height
 
     def get_image_data(self):
         self.interface.factory.not_implemented("Canvas.get_image_data()")
