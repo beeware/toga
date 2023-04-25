@@ -7,6 +7,15 @@ except ModuleNotFoundError:
     js = None
 
 
+try:
+    # Try to import pyodide from the PyScript namespace.
+    import pyodide
+except ModuleNotFoundError:
+    # To ensure the code can be imported, provide a js symbol
+    # as a fallback
+    pyodide = None
+
+
 def create_element(
     tag,
     id=None,
