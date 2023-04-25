@@ -1,0 +1,1 @@
+GTK fonts coverage is now at 100%
