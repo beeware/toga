@@ -120,8 +120,8 @@ linkcheck_ignore = [r"https://github.com/.*#"]
 
 # virtual env prefix: (venv), (beeware-venv)
 venv = r"\((?:beeware-)?venv\)"
-# macOS and Linux shell prompt: $, #
-shell = r"\$|#"
+# macOS and Linux shell prompt: $
+shell = r"\$"
 # win CMD prompt: C:\>, C:\...>
 cmd = r"C:\\>|C:\\\.\.\.>"
 # PowerShell prompt: PS C:\>, PS C:\...>
