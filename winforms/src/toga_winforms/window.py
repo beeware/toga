@@ -47,6 +47,7 @@ class Window:
 
         self.native = WinForms.Form()
         self.native.interface = self.interface
+        self.native._impl = self
         self.native.FormClosing += self.winforms_FormClosing
 
         self.native.MinimizeBox = self.native.interface.minimizable
