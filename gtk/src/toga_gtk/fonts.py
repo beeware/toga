@@ -55,17 +55,3 @@ class Font:
             _FONT_CACHE[self.interface] = font
 
         self.native = font
-
-    def measure(self, text, widget, tight=False):
-        layout = widget.create_pango_layout(text)
-
-        layout.set_font_description(self.native)
-        ink, logical = layout.get_extents()
-        if tight:
-            width = (ink.width / Pango.SCALE) - (ink.width * 0.2) / Pango.SCALE
-            height = ink.height / Pango.SCALE
-        else:
-            width = (logical.width / Pango.SCALE) - (logical.width * 0.2) / Pango.SCALE
-            height = logical.height / Pango.SCALE
-
-        return width, height
