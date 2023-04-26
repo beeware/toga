@@ -71,7 +71,7 @@ async def test_font_file_loaded(
 ):
     Font.register(
         family=font_family,
-        path=f"{app_path.parent}/src/testbed/{font_path}",
+        path=f"{app_path}/{font_path}",
         **font_kwargs,
     )
 
