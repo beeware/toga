@@ -27,7 +27,7 @@ async def test_directions(widget, probe):
 
     # Make the container a column box so the divider will become wide.
     widget.parent.style.direction = COLUMN
-    await probe.redraw(message="Divider should become wide")
+    await probe.redraw("Divider should become wide")
 
     # The divider will now be wide, but short.
     assert widget.direction == toga.Divider.HORIZONTAL
@@ -36,7 +36,7 @@ async def test_directions(widget, probe):
 
     # Make the divider vertical
     widget.direction = toga.Divider.VERTICAL
-    await probe.redraw(message="Divider should be VERTICAL")
+    await probe.redraw("Divider should be VERTICAL")
 
     # In a column box, a vertical divider will be narrow and short.
     assert widget.direction == toga.Divider.VERTICAL
@@ -45,7 +45,7 @@ async def test_directions(widget, probe):
 
     # Make the container a row box again so the divider will become tall.
     widget.parent.style.direction = ROW
-    await probe.redraw(message="Divider should become tall")
+    await probe.redraw("Divider should become tall")
 
     # In a row box, a vertical divider will be narrow and tall.
     assert widget.direction == toga.Divider.VERTICAL

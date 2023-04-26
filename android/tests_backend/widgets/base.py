@@ -71,10 +71,7 @@ class SimpleProbe:
 
         # If we're running slow, wait for a second
         if self.widget.app.run_slow:
-            if not (message is None):
-                if message == "":
-                    message = "Waiting for redraw"
-                print("\n%s" % message)
+            print("Waiting for redraw" if message is None else message)
             await asyncio.sleep(1)
 
     @property
