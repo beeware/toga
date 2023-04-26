@@ -1,1 +1,1 @@
-Add diagnostic output to testbed probe.redraw()
+The testbed app has better diagnostic output when running in test mode.
