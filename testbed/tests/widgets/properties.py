@@ -21,14 +21,14 @@ async def test_enabled(widget, probe):
 
     # Disable the widget
     widget.enabled = False
-    await probe.redraw()
+    await probe.redraw("Widget should be disabled")
 
     assert not widget.enabled
     assert not probe.enabled
 
     # Enable the widget
     widget.enabled = True
-    await probe.redraw()
+    await probe.redraw("Widget should be enabled")
 
     assert widget.enabled
     assert probe.enabled
@@ -41,7 +41,7 @@ async def test_enable_noop(widget, probe):
 
     # Attempt to disable the widget
     widget.enabled = False
-    await probe.redraw()
+    await probe.redraw("Widget should be disabled")
 
     # Widget still reports as enabled
     assert widget.enabled
@@ -58,12 +58,12 @@ async def test_focus(widget, probe):
     other_probe = get_probe(other)
 
     other.focus()
-    await probe.redraw()
+    await probe.redraw("A separate widget should be given focus")
     assert not probe.has_focus
     assert other_probe.has_focus
 
     widget.focus()
-    await probe.redraw()
+    await probe.redraw("Widget should be given focus")
     assert probe.has_focus
     assert not other_probe.has_focus
 
@@ -76,13 +76,13 @@ async def test_focus_noop(widget, probe):
     other_probe = get_probe(other)
 
     other.focus()
-    await probe.redraw()
+    await probe.redraw("A separate widget should be given focus")
     assert not probe.has_focus
     assert other_probe.has_focus
 
     # Widget has *not* taken focus
     widget.focus()
-    await probe.redraw()
+    await probe.redraw("Widget should be given focus")
     assert not probe.has_focus
     assert other_probe.has_focus
 
@@ -91,7 +91,7 @@ async def test_text(widget, probe):
     "The text displayed on a widget can be changed"
     for text in TEXTS:
         widget.text = text
-        await probe.redraw()
+        await probe.redraw("Widget text should be %s" % text)
 
         assert widget.text == text
         assert probe.text == text
@@ -103,7 +103,7 @@ async def test_text_width_change(widget, probe):
 
     # Change the text to something long
     widget.text = "Very long example text"
-    await probe.redraw()
+    await probe.redraw("Widget text should be very long")
 
     # The widget is now wider than it was previously
     assert probe.width > orig_width
@@ -119,7 +119,7 @@ async def test_font(widget, probe):
 
     # Set the font to larger than its original size
     widget.style.font_size = orig_font.size * 3
-    await probe.redraw()
+    await probe.redraw("Widget font should be larger than its original size")
 
     # Widget has a new font size
     new_size_font = probe.font
@@ -135,7 +135,7 @@ async def test_font(widget, probe):
 
     # Change to a different font
     widget.style.font_family = FANTASY
-    await probe.redraw()
+    await probe.redraw("Widget font should be changed to FANTASY")
 
     # Font family has been changed
     new_family_font = probe.font
@@ -150,7 +150,9 @@ async def test_font(widget, probe):
     # Reset to original family and size.
     del widget.style.font_family
     del widget.style.font_size
-    await probe.redraw()
+    await probe.redraw(
+        message="Widget text should be reset to original family and size"
+    )
     assert probe.font == orig_font
     assert probe.height == orig_height
     assert probe.width == orig_width
@@ -167,7 +169,9 @@ async def test_font_attrs(widget, probe):
             widget.style.font_weight = weight
             for style in [NORMAL, ITALIC]:
                 widget.style.font_style = style
-                await probe.redraw()
+                await probe.redraw(
+                    message="Widget text font style should be %s" % style
+                )
                 probe.assert_font_family(family)
                 assert probe.font.weight == weight
                 assert probe.font.style == style
@@ -177,7 +181,7 @@ async def test_color(widget, probe):
     "The foreground color of a widget can be changed"
     for color in COLORS:
         widget.style.color = color
-        await probe.redraw()
+        await probe.redraw("Widget text color should be %s" % color)
         assert_color(probe.color, color)
 
 
@@ -188,12 +192,12 @@ async def test_color_reset(widget, probe):
 
     # Set the color to something different
     widget.style.color = RED
-    await probe.redraw()
+    await probe.redraw("Widget text color should be RED")
     assert_color(probe.color, named_color(RED))
 
     # Reset the color, and check that it has been restored to the original
     del widget.style.color
-    await probe.redraw()
+    await probe.redraw("Widget text color should be restored to the original")
     assert_color(probe.color, original)
 
 
@@ -201,7 +205,7 @@ async def test_background_color(widget, probe):
     "The background color of a widget can be set"
     for color in COLORS:
         widget.style.background_color = color
-        await probe.redraw()
+        await probe.redraw("Widget text background color should be %s" % color)
         assert_color(probe.background_color, color)
 
 
@@ -212,19 +216,21 @@ async def test_background_color_reset(widget, probe):
 
     # Set the background color to something different
     widget.style.background_color = RED
-    await probe.redraw()
+    await probe.redraw("Widget text background color should be RED")
     assert_color(probe.background_color, named_color(RED))
 
     # Reset the background color, and check that it has been restored to the original
     del widget.style.background_color
-    await probe.redraw()
+    await probe.redraw(
+        message="Widget text background color should be restored to original"
+    )
     assert_color(probe.background_color, original)
 
 
 async def test_background_color_transparent(widget, probe):
     "Background transparency is treated as a color reset"
     widget.style.background_color = TRANSPARENT
-    await probe.redraw()
+    await probe.redraw("Widget text background color should be TRANSPARENT")
     assert_color(probe.background_color, TRANSPARENT)
 
 
@@ -232,7 +238,7 @@ async def test_flex_widget_size(widget, probe):
     "The widget can expand in either axis."
     # Container is initially a non-flex row box. Paint it red so we can see it.
     widget.style.background_color = RED
-    await probe.redraw()
+    await probe.redraw("Widget background color should be RED")
 
     # Check the initial widget size
     # Match isn't exact because of pixel scaling on some platforms
@@ -244,7 +250,7 @@ async def test_flex_widget_size(widget, probe):
     del widget.style.height
 
     # Widget should now be 100 pixels wide, but as tall as the container.
-    await probe.redraw()
+    await probe.redraw("Widget should be 100px wide now")
     assert probe.width == approx(100, rel=0.01)
     assert probe.height > 300
 
@@ -253,21 +259,21 @@ async def test_flex_widget_size(widget, probe):
     widget.parent.style.direction = COLUMN
 
     # Widget should now be the size of the container
-    await probe.redraw()
+    await probe.redraw("Widget should be the size of container now")
     assert probe.width > 300
     assert probe.height > 300
 
     # Revert to fixed height
     widget.style.height = 150
 
-    await probe.redraw()
+    await probe.redraw("Widget should be reverted to fixed height")
     assert probe.width > 300
     assert probe.height == approx(150, rel=0.01)
 
     # Revert to fixed width
     widget.style.width = 150
 
-    await probe.redraw()
+    await probe.redraw("Widget should be reverted to fixed width")
     assert probe.width == approx(150, rel=0.01)
     assert probe.height == approx(150, rel=0.01)
 
@@ -276,7 +282,7 @@ async def test_flex_horizontal_widget_size(widget, probe):
     "Check that a widget that is flexible in the horizontal axis resizes as expected"
     # Container is initially a non-flex row box.
     # Initial widget size is small (but non-zero), based on content size.
-    await probe.redraw()
+    await probe.redraw("Widget should be a non-flex row box")
     probe.assert_width(1, 160)
     probe.assert_height(1, 50)
 
@@ -284,7 +290,9 @@ async def test_flex_horizontal_widget_size(widget, probe):
     widget.style.flex = 1
 
     # widget has expanded width, but has the same height.
-    await probe.redraw()
+    await probe.redraw(
+        message="Widget width should be expanded but has the same height"
+    )
     probe.assert_width(350, MAX_WIDTH)
     probe.assert_height(2, 50)
     assert probe.width > 350
@@ -296,7 +304,9 @@ async def test_flex_horizontal_widget_size(widget, probe):
 
     # Widget is still the width of the screen
     # and the height hasn't changed
-    await probe.redraw()
+    await probe.redraw(
+        message="Widget width should be still the width of the screen without height change"
+    )
     assert probe.width > 350
     probe.assert_width(350, MAX_WIDTH)
     probe.assert_height(2, 50)
@@ -307,6 +317,6 @@ async def test_flex_horizontal_widget_size(widget, probe):
 
     # Widget is approximately the requested size
     # (Definitely less than the window size)
-    await probe.redraw()
+    await probe.redraw("Widget should be changed to 300px width x 200px height")
     probe.assert_width(290, 330)
     probe.assert_height(190, 230)

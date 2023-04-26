@@ -36,7 +36,7 @@ class SimpleProbe:
     def assert_font_family(self, expected):
         assert self.font.family == expected
 
-    async def redraw(self):
+    async def redraw(self, message=None):
         """Request a redraw of the app, waiting until that redraw has completed."""
         # Force a repaint
         while self.impl.container.needs_redraw or Gtk.events_pending():
@@ -44,6 +44,7 @@ class SimpleProbe:
 
         # If we're running slow, wait for a second
         if self.widget.app.run_slow:
+            print("Waiting for redraw" if message is None else message)
             await asyncio.sleep(1)
 
     @property
