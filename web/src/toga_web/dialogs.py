@@ -1,6 +1,6 @@
 import asyncio
 
-from toga_web.libs import js
+from toga_web.libs import create_element, js
 
 
 class BaseDialog:
@@ -25,9 +25,41 @@ class BaseDialog:
 class InfoDialog(BaseDialog):
     def __init__(self, window, title, message, on_result=None):
         super().__init__()
-        # TODO: Replace with something more customized using Bootstrap modals.
-        js.alert(message)
+        self.native = create_element(
+            "sl-dialog",
+            id="toga-info-dialog",
+            label=title,
+            children=[
+                create_element("p", content=message),
+            ]
+            + self.create_buttons(),
+        )
 
+        # Add the dialog to the DOM.
+        window.app._impl.native.appendChild(self.native)
+
+        # If this is the first time a dialog is being shown, the Shoelace
+        # autoloader needs to construct the Dialog custom element. We can't
+        # display the dialog until that element has been fully loaded and
+        # cosntructed. Only show the dialog when the promise of <sl-dialog>
+        # element construction has been fulfilled.
+        js.customElements.whenDefined("sl-dialog").then(self.show_dialog)
+
+    def create_buttons(self):
+        close_button = create_element(
+            "sl-button", slot="footer", variant="primary", content="Ok"
+        )
+        # Handle the close of the dialog
+        close_button.onclick = self.dialog_close
+
+        return [close_button]
+
+    def show_dialog(self, promise):
+        self.native.show()
+
+    def dialog_close(self, event):
+        self.native.hide()
+        self.native.parentElement.removeChild(self.native)
         self.future.set_result(None)
 
 

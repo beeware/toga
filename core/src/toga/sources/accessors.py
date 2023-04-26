@@ -35,8 +35,8 @@ def to_accessor(heading):
 
 
 def build_accessors(headings, accessors):
-    """Convert a list of headings (with accessor overrides) to a finalised list
-    of accessors.
+    """Convert a list of headings (with accessor overrides) to a finalised list of
+    accessors.
 
     Args:
         headings: a list of strings to be used as headings
@@ -50,7 +50,7 @@ def build_accessors(headings, accessors):
          - Otherwise, a final list of ready-to-use accessors.
 
     Returns:
-        A finalized list of accessors.
+        A finalised list of accessors.
     """
     if accessors:
         if isinstance(accessors, dict):

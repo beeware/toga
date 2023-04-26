@@ -1,9 +1,12 @@
+from abc import abstractmethod
+
 from toga_winforms.colors import native_color
 from toga_winforms.libs import Point, Size, SystemColors
 
 
 class Widget:
     def __init__(self, interface):
+        super().__init__()
         self.interface = interface
         self.interface._impl = self
 
@@ -13,8 +16,9 @@ class Widget:
         self.create()
         self.interface.style.reapply()
 
+    @abstractmethod
     def create(self):
-        pass
+        ...
 
     def set_app(self, app):
         # No special handling required
@@ -31,12 +35,10 @@ class Widget:
     @container.setter
     def container(self, container):
         if self.container:
-            if container:
-                raise RuntimeError("Already have a container")
-            else:
-                # container is set to None, removing self from the container.native
-                self._container.native.Controls.Remove(self.native)
-                self._container = None
+            assert container is None, "Widget already has a container"
+            # container is set to None, removing self from the container.native
+            self._container.native.Controls.Remove(self.native)
+            self._container = None
         elif container:
             # setting container, adding self to container.native
             self._container = container
@@ -69,8 +71,7 @@ class Widget:
         self.native.Enabled = value
 
     def focus(self):
-        if self.native:
-            self.native.Focus()
+        self.native.Focus()
 
     # APPLICATOR
 
@@ -79,24 +80,22 @@ class Widget:
         return 0
 
     def set_bounds(self, x, y, width, height):
-        if self.native:
-            # Root level widgets may require vertical adjustment to
-            # account for toolbars, etc.
-            if self.interface.parent is None:
-                vertical_shift = self.frame.vertical_shift
-            else:
-                vertical_shift = 0
+        # Root level widgets may require vertical adjustment to
+        # account for toolbars, etc.
+        if self.interface.parent is None:
+            vertical_shift = self.frame.vertical_shift
+        else:
+            vertical_shift = 0
 
-            self.native.Size = Size(width, height)
-            self.native.Location = Point(x, y + vertical_shift)
+        self.native.Size = Size(width, height)
+        self.native.Location = Point(x, y + vertical_shift)
 
     def set_alignment(self, alignment):
         # By default, alignment can't be changed
         pass
 
     def set_hidden(self, hidden):
-        if self.native:
-            self.native.Visible = not hidden
+        self.native.Visible = not hidden
 
     def set_font(self, font):
         # By default, font can't be changed
@@ -118,15 +117,17 @@ class Widget:
 
     def add_child(self, child):
         if self.viewport:
-            # we are the the top level container
+            # we are the top level container
             child.container = self
         else:
             child.container = self.container
 
     def insert_child(self, index, child):
-        if self.container:
+        if self.viewport:
+            # we are the the top level container
+            child.container = self
+        else:
             child.container = self.container
-            self.container.native.Controls.SetChildIndex(child.native, index)
 
     def remove_child(self, child):
         child.container = None
@@ -134,5 +135,6 @@ class Widget:
     def refresh(self):
         self.rehint()
 
+    @abstractmethod
     def rehint(self):
-        pass
+        ...

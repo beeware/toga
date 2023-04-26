@@ -1,3 +1,4 @@
+import asyncio
 from datetime import datetime
 
 import toga
@@ -21,6 +22,12 @@ class WindowDemoApp(toga.App):
 
     def do_large(self, widget, **kwargs):
         self.main_window.size = (1500, 1000)
+
+    def do_full_screen(self, widget, **kwargs):
+        if self.is_full_screen:
+            self.exit_full_screen()
+        else:
+            self.set_full_screen(self.main_window)
 
     def do_title(self, widget, **kwargs):
         self.main_window.title = f"Time is {datetime.now()}"
@@ -61,6 +68,12 @@ class WindowDemoApp(toga.App):
         )
         self.app.windows += no_close_handler_window
         no_close_handler_window.show()
+
+    async def do_current_window_cycling(self, widget, **kwargs):
+        for window in self.windows:
+            self.current_window = window
+            self.label.text = f"Current window is {self.current_window.id}"
+            await asyncio.sleep(1)
 
     def do_report(self, widget, **kwargs):
         self.label.text = (
@@ -121,11 +134,19 @@ class WindowDemoApp(toga.App):
         btn_do_large = toga.Button(
             "Become large", on_press=self.do_large, style=btn_style
         )
+        btn_do_full_screen = toga.Button(
+            "Become full screen", on_press=self.do_full_screen, style=btn_style
+        )
         btn_do_title = toga.Button(
             "Change title", on_press=self.do_title, style=btn_style
         )
         btn_do_new_windows = toga.Button(
             "Create Window", on_press=self.do_new_windows, style=btn_style
+        )
+        btn_do_current_window_cycling = toga.Button(
+            "Cycle between windows",
+            on_press=self.do_current_window_cycling,
+            style=btn_style,
         )
         btn_do_report = toga.Button("Report", on_press=self.do_report, style=btn_style)
         btn_change_content = toga.Button(
@@ -140,8 +161,10 @@ class WindowDemoApp(toga.App):
                 btn_do_right,
                 btn_do_small,
                 btn_do_large,
+                btn_do_full_screen,
                 btn_do_title,
                 btn_do_new_windows,
+                btn_do_current_window_cycling,
                 btn_do_report,
                 btn_change_content,
                 btn_hide,

@@ -45,7 +45,7 @@ class TextInputApp(toga.App):
             yield 1
         self.label.text = "Enter some values and press extract."
 
-        # Renable the inputs again.
+        # Re-enable the inputs again.
         self.text_input.enabled = True
         self.text_input_placeholder.enabled = True
         self.right_aligned_input.enabled = True
@@ -73,6 +73,7 @@ class TextInputApp(toga.App):
             value="Initial value",
             placeholder="Type something...",
             style=Pack(padding=10),
+            on_confirm=self.do_extract_values,
         )
         self.text_input_placeholder = toga.TextInput(
             placeholder="Type something...", style=Pack(padding=10)

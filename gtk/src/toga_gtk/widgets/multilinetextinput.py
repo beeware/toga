@@ -20,7 +20,7 @@ class MultilineTextInput(Widget):
         self._placeholder = ""
         self.textview.connect("focus-in-event", self.gtk_on_focus_in)
         self.textview.connect("focus-out-event", self.gtk_on_focus_out)
-        self.tag_placholder = self.buffer.create_tag("placeholder", foreground="gray")
+        self.tag_placeholder = self.buffer.create_tag("placeholder", foreground="gray")
 
     def set_value(self, value):
         self.buffer.set_text(value)
@@ -37,15 +37,14 @@ class MultilineTextInput(Widget):
     def set_placeholder(self, value):
         """Set the placeholder text of the widget.
 
-        GTK.TextView does not have a placeholder option by default so we
-        have to create one. We do this with the two helper functions
-        `on_focus_in` and `on_focus_out`.
+        GTK.TextView does not have a placeholder option by default so we have to create
+        one. We do this with the two helper functions `on_focus_in` and `on_focus_out`.
         """
         if self.get_value() == self._placeholder:
             self._placeholder = value
             self.buffer.set_text(self.interface.value)
             self.buffer.apply_tag(
-                self.tag_placholder,
+                self.tag_placeholder,
                 self.buffer.get_start_iter(),
                 self.buffer.get_end_iter(),
             )  # make the placeholder text gray.
@@ -61,15 +60,15 @@ class MultilineTextInput(Widget):
         if self.get_value() == "":
             self.buffer.set_text(self.interface.placeholder)
             self.buffer.apply_tag(
-                self.tag_placholder,
+                self.tag_placeholder,
                 self.buffer.get_start_iter(),
                 self.buffer.get_end_iter(),
             )  # make the placeholder text gray.
         return False
 
     def rehint(self):
-        self.interface.intrinsic.width = at_least(self.interface.MIN_WIDTH)
-        self.interface.intrinsic.height = at_least(self.interface.MIN_HEIGHT)
+        self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
+        self.interface.intrinsic.height = at_least(self.interface._MIN_HEIGHT)
 
     def set_on_change(self, handler):
         self.interface.factory.not_implemented("MultilineTextInput.set_on_change()")

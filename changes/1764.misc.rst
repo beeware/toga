@@ -1,1 +1,0 @@
-A GitHub workflow now runs every Sunday at 2000 UTC to check for updates to ``pre-commit`` hooks and commits them to a new PR.

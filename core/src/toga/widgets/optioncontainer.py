@@ -5,7 +5,7 @@ from toga.handlers import wrapped_handler
 from .base import Widget
 
 # BACKWARDS COMPATIBILITY: a token object that can be used to differentiate
-# between an explicitly provided ``None``, and a unspecified value falling
+# between an explicitly provided ``None``, and an unspecified value falling
 # back to a default.
 NOT_PROVIDED = object()
 
@@ -276,7 +276,7 @@ class OptionContainer(Widget):
         id (str):   An identifier for this widget.
         style (:obj:`Style`): an optional style object.
             If no style is provided then a new one will be created for the widget.
-        content (``list`` of ``tuple`` (``str``, :class:`~toga.Widget`)):
+        content (``list`` of ``tuple`` (``str``, :class:`~toga.widgets.base.Widget`)):
             Each tuple in the list is composed of a title for the option and
             the widget tree that is displayed in the option.
     """
@@ -318,14 +318,14 @@ class OptionContainer(Widget):
 
     @property
     def content(self):
-        """The sub layouts of the `OptionContainer`.
+        """The sub layouts of the :class:`OptionContainer`.
 
         Returns:
             A OptionList ``list`` of :class:`~toga.OptionItem`. Each element of the list
             is a sub layout of the `OptionContainer`
 
         Raises:
-            ValueError: If the list is less than two elements long.
+            :exp:`ValueError`: If the list is less than two elements long.
         """
         return self._content
 
@@ -346,12 +346,20 @@ class OptionContainer(Widget):
             current_tab = current_tab.index
         self._impl.set_current_tab_index(current_tab)
 
-    def _set_app(self, app):
+    @Widget.app.setter
+    def app(self, app):
+        # Invoke the superclass property setter
+        Widget.app.fset(self, app)
+
         # Also assign the app to the content in the container
         for item in self._content:
             item._content.app = app
 
-    def _set_window(self, window):
+    @Widget.window.setter
+    def window(self, window):
+        # Invoke the superclass property setter
+        Widget.window.fset(self, window)
+
         # Also assign the window to the content in the container
         for item in self._content:
             item._content.window = window
@@ -370,7 +378,7 @@ class OptionContainer(Widget):
 
         Args:
             text (str): The text for the option.
-            widget (:class:`~toga.Widget`): The widget to add to the option.
+            widget (:class:`~toga.widgets.base.Widget`): The widget to add to the option.
         """
         ##################################################################
         # 2022-07: Backwards compatibility
@@ -424,7 +432,7 @@ class OptionContainer(Widget):
         Args:
             index (int): Index for the option.
             text (str): The text for the option.
-            widget (:class:`~toga.Widget`): The widget to add to the option.
+            widget (:class:`~toga.widgets.base.Widget`): The widget to add to the option.
         """
         widget.app = self.app
         widget.window = self.window
@@ -441,11 +449,10 @@ class OptionContainer(Widget):
 
     @property
     def on_select(self):
-        """The callback function that is invoked when one of the options is
-        selected.
+        """The callback function that is invoked when one of the options is selected.
 
         Returns:
-            (``callable``) The callback function.
+            (``Callable``) The callback function.
         """
         return self._on_select
 
@@ -454,7 +461,7 @@ class OptionContainer(Widget):
         """Set the function to be executed on option selection.
 
         :param handler:     callback function
-        :type handler:      ``callable``
+        :type handler:      ``Callable``
         """
         self._on_select = wrapped_handler(self, handler)
         self._impl.set_on_select(self._on_select)

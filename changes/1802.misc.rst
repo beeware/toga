@@ -1,1 +1,0 @@
-Make API support table circles a more consistent size

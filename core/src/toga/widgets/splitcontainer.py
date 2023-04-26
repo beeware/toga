@@ -4,8 +4,8 @@ from .base import Widget
 
 
 class SplitContainer(Widget):
-    """A SplitContainer displays two widgets vertically or horizontally next to
-    each other with a movable divider.
+    """A SplitContainer displays two widgets vertically or horizontally next to each
+    other with a movable divider.
 
     Args:
         id (str):  An identifier for this widget.
@@ -13,12 +13,12 @@ class SplitContainer(Widget):
             If no style is provided then a new one will be created for the widget.
         direction: The direction for the container split,
             either `SplitContainer.HORIZONTAL` or `SplitContainer.VERTICAL`
-        content(``list`` of :class:`~toga.Widget`): The list of components to be
+        content(``list`` of :class:`~toga.widgets.base.Widget`): The list of components to be
             split or tuples of components to be split and adjusting parameters
             in the following order:
-            widget (:class:`~toga.Widget`): The widget that will be added.
+            widget (:class:`~toga.widgets.base.Widget`): The widget that will be added.
             weight (float): Specifying the weighted splits.
-            flex (boolean): Should the content expand when the widget is resized. (optional)
+            flex (Boolean): Should the content expand when the widget is resized. (optional)
     """
 
     HORIZONTAL = False
@@ -58,7 +58,7 @@ class SplitContainer(Widget):
         """The sub layouts of the `SplitContainer`.
 
         Returns:
-            A ``list`` of :class:`~toga.Widget`. Each element of the list
+            A ``list`` of :class:`~toga.widgets.base.Widget`. Each element of the list
             is a sub layout of the `SplitContainer`
 
         Raises:
@@ -102,13 +102,21 @@ class SplitContainer(Widget):
             self._impl.add_content(position, widget._impl, flex)
             widget.refresh()
 
-    def _set_app(self, app):
+    @Widget.app.setter
+    def app(self, app):
+        # Invoke the superclass property setter
+        Widget.app.fset(self, app)
+
         # Also assign the app to the content in the container
         if self.content:
             for content in self.content:
                 content.app = app
 
-    def _set_window(self, window):
+    @Widget.window.setter
+    def window(self, window):
+        # Invoke the superclass property setter
+        Widget.window.fset(self, window)
+
         # Also assign the window to the content in the container
         if self._content:
             for content in self._content:

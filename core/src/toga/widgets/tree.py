@@ -21,8 +21,8 @@ class Tree(Widget):
 
           - any Python object ``value`` with a string representation. This
             string will be shown in the widget. If ``value`` has an attribute
-            ``icon``, instance of (:class:`~toga.Icon`), the icon will be shown
-            in front of the text.
+            ``icon``, instance of (:class:`~toga.icons.Icon`), the icon will be
+            shown in front of the text.
 
           - a tuple ``(icon, value)`` where again the string representation of
             ``value`` will be used as text.
@@ -79,7 +79,6 @@ class Tree(Widget):
     def data(self):
         """
         :returns: The data source of the tree
-        :rtype: ``dict``
         """
         return self._data
 
@@ -109,9 +108,8 @@ class Tree(Widget):
     def selection(self):
         """The current selection of the table.
 
-        A value of None indicates no selection. If the tree allows
-        multiple selection, returns a list of selected data nodes.
-        Otherwise, returns a single data node.
+        A value of None indicates no selection. If the tree allows multiple selection,
+        returns a list of selected data nodes. Otherwise, returns a single data node.
         """
         return self._impl.get_selection()
 

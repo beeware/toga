@@ -21,10 +21,6 @@ class ActivityIndicator(Widget):
         # Add the layout constraints
         self.add_constraints()
 
-    def get_enabled(self):
-        # An activity indicator is always enabled
-        return True
-
     def is_running(self):
         return self._is_running
 

@@ -3,8 +3,7 @@ from .base import Widget
 
 class ActivityIndicator(Widget):
     def __init__(self, id=None, style=None, running=False):
-        """
-        Create a new ActivityIndicator widget.
+        """Create a new ActivityIndicator widget.
 
         Inherits from :class:`~toga.widgets.base.Widget`.
 
@@ -21,9 +20,21 @@ class ActivityIndicator(Widget):
         if running:
             self.start()
 
-    @Widget.enabled.setter
+    @property
+    def enabled(self):
+        """Is the widget currently enabled? i.e., can the user interact with the widget?
+
+        ActivityIndicator widgets cannot be disabled; this property will always return
+        True; any attempt to modify it will be ignored.
+        """
+        return True
+
+    @enabled.setter
     def enabled(self, value):
-        # ActivityIndicator doesn't have a "disabled" state
+        pass
+
+    def focus(self):
+        "No-op; ActivityIndicator cannot accept input focus"
         pass
 
     @property
@@ -32,7 +43,7 @@ class ActivityIndicator(Widget):
 
         Use ``start()`` and ``stop()`` to change the running state.
 
-        :returns: True if this activity indicator is running; False otherwise.
+        True if this activity indicator is running; False otherwise.
         """
         return self._impl.is_running()
 

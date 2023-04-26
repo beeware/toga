@@ -309,11 +309,10 @@ class App:
     def _submenu(self, group, menubar):
         """Obtain the submenu representing the command group.
 
-        This will create the submenu if it doesn't exist. It will call
-        itself recursively to build the full path to menus inside
-        submenus, returning the "leaf" node in the submenu path. Once
-        created, it caches the menu that has been created for future
-        lookup.
+        This will create the submenu if it doesn't exist. It will call itself
+        recursively to build the full path to menus inside submenus, returning the
+        "leaf" node in the submenu path. Once created, it caches the menu that has been
+        created for future lookup.
         """
         try:
             return self._menu_groups[group]
@@ -367,8 +366,11 @@ class App:
     def exit(self):
         self.loop.stop()
 
-    def current_window(self):
+    def get_current_window(self):
         return self.native.keyWindow
+
+    def set_current_window(self, window):
+        window._impl.native.makeKeyAndOrderFront(window._impl.native)
 
     def enter_full_screen(self, windows):
         # If we're already in full screen mode, exit so that
@@ -385,9 +387,10 @@ class App:
             window.content._impl.native.enterFullScreenMode(screen, withOptions=opts)
             # Going full screen causes the window content to be re-homed
             # in a NSFullScreenWindow; teach the new parent window
-            # about it's Toga representations.
+            # about its Toga representations.
             window.content._impl.native.window._impl = window._impl
             window.content._impl.native.window.interface = window
+            window.content.refresh()
 
     def exit_full_screen(self, windows):
         opts = NSMutableDictionary.alloc().init()
@@ -397,6 +400,7 @@ class App:
 
         for window in windows:
             window.content._impl.native.exitFullScreenModeWithOptions(opts)
+            window.content.refresh()
 
     def show_cursor(self):
         if not self._cursor_visible:

@@ -24,8 +24,8 @@ import toga_dummy
 class NoDefault:
     """This utility class to indicate that no argument default exists.
 
-    The use of `None` is not possible because it itself could be a
-    default argument value.
+    The use of `None` is not possible because it itself could be a default argument
+    value.
     """
 
     def __eq__(self, other):
@@ -44,10 +44,10 @@ FunctionArguments = namedtuple(
 
 
 class DefinitionExtractor:
-    """The DefinitionExtractor consumes a .py file and extracts information,
-    with the help of the 'ast' module from it.
+    """The DefinitionExtractor consumes a .py file and extracts information, with the
+    help of the 'ast' module from it.
 
-    Non existing files result in a empty DefinitionExtractor, this means the
+    Non-existing files result in an empty DefinitionExtractor, this means the
     all properties return empty lists or dicts.
 
     Args:
@@ -94,8 +94,8 @@ class DefinitionExtractor:
                         self._classes[target.id] = node
 
     def is_required_for_platform(self, node):
-        """Checks if the class or function is required for the given platform.
-        It looks for a decorator with the name `not_required_on`.
+        """Checks if the class or function is required for the given platform. It looks
+        for a decorator with the name `not_required_on`.
 
         Returns:
             `True` if the class/function is required for the platform.
@@ -149,8 +149,7 @@ class DefinitionExtractor:
         return defaults
 
     def _extract_class_methods(self):
-        """Extract all the methods from the classes and save them in
-        `self.methods`.
+        """Extract all the methods from the classes and save them in `self.methods`.
 
         Use the combination of class and method name, like so:
         `<class_name>.<method_name>` as the key.
@@ -277,7 +276,7 @@ def get_required_files(platform_category, path_to_backend):
 
 
 def create_impl_tests(root):
-    """Calling this function with a the path to a Toga backend will return the
+    """Calling this function with the path to a Toga backend will return the
     implementation tests for this backend.
 
     Args:

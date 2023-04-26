@@ -9,14 +9,14 @@ from toga.widgets.base import WidgetRegistry
 
 
 class Window:
-    """The top level container of a application.
+    """The top level container of an application.
 
     Args:
         id (str): The ID of the window (optional).
         title (str): Title for the window (optional).
         position (``tuple`` of (int, int)): Position of the window, as x,y coordinates.
         size (``tuple`` of (int, int)):  Size of the window, as (width, height) sizes, in pixels.
-        toolbar (``list`` of :class:`~toga.Widget`): A list of widgets to add to a toolbar
+        toolbar (``list`` of :class:`~toga.widgets.base.Widget`): A list of widgets to add to a toolbar
         resizeable (bool): Toggle if the window is resizable by the user, defaults to `True`.
         closeable (bool): Toggle if the window is closable by the user, defaults to `True`.
         minimizable (bool): Toggle if the window is minimizable by the user, defaults to `True`.
@@ -84,10 +84,10 @@ class Window:
 
     @property
     def app(self):
-        """Instance of the :class:`toga.App` that this window belongs to.
+        """Instance of the :class:`toga.app.App` that this window belongs to.
 
         Returns:
-            The app that it belongs to :class:`toga.App`.
+            The app that it belongs to :class:`toga.app.App`.
 
         Raises:
             Exception: If the window already is associated with another app.
@@ -126,17 +126,17 @@ class Window:
         """Toolbar for the window.
 
         Returns:
-            A ``list`` of :class:`~toga.Widget`
+            A ``list`` of :class:`~toga.widgets.base.Widget`
         """
         return self._toolbar
 
     @property
     def content(self):
-        """Content of the window. On setting, the content is added to the same
-        app as the window and to the same app.
+        """Content of the window. On setting, the content is added to the same app as
+        the window and to the same app.
 
         Returns:
-            A :class:`~toga.Widget`
+            A :class:`~toga.widgets.base.Widget`
         """
         return self._content
 
@@ -330,13 +330,13 @@ class Window:
         )
 
     def stack_trace_dialog(self, title, message, content, retry=False, on_result=None):
-        """Open a dialog that allows to display a large text body, such as a
-        stack trace.
+        """Open a dialog that allows to display a large text body, such as a stack
+        trace.
 
         :param title: The title of the dialog window.
         :param message: Contextual information about the source of the stack trace.
         :param content: The stack trace, pre-formatted as a multi-line string.
-        :param retry: A boolean; if True, the user will be given the a "Retry" and
+        :param retry: A Boolean; if True, the user will be given a "Retry" and
             "Quit" option; if False, a single option to acknowledge the error will
             be displayed.
         :param on_result: A callback that will be invoked when the user
@@ -363,7 +363,7 @@ class Window:
 
         This opens a native dialog where the user can select a place to save a file.
         It is possible to suggest a filename and force the user to use a specific file extension.
-        If no path is returned (eg. dialog is canceled), a ValueError is raised.
+        If no path is returned (e.g. dialog is canceled), a ValueError is raised.
 
         :param title: The title of the dialog window
         :param suggested_filename: A default filename
@@ -413,7 +413,7 @@ class Window:
         :param on_result: A callback that will be invoked when the user
             selects an option on the dialog.
         :returns: An awaitable Dialog object. The Dialog object returns
-            a list of ``Path`` objects if multiselect is ``True``, or a single
+            a list of ``Path`` objects if ``multiselect`` is ``True``, or a single
             ``Path`` otherwise. Returns ``None`` if the open operation is
             cancelled by the user.
         """
@@ -442,7 +442,7 @@ class Window:
         :param on_result: A callback that will be invoked when the user
             selects an option on the dialog.
         :returns: An awaitable Dialog object. The Dialog object returns
-            a list of ``Path`` objects if multiselect is ``True``, or a single
+            a list of ``Path`` objects if ``multiselect`` is ``True``, or a single
             ``Path`` otherwise. Returns ``None`` if the open operation is
             cancelled by the user.
         """

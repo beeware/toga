@@ -213,4 +213,4 @@ def cocoa_key(shortcut):
             key = key.replace(mod.value, "")
             modifiers |= mask
 
-    return (key, modifiers)
+    return key, modifiers

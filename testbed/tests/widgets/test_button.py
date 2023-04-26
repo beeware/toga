@@ -19,6 +19,12 @@ from .properties import (  # noqa: F401
     test_text_width_change,
 )
 
+# Buttons can't be given focus on mobile
+if toga.platform.current_platform in {"android", "iOS"}:
+    from .properties import test_focus_noop  # noqa: F401
+else:
+    from .properties import test_focus  # noqa: F401
+
 
 @fixture
 async def widget():
@@ -42,12 +48,12 @@ async def test_text(widget, probe):
 
 async def test_press(widget, probe):
     # Press the button before installing a handler
-    probe.press()
+    await probe.press()
 
     # Set up a mock handler, and press the button again.
     handler = Mock()
     widget.on_press = handler
-    probe.press()
+    await probe.press()
     await probe.redraw()
     handler.assert_called_once_with(widget)
 

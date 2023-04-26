@@ -1,1 +1,0 @@
-The mapping between Pack layout and HTML/CSS has been formalized.

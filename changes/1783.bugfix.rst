@@ -1,1 +1,0 @@
-MultilineTextInput now correctly adapts to Dark Mode on macOS.

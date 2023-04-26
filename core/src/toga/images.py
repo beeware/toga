@@ -5,8 +5,7 @@ from toga.platform import get_platform_factory
 
 
 class Image:
-    """
-    A representation of graphical content.
+    """A representation of graphical content.
 
     :param path: Path to the image. Allowed values can be local file
         (relative or absolute path) or URL (HTTP or HTTPS). Relative paths
@@ -54,8 +53,7 @@ class Image:
         return self._impl
 
     def save(self, path):
-        """
-        Save image to given path.
+        """Save image to given path.
 
         :param path: Path where to save the image.
         """

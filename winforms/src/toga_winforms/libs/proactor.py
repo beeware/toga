@@ -8,8 +8,8 @@ from .winforms import Action, Task, WinForms
 
 class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
     def run_forever(self, app_context):
-        """Set up the asyncio event loop, integrate it with the Winforms event
-        loop, and start the application.
+        """Set up the asyncio event loop, integrate it with the Winforms event loop, and
+        start the application.
 
         This largely duplicates the setup behavior of the default Proactor
         run_forever implementation.
@@ -29,7 +29,7 @@ class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
         # Remember the application context.
         self.app_context = app_context
 
-        # Setup the Proactor.
+        # Set up the Proactor.
         # The code between the following markers should be exactly the same as
         # the official CPython implementation, up to the start of the
         # `while True:` part of run_forever() (see BaseEventLoop.run_forever()
@@ -77,8 +77,7 @@ class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
         Task.Delay(5).ContinueWith(self.task)
 
     def tick(self, *args, **kwargs):
-        """Cause a single iteration of the event loop to run on the main GUI
-        thread."""
+        """Cause a single iteration of the event loop to run on the main GUI thread."""
         # FIXME: this only works if there is a "main window" registered with the
         # app (#750).
         #
@@ -89,11 +88,11 @@ class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
             self.app_context.MainForm.Invoke(action)
 
     def run_once_recurring(self):
-        """Run one iteration of the event loop, and enqueue the next iteration
-        (if we're not stopping).
+        """Run one iteration of the event loop, and enqueue the next iteration (if we're
+        not stopping).
 
-        This largely duplicates the "finally" behavior of the default
-        Proactor run_forever implementation.
+        This largely duplicates the "finally" behavior of the default Proactor
+        run_forever implementation.
         """
         # Perform one tick of the event loop.
         self._run_once()

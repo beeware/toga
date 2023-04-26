@@ -26,12 +26,7 @@ class cachedicon:
 
 
 class Icon:
-    """
-    A representation of an Icon image.
-
-    Icon is a deferred resource - it's impl isn't available until it the icon
-    is assigned to perform a role in an app. At the point at which the Icon is
-    used, the Icon is bound to a factory, and the implementation is created.
+    """A representation of an Icon image.
 
     :param path: The path to the icon file, relative to the application's
         module directory.
@@ -101,7 +96,7 @@ class Icon:
                 if icon_path.exists():
                     return icon_path
 
-                # look for a icon file without a size in the filename
+                # look for an icon file without a size in the filename
                 icon_path = resource_path / f"{basename}{extension}"
                 if icon_path.exists():
                     return icon_path

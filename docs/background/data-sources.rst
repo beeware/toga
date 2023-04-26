@@ -63,14 +63,13 @@ should define their own data sources.
 
 A custom data source enables you to provide a data manipulation API that makes
 sense for your application. For example, if you were writing an application to
-display files on a file system, you shouldn't just build a dictionary of
-files, and use that to construct a ``TreeSource``. Instead, you should write
-your own ``FileSystemSource`` that reflects the files on the file system. Your
-file system data source doesn't need to expose ``insert()`` or ``remove()``
-methods - because the end user doesn't need an interface to "insert" files
-into your filesystem. However, you might have a `create_empty_file()` method
-that creates a new file in the filesystem and adds a representation to the
-tree.
+display files on a file system, you shouldn't just build a dictionary of files,
+and use that to construct a ``TreeSource``. Instead, you should write your own
+``FileSystemSource`` that reflects the files on the file system. Your file
+system data source doesn't need to expose ``insert()`` or ``remove()`` methods -
+because the end user doesn't need an interface to "insert" files into your file
+system. However, you might have a `create_empty_file()` method that creates a
+new file in the file system and adds a representation to the tree.
 
 Custom data sources are also required to emit notifications whenever notable
 events occur. This allows the widgets rendering the data source to respond

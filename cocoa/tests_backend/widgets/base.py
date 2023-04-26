@@ -1,9 +1,30 @@
 import asyncio
+from ctypes import c_void_p
+
+from rubicon.objc import SEL, NSArray, NSObject, ObjCClass, objc_method
+from rubicon.objc.api import NSString
 
 from toga.colors import TRANSPARENT
 from toga.fonts import CURSIVE, FANTASY, MONOSPACE, SANS_SERIF, SERIF, SYSTEM
+from toga_cocoa.libs.appkit import appkit
 
 from .properties import toga_color
+
+NSRunLoop = ObjCClass("NSRunLoop")
+NSRunLoop.declare_class_property("currentRunLoop")
+NSDefaultRunLoopMode = NSString(c_void_p.in_dll(appkit, "NSDefaultRunLoopMode"))
+
+
+class EventListener(NSObject):
+    @objc_method
+    def init(self):
+        self.event = asyncio.Event()
+        return self
+
+    @objc_method
+    def onEvent(self):
+        self.event.set()
+        self.event.clear()
 
 
 class SimpleProbe:
@@ -12,6 +33,22 @@ class SimpleProbe:
         self.native = widget._impl.native
         assert isinstance(self.native, self.native_class)
 
+        self.event_listener = EventListener.alloc().init()
+
+    async def post_event(self, event):
+        self.native.window.postEvent(event, atStart=False)
+
+        # Add another event to the queue behind the original event, to notify us once
+        # it's been processed.
+        NSRunLoop.currentRunLoop.performSelector(
+            SEL("onEvent"),
+            target=self.event_listener,
+            argument=None,
+            order=0,
+            modes=NSArray.arrayWithObject(NSDefaultRunLoopMode),
+        )
+        await self.event_listener.event.wait()
+
     def assert_container(self, container):
         container_native = container._impl.native
         for control in container_native.subviews:
@@ -19,6 +56,11 @@ class SimpleProbe:
                 break
         else:
             raise ValueError(f"cannot find {self.native} in {container_native}")
+
+    def assert_not_contained(self):
+        assert self.widget._impl.container is None
+        assert self.native.superview is None
+        assert self.native.window is None
 
     def assert_alignment(self, expected):
         assert self.alignment == expected
@@ -58,6 +100,16 @@ class SimpleProbe:
     def height(self):
         return self.native.frame.size.height
 
+    def assert_layout(self, size, position):
+        # Widget is contained and in a window.
+        assert self.widget._impl.container is not None
+        assert self.native.superview is not None
+        assert self.native.window is not None
+
+        # size and position is as expected.
+        assert (self.native.frame.size.width, self.native.frame.size.height) == size
+        assert (self.native.frame.origin.x, self.native.frame.origin.y) == position
+
     def assert_width(self, min_width, max_width):
         assert (
             min_width <= self.width <= max_width
@@ -78,5 +130,13 @@ class SimpleProbe:
         else:
             return TRANSPARENT
 
-    def press(self):
+    async def press(self):
         self.native.performClick(None)
+
+    @property
+    def is_hidden(self):
+        return self.native.isHidden()
+
+    @property
+    def has_focus(self):
+        return self.native.window.firstResponder == self.native

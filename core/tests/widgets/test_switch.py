@@ -28,7 +28,7 @@ def test_widget_created(switch):
 
 
 def test_widget_created_explicit(switch):
-    """Explicit arguments at construction are stored"""
+    """Explicit arguments at construction are stored."""
 
     def change_handler(widget, *args, **kwargs):
         pass

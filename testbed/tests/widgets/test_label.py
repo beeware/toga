@@ -11,6 +11,7 @@ from .properties import (  # noqa: F401
     test_color_reset,
     test_enabled,
     test_flex_horizontal_widget_size,
+    test_focus_noop,
     test_font,
     test_font_attrs,
     test_text,
@@ -24,7 +25,7 @@ async def widget():
 
 
 async def test_multiline(widget, probe):
-    """If the label contains multiline text, it resizes vertically"""
+    """If the label contains multiline text, it resizes vertically."""
 
     def make_lines(n):
         return "\n".join(f"This is line {i}" for i in range(n))
@@ -61,7 +62,7 @@ async def test_multiline(widget, probe):
 
 
 async def test_alignment(widget, probe):
-    """Labels honor alignment settings"""
+    """Labels honor alignment settings."""
     # Initial alignment is LEFT, initial direction is LTR
     widget.parent.style.direction = COLUMN
     await probe.redraw()

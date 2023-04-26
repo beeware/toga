@@ -2,6 +2,7 @@ from asyncio import get_event_loop
 
 from rubicon.objc import objc_method, objc_property, py_from_ns
 from rubicon.objc.runtime import objc_id
+from travertino.size import at_least
 
 from toga_iOS.libs import NSURL, NSURLRequest, WKWebView
 from toga_iOS.widgets.base import Widget
@@ -90,3 +91,7 @@ class WebView(Widget):
 
     def invoke_javascript(self, javascript):
         self.native.evaluateJavaScript(javascript, completionHandler=None)
+
+    def rehint(self):
+        self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
+        self.interface.intrinsic.height = at_least(self.interface._MIN_HEIGHT)

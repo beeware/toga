@@ -28,18 +28,17 @@ class Canvas(Widget):
     def gtk_draw_callback(self, canvas, gtk_context):
         """Creates a draw callback.
 
-        Gtk+ uses a drawing callback to draw on a DrawingArea.
-        Assignment of the callback function creates a Gtk+ canvas and
-        Gtk+ context automatically using the canvas and gtk_context
-        function arguments. This method calls the draw method on the
-        interface Canvas to draw the objects.
+        Gtk+ uses a drawing callback to draw on a DrawingArea. Assignment of the
+        callback function creates a Gtk+ canvas and Gtk+ context automatically using the
+        canvas and gtk_context function arguments. This method calls the draw method on
+        the interface Canvas to draw the objects.
         """
         self.original_transform_matrix = gtk_context.get_matrix()
         self.interface._draw(self, draw_context=gtk_context)
 
     def gtk_on_size_allocate(self, widget, allocation):
-        """Called on widget resize, and calls the handler set on the interface,
-        if any."""
+        """Called on widget resize, and calls the handler set on the interface, if
+        any."""
         if self.interface.on_resize:
             self.interface.on_resize(self.interface)
 
@@ -228,7 +227,18 @@ class Canvas(Widget):
             y += height
 
     def measure_text(self, text, font, tight=False):
-        return font._impl.measure(text, widget=self.native, tight=tight)
+        layout = self.native.create_pango_layout(text)
+
+        layout.set_font_description(self.native)
+        ink, logical = layout.get_extents()
+        if tight:
+            width = (ink.width / Pango.SCALE) - (ink.width * 0.2) / Pango.SCALE
+            height = ink.height / Pango.SCALE
+        else:
+            width = (logical.width / Pango.SCALE) - (logical.width * 0.2) / Pango.SCALE
+            height = logical.height / Pango.SCALE
+
+        return width, height
 
     def get_image_data(self):
         self.interface.factory.not_implemented("Canvas.get_image_data()")

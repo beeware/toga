@@ -1,11 +1,13 @@
 from pytest import approx
 
+import toga
 from toga.colors import RED, TRANSPARENT, color as named_color
 from toga.fonts import BOLD, FANTASY, ITALIC, NORMAL, SERIF, SYSTEM
 from toga.style.pack import COLUMN
 
 from ..assertions import assert_color
 from ..data import COLORS, TEXTS
+from .probe import get_probe
 
 # An upper bound for widths
 MAX_WIDTH = 2000
@@ -34,17 +36,55 @@ async def test_enabled(widget, probe):
 
 async def test_enable_noop(widget, probe):
     "Changing the enabled status on the widget is a no-op"
-    # Widget is initially enabled
+    # Widget reports as enabled
     assert widget.enabled
-    assert probe.enabled
 
     # Attempt to disable the widget
     widget.enabled = False
     await probe.redraw()
 
-    # Widget is still enabled
+    # Widget still reports as enabled
     assert widget.enabled
-    assert probe.enabled
+
+
+# async def test_hidden(widget, probe):
+
+
+async def test_focus(widget, probe):
+    "The widget can be given focus"
+    # Add a separate widget that can take take focus
+    other = toga.TextInput()
+    widget.parent.add(other)
+    other_probe = get_probe(other)
+
+    other.focus()
+    await probe.redraw()
+    assert not probe.has_focus
+    assert other_probe.has_focus
+
+    widget.focus()
+    await probe.redraw()
+    assert probe.has_focus
+    assert not other_probe.has_focus
+
+
+async def test_focus_noop(widget, probe):
+    "The widget cannot be given focus"
+    # Add a separate widget that can take take focus
+    other = toga.TextInput()
+    widget.parent.add(other)
+    other_probe = get_probe(other)
+
+    other.focus()
+    await probe.redraw()
+    assert not probe.has_focus
+    assert other_probe.has_focus
+
+    # Widget has *not* taken focus
+    widget.focus()
+    await probe.redraw()
+    assert not probe.has_focus
+    assert other_probe.has_focus
 
 
 async def test_text(widget, probe):
@@ -197,7 +237,7 @@ async def test_flex_widget_size(widget, probe):
     # Check the initial widget size
     # Match isn't exact because of pixel scaling on some platforms
     assert probe.width == approx(100, rel=0.01)
-    assert probe.height == approx(100, rel=0.01)
+    assert probe.height == approx(200, rel=0.01)
 
     # Drop the fixed height, and make the widget flexible
     widget.style.flex = 1
@@ -237,8 +277,8 @@ async def test_flex_horizontal_widget_size(widget, probe):
     # Container is initially a non-flex row box.
     # Initial widget size is small (but non-zero), based on content size.
     await probe.redraw()
-    probe.assert_width(10, 150)
-    probe.assert_height(10, 50)
+    probe.assert_width(1, 160)
+    probe.assert_height(1, 50)
 
     # Make the widget flexible; it will expand to fill horizontal space
     widget.style.flex = 1

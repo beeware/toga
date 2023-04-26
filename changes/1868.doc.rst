@@ -1,0 +1,1 @@
+The contribution guide was expanded to include more suggestions for potential projects, and to explain how the backend tests work.

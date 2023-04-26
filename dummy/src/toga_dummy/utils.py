@@ -9,8 +9,8 @@ from travertino.size import BaseIntrinsicSize
 
 
 def not_required(method_or_class):
-    """This decorator function is used to mark methods or classes that they are
-    not required for interface compliance.
+    """This decorator function is used to mark methods or classes that they are not
+    required for interface compliance.
 
     :param method_or_class: The method or class to decorate
     :returns: The method or class being decorated
@@ -19,9 +19,9 @@ def not_required(method_or_class):
 
 
 def not_required_on(*args):
-    """This decorator function is used to mark methods or classes that they are
-    not required on certain platforms. This is only used by the implementation
-    checks creation mechanism.
+    """This decorator function is used to mark methods or classes that they are not
+    required on certain platforms. This is only used by the implementation checks
+    creation mechanism.
 
     Examples:
         >>> # Marks the function as only required on platforms that are not "mobile".
@@ -74,7 +74,7 @@ class EventLog:
     def log(cls, logtype, instance, **context):
         """Add an entry to the event log.
 
-        :param logtype: The type of object being logged (SET_VALUE, etc)
+        :param logtype: The type of object being logged (SET_VALUE, etc.)
         :param instance: The instance that generated loggable activity
         :param context: A dictionary of data related to the event. The contents
             of the dictionary will depend on the event that occurred.
@@ -142,8 +142,7 @@ class EventLog:
 
     @classmethod
     def retrieved(cls, instance, attr):
-        """Determine if an attempt has been made to retrieve the value of an
-        attribute.
+        """Determine if an attempt has been made to retrieve the value of an attribute.
 
         This only includes "normal" attribute access; retrievals made for test
         purposes are *not* included.
@@ -206,7 +205,7 @@ class EventLog:
 class LogEntry:
     """An entry in the event log.
 
-    :param logtype: The type of object being logged (SET_VALUE, etc)
+    :param logtype: The type of object being logged (SET_VALUE, etc.)
     :param instance: The instance that generated loggable activity
     :param context: A dictionary of data related to the event. The contents of
         the dictionary will depend on the event that occurred.
@@ -228,11 +227,10 @@ NOT_PROVIDED = object()
 
 
 class LoggedObject:
-    """A base class for objects on the dummy backend whose activity will be
-    logged.
+    """A base class for objects on the dummy backend whose activity will be logged.
 
-    Objects specified in the dummy backend should extend this class, and
-    log any activity they perform using the methods on this object.
+    Objects specified in the dummy backend should extend this class, and log any
+    activity they perform using the methods on this object.
     """
 
     def _set_value(self, attr, value):
@@ -397,7 +395,8 @@ def assert_action_performed_with(_widget, _action, **test_data):
     try:
         # Iterate over every action that was performed on
         # this object.
-        for data in EventLog.performed_actions(_widget, _action):
+        actions_performed = EventLog.performed_actions(_widget, _action)
+        for data in actions_performed:
             found = True
             # Iterate over every key and value in the test
             # data. If the value in the recorded action
@@ -428,6 +427,13 @@ def assert_action_performed_with(_widget, _action, **test_data):
             # with the next recorded action.
             if found:
                 return
+
+        # None of the recorded actions match the test data.
+        pytest.fail(
+            f"Widget {_widget} did not perform action {_action!r} "
+            f"with data {test_data!r}; "
+            f"actions performed were {actions_performed!r}"
+        )
     except AttributeError as e:
         # None of the recorded actions match the test data.
         pytest.fail(str(e))
@@ -462,8 +468,7 @@ class TestCase(unittest.TestCase):
     #####
 
     def assertValueSet(self, _widget, _attr, value):
-        """Assert that the widget implementation has set an attribute to a
-        value.
+        """Assert that the widget implementation has set an attribute to a value.
 
         Args:
             _widget: The interface of the widget to check
@@ -473,19 +478,17 @@ class TestCase(unittest.TestCase):
         self.assertEqual(self.pytest_assert(attribute_value, _widget, _attr), value)
 
     def assertValuesSet(self, _widget, _attr, values):
-        """Assert that the widget implementation has been set to multiple
-        values.
+        """Assert that the widget implementation has been set to multiple values.
 
         Args:
             _widget: The interface of the widget to check
             _attr: The attribute that should have been set
-            value: The values that the attribute have been set to.
+            values: The values that the attribute have been set to.
         """
         self.assertEqual(self.pytest_assert(attribute_values, _widget, _attr), values)
 
     def assertValueGet(self, _widget, _attr):
-        """Assert that the widget implementation attempted to retrieve an
-        attribute.
+        """Assert that the widget implementation attempted to retrieve an attribute.
 
         Args:
             _widget: The interface of the widget to check
@@ -510,6 +513,7 @@ class TestCase(unittest.TestCase):
 
     def assertActionPerformed(self, _widget, _action):
         """Assert that the named action performed by a widget.
+
         Args:
             _widget: The interface of the widget that should have performed the action.
             _action: The name of the action to check

@@ -1,0 +1,1 @@
+New ProgressBar and Switch widgets were added to the web platform implementation.

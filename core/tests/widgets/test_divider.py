@@ -3,6 +3,7 @@ import pytest
 import toga
 from toga_dummy.utils import (
     EventLog,
+    assert_action_not_performed,
     assert_action_performed,
 )
 
@@ -62,3 +63,11 @@ def test_update_direction():
     # The direction has been changed, and a refresh requested
     assert divider.direction == toga.Divider.VERTICAL
     assert_action_performed(divider, "refresh")
+
+
+def test_focus_noop():
+    "Focus is a no-op."
+    divider = toga.Divider(direction=toga.Divider.HORIZONTAL)
+
+    divider.focus()
+    assert_action_not_performed(divider, "focus")

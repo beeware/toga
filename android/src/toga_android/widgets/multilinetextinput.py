@@ -48,11 +48,6 @@ class MultilineTextInput(TextViewWidget):
         self.native.setHint(value if value is not None else "")
 
     def set_alignment(self, value):
-        # Refuse to set alignment unless widget has been added to a container.
-        # This is because Android EditText requires LayoutParams before
-        # setGravity() can be called.
-        if not self.native.getLayoutParams():
-            return
         self.native.setGravity(Gravity.TOP | align(value))
 
     def set_value(self, value):
@@ -65,8 +60,8 @@ class MultilineTextInput(TextViewWidget):
         self.native.addTextChangedListener(self._textChangedListener)
 
     def rehint(self):
-        self.interface.intrinsic.width = at_least(self.interface.MIN_WIDTH)
-        self.interface.intrinsic.height = at_least(self.interface.MIN_HEIGHT)
+        self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
+        self.interface.intrinsic.height = at_least(self.interface._MIN_HEIGHT)
 
     def scroll_to_bottom(self):
         last_line = (self.native.getLineCount() - 1) * self.native.getLineHeight()

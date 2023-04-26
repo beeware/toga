@@ -1,3 +1,5 @@
+from travertino.size import at_least
+
 from toga_cocoa.libs import NSObject, NSSize, NSSplitView, objc_method
 from toga_cocoa.window import CocoaViewport
 
@@ -79,3 +81,7 @@ class SplitContainer(Widget):
 
     def on_resize(self):
         pass
+
+    def rehint(self):
+        self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
+        self.interface.intrinsic.height = at_least(self.interface._MIN_HEIGHT)

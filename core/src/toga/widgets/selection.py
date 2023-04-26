@@ -15,8 +15,6 @@ class Selection(Widget):
         items (``list`` of ``str``): The items for the selection.
     """
 
-    MIN_WIDTH = 100
-
     def __init__(
         self,
         id=None,

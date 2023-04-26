@@ -127,8 +127,8 @@ class DetailedList(Widget):
         self.native.EnsureVisible(row)
 
     def rehint(self):
-        self.interface.intrinsic.width = at_least(self.interface.MIN_WIDTH)
-        self.interface.intrinsic.height = at_least(self.interface.MIN_HEIGHT)
+        self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
+        self.interface.intrinsic.height = at_least(self.interface._MIN_HEIGHT)
 
     def build_item(self, row, index):
         item = WinForms.ListViewItem(row.title)

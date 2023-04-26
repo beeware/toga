@@ -41,9 +41,9 @@ class Font(BaseFont):
 
     @staticmethod
     def register(family, path, weight=NORMAL, style=NORMAL, variant=NORMAL):
-        """Registers a file-based font with it's family name, style, variant
-        and weight. When invalid values for style, variant or weight are passed,
-        ``NORMAL`` will be used.
+        """Registers a file-based font with its family name, style, variant
+        and weight. When invalid values for style, variant or weight are
+        passed, ``NORMAL`` will be used.
 
         When a font file includes multiple font weight/style/etc, each variant
         must be registerered separately::
@@ -61,12 +61,11 @@ class Font(BaseFont):
             Font.register("Bahnschrift", "resources/Bahnschrift.ttf", weight=Font.BOLD)
 
         :param family: The font family name. This is the name that can be
-            referenced in style definitions.
+                referenced in style definitions.
         :param path: The path to the font file.
-        :param weight: The font weight; ``NORMAL`` (default) or ``BOLD``
-        :param style: The font style; ``NORMAL`` (default), ``ITALIC`` or
-            ``OBLIQUE``
-        :param variant: The font variant; ``NORMAL`` (default) or ``SMALL_CAPS``
+        :param weight: The font weight. Default value is ``NORMAL``.
+        :param style: The font style. Default value is ``NORMAL``.
+        :param variant: The font variant. Default value is ``NORMAL``.
         """
         font_key = Font.registered_font_key(
             family, weight=weight, style=style, variant=variant
@@ -77,13 +76,14 @@ class Font(BaseFont):
     def registered_font_key(family, weight, style, variant):
         """Creates a key for storing a registered font in the font cache.
 
-        If weight, style or variant contain an invalid value, Font.NORMAL is
+        If weight, style or variant contain an invalid value, ``NORMAL`` is
         used instead.
 
-        :param family: The font family name
-        :param weight: The font weight: Font.NORMAL (default) or a value from Font.FONT_WEIGHTS
-        :param style: The font style: Font.NORMAL (default) or a value from Font.FONT_STYLES
-        :param variant: The font variant: Font.NORMAL (default) or a value from Font.FONT_VARIANTS
+        :param family: The font family name. This is the name that can be
+            referenced in style definitions.
+        :param weight: The font weight. Default value is ``NORMAL``.
+        :param style: The font style. Default value is ``NORMAL``.
+        :param variant: The font variant. Default value is ``NORMAL``.
         :returns: The font key
         """
         if weight not in constants.FONT_WEIGHTS:
@@ -93,4 +93,4 @@ class Font(BaseFont):
         if variant not in constants.FONT_VARIANTS:
             variant = NORMAL
 
-        return (family, weight, style, variant)
+        return family, weight, style, variant

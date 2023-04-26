@@ -12,7 +12,6 @@ class Box(Widget):
 
         Inherits from :class:`~toga.widgets.base.Widget`.
 
-        :param text: The text to display on the button.
         :param id: The ID for the widget.
         :param style: A style object. If no style is provided, a default style
             will be applied to the widget.
@@ -20,14 +19,27 @@ class Box(Widget):
         """
         super().__init__(id=id, style=style)
 
+        # Create a platform specific implementation of a Box
+        self._impl = self.factory.Box(interface=self)
+
+        # Children need to be added *after* the impl has been created.
         self._children = []
         if children:
             self.add(*children)
 
-        # Create a platform specific implementation of a Box
-        self._impl = self.factory.Box(interface=self)
+    @property
+    def enabled(self):
+        """Is the widget currently enabled? i.e., can the user interact with the widget?
 
-    @Widget.enabled.setter
+        Box widgets cannot be disabled; this property will always return True; any
+        attempt to modify it will be ignored.
+        """
+        return True
+
+    @enabled.setter
     def enabled(self, value):
-        # Box doesn't have a "disabled" state
+        pass
+
+    def focus(self):
+        """No-op; Box cannot accept input focus."""
         pass

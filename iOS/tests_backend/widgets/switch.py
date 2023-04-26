@@ -61,5 +61,5 @@ class SwitchProbe(SimpleProbe):
             30 <= switch_height <= 40
         ), f"Switch height ({switch_height}) not in range (30, 40)"
 
-    def press(self):
+    async def press(self):
         self.native_switch.sendActionsForControlEvents(UIControlEventValueChanged)

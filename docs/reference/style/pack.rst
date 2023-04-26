@@ -30,7 +30,7 @@ Pack style properties
 **Initial value:** ``pack``
 
 Used to define the how to display the element. A value of ``pack`` will apply
-the pack layout algorithm to this node and its descendents. A value of
+the pack layout algorithm to this node and its descendants. A value of
 ``none`` removes the element from the layout entirely. Space will be allocated
 for the element as if it were there, but the element itself will not be
 visible.
@@ -38,13 +38,19 @@ visible.
 ``visibility``
 --------------
 
-**Values:** ``hidden`` | ``visible`` | ``none``
+**Values:** ``hidden`` | ``visible``
 
 **Initial value:** ``visible``
 
-Used to define whether the element should be drawn. A value of ``visible``
-means the element will be displayed. A value of ``none`` removes the element,
-but still allocates space for the element as if it were in the element tree.
+Used to define whether the element should be drawn. A value of ``visible`` means
+the element will be displayed. A value of ``hidden`` removes the element from
+view, but allocates space for the element as if it were still in the layout.
+
+Any children of a hidden element are implicitly removed from view.
+
+If a previously hidden element is made visible, any children of the element with
+a visibility of ``hidden`` will remain hidden. Any descendants of the hidden
+child will also remain hidden, regardless of their visibility.
 
 ``direction``
 -------------

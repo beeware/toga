@@ -2,6 +2,18 @@ from pytest import approx
 
 from toga.colors import TRANSPARENT
 
+NOT_PROVIDED = object()
+
+
+def assert_set_get(obj, name, value, expected=NOT_PROVIDED):
+    if expected is NOT_PROVIDED:
+        expected = value
+
+    setattr(obj, name, value)
+    actual = getattr(obj, name)
+    assert actual == expected
+    return actual
+
 
 def assert_color(actual, expected):
     if expected in {None, TRANSPARENT}:

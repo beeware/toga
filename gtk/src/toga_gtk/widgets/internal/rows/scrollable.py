@@ -2,20 +2,19 @@ from toga_gtk.libs import GLib, Gtk
 
 
 class ScrollableRow(Gtk.ListBoxRow):
-    """You can use and inherit from this class as if it were Gtk.ListBoxRow,
-    nothing from the original implementation is changed.
+    """You can use and inherit from this class as if it were Gtk.ListBoxRow, nothing
+    from the original implementation is changed.
 
-    There are three new public methods: scroll_to_top(),
-    scroll_to_center() and scroll_to_bottom(). 'top', 'center' and
-    'bottom' are with respect to where in the visible region the row
-    will move to.
+    There are three new public methods: scroll_to_top(), scroll_to_center() and
+    scroll_to_bottom(). 'top', 'center' and 'bottom' are with respect to where in the
+    visible region the row will move to.
     """
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # We need to wait until this widget is allocated to scroll it in,
         # for that we use signals and callbacks. The handler_is of the
-        # signal is used to disconnect and we store it here.
+        # signal is used to disconnect, and we store it here.
         self._gtk_scroll_handler_id_value = None
 
         # The animation function will use this variable to control whether the animation is
@@ -34,8 +33,7 @@ class ScrollableRow(Gtk.ListBoxRow):
         self.scroll_to_position("BOTTOM")
 
     def scroll_to_position(self, position):
-        """Scrolls the parent Gtk.ListBox until child is in the center of the
-        view.
+        """Scrolls the parent Gtk.ListBox until child is in the center of the view.
 
         `position` is one of "TOP", "CENTER" or "BOTTOM"
         """
@@ -61,7 +59,7 @@ class ScrollableRow(Gtk.ListBoxRow):
         return True
 
     def gtk_do_scroll_to_position(self, position):
-        # Disconnect the from the signal that called us
+        # Disconnect from the signal that called us
         self._gtk_scroll_handler_id = None
 
         list_box = self.get_parent()
@@ -102,7 +100,7 @@ class ScrollableRow(Gtk.ListBoxRow):
 
     def gtk_animate_scroll_to_position(self, final):
         # If this function returns True it is executed again.
-        # If this function returns False is is not executed anymore.
+        # If this function returns False, it is not executed anymore.
         # Set self._animation_control to None after the animation is over.
         list_box = self.get_parent()
         adj = list_box.get_adjustment()

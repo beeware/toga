@@ -99,7 +99,7 @@ class Window:
         self.navigation_controller.topViewController.title = title
 
     def get_position(self):
-        return (0, 0)
+        return 0, 0
 
     def set_position(self, position):
         # Does nothing on mobile
@@ -132,7 +132,7 @@ class Window:
         pass
 
     def get_visible(self):
-        # The window is alays visible
+        # The window is always visible
         return True
 
     def close(self):

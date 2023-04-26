@@ -1,20 +1,6 @@
 from toga_web.libs import create_element, js
 
 
-class WebViewport:
-    def __init__(self):
-        self.dpi = 96
-        self.baseline_dpi = 96
-
-    @property
-    def width(self):
-        return 1024
-
-    @property
-    def height(self):
-        return 768
-
-
 class Window:
     def __init__(self, interface, title, position, size):
         self.interface = interface
@@ -50,8 +36,6 @@ class Window:
                 child._impl.container = None
 
     def set_content(self, widget):
-        widget.viewport = WebViewport()
-
         # Remove existing content of the window.
         for child in self.native.childNodes:
             self.native.removeChild(child)
@@ -78,14 +62,14 @@ class Window:
         self.interface.factory.not_implemented("Window.close()")
 
     def get_position(self):
-        return (0, 0)
+        return 0, 0
 
     def set_position(self, position):
         # Does nothing on web
         pass
 
     def get_size(self):
-        return (self.content.viewport.width, self.content.viewport.height)
+        return self.native.offsetWidth, self.native.offsetHeight
 
     def set_size(self, size):
         # Does nothing on web
