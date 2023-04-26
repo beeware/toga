@@ -1,4 +1,4 @@
-from toga_web.libs import pyodide
+from toga_web.libs import create_proxy
 
 from .base import Widget
 
@@ -6,9 +6,7 @@ from .base import Widget
 class Switch(Widget):
     def create(self):
         self.native = self._create_native_widget("sl-switch")
-
-        dom_onchange = pyodide.create_proxy(self.dom_onchange)
-        self.native.addEventListener("sl-change", dom_onchange)
+        self.native.addEventListener("sl-change", create_proxy(self.dom_onchange))
 
     def dom_onchange(self, event):
         self.interface.on_change(None)
