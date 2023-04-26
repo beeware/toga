@@ -6,8 +6,6 @@ import pytest
 import toga
 from toga.fonts import BOLD, ITALIC, OBLIQUE, SANS_SERIF, SMALL_CAPS, SYSTEM, Font
 
-app_path = toga.App.app.paths.app
-
 
 @pytest.fixture
 async def widget() -> toga.Label:
@@ -67,11 +65,17 @@ async def test_font_options(
     ],
 )
 async def test_font_file_loaded(
-    widget: toga.Label, widget_probe: Any, font_family: str, font_path: str, font_kwargs
+    widget: toga.Label,
+    widget_probe: Any,
+    font_family: str,
+    font_path: str,
+    font_kwargs,
+    capsys: pytest.CaptureFixture[str],
+    app: toga.App,
 ):
     Font.register(
         family=font_family,
-        path=f"{app_path}/{font_path}",
+        path=f"{app.paths.app}/{font_path}",
         **font_kwargs,
     )
 
@@ -88,6 +92,9 @@ async def test_font_file_loaded(
     for prop, value in font_kwargs.items():
         assert getattr(widget_probe.font, prop) == value
 
+    # Needed to prevent tests from passing when they shouldn't due to GTK not returning system font as fallback
+    assert "could not be found" not in capsys.readouterr().out
+
 
 @pytest.mark.parametrize(
     "font_family,font_path",
@@ -99,9 +106,13 @@ async def test_font_file_loaded(
     ],
 )
 async def test_font_file_not_loaded(
-    widget: toga.Label, widget_probe: Any, font_family: str, font_path: str
+    widget: toga.Label,
+    widget_probe: Any,
+    font_family: str,
+    font_path: str,
+    app: toga.App,
 ):
-    Font.register(family=font_family, path=f"{app_path.parent}/src/testbed/{font_path}")
+    Font.register(family=font_family, path=f"{app.paths.app}/{font_path}")
     widget.style.font_family = font_family
     await widget_probe.redraw()
     widget_probe.assert_font_family == SYSTEM
