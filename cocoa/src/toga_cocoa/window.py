@@ -2,7 +2,7 @@ from toga.command import Command as BaseCommand
 from toga.window import WindowState
 from toga_cocoa.libs import (
     SEL,
-    CGRectContainsRect,
+    CGRect,
     NSBackingStoreBuffered,
     NSClosableWindowMask,
     NSFullScreenWindowMask,
@@ -329,7 +329,9 @@ class Window:
         else:
             screen_native = None
             for individual_screen in NSScreen.screens:
-                if CGRectContainsRect(individual_screen.frame(), self.native.frame):
+                if CGRect.CGRectContainsRect(
+                    individual_screen.frame(), self.native.frame
+                ):
                     screen_native = individual_screen
 
         if state == WindowState.NORMAL:
@@ -346,7 +348,7 @@ class Window:
             else:
                 # If the window is off-screen, bring it back on-screen
                 screen_rect = NSScreen.mainScreen().visibleFrame()
-                if not CGRectContainsRect(screen_rect, self.native.frame()):
+                if not CGRect.CGRectContainsRect(screen_rect, self.native.frame()):
                     self.native.setFrameOrigin(screen_rect.origin)
 
         elif state == WindowState.MAXIMIZED:

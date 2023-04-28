@@ -4,7 +4,6 @@ from rubicon.objc import (  # noqa: F401
     SEL,
     CGFloat,
     CGRect,
-    CGRectContainsRect,
     NSFullScreenWindowMask,
     NSMakePoint,
     NSMakeRect,
