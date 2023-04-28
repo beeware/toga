@@ -13,7 +13,7 @@ The tree widget is still under development.
 Usage
 -----
 
-.. code-block:: Python
+.. code-block:: python
 
     import toga
 

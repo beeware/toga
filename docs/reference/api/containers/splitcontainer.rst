@@ -16,7 +16,7 @@ The split container is a container with a movable split and the option for 2 or 
 Usage
 -----
 
-.. code-block:: Python
+.. code-block:: python
 
     import toga
 
@@ -29,9 +29,9 @@ Usage
 Setting split direction
 -----------------------
 
-Split direction is set on instantiation using the `direction` keyword argument. Direction is vertical by default.
+Split direction is set on instantiation using the ``direction`` keyword argument. Direction is vertical by default.
 
-.. code-block:: Python
+.. code-block:: python
 
     import toga
 

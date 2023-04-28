@@ -154,12 +154,17 @@ class Widget(Node):
         Any nominated child widget that is not a child of this widget will
         not have any change in parentage.
 
+        Refreshes the widget after removal if any children were removed.
+
         Raises ``ValueError`` if this widget cannot have children.
 
         :param children: The child nodes to remove.
         """
+        removed = False
+
         for child in children:
             if child.parent is self:
+                removed = True
                 super().remove(child)
 
                 child.app = None
@@ -167,8 +172,17 @@ class Widget(Node):
 
                 self._impl.remove_child(child._impl)
 
-        if self.window:
+        if self.window and removed:
             self.window.content.refresh()
+
+    def clear(self):
+        """Remove all child widgets of this node.
+
+        Refreshes the widget after removal if any children were removed.
+
+        Raises ``ValueError`` if this widget cannot have children.
+        """
+        self.remove(*self.children)
 
     @property
     def app(self):

@@ -16,7 +16,7 @@ The Number input is a text input box that is limited to numeric input.
 Usage
 -----
 
-.. code-block:: Python
+.. code-block:: python
 
     import toga
 

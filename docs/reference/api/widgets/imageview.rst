@@ -13,7 +13,7 @@ The Image View is a container for an image to be rendered on the display
 Usage
 -----
 
-.. code-block:: Python
+.. code-block:: python
 
     import toga
 

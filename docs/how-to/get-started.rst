@@ -14,10 +14,12 @@ Quickstart
 ==========
 
 Create a new virtual environment. In your virtual environment, install Toga, and
-then run it::
+then run it:
 
-    $ python -m pip install toga-demo
-    $ toga-demo
+.. code-block:: console
+
+  $ python -m pip install toga-demo
+  $ toga-demo
 
 This will pop up a GUI window showing the full range of widgets available
 to an application using Toga.

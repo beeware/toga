@@ -17,7 +17,7 @@ its own scrollable selection.
 Usage
 -----
 
-.. code-block:: Python
+.. code-block:: python
 
     import toga
 
@@ -30,7 +30,7 @@ Scroll settings
 
 Horizontal or vertical scroll can be set via the initializer or using the property.
 
-.. code-block:: Python
+.. code-block:: python
 
     import toga
 

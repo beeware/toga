@@ -16,7 +16,7 @@ The text input widget is a simple input field for user entry of text data.
 Usage
 -----
 
-.. code-block:: Python
+.. code-block:: python
 
     import toga
 

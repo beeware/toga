@@ -114,6 +114,7 @@ if __name__ == "__main__":
     # If `--slow` is in the arguments, run the test suite in slow mode
     try:
         args.remove("--slow")
+        args.append("-s")
         run_slow = True
     except ValueError:
         run_slow = False

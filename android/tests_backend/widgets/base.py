@@ -64,13 +64,14 @@ class SimpleProbe:
         else:
             assert actual == expected
 
-    async def redraw(self):
+    async def redraw(self, message=None):
         """Request a redraw of the app, waiting until that redraw has completed."""
         self.native.requestLayout()
         await self.layout_listener.event.wait()
 
         # If we're running slow, wait for a second
         if self.widget.app.run_slow:
+            print("Waiting for redraw" if message is None else message)
             await asyncio.sleep(1)
 
     @property
