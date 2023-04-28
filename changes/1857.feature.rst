@@ -1,0 +1,1 @@
+APIs were added for changing the window states and for supporting the same on multiple screens.
