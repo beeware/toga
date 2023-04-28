@@ -5,7 +5,6 @@ from toga_cocoa.libs import (
     CGRect,
     NSBackingStoreBuffered,
     NSClosableWindowMask,
-    NSFullScreenWindowMask,
     NSLayoutAttributeBottom,
     NSLayoutAttributeLeft,
     NSLayoutAttributeRight,
@@ -26,7 +25,6 @@ from toga_cocoa.libs import (
     NSToolbar,
     NSToolbarItem,
     NSWindow,
-    NSWindowZoomed,
     objc_method,
     objc_property,
 )
@@ -314,11 +312,11 @@ class Window:
         return bool(self.native.isVisible)
 
     def get_window_state(self):
-        if self.native.styleMask() & NSWindowZoomed:
+        if self.native.styleMask() & NSWindow.NSWindowZoomed:
             return WindowState.MAXIMIZED
         elif self.native.isMiniaturized():
             return WindowState.MINIMIZED
-        elif self.native.styleMask() & NSFullScreenWindowMask:
+        elif self.native.styleMask() & NSWindow.NSFullScreenWindowMask:
             return WindowState.FULLSCREEN
         else:
             return WindowState.NORMAL
