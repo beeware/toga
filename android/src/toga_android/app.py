@@ -218,14 +218,15 @@ class App:
         :returns: A Dictionary containing "resultCode" (int) and "resultData" (Intent or None)
         :rtype: dict
         """
-        if not intent.resolveActivity(self.native.getPackageManager()):
+        try:
+            self._listener.last_intent_requestcode += 1
+            code = self._listener.last_intent_requestcode
+
+            result_future = asyncio.Future()
+            self._listener.running_intents[code] = result_future
+
+            self.native.startActivityForResult(intent, code)
+            await result_future
+            return result_future.result()
+        except AttributeError:
             raise RuntimeError("No appropriate Activity found to handle this intent.")
-        self._listener.last_intent_requestcode += 1
-        code = self._listener.last_intent_requestcode
-
-        result_future = asyncio.Future()
-        self._listener.running_intents[code] = result_future
-
-        self.native.startActivityForResult(intent, code)
-        await result_future
-        return result_future.result()
