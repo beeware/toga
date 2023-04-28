@@ -253,6 +253,9 @@ class App:
         )
         self._create_app_commands()
 
+        # Query the available screens to populate the screens variable
+        self.query_screens()
+
         # Call user code to populate the main window
         self.interface.startup()
 
@@ -365,6 +368,23 @@ class App:
 
     def exit(self):
         self.loop.stop()
+
+    def query_screens(self):
+        class Screen:
+            def __init__(self, name, native):
+                self.name = name
+                self.native = native
+
+            def __repr__(self):
+                return self.name
+
+        screens = []
+        native_screens = NSScreen.screens
+
+        for screen in native_screens:
+            screens.append(Screen(name=screen.localizedName, native=screen))
+
+        self.interface.screens = tuple(screens)
 
     def get_current_window(self):
         return self.native.keyWindow

@@ -73,6 +73,14 @@ class Window(LoggedObject):
         self._action("close")
 
     @not_required_on("mobile")
+    def get_window_state(self):
+        self._get_value("state")
+
+    @not_required_on("mobile")
+    def set_window_state(self, state, screen=None):
+        self._set_value("state", state)
+
+    @not_required_on("mobile")
     def set_full_screen(self, is_full_screen):
         self._set_value("is_full_screen", is_full_screen)
 

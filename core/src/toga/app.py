@@ -344,6 +344,8 @@ class App:
         self._impl = self._create_impl()
         self.on_exit = on_exit
 
+        self.screens = None
+
     def _create_impl(self):
         return self.factory.App(interface=self)
 

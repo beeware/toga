@@ -1,11 +1,20 @@
 import warnings
 from builtins import id as identifier
+from enum import Enum, auto, unique
 from pathlib import Path
 
 from toga.command import CommandSet
 from toga.handlers import wrapped_handler
 from toga.platform import get_platform_factory
 from toga.widgets.base import WidgetRegistry
+
+
+@unique
+class WindowState(Enum):
+    NORMAL = auto()
+    MAXIMIZED = auto()
+    MINIMIZED = auto()
+    FULLSCREEN = auto()
 
 
 class Window:
@@ -208,6 +217,23 @@ class Window:
                 "Can't hide a window that doesn't have an associated app"
             )
         self._impl.hide()
+
+    @property
+    def state(self):
+        return self._impl.get_window_state()
+
+    @state.setter
+    def state(self, values):
+        if isinstance(values, tuple):
+            if len(values) > 2:
+                raise ValueError(
+                    "state property only accepts values in the format of: window_state, screen"
+                )
+            args = (value for value in values)
+        else:
+            args = (values,)
+
+        self._impl.set_window_state(*args)
 
     @property
     def full_screen(self):

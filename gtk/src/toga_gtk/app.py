@@ -95,6 +95,9 @@ class App:
         )
         self._create_app_commands()
 
+        # Query the available screens to populate the screens variable
+        self.query_screens()
+
         self.interface.startup()
 
         # Create the lookup table of menu items,
@@ -220,6 +223,26 @@ class App:
 
     def exit(self):
         self.native.quit()
+
+    def query_screens(self):
+        class Screen:
+            def __init__(self, name, native):
+                self.name = name
+                self.native = native
+
+            def __repr__(self):
+                return self.name
+
+        screens = []
+        display = Gdk.Display.get_default()
+        n_screens = display.get_n_screens()
+
+        for i in range(n_screens):
+            screen_native = display.get_screen(i)
+            screen_name = screen_native.get_display_name()
+            screens.append(Screen(name=screen_name, native=screen_native))
+
+        self.interface.screens = tuple(screens)
 
     def set_on_exit(self, value):
         pass

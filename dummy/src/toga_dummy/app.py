@@ -51,6 +51,10 @@ class App(LoggedObject):
         self._action("set_current_window")
 
     @not_required_on("mobile")
+    def query_screens(self):
+        self._action("query_screens")
+
+    @not_required_on("mobile")
     def enter_full_screen(self, windows):
         self._action("enter_full_screen", windows=windows)
 

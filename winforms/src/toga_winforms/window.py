@@ -1,4 +1,5 @@
 from toga import GROUP_BREAK, SECTION_BREAK
+from toga.window import WindowState
 
 from .libs import Point, Size, WinForms
 
@@ -197,6 +198,70 @@ class Window:
                 # result handling.
                 self.interface.on_close(self)
                 event.Cancel = True
+
+    def get_window_state(self):
+        window_state = self.native.WindowState
+        window_border_style = self.native.FormBorderStyle
+        if (
+            window_state == WinForms.FormWindowState.Normal
+            and window_border_style != WinForms.FormBorderStyle(0)
+        ):
+            return WindowState.NORMAL
+        elif (
+            window_state == WinForms.FormWindowState.Maximized
+            and window_border_style != WinForms.FormBorderStyle(0)
+        ):
+            return WindowState.MAXIMIZED
+        elif (
+            window_state == WinForms.FormWindowState.Minimized
+            and window_border_style != WinForms.FormBorderStyle(0)
+        ):
+            return WindowState.MINIMIZED
+        elif (
+            window_state == WinForms.FormWindowState.Maximized
+            and window_border_style == WinForms.FormBorderStyle(0)
+        ):
+            return WindowState.FULLSCREEN
+
+    def set_window_state(self, state, screen=None):
+        if screen is not None:
+            screen_native = screen.native
+        else:
+            screen_native = WinForms.Screen
+
+        if state == WindowState.NORMAL:
+            self.native.FormBorderStyle = WinForms.FormBorderStyle.FixedSingle
+            self.native.WindowState = WinForms.FormWindowState.Normal
+            self.native.StartPosition = WinForms.FormStartPosition.Manual
+            self.native.Location = screen_native.FromControl(
+                self.native
+            ).WorkingArea.Location
+
+        elif state == WindowState.MAXIMIZED:
+            self.native.FormBorderStyle = WinForms.FormBorderStyle.FixedSingle
+            self.native.WindowState = WinForms.FormWindowState.Maximized
+            self.native.StartPosition = WinForms.FormStartPosition.Manual
+            self.native.Location = screen_native.FromControl(
+                self.native
+            ).WorkingArea.Location
+
+        elif state == WindowState.MINIMIZED:
+            self.native.FormBorderStyle = WinForms.FormBorderStyle.FixedSingle
+            self.native.WindowState = WinForms.FormWindowState.Minimized
+            self.native.StartPosition = WinForms.FormStartPosition.Manual
+            self.native.Location = screen_native.FromControl(
+                self.native
+            ).WorkingArea.Location
+
+        elif state == WindowState.FULLSCREEN:
+            self.native.FormBorderStyle = WinForms.FormBorderStyle(0)
+            self.native.WindowState = WinForms.FormWindowState.Maximized
+            self.native.StartPosition = WinForms.FormStartPosition.Manual
+            self.native.Location = screen_native.FromControl(
+                self.native
+            ).WorkingArea.Location
+        else:
+            return
 
     def set_full_screen(self, is_full_screen):
         if is_full_screen:

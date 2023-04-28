@@ -36,6 +36,9 @@ class App:
         # Create the menus.
         self.create_menus()
 
+        # Query the available screens to populate the screens variable
+        self.query_screens()
+
         # Call user code to populate the main window
         self.interface.startup()
 
@@ -184,6 +187,9 @@ class App:
 
     def set_current_window(self):
         self.interface.factory.not_implemented("App.set_current_window()")
+
+    def query_screens(self):
+        self.interface.factory.not_implemented("App.query_screens()")
 
     def enter_full_screen(self, windows):
         self.interface.factory.not_implemented("App.enter_full_screen()")

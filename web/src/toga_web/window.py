@@ -75,5 +75,11 @@ class Window:
         # Does nothing on web
         pass
 
+    def get_window_state(self):
+        self.interface.factory.not_implemented("Window.get_window_state()")
+
+    def set_window_state(self, state, screen=None):
+        self.interface.factory.not_implemented("Window.set_window_state()")
+
     def set_full_screen(self, is_full_screen):
         self.interface.factory.not_implemented("Window.set_full_screen()")

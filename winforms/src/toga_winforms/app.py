@@ -122,6 +122,9 @@ class App:
         )
         self._create_app_commands()
 
+        # Query the available screens to populate the screens variable
+        self.query_screens()
+
         # Call user code to populate the main window
         self.interface.startup()
         self.create_menus()
@@ -285,6 +288,23 @@ class App:
     def exit(self):
         self._is_exiting = True
         self.native.Exit()
+
+    def query_screens(self):
+        class Screen:
+            def __init__(self, name, native):
+                self.name = name
+                self.native = native
+
+            def __repr__(self):
+                return self.name
+
+        screens = []
+        native_screens = WinForms.Screen.AllScreens
+
+        for screen in native_screens:
+            screens.append(Screen(name=screen.DeviceName, native=screen))
+
+        self.interface.screens = tuple(screens)
 
     def set_main_window(self, window):
         self.app_context.MainForm = window._impl.native
