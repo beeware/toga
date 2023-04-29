@@ -239,7 +239,7 @@ class App:
 
         for i in range(n_screens):
             screen_native = display.get_screen(i)
-            screen_name = screen_native.get_display_name()
+            screen_name = screen_native.make_display_name()
             screens.append(Screen(name=screen_name, native=screen_native))
 
         self.interface.screens = tuple(screens)

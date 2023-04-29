@@ -48,6 +48,23 @@ class Window:
         self.layout.pack_end(self.container, expand=True, fill=True, padding=0)
         self.native.add(self.layout)
 
+        self._window_state = WindowState.NORMAL
+        # Connect the "window-state-event" signal to the on_window_state_event() function
+        self.native.connect("window-state-event", self.on_window_state_event)
+
+    def on_window_state_event(self, widget, event):
+        # Get the window state
+        instantaneous_state = event.new_window_state
+
+        if instantaneous_state & Gdk.WindowState.MAXIMIZED:
+            self._window_state = WindowState.MAXIMIZED
+        elif instantaneous_state & Gdk.WindowState.ICONIFIED:
+            self._window_state = WindowState.MINIMIZED
+        elif instantaneous_state & Gdk.WindowState.FULLSCREEN:
+            self._window_state = WindowState.FULLSCREEN
+        else:
+            self._window_state = WindowState.NORMAL
+
     def get_title(self):
         return self.native.get_title()
 
@@ -138,15 +155,7 @@ class Window:
         self.native.resize(size[0], size[1])
 
     def get_window_state(self):
-        state = self.native.get_window_state()
-        if state & Gdk.WindowState.MAXIMIZED:
-            return WindowState.MAXIMIZED
-        elif state & Gdk.WindowState.ICONIFIED:
-            return WindowState.MINIMIZED
-        elif state & Gdk.WindowState.FULLSCREEN:
-            return WindowState.FULLSCREEN
-        else:
-            return WindowState.NORMAL
+        return self._window_state
 
     def set_window_state(self, state, screen=None):
         if screen is not None:
@@ -154,8 +163,10 @@ class Window:
         else:
             screen_native = self.native.get_screen()
 
-        monitor = screen_native.get_monitor_at_window(self.native)
-        geometry = screen_native.get_monitor_geometry(monitor)
+        display = screen_native.get_display()
+        window = self.native.get_window()
+        monitor = Gdk.Display.get_monitor_at_window(display, window)
+        geometry = Gdk.Monitor.get_geometry(monitor)
 
         if state == WindowState.NORMAL:
             current_state = self.get_window_state()
@@ -165,21 +176,25 @@ class Window:
                 self.native.deiconify()
             elif current_state == WindowState.FULLSCREEN:
                 self.native.unfullscreen()
+            self._window_state = WindowState.NORMAL
 
         elif state == WindowState.MAXIMIZED:
             self.native.move(geometry.x, geometry.y)
             self.native.set_size_request(geometry.width, geometry.height)
             self.native.maximize()
+            self._window_state = WindowState.MAXIMIZED
 
         elif state == WindowState.MINIMIZED:
             self.native.move(geometry.x, geometry.y)
             self.native.set_size_request(geometry.width, geometry.height)
             self.native.iconify()
+            self._window_state = WindowState.MINIMIZED
 
         elif state == WindowState.FULLSCREEN:
             self.native.move(geometry.x, geometry.y)
             self.native.set_size_request(geometry.width, geometry.height)
             self.native.fullscreen()
+            self._window_state = WindowState.FULLSCREEN
 
         else:
             return
