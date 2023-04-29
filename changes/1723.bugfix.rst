@@ -1,0 +1,1 @@
+Fixed bug for toga.Selection value returning None instead of an empty string.
