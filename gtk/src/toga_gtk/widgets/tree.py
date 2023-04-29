@@ -15,7 +15,7 @@ class Tree(Widget):
         self.store = SourceTreeModel(
             [{"type": str, "attr": a} for a in self.interface._accessors],
             is_tree=is_tree,
-            missing_value=self.interface.missing_value,
+            missing_value=getattr(self.interface, "missing_value", None),
         )
 
         # Create a tree view, and put it in a scroll view.
