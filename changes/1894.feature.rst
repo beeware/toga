@@ -1,1 +1,1 @@
-The API for showing and hiding cursor was implemented for Windows platform.
+Winforms now supports hiding and re-showing the app cursor.
