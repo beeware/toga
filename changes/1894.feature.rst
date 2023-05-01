@@ -1,0 +1,1 @@
+Winforms now supports hiding and re-showing the app cursor.
