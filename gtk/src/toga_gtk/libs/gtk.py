@@ -5,6 +5,11 @@ gi.require_version("Gtk", "3.0")
 
 from gi.repository import Gdk, GdkPixbuf, Gio, GLib, GObject, Gtk  # noqa: E402, F401
 
+if Gdk.Screen.get_default() is None:
+    exit("This system does not have a DISPLAY environment variable set")
+
+print(Gdk.Screen.get_default())
+
 # The following import will fail if WebKit or its API wrappers aren't
 # installed; handle failure gracefully
 # (see https://github.com/beeware/toga/issues/26)
