@@ -49,6 +49,9 @@ class App:
         # window-level close handling.
         self._is_exiting = False
 
+        # Winforms cursor visibility is a stack; If you call hide N times, you
+        # need to call Show N times to make the cursor re-appear. Store a local
+        # boolean to allow us to avoid building a deep stack.
         self._cursor_visible = True
 
         self.loop = WinformsProactorEventLoop()
