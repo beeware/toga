@@ -59,6 +59,8 @@ class DetailedList(Widget):
         self.right_click_gesture.set_propagation_phase(Gtk.PropagationPhase.BUBBLE)
         self.right_click_gesture.connect("pressed", self.gtk_on_right_click)
 
+        # print(self.scrolled_window.get_children()[0].get_children()[0].get_children())
+
     def row_factory(self, item):
         """
         Args:
@@ -212,6 +214,16 @@ class DetailedList(Widget):
         If either of those things changes the buttons need to be notified to recalculate
         their positions.
         """
+        self._update_scrolled_window_width()
         self.refresh_button.list_changed()
         self.scroll_button.list_changed()
         return True
+
+    def _update_scrolled_window_width(self):
+        # Checks if the widest child of the list_box is wider than the min_width.
+        # If so, changes the width of the interface.
+        new_width = self.interface._MIN_WIDTH
+        for child in self.list_box.get_children():
+            if child.get_preferred_width().natural_width > new_width:
+                new_width = child.get_preferred_width().natural_width
+        self.interface.intrinsic.width = new_width
