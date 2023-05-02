@@ -31,7 +31,9 @@ class DetailedList(Widget):
 
         self.scrolled_window = Gtk.ScrolledWindow()
 
-        self.scrolled_window.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
+        self.scrolled_window.set_policy(
+            Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC
+        )
         self.scrolled_window.set_min_content_width(self.interface._MIN_WIDTH)
         self.scrolled_window.set_min_content_height(self.interface._MIN_HEIGHT)
 
@@ -43,7 +45,7 @@ class DetailedList(Widget):
         self.scroll_button.set_scroll(lambda: self.scroll_to_row(-1))
 
         self.native = Gtk.Overlay()
-        self.native.add_overlay(self.scrolled_window)
+        self.native.add(self.scrolled_window)
 
         self.refresh_button.overlay_over(self.native)
         self.scroll_button.overlay_over(self.native)
