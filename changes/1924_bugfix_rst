@@ -1,0 +1,1 @@
+Fixed bug causing detailedlist to not show when put in a box without a specified width on GTK
