@@ -69,6 +69,9 @@ class Tree(Widget):
         self._on_select = None
         self._on_double_click = None
 
+        # TODO: Tree should have a missing_value placeholder, same as Table.
+        self.missing_value = None
+
         self._impl = self.factory.Tree(interface=self)
         self.data = data
 
