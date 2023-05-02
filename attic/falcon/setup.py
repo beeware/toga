@@ -6,11 +6,9 @@ from setuptools import setup
 # Version handline needs to be programatic because
 # we can't import toga_falcon to compute the version;
 # and to support versioned subpackage dependencies
-with open('toga_falcon/__init__.py', encoding='utf8') as version_file:
+with open("toga_falcon/__init__.py", encoding="utf8") as version_file:
     version_match = re.search(
-        r"^__version__ = ['\"]([^'\"]*)['\"]",
-        version_file.read(),
-        re.M
+        r"^__version__ = ['\"]([^'\"]*)['\"]", version_file.read(), re.M
     )
     if version_match:
         version = version_match.group(1)
@@ -20,6 +18,6 @@ with open('toga_falcon/__init__.py', encoding='utf8') as version_file:
 setup(
     version=version,
     install_requires=[
-        'toga-core==%s' % version,
+        "toga-core==%s" % version,
     ],
 )
