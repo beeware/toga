@@ -69,7 +69,10 @@ class Selection(Widget):
         self.interface.factory.not_implemented("Selection.select_item()")
 
     def get_selected_item(self):
-        return self.interface.items[self.picker.selectedRowInComponent(0)]
+        try:
+            return self.interface.items[self.picker.selectedRowInComponent(0)]
+        except IndexError:
+            return None
 
     def set_on_select(self, handler):
         # No special handling required

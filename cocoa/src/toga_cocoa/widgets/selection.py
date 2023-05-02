@@ -43,7 +43,9 @@ class Selection(Widget):
         self.native.selectItemWithTitle(item)
 
     def get_selected_item(self):
-        return str(self.native.titleOfSelectedItem)
+        selected = self.native.titleOfSelectedItem
+        if selected:
+            return str(selected)
 
     def set_on_select(self, handler):
         pass

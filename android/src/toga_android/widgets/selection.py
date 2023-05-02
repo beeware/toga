@@ -41,10 +41,7 @@ class Selection(Widget):
         if selected:
             return str(selected)
         else:
-            if self.adapter.getCount() > 0:
-                return ""
-            else:
-                return None
+            return None
 
     def remove_all_items(self):
         self.adapter.clear()
