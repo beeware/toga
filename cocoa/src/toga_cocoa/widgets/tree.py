@@ -94,7 +94,7 @@ class TogaTree(NSOutlineView):
         except AttributeError:
             # If the node doesn't have a property with the
             # accessor name, assume an empty string value.
-            value = ""
+            value = self.interface.missing_value
             icon_iface = None
 
         # If the value has an icon, get the _impl.
@@ -139,7 +139,9 @@ class TogaTree(NSOutlineView):
         heights = [default_row_height]
 
         for column in self.tableColumns:
-            value = getattr(item.attrs["node"], str(column.identifier))
+            value = getattr(
+                item.attrs["node"], str(column.identifier), self.interface.missing_value
+            )
 
             if isinstance(value, toga.Widget):
                 # if the cell value is a widget, use its height
