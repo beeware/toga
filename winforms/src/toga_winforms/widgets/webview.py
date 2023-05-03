@@ -8,6 +8,7 @@ import toga
 from toga_winforms.keys import toga_key
 from toga_winforms.libs import (
     Action,
+    Color,
     CoreWebView2CreationProperties,
     String,
     Task,
@@ -16,7 +17,6 @@ from toga_winforms.libs import (
     WebView2,
     WebView2RuntimeNotFoundException,
     WinForms,
-    Color
 )
 
 from .base import Widget
