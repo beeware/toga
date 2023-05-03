@@ -6,9 +6,9 @@ gi.require_version("Gtk", "3.0")
 from gi.repository import Gdk, GdkPixbuf, Gio, GLib, GObject, Gtk  # noqa: E402, F401
 
 if Gdk.Screen.get_default() is None:
-    exit("This system does not have a DISPLAY environment variable set")
-
-print(Gdk.Screen.get_default())
+    raise RuntimeError(
+        "Cannot identify an active display. Is the ``DISPLAY`` environment variable set correctly?"
+    )
 
 # The following import will fail if WebKit or its API wrappers aren't
 # installed; handle failure gracefully

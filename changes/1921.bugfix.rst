@@ -1,1 +1,1 @@
-Improved error caused by segfault for linux systems without a DISPLAY variable set
+Apps on Linux no longer segfault if an X Windows display cannot be identified.
