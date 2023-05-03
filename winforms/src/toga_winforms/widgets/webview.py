@@ -8,6 +8,7 @@ import toga
 from toga_winforms.keys import toga_key
 from toga_winforms.libs import (
     Action,
+    Color,
     CoreWebView2CreationProperties,
     String,
     Task,
@@ -43,6 +44,7 @@ class WebView(Widget):
 
         # Trigger the configuration of the webview
         self.native.EnsureCoreWebView2Async(None)
+        self.native.DefaultBackgroundColor = Color.Transparent
 
     def winforms_initialization_completed(self, sender, args):
         # The WebView2 widget has an "internal" widget (CoreWebView2) that is

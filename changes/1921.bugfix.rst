@@ -1,0 +1,1 @@
+Apps on Linux no longer segfault if an X Windows display cannot be identified.
