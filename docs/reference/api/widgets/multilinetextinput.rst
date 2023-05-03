@@ -13,7 +13,7 @@ The Multi-line text input is similar to the text input but designed for larger i
 Usage
 -----
 
-.. code-block:: Python
+.. code-block:: python
 
     import toga
 

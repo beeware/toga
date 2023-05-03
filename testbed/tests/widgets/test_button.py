@@ -37,7 +37,7 @@ async def test_text(widget, probe):
 
     for text in TEXTS:
         widget.text = text
-        await probe.redraw()
+        await probe.redraw("Button text should be %s" % text)
 
         # Text after a newline will be stripped.
         expected = text.split("\n")[0]
@@ -54,12 +54,12 @@ async def test_press(widget, probe):
     handler = Mock()
     widget.on_press = handler
     await probe.press()
-    await probe.redraw()
+    await probe.redraw("Button should be pressed")
     handler.assert_called_once_with(widget)
 
 
 async def test_background_color_transparent(widget, probe):
     "Buttons treat background transparency as a color reset."
     widget.style.background_color = TRANSPARENT
-    await probe.redraw()
+    await probe.redraw("Button background color should be transparent")
     assert_color(probe.background_color, None)

@@ -179,8 +179,11 @@ class App:
     def exit(self):
         pass
 
-    def current_window(self):
-        self.interface.factory.not_implemented("App.current_window()")
+    def get_current_window(self):
+        self.interface.factory.not_implemented("App.get_current_window()")
+
+    def set_current_window(self):
+        self.interface.factory.not_implemented("App.set_current_window()")
 
     def enter_full_screen(self, windows):
         self.interface.factory.not_implemented("App.enter_full_screen()")

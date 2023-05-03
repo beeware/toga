@@ -22,14 +22,14 @@ First, ensure that you have Python 3 and pip installed. To do this, run:
 
   .. group-tab:: macOS
 
-    .. code-block:: bash
+    .. code-block:: console
 
       $ python3 --version
       $ pip3 --version
 
   .. group-tab:: Linux
 
-    .. code-block:: bash
+    .. code-block:: console
 
       $ python3 --version
       $ pip3 --version
@@ -49,14 +49,14 @@ start coding. To set up a virtual environment, run:
 
   .. group-tab:: macOS
 
-    .. code-block:: bash
+    .. code-block:: console
 
       $ python3 -m venv venv
       $ source venv/bin/activate
 
   .. group-tab:: Linux
 
-    .. code-block:: bash
+    .. code-block:: console
 
       $ python3 -m venv venv
       $ source venv/bin/activate
@@ -66,7 +66,7 @@ start coding. To set up a virtual environment, run:
     .. code-block:: doscon
 
       C:\...>python3 -m venv venv
-      C:\...>venv/Scripts/activate
+      C:\...>venv\Scripts\activate
 
 Your prompt should now have a ``(venv)`` prefix in front of it.
 
@@ -80,19 +80,29 @@ Next, install any additional dependencies for your operating system:
 
   .. group-tab:: Linux
 
-    .. code-block:: bash
+    Ubuntu 18.04+, Debian 10+
 
-      # Ubuntu 18.04+, Debian 10+
+    .. code-block:: console
+
       (venv) $ sudo apt-get update
       (venv) $ sudo apt-get install python3-dev libgirepository1.0-dev libcairo2-dev libpango1.0-dev libwebkit2gtk-4.0-37 gir1.2-webkit2-4.0
 
-      # Fedora
+    Fedora
+
+    .. code-block:: console
+
       (venv) $ sudo dnf install pkg-config python3-devel gobject-introspection-devel cairo-devel cairo-gobject-devel pango-devel webkitgtk3
 
-      # Arch / Manjaro
+    Arch / Manjaro
+
+    .. code-block:: console
+
       (venv) $ sudo pacman -Syu git pkgconf cairo python-cairo pango gobject-introspection gobject-introspection-runtime python-gobject webkit2gtk
 
-      # FreeBSD
+    FreeBSD
+
+    .. code-block:: console
+
       (venv) $ sudo pkg update
       (venv) $ sudo pkg install gtk3 pango gobject-introspection cairo webkit2-gtk3
 
@@ -144,14 +154,14 @@ source packages, so we have to manually install each package:
 
   .. group-tab:: macOS
 
-    .. code-block:: bash
+    .. code-block:: console
 
       (venv) $ cd toga
       (venv) $ pip install -e "./core[dev]" -e ./dummy -e ./cocoa
 
   .. group-tab:: Linux
 
-    .. code-block:: bash
+    .. code-block:: console
 
       (venv) $ cd toga
       (venv) $ pip install -e ./core[dev] -e ./dummy -e ./gtk
@@ -172,14 +182,14 @@ git commit. To enable pre-commit, run:
 
   .. group-tab:: macOS
 
-    .. code-block:: bash
+    .. code-block:: console
 
       (venv) $ pre-commit install
       pre-commit installed at .git/hooks/pre-commit
 
   .. group-tab:: Linux
 
-    .. code-block:: bash
+    .. code-block:: console
 
       (venv) $ pre-commit install
       pre-commit installed at .git/hooks/pre-commit
@@ -199,7 +209,7 @@ pre-commit will make the changes needed to correct the problems it has found:
 
   .. group-tab:: macOS
 
-    .. code-block:: bash
+    .. code-block:: console
 
       (venv) $ git add some/interesting_file.py
       (venv) $ git commit -m "Minor change"
@@ -225,7 +235,7 @@ pre-commit will make the changes needed to correct the problems it has found:
 
   .. group-tab:: Linux
 
-    .. code-block:: bash
+    .. code-block:: console
 
       (venv) $ git add some/interesting_file.py
       (venv) $ git commit -m "Minor change"
@@ -282,7 +292,7 @@ and re-commit the change.
 
   .. group-tab:: macOS
 
-    .. code-block:: bash
+    .. code-block:: console
 
       (venv) $ git add some/interesting_file.py
       (venv) $ git commit -m "Minor change"
@@ -302,7 +312,7 @@ and re-commit the change.
 
   .. group-tab:: Linux
 
-    .. code-block:: bash
+    .. code-block:: console
 
       (venv) $ git add some/interesting_file.py
       (venv) $ git commit -m "Minor change"
@@ -538,13 +548,13 @@ To run the core test suite:
 
   .. group-tab:: macOS
 
-    .. code-block:: bash
+    .. code-block:: console
 
       (venv) $ tox -e py-core
 
   .. group-tab:: Linux
 
-    .. code-block:: bash
+    .. code-block:: console
 
       (venv) $ tox -e py-core
 
@@ -616,13 +626,13 @@ specific test, using `pytest specifiers
 
   .. group-tab:: macOS
 
-    .. code-block:: bash
+    .. code-block:: console
 
       (venv) $ tox -e py-core -- tests/path_to_test_file/test_some_test.py
 
   .. group-tab:: Linux
 
-    .. code-block:: bash
+    .. code-block:: console
 
       (venv) $ tox -e py-core -- tests/path_to_test_file/test_some_test.py
 
@@ -655,7 +665,7 @@ test mode:
 
   .. group-tab:: macOS
 
-    .. code-block:: bash
+    .. code-block:: console
 
       (venv) $ python -m pip install briefcase
       (venv) $ cd testbed
@@ -663,7 +673,7 @@ test mode:
 
   .. group-tab:: Linux
 
-    .. code-block:: bash
+    .. code-block:: console
 
       (venv) $ python -m pip install briefcase
       (venv) $ cd testbed
@@ -694,13 +704,13 @@ So - to run *only* the button tests in slow mode, you could run:
 
   .. group-tab:: macOS
 
-    .. code-block:: bash
+    .. code-block:: console
 
       (venv) $ briefcase dev --test -- tests/widgets/test_button.py --slow
 
   .. group-tab:: Linux
 
-    .. code-block:: bash
+    .. code-block:: console
 
       (venv) $ briefcase dev --test -- tests/widgets/test_button.py --slow
 
@@ -725,13 +735,13 @@ run``.
 
     To run the Android test suite:
 
-    .. code-block:: bash
+    .. code-block:: console
 
       (venv) $ briefcase run android --test
 
     To run the iOS test suite:
 
-    .. code-block:: bash
+    .. code-block:: console
 
       (venv) $ briefcase run iOS --test
 
@@ -739,7 +749,7 @@ run``.
 
     To run the Android test suite:
 
-    .. code-block:: bash
+    .. code-block:: console
 
       (venv) $ briefcase run android --test
 
@@ -858,13 +868,13 @@ To create a feature branch, run:
 
   .. group-tab:: macOS
 
-    .. code-block:: bash
+    .. code-block:: console
 
       (venv) $ git checkout -b fix-layout-bug
 
   .. group-tab:: Linux
 
-    .. code-block:: bash
+    .. code-block:: console
 
       (venv) $ git checkout -b fix-layout-bug
 

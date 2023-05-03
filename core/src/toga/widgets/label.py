@@ -35,7 +35,6 @@ class Label(Widget):
         ``None``, and the Unicode codepoint U+200B (ZERO WIDTH SPACE), will be
         interpreted and returned as an empty string. Any other object will be
         converted to a string using ``str()``.
-
         """
         return self._impl.get_text()
 

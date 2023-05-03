@@ -242,7 +242,7 @@ def test_determinate_switch(progressbar):
 
 
 def test_disable_no_op(progressbar):
-    """ProgressBar doesn't have a disabled state"""
+    """ProgressBar doesn't have a disabled state."""
     # Enabled by default
     assert progressbar.enabled
 

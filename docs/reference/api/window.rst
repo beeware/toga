@@ -16,7 +16,7 @@ Usage
 The window class is used for desktop applications, where components need to be shown within a window-manager. Windows can be configured on
 instantiation and support displaying multiple widgets, toolbars and resizing.
 
-.. code-block:: Python
+.. code-block:: python
 
     import toga
 

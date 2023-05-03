@@ -449,8 +449,7 @@ class OptionContainer(Widget):
 
     @property
     def on_select(self):
-        """The callback function that is invoked when one of the options is
-        selected.
+        """The callback function that is invoked when one of the options is selected.
 
         Returns:
             (``Callable``) The callback function.

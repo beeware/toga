@@ -1,0 +1,1 @@
+Moved font measuring logic for GTK from Font class to Canvas widget

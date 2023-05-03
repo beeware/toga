@@ -43,8 +43,12 @@ class App(LoggedObject):
         self._action("exit")
 
     @not_required_on("mobile")
-    def current_window(self):
-        self._action("current_window")
+    def get_current_window(self):
+        self._action("get_current_window")
+
+    @not_required_on("mobile")
+    def set_current_window(self):
+        self._action("set_current_window")
 
     @not_required_on("mobile")
     def enter_full_screen(self, windows):

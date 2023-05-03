@@ -15,9 +15,9 @@ Usage
 
 The app class is used by instantiating with a name, namespace and callback to a startup delegate which takes 1 argument of the app instance.
 
-To start a UI loop, call `app.main_loop()`
+To start a UI loop, call ``app.main_loop()``
 
-.. code-block:: Python
+.. code-block:: python
 
     import toga
 
@@ -33,7 +33,7 @@ To start a UI loop, call `app.main_loop()`
 
 Alternatively, you can subclass App and implement the startup method
 
-.. code-block:: Python
+.. code-block:: python
 
     import toga
 

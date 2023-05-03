@@ -22,7 +22,7 @@ bee_movies = [
         "year": 2007,
         "title": "The Girl Who Swallowed Bees",
         "rating": "7.5",
-        "genre": "Short",
+        # No genre defined
     },
     {
         "year": 1974,
@@ -92,6 +92,7 @@ class ExampleTreeApp(toga.App):
             headings=["Year", "Title", "Rating", "Genre"],
             on_select=self.on_select_handler,
             style=Pack(flex=1),
+            missing_value="?",
         )
 
         self.decade_1940s = self.tree.data.append(

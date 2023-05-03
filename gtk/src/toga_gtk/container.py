@@ -58,15 +58,13 @@ class TogaContainer(Gtk.Fixed):
 
     @property
     def content(self):
-        """The Toga implementation widget that is the root content of this
-        container.
+        """The Toga implementation widget that is the root content of this container.
 
-        All children of the root content will also be added to the container as
-        a result of assigning content.
+        All children of the root content will also be added to the container as a result
+        of assigning content.
 
-        If the container already has content, the old content will be replaced.
-        The old root content and all it's children will be removed from the
-        container.
+        If the container already has content, the old content will be replaced. The old
+        root content and all it's children will be removed from the container.
         """
         return self._content
 
@@ -82,8 +80,8 @@ class TogaContainer(Gtk.Fixed):
     def recompute(self):
         """Rehint and re-layout the container's content, if necessary.
 
-        Any widgets known to be dirty will be rehinted. The minimum
-        possible layout size for the container will also be recomputed.
+        Any widgets known to be dirty will be rehinted. The minimum possible layout size
+        for the container will also be recomputed.
         """
         if self._content and self.needs_redraw:
             # If any of the widgets have been marked as dirty,
@@ -103,8 +101,7 @@ class TogaContainer(Gtk.Fixed):
             self.min_height = self._content.interface.layout.height
 
     def do_get_preferred_width(self):
-        """Return (recomputing if necessary) the preferred width for the
-        container.
+        """Return (recomputing if necessary) the preferred width for the container.
 
         The preferred size of the container is its minimum size. This
         preference will be overridden with the layout size when the layout is
@@ -125,15 +122,12 @@ class TogaContainer(Gtk.Fixed):
         return self.min_width, self.min_width
 
     def do_get_preferred_height(self):
-        """Return (recomputing if necessary) the preferred height for the
-        container.
+        """Return (recomputing if necessary) the preferred height for the container.
 
-        The preferred size of the container is its minimum size. This
-        preference will be overridden with the layout size when the
-        layout is applied.
+        The preferred size of the container is its minimum size. This preference will be
+        overridden with the layout size when the layout is applied.
 
-        If the container does not yet have content, the minimum height
-        is set to 0.
+        If the container does not yet have content, the minimum height is set to 0.
         """
         # print("GET PREFERRED HEIGHT", self._content)
         if self._content is None:
@@ -149,11 +143,10 @@ class TogaContainer(Gtk.Fixed):
     def do_size_allocate(self, allocation):
         """Perform the actual layout for the widget, and all it's children.
 
-        The container will assume whatever size it has been given by GTK -
-        usually the full space of the window that holds the container.
-        The layout will then be re-computed based on this new available size,
-        and that new geometry will be applied to all child widgets of the
-        container.
+        The container will assume whatever size it has been given by GTK - usually the
+        full space of the window that holds the container. The layout will then be re-
+        computed based on this new available size, and that new geometry will be applied
+        to all child widgets of the container.
         """
         # print(self._content, f"Container layout {allocation.width}x{allocation.height} @ {allocation.x}x{allocation.y}")  # noqa: E501
 

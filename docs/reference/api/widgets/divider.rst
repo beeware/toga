@@ -18,7 +18,7 @@ Usage
 
 To separate two labels stacked vertically with a horizontal line:
 
-.. code-block:: Python
+.. code-block:: python
 
     import toga
     from toga.style import Pack, COLUMN

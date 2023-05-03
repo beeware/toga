@@ -10,8 +10,7 @@ from .label import TextViewWidget
 
 
 def decimal_from_string(s):
-    """Convert s to a `Decimal`, returning `None` if it's not a valid
-    number."""
+    """Convert s to a `Decimal`, returning `None` if it's not a valid number."""
     try:
         return Decimal(s)
     except InvalidOperation:
@@ -21,8 +20,8 @@ def decimal_from_string(s):
 def string_from_decimal(d):
     """Implement the inverse of `decimal_from_string()`.
 
-    This way, Toga's `NumericInput` can pass us a `None` or `Decimal`,
-    and we can always place a String in the Android `EditText`.
+    This way, Toga's `NumericInput` can pass us a `None` or `Decimal`, and we can always
+    place a String in the Android `EditText`.
     """
     if d is None:
         return ""

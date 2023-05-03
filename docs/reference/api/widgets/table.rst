@@ -17,7 +17,7 @@ can be added.
 Usage
 -----
 
-.. code-block:: Python
+.. code-block:: python
 
     import toga
 

@@ -4,15 +4,15 @@ from toga_gtk.libs import GObject, Gtk
 
 
 class SourceTreeModel(GObject.Object, Gtk.TreeModel):
-    """A full Gtk.TreeModel implementation backed by a toga.source.ListSource
-    or toga.source.TreeSource.
+    """A full Gtk.TreeModel implementation backed by a toga.source.ListSource or
+    toga.source.TreeSource.
 
     It stores a reference to every node in the source.
     TODO: If the source is a TreeSource, it uses the Node._parent attribute.
     Maybe an method could be added (like index()) to the TreeSource to access it.
     """
 
-    def __init__(self, columns, is_tree):
+    def __init__(self, columns, is_tree, missing_value):
         """
         Args:
             columns (list(dict(str, any))): the columns excluding first column which is always the row object.
@@ -25,6 +25,7 @@ class SourceTreeModel(GObject.Object, Gtk.TreeModel):
         self.source = None
         self.columns = columns
         self.is_tree = is_tree
+        self.missing_value = missing_value
         # by storing the row and calling index later, we can opt-in for this performance
         # boost and don't have to track iterators (we would have to if we stored indices).
         self.flags = Gtk.TreeModelFlags.ITERS_PERSIST
@@ -163,7 +164,7 @@ class SourceTreeModel(GObject.Object, Gtk.TreeModel):
             return None
 
         # workaround icon+name tuple breaking gtk tree
-        ret = getattr(row, self.columns[column - 1]["attr"])
+        ret = getattr(row, self.columns[column - 1]["attr"], self.missing_value)
         if isinstance(ret, tuple):
             ret = ret[1]
         return ret

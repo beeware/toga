@@ -1,7 +1,9 @@
 from travertino.size import at_least
 
+from toga_android.keys import toga_key
+
 from ..libs.android.text import InputType, TextWatcher
-from ..libs.android.view import Gravity, View__MeasureSpec
+from ..libs.android.view import Gravity, OnKeyListener, View__MeasureSpec
 from ..libs.android.widget import EditText
 from .base import align
 from .label import TextViewWidget
@@ -24,12 +26,32 @@ class TogaTextWatcher(TextWatcher):
         pass
 
 
+class TogaKeyListener(OnKeyListener):
+    def __init__(self, impl):
+        super().__init__()
+        self.impl = impl
+        self.interface = impl.interface
+
+    def onKey(self, _view, _key, _event):
+        try:
+            key_pressed = toga_key(_event)["key"].value
+            if (key_pressed == "<enter>" or key_pressed == "numpad:enter") and int(
+                _event.getAction()
+            ) == 1:
+                self.interface.on_confirm(None)
+            return False
+        except TypeError:
+            return False
+
+
 class TextInput(TextViewWidget):
     def create(self):
         self._textChangedListener = None
         self.native = EditText(self._native_activity)
         self.native.setInputType(InputType.TYPE_CLASS_TEXT)
         self.cache_textview_defaults()
+        self._on_key_listener = TogaKeyListener(self)
+        self.native.setOnKeyListener(self._on_key_listener)
 
     def get_value(self):
         return self.native.getText().toString()

@@ -16,7 +16,7 @@ A text label for annotating forms or interfaces.
 Usage
 -----
 
-.. code-block:: Python
+.. code-block:: python
 
     import toga
 

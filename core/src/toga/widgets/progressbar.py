@@ -40,11 +40,11 @@ class ProgressBar(Widget):
 
     @property
     def enabled(self):
-        """Is the widget currently enabled? i.e., can the user interact with the
-        widget?
+        """Is the widget currently enabled? i.e., can the user interact with the widget?
 
-        ProgressBar widgets cannot be disabled; this property will always
-        return True; any attempt to modify it will be ignored."""
+        ProgressBar widgets cannot be disabled; this property will always return True;
+        any attempt to modify it will be ignored.
+        """
         return True
 
     @enabled.setter

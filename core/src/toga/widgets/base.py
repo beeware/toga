@@ -154,12 +154,17 @@ class Widget(Node):
         Any nominated child widget that is not a child of this widget will
         not have any change in parentage.
 
+        Refreshes the widget after removal if any children were removed.
+
         Raises ``ValueError`` if this widget cannot have children.
 
         :param children: The child nodes to remove.
         """
+        removed = False
+
         for child in children:
             if child.parent is self:
+                removed = True
                 super().remove(child)
 
                 child.app = None
@@ -167,8 +172,17 @@ class Widget(Node):
 
                 self._impl.remove_child(child._impl)
 
-        if self.window:
+        if self.window and removed:
             self.window.content.refresh()
+
+    def clear(self):
+        """Remove all child widgets of this node.
+
+        Refreshes the widget after removal if any children were removed.
+
+        Raises ``ValueError`` if this widget cannot have children.
+        """
+        self.remove(*self.children)
 
     @property
     def app(self):
@@ -229,8 +243,7 @@ class Widget(Node):
 
     @property
     def enabled(self):
-        """Is the widget currently enabled? i.e., can the user interact with the
-        widget?"""
+        """Is the widget currently enabled? i.e., can the user interact with the widget?"""
         return self._impl.get_enabled()
 
     @enabled.setter
@@ -258,10 +271,10 @@ class Widget(Node):
     def focus(self):
         """Give this widget the input focus.
 
-        This method is a no-op if the widget can't accept focus. The ability of
-        a widget to accept focus is platform-dependent. In general, on desktop
-        platforms you can focus any widget that can accept user input, while
-        on mobile platforms focus is limited to widgets that accept text input
-        (i.e., widgets that cause the virtual keyboard to appear).
+        This method is a no-op if the widget can't accept focus. The ability of a widget
+        to accept focus is platform-dependent. In general, on desktop platforms you can
+        focus any widget that can accept user input, while on mobile platforms focus is
+        limited to widgets that accept text input (i.e., widgets that cause the virtual
+        keyboard to appear).
         """
         self._impl.focus()

@@ -1,0 +1,1 @@
+An API for setting a window into active focus was added.

@@ -17,7 +17,7 @@ usually rendered as a "spinner" animation.
 Usage
 -----
 
-.. code-block:: Python
+.. code-block:: python
 
     import toga
 

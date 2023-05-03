@@ -19,6 +19,9 @@ class SelectionApp(toga.App):
 
         # Add the content on the main window
         self.selection = toga.Selection(items=self.OPTIONS)
+        self.empty_selection = toga.Selection()
+
+        self.report_label = toga.Label("", style=label_style)
 
         self.main_window.content = toga.Box(
             children=[
@@ -27,6 +30,22 @@ class SelectionApp(toga.App):
                     children=[
                         toga.Label("Select an element", style=label_style),
                         self.selection,
+                    ],
+                ),
+                toga.Box(
+                    style=box_style,
+                    children=[
+                        toga.Label("Empty selection", style=label_style),
+                        self.empty_selection,
+                    ],
+                ),
+                toga.Box(
+                    style=box_style,
+                    children=[
+                        toga.Button(
+                            "Report on selection", on_press=self.report_selection
+                        ),
+                        self.report_label,
                     ],
                 ),
                 toga.Box(
@@ -66,7 +85,7 @@ class SelectionApp(toga.App):
                 toga.Box(
                     style=box_style,
                     children=[
-                        toga.Label("use some style!", style=label_style),
+                        toga.Label("Use some style!", style=label_style),
                         toga.Selection(
                             style=Pack(width=200, padding=24),
                             items=["Curium", "Titanium", "Copernicium"],
@@ -112,6 +131,11 @@ class SelectionApp(toga.App):
         # get the current value of the slider with `selection.value`
 
         print(f"The selection widget changed to {selection.value}")
+
+    def report_selection(self, widget):
+        self.report_label.text = (
+            f"Element: {self.selection.value!r}; Empty: {self.empty_selection.value!r}"
+        )
 
 
 def main():

@@ -15,7 +15,7 @@ Usage
 
 Simple usage to draw a black circle on the screen using the arc drawing object:
 
-.. code-block:: Python
+.. code-block:: python
 
     import toga
     canvas = toga.Canvas(style=Pack(flex=1))
@@ -28,7 +28,7 @@ want to modify the parameters of the drawing objects. Here we draw a black
 circle and black rectangle. We then change the size of the circle, move the
 rectangle, and finally delete the rectangle.
 
-.. code-block:: Python
+.. code-block:: python
 
     import toga
     canvas = toga.Canvas(style=Pack(flex=1))
@@ -47,7 +47,7 @@ character on the canvas. First, we create a hero context. Next, we create a
 black circle and a black outlined rectangle for the hero's body. Finally, we
 move the hero by 10 on the x-axis.
 
-.. code-block:: Python
+.. code-block:: python
 
     import toga
     canvas = toga.Canvas(style=Pack(flex=1))
