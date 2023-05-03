@@ -1,0 +1,1 @@
+Webviews on Windows no longer have a black background when they are resized.
