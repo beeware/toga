@@ -24,8 +24,7 @@ class AndroidViewport(ViewTreeObserver__OnGlobalLayoutListener):
     def onGlobalLayout(self):
         """This listener is run after each native layout pass.
 
-        If any view's size or position has changed, the new values will
-        be visible here.
+        If any view's size or position has changed, the new values will be visible here.
         """
         new_size = (self.width, self.height)
         if self.last_size != new_size:
@@ -79,7 +78,7 @@ class Window:
         self.app.native.setTitle(title)
 
     def get_position(self):
-        return (0, 0)
+        return 0, 0
 
     def set_position(self, position):
         # Does nothing on mobile
@@ -103,7 +102,7 @@ class Window:
         pass
 
     def get_visible(self):
-        # The window is alays visible
+        # The window is always visible
         return True
 
     def close(self):

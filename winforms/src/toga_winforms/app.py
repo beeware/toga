@@ -49,6 +49,11 @@ class App:
         # window-level close handling.
         self._is_exiting = False
 
+        # Winforms cursor visibility is a stack; If you call hide N times, you
+        # need to call Show N times to make the cursor re-appear. Store a local
+        # boolean to allow us to avoid building a deep stack.
+        self._cursor_visible = True
+
         self.loop = WinformsProactorEventLoop()
         asyncio.set_event_loop(self.loop)
 
@@ -105,7 +110,7 @@ class App:
                 group=toga.Group.HELP,
             ),
             toga.Command(None, "Preferences", group=toga.Group.FILE),
-            # Quit should always be the last item, in a section on it's own
+            # Quit should always be the last item, in a section on its own
             toga.Command(
                 lambda _: self.interface.exit(),
                 "Exit " + self.interface.name,
@@ -289,23 +294,31 @@ class App:
     def set_main_window(self, window):
         self.app_context.MainForm = window._impl.native
 
-    def current_window(self):
-        self.interface.factory.not_implemented("App.current_window()")
+    def get_current_window(self):
+        for window in self.interface.windows:
+            if WinForms.Form.ActiveForm == window._impl.native:
+                return window._impl.native
+
+    def set_current_window(self, window):
+        window._impl.native.Activate()
 
     def enter_full_screen(self, windows):
-        self.interface.factory.not_implemented("App.enter_full_screen()")
+        for window in windows:
+            window._impl.set_full_screen(True)
 
     def exit_full_screen(self, windows):
-        self.interface.factory.not_implemented("App.exit_full_screen()")
-
-    def set_cursor(self, value):
-        self.interface.factory.not_implemented("App.set_cursor()")
+        for window in windows:
+            window._impl.set_full_screen(False)
 
     def show_cursor(self):
-        self.interface.factory.not_implemented("App.show_cursor()")
+        if not self._cursor_visible:
+            WinForms.Cursor.Show()
+        self._cursor_visible = True
 
     def hide_cursor(self):
-        self.interface.factory.not_implemented("App.hide_cursor()")
+        if self._cursor_visible:
+            WinForms.Cursor.Hide()
+        self._cursor_visible = False
 
 
 class DocumentApp(App):

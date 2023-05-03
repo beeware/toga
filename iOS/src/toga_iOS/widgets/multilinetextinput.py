@@ -23,8 +23,8 @@ class TogaMultilineTextView(UITextView):
         # To keep consistency with non-mobile platforms, we'll resign the
         # responder status when you tap somewhere else outside this view
         # (except the keyboard)
-        within_x = point.x > 0 and point.x < self.frame.size.width
-        within_y = point.y > 0 and point.y < self.frame.size.height
+        within_x = 0 < point.x < self.frame.size.width
+        within_y = 0 < point.y < self.frame.size.height
         in_view = within_x and within_y
         if not in_view:
             self.resignFirstResponder()
@@ -110,7 +110,7 @@ class MultilineTextInput(Widget):
         self.placeholder_label.text = value
 
     def set_readonly(self, value):
-        self.native.editable = value
+        self.native.editable = not value
 
     def set_value(self, value):
         self.native.text = value
@@ -120,8 +120,8 @@ class MultilineTextInput(Widget):
         return self.native.text
 
     def rehint(self):
-        self.interface.intrinsic.width = at_least(self.interface.MIN_WIDTH)
-        self.interface.intrinsic.height = at_least(self.interface.MIN_HEIGHT)
+        self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
+        self.interface.intrinsic.height = at_least(self.interface._MIN_HEIGHT)
 
     def set_font(self, font):
         if font:

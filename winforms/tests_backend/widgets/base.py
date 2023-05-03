@@ -15,6 +15,7 @@ class SimpleProbe:
         self.widget = widget
         self.native = widget._impl.native
         assert isinstance(self.native, self.native_class)
+        self.scale_factor = self.native.CreateGraphics().DpiX / 96
 
     def assert_container(self, container):
         container_native = container._impl.native
@@ -23,6 +24,10 @@ class SimpleProbe:
                 break
         else:
             raise ValueError(f"cannot find {self.native} in {container_native}")
+
+    def assert_not_contained(self):
+        assert self.widget._impl.container is None
+        assert self.native.Parent is None
 
     def assert_alignment(self, expected):
         # Winforms doesn't have a "Justified" alignment; it falls back to LEFT
@@ -42,12 +47,13 @@ class SimpleProbe:
             SYSTEM: SystemFonts.DefaultFont.FontFamily.Name,
         }.get(expected, expected)
 
-    async def redraw(self):
+    async def redraw(self, message=None):
         """Request a redraw of the app, waiting until that redraw has completed."""
         # Winforms style changes always take effect immediately.
 
         # If we're running slow, wait for a second
         if self.widget.app.run_slow:
+            print("Waiting for redraw" if message is None else message)
             await asyncio.sleep(1)
 
     @property
@@ -78,11 +84,11 @@ class SimpleProbe:
 
     @property
     def width(self):
-        return self.native.Width
+        return self.native.Width / self.scale_factor
 
     @property
     def height(self):
-        return self.native.Height
+        return self.native.Height / self.scale_factor
 
     def assert_width(self, min_width, max_width):
         assert (
@@ -94,5 +100,25 @@ class SimpleProbe:
             min_height <= self.height <= max_height
         ), f"Height ({self.height}) not in range ({min_height}, {max_height})"
 
-    def press(self):
+    def assert_layout(self, size, position):
+        # Widget is contained and in a window.
+        assert self.widget._impl.container is not None
+        assert self.native.Parent is not None
+
+        # size and position is as expected.
+        assert (self.native.Width, self.native.Height) == size
+        assert (
+            self.native.Left,
+            self.native.Top - self.widget._impl.container.vertical_shift,
+        ) == position
+
+    async def press(self):
         self.native.OnClick(EventArgs.Empty)
+
+    @property
+    def is_hidden(self):
+        return not self.native.Visible
+
+    @property
+    def has_focus(self):
+        return self.native.ContainsFocus

@@ -15,6 +15,7 @@ class App:
 
     def create(self):
         # self.resource_path = os.path.dirname(os.path.dirname(NSBundle.mainBundle.bundlePath))
+        self.native = js.document.getElementById("app-placeholder")
 
         formal_name = self.interface.formal_name
 
@@ -40,25 +41,17 @@ class App:
 
     def _create_submenu(self, group, items):
         submenu = create_element(
-            "li",
-            classes=["nav-item", "dropdown"],
+            "sl-dropdown",
             children=[
                 create_element(
-                    "a",
+                    "span",
                     id=f"menu-{id(group)}",
-                    classes=[
-                        "nav-link",
-                        "dropdown-toggle",
-                    ],
-                    data_toggle="dropdown",
-                    aria_haspopup="true",
-                    aria_expanded="false",
+                    classes=["menu"],
+                    slot="trigger",
                     content=group.text,
                 ),
                 create_element(
-                    "div",
-                    classes=["dropdown-menu"],
-                    aria_labelledby=f"menu-{id(group)}",
+                    "sl-menu",
                     children=items,
                 ),
             ],
@@ -81,22 +74,26 @@ class App:
                 submenu = self._menu_groups.setdefault(cmd.group, [])
 
                 menu_item = create_element(
-                    "a",
-                    classes=["dropdown-item"] + ([] if cmd.enabled else ["disabled"]),
+                    "sl-menu-item",
                     content=cmd.text,
+                    disabled=not cmd.enabled,
                 )
                 menu_item.onclick = cmd.action
 
                 submenu.append(menu_item)
 
-        menu_container = create_element(
-            "ul",
-            classes=["navbar-nav", "mr-auto"],
-        )
-        help_menu_container = create_element(
-            "ul",
-            classes=["navbar-nav", "ml-auto"],
-        )
+        menu_container = create_element("nav", classes=["menubar"])
+        help_menu_container = create_element("nav", classes=["menubar"])
+
+        # If there isn't an explicit app menu group, add an inert placeholder
+        if toga.Group.APP not in self._menu_groups:
+            menu_container.appendChild(
+                create_element(
+                    "span",
+                    classes=["app"],
+                    content=self.interface.formal_name,
+                )
+            )
 
         for group, items in self._menu_groups.items():
             submenu = self._create_submenu(group, items)
@@ -107,66 +104,27 @@ class App:
 
         self.menubar = create_element(
             "header",
+            classes=["toga"],
             children=[
                 create_element(
-                    "nav",
-                    classes=[
-                        "navbar",
-                        "fixed-top",
-                        "navbar-expand-lg",
-                        "navbar-dark",
-                        "bg-dark",
-                    ],
+                    "a",
+                    classes=["brand"],
                     children=[
                         create_element(
-                            "div",
-                            classes=["container"],
-                            children=[
-                                create_element(
-                                    "a",
-                                    classes=["navbar-brand"],
-                                    content=f"""
-                                        <img src="static/logo-32.png"
-                                             class="d-inline-block align-top"
-                                             alt="{self.interface.formal_name} logo"
-                                             loading="lazy">
-                                        {self.interface.formal_name}
-                                    """,
-                                ),
-                                create_element(
-                                    "button",
-                                    classes=["navbar-toggler"],
-                                    type="button",
-                                    data_toggle="collapse",
-                                    data_target="#navbarsExample07",
-                                    aria_controls="navbarsExample07",
-                                    aria_expanded="false",
-                                    aria_label="Toggle navigation",
-                                    children=[
-                                        create_element(
-                                            "span", classes=["navbar-toggler-icon"]
-                                        )
-                                    ],
-                                ),
-                                create_element(
-                                    "div",
-                                    id="navbarsExample07",
-                                    classes=["collapse", "navbar-collapse"],
-                                    children=[
-                                        menu_container,
-                                        help_menu_container,
-                                    ],
-                                ),
-                            ],
+                            "img",
+                            src="static/logo-32.png",
+                            alt=f"{self.interface.formal_name} logo",
+                            loading="lazy",
                         )
                     ],
-                )
+                ),
+                menu_container,
+                help_menu_container,
             ],
         )
 
         # Menubar exists at the app level.
-        app_placeholder = js.document.getElementById("app-placeholder")
-        app_placeholder.appendChild(self.menubar)
+        self.native.appendChild(self.menubar)
 
     def main_loop(self):
         self.create()
@@ -175,23 +133,57 @@ class App:
         pass
 
     def show_about_dialog(self):
-        about_text = f"{self.interface.formal_name}"
+        name_and_version = f"{self.interface.formal_name}"
 
         if self.interface.version is not None:
-            about_text += f" v{self.interface.version}"
+            name_and_version += f" v{self.interface.version}"
 
         if self.interface.author is not None:
-            about_text += "\n\nCopyright © {author}".format(
-                author=self.interface.author
-            )
+            copyright = f"\n\nCopyright © {self.interface.author}"
 
-        js.alert(about_text)
+        close_button = create_element(
+            "sl-button", slot="footer", variant="primary", content="Ok"
+        )
+        about_dialog = create_element(
+            "sl-dialog",
+            id="toga-about-dialog",
+            label="About",
+            children=[
+                create_element("p", content=name_and_version),
+                create_element("p", content=copyright),
+                close_button,
+            ],
+        )
+
+        # Create a button handler to capture the close,
+        # and destroy the dialog
+        def dialog_close(event):
+            about_dialog.hide()
+            self.native.removeChild(about_dialog)
+
+        close_button.onclick = dialog_close
+
+        # Add the dialog to the DOM.
+        self.native.appendChild(about_dialog)
+
+        # If this is the first time a dialog is being shown, the Shoelace
+        # autoloader needs to construct the Dialog custom element. We can't
+        # display the dialog until that element has been fully loaded and
+        # cosntructed. Only show the dialog when the promise of <sl-dialog>
+        # element construction has been fulfilled.
+        def show_dialog(promise):
+            about_dialog.show()
+
+        js.customElements.whenDefined("sl-dialog").then(show_dialog)
 
     def exit(self):
         pass
 
-    def current_window(self):
-        self.interface.factory.not_implemented("App.current_window()")
+    def get_current_window(self):
+        self.interface.factory.not_implemented("App.get_current_window()")
+
+    def set_current_window(self):
+        self.interface.factory.not_implemented("App.set_current_window()")
 
     def enter_full_screen(self, windows):
         self.interface.factory.not_implemented("App.enter_full_screen()")

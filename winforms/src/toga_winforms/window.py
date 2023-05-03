@@ -47,6 +47,7 @@ class Window:
 
         self.native = WinForms.Form()
         self.native.interface = self.interface
+        self.native._impl = self
         self.native.FormClosing += self.winforms_FormClosing
 
         self.native.MinimizeBox = self.native.interface.minimizable
@@ -81,13 +82,13 @@ class Window:
             self.toolbar_native.Items.Add(item)
 
     def get_position(self):
-        return (self.native.Location.X, self.native.Location.Y)
+        return self.native.Location.X, self.native.Location.Y
 
     def set_position(self, position):
         self.native.Location = Point(*position)
 
     def get_size(self):
-        return (self.native.ClientSize.Width, self.native.ClientSize.Height)
+        return self.native.ClientSize.Width, self.native.ClientSize.Height
 
     def set_size(self, size):
         self.native.ClientSize = Size(*size)
@@ -198,7 +199,12 @@ class Window:
                 event.Cancel = True
 
     def set_full_screen(self, is_full_screen):
-        self.interface.factory.not_implemented("Window.set_full_screen()")
+        if is_full_screen:
+            self.native.FormBorderStyle = WinForms.FormBorderStyle(0)
+            self.native.WindowState = WinForms.FormWindowState.Maximized
+        else:
+            self.native.FormBorderStyle = WinForms.FormBorderStyle(1)
+            self.native.WindowState = WinForms.FormWindowState.Normal
 
     def close(self):
         self._is_closing = True

@@ -18,12 +18,9 @@ class WebView(Widget):
     :type  user_agent: ``str``
     :param on_key_down: The callback method for when a key is pressed within the web view
     :type  on_key_down: ``callable``
-    :param on_webview_load: The callback method for when the webview loads (or reloads).
+    :param on_webview_load: The callback method for when the web view loads (or reloads).
     :type  on_webview_load: ``callable``
     """
-
-    MIN_WIDTH = 100
-    MIN_HEIGHT = 100
 
     def __init__(
         self,
@@ -106,18 +103,18 @@ class WebView(Widget):
 
     @property
     def on_webview_load(self):
-        """The handler to invoke when the webview finishes loading.
+        """The handler to invoke when the web view finishes loading.
 
-        :return: The function that is called when the webview finishes loading.
+        :return: The function that is called when the web view finishes loading.
         :rtype:  ``callable``
         """
         return self._on_webview_load
 
     @on_webview_load.setter
     def on_webview_load(self, handler):
-        """Set the handler to invoke when the webview finishes loading.
+        """Set the handler to invoke when the web view finishes loading.
 
-        :param handler: The handler to invoke when the webview finishes loading.
+        :param handler: The handler to invoke when the web view finishes loading.
         :type  handler: ``callable``
         """
         self._on_webview_load = wrapped_handler(self, handler)
@@ -154,7 +151,7 @@ class WebView(Widget):
         **This is an asynchronous operation**. The method will complete
         when the return value is available.
 
-        :param javascript: The javascript expression to evaluate.
+        :param javascript: The JavaScript expression to evaluate.
         :type  javascript: ``str``
         """
         return await self._impl.evaluate_javascript(javascript)
@@ -162,12 +159,12 @@ class WebView(Widget):
     def invoke_javascript(self, javascript):
         """Invoke a JavaScript expression.
 
-        The result (if any) of the javascript is ignored.
+        The result (if any) of the JavaScript is ignored.
 
-        **No guarantee is provided that the javascript has completed
+        **No guarantee is provided that the JavaScript has completed
         execution when `invoke()` returns**
 
-        :param javascript: The javascript expression to evaluate.
+        :param javascript: The JavaScript expression to evaluate.
         :type  javascript: ``str``
         """
         self._impl.invoke_javascript(javascript)

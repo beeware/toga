@@ -26,7 +26,6 @@ def run_tests(app, cov, args, report_coverage, run_slow):
                 "-vv",
                 "--no-header",
                 "--tb=native",
-                "-rP",  # Show stdout from all tests, even if they passed.
                 "--color=no",
                 # Run all async tests and fixtures using pytest-asyncio.
                 "--asyncio-mode=auto",
@@ -56,6 +55,12 @@ def run_tests(app, cov, args, report_coverage, run_slow):
         if app.returncode == 0:
             cov.stop()
             if report_coverage:
+                # Exclude some patterns of lines that can't have coverage
+                cov.exclude("pragma: no cover")
+                cov.exclude("@(abc\\.)?abstractmethod")
+                cov.exclude("NotImplementedError")
+                cov.exclude("\\.not_implemented\\(")
+
                 total = cov.report(
                     precision=1,
                     skip_covered=True,
@@ -109,6 +114,7 @@ if __name__ == "__main__":
     # If `--slow` is in the arguments, run the test suite in slow mode
     try:
         args.remove("--slow")
+        args.append("-s")
         run_slow = True
     except ValueError:
         run_slow = False

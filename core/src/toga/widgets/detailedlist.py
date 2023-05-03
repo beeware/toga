@@ -7,17 +7,17 @@ from .base import Widget
 
 
 class DetailedList(Widget):
-    """A widget to hold data in a list form. Rows are selectable and can be
-    deleted. A updated function can be invoked by pulling the list down.
+    """A widget to hold data in a list form. Rows are selectable and can be deleted. An
+    updated function can be invoked by pulling the list down.
 
     Args:
         id (str): An identifier for this widget.
         data (list of `dict`): List of dictionaries with required 'icon', 'title', and
             'subtitle' keys as well as optional custom keys to store additional
-            info like 'pk' for a database primary key (think django ORM)
-        on_delete (``callable``): Function that is invoked on row deletion.
-        on_refresh (``callable``): Function that is invoked on user initialised refresh.
-        on_select (``callable``): Function that is invoked on row selection.
+            info like 'pk' for a database primary key (think Django ORM)
+        on_delete (``Callable``): Function that is invoked on row deletion.
+        on_refresh (``Callable``): Function that is invoked on user initialized refresh.
+        on_select (``Callable``): Function that is invoked on row selection.
         style (:obj:`Style`): An optional style object. If no style is provided then
             a new one will be created for the widget.
 
@@ -78,7 +78,7 @@ class DetailedList(Widget):
     @property
     def data(self):
         """The data source of the widget. It accepts data in the form of
-        ``list`` of ``dict`` or :obj:`ListSource`
+        ``list`` of ``dict`` or :class:`ListSource`
 
         Returns:
             Returns a (:obj:`ListSource`).
@@ -98,8 +98,7 @@ class DetailedList(Widget):
         self._impl.change_source(source=self._data)
 
     def scroll_to_top(self):
-        """Scroll the view so that the top of the list (first row) is
-        visible."""
+        """Scroll the view so that the top of the list (first row) is visible."""
         self.scroll_to_row(0)
 
     def scroll_to_row(self, row):
@@ -116,15 +115,14 @@ class DetailedList(Widget):
             self._impl.scroll_to_row(len(self.data) + row)
 
     def scroll_to_bottom(self):
-        """Scroll the view so that the bottom of the list (last row) is
-        visible."""
+        """Scroll the view so that the bottom of the list (last row) is visible."""
         self.scroll_to_row(-1)
 
     @property
     def on_delete(self):
-        """The function invoked on row deletion. The delete handler must accept
-        two arguments. The first is a ref. to the widget and the second the row
-        that is about to be deleted.
+        """The function invoked on row deletion. The delete handler must accept two
+        arguments. The first is a ref. to the widget and the second the row that is
+        about to be deleted.
 
         Examples:
             >>> def delete_handler(widget, row):
@@ -144,7 +142,7 @@ class DetailedList(Widget):
     def on_refresh(self):
         """
         Returns:
-            The function to be invoked on user initialised refresh.
+            The function to be invoked on user initialized refresh.
         """
         return self._on_refresh
 

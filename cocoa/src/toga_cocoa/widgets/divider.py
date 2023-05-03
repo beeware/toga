@@ -16,10 +16,6 @@ class Divider(Widget):
         # Set the initial direction
         self._direction = self.interface.HORIZONTAL
 
-    def get_enabled(self):
-        # A Divider is always enabled
-        return True
-
     def rehint(self):
         content_size = self.native.intrinsicContentSize()
 

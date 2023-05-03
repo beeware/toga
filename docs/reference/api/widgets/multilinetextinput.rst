@@ -8,12 +8,12 @@ Multi-line text input
    :included_cols: 4,5,6,7,8,9
    :exclude: {0: '(?!^(MultilineTextInput|Component)$)'}
 
-The Multi-line text input is similar to the text input but designed for larger inputs, similar to the textarea field of HTML.
+The Multi-line text input is similar to the text input but designed for larger inputs, similar to the ``<textarea>`` field of HTML.
 
 Usage
 -----
 
-.. code-block:: Python
+.. code-block:: python
 
     import toga
 

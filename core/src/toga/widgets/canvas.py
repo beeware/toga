@@ -17,11 +17,11 @@ class FillRule(Enum):
 
 
 class Context:
-    """The user-created :class:`Context` drawing object to populate a drawing
-    with visual context.
+    """The user-created :class:`Context` drawing object to populate a drawing with
+    visual context.
 
-    The top left corner of the canvas must be painted at the origin of
-    the context and is sized using the rehint() method.
+    The top left corner of the canvas must be painted at the origin of the context and
+    is sized using the rehint() method.
     """
 
     def __init__(self, *args, **kwargs):  # kwargs used to support multiple inheritance
@@ -35,9 +35,9 @@ class Context:
     def _draw(self, impl, *args, **kwargs):
         """Draw all drawing objects that are on the context or canvas.
 
-        This method is used by the implementation to tell the interface
-        canvas to draw all objects on it, and used by a context to draw
-        all the objects that are on the context.
+        This method is used by the implementation to tell the interface canvas to draw
+        all objects on it, and used by a context to draw all the objects that are on the
+        context.
         """
         for obj in self.drawing_objects:
             obj._draw(impl, *args, **kwargs)
@@ -81,9 +81,8 @@ class Context:
     def redraw(self):
         """Force a redraw of the Canvas.
 
-        The Canvas will be automatically redrawn after adding or remove
-        a drawing object. If you modify a drawing object, this method is
-        used to force a redraw.
+        The Canvas will be automatically redrawn after adding or remove a drawing
+        object. If you modify a drawing object, this method is used to force a redraw.
         """
         self.canvas._impl.redraw()
 
@@ -133,15 +132,11 @@ class Context:
         A drawing operator that fills the current path according to the current
         fill rule, (each sub-path is implicitly closed before being filled).
 
-        Args:
-            fill_rule (str, optional): 'nonzero' is the non-zero winding rule and
-                                       'evenodd' is the even-odd winding rule.
-            preserve (bool, optional): Preserves the path within the Context.
-            color (str, optional): color value in any valid color format,
-                default to black.
-
-        Yields:
-            :class:`Fill` object.
+        :param fill_rule: `nonzero` is the non-zero winding rule; `evenodd` is
+            the even-odd winding rule.
+        :param preserve: Preserve the path within the Context.
+        :param color: color value in any valid color format, default to black.
+        :yields: :class:`Fill` object.
         """
         fill = Fill(color, fill_rule, preserve)
         fill.canvas = self.canvas
@@ -153,10 +148,10 @@ class Context:
         """Constructs and yields a :class:`Stroke`.
 
         Args:
-            color (str, optional): color value in any valid color format,
+            color (str, Optional): color value in any valid color format,
                 default to black.
-            line_width (float, optional): stroke line width, default is 2.0.
-            line_dash (array of floats, optional): stroke line dash pattern, default is None.
+            line_width (float, Optional): stroke line width, default is 2.0.
+            line_dash (array of floats, Optional): stroke line dash pattern, default is None.
 
         Yields:
             :class:`Stroke` object.
@@ -241,7 +236,7 @@ class Context:
         return self.add_draw_obj(bezier_curve_to)
 
     def quadratic_curve_to(self, cpx, cpy, x, y):
-        """Constructs and returns a :class:`QuadraticCurveTo.`.
+        """Constructs and returns a :class:`QuadraticCurveTo`.
 
         Args:
             cpx (float): The x axis of the coordinate for the control point.
@@ -258,21 +253,19 @@ class Context:
     def arc(self, x, y, radius, startangle=0.0, endangle=2 * pi, anticlockwise=False):
         """Constructs and returns a :class:`Arc`.
 
-        Args:
-            x (float): The x coordinate of the arc's center.
-            y (float): The y coordinate of the arc's center.
-            radius (float): The arc's radius.
-            startangle (float, optional): The angle (in radians) at which the
+        :param x: The x coordinate of the arc's center.
+        :param y: The y coordinate of the arc's center.
+        :param radius: The arc's radius.
+        :param startangle: The angle (in radians) at which the
                 arc starts, measured clockwise from the positive x axis,
                 default 0.0.
-            endangle (float, optional): The angle (in radians) at which the arc ends,
+        :param endangle: The angle (in radians) at which the arc ends,
                 measured clockwise from the positive x axis, default 2*pi.
-            anticlockwise (bool, optional): If true, causes the arc to be drawn
+        :param anticlockwise: If true, causes the arc to be drawn
                 counter-clockwise between the two angles instead of clockwise,
                 default false.
 
-        Returns:
-            :class:`Arc` object.
+        :returns: :class:`Arc` object.
         """
         arc = Arc(x, y, radius, startangle, endangle, anticlockwise)
         return self.add_draw_obj(arc)
@@ -290,18 +283,18 @@ class Context:
     ):
         """Constructs and returns a :class:`Ellipse`.
 
-        Args:
-            x (float): The x axis of the coordinate for the ellipse's center.
-            y (float): The y axis of the coordinate for the ellipse's center.
-            radiusx (float): The ellipse's major-axis radius.
-            radiusy (float): The ellipse's minor-axis radius.
-            rotation (float, optional): The rotation for this ellipse, expressed in radians, default 0.0.
-            startangle (float, optional): The starting point in radians, measured from the x
-                axis, from which it will be drawn, default 0.0.
-            endangle (float, optional): The end ellipse's angle in radians to which it will
-                be drawn, default 2*pi.
-            anticlockwise (bool, optional): If true, draws the ellipse
-                anticlockwise (counter-clockwise) instead of clockwise, default false.
+        :param x: The x axis of the coordinate for the ellipse's center.
+        :param y: The y axis of the coordinate for the ellipse's center.
+        :param radiusx: The ellipse's major-axis radius.
+        :param radiusy: The ellipse's minor-axis radius.
+        :param rotation: The rotation for this ellipse, expressed in radians,
+            default 0.0.
+        :param startangle: The starting point in radians, measured from the x
+            axis, from which it will be drawn, default 0.0.
+        :param endangle: The end ellipse's angle in radians to which it will e
+            drawn, default 2*pi.
+        :param anticlockwise: If true, draws the ellipse anticlockwise
+            (counter-clockwise) instead of clockwise, default false.
 
         Returns:
             :class:`Ellipse` object.
@@ -339,10 +332,10 @@ class Context:
         or use the default font if there is no font assigned.
 
         Args:
-            text (string): The text to fill.
-            x (float, optional): The x coordinate of the text. Default to 0.
-            y (float, optional): The y coordinate of the text. Default to 0.
-            font (:class:`~toga.Font`, optional): The font to write with.
+            text (str): The text to fill.
+            x (float, Optional): The x coordinate of the text. Default to 0.
+            y (float, Optional): The y coordinate of the text. Default to 0.
+            font (:class:`~toga.fonts.Font`, Optional): The font to write with.
 
         Returns:
             :class:`WriteText` object.
@@ -360,11 +353,11 @@ class Fill(Context):
     fill rule, (each sub-path is implicitly closed before being filled).
 
     Args:
-        color (str, optional): Color value in any valid color format,
+        color (str, Optional): Color value in any valid color format,
             default to black.
-        fill_rule (str, optional): 'nonzero' if the non-zero winding rule and
-                                   'evenodd' if the even-odd winding rule.
-        preserve (bool, optional): Preserves the path within the Context.
+        fill_rule (str, Optional): `nonzero` if the non-zero winding rule and
+                                   `evenodd` if the even-odd winding rule.
+        preserve (bool, Optional): Preserves the path within the Context.
     """
 
     def __init__(self, color=BLACK, fill_rule=FillRule.NONZERO, preserve=False):
@@ -423,10 +416,10 @@ class Stroke(Context):
     current line style settings.
 
     Args:
-        color (str, optional): Color value in any valid color format,
+        color (str, Optional): Color value in any valid color format,
             default to black.
-        line_width (float, optional): Stroke line width, default is 2.0.
-        line_dash (array of floats, optional): Stroke line dash pattern, default is None.
+        line_width (float, Optional): Stroke line width, default is 2.0.
+        line_dash (array of floats, Optional): Stroke line dash pattern, default is None.
     """
 
     def __init__(self, color=BLACK, line_width=2.0, line_dash=None):
@@ -464,8 +457,7 @@ class Stroke(Context):
 
 
 class ClosedPath(Context):
-    """A user-created :class:`ClosedPath` drawing object for a closed path
-    context.
+    """A user-created :class:`ClosedPath` drawing object for a closed path context.
 
     Creates a new path and then closes it.
 
@@ -497,18 +489,18 @@ class Canvas(Context, Widget):
         id (str):  An identifier for this widget.
         style (:obj:`Style`): An optional style object. If no
             style is provided then a new one will be created for the widget.
-        on_resize (:obj:`callable`): Handler to invoke when the canvas is resized.
-        on_press (:obj:`callable`): Handler to invoke when the primary
+        on_resize (:obj:`Callable`): Handler to invoke when the canvas is resized.
+        on_press (:obj:`Callable`): Handler to invoke when the primary
             (usually the left) button is pressed.
-        on_release (:obj:`callable`): Handler to invoke when the primary
+        on_release (:obj:`Callable`): Handler to invoke when the primary
             (usually the left) button is released.
-        on_drag (:obj:`callable`): Handler to invoke when cursor is dragged with
+        on_drag (:obj:`Callable`): Handler to invoke when cursor is dragged with
             the primary (usually the left) button pressed.
-        on_alt_press (:obj:`callable`): Handler to invoke when the alternate
+        on_alt_press (:obj:`Callable`): Handler to invoke when the alternate
             (usually the right) button pressed.
-        on_alt_release (:obj:`callable`): Handler to invoke when the alternate
+        on_alt_release (:obj:`Callable`): Handler to invoke when the alternate
             (usually the right) button released
-        on_alt_drag (:obj:`callable`): Handler to invoke when the cursor is
+        on_alt_drag (:obj:`Callable`): Handler to invoke when the cursor is
             dragged with the alternate (usually the right) button pressed.
     """
 
@@ -564,15 +556,15 @@ class Canvas(Context, Widget):
         """Set the handler to invoke when the canvas is resized.
 
         Args:
-            handler (:obj:`callable`): The handler to invoke when the canvas is resized.
+            handler (:obj:`Callable`): The handler to invoke when the canvas is resized.
         """
         self._on_resize = wrapped_handler(self, handler)
         self._impl.set_on_resize(self._on_resize)
 
     @property
     def on_press(self):
-        """Return the handler invoked when the primary (usually the left) mouse
-        button is pressed.
+        """Return the handler invoked when the primary (usually the left) mouse button
+        is pressed.
 
         Returns:
             The handler that is invoked when the primary mouse button is pressed.
@@ -581,11 +573,11 @@ class Canvas(Context, Widget):
 
     @on_press.setter
     def on_press(self, handler):
-        """Set the handler to invoke when the primary (usually the left) mouse
-        button is pressed.
+        """Set the handler to invoke when the primary (usually the left) mouse button is
+        pressed.
 
         Args:
-            handler (:obj:`callable`): The handler to invoke when the
+            handler (:obj:`Callable`): The handler to invoke when the
             primary mouse button is pressed.
         """
         self._on_press = wrapped_handler(self, handler)
@@ -593,8 +585,8 @@ class Canvas(Context, Widget):
 
     @property
     def on_release(self):
-        """Return the handler invoked when the primary (usually the left) mouse
-        button is released.
+        """Return the handler invoked when the primary (usually the left) mouse button
+        is released.
 
         Returns:
             The handler that is invoked when the primary mouse button is released.
@@ -603,11 +595,11 @@ class Canvas(Context, Widget):
 
     @on_release.setter
     def on_release(self, handler):
-        """Set the handler to invoke when the primary (usually the left) mouse
-        button is released.
+        """Set the handler to invoke when the primary (usually the left) mouse button is
+        released.
 
         Args:
-            handler (:obj:`callable`): The handler to invoke when the
+            handler (:obj:`Callable`): The handler to invoke when the
             primary mouse button is released.
         """
         self._on_release = wrapped_handler(self, handler)
@@ -615,8 +607,8 @@ class Canvas(Context, Widget):
 
     @property
     def on_drag(self):
-        """Return the handler invoked when the mouse is dragged with the
-        primary (usually the left) mouse button is pressed.
+        """Return the handler invoked when the mouse is dragged with the primary
+        (usually the left) mouse button is pressed.
 
         Returns:
             The handler that is invoked when the mouse is dragged with
@@ -626,11 +618,11 @@ class Canvas(Context, Widget):
 
     @on_drag.setter
     def on_drag(self, handler):
-        """Set the handler to invoke when the mouse button is dragged with the
-        primary (usually the left) button pressed.
+        """Set the handler to invoke when the mouse button is dragged with the primary
+        (usually the left) button pressed.
 
         Args:
-            handler (:obj:`callable`): The handler to invoke when the
+            handler (:obj:`Callable`): The handler to invoke when the
             mouse is dragged with the primary button pressed.
         """
         self._on_drag = wrapped_handler(self, handler)
@@ -638,8 +630,8 @@ class Canvas(Context, Widget):
 
     @property
     def on_alt_press(self):
-        """Return the handler to invoke when the alternate (usually the right)
-        mouse button is pressed.
+        """Return the handler to invoke when the alternate (usually the right) mouse
+        button is pressed.
 
         Returns:
             The handler that is invoked when the alternate mouse button is pressed.
@@ -648,11 +640,11 @@ class Canvas(Context, Widget):
 
     @on_alt_press.setter
     def on_alt_press(self, handler):
-        """Set the handler to invoke when the alternate (usually the right)
-        mouse button is pressed.
+        """Set the handler to invoke when the alternate (usually the right) mouse button
+        is pressed.
 
         Args:
-            handler (:obj:`callable`): The handler to invoke when the
+            handler (:obj:`Callable`): The handler to invoke when the
             alternate mouse button is pressed.
         """
         self._on_alt_press = wrapped_handler(self, handler)
@@ -660,8 +652,8 @@ class Canvas(Context, Widget):
 
     @property
     def on_alt_release(self):
-        """Return the handler to invoke when the alternate (usually the right)
-        mouse button is released.
+        """Return the handler to invoke when the alternate (usually the right) mouse
+        button is released.
 
         Returns:
             The handler that is invoked when the alternate mouse button is released.
@@ -670,11 +662,11 @@ class Canvas(Context, Widget):
 
     @on_alt_release.setter
     def on_alt_release(self, handler):
-        """Set the handler to invoke when the alternate (usually the right)
-        mouse button is released.
+        """Set the handler to invoke when the alternate (usually the right) mouse button
+        is released.
 
         Args:
-            handler (:obj:`callable`): The handler to invoke when the
+            handler (:obj:`Callable`): The handler to invoke when the
             alternate mouse button is released.
         """
         self._on_alt_release = wrapped_handler(self, handler)
@@ -682,8 +674,8 @@ class Canvas(Context, Widget):
 
     @property
     def on_alt_drag(self):
-        """Return the handler to invoke when the mouse is dragged while the
-        alternate (usually the right) mouse button is pressed.
+        """Return the handler to invoke when the mouse is dragged while the alternate
+        (usually the right) mouse button is pressed.
 
         Returns:
             The handler that is invoked when the mouse is dragged with
@@ -693,11 +685,11 @@ class Canvas(Context, Widget):
 
     @on_alt_drag.setter
     def on_alt_drag(self, handler):
-        """Set the handler to invoke when the mouse is dragged with the
-        alternate (usually the right) button pressed.
+        """Set the handler to invoke when the mouse is dragged with the alternate
+        (usually the right) button pressed.
 
         Args:
-            handler (:obj:`callable`): The handler to invoke when the
+            handler (:obj:`Callable`): The handler to invoke when the
             mouse is dragged with the alternate button pressed.
         """
         self._on_alt_drag = wrapped_handler(self, handler)
@@ -722,12 +714,9 @@ class Canvas(Context, Widget):
     def scale(self, sx, sy):
         """Constructs and returns a :class:`Scale`.
 
-        Args:
-            sx (float): scale factor for the X dimension.
-            sy (float): scale factor for the Y dimension.
-
-        Returns:
-            :class:`Scale` object.
+        :param sx: scale factor for the X dimension.
+        :param sy: scale factor for the Y dimension.
+        :returns: :class:`Scale` object.
         """
         scale = Scale(sx, sy)
         return self.add_draw_obj(scale)
@@ -735,12 +724,9 @@ class Canvas(Context, Widget):
     def translate(self, tx, ty):
         """Constructs and returns a :class:`Translate`.
 
-        Args:
-            tx (float): X value of coordinate.
-            ty (float): Y value of coordinate.
-
-        Returns:
-            :class:`Translate` object.
+        :param tx: X value of coordinate.
+        :param ty: Y value of coordinate.
+        :returns: :class:`Translate` object.
         """
         translate = Translate(tx, ty)
         return self.add_draw_obj(translate)
@@ -770,8 +756,8 @@ class Canvas(Context, Widget):
 
 
 class MoveTo:
-    """A user-created :class:`MoveTo` drawing object which moves the start of
-    the next operation to a point.
+    """A user-created :class:`MoveTo` drawing object which moves the start of the next
+    operation to a point.
 
     Moves the starting point of a new sub-path to the (x, y) coordinates.
 
@@ -794,8 +780,7 @@ class MoveTo:
 
 
 class LineTo:
-    """A user-created :class:`LineTo` drawing object which draws a line to a
-    point.
+    """A user-created :class:`LineTo` drawing object which draws a line to a point.
 
     Connects the last point in the sub-path to the (x, y) coordinates
     with a straight line (but does not actually draw it).
@@ -818,8 +803,7 @@ class LineTo:
 
 
 class BezierCurveTo:
-    """A user-created :class:`BezierCurveTo` drawing object which adds a Bézier
-    curve.
+    """A user-created :class:`BezierCurveTo` drawing object which adds a Bézier curve.
 
     It requires three points. The first two points are control points
     and the third one is the end point. The starting point is the last
@@ -858,19 +842,18 @@ class BezierCurveTo:
 
 
 class QuadraticCurveTo:
-    """A user-created :class:`QuadraticCurveTo` drawing object which adds a
-    quadratic curve.
+    """A user-created :class:`QuadraticCurveTo` drawing object which adds a quadratic
+    curve.
 
     It requires two points. The first point is a control point and the
     second one is the end point. The starting point is the last point in the
-    current path, which can be changed using moveTo() before creating the
+    current path, which can be changed using ``moveTo()`` before creating the
     quadratic Bézier curve.
 
-    Args:
-        cpx (float): The x axis of the coordinate for the control point.
-        cpy (float): The y axis of the coordinate for the control point.
-        x (float): The x axis of the coordinate for the end point.
-        y (float): he y axis of the coordinate for the end point.
+    :param cpx: The x axis of the coordinate for the control point.
+    :param cpy: The y axis of the coordinate for the control point.
+    :param x: The x axis of the coordinate for the end point.
+    :param y: he y axis of the coordinate for the end point.
     """
 
     def __init__(self, cpx, cpy, x, y):
@@ -890,22 +873,22 @@ class QuadraticCurveTo:
 class Ellipse:
     """A user-created :class:`Ellipse` drawing object which adds an ellipse.
 
-    The ellipse is centered at (x, y) position with the radii radiusx and radiusy
-    starting at startAngle and ending at endAngle going in the given
-    direction by anticlockwise (defaulting to clockwise).
+    The ellipse is centered at ``(x, y)`` position with the radii ``radiusx``
+    and ``radiusy`` starting at ``startangle`` and ending at ``endangle`` going
+    in the given direction by anticlockwise (defaulting to clockwise).
 
-    Args:
-        x (float): The x axis of the coordinate for the ellipse's center.
-        y (float): The y axis of the coordinate for the ellipse's center.
-        radiusx (float): The ellipse's major-axis radius.
-        radiusy (float): The ellipse's minor-axis radius.
-        rotation (float, optional): The rotation for this ellipse, expressed in radians, default 0.0.
-        startangle (float, optional): The starting point in radians, measured from the x
-            axis, from which it will be drawn, default 0.0.
-        endangle (float, optional): The end ellipse's angle in radians to which it will
-            be drawn, default 2*pi.
-        anticlockwise (bool, optional): If true, draws the ellipse anticlockwise
-            (counter-clockwise) instead of clockwise, default false.
+    :param x: The x axis of the coordinate for the ellipse's center.
+    :param y: The y axis of the coordinate for the ellipse's center.
+    :param radiusx: The ellipse's major-axis radius.
+    :param radiusy: The ellipse's minor-axis radius.
+    :param rotation: The rotation for this ellipse, expressed in radians, default
+        0.0.
+    :param startangle: The starting point in radians, measured from the x axis,
+        from which it will be drawn, default 0.0.
+    :param endangle: The end ellipse's angle in radians to which it will be
+        drawn, default 2*pi.
+    :param anticlockwise: If true, draws the ellipse anticlockwise
+        (counter-clockwise) instead of clockwise, default false.
     """
 
     def __init__(
@@ -955,22 +938,19 @@ class Ellipse:
 class Arc:
     """A user-created :class:`Arc` drawing object which adds an arc.
 
-    The arc is centered at (x, y) position with radius r starting at startangle
-    and ending at endangle going in the given direction by anticlockwise
-    (defaulting to clockwise).
+    The arc is centered at ``(x, y)`` position with radius ``r`` starting at
+    ``startangle`` and ending at ``endangle`` going in the given direction by
+    anticlockwise (defaulting to clockwise).
 
-    Args:
-        x (float): The x coordinate of the arc's center.
-        y (float): The y coordinate of the arc's center.
-        radius (float): The arc's radius.
-        startangle (float, optional): The angle (in radians) at which the
-            arc starts, measured clockwise from the positive x axis,
-            default 0.0.
-        endangle (float, optional): The angle (in radians) at which the arc ends,
-            measured clockwise from the positive x axis, default 2*pi.
-        anticlockwise (bool, optional): If true, causes the arc to be drawn
-            counter-clockwise between the two angles instead of clockwise,
-            default false.
+    :param x: The x coordinate of the arc's center.
+    :param y: The y coordinate of the arc's center.
+    :param radius: The arc's radius.
+    :param startangle: The angle (in radians) at which the arc starts, measured
+        clockwise from the positive x axis, default 0.0.
+    :param endangle: The angle (in radians) at which the arc ends, measured
+        clockwise from the positive x axis, default 2*pi.
+    :param anticlockwise: If true, causes the arc to be drawn counter-clockwise
+        between the two angles instead of clockwise, default false.
     """
 
     def __init__(
@@ -1062,11 +1042,11 @@ class Rotate:
 class Scale:
     """A user-created :class:`Scale` to add canvas scaling.
 
-    Modifies the canvas by scaling the X and Y canvas axes by sx and sy.
+    Modifies the canvas by scaling the X and Y canvas axes by ``sx`` and ``sy``
+    respectively.
 
-    Args:
-        sx (float): scale factor for the X dimension.
-        sy (float): scale factor for the Y dimension.
+    :param sx: scale factor for the X dimension.
+    :param sy: scale factor for the Y dimension.
     """
 
     def __init__(self, sx, sy):
@@ -1084,11 +1064,10 @@ class Scale:
 class Translate:
     """A user-created :class:`Translate` to translate the canvas.
 
-    Modifies the canvas by translating the canvas origin by (tx, ty).
+    Modifies the canvas by translating the canvas origin by ``(tx, ty)``.
 
-    Args:
-        tx (float): X value of coordinate.
-        ty (float): Y value of coordinate.
+    :param tx: X value of coordinate.
+    :param ty: Y value of coordinate.
     """
 
     def __init__(self, tx, ty):
@@ -1106,8 +1085,7 @@ class Translate:
 class ResetTransform:
     """A user-created :class:`ResetTransform` to reset the canvas.
 
-    Resets the canvas by setting it equal to the canvas with no
-    transformations.
+    Resets the canvas by setting it equal to the canvas with no transformations.
     """
 
     def __repr__(self):
@@ -1126,10 +1104,10 @@ class WriteText:
     or use the default font if there is no font assigned.
 
     Args:
-        text (string): The text to fill.
-        x (float, optional): The x coordinate of the text. Default to 0.
-        y (float, optional): The y coordinate of the text. Default to 0.
-        font (:class:`toga.Font`, optional): The font to write with.
+        text (str): The text to fill.
+        x (float, Optional): The x coordinate of the text. Default to 0.
+        y (float, Optional): The y coordinate of the text. Default to 0.
+        font (:class:`toga.fonts.Font`, Optional): The font to write with.
     """
 
     def __init__(self, text, x, y, font):

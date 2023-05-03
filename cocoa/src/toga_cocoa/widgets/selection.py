@@ -30,7 +30,7 @@ class Selection(Widget):
         content_size = self.native.intrinsicContentSize()
         self.interface.intrinsic.height = content_size.height
         self.interface.intrinsic.width = at_least(
-            max(self.interface.MIN_WIDTH, content_size.width)
+            max(self.interface._MIN_WIDTH, content_size.width)
         )
 
     def remove_all_items(self):
@@ -43,7 +43,9 @@ class Selection(Widget):
         self.native.selectItemWithTitle(item)
 
     def get_selected_item(self):
-        return str(self.native.titleOfSelectedItem)
+        selected = self.native.titleOfSelectedItem
+        if selected:
+            return str(selected)
 
     def set_on_select(self, handler):
         pass

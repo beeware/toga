@@ -1,7 +1,7 @@
 toga-uwp
 ========
 
-A Univeral Windows Platform (UWP) backend for the `Toga widget toolkit`_.
+A Universal Windows Platform (UWP) backend for the `Toga widget toolkit`_.
 
 **Toga requires Python 3**
 

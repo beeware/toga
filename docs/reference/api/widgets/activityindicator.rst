@@ -1,7 +1,7 @@
 Activity Indicator
 ==================
 
-A small animated indicator showing activity on a task of indeterminite length,
+A small animated indicator showing activity on a task of indeterminate length,
 usually rendered as a "spinner" animation.
 
 .. figure:: /reference/images/ActivityIndicator.jpeg
@@ -17,7 +17,7 @@ usually rendered as a "spinner" animation.
 Usage
 -----
 
-.. code-block:: Python
+.. code-block:: python
 
     import toga
 

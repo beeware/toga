@@ -34,14 +34,6 @@ class MainWindow(Window):
         icon_impl = toga_App.app.icon._impl
         self.native.set_icon(icon_impl.native_72.get_pixbuf())
 
-    def set_app(self, app):
-        super().set_app(app)
-
-        # The GTK docs list set_wmclass() as deprecated (and "pointless")
-        # but it's the only way I've found that actually sets the
-        # Application name to something other than '__main__.py'.
-        self.native.set_wmclass(app.interface.name, app.interface.name)
-
     def gtk_delete_event(self, *args):
         # Return value of the GTK on_close handler indicates
         # whether the event has been fully handled. Returning
@@ -73,7 +65,8 @@ class App:
     def create(self):
         # Stimulate the build of the app
         self.native = Gtk.Application(
-            application_id=self.interface.app_id, flags=Gio.ApplicationFlags.FLAGS_NONE
+            application_id=self.interface.app_id,
+            flags=Gio.ApplicationFlags.FLAGS_NONE,
         )
 
         # Connect the GTK signal that will cause app startup to occur
@@ -91,7 +84,7 @@ class App:
                 group=toga.Group.HELP,
             ),
             Command(None, "Preferences", group=toga.Group.APP),
-            # Quit should always be the last item, in a section on it's own
+            # Quit should always be the last item, in a section on its own
             Command(
                 lambda _: self.interface.exit(),
                 "Quit " + self.interface.name,
@@ -231,8 +224,11 @@ class App:
     def set_on_exit(self, value):
         pass
 
-    def current_window(self):
+    def get_current_window(self):
         return self.native.get_active_window()._impl
+
+    def set_current_window(self, window):
+        window._impl.native.present()
 
     def enter_full_screen(self, windows):
         for window in windows:

@@ -15,7 +15,9 @@ macOS
 
 The backend for macOS is named `toga-cocoa`_. It supports macOS 10.10 (Yosemite)
 and later. It is installed automatically on macOS machines (machines that
-report ``sys.platform == 'darwin'``), or can be manually installed by invoking::
+report ``sys.platform == 'darwin'``), or can be manually installed by invoking:
+
+.. code-block:: console
 
     $ pip install toga-cocoa
 
@@ -33,7 +35,9 @@ Linux
 The backend for Linux platforms is named `toga-gtk`_. It supports GTK 3.4
 and later. It is installed automatically on Linux machines (machines that
 report ``sys.platform == 'linux'``), or can be manually installed by
-invoking::
+invoking:
+
+.. code-block:: console
 
     $ pip install toga-gtk
 
@@ -47,15 +51,16 @@ Windows
 
 .. image:: /reference/screenshots/winforms.png
 
-The backend for Windows is named `toga-winforms`_. It supports Windows 10 with
+The backend for Windows is named `toga-winforms`_. It supports Windows 11 with
 .NET 4 installed. It is installed automatically on Windows machines
 (machines that report ``sys.platform == 'win32'``), or can be manually
-installed by invoking::
+installed by invoking:
+
+.. code-block:: console
 
     $ pip install toga-winforms
 
-It uses `Python.net`_. Unfortunately, python.net has not been packaged for
-Python 3.9 or higher, so you'll need to use Python 3.8 or earlier in your app.
+It uses `Python.net`_.
 
 .. _toga-winforms: https://github.com/beeware/toga/tree/main/winforms
 .. _Python.net: https://pythonnet.github.io
@@ -67,23 +72,25 @@ iOS
 ~~~
 
 The backend for iOS is named `toga-iOS`_. It supports iOS 6 or later. It
-must be manually installed into an iOS Python project (such as one that has
-been developed using the `Python-iOS-template cookiecutter`_). It can be
-manually installed by invoking::
+must be manually installed into an iOS Python project. It can be manually
+installed by invoking:
+
+.. code-block:: console
 
     $ pip install toga-iOS
 
 The iOS backend is currently proof-of-concept only. Most widgets have not been
 implemented. It uses `Rubicon`_ to provide a bridge to native macOS libraries.
 
-.. _Python-iOS-template cookiecutter: https://github.com/beeware/Python-iOS-template
 .. _toga-iOS: https://github.com/beeware/toga/tree/main/iOS
 
 Android
 ~~~~~~~
 
 The backend for Android is named `toga-android`_. It can be manually installed
-by invoking::
+by invoking:
+
+.. code-block:: console
 
     $ pip install toga-android
 
@@ -98,7 +105,9 @@ Web
 ---
 
 The Web backend is named `toga-web`_. It can be manually installed
-by invoking::
+by invoking:
+
+.. code-block:: console
 
     $ pip install toga-web
 

@@ -1,1 +1,0 @@
-The handling of GTK layouts has been modified to reduce the frequency and increase the accuracy of layout results.

@@ -5,6 +5,7 @@ from ..libs import *
 
 
 class TextInput(Widget):
+    IMPLEMENTS_ON_CONFIRM = False
     window_class = 'edit'
     default_style = WS_VISIBLE | WS_CHILD | WS_TABSTOP| ES_AUTOHSCROLL
 

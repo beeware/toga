@@ -10,7 +10,7 @@ bee_movies = [
     ("The Secret Life of Bees", "2008", "7.3", "Drama"),
     ("Bee Movie", "2007", "6.1", "Animation, Adventure, Comedy"),
     ("Bees", "1998", "6.3", "Horror"),
-    ("The Girl Who Swallowed Bees", "2007", "7.5", "Short"),
+    ("The Girl Who Swallowed Bees", "2007", "7.5"),  # Missing a genre
     ("Birds Do It, Bees Do It", "1974", "7.3", "Documentary"),
     ("Bees: A Life for the Queen", "1998", "8.0", "TV Movie"),
     ("Bees in Paradise", "1944", "5.4", "Comedy, Musical"),
@@ -130,6 +130,7 @@ class ExampleTableApp(toga.App):
             multiple_select=False,
             on_select=self.on_select_handler1,
             on_double_click=self.on_double_click1,
+            missing_value="Unknown",
         )
 
         self.table2 = toga.Table(
@@ -139,6 +140,7 @@ class ExampleTableApp(toga.App):
             style=Pack(flex=1, padding_left=5),
             on_select=self.on_select_handler2,
             on_double_click=self.on_double_click2,
+            missing_value="?",
         )
 
         tablebox = toga.Box(children=[self.table1, self.table2], style=Pack(flex=1))

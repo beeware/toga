@@ -173,7 +173,11 @@ class Table(Widget):
         if self.interface.data is None or self.interface._accessors is None:
             return None
         row_object = self.interface.data[row_index]
-        value = getattr(row_object, self.interface._accessors[col_index])
+        value = getattr(
+            row_object,
+            self.interface._accessors[col_index],
+            self.interface.missing_value,
+        )
         return value
 
     def get_selection(self):

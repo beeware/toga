@@ -76,8 +76,8 @@ class WebView(Widget):
         # Define a callback that will update the future when
         # the Javascript is complete.
         def gtk_js_finished(webview, task, *user_data):
-            """If `run_javascript_finish` from GTK returns a result, unmarshal
-            it, and call back with the result."""
+            """If `run_javascript_finish` from GTK returns a result, unmarshal it, and
+            call back with the result."""
             result = webview.run_javascript_finish(task)
             if result:
                 result = result.get_js_value().to_string()
@@ -96,5 +96,5 @@ class WebView(Widget):
         self.native.run_javascript(javascript, None, None)
 
     def rehint(self):
-        self.interface.intrinsic.width = at_least(self.interface.MIN_WIDTH)
-        self.interface.intrinsic.height = at_least(self.interface.MIN_HEIGHT)
+        self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
+        self.interface.intrinsic.height = at_least(self.interface._MIN_HEIGHT)

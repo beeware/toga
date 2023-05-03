@@ -12,7 +12,7 @@ class ScrollContainer(Widget):
             If no style is provided then a new one will be created for the widget.
         horizontal (bool):  If True enable horizontal scroll bar.
         vertical (bool): If True enable vertical scroll bar.
-        content (:class:`~toga.Widget`): The content of the scroll window.
+        content (:class:`~toga.widgets.base.Widget`): The content of the scroll window.
     """
 
     MIN_WIDTH = 100
@@ -53,12 +53,20 @@ class ScrollContainer(Widget):
         self.content = content
         self.on_scroll = on_scroll
 
-    def _set_app(self, app):
+    @Widget.app.setter
+    def app(self, app):
+        # Invoke the superclass property setter
+        Widget.app.fset(self, app)
+
         # Also assign the app to the content in the container
         if self.content:
             self.content.app = app
 
-    def _set_window(self, window):
+    @Widget.window.setter
+    def window(self, window):
+        # Invoke the superclass property setter
+        Widget.window.fset(self, window)
+
         # Also assign the window to the content in the container
         if self._content:
             self._content.window = window
@@ -68,7 +76,7 @@ class ScrollContainer(Widget):
         """Content of the scroll container.
 
         Returns:
-            The content of the widget (:class:`~toga.Widget`).
+            The content of the widget (:class:`~toga.widgets.base.Widget`).
         """
         return self._content
 

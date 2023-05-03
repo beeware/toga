@@ -9,7 +9,7 @@ So... why the name Toga?
 
 We all know the aphorism that `"When in Rome, do as the Romans do."`_
 
-.. _"When in Rome, do as the Romans do.": http://en.wiktionary.org/wiki/when_in_Rome_do_as_the_Romans_do
+.. _"When in Rome, do as the Romans do.": https://en.wiktionary.org/wiki/when_in_Rome_do_as_the_Romans_do
 
 So - what does a well dressed Roman wear? A toga, of course! And what does a
 well dressed Python app wear? Toga!
@@ -39,5 +39,5 @@ number of BeeWare_ projects, and the original creator of Toga has been tinkering
 with various widget toolkits for over 20 years, so the metaphor seemed
 appropriate.
 
-.. _yak shaving: http://en.wiktionary.org/wiki/yak_shaving
-.. _BeeWare: http://beeware.org
+.. _yak shaving: https://en.wiktionary.org/wiki/yak_shaving
+.. _BeeWare: https://beeware.org/

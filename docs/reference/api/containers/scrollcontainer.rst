@@ -8,7 +8,7 @@ Scroll Container
    :included_cols: 4,5,6,7,8,9
    :exclude: {0: '(?!(ScrollContainer|Component))'}
 
-The Scroll Container is similar to the iframe or scrollable div element in HTML, it contains an object with
+The Scroll Container is similar to the ``iframe`` or scrollable ``div`` element in HTML, it contains an object with
 its own scrollable selection.
 
 .. figure:: /reference/images/ScrollContainer.jpeg
@@ -17,7 +17,7 @@ its own scrollable selection.
 Usage
 -----
 
-.. code-block:: Python
+.. code-block:: python
 
     import toga
 
@@ -30,7 +30,7 @@ Scroll settings
 
 Horizontal or vertical scroll can be set via the initializer or using the property.
 
-.. code-block:: Python
+.. code-block:: python
 
     import toga
 

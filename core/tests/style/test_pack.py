@@ -1777,3 +1777,91 @@ class PackLayoutTests(TestCase):
                 ],
             },
         )
+
+    def test_fixed_size(self):
+        root = TestNode(
+            "app",
+            style=Pack(),
+            children=[
+                TestNode(
+                    "first",
+                    style=Pack(width=100, height=100),
+                    size=(at_least(0), at_least(0)),
+                ),
+                TestNode(
+                    "second",
+                    style=Pack(width=100, height=100),
+                    size=(at_least(50), at_least(50)),
+                    children=[
+                        TestNode(
+                            "child",
+                            style=Pack(width=50, height=50),
+                            size=(at_least(0), at_least(0)),
+                        ),
+                    ],
+                ),
+            ],
+        )
+
+        # Minimum size
+        root.style.layout(root, TestViewport(0, 0, dpi=96))
+        self.assertLayout(
+            root,
+            (200, 100),
+            {
+                "origin": (0, 0),
+                "content": (200, 100),
+                "children": [
+                    {"origin": (0, 0), "content": (100, 100)},
+                    {
+                        "origin": (100, 0),
+                        "content": (100, 100),
+                        "children": [
+                            {"origin": (100, 0), "content": (50, 50)},
+                        ],
+                    },
+                ],
+            },
+        )
+
+        # Normal size
+        root.style.layout(root, TestViewport(640, 480, dpi=96))
+        self.assertLayout(
+            root,
+            (640, 480),
+            {
+                "origin": (0, 0),
+                "content": (640, 480),
+                "children": [
+                    {"origin": (0, 0), "content": (100, 100)},
+                    {
+                        "origin": (100, 0),
+                        "content": (100, 100),
+                        "children": [
+                            {"origin": (100, 0), "content": (50, 50)},
+                        ],
+                    },
+                ],
+            },
+        )
+
+        # HiDPI Normal size
+        root.style.layout(root, TestViewport(640, 480, dpi=144))
+        self.assertLayout(
+            root,
+            (640, 480),
+            {
+                "origin": (0, 0),
+                "content": (640, 480),
+                "children": [
+                    {"origin": (0, 0), "content": (150, 150)},
+                    {
+                        "origin": (150, 0),
+                        "content": (150, 150),
+                        "children": [
+                            {"origin": (150, 0), "content": (75, 75)},
+                        ],
+                    },
+                ],
+            },
+        )

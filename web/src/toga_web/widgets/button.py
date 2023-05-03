@@ -3,10 +3,7 @@ from .base import Widget
 
 class Button(Widget):
     def create(self):
-        self.native = self._create_native_widget(
-            "button",
-            classes=["btn-block"],
-        )
+        self.native = self._create_native_widget("sl-button")
         self.native.onclick = self.dom_onclick
 
     def dom_onclick(self, event):

@@ -1,3 +1,5 @@
+from travertino.size import at_least
+
 from toga_iOS.libs import UIImageView, UIViewContentMode
 from toga_iOS.widgets.base import Widget
 
@@ -19,3 +21,7 @@ class ImageView(Widget):
             self.native.image = image._impl.native
         else:
             self.native.image = None
+
+    def rehint(self):
+        self.interface.intrinsic.width = at_least(0)
+        self.interface.intrinsic.height = at_least(0)

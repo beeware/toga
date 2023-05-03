@@ -1,4 +1,5 @@
 from rubicon.objc import SEL, objc_method, objc_property
+from travertino.size import at_least
 
 from toga.interface import NavigationView as NavigationViewInterface
 from toga_iOS.libs import (
@@ -63,3 +64,7 @@ class NavigationView(NavigationViewInterface, WidgetMixin):
 
     def pop(self, content):
         self._controller.popViewController_animated_(True)
+
+    def rehint(self):
+        self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
+        self.interface.intrinsic.height = at_least(self.interface._MIN_HEIGHT)

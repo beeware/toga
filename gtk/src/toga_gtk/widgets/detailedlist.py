@@ -1,3 +1,5 @@
+from travertino.size import at_least
+
 from ..libs import Gdk, Gio, GLib, Gtk
 from .base import Widget
 from .internal.buttons.refresh import RefreshButton
@@ -26,14 +28,14 @@ class DetailedList(Widget):
         self.store = Gio.ListStore()
         # We need to provide a function that transforms whatever is in the store into
         # a `Gtk.ListBoxRow`, but the items in the store already are `Gtk.ListBoxRow` thus
-        # the indentity function.
+        # the identity function.
         self.list_box.bind_model(self.store, lambda a: a)
 
         self.scrolled_window = Gtk.ScrolledWindow()
 
         self.scrolled_window.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
-        self.scrolled_window.set_min_content_width(self.interface.MIN_WIDTH)
-        self.scrolled_window.set_min_content_height(self.interface.MIN_HEIGHT)
+        self.scrolled_window.set_min_content_width(self.interface._MIN_WIDTH)
+        self.scrolled_window.set_min_content_height(self.interface._MIN_HEIGHT)
 
         self.scrolled_window.add(self.list_box)
 
@@ -80,7 +82,7 @@ class DetailedList(Widget):
             self.store.append(self.row_factory(item))
 
         # We can't know the dimensions of each row (and thus of the list) until gtk allocates
-        # space for it. Gtk does emit `size-allocate` after allocation but I couldn't find any
+        # space for it. Gtk does emit `size-allocate` after allocation, but I couldn't find any
         # guarantees that the rows have their sizes allocated in the order they are inserted
         # in the `ListStore` and in my opinion that's unlikely to be the case.
 
@@ -120,8 +122,7 @@ class DetailedList(Widget):
         self.store.insert(index, item_impl)
 
     def remove(self, item, index):
-        """Removes a row from the store. Doesn't remove the row from the
-        interface.
+        """Removes a row from the store. Doesn't remove the row from the interface.
 
         Args:
             item (:obj:`Row`)
@@ -204,13 +205,17 @@ class DetailedList(Widget):
             self.list_box.select_row(item_impl)
 
     def _list_items_changed(self):
-        """Some components such as the refresh button and scroll button change
-        their appearance based on how many items there are on the list or the
-        size of the items.
+        """Some components such as the refresh button and scroll button change their
+        appearance based on how many items there are on the list or the size of the
+        items.
 
-        If either of those things changes the buttons need to be
-        notified to recalculate their positions.
+        If either of those things changes the buttons need to be notified to recalculate
+        their positions.
         """
         self.refresh_button.list_changed()
         self.scroll_button.list_changed()
         return True
+
+    def rehint(self):
+        self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
+        self.interface.intrinsic.height = at_least(self.interface._MIN_HEIGHT)

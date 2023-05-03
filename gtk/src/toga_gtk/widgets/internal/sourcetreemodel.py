@@ -4,19 +4,19 @@ from toga_gtk.libs import GObject, Gtk
 
 
 class SourceTreeModel(GObject.Object, Gtk.TreeModel):
-    """A full Gtk.TreeModel implementation backed by a toga.source.ListSource
-    or toga.source.TreeSource.
+    """A full Gtk.TreeModel implementation backed by a toga.source.ListSource or
+    toga.source.TreeSource.
 
     It stores a reference to every node in the source.
     TODO: If the source is a TreeSource, it uses the Node._parent attribute.
     Maybe an method could be added (like index()) to the TreeSource to access it.
     """
 
-    def __init__(self, columns, is_tree):
+    def __init__(self, columns, is_tree, missing_value):
         """
         Args:
             columns (list(dict(str, any))): the columns excluding first column which is always the row object.
-                each ``dict`` must have have:
+                each ``dict`` must have:
                  - an ``attr`` entry, with a string value naming the attribute to get from the row
                  - a ``type`` entry, with the column type (``str``, ``Gtk.Pixbuf``, ...)
             is_tree (bool): the model must know if it's for a tree or a list to set flags
@@ -25,6 +25,7 @@ class SourceTreeModel(GObject.Object, Gtk.TreeModel):
         self.source = None
         self.columns = columns
         self.is_tree = is_tree
+        self.missing_value = missing_value
         # by storing the row and calling index later, we can opt-in for this performance
         # boost and don't have to track iterators (we would have to if we stored indices).
         self.flags = Gtk.TreeModelFlags.ITERS_PERSIST
@@ -135,8 +136,8 @@ class SourceTreeModel(GObject.Object, Gtk.TreeModel):
         indices = path.get_indices()
         r = self._get_row(indices)
         if r is None:
-            return (False, Gtk.TreeIter(stamp=-1))
-        return (True, self._create_iter(user_data=r))
+            return False, Gtk.TreeIter(stamp=-1)
+        return True, self._create_iter(user_data=r)
 
     def do_get_n_columns(self):
         """Gtk.TreeModel."""
@@ -163,7 +164,7 @@ class SourceTreeModel(GObject.Object, Gtk.TreeModel):
             return None
 
         # workaround icon+name tuple breaking gtk tree
-        ret = getattr(row, self.columns[column - 1]["attr"])
+        ret = getattr(row, self.columns[column - 1]["attr"], self.missing_value)
         if isinstance(ret, tuple):
             ret = ret[1]
         return ret
@@ -175,8 +176,8 @@ class SourceTreeModel(GObject.Object, Gtk.TreeModel):
         else:
             r = self._get_user_data(parent)
         if self._row_has_child(r, 0):
-            return (True, self._create_iter(user_data=r[0]))
-        return (False, Gtk.TreeIter(stamp=-1))
+            return True, self._create_iter(user_data=r[0])
+        return False, Gtk.TreeIter(stamp=-1)
 
     def do_iter_has_child(self, iter_):
         """Gtk.TreeModel."""
@@ -245,24 +246,24 @@ class SourceTreeModel(GObject.Object, Gtk.TreeModel):
         if parent is None:
             r = self.source
         elif parent.stamp != self.stamp:
-            return (False, Gtk.TreeIter(stamp=-1))
+            return False, Gtk.TreeIter(stamp=-1)
         else:
             r = self._get_user_data(parent)
         if self._row_has_child(r, n):
-            return (True, self._create_iter(user_data=r[n]))
-        return (False, Gtk.TreeIter(stamp=-1))
+            return True, self._create_iter(user_data=r[n])
+        return False, Gtk.TreeIter(stamp=-1)
 
     def do_iter_parent(self, child):
         """Gtk.TreeModel."""
         if not self.is_tree or child is None or (child.stamp != self.stamp):
-            return (False, Gtk.TreeIter(stamp=-1))
+            return False, Gtk.TreeIter(stamp=-1)
         r = self._get_user_data(child)
         if r is None or r is self.source:
-            return (False, Gtk.TreeIter(stamp=-1))
+            return False, Gtk.TreeIter(stamp=-1)
         parent = r._parent or self.source
         if parent is self.source:
-            return (False, Gtk.TreeIter(stamp=-1))
-        return (True, self._create_iter(user_data=parent))
+            return False, Gtk.TreeIter(stamp=-1)
+        return True, self._create_iter(user_data=parent)
 
     def do_ref_node(self, iter_):
         """Gtk.TreeModel."""

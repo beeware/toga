@@ -1,4 +1,4 @@
-from abc import ABC, abstractclassmethod
+from abc import ABC, abstractmethod
 
 from ...libs.android.view import OnClickListener, View__MeasureSpec
 from ...libs.android.widget import EditText
@@ -15,11 +15,13 @@ class TogaPickerClickListener(OnClickListener):
 
 
 class PickerBase(Widget, ABC):
-    @abstractclassmethod
+    @classmethod
+    @abstractmethod
     def _get_icon(cls):
         raise NotImplementedError
 
-    @abstractclassmethod
+    @classmethod
+    @abstractmethod
     def _get_hint(cls):
         raise NotImplementedError
 

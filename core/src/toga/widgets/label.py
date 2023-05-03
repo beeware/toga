@@ -24,6 +24,10 @@ class Label(Widget):
 
         self.text = text
 
+    def focus(self):
+        "No-op; Label cannot accept input focus"
+        pass
+
     @property
     def text(self):
         """The text displayed by the label.
@@ -31,7 +35,6 @@ class Label(Widget):
         ``None``, and the Unicode codepoint U+200B (ZERO WIDTH SPACE), will be
         interpreted and returned as an empty string. Any other object will be
         converted to a string using ``str()``.
-
         """
         return self._impl.get_text()
 

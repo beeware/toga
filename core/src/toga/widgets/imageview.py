@@ -8,7 +8,7 @@ class ImageView(Widget):
     """
 
     Args:
-        image (:class:`~toga.Image`): The image to display.
+        image (:class:`~toga.images.Image`): The image to display.
         id (str): An identifier for this widget.
         style (:obj:`Style`):
 

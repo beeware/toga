@@ -8,12 +8,14 @@ WebView
    :included_cols: 4,5,6,7,8,9
    :exclude: {0: '(?!^(WebView|Component)$)'}
 
-The Web View widget is used for displaying an embedded browser window within an application.
+The Web View widget is used for displaying an embedded browser window within an
+application.
 
-Both sites served by a web server and local content can be displayed. Due to security
-restrictions in the macOS backend WKWebView, local content on macOS can only be loaded
-from a single directory, relative to the base URL, and not from an absolute "file://" URL.
-As a workaround, it is possible to use a lightweight webserver instead.
+Both sites served by a web server and local content can be displayed. Due to
+security restrictions in the macOS backend ``WKWebView``, local content on macOS
+can only be loaded from a single directory, relative to the base URL, and not
+from an absolute "file://" URL. As a workaround, it is possible to use a
+lightweight web server instead.
 
 .. figure:: /reference/images/WebView.jpeg
     :align: center
@@ -21,7 +23,7 @@ As a workaround, it is possible to use a lightweight webserver instead.
 Usage
 -----
 
-.. code-block:: Python
+.. code-block:: python
 
     import toga
 
@@ -36,11 +38,13 @@ default on some platforms. To enable WebView debugging:
 
 * macOS
 
-    Run the following at the terminal::
+    Run the following at the terminal:
+
+.. code-block:: console
 
         $ defaults write com.example.appname WebKitDeveloperExtras -bool true
 
-    substituting `com.example.appname` with the bundle ID for your app.
+    substituting ``com.example.appname`` with the bundle ID for your app.
 
 
 Reference

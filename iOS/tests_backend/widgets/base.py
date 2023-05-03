@@ -2,7 +2,7 @@ import asyncio
 
 from toga.colors import TRANSPARENT
 from toga.fonts import CURSIVE, FANTASY, MONOSPACE, SANS_SERIF, SERIF, SYSTEM
-from toga_iOS.libs import NSRunLoop, UIColor
+from toga_iOS.libs import NSRunLoop, UIApplication, UIColor
 
 from .properties import toga_color
 
@@ -48,6 +48,10 @@ class SimpleProbe:
         else:
             raise ValueError(f"cannot find {self.native} in {container_native}")
 
+    def assert_not_contained(self):
+        assert self.widget._impl.container is None
+        assert self.native.superview() is None
+
     def assert_alignment(self, expected):
         assert self.alignment == expected
 
@@ -61,13 +65,14 @@ class SimpleProbe:
             SYSTEM: ".AppleSystemUIFont",
         }.get(expected, expected)
 
-    async def redraw(self):
+    async def redraw(self, message=None):
         """Request a redraw of the app, waiting until that redraw has completed."""
         # Force a repaint
         self.widget.window.content._impl.native.layer.displayIfNeeded()
 
         # If we're running slow, wait for a second
         if self.widget.app.run_slow:
+            print("Waiting for redraw" if message is None else message)
             await asyncio.sleep(1)
         else:
             # Running at "normal" speed, we need to release to the event loop
@@ -90,6 +95,24 @@ class SimpleProbe:
     def height(self):
         return self.native.frame.size.height
 
+    def assert_layout(self, size, position):
+        # Widget is contained and in a window.
+        assert self.widget._impl.container is not None
+        assert self.native.superview() is not None
+
+        # size and position is as expected.
+        assert (self.native.frame.size.width, self.native.frame.size.height) == size
+
+        # Allow for the status bar and navigation bar in vertical position
+        statusbar_frame = UIApplication.sharedApplication.statusBarFrame
+        navbar = self.widget.window._impl.controller.navigationController
+        navbar_frame = navbar.navigationBar.frame
+        offset = statusbar_frame.size.height + navbar_frame.size.height
+        assert (
+            self.native.frame.origin.x,
+            self.native.frame.origin.y - offset,
+        ) == position
+
     def assert_width(self, min_width, max_width):
         assert (
             min_width <= self.width <= max_width
@@ -107,5 +130,13 @@ class SimpleProbe:
         else:
             return toga_color(self.native.backgroundColor)
 
-    def press(self):
+    async def press(self):
         self.native.sendActionsForControlEvents(UIControlEventTouchDown)
+
+    @property
+    def is_hidden(self):
+        return self.native.isHidden()
+
+    @property
+    def has_focus(self):
+        return self.native.isFirstResponder

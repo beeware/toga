@@ -1,1 +1,0 @@
-The handling of version numbers in the documentation was changed.
