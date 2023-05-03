@@ -44,7 +44,7 @@ async def widget_probe(main_window, widget):
     main_window.content = box
 
     probe = get_widget_probe(widget)
-    await probe.redraw()
+    await probe.redraw(f"\nConstructing {widget.__class__.__name__} probe")
     probe.assert_container(box)
 
     yield probe

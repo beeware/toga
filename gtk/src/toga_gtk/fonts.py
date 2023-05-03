@@ -22,9 +22,10 @@ class Font:
     def __init__(self, interface):
         self.interface = interface
 
-        if Pango is None:
+        # Can't meaningfully test for pango not being installed
+        if Pango is None:  # pragma: no cover
             raise RuntimeError(
-                "'from gi.repository import Pango' failed; you may need to install gir1.2-pango-1.0."
+                "Unable to import Pango. Have you installed the Pango and gobject-introspection system libraries?"
             )
 
         try:
