@@ -34,10 +34,10 @@ def toga_font(font):
             Pango.Style.OBLIQUE: OBLIQUE,
         }.get(font.get_style(), NORMAL),
         weight={
-            Pango.Variant.SMALL_CAPS: SMALL_CAPS,
+            Pango.Weight.BOLD: BOLD,
         }.get(font.get_weight(), NORMAL),
         variant={
-            Pango.Weight.BOLD: BOLD,
+            Pango.Variant.SMALL_CAPS: SMALL_CAPS,
         }.get(font.get_variant(), NORMAL),
     )
 

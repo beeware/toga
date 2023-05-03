@@ -14,7 +14,7 @@ if libfontconfig:
 
     fontconfig.FcConfigAppFontAddFile.argtypes = [FcConfig, c_char_p]
     fontconfig.FcConfigAppFontAddFile.restypes = c_int
-else:
+else:  # pragma: no cover
     fontconfig = None
 
 
@@ -23,14 +23,14 @@ class _FontConfig:
         if fontconfig:
             fontconfig.FcInit()
             self.config = fontconfig.FcConfigGetCurrent()
-        else:
+        else:  # pragma: no cover
             print(
                 "Unable to initialize FontConfig library. Is libfontconfig.so.1 on your LD_LIBRARY_PATH?"
             )
             self.config = None
 
     def add_font_file(self, path):
-        if self.config is None:
+        if self.config is None:  # pragma: no cover
             raise RuntimeError(
                 "Can't load custom fonts without a working Fontconfig library"
             )
@@ -39,7 +39,7 @@ class _FontConfig:
             self.config, str(path).encode("utf-8")
         )
         if result == 0:
-            raise ValueError(f"Couldn't load font file {path}")
+            raise ValueError(f"Unable to load font file {path}")
 
 
 # Instantiate and configure a singleton FontConfig instance

@@ -1,3 +1,5 @@
+import sys
+from pathlib import Path
 from typing import Any
 
 import pytest
@@ -20,6 +22,13 @@ from .conftest import skip_on_platforms
 async def widget() -> toga.Label:
     skip_on_platforms("android", "iOS", "macOS", "windows")
     return toga.Label("hello, this is a label")
+
+
+@pytest.fixture
+async def app_path(app):
+    # This *should* be app.paths.app, but under test conditions,
+    # the mainline is the test module, which confuses the app path.
+    return Path(sys.modules[app.__module__].__file__).parent
 
 
 async def test_use_system_font_fallback(
@@ -82,12 +91,12 @@ async def test_font_file_loaded(
     font_path: str,
     font_kwargs,
     capsys: pytest.CaptureFixture[str],
-    app: toga.App,
+    app_path: Path,
 ):
     """Custom fonts can be loaded and used."""
     Font.register(
         family=font_family,
-        path=app.paths.app / font_path,
+        path=app_path / font_path,
         **font_kwargs,
     )
 
@@ -108,19 +117,23 @@ async def test_font_file_loaded(
     assert "could not be found" not in capsys.readouterr().out
 
 
-async def test_non_existent_font_file(app: toga.App):
+async def test_non_existent_font_file(widget: toga.Label, app_path: Path):
     "Invalid font files fail registration"
-    with pytest.raises(ValueError, match=r"Font file does not exist"):
-        Font.register(
-            family="non-existent",
-            path=app.paths.app / "resources" / "fonts" / "nonexistent.ttf",
-        )
+    Font.register(
+        family="non-existent",
+        path=app_path / "resources" / "fonts" / "nonexistent.ttf",
+    )
+    with pytest.raises(
+        ValueError, match=r"Font file .*nonexistent.ttf could not be found"
+    ):
+        widget.style.font_family = "non-existent"
 
 
-async def test_corrupted_font_file(app: toga.App):
+async def test_corrupted_font_file(widget: toga.Label, app_path: Path):
     "Corrupted font files fail registration"
-    with pytest.raises(ValueError, match=r"Couldn't load font file"):
-        Font.register(
-            family="non-existent",
-            path=app.paths.app / "resources" / "fonts" / "Corrupted.ttf",
-        )
+    Font.register(
+        family="corrupted",
+        path=app_path / "resources" / "fonts" / "Corrupted.ttf",
+    )
+    with pytest.raises(ValueError, match=r"Unable to load font file .*Corrupted.ttf"):
+        widget.style.font_family = "corrupted"

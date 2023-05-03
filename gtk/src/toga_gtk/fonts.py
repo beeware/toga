@@ -41,13 +41,10 @@ class Font:
                 font_path = (
                     self.interface.factory.paths.app / _REGISTERED_FONT_CACHE[font_key]
                 )
-                try:
-                    if Path(font_path).is_file():
-                        FontConfig.add_font_file(str(font_path))
-                    else:
-                        print(f"Font file {font_path} could not be found")
-                except ValueError:
-                    print(f"Font '{self.interface}' could not be loaded")
+                if Path(font_path).is_file():
+                    FontConfig.add_font_file(str(font_path))
+                else:
+                    raise ValueError(f"Font file {font_path} could not be found")
             except KeyError:
                 # Not a pre-registered font
                 if self.interface.family not in SYSTEM_DEFAULT_FONTS:

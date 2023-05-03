@@ -170,7 +170,7 @@ async def test_font_attrs(widget, probe):
             for style in [NORMAL, ITALIC]:
                 widget.style.font_style = style
                 await probe.redraw(
-                    message="Widget text font style should be %s" % style
+                    message=f"Widget text font should be {family} {weight} {style}"
                 )
                 probe.assert_font_family(family)
                 assert probe.font.weight == weight
