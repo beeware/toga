@@ -33,7 +33,11 @@ class Tree(Widget):
         multiple rows. Defaults to ``False``.
     :param on_select: A handler to be invoked when the user selects one or
         multiple rows.
-    :param on_double_click: A handler to be invoked when the user double clicks a row.
+    :param on_double_click: A handler to be invoked when the user double clicks
+        a row.
+    :param missing_value: value for replacing a missing value in the data
+            source. (Default: None). When 'None', a warning message will be
+            shown.
     """
 
     MIN_WIDTH = 100
@@ -49,6 +53,7 @@ class Tree(Widget):
         multiple_select=False,
         on_select=None,
         on_double_click=None,
+        missing_value=None,
         factory=None,  # DEPRECATED!
     ):
         super().__init__(id=id, style=style)
@@ -66,6 +71,13 @@ class Tree(Widget):
         self._accessors = build_accessors(headings, accessors)
         self._multiple_select = multiple_select
         self._data = None
+        if missing_value is None:
+            print(
+                "WARNING: Using empty string for missing value in data. "
+                "Define a 'missing_value' on the table to silence this message"
+            )
+        self._missing_value = missing_value or ""
+
         self._on_select = None
         self._on_double_click = None
 
@@ -112,6 +124,10 @@ class Tree(Widget):
         returns a list of selected data nodes. Otherwise, returns a single data node.
         """
         return self._impl.get_selection()
+
+    @property
+    def missing_value(self):
+        return self._missing_value
 
     @property
     def on_select(self):

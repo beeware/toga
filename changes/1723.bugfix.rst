@@ -1,0 +1,1 @@
+A Selection widget with no items now consistently returns a current value of ``None`` on all platforms.
