@@ -25,20 +25,20 @@ def toga_color(color):
         return None
 
 
-_FONT_STYLE_REVERSE_MAP = {Pango.Style.ITALIC: ITALIC, Pango.Style.OBLIQUE: OBLIQUE}
-
-_FONT_VARIANT_REVERSE_MAP = {Pango.Variant.SMALL_CAPS: SMALL_CAPS}
-
-_FONT_WEIGHT_REVERSE_MAP = {Pango.Weight.BOLD: BOLD}
-
-
 def toga_font(font):
     return Font(
         family=font.get_family(),
         size=int(font.get_size() / Pango.SCALE),
-        style=_FONT_STYLE_REVERSE_MAP.get(font.get_style(), NORMAL),
-        weight=_FONT_WEIGHT_REVERSE_MAP.get(font.get_weight(), NORMAL),
-        variant=_FONT_VARIANT_REVERSE_MAP.get(font.get_variant(), NORMAL),
+        style={
+            Pango.Style.ITALIC: ITALIC,
+            Pango.Style.OBLIQUE: OBLIQUE,
+        }.get(font.get_style(), NORMAL),
+        weight={
+            Pango.Variant.SMALL_CAPS: SMALL_CAPS,
+        }.get(font.get_weight(), NORMAL),
+        variant={
+            Pango.Weight.BOLD: BOLD,
+        }.get(font.get_variant(), NORMAL),
     )
 
 
