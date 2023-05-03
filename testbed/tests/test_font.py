@@ -19,7 +19,9 @@ def test_no_pango():
 
 
 async def test_use_system_font_fallback(
-    widget: toga.Label, widget_probe: Any, capsys: pytest.CaptureFixture[str]
+    widget: toga.Label,
+    widget_probe: Any,
+    capsys: pytest.CaptureFixture[str],
 ):
     widget_probe.assert_font_family(SYSTEM)
     widget.style.font_family = "unknown"
@@ -31,7 +33,10 @@ async def test_use_system_font_fallback(
 @pytest.mark.parametrize("font_style", [ITALIC, OBLIQUE])
 @pytest.mark.parametrize("font_variant", [SMALL_CAPS])
 async def test_font_options(
-    widget: toga.Label, widget_probe: Any, font_style: str, font_variant: str
+    widget: toga.Label,
+    widget_probe: Any,
+    font_style: str,
+    font_variant: str,
 ):
     widget.style.font_style = font_style
     widget.style.font_variant = font_variant
