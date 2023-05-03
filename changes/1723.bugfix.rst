@@ -1,1 +1,1 @@
-Fixed bug for toga.Selection value returning None instead of an empty string.
+A Selection widget with no items now consistently returns a current value of ``None`` on all platforms.
