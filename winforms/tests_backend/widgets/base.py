@@ -4,13 +4,27 @@ from System import EventArgs, Object
 from System.Drawing import FontFamily, SystemColors, SystemFonts
 
 from toga.colors import TRANSPARENT
-from toga.fonts import CURSIVE, FANTASY, MONOSPACE, SANS_SERIF, SERIF, SYSTEM
+from toga.fonts import (
+    BOLD,
+    CURSIVE,
+    FANTASY,
+    ITALIC,
+    MONOSPACE,
+    NORMAL,
+    SANS_SERIF,
+    SERIF,
+    SYSTEM,
+)
 from toga.style.pack import JUSTIFY, LEFT
 
 from .properties import toga_color, toga_font
 
 
 class SimpleProbe:
+    FONT_WEIGHTS = [NORMAL, BOLD]
+    FONT_STYLES = [NORMAL, ITALIC]
+    FONT_VARIANTS = [NORMAL]
+
     def __init__(self, widget):
         self.widget = widget
         self.native = widget._impl.native

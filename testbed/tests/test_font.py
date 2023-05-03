@@ -5,22 +5,14 @@ from typing import Any
 import pytest
 
 import toga
-from toga.fonts import (
-    BOLD,
-    ITALIC,
-    NORMAL,
-    OBLIQUE,
-    SMALL_CAPS,
-    SYSTEM,
-    Font,
-)
+from toga.fonts import BOLD, ITALIC, SYSTEM, Font
 
 from .conftest import skip_on_platforms
 
 
 @pytest.fixture
 async def widget() -> toga.Label:
-    skip_on_platforms("android", "iOS", "macOS", "windows")
+    skip_on_platforms("android", "iOS", "macOS")
     return toga.Label("hello, this is a label")
 
 
@@ -46,9 +38,9 @@ async def test_use_system_font_fallback(
 
 async def test_font_options(widget: toga.Label, widget_probe: Any):
     """Every combination of weight, style and variant can be used on a font."""
-    for font_weight in [NORMAL, BOLD]:
-        for font_style in [NORMAL, ITALIC, OBLIQUE]:
-            for font_variant in [NORMAL, SMALL_CAPS]:
+    for font_weight in widget_probe.FONT_WEIGHTS:
+        for font_style in widget_probe.FONT_STYLES:
+            for font_variant in widget_probe.FONT_VARIANTS:
                 widget.style.font_style = font_style
                 widget.style.font_variant = font_variant
                 widget.style.font_weight = font_weight
@@ -66,12 +58,12 @@ async def test_font_options(widget: toga.Label, widget_probe: Any):
     [
         # OpenType font, no options
         (
-            "Font Awesome 5 Free",
+            "Font Awesome 5 Free Solid",
             "resources/fonts/Font Awesome 5 Free-Solid-900.otf",
             {},
         ),
         # TrueType font, no options
-        ("ENDOR", "resources/fonts/ENDOR___.ttf", {}),
+        ("Endor", "resources/fonts/ENDOR___.ttf", {}),
         # Font with weight property
         ("Roboto", "resources/fonts/Roboto-Bold.ttf", {"weight": BOLD}),
         # Font with style property

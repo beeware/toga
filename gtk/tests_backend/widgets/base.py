@@ -2,12 +2,17 @@ import asyncio
 
 import pytest
 
+from toga.fonts import BOLD, ITALIC, NORMAL, OBLIQUE, SMALL_CAPS
 from toga_gtk.libs import Gtk
 
 from .properties import toga_color, toga_font
 
 
 class SimpleProbe:
+    FONT_WEIGHTS = [NORMAL, BOLD]
+    FONT_STYLES = [NORMAL, ITALIC, OBLIQUE]
+    FONT_VARIANTS = [NORMAL, SMALL_CAPS]
+
     def __init__(self, widget):
         self.widget = widget
         self.impl = widget._impl
