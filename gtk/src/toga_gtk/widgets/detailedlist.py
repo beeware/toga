@@ -1,3 +1,5 @@
+from travertino.size import at_least
+
 from ..libs import Gdk, Gio, GLib, Gtk
 from .base import Widget
 from .internal.buttons.refresh import RefreshButton
@@ -213,3 +215,7 @@ class DetailedList(Widget):
         self.refresh_button.list_changed()
         self.scroll_button.list_changed()
         return True
+
+    def rehint(self):
+        self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
+        self.interface.intrinsic.height = at_least(self.interface._MIN_HEIGHT)
