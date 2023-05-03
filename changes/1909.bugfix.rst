@@ -1,1 +1,1 @@
-Fixed a bug causing valid intents to not be found and failing to run.
+Error handling associated with the creation of creation of Android Intents has been improved.
