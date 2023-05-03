@@ -46,7 +46,7 @@ class Font(BaseFont):
         passed, ``NORMAL`` will be used.
 
         When a font file includes multiple font weight/style/etc, each variant
-        must be registerered separately::
+        must be registered separately::
 
             # Register a simple regular font
             Font.register("Font Awesome 5 Free Solid", "resources/Font Awesome 5 Free-Solid-900.otf")
