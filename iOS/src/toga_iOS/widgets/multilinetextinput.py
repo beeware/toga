@@ -1,4 +1,4 @@
-from rubicon.objc import CGPoint, objc_method, objc_property
+from rubicon.objc import CGPoint, NSRange, objc_method, objc_property
 from travertino.size import at_least
 
 from toga_iOS.libs import (
@@ -133,7 +133,9 @@ class MultilineTextInput(Widget):
         self.interface.factory.not_implemented("MultilineTextInput.set_on_change()")
 
     def scroll_to_bottom(self):
-        self.interface.factory.not_implemented("MultilineTextInput.scroll_to_bottom()")
+        range_ = NSRange(len(self.native.text) - 1, 1)
+        self.native.scrollRangeToVisible(range_)
 
     def scroll_to_top(self):
-        self.interface.factory.not_implemented("MultilineTextInput.scroll_to_top()")
+        range_ = NSRange(0, 0)
+        self.native.scrollRangeToVisible(range_)
