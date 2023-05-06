@@ -3,7 +3,7 @@
 ##########################################################################
 from ctypes import POINTER, c_bool, c_double, c_uint32, c_void_p, cdll, util
 
-from rubicon.objc import CFIndex, CGFloat, CGGlyph, CGRect, CGSize, UniChar
+from rubicon.objc import CFIndex, CGFloat, CGGlyph, CGRect, CGSize, NSArray, UniChar
 
 ######################################################################
 core_text = cdll.LoadLibrary(util.find_library("CoreText"))
@@ -76,11 +76,26 @@ core_text.CTFontCreateWithFontDescriptor.argtypes = [c_void_p, CGFloat, c_void_p
 core_text.CTFontDescriptorCreateWithAttributes.restype = c_void_p
 core_text.CTFontDescriptorCreateWithAttributes.argtypes = [c_void_p]
 
+core_text.CTFontManagerRegisterFontsForURL.restype = c_bool
+core_text.CTFontManagerRegisterFontsForURL.argtypes = [c_void_p, c_uint32, c_void_p]
+
+core_text.CTFontManagerCreateFontDescriptorsFromURL.restype = NSArray
+core_text.CTFontManagerCreateFontDescriptorsFromURL.argtypes = [c_void_p]
+
 ######################################################################
 # CTFontDescriptor.h
 
 kCTFontFamilyNameAttribute = c_void_p.in_dll(core_text, "kCTFontFamilyNameAttribute")
 kCTFontTraitsAttribute = c_void_p.in_dll(core_text, "kCTFontTraitsAttribute")
+
+######################################################################
+# CTFontManagerScope.h
+
+kCTFontManagerScopeNone = 0
+kCTFontManagerScopeProcess = 1
+kCTFontManagerScopePersistent = 2
+kCTFontManagerScopeSession = 3
+kCTFontManagerScopeUser = 2
 
 ######################################################################
 # CTFontTraits.h
