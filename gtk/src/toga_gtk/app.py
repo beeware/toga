@@ -76,23 +76,6 @@ class App:
         self.actions = None
 
     def gtk_startup(self, data=None):
-        # Set up the default commands for the interface.
-        self.interface.commands.add(
-            Command(
-                lambda _: self.interface.about(),
-                "About " + self.interface.name,
-                group=toga.Group.HELP,
-            ),
-            Command(None, "Preferences", group=toga.Group.APP),
-            # Quit should always be the last item, in a section on its own
-            Command(
-                lambda _: self.interface.exit(),
-                "Quit " + self.interface.name,
-                shortcut=toga.Key.MOD_1 + "q",
-                group=toga.Group.APP,
-                section=sys.maxsize,
-            ),
-        )
         self._create_app_commands()
 
         self.interface.startup()
@@ -119,8 +102,15 @@ class App:
         )
 
     def _create_app_commands(self):
-        # No extra menus
-        pass
+        # Set up the default commands for the interface.
+        self.interface.commands.add(
+            Command(
+                lambda _: self.interface.about(),
+                "About " + self.interface.name,
+                group=toga.Group.HELP,
+            ),
+            Command(None, "Preferences", group=toga.Group.APP),
+        )
 
     def gtk_activate(self, data=None):
         pass
