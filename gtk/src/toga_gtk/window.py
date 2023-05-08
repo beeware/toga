@@ -23,15 +23,22 @@ class Window:
 
         self.native.set_default_size(size[0], size[1])
 
-        self.set_title(title)
-        self.set_position(position)
-
         # Set the window deletable/closeable.
         self.native.set_deletable(self.interface.closeable)
 
         # Added to set Window Resizable - removes Window Maximize button from
         # Window Decorator when resizable == False
         self.native.set_resizable(self.interface.resizeable)
+
+        # Initial the HeaderBar
+        self.header_bar = Gtk.HeaderBar()
+        self.header_bar.props.show_close_button = True
+        self.header_bar.props.title = title
+        self.header_bar.show()
+        self.native.set_titlebar(self.header_bar)
+
+        self.set_title(title)
+        self.set_position(position)
 
         self.toolbar_native = None
         self.toolbar_items = None
