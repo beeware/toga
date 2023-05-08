@@ -108,25 +108,29 @@ class App:
                 None,
                 "Preferences",
                 group=toga.Group.APP,
-                order=sys.maxsize-3, 
+                section=sys.maxsize,
+                order=0, 
             ),
             Command(
                 None,
                 "Keyboard Shortcuts",
                 group=toga.Group.APP,
-                order=sys.maxsize-2,
+                section=sys.maxsize,
+                order=1,
             ),
             Command(
                 None,
                 "Help",
                 group=toga.Group.APP,
-                order=sys.maxsize-1,
+                section=sys.maxsize,
+                order=2,
             ),
             Command(
                 lambda _: self.interface.about(),
                 "About " + self.interface.name,
                 group=toga.Group.APP,
-                order=sys.maxsize, 
+                section=sys.maxsize,
+                order=3, 
             ),
         )
 
