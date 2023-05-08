@@ -55,6 +55,36 @@ animates as a throbbing or "ping pong" animation.
     # Stop progress animation
     progress.stop()
 
+To update the progress bar's current value without blocking the applicaiton, you
+you will need to use an async function. This function can either be assigned to
+a background task or assigned to an event handler like on_press for a button. If
+the function does not have a proper await response, you can sleep between each
+update to show the update on the progress bar.
+
+.. code-block:: python
+
+    import toga
+    import asyncio
+
+    class MyApp(toga.App):
+        def startup(self):
+            # build UI
+            self.progress_bar = toga.ProgressBar(max=100)
+
+            self.button = toga.Button(on_press=progress)
+            # or
+            self.add_background_task(progress)
+
+
+
+        async def progress(self):
+            await asyncio.sleep(0.1)
+            #or
+            await #response
+
+    def main():
+        return MyApp('First App', 'org.beeware.helloworld')
+
 Notes
 -----
 
