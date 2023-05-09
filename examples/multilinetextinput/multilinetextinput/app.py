@@ -73,6 +73,7 @@ class ExampleMultilineTextInputApp(toga.App):
             children=[
                 button_scroll_top,
                 button_scroll_bottom,
+                toga.TextInput(style=Pack(flex=1)),
             ],
             style=Pack(direction=ROW, padding=10),
         )

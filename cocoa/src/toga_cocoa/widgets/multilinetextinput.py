@@ -18,6 +18,10 @@ class TogaTextView(NSTextView):
         # Disable the touchbar.
         return None
 
+    @objc_method
+    def textDidChange_(self, notification) -> None:
+        self.interface.on_change(None)
+
 
 class MultilineTextInput(Widget):
     def create(self):
@@ -34,6 +38,9 @@ class MultilineTextInput(Widget):
 
         # Create the actual text widget
         self.text = TogaTextView.alloc().init()
+        self.text.interface = self.interface
+        self.text.delegate = self.text
+
         self.text.editable = True
         self.text.selectable = True
         self.text.verticallyResizable = True
@@ -48,11 +55,17 @@ class MultilineTextInput(Widget):
         # Add the layout constraints
         self.add_constraints()
 
+    def get_placeholder(self):
+        return self.text.placeholderString
+
     def set_placeholder(self, value):
-        self.text.placeholderString = self.interface.placeholder
+        self.text.placeholderString = value
+
+    def get_readonly(self):
+        return not self.text.isEditable()
 
     def set_readonly(self, value):
-        self.text.editable = not self.interface.readonly
+        self.text.editable = not value
 
     def get_value(self):
         return self.text.string
@@ -70,9 +83,6 @@ class MultilineTextInput(Widget):
     def rehint(self):
         self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
         self.interface.intrinsic.height = at_least(self.interface._MIN_HEIGHT)
-
-    def set_on_change(self, handler):
-        self.interface.factory.not_implemented("MultilineTextInput.set_on_change()")
 
     def scroll_to_bottom(self):
         self.text.scrollToEndOfDocument(None)
