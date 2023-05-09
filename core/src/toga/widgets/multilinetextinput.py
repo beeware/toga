@@ -1,71 +1,37 @@
-import warnings
-
 from toga.handlers import wrapped_handler
 
 from .base import Widget
 
 
 class MultilineTextInput(Widget):
-    """A multi-line text input widget.
-
-    Args:
-        id (str): An identifier for this widget.
-        style(:obj:`Style`):  An optional style object.
-            If no style is provided then a new one will be created for the widget.
-        value (str): The initial text of the widget.
-        readonly (bool): Whether a user can write into the text input,
-            defaults to `False`.
-        placeholder (str): The placeholder text for the widget.
-        on_change (``callable``): The handler to invoke when the text changes.
-    """
-
-    MIN_HEIGHT = 100
-    MIN_WIDTH = 100
-
     def __init__(
         self,
         id=None,
         style=None,
-        factory=None,  # DEPRECATED!
         value=None,
         readonly=False,
         placeholder=None,
         on_change=None,
-        initial=None,  # DEPRECATED!
     ):
-        super().__init__(id=id, style=style)
+        """Create a new multi-line text input widget.
 
-        ######################################################################
-        # 2022-09: Backwards compatibility
-        ######################################################################
-        # factory no longer used
-        if factory:
-            warnings.warn("The factory argument is no longer used.", DeprecationWarning)
-        ######################################################################
-        # End backwards compatibility.
-        ######################################################################
+        Inherits from :class:`~toga.widgets.base.Widget`.
+
+        :param id: The ID for the widget.
+        :param style: A style object. If no style is provided, a default style
+            will be applied to the widget.
+        :param value: The initial content to display in the widget.
+        :param readonly: Is the widget content readonly?
+        :param placeholder: The content to display as a placeholder when
+            there is no user content, and the widget does not have focus.
+        :param on_change: A handler that will be invoked when the the value of
+            the widget changes as a result of user input.
+        """
+
+        super().__init__(id=id, style=style)
 
         # Create a platform specific implementation of a MultilineTextInput
         self._impl = self.factory.MultilineTextInput(interface=self)
-
-        ##################################################################
-        # 2022-07: Backwards compatibility
-        ##################################################################
-
-        # initial replaced with value
-        if initial is not None:
-            if value is not None:
-                raise ValueError(
-                    "Cannot specify both `initial` and `value`; "
-                    "`initial` has been deprecated, use `value`"
-                )
-            else:
-                warnings.warn("`initial` has been renamed `value`", DeprecationWarning)
-            value = initial
-
-        ##################################################################
-        # End backwards compatibility.
-        ##################################################################
 
         # Set all the properties
         self.value = value
@@ -75,69 +41,67 @@ class MultilineTextInput(Widget):
 
     @property
     def placeholder(self):
-        """The placeholder text.
+        """The placeholder text for the widget.
 
-        Returns:
-            The placeholder text as a `str``.
+        A value of ``None`` will be interpreted and returned as an empty string.
+        Any other object will be converted to a string using ``str()``.
         """
-        return self._placeholder
+        return self._impl.get_placeholder()
 
     @placeholder.setter
     def placeholder(self, value):
-        self._placeholder = "" if value is None else str(value)
-        self._impl.set_placeholder(self._placeholder)
+        self._impl.set_placeholder("" if value is None else str(value))
+        self.refresh()
+
+    @property
+    def enabled(self):
+        """Is the widget currently enabled? i.e., can the user interact with the
+        widget?
+
+        Disabling a MultilineTextInput is equivalent to making the input
+        readonly.
+        """
+        return not self._impl.get_readonly()
+
+    @enabled.setter
+    def enabled(self, value):
+        self._impl.set_readonly(not bool(value))
 
     @property
     def readonly(self):
-        """Whether a user can write into the text input.
+        """Can the value of the widget be modified by the user?
 
-        Returns:
-            `True` if the user can only read, `False` if the user can read and write the text.
+        This only controls manual changes by the user (i.e., typing at the
+        keyboard). Programmatic changes will be permitted while the widget is
+        set read-only.
         """
-        return self._readonly
+        return self._impl.get_readonly()
 
     @readonly.setter
     def readonly(self, value):
-        self._readonly = value
-        self._impl.set_readonly(value)
+        self._impl.set_readonly(bool(value))
 
     @property
     def value(self):
-        """The value of the multi line text input field.
+        """The text to display in the widget.
 
-        Returns:
-            The text of the Widget as a ``str``.
+        A value of ``None`` will be interpreted and returned as an empty string.
+        Any other object will be converted to a string using ``str()``.
         """
         return self._impl.get_value()
 
     @value.setter
     def value(self, value):
-        cleaned_value = "" if value is None else str(value)
-        self._impl.set_value(cleaned_value)
+        self._impl.set_value("" if value is None else str(value))
         self.refresh()
 
     def clear(self):
-        """Clears the text from the widget."""
+        """Clear any text from the widget.
+
+        This will restore any placeholder text, if a placeholder has been
+        provided.
+        """
         self.value = ""
-
-    @property
-    def on_change(self):
-        """The handler to invoke when the value changes.
-
-        Returns:
-            The function ``callable`` that is called on a content change.
-        """
-        return self._on_change
-
-    @on_change.setter
-    def on_change(self, handler):
-        """Set the handler to invoke when the value is changed.
-
-        Args:
-            handler (:obj:`callable`): The handler to invoke when the value is changed.
-        """
-        self._on_change = wrapped_handler(self, handler)
-        self._impl.set_on_change(self._on_change)
 
     def scroll_to_bottom(self):
         """Scroll the view to make the bottom of the text field visible."""
@@ -146,3 +110,15 @@ class MultilineTextInput(Widget):
     def scroll_to_top(self):
         """Scroll the view to make the top of the text field visible."""
         self._impl.scroll_to_top()
+
+    @property
+    def on_change(self):
+        """The handler to invoke when the value of the widget changes.
+
+        This is only invoked in response to user-generated changes.
+        """
+        return self._on_change
+
+    @on_change.setter
+    def on_change(self, handler):
+        self._on_change = wrapped_handler(self, handler)
