@@ -138,4 +138,4 @@ class SimpleProbe:
         return self.native.isFirstResponder
 
     async def type_character(self, char):
-        self.native.delegate.textViewDidChange(self.native)
+        self.native.insertText(char)

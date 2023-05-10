@@ -4,7 +4,7 @@
 from ctypes import POINTER, Structure, c_char_p, c_int, c_void_p, cdll, util
 from enum import Enum
 
-from rubicon.objc import CGFloat, ObjCClass, objc_const
+from rubicon.objc import CGFloat, ObjCClass, ObjCProtocol, objc_const
 
 from toga.constants import CENTER, JUSTIFY, LEFT, RIGHT
 from toga_iOS.libs.core_graphics import CGContextRef
@@ -118,6 +118,11 @@ def NSTextAlignment(alignment):
         JUSTIFY: NSJustifiedTextAlignment,
     }[alignment]
 
+
+######################################################################
+# UIAction.h
+
+UIKeyInput = ObjCProtocol("UIKeyInput")
 
 ######################################################################
 # UIAlertController.h

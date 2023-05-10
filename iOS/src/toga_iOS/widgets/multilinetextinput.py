@@ -12,13 +12,14 @@ from toga_iOS.libs import (
     NSLayoutConstraint,
     NSLayoutRelationEqual,
     NSTextAlignment,
+    UIKeyInput,
     UILabel,
     UITextView,
 )
 from toga_iOS.widgets.base import Widget
 
 
-class TogaMultilineTextView(UITextView):
+class TogaMultilineTextView(UITextView, protocols=[UIKeyInput]):
     interface = objc_property(object, weak=True)
     impl = objc_property(object, weak=True)
 
