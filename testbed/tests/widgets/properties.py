@@ -1,9 +1,9 @@
-from pytest import approx
+from pytest import approx, fixture
 
 import toga
-from toga.colors import RED, TRANSPARENT, color as named_color
+from toga.colors import CORNFLOWERBLUE, RED, TRANSPARENT, color as named_color
 from toga.fonts import BOLD, FANTASY, ITALIC, NORMAL, SERIF, SYSTEM
-from toga.style.pack import COLUMN
+from toga.style.pack import CENTER, COLUMN, JUSTIFY, LEFT, LTR, RIGHT, RTL
 
 from ..assertions import assert_color
 from ..data import COLORS, TEXTS
@@ -11,6 +11,11 @@ from .probe import get_probe
 
 # An upper bound for widths
 MAX_WIDTH = 2000
+
+
+@fixture
+def verify_font_sizes():
+    return True
 
 
 async def test_enabled(widget, probe):
@@ -45,9 +50,6 @@ async def test_enable_noop(widget, probe):
 
     # Widget still reports as enabled
     assert widget.enabled
-
-
-# async def test_hidden(widget, probe):
 
 
 async def test_focus(widget, probe):
@@ -91,10 +93,39 @@ async def test_text(widget, probe):
     "The text displayed on a widget can be changed"
     for text in TEXTS:
         widget.text = text
-        await probe.redraw("Widget text should be %s" % text)
+        await probe.redraw(f"Widget text should be {str(text)!r}")
 
-        assert widget.text == text
-        assert probe.text == text
+        assert widget.text == str(text)
+        assert probe.text == str(text)
+
+
+async def test_text_value(widget, probe):
+    "The text value displayed on a widget can be changed"
+    for text in TEXTS:
+        widget.value = text
+        await probe.redraw(f"Widget value should be {str(text)!r}")
+
+        assert widget.value == str(text)
+        assert probe.value == str(text)
+
+
+async def test_placeholder(widget, probe):
+    "The placeholder displayed by a widget can be changed"
+    for text in TEXTS:
+        widget.value = "Hello"
+        widget.placeholder = text
+        await probe.redraw(f"Widget placeholder should be {str(text)!r}, but hidden")
+
+        assert widget.placeholder == str(text)
+        assert probe.placeholder == str(text)
+        assert not probe.placeholder_visible()
+
+        widget.value = None
+        await probe.redraw(f"Widget placeholder still be {str(text)!r}, and visible")
+
+        assert widget.placeholder == str(text)
+        assert probe.placeholder == str(text)
+        assert probe.placeholder_visible()
 
 
 async def test_text_width_change(widget, probe):
@@ -109,11 +140,12 @@ async def test_text_width_change(widget, probe):
     assert probe.width > orig_width
 
 
-async def test_font(widget, probe):
+async def test_font(widget, probe, verify_font_sizes):
     "The font size and family of a widget can be changed."
     # Capture the original size and font of the widget
-    orig_height = probe.height
-    orig_width = probe.width
+    if verify_font_sizes:
+        orig_height = probe.height
+        orig_width = probe.width
     orig_font = probe.font
     probe.assert_font_family(SYSTEM)
 
@@ -130,8 +162,9 @@ async def test_font(widget, probe):
     assert (orig_font.size * 2.5) < new_size_font.size < (orig_font.size * 3.5)
 
     # Widget should be taller and wider
-    assert probe.width > orig_width
-    assert probe.height > orig_height
+    if verify_font_sizes:
+        assert probe.width > orig_width
+        assert probe.height > orig_height
 
     # Change to a different font
     widget.style.font_family = FANTASY
@@ -144,8 +177,9 @@ async def test_font(widget, probe):
     # Font size hasn't changed
     assert new_family_font.size == new_size_font.size
     # Widget should still be taller and wider than the original
-    assert probe.width > orig_width
-    assert probe.height > orig_height
+    if verify_font_sizes:
+        assert probe.width > orig_width
+        assert probe.height > orig_height
 
     # Reset to original family and size.
     del widget.style.font_family
@@ -154,8 +188,9 @@ async def test_font(widget, probe):
         message="Widget text should be reset to original family and size"
     )
     assert probe.font == orig_font
-    assert probe.height == orig_height
-    assert probe.width == orig_width
+    if verify_font_sizes:
+        assert probe.height == orig_height
+        assert probe.width == orig_width
 
 
 async def test_font_attrs(widget, probe):
@@ -234,11 +269,45 @@ async def test_background_color_transparent(widget, probe):
     assert_color(probe.background_color, TRANSPARENT)
 
 
+async def test_alignment(widget, probe):
+    """Labels honor alignment settings."""
+    # Use column alignment to ensure widget uses all available width
+    widget.parent.style.direction = COLUMN
+
+    # Initial alignment is LEFT, initial direction is LTR
+    await probe.redraw("Label text direction should be LTR")
+    probe.assert_alignment(LEFT)
+
+    for alignment in [RIGHT, CENTER, JUSTIFY]:
+        widget.style.text_align = alignment
+        await probe.redraw("Label text direction should be %s" % alignment)
+        probe.assert_alignment(alignment)
+
+    # Clearing the alignment reverts to default alignment of LEFT
+    del widget.style.text_align
+    await probe.redraw("Label text direction should be reverted to LEFT")
+    probe.assert_alignment(LEFT)
+
+    # If text direction is RTL, default alignment is RIGHT
+    widget.style.text_direction = RTL
+    await probe.redraw("Label text direction should be RTL")
+    probe.assert_alignment(RIGHT)
+
+    # If text direction is expliclty LTR, default alignment is LEFT
+    widget.style.text_direction = LTR
+    await probe.redraw("Label text direction should be LTR")
+    probe.assert_alignment(LEFT)
+
+
 async def test_flex_widget_size(widget, probe):
     "The widget can expand in either axis."
-    # Container is initially a non-flex row box. Paint it red so we can see it.
-    widget.style.background_color = RED
-    await probe.redraw("Widget background color should be RED")
+    # Container is initially a non-flex row widget of fixed size.
+    # Paint the background so we can easily see it against the background.
+    widget.style.flex = 0
+    widget.style.width = 100
+    widget.style.height = 200
+    widget.style.background_color = CORNFLOWERBLUE
+    await probe.redraw("Widget should have fixed 100x200 size")
 
     # Check the initial widget size
     # Match isn't exact because of pixel scaling on some platforms
@@ -282,7 +351,6 @@ async def test_flex_horizontal_widget_size(widget, probe):
     "Check that a widget that is flexible in the horizontal axis resizes as expected"
     # Container is initially a non-flex row box.
     # Initial widget size is small (but non-zero), based on content size.
-    await probe.redraw("Widget should be a non-flex row box")
     probe.assert_width(1, 160)
     probe.assert_height(1, 50)
 

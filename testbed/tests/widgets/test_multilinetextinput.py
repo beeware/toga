@@ -1,14 +1,37 @@
+from unittest.mock import Mock
+
 import pytest
 
 import toga
+from toga.style import Pack
 
 from ..conftest import skip_on_platforms
+from .properties import (  # noqa: F401
+    test_alignment,
+    test_background_color,
+    test_background_color_reset,
+    test_background_color_transparent,
+    test_color,
+    test_color_reset,
+    test_enabled,
+    test_flex_widget_size,
+    test_focus,
+    test_font,
+    test_font_attrs,
+    test_placeholder,
+    test_text_value,
+)
 
 
 @pytest.fixture
 async def widget():
     skip_on_platforms("android", "windows", "linux")
-    return toga.MultilineTextInput(value="Hello")
+    return toga.MultilineTextInput(value="Hello", style=Pack(flex=1))
+
+
+@pytest.fixture
+def verify_font_sizes():
+    return False
 
 
 async def test_readonly(widget, probe):
@@ -30,3 +53,73 @@ async def test_readonly(widget, probe):
 
     assert not widget.readonly
     assert not probe.readonly
+
+
+async def test_scroll_position(widget, probe):
+    "The widget can be programmatically scrolled."
+    # The document and the visible area are initially the same
+    assert probe.visible_width == pytest.approx(probe.document_width, abs=5)
+    assert probe.visible_height == pytest.approx(probe.document_height, abs=5)
+
+    # The scroll position is at the origin.
+    assert probe.horizontal_scroll_position == pytest.approx(0.0)
+    assert probe.vertical_scroll_position == pytest.approx(0.0)
+
+    # Add a lot of content
+    widget.value = "All work and no play makes Jack a dull boy. " * 1000
+    await probe.redraw("The document now contains a lot of content")
+
+    # The document and the visible area are initially the same
+    assert probe.visible_width == pytest.approx(probe.document_width, abs=5)
+    assert probe.visible_height * 2 < probe.document_height
+
+    # The scroll position is at the origin.
+    assert probe.horizontal_scroll_position == pytest.approx(0.0)
+    assert probe.vertical_scroll_position == pytest.approx(0.0)
+
+    widget.scroll_to_top()
+    await probe.redraw("The document has been explicitly scrolled to the top")
+
+    # The scroll position is still the origin.
+    assert probe.horizontal_scroll_position == pytest.approx(0.0)
+    assert probe.vertical_scroll_position == pytest.approx(0.0)
+
+    widget.scroll_to_bottom()
+    await probe.redraw("The document has been explicitly scrolled to the bottom")
+
+    # The horizontal scroll position is unchanged;
+    # the vertical position reflects the document size within the visible window.
+    assert probe.horizontal_scroll_position == pytest.approx(0.0)
+    scroll_offset = probe.document_height - probe.visible_height
+    assert probe.vertical_scroll_position == scroll_offset
+
+    widget.scroll_to_top()
+    await probe.redraw("The document has been explicitly scrolled back to the top")
+
+    # The scroll position is still the origin.
+    assert probe.horizontal_scroll_position == pytest.approx(0.0)
+    assert probe.vertical_scroll_position == pytest.approx(0.0)
+
+
+async def test_on_change_handler(widget, probe):
+    "The on_change handler is triggered when the user types, but not on programmatic changes."
+    # Install a handler, and give the widget focus.
+    handler = Mock()
+    widget.on_change = handler
+    widget.focus()
+
+    widget.value = "This is new content."
+    await probe.redraw("Value has been set programmatically")
+    handler.assert_not_called()
+
+    # Clearing doesn't trigger the event handler
+    widget.clear()
+    await probe.redraw("Value has been cleared programmatically")
+    handler.assert_not_called()
+
+    for count, char in enumerate("Hello world", start=1):
+        await probe.type_character(char)
+        await probe.redraw(f"Typed {char!r}")
+
+        # The number of events equals the number of characters typed.
+        assert handler.call_count == count

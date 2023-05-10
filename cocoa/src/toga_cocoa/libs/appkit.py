@@ -379,6 +379,9 @@ class NSEventType(IntEnum):
     RightMouseDragged = 7
     MouseEntered = 8
 
+    KeyDown = 10
+    KeyUp = 11
+
 
 ######################################################################
 # NSFont.h

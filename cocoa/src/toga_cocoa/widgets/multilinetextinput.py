@@ -1,10 +1,13 @@
 from travertino.size import at_least
 
+from toga.colors import TRANSPARENT
 from toga_cocoa.colors import native_color
 from toga_cocoa.libs import (
     NSBezelBorder,
     NSScrollView,
+    NSTextAlignment,
     NSTextView,
+    NSViewHeightSizable,
     NSViewWidthSizable,
     objc_method,
 )
@@ -13,11 +16,6 @@ from .base import Widget
 
 
 class TogaTextView(NSTextView):
-    @objc_method
-    def touchBar(self):
-        # Disable the touchbar.
-        return None
-
     @objc_method
     def textDidChange_(self, notification) -> None:
         self.interface.on_change(None)
@@ -37,55 +35,69 @@ class MultilineTextInput(Widget):
         self.native.translatesAutoresizingMaskIntoConstraints = False
 
         # Create the actual text widget
-        self.text = TogaTextView.alloc().init()
-        self.text.interface = self.interface
-        self.text.delegate = self.text
+        self.native_text = TogaTextView.alloc().init()
+        self.native_text.interface = self.interface
+        self.native_text.delegate = self.native_text
 
-        self.text.editable = True
-        self.text.selectable = True
-        self.text.verticallyResizable = True
-        self.text.horizontallyResizable = False
-        self.text.usesAdaptiveColorMappingForDarkAppearance = True
+        self.native_text.editable = True
+        self.native_text.selectable = True
+        self.native_text.verticallyResizable = True
+        self.native_text.horizontallyResizable = False
+        self.native_text.usesAdaptiveColorMappingForDarkAppearance = True
 
-        self.text.autoresizingMask = NSViewWidthSizable
+        self.native_text.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable
 
         # Put the text view in the scroll window.
-        self.native.documentView = self.text
+        self.native.documentView = self.native_text
 
         # Add the layout constraints
         self.add_constraints()
 
     def get_placeholder(self):
-        return self.text.placeholderString
+        return self.native_text.placeholderString
 
     def set_placeholder(self, value):
-        self.text.placeholderString = value
+        self.native_text.placeholderString = value
 
     def get_readonly(self):
-        return not self.text.isEditable()
+        return not self.native_text.isEditable()
 
     def set_readonly(self, value):
-        self.text.editable = not value
+        self.native_text.editable = not value
 
     def get_value(self):
-        return self.text.string
+        return self.native_text.string
 
     def set_value(self, value):
-        self.text.string = value
+        self.native_text.string = value
 
     def set_color(self, value):
-        self.text.textColor = native_color(value)
+        self.native_text.textColor = native_color(value)
+
+    def set_background_color(self, color):
+        if color is TRANSPARENT:
+            # Both the text view and the scroll view need to be made transparent
+            self.native.drawsBackground = False
+            self.native_text.drawsBackground = False
+        else:
+            # Both the text view and the scroll view need to be opaque,
+            # but only the text view needs a color.
+            self.native.drawsBackground = True
+            self.native_text.drawsBackground = True
+            self.native_text.backgroundColor = native_color(color)
+
+    def set_alignment(self, value):
+        self.native_text.alignment = NSTextAlignment(value)
 
     def set_font(self, font):
-        if font:
-            self.text.font = font._impl.native
+        self.native_text.font = font._impl.native
 
     def rehint(self):
         self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
         self.interface.intrinsic.height = at_least(self.interface._MIN_HEIGHT)
 
     def scroll_to_bottom(self):
-        self.text.scrollToEndOfDocument(None)
+        self.native_text.scrollToEndOfDocument(None)
 
     def scroll_to_top(self):
-        self.text.scrollToBeginningOfDocument(None)
+        self.native_text.scrollToBeginningOfDocument(None)
