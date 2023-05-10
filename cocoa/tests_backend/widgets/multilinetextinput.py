@@ -87,3 +87,7 @@ class MultilineTextInputProbe(SimpleProbe):
     @property
     def vertical_scroll_position(self):
         return self.native.contentView.bounds.origin.y
+
+    async def wait_for_scroll_completion(self):
+        # No animation associated with scroll, so this is a no-op
+        pass

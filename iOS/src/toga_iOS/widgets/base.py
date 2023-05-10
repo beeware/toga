@@ -1,6 +1,5 @@
 from abc import abstractmethod
 
-from toga.colors import TRANSPARENT
 from toga_iOS.colors import native_color
 from toga_iOS.constraints import Constraints
 from toga_iOS.libs import UIColor
@@ -106,7 +105,7 @@ class Widget:
 
     # TODO: check if it's safe to make this the default implementation.
     def set_background_color_simple(self, value):
-        if value and (value != TRANSPARENT):
+        if value:
             self.native.backgroundColor = native_color(value)
         else:
             try:

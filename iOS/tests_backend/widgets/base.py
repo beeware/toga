@@ -1,8 +1,7 @@
 import asyncio
 
-from toga.colors import TRANSPARENT
 from toga.fonts import CURSIVE, FANTASY, MONOSPACE, SANS_SERIF, SERIF, SYSTEM
-from toga_iOS.libs import NSRunLoop, UIApplication, UIColor
+from toga_iOS.libs import NSRunLoop, UIApplication
 
 from .properties import toga_color
 
@@ -125,10 +124,7 @@ class SimpleProbe:
 
     @property
     def background_color(self):
-        if self.native.backgroundColor == UIColor.clearColor:
-            return TRANSPARENT
-        else:
-            return toga_color(self.native.backgroundColor)
+        return toga_color(self.native.backgroundColor)
 
     async def press(self):
         self.native.sendActionsForControlEvents(UIControlEventTouchDown)
@@ -140,3 +136,6 @@ class SimpleProbe:
     @property
     def has_focus(self):
         return self.native.isFirstResponder
+
+    async def type_character(self, char):
+        self.native.delegate.textViewDidChange(self.native)

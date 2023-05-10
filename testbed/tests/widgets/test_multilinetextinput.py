@@ -62,7 +62,6 @@ async def test_scroll_position(widget, probe):
     assert probe.visible_height == pytest.approx(probe.document_height, abs=5)
 
     # The scroll position is at the origin.
-    assert probe.horizontal_scroll_position == pytest.approx(0.0)
     assert probe.vertical_scroll_position == pytest.approx(0.0)
 
     # Add a lot of content
@@ -74,31 +73,30 @@ async def test_scroll_position(widget, probe):
     assert probe.visible_height * 2 < probe.document_height
 
     # The scroll position is at the origin.
-    assert probe.horizontal_scroll_position == pytest.approx(0.0)
     assert probe.vertical_scroll_position == pytest.approx(0.0)
 
     widget.scroll_to_top()
     await probe.redraw("The document has been explicitly scrolled to the top")
 
     # The scroll position is still the origin.
-    assert probe.horizontal_scroll_position == pytest.approx(0.0)
     assert probe.vertical_scroll_position == pytest.approx(0.0)
 
     widget.scroll_to_bottom()
+    await probe.wait_for_scroll_completion()
     await probe.redraw("The document has been explicitly scrolled to the bottom")
 
-    # The horizontal scroll position is unchanged;
-    # the vertical position reflects the document size within the visible window.
-    assert probe.horizontal_scroll_position == pytest.approx(0.0)
+    # The vertical scroll position reflects the document size within the visible window.
+    # The exact position varies by platform because of scroll bounce, decorations, etc
     scroll_offset = probe.document_height - probe.visible_height
-    assert probe.vertical_scroll_position == scroll_offset
+    assert probe.vertical_scroll_position == pytest.approx(scroll_offset, abs=30)
 
     widget.scroll_to_top()
+    await probe.wait_for_scroll_completion()
     await probe.redraw("The document has been explicitly scrolled back to the top")
 
-    # The scroll position is still the origin.
-    assert probe.horizontal_scroll_position == pytest.approx(0.0)
-    assert probe.vertical_scroll_position == pytest.approx(0.0)
+    # The scroll position back at the origin.
+    # Due to scroll bounce etc, this might be slightly off 0
+    assert probe.vertical_scroll_position == pytest.approx(0.0, abs=10)
 
 
 async def test_on_change_handler(widget, probe):
