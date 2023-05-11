@@ -270,7 +270,7 @@ async def test_background_color_transparent(widget, probe):
 
 
 async def test_alignment(widget, probe):
-    """Labels honor alignment settings."""
+    """Widget honors alignment settings."""
     # Use column alignment to ensure widget uses all available width
     widget.parent.style.direction = COLUMN
 

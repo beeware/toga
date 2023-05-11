@@ -106,6 +106,7 @@ async def test_on_change_handler(widget, probe):
     widget.on_change = handler
     widget.focus()
 
+    # Programmatic value changes don't trigger the event handler
     widget.value = "This is new content."
     await probe.redraw("Value has been set programmatically")
     handler.assert_not_called()
