@@ -81,10 +81,14 @@ class SimpleProbe:
         # Force a repaint
         self.widget.window.content._impl.native.displayIfNeeded()
 
-        # If we're running slow, wait for a second
         if self.widget.app.run_slow:
+            # If we're running slow, wait for a second
             print("Waiting for redraw" if message is None else message)
             await asyncio.sleep(1)
+        else:
+            # Running at "normal" speed, we need to release to the event loop
+            # for at least one iteration. `runUntilDate:None` does this.
+            NSRunLoop.currentRunLoop.runUntilDate(None)
 
     @property
     def enabled(self):
