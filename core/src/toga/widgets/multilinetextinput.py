@@ -21,9 +21,9 @@ class MultilineTextInput(Widget):
         :param style: A style object. If no style is provided, a default style
             will be applied to the widget.
         :param value: The initial content to display in the widget.
-        :param readonly: Is the widget content readonly?
+        :param readonly: Can the value of the widget be modified by the user?
         :param placeholder: The content to display as a placeholder when
-            there is no user content, and the widget does not have focus.
+            there is no user content to display.
         :param on_change: A handler that will be invoked when the the value of
             the widget changes as a result of user input.
         """
@@ -59,7 +59,7 @@ class MultilineTextInput(Widget):
         widget?
 
         Disabling a MultilineTextInput is equivalent to making the input
-        readonly.
+        read-only.
         """
         return not self._impl.get_readonly()
 
@@ -72,8 +72,8 @@ class MultilineTextInput(Widget):
         """Can the value of the widget be modified by the user?
 
         This only controls manual changes by the user (i.e., typing at the
-        keyboard). Programmatic changes will be permitted while the widget is
-        set read-only.
+        keyboard). Programmatic changes are permitted while the widget has
+        ``readonly`` enabled.
         """
         return self._impl.get_readonly()
 
