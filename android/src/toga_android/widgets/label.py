@@ -3,8 +3,8 @@ from travertino.size import at_least
 from toga.constants import JUSTIFY
 from toga_android.colors import native_color
 
-from ..libs.android.graphics import LineBreaker
 from ..libs.android.os import Build
+from ..libs.android.text import Layout
 from ..libs.android.view import Gravity, View__MeasureSpec
 from ..libs.android.widget import TextView
 from .base import Widget, align
@@ -66,9 +66,13 @@ class Label(TextViewWidget):
         if not self.native.getLayoutParams():
             return
 
-        # Justified text wasn't added until Android O (SDK 26)
-        if value == JUSTIFY and Build.VERSION.SDK_INT >= Build.VERSION_CODES.O:
-            self.native.setJustificationMode(LineBreaker.JUSTIFICATION_MODE_INTER_WORD)
-        else:
-            self.native.setJustificationMode(LineBreaker.JUSTIFICATION_MODE_NONE)
+        # Justified text wasn't added until API level 26.
+        # We only run the test suite on API 31, so we need to disable branch coverage.
+        if Build.VERSION.SDK_INT >= 26:  # pragma: no branch
+            self.native.setJustificationMode(
+                Layout.JUSTIFICATION_MODE_INTER_WORD
+                if value == JUSTIFY
+                else Layout.JUSTIFICATION_MODE_NONE
+            )
+
         self.native.setGravity(Gravity.CENTER_VERTICAL | align(value))
