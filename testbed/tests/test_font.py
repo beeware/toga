@@ -106,7 +106,9 @@ async def test_font_file_loaded(
         assert getattr(widget_probe.font, prop) == value
 
     # Ensure the font was actually loaded.
-    assert "could not be found" not in capsys.readouterr().out
+    stdout = capsys.readouterr().out
+    assert "using system font as a fallback" not in stdout
+    assert "could not be found" not in stdout
 
 
 async def test_non_existent_font_file(widget: toga.Label, app_path: Path):
