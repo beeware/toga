@@ -67,7 +67,8 @@ class Label(TextViewWidget):
             return
 
         # Justified text wasn't added until API level 26.
-        if Build.VERSION.SDK_INT >= 26:
+        # We only run the test suite on API 31, so we need to disable branch coverage.
+        if Build.VERSION.SDK_INT >= 26:  # pragma: no branch
             self.native.setJustificationMode(
                 Layout.JUSTIFICATION_MODE_INTER_WORD
                 if value == JUSTIFY
