@@ -32,7 +32,9 @@ class Font(BaseFont):
 
     def __str__(self):
         size = (
-            "system size" if self.size == SYSTEM_DEFAULT_FONT_SIZE else f"{self.size}pt"
+            "default size"
+            if self.size == SYSTEM_DEFAULT_FONT_SIZE
+            else f"{self.size}pt"
         )
         weight = f" {self.weight}" if self.weight != NORMAL else ""
         variant = f" {self.variant}" if self.variant != NORMAL else ""

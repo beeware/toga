@@ -70,23 +70,23 @@ from toga.fonts import (
             NORMAL,
             "system 42pt",
         ),
-        # Custom font, system size
+        # Custom font, default size
         (
             "Custom Font",
             SYSTEM_DEFAULT_FONT_SIZE,
             NORMAL,
             NORMAL,
             NORMAL,
-            "Custom Font system size",
+            "Custom Font default size",
         ),
-        # System font, system size
+        # System font, default size
         (
             SYSTEM,
             SYSTEM_DEFAULT_FONT_SIZE,
             NORMAL,
             NORMAL,
             NORMAL,
-            "system system size",
+            "system default size",
         ),
     ],
 )
