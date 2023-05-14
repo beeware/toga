@@ -41,10 +41,6 @@ class Font:
                 font_path = (
                     self.interface.factory.paths.app / _REGISTERED_FONT_CACHE[font_key]
                 )
-                if Path(font_path).is_file():
-                    FontConfig.add_font_file(str(font_path))
-                else:
-                    raise ValueError(f"Font file {font_path} could not be found")
             except KeyError:
                 # Not a pre-registered font
                 if self.interface.family not in SYSTEM_DEFAULT_FONTS:
@@ -52,6 +48,11 @@ class Font:
                         f"Unknown font '{self.interface}'; "
                         "using system font as a fallback"
                     )
+            else:
+                if Path(font_path).is_file():
+                    FontConfig.add_font_file(str(font_path))
+                else:
+                    raise ValueError(f"Font file {font_path} could not be found")
 
             # Initialize font with properties 'None NORMAL NORMAL NORMAL 0'
             font = Pango.FontDescription()
