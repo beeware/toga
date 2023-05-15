@@ -28,6 +28,9 @@ class Font:
                 font_path = str(
                     self.interface.factory.paths.app / _REGISTERED_FONT_CACHE[font_key]
                 )
+            except KeyError:
+                font_family = win_font_family(self.interface.family)
+            else:
                 try:
                     self._pfc = PrivateFontCollection()
                     self._pfc.AddFontFile(font_path)
@@ -36,8 +39,6 @@ class Font:
                     raise ValueError(f"Font file {font_path} could not be found")
                 except (IndexError, ExternalException):
                     raise ValueError(f"Unable to load font file {font_path}")
-            except KeyError:
-                font_family = win_font_family(self.interface.family)
 
             font_style = win_font_style(
                 self.interface.weight,
