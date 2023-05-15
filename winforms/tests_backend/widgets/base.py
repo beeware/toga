@@ -57,13 +57,16 @@ class SimpleProbe:
         }.get(expected, expected)
 
     def assert_font_options(self, weight, style, variant):
+        assert self.font.weight == weight
+
         if style == OBLIQUE:
             print("Ignoring OBLIQUE font test")
-        elif SMALL_CAPS:
+        else:
+            assert self.font.style == style
+
+        if variant == SMALL_CAPS:
             print("Ignoring SMALL CAPS font test")
         else:
-            assert self.font.weight == weight
-            assert self.font.style == style
             assert self.font.variant == variant
 
     async def redraw(self, message=None):
