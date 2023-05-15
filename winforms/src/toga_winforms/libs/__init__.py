@@ -3,7 +3,7 @@ from .extensions import (  # noqa: F401
     WebView2,
     WebView2RuntimeNotFoundException,
 )
-from .fonts import HorizontalTextAlignment, TextAlignment, win_font_family  # noqa: F401
+from .fonts import HorizontalTextAlignment, TextAlignment  # noqa: F401
 from .winforms import (  # noqa: F401
     Action,
     Bitmap,

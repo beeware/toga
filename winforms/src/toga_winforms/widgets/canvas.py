@@ -19,10 +19,8 @@ from toga_winforms.libs import (
     SolidBrush,
     StringFormat,
     WinForms,
-    win_font_family,
 )
 
-from ..libs.fonts import win_font_style
 from .box import Box
 
 
@@ -302,8 +300,8 @@ class Canvas(Box):
     # Text
     def write_text(self, text, x, y, font, draw_context, *args, **kwargs):
         full_height = 0
-        font_family = win_font_family(font.family)
-        font_style = win_font_style(font.weight, font.style, font_family)
+        font_family = font._impl.native.FontFamily
+        font_style = font._impl.native.Style
         for line in text.splitlines():
             _, height = self.measure_text(line, font)
             origin = PointF(x, y + full_height - height)
