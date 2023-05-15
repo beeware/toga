@@ -33,8 +33,12 @@ class MultilineTextInput(Widget):
         # Create a platform specific implementation of a MultilineTextInput
         self._impl = self.factory.MultilineTextInput(interface=self)
 
-        # Set all the properties
+        # Set a dummy handler before installing the actual on_change, because we do not want
+        # on_change triggered by the initial value being set
+        self.on_change = None
         self.value = value
+
+        # Set all the properties
         self.readonly = readonly
         self.placeholder = placeholder
         self.on_change = on_change

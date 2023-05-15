@@ -9,10 +9,6 @@ from .properties import toga_alignment, toga_color, toga_font
 class MultilineTextInputProbe(SimpleProbe):
     native_class = UITextView
 
-    def __init__(self, widget):
-        super().__init__(widget)
-        self.native.layer.removeAllAnimations()
-
     @property
     def value(self):
         return str(self.native.text)
@@ -23,6 +19,10 @@ class MultilineTextInputProbe(SimpleProbe):
 
     def placeholder_visible(self):
         return not self.native.placeholder_label.isHidden()
+
+    @property
+    def placeholder_hides_on_focus(self):
+        return False
 
     @property
     def color(self):

@@ -34,7 +34,7 @@ def toga_font(font):
     )
 
 
-def toga_alignment(xalign, yalign, justify):
+def toga_alignment_full(xalign, yalign, justify):
     if yalign != 0.5:
         pytest.fail("Y-alignment should be 0.5")
 
@@ -47,3 +47,12 @@ def toga_alignment(xalign, yalign, justify):
         }[(xalign, justify)]
     except KeyError:
         pytest.fail(f"Can't interpret GTK x alignment {xalign} with justify {justify}")
+
+
+def toga_alignment(justify):
+    return {
+        Gtk.Justification.LEFT: LEFT,
+        Gtk.Justification.RIGHT: RIGHT,
+        Gtk.Justification.CENTER: CENTER,
+        Gtk.Justification.FILL: JUSTIFY,
+    }[justify]

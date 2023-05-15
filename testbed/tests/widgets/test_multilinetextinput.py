@@ -25,7 +25,7 @@ from .properties import (  # noqa: F401
 
 @pytest.fixture
 async def widget():
-    skip_on_platforms("android", "windows", "linux")
+    skip_on_platforms("android", "windows")
     return toga.MultilineTextInput(value="Hello", style=Pack(flex=1))
 
 
@@ -65,7 +65,7 @@ async def test_scroll_position(widget, probe):
     assert probe.vertical_scroll_position == pytest.approx(0.0)
 
     # Add a lot of content
-    widget.value = "All work and no play makes Jack a dull boy. " * 1000
+    widget.value = "All work and no play makes Jack a dull boy... " * 1000
     await probe.redraw("The document now contains a lot of content")
 
     # The document and the visible area are initially the same

@@ -12,7 +12,7 @@ class ExampleMultilineTextInputApp(toga.App):
         self.multiline_input.readonly = not self.multiline_input.readonly
 
     def add_content_pressed(self, widget, **kwargs):
-        self.multiline_input.value = (
+        self.multiline_input.value = self.multiline_input.value + (
             "All work and no play makes Jack a dull boy... " * 100
         )
 

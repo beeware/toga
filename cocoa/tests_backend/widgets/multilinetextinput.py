@@ -26,6 +26,10 @@ class MultilineTextInputProbe(SimpleProbe):
         return not bool(self.native_text.string)
 
     @property
+    def placeholder_hides_on_focus(self):
+        return False
+
+    @property
     def color(self):
         return toga_color(self.native_text.textColor)
 

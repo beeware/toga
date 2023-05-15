@@ -1,7 +1,7 @@
 from toga_gtk.libs import Gtk
 
 from .base import SimpleProbe
-from .properties import toga_alignment
+from .properties import toga_alignment_full
 
 
 class LabelProbe(SimpleProbe):
@@ -13,7 +13,7 @@ class LabelProbe(SimpleProbe):
 
     @property
     def alignment(self):
-        return toga_alignment(
+        return toga_alignment_full(
             self.native.get_xalign(),
             self.native.get_yalign(),
             self.native.get_justify(),
