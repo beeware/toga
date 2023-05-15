@@ -5,7 +5,15 @@ from typing import Any
 import pytest
 
 import toga
-from toga.fonts import BOLD, ITALIC, SYSTEM, Font
+from toga.fonts import (
+    BOLD,
+    FONT_STYLES,
+    FONT_VARIANTS,
+    FONT_WEIGHTS,
+    ITALIC,
+    SYSTEM,
+    Font,
+)
 
 from .conftest import skip_on_platforms
 
@@ -38,9 +46,9 @@ async def test_use_system_font_fallback(
 
 async def test_font_options(widget: toga.Label, widget_probe: Any):
     """Every combination of weight, style and variant can be used on a font."""
-    for font_weight in widget_probe.FONT_WEIGHTS:
-        for font_style in widget_probe.FONT_STYLES:
-            for font_variant in widget_probe.FONT_VARIANTS:
+    for font_weight in FONT_WEIGHTS:
+        for font_style in FONT_STYLES:
+            for font_variant in FONT_VARIANTS:
                 widget.style.font_style = font_style
                 widget.style.font_variant = font_variant
                 widget.style.font_weight = font_weight
@@ -48,9 +56,7 @@ async def test_font_options(widget: toga.Label, widget_probe: Any):
                     f"Using a {font_weight} {font_style} {font_variant} font"
                 )
 
-                assert widget_probe.font.weight == font_weight
-                assert widget_probe.font.style == font_style
-                assert widget_probe.font.variant == font_variant
+                widget_probe.assert_font_options(font_weight, font_style, font_variant)
 
 
 @pytest.mark.parametrize(

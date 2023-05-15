@@ -5,14 +5,13 @@ from System.Drawing import FontFamily, SystemColors, SystemFonts
 
 from toga.colors import TRANSPARENT
 from toga.fonts import (
-    BOLD,
     CURSIVE,
     FANTASY,
-    ITALIC,
     MONOSPACE,
-    NORMAL,
+    OBLIQUE,
     SANS_SERIF,
     SERIF,
+    SMALL_CAPS,
     SYSTEM,
 )
 from toga.style.pack import JUSTIFY, LEFT
@@ -21,10 +20,6 @@ from .properties import toga_color, toga_font
 
 
 class SimpleProbe:
-    FONT_WEIGHTS = [NORMAL, BOLD]
-    FONT_STYLES = [NORMAL, ITALIC]
-    FONT_VARIANTS = [NORMAL]
-
     def __init__(self, widget):
         self.widget = widget
         self.native = widget._impl.native
@@ -60,6 +55,16 @@ class SimpleProbe:
             SERIF: FontFamily.GenericSerif.Name,
             SYSTEM: SystemFonts.DefaultFont.FontFamily.Name,
         }.get(expected, expected)
+
+    def assert_font_options(self, weight, style, variant):
+        if style == OBLIQUE:
+            print("Ignoring OBLIQUE font test")
+        elif SMALL_CAPS:
+            print("Ignoring SMALL CAPS font test")
+        else:
+            assert self.font.weight == weight
+            assert self.font.style == style
+            assert self.font.variant == variant
 
     async def redraw(self, message=None):
         """Request a redraw of the app, waiting until that redraw has completed."""

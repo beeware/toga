@@ -2,17 +2,12 @@ import asyncio
 
 import pytest
 
-from toga.fonts import BOLD, ITALIC, NORMAL, OBLIQUE, SMALL_CAPS
 from toga_gtk.libs import Gtk
 
 from .properties import toga_color, toga_font
 
 
 class SimpleProbe:
-    FONT_WEIGHTS = [NORMAL, BOLD]
-    FONT_STYLES = [NORMAL, ITALIC, OBLIQUE]
-    FONT_VARIANTS = [NORMAL, SMALL_CAPS]
-
     def __init__(self, widget):
         self.widget = widget
         self.impl = widget._impl
@@ -40,6 +35,11 @@ class SimpleProbe:
 
     def assert_font_family(self, expected):
         assert self.font.family == expected
+
+    def assert_font_options(self, weight, style, variant):
+        assert self.font.weight == weight
+        assert self.font.style == style
+        assert self.font.variant == variant
 
     async def redraw(self, message=None):
         """Request a redraw of the app, waiting until that redraw has completed."""

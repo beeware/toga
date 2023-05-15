@@ -29,7 +29,14 @@ from travertino.declaration import BaseStyle, Choices
 from travertino.layout import BaseBox
 from travertino.size import BaseIntrinsicSize
 
-from toga.fonts import SYSTEM_DEFAULT_FONT_SIZE, SYSTEM_DEFAULT_FONTS, Font
+from toga.fonts import (
+    FONT_STYLES,
+    FONT_VARIANTS,
+    FONT_WEIGHTS,
+    SYSTEM_DEFAULT_FONT_SIZE,
+    SYSTEM_DEFAULT_FONTS,
+    Font,
+)
 
 ######################################################################
 # Display
@@ -58,9 +65,9 @@ COLOR_CHOICES = Choices(color=True, default=True)
 BACKGROUND_COLOR_CHOICES = Choices(TRANSPARENT, color=True, default=True)
 
 FONT_FAMILY_CHOICES = Choices(*SYSTEM_DEFAULT_FONTS, string=True)
-FONT_STYLE_CHOICES = Choices(NORMAL, ITALIC, OBLIQUE)
-FONT_VARIANT_CHOICES = Choices(NORMAL, SMALL_CAPS)
-FONT_WEIGHT_CHOICES = Choices(NORMAL, BOLD)
+FONT_STYLE_CHOICES = Choices(*FONT_STYLES)
+FONT_VARIANT_CHOICES = Choices(*FONT_VARIANTS)
+FONT_WEIGHT_CHOICES = Choices(*FONT_WEIGHTS)
 FONT_SIZE_CHOICES = Choices(integer=True)
 
 
