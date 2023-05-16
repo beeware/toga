@@ -116,9 +116,11 @@ class MultilineTextInput(Widget):
         self.native_textview.grab_focus()
 
     def _add_change_handler(self):
+        print("ADD CHANGE HANDLER")
         self.change_handler = self.buffer.connect("changed", self.gtk_on_changed)
 
     def _remove_change_handler(self):
+        print("REMOVE CHANGE HANDLER")
         self.buffer.disconnect(self.change_handler)
 
     def gtk_on_changed(self, *args):
@@ -126,17 +128,20 @@ class MultilineTextInput(Widget):
 
     def gtk_on_focus_in(self, *args):
         # When focus is gained, make sure the content buffer is active.
+        print("FOCUS IN")
         self.native_textview.set_buffer(self.buffer)
         return False
 
     def gtk_on_focus_out(self, *args):
         # When focus is lost, if there's no content, install the placeholder
+        print("FOCUS OUT")
         if self.get_value() == "":
             self.native_textview.set_buffer(self.placeholder)
         return False
 
     def gtk_on_key_press(self, *args):
         # If there's a key press, make sure the content buffer is active
+        print("ON KEY PRESS")
         self.native_textview.set_buffer(self.buffer)
         return False
 

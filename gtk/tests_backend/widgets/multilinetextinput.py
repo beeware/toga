@@ -33,6 +33,9 @@ class MultilineTextInputProbe(SimpleProbe):
         )
 
     def placeholder_visible(self):
+        print("LIVE BUFFER", self.native_textview.get_buffer())
+        print("BUFFER", self.impl.buffer)
+        print("PLACEHOLDER", self.impl.placeholder)
         return self.native_textview.get_buffer() == self.impl.placeholder
 
     @property
