@@ -218,7 +218,7 @@ jobs:
 
                 # Start the BSP window manager
                 echo "Start window manager..."
-                bspwm &
+                DISPLAY=:99 bspwm &
                 sleep 5
 
             briefcase-run-prefix: 'DISPLAY=:99'
