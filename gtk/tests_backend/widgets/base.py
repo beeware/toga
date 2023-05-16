@@ -1,8 +1,6 @@
 import asyncio
 from threading import Event
 
-import pytest
-
 from toga_gtk.libs import Gdk, Gtk
 
 from .properties import toga_color, toga_font
@@ -112,10 +110,7 @@ class SimpleProbe:
 
     @property
     def has_focus(self):
-        # FIXME: This works when running standalone, but fails under CI.
-        # I *think* this is because CI is using xvfb.
-        # return self.native.has_focus()
-        pytest.skip("Focus changes don't work on GTK inside XVFB")
+        return self.native.has_focus()
 
     async def type_character(self, char):
         # Construct a GDK KeyPress event.

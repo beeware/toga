@@ -21,6 +21,10 @@ class MultilineTextInputProbe(SimpleProbe):
         )
 
     @property
+    def has_focus(self):
+        return self.native_textview.has_focus()
+
+    @property
     def placeholder(self):
         return self.impl.placeholder.get_text(
             self.impl.placeholder.get_start_iter(),
