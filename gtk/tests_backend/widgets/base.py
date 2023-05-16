@@ -41,12 +41,12 @@ class SimpleProbe:
     async def redraw(self, message=None):
         """Request a redraw of the app, waiting until that redraw has completed."""
         # Force a repaint
+        print("Waiting for redraw" if message is None else message)
         while self.impl.container.needs_redraw or Gtk.events_pending():
             Gtk.main_iteration_do(blocking=False)
 
         # If we're running slow, wait for a second
         if self.widget.app.run_slow:
-            print("Waiting for redraw" if message is None else message)
             await asyncio.sleep(1)
 
     @property
