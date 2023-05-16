@@ -22,7 +22,7 @@ class MultilineTextInputProbe(SimpleProbe):
 
     @property
     def placeholder_hides_on_focus(self):
-        return False
+        return True
 
     @property
     def color(self):
