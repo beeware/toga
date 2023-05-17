@@ -4,8 +4,10 @@ from java import dynamic_proxy
 from pytest import approx
 
 from android.graphics.drawable import ColorDrawable, DrawableWrapper, LayerDrawable
+from android.os import Build
 from android.view import View, ViewTreeObserver
 from toga.fonts import SYSTEM
+from toga.style.pack import JUSTIFY, LEFT
 
 from .properties import toga_color
 
@@ -56,7 +58,11 @@ class SimpleProbe:
         assert self.native.getParent() is None
 
     def assert_alignment(self, expected):
-        assert self.alignment == expected
+        actual = self.alignment
+        if expected == JUSTIFY and Build.VERSION.SDK_INT < 26:
+            assert actual == LEFT
+        else:
+            assert actual == expected
 
     def assert_font_family(self, expected):
         actual = self.font.family

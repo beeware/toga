@@ -189,7 +189,7 @@ class Window:
             if not self.interface.closeable:
                 # Closeability is implemented by shortcutting the close handler.
                 event.Cancel = True
-            elif self.interface.on_close:
+            elif self.interface.on_close._raw:
                 # If there is an on_close event handler, process it;
                 # but then cancel the close event. If the result of
                 # on_close handling indicates the window should close,
