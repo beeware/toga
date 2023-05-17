@@ -17,7 +17,7 @@ Notes
   oblique font will be interpreted as Italic.
 
 * Windows does not support the use of a Small Caps variant on fonts. A request
-  for a Small Caps variant will be ingored.
+  for a Small Caps variant will be ignored.
 
 Reference
 ---------
