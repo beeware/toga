@@ -3,6 +3,7 @@ import asyncio
 from java import dynamic_proxy
 from pytest import approx
 
+from android.graphics.drawable import ColorDrawable, DrawableWrapper, LayerDrawable
 from android.view import View, ViewTreeObserver
 from toga.fonts import SYSTEM
 
@@ -116,7 +117,29 @@ class SimpleProbe:
 
     @property
     def background_color(self):
-        return toga_color(self.native.getBackground().getColor())
+        background = self.native.getBackground()
+        while True:
+            if isinstance(background, ColorDrawable):
+                return toga_color(background.getColor())
+            elif isinstance(background, LayerDrawable):
+                # LayerDrawable applies color filters to all of its layers, but it doesn't
+                # implement getColorFilter itself.
+                background = background.getDrawable(0)
+            elif isinstance(background, DrawableWrapper):
+                # DrawableWrapper doesn't implement getColorFilter in API level 24, but
+                # has implemented it by API level 33.
+                background = background.getDrawable()
+            else:
+                break
+
+        filter = background.getColorFilter()
+        if filter:
+            # PorterDuffColorFilter.getColor is undocumented, but continues to work for
+            # now. If this method is blocked in the future, another option is to use the
+            # filter to draw something and see what color comes out.
+            return toga_color(filter.getColor())
+        else:
+            return None
 
     async def press(self):
         self.native.performClick()

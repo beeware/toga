@@ -4,6 +4,7 @@ from toga.constants import CENTER, JUSTIFY, LEFT, RIGHT, TRANSPARENT
 
 from ..colors import native_color
 from ..libs.activity import MainActivity
+from ..libs.android.graphics import PorterDuff__Mode, PorterDuffColorFilter
 from ..libs.android.view import Gravity, View
 
 
@@ -109,18 +110,25 @@ class Widget:
         # By default, font can't be changed
         pass
 
-    def set_background_color(self, color):
-        # By default, background color can't be changed.
-        pass
-
     # Although setBackgroundColor is defined in the View base class, we can't use it as
     # a default implementation because it often overwrites other aspects of the widget's
-    # appearance.
+    # appearance. So each widget must decide how to implement this method, possibly
+    # using one of the utility functions below.
+    def set_background_color(self, color):
+        pass
+
     def set_background_color_simple(self, value):
         if value is None:
             self.native.setBackgroundColor(native_color(TRANSPARENT))
         else:
             self.native.setBackgroundColor(native_color(value))
+
+    def set_background_color_tint(self, value):
+        self.native.getBackground().setColorFilter(
+            None
+            if value is None or value == TRANSPARENT
+            else PorterDuffColorFilter(native_color(value), PorterDuff__Mode.SRC_IN)
+        )
 
     def set_alignment(self, alignment):
         pass  # If appropriate, a widget subclass will implement this.
