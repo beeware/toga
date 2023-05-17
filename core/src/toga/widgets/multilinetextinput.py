@@ -8,9 +8,9 @@ class MultilineTextInput(Widget):
         self,
         id=None,
         style=None,
-        value=None,
-        readonly=False,
-        placeholder=None,
+        value: str = None,
+        readonly: bool = False,
+        placeholder: str = None,
         on_change=None,
     ):
         """Create a new multi-line text input widget.
@@ -44,7 +44,7 @@ class MultilineTextInput(Widget):
         self.on_change = on_change
 
     @property
-    def placeholder(self):
+    def placeholder(self) -> str:
         """The placeholder text for the widget.
 
         A value of ``None`` will be interpreted and returned as an empty string.
@@ -58,7 +58,7 @@ class MultilineTextInput(Widget):
         self.refresh()
 
     @property
-    def enabled(self):
+    def enabled(self) -> bool:
         """Is the widget currently enabled? i.e., can the user interact with the
         widget?
 
@@ -72,7 +72,7 @@ class MultilineTextInput(Widget):
         self._impl.set_readonly(not bool(value))
 
     @property
-    def readonly(self):
+    def readonly(self) -> bool:
         """Can the value of the widget be modified by the user?
 
         This only controls manual changes by the user (i.e., typing at the
@@ -86,7 +86,7 @@ class MultilineTextInput(Widget):
         self._impl.set_readonly(bool(value))
 
     @property
-    def value(self):
+    def value(self) -> str:
         """The text to display in the widget.
 
         A value of ``None`` will be interpreted and returned as an empty string.
