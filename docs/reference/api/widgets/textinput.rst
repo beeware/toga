@@ -1,9 +1,9 @@
 TextInput
 =========
 
-An widget for the display and editing of a single line of text.
+A widget for the display and editing of a single line of text.
 
-.. figure:: /reference/images/TextInput.jpeg
+.. figure:: /reference/images/TextInput.png
    :align: center
    :width: 300
 

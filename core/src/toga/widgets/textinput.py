@@ -6,6 +6,11 @@ from .base import Widget
 
 
 class TextInput(Widget):
+    """Create a new single-line text input widget.
+
+    Inherits from :class:`~toga.widgets.base.Widget`.
+    """
+
     def __init__(
         self,
         id=None,
@@ -19,10 +24,7 @@ class TextInput(Widget):
         on_lose_focus=None,
         validators: Optional[List[callable]] = None,
     ):
-        """Create a new single-line text input widget.
-
-        Inherits from :class:`~toga.widgets.base.Widget`.
-
+        """
         :param id: The ID for the widget.
         :param style: A style object. If no style is provided, a default style
             will be applied to the widget.
@@ -83,7 +85,7 @@ class TextInput(Widget):
         self._impl.set_readonly(bool(value))
 
     @property
-    def placeholder(self):
+    def placeholder(self) -> str:
         """The placeholder text for the widget.
 
         A value of ``None`` will be interpreted and returned as an empty string.
