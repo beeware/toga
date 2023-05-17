@@ -64,15 +64,16 @@ Layout widgets
 Resources
 ---------
 
-=================================================== =================================
- Component                                           Description
-=================================================== =================================
- :doc:`Font </reference/api/resources/fonts>`        Fonts
- :doc:`Command </reference/api/resources/command>`   Command
- :doc:`Group </reference/api/resources/group>`       Command group
- :doc:`Icon </reference/api/resources/icons>`        An icon for buttons, menus, etc
- :doc:`Image </reference/api/resources/images>`      An image
-=================================================== =================================
+========================================================= =================================
+ Component                                                 Description
+========================================================= =================================
+ :doc:`Font </reference/api/resources/fonts>`              Fonts
+ :doc:`Command </reference/api/resources/command>`         Command
+ :doc:`Group </reference/api/resources/group>`             Command group
+ :doc:`Icon </reference/api/resources/icons>`              An icon for buttons, menus, etc
+ :doc:`Image </reference/api/resources/images>`            An image
+ :doc:`Validators </reference/api/resources/validators>`   Input validators
+========================================================= =================================
 
 .. toctree::
    :hidden:
