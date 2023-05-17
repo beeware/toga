@@ -7,6 +7,7 @@ from toga.colors import TRANSPARENT
 from toga.fonts import (
     CURSIVE,
     FANTASY,
+    ITALIC,
     MONOSPACE,
     OBLIQUE,
     SANS_SERIF,
@@ -60,7 +61,8 @@ class SimpleProbe:
         assert self.font.weight == weight
 
         if style == OBLIQUE:
-            print("Ignoring OBLIQUE font test")
+            print("Intepreting OBLIQUE font as ITALIC")
+            assert self.font.style == ITALIC
         else:
             assert self.font.style == style
 

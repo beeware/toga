@@ -13,7 +13,11 @@ The font class is used for abstracting the platforms implementation of fonts.
 Notes
 -----
 
-* Windows does not support the use of the Oblique font style or the Small Caps variant on fonts.
+* Windows does not support the use of the Oblique font style. A request for an
+  oblique font will be interpreted as Italic.
+
+* Windows does not support the use of a Small Caps variant on fonts. A request
+  for a Small Caps variant will be ingored.
 
 Reference
 ---------

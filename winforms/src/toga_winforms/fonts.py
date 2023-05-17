@@ -79,7 +79,8 @@ class Font:
             ):
                 font_style |= FontStyle.Bold
             if (
-                self.interface.style.lower() == "italic"
+                # Winforms doesn't recognize Oblique; so we interpret as Italic
+                self.interface.style.lower() in {"italic", "oblique"}
                 and font_family.IsStyleAvailable(FontStyle.Italic)
             ):
                 font_style |= FontStyle.Italic
