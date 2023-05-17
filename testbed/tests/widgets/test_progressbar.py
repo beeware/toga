@@ -7,6 +7,7 @@ import toga
 from .properties import (  # noqa: F401
     test_enable_noop,
     test_flex_horizontal_widget_size,
+    verify_focus_handlers,
 )
 
 # Progressbar can't be given focus on mobile

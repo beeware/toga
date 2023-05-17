@@ -20,8 +20,10 @@ from .properties import (  # noqa: F401
     test_placeholder,
     test_placeholder_color,
     test_placeholder_focus,
+    test_readonly,
     test_text_value,
     test_vertical_alignment_top,
+    verify_focus_handlers,
 )
 
 
@@ -32,28 +34,8 @@ async def widget():
 
 @pytest.fixture
 def verify_font_sizes():
-    return False
-
-
-async def test_readonly(widget, probe):
-    "A widget can be made readonly"
-    # Initial value is enabled
-    assert not widget.readonly
-    assert not probe.readonly
-
-    # Change to readonly
-    widget.readonly = True
-    await probe.redraw("Multiline Text Input should be read only")
-
-    assert widget.readonly
-    assert probe.readonly
-
-    # Change back to writable
-    widget.readonly = False
-    await probe.redraw("Multiline Text Input should be writable")
-
-    assert not widget.readonly
-    assert not probe.readonly
+    # We can't verify font sizes inside the MultilineTextInput
+    return False, False
 
 
 async def test_scroll_position(widget, probe):

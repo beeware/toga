@@ -10,6 +10,7 @@ from ..assertions import assert_set_get
 from .properties import (  # noqa: F401
     test_enabled,
     test_flex_horizontal_widget_size,
+    verify_focus_handlers,
 )
 
 # Slider can't be given focus on mobile

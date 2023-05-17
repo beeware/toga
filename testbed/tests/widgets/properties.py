@@ -1,3 +1,5 @@
+from unittest.mock import Mock
+
 from pytest import approx, fixture
 
 import toga
@@ -15,7 +17,14 @@ MAX_WIDTH = 2000
 
 @fixture
 def verify_font_sizes():
-    return True
+    # Return whether we can verify width, height
+    return True, True
+
+
+@fixture
+def verify_focus_handlers():
+    # Not all widgets have focus handlers
+    return False
 
 
 async def test_enabled(widget, probe):
@@ -52,8 +61,14 @@ async def test_enable_noop(widget, probe):
     assert widget.enabled
 
 
-async def test_focus(widget, probe):
+async def test_focus(widget, probe, verify_focus_handlers):
     "The widget can be given focus"
+    if verify_focus_handlers:
+        on_gain_handler = Mock()
+        on_lose_handler = Mock()
+        widget.on_gain_focus = on_gain_handler
+        widget.on_lose_focus = on_lose_handler
+
     # Add a separate widget that can take take focus
     other = toga.TextInput()
     widget.parent.add(other)
@@ -68,6 +83,17 @@ async def test_focus(widget, probe):
     await probe.redraw("Widget should be given focus")
     assert probe.has_focus
     assert not other_probe.has_focus
+
+    if verify_focus_handlers:
+        on_gain_handler.assert_called_once()
+
+    other.focus()
+    await probe.redraw("Focus has been lost")
+    assert not probe.has_focus
+    assert other_probe.has_focus
+
+    if verify_focus_handlers:
+        on_lose_handler.assert_called_once()
 
 
 async def test_focus_noop(widget, probe):
@@ -267,9 +293,10 @@ async def test_text_width_change(widget, probe):
 async def test_font(widget, probe, verify_font_sizes):
     "The font size and family of a widget can be changed."
     # Capture the original size and font of the widget
-    if verify_font_sizes:
-        orig_height = probe.height
+    if verify_font_sizes[0]:
         orig_width = probe.width
+    if verify_font_sizes[1]:
+        orig_height = probe.height
     orig_font = probe.font
     probe.assert_font_family(SYSTEM)
 
@@ -286,8 +313,9 @@ async def test_font(widget, probe, verify_font_sizes):
     assert (orig_font.size * 2.5) < new_size_font.size < (orig_font.size * 3.5)
 
     # Widget should be taller and wider
-    if verify_font_sizes:
+    if verify_font_sizes[0]:
         assert probe.width > orig_width
+    if verify_font_sizes[1]:
         assert probe.height > orig_height
 
     # Change to a different font
@@ -301,8 +329,9 @@ async def test_font(widget, probe, verify_font_sizes):
     # Font size hasn't changed
     assert new_family_font.size == new_size_font.size
     # Widget should still be taller and wider than the original
-    if verify_font_sizes:
+    if verify_font_sizes[0]:
         assert probe.width > orig_width
+    if verify_font_sizes[1]:
         assert probe.height > orig_height
 
     # Reset to original family and size.
@@ -312,9 +341,10 @@ async def test_font(widget, probe, verify_font_sizes):
         message="Widget text should be reset to original family and size"
     )
     assert probe.font == orig_font
-    if verify_font_sizes:
-        assert probe.height == orig_height
+    if verify_font_sizes[0]:
         assert probe.width == orig_width
+    if verify_font_sizes[1]:
+        assert probe.height == orig_height
 
 
 async def test_font_attrs(widget, probe):
@@ -438,6 +468,27 @@ async def test_alignment(widget, probe):
 async def test_vertical_alignment_top(widget, probe):
     """Text is vertically aligned to the top of the widget."""
     assert probe.vertical_alignment == TOP
+
+
+async def test_readonly(widget, probe):
+    "A widget can be made readonly"
+    # Initial value is enabled
+    assert not widget.readonly
+    assert not probe.readonly
+
+    # Change to readonly
+    widget.readonly = True
+    await probe.redraw("Input should be read only")
+
+    assert widget.readonly
+    assert probe.readonly
+
+    # Change back to writable
+    widget.readonly = False
+    await probe.redraw("Input should be writable")
+
+    assert not widget.readonly
+    assert not probe.readonly
 
 
 async def test_flex_widget_size(widget, probe):

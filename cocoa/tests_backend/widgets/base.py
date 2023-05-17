@@ -31,6 +31,7 @@ class EventListener(NSObject):
 class SimpleProbe:
     def __init__(self, widget):
         self.widget = widget
+        self.impl = widget._impl
         self.native = widget._impl.native
         assert isinstance(self.native, self.native_class)
 
@@ -151,6 +152,7 @@ class SimpleProbe:
         # Convert the requested character into a Cocoa keycode.
         # This table is incomplete, but covers all the basics.
         key_code = {
+            "<esc>": 53,
             " ": 49,
             "\n": 36,
             "a": 0,
