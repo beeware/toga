@@ -1,198 +1,304 @@
-from unittest import mock
-from unittest.mock import Mock, call
+from unittest.mock import Mock
+
+import pytest
 
 import toga
-from toga_dummy.utils import TestCase
+from toga_dummy.utils import (
+    EventLog,
+    assert_action_not_performed,
+    assert_action_performed,
+    assert_action_performed_with,
+    attribute_value,
+)
 
 
-class TextInputTests(TestCase):
-    def setUp(self):
-        super().setUp()
-
-        self.value = "Initial Text"
-        self.placeholder = "Placeholder Text"
-        self.readonly = False
-        self.on_gain_focus = mock.Mock()
-        self.on_lose_focus = mock.Mock()
-        self.text_input = toga.TextInput(
-            value=self.value,
-            placeholder=self.placeholder,
-            readonly=self.readonly,
-            on_gain_focus=self.on_gain_focus,
-            on_lose_focus=self.on_lose_focus,
-        )
-
-    def test_widget_created(self):
-        self.assertEqual(self.text_input._impl.interface, self.text_input)
-        self.assertActionPerformed(self.text_input, "create TextInput")
-
-    def test_arguments_are_all_set_properly(self):
-        self.assertEqual(self.text_input.placeholder, self.placeholder)
-        self.assertEqual(self.text_input.readonly, self.readonly)
-
-    def test_set_placeholder_with_None(self):
-        self.text_input.placeholder = None
-        self.assertEqual(self.text_input.placeholder, "")
-
-    def test_set_value_with_None(self):
-        self.text_input.value = None
-        self.assertValueSet(self.text_input, "value", "")
-
-    def test_getting_value_invokes_impl_method(self):
-        self.text_input.value
-        self.assertValueGet(self.text_input, "value")
-
-    def test_setting_value_invokes_impl_method(self):
-        new_value = "New Value"
-        self.text_input.value = new_value
-        self.assertValueSet(self.text_input, "value", new_value)
-
-    def test_on_change_callback_set(self):
-        def dummy_function():
-            pass
-
-        self.text_input.on_change = dummy_function
-        self.assertIsNotNone(self.text_input.on_change)
-
-    def test_focus(self):
-        self.text_input.focus()
-        self.assertActionPerformed(self.text_input, "focus")
-
-    def test_on_gain_focus(self):
-        self.assertEqual(self.text_input.on_gain_focus._raw, self.on_gain_focus)
-
-    def test_on_lose_focus(self):
-        self.assertEqual(self.text_input.on_lose_focus._raw, self.on_lose_focus)
-
-    ######################################################################
-    # 2022-07: Backwards compatibility
-    ######################################################################
-
-    def test_init_with_deprecated(self):
-        # initial is a deprecated argument
-        with self.assertWarns(DeprecationWarning):
-            my_text_input = toga.TextInput(
-                initial=self.value,
-                placeholder=self.placeholder,
-                readonly=self.readonly,
-                on_gain_focus=self.on_gain_focus,
-                on_lose_focus=self.on_lose_focus,
-            )
-        self.assertEqual(my_text_input.value, self.value)
-
-        # can't specify both initial *and* value
-        with self.assertRaises(ValueError):
-            toga.TextInput(
-                initial=self.value,
-                value=self.value,
-                placeholder=self.placeholder,
-                readonly=self.readonly,
-                on_gain_focus=self.on_gain_focus,
-                on_lose_focus=self.on_lose_focus,
-            )
-
-    ######################################################################
-    # End backwards compatibility.
-    ######################################################################
+@pytest.fixture
+def validator():
+    return Mock(return_value=None)
 
 
-class ValidatedTextInputTests(TestCase):
-    def setUp(self):
-        super().setUp()
+@pytest.fixture
+def widget(validator):
+    return toga.TextInput(validators=[validator])
 
-        self.value = "Initial Text"
 
-    def test_validator_run_in_constructor(self):
-        validator = Mock(return_value=None)
-        text_input = toga.TextInput(
-            value=self.value,
-            validators=[validator],
-        )
-        self.assertTrue(text_input.is_valid)
-        self.assertValueNotSet(text_input, "error")
-        self.assertValueSet(text_input, "valid", True)
-        self.assertActionPerformed(text_input, "clear_error")
-        validator.assert_called_once_with(self.value)
+def test_widget_created():
+    "A text input can be created"
+    widget = toga.TextInput()
+    assert widget._impl.interface == widget
+    assert_action_performed(widget, "create TextInput")
 
-    def test_getting_is_valid_invokes_impl_method(self):
-        text_input = toga.TextInput(
-            value=self.value,
-        )
-        self.assertValueNotGet(text_input, "valid")
-        text_input.is_valid
-        self.assertValueGet(text_input, "valid")
+    assert not widget.readonly
+    assert widget.placeholder == ""
+    assert widget.value == ""
+    assert widget._on_change._raw is None
+    assert widget._on_confirm._raw is None
+    assert widget._on_gain_focus._raw is None
+    assert widget._on_lose_focus._raw is None
+    assert widget.validators == []
 
-    def test_validator_run_after_set(self):
-        message = "This is an error message"
-        validator = Mock(return_value=message)
-        text_input = toga.TextInput(
-            value=self.value,
-        )
 
-        self.assertTrue(text_input.is_valid)
-        self.assertValueNotSet(text_input, "error")
-        self.assertValueSet(text_input, "valid", True)
+def test_create_with_values():
+    "A multiline text input can be created with initial values"
+    on_change = Mock()
+    on_confirm = Mock()
+    on_gain_focus = Mock()
+    on_lose_focus = Mock()
+    validator1 = Mock(return_value=None)
+    validator2 = Mock(return_value=None)
 
-        text_input.validators = [validator]
+    widget = toga.TextInput(
+        value="Some text",
+        placeholder="A placeholder",
+        readonly=True,
+        on_change=on_change,
+        on_confirm=on_confirm,
+        on_gain_focus=on_gain_focus,
+        on_lose_focus=on_lose_focus,
+        validators=[validator1, validator2],
+    )
+    assert widget._impl.interface == widget
+    assert_action_performed(widget, "create TextInput")
 
-        self.assertFalse(text_input.is_valid)
-        self.assertValueSet(text_input, "error", message)
-        self.assertValueSet(text_input, "valid", False)
-        validator.assert_called_once_with(self.value)
+    assert widget.readonly
+    assert widget.placeholder == "A placeholder"
+    assert widget.value == "Some text"
+    assert widget._on_change._raw == on_change
+    assert widget._on_confirm._raw == on_confirm
+    assert widget._on_gain_focus._raw == on_gain_focus
+    assert widget._on_lose_focus._raw == on_lose_focus
+    assert widget.validators == [validator1, validator2]
 
-    def test_text_input_with_no_validator_is_valid(self):
-        text_input = toga.TextInput(
-            value=self.value,
-        )
-        self.assertTrue(text_input.validate())
-        self.assertTrue(text_input.is_valid)
+    # Validators have been invoked with the initial text
+    validator1.assert_called_once_with("Some text")
+    validator2.assert_called_once_with("Some text")
 
-    def test_validate_true_when_valid(self):
-        validator = Mock(return_value=None)
-        text_input = toga.TextInput(
-            value=self.value,
-            validators=[validator],
-        )
-        self.assertTrue(text_input.validate())
 
-    def test_validate_false_when_invalid(self):
-        message = "This is an error message"
-        validator = Mock(return_value=message)
-        text_input = toga.TextInput(
-            value=self.value,
-            validators=[validator],
-        )
-        self.assertFalse(text_input.validate())
+@pytest.mark.parametrize(
+    "value, expected",
+    [
+        ("New Text", "New Text"),
+        ("", ""),
+        (None, ""),
+        (12345, "12345"),
+    ],
+)
+def test_value(widget, value, expected, validator):
+    """The value of the input can be set."""
+    # Clear the event log and validator mock
+    EventLog.reset()
+    validator.reset_mock()
 
-    def test_validate_passes(self):
-        validator = Mock(side_effect=[None, None])
-        text_input = toga.TextInput(
-            value=self.value,
-            validators=[validator],
-        )
-        self.assertTrue(text_input.is_valid)
-        self.assertValueSet(text_input, "valid", True)
-        self.assertValueNotSet(text_input, "error")
+    widget.value = value
+    assert widget.value == expected
 
-        text_input.validate()
-        self.assertTrue(text_input.is_valid)
-        self.assertValueSet(text_input, "valid", True)
-        self.assertValueNotSet(text_input, "error")
-        self.assertEqual(validator.call_args_list, [call(self.value), call(self.value)])
+    # test backend has the right value
+    assert attribute_value(widget, "value") == expected
 
-    def test_validate_fails(self):
-        message = "This is an error message"
-        validator = Mock(side_effect=[None, message])
-        text_input = toga.TextInput(
-            value=self.value,
-            validators=[validator],
-        )
-        self.assertTrue(text_input.is_valid)
-        self.assertValueNotSet(text_input, "error")
-        self.assertValueSet(text_input, "valid", True)
+    # A refresh was performed
+    assert_action_performed(widget, "refresh")
 
-        text_input.validate()
-        self.assertFalse(text_input.is_valid)
-        self.assertValueSet(text_input, "error", message)
-        self.assertValueSet(text_input, "valid", False)
-        self.assertEqual(validator.call_args_list, [call(self.value), call(self.value)])
+    # The validator was invoked
+    validator.assert_called_once_with(expected)
+
+
+@pytest.mark.parametrize(
+    "value, expected",
+    [
+        (None, False),
+        ("", False),
+        ("true", True),
+        ("false", True),  # Evaluated as a string, this value is true.
+        (0, False),
+        (1234, True),
+    ],
+)
+def test_readonly(widget, value, expected):
+    "The readonly status of the widget can be changed."
+    # Widget is initially not readonly by default.
+    assert not widget.readonly
+
+    # Set the readonly status
+    widget.readonly = value
+    assert widget.readonly == expected
+
+    # Set the widget readonly
+    widget.readonly = True
+    assert widget.readonly
+
+    # Set the readonly status again
+    widget.readonly = value
+    assert widget.readonly == expected
+
+
+@pytest.mark.parametrize(
+    "value, expected",
+    [
+        ("New Text", "New Text"),
+        ("", ""),
+        (None, ""),
+        (12345, "12345"),
+    ],
+)
+def test_placeholder(widget, value, expected):
+    """The value of the placeholder can be set."""
+    # Clear the event log
+    EventLog.reset()
+
+    widget.placeholder = value
+    assert widget.placeholder == expected
+
+    # test backend has the right value
+    assert attribute_value(widget, "placeholder") == expected
+
+    # A refresh was performed
+    assert_action_performed(widget, "refresh")
+
+
+def test_on_change(widget):
+    """The on_change handler can be invoked."""
+    # No handler initially
+    assert widget._on_change._raw is None
+
+    # Define and set a new callback
+    handler = Mock()
+
+    widget.on_change = handler
+
+    assert widget.on_change._raw == handler
+
+    # Invoke the callback
+    widget._impl.simulate_change()
+
+    # Callback was invoked
+    handler.assert_called_once_with(widget)
+
+
+def test_on_confirm(widget):
+    """The on_confirm handler can be invoked."""
+    # No handler initially
+    assert widget._on_confirm._raw is None
+
+    # Define and set a new callback
+    handler = Mock()
+
+    widget.on_confirm = handler
+
+    assert widget.on_confirm._raw == handler
+
+    # Invoke the callback
+    widget._impl.simulate_confirm()
+
+    # Callback was invoked
+    handler.assert_called_once_with(widget)
+
+
+def test_on_gain_focus(widget):
+    """The on_gain_focus handler can be invoked."""
+    # No handler initially
+    assert widget._on_gain_focus._raw is None
+
+    # Define and set a new callback
+    handler = Mock()
+
+    widget.on_gain_focus = handler
+
+    assert widget.on_gain_focus._raw == handler
+
+    # Invoke the callback
+    widget._impl.simulate_gain_focus()
+
+    # Callback was invoked
+    handler.assert_called_once_with(widget)
+
+
+def test_on_lose_focus(widget):
+    """The on_lose_focus handler can be invoked."""
+    # No handler initially
+    assert widget._on_lose_focus._raw is None
+
+    # Define and set a new callback
+    handler = Mock()
+
+    widget.on_lose_focus = handler
+
+    assert widget.on_lose_focus._raw == handler
+
+    # Invoke the callback
+    widget._impl.simulate_lose_focus()
+
+    # Callback was invoked
+    handler.assert_called_once_with(widget)
+
+
+def test_change_validators(widget, validator):
+    "If the validator list is changed, the new validators are invoked"
+    new_validator1 = Mock(return_value=None)
+    new_validator2 = Mock(return_value=None)
+
+    widget.value = "Some text"
+
+    # Clear the validator mock
+    validator.reset_mock()
+
+    widget.validators = [new_validator1, new_validator2]
+
+    # Old validator hasn't been invoked
+    validator.assert_not_called()
+
+    # Validators have been invoked with the initial text
+    new_validator1.assert_called_once_with("Some text")
+    new_validator2.assert_called_once_with("Some text")
+
+
+def test_remove_validators(widget, validator):
+    "The validator list can be cleared"
+    widget.value = "Some text"
+
+    # Clear the event log and validator mock
+    EventLog.reset()
+    validator.reset_mock()
+
+    # Clear the validators
+    widget.validators = None
+
+    # Old validator hasn't been invoked
+    validator.assert_not_called()
+
+
+def test_is_valid(widget):
+    "Widget validity can be evaluated"
+    validator1 = Mock(return_value=None)
+    validator2 = Mock(return_value=None)
+
+    widget.validators = [validator1, validator2]
+
+    # Widget is initially valid
+    assert widget.validate()
+    assert widget.is_valid
+    assert_action_not_performed(widget, "set_error")
+
+    # Second validator returns an error
+    EventLog.reset()
+    validator2.return_value = "Invalid 2"
+
+    assert not widget.validate()
+    assert not widget.is_valid
+    assert_action_performed_with(widget, "set_error", error_message="Invalid 2")
+
+    # First validator also returns an error
+    EventLog.reset()
+    validator1.return_value = "Invalid 1"
+
+    assert not widget.validate()
+    assert not widget.is_valid
+    assert_action_performed_with(widget, "set_error", error_message="Invalid 1")
+
+    # Make the validators pass again
+    EventLog.reset()
+    validator1.return_value = None
+    validator2.return_value = None
+
+    assert widget.validate()
+    assert widget.is_valid
+    assert_action_not_performed(widget, "set_error")

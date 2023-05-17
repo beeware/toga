@@ -112,6 +112,7 @@ class TextInput(Widget):
         else:
             v = str(value)
         self._impl.set_value(v)
+        self.refresh()
 
     @property
     def is_valid(self) -> bool:
@@ -132,16 +133,22 @@ class TextInput(Widget):
 
     @property
     def validators(self) -> List[callable]:
-        """The list of validators being used to check input on the widget."""
+        """The list of validators being used to check input on the widget.
+
+        Changing the list of validators will cause validation to be performed.
+        """
         return self._validators
 
     @validators.setter
     def validators(self, validators):
+        replacing = hasattr(self, "_validators")
         if validators is None:
             self._validators = []
         else:
             self._validators = validators
-        self.validate()
+
+        if replacing:
+            self.validate()
 
     @property
     def on_gain_focus(self):
@@ -189,6 +196,6 @@ class TextInput(Widget):
 
     @on_confirm.setter
     def on_confirm(self, handler):
-        if not getattr(self._impl, "IMPLEMENTS_ON_CONFIRM", True):
+        if not getattr(self._impl, "IMPLEMENTS_ON_CONFIRM", True):  # pragma: no cover
             self.factory.not_implemented("TextInput.on_confirm()")
         self._on_confirm = wrapped_handler(self, handler)

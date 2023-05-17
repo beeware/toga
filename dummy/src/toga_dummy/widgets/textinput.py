@@ -1,36 +1,33 @@
+from ..utils import not_required
 from .base import Widget
 
 
+@not_required  # Testbed coverage is complete for this widget.
 class TextInput(Widget):
     def create(self):
         self._action("create TextInput")
 
+    def get_readonly(self):
+        return self._get_value("readonly", False)
+
     def set_readonly(self, value):
         self._set_value("readonly", value)
+
+    def get_placeholder(self):
+        return self._get_value("placeholder", "")
 
     def set_placeholder(self, value):
         self._set_value("placeholder", value)
 
     def get_value(self):
-        return self._get_value("value")
+        return self._get_value("value", "")
 
     def set_value(self, value):
         self._set_value("value", value)
-
-    def set_alignment(self, value):
-        self._set_value("alignment", value)
-
-    def set_on_change(self, handler):
-        self._set_value("on_change", handler)
-
-    def set_on_gain_focus(self, handler):
-        self._set_value("on_gain_focus", handler)
-
-    def set_on_lose_focus(self, handler):
-        self._set_value("on_lose_focus", handler)
+        self.interface.validate()
 
     def set_error(self, error_message):
-        self._set_value("error", error_message)
+        self._action("set_error", error_message=error_message)
         self._set_value("valid", False)
 
     def clear_error(self):
@@ -39,3 +36,15 @@ class TextInput(Widget):
 
     def is_valid(self):
         return self._get_value("valid")
+
+    def simulate_change(self):
+        self.interface.on_change(None)
+
+    def simulate_confirm(self):
+        self.interface.on_confirm(None)
+
+    def simulate_gain_focus(self):
+        self.interface.on_gain_focus(None)
+
+    def simulate_lose_focus(self):
+        self.interface.on_lose_focus(None)
