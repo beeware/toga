@@ -3,7 +3,7 @@ from pytest import approx, fixture
 import toga
 from toga.colors import CORNFLOWERBLUE, RED, TRANSPARENT, color as named_color
 from toga.fonts import BOLD, FANTASY, ITALIC, NORMAL, SERIF, SYSTEM
-from toga.style.pack import CENTER, COLUMN, JUSTIFY, LEFT, LTR, RIGHT, RTL
+from toga.style.pack import CENTER, COLUMN, JUSTIFY, LEFT, LTR, RIGHT, RTL, TOP
 
 from ..assertions import assert_color
 from ..data import COLORS, TEXTS
@@ -352,10 +352,14 @@ async def test_alignment(widget, probe):
     await probe.redraw("Label text direction should be LTR")
     probe.assert_alignment(LEFT)
 
+    # Vertical alignment is not affected by horizontal alignment changes.
+    vertical_alignment = probe.vertical_alignment
+
     for alignment in [RIGHT, CENTER, JUSTIFY]:
         widget.style.text_align = alignment
         await probe.redraw("Label text direction should be %s" % alignment)
         probe.assert_alignment(alignment)
+        assert probe.vertical_alignment == vertical_alignment
 
     # Clearing the alignment reverts to default alignment of LEFT
     del widget.style.text_align
@@ -371,6 +375,11 @@ async def test_alignment(widget, probe):
     widget.style.text_direction = LTR
     await probe.redraw("Label text direction should be LTR")
     probe.assert_alignment(LEFT)
+
+
+async def test_vertical_alignment_top(widget, probe):
+    """Text is vertically aligned to the top of the widget."""
+    assert probe.vertical_alignment == TOP
 
 
 async def test_flex_widget_size(widget, probe):

@@ -5,7 +5,6 @@ from toga_android.keys import toga_key
 from ..libs.android.text import InputType, TextWatcher
 from ..libs.android.view import Gravity, OnKeyListener, View__MeasureSpec
 from ..libs.android.widget import EditText
-from .base import align
 from .label import TextViewWidget
 
 
@@ -64,12 +63,7 @@ class TextInput(TextViewWidget):
         self.native.setHint(value if value is not None else "")
 
     def set_alignment(self, value):
-        # Refuse to set alignment unless widget has been added to a container.
-        # This is because Android EditText requires LayoutParams before
-        # setGravity() can be called.
-        if not self.native.getLayoutParams():
-            return
-        self.native.setGravity(Gravity.CENTER_VERTICAL | align(value))
+        self.set_textview_alignment(value, Gravity.CENTER_VERTICAL)
 
     def set_value(self, value):
         self.native.setText(value)

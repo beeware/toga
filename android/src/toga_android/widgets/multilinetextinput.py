@@ -1,7 +1,5 @@
 from travertino.size import at_least
 
-from toga.constants import LEFT
-
 from ..libs.android.text import InputType, TextWatcher
 from ..libs.android.view import Gravity
 from ..libs.android.widget import EditText
@@ -30,7 +28,6 @@ class MultilineTextInput(TextViewWidget):
         self.native.setInputType(
             InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_MULTI_LINE
         )
-        self.set_alignment(LEFT)
         self.native.addTextChangedListener(TogaTextWatcher(self))
         self.cache_textview_defaults()
 

@@ -20,6 +20,7 @@ from .properties import (  # noqa: F401
     test_font_attrs,
     test_placeholder,
     test_text_value,
+    test_vertical_alignment_top,
 )
 
 

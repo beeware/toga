@@ -3,9 +3,9 @@ import base64
 
 from travertino.size import at_least
 
-from ..libs.android.view import Gravity, View__MeasureSpec
+from ..libs.android.view import View__MeasureSpec
 from ..libs.android.webkit import ValueCallback, WebView as A_WebView, WebViewClient
-from .base import Widget, align
+from .base import Widget
 
 
 class ReceiveString(ValueCallback):
@@ -71,13 +71,6 @@ class WebView(Widget):
 
     def invoke_javascript(self, javascript):
         self.native.evaluateJavascript(str(javascript), ReceiveString())
-
-    def set_alignment(self, value):
-        # Refuse to set alignment unless widget has been added to a container.
-        # This is because this widget's setGravity() requires LayoutParams before it can be called.
-        if not self.native.getLayoutParams():
-            return
-        self.native.setGravity(Gravity.CENTER_VERTICAL | align(value))
 
     def rehint(self):
         self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
