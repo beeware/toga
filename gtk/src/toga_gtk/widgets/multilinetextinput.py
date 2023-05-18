@@ -18,7 +18,7 @@ class MultilineTextInput(Widget):
         self.native.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
 
         self.buffer = Gtk.TextBuffer()
-        self._add_change_handler()
+        self.buffer.connect("changed", self.gtk_on_changed)
 
         # The GTK TextView doesn't have an implementation of placeholder. We
         # fake it by using a different buffer that contains placeholder text.
@@ -69,17 +69,15 @@ class MultilineTextInput(Widget):
         )
 
     def set_value(self, value):
-        # Temporarily disable change handlers so we don't get on_change
-        # events for user content.
-        self._remove_change_handler()
         self.buffer.set_text(value)
-        self._add_change_handler()
 
         # If there's a non-empty value, use the "real" buffer; otherwise, use
         # the placeholder.
         if value:
             self.native_textview.set_buffer(self.buffer)
         else:
+            # See gtk_on_change for why this is needed
+            self.interface.on_change(None)
             self.native_textview.set_buffer(self.placeholder)
 
     def get_readonly(self):
@@ -115,14 +113,14 @@ class MultilineTextInput(Widget):
     def focus(self):
         self.native_textview.grab_focus()
 
-    def _add_change_handler(self):
-        self.change_handler = self.buffer.connect("changed", self.gtk_on_changed)
-
-    def _remove_change_handler(self):
-        self.buffer.disconnect(self.change_handler)
-
     def gtk_on_changed(self, *args):
-        self.interface.on_change(None)
+        # buffer.set_text("foo") generates 2 change signals; one clearing the
+        # buffer, and one setting the new value. We only propegate the second
+        # signal. To ensure that we also get a signal when the value is
+        # deliberately cleared, we add an explicit signal handler to set_value()
+        # for the empty value case.
+        if self.get_value():
+            self.interface.on_change(None)
 
     def gtk_on_focus_in(self, *args):
         # When focus is gained, make sure the content buffer is active.
@@ -131,7 +129,7 @@ class MultilineTextInput(Widget):
 
     def gtk_on_focus_out(self, *args):
         # When focus is lost, if there's no content, install the placeholder
-        if self.get_value() == "":
+        if not self.get_value():
             self.native_textview.set_buffer(self.placeholder)
         return False
 

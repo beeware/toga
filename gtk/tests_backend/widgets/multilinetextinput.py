@@ -96,11 +96,6 @@ class MultilineTextInputProbe(SimpleProbe):
         )
 
     @property
-    def enabled(self):
-        # Enabled is proxied onto readonly on the text view
-        return self.native_textview.get_property("editable")
-
-    @property
     def readonly(self):
         return not self.native_textview.get_property("editable")
 
