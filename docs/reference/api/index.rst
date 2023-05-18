@@ -23,7 +23,7 @@ General widgets
 ======================================================================= ========================================================================
  :doc:`ActivityIndicator </reference/api/widgets/activityindicator>`     A small animated indicator showing activity on a task of indeterminate
                                                                          length, usually rendered as a "spinner" animation.
- :doc:`Button </reference/api/widgets/button>`                           A pressable button that can be pressed or clicked.
+ :doc:`Button </reference/api/widgets/button>`                           A button that can be pressed or clicked.
  :doc:`Canvas </reference/api/widgets/canvas>`                           Area you can draw on
  :doc:`DetailedList </reference/api/widgets/detailedlist>`               A list of complex content
  :doc:`Divider </reference/api/widgets/divider>`                         A separator used to visually distinguish two sections of content in a

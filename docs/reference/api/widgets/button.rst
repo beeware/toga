@@ -1,7 +1,7 @@
 Button
 ======
 
-A widget that can be pressed or clicked to cause an action in an application.
+A button that can be pressed or clicked.
 
 .. figure:: /reference/images/Button.jpeg
     :align: center
