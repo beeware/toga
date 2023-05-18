@@ -1,5 +1,6 @@
 from travertino.size import at_least
 
+from toga.keys import Key
 from toga_gtk.keys import toga_key
 
 from ..libs import Gtk, gtk_alignment
@@ -9,34 +10,34 @@ from .base import Widget
 class TextInput(Widget):
     def create(self):
         self.native = Gtk.Entry()
-        self.native.connect("show", lambda event: self.refresh())
         self.native.connect("changed", self.gtk_on_change)
         self.native.connect("focus-in-event", self.gtk_focus_in_event)
-        self.native.connect("focus-out-event", self.gtk_focus_in_event)
-        self.native.connect("key-release-event", self.gtk_key_release_event)
+        self.native.connect("focus-out-event", self.gtk_focus_out_event)
+        self.native.connect("key-press-event", self.gtk_key_press_event)
 
     def gtk_on_change(self, entry):
-        if self.interface.on_change:
-            self.interface.on_change(self.interface)
+        self.interface.on_change(self.interface)
+        self.interface.validate()
 
     def gtk_focus_in_event(self, entry, user_data):
-        if self.interface.on_gain_focus:
-            self.interface.on_gain_focus(self.interface)
+        self.interface.on_gain_focus(self.interface)
 
     def gtk_focus_out_event(self, entry, user_data):
-        if self.interface.on_lose_focus:
-            self.interface.on_lose_focus(self.interface)
+        self.interface.on_lose_focus(self.interface)
 
-    def gtk_key_release_event(self, entry, user_data):
-        try:
-            key_pressed = toga_key(user_data)["key"].value
-            if key_pressed == "<enter>" or key_pressed == "numpad:enter":
-                self.interface.on_confirm(None)
-        except TypeError:
-            pass
+    def gtk_key_press_event(self, entry, user_data):
+        key_pressed = toga_key(user_data)
+        if key_pressed and key_pressed["key"] in {Key.ENTER, Key.NUMPAD_ENTER}:
+            self.interface.on_confirm(None)
+
+    def get_readonly(self):
+        return not self.native.get_property("editable")
 
     def set_readonly(self, value):
         self.native.set_property("editable", not value)
+
+    def get_placeholder(self):
+        return self.native.get_placeholder_text()
 
     def set_placeholder(self, value):
         self.native.set_placeholder_text(value)
@@ -47,14 +48,12 @@ class TextInput(Widget):
             xalign
         )  # Aligns the whole text block within the widget.
 
-    def set_font(self, font):
-        super().set_font(font)
-
     def get_value(self):
         return self.native.get_text()
 
     def set_value(self, value):
         self.native.set_text(value)
+        self.interface.validate()
 
     def rehint(self):
         # print("REHINT", self,
@@ -67,23 +66,11 @@ class TextInput(Widget):
         self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
         self.interface.intrinsic.height = height[1]
 
-    def set_on_change(self, handler):
-        # No special handling required
-        pass
-
-    def set_on_gain_focus(self, handler):
-        # No special handling required
-        pass
-
-    def set_on_lose_focus(self, handler):
-        # No special handling required
-        pass
-
     def set_error(self, error_message):
-        self.interface.factory.not_implemented("TextInput.set_error()")
+        self.native.set_icon_from_icon_name(Gtk.EntryIconPosition.SECONDARY, "error")
 
     def clear_error(self):
-        self.interface.factory.not_implemented("TextInput.clear_error()")
+        self.native.set_icon_from_icon_name(Gtk.EntryIconPosition.SECONDARY, None)
 
     def is_valid(self):
-        self.interface.factory.not_implemented("TextInput.is_valid()")
+        return self.native.get_icon_name(Gtk.EntryIconPosition.SECONDARY) is None

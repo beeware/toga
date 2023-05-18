@@ -120,6 +120,7 @@ class SimpleProbe:
             {
                 " ": Gdk.KEY_space,
                 "\n": Gdk.KEY_Return,
+                "<esc>": Gdk.KEY_Escape,
             }.get(char, Gdk.KEY_question),
         )
 
