@@ -57,8 +57,9 @@ async def test_readonly(widget, probe):
 
 async def test_scroll_position(widget, probe):
     "The widget can be programmatically scrolled."
-    # The document and the visible area are initially the same
-    assert probe.width == pytest.approx(probe.document_width, abs=5)
+    # The document and the visible area are initially the same (although there
+    # can be some variance in width due to the appearance of scrollbars)
+    assert probe.width == pytest.approx(probe.document_width, abs=20)
     assert probe.height == pytest.approx(probe.document_height, abs=5)
 
     # The scroll position is at the origin.
