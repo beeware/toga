@@ -68,8 +68,10 @@ async def test_scroll_position(widget, probe):
     widget.value = "All work and no play makes Jack a dull boy... " * 1000
     await probe.redraw("The document now contains a lot of content")
 
-    # The document and the visible area are initially the same
-    assert probe.width == pytest.approx(probe.document_width, abs=5)
+    # The width of the document doesn't change (although there can be some
+    # variance in width due to the appearance of scrollbars). However, the
+    # height of the document is now much more than the height of the widget.
+    assert probe.width == pytest.approx(probe.document_width, abs=20)
     assert probe.height * 2 < probe.document_height
 
     # The scroll position is at the origin.
@@ -85,8 +87,9 @@ async def test_scroll_position(widget, probe):
     await probe.wait_for_scroll_completion()
     await probe.redraw("The document has been explicitly scrolled to the bottom")
 
-    # The vertical scroll position reflects the document size within the visible window.
-    # The exact position varies by platform because of scroll bounce, decorations, etc
+    # The vertical scroll position reflects the document size within the visible
+    # window. The exact position varies by platform because of scroll bounce,
+    # decorations, etc
     scroll_offset = probe.document_height - probe.height
     assert probe.vertical_scroll_position == pytest.approx(scroll_offset, abs=30)
 
