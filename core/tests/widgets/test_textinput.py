@@ -112,6 +112,9 @@ def test_value(widget, value, expected, validator):
     # change handler was invoked
     on_change_handler.assert_called_once_with(widget)
 
+    # change handler was invoked
+    on_change_handler.assert_called_once_with(widget)
+
 
 @pytest.mark.parametrize(
     "value, expected",
