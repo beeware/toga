@@ -73,6 +73,9 @@ def test_create_with_values():
     validator1.assert_called_once_with("Some text")
     validator2.assert_called_once_with("Some text")
 
+    # Change handler hasn't been invoked
+    on_change.assert_not_called()
+
 
 @pytest.mark.parametrize(
     "value, expected",
@@ -89,6 +92,10 @@ def test_value(widget, value, expected, validator):
     EventLog.reset()
     validator.reset_mock()
 
+    # Define and set a new change callback
+    on_change_handler = Mock()
+    widget.on_change = on_change_handler
+
     widget.value = value
     assert widget.value == expected
 
@@ -100,6 +107,9 @@ def test_value(widget, value, expected, validator):
 
     # The validator was invoked
     validator.assert_called_once_with(expected)
+
+    # change handler was invoked
+    on_change_handler.assert_called_once_with(widget)
 
 
 @pytest.mark.parametrize(

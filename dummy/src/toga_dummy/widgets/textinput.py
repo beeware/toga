@@ -24,6 +24,7 @@ class TextInput(Widget):
 
     def set_value(self, value):
         self._set_value("value", value)
+        self.interface.on_change(None)
 
     def set_error(self, error_message):
         self._action("set_error", error_message=error_message)

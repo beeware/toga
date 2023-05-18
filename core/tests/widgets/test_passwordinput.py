@@ -54,3 +54,6 @@ def test_create_with_values():
     # Validators have been invoked with the initial text
     validator1.assert_called_once_with("Some text")
     validator2.assert_called_once_with("Some text")
+
+    # Change handler hasn't been invoked
+    on_change.assert_not_called()

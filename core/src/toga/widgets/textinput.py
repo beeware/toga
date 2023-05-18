@@ -33,7 +33,7 @@ class TextInput(Widget):
         :param placeholder: The content to display as a placeholder when there
             is no user content to display.
         :param on_change: A handler that will be invoked when the the value of
-            the widget changes as a result of user input.
+            the widget changes.
         :param on_confirm: A handler that will be invoked when the user accepts
             the value of the input (usually by pressing Return on the keyboard).
         :param on_gain_focus: A handler that will be invoked when the widget
@@ -54,8 +54,8 @@ class TextInput(Widget):
         # Set the actual value before on_change, because we do not want
         # on_change triggered by it However, we need to prime the handler
         # property in case it is accessed.
-        self._on_change = None
-        self._on_confirm = None
+        self.on_change = None
+        self.on_confirm = None
 
         # Set the list of validators before we set the initial value so that
         # validation is performed on the initial value
@@ -126,10 +126,7 @@ class TextInput(Widget):
 
     @property
     def on_change(self):
-        """The handler to invoke when the value of the widget changes.
-
-        This is only invoked in response to user-generated changes.
-        """
+        """The handler to invoke when the value of the widget changes."""
         return self._on_change
 
     @on_change.setter
