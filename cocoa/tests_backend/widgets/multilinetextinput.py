@@ -20,6 +20,7 @@ class MultilineTextInputProbe(SimpleProbe):
     def placeholder(self):
         return str(self.native_text.placeholderString)
 
+    @property
     def placeholder_visible(self):
         # macOS manages it's own placeholder visibility.
         # We can use the existence of widget text as a proxy.
@@ -67,14 +68,6 @@ class MultilineTextInputProbe(SimpleProbe):
     @property
     def has_focus(self):
         return self.native.window.firstResponder == self.native_text
-
-    @property
-    def visible_height(self):
-        return self.native.contentView.bounds.size.height
-
-    @property
-    def visible_width(self):
-        return self.native.contentView.bounds.size.width
 
     @property
     def document_height(self):

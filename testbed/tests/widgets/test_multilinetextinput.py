@@ -58,8 +58,8 @@ async def test_readonly(widget, probe):
 async def test_scroll_position(widget, probe):
     "The widget can be programmatically scrolled."
     # The document and the visible area are initially the same
-    assert probe.visible_width == pytest.approx(probe.document_width, abs=5)
-    assert probe.visible_height == pytest.approx(probe.document_height, abs=5)
+    assert probe.width == pytest.approx(probe.document_width, abs=5)
+    assert probe.height == pytest.approx(probe.document_height, abs=5)
 
     # The scroll position is at the origin.
     assert probe.vertical_scroll_position == pytest.approx(0.0)
@@ -69,8 +69,8 @@ async def test_scroll_position(widget, probe):
     await probe.redraw("The document now contains a lot of content")
 
     # The document and the visible area are initially the same
-    assert probe.visible_width == pytest.approx(probe.document_width, abs=5)
-    assert probe.visible_height * 2 < probe.document_height
+    assert probe.width == pytest.approx(probe.document_width, abs=5)
+    assert probe.height * 2 < probe.document_height
 
     # The scroll position is at the origin.
     assert probe.vertical_scroll_position == pytest.approx(0.0)
@@ -87,7 +87,7 @@ async def test_scroll_position(widget, probe):
 
     # The vertical scroll position reflects the document size within the visible window.
     # The exact position varies by platform because of scroll bounce, decorations, etc
-    scroll_offset = probe.document_height - probe.visible_height
+    scroll_offset = probe.document_height - probe.height
     assert probe.vertical_scroll_position == pytest.approx(scroll_offset, abs=30)
 
     widget.scroll_to_top()

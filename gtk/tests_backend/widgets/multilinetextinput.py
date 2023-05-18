@@ -32,6 +32,7 @@ class MultilineTextInputProbe(SimpleProbe):
             True,
         )
 
+    @property
     def placeholder_visible(self):
         return self.native_textview.get_buffer() == self.impl.placeholder
 
@@ -102,14 +103,6 @@ class MultilineTextInputProbe(SimpleProbe):
     @property
     def readonly(self):
         return not self.native_textview.get_property("editable")
-
-    @property
-    def visible_height(self):
-        return self.native.get_allocation().height
-
-    @property
-    def visible_width(self):
-        return self.native.get_allocation().width
 
     @property
     def document_height(self):

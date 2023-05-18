@@ -17,6 +17,7 @@ class MultilineTextInputProbe(SimpleProbe):
     def placeholder(self):
         return str(self.native.placeholder_label.text)
 
+    @property
     def placeholder_visible(self):
         return not self.native.placeholder_label.isHidden()
 
@@ -44,14 +45,6 @@ class MultilineTextInputProbe(SimpleProbe):
     @property
     def readonly(self):
         return not self.native.isEditable()
-
-    @property
-    def visible_height(self):
-        return self.native.frame.size.height
-
-    @property
-    def visible_width(self):
-        return self.native.frame.size.width
 
     @property
     def document_height(self):
