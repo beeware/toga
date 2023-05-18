@@ -105,7 +105,7 @@ class TextInput(Widget):
         A value of ``None`` will be interpreted and returned as an empty string.
         Any other object will be converted to a string using ``str()``.
 
-        Any newline ("\n") characters in the string will be replaced with a space.
+        Any newline (``\\n``) characters in the string will be replaced with a space.
 
         Validation will be performed as a result of changing widget value.
         """
