@@ -28,7 +28,7 @@ the user's input starts with the text "Hello":
         return "Why didn't you say hello?"
 
 Toga provides built-in validators for a range of common validation types, as well
-as some base classes that can be used as a starting point for custom valiators.
+as some base classes that can be used as a starting point for custom validators.
 
 A list of validators can then be provided to any widget that performs
 validation, such as the :class:`~toga.widgets.textinput.TextInput` widget. In
