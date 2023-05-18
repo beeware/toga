@@ -16,17 +16,18 @@ from .properties import (  # noqa: F401
     test_font_attrs,
     test_placeholder,
     test_readonly,
-    test_text_value,
 )
 from .test_textinput import (  # noqa: F401
     test_on_change_handler,
     test_on_confirm_handler,
+    test_text_value,
+    test_validation,
 )
 
 
 @pytest.fixture
 async def widget():
-    return toga.PasswordInput()
+    return toga.PasswordInput(value="sekrit")
 
 
 @pytest.fixture

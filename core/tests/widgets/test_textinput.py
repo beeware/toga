@@ -83,6 +83,7 @@ def test_create_with_values():
         ("New Text", "New Text"),
         ("", ""),
         (None, ""),
+        ("New\nText\n", "New Text "),
         (12345, "12345"),
     ],
 )

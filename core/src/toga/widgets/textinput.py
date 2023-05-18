@@ -105,6 +105,8 @@ class TextInput(Widget):
         A value of ``None`` will be interpreted and returned as an empty string.
         Any other object will be converted to a string using ``str()``.
 
+        Any newline ("\n") characters in the string will be replaced with a space.
+
         Validation will be performed as a result of changing widget value.
         """
         return self._impl.get_value()
@@ -114,7 +116,7 @@ class TextInput(Widget):
         if value is None:
             v = ""
         else:
-            v = str(value)
+            v = str(value).replace("\n", " ")
         self._impl.set_value(v)
         self.validate()
         self.refresh()

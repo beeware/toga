@@ -35,6 +35,12 @@ validator is a function that will be invoked whenever the content of the input
 changes. The function should return ``None`` if the current value of the input
 is valid; if the current value is invalid, it should return an error message.
 
+Notes
+-----
+
+* On iOS, a validation failure will be displayed, but the error message
+  associated with the validation failure will not be shown.
+
 Reference
 ---------
 

@@ -4,6 +4,7 @@ import pytest
 
 import toga
 
+from ..data import TEXTS
 from .properties import (  # noqa: F401
     test_alignment,
     test_background_color,
@@ -18,7 +19,6 @@ from .properties import (  # noqa: F401
     test_font_attrs,
     test_placeholder,
     test_readonly,
-    test_text_value,
 )
 
 
@@ -116,8 +116,12 @@ async def test_validation(widget, probe):
     await probe.redraw("Text is initially invalid")
     assert not widget.is_valid
 
+    widget.clear()
+    await probe.redraw("Cleared content; now valid")
+    assert widget.is_valid
+
     await probe.type_character("3")
-    await probe.redraw("Typed a 3; replaces content, still invalid")
+    await probe.redraw("Typed a 3; now invalid")
     assert not widget.is_valid
 
     await probe.type_character("1")
@@ -131,3 +135,13 @@ async def test_validation(widget, probe):
     await probe.type_character("3")
     await probe.redraw("Typed a 4; still valid")
     assert not widget.is_valid
+
+
+async def test_text_value(widget, probe):
+    "The text value displayed on a widget can be changed"
+    for text in TEXTS:
+        widget.value = text
+        await probe.redraw(f"Widget value should be {str(text)!r}")
+
+        assert widget.value == str(text).replace("\n", " ")
+        assert probe.value == str(text).replace("\n", " ")
