@@ -1,5 +1,5 @@
-Number Input
-============
+NumberInput
+===========
 
 .. rst-class:: widget-support
 .. csv-filter:: Availability (:ref:`Key <api-status-key>`)

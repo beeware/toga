@@ -1,5 +1,5 @@
-Multi-line text input
-=====================
+MultilineTextInput
+==================
 
 A scrollable panel that allows for the display and editing of multiple lines of text.
 
@@ -26,7 +26,7 @@ Usage
 
 The input can be provided a placeholder value - this is a value that will be
 displayed to the user as a prompt for appropriate content for the widget. This
-placeholder will only be displayed if the widget has not content; as soon as
+placeholder will only be displayed if the widget has no content; as soon as
 a value is provided (either by the user, or programmatically), the placeholder
 content will be hidden.
 

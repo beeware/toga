@@ -1,5 +1,5 @@
-Progress Bar
-============
+ProgressBar
+===========
 
 Displays task progress on a horizontal graphical bar. The task being monitored
 can be of known or indeterminate length.
