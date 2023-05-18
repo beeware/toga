@@ -25,7 +25,7 @@ class MultilineTextInput(Widget):
         :param placeholder: The content to display as a placeholder when
             there is no user content to display.
         :param on_change: A handler that will be invoked when the the value of
-            the widget changes as a result of user input.
+            the widget changes.
         """
 
         super().__init__(id=id, style=style)
@@ -56,20 +56,6 @@ class MultilineTextInput(Widget):
     def placeholder(self, value):
         self._impl.set_placeholder("" if value is None else str(value))
         self.refresh()
-
-    @property
-    def enabled(self) -> bool:
-        """Is the widget currently enabled? i.e., can the user interact with the
-        widget?
-
-        Disabling a MultilineTextInput is equivalent to making the input
-        read-only.
-        """
-        return not self._impl.get_readonly()
-
-    @enabled.setter
-    def enabled(self, value):
-        self._impl.set_readonly(not bool(value))
 
     @property
     def readonly(self) -> bool:
@@ -117,10 +103,7 @@ class MultilineTextInput(Widget):
 
     @property
     def on_change(self):
-        """The handler to invoke when the value of the widget changes.
-
-        This is only invoked in response to user-generated changes.
-        """
+        """The handler to invoke when the value of the widget changes."""
         return self._on_change
 
     @on_change.setter

@@ -55,6 +55,10 @@ def test_value(widget, value, expected):
     # Clear the event log
     EventLog.reset()
 
+    # Install an on_change handler
+    handler = Mock()
+    widget.on_change = handler
+
     widget.value = value
     assert widget.value == expected
 
@@ -64,11 +68,18 @@ def test_value(widget, value, expected):
     # A refresh was performed
     assert_action_performed(widget, "refresh")
 
+    # Callback was invoked
+    handler.assert_called_once_with(widget)
+
 
 def test_clear(widget):
     """The value of the input can be cleared."""
     # Clear the event log
     EventLog.reset()
+
+    # Install an on_change handler
+    handler = Mock()
+    widget.on_change = handler
 
     # Set an initial value on the widget
     widget.value = "Hello world"
@@ -77,8 +88,12 @@ def test_clear(widget):
     # A refresh was performed
     assert_action_performed(widget, "refresh")
 
-    # Clear the event log
+    # Callback was invoked
+    handler.assert_called_once_with(widget)
+
+    # Clear the event log and handler mock
     EventLog.reset()
+    handler.reset_mock()
 
     # Clear the widget text.
     widget.clear()
@@ -86,6 +101,9 @@ def test_clear(widget):
 
     # A refresh was performed
     assert_action_performed(widget, "refresh")
+
+    # Callback was invoked
+    handler.assert_called_once_with(widget)
 
 
 @pytest.mark.parametrize(
@@ -115,39 +133,6 @@ def test_readonly(widget, value, expected):
     # Set the readonly status again
     widget.readonly = value
     assert widget.readonly == expected
-
-
-@pytest.mark.parametrize(
-    "value, expected",
-    [
-        (None, False),
-        ("", False),
-        ("true", True),
-        ("false", True),  # Evaluated as a string, this value is true.
-        (0, False),
-        (1234, True),
-    ],
-)
-def test_enabled(widget, value, expected):
-    "The enabled status of the widget can be changed, but is a proxy for readonly"
-    # Widget is initially enabled by default.
-    assert widget.enabled
-    assert not widget.readonly
-
-    # Set the enabled status
-    widget.enabled = value
-    assert widget.enabled == expected
-    assert widget.readonly != expected
-
-    # Disable the widget
-    widget.enabled = False
-    assert not widget.enabled
-    assert widget.readonly
-
-    # Set the enabled status again
-    widget.enabled = value
-    assert widget.enabled == expected
-    assert widget.readonly != expected
 
 
 @pytest.mark.parametrize(

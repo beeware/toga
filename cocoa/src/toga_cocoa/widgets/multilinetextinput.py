@@ -59,6 +59,13 @@ class MultilineTextInput(Widget):
     def set_placeholder(self, value):
         self.native_text.placeholderString = value
 
+    def get_enabled(self):
+        return self.native_text.isSelectable()
+
+    def set_enabled(self, value):
+        self.native_text.editable = value
+        self.native_text.selectable = value
+
     def get_readonly(self):
         return not self.native_text.isEditable()
 
@@ -70,6 +77,7 @@ class MultilineTextInput(Widget):
 
     def set_value(self, value):
         self.native_text.string = value
+        self.interface.on_change(None)
 
     def set_color(self, value):
         self.native_text.textColor = native_color(value)

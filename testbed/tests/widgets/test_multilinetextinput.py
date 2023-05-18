@@ -1,4 +1,4 @@
-from unittest.mock import Mock
+from unittest.mock import Mock, call
 
 import pytest
 
@@ -109,16 +109,16 @@ async def test_on_change_handler(widget, probe):
     # Programmatic value changes don't trigger the event handler
     widget.value = "This is new content."
     await probe.redraw("Value has been set programmatically")
-    handler.assert_not_called()
+    assert handler.mock_calls == [call(widget)]
 
     # Clearing doesn't trigger the event handler
     widget.clear()
     await probe.redraw("Value has been cleared programmatically")
-    handler.assert_not_called()
+    assert handler.mock_calls == [call(widget)] * 2
 
     for count, char in enumerate("Hello world", start=1):
         await probe.type_character(char)
         await probe.redraw(f"Typed {char!r}")
 
         # The number of events equals the number of characters typed.
-        assert handler.call_count == count
+        assert handler.mock_calls == [call(widget)] * (count + 2)

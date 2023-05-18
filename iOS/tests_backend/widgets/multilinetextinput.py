@@ -38,11 +38,6 @@ class MultilineTextInputProbe(SimpleProbe):
         return toga_alignment(self.native.textAlignment)
 
     @property
-    def enabled(self):
-        # Enabled is proxied onto readonly on the text view
-        return self.native.isEditable()
-
-    @property
     def readonly(self):
         return not self.native.isEditable()
 

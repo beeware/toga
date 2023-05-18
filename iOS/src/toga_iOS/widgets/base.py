@@ -63,7 +63,7 @@ class Widget:
         return self.native.isEnabled()
 
     def set_enabled(self, value):
-        self.native.enabled = value
+        self.native.setEnabled(value)
 
     def focus(self):
         self.native.becomeFirstResponder()
