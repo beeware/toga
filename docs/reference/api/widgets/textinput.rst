@@ -38,8 +38,8 @@ is valid; if the current value is invalid, it should return an error message.
 Notes
 -----
 
-* On iOS, a validation failure will be displayed, but the error message
-  associated with the validation failure will not be shown.
+* Although an error message is provided when validation fails, Toga does not
+  guarantee that this error message will be displayed to the user.
 
 Reference
 ---------

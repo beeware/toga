@@ -79,7 +79,7 @@ class CountValidator:
     def count(self, input_string: str) -> int:
         """Count the instances of content of interest in the input string.
 
-        :param input_string: The string to inspect fo content of interest.
+        :param input_string: The string to inspect for content of interest.
         :returns: The number of instances of content that the validator is looking for.
         """
         ...
@@ -285,7 +285,7 @@ class NotContains(Contains):
         """A validator confirming that the string does not contains one or more
         substring.
 
-        :param substring: A substring that mustnot exist in the input.
+        :param substring: A substring that must not exist in the input.
         :param error_message: Optional; the error message to display when the
             input doesn't contain all the provided substrings.
         :param allow_empty: Optional; Is no input considered valid? Defaults to
