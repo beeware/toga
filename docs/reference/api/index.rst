@@ -33,7 +33,9 @@ General widgets
  :doc:`MultilineTextInput </reference/api/widgets/multilinetextinput>`   A scrollable panel that allows for the display and editing of multiple
                                                                          lines of text.
  :doc:`NumberInput </reference/api/widgets/numberinput>`                 Number Input field
- :doc:`PasswordInput </reference/api/widgets/passwordinput>`             A text input that hides it's input
+ :doc:`PasswordInput </reference/api/widgets/passwordinput>`             A widget to allow the entry of a password. Any value typed by the
+                                                                         user will be obscured, allowing the user to see the number of
+                                                                         characters they have typed, but not the actual characters.
  :doc:`ProgressBar </reference/api/widgets/progressbar>`                 A horizontal bar to visualize task progress. The task being monitored
                                                                          can be of known or indeterminate length.
  :doc:`Selection </reference/api/widgets/selection>`                     Selection
@@ -42,7 +44,7 @@ General widgets
  :doc:`Switch </reference/api/widgets/switch>`                           A clickable button with two stable states: True (on, checked); and
                                                                          False (off, unchecked). The button has a text label.
  :doc:`Table </reference/api/widgets/table>`                             Table of data
- :doc:`TextInput </reference/api/widgets/textinput>`                     Text Input field
+ :doc:`TextInput </reference/api/widgets/textinput>`                     A widget for the display and editing of a single line of text.
  :doc:`Tree </reference/api/widgets/tree>`                               Tree of data
  :doc:`WebView </reference/api/widgets/webview>`                         A panel for displaying HTML
  :doc:`Widget </reference/api/widgets/widget>`                           The abstract base class of all widgets. This class should not be be
