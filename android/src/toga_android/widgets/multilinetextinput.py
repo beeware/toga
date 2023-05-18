@@ -45,10 +45,10 @@ class MultilineTextInput(TextViewWidget):
 
     def set_readonly(self, readonly):
         if readonly:
-            # Implicitly calls setFocusableInTouchMode(false)
+            # Implicitly calls setFocusableInTouchMode(False)
             self.native.setFocusable(False)
         else:
-            # Implicitly calls setFocusable(true)
+            # Implicitly calls setFocusable(True)
             self.native.setFocusableInTouchMode(True)
 
     def get_placeholder(self):

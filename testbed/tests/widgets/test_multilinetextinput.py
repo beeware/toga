@@ -110,12 +110,12 @@ async def test_on_change_handler(widget, probe):
     widget.on_change = handler
     widget.focus()
 
-    # Programmatic value changes don't trigger the event handler
+    # Programmatic value changes trigger the event handler
     widget.value = "This is new content."
     await probe.redraw("Value has been set programmatically")
     assert handler.mock_calls == [call(widget)]
 
-    # Clearing doesn't trigger the event handler
+    # Clearing triggers the event handler
     widget.clear()
     await probe.redraw("Value has been cleared programmatically")
     assert handler.mock_calls == [call(widget)] * 2

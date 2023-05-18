@@ -14,6 +14,7 @@ class MultilineTextInputProbe(LabelProbe):
     def placeholder(self):
         return str(self.native.getHint())
 
+    @property
     def placeholder_visible(self):
         return not self.value
 
@@ -22,24 +23,12 @@ class MultilineTextInputProbe(LabelProbe):
         return False
 
     @property
-    def enabled(self):
-        return not self.readonly
-
-    @property
     def readonly(self):
         focusable = self.native.isFocusable()
         focusable_in_touch_mode = self.native.isFocusableInTouchMode()
         if focusable != focusable_in_touch_mode:
             raise ValueError(f"invalid state: {focusable=}, {focusable_in_touch_mode=}")
         return not focusable
-
-    @property
-    def visible_height(self):
-        return self.height
-
-    @property
-    def visible_width(self):
-        return self.width
 
     @property
     def document_height(self):
