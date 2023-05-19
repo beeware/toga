@@ -352,14 +352,11 @@ async def test_alignment(widget, probe):
     await probe.redraw("Label text direction should be LTR")
     probe.assert_alignment(LEFT)
 
-    # Vertical alignment is not affected by horizontal alignment changes.
-    vertical_alignment = probe.vertical_alignment
-
     for alignment in [RIGHT, CENTER, JUSTIFY]:
         widget.style.text_align = alignment
         await probe.redraw("Label text direction should be %s" % alignment)
         probe.assert_alignment(alignment)
-        assert probe.vertical_alignment == vertical_alignment
+        assert probe.vertical_alignment == TOP
 
     # Clearing the alignment reverts to default alignment of LEFT
     del widget.style.text_align
@@ -375,6 +372,12 @@ async def test_alignment(widget, probe):
     widget.style.text_direction = LTR
     await probe.redraw("Label text direction should be LTR")
     probe.assert_alignment(LEFT)
+
+    # If the widget has an explicit height, the vertical alignment of the widget
+    # is still TOP
+    widget.style.height = 200
+    await probe.redraw("Label text should be at the top")
+    assert probe.vertical_alignment == TOP
 
 
 async def test_vertical_alignment_top(widget, probe):

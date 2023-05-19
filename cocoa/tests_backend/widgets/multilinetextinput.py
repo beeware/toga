@@ -1,4 +1,5 @@
 from toga.colors import TRANSPARENT
+from toga.constants import TOP
 from toga_cocoa.libs import NSScrollView
 
 from .base import SimpleProbe
@@ -55,6 +56,12 @@ class MultilineTextInputProbe(SimpleProbe):
     @property
     def alignment(self):
         return toga_alignment(self.native_text.alignment)
+
+    @property
+    def vertical_alignment(self):
+        # Cocoa doesn't provide an option to alter the vertical alignment of
+        # NSTextView
+        return TOP
 
     @property
     def enabled(self):
