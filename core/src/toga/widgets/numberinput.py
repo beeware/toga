@@ -1,9 +1,44 @@
+import re
 from decimal import Decimal, InvalidOperation
 from typing import Optional
 
 from toga.handlers import wrapped_handler
 
 from .base import Widget
+
+# Implementation notes
+# ====================
+#
+# * `step`, `min_value` and `max_value` maintain an interface shadow copy of
+#   their current values. This is because we use Decimal as a representation,
+#   but all the implementations use floats. To ensure that we can round-trip
+#   step/min/max values, we need to keep a local copy.
+# * Decimal(3.7) yields "3.700000000...177". However, Decimal(str(3.7)) yields
+#   "3.7". If the user provides a float, convert to a string first to ensure
+#   that we don't introduce floating point error.
+
+
+NUMERIC_RE = re.compile(r"[^0-9\.-]")
+
+
+def _clean_decimal_str(value):
+    """Clean a string value"""
+    # Replace any character that isn't a number, `.` or `-`
+    value = NUMERIC_RE.sub("", value)
+    # Remove any `-` not at the start of the string
+    pos = 1
+    while (pos := value.find("-", pos)) != -1:
+        value = value[:pos] + value[pos + 1 :]
+
+    # Only allow the first instance of `.`
+    pos = value.find(".")
+    if pos != -1:
+        pos = pos + 1
+        while (pos := value.find(".", pos)) != -1:
+            value = value[:pos] + value[pos + 1 :]
+            pos = value.find(".", pos)
+
+    return value
 
 
 class NumberInput(Widget):
@@ -46,10 +81,9 @@ class NumberInput(Widget):
         self.step = step
         self.min_value = min_value
         self.max_value = max_value
-        self.on_change = on_change
+        self.value = value
 
-        if value is not None:
-            self.value = value
+        self.on_change = on_change
 
     @property
     def readonly(self) -> bool:
@@ -59,11 +93,10 @@ class NumberInput(Widget):
         keyboard). Programmatic changes are permitted while the widget has
         ``readonly`` enabled.
         """
-        return self._readonly
+        return self._impl.get_readonly()
 
     @readonly.setter
     def readonly(self, value):
-        self._readonly = value
         self._impl.set_readonly(value)
 
     @property
@@ -76,9 +109,14 @@ class NumberInput(Widget):
     @step.setter
     def step(self, step):
         try:
+            # See implementation notes for the reason for this conversion
+            if isinstance(step, float):
+                step = str(step)
+
             self._step = Decimal(step)
         except (ValueError, TypeError, InvalidOperation):
-            raise ValueError("step must be an number")
+            raise ValueError("step must be a number")
+
         self._impl.set_step(self._step)
 
     @property
@@ -87,17 +125,28 @@ class NumberInput(Widget):
 
         Returns ``None`` if there is no minimum bound.
         """
-        return self._impl.get_min_value()
+        return self._min_value
 
     @min_value.setter
-    def min_value(self, value):
+    def min_value(self, new_min):
         try:
-            value = Decimal(value)
-        except (ValueError, InvalidOperation):
-            raise ValueError("min_value must be a number")
-        except TypeError:
-            value = None
-        self._impl.set_min_value(value)
+            # See implementation notes for the reason for this conversion
+            if isinstance(new_min, float):
+                new_min = str(new_min)
+
+            new_min = Decimal(new_min)
+
+            # Clip widget's value to the new minumum
+            if self.value is not None and self.value < new_min:
+                self.value = new_min
+        except (TypeError, ValueError, InvalidOperation):
+            if new_min is None or new_min == "":
+                new_min = None
+            else:
+                raise ValueError("min_value must be a number or None")
+
+        self._min_value = new_min
+        self._impl.set_min_value(new_min)
 
     @property
     def max_value(self) -> Optional[Decimal]:
@@ -105,41 +154,77 @@ class NumberInput(Widget):
 
         Returns ``None`` if there is no maximum bound.
         """
-        return self.get_max_value()
+        return self._max_value
 
     @max_value.setter
-    def max_value(self, value):
+    def max_value(self, new_max):
         try:
-            value = Decimal(value)
-        except (ValueError, InvalidOperation):
-            raise ValueError("max_value must be a number")
-        except TypeError:
-            value = None
-        self._impl.set_max_value(value)
+            # See implementation notes for the reason for this conversion
+            if isinstance(new_max, float):
+                new_max = str(new_max)
+
+            new_max = Decimal(new_max)
+
+            # Clip widget's value to the new maximum
+            if self.value is not None and self.value > new_max:
+                self.value = new_max
+        except (TypeError, ValueError, InvalidOperation):
+            if new_max is None or new_max == "":
+                new_max = None
+            else:
+                raise ValueError("max_value must be a number or None")
+
+        self._max_value = new_max
+        self._impl.set_max_value(new_max)
 
     @property
     def value(self) -> Optional[Decimal]:
         """Current value of the widget.
 
-        Returns ``None`` if no value has been set on the widget
+        Returns ``None`` if no value has been set on the widget.
+
+        While the widget is being edited by the user, it is possible for the UI
+        to contain text that isn't a valid value according to the min/max range.
+        In this case, the widget will return a current value of ``None``.
         """
-        return self.get_value()
+        # Get the value currently displayed by the widget. This *could*
+        # be outside the min/max range.
+        value = self._impl.get_value()
+
+        # If the widget has a current value, clip it
+        if value:
+            if self.min_value and value < self.min_value:
+                return None
+            elif self.max_value and value > self.max_value:
+                return None
+        return value
 
     @value.setter
     def value(self, value):
         try:
+            # Decimal(3.7) yields "3.700000000...177".
+            # However, Decimal(str(3.7)) yields "3.7". If the user provides a float,
+            # convert to a string first.
+            if isinstance(value, float):
+                value = str(value)
             value = Decimal(value)
 
             if self.min_value is not None and value < self.min_value:
                 value = self.min_value
             elif self.max_value is not None and value > self.max_value:
                 value = self.max_value
-        except (ValueError, InvalidOperation):
-            raise ValueError("value must be a number")
-        except TypeError:
-            value = None
+        except (TypeError, ValueError, InvalidOperation):
+            if value is None or value == "":
+                value = None
+            else:
+                raise ValueError("value must be a number or None")
 
         self._impl.set_value(value)
+        self.refresh()
+
+    def clear(self):
+        """Clear any value from the widget."""
+        self.value = None
 
     @property
     def on_change(self):
