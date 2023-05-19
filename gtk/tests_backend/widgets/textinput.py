@@ -1,4 +1,4 @@
-from toga.constants import JUSTIFY, LEFT
+from toga.constants import JUSTIFY, LEFT, TOP
 from toga_gtk.libs import Gtk
 
 from .base import SimpleProbe
@@ -35,6 +35,11 @@ class TextInputProbe(SimpleProbe):
             assert self.alignment == LEFT
         else:
             assert self.alignment == expected
+
+    @property
+    def vertical_alignment(self):
+        # FIXME; This is a lie - but it's also non-configurable.
+        return TOP
 
     @property
     def readonly(self):

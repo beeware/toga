@@ -1,5 +1,5 @@
 from toga.colors import TRANSPARENT
-from toga.constants import RIGHT
+from toga.constants import RIGHT, TOP
 from toga_cocoa.libs import (
     NSLeftTextAlignment,
     NSRightTextAlignment,
@@ -62,6 +62,12 @@ class TextInputProbe(SimpleProbe):
         else:
             assert self.impl.error_label.alignment == NSRightTextAlignment
         return result
+
+    @property
+    def vertical_alignment(self):
+        # Cocoa doesn't provide an option to alter the vertical alignment of
+        # NSTextField
+        return TOP
 
     @property
     def readonly(self):
