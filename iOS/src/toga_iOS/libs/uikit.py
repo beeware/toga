@@ -1,10 +1,10 @@
 ##########################################################################
 # System/Library/Frameworks/UIKit.framework
 ##########################################################################
-from ctypes import POINTER, Structure, c_char_p, c_int, c_void_p, cdll, util
+from ctypes import POINTER, c_char_p, c_int, c_void_p, cdll, util
 from enum import Enum
 
-from rubicon.objc import CGFloat, ObjCClass, ObjCProtocol, objc_const
+from rubicon.objc import ObjCClass, ObjCProtocol, objc_const
 
 from toga.constants import CENTER, JUSTIFY, LEFT, RIGHT
 from toga_iOS.libs.core_graphics import CGContextRef
@@ -67,19 +67,6 @@ NSLayoutFormatDirectionMask = 0x3 << 16
 
 NSLayoutConstraintOrientationHorizontal = (0,)
 NSLayoutConstraintOrientationVertical = 1
-
-
-class NSEdgeInsets(Structure):
-    _fields_ = [
-        ("top", CGFloat),
-        ("left", CGFloat),
-        ("bottom", CGFloat),
-        ("right", CGFloat),
-    ]
-
-
-def NSEdgeInsetsMake(top, left, bottom, right):
-    return NSEdgeInsets(top, left, bottom, right)
 
 
 class NSLayoutPriority(Enum):
