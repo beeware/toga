@@ -9,14 +9,20 @@ class ColorsApp(toga.App):
     def change_color_foreground(self, color):
         def _change_color_foreground(widget):
             for widget in self.example_widgets:
-                widget.style.color = color
+                if color is None:
+                    del widget.style.color
+                else:
+                    widget.style.color = color
 
         return _change_color_foreground
 
     def change_color_background(self, color):
         def _change_color_background(widget):
             for widget in self.example_widgets:
-                widget.style.background_color = color
+                if color is None:
+                    del widget.style.background_color
+                else:
+                    widget.style.background_color = color
 
         return _change_color_background
 
@@ -122,60 +128,61 @@ class ColorsApp(toga.App):
         ]
 
         # setup control box
+        button_style = Pack(padding=2, width=100)
         change_fcolor_r = toga.Button(
             "Red",
             on_press=self.change_color_foreground(colors.RED),
-            style=Pack(padding=5, width=100),
+            style=button_style,
         )
         change_fcolor_g = toga.Button(
             "Green",
             on_press=self.change_color_foreground(colors.GREEN),
-            style=Pack(padding=5, width=100),
+            style=button_style,
         )
         change_fcolor_b = toga.Button(
             "Blue",
             on_press=self.change_color_foreground(colors.BLUE),
-            style=Pack(padding=5, width=100),
+            style=button_style,
         )
         change_fcolor_reset = toga.Button(
             "Reset",
             on_press=self.change_color_foreground(None),
-            style=Pack(padding=5, width=100),
+            style=button_style,
         )
         change_bcolor_r = toga.Button(
             "Red",
             on_press=self.change_color_background(colors.RED),
-            style=Pack(padding=5, width=100),
+            style=button_style,
         )
         change_bcolor_g = toga.Button(
             "Green",
             on_press=self.change_color_background(colors.GREEN),
-            style=Pack(padding=5, width=100),
+            style=button_style,
         )
         change_bcolor_b = toga.Button(
             "Blue",
             on_press=self.change_color_background(colors.BLUE),
-            style=Pack(padding=5, width=100),
+            style=button_style,
         )
         change_bcolor_t = toga.Button(
             "Transparent",
             on_press=self.change_color_background(colors.TRANSPARENT),
-            style=Pack(padding=5, width=100),
+            style=button_style,
         )
         change_bcolor_reset = toga.Button(
             "Reset",
             on_press=self.change_color_background(None),
-            style=Pack(padding=5, width=100),
+            style=button_style,
         )
 
         control_box = toga.Box(
             children=[
-                toga.Label("Color selection:"),
+                toga.Label("Foreground"),
                 change_fcolor_r,
                 change_fcolor_g,
                 change_fcolor_b,
                 change_fcolor_reset,
-                toga.Label("Background color selection:", style=Pack(padding_top=10)),
+                toga.Label("Background", style=Pack(padding_top=10)),
                 change_bcolor_r,
                 change_bcolor_g,
                 change_bcolor_b,

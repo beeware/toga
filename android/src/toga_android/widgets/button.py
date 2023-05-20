@@ -30,7 +30,7 @@ class Button(TextViewWidget):
         self.native.setEnabled(value)
 
     def set_background_color(self, value):
-        self.set_background_color_tint(value)
+        self.set_background_filter(value)
 
     def rehint(self):
         # Like other text-viewing widgets, Android crashes when rendering

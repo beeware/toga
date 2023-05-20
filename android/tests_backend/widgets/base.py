@@ -3,7 +3,12 @@ import asyncio
 from java import dynamic_proxy
 from pytest import approx
 
-from android.graphics.drawable import ColorDrawable, DrawableWrapper, LayerDrawable
+from android.graphics.drawable import (
+    ColorDrawable,
+    DrawableContainer,
+    DrawableWrapper,
+    LayerDrawable,
+)
 from android.os import Build
 from android.view import View, ViewTreeObserver
 from toga.fonts import SYSTEM
@@ -127,14 +132,17 @@ class SimpleProbe:
         while True:
             if isinstance(background, ColorDrawable):
                 return toga_color(background.getColor())
+
+            # The following complex Drawables all apply color filters to their children,
+            # but they don't implement getColorFilter, at least not in our current
+            # minimum API level.
             elif isinstance(background, LayerDrawable):
-                # LayerDrawable applies color filters to all of its layers, but it doesn't
-                # implement getColorFilter itself.
                 background = background.getDrawable(0)
+            elif isinstance(background, DrawableContainer):
+                background = background.getCurrent()
             elif isinstance(background, DrawableWrapper):
-                # DrawableWrapper doesn't implement getColorFilter in API level 24, but
-                # has implemented it by API level 33.
                 background = background.getDrawable()
+
             else:
                 break
 

@@ -1,5 +1,7 @@
 from java import jclass
 
+from toga.colors import TRANSPARENT
+
 from .label import LabelProbe
 
 
@@ -44,3 +46,8 @@ class MultilineTextInputProbe(LabelProbe):
 
     async def wait_for_scroll_completion(self):
         pass
+
+    @property
+    def background_color(self):
+        color = super().background_color
+        return TRANSPARENT if color is None else color

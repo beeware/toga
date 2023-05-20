@@ -4,7 +4,8 @@ from toga.constants import CENTER, JUSTIFY, LEFT, RIGHT, TRANSPARENT
 
 from ..colors import native_color
 from ..libs.activity import MainActivity
-from ..libs.android.graphics import PorterDuff__Mode, PorterDuffColorFilter
+from ..libs.android.drawable import ColorDrawable, InsetDrawable
+from ..libs.android.graphics import PorterDuff__Mode, PorterDuffColorFilter, Rect
 from ..libs.android.view import Gravity, View
 
 
@@ -117,16 +118,30 @@ class Widget:
     def set_background_color(self, color):
         pass
 
-    def set_background_color_simple(self, value):
-        if value is None:
-            self.native.setBackgroundColor(native_color(TRANSPARENT))
-        else:
-            self.native.setBackgroundColor(native_color(value))
+    def set_background_simple(self, value):
+        if not hasattr(self, "_default_background"):
+            self._default_background = self.native.getBackground()
 
-    def set_background_color_tint(self, value):
+        if value in (None, TRANSPARENT):
+            self.native.setBackground(self._default_background)
+        else:
+            background = ColorDrawable(native_color(value))
+            if isinstance(self._default_background, InsetDrawable):
+                outer_padding = Rect()
+                inner_padding = Rect()
+                self._default_background.getPadding(outer_padding)
+                self._default_background.getDrawable().getPadding(inner_padding)
+                insets = [
+                    getattr(outer_padding, name) - getattr(inner_padding, name)
+                    for name in ["left", "top", "right", "bottom"]
+                ]
+                background = InsetDrawable(background, *insets)
+            self.native.setBackground(background)
+
+    def set_background_filter(self, value):
         self.native.getBackground().setColorFilter(
             None
-            if value is None or value == TRANSPARENT
+            if value in (None, TRANSPARENT)
             else PorterDuffColorFilter(native_color(value), PorterDuff__Mode.SRC_IN)
         )
 

@@ -50,7 +50,7 @@ class Label(TextViewWidget):
         self.native.setText(value)
 
     def set_background_color(self, value):
-        self.set_background_color_simple(value)
+        self.set_background_simple(value)
 
     def rehint(self):
         # Refuse to rehint an Android TextView if it has no LayoutParams yet.

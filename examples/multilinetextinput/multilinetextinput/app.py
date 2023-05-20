@@ -1,5 +1,4 @@
 import toga
-from toga.colors import RED, YELLOW
 from toga.constants import COLUMN, ROW
 from toga.style import Pack
 
@@ -11,20 +10,6 @@ class ExampleMultilineTextInputApp(toga.App):
 
     def readonly_toggle_pressed(self, widget, **kwargs):
         self.multiline_input.readonly = not self.multiline_input.readonly
-
-    def foreground_pressed(self, widget, **kwargs):
-        style = self.multiline_input.style
-        if style.color:
-            del style.color
-        else:
-            style.color = RED
-
-    def background_pressed(self, widget, **kwargs):
-        style = self.multiline_input.style
-        if style.background_color:
-            del style.background_color
-        else:
-            style.background_color = YELLOW
 
     def add_content_pressed(self, widget, **kwargs):
         self.multiline_input.value = self.multiline_input.value + (
@@ -45,7 +30,7 @@ class ExampleMultilineTextInputApp(toga.App):
             self.label.text = "Nothing has been written yet"
             return
         number_of_lines = len(self.multiline_input.value.split("\n"))
-        self.label.text = f"{number_of_lines} lines has been written"
+        self.label.text = f"{number_of_lines} lines have been written"
 
     def startup(self):
         self.main_window = toga.MainWindow(title=self.name)
@@ -62,13 +47,6 @@ class ExampleMultilineTextInputApp(toga.App):
         )
         button_toggle_readonly = toga.Button(
             "Readonly", on_press=self.readonly_toggle_pressed, style=Pack(flex=1)
-        )
-
-        button_foreground = toga.Button(
-            "Foreground", on_press=self.foreground_pressed, style=Pack(flex=1)
-        )
-        button_background = toga.Button(
-            "Background", on_press=self.background_pressed, style=Pack(flex=1)
         )
 
         button_add_content = toga.Button(
@@ -94,19 +72,12 @@ class ExampleMultilineTextInputApp(toga.App):
         )
         btn_box2 = toga.Box(
             children=[
-                button_foreground,
-                button_background,
-            ],
-            style=Pack(direction=ROW, padding_bottom=10),
-        )
-        btn_box3 = toga.Box(
-            children=[
                 button_add_content,
                 button_clear,
             ],
             style=Pack(direction=ROW, padding_bottom=10),
         )
-        btn_box4 = toga.Box(
+        btn_box3 = toga.Box(
             children=[
                 button_scroll_top,
                 button_scroll_bottom,
@@ -117,14 +88,7 @@ class ExampleMultilineTextInputApp(toga.App):
         self.label = toga.Label("Nothing has been written yet")
 
         outer_box = toga.Box(
-            children=[
-                btn_box1,
-                btn_box2,
-                btn_box3,
-                btn_box4,
-                self.multiline_input,
-                self.label,
-            ],
+            children=[btn_box1, btn_box2, btn_box3, self.multiline_input, self.label],
             style=Pack(direction=COLUMN, padding=10),
         )
 

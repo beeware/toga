@@ -58,7 +58,9 @@ class MultilineTextInput(TextViewWidget):
         self.set_textview_alignment(value, Gravity.TOP)
 
     def set_background_color(self, value):
-        self.set_background_color_tint(value)
+        # This causes any custom color to hide the bottom border line, but it's better
+        # than set_background_filter, which affects *only* the bottom border line.
+        self.set_background_simple(value)
 
     def rehint(self):
         self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
