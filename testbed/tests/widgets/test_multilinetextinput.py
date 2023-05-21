@@ -58,10 +58,10 @@ async def test_readonly(widget, probe):
 
 async def test_scroll_position(widget, probe):
     "The widget can be programmatically scrolled."
-    # The document and the visible area are initially the same (although there
-    # can be some variance in width due to the appearance of scrollbars)
-    assert probe.width == pytest.approx(probe.document_width, abs=20)
-    assert probe.height == pytest.approx(probe.document_height, abs=5)
+    # The document initially fits within the visible area.
+    assert probe.width >= probe.document_width
+    assert probe.height >= probe.document_height
+    original_width, original_height = probe.width, probe.height
 
     # The scroll position is at the origin.
     assert probe.vertical_scroll_position == pytest.approx(0.0)
@@ -70,10 +70,12 @@ async def test_scroll_position(widget, probe):
     widget.value = "All work and no play makes Jack a dull boy... " * 1000
     await probe.redraw("The document now contains a lot of content")
 
-    # The width of the document doesn't change (although there can be some
+    # The size of the widget doesn't change (although there can be some
     # variance in width due to the appearance of scrollbars). However, the
     # height of the document is now much more than the height of the widget.
-    assert probe.width == pytest.approx(probe.document_width, abs=20)
+    assert probe.width == pytest.approx(original_width, abs=20)
+    assert probe.width >= probe.document_width
+    assert probe.height == original_height
     assert probe.height * 2 < probe.document_height
 
     # The scroll position is at the origin.
@@ -105,7 +107,7 @@ async def test_scroll_position(widget, probe):
 
 
 async def test_on_change_handler(widget, probe):
-    "The on_change handler is triggered when the user types, but not on programmatic changes."
+    "The on_change handler is triggered when the user types, and on programmatic changes."
     # Install a handler, and give the widget focus.
     handler = Mock()
     widget.on_change = handler

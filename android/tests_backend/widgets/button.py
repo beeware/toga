@@ -1,5 +1,6 @@
 from java import jclass
 
+from toga.colors import TRANSPARENT
 from toga.fonts import SYSTEM
 
 from .label import LabelProbe
@@ -15,3 +16,8 @@ class ButtonProbe(LabelProbe):
             assert actual == "sans-serif-medium"
         else:
             assert actual == expected
+
+    @property
+    def background_color(self):
+        color = super().background_color
+        return None if color == TRANSPARENT else color

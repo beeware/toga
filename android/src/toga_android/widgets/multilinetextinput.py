@@ -15,8 +15,7 @@ class TogaTextWatcher(TextWatcher):
         pass
 
     def afterTextChanged(self, _editable):
-        if self.interface.on_change:
-            self.interface.on_change(widget=self.interface)
+        self.interface.on_change(widget=self.interface)
 
     def onTextChanged(self, _charSequence, _start, _before, _count):
         pass
@@ -67,7 +66,7 @@ class MultilineTextInput(TextViewWidget):
         self.interface.intrinsic.height = at_least(self.interface._MIN_HEIGHT)
 
     def scroll_to_bottom(self):
-        self.native.scrollTo(0, self.native.getLayout().getHeight())
+        self.native.setSelection(self.native.length())
 
     def scroll_to_top(self):
-        self.native.scrollTo(0, 0)
+        self.native.setSelection(0)

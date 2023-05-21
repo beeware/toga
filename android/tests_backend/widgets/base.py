@@ -11,6 +11,7 @@ from android.graphics.drawable import (
 )
 from android.os import Build
 from android.view import View, ViewTreeObserver
+from toga.colors import TRANSPARENT
 from toga.fonts import SYSTEM
 from toga.style.pack import JUSTIFY, LEFT
 
@@ -146,6 +147,8 @@ class SimpleProbe:
             else:
                 break
 
+        if background is None:
+            return TRANSPARENT
         filter = background.getColorFilter()
         if filter:
             # PorterDuffColorFilter.getColor is undocumented, but continues to work for
@@ -153,7 +156,7 @@ class SimpleProbe:
             # filter to draw something and see what color comes out.
             return toga_color(filter.getColor())
         else:
-            return None
+            return TRANSPARENT
 
     async def press(self):
         self.native.performClick()

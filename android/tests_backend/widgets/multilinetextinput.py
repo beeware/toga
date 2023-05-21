@@ -1,7 +1,5 @@
 from java import jclass
 
-from toga.colors import TRANSPARENT
-
 from .label import LabelProbe
 
 
@@ -34,20 +32,18 @@ class MultilineTextInputProbe(LabelProbe):
 
     @property
     def document_height(self):
-        return self.native.getLayout().getHeight()
+        return self.native.getLayout().getHeight() / self.scale_factor
 
     @property
     def document_width(self):
-        return self.native.getLayout().getWidth()
+        return self.native.getLayout().getWidth() / self.scale_factor
 
     @property
     def vertical_scroll_position(self):
-        return self.native.getScrollY()
+        return self.native.getScrollY() / self.scale_factor
 
     async def wait_for_scroll_completion(self):
         pass
 
-    @property
-    def background_color(self):
-        color = super().background_color
-        return TRANSPARENT if color is None else color
+    async def type_character(self, char):
+        self.native.append(char)
