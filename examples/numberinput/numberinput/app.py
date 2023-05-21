@@ -4,19 +4,19 @@ from toga.style import Pack
 
 
 class ExampleNumberInputApp(toga.App):
-    ni1 = None
-
     # Button callback functions
     def do_stuff(self, widget, **kwargs):
-        if self.ni1:
-            self.label.text = "You entered following value: " + str(self.ni1.value)
+        self.label.text = (
+            f"Current values are {self.input1.value} and {self.input2.value}"
+        )
 
     def do_clear(self, widget, **kwargs):
+        self.input1.value = None
+        self.input2.value = None
         self.label.text = "Ready."
 
-    def handle_numberinput(self, widget):
-        if self.ni1:
-            self.label.text = "You entered following value: " + str(self.ni1.value)
+    def on_change(self, widget):
+        self.label.text = f"You entered the value: {widget.value}"
 
     def startup(self):
         # Set up main window
@@ -25,14 +25,27 @@ class ExampleNumberInputApp(toga.App):
         # Label to show responses.
         self.label = toga.Label("Ready.")
         label1 = toga.Label("Enter value from 12 to 72:")
-        self.ni1 = toga.NumberInput(
+        self.input1 = toga.NumberInput(
             min_value=12,
             max_value=72,
-            value=12,
-            on_change=self.handle_numberinput,
+            step=2,
+            value=37,
+            on_change=self.on_change,
+        )
+        label2 = toga.Label("Enter value from 1.2 to 7.2:")
+        self.input2 = toga.NumberInput(
+            min_value=1.2,
+            max_value=7.2,
+            step=0.1,
+            value=3.7,
+            on_change=self.on_change,
         )
         box1 = toga.Box(
-            children=[label1, self.ni1],
+            children=[label1, self.input1],
+            style=Pack(direction=ROW, padding=5),
+        )
+        box2 = toga.Box(
+            children=[label2, self.input2],
             style=Pack(direction=ROW, padding=5),
         )
         # Buttons
@@ -45,8 +58,8 @@ class ExampleNumberInputApp(toga.App):
 
         # Outermost box
         outer_box = toga.Box(
-            children=[btn_box, box1, self.label],
-            style=Pack(flex=1, direction=COLUMN, padding=10, width=500, height=300),
+            children=[btn_box, box1, box2, self.label],
+            style=Pack(flex=1, direction=COLUMN, padding=10),
         )
 
         # Add the content on the main window
