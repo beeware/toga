@@ -1,11 +1,13 @@
 import sys
 from decimal import Decimal, InvalidOperation
 
+from rubicon.objc import SEL, objc_method, objc_property
 from travertino.size import at_least
 
+from toga.colors import TRANSPARENT
+from toga.widgets.numberinput import _clean_decimal_str
 from toga_cocoa.colors import native_color
 from toga_cocoa.libs import (
-    SEL,
     NSLayoutAttributeBottom,
     NSLayoutAttributeCenterY,
     NSLayoutAttributeLeft,
@@ -17,12 +19,11 @@ from toga_cocoa.libs import (
     NSTextAlignment,
     NSTextField,
     NSTextFieldSquareBezel,
-    objc_method,
-    objc_property,
+    NSTextView,
+    NSView,
 )
 
 from .base import Widget
-from .box import TogaView
 
 
 class TogaStepper(NSStepper):
@@ -32,52 +33,48 @@ class TogaStepper(NSStepper):
     @objc_method
     def onChange_(self, stepper) -> None:
         self.interface.value = Decimal(stepper.floatValue).quantize(self.interface.step)
-        if self.interface.on_change:
-            self.interface.on_change(self.interface)
 
     @objc_method
     def controlTextDidChange_(self, notification) -> None:
+        value = str(self.impl.native_input.stringValue)
         try:
-            value = str(self.impl.input.stringValue)
             # Try to convert to a decimal. If the value isn't a number,
             # this will raise InvalidOperation
             Decimal(value)
-            # We set the input widget's value to the literal text input
-            # This preserves the display of "123.", which Decimal will
-            # convert to "123"
-            self.interface.value = value
-            if self.interface.on_change:
-                self.interface.on_change(self.interface)
         except InvalidOperation:
-            # If the string value isn't valid, reset the widget
-            # to the widget's stored value. This will update the
-            # display, removing any invalid values from view.
-            self.impl.set_value(self.interface.value)
+            # If the string value isn't valid, remove any characters that
+            # would make it invalid.
+            self.impl.native_input.stringValue = _clean_decimal_str(value)
+
+        self.interface.on_change(self.interface)
 
 
 class NumberInput(Widget):
     def create(self):
-        self.native = TogaView.alloc().init()
+        self.native = NSView.alloc().init()
 
-        self.input = NSTextField.new()
-        self.input.bezeled = True
-        self.input.bezelStyle = NSTextFieldSquareBezel
-        self.input.translatesAutoresizingMaskIntoConstraints = False
+        self.native_input = NSTextField.new()
+        self.native_input.bezeled = True
+        self.native_input.bezelStyle = NSTextFieldSquareBezel
+        self.native_input.translatesAutoresizingMaskIntoConstraints = False
+        self.native_input.selectable = True
 
-        self.stepper = TogaStepper.alloc().init()
-        self.stepper.interface = self.interface
-        self.stepper.impl = self
-        self.stepper.translatesAutoresizingMaskIntoConstraints = False
+        self.native_stepper = TogaStepper.alloc().init()
+        self.native_stepper.interface = self.interface
+        self.native_stepper.impl = self
+        self.native_stepper.translatesAutoresizingMaskIntoConstraints = False
 
-        self.stepper.target = self.stepper
-        self.stepper.action = SEL("onChange:")
+        self.native_stepper.target = self.native_stepper
+        self.native_stepper.action = SEL("onChange:")
 
-        self.stepper.controller = self.input
-        self.input.delegate = self.stepper
+        self.native_stepper.valueWraps = False
+
+        self.native_stepper.controller = self.native_input
+        self.native_input.delegate = self.native_stepper
 
         # Add the input and stepper to the constraining box.
-        self.native.addSubview(self.input)
-        self.native.addSubview(self.stepper)
+        self.native.addSubview(self.native_input)
+        self.native.addSubview(self.native_stepper)
 
         # Add constraints to lay out the input and stepper.
         # Stepper is always top right corner.
@@ -86,7 +83,7 @@ class NumberInput(Widget):
                 self.native,
                 NSLayoutAttributeTop,
                 NSLayoutRelationEqual,
-                self.stepper,
+                self.native_stepper,
                 NSLayoutAttributeTop,
                 1.0,
                 0,
@@ -97,7 +94,7 @@ class NumberInput(Widget):
                 self.native,
                 NSLayoutAttributeRight,
                 NSLayoutRelationEqual,
-                self.stepper,
+                self.native_stepper,
                 NSLayoutAttributeRight,
                 1.0,
                 0,
@@ -110,7 +107,7 @@ class NumberInput(Widget):
                 self.native,
                 NSLayoutAttributeBottom,
                 NSLayoutRelationEqual,
-                self.stepper,
+                self.native_stepper,
                 NSLayoutAttributeBottom,
                 1.0,
                 0,
@@ -120,10 +117,10 @@ class NumberInput(Widget):
         # Input is always left, centred vertically on the stepper
         self.native.addConstraint(
             NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(
-                self.stepper,
+                self.native_stepper,
                 NSLayoutAttributeCenterY,
                 NSLayoutRelationEqual,
-                self.input,
+                self.native_input,
                 NSLayoutAttributeCenterY,
                 1.0,
                 0,
@@ -134,7 +131,7 @@ class NumberInput(Widget):
                 self.native,
                 NSLayoutAttributeLeft,
                 NSLayoutRelationEqual,
-                self.input,
+                self.native_input,
                 NSLayoutAttributeLeft,
                 1.0,
                 0,
@@ -144,10 +141,10 @@ class NumberInput(Widget):
         # Stepper and input meet in the middle with a small gap
         self.native.addConstraint(
             NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(
-                self.stepper,
+                self.native_stepper,
                 NSLayoutAttributeLeft,
                 NSLayoutRelationEqual,
-                self.input,
+                self.native_input,
                 NSLayoutAttributeRight,
                 1.0,
                 2,
@@ -158,65 +155,82 @@ class NumberInput(Widget):
         self.add_constraints()
 
     def set_color(self, color):
-        self.input.textColor = native_color(color)
+        self.native_input.textColor = native_color(color)
+
+    def set_background_color(self, color):
+        if color is TRANSPARENT:
+            # The text view needs to be made transparent *and* non-bezeled
+            self.native_input.drawsBackground = False
+            self.native_input.bezeled = False
+        else:
+            self.native_input.drawsBackground = True
+            self.native_input.bezeled = True
+            self.native_input.backgroundColor = native_color(color)
+
+    def has_focus(self):
+        # When the NSTextField gets focus, a field editor is created, and that editor
+        # has the original widget as the delegate. The first responder is the Field Editor.
+        return isinstance(self.native.window.firstResponder, NSTextView) and (
+            self.native.window.firstResponder.delegate == self.native_input
+        )
+
+    def focus(self):
+        if not self.has_focus():
+            self.interface.window._impl.native.makeFirstResponder(self.native_input)
+
+    def get_readonly(self):
+        return not self.native_input.isEditable()
 
     def set_readonly(self, value):
-        # Even if it's not editable, it's still selectable.
-        self.input.editable = not value
-        self.input.selectable = True
-
-    def set_placeholder(self, value):
-        self.input.cell.placeholderString = value
+        self.native_input.editable = not value
 
     def set_step(self, step):
-        self.stepper.increment = self.interface.step
+        self.native_stepper.increment = step
 
     def set_min_value(self, value):
-        if self.interface.min_value is None:
-            self.stepper.minValue = -sys.maxsize
+        if value is None:
+            self.native_stepper.minValue = -sys.float_info.max
         else:
-            self.stepper.minValue = value
+            self.native_stepper.minValue = float(value)
 
     def set_max_value(self, value):
-        if self.interface.max_value is None:
-            self.stepper.maxValue = sys.maxsize
+        if value is None:
+            self.native_stepper.maxValue = sys.float_info.max
         else:
-            self.stepper.maxValue = value
+            self.native_stepper.maxValue = float(value)
 
     def set_alignment(self, value):
-        self.input.alignment = NSTextAlignment(value)
+        self.native_input.alignment = NSTextAlignment(value)
 
     def set_font(self, font):
-        if font:
-            self.input.font = font._impl.native
+        self.native_input.font = font._impl.native
+
+    def get_value(self):
+        try:
+            return Decimal(str(self.native_input.stringValue))
+        except InvalidOperation:
+            return None
 
     def set_value(self, value):
-        if self.interface.value is None:
-            self.stepper.floatValue = 0
-            self.input.stringValue = ""
+        if value is None:
+            self.native_stepper.floatValue = 0.0
+            self.native_input.stringValue = ""
         else:
-            self.stepper.floatValue = float(self.interface.value)
-            # We use the *literal* input value here, not the value
-            # stored in the interface, because we want to display
-            # what the user has actually input, not the interpreted
-            # Decimal value. Any invalid input value should result
-            # in the interface to a value of None, so this branch
-            # should only execute if we know the raw value can be
-            # converted to a Decimal.
-            self.input.stringValue = value
+            self.native_stepper.floatValue = float(value)
+            self.native_input.stringValue = str(value)
+        self.interface.on_change(None)
+
+    def get_enabled(self):
+        return self.native_input.isEnabled
 
     def set_enabled(self, value):
-        self.input.enabled = value
-        self.stepper.enabled = value
+        self.native_input.enabled = value
+        self.native_stepper.enabled = value
 
     def rehint(self):
         # Height of a text input is known and fixed.
-        stepper_size = self.input.intrinsicContentSize()
-        input_size = self.input.intrinsicContentSize()
+        input_size = self.native_input.intrinsicContentSize()
+        stepper_size = self.native_stepper.intrinsicContentSize()
 
         self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
         self.interface.intrinsic.height = max(input_size.height, stepper_size.height)
-
-    def set_on_change(self, handler):
-        # No special handling required
-        pass

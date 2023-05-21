@@ -68,6 +68,17 @@ async def test_focus(widget, probe, other, other_probe, verify_focus_handlers):
     if verify_focus_handlers:
         on_gain_handler.assert_called_once()
 
+        # Reset the mock so it can be tested again
+        on_gain_handler.reset_mock()
+
+    widget.focus()
+    await probe.redraw("Widget already has focus")
+    assert probe.has_focus
+    assert not other_probe.has_focus
+
+    if verify_focus_handlers:
+        on_gain_handler.assert_not_called()
+
     other.focus()
     await probe.redraw("Focus has been lost")
     assert not probe.has_focus
