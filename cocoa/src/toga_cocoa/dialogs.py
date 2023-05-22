@@ -256,7 +256,7 @@ class SaveFileDialog(FileDialog):
             initial_directory=initial_directory,
             file_types=None,  # File types aren't offered by Cocoa save panels.
             multiselect=False,
-            on_result=None,
+            on_result=on_result,
         )
 
     def create_panel(self, multiselect):
@@ -274,7 +274,7 @@ class OpenFileDialog(FileDialog):
             initial_directory=initial_directory,
             file_types=file_types,
             multiselect=multiselect,
-            on_result=None,
+            on_result=on_result,
         )
 
     def create_panel(self, multiselect):
@@ -294,7 +294,7 @@ class SelectFolderDialog(FileDialog):
             initial_directory=initial_directory,
             file_types=None,
             multiselect=multiselect,
-            on_result=None,
+            on_result=on_result,
         )
 
     def create_panel(self, multiselect):
