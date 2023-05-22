@@ -1,0 +1,1 @@
+Pass the ``on_result`` argument to the parent ``FileDialog`` constructors in toga cocoa dialogs.
