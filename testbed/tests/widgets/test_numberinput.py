@@ -61,7 +61,7 @@ async def test_on_change_handler(widget, probe):
             ("-1", Decimal("-1")),
             ("-12", Decimal("-12")),
             ("-12.", Decimal("-12.")),
-            ("-12.", Decimal("-12.")),  # 'x' is ignored, but rasises on_changed
+            ("-12.", Decimal("-12.")),  # 'x' is ignored, but raises on_changed
             ("-12.3", Decimal("-12.3")),
             ("-12.34", Decimal("-12.34")),
         ],

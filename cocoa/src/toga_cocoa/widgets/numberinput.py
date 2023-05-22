@@ -32,6 +32,7 @@ class TogaStepper(NSStepper):
 
     @objc_method
     def onChange_(self, stepper) -> None:
+        # Stepper has increased/decreased; apply quantization to the step.
         self.interface.value = Decimal(stepper.floatValue).quantize(self.interface.step)
 
     @objc_method
