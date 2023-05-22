@@ -51,7 +51,7 @@ async def test_on_change_handler(widget, probe):
     assert handler.mock_calls == [call(widget)]
 
     # Clearing doesn't trigger the event handler
-    widget.clear()
+    widget.value = ""
     await probe.redraw("Value has been cleared programmatically")
     assert handler.mock_calls == [call(widget)] * 2
 
@@ -116,7 +116,7 @@ async def test_validation(widget, probe):
     await probe.redraw("Text is initially invalid")
     assert not widget.is_valid
 
-    widget.clear()
+    widget.value = ""
     await probe.redraw("Cleared content; now valid")
     assert widget.is_valid
 
