@@ -111,40 +111,6 @@ def test_bad_value(widget, value):
         widget.value = value
 
 
-def test_clear(widget):
-    """The value of the input can be cleared."""
-    # Clear the event log
-    EventLog.reset()
-
-    # Define and set a new change callback
-    on_change_handler = Mock()
-    widget.on_change = on_change_handler
-
-    # Set an initial value on the widget
-    widget.value = "1.23"
-    assert widget.value == Decimal("1.23")
-
-    # A refresh was performed
-    assert_action_performed(widget, "refresh")
-
-    # change handler was invoked
-    on_change_handler.assert_called_once_with(widget)
-
-    # Clear the event log and mocks
-    EventLog.reset()
-    on_change_handler.reset_mock()
-
-    # Clear the widget text.
-    widget.clear()
-    assert widget.value is None
-
-    # A refresh was performed
-    assert_action_performed(widget, "refresh")
-
-    # change handler was invoked
-    on_change_handler.assert_called_once_with(widget)
-
-
 @pytest.mark.parametrize(
     "value, expected",
     [

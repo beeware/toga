@@ -222,10 +222,6 @@ class NumberInput(Widget):
         self._impl.set_value(value)
         self.refresh()
 
-    def clear(self):
-        """Clear any value from the widget."""
-        self.value = None
-
     @property
     def on_change(self):
         """The handler to invoke when the value of the widget changes."""
