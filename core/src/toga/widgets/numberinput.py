@@ -26,17 +26,18 @@ def _clean_decimal_str(value):
     # Replace any character that isn't a number, `.` or `-`
     value = NUMERIC_RE.sub("", value)
     # Remove any `-` not at the start of the string
-    pos = 1
-    while (pos := value.find("-", pos)) != -1:
+    pos = value.find("-", 1)
+    while pos != -1:
         value = value[:pos] + value[pos + 1 :]
+        pos = value.find("-", pos + 1)
 
     # Only allow the first instance of `.`
     pos = value.find(".")
     if pos != -1:
-        pos = pos + 1
-        while (pos := value.find(".", pos)) != -1:
+        pos = value.find(".", pos + 1)
+        while pos != -1:
             value = value[:pos] + value[pos + 1 :]
-            pos = value.find(".", pos)
+            pos = value.find(".", pos + 1)
 
     return value
 
