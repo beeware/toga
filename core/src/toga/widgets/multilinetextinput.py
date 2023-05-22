@@ -85,14 +85,6 @@ class MultilineTextInput(Widget):
         self._impl.set_value("" if value is None else str(value))
         self.refresh()
 
-    def clear(self):
-        """Clear any text from the widget.
-
-        This will restore any placeholder text, if a placeholder has been
-        provided.
-        """
-        self.value = ""
-
     def scroll_to_bottom(self):
         """Scroll the view to make the bottom of the text field visible."""
         self._impl.scroll_to_bottom()

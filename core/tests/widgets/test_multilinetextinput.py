@@ -72,40 +72,6 @@ def test_value(widget, value, expected):
     handler.assert_called_once_with(widget)
 
 
-def test_clear(widget):
-    """The value of the input can be cleared."""
-    # Clear the event log
-    EventLog.reset()
-
-    # Install an on_change handler
-    handler = Mock()
-    widget.on_change = handler
-
-    # Set an initial value on the widget
-    widget.value = "Hello world"
-    assert widget.value == "Hello world"
-
-    # A refresh was performed
-    assert_action_performed(widget, "refresh")
-
-    # Callback was invoked
-    handler.assert_called_once_with(widget)
-
-    # Clear the event log and handler mock
-    EventLog.reset()
-    handler.reset_mock()
-
-    # Clear the widget text.
-    widget.clear()
-    assert widget.value == ""
-
-    # A refresh was performed
-    assert_action_performed(widget, "refresh")
-
-    # Callback was invoked
-    handler.assert_called_once_with(widget)
-
-
 @pytest.mark.parametrize(
     "value, expected",
     [
