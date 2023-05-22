@@ -189,7 +189,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        backend: [ "macOS", "windows", "linux", "android", "iOS" ]
+        backend: [ "macOS", "windows", "linux", "android", "iOS", "web" ]
         include:
           - pre-command:
             briefcase-run-prefix:
@@ -220,6 +220,11 @@ jobs:
           - backend: android
             runs-on: macos-12
             briefcase-run-args: " -d '{\"avd\":\"beePhone\"}' --Xemulator=-no-window --Xemulator=-no-snapshot --Xemulator=-no-audio --Xemulator=-no-boot-anim --shutdown-on-exit"
+
+          - backend: web
+            runs-on: ubuntu-22.04
+            briefcase-run-args: " --no-browser"
+
     steps:
     - uses: actions/checkout@v3.5.2
       with:

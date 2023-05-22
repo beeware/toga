@@ -97,4 +97,5 @@ build_gradle_extra_content = "android.defaultConfig.python.extractPackages 'toga
 requires = [
     "../web"
 ]
-style_framework = "Shoelace v2.3"
+# FIXME: needed for test purposes to use a pre-release template.
+template_branch = "web-test"
