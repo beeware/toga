@@ -74,7 +74,7 @@ async def test_scroll_position(widget, probe):
     # variance in width due to the appearance of scrollbars). However, the
     # height of the document is now much more than the height of the widget.
     assert probe.width == pytest.approx(original_width, abs=20)
-    assert probe.width >= probe.document_width
+    assert probe.width == pytest.approx(probe.document_width, abs=20)
     assert probe.height == original_height
     assert probe.height * 2 < probe.document_height
 
