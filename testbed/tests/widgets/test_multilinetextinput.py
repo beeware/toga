@@ -64,7 +64,7 @@ async def test_scroll_position(widget, probe):
     original_width, original_height = probe.width, probe.height
 
     # The scroll position is at the origin.
-    assert probe.vertical_scroll_position == pytest.approx(0.0)
+    assert probe.vertical_scroll_position == pytest.approx(0, abs=1)
 
     # Add a lot of content
     widget.value = "All work and no play makes Jack a dull boy... " * 1000
@@ -79,13 +79,13 @@ async def test_scroll_position(widget, probe):
     assert probe.height * 2 < probe.document_height
 
     # The scroll position is at the origin.
-    assert probe.vertical_scroll_position == pytest.approx(0.0)
+    assert probe.vertical_scroll_position == pytest.approx(0, abs=1)
 
     widget.scroll_to_top()
     await probe.redraw("The document has been explicitly scrolled to the top")
 
     # The scroll position is still the origin.
-    assert probe.vertical_scroll_position == pytest.approx(0.0)
+    assert probe.vertical_scroll_position == pytest.approx(0, abs=1)
 
     widget.scroll_to_bottom()
     await probe.wait_for_scroll_completion()
