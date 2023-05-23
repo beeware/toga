@@ -50,11 +50,24 @@ class TogaStepper(NSStepper):
         self.interface.on_change(self.interface)
 
 
+class TogaNumberInput(NSTextField):
+    interface = objc_property(object, weak=True)
+    impl = objc_property(object, weak=True)
+
+    @objc_method
+    def textDidEndEditing_(self, notification) -> None:
+        # Loss of focus; ensure that the displayed value
+        # matches the clipped, normalized decimal value
+        self.impl.set_value(self.interface.value)
+
+
 class NumberInput(Widget):
     def create(self):
         self.native = NSView.alloc().init()
 
-        self.native_input = NSTextField.new()
+        self.native_input = TogaNumberInput.new()
+        self.native_input.interface = self.interface
+        self.native_input.impl = self
         self.native_input.bezeled = True
         self.native_input.bezelStyle = NSTextFieldSquareBezel
         self.native_input.translatesAutoresizingMaskIntoConstraints = False

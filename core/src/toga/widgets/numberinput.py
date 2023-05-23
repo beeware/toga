@@ -201,9 +201,9 @@ class NumberInput(Widget):
         # If the widget has a current value, clip it
         if value:
             if self.min_value and value < self.min_value:
-                return None
+                return self.min_value
             elif self.max_value and value > self.max_value:
-                return None
+                return self.max_value
         return value
 
     @value.setter

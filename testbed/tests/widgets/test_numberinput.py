@@ -86,8 +86,8 @@ async def test_on_change_handler(widget, probe):
         assert handler.mock_calls == [call(widget)] * event_count
 
 
-async def test_min_max_clip(widget, probe):
-    "Widget value is clipped to min/max values"
+async def test_focus_value_clipping(widget, probe):
+    "Widget value is clipped to min/max values when focus is lost."
     # Set min/max values, and a granular step
     widget.min_value = Decimal(100)
     widget.max_value = Decimal(2000)
@@ -109,11 +109,11 @@ async def test_min_max_clip(widget, probe):
     assert handler.mock_calls == [call(widget)] * event_count
 
     for char, value, events_delta in [
-        ("1", None, 1),  # less than min
-        ("2", None, 1),  # less than min
+        ("1", Decimal("100"), 1),  # less than min
+        ("2", Decimal("100"), 1),  # less than min
         ("3", Decimal("123"), 1),
         ("4", Decimal("1234"), 1),
-        ("5", None, 1),  # exceeds max
+        ("5", Decimal("2000"), 1),  # exceeds max
     ]:
         await probe.type_character(char)
         await probe.redraw(f"Typed {char!r}")
@@ -128,6 +128,8 @@ async def test_min_max_clip(widget, probe):
     other.focus()
     await probe.redraw("Lost focus; value is clipped")
     assert widget.value == Decimal("2000")
+    # The raw value from the implementation matches the widget
+    assert probe.value == "2000"
 
 
 async def test_value(widget, probe):

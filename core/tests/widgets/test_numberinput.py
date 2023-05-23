@@ -279,8 +279,8 @@ def test_clip_on_value_change(widget, provided, clipped):
     "provided, clipped",
     [
         (15, Decimal(15)),
-        (25, None),
-        (5, None),
+        (25, Decimal(20)),
+        (5, Decimal(10)),
         (None, None),
     ],
 )

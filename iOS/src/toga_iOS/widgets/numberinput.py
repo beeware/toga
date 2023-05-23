@@ -42,6 +42,10 @@ class TogaNumericTextField(UITextField):
             return True
         return False
 
+    @objc_method
+    def textFieldDidEndEditing_(self, textField) -> None:
+        self.impl.set_value(self.interface.value)
+
 
 class NumberInput(Widget):
     def create(self):

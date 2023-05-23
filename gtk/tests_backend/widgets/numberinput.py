@@ -15,6 +15,10 @@ class NumberInputProbe(SimpleProbe):
     def clear_input(self):
         self.native.set_text("")
 
+    @property
+    def value(self):
+        return self.native.get_text()
+
     async def increment(self):
         self.native.spin(
             Gtk.SpinType.STEP_FORWARD, self.impl.adjustment.get_step_increment()
