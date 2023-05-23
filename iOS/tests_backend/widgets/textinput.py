@@ -1,4 +1,3 @@
-from toga.constants import TOP
 from toga_iOS.libs import UITextField
 
 from .base import SimpleProbe
@@ -38,10 +37,9 @@ class TextInputProbe(SimpleProbe):
     def alignment(self):
         return toga_alignment(self.native.textAlignment)
 
-    @property
-    def vertical_alignment(self):
-        # FIXME; This is a lie - but it's also non-configurable.
-        return TOP
+    def assert_vertical_alignment(self, expected):
+        # Vertical alignment isn't configurable on UITextField
+        pass
 
     @property
     def readonly(self):

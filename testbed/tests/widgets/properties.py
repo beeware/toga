@@ -27,6 +27,11 @@ def verify_focus_handlers():
     return False
 
 
+@fixture
+def verify_vertical_alignment():
+    return TOP
+
+
 async def test_enabled(widget, probe):
     "The widget can be enabled and disabled"
     # Widget is initially enabled
@@ -428,7 +433,7 @@ async def test_background_color_transparent(widget, probe):
     assert_color(probe.background_color, TRANSPARENT if supports_alpha else original)
 
 
-async def test_alignment(widget, probe):
+async def test_alignment(widget, probe, verify_vertical_alignment):
     """Widget honors alignment settings."""
     # Use column alignment to ensure widget uses all available width
     widget.parent.style.direction = COLUMN
@@ -441,7 +446,7 @@ async def test_alignment(widget, probe):
         widget.style.text_align = alignment
         await probe.redraw("Label text direction should be %s" % alignment)
         probe.assert_alignment(alignment)
-        assert probe.vertical_alignment == TOP
+        probe.assert_vertical_alignment(verify_vertical_alignment)
 
     # Clearing the alignment reverts to default alignment of LEFT
     del widget.style.text_align
@@ -462,12 +467,7 @@ async def test_alignment(widget, probe):
     # is still TOP
     widget.style.height = 200
     await probe.redraw("Label text should be at the top")
-    assert probe.vertical_alignment == TOP
-
-
-async def test_vertical_alignment_top(widget, probe):
-    """Text is vertically aligned to the top of the widget."""
-    assert probe.vertical_alignment == TOP
+    probe.assert_vertical_alignment(verify_vertical_alignment)
 
 
 async def test_readonly(widget, probe):

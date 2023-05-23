@@ -3,6 +3,7 @@ from unittest.mock import Mock, call
 import pytest
 
 import toga
+from toga.constants import CENTER
 
 from ..data import TEXTS
 from .properties import (  # noqa: F401
@@ -20,6 +21,11 @@ from .properties import (  # noqa: F401
     test_placeholder,
     test_readonly,
 )
+
+
+@pytest.fixture
+def verify_vertical_alignment():
+    return CENTER
 
 
 @pytest.fixture

@@ -32,6 +32,5 @@ class LabelProbe(SimpleProbe):
         )
         return toga_alignment(self.native.getGravity(), justification_mode)
 
-    @property
-    def vertical_alignment(self):
-        return toga_vertical_alignment(self.native.getGravity())
+    def assert_vertical_alignment(self, expected):
+        assert toga_vertical_alignment(self.native.getGravity()) == expected

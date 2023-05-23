@@ -1,6 +1,5 @@
 import asyncio
 
-from toga.constants import TOP
 from toga_iOS.libs import UITextView
 
 from .base import SimpleProbe
@@ -38,11 +37,9 @@ class MultilineTextInputProbe(SimpleProbe):
     def alignment(self):
         return toga_alignment(self.native.textAlignment)
 
-    @property
-    def vertical_alignment(self):
-        # iOS doesn't provide an option to alter the vertical alignment of
-        # UITextView
-        return TOP
+    def assert_vertical_alignment(self, expected):
+        # Vertical alignment isn't configurable on UITextView
+        pass
 
     @property
     def readonly(self):

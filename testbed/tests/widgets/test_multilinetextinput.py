@@ -22,8 +22,8 @@ from .properties import (  # noqa: F401
     test_placeholder_focus,
     test_readonly,
     test_text_value,
-    test_vertical_alignment_top,
     verify_focus_handlers,
+    verify_vertical_alignment,
 )
 
 
