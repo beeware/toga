@@ -17,7 +17,7 @@ class ExampleMultilineTextInputApp(toga.App):
         )
 
     def clear_pressed(self, widget, **kwargs):
-        self.multiline_input.clear()
+        self.multiline_input.value = ""
 
     def scroll_to_top(self, widget):
         self.multiline_input.scroll_to_top()

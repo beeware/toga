@@ -5,7 +5,6 @@ import pytest
 import toga
 from toga.style import Pack
 
-from ..conftest import skip_on_platforms
 from .properties import (  # noqa: F401
     test_alignment,
     test_background_color,
@@ -19,6 +18,8 @@ from .properties import (  # noqa: F401
     test_font,
     test_font_attrs,
     test_placeholder,
+    test_placeholder_color,
+    test_placeholder_focus,
     test_text_value,
     test_vertical_alignment_top,
 )
@@ -26,7 +27,6 @@ from .properties import (  # noqa: F401
 
 @pytest.fixture
 async def widget():
-    skip_on_platforms("windows")
     return toga.MultilineTextInput(value="Hello", style=Pack(flex=1))
 
 
@@ -129,3 +129,4 @@ async def test_on_change_handler(widget, probe):
 
         # The number of events equals the number of characters typed.
         assert handler.mock_calls == [call(widget)] * (count + 2)
+        assert probe.value == "Hello world"[:count]

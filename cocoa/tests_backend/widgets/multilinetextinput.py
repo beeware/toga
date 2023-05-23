@@ -15,11 +15,11 @@ class MultilineTextInputProbe(SimpleProbe):
 
     @property
     def value(self):
-        return str(self.native_text.string)
-
-    @property
-    def placeholder(self):
-        return str(self.native_text.placeholderString)
+        return str(
+            self.native_text.placeholderString
+            if self.placeholder_visible
+            else self.native_text.string
+        )
 
     @property
     def placeholder_visible(self):

@@ -35,6 +35,7 @@ class ColorsApp(toga.App):
         label = toga.Label("This is a Label", style=Pack(padding=5))
         multiline_text_input = toga.MultilineTextInput(
             value="This is a Multiline Text Input field!",
+            placeholder="placeholder",
             style=Pack(padding=5, flex=1),
         )
         number_input = toga.NumberInput(value=1337, style=Pack(padding=5))
@@ -63,6 +64,7 @@ class ColorsApp(toga.App):
         )
         text_input = toga.TextInput(
             value="This is a Text input field!",
+            placeholder="placeholder",
             style=Pack(padding=5),
         )
 

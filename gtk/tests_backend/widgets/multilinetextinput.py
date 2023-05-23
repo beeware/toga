@@ -17,21 +17,12 @@ class MultilineTextInputProbe(SimpleProbe):
 
     @property
     def value(self):
-        return self.impl.buffer.get_text(
-            self.impl.buffer.get_start_iter(), self.impl.buffer.get_end_iter(), True
-        )
+        buffer = self.impl.placeholder if self.placeholder_visible else self.impl.buffer
+        return buffer.get_text(buffer.get_start_iter(), buffer.get_end_iter(), True)
 
     @property
     def has_focus(self):
         return self.native_textview.has_focus()
-
-    @property
-    def placeholder(self):
-        return self.impl.placeholder.get_text(
-            self.impl.placeholder.get_start_iter(),
-            self.impl.placeholder.get_end_iter(),
-            True,
-        )
 
     @property
     def placeholder_visible(self):

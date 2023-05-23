@@ -1,4 +1,5 @@
 from System.Drawing import Color, ContentAlignment, SystemColors
+from System.Windows.Forms import HorizontalAlignment
 from travertino.fonts import Font
 
 from toga.colors import TRANSPARENT, rgba
@@ -34,6 +35,10 @@ def toga_xalignment(alignment):
         ContentAlignment.TopRight: RIGHT,
         ContentAlignment.MiddleRight: RIGHT,
         ContentAlignment.BottomRight: RIGHT,
+        #
+        HorizontalAlignment.Left: LEFT,
+        HorizontalAlignment.Center: CENTER,
+        HorizontalAlignment.Right: RIGHT,
     }[alignment]
 
 

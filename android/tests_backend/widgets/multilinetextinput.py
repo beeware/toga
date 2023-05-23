@@ -8,15 +8,11 @@ class MultilineTextInputProbe(LabelProbe):
 
     @property
     def value(self):
-        return self.text
-
-    @property
-    def placeholder(self):
-        return str(self.native.getHint())
+        return self.native.getHint() if self.placeholder_visible else self.text
 
     @property
     def placeholder_visible(self):
-        return not self.value
+        return not self.text
 
     @property
     def placeholder_hides_on_focus(self):

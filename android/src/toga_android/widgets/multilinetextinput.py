@@ -15,7 +15,7 @@ class TogaTextWatcher(TextWatcher):
         pass
 
     def afterTextChanged(self, _editable):
-        self.interface.on_change(widget=self.interface)
+        self.interface.on_change(None)
 
     def onTextChanged(self, _charSequence, _start, _before, _count):
         pass
