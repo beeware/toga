@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from ..utils import not_required
 from .base import Widget
 
@@ -22,12 +24,16 @@ class NumberInput(Widget):
     def set_max_value(self, value):
         self._set_value("max_value", value)
 
-    def get_value(self):
-        return self._get_value("value", None)
-
     def set_value(self, value):
         self._set_value("value", value)
         self.interface.on_change(None)
+
+    def get_value(self):
+        value = self._get_value("value", None)
+        if value is None:
+            return value
+        else:
+            return Decimal(value).quantize(self.interface.step)
 
     def set_on_change(self, handler):
         self._set_value("on_change", handler)

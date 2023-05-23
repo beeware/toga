@@ -23,7 +23,7 @@ from .properties import (  # noqa: F401
 
 @pytest.fixture
 async def widget():
-    return toga.NumberInput(value="1.23")
+    return toga.NumberInput(value="1.23", step="0.01")
 
 
 @pytest.fixture
@@ -54,23 +54,23 @@ async def test_on_change_handler(widget, probe):
     await probe.redraw("Value has been cleared programmatically")
     assert handler.mock_calls == [call(widget)] * 2
 
-    for (count, char), (raw, value) in zip(
+    for (count, char), value in zip(
         enumerate("-12.x34", start=1),
         [
-            ("-", None),  # bare - isn't a valid number.
-            ("-1", Decimal("-1")),
-            ("-12", Decimal("-12")),
-            ("-12.", Decimal("-12.")),
-            ("-12.", Decimal("-12.")),  # 'x' is ignored, but raises on_changed
-            ("-12.3", Decimal("-12.3")),
-            ("-12.34", Decimal("-12.34")),
+            None,  # bare - isn't a valid number.
+            Decimal("-1.00"),
+            Decimal("-12.00"),
+            Decimal("-12.00"),
+            Decimal("-12.00"),  # 'x' is ignored, but raises on_changed
+            Decimal("-12.30"),
+            Decimal("-12.34"),
         ],
     ):
         await probe.type_character(char)
         await probe.redraw(f"Typed {char!r}")
 
         assert widget.value == value
-        assert probe.value == raw
+
         # The number of events equals the number of characters typed.
         assert handler.mock_calls == [call(widget)] * (count + 2)
 
@@ -79,44 +79,44 @@ async def test_on_change_handler(widget, probe):
     await probe.redraw("Value has been cleared programmatically")
     assert handler.mock_calls == [call(widget)] * 10
 
-    # Set min/max values
+    # Set min/max values, and a granular step
     widget.min_value = Decimal(100)
     widget.max_value = Decimal(2000)
+    widget.step = 1
 
-    for (count, char), (raw, value) in zip(
+    for (count, char), value in zip(
         enumerate("12345", start=1),
         [
-            ("1", None),  # less than min
-            ("12", None),  # less than min
-            ("123", Decimal("123")),
-            ("1234", Decimal("1234")),
-            ("12345", None),  # exceeds max
+            None,  # less than min
+            None,  # less than min
+            Decimal("123"),
+            Decimal("1234"),
+            None,  # exceeds max
         ],
     ):
         await probe.type_character(char)
         await probe.redraw(f"Typed {char!r}")
 
         assert widget.value == value
-        assert probe.value == raw
+
         # The number of events equals the number of characters typed.
         assert handler.mock_calls == [call(widget)] * (count + 10)
 
 
 async def test_value(widget, probe):
     "The numerical value displayed on a widget can be changed"
-    for text, value, clean in [
-        (None, None, ""),
-        ("", None, ""),
-        ("123", Decimal("123"), "123"),
-        ("1.23", Decimal("1.23"), "1.23"),
-        (123, Decimal("123"), "123"),
-        (1.23, Decimal("1.23"), "1.23"),
+    for text, value in [
+        (None, None),
+        ("", None),
+        ("123", Decimal("123.00")),
+        ("1.23", Decimal("1.23")),
+        (123, Decimal("123.00")),
+        (1.23, Decimal("1.23")),
     ]:
         widget.value = text
         await probe.redraw(f"Widget value should be {str(text)!r}")
 
         assert widget.value == value
-        assert probe.value == clean
 
 
 async def test_increment_decrement(widget, probe):
@@ -126,9 +126,10 @@ async def test_increment_decrement(widget, probe):
     widget.on_change = handler
 
     widget.value = 12.34
-    await probe.redraw("Widget value should be 12.34")
+    widget.step = 1
+    await probe.redraw("Widget value should be 12")
 
-    assert widget.value == Decimal("12.34")
+    assert widget.value == Decimal("12")
     assert handler.mock_calls == [call(widget)]
 
     # Hit the increment button
@@ -154,20 +155,24 @@ async def test_increment_decrement(widget, probe):
     # Set a new value
     widget.value = 1.234
     widget.step = 0.01
-    await probe.redraw("Widget value should be 1.234")
+    await probe.redraw("Widget value should be 1.23")
+    assert widget.value == Decimal("1.23")
     assert handler.mock_calls == [call(widget)] * 5
 
     # Increment by a step
     await probe.increment()
     await probe.redraw("Widget value should be 1.24")
+    assert widget.value == Decimal("1.24")
     assert handler.mock_calls == [call(widget)] * 6
 
     # Increment by another step
     await probe.increment()
     await probe.redraw("Widget value should be 1.25")
+    assert widget.value == Decimal("1.25")
     assert handler.mock_calls == [call(widget)] * 7
 
     # Decrement by a step
-    await probe.increment()
+    await probe.decrement()
     await probe.redraw("Widget value should be 1.24")
+    assert widget.value == Decimal("1.24")
     assert handler.mock_calls == [call(widget)] * 8

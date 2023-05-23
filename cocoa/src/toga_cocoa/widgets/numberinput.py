@@ -32,8 +32,8 @@ class TogaStepper(NSStepper):
 
     @objc_method
     def onChange_(self, stepper) -> None:
-        # Stepper has increased/decreased; apply quantization to the step.
-        self.interface.value = Decimal(stepper.floatValue).quantize(self.interface.step)
+        # Stepper has increased/decreased
+        self.interface.value = Decimal(stepper.floatValue)
 
     @objc_method
     def controlTextDidChange_(self, notification) -> None:
@@ -208,7 +208,8 @@ class NumberInput(Widget):
 
     def get_value(self):
         try:
-            return Decimal(str(self.native_input.stringValue))
+            raw = str(self.native_input.stringValue)
+            return Decimal(raw).quantize(self.interface.step)
         except InvalidOperation:
             return None
 

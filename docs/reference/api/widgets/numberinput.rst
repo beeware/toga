@@ -20,12 +20,13 @@ Usage
 
     import toga
 
-    widget = toga.NumberInput(min_value=1, max_value=10)
-    widget.value = 2.71828
+    widget = toga.NumberInput(min_value=1, max_value=10, step=0.001)
+    widget.value = 2.718
 
 Although NumberInput can accept integers and floats as inputs, the value
 returned by a NumberInput will be a ``decimal.Decimal`` object to ensure
-precision is retained.
+precision is retained. This ``Decimal`` value is guaranteed to have the same
+precision as the ``step`` property.
 
 Reference
 ---------

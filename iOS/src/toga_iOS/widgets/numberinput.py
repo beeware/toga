@@ -92,7 +92,7 @@ class NumberInput(Widget):
 
     def get_value(self):
         try:
-            return Decimal(str(self.native.text))
+            return Decimal(str(self.native.text)).quantize(self.interface.step)
         except InvalidOperation:
             return None
 

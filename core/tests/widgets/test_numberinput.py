@@ -14,11 +14,13 @@ from toga_dummy.utils import (
 
 @pytest.fixture
 def widget():
-    return toga.NumberInput()
+    return toga.NumberInput(step="0.01")
 
 
-def test_widget_created(widget):
-    "A text input can be created"
+def test_widget_created():
+    "A NumberInput can be created with minimal arguments"
+    widget = toga.NumberInput()
+
     assert widget._impl.interface == widget
     assert_action_performed(widget, "create NumberInput")
 
@@ -31,12 +33,12 @@ def test_widget_created(widget):
 
 
 def test_create_with_values():
-    "A multiline text input can be created with initial values"
+    "A NumberInput can be created with initial values"
     on_change = Mock()
 
     widget = toga.NumberInput(
         value=Decimal("2.71828"),
-        step=37,
+        step=0.001,
         min_value=-42,
         max_value=420,
         readonly=True,
@@ -46,8 +48,8 @@ def test_create_with_values():
     assert_action_performed(widget, "create NumberInput")
 
     assert widget.readonly
-    assert widget.value == Decimal("2.71828")
-    assert widget.step == Decimal("37")
+    assert widget.value == Decimal("2.718")
+    assert widget.step == Decimal("0.001")
     assert widget.min_value == Decimal("-42")
     assert widget.max_value == Decimal("420")
     assert widget._on_change._raw == on_change
@@ -134,6 +136,26 @@ def test_step(widget, value, expected):
 
     # test backend has the right value
     assert attribute_value(widget, "step") == expected
+
+
+@pytest.mark.parametrize(
+    "step, expected",
+    [
+        ("0.0001", Decimal("12.3456")),
+        ("0.001", Decimal("12.346")),
+        ("0.01", Decimal("12.35")),
+        ("0.1", Decimal("12.3")),
+        ("1", Decimal("12")),
+        ("10", Decimal("12")),
+    ],
+)
+def test_quantization(widget, step, expected):
+    "The value is quantized to the precision of the step"
+    widget.value = 12.3456
+    widget.step = step
+
+    # The value has been quantized to the step
+    assert widget.value == expected
 
 
 @pytest.mark.parametrize(
