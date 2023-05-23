@@ -24,6 +24,10 @@ class NumberInputProbe(SimpleProbe):
         self.native_stepper = self.impl.native_stepper
         assert isinstance(self.native_stepper, NSStepper)
 
+    @property
+    def empty_value(self):
+        return None
+
     async def increment(self):
         # Click a point on the middle line of the stepper horizontally, but very
         # slightly above the midpoint vertically. Remember Cocoa's coordinate

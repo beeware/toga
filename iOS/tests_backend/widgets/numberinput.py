@@ -11,6 +11,10 @@ from .properties import toga_alignment, toga_color, toga_font
 class NumberInputProbe(SimpleProbe):
     native_class = UITextField
 
+    @property
+    def empty_value(self):
+        return None
+
     async def increment(self):
         xfail("iOS doesn't support stepped increments")
 

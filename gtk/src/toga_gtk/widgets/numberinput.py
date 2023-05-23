@@ -1,5 +1,5 @@
 import sys
-from decimal import Decimal
+from decimal import Decimal, InvalidOperation
 
 from travertino.size import at_least
 
@@ -18,13 +18,13 @@ class NumberInput(Widget):
         self.native.connect("changed", self.gtk_on_change)
 
     def gtk_on_change(self, widget):
-        value = widget.get_text().replace(",", ".") or 0
-        self.interface._value = Decimal(value).quantize(self.interface.step)
-        if self.interface.on_change:
-            self.interface.on_change(widget)
+        self.interface.on_change(widget)
+
+    def get_readonly(self):
+        return not self.native.get_property("editable")
 
     def set_readonly(self, value):
-        self.native.editable = not value
+        self.native.set_property("editable", not value)
 
     def set_step(self, step):
         self.adjustment.set_step_increment(float(self.interface.step))
@@ -32,39 +32,38 @@ class NumberInput(Widget):
         self.native.set_digits(abs(self.interface.step.as_tuple().exponent))
 
     def set_min_value(self, value):
-        if self.interface.min_value is None:
-            self.adjustment.set_lower(-sys.maxsize - 1)
+        if value is None:
+            self.adjustment.set_lower(-sys.float_info.max)
         else:
-            self.adjustment.set_lower(float(self.interface.min_value))
+            self.adjustment.set_lower(float(value))
         self.native.set_adjustment(self.adjustment)
 
     def set_max_value(self, value):
-        if self.interface.max_value is None:
-            self.adjustment.set_upper(sys.maxsize)
+        if value is None:
+            self.adjustment.set_upper(sys.float_info.max)
         else:
-            self.adjustment.set_upper(float(self.interface.max_value))
+            self.adjustment.set_upper(float(value))
         self.native.set_adjustment(self.adjustment)
+
+    def get_value(self):
+        try:
+            return Decimal(self.native.get_text())
+        except InvalidOperation:
+            return None
 
     def set_value(self, value):
         if value is None:
             self.native.set_value(Decimal(0.0))
         else:
-            self.native.set_value(self.interface.value)
+            self.native.set_value(value)
 
     def set_alignment(self, value):
         xalign, justify = gtk_alignment(value)
         self.native.set_alignment(xalign)
 
-    def set_font(self, font):
-        self.interface.factory.not_implemented("NumberInput.set_font()")
-
     def rehint(self):
         width = self.native.get_preferred_width()
         height = self.native.get_preferred_height()
-        if width and height:
-            self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
-            self.interface.intrinsic.height = height[1]
 
-    def set_on_change(self, handler):
-        # No special handling required.
-        pass
+        self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH + width[1])
+        self.interface.intrinsic.height = height[1]

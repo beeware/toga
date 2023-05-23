@@ -75,6 +75,12 @@ class NumberInput(Widget):
 
         super().__init__(id=id, style=style)
 
+        # The initial setting of min/min_value requires calling get_value(),
+        # which in turn interrogates min/max_value. Prime those values with
+        # an empty starting value
+        self._min_value = None
+        self._max_value = None
+
         self.on_change = None
         self._impl = self.factory.NumberInput(interface=self)
 

@@ -24,9 +24,9 @@ class ExampleNumberInputApp(toga.App):
 
         # Label to show responses.
         self.label = toga.Label("Ready.")
-        label1 = toga.Label("Enter value from 12 to 72:")
+        label1 = toga.Label("Enter value from -12 to 72:")
         self.input1 = toga.NumberInput(
-            min_value=12,
+            min_value=-12,
             max_value=72,
             step=2,
             value=37,

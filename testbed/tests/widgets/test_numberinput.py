@@ -39,6 +39,8 @@ def verify_focus_handlers():
 
 async def test_on_change_handler(widget, probe):
     "The on_change handler is triggered when the user types."
+    widget.step = "0.01"
+
     # Install a handler, and give the widget focus.
     handler = Mock()
     widget.on_change = handler
@@ -57,7 +59,7 @@ async def test_on_change_handler(widget, probe):
     for (count, char), value in zip(
         enumerate("-12.x34", start=1),
         [
-            None,  # bare - isn't a valid number.
+            probe.empty_value,  # bare - isn't a valid number.
             Decimal("-1.00"),
             Decimal("-12.00"),
             Decimal("-12.00"),
@@ -106,8 +108,8 @@ async def test_on_change_handler(widget, probe):
 async def test_value(widget, probe):
     "The numerical value displayed on a widget can be changed"
     for text, value in [
-        (None, None),
-        ("", None),
+        (None, probe.empty_value),
+        ("", probe.empty_value),
         ("123", Decimal("123.00")),
         ("1.23", Decimal("1.23")),
         (123, Decimal("123.00")),

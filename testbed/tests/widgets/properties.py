@@ -519,7 +519,7 @@ async def test_flex_horizontal_widget_size(widget, probe):
     "Check that a widget that is flexible in the horizontal axis resizes as expected"
     # Container is initially a non-flex row box.
     # Initial widget size is small (but non-zero), based on content size.
-    probe.assert_width(1, 160)
+    probe.assert_width(1, 300)
     probe.assert_height(1, 50)
 
     # Make the widget flexible; it will expand to fill horizontal space
