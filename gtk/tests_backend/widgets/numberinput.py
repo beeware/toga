@@ -1,6 +1,4 @@
-from decimal import Decimal
-
-from toga.constants import JUSTIFY, LEFT, TOP
+from toga.constants import JUSTIFY, LEFT
 from toga_gtk.libs import Gtk
 
 from .base import SimpleProbe
@@ -11,16 +9,21 @@ class NumberInputProbe(SimpleProbe):
     native_class = Gtk.SpinButton
 
     @property
-    def empty_value(self):
-        return Decimal("0.00")
+    def allows_invalid_value(self):
+        return False
 
-    @property
-    def raw_empty_value(self):
-        return "0.00"
+    def clear_input(self):
+        self.native.set_text("")
 
-    @property
-    def value(self):
-        return self.native.get_text()
+    async def increment(self):
+        self.native.spin(
+            Gtk.SpinType.STEP_FORWARD, self.impl.adjustment.get_step_increment()
+        )
+
+    async def decrement(self):
+        self.native.spin(
+            Gtk.SpinType.STEP_BACKWARD, self.impl.adjustment.get_step_increment()
+        )
 
     @property
     def alignment(self):
@@ -32,10 +35,9 @@ class NumberInputProbe(SimpleProbe):
         else:
             assert self.alignment == expected
 
-    @property
-    def vertical_alignment(self):
-        # FIXME; This is a lie - but it's also non-configurable.
-        return TOP
+    def assert_vertical_alignment(self, expected):
+        # GTK.SpinButton vertical alignment is non-configurable
+        pass
 
     @property
     def readonly(self):

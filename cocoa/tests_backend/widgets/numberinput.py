@@ -25,8 +25,11 @@ class NumberInputProbe(SimpleProbe):
         assert isinstance(self.native_stepper, NSStepper)
 
     @property
-    def empty_value(self):
-        return None
+    def allows_invalid_value(self):
+        return True
+
+    def clear_input(self):
+        self.widget.value = ""
 
     async def increment(self):
         # Click a point on the middle line of the stepper horizontally, but very

@@ -12,8 +12,11 @@ class NumberInputProbe(SimpleProbe):
     native_class = UITextField
 
     @property
-    def empty_value(self):
-        return None
+    def allows_invalid_value(self):
+        return True
+
+    def clear_input(self):
+        self.widget.value = ""
 
     async def increment(self):
         xfail("iOS doesn't support stepped increments")
