@@ -4,8 +4,8 @@ from toga.constants import CENTER, JUSTIFY, LEFT, RIGHT, TRANSPARENT
 
 from ..colors import native_color
 from ..libs.activity import MainActivity
-from ..libs.android.drawable import ColorDrawable, InsetDrawable
 from ..libs.android.graphics import PorterDuff__Mode, PorterDuffColorFilter, Rect
+from ..libs.android.graphics.drawable import ColorDrawable, InsetDrawable
 from ..libs.android.view import Gravity, View
 
 
