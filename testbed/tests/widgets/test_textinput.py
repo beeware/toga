@@ -26,6 +26,11 @@ from .properties import (  # noqa: F401
 
 
 @pytest.fixture
+def verify_vertical_alignment():
+    return CENTER
+
+
+@pytest.fixture
 async def widget():
     return toga.TextInput(value="Hello")
 
