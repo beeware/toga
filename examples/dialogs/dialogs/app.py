@@ -26,7 +26,7 @@ class ExampledialogsApp(toga.App):
             )
 
     async def action_confirm_dialog(self, widget):
-        if await self.main_window.question_dialog("Toga", "Are you sure you want to?"):
+        if await self.main_window.confirm_dialog("Toga", "Are you sure you want to?"):
             self.label.text = "Lets do it!"
         else:
             self.label.text = "Left it as it was."
