@@ -63,6 +63,10 @@ class MultilineTextInput(Widget):
     def set_font(self, font):
         self.apply_css("font", get_font_css(font), native=self.native_textview)
 
+    @property
+    def has_focus(self):
+        return self.native_textview.has_focus()
+
     def get_value(self):
         return self.buffer.get_text(
             self.buffer.get_start_iter(), self.buffer.get_end_iter(), True
@@ -78,7 +82,11 @@ class MultilineTextInput(Widget):
         else:
             # See gtk_on_change for why this is needed
             self.interface.on_change(None)
-            self.native_textview.set_buffer(self.placeholder)
+            print("CLEARED", self.has_focus, self.native_textview.has_focus())
+            if not self.has_focus:
+                self.native_textview.set_buffer(self.placeholder)
+            else:
+                self.native_textview.set_buffer(self.buffer)
 
     def get_readonly(self):
         return not self.native_textview.get_property("editable")

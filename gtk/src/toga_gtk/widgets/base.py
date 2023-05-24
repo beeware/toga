@@ -76,8 +76,13 @@ class Widget:
     def set_enabled(self, value):
         self.native.set_sensitive(value)
 
+    @property
+    def has_focus(self):
+        return self.native.has_focus()
+
     def focus(self):
-        self.native.grab_focus()
+        if not self.has_focus:
+            self.native.grab_focus()
 
     def get_tab_index(self):
         self.interface.factory.not_implemented("Widget.get_tab_index()")
