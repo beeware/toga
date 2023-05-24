@@ -20,16 +20,19 @@ class MultilineTextInput(Widget):
 
         # When moving focus with the tab key, the Enter/Leave event handlers see the
         # wrong value of ContainsFocus, so we use GotFocus/LostFocus instead.
-        def focus_handler(sender, event):
-            self._update_text()
-
-        self.native.GotFocus += focus_handler
-        self.native.LostFocus += focus_handler
+        self.native.GotFocus += self.winforms_got_focus
+        self.native.LostFocus += self.winforms_lost_focus
 
         # Dummy values used during initialization
         self._value = self._placeholder = ""
         self._suppress_on_change = True
         self.set_color(None)
+
+    def winforms_got_focus(self, sender, event):
+        self._update_text()
+
+    def winforms_lost_focus(self, sender, event):
+        self._update_text()
 
     def get_readonly(self):
         return self.native.ReadOnly
