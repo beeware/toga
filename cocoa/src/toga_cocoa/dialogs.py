@@ -1,4 +1,4 @@
-import asyncio
+from abc import ABC
 from pathlib import Path
 
 from .libs import (
@@ -17,29 +17,16 @@ from .libs import (
 )
 
 
-class BaseDialog:
-    def __init__(self):
-        loop = asyncio.get_event_loop()
-        self.future = loop.create_future()
-
-    def __eq__(self, other):
-        raise RuntimeError(
-            "Can't check dialog result directly; use await or an on_result handler"
-        )
-
-    def __bool__(self):
-        raise RuntimeError(
-            "Can't check dialog result directly; use await or an on_result handler"
-        )
-
-    def __await__(self):
-        return self.future.__await__()
+class BaseDialog(ABC):
+    def __init__(self, interface):
+        self.interface = interface
+        self.interface.impl = self
 
 
 class NSAlertDialog(BaseDialog):
     def __init__(
         self,
-        window,
+        interface,
         title,
         message,
         alert_style,
@@ -47,43 +34,41 @@ class NSAlertDialog(BaseDialog):
         on_result=None,
         **kwargs
     ):
-        super().__init__()
+        super().__init__(interface=interface)
         self.on_result = on_result
 
-        alert = NSAlert.alloc().init()
-        alert.icon = window.app.icon._impl.native
-        alert.alertStyle = alert_style
-        alert.messageText = title
-        alert.informativeText = message
+        self.native = NSAlert.alloc().init()
+        self.native.icon = interface.app.icon._impl.native
+        self.native.alertStyle = alert_style
+        self.native.messageText = title
+        self.native.informativeText = message
 
-        self.build_dialog(alert, **kwargs)
+        self.build_dialog(**kwargs)
 
-        alert.beginSheetModalForWindow(
-            window._impl.native, completionHandler=completion_handler
+        self.native.beginSheetModalForWindow(
+            interface.window._impl.native, completionHandler=completion_handler
         )
 
-    def build_dialog(self, alert):
+    def build_dialog(self):
         pass
 
     def completion_handler(self, return_value: int) -> None:
-        if self.on_result:
-            self.on_result(self, None)
+        self.on_result(self, None)
 
-        self.future.set_result(None)
+        self.interface.future.set_result(None)
 
     def bool_completion_handler(self, return_value: int) -> None:
         result = return_value == NSAlertFirstButtonReturn
 
-        if self.on_result:
-            self.on_result(self, result)
+        self.on_result(self, result)
 
-        self.future.set_result(result)
+        self.interface.future.set_result(result)
 
 
 class InfoDialog(NSAlertDialog):
-    def __init__(self, window, title, message, on_result=None):
+    def __init__(self, interface, title, message, on_result=None):
         super().__init__(
-            window=window,
+            interface=interface,
             title=title,
             message=message,
             alert_style=NSAlertStyle.Informational,
@@ -93,9 +78,9 @@ class InfoDialog(NSAlertDialog):
 
 
 class QuestionDialog(NSAlertDialog):
-    def __init__(self, window, title, message, on_result=None):
+    def __init__(self, interface, title, message, on_result=None):
         super().__init__(
-            window=window,
+            interface=interface,
             title=title,
             message=message,
             alert_style=NSAlertStyle.Informational,
@@ -103,15 +88,15 @@ class QuestionDialog(NSAlertDialog):
             on_result=on_result,
         )
 
-    def build_dialog(self, alert):
-        alert.addButtonWithTitle("Yes")
-        alert.addButtonWithTitle("No")
+    def build_dialog(self):
+        self.native.addButtonWithTitle("Yes")
+        self.native.addButtonWithTitle("No")
 
 
 class ConfirmDialog(NSAlertDialog):
-    def __init__(self, window, title, message, on_result=None):
+    def __init__(self, interface, title, message, on_result=None):
         super().__init__(
-            window=window,
+            interface=interface,
             title=title,
             message=message,
             alert_style=NSAlertStyle.Informational,
@@ -119,15 +104,15 @@ class ConfirmDialog(NSAlertDialog):
             on_result=on_result,
         )
 
-    def build_dialog(self, alert):
-        alert.addButtonWithTitle("OK")
-        alert.addButtonWithTitle("Cancel")
+    def build_dialog(self):
+        self.native.addButtonWithTitle("OK")
+        self.native.addButtonWithTitle("Cancel")
 
 
 class ErrorDialog(NSAlertDialog):
-    def __init__(self, window, title, message, on_result=None):
+    def __init__(self, interface, title, message, on_result=None):
         super().__init__(
-            window=window,
+            interface=interface,
             title=title,
             message=message,
             alert_style=NSAlertStyle.Critical,
@@ -137,14 +122,14 @@ class ErrorDialog(NSAlertDialog):
 
 
 class StackTraceDialog(NSAlertDialog):
-    def __init__(self, window, title, message, on_result=None, **kwargs):
+    def __init__(self, interface, title, message, on_result=None, **kwargs):
         if kwargs.get("retry"):
             completion_handler = self.bool_completion_handler
         else:
             completion_handler = self.completion_handler
 
         super().__init__(
-            window=window,
+            interface=interface,
             title=title,
             message=message,
             alert_style=NSAlertStyle.Critical,
@@ -153,7 +138,7 @@ class StackTraceDialog(NSAlertDialog):
             **kwargs,
         )
 
-    def build_dialog(self, alert, content, retry):
+    def build_dialog(self, content, retry):
         scroll = NSScrollView.alloc().initWithFrame(NSMakeRect(0, 0, 500, 200))
         scroll.hasVerticalScroller = True
         scroll.hasHorizontalScrolle = False
@@ -169,17 +154,17 @@ class StackTraceDialog(NSAlertDialog):
 
         scroll.documentView = trace
 
-        alert.accessoryView = scroll
+        self.native.accessoryView = scroll
 
         if retry:
-            alert.addButtonWithTitle("Retry")
-            alert.addButtonWithTitle("Quit")
+            self.native.addButtonWithTitle("Retry")
+            self.native.addButtonWithTitle("Quit")
 
 
 class FileDialog(BaseDialog):
     def __init__(
         self,
-        window,
+        interface,
         title,
         filename,
         initial_directory,
@@ -187,7 +172,7 @@ class FileDialog(BaseDialog):
         multiselect,
         on_result=None,
     ):
-        super().__init__()
+        super().__init__(interface=interface)
         self.on_result = on_result
 
         # Create the panel
@@ -212,7 +197,7 @@ class FileDialog(BaseDialog):
             handler = self.single_path_completion_handler
 
         self.panel.beginSheetModalForWindow(
-            window._impl.native,
+            interface.window._impl.native,
             completionHandler=handler,
         )
 
@@ -222,10 +207,9 @@ class FileDialog(BaseDialog):
         else:
             result = None
 
-        if self.on_result:
-            self.on_result(self, result)
+        self.on_result(self, result)
 
-        self.future.set_result(result)
+        self.interface.future.set_result(result)
 
     def multi_path_completion_handler(self, return_value: int) -> None:
         if return_value == NSFileHandlingPanelOKButton:
@@ -233,16 +217,15 @@ class FileDialog(BaseDialog):
         else:
             result = None
 
-        if self.on_result:
-            self.on_result(self, result)
+        self.on_result(self, result)
 
-        self.future.set_result(result)
+        self.interface.future.set_result(result)
 
 
 class SaveFileDialog(FileDialog):
     def __init__(
         self,
-        window,
+        interface,
         title,
         filename,
         initial_directory,
@@ -250,7 +233,7 @@ class SaveFileDialog(FileDialog):
         on_result=None,
     ):
         super().__init__(
-            window=window,
+            interface=interface,
             title=title,
             filename=filename,
             initial_directory=initial_directory,
@@ -265,10 +248,16 @@ class SaveFileDialog(FileDialog):
 
 class OpenFileDialog(FileDialog):
     def __init__(
-        self, window, title, initial_directory, file_types, multiselect, on_result=None
+        self,
+        interface,
+        title,
+        initial_directory,
+        file_types,
+        multiselect,
+        on_result=None,
     ):
         super().__init__(
-            window=window,
+            interface=interface,
             title=title,
             filename=None,
             initial_directory=initial_directory,
@@ -286,9 +275,16 @@ class OpenFileDialog(FileDialog):
 
 
 class SelectFolderDialog(FileDialog):
-    def __init__(self, window, title, initial_directory, multiselect, on_result=None):
+    def __init__(
+        self,
+        interface,
+        title,
+        initial_directory,
+        multiselect,
+        on_result=None,
+    ):
         super().__init__(
-            window=window,
+            interface=interface,
             title=title,
             filename=None,
             initial_directory=initial_directory,

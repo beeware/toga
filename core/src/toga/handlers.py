@@ -2,6 +2,7 @@ import asyncio
 import inspect
 import sys
 import traceback
+from abc import ABC
 
 
 class NativeHandler:
@@ -83,3 +84,28 @@ def wrapped_handler(interface, handler, cleanup=None):
         _handler._raw = None
 
     return _handler
+
+
+class AsyncResult(ABC):
+    def __init__(self):
+        loop = asyncio.get_event_loop()
+        self.future = loop.create_future()
+
+    def __repr__(self):
+        return f"<Async {self.RESULT_TYPE} result; future={self.future}>"
+
+    def __await__(self):
+        return self.future.__await__()
+
+    # All the comparison dunder methods are disabled
+    def __bool__(self, other):
+        raise RuntimeError(
+            f"Can't check {self.RESULT_TYPE} result directly; use await or an on_result handler"
+        )
+
+    __lt__ = __bool__
+    __le__ = __bool__
+    __eq__ = __bool__
+    __ne__ = __bool__
+    __gt__ = __bool__
+    __ge__ = __bool__
