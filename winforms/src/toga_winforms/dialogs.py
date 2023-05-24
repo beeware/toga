@@ -210,7 +210,7 @@ class FileDialog(BaseDialog):
         multiselect,
         on_result=None,
     ):
-        super().__init__(inteface=interface)
+        super().__init__(interface=interface)
         self.on_result = on_result
 
         native.Title = title
@@ -302,7 +302,7 @@ class OpenFileDialog(FileDialog):
         on_result=None,
     ):
         super().__init__(
-            dialog=WinForms.OpenFileDialog(),
+            native=WinForms.OpenFileDialog(),
             interface=interface,
             title=title,
             filename=None,
