@@ -16,11 +16,11 @@ class TextInputProbe(SimpleProbe):
 
     @property
     def value(self):
-        return str(self.native.stringValue)
-
-    @property
-    def placeholder(self):
-        return str(self.native.cell.placeholderString)
+        return str(
+            self.native.placeholderString
+            if self.placeholder_visible
+            else self.native.stringValue
+        )
 
     @property
     def placeholder_visible(self):

@@ -116,7 +116,8 @@ class TextInput(Widget):
         self.native.enabled = not value
 
     def get_placeholder(self):
-        return str(self.native.placeholder)
+        # UIKit transparently converts "" into None
+        return str(self.native.placeholder if self.native.placeholder else "")
 
     def set_placeholder(self, value):
         self.native.placeholder = value

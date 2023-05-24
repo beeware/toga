@@ -10,11 +10,11 @@ class TextInputProbe(SimpleProbe):
 
     @property
     def value(self):
-        return self.native.get_text()
-
-    @property
-    def placeholder(self):
-        return self.native.get_placeholder_text()
+        return (
+            self.native.get_placeholder_text()
+            if self.placeholder_visible
+            else self.native.get_text()
+        )
 
     @property
     def placeholder_visible(self):

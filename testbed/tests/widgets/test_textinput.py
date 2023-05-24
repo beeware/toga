@@ -19,6 +19,8 @@ from .properties import (  # noqa: F401
     test_font,
     test_font_attrs,
     test_placeholder,
+    test_placeholder_color,
+    test_placeholder_focus,
     test_readonly,
 )
 
