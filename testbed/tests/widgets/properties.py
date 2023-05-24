@@ -147,9 +147,8 @@ async def test_placeholder(widget, probe):
 
 async def test_placeholder_focus(widget, probe):
     "Placeholders interact correctly with focus changes"
-
     widget.value = ""
-    widget.placeholder = "replacement"
+    widget.placeholder = "placeholder"
     hides_on_focus = probe.placeholder_hides_on_focus
 
     # Placeholder visibility can be focus dependent, so add another
@@ -162,40 +161,40 @@ async def test_placeholder_focus(widget, probe):
     widget.focus()
     await probe.redraw("Widget has focus")
     assert widget.value == ""
-    assert widget.placeholder == "replacement"
-    assert probe.value == "" if hides_on_focus else "replacement"
-    assert probe.placeholder_visible == (not hides_on_focus)
-
-    # Give a different widget focus; this will show the placeholder
-    other.focus()
-    await probe.redraw("Widget has lost focus")
-    assert widget.value == ""
-    assert widget.placeholder == "replacement"
-    assert probe.value == "replacement"
-    assert probe.placeholder_visible
-
-    # Give the widget focus, again
-    widget.focus()
-    await probe.redraw("Widget has focus; placeholder may not be visible")
-    assert widget.value == ""
-    assert widget.placeholder == "replacement"
-    assert probe.value == "" if hides_on_focus else "replacement"
-    assert probe.placeholder_visible == (not hides_on_focus)
-
-    # Change the placeholder text while the widget has focus
-    widget.placeholder = "placeholder"
-    await probe.redraw("Widget placeholder should be 'placeholder'")
-    assert widget.value == ""
     assert widget.placeholder == "placeholder"
     assert probe.value == "" if hides_on_focus else "placeholder"
     assert probe.placeholder_visible == (not hides_on_focus)
 
     # Give a different widget focus; this will show the placeholder
     other.focus()
-    await probe.redraw("Widget has lost focus; placeholder should be visible")
+    await probe.redraw("Widget has lost focus")
     assert widget.value == ""
     assert widget.placeholder == "placeholder"
     assert probe.value == "placeholder"
+    assert probe.placeholder_visible
+
+    # Give the widget focus, again
+    widget.focus()
+    await probe.redraw("Widget has focus; placeholder may not be visible")
+    assert widget.value == ""
+    assert widget.placeholder == "placeholder"
+    assert probe.value == "" if hides_on_focus else "placeholder"
+    assert probe.placeholder_visible == (not hides_on_focus)
+
+    # Change the placeholder text while the widget has focus
+    widget.placeholder = "replacement"
+    await probe.redraw("Widget placeholder should be 'replacement'")
+    assert widget.value == ""
+    assert widget.placeholder == "replacement"
+    assert probe.value == "" if hides_on_focus else "replacement"
+    assert probe.placeholder_visible == (not hides_on_focus)
+
+    # Give a different widget focus; this will show the placeholder
+    other.focus()
+    await probe.redraw("Widget has lost focus; placeholder should be visible")
+    assert widget.value == ""
+    assert widget.placeholder == "replacement"
+    assert probe.value == "replacement"
     assert probe.placeholder_visible
 
     # Focus in and out while a value is set.
@@ -203,16 +202,31 @@ async def test_placeholder_focus(widget, probe):
     widget.focus()
     await probe.redraw("Widget has focus; value is set")
     assert widget.value == "example"
-    assert widget.placeholder == "placeholder"
+    assert widget.placeholder == "replacement"
     assert probe.value == "example"
     assert not probe.placeholder_visible
 
     other.focus()
     await probe.redraw("Widget has lost focus, value is set")
     assert widget.value == "example"
-    assert widget.placeholder == "placeholder"
+    assert widget.placeholder == "replacement"
     assert probe.value == "example"
     assert not probe.placeholder_visible
+
+    # Value cleared while focus is set
+    widget.focus()
+    await probe.redraw("Widget has focus; value is set")
+    assert widget.value == "example"
+    assert widget.placeholder == "replacement"
+    assert probe.value == "example"
+    assert not probe.placeholder_visible
+
+    widget.value = ""
+    await probe.redraw("Value has been cleared")
+    assert widget.value == ""
+    assert widget.placeholder == "replacement"
+    assert probe.value == "" if hides_on_focus else "replacement"
+    assert probe.placeholder_visible == (not hides_on_focus)
 
 
 async def test_placeholder_color(widget, probe):

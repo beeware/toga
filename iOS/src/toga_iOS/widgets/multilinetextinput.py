@@ -137,7 +137,7 @@ class MultilineTextInput(Widget):
 
     def set_value(self, value):
         self.native.text = value
-        self.placeholder_label.setHidden(len(self.native.text) > 0)
+        self.placeholder_label.setHidden(self.has_focus or len(self.native.text) > 0)
         self.interface.on_change(None)
 
     def set_color(self, value):

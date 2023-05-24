@@ -111,6 +111,7 @@ async def test_on_change_handler(widget, probe):
     # Install a handler, and give the widget focus.
     handler = Mock()
     widget.on_change = handler
+    widget.placeholder = "placeholder"
     widget.focus()
 
     # Programmatic value changes trigger the event handler
