@@ -82,7 +82,6 @@ class MultilineTextInput(Widget):
         else:
             # See gtk_on_change for why this is needed
             self.interface.on_change(None)
-            print("CLEARED", self.has_focus, self.native_textview.has_focus())
             if not self.has_focus:
                 self.native_textview.set_buffer(self.placeholder)
             else:

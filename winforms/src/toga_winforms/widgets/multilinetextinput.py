@@ -24,14 +24,23 @@ class MultilineTextInput(Widget):
         self.native.LostFocus += self.winforms_lost_focus
 
         # Dummy values used during initialization
-        self._value = self._placeholder = ""
-        self._suppress_on_change = True
+        self._placeholder = ""
+        self._placeholder_visible = True
         self.set_color(None)
 
     def winforms_got_focus(self, sender, event):
+        # If the placeholder is visible when we gain focus, the widget is empty;
+        # so make the native text empty and hide the placeholder.
+        if self._placeholder_visible:
+            self.native.Text = ""
+            self._placeholder_visible = False
         self._update_text()
 
     def winforms_lost_focus(self, sender, event):
+        # When we lose focus, if the widget is empty, we need to show the
+        # placeholder again.
+        if self.native.Text == "":
+            self._placeholder_visible = True
         self._update_text()
 
     def get_readonly(self):
@@ -48,12 +57,16 @@ class MultilineTextInput(Widget):
         self._update_text()
 
     def get_value(self):
-        return self._value
+        # If the placeholder is visible, we know the widget has no value
+        if self._placeholder_visible:
+            return ""
+        return self.native.Text
 
     def set_value(self, value):
-        self._value = value
-        if value:
-            self._suppress_on_change = False
+        self.native.Text = value
+        # If the value is empty, the placeholder is only visible if the widget
+        # does *not* currently have focus.
+        self._placeholder_visible = value == "" and not self.native.ContainsFocus
         self._update_text()
 
     def rehint(self):
@@ -61,21 +74,16 @@ class MultilineTextInput(Widget):
         self.interface.intrinsic.height = at_least(self.interface._MIN_HEIGHT)
 
     def winforms_text_changed(self, sender, event):
-        if not self._suppress_on_change:
-            self._value = self.native.Text
+        # Only report text change events when the placeholder is not visible.
+        if not self._placeholder_visible:
             self.interface.on_change(None)
 
     def _update_text(self):
-        show_placeholder = (not self.native.ContainsFocus) and (self._value == "")
-        if show_placeholder:
-            self._suppress_on_change = True
+        if self._placeholder_visible:
             self.native.Text = self._placeholder
             self.native.ForeColor = SystemColors.GrayText
         else:
-            if self.native.Text != self._value:  # Avoid moving cursor on focus change
-                self.native.Text = self._value
             self.native.ForeColor = self._color
-            self._suppress_on_change = False
 
     def set_color(self, color):
         self._color = (
