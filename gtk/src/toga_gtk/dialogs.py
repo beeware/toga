@@ -1,32 +1,19 @@
-import asyncio
+from abc import ABC
 from pathlib import Path
 
 from .libs import Gtk
 
 
-class BaseDialog:
-    def __init__(self):
-        loop = asyncio.get_event_loop()
-        self.future = loop.create_future()
-
-    def __eq__(self, other):
-        raise RuntimeError(
-            "Can't check dialog result directly; use await or an on_result handler"
-        )
-
-    def __bool__(self):
-        raise RuntimeError(
-            "Can't check dialog result directly; use await or an on_result handler"
-        )
-
-    def __await__(self):
-        return self.future.__await__()
+class BaseDialog(ABC):
+    def __init__(self, interface):
+        self.interface = interface
+        self.interface.impl = self
 
 
 class MessageDialog(BaseDialog):
     def __init__(
         self,
-        window,
+        interface,
         title,
         message,
         message_type,
@@ -34,20 +21,20 @@ class MessageDialog(BaseDialog):
         success_result=None,
         on_result=None,
     ):
-        super().__init__()
+        super().__init__(interface=interface)
         self.on_result = on_result
 
-        dialog = Gtk.MessageDialog(
-            transient_for=window._impl.native,
+        self.native = Gtk.MessageDialog(
+            transient_for=interface.window._impl.native,
             flags=0,
             message_type=message_type,
             buttons=buttons,
             text=title,
         )
-        dialog.format_secondary_text(message)
+        self.native.format_secondary_text(message)
 
-        return_value = dialog.run()
-        dialog.destroy()
+        return_value = self.native.run()
+        self.native.destroy()
 
         if success_result:
             result = return_value == success_result
@@ -58,13 +45,13 @@ class MessageDialog(BaseDialog):
         if self.on_result:
             self.on_result(self, result)
 
-        self.future.set_result(result)
+        self.interface.future.set_result(result)
 
 
 class InfoDialog(MessageDialog):
-    def __init__(self, window, title, message, on_result=None):
+    def __init__(self, interface, title, message, on_result=None):
         super().__init__(
-            window=window,
+            interface=interface,
             title=title,
             message=message,
             message_type=Gtk.MessageType.INFO,
@@ -74,9 +61,9 @@ class InfoDialog(MessageDialog):
 
 
 class QuestionDialog(MessageDialog):
-    def __init__(self, window, title, message, on_result=None):
+    def __init__(self, interface, title, message, on_result=None):
         super().__init__(
-            window=window,
+            interface=interface,
             title=title,
             message=message,
             message_type=Gtk.MessageType.QUESTION,
@@ -87,9 +74,9 @@ class QuestionDialog(MessageDialog):
 
 
 class ConfirmDialog(MessageDialog):
-    def __init__(self, window, title, message, on_result=None):
+    def __init__(self, interface, title, message, on_result=None):
         super().__init__(
-            window=window,
+            interface=interface,
             title=title,
             message=message,
             message_type=Gtk.MessageType.WARNING,
@@ -100,9 +87,9 @@ class ConfirmDialog(MessageDialog):
 
 
 class ErrorDialog(MessageDialog):
-    def __init__(self, window, title, message, on_result=None):
+    def __init__(self, interface, title, message, on_result=None):
         super().__init__(
-            window=window,
+            interface=interface,
             title=title,
             message=message,
             message_type=Gtk.MessageType.ERROR,
@@ -112,15 +99,15 @@ class ErrorDialog(MessageDialog):
 
 
 class StackTraceDialog(BaseDialog):
-    def __init__(self, window, title, message, on_result=None, **kwargs):
-        super().__init__()
-        window.factory.not_implemented("Window.stack_trace_dialog()")
+    def __init__(self, interface, title, message, on_result=None, **kwargs):
+        super().__init__(interface=interface)
+        interface.window.factory.not_implemented("Window.stack_trace_dialog()")
 
 
 class FileDialog(BaseDialog):
     def __init__(
         self,
-        window,
+        interface,
         title,
         filename,
         initial_directory,
@@ -130,55 +117,55 @@ class FileDialog(BaseDialog):
         ok_icon,
         on_result=None,
     ):
-        super().__init__()
+        super().__init__(interface=interface)
         self.on_result = on_result
 
-        dialog = Gtk.FileChooserDialog(
-            transient_for=window._impl.native,
+        self.native = Gtk.FileChooserDialog(
+            transient_for=interface.window._impl.native,
             title=title,
             action=action,
         )
-        dialog.add_button(Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL)
-        dialog.add_button(ok_icon, Gtk.ResponseType.OK)
+        self.native.add_button(Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL)
+        self.native.add_button(ok_icon, Gtk.ResponseType.OK)
 
         if filename:
-            dialog.set_current_name(filename)
+            self.native.set_current_name(filename)
 
         if initial_directory:
-            dialog.set_current_folder(str(initial_directory))
+            self.native.set_current_folder(str(initial_directory))
 
         if file_types:
             for file_type in file_types:
                 filter_filetype = Gtk.FileFilter()
                 filter_filetype.set_name("." + file_type + " files")
                 filter_filetype.add_pattern("*." + file_type)
-                dialog.add_filter(filter_filetype)
+                self.native.add_filter(filter_filetype)
 
         if multiselect:
-            dialog.set_select_multiple(True)
+            self.native.set_select_multiple(True)
 
-        response = dialog.run()
+        response = self.native.run()
 
         if response == Gtk.ResponseType.OK:
             if multiselect:
-                result = [Path(filename) for filename in dialog.get_filenames()]
+                result = [Path(filename) for filename in self.native.get_filenames()]
             else:
-                result = Path(dialog.get_filename())
+                result = Path(self.native.get_filename())
         else:
             result = None
 
-        dialog.destroy()
+        self.native.destroy()
 
         if self.on_result:
             self.on_result(self, result)
 
-        self.future.set_result(result)
+        self.interface.future.set_result(result)
 
 
 class SaveFileDialog(FileDialog):
     def __init__(
         self,
-        window,
+        interface,
         title,
         filename,
         initial_directory,
@@ -186,7 +173,7 @@ class SaveFileDialog(FileDialog):
         on_result=None,
     ):
         super().__init__(
-            window=window,
+            interface=interface,
             title=title,
             filename=filename,
             initial_directory=initial_directory,
@@ -200,10 +187,16 @@ class SaveFileDialog(FileDialog):
 
 class OpenFileDialog(FileDialog):
     def __init__(
-        self, window, title, initial_directory, file_types, multiselect, on_result=None
+        self,
+        interface,
+        title,
+        initial_directory,
+        file_types,
+        multiselect,
+        on_result=None,
     ):
         super().__init__(
-            window=window,
+            interface=interface,
             title=title,
             filename=None,
             initial_directory=initial_directory,
@@ -216,9 +209,16 @@ class OpenFileDialog(FileDialog):
 
 
 class SelectFolderDialog(FileDialog):
-    def __init__(self, window, title, initial_directory, multiselect, on_result=None):
+    def __init__(
+        self,
+        interface,
+        title,
+        initial_directory,
+        multiselect,
+        on_result=None,
+    ):
         super().__init__(
-            window=window,
+            interface=interface,
             title=title,
             filename=None,
             initial_directory=initial_directory,

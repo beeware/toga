@@ -113,7 +113,7 @@ class Window:
     def gtk_delete_event(self, widget, data):
         if self._is_closing:
             should_close = True
-        elif self.interface.on_close:
+        elif self.interface.on_close._raw:
             should_close = self.interface.on_close(self.interface.app)
         else:
             should_close = True

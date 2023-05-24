@@ -1,34 +1,29 @@
 import asyncio
+from abc import ABC
 from pathlib import Path
 
 from .libs import WinFont, WinForms
 from .libs.winforms import ContentAlignment, FontFamily, FontStyle, SystemFonts
 
 
-class BaseDialog:
-    def __init__(self):
-        loop = asyncio.get_event_loop()
-        self.future = loop.create_future()
-
-    def __eq__(self, other):
-        raise RuntimeError(
-            "Can't check dialog result directly; use await or an on_result handler"
-        )
-
-    def __bool__(self):
-        raise RuntimeError(
-            "Can't check dialog result directly; use await or an on_result handler"
-        )
-
-    def __await__(self):
-        return self.future.__await__()
+class BaseDialog(ABC):
+    def __init__(self, interface):
+        self.interface = interface
+        self.interface.impl = self
 
 
 class MessageDialog(BaseDialog):
     def __init__(
-        self, window, title, message, buttons, icon, success_result=None, on_result=None
+        self,
+        interface,
+        title,
+        message,
+        buttons,
+        icon,
+        success_result=None,
+        on_result=None,
     ):
-        super().__init__()
+        super().__init__(interface=interface)
         self.on_result = on_result
 
         return_value = WinForms.MessageBox.Show(message, title, buttons, icon)
@@ -42,13 +37,13 @@ class MessageDialog(BaseDialog):
         if self.on_result:
             self.on_result(self, result)
 
-        self.future.set_result(result)
+        self.interface.future.set_result(result)
 
 
 class InfoDialog(MessageDialog):
-    def __init__(self, window, title, message, on_result=None):
+    def __init__(self, interface, title, message, on_result=None):
         super().__init__(
-            window=window,
+            interface=interface,
             title=title,
             message=message,
             buttons=WinForms.MessageBoxButtons.OK,
@@ -58,9 +53,9 @@ class InfoDialog(MessageDialog):
 
 
 class QuestionDialog(MessageDialog):
-    def __init__(self, window, title, message, on_result=None):
+    def __init__(self, interface, title, message, on_result=None):
         super().__init__(
-            window=window,
+            interface=interface,
             title=title,
             message=message,
             buttons=WinForms.MessageBoxButtons.YesNo,
@@ -71,9 +66,9 @@ class QuestionDialog(MessageDialog):
 
 
 class ConfirmDialog(MessageDialog):
-    def __init__(self, window, title, message, on_result=None):
+    def __init__(self, interface, title, message, on_result=None):
         super().__init__(
-            window=window,
+            interface=interface,
             title=title,
             message=message,
             buttons=WinForms.MessageBoxButtons.OKCancel,
@@ -84,9 +79,9 @@ class ConfirmDialog(MessageDialog):
 
 
 class ErrorDialog(MessageDialog):
-    def __init__(self, window, title, message, on_result=None):
+    def __init__(self, interface, title, message, on_result=None):
         super().__init__(
-            window=window,
+            interface=interface,
             title=title,
             message=message,
             buttons=WinForms.MessageBoxButtons.OK,
@@ -97,19 +92,26 @@ class ErrorDialog(MessageDialog):
 
 class StackTraceDialog(BaseDialog):
     def __init__(
-        self, window, title, message, content, retry, on_result=None, **kwargs
+        self,
+        interface,
+        title,
+        message,
+        content,
+        retry,
+        on_result=None,
+        **kwargs,
     ):
-        super().__init__()
+        super().__init__(interface=interface)
         self.on_result = on_result
 
-        self.dialog = WinForms.Form()
-        self.dialog.MinimizeBox = False
-        self.dialog.FormBorderStyle = self.dialog.FormBorderStyle.FixedSingle
-        self.dialog.MaximizeBox = False
-        self.dialog.FormClosing += self.winforms_FormClosing
-        self.dialog.Width = 540
-        self.dialog.Height = 320
-        self.dialog.Text = title
+        self.native = WinForms.Form()
+        self.native.MinimizeBox = False
+        self.native.FormBorderStyle = self.native.FormBorderStyle.FixedSingle
+        self.native.MaximizeBox = False
+        self.native.FormClosing += self.winforms_FormClosing
+        self.native.Width = 540
+        self.native.Height = 320
+        self.native.Text = title
 
         # The top-of-page introductory message
         textLabel = WinForms.Label()
@@ -119,7 +121,7 @@ class StackTraceDialog(BaseDialog):
         textLabel.Alignment = ContentAlignment.MiddleCenter
         textLabel.Text = message
 
-        self.dialog.Controls.Add(textLabel)
+        self.native.Controls.Add(textLabel)
 
         # A scrolling text box for the stack trace.
         trace = WinForms.RichTextBox()
@@ -136,7 +138,7 @@ class StackTraceDialog(BaseDialog):
         )
         trace.Text = content
 
-        self.dialog.Controls.Add(trace)
+        self.native.Controls.Add(trace)
 
         # Add acceptance/close buttons
         if retry:
@@ -147,7 +149,7 @@ class StackTraceDialog(BaseDialog):
             retry.Text = "Retry"
             retry.Click += self.winforms_Click_retry
 
-            self.dialog.Controls.Add(retry)
+            self.native.Controls.Add(retry)
 
             quit = WinForms.Button()
             quit.Left = 400
@@ -156,7 +158,7 @@ class StackTraceDialog(BaseDialog):
             quit.Text = "Quit"
             quit.Click += self.winforms_Click_quit
 
-            self.dialog.Controls.Add(quit)
+            self.native.Controls.Add(quit)
         else:
             accept = WinForms.Button()
             accept.Left = 400
@@ -165,9 +167,9 @@ class StackTraceDialog(BaseDialog):
             accept.Text = "Ok"
             accept.Click += self.winforms_Click_accept
 
-            self.dialog.Controls.Add(accept)
+            self.native.Controls.Add(accept)
 
-        self.dialog.ShowDialog()
+        self.native.ShowDialog()
 
     def winforms_FormClosing(self, sender, event):
         # If the close button is pressed, there won't be a future yet.
@@ -175,17 +177,16 @@ class StackTraceDialog(BaseDialog):
         # If a button is pressed, the future will be set, and a close
         # event will be triggered.
         try:
-            self.future.result()
+            self.interface.future.result()
         except asyncio.InvalidStateError:
             event.Cancel = True
 
     def handle_result(self, result):
-        if self.on_result:
-            self.on_result(self, result)
+        self.on_result(self, result)
 
-        self.future.set_result(result)
+        self.interface.future.set_result(result)
 
-        self.dialog.Close()
+        self.native.Close()
 
     def winforms_Click_quit(self, sender, event):
         self.handle_result(False)
@@ -200,8 +201,8 @@ class StackTraceDialog(BaseDialog):
 class FileDialog(BaseDialog):
     def __init__(
         self,
-        dialog,
-        window,
+        native,
+        interface,
         title,
         filename,
         initial_directory,
@@ -209,16 +210,16 @@ class FileDialog(BaseDialog):
         multiselect,
         on_result=None,
     ):
-        super().__init__()
+        super().__init__(interface=interface)
         self.on_result = on_result
 
-        dialog.Title = title
+        native.Title = title
 
         if filename is not None:
-            dialog.FileName = filename
+            native.FileName = filename
 
         if initial_directory is not None:
-            self._set_initial_directory(dialog, str(initial_directory))
+            self._set_initial_directory(native, str(initial_directory))
 
         if file_types is not None:
             filters = [f"{ext} files (*.{ext})|*.{ext}" for ext in file_types] + [
@@ -229,32 +230,31 @@ class FileDialog(BaseDialog):
                 pattern = ";".join([f"*.{ext}" for ext in file_types])
                 filters.insert(0, f"All matching files ({pattern})|{pattern}")
 
-            dialog.Filter = "|".join(filters)
+            native.Filter = "|".join(filters)
 
         if multiselect:
-            dialog.Multiselect = True
+            native.Multiselect = True
 
-        response = dialog.ShowDialog()
+        response = native.ShowDialog()
 
         if response == WinForms.DialogResult.OK:
-            result = self._get_filenames(dialog, multiselect)
+            result = self._get_filenames(native, multiselect)
         else:
             result = None
 
-        if self.on_result:
-            self.on_result(self, result)
+        self.on_result(self, result)
 
-        self.future.set_result(result)
+        self.interface.future.set_result(result)
 
     @classmethod
-    def _get_filenames(cls, dialog, multiselect):
+    def _get_filenames(cls, native, multiselect):
         if multiselect:
-            return [Path(filename) for filename in dialog.FileNames]
+            return [Path(filename) for filename in native.FileNames]
         else:
-            return Path(dialog.FileName)
+            return Path(native.FileName)
 
     @classmethod
-    def _set_initial_directory(cls, dialog, initial_directory):
+    def _set_initial_directory(cls, native, initial_directory):
         """Set the initial directory of the given dialog.
 
         On Windows, not all file/folder dialogs work the same way,
@@ -262,17 +262,17 @@ class FileDialog(BaseDialog):
         set the initial directory in some other fashion.
 
         Args:
-            dialog (WinForms.CommonDialog): the dialog to set the
+            native (WinForms.CommonDialog): the dialog to set the
                 initial directory on.
             initial_directory (str): the path of the initial directory.
         """
-        dialog.InitialDirectory = initial_directory
+        native.InitialDirectory = initial_directory
 
 
 class SaveFileDialog(FileDialog):
     def __init__(
         self,
-        window,
+        interface,
         title,
         filename,
         initial_directory,
@@ -280,8 +280,8 @@ class SaveFileDialog(FileDialog):
         on_result=None,
     ):
         super().__init__(
-            dialog=WinForms.SaveFileDialog(),
-            window=window,
+            native=WinForms.SaveFileDialog(),
+            interface=interface,
             title=title,
             filename=filename,
             initial_directory=initial_directory,
@@ -293,11 +293,17 @@ class SaveFileDialog(FileDialog):
 
 class OpenFileDialog(FileDialog):
     def __init__(
-        self, window, title, initial_directory, file_types, multiselect, on_result=None
+        self,
+        interface,
+        title,
+        initial_directory,
+        file_types,
+        multiselect,
+        on_result=None,
     ):
         super().__init__(
-            dialog=WinForms.OpenFileDialog(),
-            window=window,
+            native=WinForms.OpenFileDialog(),
+            interface=interface,
             title=title,
             filename=None,
             initial_directory=initial_directory,
@@ -308,10 +314,17 @@ class OpenFileDialog(FileDialog):
 
 
 class SelectFolderDialog(FileDialog):
-    def __init__(self, window, title, initial_directory, multiselect, on_result=None):
+    def __init__(
+        self,
+        interface,
+        title,
+        initial_directory,
+        multiselect,
+        on_result=None,
+    ):
         super().__init__(
-            dialog=WinForms.FolderBrowserDialog(),
-            window=window,
+            native=WinForms.FolderBrowserDialog(),
+            interface=interface,
             title=title,
             filename=None,
             initial_directory=initial_directory,
@@ -321,10 +334,10 @@ class SelectFolderDialog(FileDialog):
         )
 
     @classmethod
-    def _get_filenames(cls, dialog, multiselect):
-        filename = Path(dialog.SelectedPath)
+    def _get_filenames(cls, native, multiselect):
+        filename = Path(native.SelectedPath)
         return [filename] if multiselect else filename
 
     @classmethod
-    def _set_initial_directory(cls, dialog, initial_directory):
-        dialog.SelectedPath = initial_directory
+    def _set_initial_directory(cls, native, initial_directory):
+        native.SelectedPath = initial_directory
