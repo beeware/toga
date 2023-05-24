@@ -1,1 +1,1 @@
-Pass the ``on_result`` argument to the parent ``FileDialog`` constructors in toga cocoa dialogs.
+The ``on_result`` handler is now used by Cocoa file dialogs.
