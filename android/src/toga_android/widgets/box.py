@@ -20,7 +20,7 @@ class Box(Widget):
         self.native.updateViewLayout(widget.native, layout_params)
 
     def set_background_color(self, value):
-        self.set_background_color_simple(value)
+        self.set_background_simple(value)
 
     def rehint(self):
         self.interface.intrinsic.width = at_least(0)

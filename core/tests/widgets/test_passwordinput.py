@@ -29,9 +29,6 @@ class PasswordInputTests(TestCase):
         self.password_input.value = new_value
         self.assertEqual(self.password_input.value, new_value)
 
-        self.password_input.clear()
-        self.assertEqual(self.password_input.value, "")
-
     def test_focus(self):
         self.password_input.focus()
         self.assertActionPerformed(self.password_input, "focus")

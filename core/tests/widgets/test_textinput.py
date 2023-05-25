@@ -30,10 +30,6 @@ class TextInputTests(TestCase):
         self.assertEqual(self.text_input.placeholder, self.placeholder)
         self.assertEqual(self.text_input.readonly, self.readonly)
 
-    def test_clear(self):
-        self.text_input.clear()
-        self.assertValueSet(self.text_input, "value", "")
-
     def test_set_placeholder_with_None(self):
         self.text_input.placeholder = None
         self.assertEqual(self.text_input.placeholder, "")

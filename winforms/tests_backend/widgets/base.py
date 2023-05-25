@@ -1,5 +1,6 @@
 import asyncio
 
+from pytest import approx
 from System import EventArgs, Object
 from System.Drawing import FontFamily, SystemColors, SystemFonts
 
@@ -106,11 +107,14 @@ class SimpleProbe:
         assert self.native.Parent is not None
 
         # size and position is as expected.
-        assert (self.native.Width, self.native.Height) == size
+        assert (self.width, self.height) == approx(size, abs=1)
         assert (
-            self.native.Left,
-            self.native.Top - self.widget._impl.container.vertical_shift,
-        ) == position
+            self.native.Left / self.scale_factor,
+            (
+                (self.native.Top - self.widget._impl.container.vertical_shift)
+                / self.scale_factor
+            ),
+        ) == approx(position, abs=1)
 
     async def press(self):
         self.native.OnClick(EventArgs.Empty)

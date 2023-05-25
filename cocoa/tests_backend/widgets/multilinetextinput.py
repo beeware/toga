@@ -1,11 +1,96 @@
+from toga.colors import TRANSPARENT
+from toga.constants import TOP
 from toga_cocoa.libs import NSScrollView
 
 from .base import SimpleProbe
+from .properties import toga_alignment, toga_color, toga_font
 
 
 class MultilineTextInputProbe(SimpleProbe):
     native_class = NSScrollView
 
+    def __init__(self, widget):
+        super().__init__(widget)
+        self.native_text = widget._impl.native_text
+
+    @property
+    def value(self):
+        return str(
+            self.native_text.placeholderString
+            if self.placeholder_visible
+            else self.native_text.string
+        )
+
+    @property
+    def placeholder_visible(self):
+        # macOS manages it's own placeholder visibility.
+        # We can use the existence of widget text as a proxy.
+        return not bool(self.native_text.string)
+
+    @property
+    def placeholder_hides_on_focus(self):
+        return False
+
+    @property
+    def color(self):
+        return toga_color(self.native_text.textColor)
+
+    @property
+    def background_color(self):
+        if self.native_text.drawsBackground:
+            # Confirm the scroll container is also opaque
+            assert self.native.drawsBackground
+            if self.native_text.backgroundColor:
+                return toga_color(self.native_text.backgroundColor)
+            else:
+                return None
+        else:
+            # Confirm the scroll container is also transparent
+            assert not self.native.drawsBackground
+            return TRANSPARENT
+
+    @property
+    def font(self):
+        return toga_font(self.native_text.font)
+
+    @property
+    def alignment(self):
+        return toga_alignment(self.native_text.alignment)
+
+    @property
+    def vertical_alignment(self):
+        # Cocoa doesn't provide an option to alter the vertical alignment of
+        # NSTextView
+        return TOP
+
+    @property
+    def enabled(self):
+        return self.native_text.isSelectable()
+
     @property
     def readonly(self):
-        return not self.native.documentView.isEditable()
+        return not self.native_text.isEditable()
+
+    @property
+    def has_focus(self):
+        return self.native.window.firstResponder == self.native_text
+
+    @property
+    def document_height(self):
+        return self.native_text.bounds.size.height
+
+    @property
+    def document_width(self):
+        return self.native_text.bounds.size.width
+
+    @property
+    def horizontal_scroll_position(self):
+        return self.native.contentView.bounds.origin.x
+
+    @property
+    def vertical_scroll_position(self):
+        return self.native.contentView.bounds.origin.y
+
+    async def wait_for_scroll_completion(self):
+        # No animation associated with scroll, so this is a no-op
+        pass

@@ -10,7 +10,7 @@ DetailedList,General Widget,:class:`~toga.widgets.detailedlist.DetailedList`,A l
 Divider,General Widget,:class:`~toga.widgets.divider.Divider`,A horizontal or vertical line,|y|,|y|,|y|,,,
 ImageView,General Widget,:class:`~toga.widgets.imageview.ImageView`,Image Viewer,|b|,|b|,|b|,|b|,|b|,
 Label,General Widget,:class:`~toga.widgets.label.Label`,Text label,|y|,|y|,|y|,|y|,|y|,|b|
-MultilineTextInput,General Widget,:class:`~toga.widgets.multilinetextinput.MultilineTextInput`,Multi-line Text Input field,|b|,|b|,|b|,|b|,|b|,
+MultilineTextInput,General Widget,:class:`~toga.widgets.multilinetextinput.MultilineTextInput`,Multi-line Text Input field,|y|,|y|,|y|,|y|,|y|,
 NumberInput,General Widget,:class:`~toga.widgets.numberinput.NumberInput`,Number Input field,|b|,|b|,|b|,|b|,|b|,
 PasswordInput,General Widget,:class:`~toga.widgets.passwordinput.PasswordInput`,A text input that hides it’s input,|b|,|b|,|b|,|b|,|b|,
 ProgressBar,General Widget,:class:`~toga.widgets.progressbar.ProgressBar`,Progress Bar,|y|,|y|,|y|,|y|,|y|,|b|

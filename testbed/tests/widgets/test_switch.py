@@ -13,6 +13,7 @@ from .properties import (  # noqa: F401
     test_font,
     test_font_attrs,
     test_text_width_change,
+    verify_font_sizes,
 )
 
 # Switches can't be given focus on mobile, or on GTK
@@ -36,7 +37,7 @@ async def test_text(widget, probe):
         await probe.redraw("Switch text should be %s" % text)
 
         # Text after a newline will be stripped.
-        expected = text.split("\n")[0]
+        expected = str(text).split("\n")[0]
         assert widget.text == expected
         assert probe.text == expected
         assert probe.height == initial_height

@@ -1,8 +1,8 @@
-Progress Bar
-============
+ProgressBar
+===========
 
-Displays task progress on a horizontal graphical bar. The task being monitored
-can be of known or indeterminate length.
+A horizontal bar to visualize task progress. The task being monitored can be of
+known or indeterminate length.
 
 .. figure:: /reference/images/ProgressBar.jpeg
     :align: center
