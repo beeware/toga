@@ -13,19 +13,38 @@ from .properties import (  # noqa: F401
 
 @pytest.fixture
 async def widget():
-    return toga.WebView(style=Pack(flex=1))
+    widget = toga.WebView(style=Pack(flex=1))
+
+    # Set some initial content that can accept focus, and has a visible background
+    widget.set_content(
+        "https://example.com/",
+        (
+            "<html style='background-color:rebeccapurple;'>"
+            "  <body><input style='width:50px;'></body>"
+            "</html>"
+        ),
+    )
+    return widget
+
+
+async def test_clear_url(widget, probe):
+    "The URL can be cleared"
+    widget.url = None
+    # A short delay is required because HTML DOM evaluation lags.
+    await probe.redraw("Page has loaded", delay=0.1)
+
+    # URL is empty
+    assert widget.url is None
 
 
 async def test_load_url(widget, probe):
     on_webview_load_handler = Mock()
     widget.on_webview_load = on_webview_load_handler
 
-    # Initial URL is empty
-    assert widget.url is None
     await widget.load_url("https://github.com/beeware")
 
     # A short delay is required because HTML DOM evaluation lags.
-    await probe.redraw("Page has loaded", delay=0.1)
+    await probe.redraw("Page has loaded", delay=0.2)
     assert widget.url == "https://github.com/beeware"
 
     # The load hander was invoked.
@@ -38,7 +57,7 @@ async def test_static_content(widget, probe):
     widget.set_content("https://example.com/", "<h1>Nice page</h1>")
 
     # A short delay is required because HTML DOM evaluation lags.
-    await probe.redraw("Webview has static content", delay=0.1)
+    await probe.redraw("Webview has static content", delay=0.2)
 
     assert widget.url == "https://example.com/"
     content = await probe.get_page_content()
