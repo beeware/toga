@@ -1,6 +1,7 @@
 from travertino.size import at_least
 
-from ..keys import toga_key
+from toga.widgets.webview import JavaScriptResult
+
 from ..libs import WebKit2
 from .base import Widget
 
@@ -11,9 +12,8 @@ class WebView(Widget):
     def create(self):
         if WebKit2 is None:
             raise RuntimeError(
-                "Unable to import WebKit2. Ensure that the operating system GTK "
-                "WebKit bindings (e.g., gir1.2-webkit2-4.0 on Debian/Ubuntu) "
-                "have been installed."
+                "Unable to import WebKit2. Ensure that the system package "
+                "providing Webkit2 and its GTK bindings have been installed."
             )
 
         self.native = WebKit2.WebView()
@@ -29,33 +29,16 @@ class WebView(Widget):
         context.set_cache_model(WebKit2.CacheModel.DOCUMENT_VIEWER)
 
         self.native.connect("load-changed", self.gtk_on_load_changed)
-        self.native.connect("key-press-event", self.gtk_on_key)
-        self._last_key_time = 0
-
-    def set_on_key_down(self, handler):
-        pass
-
-    def set_on_webview_load(self, handler):
-        pass
 
     def gtk_on_load_changed(self, widget, load_event, *args):
         if load_event == WebKit2.LoadEvent.FINISHED:
             if self.interface.on_webview_load:
                 self.interface.on_webview_load(self.interface)
 
-    def gtk_on_key(self, widget, event, *args):
-        # key-press-event on WebKit on GTK double-sends events, but they have
-        # the same time key. Check for it before we register the press.
-        if event.time > self._last_key_time and self.interface.on_key_down:
-            self._last_key_time = event.time
-            toga_event = toga_key(event)
-            if toga_event:
-                self.interface.on_key_down(self.interface, **toga_event)
-
     def get_url(self):
         return self.native.get_uri()
 
-    def set_url(self, value):
+    def set_url(self, value, future=None):
         if value:
             self.native.load_uri(value)
 
@@ -66,12 +49,9 @@ class WebView(Widget):
     def set_content(self, root_url, content):
         self.native.load_html(content, root_url)
 
-    def get_dom(self):
-        self.interface.factory.not_implemented("WebView.get_dom()")
-
-    async def evaluate_javascript(self, javascript):
+    def evaluate_javascript(self, javascript, on_result=None):
         # Construct a future on the event loop
-        future = self.interface.window.app._impl.loop.create_future()
+        result = JavaScriptResult()
 
         # Define a callback that will update the future when
         # the Javascript is complete.
@@ -81,19 +61,14 @@ class WebView(Widget):
             result = webview.run_javascript_finish(task)
             if result:
                 result = result.get_js_value().to_string()
-            future.set_result(result)
+            result.future.set_result(result)
 
         # Invoke the javascript method, with a callback that will set
         # the future when a result is available.
         self.native.run_javascript(javascript, None, gtk_js_finished)
 
         # wait for the future, and return the result
-        await future
-        return future.result()
-
-    def invoke_javascript(self, javascript):
-        # Invoke the javascript without a callback.
-        self.native.run_javascript(javascript, None, None)
+        return result
 
     def rehint(self):
         self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)

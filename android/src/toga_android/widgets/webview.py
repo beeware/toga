@@ -1,7 +1,8 @@
-import asyncio
 import base64
 
 from travertino.size import at_least
+
+from toga.widgets.webview import JavaScriptResult
 
 from ..libs.android.view import View__MeasureSpec
 from ..libs.android.webkit import ValueCallback, WebView as A_WebView, WebViewClient
@@ -31,22 +32,14 @@ class WebView(Widget):
         # Enable JS.
         self.native.getSettings().setJavaScriptEnabled(True)
 
-    def set_on_key_down(self, handler):
-        # Android isn't a platform that usually has a keyboard attached, so this is unimplemented for now.
-        self.interface.factory.not_implemented("WebView.set_on_key_down()")
-
     def set_on_webview_load(self, handler):
         # This requires subclassing WebViewClient, which is not yet possible with rubicon-java.
         self.interface.factory.not_implemented("WebView.set_on_webview_load()")
 
-    def get_dom(self):
-        # Android has no straightforward way to get the DOM from the browser synchronously.
-        self.interface.factory.not_implemented("WebView.get_dom()")
-
     def get_url(self):
         return self.native.getUrl()
 
-    def set_url(self, value):
+    def set_url(self, value, future=None):
         if value:
             self.native.loadUrl(str(value))
 
@@ -62,15 +55,13 @@ class WebView(Widget):
         if value is not None:
             self.native.getSettings().setUserAgentString(value)
 
-    async def evaluate_javascript(self, javascript):
-        js_value = asyncio.Future()
-        self.native.evaluateJavascript(
-            str(javascript), ReceiveString(js_value.set_result)
-        )
-        return await js_value
+    def evaluate_javascript(self, javascript, on_result=None):
+        result = JavaScriptResult()
 
-    def invoke_javascript(self, javascript):
-        self.native.evaluateJavascript(str(javascript), ReceiveString())
+        self.native.evaluateJavascript(
+            str(javascript), ReceiveString(result.future.set_result)
+        )
+        return result
 
     def rehint(self):
         self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)

@@ -1,10 +1,10 @@
 import traceback
 import webbrowser
-from asyncio import get_event_loop
 
 from travertino.size import at_least
 
 import toga
+from toga.widgets.webview import JavaScriptResult
 from toga_winforms.keys import toga_key
 from toga_winforms.libs import (
     Action,
@@ -141,29 +141,23 @@ class WebView(Widget):
         if self.native.CoreWebView2:
             self.native.CoreWebView2.Settings.UserAgent = user_agent
 
-    async def evaluate_javascript(self, javascript):
-        loop = get_event_loop()
-        future = loop.create_future()
+    def evaluate_javascript(self, javascript, on_result=None):
+        result = JavaScriptResult()
 
         task_scheduler = TaskScheduler.FromCurrentSynchronizationContext()
         try:
 
             def callback(task):
-                future.set_result(task.Result)
+                result.future.set_result(task.Result)
 
             self.native.ExecuteScriptAsync(javascript).ContinueWith(
                 Action[Task[String]](callback), task_scheduler
             )
         except Exception:
             traceback.print_exc()
-            future.set_result(None)
+            result.future.set_result(None)
 
-        return await future
-
-    def invoke_javascript(self, javascript):
-        # The script will execute async, but you weren't going to get the result
-        # anyway, so it doesn't really matter.
-        self.native.ExecuteScriptAsync(javascript)
+        return result
 
     def rehint(self):
         self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
