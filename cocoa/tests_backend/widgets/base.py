@@ -31,6 +31,7 @@ class EventListener(NSObject):
 class SimpleProbe:
     def __init__(self, widget):
         self.widget = widget
+        self.impl = widget._impl
         self.native = widget._impl.native
         assert isinstance(self.native, self.native_class)
 
@@ -76,7 +77,7 @@ class SimpleProbe:
             SYSTEM: ".AppleSystemUIFont",
         }.get(expected, expected)
 
-    async def redraw(self, message=None):
+    async def redraw(self, message=None, delay=None):
         """Request a redraw of the app, waiting until that redraw has completed."""
         # Force a repaint
         self.widget.window.content._impl.native.displayIfNeeded()
@@ -84,10 +85,11 @@ class SimpleProbe:
         if self.widget.app.run_slow:
             # If we're running slow, wait for a second
             print("Waiting for redraw" if message is None else message)
-            await asyncio.sleep(1)
+            delay = 1
+
+        if delay:
+            await asyncio.sleep(delay)
         else:
-            # Running at "normal" speed, we need to release to the event loop
-            # for at least one iteration. `runUntilDate:None` does this.
             NSRunLoop.currentRunLoop.runUntilDate(None)
 
     @property
