@@ -16,3 +16,6 @@ source = [
     "src/toga",
     "**/toga",
 ]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"

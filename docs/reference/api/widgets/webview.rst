@@ -1,24 +1,17 @@
 WebView
 =======
 
+An embedded web browser.
+
+.. figure:: /reference/images/WebView.jpeg
+    :align: center
+
 .. rst-class:: widget-support
 .. csv-filter:: Availability (:ref:`Key <api-status-key>`)
    :header-rows: 1
    :file: ../../data/widgets_by_platform.csv
    :included_cols: 4,5,6,7,8,9
    :exclude: {0: '(?!^(WebView|Component)$)'}
-
-The Web View widget is used for displaying an embedded browser window within an
-application.
-
-Both sites served by a web server and local content can be displayed. Due to
-security restrictions in the macOS backend ``WKWebView``, local content on macOS
-can only be loaded from a single directory, relative to the base URL, and not
-from an absolute "file://" URL. As a workaround, it is possible to use a
-lightweight web server instead.
-
-.. figure:: /reference/images/WebView.jpeg
-    :align: center
 
 Usage
 -----
@@ -27,25 +20,42 @@ Usage
 
     import toga
 
-    web = toga.WebView(url='https://google.com')
+    webview = toga.WebView()
 
-Debugging
----------
+    # Request a URL be loaded in the webview.
+    webview.url = "https://beeware.org"
 
-If you need to debug the HTML, JavaScript or CSS content of a view, you may want
-to use the "inspect element" feature of the WebView. This is not be turned on by
-default on some platforms. To enable WebView debugging:
+    # Load a URL, and wait (non-blocking) for the page to complete loading
+    await webview.load_url("https://beeware.org")
 
-* macOS
+    # Load static HTML content into the wevbiew.
+    webview.set_content("https://example.com", "<html>...</html>")
 
-    Run the following at the terminal:
+Notes
+-----
 
-.. code-block:: console
+* Using WebView on Windows 10 requires that your users have installed the `Edge
+  WebView2 Evergreen Runtime
+  <https://developer.microsoft.com/en-us/microsoft-edge/webview2/#download-section>`__.
+  This is installed by default on Windows 11.
+
+* Using WebView on Linux requires that the user has installed the system packages
+  for WebKit2, plus the GObject Introspection bindings for WebKit2.
+
+* Due to app security restrictions, it is not possible to display URLs with a
+  ``file://`` URL. To serve local file content, run a web server on
+  ``localhost`` using a background thread, and set the WebView's URL
+
+* On macOS, the "inspect element" feature is not enabled by default. Webview
+  debugging is only available when your code is packaged as a full macOS app
+  (e.g., with Briefcase). To enable debugging, run:
+
+    .. code-block:: console
 
         $ defaults write com.example.appname WebKitDeveloperExtras -bool true
 
-    substituting ``com.example.appname`` with the bundle ID for your app.
-
+    Substituting ``com.example.appname`` with the bundle ID for your packaged
+    app.
 
 Reference
 ---------

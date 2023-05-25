@@ -1,170 +1,121 @@
-import warnings
+import asyncio
 
-from toga.handlers import wrapped_handler
+from toga.handlers import AsyncResult, wrapped_handler
 
 from .base import Widget
 
 
+class JavaScriptResult(AsyncResult):
+    RESULT_TYPE = "JavaScript"
+
+
 class WebView(Widget):
-    """A widget to display and open html content.
-
-    :param id: An identifier for this widget.
-    :type  id: ``str``
-    :param style: An optional style object. If no style is provided then a new one will be created for the widget.
-    :type  style: ``Style``
-    :param url: The URL to start with.
-    :type  url: ``str``
-    :param user_agent: The user agent for the web view.
-    :type  user_agent: ``str``
-    :param on_key_down: The callback method for when a key is pressed within the web view
-    :type  on_key_down: ``callable``
-    :param on_webview_load: The callback method for when the web view loads (or reloads).
-    :type  on_webview_load: ``callable``
-    """
-
     def __init__(
         self,
         id=None,
         style=None,
-        factory=None,  # DEPRECATED!
-        url=None,
-        user_agent=None,
-        on_key_down=None,
+        url: str = None,
+        user_agent: str = None,
         on_webview_load=None,
     ):
+        """Create a new WebView widget.
+
+        Inherits from :class:`~toga.widgets.base.Widget`.
+
+        :param id: The ID for the widget.
+        :param style: A style object. If no style is provided, a default style
+            will be applied to the widget.
+        :param url: The full URL to load in the WebView. Optional; if not provided,
+            an empty page will be displayed
+        :param user_agent: The user agent to use for web requests. Optional; if not
+            provided, the default user agent for the platform will be used.
+        :param on_webview_load: A handler that will be invoked when a key is pressed while
+            the web view has focus.
+        """
+
         super().__init__(id=id, style=style)
-
-        ######################################################################
-        # 2022-09: Backwards compatibility
-        ######################################################################
-        # factory no longer used
-        if factory:
-            warnings.warn("The factory argument is no longer used.", DeprecationWarning)
-        ######################################################################
-        # End backwards compatibility.
-        ######################################################################
-
-        # Prime some internal property-backing variables
-        self._html_content = None
-        self._user_agent = None
 
         self._impl = self.factory.WebView(interface=self)
         self.user_agent = user_agent
-        self.url = url
-        self.on_key_down = on_key_down
+
+        # Set the load handler before loading the first URL.
         self.on_webview_load = on_webview_load
+        self.url = url
+
+    def _set_url(self, url, future):
+        # Utility method for validating and setting the URL with a future.
+        if url and not (url.startswith("https://") or url.startswith("http://")):
+            raise ValueError("WebView can only display http:// and https:// URLs")
+
+        self._impl.set_url(url, future=future)
 
     @property
-    def dom(self):
-        """The current DOM.
-
-        :return: The current DOM
-        :rtype:  ``str``
-        """
-        return self._impl.get_dom()
-
-    @property
-    def url(self):
+    def url(self) -> str:
         """The current URL.
 
-        :return: The current URL
-        :rtype:  ``str``
+        WebView can only display ``http://`` and ``https://`` URLs.
+
+        Returns ``None`` if no URL is currently displayed.
         """
         return self._impl.get_url()
 
     @url.setter
     def url(self, value):
-        """Set the current URL of the web view.
+        self._set_url(value, future=None)
 
-        :param value: The URL
-        :type  value: ``str``
+    async def load_url(self, url: str):
+        """Load a URL, and wait until the loading has completed.
+
+        :param url: The URL to load.
         """
-        self._html_content = None
-        self._impl.set_url(value)
+        if url and not (url.startswith("https://") or url.startswith("http://")):
+            raise ValueError("WebView can only display http:// and https:// URLs")
 
-    @property
-    def on_key_down(self):
-        """The handler to invoke when the button is pressed.
+        loop = asyncio.get_event_loop()
+        loaded_future = loop.create_future()
 
-        :return: The function that is called on button press.
-        :rtype:  ``callable``
-        """
-        return self._on_key_down
+        self._set_url(url, future=loaded_future)
 
-    @on_key_down.setter
-    def on_key_down(self, handler):
-        """Set the handler to invoke when a key is pressed.
-
-        :param handler: The handler to invoke when a key is pressed.
-        :type  handler: ``callable``
-        """
-        self._on_key_down = wrapped_handler(self, handler)
-        self._impl.set_on_key_down(self._on_key_down)
+        return await loaded_future
 
     @property
     def on_webview_load(self):
-        """The handler to invoke when the web view finishes loading.
-
-        :return: The function that is called when the web view finishes loading.
-        :rtype:  ``callable``
-        """
+        """The handler to invoke when the web view finishes loading."""
         return self._on_webview_load
 
     @on_webview_load.setter
     def on_webview_load(self, handler):
-        """Set the handler to invoke when the web view finishes loading.
-
-        :param handler: The handler to invoke when the web view finishes loading.
-        :type  handler: ``callable``
-        """
         self._on_webview_load = wrapped_handler(self, handler)
-        self._impl.set_on_webview_load(self._on_webview_load)
 
     @property
-    def user_agent(self):
-        """The user agent for the web view as a ``str``.
-
-        :return: The user agent
-        :rtype:  ``str``
-        """
-        return self._user_agent
+    def user_agent(self) -> str:
+        """The user agent for the web view."""
+        return self._impl.get_user_agent()
 
     @user_agent.setter
     def user_agent(self, value):
-        self._user_agent = value
         self._impl.set_user_agent(value)
 
-    def set_content(self, root_url, content):
+    def set_content(self, root_url: str, content: str):
         """Set the content of the web view.
 
         :param root_url: The URL
-        :type  root_url: ``str``
-        :param content: The new content
-        :type  content: ``str``
+        :param content: The HTML content for the webview
         """
-        self._html_content = content
         self._impl.set_content(root_url, content)
 
-    async def evaluate_javascript(self, javascript):
-        """Evaluate a JavaScript expression, returning the result.
+    def evaluate_javascript(self, javascript, on_result=None) -> JavaScriptResult:
+        """Evaluate a JavaScript expression.
 
-        **This is an asynchronous operation**. The method will complete
-        when the return value is available.
-
-        :param javascript: The JavaScript expression to evaluate.
-        :type  javascript: ``str``
-        """
-        return await self._impl.evaluate_javascript(javascript)
-
-    def invoke_javascript(self, javascript):
-        """Invoke a JavaScript expression.
-
-        The result (if any) of the JavaScript is ignored.
-
-        **No guarantee is provided that the JavaScript has completed
-        execution when `invoke()` returns**
+        **This method is asynchronous**. It does not guarantee that the provided
+        JavaScript has finished evaluating when the method returns. The value
+        returned by this method can be awaited in an asynchronous context.
+        Alternatively, you can provide an ``on_result`` callback that will be
+        invoked when the JavaScript has been evaluated.
 
         :param javascript: The JavaScript expression to evaluate.
-        :type  javascript: ``str``
+        :param on_result: Optional; a callback that will be invoked when the the
+            evaluated JavaScript completes.
+        :returns: An asynchronous JavaScriptResult object.
         """
-        self._impl.invoke_javascript(javascript)
+        return self._impl.evaluate_javascript(javascript, on_result=on_result)
