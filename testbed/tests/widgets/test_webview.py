@@ -1,4 +1,5 @@
-from unittest.mock import Mock
+import asyncio
+from unittest.mock import ANY, Mock
 
 import pytest
 
@@ -9,6 +10,34 @@ from .properties import (  # noqa: F401
     test_flex_widget_size,
     test_focus,
 )
+
+
+async def assert_content_change(widget, probe, message, url, content):
+    # Web views aren't instantaneous. Even for simple static changes of page
+    # content, the DOM won't be immediately rendered. As a result, even though a
+    # page loaded signal has been received, it doesn't mean the accessors for
+    # the page URL or DOM content has been updated in the widget. This is a
+    # problem for tests, as we need to "make change, test change occurred" with
+    # as little delay as possible. So - wait for up to 2 seconds for the URL
+    # *and* content to change in any way before asserting the new values.
+
+    changed = False
+    timer = 2
+
+    await probe.redraw(message)
+
+    # Loop for up to a second for a change to occur
+    while timer > 0 and not changed:
+        new_url = widget.url
+        new_content = await probe.get_page_content()
+
+        changed = new_url == url and new_content == content
+        if not changed:
+            timer -= 0.05
+            await asyncio.sleep(0.05)
+
+    assert new_url == url
+    assert new_content == content
 
 
 @pytest.fixture
@@ -25,38 +54,62 @@ async def widget():
 
 async def test_clear_url(widget, probe):
     "The URL can be cleared"
+    on_webview_load_handler = Mock()
+    widget.on_webview_load = on_webview_load_handler
+
     widget.url = None
 
-    # DOM loads aren't instantaneous; wait for the URL to appear
-    await probe.redraw("Page has loaded", delay=0.1)
+    # Wait for the content to be cleared
+    await assert_content_change(
+        widget,
+        probe,
+        message="Page has been cleared",
+        url=None,
+        content="",
+    )
 
-    # URL is empty
-    assert widget.url is None
+    # The load hander was invoked.
+    on_webview_load_handler.assert_called_with(widget)
 
 
 async def test_load_url(widget, probe):
+    "A URL can be loaded into the view"
     on_webview_load_handler = Mock()
     widget.on_webview_load = on_webview_load_handler
 
     await widget.load_url("https://github.com/beeware")
 
     # DOM loads aren't instantaneous; wait for the URL to appear
-    await probe.redraw("Page has loaded", delay=0.5)
+    await assert_content_change(
+        widget,
+        probe,
+        message="Page has been loaded",
+        url="https://github.com/beeware",
+        content=ANY,
+    )
 
     # The load hander was invoked.
-    on_webview_load_handler.assert_called_once_with(widget)
+    on_webview_load_handler.assert_called_with(widget)
 
 
 async def test_static_content(widget, probe):
     "Static content can be loaded into the page"
+    on_webview_load_handler = Mock()
+    widget.on_webview_load = on_webview_load_handler
 
     widget.set_content("https://example.com/", "<h1>Nice page</h1>")
 
     # DOM loads aren't instantaneous; wait for the URL to appear
-    await probe.redraw("Webview has static content", delay=0.5)
+    await assert_content_change(
+        widget,
+        probe,
+        message="Webview has static content",
+        url="https://example.com/",
+        content="<h1>Nice page</h1>",
+    )
 
-    content = await probe.get_page_content()
-    assert content == "<h1>Nice page</h1>"
+    # The load hander was invoked.
+    on_webview_load_handler.assert_called_with(widget)
 
 
 async def test_user_agent(widget, probe):
