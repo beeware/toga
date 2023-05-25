@@ -33,15 +33,13 @@ class MultilineTextInput(Widget):
         # so make the native text empty and hide the placeholder.
         if self._placeholder_visible:
             self.native.Text = ""
-            self._placeholder_visible = False
-        self._update_text()
+            self._set_placeholder_visible(False)
 
     def winforms_lost_focus(self, sender, event):
         # When we lose focus, if the widget is empty, we need to show the
         # placeholder again.
         if self.native.Text == "":
-            self._placeholder_visible = True
-        self._update_text()
+            self._set_placeholder_visible(True)
 
     def get_readonly(self):
         return self.native.ReadOnly
@@ -54,7 +52,8 @@ class MultilineTextInput(Widget):
 
     def set_placeholder(self, value):
         self._placeholder = value
-        self._update_text()
+        if self._placeholder_visible:
+            self.native.Text = value
 
     def get_value(self):
         # If the placeholder is visible, we know the widget has no value
@@ -63,33 +62,41 @@ class MultilineTextInput(Widget):
         return self.native.Text
 
     def set_value(self, value):
-        self.native.Text = value
         # If the value is empty, the placeholder is only visible if the widget
         # does *not* currently have focus.
-        self._placeholder_visible = value == "" and not self.native.ContainsFocus
-        self._update_text()
+        if value == "" and not self.native.ContainsFocus:
+            self.native.Text = value
+            self._set_placeholder_visible(True)
+        else:
+            self._set_placeholder_visible(False)
+            self.native.Text = value
 
     def rehint(self):
         self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
         self.interface.intrinsic.height = at_least(self.interface._MIN_HEIGHT)
 
     def winforms_text_changed(self, sender, event):
-        # Only report text change events when the placeholder is not visible.
+        # Showing and hiding the placeholder should not cause an interface event.
         if not self._placeholder_visible:
             self.interface.on_change(None)
 
-    def _update_text(self):
-        if self._placeholder_visible:
+    def _set_placeholder_visible(self, visible):
+        # Changing ForeColor causes a native TextChanged event, so the order of these
+        # lines is important.
+        if visible:
+            self._placeholder_visible = True
             self.native.Text = self._placeholder
             self.native.ForeColor = SystemColors.GrayText
-        else:
+        elif self._placeholder_visible:
             self.native.ForeColor = self._color
+            self._placeholder_visible = False
 
     def set_color(self, color):
         self._color = (
             SystemColors.WindowText if (color is None) else native_color(color)
         )
-        self._update_text()
+        if not self._placeholder_visible:
+            self.native.ForeColor = self._color
 
     def set_alignment(self, value):
         original_selection = (self.native.SelectionStart, self.native.SelectionLength)
