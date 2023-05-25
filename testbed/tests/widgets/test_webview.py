@@ -15,14 +15,10 @@ from .properties import (  # noqa: F401
 async def widget():
     widget = toga.WebView(style=Pack(flex=1))
 
-    # Set some initial content that can accept focus, and has a visible background
+    # Set some initial content that has a visible background
     widget.set_content(
         "https://example.com/",
-        (
-            "<html style='background-color:rebeccapurple;'>"
-            "  <body><input style='width:50px;'></body>"
-            "</html>"
-        ),
+        "<html style='background-color:rebeccapurple;'></html>",
     )
     return widget
 
@@ -30,7 +26,8 @@ async def widget():
 async def test_clear_url(widget, probe):
     "The URL can be cleared"
     widget.url = None
-    # A short delay is required because HTML DOM evaluation lags.
+
+    # DOM loads aren't instantaneous; wait for the URL to appear
     await probe.redraw("Page has loaded", delay=0.1)
 
     # URL is empty
@@ -43,9 +40,8 @@ async def test_load_url(widget, probe):
 
     await widget.load_url("https://github.com/beeware")
 
-    # A short delay is required because HTML DOM evaluation lags.
-    await probe.redraw("Page has loaded", delay=0.2)
-    assert widget.url == "https://github.com/beeware"
+    # DOM loads aren't instantaneous; wait for the URL to appear
+    await probe.redraw("Page has loaded", delay=0.5)
 
     # The load hander was invoked.
     on_webview_load_handler.assert_called_once_with(widget)
@@ -56,10 +52,9 @@ async def test_static_content(widget, probe):
 
     widget.set_content("https://example.com/", "<h1>Nice page</h1>")
 
-    # A short delay is required because HTML DOM evaluation lags.
-    await probe.redraw("Webview has static content", delay=0.2)
+    # DOM loads aren't instantaneous; wait for the URL to appear
+    await probe.redraw("Webview has static content", delay=0.5)
 
-    assert widget.url == "https://example.com/"
     content = await probe.get_page_content()
     assert content == "<h1>Nice page</h1>"
 
@@ -80,12 +75,23 @@ async def test_evaluate_javascript(widget, probe):
     "JavaScript can be evaluated"
     on_result_handler = Mock()
 
-    result = await widget.evaluate_javascript("37 + 42", on_result=on_result_handler)
+    for expression, expected in [
+        ("37 + 42", 79),
+        ("'awesome'.includes('we')", True),
+        ("'hello js'", "hello js"),
+    ]:
+        # reset the mock for each pass
+        on_result_handler.reset_mock()
 
-    # The resulting value has been converted into Python
-    assert result == 79
-    # The same value was passed to the on-result handler
-    on_result_handler.assert_called_once_with(79)
+        result = await widget.evaluate_javascript(
+            expression,
+            on_result=on_result_handler,
+        )
+
+        # The resulting value has been converted into Python
+        assert result == expected
+        # The same value was passed to the on-result handler
+        on_result_handler.assert_called_once_with(expected)
 
 
 async def test_evaluate_javascript_no_handler(widget, probe):

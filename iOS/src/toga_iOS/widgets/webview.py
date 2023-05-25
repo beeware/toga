@@ -53,9 +53,7 @@ class WebView(Widget):
 
     def get_url(self):
         url = str(self.native.URL)
-        if url == "about:blank":
-            return None
-        return url
+        return None if url == "about:blank" else url
 
     def set_url(self, value, future=None):
         if value:

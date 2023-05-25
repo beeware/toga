@@ -10,7 +10,7 @@ class WebView(Widget):
     """GTK WebView implementation."""
 
     def create(self):
-        if WebKit2 is None:
+        if WebKit2 is None:  # pragma: no cover
             raise RuntimeError(
                 "Unable to import WebKit2. Ensure that the system package "
                 "providing Webkit2 and its GTK bindings have been installed."
@@ -30,17 +30,30 @@ class WebView(Widget):
 
         self.native.connect("load-changed", self.gtk_on_load_changed)
 
+        self.load_future = None
+
     def gtk_on_load_changed(self, widget, load_event, *args):
         if load_event == WebKit2.LoadEvent.FINISHED:
-            if self.interface.on_webview_load:
-                self.interface.on_webview_load(self.interface)
+            self.interface.on_webview_load(self.interface)
+
+            if self.load_future:
+                self.load_future.set_result(None)
+                self.load_future = None
 
     def get_url(self):
-        return self.native.get_uri()
+        url = self.native.get_uri()
+        return None if url == "about:blank" else url
 
     def set_url(self, value, future=None):
         if value:
             self.native.load_uri(value)
+        else:
+            self.native.load_plain_text("")
+
+        self.load_future = future
+
+    def get_user_agent(self):
+        return self.native.get_settings().props.user_agent
 
     def set_user_agent(self, value):
         # replace user agent of webview (webview has own one)
@@ -58,10 +71,24 @@ class WebView(Widget):
         def gtk_js_finished(webview, task, *user_data):
             """If `run_javascript_finish` from GTK returns a result, unmarshal it, and
             call back with the result."""
-            result = webview.run_javascript_finish(task)
-            if result:
-                result = result.get_js_value().to_string()
-            result.future.set_result(result)
+            try:
+                js_result = webview.run_javascript_finish(task)
+                value = js_result.get_js_value()
+                if value.is_boolean():
+                    value = value.to_boolean()
+                elif value.is_number():
+                    value = value.to_double()
+                else:
+                    value = value.to_string()
+
+                result.future.set_result(value)
+                if on_result:
+                    on_result(value)
+            except Exception as e:
+                exc = RuntimeError(str(e))
+                result.future.set_exception(exc)
+                if on_result:
+                    on_result(None, exception=exc)
 
         # Invoke the javascript method, with a callback that will set
         # the future when a result is available.
