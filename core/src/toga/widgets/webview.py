@@ -97,10 +97,10 @@ class WebView(Widget):
         self._impl.set_user_agent(value)
 
     def set_content(self, root_url: str, content: str):
-        """Set the content of the web view.
+        """Set the HTML content of the WebView.
 
         :param root_url: The URL
-        :param content: The HTML content for the webview
+        :param content: The HTML content for the WebView
         """
         self._impl.set_content(root_url, content)
 

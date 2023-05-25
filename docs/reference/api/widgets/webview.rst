@@ -46,7 +46,7 @@ Notes
   ``file://`` URL. To serve local file content, run a web server on
   ``localhost`` using a background thread, and set the WebView's URL
 
-* On macOS, the "inspect element" feature is not enabled by default. Webview
+* On macOS, the "inspect element" feature is not enabled by default. WebView
   debugging is only available when your code is packaged as a full macOS app
   (e.g., with Briefcase). To enable debugging, run:
 

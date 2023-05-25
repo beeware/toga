@@ -145,7 +145,10 @@ def test_set_content(widget):
     "Static HTML content can be loaded into the page"
     widget.set_content("https://example.com", "<h1>Fancy page</h1>")
     assert_action_performed_with(
-        widget, "set_content", "https://example.com", "<h1>Fancy page</h1>"
+        widget,
+        "set content",
+        root_url="https://example.com",
+        content="<h1>Fancy page</h1>",
     )
 
 
