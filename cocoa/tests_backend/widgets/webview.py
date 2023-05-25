@@ -6,9 +6,5 @@ from .base import SimpleProbe
 class WebViewProbe(SimpleProbe):
     native_class = WKWebView
 
-    # @property
-    # def readonly(self):
-    #     return not self.native.documentView.isEditable()
-
     async def get_page_content(self):
         return await self.impl.evaluate_javascript("document.body.innerHTML")
