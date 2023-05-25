@@ -106,28 +106,99 @@ async def test_scroll_position(widget, probe):
     assert probe.vertical_scroll_position == pytest.approx(0.0, abs=10)
 
 
-async def test_on_change_handler(widget, probe):
-    "The on_change handler is triggered when the user types, and on programmatic changes."
-    # Install a handler, and give the widget focus.
+@pytest.fixture
+async def handler(widget):
     handler = Mock()
     widget.on_change = handler
-    widget.placeholder = "placeholder"
-    widget.focus()
+    handler.assert_not_called()
+    return handler
 
-    # Programmatic value changes trigger the event handler
+
+@pytest.fixture
+async def other(widget):
+    "A separate widget that can take focus"
+    other = toga.TextInput()
+    widget.parent.add(other)
+    return other
+
+
+@pytest.fixture(params=[True, False])
+async def focused(request, widget, other):
+    if request.param:
+        widget.focus()
+    else:
+        other.focus()
+    return request.param
+
+
+@pytest.fixture(params=["", "placeholder"])
+async def placeholder(request, widget):
+    widget.placeholder = request.param
+
+
+async def test_on_change_programmatic(widget, probe, handler, focused, placeholder):
+    "The on_change handler is triggered on programmatic changes"
+    # Non-empty to non-empty
     widget.value = "This is new content."
     await probe.redraw("Value has been set programmatically")
-    assert handler.mock_calls == [call(widget)]
+    handler.assert_called_once_with(widget)
+    handler.reset_mock()
 
-    # Clearing triggers the event handler
+    # Non-empty to empty
     widget.value = ""
     await probe.redraw("Value has been cleared programmatically")
-    assert handler.mock_calls == [call(widget)] * 2
+    handler.assert_called_once_with(widget)
+    handler.reset_mock()
+
+    # Empty to non-empty
+    widget.value = "And another thing"
+    await probe.redraw("Value has been set programmatically")
+    handler.assert_called_once_with(widget)
+    handler.reset_mock()
+
+
+async def test_on_change_user(widget, probe, handler):
+    "The on_change handler is triggered on user input"
+    # This test simulates typing, so the widget must be focused.
+    widget.focus()
+    widget.value = ""
+    handler.reset_mock()
 
     for count, char in enumerate("Hello world", start=1):
         await probe.type_character(char)
         await probe.redraw(f"Typed {char!r}")
 
         # The number of events equals the number of characters typed.
-        assert handler.mock_calls == [call(widget)] * (count + 2)
-        assert probe.value == "Hello world"[:count]
+        assert handler.mock_calls == [call(widget)] * count
+        expected = "Hello world"[:count]
+        assert probe.value == expected
+        assert widget.value == expected
+
+
+async def test_on_change_focus(widget, probe, handler, focused, placeholder, other):
+    """The on_change handler is not triggered by focus changes, even if they cause a
+    placeholder to appear or disappear.
+    """
+
+    def toggle_focus():
+        nonlocal focused
+        if focused:
+            other.focus()
+            focused = False
+        else:
+            widget.focus()
+            focused = True
+
+    widget.value = ""
+    handler.assert_called_once_with(widget)
+    handler.reset_mock()
+    toggle_focus()
+    await probe.redraw(f"Value is empty; focus toggled to {focused}")
+    handler.assert_not_called()
+
+    widget.value = "something"
+    handler.assert_called_once_with(widget)
+    handler.reset_mock()
+    toggle_focus()
+    await probe.redraw(f"Value is non-empty; focus toggled to {focused}")
+    handler.assert_not_called()
