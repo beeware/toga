@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import datetime
 import warnings
 
@@ -16,7 +18,7 @@ class DateInput(Widget):
         value: datetime.date | None = None,
         min_date: datetime.date | None = None,
         max_date: datetime.date | None = None,
-        on_change=None,
+        on_change: callable | None = None,
     ):
         """Create a new DateInput widget.
 
@@ -145,7 +147,7 @@ class DateInput(Widget):
         self._impl.set_max_date(max_date)
 
     @property
-    def on_change(self):
+    def on_change(self) -> callable:
         """The handler to invoke when the date value changes."""
         return self._on_change
 
