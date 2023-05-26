@@ -32,11 +32,10 @@ class TimePicker(PickerBase):
         return "HH:MM"
 
     def create(self):
-        return super().create()
+        self._min_time = None
+        self._max_time = None
 
-    def set_on_change(self, handler):
-        # nothing to do here, but it just has to exist
-        pass
+        return super().create()
 
     def get_value(self):
         return self._value
@@ -47,8 +46,14 @@ class TimePicker(PickerBase):
         if self._dialog is not None:
             self._dialog.updateTime(value.hour, value.minute)
 
+    def get_min_time(self):
+        return self._min_time
+
     def set_min_time(self, value):
         self.interface.factory.not_implemented("TimePicker.set_min_time()")
+
+    def get_max_time(self):
+        return self._max_time
 
     def set_max_time(self, value):
         self.interface.factory.not_implemented("TimePicker.set_max_time()")

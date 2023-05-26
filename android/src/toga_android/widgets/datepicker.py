@@ -33,11 +33,10 @@ class DatePicker(PickerBase):
         return "YYYY-MM-DD"
 
     def create(self):
-        return super().create()
+        self._min_date = None
+        self._max_date = None
 
-    def set_on_change(self, handler):
-        # nothing to do here, but it just has to exist
-        pass
+        return super().create()
 
     def get_value(self):
         return self._value
@@ -49,11 +48,19 @@ class DatePicker(PickerBase):
             if self._dialog is not None:
                 self._dialog.updateDate(value.year, value.month - 1, value.day)
 
+    def get_min_date(self):
+        return self._min_date
+
     def set_min_date(self, value):
+        self._min_date = value
         if value is not None and self._dialog is not None:
             self._dialog.getDatePicker().setMinDate(self._date_to_milli(value))
 
+    def get_max_date(self):
+        return self._max_date
+
     def set_max_date(self, value):
+        self._max_date = value
         if value is not None and self._dialog is not None:
             self._dialog.getDatePicker().setMaxDate(self._date_to_milli(value))
 

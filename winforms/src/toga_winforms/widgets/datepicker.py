@@ -7,20 +7,28 @@ from toga_winforms.libs import CultureInfo, WinDateTime, WinForms
 from .base import Widget
 
 
+def py_date(value):
+    return datetime.datetime.strptime(
+        value.ToString("yyyy-MM-ddTHH:mm:sszzz", CultureInfo.InvariantCulture),
+        "%Y-%m-%dT%H:%M:%S%z",
+    ).date()
+
+
 class DatePicker(Widget):
     def create(self):
         self.native = WinForms.DateTimePicker()
+        self.native.ValueChanged += self.winforms_value_changed
 
     def get_value(self):
-        return datetime.datetime.strptime(
-            self.native.Value.ToString(
-                "yyyy-MM-ddTHH:mm:sszzz", CultureInfo.InvariantCulture
-            ),
-            "%Y-%m-%dT%H:%M:%S%z",
-        ).date()
+        return py_date(self.native.Value)
 
     def set_value(self, value):
         self.native.Value = WinDateTime(value.year, value.month, value.day)
+
+    def get_min_date(self):
+        if self.native.MinDate == self.native.MinDateTime:
+            return None
+        return py_date(self.native.MinDate)
 
     def set_min_date(self, value):
         if value is None:
@@ -29,6 +37,11 @@ class DatePicker(Widget):
             value = WinDateTime(value.year, value.month, value.day)
 
         self.native.MinDate = value
+
+    def get_max_date(self):
+        if self.native.MaxDate == self.native.MaxDateTime:
+            return None
+        return py_date(self.native.MaxDate)
 
     def set_max_date(self, value):
         if value is None:
@@ -44,9 +57,5 @@ class DatePicker(Widget):
         self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
         self.interface.intrinsic.height = self.native.PreferredSize.Height
 
-    def set_on_change(self, handler):
-        self.native.ValueChanged += self.on_date_change
-
-    def on_date_change(self, sender, event):
-        if self.interface._on_change:
-            self.interface.on_change(self.interface)
+    def winforms_value_changed(self, sender, event):
+        self.interface.on_change(self.interface)
