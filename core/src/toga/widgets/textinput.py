@@ -1,4 +1,4 @@
-from typing import List, Optional
+from __future__ import annotations
 
 from toga.handlers import wrapped_handler
 
@@ -15,14 +15,14 @@ class TextInput(Widget):
         self,
         id=None,
         style=None,
-        value: Optional[str] = None,
+        value: str | None = None,
         readonly: bool = False,
-        placeholder: Optional[str] = None,
-        on_change=None,
-        on_confirm=None,
-        on_gain_focus=None,
-        on_lose_focus=None,
-        validators: Optional[List[callable]] = None,
+        placeholder: str | None = None,
+        on_change: callable | None = None,
+        on_confirm: callable | None = None,
+        on_gain_focus: callable | None = None,
+        on_lose_focus: callable | None = None,
+        validators: list[callable] | None = None,
     ):
         """
         :param id: The ID for the widget.
@@ -127,7 +127,7 @@ class TextInput(Widget):
         return self._impl.is_valid()
 
     @property
-    def on_change(self):
+    def on_change(self) -> callable:
         """The handler to invoke when the value of the widget changes."""
         return self._on_change
 
@@ -136,7 +136,7 @@ class TextInput(Widget):
         self._on_change = wrapped_handler(self, handler)
 
     @property
-    def validators(self) -> List[callable]:
+    def validators(self) -> list[callable]:
         """The list of validators being used to check input on the widget.
 
         Changing the list of validators will cause validation to be performed.
@@ -155,7 +155,7 @@ class TextInput(Widget):
             self.validate()
 
     @property
-    def on_gain_focus(self):
+    def on_gain_focus(self) -> callable:
         """The handler to invoke when the widget gains input focus."""
         return self._on_gain_focus
 
@@ -164,7 +164,7 @@ class TextInput(Widget):
         self._on_gain_focus = wrapped_handler(self, handler)
 
     @property
-    def on_lose_focus(self):
+    def on_lose_focus(self) -> callable:
         """The handler to invoke when the widget loses input focus."""
         return self._on_lose_focus
 
@@ -192,7 +192,7 @@ class TextInput(Widget):
             return False
 
     @property
-    def on_confirm(self):
+    def on_confirm(self) -> callable:
         """The handler to invoke when the user accepts the value of the widget,
         usually by pressing return/enter on the keyboard.
         """
