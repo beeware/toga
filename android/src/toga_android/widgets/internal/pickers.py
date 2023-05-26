@@ -26,7 +26,6 @@ class PickerBase(Widget, ABC):
         raise NotImplementedError
 
     def create(self):
-        self._value = None
         self._dialog = None
         self.native = EditText(self._native_activity)
         self.native.setFocusable(False)

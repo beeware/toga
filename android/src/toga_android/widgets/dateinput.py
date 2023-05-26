@@ -33,6 +33,7 @@ class DateInput(PickerBase):
         return "YYYY-MM-DD"
 
     def create(self):
+        self._value = date.today()
         self._min_date = None
         self._max_date = None
 
@@ -78,6 +79,6 @@ class DateInput(PickerBase):
             self._value.month - 1,
             self._value.day,
         )
-        self.set_min_date(self.interface._min_date)
-        self.set_max_date(self.interface._max_date)
+        self.set_min_date(self._min_date)
+        self.set_max_date(self._max_date)
         self._dialog.show()

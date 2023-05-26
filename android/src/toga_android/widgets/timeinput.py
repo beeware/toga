@@ -1,4 +1,4 @@
-from datetime import time
+from datetime import datetime, time
 
 from ..libs.android import R__drawable
 from ..libs.android.widget import (
@@ -32,6 +32,7 @@ class TimeInput(PickerBase):
         return "HH:MM"
 
     def create(self):
+        self._value = datetime.now().time()
         self._min_time = None
         self._max_time = None
 
