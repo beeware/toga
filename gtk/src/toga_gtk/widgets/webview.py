@@ -49,6 +49,7 @@ class WebView(Widget):
             self.native.load_uri(value)
         else:
             self.native.load_plain_text("")
+            self.interface.on_webview_load(self.interface)
 
         self.load_future = future
 
