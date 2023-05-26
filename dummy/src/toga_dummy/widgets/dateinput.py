@@ -1,8 +1,10 @@
 from datetime import date
 
+from ..utils import not_required
 from .base import Widget
 
 
+@not_required  # Testbed coverage is complete for this widget.
 class DateInput(Widget):
     def create(self):
         self._action("create DateInput")
@@ -25,6 +27,3 @@ class DateInput(Widget):
 
     def set_max_date(self, value):
         self._set_value("max date", value)
-
-    def set_on_change(self, handler):
-        self._set_value("on_change", handler)
