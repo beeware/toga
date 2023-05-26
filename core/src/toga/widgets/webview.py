@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import asyncio
 
 from toga.handlers import AsyncResult, wrapped_handler
@@ -14,9 +16,9 @@ class WebView(Widget):
         self,
         id=None,
         style=None,
-        url: str = None,
-        user_agent: str = None,
-        on_webview_load=None,
+        url: str | None = None,
+        user_agent: str | None = None,
+        on_webview_load: callable | None = None,
     ):
         """Create a new WebView widget.
 
@@ -50,7 +52,7 @@ class WebView(Widget):
         self._impl.set_url(url, future=future)
 
     @property
-    def url(self) -> str:
+    def url(self) -> str | None:
         """The current URL.
 
         WebView can only display ``http://`` and ``https://`` URLs.
@@ -79,7 +81,7 @@ class WebView(Widget):
         return await loaded_future
 
     @property
-    def on_webview_load(self):
+    def on_webview_load(self) -> callable:
         """The handler to invoke when the web view finishes loading."""
         return self._on_webview_load
 
