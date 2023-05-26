@@ -1,5 +1,4 @@
 import datetime
-import warnings
 
 from toga.handlers import wrapped_handler
 
@@ -7,70 +6,55 @@ from .base import Widget
 
 
 class DatePicker(Widget):
-    """A widget to get user selected datetime object.
-
-    Args:
-        id (str): An identifier for this widget.
-        style (:obj:`Style`): An optional style object. If no style is provided then
-            a new one will be created for the widget.
-    """
-
     _MIN_WIDTH = 200
 
     def __init__(
         self,
         id=None,
         style=None,
-        factory=None,  # DEPRECATED!
-        value=None,
-        min_date=None,
-        max_date=None,
+        value: datetime.date | None = None,
+        min_date: datetime.date | None = None,
+        max_date: datetime.date | None = None,
         on_change=None,
-        initial=None,  # DEPRECATED!
     ):
+        """Create a new DatePicker widget.
+
+        Inherits from :class:`~toga.widgets.base.Widget`.
+
+        :param id: The ID for the widget.
+        :param style: A style object. If no style is provided, a default style
+            will be applied to the widget.
+        :param value: The initial date to display. Optional; if not specified,
+            today's date will be used.
+        :param min_date: Optional; if provided, the earliest date (inclusive)
+            that can be selected.
+        :param max_date: Optional; if provided, the latest date (inclusive)
+            that can be selected.
+        :param on_change: A handler that will be invoked when the switch changes
+            value.
+        """
         super().__init__(id=id, style=style)
-        ######################################################################
-        # 2022-09: Backwards compatibility
-        ######################################################################
-        # factory no longer used
-        if factory:
-            warnings.warn("The factory argument is no longer used.", DeprecationWarning)
-        ######################################################################
-        # End backwards compatibility.
-        ######################################################################
 
         # Create a platform specific implementation of a DatePicker
         self._impl = self.factory.DatePicker(interface=self)
 
-        ##################################################################
-        # 2022-07: Backwards compatibility
-        ##################################################################
-
-        # initial replaced with value
-        if initial is not None:
-            if value is not None:
-                raise ValueError(
-                    "Cannot specify both `initial` and `value`; "
-                    "`initial` has been deprecated, use `value`"
-                )
-            else:
-                warnings.warn("`initial` has been renamed `value`", DeprecationWarning)
-            value = initial
-
-        ##################################################################
-        # End backwards compatibility.
-        ##################################################################
-
-        self.value = value
+        self.on_change = None
         self.min_date = min_date
         self.max_date = max_date
+
+        self.value = value
         self.on_change = on_change
 
     @property
-    def value(self):
-        """The value of the currently selected date.
+    def value(self) -> datetime.date:
+        """The currently selected date.
 
-        :return: Selected date as Date object
+        A value of ``None`` will be converted into today's date.
+
+        If a ``datetime`` object is provided, the date portion will be extracted.
+
+        If a string is provided, it will be parsed as an ISO8601 format date
+        string. (i.e., "2023-12-25")
         """
         return self._impl.get_value()
 
@@ -84,63 +68,86 @@ class DatePicker(Widget):
         elif isinstance(value, str):
             return datetime.date.fromisoformat(value)
         else:
-            raise TypeError("not a valid date value")
+            raise TypeError("Not a valid date value")
 
     @value.setter
     def value(self, value):
-        self._impl.set_value(self._convert_date(value))
+        value = self._convert_date(value)
+
+        if self.min_date and value < self.min_date:
+            value = self.min_date
+        elif self.max_date and value > self.max_date:
+            value = self.max_date
+
+        self._impl.set_value(value)
 
     @property
-    def min_date(self):
-        """The minimum allowable date for the widget. All dates prior to the minimum
-        date will be blanked out.
+    def min_date(self) -> datetime.date | None:
+        """The minimum allowable date (inclusive) for the widget.
 
-        :return: The minimum date specified. Returns None if min_date not specified
+        If provided, dates earlier than the provided date will not be available
+        for selection. Any existing date value will be clipped to the new
+        minimum.
+
+        The value provided for the minimum date will be interpreted using the
+        same rules as ``value``, with a value of ``None`` removing any minimum
+        bound on date selection.
+
+        If a new minimum date falls after the currently specified maximum date,
+        a ``ValueError`` is raised.
         """
-        return self._min_date
+        return self._impl.get_min_date()
 
     @min_date.setter
     def min_date(self, value):
         if value is None:
-            self._min_date = None
+            min_date = None
         else:
-            self._min_date = self._convert_date(value)
+            min_date = self._convert_date(value)
+            max_date = self.max_date
+            if max_date and min_date > max_date:
+                raise ValueError("min_date is after the current max_date")
+            if self.value < min_date:
+                self.value = min_date
 
-        self._impl.set_min_date(self._min_date)
+        self._impl.set_min_date(min_date)
 
     @property
-    def max_date(self):
-        """The maximum allowable date for the widget. All dates prior to the minimum
-        date will be blanked out.
+    def max_date(self) -> datetime.date | None:
+        """The maximum allowable date (inclusive) for the widget.
 
-        :return: The maximum date specified. Returns None if max_date not specified
+        If provided, dates after than the provided date will not be available
+        for selection. Any existing date value will be clipped to the new
+        maximum.
+
+        The value provided for the maximum date will be interpreted using the
+        same rules as ``value``, with a value of ``None`` removing any maximum
+        bound on date selection.
+
+        If a new maximum date falls after the currently specified minimum date,
+        a ``ValueError`` is raised.
         """
-        return self._max_date
+        return self._impl.get_max_date()
 
     @max_date.setter
     def max_date(self, value):
         if value is None:
-            self._max_date = None
+            max_date = None
         else:
-            self._max_date = self._convert_date(value)
+            max_date = self._convert_date(value)
+            min_date = self.min_date
+            if min_date and max_date < min_date:
+                raise ValueError("max_date is before the current min_date")
+            if self.value > max_date:
+                self.value = max_date
 
-        self._impl.set_max_date(self._max_date)
+        self._impl.set_max_date(max_date)
 
     @property
     def on_change(self):
-        """The handler to invoke when the value changes.
-
-        Returns:
-            The function ``callable`` that is called on a content change.
-        """
+        """The handler to invoke when the date value changes."""
         return self._on_change
 
     @on_change.setter
     def on_change(self, handler):
-        """Set the handler to invoke when the date is changed.
-
-        Args:
-            handler (:obj:`callable`): The handler to invoke when the date is changed.
-        """
         self._on_change = wrapped_handler(self, handler)
-        self._impl.set_on_change(self._on_change)

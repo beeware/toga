@@ -1,103 +1,218 @@
 import datetime
+from unittest.mock import Mock
+
+import pytest
 
 import toga
-from toga_dummy.utils import TestCase
+from toga_dummy.utils import assert_action_performed
 
 
-class TimePickerTests(TestCase):
-    def setUp(self):
-        super().setUp()
+@pytest.fixture
+def on_change_handler():
+    return Mock()
 
-        self.time_picker = toga.TimePicker()
 
-    def test_widget_created(self):
-        self.assertEqual(self.time_picker._impl.interface, self.time_picker)
-        self.assertActionPerformed(self.time_picker, "create TimePicker")
+@pytest.fixture
+def widget(on_change_handler):
+    return toga.TimePicker(on_change=on_change_handler)
 
-    def test_getting_value_invokes_impl_method(self):
-        # Exercise the value attribute getter for testing only. Actual value not needed.
-        self.time_picker.value
-        self.assertValueGet(self.time_picker, "value")
 
-    def test_set_value_with_None(self):
-        self.time_picker.value = None
-        none_default = datetime.datetime.today().time().replace(microsecond=0)
-        self.assertValueSet(self.time_picker, "value", none_default)
+@pytest.mark.freeze_time("2023-05-25 10:42:37")
+def test_widget_created():
+    """A TimePicker can be created."""
+    widget = toga.TimePicker()
 
-    def test_set_value_with_string(self):
-        self.time_picker.value = "06:07:08"
-        self.assertValueSet(self.time_picker, "value", datetime.time(6, 7, 8))
+    # Round trip the impl/interface
+    assert widget._impl.interface == widget
+    assert_action_performed(widget, "create TimePicker")
 
-    def test_set_value_with_invalid_string(self):
-        with self.assertRaises(ValueError):
-            self.time_picker.value = "Not a time"
+    assert widget.value == datetime.time(10, 42, 0)
+    assert widget.on_change._raw is None
 
-    def test_set_value_with_non_time(self):
-        with self.assertRaises(TypeError):
-            self.time_picker.value = 1.2345
 
-    def test_set_value_with_an_hour_ago(self):
-        hour_ago = (datetime.datetime.today() - datetime.timedelta(hours=1)).time()
-        self.time_picker.value = hour_ago
-        self.assertValueSet(self.time_picker, "value", hour_ago)
+def test_widget_created_with_values(on_change_handler):
+    """A TimePicker can be created with initial values"""
+    # Round trip the impl/interface
+    widget = toga.TimePicker(
+        value=datetime.time(13, 37, 42),
+        min_time=datetime.time(6, 1, 2),
+        max_time=datetime.time(18, 58, 59),
+        on_change=on_change_handler,
+    )
+    assert widget._impl.interface == widget
+    assert_action_performed(widget, "create TimePicker")
 
-    def test_set_value_with_an_hour_ago_datetime(self):
-        hour_ago = datetime.datetime.now() - datetime.timedelta(hours=1)
-        self.time_picker.value = hour_ago
-        self.assertValueSet(self.time_picker, "value", hour_ago.time())
+    assert widget.value == datetime.time(13, 37, 42)
+    assert widget.min_time == datetime.time(6, 1, 2)
+    assert widget.max_time == datetime.time(18, 58, 59)
+    assert widget.on_change._raw == on_change_handler
 
-    def test_setting_value_invokes_impl_method(self):
-        new_value = "06:07:08"
-        self.time_picker.value = new_value
-        self.assertValueSet(self.time_picker, "value", datetime.time(6, 7, 8))
+    # The change handler isn't invoked at construction.
+    on_change_handler.assert_not_called()
 
-    def test_min_max_time(self):
-        self.assertEqual(self.time_picker.min_time, None)
-        self.assertEqual(self.time_picker.max_time, None)
 
-        hour_ago = (datetime.datetime.today() - datetime.timedelta(hours=1)).time()
-        self.time_picker.min_time = hour_ago
-        self.time_picker.max_time = hour_ago
-        self.assertEqual(self.time_picker.min_time, hour_ago)
-        self.assertEqual(self.time_picker.max_time, hour_ago)
+@pytest.mark.freeze_time("2023-05-25 10:42:37")
+@pytest.mark.parametrize(
+    "value, expected",
+    [
+        (None, datetime.time(10, 42, 0)),
+        (datetime.time(14, 37, 42), datetime.time(14, 37, 42)),
+        (datetime.datetime(2023, 2, 11, 14, 37, 42), datetime.time(14, 37, 42)),
+        ("14:37:42", datetime.time(14, 37, 42)),
+    ],
+)
+def test_value(widget, value, expected, on_change_handler):
+    "The value of the datepicker can be set"
+    widget.value = value
 
-        self.time_picker.min_time = None
-        self.time_picker.max_time = None
-        self.assertEqual(self.time_picker.min_time, None)
-        self.assertEqual(self.time_picker.max_time, None)
+    assert widget.value == expected
 
-    def test_on_change_callback_set(self):
-        def dummy_function():
-            pass
+    on_change_handler.assert_called_once_with(widget)
 
-        self.time_picker.on_change = dummy_function
-        self.assertIsNotNone(self.time_picker.on_change)
 
-    def test_focus(self):
-        self.time_picker.focus()
-        self.assertActionPerformed(self.time_picker, "focus")
+@pytest.mark.parametrize(
+    "value, exc, message",
+    [
+        (123, TypeError, "Not a valid time value"),
+        (object(), TypeError, "Not a valid time value"),
+        (datetime.date(2023, 5, 25), TypeError, "Not a valid time value"),
+        ("not a time", ValueError, "Invalid isoformat string: 'not a time'"),
+    ],
+)
+def test_invalid_value(widget, value, exc, message):
+    "Invalid time values raise an exception"
+    with pytest.raises(exc, match=message):
+        widget.value = value
 
-    ######################################################################
-    # 2022-07: Backwards compatibility
-    ######################################################################
 
-    def test_init_with_deprecated(self):
-        value = datetime.time(6, 7, 8)
+@pytest.mark.parametrize(
+    "value, clipped",
+    [
+        (datetime.time(3, 37, 42), datetime.time(6, 0, 0)),
+        (datetime.time(10, 37, 42), datetime.time(10, 37, 42)),
+        (datetime.time(22, 37, 42), datetime.time(18, 0, 0)),
+    ],
+)
+def test_value_clipping(widget, value, clipped, on_change_handler):
+    "It the value is inconsistent with min/max, it is clipped."
+    # Set min/max dates, and clear the on_change mock
+    widget.min_time = datetime.time(6, 0, 0)
+    widget.max_time = datetime.time(18, 0, 0)
+    on_change_handler.reset_mock()
 
-        # initial is a deprecated argument
-        with self.assertWarns(DeprecationWarning):
-            my_text_input = toga.TimePicker(
-                initial=value,
-            )
-        self.assertEqual(my_text_input.value, value)
+    # Set the new value
+    widget.value = value
 
-        # can't specify both initial *and* value
-        with self.assertRaises(ValueError):
-            toga.TimePicker(
-                initial=value,
-                value=value,
-            )
+    # Value has been clipped
+    assert widget.value == clipped
 
-    ######################################################################
-    # End backwards compatibility.
-    ######################################################################
+    # on_change handler called once.
+    on_change_handler.assert_called_once_with(widget)
+
+
+@pytest.mark.parametrize(
+    "value, expected",
+    [
+        (None, None),
+        (datetime.time(6, 1, 11), datetime.time(6, 1, 11)),
+        (datetime.datetime(2023, 6, 16, 6, 2, 11), datetime.time(6, 2, 11)),
+        ("06:03:11", datetime.time(6, 3, 11)),
+    ],
+)
+def test_min_time(widget, value, expected):
+    "The min_time of the datepicker can be set"
+    widget.min_time = value
+
+    assert widget.min_time == expected
+
+
+@pytest.mark.parametrize(
+    "value, exc, message",
+    [
+        (123, TypeError, "Not a valid time value"),
+        (object(), TypeError, "Not a valid time value"),
+        (datetime.date(2023, 5, 25), TypeError, "Not a valid time value"),
+        ("not a time", ValueError, "Invalid isoformat string: 'not a time'"),
+        (
+            datetime.time(19, 0, 0),
+            ValueError,
+            "min_time is after the current max_time",
+        ),
+    ],
+)
+def test_invalid_min_time(widget, value, exc, message):
+    "Invalid min_time values raise an exception"
+    widget.max_time = datetime.time(18, 0, 0)
+
+    with pytest.raises(exc, match=message):
+        widget.min_time = value
+
+
+def test_min_time_clip(widget, on_change_handler):
+    "If the current value is before a new min date, the value is clipped"
+    widget.value = datetime.time(3, 42, 37)
+
+    # Clear the change handler
+    on_change_handler.reset_mock()
+
+    widget.min_time = datetime.time(6, 0, 0)
+
+    # Value has been clipped
+    assert widget.value == datetime.time(6, 0, 0)
+
+    # on_change handler called.
+    on_change_handler.assert_called_once_with(widget)
+
+
+@pytest.mark.parametrize(
+    "value, expected",
+    [
+        (None, None),
+        (datetime.time(18, 1, 11), datetime.time(18, 1, 11)),
+        (datetime.datetime(2023, 5, 25, 18, 2, 11), datetime.time(18, 2, 11)),
+        ("18:03:11", datetime.time(18, 3, 11)),
+    ],
+)
+def test_max_time(widget, value, expected):
+    "The max_time of the datepicker can be set"
+    widget.max_time = value
+
+    assert widget.max_time == expected
+
+
+@pytest.mark.parametrize(
+    "value, exc, message",
+    [
+        (123, TypeError, "Not a valid time value"),
+        (object(), TypeError, "Not a valid time value"),
+        (datetime.date(2023, 5, 25), TypeError, "Not a valid time value"),
+        ("not a time", ValueError, "Invalid isoformat string: 'not a time'"),
+        (
+            datetime.time(6, 37, 42),
+            ValueError,
+            "max_time is before the current min_time",
+        ),
+    ],
+)
+def test_invalid_max_time(widget, value, exc, message):
+    "Invalid max_time values raise an exception"
+    widget.min_time = datetime.time(18, 0, 0)
+
+    with pytest.raises(exc, match=message):
+        widget.max_time = value
+
+
+def test_max_time_clip(widget, on_change_handler):
+    "If the current value is after a new max date, the value is clipped"
+    widget.value = datetime.time(22, 37, 42)
+
+    # Clear the change handler
+    on_change_handler.reset_mock()
+
+    widget.max_time = datetime.time(18, 0, 0)
+
+    # Value has been clipped
+    assert widget.value == datetime.time(18, 0, 0)
+
+    # on_change handler called.
+    on_change_handler.assert_called_once_with(widget)
