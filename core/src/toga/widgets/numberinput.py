@@ -1,6 +1,7 @@
+from __future__ import annotations
+
 import re
 from decimal import Decimal, InvalidOperation
-from typing import Optional
 
 from toga.handlers import wrapped_handler
 
@@ -48,11 +49,11 @@ class NumberInput(Widget):
         id=None,
         style=None,
         step: Decimal = 1,
-        min_value: Optional[Decimal] = None,
-        max_value: Optional[Decimal] = None,
-        value: Optional[Decimal] = None,
+        min_value: Decimal | None = None,
+        max_value: Decimal | None = None,
+        value: Decimal | None = None,
         readonly: bool = False,
-        on_change=None,
+        on_change: callable | None = None,
     ):
         """Create a new single-line text input widget.
 
@@ -127,7 +128,7 @@ class NumberInput(Widget):
         self._impl.set_step(self._step)
 
     @property
-    def min_value(self) -> Optional[Decimal]:
+    def min_value(self) -> Decimal | None:
         """The minimum bound for the widget's value.
 
         Returns ``None`` if there is no minimum bound.
@@ -156,7 +157,7 @@ class NumberInput(Widget):
         self._impl.set_min_value(new_min)
 
     @property
-    def max_value(self) -> Optional[Decimal]:
+    def max_value(self) -> Decimal | None:
         """The maximum bound for the widget's value.
 
         Returns ``None`` if there is no maximum bound.
@@ -185,7 +186,7 @@ class NumberInput(Widget):
         self._impl.set_max_value(new_max)
 
     @property
-    def value(self) -> Optional[Decimal]:
+    def value(self) -> Decimal | None:
         """Current value of the widget.
 
         Returns ``None`` if no value has been set on the widget.
@@ -230,7 +231,7 @@ class NumberInput(Widget):
         self.refresh()
 
     @property
-    def on_change(self):
+    def on_change(self) -> callable:
         """The handler to invoke when the value of the widget changes."""
         return self._on_change
 
