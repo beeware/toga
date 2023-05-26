@@ -11,7 +11,7 @@ class Switch(Widget):
         text,
         id=None,
         style=None,
-        on_change=None,
+        on_change: callable | None = None,
         value: bool = False,
         enabled: bool = True,
     ):
@@ -70,7 +70,7 @@ class Switch(Widget):
         self.refresh()
 
     @property
-    def on_change(self):
+    def on_change(self) -> callable:
         """The handler to invoke when the value of the switch changes."""
         return self._on_change
 

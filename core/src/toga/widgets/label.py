@@ -6,7 +6,7 @@ from .base import Widget
 class Label(Widget):
     def __init__(
         self,
-        text,
+        text: str,
         id=None,
         style=None,
     ):
@@ -31,7 +31,7 @@ class Label(Widget):
         pass
 
     @property
-    def text(self):
+    def text(self) -> str:
         """The text displayed by the label.
 
         ``None``, and the Unicode codepoint U+200B (ZERO WIDTH SPACE), will be

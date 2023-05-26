@@ -11,8 +11,8 @@ class Button(Widget):
         text,
         id=None,
         style=None,
-        on_press=None,
-        enabled=True,
+        on_press: callable | None = None,
+        enabled: bool = True,
     ):
         """Create a new button widget.
 
@@ -41,7 +41,7 @@ class Button(Widget):
         self.enabled = enabled
 
     @property
-    def text(self):
+    def text(self) -> str:
         """The text displayed on the button.
 
         ``None``, and the Unicode codepoint U+200B (ZERO WIDTH SPACE), will be
@@ -66,7 +66,7 @@ class Button(Widget):
         self.refresh()
 
     @property
-    def on_press(self):
+    def on_press(self) -> callable:
         """The handler to invoke when the button is pressed."""
         return self._on_press
 

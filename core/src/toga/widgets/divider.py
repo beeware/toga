@@ -30,7 +30,7 @@ class Divider(Widget):
         self.direction = direction
 
     @property
-    def enabled(self):
+    def enabled(self) -> bool:
         """Is the widget currently enabled? i.e., can the user interact with the widget?
 
         Divider widgets cannot be disabled; this property will always return True; any

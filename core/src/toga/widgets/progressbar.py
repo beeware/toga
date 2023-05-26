@@ -8,9 +8,9 @@ class ProgressBar(Widget):
         self,
         id=None,
         style=None,
-        max=1.0,
-        value=0.0,
-        running=False,
+        max: float = 1.0,
+        value: float = 0.0,
+        running: bool = False,
     ):
         """Create a new Progress Bar widget.
 
