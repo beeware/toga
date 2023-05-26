@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from .base import Widget
 
 
@@ -8,9 +10,9 @@ class ProgressBar(Widget):
         self,
         id=None,
         style=None,
-        max=1.0,
-        value=0.0,
-        running=False,
+        max: float = 1.0,
+        value: float = 0.0,
+        running: bool = False,
     ):
         """Create a new Progress Bar widget.
 
@@ -39,7 +41,7 @@ class ProgressBar(Widget):
             self.start()
 
     @property
-    def enabled(self):
+    def enabled(self) -> bool:
         """Is the widget currently enabled? i.e., can the user interact with the widget?
 
         ProgressBar widgets cannot be disabled; this property will always return True;
@@ -52,7 +54,7 @@ class ProgressBar(Widget):
         pass
 
     @property
-    def is_running(self):
+    def is_running(self) -> bool:
         """Describe if the activity indicator is currently running.
 
         Use ``start()`` and ``stop()`` to change the running state.
@@ -62,7 +64,7 @@ class ProgressBar(Widget):
         return self._impl.is_running()
 
     @property
-    def is_determinate(self):
+    def is_determinate(self) -> bool:
         """Describe whether the progress bar has a known or indeterminate maximum.
 
         True if the progress bar has determinate length; False otherwise.
@@ -86,7 +88,7 @@ class ProgressBar(Widget):
             self._impl.stop()
 
     @property
-    def value(self):
+    def value(self) -> float:
         """The current value of the progress indicator.
 
         If the progress bar is determinate, the value must be between 0 and
@@ -104,7 +106,7 @@ class ProgressBar(Widget):
             self._impl.set_value(value)
 
     @property
-    def max(self):
+    def max(self) -> float | None:
         """The value indicating completion of the task being monitored.
 
         Must be a number > 0, or ``None`` for a task of indeterminate length.

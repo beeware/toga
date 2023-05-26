@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from toga.handlers import wrapped_handler
 
 from .base import Widget
@@ -8,10 +10,10 @@ class MultilineTextInput(Widget):
         self,
         id=None,
         style=None,
-        value: str = None,
+        value: str | None = None,
         readonly: bool = False,
-        placeholder: str = None,
-        on_change=None,
+        placeholder: str | None = None,
+        on_change: callable | None = None,
     ):
         """Create a new multi-line text input widget.
 
@@ -94,7 +96,7 @@ class MultilineTextInput(Widget):
         self._impl.scroll_to_top()
 
     @property
-    def on_change(self):
+    def on_change(self) -> callable:
         """The handler to invoke when the value of the widget changes."""
         return self._on_change
 

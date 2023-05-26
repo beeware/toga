@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from toga.handlers import wrapped_handler
 
 from .base import Widget
@@ -9,9 +11,9 @@ class Switch(Widget):
         text,
         id=None,
         style=None,
-        on_change=None,
-        value=False,
-        enabled=True,
+        on_change: callable | None = None,
+        value: bool = False,
+        enabled: bool = True,
     ):
         """Create a new Switch widget.
 
@@ -21,6 +23,7 @@ class Switch(Widget):
         :param id: The ID for the widget.
         :param style: A style object. If no style is provided, a default style
             will be applied to the widget.
+        :param value: The initial value for the switch.
         :param on_change: A handler that will be invoked when the switch changes
             value.
         :param enabled: Is the switch enabled (i.e., can it be pressed?).
@@ -42,7 +45,7 @@ class Switch(Widget):
         self.enabled = enabled
 
     @property
-    def text(self):
+    def text(self) -> str:
         """The text label for the Switch.
 
         ``None``, and the Unicode codepoint U+200B (ZERO WIDTH SPACE), will be
@@ -67,7 +70,7 @@ class Switch(Widget):
         self.refresh()
 
     @property
-    def on_change(self):
+    def on_change(self) -> callable:
         """The handler to invoke when the value of the switch changes."""
         return self._on_change
 
@@ -76,7 +79,7 @@ class Switch(Widget):
         self._on_change = wrapped_handler(self, handler)
 
     @property
-    def value(self):
+    def value(self) -> bool:
         """The current state of the switch, as a Boolean.
 
         Any non-Boolean value will be converted to a Boolean.
