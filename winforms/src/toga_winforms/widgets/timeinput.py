@@ -13,9 +13,13 @@ class TimeInput(Widget):
         self.native.ValueChanged += self.winforms_value_changed
         self.native.Format = WinForms.DateTimePickerFormat.Time
         self.native.ShowUpDown = True
+        self._min_time = None
+        self._max_time = None
 
     def get_value(self):
-        return datetime.datetime.strptime(self.native.Text, "%I:%M:%S %p").time()
+        return datetime.time(
+            self.native.Value.Hour, self.native.Value.Minute, self.native.Value.Second
+        )
 
     def set_value(self, value):
         # Jan 1 1970 is a dummy date; we don't need the date component
@@ -53,6 +57,6 @@ class TimeInput(Widget):
 
     def winforms_value_changed(self, sender, event):
         # Since there is no native option to set a min or max time, calling min/max to validate on each change.
-        self.set_max_time(self.interface.max_time)
-        self.set_min_time(self.interface.min_time)
+        self.set_max_time(self._max_time)
+        self.set_min_time(self._min_time)
         self.interface.on_change(self.interface)

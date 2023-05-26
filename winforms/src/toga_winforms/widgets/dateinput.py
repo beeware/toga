@@ -2,16 +2,9 @@ import datetime
 
 from travertino.size import at_least
 
-from toga_winforms.libs import CultureInfo, WinDateTime, WinForms
+from toga_winforms.libs import WinDateTime, WinForms
 
 from .base import Widget
-
-
-def py_date(value):
-    return datetime.datetime.strptime(
-        value.ToString("yyyy-MM-ddTHH:mm:sszzz", CultureInfo.InvariantCulture),
-        "%Y-%m-%dT%H:%M:%S%z",
-    ).date()
 
 
 class DateInput(Widget):
@@ -20,7 +13,9 @@ class DateInput(Widget):
         self.native.ValueChanged += self.winforms_value_changed
 
     def get_value(self):
-        return py_date(self.native.Value)
+        return datetime.date(
+            self.native.Value.Year, self.native.Value.Month, self.native.Value.Day
+        )
 
     def set_value(self, value):
         self.native.Value = WinDateTime(value.year, value.month, value.day)
@@ -28,7 +23,9 @@ class DateInput(Widget):
     def get_min_date(self):
         if self.native.MinDate == self.native.MinDateTime:
             return None
-        return py_date(self.native.MinDate)
+        return datetime.date(
+            self.native.MinDate.Year, self.native.MinDate.Month, self.native.MinDate.Day
+        )
 
     def set_min_date(self, value):
         if value is None:
@@ -41,7 +38,9 @@ class DateInput(Widget):
     def get_max_date(self):
         if self.native.MaxDate == self.native.MaxDateTime:
             return None
-        return py_date(self.native.MaxDate)
+        return datetime.date(
+            self.native.MaxDate.Year, self.native.MaxDate.Month, self.native.MaxDate.Day
+        )
 
     def set_max_date(self, value):
         if value is None:
