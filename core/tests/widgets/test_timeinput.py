@@ -14,33 +14,33 @@ def on_change_handler():
 
 @pytest.fixture
 def widget(on_change_handler):
-    return toga.TimePicker(on_change=on_change_handler)
+    return toga.TimeInput(on_change=on_change_handler)
 
 
 @pytest.mark.freeze_time("2023-05-25 10:42:37")
 def test_widget_created():
-    """A TimePicker can be created."""
-    widget = toga.TimePicker()
+    """A TimeInput can be created."""
+    widget = toga.TimeInput()
 
     # Round trip the impl/interface
     assert widget._impl.interface == widget
-    assert_action_performed(widget, "create TimePicker")
+    assert_action_performed(widget, "create TimeInput")
 
     assert widget.value == datetime.time(10, 42, 0)
     assert widget.on_change._raw is None
 
 
 def test_widget_created_with_values(on_change_handler):
-    """A TimePicker can be created with initial values"""
+    """A TimeInput can be created with initial values"""
     # Round trip the impl/interface
-    widget = toga.TimePicker(
+    widget = toga.TimeInput(
         value=datetime.time(13, 37, 42),
         min_time=datetime.time(6, 1, 2),
         max_time=datetime.time(18, 58, 59),
         on_change=on_change_handler,
     )
     assert widget._impl.interface == widget
-    assert_action_performed(widget, "create TimePicker")
+    assert_action_performed(widget, "create TimeInput")
 
     assert widget.value == datetime.time(13, 37, 42)
     assert widget.min_time == datetime.time(6, 1, 2)

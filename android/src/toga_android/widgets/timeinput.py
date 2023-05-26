@@ -22,7 +22,7 @@ class TimePickerListener(OnTimeSetListener):
             self.picker_impl.interface.on_change(self.picker_impl)
 
 
-class TimePicker(PickerBase):
+class TimeInput(PickerBase):
     @classmethod
     def _get_icon(cls):
         return R__drawable.ic_menu_recent_history
@@ -50,13 +50,13 @@ class TimePicker(PickerBase):
         return self._min_time
 
     def set_min_time(self, value):
-        self.interface.factory.not_implemented("TimePicker.set_min_time()")
+        self.interface.factory.not_implemented("TimeInput.set_min_time()")
 
     def get_max_time(self):
         return self._max_time
 
     def set_max_time(self, value):
-        self.interface.factory.not_implemented("TimePicker.set_max_time()")
+        self.interface.factory.not_implemented("TimeInput.set_max_time()")
 
     def _create_dialog(self):
         self._dialog = TimePickerDialog(

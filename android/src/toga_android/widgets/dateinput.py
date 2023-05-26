@@ -23,7 +23,7 @@ class DatePickerListener(OnDateSetListener):
             self.picker_impl.interface.on_change(self.picker_impl)
 
 
-class DatePicker(PickerBase):
+class DateInput(PickerBase):
     @classmethod
     def _get_icon(cls):
         return R__drawable.ic_menu_my_calendar

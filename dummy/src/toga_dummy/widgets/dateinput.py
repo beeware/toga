@@ -3,9 +3,9 @@ from datetime import date
 from .base import Widget
 
 
-class DatePicker(Widget):
+class DateInput(Widget):
     def create(self):
-        self._action("create DatePicker")
+        self._action("create DateInput")
 
     def get_value(self):
         return self._get_value("value", date.today())

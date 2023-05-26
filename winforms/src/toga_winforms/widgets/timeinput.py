@@ -7,7 +7,7 @@ from toga_winforms.libs import WinDateTime, WinForms
 from .base import Widget
 
 
-class TimePicker(Widget):
+class TimeInput(Widget):
     def create(self):
         self.native = WinForms.DateTimePicker()
         self.native.ValueChanged += self.winforms_value_changed

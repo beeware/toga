@@ -3,9 +3,9 @@ from datetime import datetime
 from .base import Widget
 
 
-class TimePicker(Widget):
+class TimeInput(Widget):
     def create(self):
-        self._action("create TimePicker")
+        self._action("create TimeInput")
 
     def get_value(self):
         return self._get_value("value", datetime.now().time())

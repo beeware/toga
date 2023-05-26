@@ -1,11 +1,12 @@
 import datetime
+import warnings
 
 from toga.handlers import wrapped_handler
 
 from .base import Widget
 
 
-class DatePicker(Widget):
+class DateInput(Widget):
     _MIN_WIDTH = 200
 
     def __init__(
@@ -17,7 +18,7 @@ class DatePicker(Widget):
         max_date: datetime.date | None = None,
         on_change=None,
     ):
-        """Create a new DatePicker widget.
+        """Create a new DateInput widget.
 
         Inherits from :class:`~toga.widgets.base.Widget`.
 
@@ -35,8 +36,8 @@ class DatePicker(Widget):
         """
         super().__init__(id=id, style=style)
 
-        # Create a platform specific implementation of a DatePicker
-        self._impl = self.factory.DatePicker(interface=self)
+        # Create a platform specific implementation of a DateInput
+        self._impl = self.factory.DateInput(interface=self)
 
         self.on_change = None
         self.min_date = min_date
@@ -151,3 +152,10 @@ class DatePicker(Widget):
     @on_change.setter
     def on_change(self, handler):
         self._on_change = wrapped_handler(self, handler)
+
+
+class DatePicker(DateInput):  # pragma: no cover
+    def __init__(self, *args, **kwargs):
+        # 2023-05
+        warnings.warn("DatePicker has been renamed DateInput.", DeprecationWarning)
+        super().__init__(*args, **kwargs)

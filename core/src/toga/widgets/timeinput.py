@@ -1,11 +1,12 @@
 import datetime
+import warnings
 
 from toga.handlers import wrapped_handler
 
 from .base import Widget
 
 
-class TimePicker(Widget):
+class TimeInput(Widget):
     def __init__(
         self,
         id=None,
@@ -15,7 +16,7 @@ class TimePicker(Widget):
         max_time: datetime.time | None = None,
         on_change=None,
     ):
-        """Create a new TimePicker widget.
+        """Create a new TimeInput widget.
 
         Inherits from :class:`~toga.widgets.base.Widget`.
 
@@ -33,8 +34,8 @@ class TimePicker(Widget):
         """
         super().__init__(id=id, style=style)
 
-        # Create a platform specific implementation of a TimePicker
-        self._impl = self.factory.TimePicker(interface=self)
+        # Create a platform specific implementation of a TimeInput
+        self._impl = self.factory.TimeInput(interface=self)
 
         self.on_change = None
         self.min_time = min_time
@@ -150,3 +151,10 @@ class TimePicker(Widget):
     @on_change.setter
     def on_change(self, handler):
         self._on_change = wrapped_handler(self, handler)
+
+
+class TimePicker(TimeInput):  # pragma: no cover
+    def __init__(self, *args, **kwargs):
+        # 2023-05
+        warnings.warn("TimePicker has been renamed TimeInput.", DeprecationWarning)
+        super().__init__(*args, **kwargs)

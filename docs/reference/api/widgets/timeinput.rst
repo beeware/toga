@@ -1,9 +1,9 @@
-DatePicker
-==========
+TimeInput
+=========
 
-A widget to select a calendar date.
+A widget to select a clock time.
 
-.. .. figure:: /reference/images/DatePicker.jpeg
+.. .. figure:: /reference/images/TimeInput.jpeg
 ..     :align: center
 ..     :width: 300
 
@@ -12,7 +12,7 @@ A widget to select a calendar date.
    :header-rows: 1
    :file: ../../data/widgets_by_platform.csv
    :included_cols: 4,5,6,7,8,9
-   :exclude: {0: '(?!(DatePicker|Component))'}
+   :exclude: {0: '(?!(TimeInput|Component))'}
 
 Usage
 -----
@@ -21,11 +21,11 @@ Usage
 
     import toga
 
-    current_date = toga.DatePicker()
+    current_time = toga.TimeInput()
 
 Reference
 ---------
 
-.. autoclass:: toga.widgets.datepicker.DatePicker
+.. autoclass:: toga.widgets.timeinput.TimeInput
    :members:
    :undoc-members:

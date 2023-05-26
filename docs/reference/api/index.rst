@@ -25,7 +25,7 @@ General widgets
                                                                          length, usually rendered as a "spinner" animation.
  :doc:`Button </reference/api/widgets/button>`                           A button that can be pressed or clicked.
  :doc:`Canvas </reference/api/widgets/canvas>`                           Area you can draw on
- :doc:`DatePicker </reference/api/widgets/datepicker>`                   A widget to select a calendar date
+ :doc:`DateInput </reference/api/widgets/dateinput>`                     A widget to select a calendar date
  :doc:`DetailedList </reference/api/widgets/detailedlist>`               A list of complex content
  :doc:`Divider </reference/api/widgets/divider>`                         A separator used to visually distinguish two sections of content in a
                                                                          layout.
@@ -44,7 +44,7 @@ General widgets
                                                                          False (off, unchecked). The button has a text label.
  :doc:`Table </reference/api/widgets/table>`                             Table of data
  :doc:`TextInput </reference/api/widgets/textinput>`                     Text Input field
- :doc:`TimePicker </reference/api/widgets/timepicker>`                   A widget to select a clock time.
+ :doc:`TimeInput </reference/api/widgets/timeinput>`                     A widget to select a clock time.
  :doc:`Tree </reference/api/widgets/tree>`                               Tree of data
  :doc:`WebView </reference/api/widgets/webview>`                         A panel for displaying HTML
  :doc:`Widget </reference/api/widgets/widget>`                           The abstract base class of all widgets. This class should not be be

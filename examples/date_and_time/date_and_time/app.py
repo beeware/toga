@@ -18,7 +18,7 @@ class DateAndTimeApp(toga.App):
         any_date_box = toga.Box(
             children=[
                 toga.Label("Any date:", style=Pack(width=150, text_align=RIGHT)),
-                toga.DatePicker(
+                toga.DateInput(
                     id="Any",
                     value=None,
                     on_change=self.changed_date,
@@ -29,7 +29,7 @@ class DateAndTimeApp(toga.App):
         min_date_box = toga.Box(
             children=[
                 toga.Label("With min:", style=Pack(width=150, text_align=RIGHT)),
-                toga.DatePicker(
+                toga.DateInput(
                     id="Min",
                     value=None,
                     on_change=self.changed_date,
@@ -41,7 +41,7 @@ class DateAndTimeApp(toga.App):
         max_date_box = toga.Box(
             children=[
                 toga.Label("With max:", style=Pack(width=150, text_align=RIGHT)),
-                toga.DatePicker(
+                toga.DateInput(
                     id="Max",
                     value=date(2021, 4, 2),
                     on_change=self.changed_date,
@@ -55,7 +55,7 @@ class DateAndTimeApp(toga.App):
                 toga.Label(
                     "With min and max:", style=Pack(width=150, text_align=RIGHT)
                 ),
-                toga.DatePicker(
+                toga.DateInput(
                     id="Min-max",
                     value=date(2021, 4, 2),
                     on_change=self.changed_date,
@@ -69,7 +69,7 @@ class DateAndTimeApp(toga.App):
         any_time_box = toga.Box(
             children=[
                 toga.Label("Any time:", style=Pack(width=150, text_align=RIGHT)),
-                toga.TimePicker(
+                toga.TimeInput(
                     id="Any time",
                     value=None,
                     on_change=self.changed_time,
@@ -80,7 +80,7 @@ class DateAndTimeApp(toga.App):
         min_time_box = toga.Box(
             children=[
                 toga.Label("With min:", style=Pack(width=150, text_align=RIGHT)),
-                toga.TimePicker(
+                toga.TimeInput(
                     id="Min time",
                     value=None,
                     on_change=self.changed_time,
@@ -92,7 +92,7 @@ class DateAndTimeApp(toga.App):
         max_time_box = toga.Box(
             children=[
                 toga.Label("With max:", style=Pack(width=150, text_align=RIGHT)),
-                toga.TimePicker(
+                toga.TimeInput(
                     id="Max time",
                     value=time(10, 42),
                     on_change=self.changed_time,
@@ -106,7 +106,7 @@ class DateAndTimeApp(toga.App):
                 toga.Label(
                     "With min and max:", style=Pack(width=150, text_align=RIGHT)
                 ),
-                toga.TimePicker(
+                toga.TimeInput(
                     id="Min-max time",
                     value=time(10, 42),
                     on_change=self.changed_time,

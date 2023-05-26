@@ -14,7 +14,7 @@ def py_date(value):
     ).date()
 
 
-class DatePicker(Widget):
+class DateInput(Widget):
     def create(self):
         self.native = WinForms.DateTimePicker()
         self.native.ValueChanged += self.winforms_value_changed

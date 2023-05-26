@@ -14,33 +14,33 @@ def on_change_handler():
 
 @pytest.fixture
 def widget(on_change_handler):
-    return toga.DatePicker(on_change=on_change_handler)
+    return toga.DateInput(on_change=on_change_handler)
 
 
 @pytest.mark.freeze_time("2023-05-25")
 def test_widget_created():
-    """A DatePicker can be created."""
-    widget = toga.DatePicker()
+    """A DateInput can be created."""
+    widget = toga.DateInput()
 
     # Round trip the impl/interface
     assert widget._impl.interface == widget
-    assert_action_performed(widget, "create DatePicker")
+    assert_action_performed(widget, "create DateInput")
 
     assert widget.value == datetime.date(2023, 5, 25)
     assert widget.on_change._raw is None
 
 
 def test_widget_created_with_values(on_change_handler):
-    """A DatePicker can be created with initial values"""
+    """A DateInput can be created with initial values"""
     # Round trip the impl/interface
-    widget = toga.DatePicker(
+    widget = toga.DateInput(
         value=datetime.date(2015, 6, 15),
         min_date=datetime.date(2013, 5, 14),
         max_date=datetime.date(2017, 7, 16),
         on_change=on_change_handler,
     )
     assert widget._impl.interface == widget
-    assert_action_performed(widget, "create DatePicker")
+    assert_action_performed(widget, "create DateInput")
 
     assert widget.value == datetime.date(2015, 6, 15)
     assert widget.min_date == datetime.date(2013, 5, 14)
