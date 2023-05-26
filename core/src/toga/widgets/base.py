@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from builtins import id as identifier
 
 from travertino.node import Node

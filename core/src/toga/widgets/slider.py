@@ -1,6 +1,8 @@
+from __future__ import annotations
+
 from abc import ABC, abstractmethod
 from contextlib import contextmanager
-from typing import Callable, Optional, Tuple
+from typing import Callable
 
 from toga.handlers import wrapped_handler
 
@@ -97,7 +99,7 @@ class Slider(Widget):
         return value
 
     @property
-    def range(self) -> Tuple[float]:
+    def range(self) -> tuple[float]:
         """Range of allowed values, in the form (min, max).
 
         If a range is set which doesn't include the current value, the value will be
@@ -137,7 +139,7 @@ class Slider(Widget):
         return self.range[1]
 
     @property
-    def tick_count(self) -> Optional[int]:
+    def tick_count(self) -> int | None:
         """Number of tick marks to display on the slider.
 
         * If this is ``None``, the slider will be continuous.
@@ -170,7 +172,7 @@ class Slider(Widget):
             self.value = old_value
 
     @property
-    def tick_step(self) -> Optional[float]:
+    def tick_step(self) -> float | None:
         """Step between adjacent ticks.
 
         * If the slider is continuous, this property returns ``None``
@@ -185,7 +187,7 @@ class Slider(Widget):
         return (self.max - self.min) / (self.tick_count - 1)
 
     @property
-    def tick_value(self) -> Optional[int]:
+    def tick_value(self) -> int | None:
         """Value of the slider, measured in ticks.
 
         * If the slider is continuous, this property returns ``None``.

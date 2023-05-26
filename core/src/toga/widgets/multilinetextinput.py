@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from toga.handlers import wrapped_handler
 
 from .base import Widget
