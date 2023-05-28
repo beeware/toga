@@ -12,12 +12,8 @@ class TextInputApp(toga.App):
     # Button callback functions
     def do_extract_values(self, widget, **kwargs):
         # Disable all the text inputs
-        self.text_input.enabled = False
-        self.text_input_placeholder.enabled = False
-        self.right_aligned_input.enabled = False
-        self.password_input.enabled = False
-        self.number_input.enabled = False
-        self.right_aligned_number_input.enabled = False
+        for input in self.inputs:
+            input.enabled = False
 
         # Update the labels with the extracted values
         self.text_label.text = "Text content: {}; {}".format(
@@ -34,24 +30,20 @@ class TextInputApp(toga.App):
             number = self.number_input.value + self.right_aligned_number_input.value
             self.number_label.text = (
                 f"The sum of {self.number_input.value} and "
-                f"{self.right_aligned_number_input.value} number is: {number}"
+                f"{self.right_aligned_number_input.value} is {number}."
             )
         except TypeError:
             self.number_label.text = "Please enter a number in each number input."
 
-        # Wait 5 seconds
-        for i in range(5, 0, -1):
+        # Wait a few seconds
+        for i in range(2, 0, -1):
             self.label.text = f"Counting down from {i}..."
             yield 1
         self.label.text = "Enter some values and press extract."
 
         # Re-enable the inputs again.
-        self.text_input.enabled = True
-        self.text_input_placeholder.enabled = True
-        self.right_aligned_input.enabled = True
-        self.password_input.enabled = True
-        self.number_input.enabled = True
-        self.right_aligned_number_input.enabled = True
+        for input in self.inputs:
+            input.enabled = True
 
     def startup(self):
         # Set up main window
@@ -70,19 +62,16 @@ class TextInputApp(toga.App):
 
         # Text inputs and a button
         self.text_input = toga.TextInput(
-            value="Initial value",
+            value="Initial value, and on_confirm handler",
             placeholder="Type something...",
             style=Pack(padding=10),
             on_confirm=self.do_extract_values,
         )
-        self.text_input_placeholder = toga.TextInput(
-            placeholder="Type something...", style=Pack(padding=10)
-        )
         self.right_aligned_input = toga.TextInput(
             placeholder="Right aligned text", style=Pack(padding=10, text_align=RIGHT)
         )
-        self.right_aligned_number_input = toga.NumberInput(
-            style=Pack(padding=10, text_align=RIGHT)
+        self.text_input_placeholder = toga.TextInput(
+            placeholder="Type something...", style=Pack(padding=10)
         )
         self.password_input = toga.PasswordInput(
             placeholder="Password...",
@@ -107,24 +96,34 @@ class TextInputApp(toga.App):
             on_press=self.do_extract_values,
             style=Pack(flex=1),
         )
+        self.right_aligned_number_input = toga.NumberInput(
+            style=Pack(padding=10, text_align=RIGHT)
+        )
+
+        children = [
+            self.label,
+            self.text_input,
+            self.right_aligned_input,
+            self.text_input_placeholder,
+            self.password_input,
+            self.password_content_label,
+            self.email_input,
+            self.number_input,
+            self.right_aligned_number_input,
+            self.text_label,
+            self.password_label,
+            self.number_label,
+            btn_extract,
+        ]
+        self.inputs = [
+            child
+            for child in children
+            if isinstance(child, (toga.TextInput, toga.NumberInput))
+        ]
 
         # Outermost box
         box = toga.Box(
-            children=[
-                self.label,
-                self.text_input,
-                self.right_aligned_input,
-                self.text_input_placeholder,
-                self.password_input,
-                self.password_content_label,
-                self.email_input,
-                self.number_input,
-                self.right_aligned_number_input,
-                self.text_label,
-                self.password_label,
-                self.number_label,
-                btn_extract,
-            ],
+            children=children,
             style=Pack(
                 flex=1,
                 direction=COLUMN,
