@@ -200,6 +200,4 @@ class TextInput(Widget):
 
     @on_confirm.setter
     def on_confirm(self, handler):
-        if not getattr(self._impl, "IMPLEMENTS_ON_CONFIRM", True):  # pragma: no cover
-            self.factory.not_implemented("TextInput.on_confirm()")
         self._on_confirm = wrapped_handler(self, handler)

@@ -2,14 +2,12 @@ from unittest.mock import Mock
 
 from pytest import approx
 
-import toga
 from toga.colors import CORNFLOWERBLUE, RED, TRANSPARENT, color as named_color
 from toga.fonts import BOLD, FANTASY, ITALIC, NORMAL, SERIF, SYSTEM
 from toga.style.pack import CENTER, COLUMN, JUSTIFY, LEFT, LTR, RIGHT, RTL
 
 from ..assertions import assert_color
 from ..data import COLORS, TEXTS
-from .probe import get_probe
 
 # An upper bound for widths
 MAX_WIDTH = 2000
@@ -49,18 +47,13 @@ async def test_enable_noop(widget, probe):
     assert widget.enabled
 
 
-async def test_focus(widget, probe, verify_focus_handlers):
+async def test_focus(widget, probe, other, other_probe, verify_focus_handlers):
     "The widget can be given focus"
     if verify_focus_handlers:
         on_gain_handler = Mock()
         on_lose_handler = Mock()
         widget.on_gain_focus = on_gain_handler
         widget.on_lose_focus = on_lose_handler
-
-    # Add a separate widget that can take take focus
-    other = toga.TextInput()
-    widget.parent.add(other)
-    other_probe = get_probe(other)
 
     other.focus()
     await probe.redraw("A separate widget should be given focus")
@@ -84,13 +77,8 @@ async def test_focus(widget, probe, verify_focus_handlers):
         on_lose_handler.assert_called_once()
 
 
-async def test_focus_noop(widget, probe):
+async def test_focus_noop(widget, probe, other, other_probe):
     "The widget cannot be given focus"
-    # Add a separate widget that can take take focus
-    other = toga.TextInput()
-    widget.parent.add(other)
-    other_probe = get_probe(other)
-
     other.focus()
     await probe.redraw("A separate widget should be given focus")
     assert not probe.has_focus
@@ -159,19 +147,13 @@ async def test_placeholder(widget, probe):
     assert probe.placeholder_visible
 
 
-async def test_placeholder_focus(widget, probe):
+async def test_placeholder_focus(widget, probe, other):
     "Placeholders interact correctly with focus changes"
     widget.value = ""
     widget.placeholder = "placeholder"
     hides_on_focus = probe.placeholder_hides_on_focus
 
-    # Placeholder visibility can be focus dependent, so add another
-    # widget that can take take focus
-    other = toga.TextInput()
-    widget.parent.add(other)
-    other.focus()
-
-    # Give the widget focus; this may hide the placeholder.
+    # Give the widget focus; this will hide the placeholder on some platforms.
     widget.focus()
     await probe.redraw("Widget has focus")
     assert widget.value == ""

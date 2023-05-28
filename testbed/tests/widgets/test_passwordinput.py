@@ -15,13 +15,21 @@ from .properties import (  # noqa: F401
     test_font,
     test_font_attrs,
     test_placeholder,
+    test_placeholder_color,
+    test_placeholder_focus,
     test_readonly,
 )
 from .test_textinput import (  # noqa: F401
-    test_on_change_handler,
-    test_on_confirm_handler,
+    focused,
+    on_change,
+    placeholder,
+    test_on_change_focus,
+    test_on_change_programmatic,
+    test_on_change_user,
+    test_on_confirm,
     test_text_value,
     test_validation,
+    verify_focus_handlers,
 )
 
 
@@ -34,8 +42,3 @@ async def widget():
 def verify_font_sizes():
     # We can't verify font width inside the TextInput
     return False, True
-
-
-@pytest.fixture
-def verify_focus_handlers():
-    return True
