@@ -1,11 +1,11 @@
 from unittest.mock import Mock
 
-from pytest import approx, fixture
+from pytest import approx
 
 import toga
 from toga.colors import CORNFLOWERBLUE, RED, TRANSPARENT, color as named_color
 from toga.fonts import BOLD, FANTASY, ITALIC, NORMAL, SERIF, SYSTEM
-from toga.style.pack import CENTER, COLUMN, JUSTIFY, LEFT, LTR, RIGHT, RTL, TOP
+from toga.style.pack import CENTER, COLUMN, JUSTIFY, LEFT, LTR, RIGHT, RTL
 
 from ..assertions import assert_color
 from ..data import COLORS, TEXTS
@@ -13,23 +13,6 @@ from .probe import get_probe
 
 # An upper bound for widths
 MAX_WIDTH = 2000
-
-
-@fixture
-def verify_font_sizes():
-    # Return whether we can verify width, height
-    return True, True
-
-
-@fixture
-def verify_focus_handlers():
-    # Not all widgets have focus handlers
-    return False
-
-
-@fixture
-def verify_vertical_alignment():
-    return TOP
 
 
 async def test_enabled(widget, probe):
@@ -439,34 +422,34 @@ async def test_alignment(widget, probe, verify_vertical_alignment):
     widget.parent.style.direction = COLUMN
 
     # Initial alignment is LEFT, initial direction is LTR
-    await probe.redraw("Label text direction should be LTR")
+    await probe.redraw("Text direction should be LTR")
     probe.assert_alignment(LEFT)
 
     for alignment in [RIGHT, CENTER, JUSTIFY]:
         widget.style.text_align = alignment
-        await probe.redraw("Label text direction should be %s" % alignment)
+        await probe.redraw("Text direction should be %s" % alignment)
         probe.assert_alignment(alignment)
         probe.assert_vertical_alignment(verify_vertical_alignment)
 
     # Clearing the alignment reverts to default alignment of LEFT
     del widget.style.text_align
-    await probe.redraw("Label text direction should be reverted to LEFT")
+    await probe.redraw("Text direction should be reverted to LEFT")
     probe.assert_alignment(LEFT)
 
     # If text direction is RTL, default alignment is RIGHT
     widget.style.text_direction = RTL
-    await probe.redraw("Label text direction should be RTL")
+    await probe.redraw("Text direction should be RTL")
     probe.assert_alignment(RIGHT)
 
     # If text direction is expliclty LTR, default alignment is LEFT
     widget.style.text_direction = LTR
-    await probe.redraw("Label text direction should be LTR")
+    await probe.redraw("Text direction should be LTR")
     probe.assert_alignment(LEFT)
 
     # If the widget has an explicit height, the vertical alignment of the widget
-    # is still TOP
+    # is unchanged.
     widget.style.height = 200
-    await probe.redraw("Label text should be at the top")
+    await probe.redraw(f"Text should be at the {verify_vertical_alignment}")
     probe.assert_vertical_alignment(verify_vertical_alignment)
 
 

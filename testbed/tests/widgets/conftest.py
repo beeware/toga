@@ -1,6 +1,7 @@
 from pytest import fixture
 
 import toga
+from toga.style.pack import TOP
 
 from .probe import get_probe
 
@@ -23,3 +24,21 @@ async def probe(main_window, widget):
     yield probe
 
     main_window.content = old_content
+
+
+@fixture
+def verify_font_sizes():
+    """Whether the widget's width and height are affected by font size"""
+    return True, True
+
+
+@fixture
+def verify_focus_handlers():
+    """Whether the widget has on_gain_focus and on_lose_focus handlers"""
+    return False
+
+
+@fixture
+def verify_vertical_alignment():
+    """The widget's default vertical alignment"""
+    return TOP

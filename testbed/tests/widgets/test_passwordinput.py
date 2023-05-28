@@ -22,7 +22,6 @@ from .test_textinput import (  # noqa: F401
     test_on_confirm_handler,
     test_text_value,
     test_validation,
-    verify_vertical_alignment,
 )
 
 

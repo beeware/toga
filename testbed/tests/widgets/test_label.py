@@ -16,8 +16,6 @@ from .properties import (  # noqa: F401
     test_font_attrs,
     test_text,
     test_text_width_change,
-    verify_font_sizes,
-    verify_vertical_alignment,
 )
 
 

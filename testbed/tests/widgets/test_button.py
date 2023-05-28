@@ -17,8 +17,6 @@ from .properties import (  # noqa: F401
     test_font,
     test_font_attrs,
     test_text_width_change,
-    verify_focus_handlers,
-    verify_font_sizes,
 )
 
 # Buttons can't be given focus on mobile
