@@ -68,6 +68,19 @@ async def placeholder(request, widget):
     widget.placeholder = request.param
 
 
+async def test_value_not_hidden(widget, probe):
+    "Value should always be visible in a regular TextInput"
+    assert not probe.value_hidden
+
+    widget.value = ""
+    await probe.redraw("Value changed from non-empty to empty")
+    assert not probe.value_hidden
+
+    widget.value = "something"
+    await probe.redraw("Value changed from empty to non-empty")
+    assert not probe.value_hidden
+
+
 async def test_on_change_programmatic(widget, probe, on_change, focused, placeholder):
     "The on_change handler is triggered on programmatic changes"
     # Non-empty to non-empty

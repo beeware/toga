@@ -21,6 +21,10 @@ class MultilineTextInputProbe(SimpleProbe):
         return buffer.get_text(buffer.get_start_iter(), buffer.get_end_iter(), True)
 
     @property
+    def value_hidden(self):
+        return False
+
+    @property
     def has_focus(self):
         return self.native_textview.has_focus()
 

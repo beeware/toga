@@ -28,6 +28,7 @@ from .test_textinput import (  # noqa: F401
     test_on_change_focus,
     test_on_change_programmatic,
     test_on_change_user,
+    test_value_not_hidden,
 )
 
 

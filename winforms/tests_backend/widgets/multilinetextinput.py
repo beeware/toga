@@ -14,6 +14,10 @@ class MultilineTextInputProbe(TextInputProbe):
         return self.native.Text
 
     @property
+    def value_hidden(self):
+        return False
+
+    @property
     def placeholder_visible(self):
         return self.native.ForeColor == SystemColors.GrayText
 

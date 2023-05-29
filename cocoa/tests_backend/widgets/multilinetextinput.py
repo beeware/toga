@@ -31,6 +31,10 @@ class MultilineTextInputProbe(SimpleProbe):
         return False
 
     @property
+    def value_hidden(self):
+        return False
+
+    @property
     def color(self):
         return toga_color(self.native_text.textColor)
 

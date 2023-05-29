@@ -2,11 +2,10 @@ import asyncio
 
 from toga_iOS.libs import UITextView
 
-from .base import SimpleProbe
-from .properties import toga_alignment, toga_color, toga_font
+from .textinput import TextInputProbe
 
 
-class MultilineTextInputProbe(SimpleProbe):
+class MultilineTextInputProbe(TextInputProbe):
     native_class = UITextView
 
     @property
@@ -24,22 +23,6 @@ class MultilineTextInputProbe(SimpleProbe):
     @property
     def placeholder_hides_on_focus(self):
         return True
-
-    @property
-    def color(self):
-        return toga_color(self.native.textColor)
-
-    @property
-    def font(self):
-        return toga_font(self.native.font)
-
-    @property
-    def alignment(self):
-        return toga_alignment(self.native.textAlignment)
-
-    def assert_vertical_alignment(self, expected):
-        # Vertical alignment isn't configurable on UITextView
-        pass
 
     @property
     def readonly(self):

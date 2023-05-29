@@ -1,3 +1,5 @@
+from rubicon.objc import SEL, send_message
+
 from toga_iOS.libs import UITextField
 
 from .base import SimpleProbe
@@ -13,6 +15,16 @@ class TextInputProbe(SimpleProbe):
             (self.native.placeholder if self.native.placeholder else "")
             if self.placeholder_visible
             else self.native.text
+        )
+
+    @property
+    def value_hidden(self):
+        # UITextField has a secureTextEntry property, which is documented as having an
+        # `isSecureTextEntry` getter; but that property isn't exposed to Rubicon
+        # (https://github.com/beeware/rubicon-objc/issues/96). Send the message
+        # manually.
+        return send_message(
+            self.native, SEL("isSecureTextEntry"), restype=bool, argtypes=[]
         )
 
     @property
@@ -47,5 +59,4 @@ class TextInputProbe(SimpleProbe):
 
     def type_return(self):
         # Invoke the return handler explicitly.
-        #
         self.native.textFieldShouldReturn(self.native)

@@ -17,6 +17,10 @@ class TextInputProbe(SimpleProbe):
         return self._placeholder if self.placeholder_visible else self.native.Text
 
     @property
+    def value_hidden(self):
+        return self.native.UseSystemPasswordChar
+
+    @property
     def _placeholder(self):
         buffer = ctypes.create_unicode_buffer(1024)
         result = ctypes.windll.user32.SendMessageW(

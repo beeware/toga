@@ -23,6 +23,10 @@ class TextInputProbe(SimpleProbe):
         )
 
     @property
+    def value_hidden(self):
+        return False
+
+    @property
     def placeholder_visible(self):
         # macOS manages it's own placeholder visibility.
         # We can use the existence of widget text as a proxy.

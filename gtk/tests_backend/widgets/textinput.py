@@ -17,6 +17,10 @@ class TextInputProbe(SimpleProbe):
         )
 
     @property
+    def value_hidden(self):
+        return not self.native.get_visibility()
+
+    @property
     def placeholder_visible(self):
         # GTK manages it's own placeholder visibility.
         # We can use the existence of widget text as a proxy.
