@@ -8,4 +8,5 @@ Resources
    group
    icons
    images
+   list_source
    validators
