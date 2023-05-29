@@ -285,31 +285,38 @@ def test_is_valid(widget):
     widget.validators = [validator1, validator2]
 
     # Widget is initially valid
-    assert widget.validate()
     assert widget.is_valid
     assert_action_not_performed(widget, "set_error")
+    assert_action_performed_with(widget, "clear_error")
 
     # Second validator returns an error
     EventLog.reset()
     validator2.return_value = "Invalid 2"
-
-    assert not widget.validate()
+    widget.value = "hello"  # Triggers validation
     assert not widget.is_valid
     assert_action_performed_with(widget, "set_error", error_message="Invalid 2")
+    assert_action_not_performed(widget, "clear_error")
 
-    # First validator also returns an error
+    # First validator also returns an error: this should take priority
     EventLog.reset()
     validator1.return_value = "Invalid 1"
-
-    assert not widget.validate()
+    widget.value = "hello"  # Triggers validation
     assert not widget.is_valid
     assert_action_performed_with(widget, "set_error", error_message="Invalid 1")
+    assert_action_not_performed(widget, "clear_error")
+
+    # Change validator order
+    EventLog.reset()
+    widget.validators = [validator2, validator1]  # Triggers validation
+    assert not widget.is_valid
+    assert_action_performed_with(widget, "set_error", error_message="Invalid 2")
+    assert_action_not_performed(widget, "clear_error")
 
     # Make the validators pass again
     EventLog.reset()
     validator1.return_value = None
     validator2.return_value = None
-
-    assert widget.validate()
+    widget.value = "hello"  # Triggers validation
     assert widget.is_valid
     assert_action_not_performed(widget, "set_error")
+    assert_action_performed_with(widget, "clear_error")

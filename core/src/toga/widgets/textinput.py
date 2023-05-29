@@ -118,7 +118,6 @@ class TextInput(Widget):
         else:
             v = str(value).replace("\n", " ")
         self._impl.set_value(v)
-        self.validate()
         self.refresh()
 
     @property
@@ -152,7 +151,7 @@ class TextInput(Widget):
             self._validators = validators
 
         if replacing:
-            self.validate()
+            self._validate()
 
     @property
     def on_gain_focus(self) -> callable:
@@ -172,24 +171,18 @@ class TextInput(Widget):
     def on_lose_focus(self, handler):
         self._on_lose_focus = wrapped_handler(self, handler)
 
-    def validate(self) -> bool:
+    def _validate(self):
         """Validate the current value of the widget.
 
         If a problem is found, the widget will be put into an error state.
-
-        :returns: ``True`` if the input is valid; ``False`` otherwise.
         """
-        error_message = None
         for validator in self.validators:
-            if error_message is None:
-                error_message = validator(self.value)
-
-        if error_message is None:
-            self._impl.clear_error()
-            return True
+            error_message = validator(self.value)
+            if error_message is not None:
+                self._impl.set_error(error_message)
+                break
         else:
-            self._impl.set_error(error_message)
-            return False
+            self._impl.clear_error()
 
     @property
     def on_confirm(self) -> callable:

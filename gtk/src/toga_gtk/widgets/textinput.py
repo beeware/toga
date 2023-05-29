@@ -17,7 +17,7 @@ class TextInput(Widget):
 
     def gtk_on_change(self, entry):
         self.interface.on_change(self.interface)
-        self.interface.validate()
+        self.interface._validate()
 
     def gtk_focus_in_event(self, entry, user_data):
         self.interface.on_gain_focus(self.interface)
@@ -53,7 +53,6 @@ class TextInput(Widget):
 
     def set_value(self, value):
         self.native.set_text(value)
-        self.interface.validate()
 
     def rehint(self):
         # print("REHINT", self,

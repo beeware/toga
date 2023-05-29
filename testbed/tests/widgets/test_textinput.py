@@ -185,27 +185,27 @@ async def test_validation(widget, probe):
     widget.value = "Test 1"
     widget.focus()
 
-    await probe.redraw("Text is initially invalid")
+    await probe.redraw("Text is initially invalid (1)")
     assert not widget.is_valid
 
     widget.value = ""
-    await probe.redraw("Cleared content; now valid")
+    await probe.redraw("Cleared content; now valid (0)")
     assert widget.is_valid
 
     await probe.type_character("3")
-    await probe.redraw("Typed a 3; now invalid")
+    await probe.redraw("Typed a 3; now invalid (3)")
     assert not widget.is_valid
 
     await probe.type_character("1")
-    await probe.redraw("Typed a 1; now valid")
+    await probe.redraw("Typed a 1; now valid (4)")
     assert widget.is_valid
 
     await probe.type_character("4")
-    await probe.redraw("Typed a 4; still valid")
+    await probe.redraw("Typed a 4; still valid (8)")
     assert widget.is_valid
 
     await probe.type_character("3")
-    await probe.redraw("Typed a 4; still valid")
+    await probe.redraw("Typed a 3; now invalid (11)")
     assert not widget.is_valid
 
 

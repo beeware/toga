@@ -39,7 +39,7 @@ class TogaTextFieldProxy:
     @staticmethod
     def textDidChange_(cls, self, notification) -> None:
         self.interface.on_change(None)
-        self.interface.validate()
+        self.interface._validate()
 
     @staticmethod
     def becomeFirstResponder(cls, self) -> bool:
@@ -210,7 +210,7 @@ class TextInput(Widget):
 
     def set_value(self, value):
         self.native.stringValue = value
-        self.interface.on_change(None)
+        self.native.textDidChange_(None)
 
     def rehint(self):
         # Height of a text input is known and fixed.
