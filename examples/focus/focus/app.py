@@ -101,7 +101,6 @@ class ExampleFocusApp(toga.App):
         )
         # Show the main window
         self.main_window.show()
-
         self.text_input.focus()
 
     def on_button_press(self, widget: toga.Button):

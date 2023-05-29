@@ -29,6 +29,11 @@ class Button(TextViewWidget):
     def set_enabled(self, value):
         self.native.setEnabled(value)
 
+    # Disable programmatic focus, otherwise whether this widget is focusable will depend
+    # on whether previous tests have generated keyboard input.
+    def focus(self):
+        pass
+
     def set_background_color(self, value):
         self.set_background_filter(value)
 

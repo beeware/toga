@@ -63,6 +63,11 @@ class Slider(Widget, toga.widgets.slider.IntSliderImpl):
         Slider.TICK_DRAWABLE = attrs.getDrawable(0)
         attrs.recycle()
 
+    # Disable programmatic focus, otherwise whether this widget is focusable will depend
+    # on whether previous tests have generated keyboard input.
+    def focus(self):
+        pass
+
     def rehint(self):
         self.native.measure(
             View__MeasureSpec.UNSPECIFIED, View__MeasureSpec.UNSPECIFIED

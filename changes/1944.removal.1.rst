@@ -1,0 +1,1 @@
+The argument names used to construct validators have changed. Error message arguments now all end with ``_message``; ``compare_count`` has been renamed ``count``; and ``min_value`` and ``max_value`` have been renamed ``min_length`` and ``max_length``, respectively.

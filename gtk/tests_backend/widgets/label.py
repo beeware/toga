@@ -17,4 +17,7 @@ class LabelProbe(SimpleProbe):
 
     @property
     def vertical_alignment(self):
-        return toga_yalignment(self.native.get_yalign())
+        return
+
+    def assert_vertical_alignment(self, expected):
+        assert toga_yalignment(self.native.get_yalign()) == expected

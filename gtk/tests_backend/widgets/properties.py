@@ -34,14 +34,13 @@ def toga_font(font):
     )
 
 
-def toga_xalignment(xalign, justify=Gtk.Justification.LEFT):
+def toga_xalignment(xalign, justify=None):
     try:
         return {
-            (0.0, Gtk.Justification.LEFT): LEFT,
-            (1.0, Gtk.Justification.RIGHT): RIGHT,
-            (0.5, Gtk.Justification.CENTER): CENTER,
-            (0.0, Gtk.Justification.FILL): JUSTIFY,
-        }[(xalign, justify)]
+            0.0: JUSTIFY if justify == Gtk.Justification.FILL else LEFT,
+            1.0: RIGHT,
+            0.5: CENTER,
+        }[xalign]
     except KeyError:
         pytest.fail(f"Can't interpret GTK x alignment {xalign} with justify {justify}")
 

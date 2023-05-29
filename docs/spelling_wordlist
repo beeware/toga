@@ -61,6 +61,9 @@ scrollers
 selectable
 Stimpy
 stylesheet
+Subclasses
+substring
+substrings
 testbed
 triaged
 Triaging
@@ -72,6 +75,7 @@ toolkits
 Towncrier
 tvOS
 Ubuntu
+validator
 validators
 verbing
 viewport
