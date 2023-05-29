@@ -161,15 +161,12 @@ class MaxLength(LengthBetween):
         self,
         length: int,
         error_message: Optional[str] = None,
-        allow_empty: bool = True,
     ):
         """A validator confirming that the length of input does not exceed a maximum size.
 
         :param length: The maximum length of the string (inclusive).
         :param error_message: Optional; the error message to display when the
             string is too long.
-        :param allow_empty: Optional; Is no input considered valid? Defaults to
-            ``True``
         """
         if error_message is None:
             error_message = "Input is too long (length should be at most {})".format(
@@ -179,7 +176,6 @@ class MaxLength(LengthBetween):
             min_length=None,
             max_length=length,
             error_message=error_message,
-            allow_empty=allow_empty,
         )
 
 
@@ -280,21 +276,17 @@ class NotContains(Contains):
         self,
         substring: str,
         error_message: Optional[str] = None,
-        allow_empty: bool = True,
     ):
         """A validator confirming that the string does not contain a substring.
 
         :param substring: A substring that must not exist in the input.
         :param error_message: Optional; the error message to display when the
             input contains the provided substring.
-        :param allow_empty: Optional; Is no input considered valid? Defaults to
-            ``True``
         """
         super().__init__(
             substring,
             count=0,
             error_message=error_message,
-            allow_empty=allow_empty,
         )
 
 

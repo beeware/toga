@@ -51,10 +51,8 @@ def test_min_length(value, kwargs, error):
         ("right size", dict(length=10), None),
         # Less than max size
         ("valid", dict(length=10), None),
-        # Allow empty strings
+        # Empty strings are less than any max length
         ("", dict(length=10), None),
-        # An empty string is less than the max length
-        ("", dict(length=10, allow_empty=False), None),
         # Just exceeds maximum length
         (
             "bad size!!!",
@@ -271,9 +269,8 @@ def test_contains(value, kwargs, error):
     [
         # No match
         ("nothing to see", dict(substring="hello"), None),
-        # Allow empty strings (both explicit and implicit)
+        # Allow empty strings (an empty string can't contain a substring)
         ("", dict(substring="hello"), None),
-        ("", dict(substring="hello", allow_empty=False), None),
         # Starts with match
         (
             "hello is what you should say",
