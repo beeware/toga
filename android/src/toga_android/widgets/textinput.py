@@ -37,15 +37,16 @@ class TogaKeyListener(OnKeyListener):
         self.interface = impl.interface
 
     def onKey(self, _view, _key, _event):
-        try:
-            key_pressed = toga_key(_event)["key"].value
-            if (key_pressed == "<enter>" or key_pressed == "numpad:enter") and int(
-                _event.getAction()
-            ) == 1:
+        event_info = toga_key(_event)
+        if event_info is None:
+            pass  # pragma: nocover
+        else:
+            key_pressed = event_info["key"].value
+            if (key_pressed == "<enter>" or key_pressed == "numpad:enter") and (
+                int(_event.getAction()) == 1
+            ):
                 self.interface.on_confirm(None)
-            return False
-        except TypeError:
-            return False
+        return False
 
 
 class TogaFocusListener(View__OnFocusChangeListener):
