@@ -40,25 +40,26 @@ class TextInputProbe(LabelProbe):
         return not focusable
 
     async def type_character(self, char):
+        # In CI, sendKeyEvent logs the warning "Cancelling event (no window focus)", and
+        # doesn't trigger on_change. So we only use it for the special keys needed by
+        # the on_confirm test.
         try:
             key_code = {
                 "<esc>": KeyEvent.KEYCODE_ESCAPE,
-                " ": KeyEvent.KEYCODE_SPACE,
                 "\n": KeyEvent.KEYCODE_ENTER,
             }[char]
         except KeyError:
-            assert len(char) == 1, char
-            key_code = getattr(KeyEvent, f"KEYCODE_{char.upper()}")
-
-        timestamp = SystemClock.uptimeMillis()
-        for action in [KeyEvent.ACTION_DOWN, KeyEvent.ACTION_UP]:
-            self._input_connection.sendKeyEvent(
-                KeyEvent(
-                    timestamp,  # downTime
-                    timestamp,  # eventTime
-                    action,
-                    key_code,
-                    0,  # repeat
-                    KeyEvent.META_SHIFT_ON if char.isupper() else 0,
+            self.native.append(char)
+        else:
+            timestamp = SystemClock.uptimeMillis()
+            for action in [KeyEvent.ACTION_DOWN, KeyEvent.ACTION_UP]:
+                self._input_connection.sendKeyEvent(
+                    KeyEvent(
+                        timestamp,  # downTime
+                        timestamp,  # eventTime
+                        action,
+                        key_code,
+                        0,  # repeat
+                        0,  # metaState
+                    )
                 )
-            )

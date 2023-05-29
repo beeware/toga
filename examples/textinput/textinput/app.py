@@ -48,34 +48,36 @@ class TextInputApp(toga.App):
     def startup(self):
         # Set up main window
         self.main_window = toga.MainWindow(title=self.name)
+        PADDING = 5
 
         # Labels to show responses.
         self.label = toga.Label(
-            "Enter some values and press extract.", style=Pack(padding=10)
+            "Enter some values and press extract.", style=Pack(padding=PADDING)
         )
-        self.text_label = toga.Label("Ready.", style=Pack(padding=10))
-        self.password_label = toga.Label("Ready.", style=Pack(padding=10))
+        self.text_label = toga.Label("Ready.", style=Pack(padding=PADDING))
+        self.password_label = toga.Label("Ready.", style=Pack(padding=PADDING))
         self.password_content_label = toga.Label(
-            EMPTY_PASSWORD, style=Pack(padding_bottom=10, font_size=9)
+            EMPTY_PASSWORD, style=Pack(padding_bottom=PADDING, font_size=9)
         )
-        self.number_label = toga.Label("Ready.", style=Pack(padding=10))
+        self.number_label = toga.Label("Ready.", style=Pack(padding=PADDING))
 
         # Text inputs and a button
         self.text_input = toga.TextInput(
             value="Initial value, and on_confirm handler",
             placeholder="Type something...",
-            style=Pack(padding=10),
+            style=Pack(padding=PADDING),
             on_confirm=self.do_extract_values,
         )
         self.right_aligned_input = toga.TextInput(
-            placeholder="Right aligned text", style=Pack(padding=10, text_align=RIGHT)
+            placeholder="Right aligned text",
+            style=Pack(padding=PADDING, text_align=RIGHT),
         )
         self.text_input_placeholder = toga.TextInput(
-            placeholder="Type something...", style=Pack(padding=10)
+            placeholder="Type something...", style=Pack(padding=PADDING)
         )
         self.password_input = toga.PasswordInput(
             placeholder="Password...",
-            style=Pack(padding=10),
+            style=Pack(padding=PADDING),
             on_change=self.on_password_change,
             validators=[
                 validators.MinLength(10),
@@ -87,17 +89,17 @@ class TextInputApp(toga.App):
         )
         self.email_input = toga.TextInput(
             placeholder="Email...",
-            style=Pack(padding=10),
+            style=Pack(padding=PADDING),
             validators=[validators.Email()],
         )
-        self.number_input = toga.NumberInput(style=Pack(padding=10))
+        self.number_input = toga.NumberInput(style=Pack(padding=PADDING))
         btn_extract = toga.Button(
             "Extract values",
             on_press=self.do_extract_values,
             style=Pack(flex=1),
         )
         self.right_aligned_number_input = toga.NumberInput(
-            style=Pack(padding=10, text_align=RIGHT)
+            style=Pack(padding=PADDING, text_align=RIGHT)
         )
 
         children = [
@@ -127,7 +129,7 @@ class TextInputApp(toga.App):
             style=Pack(
                 flex=1,
                 direction=COLUMN,
-                padding=10,
+                padding=PADDING,
             ),
         )
 
