@@ -52,8 +52,8 @@ class CountValidator:
             expected, but were not found.
         :param expected_non_existence_message: The error message to show if matches were
             not expected, but were found.
-        :param expected_count_message: The error message to show if the count
-            unexpectedly matches the desired value.
+        :param expected_count_message: The error message to show if matches
+            were expected, but a different number were found.
         :param allow_empty: Optional; Is no input considered valid? Defaults to
             ``True``
         """
@@ -167,7 +167,7 @@ class MaxLength(LengthBetween):
 
         :param length: The maximum length of the string (inclusive).
         :param error_message: Optional; the error message to display when the
-            string isn't long enough.
+            string is too long.
         :param allow_empty: Optional; Is no input considered valid? Defaults to
             ``True``
         """
@@ -242,12 +242,12 @@ class Contains(CountValidator):
         allow_empty: bool = True,
     ):
         """A validator confirming that the string contains one or more
-        substring.
+        copies of a substring.
 
         :param substring: The substring that must exist in the input.
         :param count: Optional; The exact number of matches that are expected.
         :param error_message: Optional; the error message to display when the
-            input doesn't contain all the provided substrings.
+            input doesn't contain the substring (or the requested count of substrings).
         :param allow_empty: Optional; Is no input considered valid? Defaults to
             ``True``
         """
@@ -282,12 +282,11 @@ class NotContains(Contains):
         error_message: Optional[str] = None,
         allow_empty: bool = True,
     ):
-        """A validator confirming that the string does not contains one or more
-        substring.
+        """A validator confirming that the string does not contain a substring.
 
         :param substring: A substring that must not exist in the input.
         :param error_message: Optional; the error message to display when the
-            input doesn't contain all the provided substrings.
+            input contains the provided substring.
         :param allow_empty: Optional; Is no input considered valid? Defaults to
             ``True``
         """
@@ -468,8 +467,8 @@ class ContainsSpecial(CountValidator):
             characters that must exist. If not provided, the existence of any
             special character will make the string valid.
         :param error_message: Optional; the error message to display when the
-            input doesn't contain special character (or the requested count of
-            special character).
+            input doesn't contain special characters (or the requested count of
+            special characters).
         :param allow_empty: Optional; Is no input considered valid? Defaults to
             ``True``
         """
