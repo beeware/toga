@@ -127,7 +127,8 @@ class TextInput(Widget):
 
     def set_value(self, value):
         self.native.text = value
-        self.native.textFieldDidChange_(None)
+        self.interface.on_change(None)
+        self.interface._validate()
 
     def set_alignment(self, value):
         self.native.textAlignment = NSTextAlignment(value)

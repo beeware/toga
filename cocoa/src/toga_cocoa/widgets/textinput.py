@@ -210,7 +210,8 @@ class TextInput(Widget):
 
     def set_value(self, value):
         self.native.stringValue = value
-        self.native.textDidChange_(None)
+        self.interface.on_change(None)
+        self.interface._validate()
 
     def rehint(self):
         # Height of a text input is known and fixed.
