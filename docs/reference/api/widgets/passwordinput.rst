@@ -31,6 +31,18 @@ are also supported by PasswordInput.
 
     password = toga.PasswordInput()
 
+Notes
+-----
+
+* Winforms does not support the use of partially or fully transparent colors
+  for the MultilineTextInput background. If a color with an alpha value is
+  provided (including ``TRANSPARENT``), the alpha channel will be ignored.
+  A ``TRANSPARENT`` background will be rendered as white.
+
+* On Winforms, if a TextInput is given an explicit height, the rendered widget
+  will not expand to fill that space. The widget will have the fixed height
+  determined by the font used on the widget. In general, you should avoid
+  setting a ``height`` style property on TextInput widgets.
 
 Reference
 ---------
