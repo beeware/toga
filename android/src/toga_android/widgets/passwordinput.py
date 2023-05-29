@@ -4,7 +4,8 @@ from .textinput import TextInput
 
 class PasswordInput(TextInput):
     def create(self):
-        super().create()
-        self.native.setInputType(
-            InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD
+        super().create(
+            input_type=(
+                InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD
+            )
         )

@@ -9,6 +9,7 @@ SubMenu = JavaClass("android/view/SubMenu")
 View = JavaClass("android/view/View")
 ViewGroup__LayoutParams = JavaClass("android/view/ViewGroup$LayoutParams")
 View__MeasureSpec = JavaClass("android/view/View$MeasureSpec")
+View__OnFocusChangeListener = JavaInterface("android/view/View$OnFocusChangeListener")
 View__OnTouchListener = JavaInterface("android/view/View$OnTouchListener")
 ViewTreeObserver__OnGlobalLayoutListener = JavaInterface(
     "android/view/ViewTreeObserver$OnGlobalLayoutListener"

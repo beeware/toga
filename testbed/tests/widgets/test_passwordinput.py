@@ -30,6 +30,7 @@ from .test_textinput import (  # noqa: F401
     test_text_value,
     test_validation,
     verify_focus_handlers,
+    verify_vertical_alignment,
 )
 
 

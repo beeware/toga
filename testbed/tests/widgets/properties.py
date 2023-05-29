@@ -86,7 +86,7 @@ async def test_focus_noop(widget, probe, other, other_probe):
 
     # Widget has *not* taken focus
     widget.focus()
-    await probe.redraw("Widget should be given focus")
+    await probe.redraw("The other widget should still have focus")
     assert not probe.has_focus
     assert other_probe.has_focus
 
