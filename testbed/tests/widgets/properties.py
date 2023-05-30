@@ -311,7 +311,7 @@ async def test_font(widget, probe, verify_font_sizes):
         message="Widget text should be reset to original family and size"
     )
     assert probe.font == orig_font
-    if verify_font_sizes[0]:
+    if verify_font_sizes[0] and probe.shrink_on_resize:
         assert probe.width == orig_width
     if verify_font_sizes[1]:
         assert probe.height == orig_height

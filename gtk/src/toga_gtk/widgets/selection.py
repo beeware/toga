@@ -1,3 +1,5 @@
+from contextlib import contextmanager
+
 from travertino.size import at_least
 
 from ..libs import Gtk
@@ -7,35 +9,104 @@ from .base import Widget
 class Selection(Widget):
     def create(self):
         self.native = Gtk.ComboBoxText.new()
-        self.native.connect("changed", self.gtk_on_select)
+        self.native.connect("changed", self.gtk_on_changed)
+        self._send_notifications = True
 
-    def gtk_on_select(self, widget):
-        if self.interface.on_select:
-            self.interface.on_select(widget)
+    @contextmanager
+    def suspend_notifications(self):
+        self._send_notifications = False
+        yield
+        self._send_notifications = True
 
-    def remove_all_items(self):
-        self.native.remove_all()
+    def gtk_on_changed(self, widget):
+        if self._send_notifications:
+            self.interface.on_change(None)
 
-    def add_item(self, item):
-        self.native.append_text(item)
+    # FIXME: 2023-05-31 Everything I can find in documentation, and every test I
+    # do with manual stylesheet in the GTK Inspector, says that `.toga button`
+    # should target the colors of a GTK ComboBoxText widget. But when applied to
+    # the widget, it either doesn't hit, or it's being overridden, and I can't
+    # work out why.
 
-        # Gtk.ComboBox does not select the first item, so it's done here.
-        if not self.get_selected_item():
-            self.select_item(item)
+    # def set_color(self, color):
+    #     self.apply_css(
+    #         "color",
+    #         get_color_css(color),
+    #         selector=".toga, .toga button",
+    #     )
 
-    def select_item(self, item):
-        self.native.set_active(self.interface.items.index(item))
+    # def set_background_color(self, color):
+    #     self.apply_css(
+    #         "background_color",
+    #         get_background_color_css(color),
+    #         selector=".toga, .toga button",
+    #     )
+
+    def change_source(self, source):
+        with self.suspend_notifications():
+            self.native.remove_all()
+            for item in source:
+                self.native.append_text(self.interface._title_for_item(item))
+
+        # Gtk.ComboBox does not select the first item by default
+        self.native.set_active(0)
+
+    def change(self, item):
+        index = self.interface._items.index(item)
+        selection = self.native.get_active()
+        # Insert a new entry at the same index,
+        # then delete the old entry (at the increased index)
+        with self.suspend_notifications():
+            self.native.insert_text(index, self.interface._title_for_item(item))
+            self.native.remove(index + 1)
+            if selection == index:
+                self.native.set_active(index)
+
+    def insert(self, index, item):
+        with self.suspend_notifications():
+            self.native.insert_text(index, self.interface._title_for_item(item))
+
+        # If you're inserting the first item, make sure it's selected
+        if len(self.interface.items) == 1:
+            self.native.set_active(0)
+
+    def remove(self, index, item):
+        selection = self.native.get_active()
+        with self.suspend_notifications():
+            self.native.remove(index)
+
+        # If we deleted the item that is currently selected, reset the
+        # selection to the first item
+        if index == selection:
+            self.native.set_active(0)
+
+    def clear(self):
+        with self.suspend_notifications():
+            self.native.remove_all()
+        self.interface.on_change(None)
+
+    def select_item(self, index, item):
+        self.native.set_active(index)
+        self.interface.on_change(None)
 
     def get_selected_item(self):
-        return self.native.get_active_text()
+        try:
+            return self.interface.items[self.native.get_active()]
+        except IndexError:
+            return None
 
     def rehint(self):
-        # width = self.native.get_preferred_width()
+        width = self.native.get_preferred_width()
         height = self.native.get_preferred_height()
 
-        self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
+        # FIXME: 2023-05-31 This will always provide a size that is big enough,
+        # but sometimes it will be *too* big. For example, if you set the font size
+        # large, then reduce it again, the widget *could* reduce in size. However,
+        # I can't find any way to prod GTK to perform a resize that will reduce
+        # it's minimum size. This is the reason the test probe has a `shrink_on_resize`
+        # property; if we can fix this resize issue, `shrink_on_resize` may not
+        # be necessary.
+        self.interface.intrinsic.width = at_least(
+            max(self.interface._MIN_WIDTH, width[1])
+        )
         self.interface.intrinsic.height = height[1]
-
-    def set_on_select(self, handler):
-        # No special handling required
-        pass

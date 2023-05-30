@@ -111,6 +111,10 @@ class SimpleProbe:
             min_height <= self.height <= max_height
         ), f"Height ({self.height}) not in range ({min_height}, {max_height})"
 
+    @property
+    def shrink_on_resize(self):
+        return True
+
     def assert_layout(self, size, position):
         # Widget is contained
         assert self.widget._impl.container is not None

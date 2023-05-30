@@ -90,6 +90,10 @@ class SimpleProbe:
         ), f"Height ({self.height}) not in range ({min_height}, {max_height})"
 
     @property
+    def shrink_on_resize(self):
+        return True
+
+    @property
     def color(self):
         sc = self.native.get_style_context()
         return toga_color(sc.get_property("color", sc.get_state()))
