@@ -41,6 +41,11 @@ class Switch(TextViewWidget):
     def set_value(self, value):
         self.native.setChecked(bool(value))
 
+    # Disable programmatic focus, otherwise whether this widget is focusable will depend
+    # on whether previous tests have generated keyboard input.
+    def focus(self):
+        pass
+
     def rehint(self):
         if not self.native.getLayoutParams():
             return

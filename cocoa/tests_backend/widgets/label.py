@@ -1,4 +1,3 @@
-from toga.constants import TOP
 from toga_cocoa.libs import NSTextField
 
 from .base import SimpleProbe
@@ -24,8 +23,6 @@ class LabelProbe(SimpleProbe):
     def alignment(self):
         return toga_alignment(self.native.alignment)
 
-    @property
-    def vertical_alignment(self):
-        # Cocoa doesn't provide an option to alter the vertical alignment of
-        # NSTextField
-        return TOP
+    def assert_vertical_alignment(self, expected):
+        # Vertical alignment isn't configurable on NSTextField
+        pass

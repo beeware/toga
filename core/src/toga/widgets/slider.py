@@ -1,6 +1,7 @@
+from __future__ import annotations
+
 from abc import ABC, abstractmethod
 from contextlib import contextmanager
-from typing import Callable, Optional, Tuple
 
 from toga.handlers import wrapped_handler
 
@@ -12,13 +13,13 @@ class Slider(Widget):
         self,
         id=None,
         style=None,
-        value=None,
-        range=(0, 1),
-        tick_count=None,
-        on_change=None,
-        on_press=None,
-        on_release=None,
-        enabled=True,
+        value: float | None = None,
+        range: tuple[float, float] = (0.0, 1.0),
+        tick_count: int | None = None,
+        on_change: callable | None = None,
+        on_press: callable | None = None,
+        on_release: callable | None = None,
+        enabled: bool = True,
     ):
         """Create a new slider widget.
 
@@ -97,7 +98,7 @@ class Slider(Widget):
         return value
 
     @property
-    def range(self) -> Tuple[float]:
+    def range(self) -> tuple[float, float]:
         """Range of allowed values, in the form (min, max).
 
         If a range is set which doesn't include the current value, the value will be
@@ -137,7 +138,7 @@ class Slider(Widget):
         return self.range[1]
 
     @property
-    def tick_count(self) -> Optional[int]:
+    def tick_count(self) -> int | None:
         """Number of tick marks to display on the slider.
 
         * If this is ``None``, the slider will be continuous.
@@ -170,7 +171,7 @@ class Slider(Widget):
             self.value = old_value
 
     @property
-    def tick_step(self) -> Optional[float]:
+    def tick_step(self) -> float | None:
         """Step between adjacent ticks.
 
         * If the slider is continuous, this property returns ``None``
@@ -185,7 +186,7 @@ class Slider(Widget):
         return (self.max - self.min) / (self.tick_count - 1)
 
     @property
-    def tick_value(self) -> Optional[int]:
+    def tick_value(self) -> int | None:
         """Value of the slider, measured in ticks.
 
         * If the slider is continuous, this property returns ``None``.
@@ -212,7 +213,7 @@ class Slider(Widget):
             self.value = self.min + (tick_value - 1) * self.tick_step
 
     @property
-    def on_change(self) -> Callable:
+    def on_change(self) -> callable:
         """Handler to invoke when the value of the slider is changed, either by the user
         or programmatically.
 
@@ -225,7 +226,7 @@ class Slider(Widget):
         self._on_change = wrapped_handler(self, handler)
 
     @property
-    def on_press(self) -> Callable:
+    def on_press(self) -> callable:
         """Handler to invoke when the user presses the slider before changing it."""
         return self._on_press
 
@@ -234,7 +235,7 @@ class Slider(Widget):
         self._on_press = wrapped_handler(self, handler)
 
     @property
-    def on_release(self) -> Callable:
+    def on_release(self) -> callable:
         """Handler to invoke when the user releases the slider after changing it."""
         return self._on_release
 

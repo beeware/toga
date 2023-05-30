@@ -1,5 +1,10 @@
-from ..libs import NSSecureTextField, NSTextFieldSquareBezel, objc_method, objc_property
-from .textinput import TextInput
+from ..libs import (
+    SEL,
+    NSSecureTextField,
+    objc_method,
+    objc_property,
+)
+from .textinput import TextInput, TogaTextFieldProxy
 
 
 class TogaSecureTextField(NSSecureTextField):
@@ -8,22 +13,28 @@ class TogaSecureTextField(NSSecureTextField):
 
     @objc_method
     def textDidChange_(self, notification) -> None:
-        if self.interface.on_change:
-            self.interface.on_change(self.interface)
+        TogaTextFieldProxy.textDidChange_(__class__, self, notification)
 
     @objc_method
-    def textShouldEndEditing_(self, textObject) -> bool:
-        return self.interface.validate()
+    def becomeFirstResponder(self) -> bool:
+        return TogaTextFieldProxy.becomeFirstResponder(__class__, self)
+
+    @objc_method
+    def textDidEndEditing_(self, textObject) -> None:
+        TogaTextFieldProxy.textDidEndEditing_(__class__, self, textObject)
+
+    @objc_method
+    def control_textView_doCommandBySelector_(
+        self,
+        control,
+        textView,
+        selector: SEL,
+    ) -> bool:
+        TogaTextFieldProxy.control_textView_doCommandBySelector_(
+            __class__, self, control, textView, selector
+        )
 
 
 class PasswordInput(TextInput):
-    def create(self):
-        self.native = TogaSecureTextField.new()
-        self.native.interface = self.interface
-        self.native.impl = self
-
-        self.native.bezeled = True
-        self.native.bezelStyle = NSTextFieldSquareBezel
-
-        # Add the layout constraints
-        self.add_constraints()
+    def _make_instance(self):
+        return TogaSecureTextField.new()

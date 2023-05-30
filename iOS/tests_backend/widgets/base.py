@@ -141,5 +141,14 @@ class SimpleProbe:
     def has_focus(self):
         return self.native.isFirstResponder
 
+    def type_return(self):
+        self.native.insertText("\n")
+
     async def type_character(self, char):
-        self.native.insertText(char)
+        if char == "<esc>":
+            # There's no analog of esc on iOS
+            pass
+        elif char == "\n":
+            self.type_return()
+        else:
+            self.native.insertText(char)

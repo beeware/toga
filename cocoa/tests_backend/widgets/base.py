@@ -153,6 +153,7 @@ class SimpleProbe:
         # Convert the requested character into a Cocoa keycode.
         # This table is incomplete, but covers all the basics.
         key_code = {
+            "<esc>": 53,
             " ": 49,
             "\n": 36,
             "a": 0,

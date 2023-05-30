@@ -1,21 +1,16 @@
-from pytest import approx, fixture
+from unittest.mock import Mock
 
-import toga
+from pytest import approx
+
 from toga.colors import CORNFLOWERBLUE, RED, TRANSPARENT, color as named_color
 from toga.fonts import BOLD, FANTASY, ITALIC, NORMAL, SERIF, SYSTEM
-from toga.style.pack import CENTER, COLUMN, JUSTIFY, LEFT, LTR, RIGHT, RTL, TOP
+from toga.style.pack import CENTER, COLUMN, JUSTIFY, LEFT, LTR, RIGHT, RTL
 
 from ..assertions import assert_color
 from ..data import COLORS, TEXTS
-from .probe import get_probe
 
 # An upper bound for widths
 MAX_WIDTH = 2000
-
-
-@fixture
-def verify_font_sizes():
-    return True
 
 
 async def test_enabled(widget, probe):
@@ -52,12 +47,13 @@ async def test_enable_noop(widget, probe):
     assert widget.enabled
 
 
-async def test_focus(widget, probe):
+async def test_focus(widget, probe, other, other_probe, verify_focus_handlers):
     "The widget can be given focus"
-    # Add a separate widget that can take take focus
-    other = toga.TextInput()
-    widget.parent.add(other)
-    other_probe = get_probe(other)
+    if verify_focus_handlers:
+        on_gain_handler = Mock()
+        on_lose_handler = Mock()
+        widget.on_gain_focus = on_gain_handler
+        widget.on_lose_focus = on_lose_handler
 
     other.focus()
     await probe.redraw("A separate widget should be given focus")
@@ -69,14 +65,20 @@ async def test_focus(widget, probe):
     assert probe.has_focus
     assert not other_probe.has_focus
 
+    if verify_focus_handlers:
+        on_gain_handler.assert_called_once()
 
-async def test_focus_noop(widget, probe):
+    other.focus()
+    await probe.redraw("Focus has been lost")
+    assert not probe.has_focus
+    assert other_probe.has_focus
+
+    if verify_focus_handlers:
+        on_lose_handler.assert_called_once()
+
+
+async def test_focus_noop(widget, probe, other, other_probe):
     "The widget cannot be given focus"
-    # Add a separate widget that can take take focus
-    other = toga.TextInput()
-    widget.parent.add(other)
-    other_probe = get_probe(other)
-
     other.focus()
     await probe.redraw("A separate widget should be given focus")
     assert not probe.has_focus
@@ -84,7 +86,7 @@ async def test_focus_noop(widget, probe):
 
     # Widget has *not* taken focus
     widget.focus()
-    await probe.redraw("Widget should be given focus")
+    await probe.redraw("The other widget should still have focus")
     assert not probe.has_focus
     assert other_probe.has_focus
 
@@ -145,19 +147,13 @@ async def test_placeholder(widget, probe):
     assert probe.placeholder_visible
 
 
-async def test_placeholder_focus(widget, probe):
+async def test_placeholder_focus(widget, probe, other):
     "Placeholders interact correctly with focus changes"
     widget.value = ""
     widget.placeholder = "placeholder"
     hides_on_focus = probe.placeholder_hides_on_focus
 
-    # Placeholder visibility can be focus dependent, so add another
-    # widget that can take take focus
-    other = toga.TextInput()
-    widget.parent.add(other)
-    other.focus()
-
-    # Give the widget focus; this may hide the placeholder.
+    # Give the widget focus; this will hide the placeholder on some platforms.
     widget.focus()
     await probe.redraw("Widget has focus")
     assert widget.value == ""
@@ -267,9 +263,10 @@ async def test_text_width_change(widget, probe):
 async def test_font(widget, probe, verify_font_sizes):
     "The font size and family of a widget can be changed."
     # Capture the original size and font of the widget
-    if verify_font_sizes:
-        orig_height = probe.height
+    if verify_font_sizes[0]:
         orig_width = probe.width
+    if verify_font_sizes[1]:
+        orig_height = probe.height
     orig_font = probe.font
     probe.assert_font_family(SYSTEM)
 
@@ -286,8 +283,9 @@ async def test_font(widget, probe, verify_font_sizes):
     assert (orig_font.size * 2.5) < new_size_font.size < (orig_font.size * 3.5)
 
     # Widget should be taller and wider
-    if verify_font_sizes:
+    if verify_font_sizes[0]:
         assert probe.width > orig_width
+    if verify_font_sizes[1]:
         assert probe.height > orig_height
 
     # Change to a different font
@@ -301,8 +299,9 @@ async def test_font(widget, probe, verify_font_sizes):
     # Font size hasn't changed
     assert new_family_font.size == new_size_font.size
     # Widget should still be taller and wider than the original
-    if verify_font_sizes:
+    if verify_font_sizes[0]:
         assert probe.width > orig_width
+    if verify_font_sizes[1]:
         assert probe.height > orig_height
 
     # Reset to original family and size.
@@ -312,9 +311,10 @@ async def test_font(widget, probe, verify_font_sizes):
         message="Widget text should be reset to original family and size"
     )
     assert probe.font == orig_font
-    if verify_font_sizes:
-        assert probe.height == orig_height
+    if verify_font_sizes[0]:
         assert probe.width == orig_width
+    if verify_font_sizes[1]:
+        assert probe.height == orig_height
 
 
 async def test_font_attrs(widget, probe):
@@ -398,46 +398,62 @@ async def test_background_color_transparent(widget, probe):
     assert_color(probe.background_color, TRANSPARENT if supports_alpha else original)
 
 
-async def test_alignment(widget, probe):
+async def test_alignment(widget, probe, verify_vertical_alignment):
     """Widget honors alignment settings."""
     # Use column alignment to ensure widget uses all available width
     widget.parent.style.direction = COLUMN
 
     # Initial alignment is LEFT, initial direction is LTR
-    await probe.redraw("Label text direction should be LTR")
+    await probe.redraw("Text direction should be LTR")
     probe.assert_alignment(LEFT)
 
     for alignment in [RIGHT, CENTER, JUSTIFY]:
         widget.style.text_align = alignment
-        await probe.redraw("Label text direction should be %s" % alignment)
+        await probe.redraw("Text direction should be %s" % alignment)
         probe.assert_alignment(alignment)
-        assert probe.vertical_alignment == TOP
+        probe.assert_vertical_alignment(verify_vertical_alignment)
 
     # Clearing the alignment reverts to default alignment of LEFT
     del widget.style.text_align
-    await probe.redraw("Label text direction should be reverted to LEFT")
+    await probe.redraw("Text direction should be reverted to LEFT")
     probe.assert_alignment(LEFT)
 
     # If text direction is RTL, default alignment is RIGHT
     widget.style.text_direction = RTL
-    await probe.redraw("Label text direction should be RTL")
+    await probe.redraw("Text direction should be RTL")
     probe.assert_alignment(RIGHT)
 
     # If text direction is expliclty LTR, default alignment is LEFT
     widget.style.text_direction = LTR
-    await probe.redraw("Label text direction should be LTR")
+    await probe.redraw("Text direction should be LTR")
     probe.assert_alignment(LEFT)
 
     # If the widget has an explicit height, the vertical alignment of the widget
-    # is still TOP
+    # is unchanged.
     widget.style.height = 200
-    await probe.redraw("Label text should be at the top")
-    assert probe.vertical_alignment == TOP
+    await probe.redraw(f"Text should be at the {verify_vertical_alignment}")
+    probe.assert_vertical_alignment(verify_vertical_alignment)
 
 
-async def test_vertical_alignment_top(widget, probe):
-    """Text is vertically aligned to the top of the widget."""
-    assert probe.vertical_alignment == TOP
+async def test_readonly(widget, probe):
+    "A widget can be made readonly"
+    # Initial value is enabled
+    assert not widget.readonly
+    assert not probe.readonly
+
+    # Change to readonly
+    widget.readonly = True
+    await probe.redraw("Input should be read only")
+
+    assert widget.readonly
+    assert probe.readonly
+
+    # Change back to writable
+    widget.readonly = False
+    await probe.redraw("Input should be writable")
+
+    assert not widget.readonly
+    assert not probe.readonly
 
 
 async def test_flex_widget_size(widget, probe):

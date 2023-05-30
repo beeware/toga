@@ -1,4 +1,3 @@
-from toga.constants import TOP
 from toga_gtk.libs import Gtk
 
 from .base import SimpleProbe
@@ -11,6 +10,7 @@ class MultilineTextInputProbe(SimpleProbe):
     def __init__(self, widget):
         super().__init__(widget)
         self.native_textview = self.impl.native_textview
+        assert isinstance(self.native_textview, Gtk.TextView)
 
         # Keypress events must be sent to the inner textview
         self._keypress_target = self.native_textview
@@ -19,6 +19,10 @@ class MultilineTextInputProbe(SimpleProbe):
     def value(self):
         buffer = self.impl.placeholder if self.placeholder_visible else self.impl.buffer
         return buffer.get_text(buffer.get_start_iter(), buffer.get_end_iter(), True)
+
+    @property
+    def value_hidden(self):
+        return False
 
     @property
     def has_focus(self):
@@ -87,10 +91,9 @@ class MultilineTextInputProbe(SimpleProbe):
             self.native_textview.get_justification(),
         )
 
-    @property
-    def vertical_alignment(self):
-        # GTKTextView doesn't provide an option for vertical alignment.
-        return TOP
+    def assert_vertical_alignment(self, expected):
+        # GTK.TextView vertical alignment is non-configurable
+        return None
 
     @property
     def readonly(self):

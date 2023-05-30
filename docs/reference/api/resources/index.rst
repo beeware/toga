@@ -8,3 +8,4 @@ Resources
    group
    icons
    images
+   validators

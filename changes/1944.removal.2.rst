@@ -1,0 +1,1 @@
+The ability to perform multiple substring matches in a ``Contains`` validator has been removed.

@@ -207,5 +207,5 @@ def toga_key(event):
             modifiers.add(Key.MOD_2)
 
         return {"key": key, "modifiers": modifiers}
-    except KeyError:
+    except KeyError:  # pragma: nocover
         return None

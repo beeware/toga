@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from builtins import id as identifier
 
 from travertino.node import Node
@@ -19,18 +21,18 @@ class WidgetRegistry(dict):
         # method instead.
         raise RuntimeError("Widgets cannot be directly added to a registry")
 
-    def update(self, widgets):
+    def update(self, widgets: list[Widget]):
         for widget in widgets:
             self.add(widget)
 
-    def add(self, widget):
+    def add(self, widget: Widget):
         if widget.id in self:
             # Prevent from adding the same widget twice
             # or adding 2 widgets with the same id
             raise KeyError(f"There is already a widget with the id {widget.id!r}")
         super().__setitem__(widget.id, widget)
 
-    def remove(self, id):
+    def remove(self, id: str):
         del self[id]
 
     def __iter__(self):
@@ -70,7 +72,7 @@ class Widget(Node):
         return f"<{self.__class__.__name__}:0x{identifier(self):x}>"
 
     @property
-    def id(self):
+    def id(self) -> str:
         """The unique identifier for the widget."""
         return self._id
 
@@ -89,7 +91,7 @@ class Widget(Node):
     def tab_index(self, tab_index):
         self._impl.set_tab_index(tab_index)
 
-    def add(self, *children):
+    def add(self, *children: list[Widget]):
         """Add the provided widgets as children of this widget.
 
         If a child widget already has a parent, it will be re-parented as a
@@ -118,7 +120,7 @@ class Widget(Node):
         if self.window:
             self.window.content.refresh()
 
-    def insert(self, index, child):
+    def insert(self, index: int, child: Widget):
         """Insert a widget as a child of this widget.
 
         If a child widget already has a parent, it will be re-parented as a
@@ -148,7 +150,7 @@ class Widget(Node):
         if self.window:
             self.window.content.refresh()
 
-    def remove(self, *children):
+    def remove(self, *children: list[Widget]):
         """Remove the provided widgets as children of this node.
 
         Any nominated child widget that is not a child of this widget will
@@ -242,7 +244,7 @@ class Widget(Node):
             window.widgets.add(self)
 
     @property
-    def enabled(self):
+    def enabled(self) -> bool:
         """Is the widget currently enabled? i.e., can the user interact with the widget?"""
         return self._impl.get_enabled()
 
