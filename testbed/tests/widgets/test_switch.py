@@ -13,7 +13,6 @@ from .properties import (  # noqa: F401
     test_font,
     test_font_attrs,
     test_text_width_change,
-    verify_font_sizes,
 )
 
 # Switches can't be given focus on mobile, or on GTK

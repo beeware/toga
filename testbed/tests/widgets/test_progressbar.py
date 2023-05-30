@@ -9,7 +9,7 @@ from .properties import (  # noqa: F401
     test_flex_horizontal_widget_size,
 )
 
-# Progressbar can't be given focus on mobile
+# Progressbar can't be given focus on mobile, or on GTK
 if toga.platform.current_platform in {"android", "iOS", "linux"}:
     from .properties import test_focus_noop  # noqa: F401
 else:

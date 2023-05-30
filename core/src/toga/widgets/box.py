@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from .base import Widget
 
 
@@ -6,7 +8,7 @@ class Box(Widget):
         self,
         id=None,
         style=None,
-        children=None,
+        children: list[Widget] | None = None,
     ):
         """Create a new Box container widget.
 
@@ -28,7 +30,7 @@ class Box(Widget):
             self.add(*children)
 
     @property
-    def enabled(self):
+    def enabled(self) -> bool:
         """Is the widget currently enabled? i.e., can the user interact with the widget?
 
         Box widgets cannot be disabled; this property will always return True; any

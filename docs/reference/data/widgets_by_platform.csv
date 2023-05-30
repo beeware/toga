@@ -12,14 +12,14 @@ ImageView,General Widget,:class:`~toga.widgets.imageview.ImageView`,Image Viewer
 Label,General Widget,:class:`~toga.widgets.label.Label`,Text label,|y|,|y|,|y|,|y|,|y|,|b|
 MultilineTextInput,General Widget,:class:`~toga.widgets.multilinetextinput.MultilineTextInput`,Multi-line Text Input field,|y|,|y|,|y|,|y|,|y|,
 NumberInput,General Widget,:class:`~toga.widgets.numberinput.NumberInput`,Number Input field,|b|,|b|,|b|,|b|,|b|,
-PasswordInput,General Widget,:class:`~toga.widgets.passwordinput.PasswordInput`,A text input that hides it’s input,|b|,|b|,|b|,|b|,|b|,
+PasswordInput,General Widget,:class:`~toga.widgets.passwordinput.PasswordInput`,A text input that hides its input,|y|,|y|,|y|,|y|,|y|,
 ProgressBar,General Widget,:class:`~toga.widgets.progressbar.ProgressBar`,Progress Bar,|y|,|y|,|y|,|y|,|y|,|b|
 Selection,General Widget,:class:`~toga.widgets.selection.Selection`,Selection,|b|,|b|,|b|,|b|,|b|,
 Slider,General Widget,:class:`~toga.widgets.slider.Slider`,Slider,|y|,|y|,|y|,|y|,|y|,
 Switch,General Widget,:class:`~toga.widgets.switch.Switch`,Switch,|y|,|y|,|y|,|y|,|y|,|b|
 Table,General Widget,:class:`~toga.widgets.table.Table`,Table of data,|b|,|b|,|b|,,|b|,
-TextInput,General Widget,:class:`~toga.widgets.textinput.TextInput`,Text Input field,|b|,|b|,|b|,|b|,|b|,|b|
-TimeInput,General Widget,:class:`~toga.widgets.timeinput.TimeInput`,An input for times,,,|b|,,|b|,
+TextInput,General Widget,:class:`~toga.widgets.textinput.TextInput`,A widget for the display and editing of a single line of text.,|y|,|y|,|y|,|y|,|y|,|b|
+TimeInput,General Widget,:class:`~toga.widgets.timepicker.TimeInput`,A widget to select a clock time.,,,|b|,,|b|,
 Tree,General Widget,:class:`~toga.widgets.tree.Tree`,Tree of data,|b|,|b|,|b|,,,
 WebView,General Widget,:class:`~toga.widgets.webview.WebView`,A panel for displaying HTML,|b|,|b|,|b|,|b|,|b|,
 Widget,General Widget,:class:`~toga.widgets.base.Widget`,The base widget,|y|,|y|,|y|,|y|,|y|,|b|
@@ -32,3 +32,4 @@ Command,Resource,:class:`~toga.command.Command`,Command,|b|,|b|,|b|,,|b|,
 Group,Resource,:class:`~toga.command.Group`,Command group,|b|,|b|,|b|,|b|,|b|,
 Icon,Resource,:class:`~toga.icons.Icon`,"An icon for buttons, menus, etc",|b|,|b|,|b|,|b|,|b|,
 Image,Resource,:class:`~toga.images.Image`,An image,|b|,|b|,|b|,|b|,|b|,
+Validators,Resource,:ref:`Validators <validators>`,Input validators,|y|,|y|,|y|,|y|,|y|,

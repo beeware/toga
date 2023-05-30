@@ -39,6 +39,9 @@ def test_create_with_values():
     assert widget.value == "Some text"
     assert widget._on_change._raw == on_change
 
+    # Change handler hasn't been invoked
+    on_change.assert_not_called()
+
 
 @pytest.mark.parametrize(
     "value, expected",

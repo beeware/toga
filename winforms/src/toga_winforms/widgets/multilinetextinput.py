@@ -3,14 +3,10 @@ from travertino.size import at_least
 from toga_winforms.colors import native_color
 from toga_winforms.libs import HorizontalTextAlignment, SystemColors, WinForms
 
-from .base import Widget
+from .textinput import TextInput
 
 
-class MultilineTextInput(Widget):
-    # Attempting to set a background color with any alpha value other than 1 raises
-    # "System.ArgumentException: Control does not support transparent background colors"
-    _background_supports_alpha = False
-
+class MultilineTextInput(TextInput):
     def create(self):
         # TextBox doesn't support automatic scroll bar visibility, so we use RichTextBox
         # (https://stackoverflow.com/a/612234).
@@ -40,15 +36,6 @@ class MultilineTextInput(Widget):
         # placeholder again.
         if self.native.Text == "":
             self._set_placeholder_visible(True)
-
-    def get_readonly(self):
-        return self.native.ReadOnly
-
-    def set_readonly(self, value):
-        self.native.ReadOnly = value
-
-    def get_placeholder(self):
-        return self._placeholder
 
     def set_placeholder(self, value):
         self._placeholder = value
@@ -103,9 +90,6 @@ class MultilineTextInput(Widget):
         self.native.SelectAll()
         self.native.SelectionAlignment = HorizontalTextAlignment(value)
         self.native.SelectionStart, self.native.SelectionLength = original_selection
-
-    def set_font(self, font):
-        self.native.Font = font._impl.native
 
     def scroll_to_bottom(self):
         self.native.SelectionStart = len(self.native.Text)

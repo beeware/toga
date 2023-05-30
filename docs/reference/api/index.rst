@@ -34,7 +34,9 @@ General widgets
  :doc:`MultilineTextInput </reference/api/widgets/multilinetextinput>`   A scrollable panel that allows for the display and editing of multiple
                                                                          lines of text.
  :doc:`NumberInput </reference/api/widgets/numberinput>`                 Number Input field
- :doc:`PasswordInput </reference/api/widgets/passwordinput>`             A text input that hides it's input
+ :doc:`PasswordInput </reference/api/widgets/passwordinput>`             A widget to allow the entry of a password. Any value typed by the
+                                                                         user will be obscured, allowing the user to see the number of
+                                                                         characters they have typed, but not the actual characters.
  :doc:`ProgressBar </reference/api/widgets/progressbar>`                 A horizontal bar to visualize task progress. The task being monitored
                                                                          can be of known or indeterminate length.
  :doc:`Selection </reference/api/widgets/selection>`                     Selection
@@ -43,7 +45,7 @@ General widgets
  :doc:`Switch </reference/api/widgets/switch>`                           A clickable button with two stable states: True (on, checked); and
                                                                          False (off, unchecked). The button has a text label.
  :doc:`Table </reference/api/widgets/table>`                             Table of data
- :doc:`TextInput </reference/api/widgets/textinput>`                     Text Input field
+ :doc:`TextInput </reference/api/widgets/textinput>`                     A widget for the display and editing of a single line of text.
  :doc:`TimeInput </reference/api/widgets/timeinput>`                     A widget to select a clock time.
  :doc:`Tree </reference/api/widgets/tree>`                               Tree of data
  :doc:`WebView </reference/api/widgets/webview>`                         A panel for displaying HTML
@@ -66,15 +68,16 @@ Layout widgets
 Resources
 ---------
 
-=================================================== =================================
- Component                                           Description
-=================================================== =================================
- :doc:`Font </reference/api/resources/fonts>`        Fonts
- :doc:`Command </reference/api/resources/command>`   Command
- :doc:`Group </reference/api/resources/group>`       Command group
- :doc:`Icon </reference/api/resources/icons>`        An icon for buttons, menus, etc
- :doc:`Image </reference/api/resources/images>`      An image
-=================================================== =================================
+========================================================= =================================
+ Component                                                 Description
+========================================================= =================================
+ :doc:`Font </reference/api/resources/fonts>`              Fonts
+ :doc:`Command </reference/api/resources/command>`         Command
+ :doc:`Group </reference/api/resources/group>`             Command group
+ :doc:`Icon </reference/api/resources/icons>`              An icon for buttons, menus, etc
+ :doc:`Image </reference/api/resources/images>`            An image
+ :doc:`Validators </reference/api/resources/validators>`   Input validators
+========================================================= =================================
 
 .. toctree::
    :hidden:
