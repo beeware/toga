@@ -87,10 +87,10 @@ async def test_change(widget, probe, on_change):
         widget.range = (0, scale)
         for position in POSITIONS:
             on_change.reset_mock()
-            probe.change(position)
+            await probe.change(position)
+            await probe.redraw("Slider scale should be %s" % scale)
             assert widget.value == approx(position * scale, abs=(ACCURACY * scale))
             on_change.assert_called_once_with(widget)
-            await probe.redraw("Slider scale should be %s" % scale)
 
     on_change.reset_mock()
     widget.on_change = None

@@ -12,9 +12,19 @@ class SliderProbe(SimpleProbe):
     def position(self):
         return (self.native.doubleValue - self._min) / (self._max - self._min)
 
-    def change(self, position):
+    async def change(self, position):
         self.native.doubleValue = self._min + (position * (self._max - self._min))
-        self.native.performClick(None)  # Setting the value doesn't trigger the action.
+        # Queue a drag event. This won't actually perform any event processing,
+        # but we need to make sure the current event is in a known state
+        # for when the event *is* processed by the call to `performClick()`
+        await self.mouse_event(
+            NSEventType.LeftMouseDragged,
+            self.native.convertPoint(
+                NSPoint(self.width / 2, self.height / 2), toView=None
+            ),
+        )
+        # Perform the action that will actually cause the drag event to be processed.
+        self.native.performClick(None)
 
     @property
     def tick_count(self):
