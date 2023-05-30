@@ -1,31 +1,28 @@
+from pytest import fail, fixture
+
 import toga
-from toga_dummy.utils import TestCase
+from toga_dummy.utils import assert_action_performed
 
 
-class ImageViewTests(TestCase):
-    def setUp(self):
-        super().setUp()
-        # We need a test app to trigger app module discovery
-        self.app = toga.App(
-            formal_name="Test App",
-            app_id="org.beeware.test-app",
-        )
+@fixture
+def widget():
+    return toga.ImageView()
 
-        self.image_view = toga.ImageView()
 
-    def test_widget_created(self):
-        self.assertEqual(self.image_view._impl.interface, self.image_view)
-        self.assertActionPerformed(self.image_view, "create ImageView")
+def test_widget_created(widget):
+    assert widget._impl.interface is widget
+    assert_action_performed(widget, "create ImageView")
 
-    def test_setting_image_invokes_impl_method(self):
-        new_image = "not a image"
 
-        # Binding a non-existent image raises an exception
-        try:
-            self.image_view.image = new_image
-            self.fail("Image should not bind")
-        except FileNotFoundError:
-            pass
+def test_setting_image_invokes_impl_method(widget):
+    new_image = "not a image"
 
-        # self.assertEqual(self.image_view._image, new_image)
-        # self.assertValueSet(self.image_view, 'image', new_image)
+    # Binding a non-existent image raises an exception
+    try:
+        widget.image = new_image
+        fail("Image should not bind")
+    except FileNotFoundError:
+        pass
+
+    # self.assertEqual(widget._image, new_image)
+    # self.assertValueSet(widget, 'image', new_image)
