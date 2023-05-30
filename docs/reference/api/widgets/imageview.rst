@@ -8,7 +8,7 @@ ImageView
    :included_cols: 4,5,6,7,8,9
    :exclude: {0: '(?!^(ImageView|Component)$)'}
 
-The Image View is a container for an image to be rendered on the display
+A widget that displays an image.
 
 Usage
 -----
@@ -17,7 +17,14 @@ Usage
 
     import toga
 
-    view = toga.ImageView(id='view1', image=my_image)
+    my_image = toga.Image(self.paths.app / "brutus.png")
+    view = toga.ImageView(my_image)
+
+Notes
+-----
+
+* The default size of the view is the size of the image, or 0x0 if ``image`` is
+  ``None``.
 
 Reference
 ---------
