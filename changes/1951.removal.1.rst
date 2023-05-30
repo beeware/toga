@@ -1,2 +1,1 @@
 ``DatePicker`` has been renamed ``DateInput``.
-``TimePicker`` has been renamed ``TimeInput``.
