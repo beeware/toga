@@ -21,7 +21,7 @@ class Slider(Widget):
         on_release: callable | None = None,
         enabled: bool = True,
     ):
-        """Create a new slider widget.
+        """Create a new Slider widget.
 
         Inherits from :class:`~toga.widgets.base.Widget`.
 

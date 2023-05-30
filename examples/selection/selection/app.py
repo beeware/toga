@@ -8,6 +8,11 @@ class SelectionApp(toga.App):
     YTTERBIUM = "Ytterbium"
     THULIUM = "Thulium"
     OPTIONS = [CARBON, YTTERBIUM, THULIUM]
+    DATA_OPTIONS = [
+        {"name": CARBON, "number": 6, "weight": 12.011},
+        {"name": YTTERBIUM, "number": 70, "weight": 173.04},
+        {"name": THULIUM, "number": 69, "weight": 168.93},
+    ]
 
     def startup(self):
         # Main window of the application with title and size
@@ -20,7 +25,10 @@ class SelectionApp(toga.App):
         # Add the content on the main window
         self.selection = toga.Selection(items=self.OPTIONS)
         self.empty_selection = toga.Selection()
-
+        self.source_selection = toga.Selection(
+            accessor="name",
+            items=self.DATA_OPTIONS,
+        )
         self.report_label = toga.Label("", style=label_style)
 
         self.main_window.content = toga.Box(
@@ -37,6 +45,13 @@ class SelectionApp(toga.App):
                     children=[
                         toga.Label("Empty selection", style=label_style),
                         self.empty_selection,
+                    ],
+                ),
+                toga.Box(
+                    style=box_style,
+                    children=[
+                        toga.Label("Selection from source", style=label_style),
+                        self.source_selection,
                     ],
                 ),
                 toga.Box(
@@ -64,11 +79,11 @@ class SelectionApp(toga.App):
                     style=box_style,
                     children=[
                         toga.Label(
-                            "use the 'on_select' callback to respond to changes",
+                            "use the 'on_change' callback to respond to changes",
                             style=label_style,
                         ),
                         toga.Selection(
-                            on_select=self.my_on_select,
+                            on_change=self.my_on_change,
                             items=["Dubnium", "Holmium", "Zirconium"],
                         ),
                     ],
@@ -127,14 +142,16 @@ class SelectionApp(toga.App):
     def set_thulium(self, widget):
         self.selection.value = self.THULIUM
 
-    def my_on_select(self, selection):
+    def my_on_change(self, selection):
         # get the current value of the slider with `selection.value`
 
         print(f"The selection widget changed to {selection.value}")
 
     def report_selection(self, widget):
         self.report_label.text = (
-            f"Element: {self.selection.value!r}; Empty: {self.empty_selection.value!r}"
+            f"Element: {self.selection.value!r}; "
+            f"Empty: {self.empty_selection.value!r}; "
+            f"Source: {self.source_selection.value.name} has weight {self.source_selection.value.weight}"
         )
 
 
