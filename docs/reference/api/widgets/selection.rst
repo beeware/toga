@@ -40,7 +40,7 @@ A Selection can also be used to display a list of dictionaries, with the
 display purposes. When the current value of the widget is retrieved, a Row
 object will be returned; this Row object will have all the original data as
 attributes on the Row. In the following example, the GUI will only display the
-names in the list of items, but the age will be availalbe as an attribute on the
+names in the list of items, but the age will be available as an attribute on the
 selected item.
 
 .. code-block:: python
