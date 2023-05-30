@@ -37,19 +37,24 @@ class SimpleProbe:
 
         self.event_listener = EventListener.alloc().init()
 
-    async def post_event(self, event):
+    async def post_event(self, event, delay=None):
         self.native.window.postEvent(event, atStart=False)
 
-        # Add another event to the queue behind the original event, to notify us once
-        # it's been processed.
-        NSRunLoop.currentRunLoop.performSelector(
-            SEL("onEvent"),
-            target=self.event_listener,
-            argument=None,
-            order=0,
-            modes=NSArray.arrayWithObject(NSDefaultRunLoopMode),
-        )
-        await self.event_listener.event.wait()
+        if delay:
+            # Some widgets enter an internal runloop when processing certain events;
+            # this prevents
+            await asyncio.sleep(delay)
+        else:
+            # Add another event to the queue behind the original event, to notify us once
+            # it's been processed.
+            NSRunLoop.currentRunLoop.performSelector(
+                SEL("onEvent"),
+                target=self.event_listener,
+                argument=None,
+                order=0,
+                modes=NSArray.arrayWithObject(NSDefaultRunLoopMode),
+            )
+            await self.event_listener.event.wait()
 
     def assert_container(self, container):
         container_native = container._impl.native
@@ -211,4 +216,20 @@ class SimpleProbe:
                 isARepeat=False,
                 keyCode=key_code,
             ),
+        )
+
+    async def mouse_event(self, event_type, location, delay=None):
+        await self.post_event(
+            NSEvent.mouseEventWithType(
+                event_type,
+                location=location,
+                modifierFlags=0,
+                timestamp=0,
+                windowNumber=self.native.window.windowNumber,
+                context=None,
+                eventNumber=0,
+                clickCount=1,
+                pressure=1.0 if event_type == NSEventType.LeftMouseDown else 0.0,
+            ),
+            delay=delay,
         )

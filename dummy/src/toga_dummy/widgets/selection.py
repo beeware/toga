@@ -45,9 +45,7 @@ class Selection(Widget):
         self._items = []
         self.simulate_selection(None)
 
-    def select_item(self, item):
-        # Confirm the item is valid. If it isn't, raise a ValueError.
-        self._items.index(item)
+    def select_item(self, index, item):
         self._action("select item", item=item)
         self.simulate_selection(item)
 

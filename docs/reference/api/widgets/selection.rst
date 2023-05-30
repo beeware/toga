@@ -60,6 +60,12 @@ selected item.
     print(f"Age of currently selected person: {selection.value.age}")
 
 
+Notes
+-----
+
+* On macOS, you cannot change the color, background color, or font of a
+  Selection.
+
 Reference
 ---------
 

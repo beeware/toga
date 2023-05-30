@@ -125,10 +125,12 @@ class Selection(Widget):
     def value(self, value):
         try:
             if self._accessor is None:
-                row = self._items.find(value=value)
+                item = self._items.find(value=value)
             else:
-                row = value
-            self._impl.select_item(row)
+                item = value
+
+            index = self._items.index(item)
+            self._impl.select_item(index=index, item=item)
         except ValueError:
             raise ValueError(f"{value!r} is not a current item in the selection")
 
