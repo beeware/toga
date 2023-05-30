@@ -89,7 +89,7 @@ class MultilineTextInput(Widget):
 
     # We don't currently support validation in this widget, but provide the method
     # anyway to make it easier for backends to share code with TextInput.
-    def _validate(self):
+    def _validate(self):  # pragma: no cover
         pass
 
     def scroll_to_bottom(self):
