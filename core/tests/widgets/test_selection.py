@@ -122,6 +122,9 @@ def test_value_no_accessor(items, value):
     widget.value = value
     assert widget.value == value
 
+    # The value renders as a string
+    assert widget._title_for_item(widget.items[1]) == str(value)
+
     # Change handler was invoked
     on_change_handler.assert_called_once_with(widget)
 
@@ -189,6 +192,9 @@ def test_value_with_accessor(accessor, items, value):
     # and need to manually access attributes on that row.
     widget.value = widget.items[1]
     assert getattr(widget.value, accessor) == value
+
+    # The value renders as a string
+    assert widget._title_for_item(widget.items[1]) == str(value)
 
     # Change handler was invoked
     on_change_handler.assert_called_once_with(widget)

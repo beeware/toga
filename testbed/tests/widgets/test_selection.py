@@ -6,6 +6,7 @@ import toga
 from toga.sources import ListSource
 
 from .properties import (  # noqa: F401
+    test_alignment,
     test_background_color,
     test_background_color_reset,
     test_background_color_transparent,
@@ -29,43 +30,46 @@ async def test_item_titles(widget, probe):
     on_change_handler = Mock()
     widget.on_change = on_change_handler
 
-    for items, display, selection, selected_title in [
-        # Empty list
-        ([], [], None, None),
-        # List of strings
-        (
-            ["first", "second", "third"],
-            ["first", "second", "third"],
-            "first",
-            "first",
-        ),
-        # List of ints, converted to string
-        ([111, 222, 333], ["111", "222", "333"], 111, "111"),
-        # List of tuples; first item is taken
-        (
-            [
-                ("first", 111),
-                ("second", 222),
-                ("third", 333),
-            ],
-            ["first", "second", "third"],
-            "first",
-            "first",
-        ),
-        # List of dicts with a "value" ley
-        (
-            [
-                {"name": "first", "value": 111},
-                {"name": "second", "value": 222},
-                {"name": "third", "value": 333},
-            ],
-            ["111", "222", "333"],
-            111,
-            "111",
-        ),
-    ]:
+    for index, (items, display, selection, selected_title) in enumerate(
+        [
+            # Empty list
+            ([], [], None, None),
+            # List of strings
+            (
+                ["first", "second", "third"],
+                ["first", "second", "third"],
+                "first",
+                "first",
+            ),
+            # List of ints, converted to string
+            ([111, 222, 333], ["111", "222", "333"], 111, "111"),
+            # List of tuples; first item is taken
+            (
+                [
+                    ("first", 111),
+                    ("second", 222),
+                    ("third", 333),
+                ],
+                ["first", "second", "third"],
+                "first",
+                "first",
+            ),
+            # List of dicts with a "value" ley
+            (
+                [
+                    {"name": "first", "value": 111},
+                    {"name": "second", "value": 222},
+                    {"name": "third", "value": 333},
+                ],
+                ["111", "222", "333"],
+                111,
+                "111",
+            ),
+        ],
+        start=1,
+    ):
         widget.items = items
-        await probe.redraw("Item list has been updated")
+        await probe.redraw(f"Item list has been updated (pass {index})")
 
         # List of displayed items is as expected,
         # and the first item has been selected.
@@ -206,46 +210,13 @@ async def test_source_changes(widget, probe):
     on_change_handler.assert_called_once_with(widget)
     on_change_handler.reset_mock()
 
+    # Insert a new item (the first in the data)
+    source.insert(0, name="new 3", value=777)
+    await probe.redraw("New item has been inserted into empty selection")
 
-# def test_clear_source(widget, source, on_change_handler):
-#     "If the source is cleared, the selection is cleared"
-#     # Clear the source
-#     source.clear()
-
-#     # The widget has been cleared
-#     assert_action_performed(widget, "clear")
-
-#     # The widget must have cleared it's selection
-#     on_change_handler.assert_called_with(widget)
-#     assert widget.value is None
-
-
-# def test_change_source_empty(widget, on_change_handler):
-#     """If the source is changed to an empty source, the selection is reset"""
-#     # Clear the event history
-#     EventLog.reset()
-
-#     widget.items = []
-
-#     # The widget source has changed
-#     assert_action_performed(widget, "change source")
-
-#     # The widget must have cleared it's selection
-#     on_change_handler.assert_called_with(widget)
-#     assert widget.value is None
-
-
-# def test_change_source(widget, on_change_handler):
-#     """If the source is changed, the selection is set to the first item"""
-#     # Clear the event history
-#     EventLog.reset()
-
-#     # Change the source of the data
-#     widget.items = ["new 1", "new 2"]
-
-#     # The widget source has changed
-#     assert_action_performed(widget, "change source")
-
-#     # The widget must have cleared it's selection
-#     on_change_handler.assert_called_with(widget)
-#     assert widget.value.key == "new 1"
+    assert probe.titles == ["new 3"]
+    assert probe.selected_title == "new 3"
+    selected = source[0]
+    assert widget.value == selected
+    on_change_handler.assert_called_once_with(widget)
+    on_change_handler.reset_mock()

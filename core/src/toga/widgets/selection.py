@@ -105,6 +105,15 @@ class Selection(Widget):
         self._items.add_listener(self._impl)
         self._impl.change_source(source=self._items)
 
+    def _title_for_item(self, item):
+        """Internal utility method; return the display title for an item"""
+        if self._accessor:
+            title = getattr(item, self._accessor)
+        else:
+            title = item.value
+
+        return str(title)
+
     @property
     def value(self):
         """The currently selected item.

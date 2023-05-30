@@ -10,6 +10,10 @@ class SelectionProbe(SimpleProbe):
     native_class = NSPopUpButton
 
     @property
+    def alignment(self):
+        xfail("Can't change the alignment of Selection on macOS")
+
+    @property
     def color(self):
         xfail("Can't change the color of Selection on macOS")
 
