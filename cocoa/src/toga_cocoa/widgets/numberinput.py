@@ -221,7 +221,9 @@ class NumberInput(Widget):
 
     def get_value(self):
         try:
-            return _clean_decimal(str(self.native_input.stringValue))
+            return _clean_decimal(
+                str(self.native_input.stringValue), self.interface.step
+            )
         except InvalidOperation:
             return None
 

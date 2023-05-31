@@ -55,7 +55,7 @@ class NumberInput(Widget):
 
     def set_value(self, value):
         if value is None:
-            self.native.set_value(_clean_decimal("0.0", self.interface.step))
+            self.native.set_value(0)
         else:
             self.native.set_value(value)
 

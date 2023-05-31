@@ -75,6 +75,8 @@ async def test_on_change_handler(widget, probe):
         ),  # 'x' is ignored
         ("3", Decimal("-12.30"), 1),
         ("4", Decimal("-12.34"), 1),
+        ("5", Decimal("-12.35"), 1),
+        ("1", Decimal("-12.35"), 1),
     ]:
         await probe.type_character(char)
         await probe.redraw(f"Typed {char!r}")
