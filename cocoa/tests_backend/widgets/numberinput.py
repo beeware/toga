@@ -15,6 +15,7 @@ from .properties import toga_alignment, toga_color, toga_font
 
 class NumberInputProbe(SimpleProbe):
     native_class = NSView
+    allows_invalid_value = True
 
     def __init__(self, widget):
         super().__init__(widget)
@@ -23,10 +24,6 @@ class NumberInputProbe(SimpleProbe):
 
         self.native_stepper = self.impl.native_stepper
         assert isinstance(self.native_stepper, NSStepper)
-
-    @property
-    def allows_invalid_value(self):
-        return True
 
     def clear_input(self):
         self.widget.value = ""

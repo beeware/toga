@@ -7,10 +7,9 @@ from .properties import toga_xalignment
 
 class NumberInputProbe(SimpleProbe):
     native_class = Gtk.SpinButton
-
-    @property
-    def allows_invalid_value(self):
-        return False
+    allows_invalid_value = False
+    allows_empty_value = False
+    allows_extra_digits = False
 
     def clear_input(self):
         self.native.set_text("")

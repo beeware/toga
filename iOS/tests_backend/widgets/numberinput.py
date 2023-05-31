@@ -9,10 +9,7 @@ from .properties import toga_alignment, toga_color, toga_font
 
 class NumberInputProbe(SimpleProbe):
     native_class = UITextField
-
-    @property
-    def allows_invalid_value(self):
-        return True
+    allows_invalid_value = True
 
     def clear_input(self):
         self.widget.value = ""

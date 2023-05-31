@@ -2,7 +2,7 @@ import ctypes
 from ctypes import c_uint
 from ctypes.wintypes import HWND, LPARAM
 
-from System.Windows.Forms import SendKeys, TextBox
+from System.Windows.Forms import TextBox
 
 from .base import SimpleProbe
 from .properties import toga_xalignment
@@ -44,18 +44,6 @@ class TextInputProbe(SimpleProbe):
     @property
     def readonly(self):
         return self.native.ReadOnly
-
-    async def type_character(self, char):
-        try:
-            key_code = {
-                "<esc>": "{ESC}",
-                "\n": "{ENTER}",
-            }[char]
-        except KeyError:
-            assert len(char) == 1, char
-            key_code = char
-
-        SendKeys.SendWait(key_code)
 
     @property
     def alignment(self):

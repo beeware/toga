@@ -5,6 +5,9 @@ from toga_winforms.libs import Color, Point, Size, SystemColors
 
 
 class Widget:
+    # In some widgets, attempting to set a background color with any alpha value other
+    # than 1 raises "System.ArgumentException: Control does not support transparent
+    # background colors". Those widgets should set this attribute to False.
     _background_supports_alpha = True
 
     def __init__(self, interface):

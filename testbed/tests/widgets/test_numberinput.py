@@ -61,9 +61,12 @@ async def test_on_change_handler(widget, probe):
     await probe.redraw("Text value has been cleared")
     assert handler.mock_calls == [call(widget)] * 2
     assert widget.value is None
+    handler.reset_mock()
 
-    event_count = 2
+    # User input triggers the event handler
+    event_count = 0
     allows_invalid = 1 if probe.allows_invalid_value else 0
+    allows_extra = 1 if (allows_invalid or probe.allows_extra_digits) else 0
     for char, value, events_delta in [
         ("-", None, 1),  # bare - isn't a valid number
         ("1", Decimal("-1.00"), 1),
@@ -72,8 +75,8 @@ async def test_on_change_handler(widget, probe):
         ("x", Decimal("-12.00"), allows_invalid),  # Ignored
         ("3", Decimal("-12.30"), 1),
         ("4", Decimal("-12.34"), 1),
-        ("5", Decimal("-12.35" if allows_invalid else "-12.34"), allows_invalid),
-        ("1", Decimal("-12.35" if allows_invalid else "-12.34"), allows_invalid),
+        ("5", Decimal("-12.35" if allows_extra else "-12.34"), allows_extra),
+        ("1", Decimal("-12.35" if allows_extra else "-12.34"), allows_extra),
     ]:
         await probe.type_character(char)
         await probe.redraw(f"Typed {char!r}")
@@ -116,7 +119,6 @@ async def test_focus_value_clipping(widget, probe):
     ]:
         await probe.type_character(char)
         await probe.redraw(f"Typed {char!r}")
-
         assert widget.value == value
 
         # The number of events equals the number of characters typed.
@@ -133,9 +135,13 @@ async def test_focus_value_clipping(widget, probe):
 
 async def test_value(widget, probe):
     "The numerical value displayed on a widget can be changed"
-    # If the implementation allows invalid values, the widget can return None.
-    # Otherwise, it returns a valid value.
-    empty_value = None if probe.allows_invalid_value else Decimal("0.00")
+    # If the implementation allows empty values, the widget can return None.
+    # Otherwise, a value set to None will return zero.
+    empty_value = (
+        None
+        if (probe.allows_invalid_value or probe.allows_empty_value)
+        else Decimal("0")
+    )
 
     for text, value in [
         (None, empty_value),
@@ -147,7 +153,6 @@ async def test_value(widget, probe):
     ]:
         widget.value = text
         await probe.redraw(f"Widget value should be {str(text)!r}")
-
         assert widget.value == value
 
 
