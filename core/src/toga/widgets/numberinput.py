@@ -133,6 +133,9 @@ class NumberInput(Widget):
         """The minimum bound for the widget's value.
 
         Returns ``None`` if there is no minimum bound.
+
+        If the current ``value`` is less than a newly specified ``min_value``,
+        ``value`` will be clipped to conform to the new minimum.
         """
         return self._min_value
 
@@ -162,6 +165,9 @@ class NumberInput(Widget):
         """The maximum bound for the widget's value.
 
         Returns ``None`` if there is no maximum bound.
+
+        If the current ``value`` exceeds a newly specified ``max_value``,
+        ``value`` will be clipped to conform to the new maximum.
         """
         return self._max_value
 
@@ -188,7 +194,7 @@ class NumberInput(Widget):
 
     @property
     def value(self) -> Decimal | None:
-        """Current value of the widget rounded to the same number of decimal 
+        """Current value of the widget rounded to the same number of decimal
         places as :any:`step`.
 
         Returns ``None`` if no value has been set on the widget.
