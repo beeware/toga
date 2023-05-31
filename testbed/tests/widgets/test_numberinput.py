@@ -63,20 +63,17 @@ async def test_on_change_handler(widget, probe):
     assert widget.value is None
 
     event_count = 2
+    allows_invalid = 1 if probe.allows_invalid_value else 0
     for char, value, events_delta in [
         ("-", None, 1),  # bare - isn't a valid number
         ("1", Decimal("-1.00"), 1),
         ("2", Decimal("-12.00"), 1),
         (".", Decimal("-12.00"), 1),
-        (
-            "x",
-            Decimal("-12.00"),
-            1 if probe.allows_invalid_value else 0,
-        ),  # 'x' is ignored
+        ("x", Decimal("-12.00"), allows_invalid),  # Ignored
         ("3", Decimal("-12.30"), 1),
         ("4", Decimal("-12.34"), 1),
-        ("5", Decimal("-12.35"), 1),
-        ("1", Decimal("-12.35"), 1),
+        ("5", Decimal("-12.35" if allows_invalid else "-12.34"), allows_invalid),
+        ("1", Decimal("-12.35" if allows_invalid else "-12.34"), allows_invalid),
     ]:
         await probe.type_character(char)
         await probe.redraw(f"Typed {char!r}")
