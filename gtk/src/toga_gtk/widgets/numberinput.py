@@ -1,7 +1,9 @@
 import sys
-from decimal import Decimal, InvalidOperation
+from decimal import InvalidOperation
 
 from travertino.size import at_least
+
+from toga.widgets.numberinput import _clean_decimal
 
 from ..libs import Gtk, gtk_alignment
 from .base import Widget
@@ -47,13 +49,13 @@ class NumberInput(Widget):
 
     def get_value(self):
         try:
-            return Decimal(self.native.get_text())
+            return _clean_decimal(self.native.get_text(), self.interface.step)
         except InvalidOperation:
             return None
 
     def set_value(self, value):
         if value is None:
-            self.native.set_value(Decimal(0.0))
+            self.native.set_value(_clean_decimal("0.0", self.interface.step))
         else:
             self.native.set_value(value)
 

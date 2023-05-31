@@ -5,7 +5,7 @@ from rubicon.objc import SEL, objc_method, objc_property
 from travertino.size import at_least
 
 from toga.colors import TRANSPARENT
-from toga.widgets.numberinput import _clean_decimal_str
+from toga.widgets.numberinput import _clean_decimal, _clean_decimal_str
 from toga_cocoa.colors import native_color
 from toga_cocoa.libs import (
     NSLayoutAttributeBottom,
@@ -33,7 +33,7 @@ class TogaStepper(NSStepper):
     @objc_method
     def onChange_(self, stepper) -> None:
         # Stepper has increased/decreased
-        self.interface.value = Decimal(stepper.floatValue)
+        self.interface.value = _clean_decimal(stepper.floatValue, self.interface.step)
 
     @objc_method
     def controlTextDidChange_(self, notification) -> None:
@@ -221,8 +221,7 @@ class NumberInput(Widget):
 
     def get_value(self):
         try:
-            raw = str(self.native_input.stringValue)
-            return Decimal(raw).quantize(self.interface.step)
+            return _clean_decimal(str(self.native_input.stringValue))
         except InvalidOperation:
             return None
 

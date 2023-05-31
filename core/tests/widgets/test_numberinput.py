@@ -4,7 +4,7 @@ from unittest.mock import Mock
 import pytest
 
 import toga
-from toga.widgets.numberinput import _clean_decimal_str
+from toga.widgets.numberinput import _clean_decimal, _clean_decimal_str
 from toga_dummy.utils import (
     EventLog,
     assert_action_performed,
@@ -70,6 +70,8 @@ def test_create_with_values():
         ("1.23", Decimal("1.23")),
         ("123", Decimal("123")),
         ("1.23e+4", Decimal("1.23e+4")),
+        # Excessive precision is truncated to step value
+        ("1.23456", Decimal("1.23")),
         # Decimal
         (Decimal("1.23"), Decimal("1.23")),
         # Empty string
@@ -142,8 +144,8 @@ def test_step(widget, value, expected):
     "step, expected",
     [
         ("0.0001", Decimal("12.3456")),
-        ("0.001", Decimal("12.346")),
-        ("0.01", Decimal("12.35")),
+        ("0.001", Decimal("12.345")),
+        ("0.01", Decimal("12.34")),
         ("0.1", Decimal("12.3")),
         ("1", Decimal("12")),
         ("10", Decimal("12")),
@@ -151,8 +153,8 @@ def test_step(widget, value, expected):
 )
 def test_quantization(widget, step, expected):
     "The value is quantized to the precision of the step"
-    widget.value = 12.3456
     widget.step = step
+    widget.value = 12.3456
 
     # The value has been quantized to the step
     assert widget.value == expected
@@ -187,6 +189,8 @@ def test_bad_step(widget, value):
         ("1.23", Decimal("1.23")),
         ("123", Decimal("123")),
         ("1.23e+4", Decimal("1.23e+4")),
+        # Excessive precision is truncated to step value
+        ("1.23456", Decimal("1.23")),
         # Decimal
         (Decimal("1.23"), Decimal("1.23")),
         # Empty string
@@ -222,7 +226,7 @@ def test_min_greater_than_max(widget):
     widget.max_value = 10
     with pytest.raises(
         ValueError,
-        match=r"min value of 100 is greater than the current max_value of 10",
+        match=r"min value of 100.00 is greater than the current max_value of 10.00",
     ):
         widget.min_value = 100
 
@@ -241,6 +245,8 @@ def test_min_greater_than_max(widget):
         ("1.23", Decimal("1.23")),
         ("123", Decimal("123")),
         ("1.23e+4", Decimal("1.23e+4")),
+        # Excessive precision is truncated to step value
+        ("1.23456", Decimal("1.23")),
         # Decimal
         (Decimal("1.23"), Decimal("1.23")),
         # Empty string
@@ -276,7 +282,7 @@ def test_max_less_than_min(widget):
     widget.min_value = 100
     with pytest.raises(
         ValueError,
-        match=r"max value of 10 is less than the current min_value of 100",
+        match=r"max value of 10.00 is less than the current min_value of 100.00",
     ):
         widget.max_value = 10
 
@@ -420,3 +426,28 @@ def test_on_change(widget):
 )
 def test_clean_decimal_str(value, clean):
     assert _clean_decimal_str(value) == clean
+
+
+@pytest.mark.parametrize(
+    "value, step, clean",
+    [
+        # Strings of integers
+        ("123", None, "123"),
+        ("123", "10", "123"),
+        ("123", "0.01", "123.00"),
+        # Strings of floats
+        ("1.23456", None, "1.23456"),
+        ("1.23456", "10", "1"),
+        ("1.23456", "0.01", "1.23"),
+        # Integers
+        (123, None, "123"),
+        (123, "10", "123"),
+        (123, "0.01", "123.00"),
+        # Floats
+        (1.23456, None, "1.23456"),
+        (1.23456, "10", "1"),
+        (1.23456, "0.01", "1.23"),
+    ],
+)
+def test_clean_decimal(value, step, clean):
+    assert _clean_decimal(value, Decimal(step) if step else step) == Decimal(clean)

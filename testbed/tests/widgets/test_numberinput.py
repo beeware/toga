@@ -109,11 +109,11 @@ async def test_focus_value_clipping(widget, probe):
     assert handler.mock_calls == [call(widget)] * event_count
 
     for char, value, events_delta in [
-        ("1", Decimal("100"), 1),  # less than min
-        ("2", Decimal("100"), 1),  # less than min
-        ("3", Decimal("123"), 1),
-        ("4", Decimal("1234"), 1),
-        ("5", Decimal("2000"), 1),  # exceeds max
+        ("1", Decimal("100.00"), 1),  # less than min
+        ("2", Decimal("100.00"), 1),  # less than min
+        ("3", Decimal("123.00"), 1),
+        ("4", Decimal("1234.00"), 1),
+        ("5", Decimal("2000.00"), 1),  # exceeds max
     ]:
         await probe.type_character(char)
         await probe.redraw(f"Typed {char!r}")
@@ -127,9 +127,9 @@ async def test_focus_value_clipping(widget, probe):
     # On loss of focus, the value will be clipped
     other.focus()
     await probe.redraw("Lost focus; value is clipped")
-    assert widget.value == Decimal("2000")
+    assert widget.value == Decimal("2000.00")
     # The raw value from the implementation matches the widget
-    assert probe.value == "2000"
+    assert probe.value == "2000.00"
 
 
 async def test_value(widget, probe):

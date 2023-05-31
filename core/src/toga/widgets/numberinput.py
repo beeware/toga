@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import re
-from decimal import Decimal, InvalidOperation
+from decimal import ROUND_DOWN, Decimal, InvalidOperation
 
 from toga.handlers import wrapped_handler
 
@@ -22,13 +22,17 @@ from .base import Widget
 NUMERIC_RE = re.compile(r"[^0-9\.-]")
 
 
-def _clean_decimal(value):
+def _clean_decimal(value, step=None):
     # Decimal(3.7) yields "3.700000000...177".
     # However, Decimal(str(3.7)) yields "3.7". If the user provides a float,
     # convert to a string first.
     if isinstance(value, float):
         value = str(value)
-    return Decimal(value)
+    value = Decimal(value)
+
+    if step is not None:
+        value = value.quantize(step, rounding=ROUND_DOWN)
+    return value
 
 
 def _clean_decimal_str(value):
@@ -147,7 +151,7 @@ class NumberInput(Widget):
     @min_value.setter
     def min_value(self, new_min):
         try:
-            new_min = _clean_decimal(new_min)
+            new_min = _clean_decimal(new_min, self.step)
 
             # Clip widget's value to the new minumum
             if self.value is not None and self.value < new_min:
@@ -184,7 +188,7 @@ class NumberInput(Widget):
     @max_value.setter
     def max_value(self, new_max):
         try:
-            new_max = _clean_decimal(new_max)
+            new_max = _clean_decimal(new_max, self.step)
 
             # Clip widget's value to the new maximum
             if self.value is not None and self.value > new_max:
@@ -233,7 +237,7 @@ class NumberInput(Widget):
     @value.setter
     def value(self, value):
         try:
-            value = _clean_decimal(value)
+            value = _clean_decimal(value, self.step)
 
             if self.min_value is not None and value < self.min_value:
                 value = self.min_value

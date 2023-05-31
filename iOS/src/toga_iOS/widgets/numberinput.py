@@ -1,9 +1,10 @@
 from ctypes import c_int
-from decimal import Decimal, InvalidOperation
+from decimal import InvalidOperation
 
 from rubicon.objc import SEL, CGSize, NSRange, objc_method, objc_property, send_message
 from travertino.size import at_least
 
+from toga.widgets.numberinput import _clean_decimal
 from toga_iOS.colors import native_color
 from toga_iOS.libs import (
     NSTextAlignment,
@@ -96,7 +97,7 @@ class NumberInput(Widget):
 
     def get_value(self):
         try:
-            return Decimal(str(self.native.text)).quantize(self.interface.step)
+            return _clean_decimal(str(self.native.text), self.interface.step)
         except InvalidOperation:
             return None
 
