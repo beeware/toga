@@ -24,7 +24,7 @@ Usage
     widget.value = 2.718
 
 NumberInput's properties can accept integers, floats, and strings containing
-numbers, but they always return ``decimal.Decimal`` objects to ensure
+numbers, but they always return :any:`decimal.Decimal` objects to ensure
 precision is retained.
 
 Reference

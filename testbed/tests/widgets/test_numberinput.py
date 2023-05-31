@@ -194,22 +194,24 @@ async def test_increment_decrement(widget, probe):
     widget.value = 1.234
     await probe.redraw("Widget value should be 1.23")
     assert widget.value == Decimal("1.23")
-    assert handler.mock_calls == [call(widget)]
+    handler.assert_called_once_with(widget)
+    handler.reset_mock()
 
-    # Increment by a step
-    await probe.increment()
-    await probe.redraw("Widget value should be 1.24")
-    assert widget.value == Decimal("1.24")
-    assert handler.mock_calls == [call(widget)] * 2
+    # Increment several times to make sure rounding works correctly
+    expected = Decimal("1.23")
+    for i in range(5):
+        expected += Decimal("0.01")
+        await probe.increment()
+        await probe.redraw(f"Widget value should be {expected}")
+        assert widget.value == expected
+        handler.assert_called_once_with(widget)
+        handler.reset_mock()
 
-    # Increment by another step
-    await probe.increment()
-    await probe.redraw("Widget value should be 1.25")
-    assert widget.value == Decimal("1.25")
-    assert handler.mock_calls == [call(widget)] * 3
-
-    # Decrement by a step
-    await probe.decrement()
-    await probe.redraw("Widget value should be 1.24")
-    assert widget.value == Decimal("1.24")
-    assert handler.mock_calls == [call(widget)] * 4
+    # And likewise with decrement
+    for i in range(5):
+        expected -= Decimal("0.01")
+        await probe.decrement()
+        await probe.redraw(f"Widget value should be {expected}")
+        assert widget.value == expected
+        handler.assert_called_once_with(widget)
+        handler.reset_mock()

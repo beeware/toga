@@ -70,8 +70,10 @@ def test_create_with_values():
         ("1.23", Decimal("1.23")),
         ("123", Decimal("123")),
         ("1.23e+4", Decimal("1.23e+4")),
-        # Excessive precision is truncated to step value
+        # Excessive precision is rounded to same number of decimal places as step
+        # (see QUANTIZE_PARAMS for related tests).
         ("1.23456", Decimal("1.23")),
+        ("1.235", Decimal("1.24")),
         # Decimal
         (Decimal("1.23"), Decimal("1.23")),
         # Empty string
@@ -140,17 +142,22 @@ def test_step(widget, value, expected):
     assert attribute_value(widget, "step") == expected
 
 
-@pytest.mark.parametrize(
+QUANTIZE_PARAMS = (
     "step, expected",
     [
         ("0.0001", Decimal("12.3456")),
-        ("0.001", Decimal("12.345")),
-        ("0.01", Decimal("12.34")),
+        ("0.001", Decimal("12.346")),
+        ("0.009", Decimal("12.346")),
+        ("0.010", Decimal("12.346")),
+        ("0.01", Decimal("12.35")),
         ("0.1", Decimal("12.3")),
         ("1", Decimal("12")),
         ("10", Decimal("12")),
     ],
 )
+
+
+@pytest.mark.parametrize(*QUANTIZE_PARAMS)
 def test_quantization(widget, step, expected):
     "The value is quantized to the precision of the step"
     widget.step = step
@@ -160,17 +167,7 @@ def test_quantization(widget, step, expected):
     assert widget.value == expected
 
 
-@pytest.mark.parametrize(
-    "step, expected",
-    [
-        ("0.0001", Decimal("12.3456")),
-        ("0.001", Decimal("12.345")),
-        ("0.01", Decimal("12.34")),
-        ("0.1", Decimal("12.3")),
-        ("1", Decimal("12")),
-        ("10", Decimal("12")),
-    ],
-)
+@pytest.mark.parametrize(*QUANTIZE_PARAMS)
 def test_quantize_on_retrieval(widget, step, expected):
     "A widget's value will be quantized on retrieval."
     widget.step = step
@@ -251,17 +248,7 @@ def test_min_greater_than_max(widget):
         widget.min_value = 100
 
 
-@pytest.mark.parametrize(
-    "step, expected",
-    [
-        ("0.0001", Decimal("12.3456")),
-        ("0.001", Decimal("12.345")),
-        ("0.01", Decimal("12.34")),
-        ("0.1", Decimal("12.3")),
-        ("1", Decimal("12")),
-        ("10", Decimal("12")),
-    ],
-)
+@pytest.mark.parametrize(*QUANTIZE_PARAMS)
 def test_min_value_quantized(widget, step, expected):
     "An existing min value is re-quantized after a change in step"
     # Set a small step so that the min value isn't quantized
@@ -331,17 +318,7 @@ def test_max_less_than_min(widget):
         widget.max_value = 10
 
 
-@pytest.mark.parametrize(
-    "step, expected",
-    [
-        ("0.0001", Decimal("12.3456")),
-        ("0.001", Decimal("12.345")),
-        ("0.01", Decimal("12.34")),
-        ("0.1", Decimal("12.3")),
-        ("1", Decimal("12")),
-        ("10", Decimal("12")),
-    ],
-)
+@pytest.mark.parametrize(*QUANTIZE_PARAMS)
 def test_max_value_quantized(widget, step, expected):
     "An existing max value is re-quantized after a change in step"
     # Set a small step so that the max value isn't quantized

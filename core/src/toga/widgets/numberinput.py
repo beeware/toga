@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import re
-from decimal import ROUND_DOWN, Decimal, InvalidOperation
+from decimal import ROUND_HALF_UP, Decimal, InvalidOperation
 
 from toga.handlers import wrapped_handler
 
@@ -31,7 +31,11 @@ def _clean_decimal(value, step=None):
     value = Decimal(value)
 
     if step is not None:
-        value = value.quantize(step, rounding=ROUND_DOWN)
+        # ROUND_DOWN would not be unreasonable for manually-entered strings, but it
+        # interacts badly with native increment operations that use floats. For example,
+        # 1.2 might be incremented to 1.299999997, and then rounded back down to 1.2,
+        # so nothing would change.
+        value = value.quantize(step, rounding=ROUND_HALF_UP)
     return value
 
 
@@ -68,7 +72,7 @@ class NumberInput(Widget):
         readonly: bool = False,
         on_change: callable | None = None,
     ):
-        """Create a new single-line text input widget.
+        """Create a new number input widget.
 
         Inherits from :class:`~toga.widgets.base.Widget`.
 
@@ -217,7 +221,7 @@ class NumberInput(Widget):
 
     @property
     def value(self) -> Decimal | None:
-        """Current value of the widget rounded to the same number of decimal
+        """Current value of the widget, rounded to the same number of decimal
         places as :any:`step`.
 
         Returns ``None`` if no value has been set on the widget.
