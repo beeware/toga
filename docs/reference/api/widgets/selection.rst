@@ -69,10 +69,10 @@ Notes
   alignment of labels in a Selection.
 
 * On GTK, a Selection widget with flexible sizing will expand its width (to the
-  extent possible possible) to accomodate any changes in content (for example,
+  extent possible possible) to accommodate any changes in content (for example,
   to accommodate a long label). However, if the content subsequently *decreases*
   in width, the Selection widget *will not* shrink. It will retain the size
-  necessary to accomodate the longest label it has historically contained.
+  necessary to accommodate the longest label it has historically contained.
 
 * On iOS, the size of the Selection widget does not adapt to the size of the
   currently displayed content, or the potential list of options.
