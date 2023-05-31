@@ -63,8 +63,16 @@ selected item.
 Notes
 -----
 
-* On macOS, you cannot change the color, background color, or font of a
+* On macOS, you cannot change the font of a Selection.
+
+* On macOS and GTK, you cannot change the text color or background color of a
   Selection.
+
+* On GTK, a Selection widget with flexible sizing will expand its width (to the
+  extent possible possible) to accomodate any changes in content (for example,
+  to accommodate a long label). However, if the content subsequently *decreases*
+  in width, the Selection widget *will not* shrink. It will retain the size
+  necessary to accomodate the longest label it has historically contained.
 
 Reference
 ---------
