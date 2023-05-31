@@ -64,11 +64,11 @@ class NumberInput(Widget):
             will be applied to the widget.
         :param step: The amount that any increment/decrement operations will
             apply to the widget's current value.
-        :param min_value: Optional; if provided, ``value`` will be guaranteed to
+        :param min_value: If provided, ``value`` will be guaranteed to
             be greater than or equal to this minimum.
-        :param min_value: Optional; if provided, ``value`` will be guaranteed to
-            be greater than or equal to this minimum.
-        :param value: Optional; the initial value for the widget.
+        :param max_value: If provided, ``value`` will be guaranteed to
+            be less than or equal to this maximum.
+        :param value: The initial value for the widget.
         :param readonly: Can the value of the widget be modified by the user?
         :param on_change: A handler that will be invoked when the the value of
             the widget changes.
@@ -110,7 +110,8 @@ class NumberInput(Widget):
     @property
     def step(self) -> Decimal:
         """The amount that any increment/decrement operations will apply to the
-        widget's current value.
+        widget's current value. (Not all backends provide increment and
+        decrement buttons.)
         """
         return self._step
 
@@ -187,7 +188,8 @@ class NumberInput(Widget):
 
     @property
     def value(self) -> Decimal | None:
-        """Current value of the widget.
+        """Current value of the widget rounded to the same number of decimal 
+        places as :any:`step`.
 
         Returns ``None`` if no value has been set on the widget.
 
