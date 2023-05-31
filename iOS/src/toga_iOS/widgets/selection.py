@@ -128,6 +128,9 @@ class Selection(Widget):
         # Get rid of focus to force the user to re-open the selection
         self.native_picker.resignFirstResponder()
 
+        # Changing the item text can change the layout size
+        self.interface.refresh()
+
     def remove(self, index, item):
         selection_change = self.native_picker.selectedRowInComponent(0) == index
 

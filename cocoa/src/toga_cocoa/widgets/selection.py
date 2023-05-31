@@ -53,6 +53,8 @@ class Selection(Widget):
         index = self.interface._items.index(item)
         native_item = self.native.itemAtIndex(index)
         native_item.title = self.interface._title_for_item(item)
+        # Changing the item text can change the layout size
+        self.interface.refresh()
 
     def remove(self, index, item):
         selection_change = self.native.indexOfSelectedItem == index

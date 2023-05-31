@@ -229,3 +229,31 @@ async def test_source_changes(widget, probe):
     assert widget.value == selected
     on_change_handler.assert_called_once_with(widget)
     on_change_handler.reset_mock()
+
+
+async def test_resize_on_content_change(widget, probe):
+    """The size of the widget adapts to the longest element."""
+    original_width = probe.width
+
+    LONG_LABEL = "this is a very long item that should be quite wide"
+    widget.items = ["first", "second", LONG_LABEL]
+    await probe.redraw("A long item has been added to the list")
+    assert probe.width > original_width * 2
+
+    widget.value = LONG_LABEL
+    await probe.redraw("The long item has been selected")
+    assert probe.width > original_width * 2
+
+    widget.items = ["first", "second", "third"]
+    await probe.redraw("The list no longer has a long item")
+    if probe.shrink_on_resize:
+        assert probe.width == original_width
+
+    widget.items = ["first", "second", LONG_LABEL]
+    await probe.redraw("A long item has been added to the list again")
+    assert probe.width > original_width * 2
+
+    widget._items[2].value = "third"
+    await probe.redraw("The long item has been renamed")
+    if probe.shrink_on_resize:
+        assert probe.width == original_width

@@ -62,6 +62,9 @@ class Selection(Widget):
             if selection == index:
                 self.native.set_active(index)
 
+        # Changing the item text can change the layout size
+        self.interface.refresh()
+
     def insert(self, index, item):
         with self.suspend_notifications():
             self.native.insert_text(index, self.interface._title_for_item(item))
