@@ -3,7 +3,7 @@ Selection
 
 A widget to select an single option from a list of alternatives.
 
-.. figure:: /reference/images/Selection.jpeg
+.. figure:: /reference/images/Selection.png
     :align: center
 
 .. rst-class:: widget-support
