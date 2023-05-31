@@ -137,6 +137,10 @@ class NumberInput(Widget):
 
         self._impl.set_step(self._step)
 
+        # Re-assigning the min and max value forces the min/max to be requantized.
+        self.min_value = self.min_value
+        self.max_value = self.max_value
+
     @property
     def min_value(self) -> Decimal | None:
         """The minimum bound for the widget's value.

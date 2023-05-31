@@ -161,6 +161,26 @@ def test_quantization(widget, step, expected):
 
 
 @pytest.mark.parametrize(
+    "step, expected",
+    [
+        ("0.0001", Decimal("12.3456")),
+        ("0.001", Decimal("12.345")),
+        ("0.01", Decimal("12.34")),
+        ("0.1", Decimal("12.3")),
+        ("1", Decimal("12")),
+        ("10", Decimal("12")),
+    ],
+)
+def test_quantize_on_retrieval(widget, step, expected):
+    "A widget's value will be quantized on retrieval."
+    widget.step = step
+
+    # Inject a raw attribute value.
+    widget._impl._set_value("value", 12.3456)
+    assert widget.value == expected
+
+
+@pytest.mark.parametrize(
     "value",
     [
         object(),  # Not convertible
@@ -232,6 +252,30 @@ def test_min_greater_than_max(widget):
 
 
 @pytest.mark.parametrize(
+    "step, expected",
+    [
+        ("0.0001", Decimal("12.3456")),
+        ("0.001", Decimal("12.345")),
+        ("0.01", Decimal("12.34")),
+        ("0.1", Decimal("12.3")),
+        ("1", Decimal("12")),
+        ("10", Decimal("12")),
+    ],
+)
+def test_min_value_quantized(widget, step, expected):
+    "An existing min value is re-quantized after a change in step"
+    # Set a small step so that the min value isn't quantized
+    widget.step = 0.00000001
+    widget.min_value = 12.3456
+
+    # Set a new minimum
+    widget.step = step
+
+    # The minimum has been re-quantized
+    assert widget.min_value == expected
+
+
+@pytest.mark.parametrize(
     "value, expected",
     [
         # float
@@ -285,6 +329,30 @@ def test_max_less_than_min(widget):
         match=r"max value of 10.00 is less than the current min_value of 100.00",
     ):
         widget.max_value = 10
+
+
+@pytest.mark.parametrize(
+    "step, expected",
+    [
+        ("0.0001", Decimal("12.3456")),
+        ("0.001", Decimal("12.345")),
+        ("0.01", Decimal("12.34")),
+        ("0.1", Decimal("12.3")),
+        ("1", Decimal("12")),
+        ("10", Decimal("12")),
+    ],
+)
+def test_max_value_quantized(widget, step, expected):
+    "An existing max value is re-quantized after a change in step"
+    # Set a small step so that the max value isn't quantized
+    widget.step = 0.00000001
+    widget.max_value = 12.3456
+
+    # Set a new maximum
+    widget.step = step
+
+    # The maximum has been re-quantized
+    assert widget.max_value == expected
 
 
 @pytest.mark.parametrize(

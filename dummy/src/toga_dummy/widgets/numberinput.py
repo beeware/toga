@@ -1,4 +1,4 @@
-from decimal import Decimal
+from toga.widgets.numberinput import _clean_decimal
 
 from ..utils import not_required
 from .base import Widget
@@ -33,7 +33,7 @@ class NumberInput(Widget):
         if value is None:
             return value
         else:
-            return Decimal(value).quantize(self.interface.step)
+            return _clean_decimal(value, self.interface.step)
 
     def set_on_change(self, handler):
         self._set_value("on_change", handler)
