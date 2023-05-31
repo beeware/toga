@@ -3,7 +3,7 @@ NumberInput
 
 A text input that is limited to numeric input.
 
-.. figure:: /reference/images/NumberInput.jpeg
+.. figure:: /reference/images/NumberInput.png
     :align: center
 
 .. rst-class:: widget-support
@@ -23,8 +23,8 @@ Usage
     widget = toga.NumberInput(min_value=1, max_value=10, step=0.001)
     widget.value = 2.718
 
-NumberInput's properties can accept integers, floats, and strings containing 
-numbers, but they always return ``decimal.Decimal`` objects to ensure 
+NumberInput's properties can accept integers, floats, and strings containing
+numbers, but they always return ``decimal.Decimal`` objects to ensure
 precision is retained.
 
 Reference
