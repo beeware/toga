@@ -22,6 +22,15 @@ from .base import Widget
 NUMERIC_RE = re.compile(r"[^0-9\.-]")
 
 
+def _clean_decimal(value):
+    # Decimal(3.7) yields "3.700000000...177".
+    # However, Decimal(str(3.7)) yields "3.7". If the user provides a float,
+    # convert to a string first.
+    if isinstance(value, float):
+        value = str(value)
+    return Decimal(value)
+
+
 def _clean_decimal_str(value):
     """Clean a string value"""
     # Replace any character that isn't a number, `.` or `-`
@@ -118,11 +127,7 @@ class NumberInput(Widget):
     @step.setter
     def step(self, step):
         try:
-            # See implementation notes for the reason for this conversion
-            if isinstance(step, float):
-                step = str(step)
-
-            self._step = Decimal(step)
+            self._step = _clean_decimal(step)
         except (ValueError, TypeError, InvalidOperation):
             raise ValueError("step must be a number")
 
@@ -142,11 +147,7 @@ class NumberInput(Widget):
     @min_value.setter
     def min_value(self, new_min):
         try:
-            # See implementation notes for the reason for this conversion
-            if isinstance(new_min, float):
-                new_min = str(new_min)
-
-            new_min = Decimal(new_min)
+            new_min = _clean_decimal(new_min)
 
             # Clip widget's value to the new minumum
             if self.value is not None and self.value < new_min:
@@ -156,6 +157,15 @@ class NumberInput(Widget):
                 new_min = None
             else:
                 raise ValueError("min_value must be a number or None")
+
+        if (
+            self.max_value is not None
+            and new_min is not None
+            and new_min > self.max_value
+        ):
+            raise ValueError(
+                f"min value of {new_min} is greater than the current max_value of {self.max_value}"
+            )
 
         self._min_value = new_min
         self._impl.set_min_value(new_min)
@@ -174,11 +184,7 @@ class NumberInput(Widget):
     @max_value.setter
     def max_value(self, new_max):
         try:
-            # See implementation notes for the reason for this conversion
-            if isinstance(new_max, float):
-                new_max = str(new_max)
-
-            new_max = Decimal(new_max)
+            new_max = _clean_decimal(new_max)
 
             # Clip widget's value to the new maximum
             if self.value is not None and self.value > new_max:
@@ -188,6 +194,15 @@ class NumberInput(Widget):
                 new_max = None
             else:
                 raise ValueError("max_value must be a number or None")
+
+        if (
+            self.min_value is not None
+            and new_max is not None
+            and new_max < self.min_value
+        ):
+            raise ValueError(
+                f"max value of {new_max} is less than the current min_value of {self.min_value}"
+            )
 
         self._max_value = new_max
         self._impl.set_max_value(new_max)
@@ -208,22 +223,17 @@ class NumberInput(Widget):
         value = self._impl.get_value()
 
         # If the widget has a current value, clip it
-        if value:
-            if self.min_value and value < self.min_value:
+        if value is not None:
+            if self.min_value is not None and value < self.min_value:
                 return self.min_value
-            elif self.max_value and value > self.max_value:
+            elif self.max_value is not None and value > self.max_value:
                 return self.max_value
         return value
 
     @value.setter
     def value(self, value):
         try:
-            # Decimal(3.7) yields "3.700000000...177".
-            # However, Decimal(str(3.7)) yields "3.7". If the user provides a float,
-            # convert to a string first.
-            if isinstance(value, float):
-                value = str(value)
-            value = Decimal(value)
+            value = _clean_decimal(value)
 
             if self.min_value is not None and value < self.min_value:
                 value = self.min_value

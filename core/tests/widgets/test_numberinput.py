@@ -181,6 +181,8 @@ def test_bad_step(widget, value):
         (1.23e4, Decimal("12300")),
         # Integer
         (123, Decimal("123")),
+        # Integer (but a value that evaluates as false)
+        (0, Decimal("0")),
         # Float and integer specified as string
         ("1.23", Decimal("1.23")),
         ("123", Decimal("123")),
@@ -215,6 +217,16 @@ def test_bad_min_value(widget, value):
         widget.min_value = value
 
 
+def test_min_greater_than_max(widget):
+    "If the new min value exceeds the max value, an error is raised"
+    widget.max_value = 10
+    with pytest.raises(
+        ValueError,
+        match=r"min value of 100 is greater than the current max_value of 10",
+    ):
+        widget.min_value = 100
+
+
 @pytest.mark.parametrize(
     "value, expected",
     [
@@ -223,6 +235,8 @@ def test_bad_min_value(widget, value):
         (1.23e4, Decimal("12300")),
         # Integer
         (123, Decimal("123")),
+        # Integer (but a value that evaluates as false)
+        (0, Decimal("0")),
         # Float and integer specified as string
         ("1.23", Decimal("1.23")),
         ("123", Decimal("123")),
@@ -257,37 +271,56 @@ def test_bad_max_value(widget, value):
         widget.max_value = value
 
 
+def test_max_less_than_min(widget):
+    "If the new max value is less than the min value, an error is raised"
+    widget.min_value = 100
+    with pytest.raises(
+        ValueError,
+        match=r"max value of 10 is less than the current min_value of 100",
+    ):
+        widget.max_value = 10
+
+
 @pytest.mark.parametrize(
-    "provided, clipped",
+    "min_value, max_value, provided, clipped",
     [
-        (15, Decimal(15)),
-        (25, Decimal(20)),
-        (5, Decimal(10)),
-        (None, None),
+        (10, 20, 15, Decimal(15)),
+        (10, 20, 25, Decimal(20)),
+        (10, 20, 5, Decimal(10)),
+        (10, 20, None, None),
+        # Check min/max values of 0
+        (0, 20, -15, Decimal(0)),
+        (-10, 0, 25, Decimal(0)),
     ],
 )
-def test_clip_on_value_change(widget, provided, clipped):
+def test_clip_on_value_change(widget, min_value, max_value, provided, clipped):
     "A widget's value will be clipped inside the min/max range."
-    widget.min_value = 10
-    widget.max_value = 20
+    widget.min_value = min_value
+    widget.max_value = max_value
 
     widget.value = provided
     assert widget.value == clipped
 
 
 @pytest.mark.parametrize(
-    "provided, clipped",
+    "min_value, max_value, provided, clipped",
     [
-        (15, Decimal(15)),
-        (25, Decimal(20)),
-        (5, Decimal(10)),
-        (None, None),
+        (10, 20, 15, Decimal(15)),
+        (10, 20, 25, Decimal(20)),
+        (10, 20, 5, Decimal(10)),
+        (10, 20, None, None),
+        # Check min/max values of 0
+        (0, 20, -15, Decimal(0)),
+        (-10, 0, 25, Decimal(0)),
+        # Check a "raw" value of 0
+        (10, 20, 0, Decimal(10)),
+        (-20, -10, 0, Decimal(-10)),
     ],
 )
-def test_clip_on_retrieval(widget, provided, clipped):
+def test_clip_on_retrieval(widget, min_value, max_value, provided, clipped):
     "A widget's value will be clipped if the widget has a value outside the min/max range."
-    widget.min_value = 10
-    widget.max_value = 20
+    widget.min_value = min_value
+    widget.max_value = max_value
 
     # Inject a raw attribute value.
     widget._impl._set_value("value", provided)
