@@ -90,11 +90,15 @@ class Widget:
             self.native.backgroundColor = native_color(color)
             self.native.drawsBackground = True
 
+    @property
     def has_focus(self):
-        return self.native.window.firstResponder == self.native
+        return (
+            self.native.window is not None
+            and self.native.window.firstResponder == self.native
+        )
 
     def focus(self):
-        if not self.has_focus():
+        if not self.has_focus and self.interface.window:
             self.interface.window._impl.native.makeFirstResponder(self.native)
 
     def get_tab_index(self):
