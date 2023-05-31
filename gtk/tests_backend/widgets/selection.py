@@ -1,4 +1,4 @@
-from pytest import xfail
+from pytest import skip, xfail
 
 from toga_gtk.libs import Gtk
 
@@ -18,11 +18,13 @@ class SelectionProbe(SimpleProbe):
 
     @property
     def color(self):
-        xfail("Can't change the color of Selection on GTK")
+        # Skip, because this *should* be possible to fix
+        skip("Can't change the color of Selection on GTK")
 
     @property
     def background_color(self):
-        xfail("Can't change the background color of Selection on GTK")
+        # Skip, because this *should* be possible to fix
+        skip("Can't change the background color of Selection on GTK")
 
     @property
     def titles(self):
