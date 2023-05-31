@@ -224,7 +224,8 @@ class NumberInput(Widget):
 
         While the widget is being edited by the user, it is possible for the UI
         to contain text that isn't a valid value according to the min/max range.
-        In this case, the widget will return a current value of ``None``.
+        In this case, the widget will return a value that has been clipped to
+        the min/max range.
         """
         # Get the value currently displayed by the widget. This *could*
         # be outside the min/max range.
