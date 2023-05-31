@@ -233,6 +233,9 @@ async def test_source_changes(widget, probe):
 
 async def test_resize_on_content_change(widget, probe):
     """The size of the widget adapts to the longest element."""
+    # This test will be an xfail on some platforms.
+    probe.assert_resizes_on_content_change()
+
     original_width = probe.width
 
     LONG_LABEL = "this is a very long item that should be quite wide"

@@ -74,6 +74,9 @@ Notes
   in width, the Selection widget *will not* shrink. It will retain the size
   necessary to accomodate the longest label it has historically contained.
 
+* On iOS, the size of the Selection widget does not adapt to the size of the
+  currently displayed content, or the potential list of options.
+
 Reference
 ---------
 

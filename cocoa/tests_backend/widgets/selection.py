@@ -9,6 +9,9 @@ from .base import SimpleProbe
 class SelectionProbe(SimpleProbe):
     native_class = NSPopUpButton
 
+    def assert_resizes_on_content_change(self):
+        pass
+
     @property
     def alignment(self):
         xfail("Can't change the alignment of Selection on macOS")

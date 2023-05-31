@@ -1,5 +1,7 @@
 import asyncio
 
+from pytest import xfail
+
 from toga_iOS.libs import UIPickerView, UITextField
 
 from .base import SimpleProbe
@@ -13,6 +15,9 @@ class SelectionProbe(SimpleProbe):
         super().__init__(widget)
         self.native_picker = widget._impl.native_picker
         assert isinstance(self.native_picker, UIPickerView)
+
+    def assert_resizes_on_content_change(self):
+        xfail("Selection doesn't resize on content changes")
 
     @property
     def alignment(self):

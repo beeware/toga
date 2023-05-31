@@ -8,6 +8,9 @@ from .base import SimpleProbe
 class SelectionProbe(SimpleProbe):
     native_class = Gtk.ComboBoxText
 
+    def assert_resizes_on_content_change(self):
+        pass
+
     @property
     def shrink_on_resize(self):
         return False
