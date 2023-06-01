@@ -11,6 +11,9 @@ class MultilineTextInput(TextInput):
             InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_MULTI_LINE,
         )
 
+    def _on_change(self):
+        self.interface.on_change(None)
+
     def _on_confirm(self):  # pragma: nocover
         pass  # The interface doesn't support this event.
 

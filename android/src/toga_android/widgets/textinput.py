@@ -110,9 +110,7 @@ class TextInput(TextViewWidget):
 
     def _on_change(self):
         self.interface.on_change(None)
-        validate = getattr(self.interface, "_validate", None)
-        if validate:
-            validate()
+        self.interface._validate()
 
     def _on_confirm(self):
         self.interface.on_confirm(None)

@@ -32,6 +32,9 @@ class NumberInput(TextInput):
     def set_min_value(self, value):
         pass  # This backend doesn't support stepped increments.
 
+    def _on_change(self):
+        self.interface.on_change(None)
+
     def _on_confirm(self):  # pragma: nocover
         pass  # The interface doesn't support this event.
 
