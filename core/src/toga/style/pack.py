@@ -157,7 +157,7 @@ class Pack(BaseStyle):
                 0, (alloc_width - scale(self.padding_left) - scale(self.padding_right))
             )
             # self._debug("INITIAL AVAILABLE WIDTH", available_width)
-            if node.intrinsic.width:
+            if node.intrinsic.width is not None:
                 # self._debug("INTRINSIC WIDTH", node.intrinsic.width)
                 try:
                     available_width = max(available_width, node.intrinsic.width.value)
@@ -179,7 +179,7 @@ class Pack(BaseStyle):
                 0, alloc_height - scale(self.padding_top) - scale(self.padding_bottom)
             )
             # self._debug("INITIAL AVAILABLE HEIGHT", available_height)
-            if node.intrinsic.height:
+            if node.intrinsic.height is not None:
                 # self._debug("INTRINSIC HEIGHT", node.intrinsic.height)
                 try:
                     available_height = max(
@@ -249,7 +249,7 @@ class Pack(BaseStyle):
                 )
                 width += child_width
                 available_width -= child_width
-            elif child.intrinsic.width:
+            elif child.intrinsic.width is not None:
                 if hasattr(child.intrinsic.width, "value"):
                     if child.style.flex:
                         full_flex += child.style.flex
@@ -293,6 +293,7 @@ class Pack(BaseStyle):
                     width += child_width
                     available_width -= child_width
 
+            # self._debug("available width =", available_width)
             available_width = max(0, available_width)
 
         if full_flex:
@@ -308,7 +309,7 @@ class Pack(BaseStyle):
             if child.style.width:
                 pass  # Already laid out
             elif child.style.flex:
-                if child.intrinsic.width:
+                if child.intrinsic.width is not None:
                     try:
                         child_alloc_width = max(
                             quantum * child.style.flex, child.intrinsic.width.value
@@ -413,7 +414,7 @@ class Pack(BaseStyle):
                 )
                 height += child_height
                 available_height -= child_height
-            elif child.intrinsic.height:
+            elif child.intrinsic.height is not None:
                 if hasattr(child.intrinsic.height, "value"):
                     if child.style.flex:
                         full_flex += child.style.flex
@@ -457,6 +458,8 @@ class Pack(BaseStyle):
                     height += child_height
                     available_height -= child_height
 
+            # self._debug("available height =", available_height)
+
         available_height = max(0, available_height)
         if full_flex:
             # self._debug("q =", available_height, full_flex, available_height / full_flex)
@@ -471,7 +474,7 @@ class Pack(BaseStyle):
             if child.style.height:
                 pass  # Already laid out
             elif child.style.flex:
-                if child.intrinsic.height:
+                if child.intrinsic.height is not None:
                     try:
                         child_alloc_height = max(
                             quantum * child.style.flex, child.intrinsic.height.value

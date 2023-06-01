@@ -18,16 +18,16 @@ class Image:
         if path:
             self.native = NSImage.alloc().initWithContentsOfFile(str(path))
         elif url:
-            self.native = NSImage.alloc().initByReferencingURL(
-                NSURL.URLWithString_(url)
-            )
+            self.native = NSImage.alloc().initByReferencingURL(NSURL.URLWithString(url))
         elif data:
-            if isinstance(data, NSData):
-                nsdata = data
-            else:
-                nsdata = NSData.dataWithBytes(data, length=len(data))
-
+            nsdata = NSData.dataWithBytes(data, length=len(data))
             self.native = NSImage.alloc().initWithData(nsdata)
+
+    def get_width(self):
+        return self.native.size.width
+
+    def get_height(self):
+        return self.native.size.height
 
     def save(self, path):
         path = Path(path)
