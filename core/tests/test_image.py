@@ -1,102 +1,156 @@
 from pathlib import Path
 
+import pytest
+
 import toga
-from toga_dummy.utils import TestCase
+from toga_dummy.paths import Paths
+from toga_dummy.utils import assert_action_performed_with
 
 
-class ImageTests(TestCase):
-    def setUp(self):
-        super().setUp()
+@pytest.fixture
+def app(monkeypatch):
+    # Monkeypatch a known app path into the paths module.
+    monkeypatch.setattr(Paths, "app", Path(toga.__file__).parent)
 
-        # an App must have been created before creating images because paths
-        # can be relative to the app path.
-        self.app = toga.App(
-            formal_name="Image Test App",
-            app_id="org.beeware.test_image",
-        )
 
-    def test_path_file_non_existent_image(self):
-        # Creating an image from a path that doesn't exist raises an error.
-        try:
-            toga.Image(path=Path("does/not/exist/image.jpg"))
-            self.fail("The image does not exist")  # pragma: nocover
-        except FileNotFoundError:
-            pass
+RELATIVE_FILE_PATH = Path("resources") / "toga.png"
+ABSOLUTE_FILE_PATH = Path(toga.__file__).parent / "resources" / "toga.png"
 
-    def test_path_file_image(self):
-        # Creating an image from a path.
-        image = toga.Image(path=Path(toga.__file__).parent / "resources" / "toga.png")
 
-        self.assertIsNotNone(image._impl)
-        self.assertEqual(
-            image._impl.interface.path,
-            Path(toga.__file__).parent / "resources" / "toga.png",
-        )
+@pytest.mark.parametrize(
+    "args, kwargs",
+    [
+        # Fully qualified path
+        ((ABSOLUTE_FILE_PATH,), {}),
+        ((), dict(path=ABSOLUTE_FILE_PATH)),
+        # Fully qualified string
+        ((f"{ABSOLUTE_FILE_PATH}",), {}),
+        ((), dict(path=f"{ABSOLUTE_FILE_PATH}")),
+        # Fully qualified file URL
+        ((f"file://{ABSOLUTE_FILE_PATH}",), {}),
+        ((), dict(path=f"file://{ABSOLUTE_FILE_PATH}")),
+        # Relative path
+        ((RELATIVE_FILE_PATH,), {}),
+        ((), dict(path=RELATIVE_FILE_PATH)),
+        # Relative string
+        ((f"{RELATIVE_FILE_PATH}",), {}),
+        ((), dict(path=f"{RELATIVE_FILE_PATH}")),
+        # Relative file ULR
+        ((f"file://{RELATIVE_FILE_PATH}",), {}),
+        ((), dict(path=f"file://{RELATIVE_FILE_PATH}")),
+    ],
+)
+def test_create_from_file(app, args, kwargs):
+    "If an file image source doesn't exist, an error is raised"
+    image = toga.Image(*args, **kwargs)
 
-    def test_str_file_non_existent_image(self):
-        # Creating an image from a string path that doesn't exist raises an error.
-        try:
-            toga.Image(path="does/not/exist/image.jpg")
-            self.fail("The image does not exist")  # pragma: nocover
-        except FileNotFoundError:
-            pass
+    # Image is bound
+    assert image._impl is not None
+    # impl/interface round trips
+    assert image._impl.interface == image
 
-    def test_str_file_image(self):
-        # Creating an image from a string path.
-        image = toga.Image(path=f"{Path(toga.__file__).parent}/resources/toga.png")
+    # The image's path is fully qualified
+    assert image._impl.interface.path == ABSOLUTE_FILE_PATH
 
-        self.assertIsNotNone(image._impl)
-        self.assertEqual(
-            image._impl.interface.path,
-            Path(toga.__file__).parent / "resources" / "toga.png",
-        )
 
-    def test_url_image(self):
-        # Creating an image from a URL.
-        url_image = toga.Image(path="https://example.com/image.png")
+MISSING_ABSOLUTE_PATH = Path.home() / "does" / "not" / "exist" / "image.jpg"
+MISSING_RELATIVE_PATH = Path("does") / "not" / "exist" / "image.jpg"
 
-        self.assertEqual(
-            url_image._impl.interface.path, "https://example.com/image.png"
-        )
-        self.assertActionPerformedWith(
-            url_image, "load image url", url="https://example.com/image.png"
-        )
 
-    def test_bytes_image(self):
-        data = bytes([1])
-        bytes_image = toga.Image(data=data)
+@pytest.mark.parametrize(
+    "args, kwargs",
+    [
+        # Empty string
+        (("",), {}),
+        ((), dict(path="")),
+        # Absolute path
+        ((MISSING_ABSOLUTE_PATH,), {}),
+        ((), dict(path=MISSING_ABSOLUTE_PATH)),
+        # Absolute string
+        ((f"{MISSING_ABSOLUTE_PATH}",), {}),
+        ((), dict(path=f"{MISSING_ABSOLUTE_PATH}")),
+        # Relative path
+        ((MISSING_RELATIVE_PATH,), {}),
+        ((), dict(path=f"{MISSING_RELATIVE_PATH}")),
+        # Relative string
+        ((f"{MISSING_RELATIVE_PATH}",), {}),
+        ((), dict(path=f"{MISSING_RELATIVE_PATH}")),
+    ],
+)
+def test_create_with_non_existent_file(app, args, kwargs):
+    "If an file image source doesn't exist, an error is raised"
+    with pytest.raises(FileNotFoundError):
+        toga.Image(*args, **kwargs)
 
-        self.assertEqual(bytes_image._impl.interface, bytes_image)
-        self.assertActionPerformedWith(bytes_image, "load image data", data=data)
 
-    def test_not_enough_arguments(self):
-        with self.assertRaises(ValueError):
-            toga.Image(None)
+def test_create_with_url(app):
+    "An image can be created from a URL"
+    image = toga.Image(path="https://example.com/image.png")
 
-    def test_too_many_arguments(self):
-        path = "/image.png"
-        data = bytes([1])
-        with self.assertRaises(ValueError):
-            toga.Image(path=path, data=data)
+    # Image is bound
+    assert image._impl is not None
+    # impl/interface round trips
+    assert image._impl.interface == image
+    # Path is the URL.
+    assert image._impl.interface.path == "https://example.com/image.png"
 
-    def test_bind(self):
-        # Bind is a deprecated no-op
-        image = toga.Image(path=Path(toga.__file__).parent / "resources" / "toga.png")
+    assert_action_performed_with(
+        image, "load image url", url="https://example.com/image.png"
+    )
 
-        with self.assertWarns(DeprecationWarning):
-            bound = image.bind()
 
-        self.assertIsNotNone(image._impl)
-        self.assertEqual(
-            image._impl.interface.path,
-            Path(toga.__file__).parent / "resources" / "toga.png",
-        )
+def test_create_with_bad_url(app):
+    "Non HTTP(s) URLs will fail"
+    with pytest.raises(
+        ValueError,
+        match=r"Images can only be loaded from http://, https:// or file:// URLs",
+    ):
+        toga.Image(path="ftp://example.com/image.png")
 
-        # The bound image is the _impl.
-        self.assertEqual(bound, image._impl)
 
-    def test_image_save(self):
-        save_path = Path("/path/to/save.png")
-        image = toga.Image(path=Path(toga.__file__).parent / "resources" / "toga.png")
-        image.save(save_path)
-        self.assertActionPerformedWith(image, "save", path=save_path)
+def test_bytes(app):
+    "An image can be constructed from data"
+    data = bytes([1])
+    image = toga.Image(data=data)
+
+    # Image is bound
+    assert image._impl is not None
+    # impl/interface round trips
+    assert image._impl.interface == image
+
+    # Image was constructed with data
+    assert_action_performed_with(image, "load image data", data=data)
+
+
+def test_not_enough_arguments(app):
+    with pytest.raises(
+        ValueError,
+        match=r"Either path or data must be set.",
+    ):
+        toga.Image(None)
+
+
+def test_too_many_arguments(app):
+    with pytest.raises(
+        ValueError,
+        match=r"Only either path or data can be set.",
+    ):
+        toga.Image(path="/image.png", data=bytes([1]))
+
+
+def test_dimensions(app):
+    "The dimensions of the image can be retrieved"
+
+    image = toga.Image(path="https://example.com/image.png")
+
+    assert image.width == 37
+    assert image.height == 42
+
+
+def test_image_save(app):
+    "An image can be saved"
+    save_path = Path("/path/to/save.png")
+    image = toga.Image(path=ABSOLUTE_FILE_PATH)
+
+    image.save(save_path)
+    assert_action_performed_with(image, "save", path=save_path)

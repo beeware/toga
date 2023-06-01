@@ -1,7 +1,9 @@
-import pathlib
-import warnings
+import re
+from pathlib import Path
 
 from toga.platform import get_platform_factory
+
+URL_RE = re.compile(r"\w+://")
 
 
 class Image:
@@ -20,13 +22,19 @@ class Image:
         if path is not None and data is not None:
             raise ValueError("Only either path or data can be set.")
 
-        if path:
-            if isinstance(path, pathlib.Path):
+        if path is not None:
+            if isinstance(path, Path):
                 self.path = path
             elif path.startswith("http://") or path.startswith("https://"):
                 self.path = path
+            elif path.startswith("file://"):
+                self.path = Path(path[7:])
+            elif URL_RE.match(path):
+                raise ValueError(
+                    "Images can only be loaded from http://, https:// or file:// URLs"
+                )
             else:
-                self.path = pathlib.Path(path)
+                self.path = Path(path)
         else:
             self.path = None
         self.data = data
@@ -34,23 +42,23 @@ class Image:
         self.factory = get_platform_factory()
         if self.data is not None:
             self._impl = self.factory.Image(interface=self, data=self.data)
-        elif isinstance(self.path, pathlib.Path):
-            full_path = self.factory.paths.app / self.path
-            if not full_path.exists():
-                raise FileNotFoundError(
-                    "Image file {full_path!r} does not exist".format(
-                        full_path=full_path
-                    )
-                )
-            self._impl = self.factory.Image(interface=self, path=full_path)
+        elif isinstance(self.path, Path):
+            self.path = self.factory.paths.app / self.path
+            if not self.path.is_file():
+                raise FileNotFoundError(f"Image file {self.path} does not exist")
+            self._impl = self.factory.Image(interface=self, path=self.path)
         else:
             self._impl = self.factory.Image(interface=self, url=self.path)
 
-    def bind(self, factory=None):
-        warnings.warn(
-            "Icons no longer need to be explicitly bound.", DeprecationWarning
-        )
-        return self._impl
+    @property
+    def width(self) -> int:
+        """The width of the image, in pixels."""
+        return self._impl.get_width()
+
+    @property
+    def height(self) -> int:
+        """The height of the image, in pixels."""
+        return self._impl.get_height()
 
     def save(self, path):
         """Save image to given path.
