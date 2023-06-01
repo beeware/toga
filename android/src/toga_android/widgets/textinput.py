@@ -17,14 +17,12 @@ class TogaTextWatcher(TextWatcher):
     def __init__(self, impl):
         super().__init__()
         self.impl = impl
-        self.interface = impl.interface
 
     def beforeTextChanged(self, _charSequence, _start, _count, _after):
         pass
 
     def afterTextChanged(self, _editable):
-        self.interface.on_change(None)
-        self.interface._validate()
+        self.impl._on_change()
 
     def onTextChanged(self, _charSequence, _start, _before, _count):
         pass
@@ -34,7 +32,6 @@ class TogaKeyListener(OnKeyListener):
     def __init__(self, impl):
         super().__init__()
         self.impl = impl
-        self.interface = impl.interface
 
     def onKey(self, _view, _key, _event):
         event_info = toga_key(_event)
@@ -45,7 +42,7 @@ class TogaKeyListener(OnKeyListener):
             if (key_pressed == "<enter>" or key_pressed == "numpad:enter") and (
                 int(_event.getAction()) == 1
             ):
-                self.interface.on_confirm(None)
+                self.impl._on_confirm()
         return False
 
 
@@ -53,32 +50,23 @@ class TogaFocusListener(View__OnFocusChangeListener):
     def __init__(self, impl):
         super().__init__()
         self.impl = impl
-        self.interface = impl.interface
 
     def onFocusChange(self, view, has_focus):
         if has_focus:
-            self.interface.on_gain_focus(None)
+            self.impl._on_gain_focus()
         else:
-            self.interface.on_lose_focus(None)
+            self.impl._on_lose_focus()
 
 
 class TextInput(TextViewWidget):
-    def create(
-        self,
-        *,
-        input_type=InputType.TYPE_CLASS_TEXT,
-        handle_confirm=True,
-        handle_focus=True,
-    ):
+    def create(self, input_type=InputType.TYPE_CLASS_TEXT):
         self.native = EditText(self._native_activity)
         self.native.setInputType(input_type)
         self.cache_textview_defaults()
 
         self.native.addTextChangedListener(TogaTextWatcher(self))
-        if handle_confirm:
-            self.native.setOnKeyListener(TogaKeyListener(self))
-        if handle_focus:
-            self.native.setOnFocusChangeListener(TogaFocusListener(self))
+        self.native.setOnKeyListener(TogaKeyListener(self))
+        self.native.setOnFocusChangeListener(TogaFocusListener(self))
 
     def get_value(self):
         return str(self.native.getText())
@@ -119,6 +107,21 @@ class TextInput(TextViewWidget):
 
     def is_valid(self):
         return self.native.getError() is None
+
+    def _on_change(self):
+        self.interface.on_change(None)
+        validate = getattr(self.interface, "_validate", None)
+        if validate:
+            validate()
+
+    def _on_confirm(self):
+        self.interface.on_confirm(None)
+
+    def _on_gain_focus(self):
+        self.interface.on_gain_focus(None)
+
+    def _on_lose_focus(self):
+        self.interface.on_lose_focus(None)
 
     def rehint(self):
         self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)

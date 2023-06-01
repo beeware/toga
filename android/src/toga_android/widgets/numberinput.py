@@ -1,100 +1,44 @@
-from decimal import Decimal, InvalidOperation
+from decimal import InvalidOperation
 
-from travertino.size import at_least
+from toga.widgets.numberinput import _clean_decimal
 
-from ..libs.android.text import InputType, TextWatcher
-from ..libs.android.view import Gravity, View__MeasureSpec
-from ..libs.android.widget import EditText
-from .base import align
-from .label import TextViewWidget
+from ..libs.android.text import InputType
+from .textinput import TextInput
 
 
-def decimal_from_string(s):
-    """Convert s to a `Decimal`, returning `None` if it's not a valid number."""
-    try:
-        return Decimal(s)
-    except InvalidOperation:
-        return None
-
-
-def string_from_decimal(d):
-    """Implement the inverse of `decimal_from_string()`.
-
-    This way, Toga's `NumericInput` can pass us a `None` or `Decimal`, and we can always
-    place a String in the Android `EditText`.
-    """
-    if d is None:
-        return ""
-    return str(d)
-
-
-class TogaNumberInputWatcher(TextWatcher):
-    def __init__(self, impl):
-        super().__init__()
-        self.interface = impl.interface
-
-    def beforeTextChanged(self, _charSequence, _start, _count, _after):
-        pass
-
-    def afterTextChanged(self, editable):
-        # Toga `NumberInput` stores the value as a property on the `interface`.
-        self.interface._value = decimal_from_string(editable.toString())
-        # Call the user on_change callback, if it exists.
-        if self.interface.on_change:
-            self.interface.on_change(widget=self.interface)
-
-    def onTextChanged(self, _charSequence, _start, _before, _count):
-        pass
-
-
-class NumberInput(TextViewWidget):
+class NumberInput(TextInput):
     def create(self):
-        self.native = EditText(self._native_activity)
-        self.native.addTextChangedListener(TogaNumberInputWatcher(self))
-
-        # A `NumberInput` in Toga supports signed decimal numbers.
-        self.native.setInputType(
+        super().create(
             InputType.TYPE_CLASS_NUMBER
             | InputType.TYPE_NUMBER_FLAG_DECIMAL
-            | InputType.TYPE_NUMBER_FLAG_SIGNED
+            | InputType.TYPE_NUMBER_FLAG_SIGNED,
         )
-        self.cache_textview_defaults()
 
-    def set_readonly(self, value):
-        self.native.setFocusable(not value)
-
-    def set_placeholder(self, value):
-        # Android EditText's setHint() requires a Python string.
-        self.native.setHint(value if value is not None else "")
-
-    def set_alignment(self, value):
-        self.native.setGravity(Gravity.CENTER_VERTICAL | align(value))
+    def get_value(self):
+        try:
+            return _clean_decimal(super().get_value(), self.interface.step)
+        except InvalidOperation:
+            return None
 
     def set_value(self, value):
-        # Store a string in the Android widget. The `afterTextChanged` method
-        # will call the user on_change handler.
-        self.native.setText(string_from_decimal(value))
+        super().set_value("" if value is None else str(value))
 
     def set_step(self, step):
-        self.interface.factory.not_implemented("NumberInput.set_step()")
+        pass  # This backend doesn't support stepped increments.
 
     def set_max_value(self, value):
-        self.interface.factory.not_implemented("NumberInput.set_max_value()")
+        pass  # This backend doesn't support stepped increments.
 
     def set_min_value(self, value):
-        self.interface.factory.not_implemented("NumberInput.set_min_value()")
+        pass  # This backend doesn't support stepped increments.
 
-    def set_on_change(self, handler):
-        # No special handling required.
-        pass
+    def _on_confirm(self):  # pragma: nocover
+        pass  # The interface doesn't support this event.
 
-    def rehint(self):
-        # On Android, EditText's measure() throws NullPointerException if the widget has no
-        # LayoutParams.
-        if not self.native.getLayoutParams():
-            return
-        self.native.measure(
-            View__MeasureSpec.UNSPECIFIED, View__MeasureSpec.UNSPECIFIED
-        )
-        self.interface.intrinsic.width = at_least(self.native.getMeasuredWidth())
-        self.interface.intrinsic.height = self.native.getMeasuredHeight()
+    def _on_gain_focus(self):
+        pass  # The interface doesn't support this event.
+
+    def _on_lose_focus(self):
+        # The interface doesn't support this event, but we should still clip the
+        # displayed value.
+        self.set_value(self.interface.value)

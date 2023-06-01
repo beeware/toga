@@ -8,10 +8,17 @@ from .textinput import TextInput
 class MultilineTextInput(TextInput):
     def create(self):
         super().create(
-            input_type=InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_MULTI_LINE,
-            handle_confirm=False,
-            handle_focus=False,
+            InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_MULTI_LINE,
         )
+
+    def _on_confirm(self):  # pragma: nocover
+        pass  # The interface doesn't support this event.
+
+    def _on_gain_focus(self):
+        pass  # The interface doesn't support this event.
+
+    def _on_lose_focus(self):
+        pass  # The interface doesn't support this event.
 
     def set_alignment(self, value):
         self.set_textview_alignment(value, Gravity.TOP)

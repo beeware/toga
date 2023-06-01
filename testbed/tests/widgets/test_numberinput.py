@@ -58,6 +58,7 @@ async def test_on_change_handler(widget, probe):
     # Get the widget into a true "clear" state (i.e., no text).
     # Clearing triggers the event handler
     probe.clear_input()
+    assert probe.value == ""
     await probe.redraw("Text value has been cleared")
     assert handler.mock_calls == [call(widget)] * 2
     assert widget.value is None
@@ -67,37 +68,43 @@ async def test_on_change_handler(widget, probe):
     event_count = 0
     allows_invalid = 1 if probe.allows_invalid_value else 0
     allows_extra = 1 if (allows_invalid or probe.allows_extra_digits) else 0
-    for char, value, events_delta in [
-        ("-", None, 1),  # bare - isn't a valid number
-        ("1", Decimal("-1.00"), 1),
-        ("2", Decimal("-12.00"), 1),
-        (".", Decimal("-12.00"), 1),
-        ("x", Decimal("-12.00"), allows_invalid),  # Ignored
-        ("3", Decimal("-12.30"), 1),
-        ("4", Decimal("-12.34"), 1),
-        ("5", Decimal("-12.35" if allows_extra else "-12.34"), allows_extra),
-        ("1", Decimal("-12.35" if allows_extra else "-12.34"), allows_extra),
+    for char, value, probe_value, events_delta in [
+        ("-", None, "-", 1),  # bare - isn't a valid number
+        ("1", "-1.00", "-1", 1),
+        ("2", "-12.00", "-12", 1),
+        (".", "-12.00", "-12.", 1),
+        ("x", "-12.00", "-12.", allows_invalid),  # Ignored
+        ("3", "-12.30", "-12.3", 1),
+        ("4", "-12.34", "-12.34", 1),
+        (
+            "5",
+            "-12.35" if allows_extra else "-12.34",
+            "-12.345" if allows_extra else "-12.34",
+            allows_extra,
+        ),
+        (
+            "1",
+            "-12.35" if allows_extra else "-12.34",
+            "-12.3451" if allows_extra else "-12.34",
+            allows_extra,
+        ),
     ]:
         await probe.type_character(char)
         await probe.redraw(f"Typed {char!r}")
-
-        assert widget.value == value
+        assert widget.value == (None if value is None else Decimal(value))
+        assert probe.value == probe_value
 
         # The number of events equals the number of characters typed.
         event_count += events_delta
         assert handler.mock_calls == [call(widget)] * event_count
 
 
-async def test_focus_value_clipping(widget, probe):
+async def test_focus_value_clipping(widget, probe, other):
     "Widget value is clipped to min/max values when focus is lost."
     # Set min/max values, and a granular step
     widget.min_value = Decimal(100)
     widget.max_value = Decimal(2000)
     widget.step = 1
-
-    # Add a separate widget that can take take focus
-    other = toga.TextInput()
-    widget.parent.add(other)
 
     # Install a handler, and give the widget focus.
     handler = Mock()
