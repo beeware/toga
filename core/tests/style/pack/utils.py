@@ -35,3 +35,29 @@ class ExampleViewport:
         self.width = width
         self.dpi = dpi
         self.baseline_dpi = baseline_dpi
+
+
+def _assert_layout(node, expected_layout):
+    assert (
+        node.layout.absolute_content_left,
+        node.layout.absolute_content_top,
+    ) == expected_layout["origin"], f"origin of {node} doesn't match"
+    assert (node.layout.content_width, node.layout.content_height) == expected_layout[
+        "content"
+    ], f"content of {node} doesn't match"
+
+    assert len(node.children) == len(
+        expected_layout.get("children", [])
+    ), f"number of children of {node} doesn't match"
+
+    for child, sublayout in zip(node.children, expected_layout.get("children", [])):
+        _assert_layout(child, sublayout)
+
+
+def assert_layout(node, expected_size, expected_layout):
+    """Assert that a node's full recursive layout matches expectation."""
+    assert (
+        node.layout.width,
+        node.layout.height,
+    ) == expected_size, "final size doesn't match"
+    _assert_layout(node, expected_layout)
