@@ -3,12 +3,23 @@ import asyncio
 from pytest import approx
 from System import EventArgs, Object
 from System.Drawing import FontFamily, SystemColors, SystemFonts
+from System.Windows.Forms import SendKeys
 
 from toga.colors import TRANSPARENT
 from toga.fonts import CURSIVE, FANTASY, MONOSPACE, SANS_SERIF, SERIF, SYSTEM
 from toga.style.pack import JUSTIFY, LEFT
 
 from .properties import toga_color, toga_font
+
+KEY_CODES = {
+    f"<{name}>": f"{{{name.upper()}}}"
+    for name in ["esc", "up", "down", "left", "right"]
+}
+KEY_CODES.update(
+    {
+        "\n": "{ENTER}",
+    }
+)
 
 
 class SimpleProbe:
@@ -118,6 +129,15 @@ class SimpleProbe:
 
     async def press(self):
         self.native.OnClick(EventArgs.Empty)
+
+    async def type_character(self, char):
+        try:
+            key_code = KEY_CODES[char]
+        except KeyError:
+            assert len(char) == 1, char
+            key_code = char
+
+        SendKeys.SendWait(key_code)
 
     @property
     def is_hidden(self):
