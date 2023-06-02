@@ -41,14 +41,23 @@ def _assert_layout(node, expected_layout):
     assert (
         node.layout.absolute_content_left,
         node.layout.absolute_content_top,
-    ) == expected_layout["origin"], f"origin of {node} doesn't match"
+    ) == expected_layout["origin"], (
+        f"origin of {node} ({node.layout.absolute_content_left},{node.layout.absolute_content_top}) "
+        f"doesn't match expected {expected_layout['origin']}"
+    )
     assert (node.layout.content_width, node.layout.content_height) == expected_layout[
         "content"
-    ], f"content of {node} doesn't match"
+    ], (
+        f"content size of {node} ({node.layout.content_width},{node.layout.content_height}) "
+        f"doesn't match expected {expected_layout['content']}"
+    )
 
-    assert len(node.children) == len(
-        expected_layout.get("children", [])
-    ), f"number of children of {node} doesn't match"
+    n_children = len(node.children)
+    expected_n_children = len(expected_layout.get("children", []))
+    assert n_children == expected_n_children, (
+        f"number of children of {node} ({n_children}) "
+        f"doesn't match expected {expected_n_children}"
+    )
 
     for child, sublayout in zip(node.children, expected_layout.get("children", [])):
         _assert_layout(child, sublayout)
@@ -59,5 +68,8 @@ def assert_layout(node, expected_size, expected_layout):
     assert (
         node.layout.width,
         node.layout.height,
-    ) == expected_size, "final size doesn't match"
+    ) == expected_size, (
+        f"final size {node.layout.width}x{node.layout.height} "
+        f"doesn't match expected {expected_size[0]}x{expected_size[1]}"
+    )
     _assert_layout(node, expected_layout)

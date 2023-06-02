@@ -145,7 +145,7 @@ class Pack(BaseStyle):
         # self._debug("COMPUTE LAYOUT for", node, "available", alloc_width, alloc_height)
 
         # Establish available width
-        if self.width:
+        if self.width != NONE:
             # If width is specified, use it
             available_width = scale(self.width)
             # self._debug("SPECIFIED WIDTH", available_width)
@@ -170,7 +170,7 @@ class Pack(BaseStyle):
                 pass
 
         # Establish available height
-        if self.height:
+        if self.height != NONE:
             # If height is specified, use it.
             available_height = scale(self.height)
             # self._debug("SPECIFIED HEIGHT", available_height)
@@ -216,9 +216,9 @@ class Pack(BaseStyle):
         else:
             # If an explicit width/height was given, that specification
             # overrides the width/height evaluated by the layout of children
-            if self.width:
+            if self.width != NONE:
                 width = scale(self.width)
-            if self.height:
+            if self.height != NONE:
                 height = scale(self.height)
 
         # self._debug("FINAL SIZE", width, height)
@@ -237,7 +237,7 @@ class Pack(BaseStyle):
         width = 0
         height = 0
         for child in node.children:
-            if child.style.width:
+            if child.style.width != NONE:
                 # self._debug("PASS 1 fixed width", child.style.width)
                 child.style._layout_node(
                     child, available_width, available_height, scale
@@ -305,7 +305,7 @@ class Pack(BaseStyle):
         # Pass 2: Lay out children with an intrinsic flexible width,
         # or no width specification at all.
         for child in node.children:
-            if child.style.width:
+            if child.style.width != NONE:
                 pass  # Already laid out
             elif child.style.flex:
                 if child.intrinsic.width:
@@ -401,7 +401,7 @@ class Pack(BaseStyle):
         full_flex = 0
         height = 0
         for child in node.children:
-            if child.style.height:
+            if child.style.height != NONE:
                 # self._debug("PASS 1 fixed height", child.style.height)
                 child.style._layout_node(
                     child, available_width, available_height, scale
@@ -468,7 +468,7 @@ class Pack(BaseStyle):
         # Pass 2: Lay out children with an intrinsic flexible height,
         # or no height specification at all.
         for child in node.children:
-            if child.style.height:
+            if child.style.height != NONE:
                 pass  # Already laid out
             elif child.style.flex:
                 if child.intrinsic.height:
@@ -567,11 +567,11 @@ class Pack(BaseStyle):
             css.append(f"flex: {self.flex} 0 0;")
 
         # width/flex
-        if self.width:
+        if self.width != NONE:
             css.append(f"width: {self.width}px;")
 
         # height/flex
-        if self.height:
+        if self.height != NONE:
             css.append(f"height: {self.height}px;")
 
         # alignment
@@ -641,8 +641,8 @@ Pack.validated_property("visibility", choices=VISIBILITY_CHOICES, initial=VISIBL
 Pack.validated_property("direction", choices=DIRECTION_CHOICES, initial=ROW)
 Pack.validated_property("alignment", choices=ALIGNMENT_CHOICES)
 
-Pack.validated_property("width", choices=SIZE_CHOICES, initial=0)
-Pack.validated_property("height", choices=SIZE_CHOICES, initial=0)
+Pack.validated_property("width", choices=SIZE_CHOICES, initial=NONE)
+Pack.validated_property("height", choices=SIZE_CHOICES, initial=NONE)
 Pack.validated_property("flex", choices=FLEX_CHOICES, initial=0)
 
 Pack.validated_property("padding_top", choices=PADDING_CHOICES, initial=0)
