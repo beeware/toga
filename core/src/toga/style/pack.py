@@ -556,10 +556,23 @@ class Pack(BaseStyle):
 
         # visibility
         if self.visibility != VISIBLE:
-            css.append(f"visibility: {self.visibility}")
+            css.append(f"visibility: {self.visibility};")
 
         # direction
         css.append(f"flex-direction: {self.direction.lower()};")
+        # flex
+        if (self.width == NONE and self.direction == ROW) or (
+            self.height == NONE and self.direction == COLUMN
+        ):
+            css.append(f"flex: {self.flex} 0 0;")
+
+        # width/flex
+        if self.width:
+            css.append(f"width: {self.width}px;")
+
+        # height/flex
+        if self.height:
+            css.append(f"height: {self.height}px;")
 
         # alignment
         if self.direction == ROW:
@@ -578,18 +591,6 @@ class Pack(BaseStyle):
                     css.append("align-items: end;")
                 elif self.alignment == CENTER:
                     css.append("align-items: center;")
-
-        # width/flex
-        if self.width:
-            css.append(f"width: {self.width}px;")
-        elif self.direction == ROW:
-            css.append(f"flex: {self.flex} 0 0;")
-
-        # height/flex
-        if self.height:
-            css.append(f"width: {self.width}px;")
-        elif self.direction == COLUMN:
-            css.append(f"flex: {self.flex} 0 0;")
 
         # padding_*
         if self.padding_top:
@@ -611,17 +612,20 @@ class Pack(BaseStyle):
 
         # text_align
         if self.text_align:
-            css.append(f"text-align: {self.text_align}")
+            css.append(f"text-align: {self.text_align};")
 
         # text_direction
         if self.text_direction != LTR:
-            css.append(f"text-direction: {self.text_direction}")
+            css.append(f"text-direction: {self.text_direction};")
 
         # font-*
         if self.font_family != SYSTEM:
-            css.append(f"font-family: {self.font_family};")
+            if " " in self.font_family:
+                css.append(f'font-family: "{self.font_family}";')
+            else:
+                css.append(f"font-family: {self.font_family};")
         if self.font_size != SYSTEM_DEFAULT_FONT_SIZE:
-            css.append(f"font-size: {self.font_size};")
+            css.append(f"font-size: {self.font_size}pt;")
         if self.font_weight != NORMAL:
             css.append(f"font-weight: {self.font_weight};")
         if self.font_style != NORMAL:
