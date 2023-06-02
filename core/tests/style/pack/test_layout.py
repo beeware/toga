@@ -1,17 +1,11 @@
 from unittest import TestCase
-from unittest.mock import Mock, call
 
-from travertino.node import Node
 from travertino.size import at_least
 
-from toga.colors import rgb
-from toga.fonts import Font
-from toga.style.applicator import TogaApplicator
 from toga.style.pack import (
     BOTTOM,
     CENTER,
     COLUMN,
-    HIDDEN,
     LEFT,
     RIGHT,
     ROW,
@@ -20,96 +14,7 @@ from toga.style.pack import (
     Pack,
 )
 
-
-class TestNode(Node):
-    __test__ = False
-
-    def __init__(self, name, style, size=None, children=None):
-        super().__init__(
-            style=style, children=children, applicator=TogaApplicator(self)
-        )
-
-        self.name = name
-        self._impl = Mock()
-        if size:
-            self.intrinsic.width = size[0]
-            self.intrinsic.height = size[1]
-
-        self.refresh = Mock()
-
-    def __repr__(self):
-        return f"<{self.name} at {id(self)}>"
-
-    def refresh(self):
-        # We're directly modifying styles and computing layouts for specific
-        # viewports, so we don't need to trigger layout changes when a style is
-        # changed.
-        pass
-
-
-class TestViewport:
-    __test__ = False
-
-    def __init__(self, width, height, dpi=96, baseline_dpi=96):
-        self.height = height
-        self.width = width
-        self.dpi = dpi
-        self.baseline_dpi = baseline_dpi
-
-
-class TestPackStyleApply(TestCase):
-    def test_set_default_right_textalign_when_rtl(self):
-        root = TestNode("app", style=Pack(text_direction=RTL))
-        root.style.reapply()
-        # Two calls; one caused by text_align, one because text_direction
-        # implies a change to text alignment.
-        assert root._impl.set_alignment.mock_calls == [call(RIGHT), call(RIGHT)]
-
-    def test_set_default_left_textalign_when_no_rtl(self):
-        root = TestNode("app", style=Pack())
-        root.style.reapply()
-        # Two calls; one caused by text_align, one because text_direction
-        # implies a change to text alignment.
-        assert root._impl.set_alignment.mock_calls == [call(LEFT), call(LEFT)]
-
-    def test_set_center_alignment(self):
-        root = TestNode("app", style=Pack(text_align="center"))
-        root.style.reapply()
-        root._impl.set_alignment.assert_called_once_with(CENTER)
-
-    def test_set_color(self):
-        color = "#ffffff"
-        root = TestNode("app", style=Pack(color=color))
-        root.style.reapply()
-        root._impl.set_color.assert_called_once_with(rgb(255, 255, 255))
-
-    def test_set_background_color(self):
-        color = "#ffffff"
-        root = TestNode("app", style=Pack(background_color=color))
-        root.style.reapply()
-        root._impl.set_background_color.assert_called_once_with(rgb(255, 255, 255))
-
-    def test_set_font(self):
-        root = TestNode(
-            "app",
-            style=Pack(
-                font_family="Roboto",
-                font_size=12,
-                font_style="normal",
-                font_variant="small-caps",
-                font_weight="bold",
-            ),
-        )
-        root.style.reapply()
-        root._impl.set_font.assert_called_with(
-            Font("Roboto", 12, "normal", "small-caps", "bold")
-        )
-        root.refresh.assert_called_with()
-
-    def test_set_visibility_hidden(self):
-        root = TestNode("app", style=Pack(visibility=HIDDEN))
-        root.style.reapply()
-        root._impl.set_hidden.assert_called_once_with(True)
+from .utils import ExampleNode, ExampleViewport
 
 
 class PackLayoutTests(TestCase):
@@ -141,18 +46,18 @@ class PackLayoutTests(TestCase):
             self._assertLayout(child, sublayout)
 
     def test_tutorial_0(self):
-        root = TestNode(
+        root = ExampleNode(
             "app",
             style=Pack(),
             children=[
-                TestNode(
+                ExampleNode(
                     "button", style=Pack(flex=1, padding=50), size=(at_least(120), 30)
                 ),
             ],
         )
 
         # Minimum size
-        root.style.layout(root, TestViewport(0, 0, dpi=96))
+        root.style.layout(root, ExampleViewport(0, 0, dpi=96))
         self.assertLayout(
             root,
             (220, 130),
@@ -164,7 +69,7 @@ class PackLayoutTests(TestCase):
         )
 
         # Normal size
-        root.style.layout(root, TestViewport(640, 480, dpi=96))
+        root.style.layout(root, ExampleViewport(640, 480, dpi=96))
         self.assertLayout(
             root,
             (640, 480),
@@ -176,7 +81,7 @@ class PackLayoutTests(TestCase):
         )
 
         # HiDPI Normal size
-        root.style.layout(root, TestViewport(640, 480, dpi=144))
+        root.style.layout(root, ExampleViewport(640, 480, dpi=144))
         self.assertLayout(
             root,
             (640, 480),
@@ -188,19 +93,19 @@ class PackLayoutTests(TestCase):
         )
 
     def test_tutorial_0_vertical(self):
-        root = TestNode(
+        root = ExampleNode(
             "app",
             style=Pack(direction=COLUMN),
             children=[
-                # TestNode('button', style=Pack(flex=1), size=(30, at_least(120))),
-                TestNode(
+                # ExampleNode('button', style=Pack(flex=1), size=(30, at_least(120))),
+                ExampleNode(
                     "button", style=Pack(flex=1, padding=50), size=(30, at_least(120))
                 ),
             ],
         )
 
         # Minimum size
-        root.style.layout(root, TestViewport(0, 0, dpi=96))
+        root.style.layout(root, ExampleViewport(0, 0, dpi=96))
         self.assertLayout(
             root,
             (130, 220),
@@ -212,7 +117,7 @@ class PackLayoutTests(TestCase):
         )
 
         # Normal size
-        root.style.layout(root, TestViewport(480, 640, dpi=96))
+        root.style.layout(root, ExampleViewport(480, 640, dpi=96))
         self.assertLayout(
             root,
             (480, 640),
@@ -224,7 +129,7 @@ class PackLayoutTests(TestCase):
         )
 
         # HiDPI normal size
-        root.style.layout(root, TestViewport(480, 640, dpi=144))
+        root.style.layout(root, ExampleViewport(480, 640, dpi=144))
         self.assertLayout(
             root,
             (480, 640),
@@ -236,18 +141,18 @@ class PackLayoutTests(TestCase):
         )
 
     def test_tutorial_0_high_baseline_dpi(self):
-        root = TestNode(
+        root = ExampleNode(
             "app",
             style=Pack(),
             children=[
-                TestNode(
+                ExampleNode(
                     "button", style=Pack(flex=1, padding=50), size=(at_least(120), 30)
                 ),
             ],
         )
 
         # Minimum size with high baseline DPI
-        root.style.layout(root, TestViewport(0, 0, dpi=160, baseline_dpi=160))
+        root.style.layout(root, ExampleViewport(0, 0, dpi=160, baseline_dpi=160))
         self.assertLayout(
             root,
             (220, 130),
@@ -259,7 +164,7 @@ class PackLayoutTests(TestCase):
         )
 
         # Normal size with high DPI equal to high baseline DPI
-        root.style.layout(root, TestViewport(640, 480, dpi=160, baseline_dpi=160))
+        root.style.layout(root, ExampleViewport(640, 480, dpi=160, baseline_dpi=160))
         self.assertLayout(
             root,
             (640, 480),
@@ -271,7 +176,7 @@ class PackLayoutTests(TestCase):
         )
 
         # HiDPI -- 1.5x baseline -- with higher baseline DPI
-        root.style.layout(root, TestViewport(640, 480, dpi=240, baseline_dpi=160))
+        root.style.layout(root, ExampleViewport(640, 480, dpi=240, baseline_dpi=160))
         self.assertLayout(
             root,
             (640, 480),
@@ -283,53 +188,53 @@ class PackLayoutTests(TestCase):
         )
 
     def test_tutorial_1(self):
-        root = TestNode(
+        root = ExampleNode(
             "app",
             style=Pack(direction=COLUMN, padding_top=10),
             children=[
-                TestNode(
+                ExampleNode(
                     "f_box",
                     style=Pack(direction=ROW, padding=5),
                     children=[
-                        TestNode(
+                        ExampleNode(
                             "f_input",
                             style=Pack(flex=1, padding_left=160),
                             size=(at_least(100), 15),
                         ),
-                        TestNode(
+                        ExampleNode(
                             "f_label",
                             style=Pack(width=100, padding_left=10),
                             size=(at_least(40), 10),
                         ),
                     ],
                 ),
-                TestNode(
+                ExampleNode(
                     "c_box",
                     style=Pack(direction=ROW, padding=5),
                     children=[
-                        TestNode(
+                        ExampleNode(
                             "join_label",
                             style=Pack(width=150, padding_right=10),
                             size=(at_least(80), 10),
                         ),
-                        TestNode(
+                        ExampleNode(
                             "c_input", style=Pack(flex=1), size=(at_least(100), 15)
                         ),
-                        TestNode(
+                        ExampleNode(
                             "c_label",
                             style=Pack(width=100, padding_left=10),
                             size=(at_least(40), 10),
                         ),
                     ],
                 ),
-                TestNode(
+                ExampleNode(
                     "button", style=Pack(flex=1, padding=15), size=(at_least(120), 30)
                 ),
             ],
         )
 
         # Minimum size
-        root.style.layout(root, TestViewport(0, 0, dpi=96))
+        root.style.layout(root, ExampleViewport(0, 0, dpi=96))
         self.assertLayout(
             root,
             (380, 120),
@@ -360,7 +265,7 @@ class PackLayoutTests(TestCase):
         )
 
         # Normal size
-        root.style.layout(root, TestViewport(640, 480, dpi=96))
+        root.style.layout(root, ExampleViewport(640, 480, dpi=96))
         self.assertLayout(
             root,
             (640, 480),
@@ -390,7 +295,7 @@ class PackLayoutTests(TestCase):
             },
         )
         # HiDPI Normal size
-        root.style.layout(root, TestViewport(640, 480, dpi=144))
+        root.style.layout(root, ExampleViewport(640, 480, dpi=144))
         self.assertLayout(
             root,
             (640, 480),
@@ -421,34 +326,34 @@ class PackLayoutTests(TestCase):
         )
 
     def test_tutorial_3(self):
-        root = TestNode(
+        root = ExampleNode(
             "app",
             style=Pack(direction=COLUMN),
             children=[
-                TestNode(
+                ExampleNode(
                     "box",
                     style=Pack(),
                     children=[
-                        TestNode(
+                        ExampleNode(
                             "input",
                             style=Pack(flex=1, padding=5),
                             size=(at_least(100), 15),
                         ),
-                        TestNode(
+                        ExampleNode(
                             "button",
                             style=Pack(width=50, padding=5),
                             size=(at_least(40), 10),
                         ),
                     ],
                 ),
-                TestNode(
+                ExampleNode(
                     "web", style=Pack(flex=1), size=(at_least(100), at_least(100))
                 ),
             ],
         )
 
         # Minimum size
-        root.style.layout(root, TestViewport(0, 0, dpi=96))
+        root.style.layout(root, ExampleViewport(0, 0, dpi=96))
         self.assertLayout(
             root,
             (170, 125),
@@ -470,7 +375,7 @@ class PackLayoutTests(TestCase):
         )
 
         # Normal size
-        root.style.layout(root, TestViewport(640, 480, dpi=96))
+        root.style.layout(root, ExampleViewport(640, 480, dpi=96))
         self.assertLayout(
             root,
             (640, 480),
@@ -492,7 +397,7 @@ class PackLayoutTests(TestCase):
         )
 
         # HiDPI Normal size
-        root.style.layout(root, TestViewport(640, 480, dpi=144))
+        root.style.layout(root, ExampleViewport(640, 480, dpi=144))
         self.assertLayout(
             root,
             (640, 480),
@@ -514,25 +419,25 @@ class PackLayoutTests(TestCase):
         )
 
     def test_beeliza(self):
-        root = TestNode(
+        root = ExampleNode(
             "app",
             style=Pack(direction=COLUMN),
             children=[
-                TestNode(
+                ExampleNode(
                     "detailedlist",
                     style=Pack(flex=1),
                     size=(at_least(100), at_least(100)),
                 ),
-                TestNode(
+                ExampleNode(
                     "box",
                     style=Pack(direction=ROW),
                     children=[
-                        TestNode(
+                        ExampleNode(
                             "input",
                             style=Pack(flex=1, padding=5),
                             size=(at_least(100), 15),
                         ),
-                        TestNode(
+                        ExampleNode(
                             "button", style=Pack(padding=5), size=(at_least(40), 10)
                         ),
                     ],
@@ -541,7 +446,7 @@ class PackLayoutTests(TestCase):
         )
 
         # Minimum size
-        root.style.layout(root, TestViewport(0, 0, dpi=96))
+        root.style.layout(root, ExampleViewport(0, 0, dpi=96))
         self.assertLayout(
             root,
             (160, 125),
@@ -563,7 +468,7 @@ class PackLayoutTests(TestCase):
         )
 
         # Normal size
-        root.style.layout(root, TestViewport(640, 480, dpi=96))
+        root.style.layout(root, ExampleViewport(640, 480, dpi=96))
         self.assertLayout(
             root,
             (640, 480),
@@ -585,7 +490,7 @@ class PackLayoutTests(TestCase):
         )
 
         # HiDPI Normal size
-        root.style.layout(root, TestViewport(640, 480, dpi=144))
+        root.style.layout(root, ExampleViewport(640, 480, dpi=144))
         self.assertLayout(
             root,
             (640, 480),
@@ -607,20 +512,20 @@ class PackLayoutTests(TestCase):
         )
 
     def test_row_alignment_top(self):
-        root = TestNode(
+        root = ExampleNode(
             "root",
             style=Pack(direction=ROW, alignment=TOP, width=300),
             children=[
-                TestNode("space_filler", style=Pack(width=100, height=540)),
-                TestNode(
+                ExampleNode("space_filler", style=Pack(width=100, height=540)),
+                ExampleNode(
                     "container",
                     style=Pack(direction=COLUMN, padding_top=110, padding_bottom=120),
                     children=[
-                        TestNode(
+                        ExampleNode(
                             "widget_a",
                             style=Pack(height=30, padding_top=32, padding_bottom=34),
                         ),
-                        TestNode(
+                        ExampleNode(
                             "widget_b",
                             style=Pack(height=36, padding_top=38, padding_bottom=40),
                         ),
@@ -630,7 +535,7 @@ class PackLayoutTests(TestCase):
         )
 
         # Minimum size
-        root.style.layout(root, TestViewport(0, 0, dpi=96))
+        root.style.layout(root, ExampleViewport(0, 0, dpi=96))
         self.assertLayout(
             root,
             (300, 540),
@@ -652,7 +557,7 @@ class PackLayoutTests(TestCase):
         )
 
         # Normal size
-        root.style.layout(root, TestViewport(640, 480, dpi=96))
+        root.style.layout(root, ExampleViewport(640, 480, dpi=96))
         self.assertLayout(
             root,
             (300, 540),
@@ -674,7 +579,7 @@ class PackLayoutTests(TestCase):
         )
 
         # HiDPI Normal size
-        root.style.layout(root, TestViewport(640, 480, dpi=144))
+        root.style.layout(root, ExampleViewport(640, 480, dpi=144))
         self.assertLayout(
             root,
             (450, 810),
@@ -696,20 +601,20 @@ class PackLayoutTests(TestCase):
         )
 
     def test_row_alignment_center(self):
-        root = TestNode(
+        root = ExampleNode(
             "root",
             style=Pack(direction=ROW, alignment=CENTER, width=300),
             children=[
-                TestNode("space_filler", style=Pack(width=100, height=540)),
-                TestNode(
+                ExampleNode("space_filler", style=Pack(width=100, height=540)),
+                ExampleNode(
                     "container",
                     style=Pack(direction=COLUMN, padding_top=110, padding_bottom=120),
                     children=[
-                        TestNode(
+                        ExampleNode(
                             "widget_a",
                             style=Pack(height=30, padding_top=32, padding_bottom=34),
                         ),
-                        TestNode(
+                        ExampleNode(
                             "widget_b",
                             style=Pack(height=36, padding_top=38, padding_bottom=40),
                         ),
@@ -719,7 +624,7 @@ class PackLayoutTests(TestCase):
         )
 
         # Minimum size
-        root.style.layout(root, TestViewport(0, 0, dpi=96))
+        root.style.layout(root, ExampleViewport(0, 0, dpi=96))
         self.assertLayout(
             root,
             (300, 540),
@@ -741,7 +646,7 @@ class PackLayoutTests(TestCase):
         )
 
         # Normal size
-        root.style.layout(root, TestViewport(640, 480, dpi=96))
+        root.style.layout(root, ExampleViewport(640, 480, dpi=96))
         self.assertLayout(
             root,
             (300, 540),
@@ -763,7 +668,7 @@ class PackLayoutTests(TestCase):
         )
 
         # HiDPI Normal size
-        root.style.layout(root, TestViewport(640, 480, dpi=144))
+        root.style.layout(root, ExampleViewport(640, 480, dpi=144))
         self.assertLayout(
             root,
             (450, 810),
@@ -785,20 +690,20 @@ class PackLayoutTests(TestCase):
         )
 
     def test_row_alignment_bottom(self):
-        root = TestNode(
+        root = ExampleNode(
             "root",
             style=Pack(direction=ROW, alignment=BOTTOM, width=300),
             children=[
-                TestNode("space_filler", style=Pack(width=100, height=540)),
-                TestNode(
+                ExampleNode("space_filler", style=Pack(width=100, height=540)),
+                ExampleNode(
                     "container",
                     style=Pack(direction=COLUMN, padding_top=110, padding_bottom=120),
                     children=[
-                        TestNode(
+                        ExampleNode(
                             "widget_a",
                             style=Pack(height=30, padding_top=32, padding_bottom=34),
                         ),
-                        TestNode(
+                        ExampleNode(
                             "widget_b",
                             style=Pack(height=36, padding_top=38, padding_bottom=40),
                         ),
@@ -808,7 +713,7 @@ class PackLayoutTests(TestCase):
         )
 
         # Minimum size
-        root.style.layout(root, TestViewport(0, 0, dpi=96))
+        root.style.layout(root, ExampleViewport(0, 0, dpi=96))
         self.assertLayout(
             root,
             (300, 540),
@@ -830,7 +735,7 @@ class PackLayoutTests(TestCase):
         )
 
         # Normal size
-        root.style.layout(root, TestViewport(640, 480, dpi=96))
+        root.style.layout(root, ExampleViewport(640, 480, dpi=96))
         self.assertLayout(
             root,
             (300, 540),
@@ -852,7 +757,7 @@ class PackLayoutTests(TestCase):
         )
 
         # HiDPI Normal size
-        root.style.layout(root, TestViewport(640, 480, dpi=144))
+        root.style.layout(root, ExampleViewport(640, 480, dpi=144))
         self.assertLayout(
             root,
             (450, 810),
@@ -874,20 +779,20 @@ class PackLayoutTests(TestCase):
         )
 
     def test_column_alignment_left(self):
-        root = TestNode(
+        root = ExampleNode(
             "root",
             style=Pack(direction=COLUMN, alignment=LEFT, height=300),
             children=[
-                TestNode("space_filler", style=Pack(width=540, height=100)),
-                TestNode(
+                ExampleNode("space_filler", style=Pack(width=540, height=100)),
+                ExampleNode(
                     "container",
                     style=Pack(direction=ROW, padding_left=110, padding_right=120),
                     children=[
-                        TestNode(
+                        ExampleNode(
                             "widget_a",
                             style=Pack(width=30, padding_left=32, padding_right=34),
                         ),
-                        TestNode(
+                        ExampleNode(
                             "widget_b",
                             style=Pack(width=36, padding_left=38, padding_right=40),
                         ),
@@ -897,7 +802,7 @@ class PackLayoutTests(TestCase):
         )
 
         # Minimum size
-        root.style.layout(root, TestViewport(0, 0, dpi=96))
+        root.style.layout(root, ExampleViewport(0, 0, dpi=96))
         self.assertLayout(
             root,
             (540, 300),
@@ -919,7 +824,7 @@ class PackLayoutTests(TestCase):
         )
 
         # Normal size
-        root.style.layout(root, TestViewport(640, 480, dpi=96))
+        root.style.layout(root, ExampleViewport(640, 480, dpi=96))
         self.assertLayout(
             root,
             (640, 300),
@@ -941,7 +846,7 @@ class PackLayoutTests(TestCase):
         )
 
         # HiDPI Normal size
-        root.style.layout(root, TestViewport(640, 480, dpi=144))
+        root.style.layout(root, ExampleViewport(640, 480, dpi=144))
         self.assertLayout(
             root,
             (810, 450),
@@ -963,20 +868,20 @@ class PackLayoutTests(TestCase):
         )
 
     def test_column_alignment_center(self):
-        root = TestNode(
+        root = ExampleNode(
             "root",
             style=Pack(direction=COLUMN, alignment=CENTER, height=300),
             children=[
-                TestNode("space_filler", style=Pack(width=540, height=100)),
-                TestNode(
+                ExampleNode("space_filler", style=Pack(width=540, height=100)),
+                ExampleNode(
                     "container",
                     style=Pack(direction=ROW, padding_left=110, padding_right=120),
                     children=[
-                        TestNode(
+                        ExampleNode(
                             "widget_a",
                             style=Pack(width=30, padding_left=32, padding_right=34),
                         ),
-                        TestNode(
+                        ExampleNode(
                             "widget_b",
                             style=Pack(width=36, padding_left=38, padding_right=40),
                         ),
@@ -986,7 +891,7 @@ class PackLayoutTests(TestCase):
         )
 
         # Minimum size
-        root.style.layout(root, TestViewport(0, 0, dpi=96))
+        root.style.layout(root, ExampleViewport(0, 0, dpi=96))
         self.assertLayout(
             root,
             (540, 300),
@@ -1008,7 +913,7 @@ class PackLayoutTests(TestCase):
         )
 
         # Normal size
-        root.style.layout(root, TestViewport(640, 480, dpi=96))
+        root.style.layout(root, ExampleViewport(640, 480, dpi=96))
         self.assertLayout(
             root,
             (640, 300),
@@ -1030,7 +935,7 @@ class PackLayoutTests(TestCase):
         )
 
         # HiDPI Normal size
-        root.style.layout(root, TestViewport(640, 480, dpi=144))
+        root.style.layout(root, ExampleViewport(640, 480, dpi=144))
         self.assertLayout(
             root,
             (810, 450),
@@ -1052,20 +957,20 @@ class PackLayoutTests(TestCase):
         )
 
     def test_column_alignment_right(self):
-        root = TestNode(
+        root = ExampleNode(
             "root",
             style=Pack(direction=COLUMN, alignment=RIGHT, height=300),
             children=[
-                TestNode("space_filler", style=Pack(width=540, height=100)),
-                TestNode(
+                ExampleNode("space_filler", style=Pack(width=540, height=100)),
+                ExampleNode(
                     "container",
                     style=Pack(direction=ROW, padding_left=110, padding_right=120),
                     children=[
-                        TestNode(
+                        ExampleNode(
                             "widget_a",
                             style=Pack(width=30, padding_left=32, padding_right=34),
                         ),
-                        TestNode(
+                        ExampleNode(
                             "widget_b",
                             style=Pack(width=36, padding_left=38, padding_right=40),
                         ),
@@ -1075,7 +980,7 @@ class PackLayoutTests(TestCase):
         )
 
         # Minimum size
-        root.style.layout(root, TestViewport(0, 0, dpi=96))
+        root.style.layout(root, ExampleViewport(0, 0, dpi=96))
         self.assertLayout(
             root,
             (540, 300),
@@ -1097,7 +1002,7 @@ class PackLayoutTests(TestCase):
         )
 
         # Normal size
-        root.style.layout(root, TestViewport(640, 480, dpi=96))
+        root.style.layout(root, ExampleViewport(640, 480, dpi=96))
         self.assertLayout(
             root,
             (640, 300),
@@ -1119,7 +1024,7 @@ class PackLayoutTests(TestCase):
         )
 
         # HiDPI Normal size
-        root.style.layout(root, TestViewport(640, 480, dpi=144))
+        root.style.layout(root, ExampleViewport(640, 480, dpi=144))
         self.assertLayout(
             root,
             (810, 450),
@@ -1141,17 +1046,17 @@ class PackLayoutTests(TestCase):
         )
 
     def test_row_alignment_no_padding(self):
-        root = TestNode(
+        root = ExampleNode(
             "root",
             style=Pack(direction=ROW, alignment=CENTER, width=300),
             children=[
-                TestNode("space_filler", style=Pack(width=100, height=540)),
-                TestNode("widget", style=Pack(height=440)),
+                ExampleNode("space_filler", style=Pack(width=100, height=540)),
+                ExampleNode("widget", style=Pack(height=440)),
             ],
         )
 
         # Minimum size
-        root.style.layout(root, TestViewport(0, 0, dpi=96))
+        root.style.layout(root, ExampleViewport(0, 0, dpi=96))
         self.assertLayout(
             root,
             (300, 540),
@@ -1166,7 +1071,7 @@ class PackLayoutTests(TestCase):
         )
 
         # Normal size
-        root.style.layout(root, TestViewport(640, 480, dpi=96))
+        root.style.layout(root, ExampleViewport(640, 480, dpi=96))
         self.assertLayout(
             root,
             (300, 540),
@@ -1181,7 +1086,7 @@ class PackLayoutTests(TestCase):
         )
 
         # HiDPI Normal size
-        root.style.layout(root, TestViewport(640, 480, dpi=144))
+        root.style.layout(root, ExampleViewport(640, 480, dpi=144))
         self.assertLayout(
             root,
             (450, 810),
@@ -1196,17 +1101,17 @@ class PackLayoutTests(TestCase):
         )
 
     def test_column_alignment_no_padding(self):
-        root = TestNode(
+        root = ExampleNode(
             "root",
             style=Pack(direction=COLUMN, alignment=CENTER, height=300),
             children=[
-                TestNode("space_filler", style=Pack(width=540, height=100)),
-                TestNode("widget", style=Pack(width=440)),
+                ExampleNode("space_filler", style=Pack(width=540, height=100)),
+                ExampleNode("widget", style=Pack(width=440)),
             ],
         )
 
         # Minimum size
-        root.style.layout(root, TestViewport(0, 0, dpi=96))
+        root.style.layout(root, ExampleViewport(0, 0, dpi=96))
         self.assertLayout(
             root,
             (540, 300),
@@ -1221,7 +1126,7 @@ class PackLayoutTests(TestCase):
         )
 
         # Normal size
-        root.style.layout(root, TestViewport(640, 480, dpi=96))
+        root.style.layout(root, ExampleViewport(640, 480, dpi=96))
         self.assertLayout(
             root,
             (640, 300),
@@ -1236,7 +1141,7 @@ class PackLayoutTests(TestCase):
         )
 
         # HiDPI Normal size
-        root.style.layout(root, TestViewport(640, 480, dpi=144))
+        root.style.layout(root, ExampleViewport(640, 480, dpi=144))
         self.assertLayout(
             root,
             (810, 450),
@@ -1251,22 +1156,22 @@ class PackLayoutTests(TestCase):
         )
 
     def test_row_alignment_row_box(self):
-        root = TestNode(
+        root = ExampleNode(
             "root",
             style=Pack(direction=ROW, alignment=CENTER),
             children=[
-                TestNode("space_filler", style=Pack(width=100, height=430)),
-                TestNode(
+                ExampleNode("space_filler", style=Pack(width=100, height=430)),
+                ExampleNode(
                     "container",
                     style=Pack(direction=ROW, padding_top=110, padding_bottom=120),
                     children=[
-                        TestNode(
+                        ExampleNode(
                             "widget_a",
                             style=Pack(
                                 width=30, height=100, padding_left=32, padding_right=34
                             ),
                         ),
-                        TestNode(
+                        ExampleNode(
                             "widget_b",
                             style=Pack(
                                 width=36, height=100, padding_left=38, padding_right=40
@@ -1278,7 +1183,7 @@ class PackLayoutTests(TestCase):
         )
 
         # Minimum size
-        root.style.layout(root, TestViewport(0, 0, dpi=96))
+        root.style.layout(root, ExampleViewport(0, 0, dpi=96))
         self.assertLayout(
             root,
             (310, 430),
@@ -1300,7 +1205,7 @@ class PackLayoutTests(TestCase):
         )
 
         # Normal size
-        root.style.layout(root, TestViewport(640, 480, dpi=96))
+        root.style.layout(root, ExampleViewport(640, 480, dpi=96))
         self.assertLayout(
             root,
             (640, 480),
@@ -1322,7 +1227,7 @@ class PackLayoutTests(TestCase):
         )
 
         # HiDPI Normal size
-        root.style.layout(root, TestViewport(640, 480, dpi=144))
+        root.style.layout(root, ExampleViewport(640, 480, dpi=144))
         self.assertLayout(
             root,
             (640, 645),
@@ -1344,22 +1249,22 @@ class PackLayoutTests(TestCase):
         )
 
     def test_column_alignment_column_box(self):
-        root = TestNode(
+        root = ExampleNode(
             "root",
             style=Pack(direction=COLUMN, alignment=CENTER),
             children=[
-                TestNode("space_filler", style=Pack(width=430, height=100)),
-                TestNode(
+                ExampleNode("space_filler", style=Pack(width=430, height=100)),
+                ExampleNode(
                     "container",
                     style=Pack(direction=COLUMN, padding_left=110, padding_right=120),
                     children=[
-                        TestNode(
+                        ExampleNode(
                             "widget_a",
                             style=Pack(
                                 width=100, height=30, padding_top=32, padding_bottom=34
                             ),
                         ),
-                        TestNode(
+                        ExampleNode(
                             "widget_b",
                             style=Pack(
                                 width=100, height=36, padding_top=38, padding_bottom=40
@@ -1371,7 +1276,7 @@ class PackLayoutTests(TestCase):
         )
 
         # Minimum size
-        root.style.layout(root, TestViewport(0, 0, dpi=96))
+        root.style.layout(root, ExampleViewport(0, 0, dpi=96))
         self.assertLayout(
             root,
             (430, 310),
@@ -1393,7 +1298,7 @@ class PackLayoutTests(TestCase):
         )
 
         # Normal size
-        root.style.layout(root, TestViewport(640, 480, dpi=96))
+        root.style.layout(root, ExampleViewport(640, 480, dpi=96))
         self.assertLayout(
             root,
             (640, 480),
@@ -1415,7 +1320,7 @@ class PackLayoutTests(TestCase):
         )
 
         # HiDPI Normal size
-        root.style.layout(root, TestViewport(640, 480, dpi=144))
+        root.style.layout(root, ExampleViewport(640, 480, dpi=144))
         self.assertLayout(
             root,
             (645, 480),
@@ -1437,15 +1342,15 @@ class PackLayoutTests(TestCase):
         )
 
     def test_rtl_row_box_child_layout(self):
-        root = TestNode(
+        root = ExampleNode(
             "container",
             style=Pack(text_direction=RTL, direction=ROW),
             children=[
-                TestNode(
+                ExampleNode(
                     "widget_a",
                     style=Pack(width=30, height=100, padding_left=32, padding_right=34),
                 ),
-                TestNode(
+                ExampleNode(
                     "widget_b",
                     style=Pack(width=36, height=100, padding_left=38, padding_right=40),
                 ),
@@ -1453,7 +1358,7 @@ class PackLayoutTests(TestCase):
         )
 
         # Minimum size
-        root.style.layout(root, TestViewport(0, 0, dpi=96))
+        root.style.layout(root, ExampleViewport(0, 0, dpi=96))
         self.assertLayout(
             root,
             (210, 100),
@@ -1468,7 +1373,7 @@ class PackLayoutTests(TestCase):
         )
 
         # Normal size
-        root.style.layout(root, TestViewport(640, 480, dpi=96))
+        root.style.layout(root, ExampleViewport(640, 480, dpi=96))
         self.assertLayout(
             root,
             (640, 480),
@@ -1483,7 +1388,7 @@ class PackLayoutTests(TestCase):
         )
 
         # HiDPI Normal size
-        root.style.layout(root, TestViewport(640, 480, dpi=144))
+        root.style.layout(root, ExampleViewport(640, 480, dpi=144))
         self.assertLayout(
             root,
             (640, 480),
@@ -1498,15 +1403,15 @@ class PackLayoutTests(TestCase):
         )
 
     def test_rtl_column_box_child_layout(self):
-        root = TestNode(
+        root = ExampleNode(
             "container",
             style=Pack(text_direction=RTL, direction=COLUMN),
             children=[
-                TestNode(
+                ExampleNode(
                     "widget_a",
                     style=Pack(width=100, height=30, padding_top=32, padding_bottom=34),
                 ),
-                TestNode(
+                ExampleNode(
                     "widget_b",
                     style=Pack(width=100, height=36, padding_top=38, padding_bottom=40),
                 ),
@@ -1514,7 +1419,7 @@ class PackLayoutTests(TestCase):
         )
 
         # Minimum size
-        root.style.layout(root, TestViewport(0, 0, dpi=96))
+        root.style.layout(root, ExampleViewport(0, 0, dpi=96))
         self.assertLayout(
             root,
             (100, 210),
@@ -1529,7 +1434,7 @@ class PackLayoutTests(TestCase):
         )
 
         # Normal size
-        root.style.layout(root, TestViewport(640, 480, dpi=96))
+        root.style.layout(root, ExampleViewport(640, 480, dpi=96))
         self.assertLayout(
             root,
             (640, 480),
@@ -1544,7 +1449,7 @@ class PackLayoutTests(TestCase):
         )
 
         # HiDPI Normal size
-        root.style.layout(root, TestViewport(640, 480, dpi=144))
+        root.style.layout(root, ExampleViewport(640, 480, dpi=144))
         self.assertLayout(
             root,
             (640, 480),
@@ -1559,17 +1464,17 @@ class PackLayoutTests(TestCase):
         )
 
     def test_rtl_alignment_top(self):
-        root = TestNode(
+        root = ExampleNode(
             "root",
             style=Pack(text_direction=RTL, direction=ROW, alignment=TOP),
             children=[
-                TestNode("space_filler", style=Pack(width=30, height=100)),
-                TestNode("widget", style=Pack(width=30, height=30)),
+                ExampleNode("space_filler", style=Pack(width=30, height=100)),
+                ExampleNode("widget", style=Pack(width=30, height=30)),
             ],
         )
 
         # Minimum size
-        root.style.layout(root, TestViewport(0, 0, dpi=96))
+        root.style.layout(root, ExampleViewport(0, 0, dpi=96))
         self.assertLayout(
             root,
             (60, 100),
@@ -1584,7 +1489,7 @@ class PackLayoutTests(TestCase):
         )
 
         # Normal size
-        root.style.layout(root, TestViewport(640, 480, dpi=96))
+        root.style.layout(root, ExampleViewport(640, 480, dpi=96))
         self.assertLayout(
             root,
             (640, 480),
@@ -1599,7 +1504,7 @@ class PackLayoutTests(TestCase):
         )
 
         # HiDPI Normal size
-        root.style.layout(root, TestViewport(640, 480, dpi=144))
+        root.style.layout(root, ExampleViewport(640, 480, dpi=144))
         self.assertLayout(
             root,
             (640, 480),
@@ -1614,17 +1519,17 @@ class PackLayoutTests(TestCase):
         )
 
     def test_rtl_alignment_bottom(self):
-        root = TestNode(
+        root = ExampleNode(
             "root",
             style=Pack(text_direction=RTL, direction=ROW, alignment=BOTTOM),
             children=[
-                TestNode("space_filler", style=Pack(width=30, height=100)),
-                TestNode("widget", style=Pack(width=30, height=30)),
+                ExampleNode("space_filler", style=Pack(width=30, height=100)),
+                ExampleNode("widget", style=Pack(width=30, height=30)),
             ],
         )
 
         # Minimum size
-        root.style.layout(root, TestViewport(0, 0, dpi=96))
+        root.style.layout(root, ExampleViewport(0, 0, dpi=96))
         self.assertLayout(
             root,
             (60, 100),
@@ -1639,7 +1544,7 @@ class PackLayoutTests(TestCase):
         )
 
         # Normal size
-        root.style.layout(root, TestViewport(640, 480, dpi=96))
+        root.style.layout(root, ExampleViewport(640, 480, dpi=96))
         self.assertLayout(
             root,
             (640, 480),
@@ -1654,7 +1559,7 @@ class PackLayoutTests(TestCase):
         )
 
         # HiDPI Normal size
-        root.style.layout(root, TestViewport(640, 480, dpi=144))
+        root.style.layout(root, ExampleViewport(640, 480, dpi=144))
         self.assertLayout(
             root,
             (640, 480),
@@ -1669,17 +1574,17 @@ class PackLayoutTests(TestCase):
         )
 
     def test_rtl_alignment_left(self):
-        root = TestNode(
+        root = ExampleNode(
             "root",
             style=Pack(text_direction=RTL, direction=COLUMN, alignment=LEFT),
             children=[
-                TestNode("space_filler", style=Pack(width=100, height=30)),
-                TestNode("widget", style=Pack(width=30, height=30)),
+                ExampleNode("space_filler", style=Pack(width=100, height=30)),
+                ExampleNode("widget", style=Pack(width=30, height=30)),
             ],
         )
 
         # Minimum size
-        root.style.layout(root, TestViewport(0, 0, dpi=96))
+        root.style.layout(root, ExampleViewport(0, 0, dpi=96))
         self.assertLayout(
             root,
             (100, 60),
@@ -1694,7 +1599,7 @@ class PackLayoutTests(TestCase):
         )
 
         # Normal size
-        root.style.layout(root, TestViewport(640, 480, dpi=96))
+        root.style.layout(root, ExampleViewport(640, 480, dpi=96))
         self.assertLayout(
             root,
             (640, 480),
@@ -1709,7 +1614,7 @@ class PackLayoutTests(TestCase):
         )
 
         # HiDPI Normal size
-        root.style.layout(root, TestViewport(640, 480, dpi=144))
+        root.style.layout(root, ExampleViewport(640, 480, dpi=144))
         self.assertLayout(
             root,
             (640, 480),
@@ -1724,17 +1629,17 @@ class PackLayoutTests(TestCase):
         )
 
     def test_rtl_alignment_right(self):
-        root = TestNode(
+        root = ExampleNode(
             "root",
             style=Pack(text_direction=RTL, direction=COLUMN, alignment=RIGHT),
             children=[
-                TestNode("space_filler", style=Pack(width=100, height=30)),
-                TestNode("widget", style=Pack(width=30, height=30)),
+                ExampleNode("space_filler", style=Pack(width=100, height=30)),
+                ExampleNode("widget", style=Pack(width=30, height=30)),
             ],
         )
 
         # Minimum size
-        root.style.layout(root, TestViewport(0, 0, dpi=96))
+        root.style.layout(root, ExampleViewport(0, 0, dpi=96))
         self.assertLayout(
             root,
             (100, 60),
@@ -1749,7 +1654,7 @@ class PackLayoutTests(TestCase):
         )
 
         # Normal size
-        root.style.layout(root, TestViewport(640, 480, dpi=96))
+        root.style.layout(root, ExampleViewport(640, 480, dpi=96))
         self.assertLayout(
             root,
             (640, 480),
@@ -1764,7 +1669,7 @@ class PackLayoutTests(TestCase):
         )
 
         # HiDPI Normal size
-        root.style.layout(root, TestViewport(640, 480, dpi=144))
+        root.style.layout(root, ExampleViewport(640, 480, dpi=144))
         self.assertLayout(
             root,
             (640, 480),
@@ -1779,21 +1684,21 @@ class PackLayoutTests(TestCase):
         )
 
     def test_fixed_size(self):
-        root = TestNode(
+        root = ExampleNode(
             "app",
             style=Pack(),
             children=[
-                TestNode(
+                ExampleNode(
                     "first",
                     style=Pack(width=100, height=100),
                     size=(at_least(0), at_least(0)),
                 ),
-                TestNode(
+                ExampleNode(
                     "second",
                     style=Pack(width=100, height=100),
                     size=(at_least(50), at_least(50)),
                     children=[
-                        TestNode(
+                        ExampleNode(
                             "child",
                             style=Pack(width=50, height=50),
                             size=(at_least(0), at_least(0)),
@@ -1804,7 +1709,7 @@ class PackLayoutTests(TestCase):
         )
 
         # Minimum size
-        root.style.layout(root, TestViewport(0, 0, dpi=96))
+        root.style.layout(root, ExampleViewport(0, 0, dpi=96))
         self.assertLayout(
             root,
             (200, 100),
@@ -1825,7 +1730,7 @@ class PackLayoutTests(TestCase):
         )
 
         # Normal size
-        root.style.layout(root, TestViewport(640, 480, dpi=96))
+        root.style.layout(root, ExampleViewport(640, 480, dpi=96))
         self.assertLayout(
             root,
             (640, 480),
@@ -1846,7 +1751,7 @@ class PackLayoutTests(TestCase):
         )
 
         # HiDPI Normal size
-        root.style.layout(root, TestViewport(640, 480, dpi=144))
+        root.style.layout(root, ExampleViewport(640, 480, dpi=144))
         self.assertLayout(
             root,
             (640, 480),
