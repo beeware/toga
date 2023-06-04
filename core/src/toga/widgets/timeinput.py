@@ -25,14 +25,13 @@ class TimeInput(Widget):
         :param id: The ID for the widget.
         :param style: A style object. If no style is provided, a default style
             will be applied to the widget.
-        :param value: The initial time to display. Optional; if not specified,
-            today's time will be used.
-        :param min_time: Optional; if provided, the earliest time (inclusive)
-            that can be selected.
-        :param max_time: Optional; if provided, the latest time (inclusive)
-            that can be selected.
-        :param on_change: A handler that will be invoked when the switch changes
-            value.
+        :param value: The initial time to display. If not specified, the current time
+            will be used.
+        :param min_time: The earliest time (inclusive) that can be selected, or ``None``
+            if there is no limit.
+        :param max_time: The latest time (inclusive) that can be selected, or ``None``
+            if there is no limit.
+        :param on_change: A handler that will be invoked when the value changes.
         """
         super().__init__(id=id, style=style)
 
@@ -52,11 +51,6 @@ class TimeInput(Widget):
 
         A value of ``None`` will be converted into the current time, rounding
         to the nearest minute.
-
-        If a ``datetime`` object is provided, the time portion will be extracted.
-
-        If a string is provided, it will be parsed as an ISO8601 format time
-        string. (i.e., "06:12")
         """
         return self._impl.get_value()
 
@@ -85,15 +79,9 @@ class TimeInput(Widget):
 
     @property
     def min_time(self) -> datetime.time | None:
-        """The minimum allowable time (inclusive) for the widget.
+        """The minimum allowable time (inclusive), or ``None`` if there is no limit.
 
-        If provided, times earlier than the provided time will not be available
-        for selection. Any existing time value will be clipped to the new
-        minimum.
-
-        The value provided for the minimum time will be interpreted using the
-        same rules as ``value``, with a value of ``None`` removing any minimum
-        bound on time selection.
+        Any existing time value will be clipped to the new minimum.
 
         If a new minimum time falls after the currently specified maximum time,
         a ``ValueError`` is raised.
@@ -116,17 +104,11 @@ class TimeInput(Widget):
 
     @property
     def max_time(self) -> datetime.time | None:
-        """The maximum allowable time (inclusive) for the widget.
+        """The maximum allowable time (inclusive), or ``None`` if there is no limit.
 
-        If provided, times after than the provided time will not be available
-        for selection. Any existing time value will be clipped to the new
-        maximum.
+        Any existing time value will be clipped to the new maximum.
 
-        The value provided for the maximum time will be interpreted using the
-        same rules as ``value``, with a value of ``None`` removing any maximum
-        bound on time selection.
-
-        If a new maximum time falls after the currently specified minimum time,
+        If a new maximum time falls before the currently specified minimum time,
         a ``ValueError`` is raised.
         """
         return self._impl.get_max_time()

@@ -27,14 +27,13 @@ class DateInput(Widget):
         :param id: The ID for the widget.
         :param style: A style object. If no style is provided, a default style
             will be applied to the widget.
-        :param value: The initial date to display. Optional; if not specified,
-            today's date will be used.
-        :param min_date: Optional; if provided, the earliest date (inclusive)
-            that can be selected.
-        :param max_date: Optional; if provided, the latest date (inclusive)
-            that can be selected.
-        :param on_change: A handler that will be invoked when the switch changes
-            value.
+        :param value: The initial date to display. If not specified, the current date
+            will be used.
+        :param min_date: The earliest date (inclusive) that can be selected, or ``None``
+            if there is no limit.
+        :param max_date: The latest date (inclusive) that can be selected, or ``None``
+            if there is no limit.
+        :param on_change: A handler that will be invoked when the value changes.
         """
         super().__init__(id=id, style=style)
 
@@ -53,11 +52,6 @@ class DateInput(Widget):
         """The currently selected date.
 
         A value of ``None`` will be converted into today's date.
-
-        If a ``datetime`` object is provided, the date portion will be extracted.
-
-        If a string is provided, it will be parsed as an ISO8601 format date
-        string. (i.e., "2023-12-25")
         """
         return self._impl.get_value()
 
@@ -86,15 +80,9 @@ class DateInput(Widget):
 
     @property
     def min_date(self) -> datetime.date | None:
-        """The minimum allowable date (inclusive) for the widget.
+        """The minimum allowable date (inclusive), or ``None`` if there is no limit.
 
-        If provided, dates earlier than the provided date will not be available
-        for selection. Any existing date value will be clipped to the new
-        minimum.
-
-        The value provided for the minimum date will be interpreted using the
-        same rules as ``value``, with a value of ``None`` removing any minimum
-        bound on date selection.
+        Any existing date value will be clipped to the new minimum.
 
         If a new minimum date falls after the currently specified maximum date,
         a ``ValueError`` is raised.
@@ -117,17 +105,11 @@ class DateInput(Widget):
 
     @property
     def max_date(self) -> datetime.date | None:
-        """The maximum allowable date (inclusive) for the widget.
+        """The maximum allowable date (inclusive), or ``None`` if there is no limit.
 
-        If provided, dates after than the provided date will not be available
-        for selection. Any existing date value will be clipped to the new
-        maximum.
+        Any existing date value will be clipped to the new maximum.
 
-        The value provided for the maximum date will be interpreted using the
-        same rules as ``value``, with a value of ``None`` removing any maximum
-        bound on date selection.
-
-        If a new maximum date falls after the currently specified minimum date,
+        If a new maximum date falls before the currently specified minimum date,
         a ``ValueError`` is raised.
         """
         return self._impl.get_max_date()

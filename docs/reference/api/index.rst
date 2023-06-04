@@ -46,7 +46,7 @@ General widgets
                                                                          False (off, unchecked). The button has a text label.
  :doc:`Table </reference/api/widgets/table>`                             Table of data
  :doc:`TextInput </reference/api/widgets/textinput>`                     A widget for the display and editing of a single line of text.
- :doc:`TimeInput </reference/api/widgets/timeinput>`                     A widget to select a clock time.
+ :doc:`TimeInput </reference/api/widgets/timeinput>`                     A widget to select a clock time
  :doc:`Tree </reference/api/widgets/tree>`                               Tree of data
  :doc:`WebView </reference/api/widgets/webview>`                         A panel for displaying HTML
  :doc:`Widget </reference/api/widgets/widget>`                           The abstract base class of all widgets. This class should not be be

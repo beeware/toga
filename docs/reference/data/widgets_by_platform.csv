@@ -5,7 +5,7 @@ MainWindow,Core Component,:class:`~toga.app.MainWindow`,Main window of the appli
 ActivityIndicator,General Widget,:class:`~toga.widgets.activityindicator.ActivityIndicator`,A spinning activity animation,|y|,|y|,,,,
 Button,General Widget,:class:`~toga.widgets.button.Button`,Basic clickable Button,|y|,|y|,|y|,|y|,|y|,|b|
 Canvas,General Widget,:class:`~toga.widgets.canvas.Canvas`,Area you can draw on,|b|,|b|,|b|,|b|,,
-DateInput,General Widget,:class:`~toga.widgets.dateinput.DateInput`,An input for dates,,,|b|,,|b|,
+DateInput,General Widget,:class:`~toga.widgets.dateinput.DateInput`,A widget to select a calendar date,,,|y|,,|y|,
 DetailedList,General Widget,:class:`~toga.widgets.detailedlist.DetailedList`,A list of complex content,|b|,|b|,,|b|,|b|,
 Divider,General Widget,:class:`~toga.widgets.divider.Divider`,A horizontal or vertical line,|y|,|y|,|y|,,,
 ImageView,General Widget,:class:`~toga.widgets.imageview.ImageView`,Image Viewer,|b|,|b|,|b|,|b|,|b|,
@@ -19,7 +19,7 @@ Slider,General Widget,:class:`~toga.widgets.slider.Slider`,Slider,|y|,|y|,|y|,|y
 Switch,General Widget,:class:`~toga.widgets.switch.Switch`,Switch,|y|,|y|,|y|,|y|,|y|,|b|
 Table,General Widget,:class:`~toga.widgets.table.Table`,Table of data,|b|,|b|,|b|,,|b|,
 TextInput,General Widget,:class:`~toga.widgets.textinput.TextInput`,A widget for the display and editing of a single line of text.,|y|,|y|,|y|,|y|,|y|,|b|
-TimeInput,General Widget,:class:`~toga.widgets.timepicker.TimeInput`,A widget to select a clock time.,,,|b|,,|b|,
+TimeInput,General Widget,:class:`~toga.widgets.timepicker.TimeInput`,A widget to select a clock time,,,|y|,,|y|,
 Tree,General Widget,:class:`~toga.widgets.tree.Tree`,Tree of data,|b|,|b|,|b|,,,
 WebView,General Widget,:class:`~toga.widgets.webview.WebView`,A panel for displaying HTML,|b|,|b|,|b|,|b|,|b|,
 Widget,General Widget,:class:`~toga.widgets.base.Widget`,The base widget,|y|,|y|,|y|,|y|,|y|,|b|

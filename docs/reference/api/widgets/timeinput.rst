@@ -3,9 +3,9 @@ TimeInput
 
 A widget to select a clock time.
 
-.. .. figure:: /reference/images/TimeInput.jpeg
-..     :align: center
-..     :width: 300
+.. figure:: /reference/images/TimeInput.png
+    :align: center
+    :width: 160
 
 .. rst-class:: widget-support
 .. csv-filter:: Availability (:ref:`Key <api-status-key>`)
@@ -22,6 +22,14 @@ Usage
     import toga
 
     current_time = toga.TimeInput()
+
+Notes
+-----
+
+* Properties that return :any:`datetime.time` objects can also accept:
+
+  * :any:`datetime.datetime`: The time portion will be extracted.
+  * :any:`str`: Will be parsed as an ISO8601 format time string (e.g., "06:12").
 
 Reference
 ---------
