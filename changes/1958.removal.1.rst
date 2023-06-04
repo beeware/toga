@@ -1,0 +1,1 @@
+A row box contained inside a row box will now expand to the full height of its parent, rather than collapsing to the maximum height of the inner box's child content.
