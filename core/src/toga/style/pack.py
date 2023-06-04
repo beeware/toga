@@ -133,9 +133,9 @@ class Pack(BaseStyle):
 
         self._layout_node(
             node,
-            viewport.width,
-            viewport.height,
-            scale,
+            alloc_width=viewport.width,
+            alloc_height=viewport.height,
+            scale=scale,
             use_all_height=True,  # root node uses all height
             use_all_width=True,  # root node uses all width
         )
@@ -151,8 +151,8 @@ class Pack(BaseStyle):
         alloc_width,
         alloc_height,
         scale,
-        use_all_width=False,
-        use_all_height=False,
+        use_all_width,
+        use_all_height,
     ):
         self.__class__._depth += 1
         # self._debug(
@@ -184,7 +184,7 @@ class Pack(BaseStyle):
 
                 # self._debug(f"ADJUSTED AVAILABLE WIDTH {available_width}")
             else:
-                # self._debug(f"USE ALL WIDTH {available_width=}")
+                # self._debug(f"AUTO WIDTH {available_width=}")
                 pass
 
         # Establish available height
@@ -208,25 +208,25 @@ class Pack(BaseStyle):
 
                 # self._debug(f"ADJUSTED AVAILABLE HEIGHT {available_height}")
             else:
-                # self._debug("USE ALL HEIGHT {available_height=})
+                # self._debug("AUTO HEIGHT {available_height=})
                 pass
 
         if node.children:
             if self.direction == COLUMN:
                 width, height = self._layout_column_children(
                     node,
-                    available_width,
-                    available_height,
-                    scale,
+                    available_width=available_width,
+                    available_height=available_height,
+                    scale=scale,
                     use_all_height=use_all_height,
                     use_all_width=use_all_width,
                 )
             else:
                 width, height = self._layout_row_children(
                     node,
-                    available_width,
-                    available_height,
-                    scale,
+                    available_width=available_width,
+                    available_height=available_height,
+                    scale=scale,
                     use_all_height=use_all_height,
                     use_all_width=use_all_width,
                 )
@@ -271,9 +271,9 @@ class Pack(BaseStyle):
                 # self._debug(f"PASS 1 fixed width {child.style.width}")
                 child.style._layout_node(
                     child,
-                    remaining_width,
-                    available_height,
-                    scale,
+                    alloc_width=remaining_width,
+                    alloc_height=available_height,
+                    scale=scale,
                     use_all_width=False,
                     use_all_height=child.style.direction == ROW,
                 )
@@ -293,9 +293,9 @@ class Pack(BaseStyle):
                         # self._debug(f"PASS 1 intrinsic non-flex width {child.intrinsic.width}")
                         child.style._layout_node(
                             child,
-                            0,
-                            available_height,
-                            scale,
+                            alloc_width=0,
+                            alloc_height=available_height,
+                            scale=scale,
                             use_all_width=False,
                             use_all_height=child.style.direction == ROW,
                         )
@@ -310,9 +310,9 @@ class Pack(BaseStyle):
                     # self._debug("PASS 1 intrinsic width {child.intrinsic.width}")
                     child.style._layout_node(
                         child,
-                        remaining_width,
-                        available_height,
-                        scale,
+                        alloc_width=remaining_width,
+                        alloc_height=available_height,
+                        scale=scale,
                         use_all_width=False,
                         use_all_height=child.style.direction == ROW,
                     )
@@ -331,9 +331,9 @@ class Pack(BaseStyle):
                     # self._debug("PASS 1 unspecified non-flex width")
                     child.style._layout_node(
                         child,
-                        remaining_width,
-                        available_height,
-                        scale,
+                        alloc_width=remaining_width,
+                        alloc_height=available_height,
+                        scale=scale,
                         use_all_width=False,
                         use_all_height=child.style.direction == ROW,
                     )
@@ -345,7 +345,7 @@ class Pack(BaseStyle):
                     width += child_width
                     remaining_width -= child_width
 
-        if full_flex > 0 and remaining_width is not None:
+        if full_flex > 0 and remaining_width > 0:
             quantum = remaining_width / full_flex
         else:
             quantum = 0
@@ -367,9 +367,9 @@ class Pack(BaseStyle):
 
                         child.style._layout_node(
                             child,
-                            child_alloc_width,
-                            available_height,
-                            scale,
+                            alloc_width=child_alloc_width,
+                            alloc_height=available_height,
+                            scale=scale,
                             use_all_width=True,
                             use_all_height=child.style.direction == ROW,
                         )
@@ -392,9 +392,9 @@ class Pack(BaseStyle):
                     remaining_width -= child_width
                     child.style._layout_node(
                         child,
-                        child_width,
-                        available_height,
-                        scale,
+                        alloc_width=child_width,
+                        alloc_height=available_height,
+                        scale=scale,
                         use_all_width=True,
                         use_all_height=child.style.direction == ROW,
                     )
@@ -485,9 +485,9 @@ class Pack(BaseStyle):
                 # self._debug(f"PASS 1 fixed height {child.style.height}")
                 child.style._layout_node(
                     child,
-                    available_width,
-                    remaining_height,
-                    scale,
+                    alloc_width=available_width,
+                    alloc_height=remaining_height,
+                    scale=scale,
                     use_all_width=child.style.direction == COLUMN,
                     use_all_height=False,
                 )
@@ -505,7 +505,14 @@ class Pack(BaseStyle):
                         full_flex += child.style.flex
                     else:
                         # self._debug(f"PASS 1 intrinsic non-flex height {child.intrinsic.height}")
-                        child.style._layout_node(child, available_width, 0, scale)
+                        child.style._layout_node(
+                            child,
+                            alloc_width=available_width,
+                            alloc_height=0,
+                            scale=scale,
+                            use_all_width=child.style.direction == COLUMN,
+                            use_all_height=False,
+                        )
                         child_height = (
                             scale(child.style.padding_top)
                             + child.layout.content_height
@@ -517,9 +524,9 @@ class Pack(BaseStyle):
                     # self._debug(f"PASS 1 intrinsic height {child.intrinsic.height})
                     child.style._layout_node(
                         child,
-                        available_width,
-                        remaining_height,
-                        scale,
+                        alloc_width=available_width,
+                        alloc_height=remaining_height,
+                        scale=scale,
                         use_all_width=child.style.direction == COLUMN,
                         use_all_height=False,
                     )
@@ -538,9 +545,9 @@ class Pack(BaseStyle):
                     # self._debug("PASS 1 unspecified non-flex height")
                     child.style._layout_node(
                         child,
-                        available_width,
-                        remaining_height,
-                        scale,
+                        alloc_width=available_width,
+                        alloc_height=remaining_height,
+                        scale=scale,
                         use_all_width=child.style.direction == COLUMN,
                         use_all_height=False,
                     )
@@ -552,7 +559,7 @@ class Pack(BaseStyle):
                     height += child_height
                     remaining_height -= child_height
 
-        if full_flex > 0 and remaining_height is not None:
+        if full_flex > 0 and remaining_height > 0:
             quantum = remaining_height / full_flex
         else:
             quantum = 0
@@ -574,9 +581,9 @@ class Pack(BaseStyle):
 
                         child.style._layout_node(
                             child,
-                            available_width,
-                            child_alloc_height,
-                            scale,
+                            alloc_width=available_width,
+                            alloc_height=child_alloc_height,
+                            scale=scale,
                             use_all_width=child.style.direction == COLUMN,
                             use_all_height=True,
                         )
@@ -599,9 +606,9 @@ class Pack(BaseStyle):
                     remaining_height -= child_height
                     child.style._layout_node(
                         child,
-                        available_width,
-                        child_height,
-                        scale,
+                        alloc_width=available_width,
+                        alloc_height=child_height,
+                        scale=scale,
                         use_all_width=child.style.direction == COLUMN,
                         use_all_height=True,
                     )
