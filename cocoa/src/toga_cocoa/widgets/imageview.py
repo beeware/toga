@@ -1,6 +1,6 @@
 from travertino.size import at_least
 
-from toga.style.pack import COLUMN
+from toga.style.pack import COLUMN, NONE
 from toga_cocoa.libs import (
     NSImageAlignment,
     NSImageFrameNone,
@@ -34,18 +34,18 @@ class ImageView(Widget):
         image = self.native.image
         if image:
             style = self.interface.style
-            if style.width and style.height:
+            if style.width != NONE and style.height != NONE:
                 # Explicit width and height for image. Scale the rendered image
                 # to fit the explicitly provided size.
                 width = style.width
                 height = style.height
                 self.native.imageScaling = NSImageScaleAxesIndependently
-            elif style.width:
+            elif style.width != NONE:
                 # Explicit width, implicit height. Preserve aspect ratio.
                 width = style.width
                 height = style.width * image.size.height // image.size.width
                 self.native.imageScaling = NSImageScaleProportionallyUpOrDown
-            elif style.height:
+            elif style.height != NONE:
                 # Explicit height, implicit width. Preserve aspect ratio.
                 width = style.height * image.size.width // image.size.height
                 height = style.height
