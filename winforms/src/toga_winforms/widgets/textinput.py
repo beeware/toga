@@ -10,8 +10,6 @@ from .base import Widget
 
 
 class TextInput(Widget):
-    # Attempting to set a background color with any alpha value other than 1 raises
-    # "System.ArgumentException: Control does not support transparent background colors"
     _background_supports_alpha = False
 
     def create(self):

@@ -93,7 +93,7 @@ class MultilineTextInputProbe(SimpleProbe):
 
     def assert_vertical_alignment(self, expected):
         # GTK.TextView vertical alignment is non-configurable
-        return None
+        pass
 
     @property
     def readonly(self):

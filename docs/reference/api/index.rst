@@ -33,7 +33,7 @@ General widgets
  :doc:`Label </reference/api/widgets/label>`                             A text label for annotating forms or interfaces.
  :doc:`MultilineTextInput </reference/api/widgets/multilinetextinput>`   A scrollable panel that allows for the display and editing of multiple
                                                                          lines of text.
- :doc:`NumberInput </reference/api/widgets/numberinput>`                 Number Input field
+ :doc:`NumberInput </reference/api/widgets/numberinput>`                 A text input that is limited to numeric input.
  :doc:`PasswordInput </reference/api/widgets/passwordinput>`             A widget to allow the entry of a password. Any value typed by the
                                                                          user will be obscured, allowing the user to see the number of
                                                                          characters they have typed, but not the actual characters.
