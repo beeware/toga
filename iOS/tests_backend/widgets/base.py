@@ -140,6 +140,9 @@ class SimpleProbe:
     def type_return(self):
         self.native.insertText("\n")
 
+    def _prevalidate_input(self, char):
+        return True
+
     async def type_character(self, char):
         if char == "<esc>":
             # There's no analog of esc on iOS
@@ -147,4 +150,10 @@ class SimpleProbe:
         elif char == "\n":
             self.type_return()
         else:
-            self.native.insertText(char)
+            # Perform any prevalidation that is required. If the input isn't
+            # valid, do a dummy "empty" insertion.
+            valid = self._prevalidate_input(char)
+            if valid:
+                self.native.insertText(char)
+            else:
+                self.native.insertText("")

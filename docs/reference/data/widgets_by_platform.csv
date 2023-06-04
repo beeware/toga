@@ -11,7 +11,7 @@ Divider,General Widget,:class:`~toga.widgets.divider.Divider`,A horizontal or ve
 ImageView,General Widget,:class:`~toga.widgets.imageview.ImageView`,A widget that displays an image,|b|,|b|,|b|,|b|,|b|,
 Label,General Widget,:class:`~toga.widgets.label.Label`,Text label,|y|,|y|,|y|,|y|,|y|,|b|
 MultilineTextInput,General Widget,:class:`~toga.widgets.multilinetextinput.MultilineTextInput`,Multi-line Text Input field,|y|,|y|,|y|,|y|,|y|,
-NumberInput,General Widget,:class:`~toga.widgets.numberinput.NumberInput`,Number Input field,|b|,|b|,|b|,|b|,|b|,
+NumberInput,General Widget,:class:`~toga.widgets.numberinput.NumberInput`,A text input that is limited to numeric input,|y|,|y|,|y|,|y|,|y|,
 PasswordInput,General Widget,:class:`~toga.widgets.passwordinput.PasswordInput`,A text input that hides its input,|y|,|y|,|y|,|y|,|y|,
 ProgressBar,General Widget,:class:`~toga.widgets.progressbar.ProgressBar`,Progress Bar,|y|,|y|,|y|,|y|,|y|,|b|
 Selection,General Widget,:class:`~toga.widgets.selection.Selection`,Selection,|b|,|b|,|b|,|b|,|b|,
