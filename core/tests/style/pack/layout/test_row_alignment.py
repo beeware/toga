@@ -387,13 +387,13 @@ def test_row_box():
             "origin": (0, 0),
             "content": (640, 480),
             "children": [
-                {"origin": (0, 0), "content": (100, 430)},
+                {"origin": (0, 25), "content": (100, 430)},
                 {
-                    "origin": (100, 160),
-                    "content": (210, 100),
+                    "origin": (100, 110),
+                    "content": (210, 250),
                     "children": [
-                        {"origin": (132, 160), "content": (30, 100)},
-                        {"origin": (234, 160), "content": (36, 100)},
+                        {"origin": (132, 110), "content": (30, 100)},
+                        {"origin": (234, 110), "content": (36, 100)},
                     ],
                 },
             ],

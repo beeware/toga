@@ -43,8 +43,8 @@ def test_row_box_child_layout():
             "origin": (0, 0),
             "content": (640, 480),
             "children": [
-                {"origin": (146, 0), "content": (30, 100)},
-                {"origin": (38, 0), "content": (36, 100)},
+                {"origin": (576, 0), "content": (30, 100)},
+                {"origin": (468, 0), "content": (36, 100)},
             ],
         },
     )
@@ -58,8 +58,8 @@ def test_row_box_child_layout():
             "origin": (0, 0),
             "content": (640, 480),
             "children": [
-                {"origin": (219, 0), "content": (45, 150)},
-                {"origin": (57, 0), "content": (54, 150)},
+                {"origin": (544, 0), "content": (45, 150)},
+                {"origin": (382, 0), "content": (54, 150)},
             ],
         },
     )
@@ -161,8 +161,8 @@ def test_alignment_top():
             "origin": (0, 0),
             "content": (640, 480),
             "children": [
-                {"origin": (30, 0), "content": (30, 100)},
-                {"origin": (0, 0), "content": (30, 30)},
+                {"origin": (610, 0), "content": (30, 100)},
+                {"origin": (580, 0), "content": (30, 30)},
             ],
         },
     )
@@ -176,8 +176,8 @@ def test_alignment_top():
             "origin": (0, 0),
             "content": (640, 480),
             "children": [
-                {"origin": (45, 0), "content": (45, 150)},
-                {"origin": (0, 0), "content": (45, 45)},
+                {"origin": (595, 0), "content": (45, 150)},
+                {"origin": (550, 0), "content": (45, 45)},
             ],
         },
     )
@@ -217,8 +217,8 @@ def test_alignment_bottom():
             "origin": (0, 0),
             "content": (640, 480),
             "children": [
-                {"origin": (30, 0), "content": (30, 100)},
-                {"origin": (0, 70), "content": (30, 30)},
+                {"origin": (610, 380), "content": (30, 100)},
+                {"origin": (580, 450), "content": (30, 30)},
             ],
         },
     )
@@ -232,8 +232,8 @@ def test_alignment_bottom():
             "origin": (0, 0),
             "content": (640, 480),
             "children": [
-                {"origin": (45, 0), "content": (45, 150)},
-                {"origin": (0, 105), "content": (45, 45)},
+                {"origin": (595, 330), "content": (45, 150)},
+                {"origin": (550, 435), "content": (45, 45)},
             ],
         },
     )
@@ -329,8 +329,8 @@ def test_alignment_right():
             "origin": (0, 0),
             "content": (640, 480),
             "children": [
-                {"origin": (0, 0), "content": (100, 30)},
-                {"origin": (70, 30), "content": (30, 30)},
+                {"origin": (540, 0), "content": (100, 30)},
+                {"origin": (610, 30), "content": (30, 30)},
             ],
         },
     )
@@ -344,8 +344,8 @@ def test_alignment_right():
             "origin": (0, 0),
             "content": (640, 480),
             "children": [
-                {"origin": (0, 0), "content": (150, 45)},
-                {"origin": (105, 45), "content": (45, 45)},
+                {"origin": (490, 0), "content": (150, 45)},
+                {"origin": (595, 45), "content": (45, 45)},
             ],
         },
     )

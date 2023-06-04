@@ -20,7 +20,41 @@ class ExampleNode(Node):
         self.refresh = Mock()
 
     def __repr__(self):
-        return f"<{self.name} at {id(self)}>"
+        return f"<{self.name}>"
+
+    def __html__(self, depth=0):
+        "Debugging helper - output the HTML interpretation of this layout"
+        if depth:
+            tag = "div"
+        else:
+            tag = "body"
+        lines = []
+
+        # Add an interpretation of intrinsic width
+        extra_style = [""]
+        if self.intrinsic.width:
+            try:
+                extra_style.append(f"min-width: {self.intrinsic.width.value}px;")
+            except AttributeError:
+                extra_style.append(f"min-width: {self.intrinsic.width}px;")
+        if self.intrinsic.height:
+            try:
+                extra_style.append(f"min-height: {self.intrinsic.height.value}px;")
+            except AttributeError:
+                extra_style.append(f"min-height: {self.intrinsic.height}px;")
+        extra_css = " ".join(extra_style)
+
+        lines.append(
+            "    " * (depth + 1)
+            + f'<{tag} id="{self.name}" style="{self.style.__css__()}{extra_css}">'
+        )
+        if self.children:
+            for child in self.children:
+                lines.append(child.__html__(depth=depth + 1))
+            lines.append("    " * (depth + 1) + f"</{tag}>")
+        else:
+            lines[-1] = lines[-1] + f"</{tag}>"
+        return "\n".join(lines)
 
     def refresh(self):
         # We're directly modifying styles and computing layouts for specific
@@ -42,13 +76,13 @@ def _assert_layout(node, expected_layout):
         node.layout.absolute_content_left,
         node.layout.absolute_content_top,
     ) == expected_layout["origin"], (
-        f"origin of {node} ({node.layout.absolute_content_left},{node.layout.absolute_content_top}) "
+        f"origin of {node} ({node.layout.absolute_content_left}, {node.layout.absolute_content_top}) "
         f"doesn't match expected {expected_layout['origin']}"
     )
     assert (node.layout.content_width, node.layout.content_height) == expected_layout[
         "content"
     ], (
-        f"content size of {node} ({node.layout.content_width},{node.layout.content_height}) "
+        f"content size of {node} ({node.layout.content_width}, {node.layout.content_height}) "
         f"doesn't match expected {expected_layout['content']}"
     )
 

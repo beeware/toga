@@ -5,8 +5,8 @@ from toga.style.pack import COLUMN, ROW, Pack
 from ..utils import ExampleNode, ExampleViewport, assert_layout
 
 
-def test_row():
-    "Children with fixed size in a row layout don't expand, even if their hints allow it"
+def test_row_expanding_intrinsic():
+    "Children in a row layout with fixed size don't expand, even if their hints allow it"
     root = ExampleNode(
         "app",
         style=Pack(direction=ROW),
@@ -121,8 +121,125 @@ def test_row():
     )
 
 
-def test_column():
-    "Children with fixed size in a column layout don't expand, even if their hints allow it"
+def test_row_fixed_intrinsic():
+    "Children in a row layout without an explicit size, but a fixed intrinsic width, don't expand"
+    root = ExampleNode(
+        "app",
+        style=Pack(direction=ROW),
+        children=[
+            ExampleNode(
+                "first",
+                style=Pack(),
+                size=(100, 100),
+            ),
+            ExampleNode(
+                "second",
+                style=Pack(direction=ROW),
+                children=[
+                    ExampleNode(
+                        "child",
+                        style=Pack(),
+                        size=(50, 50),
+                    ),
+                ],
+            ),
+            ExampleNode(  # Explictly 0 sized
+                "third",
+                style=Pack(),
+                size=(0, 0),
+            ),
+        ],
+    )
+
+    # Minimum size
+    root.style.layout(root, ExampleViewport(0, 0, dpi=96))
+    assert_layout(
+        root,
+        (150, 100),
+        {
+            "origin": (0, 0),
+            "content": (150, 100),
+            "children": [
+                {
+                    "origin": (0, 0),
+                    "content": (100, 100),
+                },
+                {
+                    "origin": (100, 0),
+                    "content": (50, 50),
+                    "children": [
+                        {"origin": (100, 0), "content": (50, 50)},
+                    ],
+                },
+                {
+                    "origin": (150, 0),
+                    "content": (0, 0),
+                },
+            ],
+        },
+    )
+
+    # Normal size
+    root.style.layout(root, ExampleViewport(640, 480, dpi=96))
+    assert_layout(
+        root,
+        (640, 480),
+        {
+            "origin": (0, 0),
+            "content": (640, 480),
+            "children": [
+                {
+                    "origin": (0, 0),
+                    "content": (100, 100),
+                },
+                {
+                    "origin": (100, 0),
+                    "content": (50, 480),
+                    "children": [
+                        {"origin": (100, 0), "content": (50, 50)},
+                    ],
+                },
+                {
+                    "origin": (150, 0),
+                    "content": (0, 0),
+                },
+            ],
+        },
+    )
+
+    # HiDPI Normal size
+    # All the sizes are coming from the intrinsic values, which
+    # are already in the viewport scale, so they're not adjusted
+    root.style.layout(root, ExampleViewport(640, 480, dpi=144))
+    assert_layout(
+        root,
+        (640, 480),
+        {
+            "origin": (0, 0),
+            "content": (640, 480),
+            "children": [
+                {
+                    "origin": (0, 0),
+                    "content": (100, 100),
+                },
+                {
+                    "origin": (100, 0),
+                    "content": (50, 480),
+                    "children": [
+                        {"origin": (100, 0), "content": (50, 50)},
+                    ],
+                },
+                {
+                    "origin": (150, 0),
+                    "content": (0, 0),
+                },
+            ],
+        },
+    )
+
+
+def test_column_expanding_intrinsic():
+    "Children in a column layout with fixed size don't expand, even if their hints allow it"
     root = ExampleNode(
         "app",
         style=Pack(direction=COLUMN),
@@ -224,6 +341,123 @@ def test_column():
                 },
                 {
                     "origin": (0, 300),
+                    "content": (0, 0),
+                },
+            ],
+        },
+    )
+
+
+def test_column_fixed_intrinsic():
+    "Children in a column layout without an explicit size, but a fixed intrinsic width, don't expand"
+    root = ExampleNode(
+        "app",
+        style=Pack(direction=COLUMN),
+        children=[
+            ExampleNode(
+                "first",
+                style=Pack(),
+                size=(100, 100),
+            ),
+            ExampleNode(
+                "second",
+                style=Pack(direction=COLUMN),
+                children=[
+                    ExampleNode(
+                        "child",
+                        style=Pack(),
+                        size=(50, 50),
+                    ),
+                ],
+            ),
+            ExampleNode(  # Explictly 0 sized
+                "third",
+                style=Pack(),
+                size=(0, 0),
+            ),
+        ],
+    )
+
+    # Minimum size
+    root.style.layout(root, ExampleViewport(0, 0, dpi=96))
+    assert_layout(
+        root,
+        (100, 150),
+        {
+            "origin": (0, 0),
+            "content": (100, 150),
+            "children": [
+                {
+                    "origin": (0, 0),
+                    "content": (100, 100),
+                },
+                {
+                    "origin": (0, 100),
+                    "content": (50, 50),
+                    "children": [
+                        {"origin": (0, 100), "content": (50, 50)},
+                    ],
+                },
+                {
+                    "origin": (0, 150),
+                    "content": (0, 0),
+                },
+            ],
+        },
+    )
+
+    # Normal size
+    root.style.layout(root, ExampleViewport(640, 480, dpi=96))
+    assert_layout(
+        root,
+        (640, 480),
+        {
+            "origin": (0, 0),
+            "content": (640, 480),
+            "children": [
+                {
+                    "origin": (0, 0),
+                    "content": (100, 100),
+                },
+                {
+                    "origin": (0, 100),
+                    "content": (640, 50),
+                    "children": [
+                        {"origin": (0, 100), "content": (50, 50)},
+                    ],
+                },
+                {
+                    "origin": (0, 150),
+                    "content": (0, 0),
+                },
+            ],
+        },
+    )
+
+    # HiDPI Normal size
+    # All the sizes are coming from the intrinsic values, which
+    # are already in the viewport scale, so they're not adjusted
+    root.style.layout(root, ExampleViewport(640, 480, dpi=144))
+    assert_layout(
+        root,
+        (640, 480),
+        {
+            "origin": (0, 0),
+            "content": (640, 480),
+            "children": [
+                {
+                    "origin": (0, 0),
+                    "content": (100, 100),
+                },
+                {
+                    "origin": (0, 100),
+                    "content": (640, 50),
+                    "children": [
+                        {"origin": (0, 100), "content": (50, 50)},
+                    ],
+                },
+                {
+                    "origin": (0, 150),
                     "content": (0, 0),
                 },
             ],
