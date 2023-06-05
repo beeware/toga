@@ -135,6 +135,7 @@ class SimpleProbe:
 
     @property
     def has_focus(self):
+        print(f"PROBE HAS FOCUS {self.native=} {self.native.isFirstResponder=}")
         return self.native.isFirstResponder
 
     def type_return(self):

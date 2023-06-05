@@ -10,6 +10,10 @@ class MultilineTextInputProbe(TextInputProbe):
 
     @property
     def value(self):
+        print(
+            f"PROBE VALUE {self.native=} {self.placeholder_visible=} "
+            f"{self.native.placeholder_label.text=} {self.native.text=}"
+        )
         return str(
             self.native.placeholder_label.text
             if self.placeholder_visible
