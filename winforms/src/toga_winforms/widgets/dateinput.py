@@ -6,53 +6,48 @@ from toga_winforms.libs import WinDateTime, WinForms
 
 from .base import Widget
 
+NO_MIN = WinForms.DateTimePicker.MinDateTime  # Year 1753
+NO_MAX = WinForms.DateTimePicker.MaxDateTime  # Year 9998
+
+
+def py_date(native_date):
+    return datetime.date(native_date.Year, native_date.Month, native_date.Day)
+
+
+def native_date(py_date):
+    return WinDateTime(py_date.year, py_date.month, py_date.day)
+
 
 class DateInput(Widget):
+    _background_supports_alpha = False
+
     def create(self):
         self.native = WinForms.DateTimePicker()
         self.native.ValueChanged += self.winforms_value_changed
 
     def get_value(self):
-        return datetime.date(
-            self.native.Value.Year, self.native.Value.Month, self.native.Value.Day
-        )
+        return py_date(self.native.Value)
 
     def set_value(self, value):
-        self.native.Value = WinDateTime(value.year, value.month, value.day)
+        self.native.Value = native_date(value)
 
     def get_min_date(self):
-        if self.native.MinDate == self.native.MinDateTime:
+        if self.native.MinDate == NO_MIN:
             return None
-        return datetime.date(
-            self.native.MinDate.Year, self.native.MinDate.Month, self.native.MinDate.Day
-        )
+        return py_date(self.native.MinDate)
 
     def set_min_date(self, value):
-        if value is None:
-            value = self.native.MinDateTime
-        else:
-            value = WinDateTime(value.year, value.month, value.day)
-
-        self.native.MinDate = value
+        self.native.MinDate = NO_MIN if value is None else native_date(value)
 
     def get_max_date(self):
-        if self.native.MaxDate == self.native.MaxDateTime:
+        if self.native.MaxDate == NO_MAX:
             return None
-        return datetime.date(
-            self.native.MaxDate.Year, self.native.MaxDate.Month, self.native.MaxDate.Day
-        )
+        return py_date(self.native.MaxDate)
 
     def set_max_date(self, value):
-        if value is None:
-            value = self.native.MaxDateTime
-        else:
-            value = WinDateTime(value.year, value.month, value.day)
-
-        self.native.MaxDate = value
+        self.native.MaxDate = NO_MAX if value is None else native_date(value)
 
     def rehint(self):
-        # Height of a date input is known and fixed.
-        # Width must be > 200
         self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
         self.interface.intrinsic.height = self.native.PreferredSize.Height
 

@@ -51,6 +51,9 @@ class DateInput(Widget):
     def value(self) -> datetime.date:
         """The currently selected date.
 
+        If this property is set to a value outside of the min/max range, it will be
+        clipped.
+
         A value of ``None`` will be converted into today's date.
         """
         return self._impl.get_value()

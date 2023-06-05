@@ -1,3 +1,5 @@
+from unittest.mock import Mock
+
 from pytest import fixture
 
 import toga
@@ -36,6 +38,23 @@ async def other(widget):
 @fixture
 async def other_probe(other):
     return get_probe(other)
+
+
+@fixture(params=[True, False])
+async def focused(request, widget, other):
+    if request.param:
+        widget.focus()
+    else:
+        other.focus()
+    return request.param
+
+
+@fixture
+async def on_change(widget):
+    on_change = Mock()
+    widget.on_change = on_change
+    on_change.assert_not_called()
+    return on_change
 
 
 @fixture

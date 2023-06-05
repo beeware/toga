@@ -23,6 +23,8 @@ KEY_CODES.update(
 
 
 class SimpleProbe:
+    fixed_height = None
+
     def __init__(self, widget):
         self.widget = widget
         self.native = widget._impl.native
@@ -108,9 +110,10 @@ class SimpleProbe:
         ), f"Width ({self.width}) not in range ({min_width}, {max_width})"
 
     def assert_height(self, min_height, max_height):
-        assert (
-            min_height <= self.height <= max_height
-        ), f"Height ({self.height}) not in range ({min_height}, {max_height})"
+        if self.fixed_height is not None:
+            assert self.height == approx(self.fixed_height, rel=0.2)
+        else:
+            assert min_height <= self.height <= max_height
 
     def assert_layout(self, size, position):
         # Widget is contained and in a window.
