@@ -67,14 +67,14 @@ class Widget:
 
     @property
     def has_focus(self):
-        print(f"HAS FOCUS {self.native=} {self.native.isFirstResponder=}")
+        print(f"HAS FOCUS {self=} {self.native.isFirstResponder=}")
         return self.native.isFirstResponder
 
     def focus(self):
         if not self.has_focus:
-            print(f"BECOME {self.native=}")
+            print(f"BECOME {self=}")
             self.native.becomeFirstResponder()
-            print(f"IS? {self.native.isFirstResponder=}")
+            print(f"IS? {self=} {self.native.isFirstResponder=}")
 
     def get_tab_index(self):
         self.interface.factory.not_implemented("Widget.get_tab_index()")

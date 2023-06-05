@@ -36,6 +36,7 @@ UIControlEventAllEvents = 0xFFFFFFFF
 class SimpleProbe:
     def __init__(self, widget):
         self.widget = widget
+        self.impl = widget._impl
         self.native = widget._impl.native
         assert isinstance(self.native, self.native_class)
 
@@ -135,7 +136,7 @@ class SimpleProbe:
 
     @property
     def has_focus(self):
-        print(f"PROBE HAS FOCUS {self.native=} {self.native.isFirstResponder=}")
+        print(f"PROBE HAS FOCUS {self.impl=} {self.native.isFirstResponder=}")
         return self.native.isFirstResponder
 
     def type_return(self):

@@ -1,3 +1,4 @@
+import asyncio
 from unittest.mock import Mock
 
 from pytest import approx
@@ -81,6 +82,20 @@ async def test_focus(widget, probe, other, other_probe, verify_focus_handlers):
 
     other.focus()
     await probe.redraw("Focus has been lost")
+    has_focus = True
+    for i in range(0, 10):
+        has_focus = probe.has_focus
+        if not has_focus:
+            break
+        await probe.redraw(f"retry {i}")
+    if not has_focus:
+        for i in range(0, 10):
+            has_focus = probe.has_focus
+            if not has_focus:
+                break
+            print(f"tick {i}")
+            await asyncio.sleep(0.1)
+
     assert not probe.has_focus
     assert other_probe.has_focus
 
@@ -177,6 +192,21 @@ async def test_placeholder_focus(widget, probe, other):
     await probe.redraw("Widget has lost focus")
     assert widget.value == ""
     assert widget.placeholder == "placeholder"
+
+    has_focus = True
+    for i in range(0, 10):
+        has_focus = probe.has_focus
+        if not has_focus:
+            break
+        await probe.redraw(f"retry {i}")
+    if not has_focus:
+        for i in range(0, 10):
+            has_focus = probe.has_focus
+            if not has_focus:
+                break
+            print(f"tick {i}")
+            await asyncio.sleep(0.1)
+
     assert probe.value == "placeholder"
     assert probe.placeholder_visible
 

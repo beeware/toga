@@ -110,6 +110,7 @@ if __name__ == "__main__":
 
     # Determine pytest arguments
     args = sys.argv[1:]
+    args.append("-s")
 
     # If `--slow` is in the arguments, run the test suite in slow mode
     try:
