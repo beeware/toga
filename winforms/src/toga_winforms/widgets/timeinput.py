@@ -5,58 +5,53 @@ from travertino.size import at_least
 from toga_winforms.libs import WinDateTime, WinForms
 
 from .base import Widget
+from .dateinput import NO_MAX, NO_MIN
+
+
+def py_time(native_time):
+    return datetime.time(native_time.Hour, native_time.Minute, native_time.Second)
+
+
+def native_time(py_time):
+    # We don't need the date component, so we can use any date as long as we're
+    # consistent.
+    return WinDateTime(1970, 1, 1, py_time.hour, py_time.minute, py_time.second)
 
 
 class TimeInput(Widget):
+    _background_supports_alpha = False
+
     def create(self):
         self.native = WinForms.DateTimePicker()
         self.native.ValueChanged += self.winforms_value_changed
         self.native.Format = WinForms.DateTimePickerFormat.Time
         self.native.ShowUpDown = True
-        self._min_time = None
-        self._max_time = None
 
     def get_value(self):
-        return datetime.time(
-            self.native.Value.Hour, self.native.Value.Minute, self.native.Value.Second
-        )
+        return py_time(self.native.Value)
 
     def set_value(self, value):
-        # Jan 1 1970 is a dummy date; we don't need the date component
-        self.native.Value = WinDateTime(
-            1970, 1, 1, value.hour, value.minute, value.second
-        )
+        self.native.Value = native_time(value)
 
     def get_min_time(self):
-        return self._min_time
+        if self.native.MinDate == NO_MIN:
+            return None
+        return py_time(self.native.MinDate)
 
     def set_min_time(self, value):
-        self._min_time = value
-        if value is None:
-            value = self.native.MinDateTime
-        else:
-            # Jan 1 1970 is a dummy date; we don't need the date component
-            value = WinDateTime(1970, 1, 1, value.hour, value.minute, value.second)
+        self.native.MinDate = NO_MIN if value is None else native_time(value)
 
     def get_max_time(self):
-        return self._max_time
+        if self.native.MaxDate == NO_MAX:
+            return None
+        return py_time(self.native.MaxDate)
 
     def set_max_time(self, value):
-        self._max_time = value
-        if value is None:
-            value = self.native.MaxDateTime
-        else:
-            # Jan 1 1970 is a dummy date; we don't need the date component
-            value = WinDateTime(1970, 1, 1, value.hour, value.minute, value.second)
+        self.native.MaxDate = NO_MAX if value is None else native_time(value)
 
     def rehint(self):
-        # Height of a date input is known and fixed.
-        # Width must be > 100
         self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
         self.interface.intrinsic.height = self.native.PreferredSize.Height
 
     def winforms_value_changed(self, sender, event):
-        # Since there is no native option to set a min or max time, calling min/max to validate on each change.
-        self.set_max_time(self._max_time)
-        self.set_min_time(self._min_time)
         self.interface.on_change(self.interface)

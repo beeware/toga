@@ -16,8 +16,8 @@ class DateInput(Widget):
         id=None,
         style=None,
         value: datetime.date | None = None,
-        min_date: datetime.date | None = None,
-        max_date: datetime.date | None = None,
+        min_value: datetime.date | None = None,
+        max_value: datetime.date | None = None,
         on_change: callable | None = None,
     ):
         """Create a new DateInput widget.
@@ -29,9 +29,9 @@ class DateInput(Widget):
             will be applied to the widget.
         :param value: The initial date to display. If not specified, the current date
             will be used.
-        :param min_date: The earliest date (inclusive) that can be selected, or ``None``
+        :param min_value: The earliest date (inclusive) that can be selected, or ``None``
             if there is no limit.
-        :param max_date: The latest date (inclusive) that can be selected, or ``None``
+        :param max_value: The latest date (inclusive) that can be selected, or ``None``
             if there is no limit.
         :param on_change: A handler that will be invoked when the value changes.
         """
@@ -41,8 +41,8 @@ class DateInput(Widget):
         self._impl = self.factory.DateInput(interface=self)
 
         self.on_change = None
-        self.min_date = min_date
-        self.max_date = max_date
+        self.min_value = min_value
+        self.max_value = max_value
 
         self.value = value
         self.on_change = on_change
@@ -74,15 +74,15 @@ class DateInput(Widget):
     def value(self, value):
         value = self._convert_date(value)
 
-        if self.min_date and value < self.min_date:
-            value = self.min_date
-        elif self.max_date and value > self.max_date:
-            value = self.max_date
+        if self.min_value and value < self.min_value:
+            value = self.min_value
+        elif self.max_value and value > self.max_value:
+            value = self.max_value
 
         self._impl.set_value(value)
 
     @property
-    def min_date(self) -> datetime.date | None:
+    def min_value(self) -> datetime.date | None:
         """The minimum allowable date (inclusive), or ``None`` if there is no limit.
 
         Any existing date value will be clipped to the new minimum.
@@ -92,22 +92,22 @@ class DateInput(Widget):
         """
         return self._impl.get_min_date()
 
-    @min_date.setter
-    def min_date(self, value):
+    @min_value.setter
+    def min_value(self, value):
         if value is None:
-            min_date = None
+            min_value = None
         else:
-            min_date = self._convert_date(value)
-            max_date = self.max_date
-            if max_date and min_date > max_date:
-                raise ValueError("min_date is after the current max_date")
-            if self.value < min_date:
-                self.value = min_date
+            min_value = self._convert_date(value)
+            max_value = self.max_value
+            if max_value and min_value > max_value:
+                raise ValueError("min_value is after the current max_value")
+            if self.value < min_value:
+                self.value = min_value
 
-        self._impl.set_min_date(min_date)
+        self._impl.set_min_date(min_value)
 
     @property
-    def max_date(self) -> datetime.date | None:
+    def max_value(self) -> datetime.date | None:
         """The maximum allowable date (inclusive), or ``None`` if there is no limit.
 
         Any existing date value will be clipped to the new maximum.
@@ -117,19 +117,19 @@ class DateInput(Widget):
         """
         return self._impl.get_max_date()
 
-    @max_date.setter
-    def max_date(self, value):
+    @max_value.setter
+    def max_value(self, value):
         if value is None:
-            max_date = None
+            max_value = None
         else:
-            max_date = self._convert_date(value)
-            min_date = self.min_date
-            if min_date and max_date < min_date:
-                raise ValueError("max_date is before the current min_date")
-            if self.value > max_date:
-                self.value = max_date
+            max_value = self._convert_date(value)
+            min_value = self.min_value
+            if min_value and max_value < min_value:
+                raise ValueError("max_value is before the current min_value")
+            if self.value > max_value:
+                self.value = max_value
 
-        self._impl.set_max_date(max_date)
+        self._impl.set_max_date(max_value)
 
     @property
     def on_change(self) -> callable:
@@ -141,8 +141,36 @@ class DateInput(Widget):
         self._on_change = wrapped_handler(self, handler)
 
 
-class DatePicker(DateInput):  # pragma: no cover
+# 2023-05: Backwards compatibility
+class DatePicker(DateInput):
     def __init__(self, *args, **kwargs):
-        # 2023-05
         warnings.warn("DatePicker has been renamed DateInput.", DeprecationWarning)
+
+        for old_name, new_name in [
+            ("min_date", "min_value"),
+            ("max_date", "max_value"),
+        ]:
+            try:
+                value = kwargs.pop(old_name)
+            except KeyError:
+                pass
+            else:
+                kwargs[new_name] = value
+
         super().__init__(*args, **kwargs)
+
+    @property
+    def min_date(self):
+        return self.min_value
+
+    @min_date.setter
+    def min_date(self, value):
+        self.min_value = value
+
+    @property
+    def max_date(self):
+        return self.max_value
+
+    @max_date.setter
+    def max_date(self, value):
+        self.max_value = value

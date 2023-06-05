@@ -2,6 +2,7 @@ from datetime import date
 from unittest.mock import call
 
 import pytest
+from pytest import fixture
 
 import toga
 
@@ -16,29 +17,41 @@ from .properties import (  # noqa: F401
     test_flex_horizontal_widget_size,
 )
 
-INITIAL_VALUE = date(2023, 5, 25)
 
-DATES = [
-    date(1850, 1, 1),
-    date(1960, 12, 31),
-    date(2020, 2, 29),  # Leap day
-    date(2340, 9, 10),
-]
+@fixture
+def initial_value():
+    return date(2023, 5, 25)
 
 
-@pytest.fixture
-async def widget():
+@fixture
+def none_value():
+    return date.today()
+
+
+@fixture
+def values():
+    return [
+        date(1850, 1, 1),
+        date(1960, 12, 31),
+        date(2020, 2, 29),  # Leap day
+        date(2340, 9, 10),
+    ]
+
+
+@fixture
+async def widget(initial_value):
     skip_on_platforms("macOS", "iOS", "linux")
-    return toga.DateInput(value=INITIAL_VALUE)
+    return toga.DateInput(value=initial_value)
 
 
-async def test_value(widget, probe, on_change):
+@pytest.mark.freeze_time  # For none_value, especially in TimeInput
+async def test_value(widget, probe, initial_value, none_value, values, on_change):
     "The value can be changed"
-    assert probe.value == INITIAL_VALUE
+    assert probe.value == initial_value
 
-    for value in [None] + DATES:
+    for value in [None] + values:
         widget.value = value
-        expected = date.today() if value is None else value
+        expected = none_value if value is None else value
         assert widget.value == expected
 
         await probe.redraw(f"Value set to {value}")
@@ -57,28 +70,14 @@ async def test_change(widget, probe, on_change):
         assert on_change.mock_calls == [call(widget)] * i
 
 
-# Some backends don't allow setting no minimum, so allow a value which is low
-# enough to accept all reasonable dates.
-def assert_no_min(probe):
-    min_date = probe.min_date
-    assert (min_date is None) or (min_date.year < 1800)
-
-
-# Some backends don't allow setting no maximum, so allow a value which is high
-# enough to accept all reasonable dates.
-def assert_no_max(probe):
-    max_date = probe.max_date
-    assert (max_date is None) or (max_date.year > 9000)
-
-
-async def test_min(widget, probe):
+async def test_min(widget, probe, initial_value, values):
     "The minimum can be changed"
-    value = INITIAL_VALUE
-    assert_no_min(probe)
+    value = initial_value
+    assert probe.min_value is None
 
-    for min in DATES + [None]:
-        widget.min_date = min
-        assert widget.min_date == min
+    for min in values + [None]:
+        widget.min_value = min
+        assert widget.min_value == min
 
         if (min is not None) and (value < min):
             assert widget.value == min
@@ -87,20 +86,17 @@ async def test_min(widget, probe):
             assert widget.value == value
 
         await probe.redraw(f"Minimum set to {min}")
-        if min is None:
-            assert_no_min(probe)
-        else:
-            assert probe.min_date == min
+        assert probe.min_value == min
 
 
-async def test_max(widget, probe):
+async def test_max(widget, probe, initial_value, values):
     "The maximum can be changed"
-    value = INITIAL_VALUE
-    assert_no_max(probe)
+    value = initial_value
+    assert probe.max_value is None
 
-    for max in DATES + [None]:
-        widget.max_date = max
-        assert widget.max_date == max
+    for max in values + [None]:
+        widget.max_value = max
+        assert widget.max_value == max
 
         if (max is not None) and (value > max):
             assert widget.value == max
@@ -109,7 +105,4 @@ async def test_max(widget, probe):
             assert widget.value == value
 
         await probe.redraw(f"Maximum set to {max}")
-        if max is None:
-            assert_no_max(probe)
-        else:
-            assert probe.max_date == max
+        assert probe.max_value == max
