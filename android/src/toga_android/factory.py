@@ -4,7 +4,7 @@ from .command import Command
 from .fonts import Font
 from .icons import Icon
 from .images import Image
-from .paths import paths
+from .paths import Paths
 from .widgets.box import Box
 from .widgets.button import Button
 from .widgets.canvas import Canvas
@@ -59,6 +59,6 @@ __all__ = [
     "Window",
     "DetailedList",
     "not_implemented",
-    "paths",
+    "Paths",
     "dialogs",
 ]

@@ -4,14 +4,7 @@ from unittest.mock import ANY
 import pytest
 
 import toga
-from toga_dummy.paths import Paths
 from toga_dummy.utils import assert_action_performed, assert_action_performed_with
-
-
-@pytest.fixture
-def app(monkeypatch):
-    # Monkeypatch a known app path into the paths module.
-    monkeypatch.setattr(Paths, "app", Path(toga.__file__).parent)
 
 
 @pytest.fixture
@@ -31,7 +24,7 @@ def test_widget_created(widget):
     assert widget.image is None
 
 
-def test_widget_created_with_args(app, widget):
+def test_widget_created_with_args(widget):
     "An ImageView can be created with argumentgs"
     image = toga.Image(Path("resources") / "toga.png")
     widget = toga.ImageView(image=image)
@@ -46,7 +39,7 @@ def test_widget_created_with_args(app, widget):
     assert widget.image == image
 
 
-def test_set_image_str(app, widget):
+def test_set_image_str(widget):
     "The image can be set with a string"
     widget.image = "https://example.com/image.jpg"
     assert_action_performed_with(widget, "set image", image=ANY)
@@ -56,7 +49,7 @@ def test_set_image_str(app, widget):
     assert widget.image.path == "https://example.com/image.jpg"
 
 
-def test_set_image_path(app, widget):
+def test_set_image_path(widget):
     "The image can be set with a Path"
     widget.image = Path("resources") / "toga.png"
     assert_action_performed_with(widget, "set image", image=ANY)
@@ -66,7 +59,7 @@ def test_set_image_path(app, widget):
     assert widget.image.path == Path(toga.__file__).parent / "resources" / "toga.png"
 
 
-def test_set_image(app, widget):
+def test_set_image(widget):
     "The image can be set with an Image instance"
     image = toga.Image(Path("resources") / "toga.png")
 
@@ -77,7 +70,7 @@ def test_set_image(app, widget):
     assert widget.image == image
 
 
-def test_set_image_none(app):
+def test_set_image_none():
     "The image can be cleared"
     widget = toga.ImageView(image="https://example.com/image.jpg")
     assert widget.image is not None

@@ -3,15 +3,7 @@ from pathlib import Path
 import pytest
 
 import toga
-from toga_dummy.paths import Paths
 from toga_dummy.utils import assert_action_performed_with
-
-
-@pytest.fixture
-def app(monkeypatch):
-    # Monkeypatch a known app path into the paths module.
-    monkeypatch.setattr(Paths, "app", Path(toga.__file__).parent)
-
 
 RELATIVE_FILE_PATH = Path("resources") / "toga.png"
 ABSOLUTE_FILE_PATH = Path(toga.__file__).parent / "resources" / "toga.png"
@@ -40,7 +32,7 @@ ABSOLUTE_FILE_PATH = Path(toga.__file__).parent / "resources" / "toga.png"
         ((), dict(path=f"file://{RELATIVE_FILE_PATH}")),
     ],
 )
-def test_create_from_file(app, args, kwargs):
+def test_create_from_file(args, kwargs):
     "If an file image source doesn't exist, an error is raised"
     image = toga.Image(*args, **kwargs)
 
@@ -77,13 +69,13 @@ MISSING_RELATIVE_PATH = Path("does") / "not" / "exist" / "image.jpg"
         ((), dict(path=f"{MISSING_RELATIVE_PATH}")),
     ],
 )
-def test_create_with_non_existent_file(app, args, kwargs):
+def test_create_with_non_existent_file(args, kwargs):
     "If an file image source doesn't exist, an error is raised"
     with pytest.raises(FileNotFoundError):
         toga.Image(*args, **kwargs)
 
 
-def test_create_with_url(app):
+def test_create_with_url():
     "An image can be created from a URL"
     image = toga.Image(path="https://example.com/image.png")
 
@@ -99,7 +91,7 @@ def test_create_with_url(app):
     )
 
 
-def test_create_with_bad_url(app):
+def test_create_with_bad_url():
     "Non HTTP(s) URLs will fail"
     with pytest.raises(
         ValueError,
@@ -108,7 +100,7 @@ def test_create_with_bad_url(app):
         toga.Image(path="ftp://example.com/image.png")
 
 
-def test_bytes(app):
+def test_bytes():
     "An image can be constructed from data"
     data = bytes([1])
     image = toga.Image(data=data)
@@ -122,7 +114,7 @@ def test_bytes(app):
     assert_action_performed_with(image, "load image data", data=data)
 
 
-def test_not_enough_arguments(app):
+def test_not_enough_arguments():
     with pytest.raises(
         ValueError,
         match=r"Either path or data must be set.",
@@ -130,7 +122,7 @@ def test_not_enough_arguments(app):
         toga.Image(None)
 
 
-def test_too_many_arguments(app):
+def test_too_many_arguments():
     with pytest.raises(
         ValueError,
         match=r"Only either path or data can be set.",
@@ -138,7 +130,7 @@ def test_too_many_arguments(app):
         toga.Image(path="/image.png", data=bytes([1]))
 
 
-def test_dimensions(app):
+def test_dimensions():
     "The dimensions of the image can be retrieved"
 
     image = toga.Image(path="https://example.com/image.png")
@@ -147,7 +139,7 @@ def test_dimensions(app):
     assert image.height == 42
 
 
-def test_image_save(app):
+def test_image_save():
     "An image can be saved"
     save_path = Path("/path/to/save.png")
     image = toga.Image(path=ABSOLUTE_FILE_PATH)

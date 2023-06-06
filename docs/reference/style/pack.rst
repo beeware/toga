@@ -320,7 +320,7 @@ The mapping that can be used to establish the reference implementation is:
    ``padding_left: <int>``       ``margin-left: <int>px``
    ``padding_right: <int>``      ``margin-right: <int>px``
    ``text_direction: <str>``     ``direction: <str>``
-   ``width: <value>``             ``width: <value>px`` if value is an integer;
+   ``width: <value>``            ``width: <value>px`` if value is an integer;
                                  ``width: auto`` if value is ``none``.
    ============================= ===================================================
 

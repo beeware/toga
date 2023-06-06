@@ -1,6 +1,7 @@
 import os
 import warnings
 
+import toga
 from toga.platform import get_platform_factory
 
 
@@ -49,9 +50,9 @@ class Icon:
         self.factory = get_platform_factory()
         try:
             if self.system:
-                resource_path = self.factory.paths.toga
+                resource_path = toga.App.app.paths.toga
             else:
-                resource_path = self.factory.paths.app
+                resource_path = toga.App.app.paths.app
 
             if self.factory.Icon.SIZES:
                 full_path = {

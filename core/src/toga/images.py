@@ -1,6 +1,7 @@
 import re
 from pathlib import Path
 
+import toga
 from toga.platform import get_platform_factory
 
 URL_RE = re.compile(r"\w+://")
@@ -43,7 +44,7 @@ class Image:
         if self.data is not None:
             self._impl = self.factory.Image(interface=self, data=self.data)
         elif isinstance(self.path, Path):
-            self.path = self.factory.paths.app / self.path
+            self.path = toga.App.app.paths.app / self.path
             if not self.path.is_file():
                 raise FileNotFoundError(f"Image file {self.path} does not exist")
             self._impl = self.factory.Image(interface=self, path=self.path)
