@@ -30,6 +30,8 @@ def handle_events():
 )
 class TestGtkDetailedList(unittest.TestCase):
     def setUp(self):
+        # An app needs to exist so that paths resolve.
+        _ = toga.App("Demo App", "org.beeware.demo")
         icon = toga.Icon(
             os.path.join(
                 os.path.dirname(__file__),
