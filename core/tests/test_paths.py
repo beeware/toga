@@ -8,16 +8,22 @@ import toga
 
 def run_app(args, cwd):
     "Run a Toga app as a subprocess with coverage enabled and the Toga Dummy backend"
-    output = subprocess.check_output(
-        [sys.executable] + args,
-        cwd=cwd,
-        env={
+    # We need to do a full copy of the environment, then add our extra bits;
+    # if we don't the Windows interpreter won't inherit SYSTEMROOT
+    env = os.environ.copy()
+    env.update(
+        {
             "COVERAGE_PROCESS_START": str(
                 Path(__file__).parent.parent / "pyproject.toml"
             ),
             "PYTHONPATH": str(Path(__file__).parent / "testbed" / "customize"),
             "TOGA_BACKEND": "toga_dummy",
-        },
+        }
+    )
+    output = subprocess.check_output(
+        [sys.executable] + args,
+        cwd=cwd,
+        env=env,
         text=True,
     )
     # When called as a subprocess, coverage drops it's coverage report in CWD.
