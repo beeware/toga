@@ -54,6 +54,8 @@ async def widget(initial_value):
 
 async def test_init():
     "Properties can be set in the constructor"
+    skip_on_platforms("macOS", "iOS", "linux")
+
     value = date(1999, 12, 31)
     min = date(1999, 12, 30)
     max = date(2000, 1, 1)

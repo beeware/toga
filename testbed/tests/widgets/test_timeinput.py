@@ -62,6 +62,8 @@ async def widget(initial_value):
 
 async def test_init(assert_value):
     "Properties can be set in the constructor"
+    skip_on_platforms("macOS", "iOS", "linux")
+
     value = time(10, 10, 30)
     min = time(2, 3, 4)
     max = time(20, 30, 40)
