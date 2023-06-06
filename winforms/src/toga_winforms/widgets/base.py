@@ -1,10 +1,15 @@
 from abc import abstractmethod
 
 from toga_winforms.colors import native_color
-from toga_winforms.libs import Point, Size, SystemColors
+from toga_winforms.libs import Color, Point, Size, SystemColors
 
 
 class Widget:
+    # In some widgets, attempting to set a background color with any alpha value other
+    # than 1 raises "System.ArgumentException: Control does not support transparent
+    # background colors". Those widgets should set this attribute to False.
+    _background_supports_alpha = True
+
     def __init__(self, interface):
         super().__init__()
         self.interface = interface
@@ -108,10 +113,15 @@ class Widget:
             self.native.ForeColor = native_color(color)
 
     def set_background_color(self, color):
+        if not hasattr(self, "_default_background"):
+            self._default_background = self.native.BackColor
         if color is None:
-            self.native.BackColor = SystemColors.Control
+            self.native.BackColor = self._default_background
         else:
-            self.native.BackColor = native_color(color)
+            win_color = native_color(color)
+            if (win_color != Color.Empty) and (not self._background_supports_alpha):
+                win_color = Color.FromArgb(255, win_color.R, win_color.G, win_color.B)
+            self.native.BackColor = win_color
 
     # INTERFACE
 

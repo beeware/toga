@@ -1,6 +1,5 @@
 from abc import abstractmethod
 
-from toga.colors import TRANSPARENT
 from toga_iOS.colors import native_color
 from toga_iOS.constraints import Constraints
 from toga_iOS.libs import UIColor
@@ -64,10 +63,15 @@ class Widget:
         return self.native.isEnabled()
 
     def set_enabled(self, value):
-        self.native.enabled = value
+        self.native.setEnabled(value)
+
+    @property
+    def has_focus(self):
+        return self.native.isFirstResponder
 
     def focus(self):
-        self.native.becomeFirstResponder()
+        if not self.has_focus:
+            self.native.becomeFirstResponder()
 
     def get_tab_index(self):
         self.interface.factory.not_implemented("Widget.get_tab_index()")
@@ -106,7 +110,7 @@ class Widget:
 
     # TODO: check if it's safe to make this the default implementation.
     def set_background_color_simple(self, value):
-        if value and (value != TRANSPARENT):
+        if value:
             self.native.backgroundColor = native_color(value)
         else:
             try:

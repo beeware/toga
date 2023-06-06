@@ -18,7 +18,3 @@ class ButtonProbe(SimpleProbe):
     @property
     def font(self):
         return toga_font(self.native.titleLabel.font)
-
-    @property
-    def background_color(self):
-        return toga_color(self.native.backgroundColor)

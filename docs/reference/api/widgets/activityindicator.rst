@@ -1,5 +1,5 @@
-Activity Indicator
-==================
+ActivityIndicator
+=================
 
 A small animated indicator showing activity on a task of indeterminate length,
 usually rendered as a "spinner" animation.

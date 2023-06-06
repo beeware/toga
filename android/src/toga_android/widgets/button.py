@@ -1,9 +1,5 @@
 from travertino.size import at_least
 
-from toga.colors import TRANSPARENT
-from toga_android.colors import native_color
-
-from ..libs.android.graphics import PorterDuff__Mode, PorterDuffColorFilter
 from ..libs.android.view import OnClickListener, View__MeasureSpec
 from ..libs.android.widget import Button as A_Button
 from .label import TextViewWidget
@@ -33,13 +29,13 @@ class Button(TextViewWidget):
     def set_enabled(self, value):
         self.native.setEnabled(value)
 
+    # Disable programmatic focus, otherwise whether this widget is focusable will depend
+    # on whether previous tests have generated keyboard input.
+    def focus(self):
+        pass
+
     def set_background_color(self, value):
-        # Do not use self.native.setBackgroundColor - this messes with the button style!
-        self.native.getBackground().setColorFilter(
-            None
-            if value is None or value == TRANSPARENT
-            else PorterDuffColorFilter(native_color(value), PorterDuff__Mode.SRC_IN)
-        )
+        self.set_background_filter(value)
 
     def rehint(self):
         # Like other text-viewing widgets, Android crashes when rendering

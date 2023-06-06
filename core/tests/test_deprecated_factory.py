@@ -100,18 +100,6 @@ class DeprecatedFactoryTests(TestCase):
         self.assertEqual(widget._impl.interface, widget)
         self.assertNotEqual(widget.factory, self.factory)
 
-    def test_multiline_text_input_created(self):
-        with self.assertWarns(DeprecationWarning):
-            widget = toga.MultilineTextInput(factory=self.factory)
-        self.assertEqual(widget._impl.interface, widget)
-        self.assertNotEqual(widget.factory, self.factory)
-
-    def test_number_input_created(self):
-        with self.assertWarns(DeprecationWarning):
-            widget = toga.NumberInput(factory=self.factory)
-        self.assertEqual(widget._impl.interface, widget)
-        self.assertNotEqual(widget.factory, self.factory)
-
     def test_option_container_created(self):
         with self.assertWarns(DeprecationWarning):
             widget = toga.OptionContainer(factory=self.factory)
@@ -141,12 +129,6 @@ class DeprecatedFactoryTests(TestCase):
             widget = toga.Table(
                 headings=["Test"], missing_value="", factory=self.factory
             )
-        self.assertEqual(widget._impl.interface, widget)
-        self.assertNotEqual(widget.factory, self.factory)
-
-    def test_text_input_created(self):
-        with self.assertWarns(DeprecationWarning):
-            widget = toga.TextInput(factory=self.factory)
         self.assertEqual(widget._impl.interface, widget)
         self.assertNotEqual(widget.factory, self.factory)
 

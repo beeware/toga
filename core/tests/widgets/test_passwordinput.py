@@ -1,37 +1,59 @@
+from unittest.mock import Mock
+
 import toga
-from toga_dummy.utils import TestCase
+from toga_dummy.utils import assert_action_performed
 
 
-class PasswordInputTests(TestCase):
-    """"""
+def test_widget_created():
+    "A text input can be created"
+    widget = toga.PasswordInput()
+    assert widget._impl.interface == widget
+    assert_action_performed(widget, "create PasswordInput")
 
-    def setUp(self):
-        super().setUp()
+    assert not widget.readonly
+    assert widget.placeholder == ""
+    assert widget.value == ""
+    assert widget._on_change._raw is None
+    assert widget._on_confirm._raw is None
+    assert widget._on_gain_focus._raw is None
+    assert widget._on_lose_focus._raw is None
+    assert widget.validators == []
 
-        self.value = "Password"
-        self.placeholder = "Placeholder"
-        self.readonly = False
 
-        self.password_input = toga.PasswordInput()
+def test_create_with_values():
+    "A multiline text input can be created with initial values"
+    on_change = Mock()
+    on_confirm = Mock()
+    on_gain_focus = Mock()
+    on_lose_focus = Mock()
+    validator1 = Mock(return_value=None)
+    validator2 = Mock(return_value=None)
 
-    def test_widget_created(self):
-        self.assertEqual(self.password_input._impl.interface, self.password_input)
-        self.assertActionPerformed(self.password_input, "create PasswordInput")
+    widget = toga.PasswordInput(
+        value="Some text",
+        placeholder="A placeholder",
+        readonly=True,
+        on_change=on_change,
+        on_confirm=on_confirm,
+        on_gain_focus=on_gain_focus,
+        on_lose_focus=on_lose_focus,
+        validators=[validator1, validator2],
+    )
+    assert widget._impl.interface == widget
+    assert_action_performed(widget, "create PasswordInput")
 
-    def test_widget(self):
-        self.assertEqual(self.password_input.readonly, False)
+    assert widget.readonly
+    assert widget.placeholder == "A placeholder"
+    assert widget.value == "Some text"
+    assert widget._on_change._raw == on_change
+    assert widget._on_confirm._raw == on_confirm
+    assert widget._on_gain_focus._raw == on_gain_focus
+    assert widget._on_lose_focus._raw == on_lose_focus
+    assert widget.validators == [validator1, validator2]
 
-        new_placeholder = "new placeholder"
-        self.password_input.placeholder = new_placeholder
-        self.assertEqual(self.password_input.placeholder, new_placeholder)
+    # Validators have been invoked with the initial text
+    validator1.assert_called_once_with("Some text")
+    validator2.assert_called_once_with("Some text")
 
-        new_value = "new value"
-        self.password_input.value = new_value
-        self.assertEqual(self.password_input.value, new_value)
-
-        self.password_input.clear()
-        self.assertEqual(self.password_input.value, "")
-
-    def test_focus(self):
-        self.password_input.focus()
-        self.assertActionPerformed(self.password_input, "focus")
+    # Change handler hasn't been invoked
+    on_change.assert_not_called()

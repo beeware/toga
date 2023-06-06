@@ -1,13 +1,25 @@
 import asyncio
 
+from pytest import approx
 from System import EventArgs, Object
 from System.Drawing import FontFamily, SystemColors, SystemFonts
+from System.Windows.Forms import SendKeys
 
 from toga.colors import TRANSPARENT
 from toga.fonts import CURSIVE, FANTASY, MONOSPACE, SANS_SERIF, SERIF, SYSTEM
 from toga.style.pack import JUSTIFY, LEFT
 
 from .properties import toga_color, toga_font
+
+KEY_CODES = {
+    f"<{name}>": f"{{{name.upper()}}}"
+    for name in ["esc", "up", "down", "left", "right"]
+}
+KEY_CODES.update(
+    {
+        "\n": "{ENTER}",
+    }
+)
 
 
 class SimpleProbe:
@@ -106,14 +118,26 @@ class SimpleProbe:
         assert self.native.Parent is not None
 
         # size and position is as expected.
-        assert (self.native.Width, self.native.Height) == size
+        assert (self.width, self.height) == approx(size, abs=1)
         assert (
-            self.native.Left,
-            self.native.Top - self.widget._impl.container.vertical_shift,
-        ) == position
+            self.native.Left / self.scale_factor,
+            (
+                (self.native.Top - self.widget._impl.container.vertical_shift)
+                / self.scale_factor
+            ),
+        ) == approx(position, abs=1)
 
     async def press(self):
         self.native.OnClick(EventArgs.Empty)
+
+    async def type_character(self, char):
+        try:
+            key_code = KEY_CODES[char]
+        except KeyError:
+            assert len(char) == 1, char
+            key_code = char
+
+        SendKeys.SendWait(key_code)
 
     @property
     def is_hidden(self):

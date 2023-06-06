@@ -1,11 +1,12 @@
 import asyncio
 from ctypes import c_void_p
 
-from rubicon.objc import SEL, NSArray, NSObject, ObjCClass, objc_method
+from rubicon.objc import SEL, NSArray, NSObject, NSPoint, ObjCClass, objc_method
 from rubicon.objc.api import NSString
 
 from toga.colors import TRANSPARENT
 from toga.fonts import CURSIVE, FANTASY, MONOSPACE, SANS_SERIF, SERIF, SYSTEM
+from toga_cocoa.libs import NSEvent, NSEventType
 from toga_cocoa.libs.appkit import appkit
 
 from .properties import toga_color
@@ -30,6 +31,7 @@ class EventListener(NSObject):
 class SimpleProbe:
     def __init__(self, widget):
         self.widget = widget
+        self.impl = widget._impl
         self.native = widget._impl.native
         assert isinstance(self.native, self.native_class)
 
@@ -80,10 +82,14 @@ class SimpleProbe:
         # Force a repaint
         self.widget.window.content._impl.native.displayIfNeeded()
 
-        # If we're running slow, wait for a second
         if self.widget.app.run_slow:
+            # If we're running slow, wait for a second
             print("Waiting for redraw" if message is None else message)
             await asyncio.sleep(1)
+        else:
+            # Running at "normal" speed, we need to release to the event loop
+            # for at least one iteration. `runUntilDate:None` does this.
+            NSRunLoop.currentRunLoop.runUntilDate(None)
 
     @property
     def enabled(self):
@@ -141,3 +147,83 @@ class SimpleProbe:
     @property
     def has_focus(self):
         return self.native.window.firstResponder == self.native
+
+    async def type_character(self, char):
+        # Convert the requested character into a Cocoa keycode.
+        # This table is incomplete, but covers all the basics.
+        key_code = {
+            "<esc>": 53,
+            " ": 49,
+            "\n": 36,
+            "a": 0,
+            "b": 11,
+            "c": 8,
+            "d": 2,
+            "e": 14,
+            "f": 3,
+            "g": 5,
+            "h": 4,
+            "i": 34,
+            "j": 38,
+            "k": 40,
+            "l": 37,
+            "m": 46,
+            "n": 45,
+            "o": 31,
+            "p": 35,
+            "q": 12,
+            "r": 15,
+            "s": 1,
+            "t": 17,
+            "u": 32,
+            "v": 9,
+            "w": 13,
+            "x": 7,
+            "y": 16,
+            "z": 6,
+        }.get(char.lower(), 0)
+
+        # This posts a single keyDown followed by a keyUp, matching "normal" keyboard operation.
+        await self.post_event(
+            NSEvent.keyEventWithType(
+                NSEventType.KeyDown,
+                location=NSPoint(0, 0),  # key presses don't have a location.
+                modifierFlags=0,
+                timestamp=0,
+                windowNumber=self.native.window.windowNumber,
+                context=None,
+                characters=char,
+                charactersIgnoringModifiers=char,
+                isARepeat=False,
+                keyCode=key_code,
+            ),
+        )
+        await self.post_event(
+            NSEvent.keyEventWithType(
+                NSEventType.KeyUp,
+                location=NSPoint(0, 0),  # key presses don't have a location.
+                modifierFlags=0,
+                timestamp=0,
+                windowNumber=self.native.window.windowNumber,
+                context=None,
+                characters=char,
+                charactersIgnoringModifiers=char,
+                isARepeat=False,
+                keyCode=key_code,
+            ),
+        )
+
+    async def mouse_event(self, event_type, location):
+        await self.post_event(
+            NSEvent.mouseEventWithType(
+                event_type,
+                location=location,
+                modifierFlags=0,
+                timestamp=0,
+                windowNumber=self.native.window.windowNumber,
+                context=None,
+                eventNumber=0,
+                clickCount=1,
+                pressure=1.0 if event_type == NSEventType.LeftMouseDown else 0.0,
+            ),
+        )
