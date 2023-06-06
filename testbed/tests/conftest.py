@@ -1,6 +1,7 @@
 import asyncio
 import inspect
 from dataclasses import dataclass
+from importlib import import_module
 
 from pytest import fixture, register_assert_rewrite, skip
 
@@ -22,6 +23,15 @@ def skip_on_platforms(*platforms):
 @fixture(scope="session")
 def app():
     return toga.App.app
+
+
+@fixture
+async def app_probe(app):
+    module = import_module("tests_backend.app")
+    probe = getattr(module, "AppProbe")(app)
+
+    await probe.redraw(f"\nConstructing {app.__class__.__name__} probe")
+    yield probe
 
 
 @fixture(scope="session")
