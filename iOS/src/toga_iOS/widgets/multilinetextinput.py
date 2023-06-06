@@ -42,10 +42,6 @@ class TogaMultilineTextView(UITextView, protocols=[UIKeyInput]):
         return point_inside
 
     @objc_method
-    def textViewShouldEndEditing_(self, text_view):
-        return True
-
-    @objc_method
     def textViewDidBeginEditing_(self, text_view):
         self.placeholder_label.setHidden(True)
 
