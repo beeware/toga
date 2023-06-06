@@ -42,7 +42,7 @@ class TogaMultilineTextView(UITextView, protocols=[UIKeyInput]):
         return point_inside
 
     @objc_method
-    def textViewShouldEndEditing_(self, text_view):
+    def textViewShouldEndEditing_(self, text_view) -> bool:
         return True
 
     @objc_method

@@ -1,5 +1,7 @@
 import asyncio
 
+from rubicon.objc import SEL
+
 from toga.fonts import CURSIVE, FANTASY, MONOSPACE, SANS_SERIF, SERIF, SYSTEM
 from toga_iOS.libs import NSRunLoop, UIApplication
 
@@ -137,6 +139,9 @@ class SimpleProbe:
     @property
     def has_focus(self):
         print(f"PROBE HAS FOCUS {self.impl=} {self.native.isFirstResponder=}")
+        keyWindow = UIApplication.sharedApplication.keyWindow
+        first_responder = keyWindow.performSelector(SEL("firstResponder"))
+        print(f"FIRST RESPONDER {first_responder=}")
         return self.native.isFirstResponder
 
     def type_return(self):

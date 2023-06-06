@@ -12,7 +12,7 @@ class MultilineTextInputProbe(TextInputProbe):
     def value(self):
         print(
             f"PROBE VALUE {self.impl=} {self.placeholder_visible=} "
-            f"{self.native.placeholder_label.text=} {self.native.text=}"
+            f"{str(self.native.placeholder_label.text)=} {str(self.native.text)=}"
         )
         return str(
             self.native.placeholder_label.text
