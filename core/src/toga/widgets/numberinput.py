@@ -222,7 +222,7 @@ class NumberInput(Widget):
     @property
     def value(self) -> Decimal | None:
         """Current value of the widget, rounded to the same number of decimal
-        places as :any:`step`, or ``None ``if no value has been set.
+        places as :any:`step`, or ``None`` if no value has been set.
 
         If this property is set to a value outside of the min/max range, it will be
         clipped.
