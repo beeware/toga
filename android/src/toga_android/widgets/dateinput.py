@@ -1,4 +1,4 @@
-from datetime import date, datetime
+from datetime import date, datetime, time
 
 from ..libs.android import R__drawable
 from ..libs.android.widget import (
@@ -7,20 +7,25 @@ from ..libs.android.widget import (
 )
 from .internal.pickers import PickerBase
 
+NO_MIN = date(1799, 1, 1)
+NO_MAX = date(9999, 1, 1)
+
+
+def py_date(native_date):
+    return date.fromtimestamp(native_date / 1000)
+
+
+def native_date(py_date):
+    return int(datetime.combine(py_date, time.min).timestamp() * 1000)
+
 
 class DatePickerListener(OnDateSetListener):
-    def __init__(self, picker_impl):
+    def __init__(self, impl):
         super().__init__()
-        self.picker_impl = picker_impl
+        self.impl = impl
 
-    def onDateSet(self, _, *args):
-        day, month, year = args
-        new_value = date(day, month + 1, year)
-
-        self.picker_impl._dialog = None
-        self.picker_impl.interface.value = new_value
-        if self.picker_impl.interface.on_change:
-            self.picker_impl.interface.on_change(self.picker_impl)
+    def onDateSet(self, view, year, month_0, day):
+        self.impl.set_value(date(year, month_0 + 1, day))
 
 
 class DateInput(PickerBase):
@@ -28,57 +33,41 @@ class DateInput(PickerBase):
     def _get_icon(cls):
         return R__drawable.ic_menu_my_calendar
 
-    @classmethod
-    def _get_hint(cls):
-        return "YYYY-MM-DD"
-
     def create(self):
-        self._value = date.today()
-        self._min_date = None
-        self._max_date = None
-
-        return super().create()
+        super().create()
+        self.native.setText("1970-01-01")  # Dummy value used during initialization
 
     def get_value(self):
-        return self._value
+        return date.fromisoformat(str(self.native.getText()))
 
     def set_value(self, value):
-        self._value = value
-        if value is not None:
-            self.native.setText(value.isoformat())
-            if self._dialog is not None:
-                self._dialog.updateDate(value.year, value.month - 1, value.day)
+        self.native.setText(value.isoformat())
+        self._dialog.updateDate(value.year, value.month - 1, value.day)
+        self.interface.on_change(None)
 
     def get_min_date(self):
-        return self._min_date
+        result = py_date(self._picker.getMinDate())
+        return None if (result == NO_MIN) else result
 
     def set_min_date(self, value):
-        self._min_date = value
-        if value is not None and self._dialog is not None:
-            self._dialog.getDatePicker().setMinDate(self._date_to_milli(value))
+        self._picker.setMinDate(native_date(NO_MIN if value is None else value))
 
     def get_max_date(self):
-        return self._max_date
+        result = py_date(self._picker.getMaxDate())
+        return None if (result == NO_MAX) else result
 
     def set_max_date(self, value):
-        self._max_date = value
-        if value is not None and self._dialog is not None:
-            self._dialog.getDatePicker().setMaxDate(self._date_to_milli(value))
-
-    @classmethod
-    def _date_to_milli(cls, value):
-        datetime_value = datetime.combine(value, datetime.min.time())
-        timestamp = datetime_value.timestamp()
-        return int(timestamp * 1000)
+        self._picker.setMaxDate(native_date(NO_MAX if value is None else value))
 
     def _create_dialog(self):
-        self._dialog = DatePickerDialog(
+        return DatePickerDialog(
             self._native_activity,
             DatePickerListener(self),
-            self._value.year,
-            self._value.month - 1,
-            self._value.day,
+            2000,  # year
+            0,  # month (0 = January)
+            1,  # day
         )
-        self.set_min_date(self._min_date)
-        self.set_max_date(self._max_date)
-        self._dialog.show()
+
+    @property
+    def _picker(self):
+        return self._dialog.getDatePicker()

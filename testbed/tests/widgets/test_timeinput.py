@@ -1,4 +1,5 @@
 from datetime import datetime, time
+from unittest.mock import Mock
 
 from pytest import fixture
 
@@ -44,6 +45,32 @@ def values():
 
 
 @fixture
+def assert_value(probe):
+    def assert_time(actual, expected):
+        if not probe.supports_seconds:
+            expected = expected.replace(second=0)
+        assert actual == expected
+
+    return assert_time
+
+
+@fixture
 async def widget(initial_value):
     skip_on_platforms("macOS", "iOS", "linux")
     return toga.TimeInput(value=initial_value)
+
+
+async def test_init(assert_value):
+    "Properties can be set in the constructor"
+    value = time(10, 10, 30)
+    min = time(2, 3, 4)
+    max = time(20, 30, 40)
+    on_change = Mock()
+
+    widget = toga.TimeInput(
+        value=value, min_value=min, max_value=max, on_change=on_change
+    )
+    assert_value(widget.value, value)
+    assert widget.min_value == min
+    assert widget.max_value == max
+    assert widget.on_change._raw is on_change

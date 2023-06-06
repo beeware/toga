@@ -1,5 +1,5 @@
 from datetime import date
-from unittest.mock import call
+from unittest.mock import Mock, call
 
 import pytest
 from pytest import fixture
@@ -39,23 +39,49 @@ def values():
 
 
 @fixture
+def assert_value(probe):
+    def assert_date(actual, expected):
+        assert actual == expected
+
+    return assert_date
+
+
+@fixture
 async def widget(initial_value):
     skip_on_platforms("macOS", "iOS", "linux")
     return toga.DateInput(value=initial_value)
 
 
+async def test_init():
+    "Properties can be set in the constructor"
+    value = date(1999, 12, 31)
+    min = date(1999, 12, 30)
+    max = date(2000, 1, 1)
+    on_change = Mock()
+
+    widget = toga.DateInput(
+        value=value, min_value=min, max_value=max, on_change=on_change
+    )
+    assert widget.value == value
+    assert widget.min_value == min
+    assert widget.max_value == max
+    assert widget.on_change._raw is on_change
+
+
 @pytest.mark.freeze_time  # For none_value, especially in TimeInput
-async def test_value(widget, probe, initial_value, none_value, values, on_change):
+async def test_value(
+    widget, probe, assert_value, initial_value, none_value, values, on_change
+):
     "The value can be changed"
-    assert probe.value == initial_value
+    assert_value(probe.value, initial_value)
 
     for value in [None] + values:
         widget.value = value
         expected = none_value if value is None else value
-        assert widget.value == expected
+        assert_value(widget.value, expected)
 
         await probe.redraw(f"Value set to {value}")
-        assert probe.value == expected
+        assert_value(probe.value, expected)
         on_change.assert_called_once_with(widget)
         on_change.reset_mock()
 

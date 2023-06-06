@@ -6,6 +6,8 @@ from .dateinput import DateTimeInputProbe
 
 
 class TimeInputProbe(DateTimeInputProbe):
+    supports_seconds = True
+
     def __init__(self, widget):
         super().__init__(widget)
         assert self.native.Format == DateTimePickerFormat.Time

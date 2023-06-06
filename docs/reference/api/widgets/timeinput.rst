@@ -31,7 +31,10 @@ Notes
   * :any:`datetime.datetime`: The time portion will be extracted.
   * :any:`str`: Will be parsed as an ISO8601 format time string (e.g., "06:12").
 
-* On Android, the widget only supports hours and minutes, not seconds.
+* On Android, the widget only supports hours and minutes. Seconds will always be
+  returned as zero.
+
+* On Android, the widget does not support minimum and maximum limits.
 
 Reference
 ---------
