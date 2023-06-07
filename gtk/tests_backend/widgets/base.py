@@ -122,6 +122,8 @@ class SimpleProbe:
             f"KEY_{char}",
             {
                 " ": Gdk.KEY_space,
+                "-": Gdk.KEY_minus,
+                ".": Gdk.KEY_period,
                 "\n": Gdk.KEY_Return,
                 "<esc>": Gdk.KEY_Escape,
             }.get(char, Gdk.KEY_question),

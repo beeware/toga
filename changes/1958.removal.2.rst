@@ -1,0 +1,1 @@
+A column box contained inside a column box will now expand to the full width of its parent, rather than collapsing to the maximum width of the inner box's child content.

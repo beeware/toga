@@ -213,3 +213,18 @@ class SimpleProbe:
                 keyCode=key_code,
             ),
         )
+
+    async def mouse_event(self, event_type, location):
+        await self.post_event(
+            NSEvent.mouseEventWithType(
+                event_type,
+                location=location,
+                modifierFlags=0,
+                timestamp=0,
+                windowNumber=self.native.window.windowNumber,
+                context=None,
+                eventNumber=0,
+                clickCount=1,
+                pressure=1.0 if event_type == NSEventType.LeftMouseDown else 0.0,
+            ),
+        )

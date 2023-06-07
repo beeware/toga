@@ -1,0 +1,1 @@
+Pack layout now honors an explicit width/height setting of 0.
