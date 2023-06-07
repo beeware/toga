@@ -358,9 +358,9 @@ class App:
         disk; even when arbitrary file system access is allowed, there are
         "preferred" locations for some types of content.
 
-        The ``paths`` object has a set of sub-properties that return
-        ``pathlib.Path`` instances of platform-appropriate paths on the
-        file system.
+        The :class:`~toga.paths.Paths` object has a set of sub-properties that
+        return :class:`pathlib.Path` instances of platform-appropriate paths on
+        the file system.
         """
         return self._paths
 
