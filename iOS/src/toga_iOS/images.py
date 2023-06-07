@@ -1,4 +1,4 @@
-from toga_iOS.libs import NSURL, NSData, UIImage
+from toga_iOS.libs import NSData, UIImage
 
 
 class Image:
@@ -8,16 +8,17 @@ class Image:
         self.url = url
 
         if path:
-            self.native = UIImage.alloc().initWithContentsOfFile_(str(path))
-        elif url:
-            # If a remote URL is provided, use the download from NSData
-            self.native = UIImage.imageWithData_(
-                NSData.dataWithContentsOfURL_(NSURL.URLWithString_(path))
-            )
-        elif data:
-            self.native = UIImage.imageWithData_(
+            self.native = UIImage.alloc().initWithContentsOfFile(str(path))
+        else:
+            self.native = UIImage.imageWithData(
                 NSData.dataWithBytes(data, length=len(data))
             )
+
+    def get_width(self):
+        return self.native.size.width
+
+    def get_height(self):
+        return self.native.size.height
 
     def save(self, path):
         self.interface.factory.not_implemented("Image.save()")

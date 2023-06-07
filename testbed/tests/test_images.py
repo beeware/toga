@@ -10,7 +10,7 @@ import toga
 
 
 def image_probe(app, image):
-    module = import_module("tests_backend.image")
+    module = import_module("tests_backend.images")
     return getattr(module, "ImageProbe")(app, image)
 
 
