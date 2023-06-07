@@ -16,7 +16,7 @@ class AppProbe(BaseProbe):
 
     @property
     def config_path(self):
-        return Path(self.get_app_context().getFilesDir().getPath()) / "log"
+        return Path(self.get_app_context().getFilesDir().getPath()) / "config"
 
     @property
     def data_path(self):
