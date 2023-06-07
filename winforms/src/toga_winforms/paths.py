@@ -9,8 +9,10 @@ class Paths:
 
     @property
     def author(self):
-        if App.app.author is None:
-            return "Toga"
+        # No coverage testing of this because we can't easily configure
+        # the app to have no author.
+        if App.app.author is None:  # pragma: no cover
+            return "Unknown"
         return App.app.author
 
     def get_config_path(self):
