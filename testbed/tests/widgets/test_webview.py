@@ -1,4 +1,5 @@
 import asyncio
+from contextlib import nullcontext
 from unittest.mock import ANY, Mock
 
 import pytest
@@ -104,7 +105,7 @@ async def test_static_content(widget, probe):
         widget,
         probe,
         message="Webview has static content",
-        url="https://example.com/",
+        url="https://example.com/" if probe.content_supports_url else None,
         content="<h1>Nice page</h1>",
     )
 
@@ -155,20 +156,36 @@ async def test_evaluate_javascript_no_handler(widget, probe):
     assert result == 79
 
 
+def javascript_error_context(probe):
+    if probe.javascript_supports_exception:
+        return pytest.raises(RuntimeError)
+    else:
+        return nullcontext()
+
+
 async def test_evaluate_javascript_error(widget, probe):
     "If JavaScript content raises an error, the error is propegated"
     on_result_handler = Mock()
 
-    with pytest.raises(RuntimeError):
-        await widget.evaluate_javascript("not valid js", on_result=on_result_handler)
+    with javascript_error_context(probe):
+        result = await widget.evaluate_javascript(
+            "not valid js", on_result=on_result_handler
+        )
+    assert result is None
 
     # The same value was passed to the on-result handler
     on_result_handler.assert_called_once()
-    assert on_result_handler.call_args.args[0] is None
-    assert isinstance(on_result_handler.call_args.kwargs["exception"], RuntimeError)
+    assert on_result_handler.call_args.args == (None,)
+    kwargs = on_result_handler.call_args.kwargs
+    if probe.javascript_supports_exception:
+        assert sorted(kwargs) == ["exception"]
+        assert isinstance(kwargs["exception"], RuntimeError)
+    else:
+        assert kwargs == {}
 
 
 async def test_evaluate_javascript_error_without_handler(widget, probe):
     "A handler isn't needed to propegate a JavaScript error"
-    with pytest.raises(RuntimeError):
-        await widget.evaluate_javascript("not valid js")
+    with javascript_error_context(probe):
+        result = await widget.evaluate_javascript("not valid js")
+    assert result is None

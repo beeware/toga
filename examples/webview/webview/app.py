@@ -5,7 +5,7 @@ from toga.style import Pack
 
 class ExampleWebView(toga.App):
     async def on_do_async_js(self, widget, **kwargs):
-        self.label.text = await self.webview.evaluate_javascript("2 + 2")
+        self.label.text = repr(await self.webview.evaluate_javascript("2 + 2"))
 
     def on_do_js(self, widget, **kwargs):
         self.webview.evaluate_javascript(
@@ -51,7 +51,7 @@ class ExampleWebView(toga.App):
         on_load_url_button = toga.Button("load URL", on_press=self.on_load_url)
         on_get_url_button = toga.Button("get URL", on_press=self.on_get_url)
         on_do_async_js_button = toga.Button("2 + 2? ", on_press=self.on_do_async_js)
-        on_do_js_button = toga.Button("mutate page", on_press=self.on_do_js)
+        on_do_js_button = toga.Button("run js", on_press=self.on_do_js)
         on_set_content_button = toga.Button("set content", on_press=self.on_set_content)
         on_clear_content_button = toga.Button(
             "clear content", on_press=self.on_clear_content

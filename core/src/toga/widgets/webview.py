@@ -110,13 +110,15 @@ class WebView(Widget):
         """Evaluate a JavaScript expression.
 
         **This method is asynchronous**. It does not guarantee that the provided
-        JavaScript has finished evaluating when the method returns. The value
+        JavaScript has finished evaluating when the method returns. The object
         returned by this method can be awaited to obtain the value of the expression,
-        converted into an equivalent Python object. Alternatively, you can provide an
-        ``on_result`` callback with one argument that will be passed the same object.
+        or you can provide an ``on_result`` callback.
 
         :param javascript: The JavaScript expression to evaluate.
-        :param on_result: A callback that will be invoked when the
-            evaluated JavaScript completes.
+        :param on_result: A callback that will be invoked when the JavaScript completes.
+            It should take one positional argument, which is the value of the
+            expression. If evaluation fails, the positional argument will be ``None``,
+            and a keyword argument ``exception`` will be passed with an exception
+            object.
         """
         return self._impl.evaluate_javascript(javascript, on_result=on_result)

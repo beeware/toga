@@ -1,11 +1,10 @@
-import traceback
+import json
 import webbrowser
 
 from travertino.size import at_least
 
 import toga
 from toga.widgets.webview import JavaScriptResult
-from toga_winforms.keys import toga_key
 from toga_winforms.libs import (
     Action,
     Color,
@@ -22,27 +21,35 @@ from toga_winforms.libs import (
 from .base import Widget
 
 
-class TogaWebBrowser(WebView2):
-    def __init__(self, interface):
-        super().__init__()
-        self.interface = interface
-        self._edge_runtime_available = None  # Set to an unknown state initially
+def requires_corewebview2(method):
+    def wrapper(self, *args, **kwargs):
+        def task():
+            method(self, *args, **kwargs)
+
+        if self.corewebview2_available:
+            task()
+        else:
+            self.pending_tasks.append(task)
+
+    return wrapper
 
 
 class WebView(Widget):
     def create(self):
-        self.native = TogaWebBrowser(self.interface)
+        self.native = WebView2()
         self.native.CoreWebView2InitializationCompleted += (
             self.winforms_initialization_completed
         )
         self.native.NavigationCompleted += self.winforms_navigation_completed
-        self.native.KeyDown += self.winforms_key_down
+        self.loaded_future = None
 
         props = CoreWebView2CreationProperties()
         props.UserDataFolder = str(toga.App.app.paths.cache / "WebView2")
         self.native.CreationProperties = props
 
         # Trigger the configuration of the webview
+        self.corewebview2_available = None
+        self.pending_tasks = []
         self.native.EnsureCoreWebView2Async(None)
         self.native.DefaultBackgroundColor = Color.Transparent
 
@@ -53,109 +60,99 @@ class WebView(Widget):
         # request is made (EnsureCoreWebView2Async).
         if args.IsSuccess:
             # We've initialized, so we must have the runtime
-            self.native._edge_runtime_available = True
-            try:
-                settings = self.native.CoreWebView2.Settings
+            self.corewebview2_available = True
+            settings = self.native.CoreWebView2.Settings
+            self.default_user_agent = settings.UserAgent
 
-                debug = True
-                settings.AreDefaultContextMenusEnabled = debug
-                settings.AreDefaultScriptDialogsEnabled = True
-                settings.AreDevToolsEnabled = debug
-                settings.IsBuiltInErrorPageEnabled = True
-                settings.IsScriptEnabled = True
-                settings.IsWebMessageEnabled = True
-                settings.IsStatusBarEnabled = debug
-                settings.IsZoomControlEnabled = True
+            debug = True
+            settings.AreDefaultContextMenusEnabled = debug
+            settings.AreDefaultScriptDialogsEnabled = True
+            settings.AreDevToolsEnabled = debug
+            settings.IsBuiltInErrorPageEnabled = True
+            settings.IsScriptEnabled = True
+            settings.IsWebMessageEnabled = True
+            settings.IsStatusBarEnabled = debug
+            settings.IsZoomControlEnabled = True
 
-                self.set_user_agent(self.interface.user_agent)
+            for task in self.pending_tasks:
+                task()
+            self.pending_tasks = None
 
-                if self.interface._html_content:
-                    self.set_content(self.interface.url, self.interface._html_content)
-                else:
-                    self.set_url(self.interface.url)
+        elif isinstance(
+            args.InitializationException, WebView2RuntimeNotFoundException
+        ):  # pragma: nocover
+            print("Could not find the Microsoft Edge WebView2 Runtime.")
+            if self.corewebview2_available is None:
+                # The initialize message is sent twice on failure.
+                # We only want to show the dialog once, so track that we
+                # know the runtime is missing.
+                self.corewebview2_available = False
+                WinForms.MessageBox.Show(
+                    "The Microsoft Edge WebView2 Runtime is not installed. "
+                    "Web content will not be displayed.\n\n"
+                    "Click OK to download the WebView2 Evergreen Runtime "
+                    "Bootstrapper from Microsoft.",
+                    "Missing Edge Webview2 runtime",
+                    WinForms.MessageBoxButtons.OK,
+                    WinForms.MessageBoxIcon.Error,
+                )
+                webbrowser.open(
+                    "https://developer.microsoft.com/en-us/microsoft-edge/webview2/#download-section"
+                )
 
-            except Exception:
-                traceback.print_exc()
-        else:
-            if isinstance(
-                args.InitializationException, WebView2RuntimeNotFoundException
-            ):
-                print("Could not find the Microsoft Edge WebView2 Runtime.")
-                if self.native._edge_runtime_available is None:
-                    # The initialize message is sent twice on failure.
-                    # We only want to show the dialog once, so track that we
-                    # know the runtime is missing.
-                    self.native._edge_runtime_available = False
-                    WinForms.MessageBox.Show(
-                        "The Microsoft Edge WebView2 Runtime is not installed. "
-                        "Web content will not be displayed.\n\n"
-                        "Click OK to download the WebView2 Evergreen Runtime "
-                        "Bootstrapper from Microsoft.",
-                        "Missing Edge Webview2 runtime",
-                        WinForms.MessageBoxButtons.OK,
-                        WinForms.MessageBoxIcon.Error,
-                    )
-                    webbrowser.open(
-                        "https://developer.microsoft.com/en-us/microsoft-edge/webview2/#download-section"
-                    )
-            else:
-                print(args.InitializationException)
+        else:  # pragma: nocover
+            raise RuntimeError(args.InitializationException)
 
     def winforms_navigation_completed(self, sender, args):
-        if self.interface.on_webview_load:
-            self.interface.on_webview_load(self.interface)
+        self.interface.on_webview_load(self.interface)
 
-    def winforms_key_down(self, sender, args):
-        if self.interface.on_key_down:
-            self.interface.on_key_down(self.interface, **toga_key(args))
-
-    def set_on_key_down(self, handler):
-        pass
-
-    def set_on_webview_load(self, handler):
-        pass
+        if self.loaded_future:
+            self.loaded_future.set_result(None)
+            self.loaded_future = None
 
     def get_url(self):
-        return str(self.native.Source)
+        source = self.native.Source
+        if source is None:  # pragma: nocover
+            return None  # CoreWebView2 is not yet initialized.
+        else:
+            url = str(source)
+            return None if url == "about:blank" else url
 
-    def set_url(self, value):
-        if value:
+    @requires_corewebview2
+    def set_url(self, value, future=None):
+        self.loaded_future = future
+        if value is None:
+            self.set_content("about:blank", "")
+        else:
             self.native.Source = Uri(value)
 
+    @requires_corewebview2
     def set_content(self, root_url, content):
-        if content and self.native.CoreWebView2:
-            self.native.CoreWebView2.NavigateToString(content)
+        self.native.NavigateToString(content)
 
-    def get_dom(self):
-        self.interface.factory.not_implemented("WebView.get_dom()")
+    def get_user_agent(self):
+        cwv = self.native.CoreWebView2
+        return cwv.Settings.UserAgent if cwv else ""
 
+    @requires_corewebview2
     def set_user_agent(self, value):
-        user_agent = (
-            value
-            if value
-            else (
-                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
-                "(KHTML, like Gecko) Chrome/90.0.4430.85 Safari/537.36 Edg/90.0.818.46"
-            )
+        self.native.CoreWebView2.Settings.UserAgent = (
+            self.default_user_agent if value is None else value
         )
-        if self.native.CoreWebView2:
-            self.native.CoreWebView2.Settings.UserAgent = user_agent
 
     def evaluate_javascript(self, javascript, on_result=None):
         result = JavaScriptResult()
-
         task_scheduler = TaskScheduler.FromCurrentSynchronizationContext()
-        try:
 
-            def callback(task):
-                result.future.set_result(task.Result)
+        def callback(task):
+            value = json.loads(task.Result)
+            result.future.set_result(value)
+            if on_result:
+                on_result(value)
 
-            self.native.ExecuteScriptAsync(javascript).ContinueWith(
-                Action[Task[String]](callback), task_scheduler
-            )
-        except Exception:
-            traceback.print_exc()
-            result.future.set_result(None)
+        self.native.ExecuteScriptAsync(javascript).ContinueWith(
+            Action[Task[String]](callback), task_scheduler
+        )
 
         return result
 
