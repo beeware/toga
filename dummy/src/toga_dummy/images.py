@@ -12,10 +12,10 @@ class Image(LoggedObject):
             self._action("load image data", data=data)
 
     def get_width(self):
-        return 37
+        return 60
 
     def get_height(self):
-        return 42
+        return 40
 
     def save(self, path):
         self._action("save", path=path)

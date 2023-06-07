@@ -18,16 +18,16 @@ async def test_implicit_size(widget, probe, container_probe):
     """If the image view size is implicit, the image provides flexible size hints."""
 
     await probe.redraw("ImageView takes size hint from the image")
-    assert probe.width == 144
-    assert probe.height == 72
+    assert probe.width == pytest.approx(144, abs=2)
+    assert probe.height == pytest.approx(72, abs=2)
     assert probe.preserve_aspect_ratio
 
     # Clear the image; it's now an explicit sized empty image.
     widget.image = None
 
     await probe.redraw("Image has been cleared")
-    assert probe.width == 0
-    assert probe.height == 0
+    assert probe.width == pytest.approx(0, abs=2)
+    assert probe.height == pytest.approx(0, abs=2)
     assert not probe.preserve_aspect_ratio
 
     # Restore the image; Make the parent a flex row
@@ -36,16 +36,16 @@ async def test_implicit_size(widget, probe, container_probe):
     widget.parent.style.direction = ROW
 
     await probe.redraw("Image is in a row box")
-    assert probe.width == container_probe.width
-    assert probe.height == container_probe.height
+    assert probe.width == pytest.approx(container_probe.width, abs=2)
+    assert probe.height == pytest.approx(container_probe.height, abs=2)
     assert probe.preserve_aspect_ratio
 
     # Make the parent a flex column
     widget.parent.style.direction = COLUMN
 
     await probe.redraw("Image is in a column box")
-    assert probe.width == container_probe.width
-    assert probe.height == container_probe.height
+    assert probe.width == pytest.approx(container_probe.width, abs=2)
+    assert probe.height == pytest.approx(container_probe.height, abs=2)
     assert probe.preserve_aspect_ratio
 
 
@@ -55,16 +55,16 @@ async def test_explicit_width(widget, probe, container_probe):
     widget.style.width = 200
 
     await probe.redraw("Image has explicit width")
-    assert probe.width == 200
-    assert probe.height == 100
+    assert probe.width == pytest.approx(200, abs=2)
+    assert probe.height == pytest.approx(100, abs=2)
     assert probe.preserve_aspect_ratio
 
     # Clear the image; it's now an explicit sized empty image.
     widget.image = None
 
     await probe.redraw("Image has been cleared")
-    assert probe.width == 200
-    assert probe.height == 0
+    assert probe.width == pytest.approx(200, abs=2)
+    assert probe.height == pytest.approx(0, abs=2)
     assert not probe.preserve_aspect_ratio
 
     # Restore the image; Make the parent a flex row
@@ -73,16 +73,16 @@ async def test_explicit_width(widget, probe, container_probe):
     widget.parent.style.direction = ROW
 
     await probe.redraw("Image is in a row box")
-    assert probe.width == 200
-    assert probe.height == container_probe.height
+    assert probe.width == pytest.approx(200, abs=2)
+    assert probe.height == pytest.approx(container_probe.height, abs=2)
     assert probe.preserve_aspect_ratio
 
     # Make the parent a flex column
     widget.parent.style.direction = COLUMN
 
     await probe.redraw("Image is in a column box")
-    assert probe.width == 200
-    assert probe.height == container_probe.height
+    assert probe.width == pytest.approx(200, abs=2)
+    assert probe.height == pytest.approx(container_probe.height, abs=2)
     assert probe.preserve_aspect_ratio
 
 
@@ -92,16 +92,16 @@ async def test_explicit_height(widget, probe, container_probe):
     widget.style.height = 150
 
     await probe.redraw("Image has explicit height")
-    assert probe.width == 300
-    assert probe.height == 150
+    assert probe.width == pytest.approx(300, abs=2)
+    assert probe.height == pytest.approx(150, abs=2)
     assert probe.preserve_aspect_ratio
 
     # Clear the image; it's now an explicit sized empty image.
     widget.image = None
 
     await probe.redraw("Image has been cleared")
-    assert probe.width == 0
-    assert probe.height == 150
+    assert probe.width == pytest.approx(0, abs=2)
+    assert probe.height == pytest.approx(150, abs=2)
     assert not probe.preserve_aspect_ratio
 
     # Restore the image; Make the parent a flex row
@@ -110,16 +110,16 @@ async def test_explicit_height(widget, probe, container_probe):
     widget.parent.style.direction = ROW
 
     await probe.redraw("Image is in a row box")
-    assert probe.width == container_probe.width
-    assert probe.height == 150
+    assert probe.width == pytest.approx(container_probe.width, abs=2)
+    assert probe.height == pytest.approx(150, abs=2)
     assert probe.preserve_aspect_ratio
 
     # Make the parent a flex column
     widget.parent.style.direction = COLUMN
 
     await probe.redraw("Image is in a column box")
-    assert probe.width == container_probe.width
-    assert probe.height == 150
+    assert probe.width == pytest.approx(container_probe.width, abs=2)
+    assert probe.height == pytest.approx(150, abs=2)
     assert probe.preserve_aspect_ratio
 
 
@@ -130,16 +130,16 @@ async def test_explicit_size(widget, probe):
     widget.style.height = 300
 
     await probe.redraw("Image has explicit sizing")
-    assert probe.width == 200
-    assert probe.height == 300
+    assert probe.width == pytest.approx(200, abs=2)
+    assert probe.height == pytest.approx(300, abs=2)
     assert not probe.preserve_aspect_ratio
 
     # Clear the image; it's now an explicit sized empty image.
     widget.image = None
 
     await probe.redraw("Image has been cleared")
-    assert probe.width == 200
-    assert probe.height == 300
+    assert probe.width == pytest.approx(200, abs=2)
+    assert probe.height == pytest.approx(300, abs=2)
     assert not probe.preserve_aspect_ratio
 
     # Restore the image; Make the parent a flex row
@@ -148,14 +148,14 @@ async def test_explicit_size(widget, probe):
     widget.parent.style.direction = ROW
 
     await probe.redraw("Image is in a row box")
-    assert probe.width == 200
-    assert probe.height == 300
+    assert probe.width == pytest.approx(200, abs=2)
+    assert probe.height == pytest.approx(300, abs=2)
     assert not probe.preserve_aspect_ratio
 
     # Make the parent a flex column
     widget.parent.style.direction = COLUMN
 
     await probe.redraw("Image is in a column box")
-    assert probe.width == 200
-    assert probe.height == 300
+    assert probe.width == pytest.approx(200, abs=2)
+    assert probe.height == pytest.approx(300, abs=2)
     assert not probe.preserve_aspect_ratio

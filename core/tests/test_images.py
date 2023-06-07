@@ -109,8 +109,8 @@ def test_dimensions():
 
     image = toga.Image(path="resources/toga.png")
 
-    assert image.width == 37
-    assert image.height == 42
+    assert image.width == 60
+    assert image.height == 40
 
 
 def test_image_save():

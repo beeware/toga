@@ -2,8 +2,62 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from travertino.size import at_least
+
 from toga.images import Image
+from toga.style.pack import NONE
 from toga.widgets.base import Widget
+
+
+def rehint_imageview(image, style, scale=1):
+    """Compute the size hints for an ImageView based on the image.
+
+    This logic is common across all backends, so it's shared here.
+
+    :param image: The image being displayed.
+    :param style: The style object for the imageview.
+    :param scale: The scale factor (if any) to apply to native pixel sizes.
+    :returns: A triple containing the intrinsic width hint, intrinsic height
+        hint, and a boolean describing whether the ImageView should preserve
+        the image's aspect ratio when rendering.
+    """
+    if image:
+        if style.width != NONE and style.height != NONE:
+            # Explicit width and height for image. Scale the rendered image
+            # to fit the explicitly provided size.
+            width = style.width * scale
+            height = style.height * scale
+            preserve_aspect_ratio = False
+
+        elif style.width != NONE:
+            # Explicit width, implicit height. Preserve aspect ratio.
+            width = style.width * scale
+            height = style.width * scale * image.height // image.width
+            if style.flex:
+                height = at_least(height)
+            preserve_aspect_ratio = True
+        elif style.height != NONE:
+            # Explicit height, implicit width. Preserve aspect ratio.
+            width = style.height * scale * image.width // image.height
+            height = style.height * scale
+            if style.flex:
+                width = at_least(width)
+            preserve_aspect_ratio = True
+        else:
+            # Use the image's actual size.
+            width = image.width * scale
+            height = image.height * scale
+            if style.flex:
+                width = at_least(width)
+                height = at_least(height)
+            preserve_aspect_ratio = True
+    else:
+        # No image. Hinted size is 0.
+        width = 0
+        height = 0
+        preserve_aspect_ratio = False
+
+    return width, height, preserve_aspect_ratio
 
 
 class ImageView(Widget):
