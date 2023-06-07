@@ -1,6 +1,6 @@
 from travertino.size import at_least
 
-from toga.style.pack import COLUMN, NONE
+from toga.style.pack import NONE
 from toga_cocoa.libs import (
     NSImageAlignment,
     NSImageFrameNone,
@@ -44,33 +44,29 @@ class ImageView(Widget):
                 # Explicit width, implicit height. Preserve aspect ratio.
                 width = style.width
                 height = style.width * image.size.height // image.size.width
+                if style.flex:
+                    height = at_least(height)
                 self.native.imageScaling = NSImageScaleProportionallyUpOrDown
             elif style.height != NONE:
                 # Explicit height, implicit width. Preserve aspect ratio.
                 width = style.height * image.size.width // image.size.height
                 height = style.height
+                if style.flex:
+                    width = at_least(width)
                 self.native.imageScaling = NSImageScaleProportionallyUpOrDown
             else:
                 # Use the image's actual size.
                 width = image.size.width
                 height = image.size.height
+                if style.flex:
+                    width = at_least(width)
+                    height = at_least(height)
                 self.native.imageScaling = NSImageScaleProportionallyUpOrDown
 
-            if style.flex and self.interface.parent:
-                parent_style = self.interface.parent.style
-                if parent_style.direction == COLUMN:
-                    # A flex-sized image in a column box
-                    self.interface.intrinsic.width = at_least(width)
-                    self.interface.intrinsic.height = at_least(0)
-                else:
-                    # A flex-sized image in a row box
-                    self.interface.intrinsic.width = at_least(0)
-                    self.interface.intrinsic.height = at_least(height)
-            else:
-                # A fixed-size image, or a flex image that hasn't been placed yet
-                self.interface.intrinsic.width = width
-                self.interface.intrinsic.height = height
+            self.interface.intrinsic.width = width
+            self.interface.intrinsic.height = height
         else:
             # No image. Hinted size is 0.
             self.interface.intrinsic.width = 0
             self.interface.intrinsic.height = 0
+            self.native.imageScaling = NSImageScaleAxesIndependently

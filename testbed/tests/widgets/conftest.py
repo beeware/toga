@@ -26,6 +26,11 @@ async def probe(main_window, widget):
 
 
 @fixture
+async def container_probe(widget):
+    return get_probe(widget.parent)
+
+
+@fixture
 async def other(widget):
     """A separate widget that can take focus"""
     other = toga.TextInput()

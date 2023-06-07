@@ -1,6 +1,7 @@
 import pytest
 
 import toga
+from toga.style.pack import COLUMN, ROW
 
 from .properties import (  # noqa: F401
     test_enable_noop,
@@ -13,34 +14,148 @@ async def widget():
     return toga.ImageView(image="resources/sample.png")
 
 
-async def test_image_sizing(widget, probe):
-    """The ImageView responds correctly to size changes."""
+async def test_implicit_size(widget, probe, container_probe):
+    """If the image view size is implicit, the image provides flexible size hints."""
 
-    # Initial image size is implicit
+    await probe.redraw("ImageView takes size hint from the image")
     assert probe.width == 144
     assert probe.height == 72
     assert probe.preserve_aspect_ratio
 
+    # Clear the image; it's now an explicit sized empty image.
+    widget.image = None
+
+    await probe.redraw("Image has been cleared")
+    assert probe.width == 0
+    assert probe.height == 0
+    assert not probe.preserve_aspect_ratio
+
+    # Restore the image; Make the parent a flex row
+    widget.image = "resources/sample.png"
+    widget.style.flex = 1
+    widget.parent.style.direction = ROW
+
+    await probe.redraw("Image is in a row box")
+    assert probe.width == container_probe.width
+    assert probe.height == container_probe.height
+    assert probe.preserve_aspect_ratio
+
+    # Make the parent a flex column
+    widget.parent.style.direction = COLUMN
+
+    await probe.redraw("Image is in a column box")
+    assert probe.width == container_probe.width
+    assert probe.height == container_probe.height
+    assert probe.preserve_aspect_ratio
+
+
+async def test_explicit_width(widget, probe, container_probe):
+    """If the image width is explicit, the image view will resize preserving aspect ratio."""
+    # Explicitly set width
+    widget.style.width = 200
+
+    await probe.redraw("Image has explicit width")
+    assert probe.width == 200
+    assert probe.height == 100
+    assert probe.preserve_aspect_ratio
+
+    # Clear the image; it's now an explicit sized empty image.
+    widget.image = None
+
+    await probe.redraw("Image has been cleared")
+    assert probe.width == 200
+    assert probe.height == 0
+    assert not probe.preserve_aspect_ratio
+
+    # Restore the image; Make the parent a flex row
+    widget.image = "resources/sample.png"
+    widget.style.flex = 1
+    widget.parent.style.direction = ROW
+
+    await probe.redraw("Image is in a row box")
+    assert probe.width == 200
+    assert probe.height == container_probe.height
+    assert probe.preserve_aspect_ratio
+
+    # Make the parent a flex column
+    widget.parent.style.direction = COLUMN
+
+    await probe.redraw("Image is in a column box")
+    assert probe.width == 200
+    assert probe.height == container_probe.height
+    assert probe.preserve_aspect_ratio
+
+
+async def test_explicit_height(widget, probe, container_probe):
+    """If the image height is explicit, the image view will resize preserving aspect ratio."""
+    # Explicitly set height
+    widget.style.height = 150
+
+    await probe.redraw("Image has explicit height")
+    assert probe.width == 300
+    assert probe.height == 150
+    assert probe.preserve_aspect_ratio
+
+    # Clear the image; it's now an explicit sized empty image.
+    widget.image = None
+
+    await probe.redraw("Image has been cleared")
+    assert probe.width == 0
+    assert probe.height == 150
+    assert not probe.preserve_aspect_ratio
+
+    # Restore the image; Make the parent a flex row
+    widget.image = "resources/sample.png"
+    widget.style.flex = 1
+    widget.parent.style.direction = ROW
+
+    await probe.redraw("Image is in a row box")
+    assert probe.width == container_probe.width
+    assert probe.height == 150
+    assert probe.preserve_aspect_ratio
+
+    # Make the parent a flex column
+    widget.parent.style.direction = COLUMN
+
+    await probe.redraw("Image is in a column box")
+    assert probe.width == container_probe.width
+    assert probe.height == 150
+    assert probe.preserve_aspect_ratio
+
+
+async def test_explicit_size(widget, probe):
+    """If the image size is explicit, the image view doesn't change size."""
     # Explicitly set both size axes
     widget.style.width = 200
     widget.style.height = 300
 
-    await probe.redraw("Image has explicit sizing; aspect ratio is ignored")
+    await probe.redraw("Image has explicit sizing")
     assert probe.width == 200
     assert probe.height == 300
     assert not probe.preserve_aspect_ratio
 
+    # Clear the image; it's now an explicit sized empty image.
     widget.image = None
 
-    await probe.redraw("Image has been cleared; but has explicit size")
+    await probe.redraw("Image has been cleared")
     assert probe.width == 200
     assert probe.height == 300
     assert not probe.preserve_aspect_ratio
 
-    del widget.style.width
-    del widget.style.height
+    # Restore the image; Make the parent a flex row
+    widget.image = "resources/sample.png"
+    widget.style.flex = 1
+    widget.parent.style.direction = ROW
 
-    await probe.redraw("Image has been cleared; explicit size removed")
-    assert probe.width == 0
-    assert probe.height == 0
+    await probe.redraw("Image is in a row box")
+    assert probe.width == 200
+    assert probe.height == 300
+    assert not probe.preserve_aspect_ratio
+
+    # Make the parent a flex column
+    widget.parent.style.direction = COLUMN
+
+    await probe.redraw("Image is in a column box")
+    assert probe.width == 200
+    assert probe.height == 300
     assert not probe.preserve_aspect_ratio

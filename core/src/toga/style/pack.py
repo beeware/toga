@@ -208,7 +208,7 @@ class Pack(BaseStyle):
 
                 # self._debug(f"ADJUSTED AVAILABLE HEIGHT {available_height}")
             else:
-                # self._debug("AUTO HEIGHT {available_height=})
+                # self._debug("AUTO HEIGHT {available_height=}")
                 pass
 
         if node.children:
@@ -521,7 +521,7 @@ class Pack(BaseStyle):
                         height += child_height
                         remaining_height -= child_height
                 else:
-                    # self._debug(f"PASS 1 intrinsic height {child.intrinsic.height})
+                    # self._debug(f"PASS 1 intrinsic height {child.intrinsic.height}")
                     child.style._layout_node(
                         child,
                         alloc_width=available_width,
@@ -627,7 +627,7 @@ class Pack(BaseStyle):
         offset = 0
         width = 0
         for child in node.children:
-            # self._debug(f"START CHILD {child} AT VERTICAL OFFSET {offset})
+            # self._debug(f"START CHILD {child} AT VERTICAL OFFSET {offset}")
             offset += scale(child.style.padding_top)
             child.layout.content_top = offset
             offset += child.layout.content_height + scale(child.style.padding_bottom)
@@ -650,10 +650,10 @@ class Pack(BaseStyle):
                 + scale(child.style.padding_left)
                 + scale(child.style.padding_right)
             )
-            # self._debug("row extra width {extra})
+            # self._debug("row extra width {extra}")
             if self.alignment is RIGHT:
                 child.layout.content_left = extra + scale(child.style.padding_left)
-                # self._debug(f"align {child} to right {child.layout.content_left=})
+                # self._debug(f"align {child} to right {child.layout.content_left=}")
             elif self.alignment is CENTER:
                 child.layout.content_left = int(extra / 2) + scale(
                     child.style.padding_left

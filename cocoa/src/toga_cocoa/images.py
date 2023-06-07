@@ -19,7 +19,7 @@ class Image:
             self.native = NSImage.alloc().initWithContentsOfFile(str(path))
         elif url:
             self.native = NSImage.alloc().initByReferencingURL(NSURL.URLWithString(url))
-        elif data:
+        else:
             nsdata = NSData.dataWithBytes(data, length=len(data))
             self.native = NSImage.alloc().initWithData(nsdata)
 
@@ -32,23 +32,17 @@ class Image:
     def save(self, path):
         path = Path(path)
         try:
-            if path.suffix == "":
-                # If no suffix is provided in the filename, default to PNG,
-                # and append that suffix to the filename.
-                str_path = str(path) + ".png"
-                filetype = NSBitmapImageFileType.PNG
-            else:
-                filetype = {
-                    ".jpg": NSBitmapImageFileType.JPEG,
-                    ".jpeg": NSBitmapImageFileType.JPEG,
-                    ".png": NSBitmapImageFileType.PNG,
-                    ".gif": NSBitmapImageFileType.GIF,
-                    ".bmp": NSBitmapImageFileType.BMP,
-                    ".tiff": NSBitmapImageFileType.TIFF,
-                }[path.suffix.lower()]
-                str_path = str(path)
+            filetype = {
+                ".jpg": NSBitmapImageFileType.JPEG,
+                ".jpeg": NSBitmapImageFileType.JPEG,
+                ".png": NSBitmapImageFileType.PNG,
+                ".gif": NSBitmapImageFileType.GIF,
+                ".bmp": NSBitmapImageFileType.BMP,
+                ".tiff": NSBitmapImageFileType.TIFF,
+            }[path.suffix.lower()]
+            str_path = str(path)
         except KeyError:
-            raise ValueError(f"Don't know how to save image of type {path.suffix}")
+            raise ValueError(f"Don't know how to save image of type {path.suffix!r}")
 
         bitmapData = NSBitmapImageRep.representationOfImageRepsInArray(
             self.native.representations,

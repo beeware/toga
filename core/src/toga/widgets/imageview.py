@@ -30,6 +30,23 @@ class ImageView(Widget):
         self.image = image
 
     @property
+    def enabled(self) -> bool:
+        """Is the widget currently enabled? i.e., can the user interact with the widget?
+
+        ImageView widgets cannot be disabled; this property will always return True; any
+        attempt to modify it will be ignored.
+        """
+        return True
+
+    @enabled.setter
+    def enabled(self, value):
+        pass
+
+    def focus(self):
+        "No-op; ImageView cannot accept input focus"
+        pass
+
+    @property
     def image(self) -> Image | None:
         """The image to display."""
         return self._image

@@ -4,7 +4,11 @@ from unittest.mock import ANY
 import pytest
 
 import toga
-from toga_dummy.utils import assert_action_performed, assert_action_performed_with
+from toga_dummy.utils import (
+    assert_action_not_performed,
+    assert_action_performed,
+    assert_action_performed_with,
+)
 
 
 @pytest.fixture
@@ -37,6 +41,26 @@ def test_widget_created_with_args(widget):
 
     # Image attribute is set
     assert widget.image == image
+
+
+def test_disable_no_op(widget):
+    "ImageView doesn't have a disabled state"
+
+    # Enabled by default
+    assert widget.enabled
+
+    # Try to disable the widget
+    widget.enabled = False
+
+    # Still enabled.
+    assert widget.enabled
+
+
+def test_focus_noop(widget):
+    "Focus is a no-op."
+
+    widget.focus()
+    assert_action_not_performed(widget, "focus")
 
 
 def test_set_image_str(widget):
