@@ -12,7 +12,7 @@ class Paths:
         return App.app._impl.native.getApplicationContext()
 
     def get_config_path(self):
-        return Path(self.__context.getFilesDir().getPath()) / "log"
+        return Path(self.__context.getFilesDir().getPath()) / "config"
 
     def get_data_path(self):
         return Path(self.__context.getFilesDir().getPath()) / "data"
