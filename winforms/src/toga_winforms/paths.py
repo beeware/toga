@@ -16,14 +16,7 @@ class Paths:
         return App.app.author
 
     def get_config_path(self):
-        return (
-            Path.home()
-            / "AppData"
-            / "Local"
-            / self.author
-            / App.app.formal_name
-            / "Config"
-        )
+        return Path.home() / "AppData" / "Local" / self.author / App.app.formal_name
 
     def get_data_path(self):
         return Path.home() / "AppData" / "Local" / self.author / App.app.formal_name

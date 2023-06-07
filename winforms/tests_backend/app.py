@@ -14,14 +14,7 @@ class AppProbe(BaseProbe):
 
     @property
     def config_path(self):
-        return (
-            Path.home()
-            / "AppData"
-            / "Local"
-            / "Tiberius Yak"
-            / "Toga Testbed"
-            / "Config"
-        )
+        return Path.home() / "AppData" / "Local" / "Tiberius Yak" / "Toga Testbed"
 
     @property
     def data_path(self):

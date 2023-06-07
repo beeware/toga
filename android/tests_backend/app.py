@@ -16,11 +16,11 @@ class AppProbe(BaseProbe):
 
     @property
     def config_path(self):
-        return Path(self.get_app_context().getFilesDir().getPath()) / "config"
+        return Path(self.get_app_context().getFilesDir().getPath())
 
     @property
     def data_path(self):
-        return Path(self.get_app_context().getFilesDir().getPath()) / "data"
+        return Path(self.get_app_context().getFilesDir().getPath())
 
     @property
     def cache_path(self):
