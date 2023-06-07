@@ -1,3 +1,5 @@
+from toga.widgets.imageview import rehint_imageview
+
 from ..libs import Gdk, GdkPixbuf, Gtk
 from .base import Widget
 
@@ -7,6 +9,7 @@ class ImageView(Widget):
         self.native = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
         self._image = Gtk.Image()
         self._pixbuf = None
+        self._preserve_aspect_ratio = False
         self.native.add(self._image)
 
     def set_image(self, image):
@@ -18,6 +21,11 @@ class ImageView(Widget):
         self.refresh()
 
     def rehint(self):
+        width, height, self._preserve_aspect_ratio = rehint_imageview(
+            image=self.interface.image,
+            style=self.interface.style,
+        )
+
         if self._pixbuf:
             height, width = self._resize_max(
                 original_height=self._pixbuf.get_height(),
