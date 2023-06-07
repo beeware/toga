@@ -27,12 +27,12 @@ class WebView(Widget):
         :param id: The ID for the widget.
         :param style: A style object. If no style is provided, a default style
             will be applied to the widget.
-        :param url: The full URL to load in the WebView. Optional; if not provided,
-            an empty page will be displayed
-        :param user_agent: The user agent to use for web requests. Optional; if not
+        :param url: The full URL to load in the WebView. If not provided,
+            an empty page will be displayed.
+        :param user_agent: The user agent to use for web requests. If not
             provided, the default user agent for the platform will be used.
-        :param on_webview_load: A handler that will be invoked when a key is pressed while
-            the web view has focus.
+        :param on_webview_load: A handler that will be invoked when the web view
+            finishes loading.
         """
 
         super().__init__(id=id, style=style)
@@ -111,13 +111,12 @@ class WebView(Widget):
 
         **This method is asynchronous**. It does not guarantee that the provided
         JavaScript has finished evaluating when the method returns. The value
-        returned by this method can be awaited in an asynchronous context.
-        Alternatively, you can provide an ``on_result`` callback that will be
-        invoked when the JavaScript has been evaluated.
+        returned by this method can be awaited to obtain the value of the expression,
+        converted into an equivalent Python object. Alternatively, you can provide an
+        ``on_result`` callback with one argument that will be passed the same object.
 
         :param javascript: The JavaScript expression to evaluate.
-        :param on_result: Optional; a callback that will be invoked when the the
+        :param on_result: A callback that will be invoked when the
             evaluated JavaScript completes.
-        :returns: An asynchronous JavaScriptResult object.
         """
         return self._impl.evaluate_javascript(javascript, on_result=on_result)
