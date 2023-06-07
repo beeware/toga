@@ -1,11 +1,20 @@
 from pathlib import Path
 
-from toga_iOS.libs import NSFileManager, NSSearchPathDirectory, NSSearchPathDomainMask
+from toga_iOS.libs import (
+    NSFileManager,
+    NSSearchPathDirectory,
+    NSSearchPathDomainMask,
+    UIApplication,
+)
+
+from .probe import BaseProbe
 
 
-class Paths:
-    def __init__(self, interface):
-        self.interface = interface
+class AppProbe(BaseProbe):
+    def __init__(self, app):
+        super().__init__()
+        self.app = app
+        assert isinstance(self.app._impl.native, UIApplication)
 
     def get_path(self, search_path):
         file_manager = NSFileManager.defaultManager
@@ -14,14 +23,18 @@ class Paths:
         )
         return Path(urls[0].path)
 
-    def get_config_path(self):
+    @property
+    def config_path(self):
         return self.get_path(NSSearchPathDirectory.ApplicationSupport) / "Config"
 
-    def get_data_path(self):
+    @property
+    def data_path(self):
         return self.get_path(NSSearchPathDirectory.Documents)
 
-    def get_cache_path(self):
+    @property
+    def cache_path(self):
         return self.get_path(NSSearchPathDirectory.Cache)
 
-    def get_logs_path(self):
+    @property
+    def logs_path(self):
         return self.get_path(NSSearchPathDirectory.ApplicationSupport) / "Logs"

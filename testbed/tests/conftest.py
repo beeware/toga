@@ -30,7 +30,8 @@ async def app_probe(app):
     module = import_module("tests_backend.app")
     probe = getattr(module, "AppProbe")(app)
 
-    await probe.redraw(f"\nConstructing {app.__class__.__name__} probe")
+    if app.run_slow:
+        print("\nConstructing app probe")
     yield probe
 
 
