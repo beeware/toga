@@ -16,20 +16,22 @@ Usage
 
 When Python code executes from the command line, the working directory is a
 known location - the location where the application was started. However, when
-building GUI apps, there is no "working directory". As a result, when specifying
+building GUI apps, there is no working directory. As a result, when specifying
 file paths, relative paths cannot be used, as there is no location to which they
 can be considered relative.
 
-Complicating matters further, operating systems have conventions over where
-certain file types should be stored. For example, macOS provides the
-``~/Library/Application Support`` folder; Linux encourages use of the
-``~/.config`` folder (amongst others), and Windows provides the
-``AppData/Local`` folder.
+Complicating matters further, operating systems have conventions (and in some
+cases, hard restrictions) over where certain file types should be stored. For
+example, macOS provides the ``~/Library/Application Support`` folder; Linux
+encourages use of the ``~/.config`` folder (amongst others), and Windows
+provides the ``AppData/Local`` folder in the user's home directory. Application
+sandbox and security policies will prevent sometimes prevent reading or
+writing files in any location other than these pre-approved locations.
 
 To assist with finding an appropriate location to store application files, every
 Toga application has a ``paths`` object that provides known file system
 locations that are appropriate for storing files of given types, such as
-configuration files, log files, cache files, or user documents.
+configuration files, log files, cache files, or user data.
 
 Each location provided by the ``paths`` object is a :class:`Pathlib.Path` that
 can be used to construct a full file path. If required, additional sub-folders
@@ -37,7 +39,8 @@ can be created under these locations.
 
 The paths returned are *not* guaranteed to be empty or unique. For example, you
 should not assume that the user data location *only* contains user data files.
-Depending on platform conventions, there may be other files or folders.
+Depending on platform conventions, the user data folder may be shared with
+files or folders with other purposes.
 
 You should not assume that any of these paths already exist. The location is
 guaranteed to follow operating system conventions, but the application is
