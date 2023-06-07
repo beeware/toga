@@ -21,17 +21,6 @@ async def test_local_image(app):
     assert image.height == 72
 
 
-async def test_web_image(app):
-    "An image can be specified by URL"
-    image = toga.Image(path="https://beeware.org/static/images/bumble-small.png")
-    probe = image_probe(app, image)
-
-    await probe.wait_for_image_load()
-
-    assert image.width == 400
-    assert image.height == 141
-
-
 async def test_data_image(app):
     "An image can be constructed from data"
     # Generate an image using pillow

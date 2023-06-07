@@ -65,12 +65,12 @@ def test_focus_noop(widget):
 
 def test_set_image_str(widget):
     "The image can be set with a string"
-    widget.image = "https://example.com/image.jpg"
+    widget.image = "resources/toga.png"
     assert_action_performed_with(widget, "set image", image=ANY)
     assert_action_performed(widget, "refresh")
 
     assert isinstance(widget.image, toga.Image)
-    assert widget.image.path == "https://example.com/image.jpg"
+    assert widget.image.path == Path(toga.__file__).parent / "resources" / "toga.png"
 
 
 def test_set_image_path(widget):
@@ -96,7 +96,7 @@ def test_set_image(widget):
 
 def test_set_image_none():
     "The image can be cleared"
-    widget = toga.ImageView(image="https://example.com/image.jpg")
+    widget = toga.ImageView(image="resources/toga.png")
     assert widget.image is not None
 
     widget.image = None

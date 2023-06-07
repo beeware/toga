@@ -11,22 +11,35 @@ Image
 
 An image is graphical content of arbitrary size.
 
-A Toga icon is a **late bound** resource - that is, it can be constructed
-without an implementation. When it is assigned to an ImageView, or other
-role where an Image is required, it is bound to a factory, at which time
-the implementation is created.
+An image can be constructed using:
 
-The path specified for an Image can be:
-
-1. A path relative to the module that defines your Toga application.
-2. An absolute file system path
-3. A URL. The content of the URL will be loaded in the background.
+1. A path relative to the module that defines your Toga application. (either as
+   a string, or as a :any:`pathlib.Path` object)
+2. An absolute file system path (either as a string, or as a :any:`pathlib.Path`
+   object)
+3. Raw binary image data.
 
 If the path specified does not exist, or cannot be loaded, a
 ``FileNotFoundError`` will be raised.
 
 Usage
 -----
+
+.. code-block:: python
+
+    from pathlib import Path
+    import toga
+
+    # Load an image in the same folder as the file that declares the App class
+    my_image = toga.Image("brutus.png")
+
+    # Load an image at an absolute path
+    my_image = toga.Image(Path.home() / "path" / "to" / "brutus.png")
+
+    # Create an image from raw data
+    with (Path.home() / "path" / "to" / "brutus.png").open("rb") as f:
+        my_image = toga.Image(data=f.read())
+
 
 Reference
 ---------

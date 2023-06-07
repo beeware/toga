@@ -1,7 +1,6 @@
 from pathlib import Path
 
 from toga_cocoa.libs import (
-    NSURL,
     NSBitmapImageFileType,
     NSBitmapImageRep,
     NSData,
@@ -10,15 +9,11 @@ from toga_cocoa.libs import (
 
 
 class Image:
-    def __init__(self, interface, path=None, url=None, data=None):
+    def __init__(self, interface, path=None, data=None):
         self.interface = interface
-        self.path = path
-        self.url = url
 
         if path:
             self.native = NSImage.alloc().initWithContentsOfFile(str(path))
-        elif url:
-            self.native = NSImage.alloc().initByReferencingURL(NSURL.URLWithString(url))
         else:
             nsdata = NSData.dataWithBytes(data, length=len(data))
             self.native = NSImage.alloc().initWithData(nsdata)

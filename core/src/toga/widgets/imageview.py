@@ -48,7 +48,13 @@ class ImageView(Widget):
 
     @property
     def image(self) -> Image | None:
-        """The image to display."""
+        """The image to display.
+
+        When setting an image, you can provide a:
+         * A :class:`~toga.images.Image` instance; pr
+         * Any value that would be a valid path specifier when creating an new :class:`~toga.images.Image` instance; or
+         * :any:`None` to clear to image view.
+        """
         return self._image
 
     @image.setter

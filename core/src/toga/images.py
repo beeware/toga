@@ -1,23 +1,26 @@
-import re
 from pathlib import Path
 
 import toga
 from toga.platform import get_platform_factory
 
-URL_RE = re.compile(r"\w+://")
-
 
 class Image:
-    """A representation of graphical content.
+    def __init__(
+        self,
+        path: str | None | Path = None,
+        *,
+        data: bytes | None = None,
+    ):
+        """Create a new image.
 
-    :param path: Path to the image. Allowed values can be local file
-        (relative or absolute path) or URL (HTTP or HTTPS). Relative paths
-        will be interpreted relative to the application module directory.
-    :param data: A bytes object with the contents of an image in a supported
-        format.
-    """
+        An image must be provided either a ``path`` or ``data``, but not both.
 
-    def __init__(self, path=None, *, data=None):
+        :param path: Path to the image. This can be an absolute path to an image
+            file, or a path relative to the file that describes the App class.
+            Can be specified as a string, or as a :any:`pathlib.Path` object.
+        :param data: A bytes object with the contents of an image in a supported
+            format.
+        """
         if path is None and data is None:
             raise ValueError("Either path or data must be set.")
         if path is not None and data is not None:
@@ -26,30 +29,21 @@ class Image:
         if path is not None:
             if isinstance(path, Path):
                 self.path = path
-            elif path.startswith("http://") or path.startswith("https://"):
-                self.path = path
-            elif path.startswith("file://"):
-                self.path = Path(path[7:])
-            elif URL_RE.match(path):
-                raise ValueError(
-                    "Images can only be loaded from http://, https:// or file:// URLs"
-                )
             else:
                 self.path = Path(path)
+            self.data = None
         else:
             self.path = None
-        self.data = data
+            self.data = data
 
         self.factory = get_platform_factory()
         if self.data is not None:
             self._impl = self.factory.Image(interface=self, data=self.data)
-        elif isinstance(self.path, Path):
+        else:
             self.path = toga.App.app.paths.app / self.path
             if not self.path.is_file():
                 raise FileNotFoundError(f"Image file {self.path} does not exist")
             self._impl = self.factory.Image(interface=self, path=self.path)
-        else:
-            self._impl = self.factory.Image(interface=self, url=self.path)
 
     @property
     def width(self) -> int:

@@ -52,15 +52,6 @@ class ImageViewApp(toga.App):
         imageview_from_bytes = toga.ImageView(image_from_bytes, style=Pack(height=72))
         box.add(imageview_from_bytes)
 
-        # image from remote URL
-        # no style parameters - we let Pack determine how to allocate
-        # the space. toga.png is a 256x256 image.
-        image_from_url = toga.Image(
-            "https://beeware.org/project/projects/libraries/toga/toga.png"
-        )
-        imageview_from_url = toga.ImageView(image_from_url)
-        box.add(imageview_from_url)
-
         # An empty imageview.
         empty_imageview = toga.ImageView()
         box.add(empty_imageview)

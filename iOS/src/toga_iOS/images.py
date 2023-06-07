@@ -2,10 +2,8 @@ from toga_iOS.libs import NSData, UIImage
 
 
 class Image:
-    def __init__(self, interface, path=None, url=None, data=None):
+    def __init__(self, interface, path=None, data=None):
         self.interface = interface
-        self.path = path
-        self.url = url
 
         if path:
             self.native = UIImage.alloc().initWithContentsOfFile(str(path))
