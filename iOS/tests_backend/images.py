@@ -1,5 +1,3 @@
-from pytest import skip
-
 from toga_iOS.libs import UIImage
 
 from .probe import BaseProbe
@@ -12,5 +10,5 @@ class ImageProbe(BaseProbe):
         self.image = image
         assert isinstance(self.image._impl.native, UIImage)
 
-    def supports_extensions(self, extension):
-        skip("iOS doesn't support saving images")
+    def supports_extension(self, extension):
+        return extension.lower() in {".jpg", ".jpeg", ".png"}

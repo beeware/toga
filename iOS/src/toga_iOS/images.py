@@ -1,4 +1,10 @@
-from toga_iOS.libs import NSData, UIImage
+from pathlib import Path
+
+from toga_iOS.libs import (
+    NSData,
+    UIImage,
+    uikit,
+)
 
 
 class Image:
@@ -19,4 +25,17 @@ class Image:
         return self.native.size.height
 
     def save(self, path):
-        self.interface.factory.not_implemented("Image.save()")
+        path = Path(path)
+        try:
+            converter = {
+                ".jpg": uikit.UIImageJPEGRepresentation,
+                ".jpeg": uikit.UIImageJPEGRepresentation,
+                ".png": uikit.UIImagePNGRepresentation,
+            }[path.suffix.lower()]
+            str_path = str(path)
+        except KeyError:
+            raise ValueError(f"Don't know how to save image of type {path.suffix!r}")
+
+        data = converter(self.native)
+
+        NSData(data).writeToFile(str_path, atomically=True)

@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from toga_gtk.libs import GdkPixbuf, Gio
 
 
@@ -18,4 +20,16 @@ class Image:
         return self.native.get_height()
 
     def save(self, path):
-        self.interface.factory.not_implemented("Image.save()")
+        path = Path(path)
+        try:
+            filetype = {
+                ".jpg": "jpeg",
+                ".jpeg": "jpeg",
+                ".png": "png",
+                ".bmp": "bmp",
+            }[path.suffix.lower()]
+            str_path = str(path)
+        except KeyError:
+            raise ValueError(f"Don't know how to save image of type {path.suffix!r}")
+
+        self.native.save(str_path, filetype)

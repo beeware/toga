@@ -41,6 +41,13 @@ Usage
         my_image = toga.Image(data=f.read())
 
 
+* When saving an Image, `PNG` and `JPEG` formats are guaranteed to be available.
+  Other formats are available on some platforms:
+
+  - macOS: `GIF`, `BMP`, `TIFF`
+  - GTK: `BMP`
+  - Windows: `GIF`, `BMP`, `TIFF`
+
 Reference
 ---------
 

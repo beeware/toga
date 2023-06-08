@@ -10,5 +10,5 @@ class ImageProbe(BaseProbe):
         self.image = image
         assert isinstance(self.image._impl.native, NSImage)
 
-    def supports_extensions(self, extension):
+    def supports_extension(self, extension):
         return extension.lower() in {".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tiff"}

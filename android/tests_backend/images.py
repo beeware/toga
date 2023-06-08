@@ -1,5 +1,3 @@
-from pytest import skip
-
 from android.graphics import Bitmap
 
 from .probe import BaseProbe
@@ -12,5 +10,5 @@ class ImageProbe(BaseProbe):
         self.image = image
         assert isinstance(self.image._impl.native, Bitmap)
 
-    def supports_extensions(self, extension):
-        skip("Android doesn't support saving images")
+    def supports_extension(self, extension):
+        return extension.lower() in {".jpg", ".jpeg", ".png"}

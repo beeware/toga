@@ -48,20 +48,22 @@ async def test_save(app):
     try:
         output_folder = app.paths.data / "images"
         output_folder.mkdir(parents=True, exist_ok=True)
-        for extension in [
-            "",  # No extension
-            ".unknown",  # Something that won't exist
-            ".png",
-            ".PNG",  # Check upper case
-            ".jpg",
-            ".jpeg",
-            ".gif",
-            ".bmp",
-            ".tiff",
-        ]:
-            filename = output_folder / f"image-{os.getpid()}{extension}"
+        for i, extension in enumerate(
+            [
+                "",  # No extension
+                ".unknown",  # Something that won't exist
+                ".png",
+                ".PNG",  # Check upper case
+                ".jpg",
+                ".jpeg",
+                ".gif",
+                ".bmp",
+                ".tiff",
+            ]
+        ):
+            filename = output_folder / f"image-{os.getpid()}-{i}{extension}"
 
-            if probe.supports_extensions(extension):
+            if probe.supports_extension(extension):
                 orig_image.save(filename)
                 await probe.redraw(f"Saving {filename}")
 
@@ -77,7 +79,7 @@ async def test_save(app):
                 ):
                     orig_image.save(filename)
 
-                await probe.redraw(f"Failed to save {filename}")
+                await probe.redraw(f"Doesn't support files of type {extension!r}")
 
                 assert not filename.exists()
 

@@ -35,7 +35,7 @@ Notes
   fill the described size without preserving the aspect ratio.
 
 * If an image is is given a style of ``flex=1``, it will be allowed to expand
-  or contract in any axis that doesn't have an explcit size set. The aspect
+  or contract in any axis that doesn't have an explicit size set. The aspect
   ratio of the image will be preserved during this scaling.
 
 Reference

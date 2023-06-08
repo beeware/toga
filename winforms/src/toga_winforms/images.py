@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from toga_winforms.libs import MemoryStream, WinImage
 
 
@@ -18,4 +20,15 @@ class Image:
         return self.native.Height
 
     def save(self, path):
+        path = Path(path)
+        if path.suffix.lower() not in {
+            ".jpg",
+            ".jpeg",
+            ".png",
+            ".gif",
+            ".bmp",
+            ".tiff",
+        }:
+            raise ValueError(f"Don't know how to save image of type {path.suffix!r}")
+
         self.native.Save(str(path))
