@@ -68,7 +68,9 @@ class WebView(Widget):
         self._set_url(value, future=None)
 
     async def load_url(self, url: str):
-        """Load a URL, and (except on Android) wait until the loading has completed.
+        """Load a URL, and wait until the loading has completed.
+
+        **Note:** On Android, this method will return immediately.
 
         :param url: The URL to load.
         """
@@ -79,8 +81,10 @@ class WebView(Widget):
 
     @property
     def on_webview_load(self) -> callable:
-        """The handler to invoke when the web view finishes loading. This is not
-        currently supported on Android."""
+        """The handler to invoke when the web view finishes loading.
+
+        **Note:** This is not currently supported on Android.
+        """
         return self._on_webview_load
 
     @on_webview_load.setter
@@ -99,10 +103,11 @@ class WebView(Widget):
     def set_content(self, root_url: str, content: str):
         """Set the HTML content of the WebView.
 
-        :param root_url: A URL which will be returned by the ``url`` property, and used
-            to resolve any relative URLs in the content. On Windows, this argument is
-            not currently supported, and calling this method will set the ``url``
-            property to ``None``.
+        **Note:** On Windows, the ``root_url`` argument is ignored. Calling this
+        method will set the ``url`` property to ``None``.
+
+        :param root_url: A URL which will be returned by the ``url`` property,
+            and used to resolve any relative URLs in the content.
         :param content: The HTML content for the WebView
         """
         self._impl.set_content(root_url, content)
@@ -110,18 +115,22 @@ class WebView(Widget):
     def evaluate_javascript(self, javascript, on_result=None) -> JavaScriptResult:
         """Evaluate a JavaScript expression.
 
-        **This method is asynchronous**. It does not guarantee that the provided
-        JavaScript has finished evaluating when the method returns. The object
-        returned by this method can be awaited to obtain the value of the expression,
-        or you can provide an ``on_result`` callback.
+        **Note:** This method is *asynchronous*. It does not guarantee that the
+        provided JavaScript has finished evaluating when the method returns. The
+        object returned by this method can be awaited to obtain the value of the
+        expression, or you can provide an ``on_result`` callback.
+
+        **Note:** On Android and Windows, *no exception handling is performed*.
+        If a JavaScript error occurs, a return value of None will be reported,
+        but no exception will be provided.
 
         :param javascript: The JavaScript expression to evaluate.
-        :param on_result: A callback that will be invoked when the JavaScript completes.
-            It should take one positional argument, which is the value of the
-            expression.
+        :param on_result: A callback that will be invoked when the JavaScript
+            completes. It should take one positional argument, which is the
+            value of the expression.
 
-            If evaluation fails, the positional argument will be ``None``, and (except
-            on Android and Windows) a keyword argument ``exception`` will be passed with
-            an exception object.
+            If evaluation fails, the positional argument will be ``None``, and a
+            keyword argument ``exception`` will be passed with an exception
+            object.
         """
         return self._impl.evaluate_javascript(javascript, on_result=on_result)
