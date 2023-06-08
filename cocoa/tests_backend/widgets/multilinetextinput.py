@@ -1,5 +1,5 @@
 from toga.colors import TRANSPARENT
-from toga_cocoa.libs import NSScrollView
+from toga_cocoa.libs import NSScrollView, NSTextView
 
 from .base import SimpleProbe
 from .properties import toga_alignment, toga_color, toga_font
@@ -11,6 +11,7 @@ class MultilineTextInputProbe(SimpleProbe):
     def __init__(self, widget):
         super().__init__(widget)
         self.native_text = widget._impl.native_text
+        assert isinstance(self.native_text, NSTextView)
 
     @property
     def value(self):

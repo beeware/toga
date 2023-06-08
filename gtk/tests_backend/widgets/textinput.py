@@ -42,7 +42,7 @@ class TextInputProbe(SimpleProbe):
 
     def assert_vertical_alignment(self, expected):
         # GTK.Entry vertical alignment is non-configurable
-        return None
+        pass
 
     @property
     def readonly(self):

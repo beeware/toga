@@ -11,7 +11,7 @@ Divider,General Widget,:class:`~toga.widgets.divider.Divider`,A horizontal or ve
 ImageView,General Widget,:class:`~toga.widgets.imageview.ImageView`,Image Viewer,|b|,|b|,|b|,|b|,|b|,
 Label,General Widget,:class:`~toga.widgets.label.Label`,Text label,|y|,|y|,|y|,|y|,|y|,|b|
 MultilineTextInput,General Widget,:class:`~toga.widgets.multilinetextinput.MultilineTextInput`,Multi-line Text Input field,|y|,|y|,|y|,|y|,|y|,
-NumberInput,General Widget,:class:`~toga.widgets.numberinput.NumberInput`,Number Input field,|b|,|b|,|b|,|b|,|b|,
+NumberInput,General Widget,:class:`~toga.widgets.numberinput.NumberInput`,A text input that is limited to numeric input,|y|,|y|,|y|,|y|,|y|,
 PasswordInput,General Widget,:class:`~toga.widgets.passwordinput.PasswordInput`,A text input that hides its input,|y|,|y|,|y|,|y|,|y|,
 ProgressBar,General Widget,:class:`~toga.widgets.progressbar.ProgressBar`,Progress Bar,|y|,|y|,|y|,|y|,|y|,|b|
 Selection,General Widget,:class:`~toga.widgets.selection.Selection`,A widget to select an single option from a list of alternatives.,|b|,|b|,|b|,|b|,|b|,
@@ -27,10 +27,11 @@ Box,Layout Widget,:class:`~toga.widgets.box.Box`,Container for components,|y|,|y
 ScrollContainer,Layout Widget,:class:`~toga.widgets.scrollcontainer.ScrollContainer`,Scrollable Container,|b|,|b|,|b|,|b|,|b|,
 SplitContainer,Layout Widget,:class:`~toga.widgets.splitcontainer.SplitContainer`,Split Container,|b|,|b|,|b|,,,
 OptionContainer,Layout Widget,:class:`~toga.widgets.optioncontainer.OptionContainer`,Option Container,|b|,|b|,|b|,,,
+App Paths,Resource,:class:~`toga.paths.Paths`,A mechanism for obtaining platform-appropriate filesystem locations for an application.,|y|,|y|,|y|,|y|,|y|,
 Font,Resource,:class:`~toga.fonts.Font`,Fonts,|b|,|b|,|b|,|b|,|b|,
 Command,Resource,:class:`~toga.command.Command`,Command,|b|,|b|,|b|,,|b|,
 Group,Resource,:class:`~toga.command.Group`,Command group,|b|,|b|,|b|,|b|,|b|,
 Icon,Resource,:class:`~toga.icons.Icon`,"An icon for buttons, menus, etc",|b|,|b|,|b|,|b|,|b|,
 Image,Resource,:class:`~toga.images.Image`,An image,|b|,|b|,|b|,|b|,|b|,
 ListSource,Resource,:class:`~toga.sources.ListSource`,A data source describing an ordered list of data.,|y|,|y|,|y|,|y|,|y|,|y|
-Validators,Resource,:ref:`Validators <validators>`,Input validators,|y|,|y|,|y|,|y|,|y|,
+Validators,Resource,:ref:`Validators <validators>`,A mechanism for validating that input meets a given set of criteria.,|y|,|y|,|y|,|y|,|y|,

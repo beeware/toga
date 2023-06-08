@@ -87,11 +87,6 @@ class MultilineTextInput(Widget):
         self._impl.set_value("" if value is None else str(value))
         self.refresh()
 
-    # We don't currently support validation in this widget, but provide the method
-    # anyway to make it easier for backends to share code with TextInput.
-    def _validate(self):
-        pass
-
     def scroll_to_bottom(self):
         """Scroll the view to make the bottom of the text field visible."""
         self._impl.scroll_to_bottom()
