@@ -1,5 +1,5 @@
 from toga.widgets.imageview import rehint_imageview
-from toga_winforms.libs import Size, WinForms
+from toga_winforms.libs import Bitmap, WinForms
 
 from .base import Widget
 
@@ -10,6 +10,14 @@ class ImageView(Widget):
         self.native.interface = self.interface
         self.native.SizeMode = WinForms.PictureBoxSizeMode.Zoom
 
+        # If self.native.Image is None, Winforms renders it as a white square
+        # with a red cross through it. Ensure we always have an actual image,
+        # using a 1x1 blank bitmap for the None case.
+        self.native.Image = self._empty_image()
+
+    def _empty_image(self):
+        return Bitmap(1, 1)
+
     def set_image(self, image):
         # If an image already exists, ensure it is destroyed
         if self.native.Image is not None:
@@ -18,17 +26,7 @@ class ImageView(Widget):
         if image:
             self.native.Image = self.interface._image._impl.native
         else:
-            width = 0
-            height = 0
-            if self.interface.style.width:
-                width = self.interface.style.width
-            if self.interface.style.height:
-                height = self.interface.style.height
-
-            self.native.Size = Size(width, height)
-            # Setting background color to white is not necessary, but it shows the
-            # picture frame
-            # self.native.BackColor = Color.White
+            self.native.Image = self._empty_image()
 
     def rehint(self):
         width, height, preserve_aspect_ratio = rehint_imageview(

@@ -8,4 +8,4 @@ class ImageViewProbe(SimpleProbe):
 
     @property
     def preserve_aspect_ratio(self):
-        return self.native.getScaleType() == WinForms.PictureBoxSizeMode.Zoom
+        return self.native.SizeMode == WinForms.PictureBoxSizeMode.Zoom
