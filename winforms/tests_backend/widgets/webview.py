@@ -12,5 +12,4 @@ class WebViewProbe(SimpleProbe):
     # https://github.com/MicrosoftEdge/WebView2Feedback/issues/983
     javascript_supports_exception = False
 
-    async def get_page_content(self):
-        return await self.impl.evaluate_javascript("document.body.innerHTML")
+    supports_on_load = True

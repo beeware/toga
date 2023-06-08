@@ -25,7 +25,6 @@ KEY_CODES.update(
 class SimpleProbe:
     def __init__(self, widget):
         self.widget = widget
-        self.impl = widget._impl
         self.native = widget._impl.native
         assert isinstance(self.native, self.native_class)
         self.scale_factor = self.native.CreateGraphics().DpiX / 96

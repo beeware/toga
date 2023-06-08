@@ -30,7 +30,7 @@ async def assert_content_change(widget, probe, message, url, content):
     # Loop for up to a second for a change to occur
     while timer > 0 and not changed:
         new_url = widget.url
-        new_content = await probe.get_page_content()
+        new_content = await widget.evaluate_javascript("document.body.innerHTML")
 
         changed = new_url == url and new_content == content
         if not changed:
@@ -70,7 +70,10 @@ async def test_clear_url(widget, probe):
     )
 
     # The load hander was invoked.
-    on_webview_load_handler.assert_called_with(widget)
+    if probe.supports_on_load:
+        on_webview_load_handler.assert_called_with(widget)
+    else:
+        on_webview_load_handler.assert_not_called()
 
 
 async def test_load_url(widget, probe):
@@ -90,7 +93,10 @@ async def test_load_url(widget, probe):
     )
 
     # The load hander was invoked.
-    on_webview_load_handler.assert_called_with(widget)
+    if probe.supports_on_load:
+        on_webview_load_handler.assert_called_with(widget)
+    else:
+        on_webview_load_handler.assert_not_called()
 
 
 async def test_static_content(widget, probe):
@@ -110,7 +116,10 @@ async def test_static_content(widget, probe):
     )
 
     # The load hander was invoked.
-    on_webview_load_handler.assert_called_with(widget)
+    if probe.supports_on_load:
+        on_webview_load_handler.assert_called_with(widget)
+    else:
+        on_webview_load_handler.assert_not_called()
 
 
 async def test_user_agent(widget, probe):

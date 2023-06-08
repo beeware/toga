@@ -128,6 +128,7 @@ class WebView(Widget):
 
     @requires_corewebview2
     def set_content(self, root_url, content):
+        # There appears to be no way to pass the root_url.
         self.native.NavigateToString(content)
 
     def get_user_agent(self):
@@ -145,6 +146,8 @@ class WebView(Widget):
         task_scheduler = TaskScheduler.FromCurrentSynchronizationContext()
 
         def callback(task):
+            # If the evaluation fails, task.Result will be "null", with no way to
+            # distinguish it from an actual null return value.
             value = json.loads(task.Result)
             result.future.set_result(value)
             if on_result:
