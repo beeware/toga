@@ -1,18 +1,18 @@
 Scroll Container
 ================
 
+An container widget that can display a layout larger that the area of the
+container, with overflow controlled by scrollbars.
+
+.. figure:: /reference/images/ScrollContainer.png
+   :align: center
+
 .. rst-class:: widget-support
 .. csv-filter:: Availability (:ref:`Key <api-status-key>`)
    :header-rows: 1
    :file: ../../data/widgets_by_platform.csv
    :included_cols: 4,5,6,7,8,9
    :exclude: {0: '(?!(ScrollContainer|Component))'}
-
-The Scroll Container is similar to the ``iframe`` or scrollable ``div`` element in HTML, it contains an object with
-its own scrollable selection.
-
-.. figure:: /reference/images/ScrollContainer.jpeg
-    :align: center
 
 Usage
 -----
@@ -21,24 +21,9 @@ Usage
 
     import toga
 
-    content = toga.WebView()
+    content = toga.Box(children=[...])
 
     container = toga.ScrollContainer(content=content)
-
-Scroll settings
----------------
-
-Horizontal or vertical scroll can be set via the initializer or using the property.
-
-.. code-block:: python
-
-    import toga
-
-    content = toga.WebView()
-
-    container = toga.ScrollContainer(content=content, horizontal=False)
-
-    container.vertical = False
 
 Reference
 ---------
