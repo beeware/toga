@@ -37,8 +37,8 @@ async def assert_content_change(widget, probe, message, url, content):
             timer -= 0.05
             await asyncio.sleep(0.05)
 
-    assert new_url == url
-    assert new_content == content
+    if not changed:
+        pytest.fail(f"{new_url=!r}, {url=!r}, {new_content[:50]=!r}, {content=!r}")
 
 
 @pytest.fixture
