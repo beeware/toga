@@ -1,5 +1,0 @@
-The ``on_key_down`` handler has been removed from WebView. If you need to catch user input, either use a handler in the embedded Javascript, or create a ``Command`` with a key shortcut.
-The ``get_dom()`` method on WebView has been removed. This method wasn't implemented on most platforms, and wasn't working on any of the platforms where it *was* implemented, as modern web view implementations don't provide a synchronous API for accessing web content in this way.
-The ``evaluate_javascript()`` method on WebView has been modified to work in both synchronous and asynchronous contexts. In a synchronous context you can invoke the method and use a functional ``on_result`` callback to be notified when evaluation is complete. In an asynchronous context, you can await the result.
-The ``invoke_javascript()`` method has been removed. All usage of ``invoke_javascript()`` can be replaced with ``evaluate_javascript()``.
-The usage of local ``file://`` URLs has been explicitly prohibited. ``file://`` URLs have not been reliable for some time; their usage is now explicitly prohibited.
