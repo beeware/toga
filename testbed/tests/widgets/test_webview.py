@@ -180,7 +180,9 @@ async def test_evaluate_javascript_error(widget, probe):
         result = await widget.evaluate_javascript(
             "not valid js", on_result=on_result_handler
         )
-    assert result is None
+        # If the backend supports exceptions, the previous line should have raised one.
+        assert not probe.javascript_supports_exception
+        assert result is None
 
     # The same value was passed to the on-result handler
     on_result_handler.assert_called_once()
@@ -197,4 +199,6 @@ async def test_evaluate_javascript_error_without_handler(widget, probe):
     "A handler isn't needed to propegate a JavaScript error"
     with javascript_error_context(probe):
         result = await widget.evaluate_javascript("not valid js")
-    assert result is None
+        # If the backend supports exceptions, the previous line should have raised one.
+        assert not probe.javascript_supports_exception
+        assert result is None
