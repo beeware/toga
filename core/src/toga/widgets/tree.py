@@ -1,7 +1,7 @@
 import warnings
 
 from toga.handlers import wrapped_handler
-from toga.sources import TreeSource
+from toga.sources import Source, TreeSource
 from toga.sources.accessors import build_accessors
 
 from .base import Widget
@@ -10,7 +10,8 @@ from .base import Widget
 class Tree(Widget):
     """Tree Widget.
 
-    :param headings: The list of headings for the interface.
+    :param headings: The list of headings for the interface. If not provided,
+        the header will not be displayed
     :param id:  An identifier for this widget.
     :param style: An optional style object. If no style is provided then a new
         one will be created for the widget.
@@ -45,7 +46,7 @@ class Tree(Widget):
 
     def __init__(
         self,
-        headings,
+        headings=None,
         id=None,
         style=None,
         data=None,
@@ -67,7 +68,31 @@ class Tree(Widget):
         # End backwards compatibility.
         ######################################################################
 
-        self.headings = headings
+        # Synthesize accessors if needed
+        if not headings and not accessors:
+            if not data or isinstance(data, Source):
+                raise ValueError(
+                    "Either headings or accessors must be set for the provided data."
+                )
+            if isinstance(data, (list, tuple)):
+                node_data = data[0]
+                if isinstance(node_data, dict):
+                    accessors = list(node_data.keys())
+                elif isinstance(node_data, (list, tuple)):
+                    accessors = [f"_{i}" for i in range(len(node_data))]
+                else:
+                    raise TypeError(
+                        "The values inside the data argument must be a list, tuple, dict"
+                    )
+            elif isinstance(data, dict):
+                node_data = list(data.keys())[0]
+                accessors = [f"_{i}" for i in range(len(node_data))]
+            else:
+                raise TypeError(
+                    "The data argument must be a list, tuple, dict, or inherit toga.sources.Source"
+                )
+
+        self._headings = headings
         self._accessors = build_accessors(headings, accessors)
         self._multiple_select = multiple_select
         self._data = None
@@ -110,6 +135,13 @@ class Tree(Widget):
 
         self._data.add_listener(self._impl)
         self._impl.change_source(source=self._data)
+
+    @property
+    def headings(self):
+        """
+        :returns: The headings of the tree
+        """
+        return self._headings
 
     @property
     def multiple_select(self):

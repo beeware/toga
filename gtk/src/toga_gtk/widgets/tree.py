@@ -28,7 +28,12 @@ class Tree(Widget):
             self.selection.set_mode(Gtk.SelectionMode.SINGLE)
         self.selection.connect("changed", self.gtk_on_select)
 
-        for i, heading in enumerate(self.interface.headings):
+        if self.interface.headings:
+            _headings = self.interface.headings
+        else:
+            _headings = self.interface._accessors
+            self.treeview.set_headers_visible(False)
+        for i, heading in enumerate(_headings):
             renderer = Gtk.CellRendererText()
             column = Gtk.TreeViewColumn(heading, renderer, text=i + 1)
             self.treeview.append_column(column)

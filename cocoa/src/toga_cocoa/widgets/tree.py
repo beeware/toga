@@ -218,6 +218,8 @@ class Tree(Widget):
         self.tree.columnAutoresizingStyle = NSTableViewColumnAutoresizingStyle.Uniform
         self.tree.usesAlternatingRowBackgroundColors = True
         self.tree.allowsMultipleSelection = self.interface.multiple_select
+        if self.interface.headings is None:
+            self.tree.headerView = None
 
         # Create columns for the tree
         self.columns = []
@@ -225,9 +227,7 @@ class Tree(Widget):
         # conversion from ObjC string to Python String, create the
         # ObjC string once and cache it.
         self.column_identifiers = {}
-        for i, (heading, accessor) in enumerate(
-            zip(self.interface.headings, self.interface._accessors)
-        ):
+        for accessor in self.interface._accessors:
             column_identifier = at(accessor)
             self.column_identifiers[id(column_identifier)] = accessor
             column = NSTableColumn.alloc().initWithIdentifier(column_identifier)
@@ -238,8 +238,9 @@ class Tree(Widget):
             #     column.sortDescriptorPrototype = sort_descriptor
             self.tree.addTableColumn(column)
             self.columns.append(column)
-
-            column.headerCell.stringValue = heading
+        if self.interface.headings:
+            for i, heading in enumerate(self.interface.headings):
+                self.columns[i].headerCell.stringValue = heading
 
         # Put the tree arrows in the first column.
         self.tree.outlineTableColumn = self.columns[0]

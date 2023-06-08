@@ -53,7 +53,17 @@ def build_accessors(headings, accessors):
         A finalised list of accessors.
     """
     if accessors:
-        if isinstance(accessors, dict):
+        if headings is None:
+            if not isinstance(accessors, (list, tuple)):
+                raise TypeError(
+                    "When no headings are provided, accessors must be a list or tuple"
+                )
+            if not all(accessors):
+                raise ValueError(
+                    "When no headings are provided, all accessors must be defined"
+                )
+            result = accessors
+        elif isinstance(accessors, dict):
             result = [
                 accessors[h] if h in accessors else to_accessor(h) for h in headings
             ]
@@ -66,7 +76,10 @@ def build_accessors(headings, accessors):
                 for h, a in zip(headings, accessors)
             ]
     else:
-        result = [to_accessor(h) for h in headings]
+        if headings:
+            result = [to_accessor(h) for h in headings]
+        else:
+            raise ValueError("Either headings or accessors must be provided")
 
     if len(result) != len(set(result)):
         raise ValueError("Data accessors are not unique.")
