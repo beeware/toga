@@ -257,12 +257,11 @@ class TreeSource(Source):
         if isinstance(value, dict):
             return [
                 self._create_node(parent=parent, data=data, children=children)
-                for data, children in sorted(value.items())
+                for data, children in value.items()
             ]
         elif hasattr(value, "__iter__") and not isinstance(value, str):
             return [
-                self._create_node(parent=parent, data=item[0], children=item[1])
-                for item in value
+                self._create_node(data, children) for data, children in value.items()
             ]
         else:
             return [self._create_node(parent=parent, data=value)]
