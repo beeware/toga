@@ -1,20 +1,11 @@
-import warnings
+from __future__ import annotations
+
+from toga.handlers import wrapped_handler
 
 from .base import Widget
 
 
 class ScrollContainer(Widget):
-    """Instantiate a new instance of the scrollable container widget.
-
-    Args:
-        id (str): An identifier for this widget.
-        style (:obj:`Style`): An optional style object.
-            If no style is provided then a new one will be created for the widget.
-        horizontal (bool):  If True enable horizontal scroll bar.
-        vertical (bool): If True enable vertical scroll bar.
-        content (:class:`~toga.widgets.base.Widget`): The content of the scroll window.
-    """
-
     MIN_WIDTH = 100
     MIN_HEIGHT = 100
 
@@ -22,28 +13,26 @@ class ScrollContainer(Widget):
         self,
         id=None,
         style=None,
-        horizontal=True,
-        vertical=True,
-        on_scroll=None,
-        content=None,
-        factory=None,  # DEPRECATED!
+        horizontal: bool = True,
+        vertical: bool = True,
+        on_scroll: callable | None = None,
+        content: Widget | None = None,
     ):
+        """Create a new Scroll Container.
+
+        Inherits from :class:`~toga.widgets.base.Widget`.
+
+        :param id: The ID for the widget.
+        :param style: A style object. If no style is provided, a default style
+            will be applied to the widget.
+        :param horizontal: Should horizontal scrolling be permitted?
+        :param vertical: Should horizontal scrolling be permitted?
+        :param on_scroll: Initial :any:`on_scroll` handler.
+        :param content: The content to display in the scroll window.
+        """
         super().__init__(id=id, style=style)
 
-        ######################################################################
-        # 2022-09: Backwards compatibility
-        ######################################################################
-        # factory no longer used
-        if factory:
-            warnings.warn("The factory argument is no longer used.", DeprecationWarning)
-        ######################################################################
-        # End backwards compatibility.
-        ######################################################################
-
-        self._vertical = vertical
-        self._horizontal = horizontal
         self._content = None
-
         # Create a platform specific implementation of a Scroll Container
         self._impl = self.factory.ScrollContainer(interface=self)
 
@@ -59,8 +48,8 @@ class ScrollContainer(Widget):
         Widget.app.fset(self, app)
 
         # Also assign the app to the content in the container
-        if self.content:
-            self.content.app = app
+        if self._content:
+            self._content.app = app
 
     @Widget.window.setter
     def window(self, window):
@@ -72,26 +61,27 @@ class ScrollContainer(Widget):
             self._content.window = window
 
     @property
-    def content(self):
-        """Content of the scroll container.
-
-        Returns:
-            The content of the widget (:class:`~toga.widgets.base.Widget`).
-        """
+    def content(self) -> Widget:
+        """The root content widget displayed inside the scroll container."""
         return self._content
 
     @content.setter
     def content(self, widget):
+        if self._content:
+            self._content.app = None
+            self._content.window = None
+
         if widget:
             widget.app = self.app
             widget.window = self.window
 
             self._content = widget
-
             self._impl.set_content(widget._impl)
-            self.refresh()
+        else:
+            self._content = None
+            self._impl.set_content(None)
 
-            widget.refresh()
+        self.refresh()
 
     def refresh_sublayouts(self):
         """Refresh the layout and appearance of this widget."""
@@ -99,44 +89,44 @@ class ScrollContainer(Widget):
             self._content.refresh()
 
     @property
-    def vertical(self):
-        """Shows whether vertical scrolling is enabled.
-
-        Returns:
-            (bool) True if enabled, False if disabled.
-        """
-        return self._vertical
+    def vertical(self) -> bool:
+        """Is vertical scrolling enabled?"""
+        return self._impl.get_vertical()
 
     @vertical.setter
     def vertical(self, value):
-        self._vertical = value
-        self._impl.set_vertical(value)
+        self._impl.set_vertical(bool(value))
+        self.refresh_sublayouts()
 
     @property
-    def horizontal(self):
-        """Shows whether horizontal scrolling is enabled.
-
-        Returns:
-            (bool) True if enabled, False if disabled.
-        """
-        return self._horizontal
+    def horizontal(self) -> bool:
+        """Is horizontal scrolling enabled?"""
+        return self._impl.get_horizontal()
 
     @horizontal.setter
     def horizontal(self, value):
-        self._horizontal = value
-        self._impl.set_horizontal(value)
+        self._impl.set_horizontal(bool(value))
+        self.refresh_sublayouts()
 
     @property
-    def on_scroll(self):
+    def on_scroll(self) -> callable:
+        """Handler to invoke when the user moves a scroll bar."""
         return self._on_scroll
 
     @on_scroll.setter
     def on_scroll(self, on_scroll):
-        self._on_scroll = on_scroll
-        self._impl.set_on_scroll(on_scroll)
+        self._on_scroll = wrapped_handler(self, on_scroll)
 
     @property
-    def horizontal_position(self):
+    def horizontal_position(self) -> float:
+        """The current horizontal scroller position.
+
+        Raises :any:`ValueError` if horizontal scrolling is not enabled.
+        """
+        if not self.horizontal:
+            raise ValueError(
+                "Cannot get horizontal position when horizontal is not set."
+            )
         return self._impl.get_horizontal_position()
 
     @horizontal_position.setter
@@ -145,14 +135,20 @@ class ScrollContainer(Widget):
             raise ValueError(
                 "Cannot set horizontal position when horizontal is not set."
             )
-        self._impl.set_horizontal_position(horizontal_position)
+        self._impl.set_horizontal_position(float(horizontal_position))
 
     @property
-    def vertical_position(self):
+    def vertical_position(self) -> float:
+        """The current vertical scroller position.
+
+        Raises :any:`ValueError` if vertical scrolling is not enabled.
+        """
+        if not self.vertical:
+            raise ValueError("Cannot get vertical position when vertical is not set.")
         return self._impl.get_vertical_position()
 
     @vertical_position.setter
     def vertical_position(self, vertical_position):
         if not self.vertical:
             raise ValueError("Cannot set vertical position when vertical is not set.")
-        self._impl.set_vertical_position(vertical_position)
+        self._impl.set_vertical_position(float(vertical_position))
