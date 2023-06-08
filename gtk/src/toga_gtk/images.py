@@ -32,4 +32,4 @@ class Image:
         except KeyError:
             raise ValueError(f"Don't know how to save image of type {path.suffix!r}")
 
-        self.native.save(str_path, filetype)
+        self.native.savev(str_path, filetype)
