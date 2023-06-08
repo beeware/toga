@@ -25,4 +25,4 @@ class AppProbe(BaseProbe):
 
     @property
     def logs_path(self):
-        return Path.home() / ".cache" / "testbed" / "log"
+        return Path.home() / ".local" / "state" / "testbed" / "log"

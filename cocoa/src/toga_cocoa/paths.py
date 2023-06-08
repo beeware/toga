@@ -8,7 +8,7 @@ class Paths:
         self.interface = interface
 
     def get_config_path(self):
-        return Path.home() / "Library" / "Application Support" / App.app.app_id
+        return Path.home() / "Library" / "Preferences" / App.app.app_id
 
     def get_data_path(self):
         return Path.home() / "Library" / "Application Support" / App.app.app_id
