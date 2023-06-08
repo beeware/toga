@@ -4,8 +4,8 @@ from .base import SimpleProbe
 
 
 class ImageViewProbe(SimpleProbe):
-    native_class = Gtk.Box
+    native_class = Gtk.Image
 
     @property
     def preserve_aspect_ratio(self):
-        return self.impl._preserve_aspect_ratio
+        return self.impl._aspect_ratio is not None
