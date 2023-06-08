@@ -71,7 +71,6 @@ async def test_save(app):
                 new_image = toga.Image(filename)
                 assert new_image.width == orig_image.width
                 assert new_image.height == orig_image.height
-
             else:
                 with pytest.raises(
                     ValueError,
@@ -85,4 +84,14 @@ async def test_save(app):
 
     finally:
         if output_folder.exists():
-            shutil.rmtree(output_folder)
+            try:
+                shutil.rmtree(output_folder)
+            except PermissionError:
+                # On Winforms, Python.net has open file references to the
+                # `new_image` instances created to validate that the image was
+                # successfully saved. These will be garbage collected
+                # eventually, but there's non way to force the issue for test
+                # cleanup. The files will be cleaned up the next time the test
+                # suite is run; and the files have a PID in them to ensure that
+                # they're unique across test runs.
+                pass

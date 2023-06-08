@@ -19,9 +19,8 @@ class ImageView(Widget):
         return Bitmap(1, 1)
 
     def set_image(self, image):
-        # If an image already exists, ensure it is destroyed
-        if self.native.Image is not None:
-            self.native.Image.Dispose()
+        # Destroy the existing image.
+        self.native.Image.Dispose()
 
         if image:
             self.native.Image = self.interface._image._impl.native
