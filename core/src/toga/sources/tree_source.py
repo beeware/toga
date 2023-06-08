@@ -92,8 +92,7 @@ class TreeSource(Source):
     def _create_nodes(self, data):
         if isinstance(data, dict):
             return [
-                self._create_node(value, children)
-                for value, children in sorted(data.items())
+                self._create_node(value, children) for value, children in data.items()
             ]
         else:
             return [self._create_node(value) for value in data]
