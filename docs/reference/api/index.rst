@@ -69,7 +69,7 @@ Resources
 ========================================================= ========================================================================
  Component                                                 Description
 ========================================================= ========================================================================
- :doc:`App Paths </reference/api/resources/paths>`         A mechanism for obtaining platform-appropriate file system locations
+ :doc:`App Paths </reference/api/resources/app_paths>`     A mechanism for obtaining platform-appropriate file system locations
                                                            for an application.
  :doc:`Font </reference/api/resources/fonts>`              Fonts
  :doc:`Command </reference/api/resources/command>`         Command

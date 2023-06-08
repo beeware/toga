@@ -3,7 +3,7 @@ Resources
 
 .. toctree::
 
-   paths
+   app_paths
    fonts
    command
    group
