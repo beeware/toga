@@ -29,13 +29,13 @@ class ImageView(Widget):
             self.native.Image = self._empty_image()
 
     def rehint(self):
-        width, height, preserve_aspect_ratio = rehint_imageview(
+        width, height, aspect_ratio = rehint_imageview(
             image=self.interface.image,
             style=self.interface.style,
         )
         self.interface.intrinsic.width = width
         self.interface.intrinsic.height = height
-        if preserve_aspect_ratio:
+        if aspect_ratio is not None:
             self.native.SizeMode = WinForms.PictureBoxSizeMode.Zoom
         else:
             self.native.SizeMode = WinForms.PictureBoxSizeMode.StretchImage

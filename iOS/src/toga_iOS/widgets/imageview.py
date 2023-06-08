@@ -22,13 +22,13 @@ class ImageView(Widget):
             self.native.image = None
 
     def rehint(self):
-        width, height, preserve_aspect_ratio = rehint_imageview(
+        width, height, aspect_ratio = rehint_imageview(
             image=self.interface.image,
             style=self.interface.style,
         )
         self.interface.intrinsic.width = width
         self.interface.intrinsic.height = height
-        if preserve_aspect_ratio:
+        if aspect_ratio is not None:
             self.native.contentMode = UIViewContentMode.ScaleAspectFit
         else:
             self.native.contentMode = UIViewContentMode.ScaleToFill

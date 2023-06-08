@@ -115,32 +115,32 @@ def test_set_image_none(app):
 
 
 @pytest.mark.parametrize(
-    "params, expected_width, expected_height, expected_preserve_aspect_ratio",
+    "params, expected_width, expected_height, expected_aspect_ratio",
     [
         # Intrinsic image size
-        (dict(style=Pack()), 60, 40, True),
-        (dict(style=Pack(), scale=2), 120, 80, True),
+        (dict(style=Pack()), 60, 40, 1.5),
+        (dict(style=Pack(), scale=2), 120, 80, 1.5),
         # Fixed width
-        (dict(style=Pack(width=150)), 150, 100, True),
-        (dict(style=Pack(width=150), scale=2), 300, 200, True),
+        (dict(style=Pack(width=150)), 150, 100, 1.5),
+        (dict(style=Pack(width=150), scale=2), 300, 200, 1.5),
         # Fixed height
-        (dict(style=Pack(height=80)), 120, 80, True),
-        (dict(style=Pack(height=80), scale=2), 240, 160, True),
+        (dict(style=Pack(height=80)), 120, 80, 1.5),
+        (dict(style=Pack(height=80), scale=2), 240, 160, 1.5),
         # Explicit image size
-        (dict(style=Pack(width=37, height=42)), 37, 42, False),
-        (dict(style=Pack(width=37, height=42), scale=2), 74, 84, False),
+        (dict(style=Pack(width=37, height=42)), 37, 42, None),
+        (dict(style=Pack(width=37, height=42), scale=2), 74, 84, None),
         # Intrinsic image size, flex widget
-        (dict(style=Pack(flex=1)), at_least(60), at_least(40), True),
-        (dict(style=Pack(flex=1), scale=2), at_least(120), at_least(80), True),
+        (dict(style=Pack(flex=1)), at_least(60), at_least(40), 1.5),
+        (dict(style=Pack(flex=1), scale=2), at_least(120), at_least(80), 1.5),
         # Fixed width, flex widget
-        (dict(style=Pack(width=150, flex=1)), 150, at_least(100), True),
-        (dict(style=Pack(width=150, flex=1), scale=2), 300, at_least(200), True),
+        (dict(style=Pack(width=150, flex=1)), 150, at_least(100), 1.5),
+        (dict(style=Pack(width=150, flex=1), scale=2), 300, at_least(200), 1.5),
         # Fixed height, flex widget
-        (dict(style=Pack(height=80, flex=1)), at_least(120), 80, True),
-        (dict(style=Pack(height=80, flex=1), scale=2), at_least(240), 160, True),
+        (dict(style=Pack(height=80, flex=1)), at_least(120), 80, 1.5),
+        (dict(style=Pack(height=80, flex=1), scale=2), at_least(240), 160, 1.5),
         # Explicit image size, flex widget
-        (dict(style=Pack(width=37, height=42, flex=1)), 37, 42, False),
-        (dict(style=Pack(width=37, height=42, flex=1), scale=2), 74, 84, False),
+        (dict(style=Pack(width=37, height=42, flex=1)), 37, 42, None),
+        (dict(style=Pack(width=37, height=42, flex=1), scale=2), 74, 84, None),
     ],
 )
 def test_rehint_image(
@@ -148,14 +148,14 @@ def test_rehint_image(
     params,
     expected_width,
     expected_height,
-    expected_preserve_aspect_ratio,
+    expected_aspect_ratio,
 ):
     image = toga.Image(path="resources/toga.png")
 
-    width, height, preserve_aspect_ratio = rehint_imageview(image=image, **params)
+    width, height, aspect_ratio = rehint_imageview(image=image, **params)
     assert width == expected_width
     assert height == expected_height
-    assert preserve_aspect_ratio == expected_preserve_aspect_ratio
+    assert aspect_ratio == expected_aspect_ratio
 
 
 @pytest.mark.parametrize(
@@ -172,7 +172,7 @@ def test_rehint_image(
     ],
 )
 def test_rehint_empty_image(params):
-    width, height, preserve_aspect_ratio = rehint_imageview(image=None, **params)
+    width, height, aspect_ratio = rehint_imageview(image=None, **params)
     assert width == 0
     assert height == 0
-    assert not preserve_aspect_ratio
+    assert aspect_ratio is None

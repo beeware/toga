@@ -23,12 +23,12 @@ class ImageView(Widget):
         # which is 160: https://developer.android.com/training/multiscreen/screendensities
         scale = float(dpi) / 160
 
-        width, height, preserve_aspect_ratio = rehint_imageview(
+        width, height, aspect_ratio = rehint_imageview(
             image=self.interface.image, style=self.interface.style, scale=scale
         )
         self.interface.intrinsic.width = width
         self.interface.intrinsic.height = height
-        if preserve_aspect_ratio:
+        if aspect_ratio is not None:
             self.native.setScaleType(A_ImageView.ScaleType.FIT_CENTER)
         else:
             self.native.setScaleType(A_ImageView.ScaleType.FIT_XY)
