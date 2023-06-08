@@ -1,1 +1,1 @@
-GTK now returns ``~/.local/state/appname/log`` as the log file location, rather than ``~/.cache/appname/log``.
+Winforms now returns ``AppData/Local/<Author Name>/<App Name>/Data`` as the user data file location, rather than ``AppData/Local/<Author Name>/<App Name>``.

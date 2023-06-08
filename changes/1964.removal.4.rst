@@ -1,0 +1,1 @@
+On Android, the user data folder is now a ``data`` subdirectory of the location returned by ``context.getFilesDir()``, rather than the bare ``context.getFilesDir()`` location.

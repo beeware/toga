@@ -38,11 +38,6 @@ Each location provided by the :class:`~toga.paths.Paths` object is a
 :class:`pathlib.Path` that can be used to construct a full file path. If
 required, additional sub-folders can be created under these locations.
 
-The paths returned are *not* guaranteed to be empty or unique. For example, you
-should not assume that the user data location *only* contains user data files.
-Depending on platform conventions, the user data folder may be shared with
-files or folders with other purposes.
-
 You should not assume that any of these paths already exist. The location is
 guaranteed to follow operating system conventions, but the application is
 responsible for ensuring the folder exists prior to writing files in these

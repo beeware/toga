@@ -12,10 +12,10 @@ class Paths:
         return App.app._impl.native.getApplicationContext()
 
     def get_config_path(self):
-        return Path(self.__context.getFilesDir().getPath())
+        return Path(self.__context.getFilesDir().getPath()) / "config"
 
     def get_data_path(self):
-        return Path(self.__context.getFilesDir().getPath())
+        return Path(self.__context.getFilesDir().getPath()) / "data"
 
     def get_cache_path(self):
         return Path(self.__context.getCacheDir().getPath())
