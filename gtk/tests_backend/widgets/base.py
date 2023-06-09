@@ -1,13 +1,15 @@
-import asyncio
 from threading import Event
 
 from toga_gtk.libs import Gdk, Gtk
 
+from ..probe import BaseProbe
 from .properties import toga_color, toga_font
 
 
-class SimpleProbe:
+class SimpleProbe(BaseProbe):
     def __init__(self, widget):
+        super().__init__()
+        self.app = widget.app
         self.widget = widget
         self.impl = widget._impl
         self.native = widget._impl.native
@@ -35,22 +37,8 @@ class SimpleProbe:
     def assert_alignment(self, expected):
         assert self.alignment == expected
 
-    def assert_font_family(self, expected):
-        assert self.font.family == expected
-
-    async def redraw(self, message=None, delay=None):
-        """Request a redraw of the app, waiting until that redraw has completed."""
-        # Force a repaint
-        while self.impl.container.needs_redraw or Gtk.events_pending():
-            Gtk.main_iteration_do(blocking=False)
-
-        # If we're running slow, wait for a second
-        if self.widget.app.run_slow:
-            print("Waiting for redraw" if message is None else message)
-            delay = 1
-
-        if delay:
-            await asyncio.sleep(delay)
+    def repaint_needed(self):
+        return self.impl.container.needs_redraw or super().repaint_needed()
 
     @property
     def enabled(self):

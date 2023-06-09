@@ -1,0 +1,1 @@
+The location returned by ``toga.App.paths.app`` is now the folder that contains the Python source file that defines the app class used by the app. If you are using a ``toga.App`` instance directly, this may alter the path that is returned.

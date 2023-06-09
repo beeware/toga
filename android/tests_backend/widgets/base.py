@@ -12,9 +12,9 @@ from android.graphics.drawable import (
 from android.os import Build
 from android.view import View, ViewTreeObserver
 from toga.colors import TRANSPARENT
-from toga.fonts import SYSTEM
 from toga.style.pack import JUSTIFY, LEFT
 
+from ..probe import BaseProbe
 from .properties import toga_color
 
 
@@ -28,8 +28,10 @@ class LayoutListener(dynamic_proxy(ViewTreeObserver.OnGlobalLayoutListener)):
         self.event.clear()
 
 
-class SimpleProbe:
+class SimpleProbe(BaseProbe):
     def __init__(self, widget):
+        super().__init__()
+        self.app = widget.app
         self.widget = widget
         self.native = widget._impl.native
         self.layout_listener = LayoutListener()
@@ -70,25 +72,12 @@ class SimpleProbe:
         else:
             assert actual == expected
 
-    def assert_font_family(self, expected):
-        actual = self.font.family
-        if expected == SYSTEM:
-            assert actual == "sans-serif"
-        else:
-            assert actual == expected
-
     async def redraw(self, message=None, delay=None):
         """Request a redraw of the app, waiting until that redraw has completed."""
         self.native.requestLayout()
         await self.layout_listener.event.wait()
 
-        # If we're running slow, wait for a second
-        if self.widget.app.run_slow:
-            print("Waiting for redraw" if message is None else message)
-            delay = 1
-
-        if delay:
-            await asyncio.sleep(delay)
+        await super().redraw(message=message, delay=delay)
 
     @property
     def enabled(self):

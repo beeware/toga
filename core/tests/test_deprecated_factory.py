@@ -1,5 +1,4 @@
 import toga
-import toga_dummy
 from toga.fonts import SANS_SERIF
 from toga_dummy.utils import TestCase
 
@@ -64,7 +63,7 @@ class DeprecatedFactoryTests(TestCase):
         self.assertNotEqual(widget.factory, self.factory)
 
     def test_image(self):
-        resource_path = toga_dummy.factory.paths.toga
+        resource_path = toga.App.app.paths.toga
         image = toga.Image(resource_path / "resources/toga.png")
         with self.assertWarns(DeprecationWarning):
             image.bind(factory=self.factory)

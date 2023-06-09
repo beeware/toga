@@ -66,16 +66,18 @@ Layout widgets
 Resources
 ---------
 
-========================================================= =================================
+========================================================= ========================================================================
  Component                                                 Description
-========================================================= =================================
+========================================================= ========================================================================
+ :doc:`App Paths </reference/api/resources/app_paths>`     A mechanism for obtaining platform-appropriate file system locations
+                                                           for an application.
  :doc:`Font </reference/api/resources/fonts>`              Fonts
  :doc:`Command </reference/api/resources/command>`         Command
  :doc:`Group </reference/api/resources/group>`             Command group
  :doc:`Icon </reference/api/resources/icons>`              An icon for buttons, menus, etc
  :doc:`Image </reference/api/resources/images>`            An image
- :doc:`Validators </reference/api/resources/validators>`   Input validators
-========================================================= =================================
+ :doc:`Validators </reference/api/resources/validators>`   A mechanism for validating that input meets a given set of criteria.
+========================================================= ========================================================================
 
 .. toctree::
    :hidden:

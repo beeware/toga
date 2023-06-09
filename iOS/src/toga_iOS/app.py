@@ -39,6 +39,7 @@ class PythonAppDelegate(UIResponder):
         self, application, launchOptions
     ) -> bool:
         print("App finished launching.")
+        App.app.native = application
         App.app.create()
 
         NSNotificationCenter.defaultCenter.addObserver(
@@ -96,7 +97,11 @@ class App:
     def __init__(self, interface):
         self.interface = interface
         self.interface._impl = self
-        App.app = self  # Add a reference for the PythonAppDelegate class to use.
+        # Native instance doesn't exist until the lifecycle completes.
+        self.native = None
+
+        # Add a reference for the PythonAppDelegate class to use.
+        App.app = self
 
         asyncio.set_event_loop_policy(EventLoopPolicy())
         self.loop = asyncio.new_event_loop()

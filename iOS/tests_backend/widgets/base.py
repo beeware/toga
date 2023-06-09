@@ -1,8 +1,6 @@
-import asyncio
+from toga_iOS.libs import UIApplication
 
-from toga.fonts import CURSIVE, FANTASY, MONOSPACE, SANS_SERIF, SERIF, SYSTEM
-from toga_iOS.libs import NSRunLoop, UIApplication
-
+from ..probe import BaseProbe
 from .properties import toga_color
 
 # From UIControl.h
@@ -33,8 +31,10 @@ UIControlEventSystemReserved = 0xF0000000  # range reserved for internal framewo
 UIControlEventAllEvents = 0xFFFFFFFF
 
 
-class SimpleProbe:
+class SimpleProbe(BaseProbe):
     def __init__(self, widget):
+        super().__init__()
+        self.app = widget.app
         self.widget = widget
         self.impl = widget._impl
         self.native = widget._impl.native
@@ -55,32 +55,12 @@ class SimpleProbe:
     def assert_alignment(self, expected):
         assert self.alignment == expected
 
-    def assert_font_family(self, expected):
-        assert self.font.family == {
-            CURSIVE: "Apple Chancery",
-            FANTASY: "Papyrus",
-            MONOSPACE: "Courier New",
-            SANS_SERIF: "Helvetica",
-            SERIF: "Times New Roman",
-            SYSTEM: ".AppleSystemUIFont",
-        }.get(expected, expected)
-
     async def redraw(self, message=None, delay=None):
         """Request a redraw of the app, waiting until that redraw has completed."""
-        # Force a repaint
+        # Force a widget repaint
         self.widget.window.content._impl.native.layer.displayIfNeeded()
 
-        # If we're running slow, wait for a second
-        if self.widget.app.run_slow:
-            print("Waiting for redraw" if message is None else message)
-            delay = 1
-
-        if delay:
-            await asyncio.sleep(delay)
-        else:
-            # Running at "normal" speed, we need to release to the event loop
-            # for at least one iteration. `runUntilDate:None` does this.
-            NSRunLoop.currentRunLoop.runUntilDate(None)
+        await super().redraw(message=message, delay=delay)
 
     @property
     def enabled(self):
