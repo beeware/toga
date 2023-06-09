@@ -1,14 +1,12 @@
-import asyncio
-
 from pytest import approx
 from System import EventArgs, Object
-from System.Drawing import FontFamily, SystemColors, SystemFonts
+from System.Drawing import SystemColors
 from System.Windows.Forms import SendKeys
 
 from toga.colors import TRANSPARENT
-from toga.fonts import CURSIVE, FANTASY, MONOSPACE, SANS_SERIF, SERIF, SYSTEM
 from toga.style.pack import JUSTIFY, LEFT
 
+from ..probe import BaseProbe
 from .properties import toga_color, toga_font
 
 KEY_CODES = {
@@ -22,10 +20,12 @@ KEY_CODES.update(
 )
 
 
-class SimpleProbe:
+class SimpleProbe(BaseProbe):
     fixed_height = None
 
     def __init__(self, widget):
+        super().__init__()
+        self.app = widget.app
         self.widget = widget
         self.native = widget._impl.native
         assert isinstance(self.native, self.native_class)
@@ -50,25 +50,6 @@ class SimpleProbe:
             assert actual == LEFT
         else:
             assert actual == expected
-
-    def assert_font_family(self, expected):
-        assert self.font.family == {
-            CURSIVE: "Comic Sans MS",
-            FANTASY: "Impact",
-            MONOSPACE: FontFamily.GenericMonospace.Name,
-            SANS_SERIF: FontFamily.GenericSansSerif.Name,
-            SERIF: FontFamily.GenericSerif.Name,
-            SYSTEM: SystemFonts.DefaultFont.FontFamily.Name,
-        }.get(expected, expected)
-
-    async def redraw(self, message=None):
-        """Request a redraw of the app, waiting until that redraw has completed."""
-        # Winforms style changes always take effect immediately.
-
-        # If we're running slow, wait for a second
-        if self.widget.app.run_slow:
-            print("Waiting for redraw" if message is None else message)
-            await asyncio.sleep(1)
 
     @property
     def enabled(self):

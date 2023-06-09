@@ -1,43 +1,27 @@
-import sys
 from pathlib import Path
 
-import toga
-from toga import App
+from toga_iOS.libs import NSFileManager, NSSearchPathDirectory, NSSearchPathDomainMask
 
 
 class Paths:
-    # Allow instantiating Path object via the factory
-    Path = Path
+    def __init__(self, interface):
+        self.interface = interface
 
-    @property
-    def app(self):
-        try:
-            return Path(sys.modules["__main__"].__file__).parent
-        except KeyError:
-            # If we're running in test conditions,
-            # there is no __main__ module.
-            return Path.cwd()
-        except AttributeError:
-            # If we're running at an interactive prompt,
-            # the __main__ module isn't file-based.
-            return Path.cwd()
+    def get_path(self, search_path):
+        file_manager = NSFileManager.defaultManager
+        urls = file_manager.URLsForDirectory(
+            search_path, inDomains=NSSearchPathDomainMask.User
+        )
+        return Path(urls[0].path)
 
-    @property
-    def data(self):
-        return Path.home() / "Library" / "Application Support" / App.app.app_id
+    def get_config_path(self):
+        return self.get_path(NSSearchPathDirectory.ApplicationSupport) / "Config"
 
-    @property
-    def cache(self):
-        return Path.home() / "Library" / "Caches" / App.app.app_id
+    def get_data_path(self):
+        return self.get_path(NSSearchPathDirectory.Documents)
 
-    @property
-    def logs(self):
-        return Path.home() / "Library" / "Logs" / App.app.app_id
+    def get_cache_path(self):
+        return self.get_path(NSSearchPathDirectory.Cache)
 
-    @property
-    def toga(self):
-        """Return a path to a Toga resources."""
-        return Path(toga.__file__).parent
-
-
-paths = Paths()
+    def get_logs_path(self):
+        return self.get_path(NSSearchPathDirectory.ApplicationSupport) / "Logs"

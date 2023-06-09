@@ -1,39 +1,41 @@
-import sys
 from pathlib import Path
 
-import toga
 from toga import App
 
 
 class Paths:
-    # Allow instantiating Path object via the factory
-    Path = Path
-
-    @property
-    def app(self):
-        try:
-            return Path(sys.modules["__main__"].__file__).parent
-        except KeyError:
-            # If we're running in test conditions,
-            # there is no __main__ module.
-            return Path.cwd()
-        except AttributeError:
-            # If we're running at an interactive prompt,
-            # the __main__ module isn't file-based.
-            return Path.cwd()
+    def __init__(self, interface):
+        self.interface = interface
 
     @property
     def author(self):
-        if App.app.author is None:
-            return "Toga"
+        # No coverage testing of this because we can't easily configure
+        # the app to have no author.
+        if App.app.author is None:  # pragma: no cover
+            return "Unknown"
         return App.app.author
 
-    @property
-    def data(self):
-        return Path.home() / "AppData" / "Local" / self.author / App.app.formal_name
+    def get_config_path(self):
+        return (
+            Path.home()
+            / "AppData"
+            / "Local"
+            / self.author
+            / App.app.formal_name
+            / "Config"
+        )
 
-    @property
-    def cache(self):
+    def get_data_path(self):
+        return (
+            Path.home()
+            / "AppData"
+            / "Local"
+            / self.author
+            / App.app.formal_name
+            / "Data"
+        )
+
+    def get_cache_path(self):
         return (
             Path.home()
             / "AppData"
@@ -43,8 +45,7 @@ class Paths:
             / "Cache"
         )
 
-    @property
-    def logs(self):
+    def get_logs_path(self):
         return (
             Path.home()
             / "AppData"
@@ -53,11 +54,3 @@ class Paths:
             / App.app.formal_name
             / "Logs"
         )
-
-    @property
-    def toga(self):
-        """Return a path to a Toga system resources."""
-        return Path(toga.__file__).parent
-
-
-paths = Paths()

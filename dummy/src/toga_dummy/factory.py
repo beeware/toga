@@ -5,7 +5,7 @@ from .documents import Document
 from .fonts import Font
 from .icons import Icon
 from .images import Image
-from .paths import paths
+from .paths import Paths
 from .widgets.activityindicator import ActivityIndicator
 from .widgets.base import Widget
 from .widgets.box import Box
@@ -48,7 +48,7 @@ __all__ = [
     "Font",
     "Icon",
     "Image",
-    "paths",
+    "Paths",
     "dialogs",
     # Widgets
     "ActivityIndicator",

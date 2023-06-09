@@ -1,0 +1,1 @@
+On Winforms, if an application doesn't define an author, an author of ``Unknown`` is now used in application data paths, rather than ``Toga``.
