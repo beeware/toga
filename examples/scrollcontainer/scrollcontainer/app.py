@@ -22,12 +22,8 @@ class ScrollContainerApp(toga.App):
     scroller = None
 
     def startup(self):
-        box = toga.Box()
-        box.style.direction = COLUMN
-        box.style.padding = 10
-        self.scroller = toga.ScrollContainer(
-            horizontal=self.hscrolling, vertical=self.vscrolling
-        )
+        main_box = toga.Box(style=Pack(direction=COLUMN))
+
         switch_box = toga.Box(style=Pack(direction=ROW))
         switch_box.add(
             toga.Switch(
@@ -43,17 +39,26 @@ class ScrollContainerApp(toga.App):
                 on_change=self.handle_hscrolling,
             )
         )
-        box.add(switch_box)
+        main_box.add(switch_box)
+
+        box = toga.Box(style=Pack(direction=COLUMN, padding=10))
+        self.scroller = toga.ScrollContainer(
+            horizontal=self.hscrolling,
+            vertical=self.vscrolling,
+            style=Pack(flex=1),
+        )
 
         for x in range(100):
             label_text = f"Label {x}"
             box.add(Item(label_text))
 
         self.scroller.content = box
+        main_box.add(self.scroller)
 
         self.main_window = toga.MainWindow(self.name, size=(400, 700))
-        self.main_window.content = self.scroller
+        self.main_window.content = main_box
         self.main_window.show()
+
         self.commands.add(
             toga.Command(
                 self.toggle_up,
