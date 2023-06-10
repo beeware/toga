@@ -21,15 +21,12 @@ from toga_winforms.libs import (
 from .base import Widget
 
 
-def requires_corewebview2(method):
+def requires_initialization(method):
     def wrapper(self, *args, **kwargs):
         def task():
             method(self, *args, **kwargs)
 
-        if self.corewebview2_available:
-            task()
-        else:
-            self.pending_tasks.append(task)
+        self.run_after_initialization(task)
 
     return wrapper
 
@@ -52,6 +49,17 @@ class WebView(Widget):
         self.pending_tasks = []
         self.native.EnsureCoreWebView2Async(None)
         self.native.DefaultBackgroundColor = Color.Transparent
+
+    # Any non-trivial use of the WebView requires the CoreWebView2 object to be
+    # initialized, which is asynchronous. Since most of this class's methods are not
+    # asynchronous, they cannot handle this using `await`. Instead, they add a callable
+    # to a queue of pending tasks, which is processed once we receive the
+    # CoreWebView2InitializationCompleted event.
+    def run_after_initialization(self, task):
+        if self.corewebview2_available:
+            task()
+        else:
+            self.pending_tasks.append(task)
 
     def winforms_initialization_completed(self, sender, args):
         # The WebView2 widget has an "internal" widget (CoreWebView2) that is
@@ -118,7 +126,7 @@ class WebView(Widget):
             url = str(source)
             return None if url == "about:blank" else url
 
-    @requires_corewebview2
+    @requires_initialization
     def set_url(self, value, future=None):
         self.loaded_future = future
         if value is None:
@@ -126,7 +134,7 @@ class WebView(Widget):
         else:
             self.native.Source = Uri(value)
 
-    @requires_corewebview2
+    @requires_initialization
     def set_content(self, root_url, content):
         # There appears to be no way to pass the root_url.
         self.native.NavigateToString(content)
@@ -135,7 +143,7 @@ class WebView(Widget):
         cwv = self.native.CoreWebView2
         return cwv.Settings.UserAgent if cwv else ""
 
-    @requires_corewebview2
+    @requires_initialization
     def set_user_agent(self, value):
         self.native.CoreWebView2.Settings.UserAgent = (
             self.default_user_agent if value is None else value
@@ -153,10 +161,12 @@ class WebView(Widget):
             if on_result:
                 on_result(value)
 
-        self.native.ExecuteScriptAsync(javascript).ContinueWith(
-            Action[Task[String]](callback), task_scheduler
-        )
+        def execute():
+            self.native.ExecuteScriptAsync(javascript).ContinueWith(
+                Action[Task[String]](callback), task_scheduler
+            )
 
+        self.run_after_initialization(execute)
         return result
 
     def rehint(self):
