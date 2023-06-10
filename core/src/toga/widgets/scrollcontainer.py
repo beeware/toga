@@ -61,6 +61,23 @@ class ScrollContainer(Widget):
             self._content.window = window
 
     @property
+    def enabled(self) -> bool:
+        """Is the widget currently enabled? i.e., can the user interact with the widget?
+
+        ScrollContainer widgets cannot be disabled; this property will always return
+        True; any attempt to modify it will be ignored.
+        """
+        return True
+
+    @enabled.setter
+    def enabled(self, value):
+        pass
+
+    def focus(self):
+        "No-op; ScrollContainer cannot accept input focus"
+        pass
+
+    @property
     def content(self) -> Widget:
         """The root content widget displayed inside the scroll container."""
         return self._content
@@ -75,12 +92,11 @@ class ScrollContainer(Widget):
             widget.app = self.app
             widget.window = self.window
 
-            self._content = widget
-            self._impl.set_content(widget._impl)
+            self._impl.set_content(widget)
         else:
-            self._content = None
             self._impl.set_content(None)
 
+        self._content = widget
         self.refresh()
 
     def refresh_sublayouts(self):
@@ -118,15 +134,28 @@ class ScrollContainer(Widget):
         self._on_scroll = wrapped_handler(self, on_scroll)
 
     @property
-    def horizontal_position(self) -> float:
-        """The current horizontal scroller position.
+    def max_horizontal_position(self) -> int | None:
+        """The maximum horizontal scroller position.
 
-        Raises :any:`ValueError` if horizontal scrolling is not enabled.
+        Returns ``None`` if horizontal scrolling is disabled.
         """
         if not self.horizontal:
-            raise ValueError(
-                "Cannot get horizontal position when horizontal is not set."
-            )
+            return None
+        return self._impl.get_max_horizontal_position()
+
+    @property
+    def horizontal_position(self) -> int | None:
+        """The current horizontal scroller position.
+
+        If the value provided is outside the current range of the
+        scroller, the value will be clipped.
+
+        If horizontal scrolling is disabled, returns ``None`` as the
+        current position, and raises :any:`ValueError` if an attempt
+        is made to change the position.
+        """
+        if not self.horizontal:
+            return None
         return self._impl.get_horizontal_position()
 
     @horizontal_position.setter
@@ -135,20 +164,35 @@ class ScrollContainer(Widget):
             raise ValueError(
                 "Cannot set horizontal position when horizontal is not set."
             )
-        self._impl.set_horizontal_position(float(horizontal_position))
+        self._impl.set_horizontal_position(int(horizontal_position))
 
     @property
-    def vertical_position(self) -> float:
-        """The current vertical scroller position.
+    def max_vertical_position(self) -> int | None:
+        """The maximum vertical scroller position.
 
-        Raises :any:`ValueError` if vertical scrolling is not enabled.
+        Returns ``None`` if vertical scrolling is disabled.
         """
         if not self.vertical:
-            raise ValueError("Cannot get vertical position when vertical is not set.")
+            return None
+        return self._impl.get_max_vertical_position()
+
+    @property
+    def vertical_position(self) -> int | None:
+        """The current vertical scroller position.
+
+        If the value provided is outside the current range of the
+        scroller, the value will be clipped.
+
+        If vertical scrolling is disabled, returns ``None`` as the
+        current position, and raises :any:`ValueError` if an attempt
+        is made to change the position.
+        """
+        if not self.vertical:
+            return None
         return self._impl.get_vertical_position()
 
     @vertical_position.setter
     def vertical_position(self, vertical_position):
         if not self.vertical:
             raise ValueError("Cannot set vertical position when vertical is not set.")
-        self._impl.set_vertical_position(float(vertical_position))
+        self._impl.set_vertical_position(int(vertical_position))
