@@ -34,7 +34,7 @@ class Widget:
     @container.setter
     def container(self, container):
         if self.container:
-            assert container is None, "Widget already has a container"
+            assert container is None, f"Widget {self} already has a container"
 
             # Existing container should be removed
             self.constraints.container = None
