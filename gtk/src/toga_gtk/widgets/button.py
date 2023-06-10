@@ -27,12 +27,16 @@ class Button(Widget):
         super().set_background_color(color)
 
     def rehint(self):
-        # print("REHINT", self, self.native.get_preferred_width(), self.native.get_preferred_height())
-        width = self.native.get_preferred_width()
-        height = self.native.get_preferred_height()
+        # print(
+        #     "REHINT",
+        #     self,
+        #     self.native.get_preferred_size()[0].width,
+        #     self.native.get_preferred_size()[0].height,
+        # )
+        min_size, natural_size = self.native.get_preferred_size()
 
-        self.interface.intrinsic.width = at_least(width[0])
-        self.interface.intrinsic.height = height[1]
+        self.interface.intrinsic.width = at_least(min_size.width)
+        self.interface.intrinsic.height = natural_size.height
 
     def gtk_clicked(self, event):
         self.interface.on_press(None)

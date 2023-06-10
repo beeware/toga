@@ -1,11 +1,11 @@
 import gi
 
-gi.require_version("Gdk", "3.0")
-gi.require_version("Gtk", "3.0")
+gi.require_version("Gdk", "4.0")
+gi.require_version("Gtk", "4.0")
 
 from gi.repository import Gdk, GdkPixbuf, Gio, GLib, GObject, Gtk  # noqa: E402, F401
 
-if Gdk.Screen.get_default() is None:  # pragma: no cover
+if Gdk.Display.get_default() is None:  # pragma: no cover
     raise RuntimeError(
         "Cannot identify an active display. Is the ``DISPLAY`` environment variable set correctly?"
     )

@@ -59,7 +59,7 @@ class ScrollButton(ParentPosition):
         if self._do_scroll is not None:
             self._do_scroll()
 
-    def gtk_on_value_changed(self, adj: Gtk.Alignment):
+    def gtk_on_value_changed(self, adj: Gtk.Align):
         self.list_changed()
 
     def list_changed(self):

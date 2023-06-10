@@ -2,7 +2,7 @@ from abc import abstractmethod
 
 from travertino.size import at_least
 
-from ..libs import Gtk, get_background_color_css, get_color_css, get_font_css
+from ..libs import get_background_color_css, get_color_css, get_font_css
 
 
 class Widget:
@@ -10,9 +10,9 @@ class Widget:
         super().__init__()
         self.interface = interface
         self.interface._impl = self
-        self._container = None
         self.native = None
-        self.style_providers = {}
+        self._container = None
+        self._widget_styles = {}
         self.create()
 
         # Ensure the native widget has links to the interface and impl
@@ -22,7 +22,6 @@ class Widget:
         # Ensure the native widget has GTK CSS style attributes; create() should
         # ensure any other widgets are also styled appropriately.
         self.native.set_name(f"toga-{self.interface.id}")
-        self.native.get_style_context().add_class("toga")
 
         # Ensure initial styles are applied.
         self.interface.style.reapply()
@@ -34,7 +33,7 @@ class Widget:
 
     @abstractmethod
     def create(self):
-        ...
+        pass
 
     def set_app(self, app):
         pass
@@ -62,8 +61,8 @@ class Widget:
         elif container:
             # setting container, adding self to container.native
             self._container = container
-            self._container.add(self.native)
-            self.native.show_all()
+            self.native.set_parent(self._container)
+            self.native.set_visible(True)
 
         for child in self.interface.children:
             child._impl.container = container
@@ -90,62 +89,53 @@ class Widget:
     def set_tab_index(self, tab_index):
         self.interface.factory.not_implemented("Widget.set_tab_index()")
 
-    ######################################################################
-    # CSS tools
-    ######################################################################
+    # CSS tools ===============================================================
 
-    def apply_css(self, property, css, native=None, selector=".toga"):
+    def apply_css(self, property, css):
         """Apply a CSS style controlling a specific property type.
 
-        GTK controls appearance with CSS; each GTK widget can have an
-        independent style sheet, composed out of multiple providers.
+        GTK controls appearance with CSS; each GTK widget can have a unique
+        selector that specific for it. This CSS is applied on display at
+        once to make effects on widgets.
 
-        Toga uses a separate provider for each property that needs to be
-        controlled (e.g., color, font, ...). When that property is modified, the
-        old provider for that property is removed; if new CSS has been provided,
-        a new provider is constructed and added to the widget.
+        Toga maintains a separate CSS for each widget that controlls
+        different properties (e.g., color, font, ...). When one of these
+        properties is modified by updates or removes, Toga updates this
+        property on the CSS and passes this updated CSS to the toplevel
+        app which takes the responsibility of appling these changes.
 
-        It is assumed that every Toga widget will have the class ``toga``.
+        It is assumed that every Toga widget will have the id attribute
+        ``toga-id(widget)`` that gives unique access to the widget style.
 
         :param property: The style property to modify
-        :param css: A dictionary of string key-value pairs, describing the new
-            CSS for the given property. If ``None``, the Toga style for that
-            property will be reset
-        :param native: The native widget to which the style should be applied.
-            Defaults to ``self.native``.
-        :param selector: The CSS selector used to target the style. Defaults to
-            ``.toga``.
+        :param css: A dictionary of string key-value pairs, describing
+            the new CSS for the given property. If ``None``, the Toga
+            style for that property will be reset
         """
-        if native is None:
-            native = self.native
+        # If there's new CSS to apply, install it.
+        if css:
+            # Update the property
+            self._widget_styles[property] = css
+        else:
+            # Reset the property
+            self._widget_styles.pop(property, None)
 
-        style_context = native.get_style_context()
-        style_provider = self.style_providers.pop((property, id(native)), None)
-
-        # If there was a previous style provider for the given property, remove
-        # it from the GTK widget
-        if style_provider:
-            style_context.remove_provider(style_provider)
-
-        # If there's new CSS to apply, construct a new provider, and install it.
-        if css is not None:
-            # Create a new CSS StyleProvider
-            style_provider = Gtk.CssProvider()
-            styles = " ".join(f"{key}: {value};" for key, value in css.items())
-            declaration = selector + " {" + styles + "}"
-            style_provider.load_from_data(declaration.encode())
-
-            # Add the provider to the widget
-            style_context.add_provider(
-                style_provider,
-                Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION,
+        # Apply css
+        if self.interface.app:
+            styles = {
+                key: value
+                for prop_value in self._widget_styles.values()
+                for key, value in prop_value.items()
+            }
+            css_styles = " ".join(
+                f"{key}: {value};" for key, value in styles.items()
             )
-            # Store the provider so it can be removed later
-            self.style_providers[(property, id(native))] = style_provider
+            widget_css = (
+                f"{self.native.get_css_name()}#{self.native.get_name()}" + " {" + css_styles + "}"
+            )
+            self.interface.app._impl.apply_styles(widget_css, self.native)
 
-    ######################################################################
-    # APPLICATOR
-    ######################################################################
+    # APPLICATOR ==============================================================
 
     def set_bounds(self, x, y, width, height):
         # Any position changes are applied by the container during do_size_allocate.
@@ -167,9 +157,7 @@ class Widget:
     def set_font(self, font):
         self.apply_css("font", get_font_css(font))
 
-    ######################################################################
-    # INTERFACE
-    ######################################################################
+    # INTERFACE ===============================================================
 
     def add_child(self, child):
         child.container = self.container
@@ -189,9 +177,8 @@ class Widget:
 
     def rehint(self):
         # Perform the actual GTK rehint.
-        # print("REHINT", self, self.native.get_preferred_width(), self.native.get_preferred_height())
-        width = self.native.get_preferred_width()
-        height = self.native.get_preferred_height()
+        min_size, _ = self.native.get_preferred_size()
 
-        self.interface.intrinsic.width = at_least(width[0])
-        self.interface.intrinsic.height = at_least(height[0])
+        # print("REHINT", self, f"{width_info[0]}x{height_info[0]}")
+        self.interface.intrinsic.width = at_least(min_size.width)
+        self.interface.intrinsic.height = at_least(min_size.height)

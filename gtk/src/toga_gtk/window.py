@@ -19,7 +19,7 @@ class Window:
         self.native = self._IMPL_CLASS()
         self.native._impl = self
 
-        self.native.connect("delete-event", self.gtk_delete_event)
+        self.native.connect("close-request", self.gtk_close_request)
 
         self.native.set_default_size(size[0], size[1])
 
@@ -40,12 +40,15 @@ class Window:
         # into the container, which is the bottom widget in the layout. The
         # toolbar (if required) will be added at the top of the layout.
         #
-        # Because expand and fill are True, the container will fill the available
-        # space, and will get a size_allocate callback if the window is resized.
-        self.layout = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+        # Because vexpand and valign are set, the container will fill the
+        # available space, and will get a size_allocate callback if the
+        # window is resized.
         self.container = TogaContainer()
-        self.layout.pack_end(self.container, expand=True, fill=True, padding=0)
-        self.native.add(self.layout)
+        self.container.set_valign(Gtk.Align.FILL)
+        self.container.set_vexpand(True)
+        self.layout = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+        self.layout.append(self.container)
+        self.native.set_child(self.layout)
 
     def get_title(self):
         return self.native.get_title()
@@ -57,35 +60,9 @@ class Window:
         app.native.add_window(self.native)
 
     def create_toolbar(self):
-        if self.toolbar_items is None:
-            self.toolbar_native = Gtk.Toolbar()
-            self.toolbar_items = {}
-            self.layout.pack_start(
-                self.toolbar_native, expand=False, fill=False, padding=0
-            )
-        else:
-            for cmd, item_impl in self.toolbar_items.items():
-                self.toolbar_native.remove(item_impl)
-                cmd._impl.native.remove(item_impl)
-
-        self.toolbar_native.set_style(Gtk.ToolbarStyle.BOTH)
-        for cmd in self.interface.toolbar:
-            if cmd == GROUP_BREAK:
-                item_impl = Gtk.SeparatorToolItem()
-                item_impl.set_draw(True)
-            elif cmd == SECTION_BREAK:
-                item_impl = Gtk.SeparatorToolItem()
-                item_impl.set_draw(False)
-            else:
-                item_impl = Gtk.ToolButton()
-                if cmd.icon:
-                    item_impl.set_icon_widget(cmd.icon._impl.native_32)
-                item_impl.set_label(cmd.text)
-                item_impl.set_tooltip_text(cmd.tooltip)
-                item_impl.connect("clicked", wrapped_handler(cmd, cmd.action))
-                cmd._impl.native.append(item_impl)
-            self.toolbar_items[cmd] = item_impl
-            self.toolbar_native.insert(item_impl, -1)
+        # TODO: Implementing toolbar commands in HeaderBar; See #1931.
+        self.interface.factory.not_implemented("Window.create_toolbar()")
+        pass
 
     def clear_content(self):
         pass
@@ -95,15 +72,15 @@ class Window:
         self.container.content = widget
 
     def show(self):
-        self.native.show_all()
+        self.native.set_visible(True)
 
     def hide(self):
-        self.native.hide()
+        self.native.set_visible(False)
 
     def get_visible(self):
         return self.native.get_property("visible")
 
-    def gtk_delete_event(self, widget, data):
+    def gtk_close_request(self, data):
         if self._is_closing:
             should_close = True
         elif self.interface.on_close._raw:
@@ -123,18 +100,28 @@ class Window:
         self.native.close()
 
     def get_position(self):
-        pos = self.native.get_position()
-        return pos.root_x, pos.root_y
+        # Gtk believes/claims that positioning top level windows is not
+        # the toolkit’s job but WM job. They are suggesting leaving
+        # positioning to windowing system.
+        # See https://discourse.gnome.org/t/how-to-center-gtkwindows-in-gtk4/3112/4
+        self.interface.factory.not_implemented("Window.get_position()")
+        pass
 
     def set_position(self, position):
-        self.native.move(position[0], position[1])
+        # Gtk believes/claims that positioning top level windows is not
+        # the toolkit’s job but WM job. They are suggesting leaving
+        # positioning to windowing system.
+        # See https://discourse.gnome.org/t/how-to-center-gtkwindows-in-gtk4/3112/4
+        self.interface.factory.not_implemented("Window.set_position()")
+        pass
 
     def get_size(self):
-        size = self.native.get_size()
-        return size.width, size.height
+        width = self.native.get_width()
+        height = self.native.get_height()
+        return width, height
 
     def set_size(self, size):
-        self.native.resize(size[0], size[1])
+        self.native.set_default_size(size[0], size[1])
 
     def set_full_screen(self, is_full_screen):
         if is_full_screen:
