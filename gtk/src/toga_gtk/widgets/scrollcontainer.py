@@ -21,7 +21,7 @@ class ScrollContainer(Widget):
         self.inner_container.content = widget
 
         # Force the display of the new content
-        self.native.show_all()
+        self.native.set_visible(True)
 
     def set_app(self, app):
         if self.interface.content:
