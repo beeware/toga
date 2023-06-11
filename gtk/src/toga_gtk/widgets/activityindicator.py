@@ -7,7 +7,7 @@ class ActivityIndicator(Widget):
         self.native = Gtk.Spinner()
 
     def is_running(self):
-        return self.native.get_property("active")
+        return self.native.get_spinning()
 
     def start(self):
         self.native.start()
@@ -16,9 +16,13 @@ class ActivityIndicator(Widget):
         self.native.stop()
 
     def rehint(self):
-        # print("REHINT", self, self.native.get_preferred_width(), self.native.get_preferred_height())
-        width = self.native.get_preferred_width()
-        height = self.native.get_preferred_height()
+        # print(
+        #     "REHINT",
+        #     self,
+        #     self.native.get_preferred_size()[0].width,
+        #     self.native.get_preferred_size()[0].height,
+        # )
+        min_size, _ = self.native.get_preferred_size()
 
-        self.interface.intrinsic.width = width[0]
-        self.interface.intrinsic.height = height[0]
+        self.interface.intrinsic.width = min_size.width
+        self.interface.intrinsic.height = min_size.height
