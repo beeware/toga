@@ -8,23 +8,28 @@ class Switch(Widget):
     SPACING = 10
 
     def create(self):
-        self.native = Gtk.Box(spacing=self.SPACING)
+        self.native = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=self.SPACING)
 
         self.native_label = Gtk.Label(xalign=0)
         self.native_label.set_name(f"toga-{self.interface.id}-label")
-        self.native_label.get_style_context().add_class("toga")
-        self.native_label.set_line_wrap(False)
+        self.native_label.add_css_class("toga")
+        self.native_label.set_wrap(False)
+        self.native_label.set_hexpand(True)
+        self.native_label.set_halign(Gtk.Align.FILL)
 
         self.native_switch = Gtk.Switch()
         self.native_switch.set_name(f"toga-{self.interface.id}-switch")
-        self.native_switch.get_style_context().add_class("toga")
+        self.native_switch.add_css_class("toga")
         self.native_switch.connect("notify::active", self.gtk_notify_active)
+        self.native_switch.set_hexpand(False)
+        self.native_switch.set_halign(Gtk.Align.START)
 
-        self.native.pack_start(self.native_label, True, True, 0)
-        self.native.pack_start(self.native_switch, False, False, 0)
+        self.native.append(self.native_label)
+        self.native.append(self.native_switch)
 
     def gtk_notify_active(self, widget, state):
-        self.interface.on_change(None)
+        if self.interface.on_change:
+            self.interface.on_change(None)
 
     def get_enabled(self):
         return self.native_switch.get_sensitive()
@@ -52,16 +57,20 @@ class Switch(Widget):
         self.apply_css("font", get_font_css(font), native=self.native_label)
 
     def rehint(self):
-        # print("REHINT", self, self.native.get_preferred_width(), self.native.get_preferred_height())
-        label_width = self.native_label.get_preferred_width()
-        label_height = self.native_label.get_preferred_height()
-
-        switch_width = self.native_switch.get_preferred_width()
-        switch_height = self.native_switch.get_preferred_height()
+        # print(
+        #     "REHINT",
+        #     self,
+        #     self.native.get_preferred_size()[0].width,
+        #     self.native.get_preferred_size()[0].height,
+        # )
+        min_label_size, label_size = self.native_label.get_preferred_size()
+        min_switch_size, switch_size = self.native_switch.get_preferred_size()
 
         # Set intrinsic width to at least the minimum width
         self.interface.intrinsic.width = at_least(
-            label_width[0] + self.SPACING + switch_width[0]
+            min_label_size.width + self.SPACING + min_switch_size.width
         )
         # Set intrinsic height to the natural height
-        self.interface.intrinsic.height = max(label_height[1], switch_height[1])
+        self.interface.intrinsic.height = max(
+            label_size.height, switch_size.height
+        )
