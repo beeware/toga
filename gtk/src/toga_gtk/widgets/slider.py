@@ -97,10 +97,9 @@ class Slider(Widget, toga.widgets.slider.SliderImpl):
         # )
         min_size, size = self.native.get_preferred_size()
 
-        if min_size.width > self.interface._MIN_WIDTH:
-            self.interface._MIN_WIDTH = min_size.width
-
         # Set intrinsic width to at least the minimum width
-        self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
+        self.interface.intrinsic.width = at_least(
+            max(min_size.width, self.interface._MIN_WIDTH)
+        )
         # Set intrinsic height to the natural height
         self.interface.intrinsic.height = size.height
