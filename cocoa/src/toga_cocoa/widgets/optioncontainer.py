@@ -1,7 +1,8 @@
+from rubicon.objc import objc_method
 from travertino.size import at_least
 
-from toga_cocoa.libs import NSObject, NSTabView, NSTabViewItem, objc_method
-from toga_cocoa.window import CocoaViewport
+from toga_cocoa.containers import Container
+from toga_cocoa.libs import NSObject, NSTabView, NSTabViewItem
 
 from ..libs import objc_property
 from .base import Widget
@@ -52,10 +53,8 @@ class OptionContainer(Widget):
             text (str): The text for the option container
             widget: The widget or widget tree that belongs to the text.
         """
-        widget.viewport = CocoaViewport(widget.native)
-
-        for child in widget.interface.children:
-            child._impl.container = widget
+        container = Container()
+        widget.container = container
 
         item = NSTabViewItem.alloc().init()
         item.label = text
@@ -63,9 +62,9 @@ class OptionContainer(Widget):
         # Turn the autoresizing mask on the widget widget
         # into constraints. This makes the widget fill the
         # available space inside the OptionContainer.
-        widget.native.translatesAutoresizingMaskIntoConstraints = True
+        container.native.translatesAutoresizingMaskIntoConstraints = True
 
-        item.view = widget.native
+        item.view = container.native
         self.native.insertTabViewItem(item, atIndex=index)
 
     def remove_content(self, index):

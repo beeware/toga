@@ -1,9 +1,9 @@
+from rubicon.objc import objc_method, objc_property
 from travertino.size import at_least
 
-from toga_cocoa.libs import NSObject, NSSize, NSSplitView, objc_method
-from toga_cocoa.window import CocoaViewport
+from toga_cocoa.containers import Container
+from toga_cocoa.libs import NSObject, NSSize, NSSplitView
 
-from ..libs import objc_property
 from .base import Widget
 
 
@@ -64,17 +64,15 @@ class SplitContainer(Widget):
 
     def add_content(self, position, widget, flex):
         # TODO: add flex option to the implementation
-        widget.viewport = CocoaViewport(widget.native)
-
-        for child in widget.interface.children:
-            child._impl.container = widget
+        container = Container()
+        widget.container = container
 
         # Turn the autoresizing mask on the widget into constraints.
         # This makes the widget fill the available space inside the
         # SplitContainer.
         # FIXME Use Constraints to enforce min width and height of the widgets otherwise width of 0 is possible.
-        widget.native.translatesAutoresizingMaskIntoConstraints = True
-        self.native.addSubview(widget.native)
+        container.native.translatesAutoresizingMaskIntoConstraints = True
+        self.native.addSubview(container.native)
 
     def set_direction(self, value):
         self.native.vertical = value

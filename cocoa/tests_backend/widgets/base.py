@@ -17,7 +17,8 @@ class SimpleProbe(BaseProbe):
         assert isinstance(self.native, self.native_class)
 
     def assert_container(self, container):
-        container_native = container._impl.native
+        assert container._impl.container == self.impl.container
+        container_native = container._impl.container.native
         for control in container_native.subviews:
             if control == self.native:
                 break

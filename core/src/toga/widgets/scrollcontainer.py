@@ -6,9 +6,6 @@ from .base import Widget
 
 
 class ScrollContainer(Widget):
-    MIN_WIDTH = 100
-    MIN_HEIGHT = 100
-
     def __init__(
         self,
         id=None,
@@ -92,17 +89,12 @@ class ScrollContainer(Widget):
             widget.app = self.app
             widget.window = self.window
 
-            self._impl.set_content(widget)
+            self._impl.set_content(widget._impl)
         else:
             self._impl.set_content(None)
 
         self._content = widget
         self.refresh()
-
-    def refresh_sublayouts(self):
-        """Refresh the layout and appearance of this widget."""
-        if self._content:
-            self._content.refresh()
 
     @property
     def vertical(self) -> bool:
@@ -112,7 +104,8 @@ class ScrollContainer(Widget):
     @vertical.setter
     def vertical(self, value):
         self._impl.set_vertical(bool(value))
-        self.refresh_sublayouts()
+        if self._content:
+            self._content.refresh()
 
     @property
     def horizontal(self) -> bool:
@@ -122,7 +115,8 @@ class ScrollContainer(Widget):
     @horizontal.setter
     def horizontal(self, value):
         self._impl.set_horizontal(bool(value))
-        self.refresh_sublayouts()
+        if self._content:
+            self._content.refresh()
 
     @property
     def on_scroll(self) -> callable:
@@ -135,7 +129,7 @@ class ScrollContainer(Widget):
 
     @property
     def max_horizontal_position(self) -> int | None:
-        """The maximum horizontal scroller position.
+        """The maximum horizontal scroll position.
 
         Returns ``None`` if horizontal scrolling is disabled.
         """
@@ -145,14 +139,14 @@ class ScrollContainer(Widget):
 
     @property
     def horizontal_position(self) -> int | None:
-        """The current horizontal scroller position.
+        """The current horizontal scroll position.
 
-        If the value provided is outside the current range of the
-        scroller, the value will be clipped.
+        If the value provided is negative, or greater than the maximum
+        horizontal position, the value will be clipped to the valid range.
 
-        If horizontal scrolling is disabled, returns ``None`` as the
-        current position, and raises :any:`ValueError` if an attempt
-        is made to change the position.
+        If horizontal scrolling is disabled, returns ``None`` as the current
+        position, and raises :any:`ValueError` if an attempt is made to change
+        the position.
         """
         if not self.horizontal:
             return None
@@ -168,7 +162,7 @@ class ScrollContainer(Widget):
 
     @property
     def max_vertical_position(self) -> int | None:
-        """The maximum vertical scroller position.
+        """The maximum vertical scroll position.
 
         Returns ``None`` if vertical scrolling is disabled.
         """
@@ -178,14 +172,14 @@ class ScrollContainer(Widget):
 
     @property
     def vertical_position(self) -> int | None:
-        """The current vertical scroller position.
+        """The current vertical scroll position.
 
-        If the value provided is outside the current range of the
-        scroller, the value will be clipped.
+        If the value provided is negative, or greater than the maximum
+        vertical position, the value will be clipped to the valid range.
 
-        If vertical scrolling is disabled, returns ``None`` as the
-        current position, and raises :any:`ValueError` if an attempt
-        is made to change the position.
+        If vertical scrolling is disabled, returns ``None`` as the current
+        position, and raises :any:`ValueError` if an attempt is made to change
+        the position.
         """
         if not self.vertical:
             return None

@@ -1,8 +1,8 @@
 Scroll Container
 ================
 
-An container widget that can display a layout larger that the area of the
-container, with overflow controlled by scrollbars.
+A container widget that can display a layout larger that the area of the
+container, with overflow controlled by scroll bars.
 
 .. figure:: /reference/images/ScrollContainer.png
    :align: center

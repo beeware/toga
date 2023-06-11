@@ -1,5 +1,3 @@
-from unittest.mock import Mock, call
-
 import pytest
 
 import toga
@@ -108,14 +106,19 @@ def test_add_child_without_app(widget):
     # The impl's add_child has been invoked
     assert_action_performed_with(widget, "add child", child=child._impl)
 
+    # The widget's layout has been refreshed
+    assert_action_performed_with(widget, "refresh")
+
 
 def test_add_child(widget):
     "A child can be added to a node when there's an app & window"
     # Set the app and window for the widget.
     app = toga.App("Test", "com.example.test")
-    window = Mock()
-    widget.app = app
-    widget.window = window
+    window = toga.Window()
+    window.app = app
+    window.content = widget
+    # Clear the event log
+    EventLog.reset()
 
     # Widget has an app and window
     assert widget.app == app
@@ -145,8 +148,11 @@ def test_add_child(widget):
     # The impl's add_child has been invoked
     assert_action_performed_with(widget, "add child", child=child._impl)
 
-    # The window layout has been refreshed
-    window.content.refresh.assert_called_once_with()
+    # The widget's layout has been refreshed
+    assert_action_performed_with(widget, "refresh")
+
+    # The window's container gets a refresh notification
+    assert_action_performed_with(window, "container refreshed")
 
     # App's widget index has been updated
     assert len(app.widgets) == 2
@@ -158,9 +164,11 @@ def test_add_multiple_children(widget):
     "Multiple children can be added in one call"
     # Set the app and window for the widget.
     app = toga.App("Test", "com.example.test")
-    window = Mock()
-    widget.app = app
-    widget.window = window
+    window = toga.Window()
+    window.app = app
+    window.content = widget
+    # Clear the event log
+    EventLog.reset()
 
     # Widget has an app and window
     assert widget.app == app
@@ -204,8 +212,12 @@ def test_add_multiple_children(widget):
     assert_action_performed_with(widget, "add child", child=child2._impl)
     assert_action_performed_with(widget, "add child", child=child3._impl)
 
-    # The window layout has been refreshed
-    window.content.refresh.assert_called_once_with()
+    # The widget's layout has been refreshed
+    # There will be multiple refresh calls
+    assert_action_performed_with(widget, "refresh")
+
+    # The window's container gets a refresh notification
+    assert_action_performed_with(window, "container refreshed")
 
     # App's widget index has been updated
     assert len(app.widgets) == 4
@@ -238,6 +250,12 @@ def test_reparent_child(widget):
     # The impl's add_child has been invoked
     assert_action_performed_with(widget, "add child", child=child._impl)
 
+    # The widget's layout has been refreshed
+    assert_action_performed_with(widget, "refresh")
+
+    # The layout of the old parent has been refreshed
+    assert_action_performed_with(other, "refresh")
+
 
 def test_reparent_child_to_self(widget):
     "Reparenting a widget to the same parent is a no-op"
@@ -261,6 +279,9 @@ def test_reparent_child_to_self(widget):
     # The impl's add_child has *not* been invoked,
     # as the widget was already a child
     assert_action_not_performed(widget, "add child")
+
+    # The widget's layout has been refreshed
+    assert_action_performed_with(widget, "refresh")
 
 
 def test_insert_child_into_leaf():
@@ -308,14 +329,19 @@ def test_insert_child_without_app(widget):
     # The impl's insert_child has been invoked
     assert_action_performed_with(widget, "insert child", child=child._impl)
 
+    # The widget's layout has been refreshed
+    assert_action_performed_with(widget, "refresh")
+
 
 def test_insert_child(widget):
     "A child can be inserted into a node when there's an app & window"
     # Set the app and window for the widget.
     app = toga.App("Test", "com.example.test")
-    window = Mock()
-    widget.app = app
-    widget.window = window
+    window = toga.Window()
+    window.app = app
+    window.content = widget
+    # Clear the event log
+    EventLog.reset()
 
     # Widget has an app and window
     assert widget.app == app
@@ -345,8 +371,11 @@ def test_insert_child(widget):
     # The impl's insert_child has been invoked
     assert_action_performed_with(widget, "insert child", child=child._impl)
 
-    # The window layout has been refreshed
-    window.content.refresh.assert_called_once_with()
+    # The widget's layout has been refreshed
+    assert_action_performed_with(widget, "refresh")
+
+    # The window's container gets a refresh notification
+    assert_action_performed_with(window, "container refreshed")
 
     # App's widget index has been updated
     assert len(app.widgets) == 2
@@ -358,9 +387,11 @@ def test_insert_position(widget):
     "Insert can put a child into a specific position"
     # Set the app and window for the widget.
     app = toga.App("Test", "com.example.test")
-    window = Mock()
-    widget.app = app
-    widget.window = window
+    window = toga.Window()
+    window.app = app
+    window.content = widget
+    # Clear the event log
+    EventLog.reset()
 
     # Widget has an app and window
     assert widget.app == app
@@ -406,8 +437,11 @@ def test_insert_position(widget):
     assert_action_performed_with(widget, "insert child", child=child2._impl)
     assert_action_performed_with(widget, "insert child", child=child3._impl)
 
-    # The window layout has been refreshed on each insertion
-    assert window.content.refresh.mock_calls == [call()] * 3
+    # The widget's layout has been refreshed
+    assert_action_performed_with(widget, "refresh")
+
+    # The window's container gets a refresh notification
+    assert_action_performed_with(window, "container refreshed")
 
     # App's widget index has been updated
     assert len(app.widgets) == 4
@@ -421,9 +455,11 @@ def test_insert_bad_position(widget):
     "If the position is invalid, an error is raised"
     # Set the app and window for the widget.
     app = toga.App("Test", "com.example.test")
-    window = Mock()
-    widget.app = app
-    widget.window = window
+    window = toga.Window()
+    window.app = app
+    window.content = widget
+    # Clear the event log
+    EventLog.reset()
 
     # Widget has an app and window
     assert widget.app == app
@@ -454,8 +490,11 @@ def test_insert_bad_position(widget):
     # The impl's insert_child has been invoked
     assert_action_performed_with(widget, "insert child", child=child._impl)
 
-    # The window layout has been refreshed
-    window.content.refresh.assert_called_once_with()
+    # The widget's layout has been refreshed
+    assert_action_performed_with(widget, "refresh")
+
+    # The window's container gets a refresh notification
+    assert_action_performed_with(window, "container refreshed")
 
     # App's widget index has been updated
     assert len(app.widgets) == 2
@@ -486,6 +525,12 @@ def test_insert_reparent_child(widget):
     # The impl's insert_child has been invoked
     assert_action_performed_with(widget, "insert child", child=child._impl)
 
+    # The widget's layout has been refreshed
+    assert_action_performed_with(widget, "refresh")
+
+    # The original parent's layout has been refreshed
+    assert_action_performed_with(other, "refresh")
+
 
 def test_insert_reparent_child_to_self(widget):
     "Reparenting a widget to the same parent by insertion is a no-op"
@@ -509,6 +554,9 @@ def test_insert_reparent_child_to_self(widget):
     # The impl's insert_child has *not* been invoked,
     # as the widget was already a child
     assert_action_not_performed(widget, "insert child")
+
+    # The widget's layout has been refreshed
+    assert_action_performed_with(widget, "refresh")
 
 
 def test_remove_child_without_app(widget):
@@ -536,6 +584,9 @@ def test_remove_child_without_app(widget):
     # The impl's remove_child has been invoked
     assert_action_performed_with(widget, "remove child", child=child._impl)
 
+    # The widget's layout has been refreshed
+    assert_action_performed_with(widget, "refresh")
+
 
 def test_remove_child(widget):
     "A child associated with an app & window can be removed from a widget"
@@ -544,9 +595,11 @@ def test_remove_child(widget):
     widget.add(child)
 
     app = toga.App("Test", "com.example.test")
-    window = Mock()
-    widget.app = app
-    widget.window = window
+    window = toga.Window()
+    window.app = app
+    window.content = widget
+    # Clear the event log
+    EventLog.reset()
 
     assert widget.children == [child]
     assert child.parent == widget
@@ -567,8 +620,11 @@ def test_remove_child(widget):
     # The impl's remove_child has been invoked
     assert_action_performed_with(widget, "remove child", child=child._impl)
 
-    # The window layout has been refreshed
-    window.content.refresh.assert_called_once_with()
+    # The widget's layout has been refreshed
+    assert_action_performed_with(widget, "refresh")
+
+    # The window's container gets a refresh notification
+    assert_action_performed_with(window, "container refreshed")
 
 
 def test_remove_multiple_children(widget):
@@ -580,9 +636,11 @@ def test_remove_multiple_children(widget):
     widget.add(child1, child2, child3)
 
     app = toga.App("Test", "com.example.test")
-    window = Mock()
-    widget.app = app
-    widget.window = window
+    window = toga.Window()
+    window.app = app
+    window.content = widget
+    # Clear the event log
+    EventLog.reset()
 
     assert widget.children == [child1, child2, child3]
     for child in widget.children:
@@ -613,8 +671,11 @@ def test_remove_multiple_children(widget):
     assert_action_performed_with(widget, "remove child", child=child1._impl)
     assert_action_performed_with(widget, "remove child", child=child3._impl)
 
-    # The window layout has been refreshed once
-    window.content.refresh.assert_called_once_with()
+    # The widget's layout has been refreshed
+    assert_action_performed_with(widget, "refresh")
+
+    # The window's container gets a refresh notification
+    assert_action_performed_with(window, "container refreshed")
 
 
 def test_clear_all_children(widget):
@@ -626,9 +687,11 @@ def test_clear_all_children(widget):
     widget.add(child1, child2, child3)
 
     app = toga.App("Test", "com.example.test")
-    window = Mock()
-    widget.app = app
-    widget.window = window
+    window = toga.Window()
+    window.app = app
+    window.content = widget
+    # Clear the event log
+    EventLog.reset()
 
     assert widget.children == [child1, child2, child3]
     for child in widget.children:
@@ -660,16 +723,21 @@ def test_clear_all_children(widget):
     assert_action_performed_with(widget, "remove child", child=child2._impl)
     assert_action_performed_with(widget, "remove child", child=child3._impl)
 
-    # The window layout has been refreshed once
-    window.content.refresh.assert_called_once_with()
+    # The widget's layout has been refreshed
+    assert_action_performed_with(widget, "refresh")
+
+    # The window's container gets a refresh notification
+    assert_action_performed_with(window, "container refreshed")
 
 
 def test_clear_no_children(widget):
     "No changes are made (no-op) if widget has no children"
     app = toga.App("Test", "com.example.test")
-    window = Mock()
-    widget.app = app
-    widget.window = window
+    window = toga.Window()
+    window.app = app
+    window.content = widget
+    # Clear the event log
+    EventLog.reset()
 
     assert widget.children == []
 
@@ -679,17 +747,22 @@ def test_clear_no_children(widget):
     # Parent doesn't have any children still
     assert widget.children == []
 
-    # The window layout has not been refreshed
-    window.content.refresh.assert_not_called()
+    # The widget's layout has *not* been refreshed
+    assert_action_not_performed(widget, "refresh")
+
+    # The window's container gets a refresh notification
+    assert_action_not_performed(window, "container refreshed")
 
 
 def test_clear_leaf_node():
     "No changes are made to leaf node that cannot have children"
     leaf = TestLeafWidget()
     app = toga.App("Test", "com.example.test")
-    window = Mock()
-    leaf.app = app
-    leaf.window = window
+    window = toga.Window()
+    window.app = app
+    window.content = leaf
+    # Clear the event log
+    EventLog.reset()
 
     assert leaf.children == []
 
@@ -699,8 +772,11 @@ def test_clear_leaf_node():
     # Parent doesn't have any children still
     assert leaf.children == []
 
-    # The window layout has not been refreshed
-    window.content.refresh.assert_not_called()
+    # The widget's layout has *not* been refreshed
+    assert_action_not_performed(leaf, "refresh")
+
+    # The window's container gets a refresh notification
+    assert_action_not_performed(window, "container refreshed")
 
 
 def test_remove_from_non_parent(widget):
@@ -724,6 +800,9 @@ def test_remove_from_non_parent(widget):
 
     # The impl's remove_child has been invoked
     assert_action_not_performed(widget, "remove child")
+
+    # The widget's layout has *not* been refreshed
+    assert_action_not_performed(widget, "refresh")
 
 
 def test_set_app(widget):

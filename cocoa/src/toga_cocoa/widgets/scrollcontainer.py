@@ -1,17 +1,18 @@
 from rubicon.objc import SEL, objc_method, objc_property
 from travertino.size import at_least
 
+from toga_cocoa.containers import Container
 from toga_cocoa.libs import (
     NSColor,
     NSMakePoint,
     NSMakeRect,
     NSNoBorder,
     NSNotificationCenter,
+    NSRunLoop,
     NSScrollView,
     NSScrollViewDidEndLiveScrollNotification,
     NSScrollViewDidLiveScrollNotification,
 )
-from toga_cocoa.window import CocoaViewport
 
 from .base import Widget
 
@@ -22,14 +23,6 @@ class TogaScrollView(NSScrollView):
 
     @objc_method
     def didScroll_(self, note) -> None:
-        # print(
-        #     f"SCROLL frame={self.impl.native.frame.size.width}x{self.impl.native.frame.size.height}"
-        #     f" @ {self.impl.native.frame.origin.x}x{self.impl.native.frame.origin.y}, "
-        #     f"doc={self.impl.native.documentView.frame.size.width}x{self.impl.native.documentView.frame.size.height}"
-        #     f" @ {self.impl.native.documentView.frame.origin.x}x{self.impl.native.documentView.frame.origin.y}, "
-        #     f"content={self.impl.native.contentView.frame.size.width}x{self.impl.native.contentView.frame.size.height}"
-        #     f" @ {self.impl.native.contentView.frame.origin.x}x{self.impl.native.contentView.frame.origin.y}, "
-        # )
         self.interface.on_scroll(None)
 
 
@@ -43,8 +36,14 @@ class ScrollContainer(Widget):
         self.native.borderType = NSNoBorder
         self.native.backgroundColor = NSColor.windowBackgroundColor
 
-        self.native.translatesAutoresizingMaskIntoConstraints = False
-        self.native.autoresizesSubviews = True
+        # The container for the document bases its layout on the
+        # size of the content view. It can only exceed the size
+        # of the contentView if scrolling is enabled in that axis.
+        self.document_container = Container(
+            layout_native=self.native.contentView,
+            on_refresh=self.content_refreshed,
+        )
+        self.native.documentView = self.document_container.native
 
         NSNotificationCenter.defaultCenter.addObserver(
             self.native,
@@ -63,26 +62,36 @@ class ScrollContainer(Widget):
         self.add_constraints()
 
     def set_content(self, widget):
-        if widget:
-            self.native.documentView = widget._impl.native
-            widget._impl.viewport = CocoaViewport(self.native.documentView)
+        # If there's existing content, clear its container
+        if self.interface.content:
+            self.interface.content._impl.container = None
 
-            for child in widget.children:
-                child._impl.container = widget._impl
-        else:
-            self.native.documentView = None
+        # If there's new content, set the container of the content
+        if widget:
+            widget.container = self.document_container
 
     def set_bounds(self, x, y, width, height):
-        # print("SET BOUNDS", x, y, width, height)
         super().set_bounds(x, y, width, height)
-        # Restrict dimensions of content to dimensions of ScrollContainer
-        # along any non-scrolling directions. Set dimensions of content
-        # to its layout dimensions along the scrolling directions.
+
+        # Setting the bounds changes the constraints, but that doesn't mean
+        # the constraints have been fully applied. Let the NSRunLoop tick once
+        # to ensure constraints are applied.
+        NSRunLoop.currentRunLoop.runUntilDate(None)
+
+        # Now that we have an updated size for the ScrollContainer, re-evaluate
+        # the size of the document content
+        if self.interface._content:
+            self.interface._content.refresh()
+
+    def content_refreshed(self):
+        width = self.native.frame.size.width
+        height = self.native.frame.size.height
+
         if self.interface.horizontal:
-            width = self.interface.content.layout.width
+            width = max(self.interface.content.layout.width, width)
 
         if self.interface.vertical:
-            height = self.interface.content.layout.height
+            height = max(self.interface.content.layout.height, height)
 
         self.native.documentView.frame = NSMakeRect(0, 0, width, height)
 

@@ -36,6 +36,11 @@ NSNotification = ObjCClass("NSNotification")
 NSNotification.declare_property("object")
 
 ######################################################################
+# NSRunLoop.h
+NSRunLoop = ObjCClass("NSRunLoop")
+NSRunLoop.declare_class_property("currentRunLoop")
+
+######################################################################
 # NSURL.h
 NSURL = ObjCClass("NSURL")
 

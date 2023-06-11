@@ -34,7 +34,7 @@ class Widget:
     @container.setter
     def container(self, container):
         if self.container:
-            assert container is None, f"Widget {self} already has a container"
+            assert container is None, f"{self} already has a container"
 
             # Existing container should be removed
             self.constraints.container = None
@@ -53,11 +53,7 @@ class Widget:
 
     @property
     def viewport(self):
-        return self._viewport
-
-    @viewport.setter
-    def viewport(self, viewport):
-        self._viewport = viewport
+        return self._container
 
     def get_enabled(self):
         return self.native.isEnabled
@@ -106,11 +102,7 @@ class Widget:
     # INTERFACE
 
     def add_child(self, child):
-        if self.viewport:
-            # we are the top level NSView
-            child.container = self
-        else:
-            child.container = self.container
+        child.container = self.container
 
     def insert_child(self, index, child):
         self.add_child(child)

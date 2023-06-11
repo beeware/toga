@@ -1,4 +1,5 @@
 from ..utils import not_required
+from ..window import Container
 from .base import Widget
 
 
@@ -6,8 +7,15 @@ from .base import Widget
 class ScrollContainer(Widget):
     def create(self):
         self._action("create ScrollContainer")
-        self._horizontal_position = 0
-        self._vertical_position = 0
+        self.scroll_container = Container(self)
+
+    # Required to satisfy the scroll container
+    def get_width(self):
+        return 3700
+
+    # Required to satisfy the scroll container
+    def get_height(self):
+        return 4200
 
     def set_content(self, widget):
         self._action("set content", widget=widget)

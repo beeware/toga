@@ -2,25 +2,30 @@ from .utils import LoggedObject, not_required, not_required_on
 
 
 @not_required
-class Viewport:
-    def __init__(self, window):
+class Container:
+    def __init__(self, native):
         self.baseline_dpi = 96
         self.dpi = 96
-        self.window = window
+
+        self.native = native
 
     @property
     def width(self):
-        return self.window.get_size()[0]
+        return self.native.get_size()[0]
 
     @property
     def height(self):
-        return self.window.get_size()[1]
+        return self.native.get_size()[1]
+
+    def refreshed(self):
+        self.native._action("container refreshed")
 
 
 class Window(LoggedObject):
     def __init__(self, interface, title, position, size):
         super().__init__()
         self.interface = interface
+        self.container = Container(self)
 
         self.set_title(title)
         self.set_position(position)
@@ -30,12 +35,17 @@ class Window(LoggedObject):
         self._action("create toolbar")
 
     def clear_content(self):
+        try:
+            widget = self._get_value("content")
+            widget.container = self.container
+        except AttributeError:
+            pass
         self._action("clear content")
 
     def set_content(self, widget):
+        widget.container = self.container
         self._action("set content", widget=widget)
         self._set_value("content", widget)
-        widget.viewport = Viewport(self)
 
     def get_title(self):
         return self._get_value("title")
@@ -50,7 +60,7 @@ class Window(LoggedObject):
         self._set_value("position", position)
 
     def get_size(self):
-        return self._get_value("size")
+        return self._get_value("size", (640, 480))
 
     def set_size(self, size):
         self._set_value("size", size)

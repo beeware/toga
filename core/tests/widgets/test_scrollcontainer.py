@@ -65,13 +65,14 @@ def test_widget_created_with_values(content, on_scroll_handler):
     assert scroll_container.on_scroll._raw == on_scroll_handler
 
     # The content has been assigned to the widget
-    assert_action_performed_with(scroll_container, "set content", widget=content)
+    assert_action_performed_with(
+        scroll_container,
+        "set content",
+        widget=content._impl,
+    )
 
     # The scroll container has been refreshed
     assert_action_performed(scroll_container, "refresh")
-
-    # The content and the frame has been refreshed
-    assert_action_performed(content, "refresh")
 
     # The scroll handler hasn't been invoked
     on_scroll_handler.assert_not_called()
@@ -170,13 +171,14 @@ def test_set_content(app, window, scroll_container, content):
     scroll_container.content = new_content
 
     # The content has been assigned to the widget
-    assert_action_performed_with(scroll_container, "set content", widget=new_content)
+    assert_action_performed_with(
+        scroll_container,
+        "set content",
+        widget=new_content._impl,
+    )
 
     # The scroll container has been refreshed
     assert_action_performed(scroll_container, "refresh")
-
-    # The new content has been refreshed
-    assert_action_performed(new_content, "refresh")
 
     # The content has been assigned
     assert scroll_container.content == new_content
