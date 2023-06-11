@@ -219,11 +219,9 @@ class DetailedList(Widget):
     def rehint(self):
         min_size, _ = self.native.get_preferred_size()
 
-        if min_size.width > self.interface._MIN_WIDTH:
-            self.interface._MIN_WIDTH = min_size.width
-
-        if min_size.height > self.interface._MIN_HEIGHT:
-            self.interface._MIN_HEIGHT = min_size.height
-
-        self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
-        self.interface.intrinsic.height = at_least(self.interface._MIN_HEIGHT)
+        self.interface.intrinsic.width = at_least(
+            max(min_size.width, self.interface._MIN_WIDTH)
+        )
+        self.interface.intrinsic.height = at_least(
+            max(min_size.height, self.interface._MIN_HEIGHT)
+        )
