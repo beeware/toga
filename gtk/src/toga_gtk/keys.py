@@ -227,7 +227,7 @@ GTK_MODIFIER_CODES = {
 def toga_key(event):
     """Convert a GDK Key Event into a Toga key."""
     try:
-        key = GDK_KEYS[event.keyval]
+        key = GDK_KEYS[event]
 
         modifiers = set()
 

@@ -31,8 +31,8 @@ class TextInput(Widget):
     def gtk_focus_out_event(self, *args):
         self.interface.on_lose_focus(self.interface)
 
-    def gtk_key_press_event(self, *args):
-        key_pressed = toga_key(args[0])
+    def gtk_key_press_event(self, event_controller_key, keyval, keycode, state):
+        key_pressed = toga_key(keyval)
         if key_pressed and key_pressed["key"] in {Key.ENTER, Key.NUMPAD_ENTER}:
             self.interface.on_confirm(None)
 
