@@ -21,18 +21,15 @@ class Slider(Widget, toga.widgets.slider.SliderImpl):
         self.adj = Gtk.Adjustment()
         self.native = Gtk.Scale.new(Gtk.Orientation.HORIZONTAL, self.adj)
 
-        self.native.connect(
-            "value-changed",
-            lambda native: self.interface.on_change(None),
-        )
-        self.native.connect(
-            "button-press-event",
-            lambda native, event: self.interface.on_press(None),
-        )
-        self.native.connect(
-            "button-release-event",
-            lambda native, event: self.interface.on_release(None),
-        )
+        self.native.connect("value-changed", self.gtk_on_change)
+
+        click_gesture = Gtk.GestureClick.new()
+        click_gesture.set_button(1)  # Montoring left mouse button
+        click_gesture.set_propagation_phase(Gtk.PropagationPhase.BUBBLE)
+        click_gesture.connect("end", self.gtk_on_end)
+        click_gesture.connect("pressed", self.gtk_on_press)
+        click_gesture.connect("unpaired-release", self.gtk_on_unpair_release)
+        self.native.add_controller(click_gesture)
 
         # Despite what the set_digits documentation says, set_round_digits has no effect
         # when set_draw_value is False, so we have to round the value manually. Disable
@@ -43,6 +40,22 @@ class Slider(Widget, toga.widgets.slider.SliderImpl):
 
         # Dummy values used during initialization.
         self.tick_count = None
+
+    def gtk_on_change(self, widget):
+        if self.interface.on_change:
+            self.interface.on_change(widget)
+
+    def gtk_on_press(self, widget, n_press, x, y):
+        if self.interface.on_press:
+            self.interface.on_press(widget)
+
+    def gtk_on_end(self, widget, sequence):
+        if self.interface.on_release:
+            self.interface.on_release(widget)
+
+    def gtk_on_unpair_release(self, widget, x, y, button, sequence):
+        if self.interface.on_release:
+            self.interface.on_release(widget)
 
     def gtk_change_value(self, native, scroll_type, value):
         self.adj.set_value(self.interface._round_value(value))
@@ -76,10 +89,18 @@ class Slider(Widget, toga.widgets.slider.SliderImpl):
         return self.tick_count
 
     def rehint(self):
-        # print("REHINT", self, self.native.get_preferred_width(), self.native.get_preferred_height())
-        height = self.native.get_preferred_height()
+        # print(
+        #     "REHINT",
+        #     self,
+        #     self.native.get_preferred_size()[0].width,
+        #     self.native.get_preferred_size()[0].height,
+        # )
+        min_size, size = self.native.get_preferred_size()
+
+        if min_size.width > self.interface._MIN_WIDTH:
+            self.interface._MIN_WIDTH = min_size.width
 
         # Set intrinsic width to at least the minimum width
         self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
         # Set intrinsic height to the natural height
-        self.interface.intrinsic.height = height[1]
+        self.interface.intrinsic.height = size.height
