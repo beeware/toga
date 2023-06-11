@@ -24,12 +24,13 @@ class Label(Widget):
         self.native.set_text(value)
 
     def rehint(self):
-        # print("REHINT", self,
-        #     self.native.get_preferred_width(), self.native.get_preferred_height(),
-        #     getattr(self, '_fixed_height', False), getattr(self, '_fixed_width', False)
+        # print(
+        #     "REHINT",
+        #     self,
+        #     self.native.get_preferred_size()[0].width,
+        #     self.native.get_preferred_size()[0].height,
         # )
-        width = self.native.get_preferred_width()
-        height = self.native.get_preferred_height()
+        min_size, size = self.native.get_preferred_size()
 
-        self.interface.intrinsic.width = at_least(width[0])
-        self.interface.intrinsic.height = height[1]
+        self.interface.intrinsic.width = at_least(min_size.width)
+        self.interface.intrinsic.height = size.height
