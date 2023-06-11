@@ -7,7 +7,7 @@ class ImageView(Widget):
         self.native = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
         self._image = Gtk.Image()
         self._pixbuf = None
-        self.native.add(self._image)
+        self.native.append(self._image)
 
     def set_image(self, image):
         self._pixbuf = image._impl.native
@@ -22,8 +22,8 @@ class ImageView(Widget):
             height, width = self._resize_max(
                 original_height=self._pixbuf.get_height(),
                 original_width=self._pixbuf.get_width(),
-                max_height=self.native.get_allocated_height(),
-                max_width=self.native.get_allocated_width(),
+                max_height=self.native.get_height(),
+                max_width=self.native.get_width(),
             )
 
             dpr = self.native.get_scale_factor()
@@ -32,10 +32,9 @@ class ImageView(Widget):
                 width * dpr, height * dpr, GdkPixbuf.InterpType.BILINEAR
             )
 
-            surface = Gdk.cairo_surface_create_from_pixbuf(
-                scaled_pixbuf, 0, self.native.get_window()  # scale: 0 = same as window
+            self._image.set_from_paintable(
+                Gdk.Texture.new_for_pixbuf(scaled_pixbuf)
             )
-            self._image.set_from_surface(surface)
 
     @staticmethod
     def _resize_max(original_height, original_width, max_height, max_width):
