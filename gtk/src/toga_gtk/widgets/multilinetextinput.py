@@ -22,7 +22,7 @@ class MultilineTextInput(Widget):
 
         # The GTK TextView doesn't have an implementation of placeholder. We
         # fake it by using a different buffer that contains placeholder text.
-        # This bufer is installed by default, until the value for the widget
+        # This buffer is installed by default, until the value for the widget
         # becomes something non-empty. The placeholder buffer is also swapped
         # out when focus is gained, or a key press event occurs. The latter
         # is needed because the value can be changed programatically when
@@ -34,15 +34,21 @@ class MultilineTextInput(Widget):
 
         self.native_textview = Gtk.TextView()
         self.native_textview.set_name(f"toga-{self.interface.id}-textview")
-        self.native_textview.get_style_context().add_class("toga")
+        self.native_textview.add_css_class("toga")
+
+        focus_controller = Gtk.EventControllerFocus()
+        focus_controller.connect("enter", self.gtk_on_focus_in)
+        focus_controller.connect("leave", self.gtk_on_focus_out)
+
+        key_press_controller = Gtk.EventControllerKey()
+        key_press_controller.connect("key-pressed", self.gtk_on_key_press)
 
         self.native_textview.set_buffer(self.placeholder)
         self.native_textview.set_wrap_mode(Gtk.WrapMode.WORD_CHAR)
-        self.native_textview.connect("focus-in-event", self.gtk_on_focus_in)
-        self.native_textview.connect("focus-out-event", self.gtk_on_focus_out)
-        self.native_textview.connect("key-press-event", self.gtk_on_key_press)
+        self.native_textview.add_controller(focus_controller)
+        self.native_textview.add_controller(key_press_controller)
 
-        self.native.add(self.native_textview)
+        self.native.set_child(self.native_textview)
 
     def set_color(self, color):
         self.apply_css(
@@ -83,7 +89,8 @@ class MultilineTextInput(Widget):
             # See gtk_on_change for why this is needed
             self.interface.on_change(None)
             if not self.has_focus:
-                self.native_textview.set_buffer(self.placeholder)
+                self.buffer = self.placeholder
+                self.native_textview.set_buffer(self.buffer)
             else:
                 self.native_textview.set_buffer(self.buffer)
 

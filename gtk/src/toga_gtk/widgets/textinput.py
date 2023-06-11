@@ -9,11 +9,17 @@ from .base import Widget
 
 class TextInput(Widget):
     def create(self):
+        focus_controller = Gtk.EventControllerFocus()
+        focus_controller.connect("enter", self.gtk_focus_in_event)
+        focus_controller.connect("leave", self.gtk_focus_out_event)
+
+        key_press_controller = Gtk.EventControllerKey()
+        key_press_controller.connect("key-pressed", self.gtk_key_press_event)
+
         self.native = Gtk.Entry()
         self.native.connect("changed", self.gtk_on_change)
-        self.native.connect("focus-in-event", self.gtk_focus_in_event)
-        self.native.connect("focus-out-event", self.gtk_focus_out_event)
-        self.native.connect("key-press-event", self.gtk_key_press_event)
+        self.native.add_controller(focus_controller)
+        self.native.add_controller(key_press_controller)
 
     def gtk_on_change(self, entry):
         self.interface.on_change(self.interface)
@@ -56,14 +62,14 @@ class TextInput(Widget):
 
     def rehint(self):
         # print("REHINT", self,
-        #     self._impl.get_preferred_width(), self._impl.get_preferred_height(),
+        #     self._impl.get_preferred_size()[0],
+        #     self._impl.get_preferred_size()[1],
         #     getattr(self, '_fixed_height', False), getattr(self, '_fixed_width', False)
         # )
-        # width = self.native.get_preferred_width()
-        height = self.native.get_preferred_height()
+        _, size = self.native.get_preferred_size()
 
         self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
-        self.interface.intrinsic.height = height[1]
+        self.interface.intrinsic.height = size.height
 
     def set_error(self, error_message):
         self.native.set_icon_from_icon_name(Gtk.EntryIconPosition.SECONDARY, "error")
