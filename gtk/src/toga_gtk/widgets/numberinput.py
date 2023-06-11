@@ -64,8 +64,13 @@ class NumberInput(Widget):
         self.native.set_alignment(xalign)
 
     def rehint(self):
-        width = self.native.get_preferred_width()
-        height = self.native.get_preferred_height()
+        # print(
+        #     "REHINT",
+        #     self,
+        #     self.native.get_preferred_size()[0].width,
+        #     self.native.get_preferred_size()[0].height,
+        # )
+        _, size = self.native.get_preferred_size()
 
-        self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH + width[1])
-        self.interface.intrinsic.height = height[1]
+        self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH + size.width)
+        self.interface.intrinsic.height = size.height
