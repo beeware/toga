@@ -2,7 +2,7 @@ from abc import abstractmethod
 
 from travertino.size import at_least
 
-from ..libs import get_background_color_css, get_color_css, get_font_css
+from ..libs import Gtk, Gdk, get_background_color_css, get_color_css, get_font_css
 
 
 class Widget:
@@ -12,7 +12,7 @@ class Widget:
         self.interface._impl = self
         self.native = None
         self._container = None
-        self._widget_styles = {}
+        self.style_providers = {}
         self.create()
 
         # Ensure the native widget has links to the interface and impl
@@ -22,6 +22,7 @@ class Widget:
         # Ensure the native widget has GTK CSS style attributes; create() should
         # ensure any other widgets are also styled appropriately.
         self.native.set_name(f"toga-{self.interface.id}")
+        self.native.add_css_class("toga")
 
         # Ensure initial styles are applied.
         self.interface.style.reapply()
@@ -91,49 +92,55 @@ class Widget:
 
     # CSS tools ===============================================================
 
-    def apply_css(self, property, css):
+    def apply_css(self, property, css, native=None, selector=".toga"):
         """Apply a CSS style controlling a specific property type.
 
-        GTK controls appearance with CSS; each GTK widget can have a unique
-        selector that specific for it. This CSS is applied on display at
-        once to make effects on widgets.
+        GTK controls appearance with CSS; each GTK widget can have an
+        independent style sheet, composed out of multiple providers.
 
-        Toga maintains a separate CSS for each widget that controlls
-        different properties (e.g., color, font, ...). When one of these
-        properties is modified by updates or removes, Toga updates this
-        property on the CSS and passes this updated CSS to the toplevel
-        app which takes the responsibility of appling these changes.
+        Toga uses a separate provider for each property that needs to be
+        controlled (e.g., color, font, ...). When that property is modified, the
+        old provider for that property is removed; if new CSS has been provided,
+        a new provider is constructed and added to the widget.
 
-        It is assumed that every Toga widget will have the id attribute
-        ``toga-id(widget)`` that gives unique access to the widget style.
+        It is assumed that every Toga widget will have the class ``toga``.
 
         :param property: The style property to modify
-        :param css: A dictionary of string key-value pairs, describing
-            the new CSS for the given property. If ``None``, the Toga
-            style for that property will be reset
+        :param css: A dictionary of string key-value pairs, describing the new
+            CSS for the given property. If ``None``, the Toga style for that
+            property will be reset
+        :param native: The native widget to which the style should be applied.
+            Defaults to ``self.native``.
+        :param selector: The CSS selector used to target the style. Defaults to
+            ``.toga``.
         """
+        if native is None:
+            native = self.native
+
+        style_provider = self.style_providers.pop((property, id(native)), None)
+
+        # If there was a previous style provider for the given property, remove
+        # it from the GTK widget
+        if style_provider:
+            Gtk.StyleContext.remove_provider_for_display(
+                Gdk.Display.get_default(),
+                style_provider,
+            )
         # If there's new CSS to apply, install it.
         if css:
-            # Update the property
-            self._widget_styles[property] = css
-        else:
-            # Reset the property
-            self._widget_styles.pop(property, None)
+            style_provider = Gtk.CssProvider()
+            styles = " ".join(f"{key}: {value};" for key, value in css.items())
+            declaration = selector + " {" + styles + "}"
+            style_provider.load_from_data(declaration, len(declaration))
 
-        # Apply css
-        if self.interface.app:
-            styles = {
-                key: value
-                for prop_value in self._widget_styles.values()
-                for key, value in prop_value.items()
-            }
-            css_styles = " ".join(
-                f"{key}: {value};" for key, value in styles.items()
+            Gtk.StyleContext.add_provider_for_display(
+                Gdk.Display.get_default(),
+                style_provider,
+                Gtk.STYLE_PROVIDER_PRIORITY_USER,
             )
-            widget_css = (
-                f"{self.native.get_css_name()}#{self.native.get_name()}" + " {" + css_styles + "}"
-            )
-            self.interface.app._impl.apply_styles(widget_css, self.native)
+
+            # Store the provider so it can be removed later
+            self.style_providers[(property, id(native))] = style_provider
 
     # APPLICATOR ==============================================================
 

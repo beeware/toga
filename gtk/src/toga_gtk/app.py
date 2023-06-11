@@ -54,10 +54,6 @@ class App:
         self.interface = interface
         self.interface._impl = self
 
-        # Initialize the app css styles
-        self.app_styles = {}
-        self._css_provider = Gtk.CssProvider()
-
         gbulb.install(gtk=True)
         self.loop = asyncio.new_event_loop()
 
@@ -87,7 +83,14 @@ class App:
         self.create_menus()
 
         # Set the default Toga styles
-        self.apply_styles(TOGA_DEFAULT_STYLES)
+        css_provider = Gtk.CssProvider()
+        css_provider.load_from_data(TOGA_DEFAULT_STYLES, len(TOGA_DEFAULT_STYLES))
+
+        Gtk.StyleContext.add_provider_for_display(
+            Gdk.Display.get_default(),
+            css_provider,
+            Gtk.STYLE_PROVIDER_PRIORITY_USER
+        )
 
     def _create_app_commands(self):
         self.interface.commands.add(
@@ -173,31 +176,6 @@ class App:
 
     def hide_cursor(self):
         self.interface.factory.not_implemented("App.hide_cursor()")
-
-    def apply_styles(self, widget_css, widget=None):
-        # Remove previous app styles
-        Gtk.StyleContext.remove_provider_for_display(
-            Gdk.Display.get_default(),
-            self._css_provider,
-        )
-
-        # Update app styles
-        if widget:
-            self.app_styles[id(widget)] = widget_css
-        else:
-            # App/default styles
-            self.app_styles[id(self.native)] = widget_css
-
-        # Install the app styles after we updated them
-        self._css_provider = Gtk.CssProvider()
-        app_css = "".join(f"{widget_css}\n" for widget_css in self.app_styles.values())
-        self._css_provider.load_from_data(app_css, len(app_css))
-
-        Gtk.StyleContext.add_provider_for_display(
-            Gdk.Display.get_default(),
-            self._css_provider,
-            Gtk.STYLE_PROVIDER_PRIORITY_USER,
-        )
 
 
 class DocumentApp(App):
