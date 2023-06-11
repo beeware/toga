@@ -45,10 +45,9 @@ class Selection(Widget):
         # )
         min_size, size = self.native.get_preferred_size()
 
-        if min_size.width > self.interface._MIN_WIDTH:
-            self.interface._MIN_WIDTH = min_size.width
-
-        self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
+        self.interface.intrinsic.width = at_least(
+            max(min_size.width, self.interface._MIN_WIDTH)
+        )
         self.interface.intrinsic.height = size.height
 
     def set_on_select(self, handler):
