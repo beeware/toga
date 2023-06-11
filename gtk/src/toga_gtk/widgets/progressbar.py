@@ -87,9 +87,13 @@ class ProgressBar(Widget):
         self._stop_indeterminate()
 
     def rehint(self):
-        # print("REHINT", self, self.native.get_preferred_width(), self.native.get_preferred_height())
-        width = self.native.get_preferred_width()
-        height = self.native.get_preferred_height()
+        # print(
+        #     "REHINT",
+        #     self,
+        #     self.native.get_preferred_size()[0].width,
+        #     self.native.get_preferred_size()[0].height,
+        # )
+        min_size, _ = self.native.get_preferred_size()
 
-        self.interface.intrinsic.width = at_least(width[0])
-        self.interface.intrinsic.height = height[0]
+        self.interface.intrinsic.width = at_least(min_size.width)
+        self.interface.intrinsic.height = min_size.height
