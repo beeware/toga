@@ -54,11 +54,11 @@ class DetailedList(Widget):
             "row-selected", self.gtk_on_row_selected
         )
 
-        self.right_click_gesture = Gtk.GestureClick.new()
-        self.right_click_gesture.set_button(3)  # Montoring right mouse button
-        self.right_click_gesture.set_propagation_phase(Gtk.PropagationPhase.BUBBLE)
-        self.right_click_gesture.connect("pressed", self.gtk_on_right_click)
-        self.list_box.add_controller(self.right_click_gesture)
+        right_click_gesture = Gtk.GestureClick.new()
+        right_click_gesture.set_button(3)  # Montoring right mouse button
+        right_click_gesture.set_propagation_phase(Gtk.PropagationPhase.BUBBLE)
+        right_click_gesture.connect("pressed", self.gtk_on_right_click)
+        self.list_box.add_controller(right_click_gesture)
 
     def row_factory(self, item):
         """
