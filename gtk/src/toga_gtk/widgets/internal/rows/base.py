@@ -34,18 +34,26 @@ class HiddenButtonsRow(BaseRow):
 
         self.buttons = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
         self.buttons_hbox = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
-        self.buttons.pack_start(self.buttons_hbox, True, False, 0)
+        self.buttons_hbox.set_vexpand(True)
+        self.buttons_hbox.set_valign(Gtk.Align.START)
+        self.buttons.append(self.buttons_hbox)
 
         self.stack.add_named(self.content, self._content_name)
         self.stack.add_named(self.buttons, self._buttons_name)
 
-        self.add(self.stack)
+        self.set_child(self.stack)
 
     def add_content(self, content: Gtk.Widget):
-        self.content.add(content)
+        self.content.append(content)
 
     def add_button(self, button: Gtk.Button):
-        self.buttons_hbox.pack_start(button, True, False, 10)
+        button.set_hexpand(True)
+        button.set_halign(Gtk.Align.START)
+        button.set_margin_top(10)
+        button.set_margin_bottom(10)
+        button.set_margin_start(10)
+        button.set_margin_end(10)
+        self.buttons_hbox.append(button)
 
     def show_buttons(self):
         self.stack.set_visible_child_name(self._buttons_name)

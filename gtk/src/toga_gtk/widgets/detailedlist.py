@@ -37,7 +37,7 @@ class DetailedList(Widget):
         self.scrolled_window.set_min_content_width(self.interface._MIN_WIDTH)
         self.scrolled_window.set_min_content_height(self.interface._MIN_HEIGHT)
 
-        self.scrolled_window.add(self.list_box)
+        self.scrolled_window.set_child(self.list_box)
 
         self.refresh_button = RefreshButton(self.scrolled_window.get_vadjustment())
 
@@ -54,10 +54,11 @@ class DetailedList(Widget):
             "row-selected", self.gtk_on_row_selected
         )
 
-        self.right_click_gesture = Gtk.GestureMultiPress.new(self.list_box)
-        self.right_click_gesture.set_button(3)
+        self.right_click_gesture = Gtk.GestureClick.new()
+        self.right_click_gesture.set_button(3)  # Montoring right mouse button
         self.right_click_gesture.set_propagation_phase(Gtk.PropagationPhase.BUBBLE)
         self.right_click_gesture.connect("pressed", self.gtk_on_right_click)
+        self.list_box.add_controller(self.right_click_gesture)
 
     def row_factory(self, item):
         """
@@ -108,7 +109,7 @@ class DetailedList(Widget):
         """
         item_impl = self.row_factory(item)
         self.store.insert(index, item_impl)
-        self.list_box.show_all()
+        self.list_box.set_visible(True)
         self._list_items_changed()
 
     def change(self, item):
@@ -139,7 +140,6 @@ class DetailedList(Widget):
         if self.interface.on_delete is not None:
             self.interface.on_delete(self.interface, item._impl.interface)
 
-        item._impl.destroy()
         self._list_items_changed()
 
     def clear(self):

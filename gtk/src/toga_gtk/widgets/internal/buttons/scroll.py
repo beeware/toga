@@ -15,15 +15,12 @@ class ScrollButton(ParentPosition):
         self._is_attached_to_parent = False
         self._do_scroll = None
 
-        self.button = Gtk.Button.new_from_icon_name(
-            "go-bottom-symbolic", Gtk.IconSize.BUTTON
-        )
+        self.button = Gtk.Button.new_from_icon_name("go-bottom-symbolic")
 
         self.button.set_can_focus(False)
 
-        button_context = self.button.get_style_context()
-        button_context.add_class("osd")
-        button_context.add_class("toga-detailed-list-floating-buttons")
+        self.button.add_css_class("osd")
+        self.button.add_css_class("toga-detailed-list-floating-buttons")
 
         self.revealer = Gtk.Revealer()
 
@@ -34,7 +31,7 @@ class ScrollButton(ParentPosition):
         self.revealer.set_margin_bottom(self.bottom_margin)
         self.revealer.set_margin_end(self.right_margin)
 
-        self.revealer.add(self.button)
+        self.revealer.set_child(self.button)
         self.revealer.set_reveal_child(False)
 
         self.button.connect("clicked", self.gtk_on_clicked)

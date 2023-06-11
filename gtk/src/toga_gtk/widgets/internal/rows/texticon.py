@@ -34,18 +34,28 @@ class TextIconRow(HiddenButtonsRow):
         content = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
         vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
 
-        vbox.pack_start(text, True, True, 0)
+        text.set_vexpand(True)
+        text.set_valign(Gtk.Align.FILL)
+        vbox.append(text)
 
         if self.icon is not None:
-            content.pack_start(self.icon, False, False, 6)
+            self.icon.set_margin_top(6)
+            self.icon.set_margin_bottom(6)
+            self.icon.set_margin_start(6)
+            self.icon.set_margin_end(6)
+            content.append(self.icon)
 
-        content.pack_start(vbox, True, True, 5)
+        vbox.set_hexpand(True)
+        vbox.set_halign(Gtk.Align.FILL)
+        vbox.set_margin_top(5)
+        vbox.set_margin_bottom(5)
+        vbox.set_margin_start(5)
+        vbox.set_margin_end(5)
+        content.append(vbox)
 
         self.add_content(content)
 
-        self._delete_button = Gtk.Button.new_from_icon_name(
-            "user-trash-symbolic", Gtk.IconSize.BUTTON
-        )
+        self._delete_button = Gtk.Button.new_from_icon_name("user-trash-symbolic")
         self._delete_button.connect("clicked", self.gtk_on_delete_clicked)
         self.add_button(self._delete_button)
 

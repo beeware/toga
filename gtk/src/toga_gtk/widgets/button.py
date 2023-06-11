@@ -33,10 +33,10 @@ class Button(Widget):
         #     self.native.get_preferred_size()[0].width,
         #     self.native.get_preferred_size()[0].height,
         # )
-        min_size, natural_size = self.native.get_preferred_size()
+        min_size, size = self.native.get_preferred_size()
 
         self.interface.intrinsic.width = at_least(min_size.width)
-        self.interface.intrinsic.height = natural_size.height
+        self.interface.intrinsic.height = size.height
 
     def gtk_clicked(self, event):
         self.interface.on_press(None)

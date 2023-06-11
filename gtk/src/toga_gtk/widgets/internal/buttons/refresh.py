@@ -8,26 +8,20 @@ class RefreshButtonWidget(Gtk.Revealer):
         super().__init__(*args, **kwargs)
         self.parent = None
 
-        self.refresh_btn = Gtk.Button.new_from_icon_name(
-            "view-refresh-symbolic", Gtk.IconSize.BUTTON
-        )
+        self.refresh_btn = Gtk.Button.new_from_icon_name("view-refresh-symbolic")
         self.refresh_btn.set_can_focus(False)
-        refresh_btn_context = self.refresh_btn.get_style_context()
-        refresh_btn_context.add_class("osd")
-        refresh_btn_context.add_class("toga-detailed-list-floating-buttons")
-        refresh_btn_context.remove_class("button")
+        self.refresh_btn.add_css_class("osd")
+        self.refresh_btn.add_css_class("toga-detailed-list-floating-buttons")
+        self.refresh_btn.remove_css_class("button")
 
-        self.close_btn = Gtk.Button.new_from_icon_name(
-            "close-symbolic", Gtk.IconSize.BUTTON
-        )
+        self.close_btn = Gtk.Button.new_from_icon_name("close-symbolic")
         self.close_btn.set_can_focus(False)
-        close_btn_context = self.close_btn.get_style_context()
-        close_btn_context.add_class("osd")
-        close_btn_context.add_class("toga-detailed-list-floating-buttons")
+        self.close_btn.add_css_class("osd")
+        self.close_btn.add_css_class("toga-detailed-list-floating-buttons")
 
-        self.hbox = Gtk.HBox()
-        self.hbox.add(self.refresh_btn)
-        self.hbox.add(self.close_btn)
+        self.hbox = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=0)
+        self.hbox.append(self.refresh_btn)
+        self.hbox.append(self.close_btn)
 
         self.set_transition_type(Gtk.RevealerTransitionType.CROSSFADE)
         self.set_valign(position)
@@ -36,7 +30,7 @@ class RefreshButtonWidget(Gtk.Revealer):
         self.set_margin_bottom(margin)
 
         self.set_reveal_child(False)
-        self.add(self.hbox)
+        self.set_child(self.hbox)
 
     def set_on_refresh(self, gtk_on_refresh: callable):
         self.refresh_btn.connect("clicked", gtk_on_refresh)
@@ -48,18 +42,18 @@ class RefreshButtonWidget(Gtk.Revealer):
         self.set_reveal_child(True)
 
     def hide(self):
-        self.refresh_btn.hide()
-        self.close_btn.hide()
+        self.refresh_btn.set_visible(False)
+        self.close_btn.set_visible(False)
         self.set_reveal_child(False)
 
     def show_close(self):
-        return self.close_btn.show_now()
+        return self.close_btn.set_visible(True)
 
     def hide_close(self):
-        return self.close_btn.hide()
+        return self.close_btn.set_visible(False)
 
     def show_refresh(self):
-        return self.refresh_btn.show_now()
+        return self.refresh_btn.set_visible(True)
 
     def is_visible(self):
         return self.get_reveal_child()

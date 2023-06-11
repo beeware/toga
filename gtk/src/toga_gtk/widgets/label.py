@@ -7,7 +7,7 @@ from .base import Widget
 class Label(Widget):
     def create(self):
         self.native = Gtk.Label()
-        self.native.set_line_wrap(False)
+        self.native.set_wrap(False)
 
     def set_alignment(self, value):
         xalign, justify = gtk_alignment(value)
