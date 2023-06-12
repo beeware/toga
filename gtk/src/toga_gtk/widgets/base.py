@@ -2,7 +2,7 @@ from abc import abstractmethod
 
 from travertino.size import at_least
 
-from ..libs import Gtk, Gdk, get_background_color_css, get_color_css, get_font_css
+from ..libs import Gdk, Gtk, get_background_color_css, get_color_css, get_font_css
 
 
 class Widget:
