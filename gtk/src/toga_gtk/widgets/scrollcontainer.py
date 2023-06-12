@@ -15,7 +15,7 @@ class ScrollContainer(Widget):
         self.native.set_overlay_scrolling(True)
 
         self.inner_container = TogaContainer()
-        self.native.add(self.inner_container)
+        self.native.set_child(self.inner_container)
 
     def set_content(self, widget):
         self.inner_container.content = widget
