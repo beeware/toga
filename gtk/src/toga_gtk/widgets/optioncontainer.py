@@ -23,7 +23,7 @@ class OptionContainer(Widget):
 
         # Tabs aren't visible by default;
         # tell the notebook to show all content.
-        self.native.show_all()
+        self.native.set_visible(True)
 
     def set_on_select(self, handler):
         # No special handling required
