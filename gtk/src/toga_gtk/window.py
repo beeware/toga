@@ -1,6 +1,3 @@
-from toga.command import GROUP_BREAK, SECTION_BREAK
-from toga.handlers import wrapped_handler
-
 from .container import TogaContainer
 from .libs import Gtk
 

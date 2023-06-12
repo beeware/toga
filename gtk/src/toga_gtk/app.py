@@ -9,10 +9,9 @@ import gbulb
 
 import toga
 from toga import App as toga_App
-from toga.command import GROUP_BREAK, SECTION_BREAK, Command
+from toga.command import Command
 
-from .keys import gtk_accel
-from .libs import TOGA_DEFAULT_STYLES, Gdk, Gio, GLib, Gtk
+from .libs import TOGA_DEFAULT_STYLES, Gdk, Gio, Gtk
 from .window import Window
 
 
