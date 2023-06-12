@@ -44,8 +44,8 @@ class WebView(Widget):
             value = "about:blank"
         self.native.loadUrl(value)
 
-        # Detecting when the load is complete requires subclassing WebViewClient, which
-        # is not yet possible with Chaquopy.
+        # Detecting when the load is complete requires subclassing WebViewClient
+        # (https://github.com/beeware/toga/issues/1020).
         if future:
             future.set_result(None)
 
