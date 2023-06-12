@@ -72,5 +72,7 @@ class NumberInput(Widget):
         # )
         _, size = self.native.get_preferred_size()
 
-        self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH + size.width)
+        self.interface.intrinsic.width = at_least(
+            self.interface._MIN_WIDTH + size.width
+        )
         self.interface.intrinsic.height = size.height

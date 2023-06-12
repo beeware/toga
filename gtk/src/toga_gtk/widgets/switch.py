@@ -8,7 +8,9 @@ class Switch(Widget):
     SPACING = 10
 
     def create(self):
-        self.native = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=self.SPACING)
+        self.native = Gtk.Box(
+            orientation=Gtk.Orientation.HORIZONTAL, spacing=self.SPACING
+        )
 
         self.native_label = Gtk.Label(xalign=0)
         self.native_label.set_name(f"toga-{self.interface.id}-label")
@@ -71,6 +73,4 @@ class Switch(Widget):
             min_label_size.width + self.SPACING + min_switch_size.width
         )
         # Set intrinsic height to the natural height
-        self.interface.intrinsic.height = max(
-            label_size.height, switch_size.height
-        )
+        self.interface.intrinsic.height = max(label_size.height, switch_size.height)

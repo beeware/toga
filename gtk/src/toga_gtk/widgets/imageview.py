@@ -32,9 +32,7 @@ class ImageView(Widget):
                 width * dpr, height * dpr, GdkPixbuf.InterpType.BILINEAR
             )
 
-            self._image.set_from_paintable(
-                Gdk.Texture.new_for_pixbuf(scaled_pixbuf)
-            )
+            self._image.set_from_paintable(Gdk.Texture.new_for_pixbuf(scaled_pixbuf))
 
     @staticmethod
     def _resize_max(original_height, original_width, max_height, max_width):

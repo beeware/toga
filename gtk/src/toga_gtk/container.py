@@ -2,7 +2,6 @@ from .libs import Gdk, Gtk
 
 
 class TogaContainerLayoutManager(Gtk.LayoutManager):
-
     def __init__(self):
         super().__init__()
 
@@ -62,10 +61,18 @@ class TogaContainerLayoutManager(Gtk.LayoutManager):
                     # Set the size of the child widget to the computed layout size.
                     # print(f"  allocate child {child_widget.interface}: {child_widget.interface.layout}")
                     child_widget_allocation = Gdk.Rectangle()
-                    child_widget_allocation.x = child_widget.interface.layout.absolute_content_left
-                    child_widget_allocation.y = child_widget.interface.layout.absolute_content_top
-                    child_widget_allocation.width = child_widget.interface.layout.content_width
-                    child_widget_allocation.height = child_widget.interface.layout.content_height
+                    child_widget_allocation.x = (
+                        child_widget.interface.layout.absolute_content_left
+                    )
+                    child_widget_allocation.y = (
+                        child_widget.interface.layout.absolute_content_top
+                    )
+                    child_widget_allocation.width = (
+                        child_widget.interface.layout.content_width
+                    )
+                    child_widget_allocation.height = (
+                        child_widget.interface.layout.content_height
+                    )
                     child_widget.size_allocate(child_widget_allocation, -1)
 
                     child_widget = child_widget.get_prev_sibling()
