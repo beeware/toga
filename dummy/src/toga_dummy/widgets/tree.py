@@ -29,3 +29,9 @@ class Tree(Widget):
 
     def set_on_double_click(self, handler):
         self._set_value("on_double_click", handler)
+
+    def simulate_select(self):
+        self.interface.on_select(None)
+
+    def simulate_double_click(self):
+        self.interface.on_double_click(None)
