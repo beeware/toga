@@ -26,6 +26,9 @@ class TogaContainer(Gtk.Fixed):
         # A flag that can be used to explicitly flag that a redraw is required.
         self.needs_redraw = True
 
+    def refreshed(self):
+        pass
+
     def make_dirty(self, widget=None):
         """Mark the container (or a specific widget in the container) as dirty.
 

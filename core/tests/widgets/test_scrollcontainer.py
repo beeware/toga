@@ -266,11 +266,21 @@ def test_vertical(scroll_container, content, value, expected):
     assert_action_performed(content, "refresh")
 
 
-def test_horizontal_position(scroll_container):
-    "The horizontal position can be set and retrieved"
-    scroll_container.horizontal_position = 10
+@pytest.mark.parametrize(
+    "position, expected",
+    [
+        (10, 10),
+        (-100, 0),  # Clipped to minimum value
+        (1500, 1000),  # Clipped to maximum value
+        ("10", 10),  # String, converted to int
+        (10.1, 10),  # Float, converted to int
+    ],
+)
+def test_horizontal_position(scroll_container, position, expected):
+    "The horizontal position can be set (clipped if necessary) and retrieved"
+    scroll_container.horizontal_position = position
 
-    assert scroll_container.horizontal_position == 10
+    assert scroll_container.horizontal_position == expected
     assert scroll_container.max_horizontal_position == 1000
 
 
@@ -292,11 +302,21 @@ def test_horizontal_position_when_not_horizontal(scroll_container):
         scroll_container.horizontal_position = 0.5
 
 
-def test_vertical_position(scroll_container):
-    "The vertical position can be set and retrieved"
-    scroll_container.vertical_position = 10
+@pytest.mark.parametrize(
+    "position, expected",
+    [
+        (10, 10),
+        (-100, 0),  # Clipped to minimum value
+        (2500, 2000),  # Clipped to maximum value
+        ("10", 10),  # String, converted to int
+        (10.1, 10),  # Float, converted to int
+    ],
+)
+def test_vertical_position(scroll_container, position, expected):
+    "The vertical position can be set (clipped if necessary) and retrieved"
+    scroll_container.vertical_position = position
 
-    assert scroll_container.vertical_position == 10
+    assert scroll_container.vertical_position == expected
     assert scroll_container.max_vertical_position == 2000
 
 

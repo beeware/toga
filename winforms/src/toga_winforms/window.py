@@ -31,6 +31,9 @@ class WinFormsViewport:
             return self.baseline_dpi
         return self.native.CreateGraphics().DpiX
 
+    def refreshed(self):
+        pass
+
 
 class Window:
     def __init__(self, interface, title, position, size):
