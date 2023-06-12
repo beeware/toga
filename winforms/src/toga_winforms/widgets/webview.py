@@ -140,8 +140,10 @@ class WebView(Widget):
         self.native.NavigateToString(content)
 
     def get_user_agent(self):
-        cwv = self.native.CoreWebView2
-        return cwv.Settings.UserAgent if cwv else ""
+        if self.corewebview2_available:
+            return self.native.CoreWebView2.Settings.UserAgent
+        else:  # pragma: nocover
+            return ""
 
     @requires_initialization
     def set_user_agent(self, value):

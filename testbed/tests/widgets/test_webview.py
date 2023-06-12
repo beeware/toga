@@ -1,6 +1,7 @@
 import asyncio
 from asyncio import wait_for
 from contextlib import nullcontext
+from time import time
 from unittest.mock import ANY, Mock
 
 import pytest
@@ -15,6 +16,7 @@ from .properties import (  # noqa: F401
 
 LOAD_TIMEOUT = 2
 JS_TIMEOUT = 0.5
+WINDOWS_INIT_TIMEOUT = 1
 
 
 async def get_content(widget, timeout):
@@ -146,8 +148,23 @@ async def test_static_content(widget, probe, on_load):
 async def test_user_agent(widget, probe):
     "The user agent can be customized"
 
-    # Default user agents are a mess, but they all start with "Mozilla/5.0"
-    assert widget.user_agent.startswith("Mozilla/5.0 (")
+    deadline = time() + WINDOWS_INIT_TIMEOUT
+    while True:
+        try:
+            # Default user agents are a mess, but they all start with "Mozilla/5.0"
+            ua = widget.user_agent
+            assert ua.startswith("Mozilla/5.0 (")
+            break
+        except AssertionError:
+            # On Windows, user_agent will return an empty string during intialization.
+            if (
+                toga.platform.current_platform == "windows"
+                and ua == ""
+                and time() < deadline
+            ):
+                await asyncio.sleep(0.05)
+            else:
+                raise
 
     # Set a custom user agent
     widget.user_agent = "NCSA_Mosaic/1.0"
