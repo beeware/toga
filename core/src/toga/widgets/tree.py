@@ -16,9 +16,22 @@ class Tree(Widget):
     :param style: An optional style object. If no style is provided then a new
         one will be created for the widget.
     :param data: The data to display in the widget. Can be an instance of
-        :class:`~toga.sources.TreeSource`, a list, dict or tuple with data to
-        display in the tree widget, or a class instance which implements the
-        interface of :class:`~toga.sources.TreeSource`. Entries can be:
+        :class:`~toga.sources.TreeSource` or a class instance which implements
+        the interface of :class:`~toga.sources.TreeSource`.
+        It can also be a list (or tuple), in this case each list item will
+        populate a row, without hierarchy.
+        It can also be a dict, in this case a key will populate a row, and its
+        value will populate children rows.
+
+        Each of these entries (list item, dict key and values) must consist of
+        a collection of cells, either:
+
+          - a list (or tuple), in which case the accessors will be matched by
+            index.
+
+          - a dict, in which case the key is used as the accessor.
+
+        The data displayed in a tree cell are:
 
           - any Python object ``value`` with a string representation. This
             string will be shown in the widget. If ``value`` has an attribute
@@ -29,7 +42,8 @@ class Tree(Widget):
             ``value`` will be used as text.
 
     :param accessors: Optional; a list of attributes to access the value in the
-        columns. If not given, the headings will be taken.
+        columns. If not given, the headings will be taken. If no headings were
+        given, accessors wil be sintesized (only for list, dict or tuple data).
     :param multiple_select: Boolean; if ``True``, allows for the selection of
         multiple rows. Defaults to ``False``.
     :param on_select: A handler to be invoked when the user selects one or
