@@ -131,7 +131,15 @@ class Widget:
             style_provider = Gtk.CssProvider()
             styles = " ".join(f"{key}: {value};" for key, value in css.items())
             declaration = selector + f"#{native.get_name()}" + " {" + styles + "}"
-            style_provider.load_from_data(declaration, len(declaration))
+
+            # Backward compatibility fix for different gtk versions ===========
+            if Gtk.get_major_version() >= 4 and Gtk.get_minor_version() >= 12:
+                style_provider.load_from_string(declaration)
+            elif Gtk.get_major_version() >= 4 and Gtk.get_minor_version() > 8:
+                style_provider.load_from_data(declaration, len(declaration))
+            else:
+                style_provider.load_from_data(declaration.encode("utf-8"))
+            # =================================================================
 
             Gtk.StyleContext.add_provider_for_display(
                 Gdk.Display.get_default(),

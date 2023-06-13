@@ -83,7 +83,15 @@ class App:
 
         # Set the default Toga styles
         css_provider = Gtk.CssProvider()
-        css_provider.load_from_data(TOGA_DEFAULT_STYLES, len(TOGA_DEFAULT_STYLES))
+
+        # Backward compatibility fix for different gtk versions ===============
+        if Gtk.get_major_version() >= 4 and Gtk.get_minor_version() >= 12:
+            css_provider.load_from_string(TOGA_DEFAULT_STYLES)
+        elif Gtk.get_major_version() >= 4 and Gtk.get_minor_version() > 8:
+            css_provider.load_from_data(TOGA_DEFAULT_STYLES, len(TOGA_DEFAULT_STYLES))
+        else:
+            css_provider.load_from_data(TOGA_DEFAULT_STYLES.encode("utf-8"))
+        # =====================================================================
 
         Gtk.StyleContext.add_provider_for_display(
             Gdk.Display.get_default(), css_provider, Gtk.STYLE_PROVIDER_PRIORITY_USER
