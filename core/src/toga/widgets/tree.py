@@ -43,7 +43,7 @@ class Tree(Widget):
 
     :param accessors: Optional; a list of attributes to access the value in the
         columns. If not given, the headings will be taken. If no headings were
-        given, accessors wil be sintesized (only for list, dict or tuple data).
+        given, accessors will be synthesized (only for list, dict or tuple data).
     :param multiple_select: Boolean; if ``True``, allows for the selection of
         multiple rows. Defaults to ``False``.
     :param on_select: A handler to be invoked when the user selects one or
