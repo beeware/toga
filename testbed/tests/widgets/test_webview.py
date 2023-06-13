@@ -14,9 +14,10 @@ from .properties import (  # noqa: F401
     test_focus,
 )
 
-# These timeouts are loose because CI can be very slow, especially on mobile.
-LOAD_TIMEOUT = 60
-JS_TIMEOUT = 60
+# These timeouts are loose because CI can be very slow, especially on mobile
+# (https://github.com/beeware/toga/pull/1949).
+LOAD_TIMEOUT = 300
+JS_TIMEOUT = 300
 WINDOWS_INIT_TIMEOUT = 60
 
 
