@@ -297,9 +297,15 @@ def test_horizontal_position_when_not_horizontal(scroll_container):
     scroll_container.horizontal = False
     with pytest.raises(
         ValueError,
-        match=r"Cannot set horizontal position when horizontal is not set.",
+        match=r"Cannot set horizontal position when horizontal scrolling is not enabled.",
     ):
-        scroll_container.horizontal_position = 0.5
+        scroll_container.horizontal_position = 37
+
+    with pytest.raises(
+        ValueError,
+        match=r"Cannot set scroll position when horizontal scrolling is not enabled.",
+    ):
+        scroll_container.position = (37, 42)
 
 
 @pytest.mark.parametrize(
@@ -333,6 +339,31 @@ def test_set_vertical_position_when_not_vertical(scroll_container):
     scroll_container.vertical = False
     with pytest.raises(
         ValueError,
-        match=r"Cannot set vertical position when vertical is not set.",
+        match=r"Cannot set vertical position when vertical scrolling is not enabled.",
     ):
-        scroll_container.vertical_position = 0.5
+        scroll_container.vertical_position = 42
+
+    with pytest.raises(
+        ValueError,
+        match=r"Cannot set scroll position when vertical scrolling is not enabled.",
+    ):
+        scroll_container.position = (37, 42)
+
+
+@pytest.mark.parametrize(
+    "position, expected",
+    [
+        ((37, 42), (37, 42)),
+        ((-100, 42), (0, 42)),  # Clipped to minimum horizontal value
+        ((37, -100), (37, 0)),  # Clipped to minimum vertical value
+        ((-100, -100), (0, 0)),  # Clipped to minimum
+        ((1500, 42), (1000, 42)),  # Clipped to maximum horizontal value
+        ((37, 2500), (37, 2000)),  # Clipped to maximum vertical value
+        ((1500, 2500), (1000, 2000)),  # Clipped to maximum
+    ],
+)
+def test_position(scroll_container, position, expected):
+    "The scroll position can be set (clipped if necessary) and retrieved"
+    scroll_container.position = position
+
+    assert scroll_container.position == expected

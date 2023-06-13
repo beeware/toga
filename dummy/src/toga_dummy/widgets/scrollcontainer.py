@@ -35,29 +35,15 @@ class ScrollContainer(Widget):
     def set_on_scroll(self, on_scroll):
         self._set_value("on_scroll", on_scroll)
 
-    def set_horizontal_position(self, horizontal_position):
-        if horizontal_position < 0:
-            horizontal_position = 0
-        elif horizontal_position > self.get_max_horizontal_position():
-            horizontal_position = self.get_max_horizontal_position()
-
+    def set_position(self, horizontal_position, vertical_position):
         self._set_value("horizontal_position", horizontal_position)
+        self._set_value("vertical_position", vertical_position)
 
     def get_horizontal_position(self):
-        if not self.get_horizontal():
-            return None
         return self._get_value("horizontal_position", 0)
 
     def get_max_horizontal_position(self):
         return 1000
-
-    def set_vertical_position(self, vertical_position):
-        if vertical_position < 0:
-            vertical_position = 0
-        elif vertical_position > self.get_max_vertical_position():
-            vertical_position = self.get_max_vertical_position()
-
-        self._set_value("vertical_position", vertical_position)
 
     def get_vertical_position(self):
         if not self.get_vertical():

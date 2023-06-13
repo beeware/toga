@@ -129,15 +129,6 @@ class ScrollContainer(Widget):
     def get_vertical_position(self):
         return int(self.native.contentView.bounds.origin.y)
 
-    def set_vertical_position(self, vertical_position):
-        new_position = NSMakePoint(
-            self.native.contentView.bounds.origin.x,
-            vertical_position,
-        )
-        self.native.contentView.scrollToPoint(new_position)
-        self.native.reflectScrolledClipView(self.native.contentView)
-        self.interface.on_scroll(None)
-
     def get_max_horizontal_position(self):
         return max(
             0,
@@ -150,11 +141,8 @@ class ScrollContainer(Widget):
     def get_horizontal_position(self):
         return int(self.native.contentView.bounds.origin.x)
 
-    def set_horizontal_position(self, horizontal_position):
-        new_position = NSMakePoint(
-            horizontal_position,
-            self.native.contentView.bounds.origin.y,
-        )
+    def set_position(self, horizontal_position, vertical_position):
+        new_position = NSMakePoint(horizontal_position, vertical_position)
         self.native.contentView.scrollToPoint(new_position)
         self.native.reflectScrolledClipView(self.native.contentView)
         self.interface.on_scroll(None)
