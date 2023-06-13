@@ -1,7 +1,7 @@
 from rubicon.objc import objc_method
 from travertino.size import at_least
 
-from toga_cocoa.containers import Container
+from toga_cocoa.container import Container
 from toga_cocoa.libs import NSObject, NSTabView, NSTabViewItem
 
 from ..libs import objc_property
@@ -53,8 +53,7 @@ class OptionContainer(Widget):
             text (str): The text for the option container
             widget: The widget or widget tree that belongs to the text.
         """
-        container = Container()
-        widget.container = container
+        container = Container(content=widget)
 
         item = NSTabViewItem.alloc().init()
         item.label = text

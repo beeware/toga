@@ -11,7 +11,6 @@ class Widget:
         self.interface = interface
         self.interface._impl = self
         self._container = None
-        self._viewport = None
         self.constraints = None
         self.native = None
         self.create()

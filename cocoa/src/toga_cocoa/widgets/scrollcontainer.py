@@ -1,7 +1,7 @@
 from rubicon.objc import SEL, objc_method, objc_property
 from travertino.size import at_least
 
-from toga_cocoa.containers import Container
+from toga_cocoa.container import Container
 from toga_cocoa.libs import (
     NSColor,
     NSMakePoint,
@@ -62,13 +62,8 @@ class ScrollContainer(Widget):
         self.add_constraints()
 
     def set_content(self, widget):
-        # If there's existing content, clear its container
-        if self.interface.content:
-            self.interface.content._impl.container = None
-
-        # If there's new content, set the container of the content
-        if widget:
-            widget.container = self.document_container
+        # Set the document container's content to the new widget
+        self.document_container.content = widget
 
     def set_bounds(self, x, y, width, height):
         super().set_bounds(x, y, width, height)

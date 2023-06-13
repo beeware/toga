@@ -19,12 +19,40 @@ class TogaView(NSView):
 
 
 class BaseContainer:
-    def __init__(self, on_refresh=None):
+    def __init__(self, content=None, on_refresh=None):
+        """A base class for macOS containers.
+
+        :param content: The widget impl that is the container's initial content.
+        :param on_refresh: The callback to be notified when this container's layout is
+            refreshed.
+        """
+        self._content = content
         self.on_refresh = on_refresh
         # macOS always renders at 96dpi. Scaling is handled
         # transparently at the level of the screen compositor.
         self.dpi = 96
         self.baseline_dpi = self.dpi
+
+    @property
+    def content(self):
+        """The Toga implementation widget that is the root content of this container.
+
+        All children of the root content will also be added to the container as a result
+        of assigning content.
+
+        If the container already has content, the old content will be replaced. The old
+        root content and all it's children will be removed from the container.
+        """
+        return self._content
+
+    @content.setter
+    def content(self, widget):
+        if self._content:
+            self._content.container = None
+
+        self._content = widget
+        if widget:
+            widget.container = self
 
     def refreshed(self):
         if self.on_refresh:
@@ -32,9 +60,12 @@ class BaseContainer:
 
 
 class MinimumContainer(BaseContainer):
-    def __init__(self):
-        """A container for evaluating the minumum possible size for a layout"""
-        super().__init__()
+    def __init__(self, content=None):
+        """A container for evaluating the minumum possible size for a layout
+
+        :param content: The widget impl that is the container's initial content.
+        """
+        super().__init__(content=content)
         self.width = 0
         self.height = 0
 
@@ -42,21 +73,26 @@ class MinimumContainer(BaseContainer):
 class Container(BaseContainer):
     def __init__(
         self,
+        content=None,
         min_width=100,
         min_height=100,
         layout_native=None,
         on_refresh=None,
     ):
-        """
+        """A container for real layouts.
+
+        Creates and enforces minimum size constraints on the container widget.
+
+        :param content: The widget impl that is the container's initial content.
         :param min_width: The minimum width to enforce on the container
         :param min_height: The minimum height to enforce on the container
-        :param layout_native: The native widget that should be used to provide
-            size hints to the layout. This will usually be the container widget
-            itself; however, for widgets like ScrollContainer where the layout
-            needs to be computed based on a different size to what will be
-            rendered, the source of the size can be different.
-        :param on_refresh: The callback to be notified when this container's
-            layout is refreshed.
+        :param layout_native: The native widget that should be used to provide size
+            hints to the layout. By default, this will usually be the container widget
+            itself; however, for widgets like ScrollContainer where the layout needs to
+            be computed based on a different size to what will be rendered, the source
+            of the size can be different.
+        :param on_refresh: The callback to be notified when this container's layout is
+            refreshed.
         """
         super().__init__(on_refresh=on_refresh)
         self.native = TogaView.alloc().init()

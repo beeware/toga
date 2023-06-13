@@ -1,5 +1,5 @@
 from toga.command import Command as BaseCommand
-from toga_cocoa.containers import Container, MinimumContainer
+from toga_cocoa.container import Container, MinimumContainer
 from toga_cocoa.libs import (
     SEL,
     NSBackingStoreBuffered,
@@ -173,12 +173,11 @@ class Window:
         self.native.setToolbar(self._toolbar_native)
 
     def clear_content(self):
-        if self.interface.content:
-            self.interface.content._impl.container = None
+        pass
 
     def set_content(self, widget):
-        # Set the new widget's container to be the window's container
-        widget.container = self.container
+        # Set the content of the window's container
+        self.container.content = widget
 
     def get_title(self):
         return str(self.native.title)

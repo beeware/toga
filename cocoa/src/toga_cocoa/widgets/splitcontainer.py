@@ -1,7 +1,7 @@
 from rubicon.objc import objc_method, objc_property
 from travertino.size import at_least
 
-from toga_cocoa.containers import Container
+from toga_cocoa.container import Container
 from toga_cocoa.libs import NSObject, NSSize, NSSplitView
 
 from .base import Widget
@@ -64,8 +64,7 @@ class SplitContainer(Widget):
 
     def add_content(self, position, widget, flex):
         # TODO: add flex option to the implementation
-        container = Container()
-        widget.container = container
+        container = Container(content=widget)
 
         # Turn the autoresizing mask on the widget into constraints.
         # This makes the widget fill the available space inside the
