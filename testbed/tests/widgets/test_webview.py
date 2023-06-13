@@ -15,8 +15,9 @@ from .properties import (  # noqa: F401
 )
 
 # These timeouts are loose because CI can be very slow, especially on mobile.
-LOAD_TIMEOUT = 5
-JS_TIMEOUT = 1
+LOAD_TIMEOUT = 60
+JS_TIMEOUT = 60
+WINDOWS_INIT_TIMEOUT = 60
 
 
 async def get_content(widget, timeout):
@@ -69,7 +70,7 @@ async def widget():
 
     # On Windows, the WebView has an asynchronous initialization process. Before we
     # start the test, make sure initialization is complete by checking the user agent.
-    deadline = time() + 5
+    deadline = time() + WINDOWS_INIT_TIMEOUT
     while True:
         try:
             # Default user agents are a mess, but they all start with "Mozilla/5.0"
