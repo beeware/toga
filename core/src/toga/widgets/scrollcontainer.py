@@ -30,6 +30,7 @@ class ScrollContainer(Widget):
         super().__init__(id=id, style=style)
 
         self._content = None
+        self.on_scroll = None
         # Create a platform specific implementation of a Scroll Container
         self._impl = self.factory.ScrollContainer(interface=self)
 

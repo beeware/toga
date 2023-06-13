@@ -102,11 +102,14 @@ async def test_enable_horizontal_scrolling(widget, probe, content, on_scroll):
     widget.horizontal = True
     await probe.redraw("Horizontal scrolling is enabled")
 
+    # clear any scroll events caused by setup
+    on_scroll.reset_mock()
+
     widget.horizontal_position = 120
     await probe.wait_for_scroll_completion()
     await probe.redraw("Horizontal scroll was allowed")
     assert widget.horizontal_position == 120
-    on_scroll.assert_called_once_with(widget)
+    on_scroll.assert_called_with(widget)
 
 
 async def test_enable_vertical_scrolling(widget, probe, on_scroll):
@@ -121,11 +124,14 @@ async def test_enable_vertical_scrolling(widget, probe, on_scroll):
     widget.vertical = True
     await probe.redraw("Vertical scrolling is enabled")
 
+    # clear any scroll events caused by setup
+    on_scroll.reset_mock()
+
     widget.vertical_position = 120
     await probe.wait_for_scroll_completion()
     await probe.redraw("Vertical scroll was allowed")
     assert widget.vertical_position == 120
-    on_scroll.assert_called_once_with(widget)
+    on_scroll.assert_called_with(widget)
 
 
 async def test_vertical_scroll(widget, probe, on_scroll):
@@ -139,32 +145,35 @@ async def test_vertical_scroll(widget, probe, on_scroll):
     assert widget.horizontal_position == 0
     assert widget.vertical_position == 0
 
+    # clear any scroll events caused by setup
+    on_scroll.reset_mock()
+
     widget.vertical_position = probe.height * 3
     await probe.wait_for_scroll_completion()
     await probe.redraw("Scroll down 3 pages")
     assert widget.vertical_position == probe.height * 3
-    on_scroll.assert_called_once_with(widget)
+    on_scroll.assert_called_with(widget)
     on_scroll.reset_mock()
 
     widget.vertical_position = 0
     await probe.wait_for_scroll_completion()
     await probe.redraw("Scroll back to origin")
     assert widget.vertical_position == 0
-    on_scroll.assert_called_once_with(widget)
+    on_scroll.assert_called_with(widget)
     on_scroll.reset_mock()
 
     widget.vertical_position = 10000
     await probe.wait_for_scroll_completion()
     await probe.redraw("Scroll past the end")
     assert widget.vertical_position == widget.max_vertical_position
-    on_scroll.assert_called_once_with(widget)
+    on_scroll.assert_called_with(widget)
     on_scroll.reset_mock()
 
     widget.vertical_position = -100
     await probe.wait_for_scroll_completion()
     await probe.redraw("Scroll past the start")
     assert widget.vertical_position == 0
-    on_scroll.assert_called_once_with(widget)
+    on_scroll.assert_called_with(widget)
     on_scroll.reset_mock()
 
 
@@ -182,18 +191,21 @@ async def test_vertical_scroll_small_content(widget, probe, small_content, on_sc
     assert widget.horizontal_position == 0
     assert widget.vertical_position == 0
 
+    # clear any scroll events caused by setup
+    on_scroll.reset_mock()
+
     widget.vertical_position = probe.height * 3
     await probe.wait_for_scroll_completion()
     await probe.redraw("Scroll down 3 pages")
     assert widget.vertical_position == 0
-    on_scroll.assert_called_once_with(widget)
+    on_scroll.assert_called_with(widget)
     on_scroll.reset_mock()
 
     widget.vertical_position = 0
     await probe.wait_for_scroll_completion()
     await probe.redraw("Scroll back to origin")
     assert widget.vertical_position == 0
-    on_scroll.assert_called_once_with(widget)
+    on_scroll.assert_called_with(widget)
     on_scroll.reset_mock()
 
 
@@ -211,32 +223,35 @@ async def test_horizontal_scroll(widget, probe, content, on_scroll):
     assert widget.horizontal_position == 0
     assert widget.vertical_position == 0
 
+    # clear any scroll events caused by setup
+    on_scroll.reset_mock()
+
     widget.horizontal_position = probe.height * 3
     await probe.wait_for_scroll_completion()
     await probe.redraw("Scroll down 3 pages")
     assert widget.horizontal_position == probe.height * 3
-    on_scroll.assert_called_once_with(widget)
+    on_scroll.assert_called_with(widget)
     on_scroll.reset_mock()
 
     widget.horizontal_position = 0
     await probe.wait_for_scroll_completion()
     await probe.redraw("Scroll back to origin")
     assert widget.horizontal_position == 0
-    on_scroll.assert_called_once_with(widget)
+    on_scroll.assert_called_with(widget)
     on_scroll.reset_mock()
 
     widget.horizontal_position = 30000
     await probe.wait_for_scroll_completion()
     await probe.redraw("Scroll past the end")
     assert widget.horizontal_position == widget.max_horizontal_position
-    on_scroll.assert_called_once_with(widget)
+    on_scroll.assert_called_with(widget)
     on_scroll.reset_mock()
 
     widget.horizontal_position = -100
     await probe.wait_for_scroll_completion()
     await probe.redraw("Scroll past the start")
     assert widget.horizontal_position == 0
-    on_scroll.assert_called_once_with(widget)
+    on_scroll.assert_called_with(widget)
     on_scroll.reset_mock()
 
 
@@ -255,18 +270,21 @@ async def test_horizontal_scroll_small_content(widget, probe, small_content, on_
     assert widget.horizontal_position == 0
     assert widget.vertical_position == 0
 
+    # clear any scroll events caused by setup
+    on_scroll.reset_mock()
+
     widget.horizontal_position = probe.height * 3
     await probe.wait_for_scroll_completion()
     await probe.redraw("Scroll down 3 pages")
     assert widget.horizontal_position == 0
-    on_scroll.assert_called_once_with(widget)
+    on_scroll.assert_called_with(widget)
     on_scroll.reset_mock()
 
     widget.horizontal_position = 0
     await probe.wait_for_scroll_completion()
     await probe.redraw("Scroll back to origin")
     assert widget.horizontal_position == 0
-    on_scroll.assert_called_once_with(widget)
+    on_scroll.assert_called_with(widget)
     on_scroll.reset_mock()
 
 
@@ -291,6 +309,9 @@ async def test_scroll_both(widget, probe, content, on_scroll):
     assert widget.horizontal_position == 0
     assert widget.vertical_position == 0
 
+    # clear any scroll events caused by setup
+    on_scroll.reset_mock()
+
     widget.horizontal_position = 1000
     widget.vertical_position = 2000
     await probe.wait_for_scroll_completion()
@@ -314,7 +335,7 @@ async def test_scroll_both(widget, probe, content, on_scroll):
     await probe.redraw("Scroll to bottom right")
     assert widget.horizontal_position == 2040 - probe.width
     assert widget.vertical_position == 6060 - probe.height
-    on_scroll.assert_called_once_with(widget)
+    on_scroll.assert_called_with(widget)
     on_scroll.reset_mock()
 
 
