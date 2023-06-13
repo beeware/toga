@@ -157,18 +157,10 @@ class ScrollContainer(Widget):
     def horizontal_position(self, horizontal_position):
         if not self.horizontal:
             raise ValueError(
-                "Cannot set horizontal position when horizontal is not set."
+                "Cannot set horizontal position when horizontal scrolling is not enabled."
             )
 
-        horizontal_position = int(horizontal_position)
-        if horizontal_position < 0:
-            horizontal_position = 0
-        else:
-            max_value = self.max_horizontal_position
-            if horizontal_position > max_value:
-                horizontal_position = max_value
-
-        self._impl.set_horizontal_position(horizontal_position)
+        self.position = (horizontal_position, self._impl.get_vertical_position())
 
     @property
     def max_vertical_position(self) -> int | None:
@@ -198,9 +190,45 @@ class ScrollContainer(Widget):
     @vertical_position.setter
     def vertical_position(self, vertical_position):
         if not self.vertical:
-            raise ValueError("Cannot set vertical position when vertical is not set.")
+            raise ValueError(
+                "Cannot set vertical position when vertical scrolling is not enabled."
+            )
 
-        vertical_position = int(vertical_position)
+        self.position = (self._impl.get_horizontal_position(), vertical_position)
+
+    @property
+    def position(self) -> tuple[int | None, int | None]:
+        """The current scroll position.
+
+        If the value provided for either axis is negative, or greater than the maximum
+        position in that axis, the value will be clipped to the valid range.
+
+        If scrolling is disabled in either axis, returns ``None`` as the current
+        position for that axis, and raises :any:`ValueError` if an attempt is made to
+        change the position.
+        """
+        return (self.horizontal_position, self.vertical_position)
+
+    @position.setter
+    def position(self, position):
+        if not self.vertical:
+            raise ValueError(
+                "Cannot set full position when vertical scrolling is not enabled."
+            )
+        if not self.horizontal:
+            raise ValueError(
+                "Cannot set full position when horizontal scrolling is not enabled."
+            )
+
+        horizontal_position = int(position[0])
+        if horizontal_position < 0:
+            horizontal_position = 0
+        else:
+            max_value = self.max_horizontal_position
+            if horizontal_position > max_value:
+                horizontal_position = max_value
+
+        vertical_position = int(position[1])
         if vertical_position < 0:
             vertical_position = 0
         else:
@@ -208,4 +236,4 @@ class ScrollContainer(Widget):
             if vertical_position > max_value:
                 vertical_position = max_value
 
-        self._impl.set_vertical_position(vertical_position)
+        self._impl.set_position(horizontal_position, vertical_position)

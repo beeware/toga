@@ -56,14 +56,20 @@ class ScrollContainer(Widget):
         width = self.native.frame.size.width
         height = self.native.frame.size.height
 
-        if self.interface._content:
-            if self.interface.horizontal:
-                width = max(self.interface.content.layout.width, width)
+        if self.interface.horizontal:
+            width = max(self.interface.content.layout.width, width)
 
-            if self.interface.vertical:
-                height = max(self.interface.content.layout.height, height)
+        if self.interface.vertical:
+            height = max(self.interface.content.layout.height, height)
 
         self.native.contentSize = NSMakeSize(width, height)
+
+    def set_background_color(self, value):
+        self.set_background_color_simple(value)
+
+    def rehint(self):
+        self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
+        self.interface.intrinsic.height = at_least(self.interface._MIN_HEIGHT)
 
     def get_vertical(self):
         return self._allow_vertical
@@ -85,29 +91,13 @@ class ScrollContainer(Widget):
         if self.interface.content:
             self.interface.refresh()
 
-    def rehint(self):
-        self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
-        self.interface.intrinsic.height = at_least(self.interface._MIN_HEIGHT)
+    def get_horizontal_position(self):
+        return int(self.native.contentOffset.x)
 
     def get_max_vertical_position(self):
         return max(
             0,
             self.native.contentSize.height - self.native.frame.size.height,
-        )
-
-    def get_vertical_position(self):
-        return self.native.contentOffset.y
-
-    def set_vertical_position(self, vertical_position):
-        if vertical_position < 0:
-            vertical_position = 0
-        else:
-            max_value = self.get_max_vertical_position()
-            if vertical_position > max_value:
-                vertical_position = max_value
-
-        self.native.setContentOffset(
-            NSMakePoint(self.native.contentOffset.x, vertical_position), animated=True
         )
 
     def get_max_horizontal_position(self):
@@ -116,17 +106,18 @@ class ScrollContainer(Widget):
             self.native.contentSize.width - self.native.frame.size.width,
         )
 
-    def get_horizontal_position(self):
-        return self.native.contentOffset.x
+    def get_vertical_position(self):
+        return int(self.native.contentOffset.y)
 
-    def set_horizontal_position(self, horizontal_position):
-        if horizontal_position < 0:
-            horizontal_position = 0
+    def set_position(self, horizontal_position, vertical_position):
+        if (
+            horizontal_position == self.get_horizontal_position()
+            and vertical_position == self.get_vertical_position()
+        ):
+            # iOS doesn't generate a scroll event unless the position actually changes.
+            # Treat all scroll position assignments as a change.
+            self.interface.on_scroll(None)
         else:
-            max_value = self.get_max_horizontal_position()
-            if horizontal_position > max_value:
-                horizontal_position = max_value
-
-        self.native.setContentOffset(
-            NSMakePoint(horizontal_position, self.native.contentOffset.y), animated=True
-        )
+            self.native.setContentOffset(
+                NSMakePoint(horizontal_position, vertical_position), animated=True
+            )

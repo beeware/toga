@@ -3,7 +3,7 @@ from unittest.mock import Mock
 import pytest
 
 import toga
-from toga.colors import CORNFLOWERBLUE, REBECCAPURPLE
+from toga.colors import CORNFLOWERBLUE, REBECCAPURPLE, TRANSPARENT
 from toga.style.pack import COLUMN, ROW, Pack
 
 from .properties import (  # noqa: F401
@@ -31,7 +31,11 @@ async def content():
             )
             for i in range(0, 100)
         ],
-        style=Pack(direction=COLUMN),
+        style=Pack(
+            direction=COLUMN,
+            # Ensure we can see the background of the scroll container
+            background_color=TRANSPARENT,
+        ),
     )
     return box
 
@@ -226,10 +230,10 @@ async def test_horizontal_scroll(widget, probe, content, on_scroll):
     # clear any scroll events caused by setup
     on_scroll.reset_mock()
 
-    widget.horizontal_position = probe.height * 3
+    widget.horizontal_position = probe.width * 3
     await probe.wait_for_scroll_completion()
-    await probe.redraw("Scroll down 3 pages")
-    assert widget.horizontal_position == probe.height * 3
+    await probe.redraw("Scroll right a little")
+    assert widget.horizontal_position == probe.width * 3
     on_scroll.assert_called_with(widget)
     on_scroll.reset_mock()
 
@@ -312,8 +316,7 @@ async def test_scroll_both(widget, probe, content, on_scroll):
     # clear any scroll events caused by setup
     on_scroll.reset_mock()
 
-    widget.horizontal_position = 1000
-    widget.vertical_position = 2000
+    widget.position = 1000, 2000
     await probe.wait_for_scroll_completion()
     await probe.redraw("Scroll to mid document")
     assert widget.horizontal_position == 1000
@@ -321,8 +324,7 @@ async def test_scroll_both(widget, probe, content, on_scroll):
     on_scroll.assert_called_with(widget)
     on_scroll.reset_mock()
 
-    widget.horizontal_position = 0
-    widget.vertical_position = 20000
+    widget.position = 0, 20000
     await probe.wait_for_scroll_completion()
     await probe.redraw("Scroll to bottom left")
     assert widget.horizontal_position == 0
@@ -330,7 +332,7 @@ async def test_scroll_both(widget, probe, content, on_scroll):
     on_scroll.assert_called_with(widget)
     on_scroll.reset_mock()
 
-    widget.horizontal_position = 10000
+    widget.position = 10000, 20000
     await probe.wait_for_scroll_completion()
     await probe.redraw("Scroll to bottom right")
     assert widget.horizontal_position == 2040 - probe.width

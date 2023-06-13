@@ -1,3 +1,5 @@
+from rubicon.objc import ObjCClass
+
 from toga.fonts import CURSIVE, FANTASY, MONOSPACE, SANS_SERIF, SERIF, SYSTEM
 from toga_iOS.libs import UIApplication
 
@@ -30,6 +32,9 @@ UIControlEventAllEditingEvents = 0x000F0000  # for UITextField
 UIControlEventApplicationReserved = 0x0F000000  # range available for application use
 UIControlEventSystemReserved = 0xF0000000  # range reserved for internal framework use
 UIControlEventAllEvents = 0xFFFFFFFF
+
+
+CATransaction = ObjCClass("CATransaction")
 
 
 class SimpleProbe(BaseProbe):
@@ -72,6 +77,10 @@ class SimpleProbe(BaseProbe):
         """Request a redraw of the app, waiting until that redraw has completed."""
         # Force a widget repaint
         self.widget.window.content._impl.native.layer.displayIfNeeded()
+
+        # Flush CoreAnimation; this ensures all animations are complete
+        # and all constraints have been evaluated.
+        CATransaction.flush()
 
         await super().redraw(message=message)
 
