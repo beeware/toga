@@ -25,6 +25,16 @@ def app():
     return toga.App.app
 
 
+@fixture
+async def app_probe(app):
+    module = import_module("tests_backend.app")
+    probe = getattr(module, "AppProbe")(app)
+
+    if app.run_slow:
+        print("\nConstructing app probe")
+    yield probe
+
+
 @fixture(scope="session")
 def main_window(app):
     return app.main_window

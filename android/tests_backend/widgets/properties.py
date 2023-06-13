@@ -2,11 +2,12 @@ from java import jint
 from travertino.fonts import Font
 
 from android.graphics import Color, Typeface
-from android.graphics.text import LineBreaker
+from android.os import Build
+from android.text import Layout
 from android.util import TypedValue
 from android.view import Gravity
 from toga.colors import TRANSPARENT, rgba
-from toga.constants import CENTER, JUSTIFY, LEFT, RIGHT
+from toga.constants import BOTTOM, CENTER, JUSTIFY, LEFT, RIGHT, TOP
 from toga.fonts import (
     BOLD,
     ITALIC,
@@ -70,15 +71,27 @@ def toga_font(typeface, size, resources):
 def toga_alignment(gravity, justification_mode):
     horizontal_gravity = gravity & Gravity.HORIZONTAL_GRAVITY_MASK
     if (
-        justification_mode == LineBreaker.JUSTIFICATION_MODE_INTER_WORD
-        and horizontal_gravity == Gravity.LEFT
+        Build.VERSION.SDK_INT < 26
+        or justification_mode == Layout.JUSTIFICATION_MODE_NONE
     ):
-        return JUSTIFY
-    elif justification_mode == LineBreaker.JUSTIFICATION_MODE_NONE:
         return {
             Gravity.LEFT: LEFT,
             Gravity.RIGHT: RIGHT,
             Gravity.CENTER_HORIZONTAL: CENTER,
         }[horizontal_gravity]
+    elif (
+        justification_mode == Layout.JUSTIFICATION_MODE_INTER_WORD
+        and horizontal_gravity == Gravity.LEFT
+    ):
+        return JUSTIFY
     else:
         raise ValueError(f"unknown combination: {gravity=}, {justification_mode=}")
+
+
+def toga_vertical_alignment(gravity):
+    vertical_gravity = gravity & Gravity.VERTICAL_GRAVITY_MASK
+    return {
+        Gravity.TOP: TOP,
+        Gravity.BOTTOM: BOTTOM,
+        Gravity.CENTER_VERTICAL: CENTER,
+    }[vertical_gravity]

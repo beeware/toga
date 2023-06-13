@@ -1,450 +1,730 @@
-import unittest
+import pytest
 
 from toga import validators
 
 
-class TestValidators(unittest.TestCase):
-    def setUp(self):
-        self.args = []
-        self.kwargs = {}
-        self.validator_factory = None
-        self.valid_inputs = []
-        self.invalid_inputs = []
-        self.check_empty = True
-
-    def check(self):
-        if self.validator_factory is None:
-            self.fail("Validator is not set!")
-        self.check_validator(
-            self.validator_factory(*self.args, **self.kwargs),
-            valid_inputs=self.valid_inputs,
-            invalid_inputs=self.invalid_inputs,
-        )
-        dummy_error = "This is a dummy error message!"
-        self.check_validator(
-            self.validator_factory(
-                *self.args, **self.kwargs, error_message=dummy_error
-            ),
-            valid_inputs=self.valid_inputs,
-            invalid_inputs=[
-                (input_string, dummy_error)
-                for input_string, error_message in self.invalid_inputs
-            ],
-        )
-        if self.check_empty:
-            self.assertIsNone(
-                self.validator_factory(
-                    *self.args,
-                    **self.kwargs,
-                    error_message=dummy_error,
-                    allow_empty=True,
-                )("")
-            )
-            self.assertEqual(
-                self.validator_factory(
-                    *self.args,
-                    **self.kwargs,
-                    error_message=dummy_error,
-                    allow_empty=False,
-                )(""),
-                dummy_error,
-            )
-
-    def check_validator(self, validator, valid_inputs, invalid_inputs):
-        for valid_input in valid_inputs:
-            self.assertIsNone(
-                validator(valid_input),
-                msg=f'"{valid_input}" should be a valid input, but it is not',
-            )
-        for invalid_input, error_message in invalid_inputs:
-            self.assertEqual(
-                error_message,
-                validator(invalid_input),
-                msg='"{}" error message is different than expected.'.format(
-                    invalid_input
-                ),
-            )
-
-    def test_validate_minimum_length(self):
-        default_error_message = "Input is too short (length should be at least 5)"
-
-        self.args = [5]
-        self.validator_factory = validators.MinLength
-        self.valid_inputs = ["I am long enough", "right", "longer"]
-        self.invalid_inputs = [
-            ("I", default_error_message),
-            ("am", default_error_message),
-            ("tiny", default_error_message),
-        ]
-
-        self.check()
-
-    def test_validate_maximum_length(self):
-        default_error_message = "Input is too long (length should be at most 10)"
-
-        self.args = [10]
-        self.validator_factory = validators.MaxLength
-        self.valid_inputs = ["", "I am good", "nice", "a"]
-        self.invalid_inputs = [
-            ("I am way too long", default_error_message),
-            ("are you serious now?", default_error_message),
-        ]
-        self.check_empty = False
-
-        self.check()
-
-    def test_validate_length_between(self):
-        default_error_message = "Input should be between 5 and 10 characters"
-
-        self.args = [5, 10]
-        self.validator_factory = validators.LengthBetween
-        self.valid_inputs = ["I am good", "right", "123456789"]
-        self.invalid_inputs = [
-            ("I", default_error_message),
-            ("am", default_error_message),
-            ("tiny", default_error_message),
-            ("I am way too long", default_error_message),
-            ("are you serious now?", default_error_message),
-        ]
-
-        self.check()
-
-    def test_validate_startswith(self):
-        default_error_message = 'Input should start with "good"'
-
-        self.args = ["good"]
-        self.validator_factory = validators.StartsWith
-        self.valid_inputs = [
-            "good to be back",
-            "goodness!",
-            "goody",
-            "good, good, good",
-        ]
-        self.invalid_inputs = [
-            ("no good", default_error_message),
-            ("I am so bad", default_error_message),
-            ("goo goo dolls", default_error_message),
-            ("go od", default_error_message),
-            (
-                "It doesn't matter if I'm good, if I don't start with it",
-                default_error_message,
-            ),
-        ]
-
-        self.check()
-
-    def test_validate_endswith(self):
-        default_error_message = 'Input should end with "good"'
-
-        self.args = ["good"]
-        self.validator_factory = validators.EndsWith
-        self.valid_inputs = [
-            "go back to good",
-            "It is so good",
-            "good",
-            "good, good, good",
-        ]
-        self.invalid_inputs = [
-            ("good start, but no", default_error_message),
-            ("I am so bad", default_error_message),
-            ("goo goo dolls", default_error_message),
-            ("go od", default_error_message),
-            (
-                "It doesn't matter if I'm good, if I don't end with it",
-                default_error_message,
-            ),
-        ]
-
-        self.check()
-
-    def test_validate_contains(self):
-        default_error_message = 'Input should contain "good"'
-
-        self.args = ["good"]
-        self.validator_factory = validators.Contains
-        self.valid_inputs = ["This is very good", "goodness", "goody", "nogood"]
-        self.invalid_inputs = [
-            ("I am so bad", default_error_message),
-            ("goo goo dolls", default_error_message),
-            ("go od", default_error_message),
-        ]
-
-        self.check()
-
-    def test_validate_contains_once(self):
-        self.args = ["good"]
-        self.kwargs = dict(compare_count=1)
-        self.validator_factory = validators.Contains
-        self.valid_inputs = ["This is very good", "goodness", "goody", "nogood"]
-        self.invalid_inputs = [
-            ("I am so bad", 'Input should contain "good"'),
-            ("good, very good", 'Input should contain "good" exactly 1 times'),
-            (
-                "it's good to be so good in being good",
-                'Input should contain "good" exactly 1 times',
-            ),
-        ]
-
-        self.check()
-
-    def test_validate_contains_zero_times(self):
-        self.args = ["bad"]
-        self.kwargs = dict(compare_count=0)
-        self.validator_factory = validators.Contains
-        self.valid_inputs = [
+@pytest.mark.parametrize(
+    "value, kwargs, error",
+    [
+        # Exact minimum size
+        ("exact", dict(length=5), None),
+        # Exceeds minimum size
+        ("this is a long string", dict(length=5), None),
+        # Allow empty strings
+        ("", dict(length=5), None),
+        # Too short
+        (
+            "bad!",
+            dict(length=5),
+            "Input is too short (length should be at least 5)",
+        ),
+        # Too short, different length
+        (
+            "this is a long string",
+            dict(length=25),
+            "Input is too short (length should be at least 25)",
+        ),
+        # Custom error message
+        (
+            "bad",
+            dict(length=5, error_message="Badness"),
+            "Badness",
+        ),
+        # Don't allow empty strings
+        (
             "",
-            "This is very good",
-            "goodness",
-            "goody",
-            "nogood",
-            "good, very good",
-        ]
-        self.invalid_inputs = [
-            ("I am so bad", 'Input should not contain "bad"'),
-            ("Why being so baddy?", 'Input should not contain "bad"'),
-            ("sinbad", 'Input should not contain "bad"'),
-        ]
-        self.check_empty = False
+            dict(length=5, allow_empty=False),
+            "Input is too short (length should be at least 5)",
+        ),
+    ],
+)
+def test_min_length(value, kwargs, error):
+    validator = validators.MinLength(**kwargs)
 
-        self.check()
+    assert validator(value) == error
 
-    def test_validate_not_contains(self):
-        self.args = ["bad"]
-        self.validator_factory = validators.NotContains
-        self.valid_inputs = [
+
+@pytest.mark.parametrize(
+    "value, kwargs, error",
+    [
+        # Exact max size
+        ("right size", dict(length=10), None),
+        # Less than max size
+        ("valid", dict(length=10), None),
+        # Empty strings are less than any max length
+        ("", dict(length=10), None),
+        # Just exceeds maximum length
+        (
+            "bad size!!!",
+            dict(length=10),
+            "Input is too long (length should be at most 10)",
+        ),
+        # Exceeds maximum length
+        (
+            "this is a long string",
+            dict(length=10),
+            "Input is too long (length should be at most 10)",
+        ),
+        # Exceeds a different maximum length
+        (
+            "this is a long string",
+            dict(length=5),
+            "Input is too long (length should be at most 5)",
+        ),
+        # Custom error message
+        (
+            "this is a long string",
+            dict(length=10, error_message="Badness"),
+            "Badness",
+        ),
+    ],
+)
+def test_max_length(value, kwargs, error):
+    validator = validators.MaxLength(**kwargs)
+
+    assert validator(value) == error
+
+
+@pytest.mark.parametrize(
+    "value, kwargs, error",
+    [
+        # Exact max size
+        ("right size", dict(min_length=5, max_length=10), None),
+        # Middle size
+        ("all good", dict(min_length=5, max_length=10), None),
+        # Exact min size
+        ("valid", dict(min_length=5, max_length=10), None),
+        # Allow empty strings
+        ("", dict(min_length=5, max_length=10), None),
+        # Just Exceeds maximum length
+        (
+            "bad size!!!",
+            dict(min_length=5, max_length=10),
+            "Input should be between 5 and 10 characters",
+        ),
+        # Just less than minimum length
+        (
+            "bad!",
+            dict(min_length=5, max_length=10),
+            "Input should be between 5 and 10 characters",
+        ),
+        # Custom error message
+        (
+            "this is a long string",
+            dict(min_length=5, max_length=10, error_message="Badness"),
+            "Badness",
+        ),
+        # Don't allow empty strings
+        (
             "",
-            "This is very good",
-            "goodness",
-            "goody",
-            "nogood",
-            "good, very good",
-        ]
-        self.invalid_inputs = [
-            ("I am so bad", 'Input should not contain "bad"'),
-            ("Why being so baddy?", 'Input should not contain "bad"'),
-            ("sinbad", 'Input should not contain "bad"'),
-        ]
-        self.check_empty = False
+            dict(min_length=5, max_length=10, allow_empty=False),
+            "Input should be between 5 and 10 characters",
+        ),
+    ],
+)
+def test_length_between(value, kwargs, error):
+    validator = validators.LengthBetween(**kwargs)
 
-        self.check()
+    assert validator(value) == error
 
-    def test_validate_contains_two_words(self):
-        default_error_message = 'Input should contain "good" or "bad"'
 
-        self.args = [["good", "bad"]]
-        self.validator_factory = validators.Contains
-        self.valid_inputs = [
-            "There are always good and bad in life",
-            "bad before good",
-            "good, good, bad",
-            "I am so bad",
-            "I am so good",
-        ]
-        self.invalid_inputs = [
-            ("wanted words are not here", default_error_message),
-            ("go od", default_error_message),
-            ("b ad", default_error_message),
-        ]
+def test_invalid_range():
+    "Minimum value must be less than maximum value"
+    with pytest.raises(
+        ValueError,
+        match=r"Minimum length cannot be less than maximum length",
+    ):
+        validators.LengthBetween(min_length=10, max_length=5)
 
-        self.check()
 
-    def test_validate_match_regex(self):
-        default_error_message = "Input should match regex: [A-Z]{1}[a-z]{2}[A-Z]{1}"
+@pytest.mark.parametrize(
+    "value, kwargs, error",
+    [
+        # Exact match
+        ("hello", dict(substring="hello"), None),
+        # Starts with match
+        ("hello world", dict(substring="hello"), None),
+        # Allow empty strings
+        ("", dict(substring="hello"), None),
+        # Doesn't start with match
+        (
+            "bad string",
+            dict(substring="hello"),
+            "Input should start with 'hello'",
+        ),
+        # Custom error message
+        (
+            "bad string",
+            dict(substring="hello", error_message="Badness"),
+            "Badness",
+        ),
+        # Don't allow empty strings
+        (
+            "",
+            dict(substring="hello", allow_empty=False),
+            "Input should start with 'hello'",
+        ),
+    ],
+)
+def test_startswith(value, kwargs, error):
+    validator = validators.StartsWith(**kwargs)
 
-        self.args = ["[A-Z]{1}[a-z]{2}[A-Z]{1}"]
-        self.validator_factory = validators.MatchRegex
-        self.valid_inputs = ["GooD", "partial is AlsO good in this case"]
-        self.invalid_inputs = [
-            ("Good", default_error_message),
-            ("gooD", default_error_message),
-            ("Goo", default_error_message),
-            ("Goo2", default_error_message),
-            ("!Goo", default_error_message),
-        ]
+    assert validator(value) == error
 
-        self.check()
 
-    def test_contains_uppercase(self):
-        self.validator_factory = validators.ContainsUppercase
-        self.valid_inputs = [
-            "Good",
-            "using Toga is very helpful",
-            "ending with uppercase workS",
-        ]
-        self.invalid_inputs = [
-            (
-                "lowercase is not helpful",
-                "Input should contain at least one uppercase character",
-            ),
-        ]
+@pytest.mark.parametrize(
+    "value, kwargs, error",
+    [
+        # Exact match
+        ("goodbye", dict(substring="goodbye"), None),
+        # Ends with match
+        ("the final goodbye", dict(substring="goodbye"), None),
+        # Allow empty strings
+        ("", dict(substring="goodbye"), None),
+        # Doesn't end with match
+        (
+            "bad string",
+            dict(substring="goodbye"),
+            "Input should end with 'goodbye'",
+        ),
+        # Custom error message
+        (
+            "bad string",
+            dict(substring="goodbye", error_message="Badness"),
+            "Badness",
+        ),
+        # Don't allow empty strings
+        (
+            "",
+            dict(substring="goodbye", allow_empty=False),
+            "Input should end with 'goodbye'",
+        ),
+    ],
+)
+def test_endswith(value, kwargs, error):
+    validator = validators.EndsWith(**kwargs)
 
-        self.check()
+    assert validator(value) == error
 
-    def test_contains_two_uppercase(self):
-        self.kwargs = dict(compare_count=2)
-        self.validator_factory = validators.ContainsUppercase
-        self.valid_inputs = ["GooD", "using TogA is very helpful"]
-        self.invalid_inputs = [
-            (
-                "no uppercase is no good",
-                "Input should contain at least one uppercase character",
-            ),
-            (
-                "One uppercase is not enough",
-                "Input should contain exactly 2 uppercase characters",
-            ),
-            ("Three Is a Crowd", "Input should contain exactly 2 uppercase characters"),
-        ]
 
-        self.check()
+@pytest.mark.parametrize(
+    "value, kwargs, error",
+    [
+        # Exact single match
+        ("hello", dict(substring="hello"), None),
+        # Starts with match
+        ("hello is what you should say", dict(substring="hello"), None),
+        # Ends with match
+        ("You should say hello", dict(substring="hello"), None),
+        # Contains substring
+        ("Say hello, you fool", dict(substring="hello"), None),
+        # Contains multiple examples of substring
+        ("Say hello, and hello again", dict(substring="hello"), None),
+        # Contains exact match of multiple substrings
+        ("Say hello, and hello again", dict(substring="hello", count=2), None),
+        # Count of 0 validates non-existence
+        ("Say hello, and hello again", dict(substring="bad", count=0), None),
+        # Allow empty strings
+        ("", dict(substring="hello"), None),
+        # Doesn't contain match
+        (
+            "bad string",
+            dict(substring="hello"),
+            "Input should contain 'hello'",
+        ),
+        # Contain match with a count of 0
+        (
+            "hello world",
+            dict(substring="hello", count=0),
+            "Input should not contain 'hello'",
+        ),
+        # Contain match, but not the right count
+        (
+            "hello world",
+            dict(substring="hello", count=2),
+            "Input should contain 'hello' exactly 2 times",
+        ),
+        # Custom error message
+        (
+            "bad string",
+            dict(substring="hello", error_message="Badness"),
+            "Badness",
+        ),
+        # Don't allow empty strings
+        (
+            "",
+            dict(substring="hello", allow_empty=False),
+            "Input should contain 'hello'",
+        ),
+    ],
+)
+def test_contains(value, kwargs, error):
+    validator = validators.Contains(**kwargs)
 
-    def test_contains_lowercase(self):
-        self.validator_factory = validators.ContainsLowercase
-        self.valid_inputs = [
-            "gOOD",
-            "USING tOGA IS VERY HELPFUL",
-            "ENDING WITH LOWERCASE WORKs",
-        ]
-        self.invalid_inputs = [
-            ("STOP YELLING!", "Input should contain at least one lowercase character"),
-        ]
+    assert validator(value) == error
 
-        self.check()
 
-    def test_contains_two_lowercase(self):
-        self.kwargs = dict(compare_count=2)
-        self.validator_factory = validators.ContainsLowercase
-        self.valid_inputs = ["GooD", "USING tOGa IS VERY HELPFUL"]
-        self.invalid_inputs = [
-            (
-                "NO LOWERCASE IS NO GOOD",
-                "Input should contain at least one lowercase character",
-            ),
-            (
-                "oNE LOWERCASE IS NOT ENOUGH",
-                "Input should contain exactly 2 lowercase characters",
-            ),
-            ("tHREE iS A cROWD", "Input should contain exactly 2 lowercase characters"),
-        ]
+@pytest.mark.parametrize(
+    "value, kwargs, error",
+    [
+        # No match
+        ("nothing to see", dict(substring="hello"), None),
+        # Allow empty strings (an empty string can't contain a substring)
+        ("", dict(substring="hello"), None),
+        # Starts with match
+        (
+            "hello is what you should say",
+            dict(substring="hello"),
+            "Input should not contain 'hello'",
+        ),
+        # Ends with match
+        (
+            "You should say hello",
+            dict(substring="hello"),
+            "Input should not contain 'hello'",
+        ),
+        # Contains substring
+        (
+            "Say hello, you fool",
+            dict(substring="hello"),
+            "Input should not contain 'hello'",
+        ),
+        # Custom error message
+        (
+            "You should say hello",
+            dict(substring="hello", error_message="Badness"),
+            "Badness",
+        ),
+    ],
+)
+def test_not_contains(value, kwargs, error):
+    validator = validators.NotContains(**kwargs)
 
-        self.check()
+    assert validator(value) == error
 
-    def test_contains_digit(self):
-        self.validator_factory = validators.ContainsDigit
-        self.valid_inputs = ["1) start counting", "count 2 and continue", "ends with 3"]
-        self.invalid_inputs = [
-            ("no digits in here", "Input should contain at least one digit"),
-        ]
 
-        self.check()
+# Test regex matches 1 upper case, 2 lower case, then 1 upper case.
+TEST_REGEX = r"[A-Z]{1}[a-z]{2}[A-Z]{1}"
 
-    def test_contains_two_digits(self):
-        self.kwargs = dict(compare_count=2)
-        self.validator_factory = validators.ContainsDigit
-        self.valid_inputs = [
-            "1+2",
-            "the number 3 is bigger than 1",
-        ]
-        self.invalid_inputs = [
-            ("no digits in here", "Input should contain at least one digit"),
-            ("only 1 digit is not enough", "Input should contain exactly 2 digits"),
-            ("3 is w4y 2 much", "Input should contain exactly 2 digits"),
-        ]
 
-        self.check()
+@pytest.mark.parametrize(
+    "value, kwargs, error",
+    [
+        # Exact match
+        ("GooD", dict(regex_string=TEST_REGEX), None),
+        # Match at start
+        ("GooD is what this is", dict(regex_string=TEST_REGEX), None),
+        # Match at end
+        ("This is also GooD", dict(regex_string=TEST_REGEX), None),
+        # Exact match in the middle of the string
+        ("it's GooD if it's in the middle", dict(regex_string=TEST_REGEX), None),
+        # Allow empty strings
+        ("", dict(regex_string=TEST_REGEX), None),
+        # Doesn't match
+        (
+            "no match here",
+            dict(regex_string=TEST_REGEX),
+            "Input should match regex: '[A-Z]{1}[a-z]{2}[A-Z]{1}'",
+        ),
+        # Custom error message
+        (
+            "no match here",
+            dict(regex_string=TEST_REGEX, error_message="Badness"),
+            "Badness",
+        ),
+        # Don't allow empty strings
+        (
+            "",
+            dict(regex_string=TEST_REGEX, allow_empty=False),
+            "Input should match regex: '[A-Z]{1}[a-z]{2}[A-Z]{1}'",
+        ),
+    ],
+)
+def test_regex(value, kwargs, error):
+    validator = validators.MatchRegex(**kwargs)
 
-    def test_contains_special(self):
-        default_error_message = "Input should contain at least one special character"
+    assert validator(value) == error
 
-        self.validator_factory = validators.ContainsSpecial
-        self.valid_inputs = ["Hey!", "tiberius@beeware.org", "#1"]
-        self.invalid_inputs = [
-            ("bad", default_error_message),
-            ("123", default_error_message),
-        ]
 
-        self.check()
+@pytest.mark.parametrize(
+    "value, kwargs, error",
+    [
+        # Only uppercase
+        ("GOOD!1", dict(), None),
+        # Some uppercase
+        ("Good!1", dict(), None),
+        # Some uppercase
+        ("GooD!1", dict(count=2), None),
+        # Count of 0
+        ("good!1", dict(count=0), None),
+        # Allow empty strings
+        ("", dict(), None),
+        # Doesn't match
+        (
+            "no match here",
+            dict(),
+            "Input should contain at least one upper case character",
+        ),
+        # Bad count
+        (
+            "Good!1",
+            dict(count=2),
+            "Input should contain exactly 2 upper case characters",
+        ),
+        # Explicit count of 0
+        (
+            "Bad Text!1",
+            dict(count=0),
+            "Input should not contain upper case characters",
+        ),
+        # Custom error message
+        (
+            "no match here",
+            dict(error_message="Badness"),
+            "Badness",
+        ),
+        # Don't allow empty strings
+        (
+            "",
+            dict(allow_empty=False),
+            "Input should contain at least one upper case character",
+        ),
+    ],
+)
+def test_contains_uppercase(value, kwargs, error):
+    validator = validators.ContainsUppercase(**kwargs)
 
-    def test_contains_two_special(self):
-        self.kwargs = dict(compare_count=2)
-        self.validator_factory = validators.ContainsSpecial
-        self.valid_inputs = ["!Hey!", "tiberius@beeware.org", "#1#"]
-        self.invalid_inputs = [
-            ("nospecial", "Input should contain at least one special character"),
-            ("notenough!", "Input should contain exactly 2 special characters"),
-            ("this is too much", "Input should contain exactly 2 special characters"),
-        ]
+    assert validator(value) == error
 
-        self.check()
 
-    def test_integer(self):
-        default_error_message = "Input should be an integer"
+@pytest.mark.parametrize(
+    "value, kwargs, error",
+    [
+        # Only lower case
+        ("good!1", dict(), None),
+        # Some lower case
+        ("Good!1", dict(), None),
+        # Some lower case, exact count
+        ("GooD!1", dict(count=2), None),
+        # Count of 0
+        ("GOOD!1", dict(count=0), None),
+        # Allow empty strings
+        ("", dict(), None),
+        # Doesn't match
+        (
+            "NO MATCH HERE!",
+            dict(),
+            "Input should contain at least one lower case character",
+        ),
+        # Bad count
+        (
+            "Good!1",
+            dict(count=2),
+            "Input should contain exactly 2 lower case characters",
+        ),
+        # Explicit count of 0
+        (
+            "Bad Text!1",
+            dict(count=0),
+            "Input should not contain lower case characters",
+        ),
+        # Custom error message
+        (
+            "NO MATCH HERE!",
+            dict(error_message="Badness"),
+            "Badness",
+        ),
+        # Don't allow empty strings
+        (
+            "",
+            dict(allow_empty=False),
+            "Input should contain at least one lower case character",
+        ),
+    ],
+)
+def test_contains_lowercase(value, kwargs, error):
+    validator = validators.ContainsLowercase(**kwargs)
 
-        self.validator_factory = validators.Integer
-        self.valid_inputs = ["0", "00", "1", "21", "1234", "12423571"]
-        self.invalid_inputs = [
-            ("a", default_error_message),
-            ("ab", default_error_message),
-            ("this is a not valid!", default_error_message),
-            ("0.0", default_error_message),
-            ("2.1", default_error_message),
-            ("-0.22", default_error_message),
-            (".2", default_error_message),
-            ("88.0", default_error_message),
-            ("9.", default_error_message),
-        ]
+    assert validator(value) == error
 
-        self.check()
 
-    def test_number(self):
-        default_error_message = "Input should be a number"
+@pytest.mark.parametrize(
+    "value, kwargs, error",
+    [
+        # Only digits
+        ("1234", dict(), None),
+        # Some digits
+        ("Good!12345", dict(), None),
+        # Some digits, exact count
+        ("GooD12!", dict(count=2), None),
+        # Count of 0
+        ("good!", dict(count=0), None),
+        # Allow empty strings
+        ("", dict(), None),
+        # Doesn't match
+        (
+            "no match here",
+            dict(),
+            "Input should contain at least one digit",
+        ),
+        # Bad count
+        (
+            "Good!1",
+            dict(count=2),
+            "Input should contain exactly 2 digits",
+        ),
+        # Explicit count of 0
+        (
+            "Bad Text!1",
+            dict(count=0),
+            "Input should not contain digits",
+        ),
+        # Custom error message
+        (
+            "no match here",
+            dict(error_message="Badness"),
+            "Badness",
+        ),
+        # Don't allow empty strings
+        (
+            "",
+            dict(allow_empty=False),
+            "Input should contain at least one digit",
+        ),
+    ],
+)
+def test_contains_digit(value, kwargs, error):
+    validator = validators.ContainsDigit(**kwargs)
 
-        self.validator_factory = validators.Number
-        self.valid_inputs = [
-            "0",
-            "00",
-            "0.0",
-            "1",
-            "2.1",
-            "-1",
-            "-0.22",
-            ".2",
-            "88.0",
-            "9.",
-            "2e+7",
-            "9e-6",
-            "1.23e+15",
-            "-9.2E+23",
-            "1.23e-15",
-            "-9.2E-23",
-        ]
-        self.invalid_inputs = [
-            ("a", default_error_message),
-            ("ab", default_error_message),
-            ("this is a not valid!", default_error_message),
-            (".", default_error_message),
-            ("88.a", default_error_message),
-            ("e+12", default_error_message),
-            ("E-9", default_error_message),
-        ]
+    assert validator(value) == error
 
-        self.check()
 
-    def test_email(self):
-        default_error_message = "Input should be a valid email address"
+@pytest.mark.parametrize(
+    "value, kwargs, error",
+    [
+        # Only special
+        ("!@*&#^(*&!^(&@))", dict(), None),
+        # Some special
+        ("Good!1", dict(), None),
+        # Some special, exact count
+        ("GooD@!", dict(count=2), None),
+        # Count of 0
+        ("good1", dict(count=0), None),
+        # Allow empty strings
+        ("", dict(), None),
+        # Doesn't match
+        (
+            "no match here",
+            dict(),
+            "Input should contain at least one special character",
+        ),
+        # Bad count
+        (
+            "Good!1",
+            dict(count=2),
+            "Input should contain exactly 2 special characters",
+        ),
+        # Explicit count of 0
+        (
+            "Bad Text!1",
+            dict(count=0),
+            "Input should not contain special characters",
+        ),
+        # Custom error message
+        (
+            "no match here",
+            dict(error_message="Badness"),
+            "Badness",
+        ),
+        # Don't allow empty strings
+        (
+            "",
+            dict(allow_empty=False),
+            "Input should contain at least one special character",
+        ),
+    ],
+)
+def test_contains_special(value, kwargs, error):
+    validator = validators.ContainsSpecial(**kwargs)
 
-        self.validator_factory = validators.Email
-        self.valid_inputs = [
-            "tiberius@beeware.org",
-            "tiberius.yak@beeware.org",
-            "tiberius@beeware.ab.cd",
-        ]
-        self.invalid_inputs = [
-            ("2iberius@beeware.org", default_error_message),
-            ("tiberius.beeware.org", default_error_message),
-            ("tiberius@me@beeware.org", default_error_message),
-            ("tiberius@beeware", default_error_message),
-            ("tiberius@beeware.", default_error_message),
-        ]
+    assert validator(value) == error
 
-        self.check()
+
+@pytest.mark.parametrize(
+    "value, kwargs, error",
+    [
+        # Zero
+        ("0", dict(), None),
+        # positive integer
+        ("123", dict(), None),
+        # Negative integer
+        ("-123", dict(), None),
+        # Extra space
+        (" 123 ", dict(), None),
+        # leading zeros
+        ("01234", dict(), None),
+        # Allow empty strings
+        ("", dict(), None),
+        # Doesn't match
+        (
+            "no match here",
+            dict(),
+            "Input should be an integer",
+        ),
+        # Contains an integer, but not a pure integer
+        (
+            "no 123",
+            dict(),
+            "Input should be an integer",
+        ),
+        # Float
+        (
+            "1.234",
+            dict(),
+            "Input should be an integer",
+        ),
+        # Hex
+        (
+            "0x123",
+            dict(),
+            "Input should be an integer",
+        ),
+        # Octal
+        (
+            "0o123",
+            dict(),
+            "Input should be an integer",
+        ),
+        # Custom error message
+        (
+            "no match here",
+            dict(error_message="Badness"),
+            "Badness",
+        ),
+        # Don't allow empty strings
+        (
+            "",
+            dict(allow_empty=False),
+            "Input should be an integer",
+        ),
+    ],
+)
+def test_integer(value, kwargs, error):
+    validator = validators.Integer(**kwargs)
+
+    assert validator(value) == error
+
+
+@pytest.mark.parametrize(
+    "value, kwargs, error",
+    [
+        # Zero
+        ("0", dict(), None),
+        # positive integer
+        ("123", dict(), None),
+        # Negative integer
+        ("-123", dict(), None),
+        # Extra space
+        (" 123 ", dict(), None),
+        # leading zeros
+        ("01234", dict(), None),
+        # Float
+        ("12.34", dict(), None),
+        # Negative Float
+        ("-12.34", dict(), None),
+        # Float, no leading 0
+        (".1234", dict(), None),
+        # Negative Float, no leading 0
+        ("-.1234", dict(), None),
+        # Exponential
+        ("1.23e+4", dict(), None),
+        # Negative Exponential
+        ("-1.23e-4", dict(), None),
+        # Exponential (captialized)
+        ("1.23E+4", dict(), None),
+        # Negative (capitalized)
+        ("-1.23E-4", dict(), None),
+        # Allow empty strings
+        ("", dict(), None),
+        # Doesn't match
+        (
+            "no match here",
+            dict(),
+            "Input should be a number",
+        ),
+        # Contains a number, but not a pure number
+        (
+            "no 1.23",
+            dict(),
+            "Input should be a number",
+        ),
+        # Just a decimal point isn't a number
+        (
+            ".",
+            dict(),
+            "Input should be a number",
+        ),
+        # Just an exponent isn't a number
+        (
+            "e+9",
+            dict(),
+            "Input should be a number",
+        ),
+        # Custom error message
+        (
+            "no match here",
+            dict(error_message="Badness"),
+            "Badness",
+        ),
+        # Don't allow empty strings
+        (
+            "",
+            dict(allow_empty=False),
+            "Input should be a number",
+        ),
+    ],
+)
+def test_number(value, kwargs, error):
+    validator = validators.Number(**kwargs)
+
+    assert validator(value) == error
+
+
+@pytest.mark.parametrize(
+    "value, kwargs, error",
+    [
+        # Valid email addresses
+        ("tiberius@beeware.org", dict(), None),
+        ("tiberius.yak@beeware.org", dict(), None),
+        ("tiberius+yak@beeware.org", dict(), None),
+        ("tiberius@beeware.ab.cd", dict(), None),
+        ("tiberius@localhost", dict(), None),
+        ("tiberius@beeware", dict(), None),
+        ("2iberius@beeware.org", dict(), None),
+        # Allow empty strings
+        ("", dict(), None),
+        # Invalid email addresses
+        ("tiberius.beeware.org", dict(), "Input should be a valid email address"),
+        ("tiberius@me@beeware.org", dict(), "Input should be a valid email address"),
+        ("tiberius@beeware.", dict(), "Input should be a valid email address"),
+        # Custom error message
+        ("not an email", dict(error_message="badness"), "badness"),
+        # Disallow empty strings
+        ("", dict(allow_empty=False), "Input should be a valid email address"),
+    ],
+)
+def test_email(value, kwargs, error):
+    validator = validators.Email(**kwargs)
+
+    assert validator(value) == error
+
+
+# @pytest.mark.parametrize(
+#     "value",
+#     [
+#     ],
+# )
+# def test_invalid_email(value):
+#     validator = validators.Email()
+
+#     assert validator(value) == "Input should be a valid email address"

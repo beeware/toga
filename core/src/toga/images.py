@@ -1,6 +1,7 @@
 import pathlib
 import warnings
 
+import toga
 from toga.platform import get_platform_factory
 
 
@@ -35,7 +36,7 @@ class Image:
         if self.data is not None:
             self._impl = self.factory.Image(interface=self, data=self.data)
         elif isinstance(self.path, pathlib.Path):
-            full_path = self.factory.paths.app / self.path
+            full_path = toga.App.app.paths.app / self.path
             if not full_path.exists():
                 raise FileNotFoundError(
                     "Image file {full_path!r} does not exist".format(

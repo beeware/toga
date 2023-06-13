@@ -1,0 +1,1 @@
+Fixed a startup crash on Android devices older than API level 29 (Android 10).

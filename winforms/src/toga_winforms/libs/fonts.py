@@ -8,10 +8,10 @@ from .winforms import (
 
 def TextAlignment(value):
     return {
-        LEFT: ContentAlignment.MiddleLeft,
-        RIGHT: ContentAlignment.MiddleRight,
-        CENTER: ContentAlignment.MiddleCenter,
-        JUSTIFY: ContentAlignment.MiddleLeft,
+        LEFT: ContentAlignment.TopLeft,
+        RIGHT: ContentAlignment.TopRight,
+        CENTER: ContentAlignment.TopCenter,
+        JUSTIFY: ContentAlignment.TopLeft,
     }[value]
 
 

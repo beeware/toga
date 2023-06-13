@@ -96,11 +96,13 @@ class Context:
         Args:
             drawing_object (:obj:'Drawing Object'): The drawing object to remove
         """
+        # AUDIT NOTE: Should this be removed? It overrides Widget.remove()
         self.drawing_objects.remove(drawing_object)
         self.redraw()
 
     def clear(self):
         """Remove all drawing objects."""
+        # AUDIT NOTE: Should this be removed? It overrides Widget.clear()
         self.drawing_objects.clear()
         self.redraw()
 

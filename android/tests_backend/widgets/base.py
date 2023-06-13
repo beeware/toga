@@ -3,9 +3,18 @@ import asyncio
 from java import dynamic_proxy
 from pytest import approx
 
+from android.graphics.drawable import (
+    ColorDrawable,
+    DrawableContainer,
+    DrawableWrapper,
+    LayerDrawable,
+)
+from android.os import Build
 from android.view import View, ViewTreeObserver
-from toga.fonts import SYSTEM
+from toga.colors import TRANSPARENT
+from toga.style.pack import JUSTIFY, LEFT
 
+from ..probe import BaseProbe
 from .properties import toga_color
 
 
@@ -19,8 +28,10 @@ class LayoutListener(dynamic_proxy(ViewTreeObserver.OnGlobalLayoutListener)):
         self.event.clear()
 
 
-class SimpleProbe:
+class SimpleProbe(BaseProbe):
     def __init__(self, widget):
+        super().__init__()
+        self.app = widget.app
         self.widget = widget
         self.native = widget._impl.native
         self.layout_listener = LayoutListener()
@@ -55,12 +66,9 @@ class SimpleProbe:
         assert self.native.getParent() is None
 
     def assert_alignment(self, expected):
-        assert self.alignment == expected
-
-    def assert_font_family(self, expected):
-        actual = self.font.family
-        if expected == SYSTEM:
-            assert actual == "sans-serif"
+        actual = self.alignment
+        if expected == JUSTIFY and Build.VERSION.SDK_INT < 26:
+            assert actual == LEFT
         else:
             assert actual == expected
 
@@ -69,10 +77,7 @@ class SimpleProbe:
         self.native.requestLayout()
         await self.layout_listener.event.wait()
 
-        # If we're running slow, wait for a second
-        if self.widget.app.run_slow:
-            print("Waiting for redraw" if message is None else message)
-            await asyncio.sleep(1)
+        await super().redraw(message=message)
 
     @property
     def enabled(self):
@@ -116,7 +121,34 @@ class SimpleProbe:
 
     @property
     def background_color(self):
-        return toga_color(self.native.getBackground().getColor())
+        background = self.native.getBackground()
+        while True:
+            if isinstance(background, ColorDrawable):
+                return toga_color(background.getColor())
+
+            # The following complex Drawables all apply color filters to their children,
+            # but they don't implement getColorFilter, at least not in our current
+            # minimum API level.
+            elif isinstance(background, LayerDrawable):
+                background = background.getDrawable(0)
+            elif isinstance(background, DrawableContainer):
+                background = background.getCurrent()
+            elif isinstance(background, DrawableWrapper):
+                background = background.getDrawable()
+
+            else:
+                break
+
+        if background is None:
+            return TRANSPARENT
+        filter = background.getColorFilter()
+        if filter:
+            # PorterDuffColorFilter.getColor is undocumented, but continues to work for
+            # now. If this method is blocked in the future, another option is to use the
+            # filter to draw something and see what color comes out.
+            return toga_color(filter.getColor())
+        else:
+            return TRANSPARENT
 
     async def press(self):
         self.native.performClick()

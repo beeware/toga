@@ -25,3 +25,8 @@ class LabelProbe(SimpleProbe):
     @property
     def alignment(self):
         return toga_alignment(self.native.textAlignment)
+
+    def assert_vertical_alignment(self, alignment):
+        # iOS has a custom draw method that always draw the text at the top;
+        # this location isn't configurable
+        pass

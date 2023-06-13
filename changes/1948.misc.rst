@@ -1,0 +1,1 @@
+Dialogs were refactored to provide reuse for asynchronous results, and provide full interface/impl separation.

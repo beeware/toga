@@ -5,7 +5,7 @@ from .documents import Document
 from .fonts import Font
 from .icons import Icon
 from .images import Image
-from .paths import paths
+from .paths import Paths
 from .widgets.activityindicator import ActivityIndicator
 from .widgets.base import Widget
 from .widgets.box import Box
@@ -17,7 +17,6 @@ from .widgets.divider import Divider
 from .widgets.imageview import ImageView
 from .widgets.label import Label
 from .widgets.multilinetextinput import MultilineTextInput
-from .widgets.navigationview import NavigationView
 from .widgets.numberinput import NumberInput
 from .widgets.optioncontainer import OptionContainer
 from .widgets.passwordinput import PasswordInput
@@ -49,7 +48,7 @@ __all__ = [
     "Font",
     "Icon",
     "Image",
-    "paths",
+    "Paths",
     "dialogs",
     "ActivityIndicator",
     "Box",
@@ -62,7 +61,6 @@ __all__ = [
     "TimePicker",
     "Label",
     "MultilineTextInput",
-    "NavigationView",
     "NumberInput",
     "OptionContainer",
     "PasswordInput",
