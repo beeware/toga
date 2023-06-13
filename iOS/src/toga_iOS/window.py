@@ -1,5 +1,6 @@
 from toga_iOS.container import RootContainer
 from toga_iOS.libs import (
+    UIColor,
     UIScreen,
     UIWindow,
 )
@@ -21,6 +22,14 @@ class Window:
 
         # Set the window's root controller to be the container's controller
         self.native.rootViewController = self.container.controller
+
+        # Set the background color of the root content.
+        try:
+            # systemBackgroundColor() was introduced in iOS 13
+            # We don't test on iOS 12, so mark the other branch as nocover
+            self.native.backgroundColor = UIColor.systemBackgroundColor()
+        except AttributeError:  # pragma: no cover
+            self.native.backgroundColor = UIColor.whiteColor
 
         self.set_title(title)
 

@@ -16,6 +16,8 @@ class Constraints:
         :param widget: The Widget implementation to be constrained.
         """
         self.widget = widget
+        self.widget.native.translatesAutoresizingMaskIntoConstraints = False
+
         self._container = None
 
         self.width_constraint = None
