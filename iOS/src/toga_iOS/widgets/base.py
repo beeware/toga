@@ -11,7 +11,6 @@ class Widget:
         self.interface = interface
         self.interface._impl = self
         self._container = None
-        self._viewport = None
         self.constraints = None
         self.native = None
         self.create()
@@ -34,7 +33,7 @@ class Widget:
     @container.setter
     def container(self, container):
         if self.container:
-            assert container is None, "Widget already has a container"
+            assert container is None, f"{self} already has a container"
 
             # Existing container should be removed
             self.constraints.container = None
@@ -53,11 +52,7 @@ class Widget:
 
     @property
     def viewport(self):
-        return self._viewport
-
-    @viewport.setter
-    def viewport(self, viewport):
-        self._viewport = viewport
+        return self._container
 
     def get_enabled(self):
         return self.native.isEnabled()
@@ -82,13 +77,8 @@ class Widget:
     # APPLICATOR
 
     def set_bounds(self, x, y, width, height):
-        # print("SET BOUNDS", self, x, y, width, height, self.constraints)
-        offset_y = 0
-        if self.container:
-            offset_y = self.container.viewport.top_offset
-        elif self.viewport:
-            offset_y = self.viewport.top_offset
-        self.constraints.update(x, y + offset_y, width, height)
+        # print("SET BOUNDS", self, x, y, width, height, self.container.top_offset)
+        self.constraints.update(x, y + self.container.top_offset, width, height)
 
     def set_alignment(self, alignment):
         pass
@@ -121,13 +111,8 @@ class Widget:
                 self.native.backgroundColor = UIColor.whiteColor
 
     # INTERFACE
-
     def add_child(self, child):
-        if self.viewport:
-            # we are the top level UIView
-            child.container = self
-        else:
-            child.container = self.container
+        child.container = self.container
 
     def insert_child(self, index, child):
         self.add_child(child)

@@ -37,11 +37,14 @@ class SimpleProbe(BaseProbe):
         super().__init__()
         self.app = widget.app
         self.widget = widget
+        self.impl = widget._impl
         self.native = widget._impl.native
         assert isinstance(self.native, self.native_class)
 
     def assert_container(self, container):
-        container_native = container._impl.native
+        assert container._impl.container == self.impl.container
+
+        container_native = container._impl.container.native
         for control in container_native.subviews():
             if control == self.native:
                 break
@@ -98,8 +101,8 @@ class SimpleProbe(BaseProbe):
 
         # Allow for the status bar and navigation bar in vertical position
         statusbar_frame = UIApplication.sharedApplication.statusBarFrame
-        navbar = self.widget.window._impl.controller.navigationController
-        navbar_frame = navbar.navigationBar.frame
+        nav_controller = self.widget.window._impl.native.rootViewController
+        navbar_frame = nav_controller.navigationBar.frame
         offset = statusbar_frame.size.height + navbar_frame.size.height
         assert (
             self.native.frame.origin.x,
