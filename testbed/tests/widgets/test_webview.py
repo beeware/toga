@@ -14,9 +14,9 @@ from .properties import (  # noqa: F401
     test_focus,
 )
 
-LOAD_TIMEOUT = 2
-JS_TIMEOUT = 0.5
-WINDOWS_INIT_TIMEOUT = 1
+# These timeouts are loose because CI can be very slow, especially on mobile.
+LOAD_TIMEOUT = 5
+JS_TIMEOUT = 1
 
 
 async def get_content(widget, timeout):
@@ -67,11 +67,26 @@ async def assert_content_change(widget, probe, message, url, content, on_load):
 async def widget():
     widget = toga.WebView(style=Pack(flex=1))
 
-    # Set some initial content that has a visible background
-    widget.set_content(
-        "https://example.com/",
-        "<html style='background-color:rebeccapurple;'></html>",
-    )
+    # On Windows, the WebView has an asynchronous initialization process. Before we
+    # start the test, make sure initialization is complete by checking the user agent.
+    deadline = time() + 5
+    while True:
+        try:
+            # Default user agents are a mess, but they all start with "Mozilla/5.0"
+            ua = widget.user_agent
+            assert ua.startswith("Mozilla/5.0 (")
+            break
+        except AssertionError:
+            # On Windows, user_agent will return an empty string during intialization.
+            if (
+                toga.platform.current_platform == "windows"
+                and ua == ""
+                and time() < deadline
+            ):
+                await asyncio.sleep(0.05)
+            else:
+                raise
+
     return widget
 
 
@@ -148,25 +163,7 @@ async def test_static_content(widget, probe, on_load):
 async def test_user_agent(widget, probe):
     "The user agent can be customized"
 
-    deadline = time() + WINDOWS_INIT_TIMEOUT
-    while True:
-        try:
-            # Default user agents are a mess, but they all start with "Mozilla/5.0"
-            ua = widget.user_agent
-            assert ua.startswith("Mozilla/5.0 (")
-            break
-        except AssertionError:
-            # On Windows, user_agent will return an empty string during intialization.
-            if (
-                toga.platform.current_platform == "windows"
-                and ua == ""
-                and time() < deadline
-            ):
-                await asyncio.sleep(0.05)
-            else:
-                raise
-
-    # Set a custom user agent
+    # The default user agent is tested by the `widget` fixture.
     widget.user_agent = "NCSA_Mosaic/1.0"
     await probe.redraw("User agent has been customized")
     assert widget.user_agent == "NCSA_Mosaic/1.0"
