@@ -110,7 +110,6 @@ class Widget:
         child.container = None
 
     def add_constraints(self):
-        self.native.translatesAutoresizingMaskIntoConstraints = False
         self.constraints = Constraints(self)
 
     def refresh(self):

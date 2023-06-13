@@ -94,7 +94,7 @@ class Container(BaseContainer):
         :param on_refresh: The callback to be notified when this container's layout is
             refreshed.
         """
-        super().__init__(on_refresh=on_refresh)
+        super().__init__(content=content, on_refresh=on_refresh)
         self.native = TogaView.alloc().init()
         self.layout_native = self.native if layout_native is None else layout_native
 

@@ -2,7 +2,7 @@ from rubicon.objc import SEL, NSMakePoint, NSMakeSize, objc_method, objc_propert
 from travertino.size import at_least
 
 from toga_iOS.container import Container
-from toga_iOS.libs import UIColor, UIScrollView
+from toga_iOS.libs import UIScrollView
 from toga_iOS.widgets.base import Widget
 
 
@@ -16,7 +16,8 @@ class TogaScrollView(UIScrollView):
 
     @objc_method
     def refreshContent(self):
-        self.impl.refresh_content()
+        if self.interface._content:
+            self.interface._content.refresh()
 
 
 class ScrollContainer(Widget):
@@ -24,7 +25,6 @@ class ScrollContainer(Widget):
         self.native = TogaScrollView.alloc().init()
         self.native.interface = self.interface
         self.native.impl = self
-        self.native.backgroundColor = UIColor.redColor
         self.native.delegate = self.native
 
         # UIScrollView doesn't have a native ability to disable a scrolling direction;
@@ -32,7 +32,10 @@ class ScrollContainer(Widget):
         self._allow_horizontal = True
         self._allow_vertical = True
 
-        self.document_container = Container(layout_native=self.native)
+        self.document_container = Container(
+            layout_native=self.native,
+            on_refresh=self.content_refreshed,
+        )
         self.native.addSubview(self.document_container.native)
         self.add_constraints()
 
@@ -49,12 +52,11 @@ class ScrollContainer(Widget):
             SEL("refreshContent"), withObject=None, afterDelay=0
         )
 
-    def refresh_content(self):
+    def content_refreshed(self):
         width = self.native.frame.size.width
         height = self.native.frame.size.height
 
         if self.interface._content:
-            self.interface._content.refresh()
             if self.interface.horizontal:
                 width = max(self.interface.content.layout.width, width)
 
@@ -68,14 +70,20 @@ class ScrollContainer(Widget):
 
     def set_vertical(self, value):
         self._allow_vertical = value
-        self.refresh_content()
+        # If the scroll container has content, we need to force a refresh
+        # to let the scroll container know how large its content is.
+        if self.interface.content:
+            self.interface.refresh()
 
     def get_horizontal(self):
         return self._allow_horizontal
 
     def set_horizontal(self, value):
         self._allow_horizontal = value
-        self.refresh_content()
+        # If the scroll container has content, we need to force a refresh
+        # to let the scroll container know how large its content is.
+        if self.interface.content:
+            self.interface.refresh()
 
     def rehint(self):
         self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)

@@ -7,12 +7,15 @@ from .libs import (
 
 
 class BaseContainer:
-    def __init__(self, content=None):
+    def __init__(self, content=None, on_refresh=None):
         """A base class for iOS containers.
 
         :param content: The widget impl that is the container's initial content.
+        :param on_refresh: The callback to be notified when this container's layout is
+            refreshed.
         """
         self._content = content
+        self.on_refresh = on_refresh
 
         # iOS renders everything at 96dpi.
         self.dpi = 96
@@ -40,11 +43,12 @@ class BaseContainer:
             widget.container = self
 
     def refreshed(self):
-        pass
+        if self.on_refresh:
+            self.on_refresh()
 
 
 class Container(BaseContainer):
-    def __init__(self, content=None, layout_native=None):
+    def __init__(self, content=None, layout_native=None, on_refresh=None):
         """
         :param content: The widget impl that is the container's initial content.
         :param layout_native: The native widget that should be used to provide size
@@ -52,8 +56,10 @@ class Container(BaseContainer):
             however, for widgets like ScrollContainer where the layout needs to be
             computed based on a different size to what will be rendered, the source of
             the size can be different.
+        :param on_refresh: The callback to be notified when this container's layout is
+            refreshed.
         """
-        super().__init__(content=content)
+        super().__init__(content=content, on_refresh=on_refresh)
         self.native = UIView.alloc().init()
         self.native.translatesAutoresizingMaskIntoConstraints = True
 
@@ -77,6 +83,7 @@ class RootContainer(Container):
         self,
         content=None,
         layout_native=None,
+        on_refresh=None,
     ):
         """
         :param content: The widget impl that is the container's initial content.
@@ -85,8 +92,14 @@ class RootContainer(Container):
             itself; however, for widgets like ScrollContainer where the layout
             needs to be computed based on a different size to what will be
             rendered, the source of the size can be different.
+        :param on_refresh: The callback to be notified when this container's layout is
+            refreshed.
         """
-        super().__init__(content=content, layout_native=layout_native)
+        super().__init__(
+            content=content,
+            layout_native=layout_native,
+            on_refresh=on_refresh,
+        )
 
         # Construct a NavigationController that provides a navigation bar, and
         # is able to maintain a stack of navigable content. This is intialized

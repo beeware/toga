@@ -8,7 +8,6 @@ from toga_cocoa.libs import (
     NSMakeRect,
     NSNoBorder,
     NSNotificationCenter,
-    NSRunLoop,
     NSScrollView,
     NSScrollViewDidEndLiveScrollNotification,
     NSScrollViewDidLiveScrollNotification,
@@ -24,6 +23,13 @@ class TogaScrollView(NSScrollView):
     @objc_method
     def didScroll_(self, note) -> None:
         self.interface.on_scroll(None)
+
+    @objc_method
+    def refreshContent(self):
+        # Now that we have an updated size for the ScrollContainer, re-evaluate
+        # the size of the document content
+        if self.interface._content:
+            self.interface._content.refresh()
 
 
 class ScrollContainer(Widget):
@@ -69,14 +75,11 @@ class ScrollContainer(Widget):
         super().set_bounds(x, y, width, height)
 
         # Setting the bounds changes the constraints, but that doesn't mean
-        # the constraints have been fully applied. Let the NSRunLoop tick once
-        # to ensure constraints are applied.
-        NSRunLoop.currentRunLoop.runUntilDate(None)
-
-        # Now that we have an updated size for the ScrollContainer, re-evaluate
-        # the size of the document content
-        if self.interface._content:
-            self.interface._content.refresh()
+        # the constraints have been fully applied. Schedule a refresh to be done
+        # as soon as possible in the future
+        self.native.performSelector(
+            SEL("refreshContent"), withObject=None, afterDelay=0
+        )
 
     def content_refreshed(self):
         width = self.native.frame.size.width
@@ -96,7 +99,7 @@ class ScrollContainer(Widget):
     def set_vertical(self, value):
         self.native.hasVerticalScroller = value
         # If the scroll container has content, we need to force a refresh
-        # to let the scroll container know how large it's content is.
+        # to let the scroll container know how large its content is.
         if self.interface.content:
             self.interface.refresh()
 
@@ -106,7 +109,7 @@ class ScrollContainer(Widget):
     def set_horizontal(self, value):
         self.native.hasHorizontalScroller = value
         # If the scroll container has content, we need to force a refresh
-        # to let the scroll container know how large it's content is.
+        # to let the scroll container know how large its content is.
         if self.interface.content:
             self.interface.refresh()
 
