@@ -20,7 +20,7 @@ class Selection(Widget):
         enabled=True,
         on_select: callable | None = None,  # DEPRECATED
     ):
-        """Create a new Slider widget.
+        """Create a new Selection widget.
 
         Inherits from :class:`~toga.widgets.base.Widget`.
 

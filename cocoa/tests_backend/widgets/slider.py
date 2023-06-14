@@ -15,8 +15,9 @@ class SliderProbe(SimpleProbe):
     async def change(self, position):
         self.native.doubleValue = self._min + (position * (self._max - self._min))
         # Queue a drag event. This won't actually perform any event processing,
-        # but we need to make sure the current event is in a known state
-        # for when the event *is* processed by the call to `performClick()`
+        # but we need to make sure the current event is in a known state,
+        # otherwise the last event from the previous test could cause an
+        # on_press or on_release callback.
         await self.mouse_event(
             NSEventType.LeftMouseDragged,
             self.native.convertPoint(
