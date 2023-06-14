@@ -14,18 +14,23 @@ from .properties import (  # noqa: F401
     test_focus,
 )
 
-# These timeouts are loose because CI can be very slow, especially on mobile
-# (https://github.com/beeware/toga/pull/1949).
-LOAD_TIMEOUT = 300
-JS_TIMEOUT = 300
+# These timeouts are loose because CI can be very slow, especially on mobile.
+LOAD_TIMEOUT = 30
+JS_TIMEOUT = 5
 WINDOWS_INIT_TIMEOUT = 60
 
 
-async def get_content(widget, timeout):
-    return await wait_for(
-        widget.evaluate_javascript("document.body.innerHTML"),
-        timeout,
-    )
+async def get_content(widget):
+    try:
+        return await wait_for(
+            widget.evaluate_javascript("document.body.innerHTML"),
+            JS_TIMEOUT,
+        )
+    except TimeoutError:
+        # On Android, if you call evaluate_javascript while a page is loading, the
+        # callback may never be called. This seems to be associated with the log message
+        # "Uncaught TypeError: Cannot read property 'innerHTML' of null".
+        return None
 
 
 async def assert_content_change(widget, probe, message, url, content, on_load):
@@ -45,7 +50,7 @@ async def assert_content_change(widget, probe, message, url, content, on_load):
     # Loop until a change occurs
     while timer > 0 and not changed:
         new_url = widget.url
-        new_content = await get_content(widget, timer)
+        new_content = await get_content(widget)
 
         changed = new_url == url and new_content == content
         if not changed:

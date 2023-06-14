@@ -19,9 +19,16 @@ class ReceiveString(ValueCallback):
         # the callback will be "null", with no way to distinguish it from an actual null
         # return value.
         result = json.loads(value)
-        self.future.set_result(result)
-        if self.on_result:
-            self.on_result(result)
+
+        # Because this method is called directly from the Android event loop, calling
+        # set_result on a timed-out future would crash the whole testbed with an
+        # InvalidStateError.
+        if self.future.cancelled():  # pragma: nocover
+            pass
+        else:
+            self.future.set_result(result)
+            if self.on_result:
+                self.on_result(result)
 
 
 class WebView(Widget):
@@ -37,7 +44,10 @@ class WebView(Widget):
 
     def get_url(self):
         url = self.native.getUrl()
-        return None if url == "about:blank" else url
+        if url == "about:blank" or url.startswith("data:"):
+            return None
+        else:
+            return url
 
     def set_url(self, value, future=None):
         if value is None:
@@ -50,13 +60,10 @@ class WebView(Widget):
             future.set_result(None)
 
     def set_content(self, root_url, content):
-        self.native.loadDataWithBaseURL(
-            root_url,  # baseUrl
-            content,
-            "text/html",
-            "utf-8",
-            root_url,  # historyUrl
-        )
+        # There is a loadDataWithBaseURL method, but it's inconsistent about whether
+        # getUrl returns the given URL or a data: URL. Rather than support this feature
+        # intermittently, it's better to not support it at all.
+        self.native.loadData(content, "text/html", "utf-8")
 
     def get_user_agent(self):
         return self.settings.getUserAgentString()

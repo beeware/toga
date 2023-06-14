@@ -116,8 +116,8 @@ class WebView(Widget):
     def set_content(self, root_url: str, content: str):
         """Set the HTML content of the WebView.
 
-        **Note:** On Windows, the ``root_url`` argument is ignored. Calling this
-        method will set the ``url`` property to ``None``.
+        **Note:** On Android and Windows, the ``root_url`` argument is ignored. Calling
+        this method will set the ``url`` property to ``None``.
 
         :param root_url: A URL which will be returned by the ``url`` property,
             and used to resolve any relative URLs in the content.
