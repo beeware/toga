@@ -47,6 +47,23 @@ class SplitContainer(Widget):
         self.direction = direction
 
     @property
+    def enabled(self) -> bool:
+        """Is the widget currently enabled? i.e., can the user interact with the widget?
+
+        SplitContainer widgets cannot be disabled; this property will always return
+        True; any attempt to modify it will be ignored.
+        """
+        return True
+
+    @enabled.setter
+    def enabled(self, value):
+        pass
+
+    def focus(self):
+        "No-op; SplitContainer cannot accept input focus"
+        pass
+
+    @property
     def content(self) -> list[Widget]:
         """The widgets displayed in the SplitContainer.
 
@@ -116,13 +133,6 @@ class SplitContainer(Widget):
         if self._content:
             for content in self._content:
                 content.window = window
-
-    def refresh_sublayouts(self):
-        """Refresh the layout and appearance of this widget."""
-        if self.content is None:
-            return
-        for widget in self.content:
-            widget.refresh()
 
     @property
     def direction(self) -> Direction:

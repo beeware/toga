@@ -26,15 +26,13 @@ class Container:
 
     @property
     def width(self):
-        return self._content.get_size()[0]
+        return self.content.get_size()[0]
 
     @property
     def height(self):
-        return self._content.get_size()[1]
+        return self.content.get_size()[1]
 
     def refreshed(self):
-        if self._content:
-            self.content.refresh()
         if self.content:
             self.content.refresh()
 
