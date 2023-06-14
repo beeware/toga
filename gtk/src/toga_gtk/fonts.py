@@ -1,6 +1,5 @@
 from pathlib import Path
 
-import toga
 from toga.constants import (
     BOLD,
     ITALIC,
@@ -39,7 +38,7 @@ class Font:
                 variant=self.interface.variant,
             )
             try:
-                font_path = toga.App.app.paths.app / _REGISTERED_FONT_CACHE[font_key]
+                font_path = _REGISTERED_FONT_CACHE[font_key]
             except KeyError:
                 # Not a pre-registered font
                 if self.interface.family not in SYSTEM_DEFAULT_FONTS:
@@ -49,7 +48,7 @@ class Font:
                     )
             else:
                 if Path(font_path).is_file():
-                    FontConfig.add_font_file(str(font_path))
+                    FontConfig.add_font_file(font_path)
                 else:
                     raise ValueError(f"Font file {font_path} could not be found")
 

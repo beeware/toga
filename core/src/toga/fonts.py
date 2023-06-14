@@ -17,6 +17,7 @@ from travertino.constants import (  # noqa: F401
 from travertino.fonts import font  # noqa: F401
 from travertino.fonts import Font as BaseFont
 
+import toga
 from toga.platform import get_platform_factory
 
 SYSTEM_DEFAULT_FONTS = {SYSTEM, MESSAGE, SERIF, SANS_SERIF, CURSIVE, FANTASY, MONOSPACE}
@@ -76,7 +77,7 @@ class Font(BaseFont):
         font_key = Font.registered_font_key(
             family, weight=weight, style=style, variant=variant
         )
-        _REGISTERED_FONT_CACHE[font_key] = path
+        _REGISTERED_FONT_CACHE[font_key] = str(toga.App.app.paths.app / path)
 
     @staticmethod
     def registered_font_key(family, weight, style, variant):

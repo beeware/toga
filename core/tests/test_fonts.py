@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import pytest
 
 import toga
@@ -11,6 +13,11 @@ from toga.fonts import (
     SYSTEM,
     SYSTEM_DEFAULT_FONT_SIZE,
 )
+
+
+@pytest.fixture
+def app():
+    return toga.App("Fonts Test", "org.beeware.toga.fonts")
 
 
 @pytest.mark.parametrize(
@@ -125,7 +132,7 @@ def test_builtin_font(family, size, weight, style, variant, as_str):
         ("Wonky", BOLD, ITALIC, "unknown", ("Wonky", BOLD, ITALIC, NORMAL)),
     ],
 )
-def test_registered_font_key(family, style, weight, variant, key):
+def test_registered_font_key(app, family, style, weight, variant, key):
     "Registered font keys can be generarted"
     assert (
         toga.Font.registered_font_key(
@@ -135,21 +142,39 @@ def test_registered_font_key(family, style, weight, variant, key):
     )
 
 
-def test_register_font():
+@pytest.mark.parametrize(
+    "path, registered",
+    [
+        # Absolute path
+        ("/path/to/custom/font.otf", "/path/to/custom/font.otf"),
+        # Relative path
+        (
+            "path/to/custom/font.otf",
+            str(Path(toga.__file__).parent / "path" / "to" / "custom" / "font.otf"),
+        ),
+    ],
+)
+def test_register_font(app, path, registered):
     "A custom font can be registered"
-    toga.Font.register("Custom Font", "/path/to/custom/font.otf")
+    toga.Font.register("Custom Font", path)
 
-    assert (
-        _REGISTERED_FONT_CACHE[("Custom Font", NORMAL, NORMAL, NORMAL)]
-        == "/path/to/custom/font.otf"
-    )
+    assert _REGISTERED_FONT_CACHE[("Custom Font", NORMAL, NORMAL, NORMAL)] == registered
 
 
-def test_register_font_variant():
+@pytest.mark.parametrize(
+    "path, registered",
+    [
+        # Absolute path
+        ("/path/to/custom/font.otf", "/path/to/custom/font.otf"),
+        # Relative path
+        (
+            "path/to/custom/font.otf",
+            str(Path(toga.__file__).parent / "path" / "to" / "custom" / "font.otf"),
+        ),
+    ],
+)
+def test_register_font_variant(app, path, registered):
     "A custom font can be registered as a variant"
-    toga.Font.register("Custom Font", "/path/to/custom/font-bold.otf", weight=BOLD)
+    toga.Font.register("Custom Font", path, weight=BOLD)
 
-    assert (
-        _REGISTERED_FONT_CACHE[("Custom Font", BOLD, NORMAL, NORMAL)]
-        == "/path/to/custom/font-bold.otf"
-    )
+    assert _REGISTERED_FONT_CACHE[("Custom Font", BOLD, NORMAL, NORMAL)] == registered

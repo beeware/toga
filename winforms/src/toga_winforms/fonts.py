@@ -1,4 +1,3 @@
-import toga
 from toga.fonts import (
     _REGISTERED_FONT_CACHE,
     CURSIVE,
@@ -39,9 +38,7 @@ class Font:
                 variant=self.interface.variant,
             )
             try:
-                font_path = str(
-                    toga.App.app.paths.app / _REGISTERED_FONT_CACHE[font_key]
-                )
+                font_path = _REGISTERED_FONT_CACHE[font_key]
             except KeyError:
                 try:
                     font_family = {
