@@ -1,1 +1,1 @@
-The ScrollConatiner widget now has 100% test coverage, and complete API documentation.
+The ScrollContainer widget now has 100% test coverage, and complete API documentation.

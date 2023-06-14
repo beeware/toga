@@ -1,8 +1,8 @@
 Scroll Container
 ================
 
-A container widget that can display a layout larger that the area of the
-container, with overflow controlled by scroll bars.
+A container that can display a layout larger that the area of the container, with
+overflow controlled by scroll bars.
 
 .. figure:: /reference/images/ScrollContainer.png
    :align: center
@@ -31,3 +31,4 @@ Reference
 .. autoclass:: toga.widgets.scrollcontainer.ScrollContainer
    :members:
    :undoc-members:
+   :exclude-members: window, app
