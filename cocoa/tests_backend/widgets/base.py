@@ -33,12 +33,12 @@ class SimpleProbe(BaseProbe):
     def assert_alignment(self, expected):
         assert self.alignment == expected
 
-    async def redraw(self, message=None):
+    async def redraw(self, message=None, delay=None):
         """Request a redraw of the app, waiting until that redraw has completed."""
         # Force a widget repaint
         self.widget.window.content._impl.native.displayIfNeeded()
 
-        await super().redraw(message=message)
+        await super().redraw(message=message, delay=delay)
 
     @property
     def enabled(self):

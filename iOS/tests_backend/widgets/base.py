@@ -1,4 +1,3 @@
-from toga.fonts import CURSIVE, FANTASY, MONOSPACE, SANS_SERIF, SERIF, SYSTEM
 from toga_iOS.libs import UIApplication
 
 from ..probe import BaseProbe
@@ -37,6 +36,7 @@ class SimpleProbe(BaseProbe):
         super().__init__()
         self.app = widget.app
         self.widget = widget
+        self.impl = widget._impl
         self.native = widget._impl.native
         assert isinstance(self.native, self.native_class)
 
@@ -55,22 +55,12 @@ class SimpleProbe(BaseProbe):
     def assert_alignment(self, expected):
         assert self.alignment == expected
 
-    def assert_font_family(self, expected):
-        assert self.font.family == {
-            CURSIVE: "Apple Chancery",
-            FANTASY: "Papyrus",
-            MONOSPACE: "Courier New",
-            SANS_SERIF: "Helvetica",
-            SERIF: "Times New Roman",
-            SYSTEM: ".AppleSystemUIFont",
-        }.get(expected, expected)
-
-    async def redraw(self, message=None):
+    async def redraw(self, message=None, delay=None):
         """Request a redraw of the app, waiting until that redraw has completed."""
         # Force a widget repaint
         self.widget.window.content._impl.native.layer.displayIfNeeded()
 
-        await super().redraw(message=message)
+        await super().redraw(message=message, delay=delay)
 
     @property
     def enabled(self):

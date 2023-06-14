@@ -72,12 +72,12 @@ class SimpleProbe(BaseProbe):
         else:
             assert actual == expected
 
-    async def redraw(self, message=None):
+    async def redraw(self, message=None, delay=None):
         """Request a redraw of the app, waiting until that redraw has completed."""
         self.native.requestLayout()
         await self.layout_listener.event.wait()
 
-        await super().redraw(message=message)
+        await super().redraw(message=message, delay=delay)
 
     @property
     def enabled(self):

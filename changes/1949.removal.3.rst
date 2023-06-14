@@ -1,0 +1,1 @@
+The ``evaluate_javascript()`` method on WebView has been modified to work in both synchronous and asynchronous contexts. In a synchronous context you can invoke the method and use a functional ``on_result`` callback to be notified when evaluation is complete. In an asynchronous context, you can await the result.
