@@ -3,29 +3,45 @@ from .utils import LoggedObject, not_required, not_required_on
 
 @not_required
 class Container:
-    def __init__(self, native):
+    def __init__(self, content=None):
         self.baseline_dpi = 96
         self.dpi = 96
 
-        self.native = native
+        # Prime the underlying storage before using setter
+        self._content = None
+        self.content = content
+
+    @property
+    def content(self):
+        return self._content
+
+    @content.setter
+    def content(self, value):
+        if self._content:
+            self._content.container = None
+
+        self._content = value
+        if value:
+            value.container = self
 
     @property
     def width(self):
-        return self.native.get_size()[0]
+        return self._content.get_size()[0]
 
     @property
     def height(self):
-        return self.native.get_size()[1]
+        return self._content.get_size()[1]
 
     def refreshed(self):
-        self.native._action("container refreshed")
+        if self._content:
+            self.content.refresh()
 
 
 class Window(LoggedObject):
     def __init__(self, interface, title, position, size):
         super().__init__()
         self.interface = interface
-        self.container = Container(self)
+        self.container = Container()
 
         self.set_title(title)
         self.set_position(position)
@@ -43,7 +59,7 @@ class Window(LoggedObject):
         self._action("clear content")
 
     def set_content(self, widget):
-        widget.container = self.container
+        self.container.content = widget
         self._action("set content", widget=widget)
         self._set_value("content", widget)
 

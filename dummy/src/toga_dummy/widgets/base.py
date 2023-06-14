@@ -14,6 +14,9 @@ class Widget(LoggedObject):
     def viewport(self):
         return self.container
 
+    def get_size(self):
+        return (37, 42)
+
     def create(self):
         self._action("create Widget")
 

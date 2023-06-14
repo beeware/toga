@@ -151,8 +151,8 @@ def test_add_child(widget):
     # The widget's layout has been refreshed
     assert_action_performed_with(widget, "refresh")
 
-    # The window's container gets a refresh notification
-    assert_action_performed_with(window, "container refreshed")
+    # The window's content gets a refresh notification
+    assert_action_performed_with(window.content, "refresh")
 
     # App's widget index has been updated
     assert len(app.widgets) == 2
@@ -216,8 +216,8 @@ def test_add_multiple_children(widget):
     # There will be multiple refresh calls
     assert_action_performed_with(widget, "refresh")
 
-    # The window's container gets a refresh notification
-    assert_action_performed_with(window, "container refreshed")
+    # The window's content gets a refresh notification
+    assert_action_performed_with(window.content, "refresh")
 
     # App's widget index has been updated
     assert len(app.widgets) == 4
@@ -374,8 +374,8 @@ def test_insert_child(widget):
     # The widget's layout has been refreshed
     assert_action_performed_with(widget, "refresh")
 
-    # The window's container gets a refresh notification
-    assert_action_performed_with(window, "container refreshed")
+    # The window's content gets a refresh notification
+    assert_action_performed_with(window.content, "refresh")
 
     # App's widget index has been updated
     assert len(app.widgets) == 2
@@ -440,8 +440,8 @@ def test_insert_position(widget):
     # The widget's layout has been refreshed
     assert_action_performed_with(widget, "refresh")
 
-    # The window's container gets a refresh notification
-    assert_action_performed_with(window, "container refreshed")
+    # The window's content gets a refresh notification
+    assert_action_performed_with(window.content, "refresh")
 
     # App's widget index has been updated
     assert len(app.widgets) == 4
@@ -493,8 +493,8 @@ def test_insert_bad_position(widget):
     # The widget's layout has been refreshed
     assert_action_performed_with(widget, "refresh")
 
-    # The window's container gets a refresh notification
-    assert_action_performed_with(window, "container refreshed")
+    # The window's content gets a refresh notification
+    assert_action_performed_with(window.content, "refresh")
 
     # App's widget index has been updated
     assert len(app.widgets) == 2
@@ -623,8 +623,8 @@ def test_remove_child(widget):
     # The widget's layout has been refreshed
     assert_action_performed_with(widget, "refresh")
 
-    # The window's container gets a refresh notification
-    assert_action_performed_with(window, "container refreshed")
+    # The window's content gets a refresh notification
+    assert_action_performed_with(window.content, "refresh")
 
 
 def test_remove_multiple_children(widget):
@@ -674,8 +674,8 @@ def test_remove_multiple_children(widget):
     # The widget's layout has been refreshed
     assert_action_performed_with(widget, "refresh")
 
-    # The window's container gets a refresh notification
-    assert_action_performed_with(window, "container refreshed")
+    # The window's content gets a refresh notification
+    assert_action_performed_with(window.content, "refresh")
 
 
 def test_clear_all_children(widget):
@@ -726,8 +726,8 @@ def test_clear_all_children(widget):
     # The widget's layout has been refreshed
     assert_action_performed_with(widget, "refresh")
 
-    # The window's container gets a refresh notification
-    assert_action_performed_with(window, "container refreshed")
+    # The window's content gets a refresh notification
+    assert_action_performed_with(window.content, "refresh")
 
 
 def test_clear_no_children(widget):
@@ -750,8 +750,8 @@ def test_clear_no_children(widget):
     # The widget's layout has *not* been refreshed
     assert_action_not_performed(widget, "refresh")
 
-    # The window's container gets a refresh notification
-    assert_action_not_performed(window, "container refreshed")
+    # The window's content gets a refresh notification
+    assert_action_not_performed(window.content, "refresh")
 
 
 def test_clear_leaf_node():
@@ -775,8 +775,8 @@ def test_clear_leaf_node():
     # The widget's layout has *not* been refreshed
     assert_action_not_performed(leaf, "refresh")
 
-    # The window's container gets a refresh notification
-    assert_action_not_performed(window, "container refreshed")
+    # The window's content gets a refresh notification
+    assert_action_not_performed(window.content, "refresh")
 
 
 def test_remove_from_non_parent(widget):
