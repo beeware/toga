@@ -20,6 +20,7 @@ class ScrollContainer(Widget):
     def set_content(self, widget):
         self.scroll_container.content = widget
         self._action("set content", widget=widget)
+        self.scroll_container.content = widget
 
     def get_vertical(self):
         return self._get_value("vertical", True)

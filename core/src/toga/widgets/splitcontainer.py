@@ -1,106 +1,101 @@
-import warnings
+from __future__ import annotations
+
+from toga.constants import Direction
 
 from .base import Widget
 
 
 class SplitContainer(Widget):
-    """A SplitContainer displays two widgets vertically or horizontally next to each
-    other with a movable divider.
-
-    Args:
-        id (str):  An identifier for this widget.
-        style (:obj:`Style`): An optional style object.
-            If no style is provided then a new one will be created for the widget.
-        direction: The direction for the container split,
-            either `SplitContainer.HORIZONTAL` or `SplitContainer.VERTICAL`
-        content(``list`` of :class:`~toga.widgets.base.Widget`): The list of components to be
-            split or tuples of components to be split and adjusting parameters
-            in the following order:
-            widget (:class:`~toga.widgets.base.Widget`): The widget that will be added.
-            weight (float): Specifying the weighted splits.
-            flex (Boolean): Should the content expand when the widget is resized. (optional)
-    """
-
-    HORIZONTAL = False
-    VERTICAL = True
+    HORIZONTAL = Direction.HORIZONTAL
+    VERTICAL = Direction.VERTICAL
 
     def __init__(
         self,
         id=None,
         style=None,
-        direction=VERTICAL,
-        content=None,
-        factory=None,  # DEPRECATED!
+        direction: Direction = Direction.VERTICAL,
+        content: list[Widget | tuple[Widget, int]] | None = None,
     ):
-        super().__init__(id=id, style=style)
-        ######################################################################
-        # 2022-09: Backwards compatibility
-        ######################################################################
-        # factory no longer used
-        if factory:
-            warnings.warn("The factory argument is no longer used.", DeprecationWarning)
-        ######################################################################
-        # End backwards compatibility.
-        ######################################################################
+        """Create a new SplitContainer.
 
-        self._direction = direction
+        Inherits from :class:`~toga.widgets.base.Widget`.
+
+        :param id: The ID for the widget.
+        :param style: A style object. If no style is provided, a default style will be
+            applied to the widget.
+        :param direction: The direction in which the divider will be drawn. Either
+            :attr:`~toga.widgets.SplitContainer.HORIZONTAL` or
+            :attr:`~toga.widgets.SplitContainer.VERTICAL`; defaults to
+            :attr:`~toga.widgets.SplitContainer.VERTICAL`
+        :param content: The content that will fill the panels of the SplitContainer. A
+            list; each item in the list is either:
+
+            * A tuple containing of a widget and the initial flex value to apply to
+              that widget in the split.
+            * A widget. The widget will be given a flex value of 1.
+
+        """
+        super().__init__(id=id, style=style)
+
         self._content = []
-        self._weight = []
 
         # Create a platform specific implementation of a SplitContainer
         self._impl = self.factory.SplitContainer(interface=self)
 
-        self.content = content
+        if content:
+            self.content = content
         self.direction = direction
 
     @property
-    def content(self):
-        """The sub layouts of the `SplitContainer`.
+    def content(self) -> list[Widget]:
+        """The widgets displayed in the SplitContainer.
 
-        Returns:
-            A ``list`` of :class:`~toga.widgets.base.Widget`. Each element of the list
-            is a sub layout of the `SplitContainer`
+        When retrieved, only the list of widgets is returned.
 
-        Raises:
-            ValueError: If the list is less than two elements long.
+        When setting the value, the list must have at least 2 elements; each item in the
+        list can be is either:
+
+        * A tuple containing of a widget and the initial flex value to apply to that
+          widget in the split.
+        * A widget. The widget will be given a flex value of 1.
+
         """
         return self._content
 
     @content.setter
     def content(self, content):
-        if content is None:
-            self._content = None
-            return
+        if content is None or len(content) < 2:
+            raise ValueError(
+                "SplitContainer content must be a list of at least 2 elements"
+            )
 
-        if len(content) < 2:
-            raise ValueError("SplitContainer content must have at least 2 elements")
-
-        self._content = []
-        for position, item in enumerate(content):
+        _content = []
+        flex = []
+        for item in content:
             if isinstance(item, tuple):
                 if len(item) == 2:
-                    widget, weight = item
-                    flex = True
-                elif len(item) == 3:
-                    widget, weight, flex = item
+                    widget, flex_value = item
+                    if flex_value < 1:
+                        flex_value = 1
                 else:
                     raise ValueError(
-                        "The tuple of the content must be the length of "
-                        "2 or 3 parameters, with the following order: "
-                        "widget, weight and flex (optional)"
+                        "An item in SplitContainer content must be a 2-tuple "
+                        "containing the widget, and the flex weight to assign to that "
+                        "widget."
                     )
             else:
                 widget = item
-                weight = 1.0
-                flex = True
+                flex_value = 1
 
-            self._content.append(widget)
-            self._weight.append(weight)
+            _content.append(widget)
+            flex.append(flex_value)
 
             widget.app = self.app
             widget.window = self.window
-            self._impl.add_content(position, widget._impl, flex)
-            widget.refresh()
+
+        self._impl.set_content(_content, flex)
+        self._content = _content
+        self.refresh()
 
     @Widget.app.setter
     def app(self, app):
@@ -130,16 +125,11 @@ class SplitContainer(Widget):
             widget.refresh()
 
     @property
-    def direction(self):
-        """The direction of the split.
-
-        Returns:
-            True if `True` for vertical, `False` for horizontal.
-        """
-        return self._direction
+    def direction(self) -> Direction:
+        """The direction of the split"""
+        return self._impl.get_direction()
 
     @direction.setter
     def direction(self, value):
-        self._direction = value
         self._impl.set_direction(value)
         self.refresh()

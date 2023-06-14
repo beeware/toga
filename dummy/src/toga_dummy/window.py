@@ -35,6 +35,8 @@ class Container:
     def refreshed(self):
         if self._content:
             self.content.refresh()
+        if self.content:
+            self.content.refresh()
 
 
 class Window(LoggedObject):

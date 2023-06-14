@@ -51,3 +51,21 @@ async def test_directions(widget, probe):
     assert widget.direction == toga.Divider.VERTICAL
     assert probe.height > 100
     assert probe.width < 10
+
+    # Make the divider horizontal
+    widget.direction = toga.Divider.HORIZONTAL
+    await probe.redraw("Divider should be HORIZONTAL")
+
+    # In a row box, a horizontal divider will be narrow and short.
+    assert widget.direction == toga.Divider.HORIZONTAL
+    assert probe.height < 10
+    assert probe.width < 10
+
+    # Make the container a COLUMN box again
+    widget.parent.style.direction = COLUMN
+    await probe.redraw("Divider should become wide")
+
+    # In a column box, a horizontal divider will be narrow and short.
+    assert widget.direction == toga.Divider.HORIZONTAL
+    assert probe.height < 10
+    assert probe.width > 100
