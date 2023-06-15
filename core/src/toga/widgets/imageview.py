@@ -104,10 +104,10 @@ class ImageView(Widget):
     def image(self) -> Image | None:
         """The image to display.
 
-        When setting an image, you can provide a:
-         * A :class:`~toga.images.Image` instance; pr
-         * Any value that would be a valid path specifier when creating an new :class:`~toga.images.Image` instance; or
-         * :any:`None` to clear to image view.
+        When setting an image, you can provide:
+         * An :class:`~toga.images.Image` instance; or
+         * Any value that would be a valid path specifier when creating a new :class:`~toga.images.Image` instance; or
+         * :any:`None` to clear the image view.
         """
         return self._image
 
