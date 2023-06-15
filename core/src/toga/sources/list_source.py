@@ -33,7 +33,7 @@ class Row:
         super().__setattr__(attr, value)
         if attr in self._attrs:
             if self._source is not None:
-                self._source._notify("change", item=self)
+                self._source.notify("change", item=self)
 
 
 class ListSource(Source):
@@ -113,7 +113,7 @@ class ListSource(Source):
         """
         row = self._create_row(value)
         self._data[index] = row
-        self._notify("insert", index=index, item=row)
+        self.notify("insert", index=index, item=row)
 
     def __iter__(self):
         """Obtain an iterator over the Rows in the data source."""
@@ -122,56 +122,36 @@ class ListSource(Source):
     def clear(self):
         """Clear all data from the data source."""
         self._data = []
-        self._notify("clear")
+        self.notify("clear")
 
-    def insert(self, index: int, *values, **named):
-        """Insert data into the data source at a specific index.
+    def insert(self, index: int, data: Any):
+        """Insert a row into the data source at a specific index.
 
         :param index: The index at which to insert the item.
-        :param values: A list of attribute values for the new item. These values
-            will be mapped in order onto the accessors.
-        :param named: Specific named attributes to include on the data row.
-            Any name provided explicitly will override an automatically
-            mapped value from ``values``.
+        :param data: The data to insert into the ListSource. This data will be converted
+            into a Row for storage.
         """
-        # Coalesce values and data into a single data dictionary,
-        # and use that to create the data row. Explicitly named data override.
-        row = self._create_row(dict(zip(self._accessors, values), **named))
+        row = self._create_row(data)
         self._data.insert(index, row)
-        self._notify("insert", index=index, item=row)
+        self.notify("insert", index=index, item=row)
         return row
 
-    def prepend(self, *values, **named):
-        """Insert data at the start of the data source.
+    def append(self, data):
+        """Insert a row at the end of the data source.
 
-        :param values: A list of attribute values for the new item. These values
-            will be mapped in order onto the accessors.
-        :param named: Specific named attributes to include on the data row. Any
-            name provided explicitly will override an automatically mapped value
-            from ``values``.
+        :param data: The data to append to the ListSource. This data will be converted
+            into a Row for storage.
         """
-        return self.insert(0, *values, **named)
-
-    def append(self, *values, **named):
-        """Insert data at the end of the data source.
-
-        :param values: A list of attribute values for the new item. These values
-            will be mapped in order onto the accessors.
-        :param named: Specific named attributes to include on the data row. Any
-            name provided explicitly will override an automatically mapped value
-            from ``values``.
-        """
-        return self.insert(len(self), *values, **named)
+        return self.insert(len(self), data)
 
     def remove(self, row: Row):
         """Remove an item from the data source.
 
-        :param row: The row to remove from the data source, or an object
-            whose value is equivalent to that row.
+        :param row: The row to remove from the data source.
         """
         i = self._data.index(row)
         del self._data[i]
-        self._notify("remove", index=i, item=row)
+        self.notify("remove", index=i, item=row)
         return row
 
     def index(self, row):
@@ -179,26 +159,42 @@ class ListSource(Source):
 
         Raises ValueError if the row cannot be found in the data source.
 
-        :param row: The row to find in the data source, or an object whose value
-            is equivalent to that row.
+        :param row: The row to find in the data source.
         :returns: The index of the row in the data source.
         """
         return self._data.index(row)
 
-    def find(self, **attrs):
+    def find(self, data, start=0):
         """Find the first item in the data that matches all the provided
         attributes.
 
-        :param attrs: The attributes and their values to search for
+        Raises ValueError if no match is found.
+
+        :param data: The data to search for. Only the values specified in data will be
+            used as matching criteria; if the row contains additional data attributes,
+            they won't be considered.
+        :param index: The starting position in the source for the search. Defaults to
+            0 (i.e., search for the first matching row in the source)
         :return: The matching Row object
         """
-        for item in self._data:
+        for item in self._data[start:]:
             try:
-                if all(getattr(item, attr) == value for attr, value in attrs.items()):
+                if isinstance(data, dict):
+                    found = all(
+                        getattr(item, attr) == value for attr, value in data.items()
+                    )
+                elif hasattr(data, "__iter__") and not isinstance(data, str):
+                    found = all(
+                        getattr(item, attr) == value
+                        for value, attr in zip(data, self._accessors)
+                    )
+                else:
+                    found = getattr(item, self._accessors[0]) == data
+
+                if found:
                     return item
             except AttributeError:
                 # Attribute didn't exist, so it's not a match
                 pass
 
-        descriptor = ", ".join(f"{attr}={value!r}" for attr, value in attrs.items())
-        raise ValueError(f"No row with {descriptor} in data")
+        raise ValueError(f"No row matching {data!r} in data")

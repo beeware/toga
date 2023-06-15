@@ -28,7 +28,7 @@ def test_row():
     assert row.val2 == 42
 
     row.val1 = "new value"
-    source._notify.assert_called_once_with("change", item=row)
+    source.notify.assert_called_once_with("change", item=row)
 
 
 @pytest.mark.parametrize(
@@ -270,7 +270,7 @@ def test_insert_kwarg(source):
     source.add_listener(listener)
 
     # Insert the new element
-    row = source.insert(1, val1="new element", val2=999)
+    row = source.insert(1, dict(val1="new element", val2=999))
 
     assert len(source) == 4
     assert source[1] == row
@@ -287,7 +287,7 @@ def test_insert_positional(source):
 
     # Insert the new element using positional args.
     # The values are mapped to the accessors in order.
-    row = source.insert(1, "new element", 999)
+    row = source.insert(1, ("new element", 999))
 
     assert len(source) == 4
     assert source[1] == row
@@ -297,86 +297,14 @@ def test_insert_positional(source):
     listener.insert.assert_called_once_with(index=1, item=row)
 
 
-def test_insert_mix(source):
-    "You can insert into a list source using a mix of positional and keyword args"
-    listener = Mock()
-    source.add_listener(listener)
-
-    # Insert the new element using positional args.
-    # The values are mapped to the accessors in order.
-    # When a keyword argument matches something already
-    # mapped, the keyword argument takes priority.
-    row = source.insert(1, "new element", 999, val2=444)
-
-    assert len(source) == 4
-    assert source[1] == row
-    assert row.val1 == "new element"
-    assert row.val2 == 444
-
-    listener.insert.assert_called_once_with(index=1, item=row)
-
-
-def test_prepend_kwarg(source):
-    "You can prepend onto a list source using kwargs"
-
-    listener = Mock()
-    source.add_listener(listener)
-
-    # Prepend the new element
-    row = source.prepend(val1="new element", val2=999)
-
-    assert len(source) == 4
-    assert source[0] == row
-    assert row.val1 == "new element"
-    assert row.val2 == 999
-
-    listener.insert.assert_called_once_with(index=0, item=row)
-
-
-def test_prepend_positional(source):
-    "You can prepend onto a list source using positional args"
-    listener = Mock()
-    source.add_listener(listener)
-
-    # Prepend the new element using positional args.
-    # The values are mapped to the accessors in order.
-    row = source.prepend("new element", 999)
-
-    assert len(source) == 4
-    assert source[0] == row
-    assert row.val1 == "new element"
-    assert row.val2 == 999
-
-    listener.insert.assert_called_once_with(index=0, item=row)
-
-
-def test_prepend_mix(source):
-    "You can prepend onto a list source using a mix of positional and keyword args"
-    listener = Mock()
-    source.add_listener(listener)
-
-    # Prepend the new element using positional args.
-    # The values are mapped to the accessors in order.
-    # When a keyword argument matches something already
-    # mapped, the keyword argument takes priority.
-    row = source.prepend("new element", 999, val2=444)
-
-    assert len(source) == 4
-    assert source[0] == row
-    assert row.val1 == "new element"
-    assert row.val2 == 444
-
-    listener.insert.assert_called_once_with(index=0, item=row)
-
-
-def test_append_kwarg(source):
-    "You can append onto a list source using kwargs"
+def test_append_dict(source):
+    "You can append onto a list source using a dictionary"
 
     listener = Mock()
     source.add_listener(listener)
 
     # Append the new element
-    row = source.append(val1="new element", val2=999)
+    row = source.append(dict(val1="new element", val2=999))
 
     assert len(source) == 4
     assert source[3] == row
@@ -393,31 +321,12 @@ def test_append_positional(source):
 
     # Append the new element using positional args.
     # The values are mapped to the accessors in order.
-    row = source.append("new element", 999)
+    row = source.append(("new element", 999))
 
     assert len(source) == 4
     assert source[3] == row
     assert row.val1 == "new element"
     assert row.val2 == 999
-
-    listener.insert.assert_called_once_with(index=3, item=row)
-
-
-def test_append_mix(source):
-    "You can append onto a list source using a mix of positional and keyword args"
-    listener = Mock()
-    source.add_listener(listener)
-
-    # Append the new element using positional args.
-    # The values are mapped to the accessors in order.
-    # When a keyword argument matches something already
-    # mapped, the keyword argument takes priority.
-    row = source.append("new element", 999, val2=444)
-
-    assert len(source) == 4
-    assert source[3] == row
-    assert row.val1 == "new element"
-    assert row.val2 == 444
 
     listener.insert.assert_called_once_with(index=3, item=row)
 
@@ -470,27 +379,36 @@ def test_find(source):
     "You can find the index of any matching row within a list source"
 
     # Duplicate row 1 of the data.
-    source.append(val1="second", val2=222)
+    source.append(dict(val1="second", val2=222))
 
     # A unique row can be found
-    assert source.find(val1="third", val2=333) == source[2]
+    assert source.find(dict(val1="third", val2=333)) == source[2]
+
+    # A unique row can be found, using implied accessor order
+    assert source.find(("third", 333)) == source[2]
+
+    # A unique row can be found, using only the first accessor
+    assert source.find("third") == source[2]
 
     # If data isn't unique, the first match is returned
-    assert source.find(val1="second", val2=222) == source[1]
+    assert source.find(dict(val1="second", val2=222)) == source[1]
+
+    # The search can start at an offset
+    assert source.find(dict(val1="second", val2=222), start=2) == source[3]
 
     # A partial match is enough
-    assert source.find(val1="third") == source[2]
+    assert source.find(dict(val1="third")) == source[2]
 
     # find will fail if the object doesn't exist
     with pytest.raises(
         ValueError,
-        match=r"No row with val1='not there', val2=999 in data",
+        match=r"No row matching {'val1': 'not there', 'val2': 999} in data",
     ):
-        source.find(val1="not there", val2=999)
+        source.find(dict(val1="not there", val2=999))
 
     # An overspecified search will fail
     with pytest.raises(
         ValueError,
-        match=r"No row with val1='first', val2=111, value='overspecified' in data",
+        match=r"No row matching {'val1': 'first', 'val2': 111, 'value': 'overspecified'} in data",
     ):
-        source.find(val1="first", val2=111, value="overspecified")
+        source.find(dict(val1="first", val2=111, value="overspecified"))

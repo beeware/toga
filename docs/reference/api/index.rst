@@ -66,19 +66,22 @@ Layout widgets
 Resources
 ---------
 
-========================================================== ========================================================================
- Component                                                  Description
-========================================================== ========================================================================
- :doc:`App Paths </reference/api/resources/app_paths>`      A mechanism for obtaining platform-appropriate file system locations
-                                                            for an application.
- :doc:`Font </reference/api/resources/fonts>`               Fonts
- :doc:`Command </reference/api/resources/command>`          Command
- :doc:`Group </reference/api/resources/group>`              Command group
- :doc:`Icon </reference/api/resources/icons>`               An icon for buttons, menus, etc
- :doc:`Image </reference/api/resources/images>`             An image
- :doc:`ListSource </reference/api/resources/list_source>`   A data source describing an ordered list of data.
- :doc:`Validators </reference/api/resources/validators>`    A mechanism for validating that input meets a given set of criteria.
-========================================================== ========================================================================
+==================================================================== ========================================================================
+ Component                                                            Description
+==================================================================== ========================================================================
+ :doc:`App Paths </reference/api/resources/app_paths>`                A mechanism for obtaining platform-appropriate file system locations
+                                                                      for an application.
+ :doc:`Font </reference/api/resources/fonts>`                         Fonts
+ :doc:`Command </reference/api/resources/command>`                    Command
+ :doc:`Group </reference/api/resources/group>`                        Command group
+ :doc:`Icon </reference/api/resources/icons>`                         An icon for buttons, menus, etc
+ :doc:`Image </reference/api/resources/images>`                       An image
+ :doc:`ListSource </reference/api/resources/sources/list_source>`     A data source describing an ordered list of data.
+ :doc:`Source </reference/api/resources/sources/source>`              A base class for data source implementations.
+ :doc:`TreeSource </reference/api/resources/sources/tree_source>`     A data source describing an ordered hierarchical tree of data.
+ :doc:`Validators </reference/api/resources/validators>`              A mechanism for validating that input meets a given set of criteria.
+ :doc:`ValueSource </reference/api/resources/sources/value_source>`   A data source describing a single value.
+==================================================================== ========================================================================
 
 .. toctree::
    :hidden:

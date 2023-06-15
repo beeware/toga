@@ -23,7 +23,7 @@ class LeafNodeTests(TestCase):
         self.example.val1 = "new value"
 
         self.assertEqual(self.example.val1, "new value")
-        self.source._notify.assert_called_once_with("change", item=self.example)
+        self.source.notify.assert_called_once_with("change", item=self.example)
 
     def test_iterate_children(self):
         "Children of a node can be iterated over -- should have no children"
@@ -68,7 +68,7 @@ class NodeTests(TestCase):
         self.parent.val1 = "new value"
 
         self.assertEqual(self.parent.val1, "new value")
-        self.source._notify.assert_called_once_with("change", item=self.parent)
+        self.source.notify.assert_called_once_with("change", item=self.parent)
 
     def test_empty_children(self):
         "A parent with 0 children isn't the same as a parent who *can't* have children"
@@ -95,23 +95,16 @@ class NodeTests(TestCase):
 
     def test_insert_child(self):
         "A new child can be inserted; defers to the source"
-        self.parent.insert(1, val1="inserted 1", val2=33)
+        self.parent.insert(1, dict(val1="inserted 1", val2=33))
         self.source.insert.assert_called_once_with(
-            self.parent, 1, val1="inserted 1", val2=33
+            self.parent, 1, dict(val1="inserted 1", val2=33)
         )
 
     def test_append_child(self):
         "A new child can be appended; defers to the source"
-        self.parent.append(val1="appended 1", val2=33)
+        self.parent.append(dict(val1="appended 1", val2=33))
         self.source.append.assert_called_once_with(
-            self.parent, val1="appended 1", val2=33
-        )
-
-    def test_prepend_child(self):
-        "A new child can be prepended; defers to the source"
-        self.parent.prepend(val1="prepended 1", val2=33)
-        self.source.prepend.assert_called_once_with(
-            self.parent, val1="prepended 1", val2=33
+            self.parent, dict(val1="appended 1", val2=33)
         )
 
     def test_remove_child(self):
@@ -364,7 +357,7 @@ class TreeSourceTests(TestCase):
         source.add_listener(listener)
 
         # Insert the new element
-        node = source.insert(None, 1, "new element", 999)
+        node = source.insert(None, 1, ("new element", 999))
 
         self.assertEqual(len(source), 4)
         self.assertEqual(source[1], node)
@@ -390,7 +383,7 @@ class TreeSourceTests(TestCase):
         source.add_listener(listener)
 
         # Insert the new element
-        node = source.insert(None, 1, val1="new element", val2=999)
+        node = source.insert(None, 1, dict(val1="new element", val2=999))
 
         self.assertEqual(len(source), 4)
         self.assertEqual(source[1], node)
@@ -417,7 +410,7 @@ class TreeSourceTests(TestCase):
         source.add_listener(listener)
 
         # Insert the new element
-        node = source.insert(source[2], 1, val1="new element", val2=999)
+        node = source.insert(source[2], 1, dict(val1="new element", val2=999))
 
         self.assertEqual(len(source), 3)
         self.assertEqual(len(source[2]), 3)
@@ -445,7 +438,7 @@ class TreeSourceTests(TestCase):
         source.add_listener(listener)
 
         # Insert the new element
-        node = source.insert(source[2], 1, val1="new element", val2=999)
+        node = source.insert(source[2], 1, dict(val1="new element", val2=999))
 
         self.assertEqual(len(source), 3)
         self.assertEqual(len(source[2]), 3)
@@ -474,7 +467,7 @@ class TreeSourceTests(TestCase):
         source.add_listener(listener)
 
         # Insert the new element
-        node = source.insert(source[0], 0, val1="new element", val2=999)
+        node = source.insert(source[0], 0, dict(val1="new element", val2=999))
 
         self.assertEqual(len(source), 3)
         self.assertTrue(source[0].can_have_children())
@@ -502,7 +495,7 @@ class TreeSourceTests(TestCase):
         source.add_listener(listener)
 
         # Insert the new element
-        node = source.append(None, val1="new element", val2=999)
+        node = source.append(None, dict(val1="new element", val2=999))
 
         self.assertEqual(len(source), 4)
         self.assertEqual(source[3], node)
@@ -529,7 +522,7 @@ class TreeSourceTests(TestCase):
         source.add_listener(listener)
 
         # Insert the new element
-        node = source.append(source[2], val1="new element", val2=999)
+        node = source.append(source[2], dict(val1="new element", val2=999))
 
         self.assertEqual(len(source), 3)
         self.assertEqual(len(source[2]), 3)
@@ -538,60 +531,6 @@ class TreeSourceTests(TestCase):
         self.assertEqual(node.val2, 999)
 
         listener.insert.assert_called_once_with(parent=source[2], index=2, item=node)
-
-    def test_prepend_root(self):
-        "A new root can be prepended"
-        source = TreeSource(
-            data={
-                ("first", 111): None,
-                ("second", 222): [],
-                ("third", 333): [("third.one", 331), ("third.two", 332)],
-            },
-            accessors=["val1", "val2"],
-        )
-
-        self.assertEqual(len(source), 3)
-
-        listener = Mock()
-        source.add_listener(listener)
-
-        # Insert the new element
-        node = source.prepend(None, val1="new element", val2=999)
-
-        self.assertEqual(len(source), 4)
-        self.assertEqual(source[0], node)
-        self.assertEqual(node.val1, "new element")
-        self.assertEqual(node.val2, 999)
-
-        listener.insert.assert_called_once_with(parent=None, index=0, item=node)
-
-    def test_prepend_child(self):
-        "A new child can be prepended"
-        source = TreeSource(
-            data={
-                ("first", 111): None,
-                ("second", 222): [],
-                ("third", 333): [("third.one", 331), ("third.two", 332)],
-            },
-            accessors=["val1", "val2"],
-        )
-
-        self.assertEqual(len(source), 3)
-        self.assertEqual(len(source[2]), 2)
-
-        listener = Mock()
-        source.add_listener(listener)
-
-        # Insert the new element
-        node = source.prepend(source[2], val1="new element", val2=999)
-
-        self.assertEqual(len(source), 3)
-        self.assertEqual(len(source[2]), 3)
-        self.assertEqual(source[2][0], node)
-        self.assertEqual(node.val1, "new element")
-        self.assertEqual(node.val2, 999)
-
-        listener.insert.assert_called_once_with(parent=source[2], index=0, item=node)
 
     def test_remove_root(self):
         "A root can be removed"
