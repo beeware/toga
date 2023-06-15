@@ -32,8 +32,12 @@ current value.
 
     selection = toga.Selection(items=["Alice", "Bob", "Charlie"])
 
-    # Which item is currently selected?
+    # Change the selection to "Charlie"
+    selection.value = "Charlie"
+
+    # Which item is currently selected? This will print "Charlie"
     print(f"Currently selected: {selection.value}")
+
 
 A Selection can also be used to display a list of dictionaries, with the
 ``accessor`` detailing which attribute of the dictionary will be used for
@@ -56,9 +60,14 @@ selected item.
         accessor="name",
     )
 
-    # What is the age of the currently selected person?
+    # Select Bob explicitly
+    selection.value = selection.items[1]
+
+    # What is the age of the currently selected person? This will print 42
     print(f"Age of currently selected person: {selection.value.age}")
 
+    # Select Charlie by searching
+    selection.value = selection.items.find(name="Charlie")
 
 Notes
 -----

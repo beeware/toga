@@ -25,17 +25,16 @@ class Selection(Widget):
         Inherits from :class:`~toga.widgets.base.Widget`.
 
         :param id: The ID for the widget.
-        :param style: A style object. If no style is provided, a default style
-            will be applied to the widget.
-        :param items: The items to display for selection. Can be either a list
-            of literal items, or a ListSource.
-        :param accessor: The accessor for the ListSource. If ``items`` is
-            provided as a list of items that are non-string iterable objects,
-            the ``accessor`` is used to select the attribute of the item that
-            will be used for display purposes. Not required if the ``items`` is
-            a list of strings, a list of non-iterable objects, or a ListSource.
-        :param value: Initial value for the selection. If unspecified, the first
-            item will be selected.
+        :param style: A style object. If no style is provided, a default style will be
+            applied to the widget.
+        :param items: The items to display for selection. Can be a list of values or a
+            ListSource. See the definition of the ``items`` property for details on how
+            items can be specified and used.
+        :param accessor: The accessor to use to extract display values from the list of
+            items. See the definition of the ``items`` property for details on how
+            ``accessor`` alters the interpretation of data in the Selection.
+        :param value: Initial value for the selection. If unspecified, the first item in
+            ``items`` will be selected.
         :param on_change: Initial :any:`on_change` handler.
         :param enabled: Whether the user can interact with the widget.
         """
@@ -69,20 +68,28 @@ class Selection(Widget):
     def items(self) -> ListSource:
         """The list of items to display in the selection, as a ListSource.
 
-        A value of None is turned into an empty ListSource.
+        When specifying items:
 
-        A literal list of values will be converted into a ListSource. The
-        conversion that takes place depends on the type of data in the list:
+        * A ListSource will be used as-is
 
-         * Literal strings will be used as-is.
+        * A value of None is turned into an empty ListSource.
 
-         * Non-iterable objects will be converted to a string for display
-           purposes, but will be returned in their original form.
+        * A list or tuple of values will be converted into a ListSource. Each item in
+          the list will be converted into a Row object.
 
-         * If the object is iterable, the value of the attribute described
-           by the ``accessor`` argument provided at the time of construction
-           will be used. If no ``accessor`` was provided, the ListSource will
-           look for an attribute named ``value``.
+          * If the item in the list is a dictionary, the keys of the dictionary will
+            become the attributes of the Row.
+
+          * All other items will be converted into a Row with a single attribute
+            attribute whose name matches the ``accessor`` provided when the Selection
+            was constructed (with an attribute of ``value`` being used if no accessor
+            was specified).
+
+            If the item is a string, or any other a non-iterable object, the value of
+            the attribute will be the item value.
+
+            If the item is list, tuple, or other iterable, the value of the attribute
+            will be the first item in the iterable.
         """
         return self._items
 
@@ -134,8 +141,16 @@ class Selection(Widget):
 
         Returns None if there are no items in the selection.
 
-        If changing the current value, ValueError is raised if the specified
-        item cannot be found in the data source.
+        If an ``accessor`` was specified when the Selection was constructed, the value
+        returned will be Row objects from the ListSource; to change the selection, a Row
+        object from the ListSource must be provided.
+
+        If no ``accessor`` was specified when the Selection was constructed, the value
+        returned will be the value stored as the ``value`` attribute on the Row object.
+        When setting the value, the widget will search for the first Row object whose
+        ``value`` attribute matches the provided value. In practice, this means that you
+        can treat the selection as containing a list of literal values, rather than a
+        ListSource containing Row objects.
         """
         index = self._impl.get_selected_index()
         if index is None:
