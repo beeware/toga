@@ -1,6 +1,11 @@
 from __future__ import annotations
 
-from typing import Protocol
+import sys
+
+if sys.version_info >= (3, 8):
+    from typing import Protocol
+else:
+    Protocol = object
 
 
 class Listener(Protocol):
