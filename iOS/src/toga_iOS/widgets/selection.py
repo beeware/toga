@@ -69,6 +69,12 @@ class Selection(Widget):
         self.native.inputView = self.native_picker
         self.native.delegate = self.native_picker
 
+        # The iOS widget doesn't maintain a local concept of the number of items, so its
+        # not possible to identify if the current visual display is empty during a
+        # change of source. Maintain a local boolean to track when we believe our
+        # local representation has no items.
+        self._empty = True
+
         self.add_constraints()
 
     def set_alignment(self, value):
@@ -95,14 +101,17 @@ class Selection(Widget):
         try:
             default_item = self.interface.items[0]
         except IndexError:
+            # Deleted the last item; source is empty
             default_item = None
+            self._empty = True
 
         self.select_item(0, default_item)
 
     def insert(self, index, item):
-        if len(self.interface.items) == 1:
+        if self._empty:
             # If you're inserting the first item, make sure it's selected
             self.select_item(index, item)
+            self._empty = False
         else:
             # If you're inserting before the current selection,
             # the index of the current selection needs to be increased by 1.
@@ -136,6 +145,7 @@ class Selection(Widget):
             self._reset_selection()
 
     def clear(self):
+        self._empty = True
         # Get rid of focus to force the user to re-open the selection
         self.native_picker.resignFirstResponder()
         self._reset_selection()
@@ -149,6 +159,6 @@ class Selection(Widget):
         self.interface.on_change(None)
 
     def get_selected_index(self):
-        if len(self.interface.items) == 0:
+        if self._empty:
             return None
         return self.native_picker.selectedRowInComponent(0)
