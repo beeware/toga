@@ -11,8 +11,12 @@ class Image:
 
         if path:
             self.native = BitmapFactory.decodeFile(str(path))
+            if self.native is None:
+                raise ValueError(f"Unable to load image from {path}")
         else:
             self.native = BitmapFactory.decodeByteArray(data, 0, len(data))
+            if self.native is None:
+                raise ValueError("Unable to load image from data")
 
     def get_width(self):
         return self.native.getWidth()

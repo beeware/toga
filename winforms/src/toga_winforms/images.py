@@ -1,6 +1,12 @@
 from pathlib import Path
 
-from toga_winforms.libs import ImageFormat, MemoryStream, WinImage
+from toga_winforms.libs import (
+    ArgumentException,
+    ImageFormat,
+    MemoryStream,
+    OutOfMemoryException,
+    WinImage,
+)
 
 
 class Image:
@@ -8,10 +14,18 @@ class Image:
         self.interface = interface
 
         if path:
-            self.native = WinImage.FromFile(str(path))
+            try:
+                self.native = WinImage.FromFile(str(path))
+            except OutOfMemoryException:
+                # OutOfMemoryException is what Winforms raises when a file
+                # isn't a valid image file.
+                raise ValueError(f"Unable to load image from {path}")
         else:
-            stream = MemoryStream(data)
-            self.native = WinImage.FromStream(stream)
+            try:
+                stream = MemoryStream(data)
+                self.native = WinImage.FromStream(stream)
+            except ArgumentException:
+                raise ValueError("Unable to load image from data")
 
     def get_width(self):
         return self.native.Width

@@ -21,6 +21,15 @@ async def test_local_image(app):
     assert image.height == 72
 
 
+async def test_bad_image_file(app):
+    "If a file isn't a loadable image, an error is raised"
+    with pytest.raises(
+        ValueError,
+        match=rf"Unable to load image from {__file__}",
+    ):
+        toga.Image(__file__)
+
+
 async def test_data_image(app):
     "An image can be constructed from data"
     # Generate an image using pillow
@@ -36,6 +45,15 @@ async def test_data_image(app):
 
     assert image.width == 110
     assert image.height == 30
+
+
+async def test_bad_image_data(app):
+    "If data isn't a valid image, an error is raised"
+    with pytest.raises(
+        ValueError,
+        match=r"Unable to load image from data",
+    ):
+        toga.Image(data=b"Not an image")
 
 
 async def test_save(app):

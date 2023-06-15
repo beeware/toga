@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from toga_gtk.libs import GdkPixbuf, Gio
+from toga_gtk.libs import GdkPixbuf, Gio, GLib
 
 
 class Image:
@@ -8,10 +8,16 @@ class Image:
         self.interface = interface
 
         if path:
-            self.native = GdkPixbuf.Pixbuf.new_from_file(str(path))
+            try:
+                self.native = GdkPixbuf.Pixbuf.new_from_file(str(path))
+            except GLib.GError:
+                raise ValueError(f"Unable to load image from {path}")
         else:
-            input_stream = Gio.MemoryInputStream.new_from_data(data, None)
-            self.native = GdkPixbuf.Pixbuf.new_from_stream(input_stream, None)
+            try:
+                input_stream = Gio.MemoryInputStream.new_from_data(data, None)
+                self.native = GdkPixbuf.Pixbuf.new_from_stream(input_stream, None)
+            except GLib.GError:
+                raise ValueError("Unable to load image from data")
 
     def get_width(self):
         return self.native.get_width()

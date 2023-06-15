@@ -14,9 +14,13 @@ class Image:
 
         if path:
             self.native = NSImage.alloc().initWithContentsOfFile(str(path))
+            if self.native is None:
+                raise ValueError(f"Unable to load image from {path}")
         else:
             nsdata = NSData.dataWithBytes(data, length=len(data))
             self.native = NSImage.alloc().initWithData(nsdata)
+            if self.native is None:
+                raise ValueError("Unable to load image from data")
 
     def get_width(self):
         return self.native.size.width
