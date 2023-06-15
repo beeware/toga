@@ -8,22 +8,12 @@ class Selection(Widget):
         self._action("create Selection")
         self._items = []
 
-    def change_source(self, source):
-        self._action("change source", source=source)
-        for item in source:
-            self._items.append(item)
-
-        # Source has changed; reset the selection and invoke the change handler
-        try:
-            selected = source[0]
-        except IndexError:
-            selected = None
-
-        self.simulate_selection(selected)
-
     def insert(self, index, item):
         self._action("insert item", index=index, item=item)
         self._items.insert(index, item)
+        # If this is the first item to be inserted, it should be selected.
+        if len(self._items) == 1:
+            self.simulate_selection(self._items[0])
 
     def change(self, item):
         self._action("change item", item=item)

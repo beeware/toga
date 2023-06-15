@@ -42,15 +42,6 @@ class Selection(Widget):
     #         selector=".toga, .toga button",
     #     )
 
-    def change_source(self, source):
-        with self.suspend_notifications():
-            self.native.remove_all()
-            for item in source:
-                self.native.append_text(self.interface._title_for_item(item))
-
-        # Gtk.ComboBox does not select the first item by default
-        self.native.set_active(0)
-
     def change(self, item):
         index = self.interface._items.index(item)
         selection = self.native.get_active()

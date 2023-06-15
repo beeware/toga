@@ -32,12 +32,6 @@ class Selection(Widget):
             max(self.interface._MIN_WIDTH, content_size.width)
         )
 
-    def change_source(self, source):
-        self.native.removeAllItems()
-        for item in source:
-            self.native.addItemWithTitle(self.interface._title_for_item(item))
-        self.interface.on_change(None)
-
     def insert(self, index, item):
         self.native.insertItemWithTitle(
             self.interface._title_for_item(item),

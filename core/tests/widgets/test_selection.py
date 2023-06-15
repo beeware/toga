@@ -6,6 +6,7 @@ import toga
 from toga.sources import ListSource
 from toga_dummy.utils import (
     EventLog,
+    assert_action_not_performed,
     assert_action_performed,
     assert_action_performed_with,
 )
@@ -323,11 +324,13 @@ def test_change_source_empty(widget, on_change_handler):
 
     widget.items = []
 
-    # The widget source has changed
-    assert_action_performed(widget, "change source")
+    # The widget data has been cleared and refreshed
+    assert_action_performed(widget, "clear")
+    assert_action_not_performed(widget, "insert item")
+    assert_action_performed(widget, "refresh")
 
     # The widget must have cleared it's selection
-    on_change_handler.assert_called_with(widget)
+    on_change_handler.assert_called_once_with(widget)
     assert widget.value is None
 
 
@@ -340,8 +343,11 @@ def test_change_source(widget, on_change_handler):
     widget.items = ["new 1", "new 2"]
 
     # The widget source has changed
-    assert_action_performed(widget, "change source")
+    assert_action_performed(widget, "clear")
+    assert_action_performed_with(widget, "insert item", item=widget.items[0])
+    assert_action_performed_with(widget, "insert item", item=widget.items[1])
+    assert_action_performed(widget, "refresh")
 
     # The widget must have cleared it's selection
-    on_change_handler.assert_called_with(widget)
+    on_change_handler.assert_called_once_with(widget)
     assert widget.value.key == "new 1"

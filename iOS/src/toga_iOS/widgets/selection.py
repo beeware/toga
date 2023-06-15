@@ -91,11 +91,6 @@ class Selection(Widget):
         )
         self.interface.intrinsic.height = fitting_size.height
 
-    def change_source(self, source):
-        # Get rid of focus to force the user to re-open the selection
-        self.native_picker.resignFirstResponder()
-        self._reset_selection()
-
     def _reset_selection(self):
         try:
             default_item = self.interface.items[0]

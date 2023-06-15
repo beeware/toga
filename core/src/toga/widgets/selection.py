@@ -103,7 +103,20 @@ class Selection(Widget):
             self._items = items
 
         self._items.add_listener(self._impl)
-        self._impl.change_source(source=self._items)
+
+        # Temporarily halt notifications
+        orig_on_change = self._on_change
+        self.on_change = None
+
+        # Clear the widget, and insert all the data rows
+        self._impl.clear()
+        for index, item in enumerate(self.items):
+            self._impl.insert(index, item)
+
+        # Restore the original change handler and trigger it.
+        self._on_change = orig_on_change
+        self.on_change(None)
+
         self.refresh()
 
     def _title_for_item(self, item):
