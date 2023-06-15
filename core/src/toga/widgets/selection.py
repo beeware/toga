@@ -137,7 +137,11 @@ class Selection(Widget):
         If changing the current value, ValueError is raised if the specified
         item cannot be found in the data source.
         """
-        item = self._impl.get_selected_item()
+        index = self._impl.get_selected_index()
+        if index is None:
+            return None
+
+        item = self._items[index]
         # If there was no accessor specified, the data values are literals.
         # Dereference the value out of the Row object.
         if item and self._accessor is None:

@@ -66,9 +66,9 @@ class Selection(Widget):
         self.native.selectItemAtIndex(index)
         self.interface.on_change(None)
 
-    def get_selected_item(self):
+    def get_selected_index(self):
         index = self.native.indexOfSelectedItem
         if index == -1:
             return None
         else:
-            return self.interface._items[self.native.indexOfSelectedItem]
+            return index

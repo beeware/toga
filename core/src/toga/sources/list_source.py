@@ -20,6 +20,10 @@ class Row:
         for name, value in data.items():
             setattr(self, name, value)
 
+    def __repr__(self):
+        descriptor = " ".join(f"{attr}={getattr(self, attr)!r}" for attr in self._attrs)
+        return f"<Row {id(self):x} {descriptor if descriptor else '(no attributes)'}>"
+
     ######################################################################
     # Utility wrappers
     ######################################################################

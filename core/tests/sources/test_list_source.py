@@ -358,7 +358,7 @@ def test_index(source):
     lookalike_row = Row(val1="second", val2=222)
     with pytest.raises(
         ValueError,
-        match=r"<toga.sources.list_source.Row object at .*> is not in list",
+        match=r"<Row .* val1='second' val2=222> is not in list",
     ):
         source.index(lookalike_row)
 
@@ -370,7 +370,7 @@ def test_index(source):
 
     with pytest.raises(
         ValueError,
-        match=r"<toga.sources.list_source.Row object at .*> is not in list",
+        match=r"<Row .* \(no attributes\)> is not in list",
     ):
         source.index(Row())
 

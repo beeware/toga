@@ -23,7 +23,7 @@ class Selection(Widget):
         del self._items[index]
 
         # If we deleted the selected item, reset the selection.
-        if self.get_selected_item() == item:
+        if self._get_value("selected_item", None) == item:
             try:
                 selected = self._items[0]
             except IndexError:
@@ -39,9 +39,9 @@ class Selection(Widget):
         self._action("select item", item=item)
         self.simulate_selection(item)
 
-    def get_selected_item(self):
+    def get_selected_index(self):
         try:
-            return self._get_value("selected_item", self._items[0])
+            return self._items.index(self._get_value("selected_item", self._items[0]))
         except IndexError:
             return None
 

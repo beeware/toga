@@ -83,11 +83,10 @@ class Selection(Widget):
         self.native.set_active(index)
         self.interface.on_change(None)
 
-    def get_selected_item(self):
-        try:
-            return self.interface.items[self.native.get_active()]
-        except IndexError:
+    def get_selected_index(self):
+        if len(self.interface.items) == 0:
             return None
+        return self.native.get_active()
 
     def rehint(self):
         width = self.native.get_preferred_width()

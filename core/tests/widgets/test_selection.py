@@ -237,7 +237,7 @@ def test_bad_item_with_accessor():
     # item is no longer a valid selection
     with pytest.raises(
         ValueError,
-        match=r"<toga.sources.list_source.Row object at .*> is not a current item in the selection",
+        match=r"<Row .* value='bad'> is not a current item in the selection",
     ):
         selection.value = item
 

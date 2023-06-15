@@ -148,8 +148,7 @@ class Selection(Widget):
             self.native.text = ""
         self.interface.on_change(None)
 
-    def get_selected_item(self):
-        try:
-            return self.interface.items[self.native_picker.selectedRowInComponent(0)]
-        except IndexError:
+    def get_selected_index(self):
+        if len(self.interface.items) == 0:
             return None
+        return self.native_picker.selectedRowInComponent(0)
