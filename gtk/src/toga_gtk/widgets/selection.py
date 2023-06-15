@@ -61,7 +61,7 @@ class Selection(Widget):
             self.native.insert_text(index, self.interface._title_for_item(item))
 
         # If you're inserting the first item, make sure it's selected
-        if len(self.interface.items) == 1:
+        if self.native.get_active() == -1:
             self.native.set_active(0)
 
     def remove(self, index, item):
@@ -84,9 +84,10 @@ class Selection(Widget):
         self.interface.on_change(None)
 
     def get_selected_index(self):
-        if len(self.interface.items) == 0:
+        index = self.native.get_active()
+        if index == -1:
             return None
-        return self.native.get_active()
+        return index
 
     def rehint(self):
         width = self.native.get_preferred_width()
