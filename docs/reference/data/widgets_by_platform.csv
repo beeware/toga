@@ -21,7 +21,7 @@ Table,General Widget,:class:`~toga.widgets.table.Table`,Table of data,|b|,|b|,|b
 TextInput,General Widget,:class:`~toga.widgets.textinput.TextInput`,A widget for the display and editing of a single line of text.,|y|,|y|,|y|,|y|,|y|,|b|
 TimeInput,General Widget,:class:`~toga.widgets.timepicker.TimeInput`,A widget to select a clock time,,,|y|,,|y|,
 Tree,General Widget,:class:`~toga.widgets.tree.Tree`,Tree of data,|b|,|b|,|b|,,,
-WebView,General Widget,:class:`~toga.widgets.webview.WebView`,A panel for displaying HTML,|b|,|b|,|b|,|b|,|b|,
+WebView,General Widget,:class:`~toga.widgets.webview.WebView`,A panel for displaying HTML,|y|,|y|,|y|,|y|,|y|,
 Widget,General Widget,:class:`~toga.widgets.base.Widget`,The base widget,|y|,|y|,|y|,|y|,|y|,|b|
 Box,Layout Widget,:class:`~toga.widgets.box.Box`,Container for components,|y|,|y|,|y|,|y|,|y|,|b|
 ScrollContainer,Layout Widget,:class:`~toga.widgets.scrollcontainer.ScrollContainer`,Scrollable Container,|b|,|b|,|b|,|b|,|b|,
