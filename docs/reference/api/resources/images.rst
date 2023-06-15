@@ -11,17 +11,6 @@ Image
 
 An image is graphical content of arbitrary size.
 
-An image can be constructed using:
-
-1. A path relative to the module that defines your Toga application. (either as
-   a string, or as a :any:`pathlib.Path` object)
-2. An absolute file system path (either as a string, or as a :any:`pathlib.Path`
-   object)
-3. Raw binary image data.
-
-If the path specified does not exist, or cannot be loaded, a
-``FileNotFoundError`` will be raised.
-
 Usage
 -----
 
@@ -40,13 +29,15 @@ Usage
     with (Path.home() / "path" / "to" / "brutus.png").open("rb") as f:
         my_image = toga.Image(data=f.read())
 
+Notes
+-----
 
-* When saving an Image, `PNG` and `JPEG` formats are guaranteed to be available.
+* When saving an Image, PNG and JPEG formats are guaranteed to be available.
   Other formats are available on some platforms:
 
-  - macOS: `GIF`, `BMP`, `TIFF`
-  - GTK: `BMP`
-  - Windows: `GIF`, `BMP`, `TIFF`
+  - macOS: GIF, BMP, TIFF
+  - GTK: BMP
+  - Windows: GIF, BMP, TIFF
 
 Reference
 ---------
