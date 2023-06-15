@@ -16,7 +16,7 @@ from toga_dummy.utils import (
 
 # Create the simplest possible widget with a concrete implementation that will
 # allow children
-class TestWidget(toga.Widget):
+class ExampleWidget(toga.Widget):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._impl = self.factory.Widget(self)
@@ -25,7 +25,7 @@ class TestWidget(toga.Widget):
 
 # Create the simplest possible widget with a concrete implementation that cannot
 # have children.
-class TestLeafWidget(toga.Widget):
+class ExampleLeafWidget(toga.Widget):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._impl = self.factory.Widget(self)
@@ -33,12 +33,12 @@ class TestLeafWidget(toga.Widget):
 
 @pytest.fixture
 def widget():
-    return TestWidget(id="widget_id", style=Pack(padding=666))
+    return ExampleWidget(id="widget_id", style=Pack(padding=666))
 
 
 def test_simple_widget():
     """A simple widget can be created."""
-    widget = TestWidget()
+    widget = ExampleWidget()
 
     # Round trip the impl/interface
     assert widget._impl.interface == widget
@@ -65,7 +65,7 @@ def test_widget_created(widget):
 
 def test_add_child_to_leaf():
     "A child cannot be added to a leaf node"
-    leaf = TestLeafWidget()
+    leaf = ExampleLeafWidget()
 
     # Widget doesn't have an app or window
     assert leaf.app is None
@@ -75,7 +75,7 @@ def test_add_child_to_leaf():
     assert leaf.children == []
 
     # Create a child widget
-    child = TestLeafWidget()
+    child = ExampleLeafWidget()
 
     # Add the child.
     with pytest.raises(ValueError, match=r"Cannot add children"):
@@ -92,7 +92,7 @@ def test_add_child_without_app(widget):
     assert widget.children == []
 
     # Create a child widget
-    child = TestLeafWidget()
+    child = ExampleLeafWidget()
 
     # Add the child.
     widget.add(child)
@@ -125,7 +125,7 @@ def test_add_child(widget):
     assert widget.children == []
 
     # Create a child widget
-    child = TestLeafWidget(id="child_id")
+    child = ExampleLeafWidget(id="child_id")
 
     # App's widget index only contains the parent
     assert app.widgets["widget_id"] == widget
@@ -170,9 +170,9 @@ def test_add_multiple_children(widget):
     assert widget.children == []
 
     # Create 3 child widgets
-    child1 = TestLeafWidget(id="child1_id")
-    child2 = TestLeafWidget(id="child2_id")
-    child3 = TestLeafWidget(id="child3_id")
+    child1 = ExampleLeafWidget(id="child1_id")
+    child2 = ExampleLeafWidget(id="child2_id")
+    child3 = ExampleLeafWidget(id="child3_id")
 
     # App's widget index only contains the parent
     assert app.widgets["widget_id"] == widget
@@ -218,8 +218,8 @@ def test_add_multiple_children(widget):
 def test_reparent_child(widget):
     "A widget can be reparented"
     # Create a second parent widget, and add a child to it
-    other = TestWidget(id="other")
-    child = TestLeafWidget(id="child_id")
+    other = ExampleWidget(id="other")
+    child = ExampleLeafWidget(id="child_id")
     other.add(child)
 
     assert other.children == [child]
@@ -242,7 +242,7 @@ def test_reparent_child(widget):
 def test_reparent_child_to_self(widget):
     "Reparenting a widget to the same parent is a no-op"
     # Add a child to the widget
-    child = TestLeafWidget(id="child_id")
+    child = ExampleLeafWidget(id="child_id")
     widget.add(child)
 
     assert widget.children == [child]
@@ -265,7 +265,7 @@ def test_reparent_child_to_self(widget):
 
 def test_insert_child_into_leaf():
     "A child cannot be inserted into a leaf node"
-    leaf = TestLeafWidget()
+    leaf = ExampleLeafWidget()
 
     # Widget doesn't have an app or window
     assert leaf.app is None
@@ -275,7 +275,7 @@ def test_insert_child_into_leaf():
     assert leaf.children == []
 
     # Create a child widget
-    child = TestLeafWidget()
+    child = ExampleLeafWidget()
 
     # insert the child.
     with pytest.raises(ValueError, match=r"Cannot insert child"):
@@ -292,7 +292,7 @@ def test_insert_child_without_app(widget):
     assert widget.children == []
 
     # Create a child widget
-    child = TestLeafWidget()
+    child = ExampleLeafWidget()
 
     # insert the child.
     widget.insert(0, child)
@@ -325,7 +325,7 @@ def test_insert_child(widget):
     assert widget.children == []
 
     # Create a child widget
-    child = TestLeafWidget(id="child_id")
+    child = ExampleLeafWidget(id="child_id")
 
     # App's widget index only contains the parent
     assert app.widgets["widget_id"] == widget
@@ -370,9 +370,9 @@ def test_insert_position(widget):
     assert widget.children == []
 
     # Create 3 child widgets
-    child1 = TestLeafWidget(id="child1_id")
-    child2 = TestLeafWidget(id="child2_id")
-    child3 = TestLeafWidget(id="child3_id")
+    child1 = ExampleLeafWidget(id="child1_id")
+    child2 = ExampleLeafWidget(id="child2_id")
+    child3 = ExampleLeafWidget(id="child3_id")
 
     # App's widget index only contains the parent
     assert app.widgets["widget_id"] == widget
@@ -433,7 +433,7 @@ def test_insert_bad_position(widget):
     assert widget.children == []
 
     # Create a child widget
-    child = TestLeafWidget(id="child_id")
+    child = ExampleLeafWidget(id="child_id")
 
     # App's widget index only contains the parent
     assert app.widgets["widget_id"] == widget
@@ -466,8 +466,8 @@ def test_insert_bad_position(widget):
 def test_insert_reparent_child(widget):
     "A widget can be reparented by insertion"
     # Create a second parent widget, and add a child to it
-    other = TestWidget(id="other")
-    child = TestLeafWidget(id="child_id")
+    other = ExampleWidget(id="other")
+    child = ExampleLeafWidget(id="child_id")
     other.add(child)
 
     assert other.children == [child]
@@ -490,7 +490,7 @@ def test_insert_reparent_child(widget):
 def test_insert_reparent_child_to_self(widget):
     "Reparenting a widget to the same parent by insertion is a no-op"
     # Add a child to the widget
-    child = TestLeafWidget(id="child_id")
+    child = ExampleLeafWidget(id="child_id")
     widget.add(child)
 
     assert widget.children == [child]
@@ -514,7 +514,7 @@ def test_insert_reparent_child_to_self(widget):
 def test_remove_child_without_app(widget):
     "A child without an app or window can be removed from a widget"
     # Add a child to the widget
-    child = TestLeafWidget(id="child_id")
+    child = ExampleLeafWidget(id="child_id")
     widget.add(child)
 
     assert widget.children == [child]
@@ -540,7 +540,7 @@ def test_remove_child_without_app(widget):
 def test_remove_child(widget):
     "A child associated with an app & window can be removed from a widget"
     # Add a child to the widget
-    child = TestLeafWidget(id="child_id")
+    child = ExampleLeafWidget(id="child_id")
     widget.add(child)
 
     app = toga.App("Test", "com.example.test")
@@ -574,9 +574,9 @@ def test_remove_child(widget):
 def test_remove_multiple_children(widget):
     "Multiple children can be removed from a widget"
     # Add children to the widget
-    child1 = TestLeafWidget(id="child1_id")
-    child2 = TestLeafWidget(id="child2_id")
-    child3 = TestLeafWidget(id="child3_id")
+    child1 = ExampleLeafWidget(id="child1_id")
+    child2 = ExampleLeafWidget(id="child2_id")
+    child3 = ExampleLeafWidget(id="child3_id")
     widget.add(child1, child2, child3)
 
     app = toga.App("Test", "com.example.test")
@@ -620,9 +620,9 @@ def test_remove_multiple_children(widget):
 def test_clear_all_children(widget):
     "All children can be simultaneously removed from a widget"
     # Add children to the widget
-    child1 = TestLeafWidget(id="child1_id")
-    child2 = TestLeafWidget(id="child2_id")
-    child3 = TestLeafWidget(id="child3_id")
+    child1 = ExampleLeafWidget(id="child1_id")
+    child2 = ExampleLeafWidget(id="child2_id")
+    child3 = ExampleLeafWidget(id="child3_id")
     widget.add(child1, child2, child3)
 
     app = toga.App("Test", "com.example.test")
@@ -685,7 +685,7 @@ def test_clear_no_children(widget):
 
 def test_clear_leaf_node():
     "No changes are made to leaf node that cannot have children"
-    leaf = TestLeafWidget()
+    leaf = ExampleLeafWidget()
     app = toga.App("Test", "com.example.test")
     window = Mock()
     leaf.app = app
@@ -706,8 +706,8 @@ def test_clear_leaf_node():
 def test_remove_from_non_parent(widget):
     "Trying to remove a child from a widget other than it's parent is a no-op"
     # Create a second parent widget, and add a child to it
-    other = TestWidget(id="other")
-    child = TestLeafWidget(id="child_id")
+    other = ExampleWidget(id="other")
+    child = ExampleLeafWidget(id="child_id")
     other.add(child)
 
     assert widget.children == []
@@ -748,9 +748,9 @@ def test_set_app(widget):
 def test_set_app_with_children(widget):
     "If a widget has children, the children get the app assignment"
     # Add children to the widget
-    child1 = TestLeafWidget(id="child1_id")
-    child2 = TestLeafWidget(id="child2_id")
-    child3 = TestLeafWidget(id="child3_id")
+    child1 = ExampleLeafWidget(id="child1_id")
+    child2 = ExampleLeafWidget(id="child2_id")
+    child3 = ExampleLeafWidget(id="child3_id")
     widget.add(child1, child2, child3)
 
     # Set up an app
@@ -874,9 +874,9 @@ def test_set_window(widget):
 def test_set_window_with_children(widget):
     "A widget can be assigned to a window."
     # Add children to the widget
-    child1 = TestLeafWidget(id="child1_id")
-    child2 = TestLeafWidget(id="child2_id")
-    child3 = TestLeafWidget(id="child3_id")
+    child1 = ExampleLeafWidget(id="child1_id")
+    child2 = ExampleLeafWidget(id="child2_id")
+    child3 = ExampleLeafWidget(id="child3_id")
     widget.add(child1, child2, child3)
 
     window = toga.Window()
@@ -980,9 +980,9 @@ def test_enabled(widget, value, expected):
 def test_refresh_root(widget):
     "Refresh can be invoked on the root node"
     # Add children to the widget
-    child1 = TestLeafWidget(id="child1_id")
-    child2 = TestLeafWidget(id="child2_id")
-    child3 = TestLeafWidget(id="child3_id")
+    child1 = ExampleLeafWidget(id="child1_id")
+    child2 = ExampleLeafWidget(id="child2_id")
+    child3 = ExampleLeafWidget(id="child3_id")
     widget.add(child1, child2, child3)
 
     # Refresh the root node
@@ -995,9 +995,9 @@ def test_refresh_root(widget):
 def test_refresh_child(widget):
     "Refresh can be invoked on child"
     # Add children to the widget
-    child1 = TestLeafWidget(id="child1_id")
-    child2 = TestLeafWidget(id="child2_id")
-    child3 = TestLeafWidget(id="child3_id")
+    child1 = ExampleLeafWidget(id="child1_id")
+    child2 = ExampleLeafWidget(id="child2_id")
+    child3 = ExampleLeafWidget(id="child3_id")
     widget.add(child1, child2, child3)
 
     # Refresh a child

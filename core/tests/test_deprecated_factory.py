@@ -130,12 +130,6 @@ class DeprecatedFactoryTests(TestCase):
         self.assertEqual(widget._impl.interface, widget)
         self.assertNotEqual(widget.factory, self.factory)
 
-    def test_web_view_created(self):
-        with self.assertWarns(DeprecationWarning):
-            widget = toga.WebView(factory=self.factory)
-        self.assertEqual(widget._impl.interface, widget)
-        self.assertNotEqual(widget.factory, self.factory)
-
     ######################################################################
     # End backwards compatibility.
     ######################################################################
