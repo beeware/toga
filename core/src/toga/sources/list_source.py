@@ -157,6 +157,11 @@ class ListSource(Source):
     def index(self, row):
         """The index of a specific row in the data source.
 
+        This search uses Row instances, and searches for an *instance* match.
+        If two Row instances have the same values, only the Row that is the
+        same Python instance will match. To search for values based on equality,
+        use :meth:`~toga.sources.ListSource.find`.
+
         Raises ValueError if the row cannot be found in the data source.
 
         :param row: The row to find in the data source.
@@ -164,20 +169,31 @@ class ListSource(Source):
         """
         return self._data.index(row)
 
-    def find(self, data, start=0):
+    def find(self, data, start=None):
         """Find the first item in the data that matches all the provided
         attributes.
+
+        This is a value based search, rather than an instance search. If two Row
+        instances have the same values, the first instance that matches will be
+        returned. To search for a second instance, provide the first found instance
+        as the ``start`` argument. To search for a specific Row instance, use the
+        :meth:`~toga.sources.ListSource.index`.
 
         Raises ValueError if no match is found.
 
         :param data: The data to search for. Only the values specified in data will be
             used as matching criteria; if the row contains additional data attributes,
-            they won't be considered.
-        :param index: The starting position in the source for the search. Defaults to
-            0 (i.e., search for the first matching row in the source)
+            they won't be considered as part of the match.
+        :param start: The instance from which to start the search. Defaults to ``None``,
+            indicating that the first match should be returned.
         :return: The matching Row object
         """
-        for item in self._data[start:]:
+        if start:
+            start_index = self._data.index(start) + 1
+        else:
+            start_index = 0
+
+        for item in self._data[start_index:]:
             try:
                 if isinstance(data, dict):
                     found = all(

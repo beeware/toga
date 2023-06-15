@@ -393,8 +393,8 @@ def test_find(source):
     # If data isn't unique, the first match is returned
     assert source.find(dict(val1="second", val2=222)) == source[1]
 
-    # The search can start at an offset
-    assert source.find(dict(val1="second", val2=222), start=2) == source[3]
+    # The search can start after a given instance
+    assert source.find(dict(val1="second", val2=222), start=source[1]) == source[3]
 
     # A partial match is enough
     assert source.find(dict(val1="third")) == source[2]
