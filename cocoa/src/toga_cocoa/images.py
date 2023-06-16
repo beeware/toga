@@ -12,15 +12,24 @@ class Image:
     def __init__(self, interface, path=None, data=None):
         self.interface = interface
 
-        if path:
-            self.native = NSImage.alloc().initWithContentsOfFile(str(path))
-            if self.native is None:
-                raise ValueError(f"Unable to load image from {path}")
-        else:
-            nsdata = NSData.dataWithBytes(data, length=len(data))
-            self.native = NSImage.alloc().initWithData(nsdata)
-            if self.native is None:
-                raise ValueError("Unable to load image from data")
+        try:
+            # We *should* be able to do a direct NSImage.alloc.init...(),
+            # but for some reason, this segfaults in some environments
+            # when loading invalid images. On iOS we can avoid this by
+            # using the class-level constructors; on macOS we need to
+            # ensure we have a valid allocated image, then try to init it.
+            image = NSImage.alloc().retain()
+            if path:
+                self.native = image.initWithContentsOfFile(str(path))
+                if self.native is None:
+                    raise ValueError(f"Unable to load image from {path}")
+            else:
+                nsdata = NSData.dataWithBytes(data, length=len(data))
+                self.native = image.initWithData(nsdata)
+                if self.native is None:
+                    raise ValueError("Unable to load image from data")
+        finally:
+            image.release()
 
     def get_width(self):
         return self.native.size.width

@@ -12,7 +12,7 @@ class Image:
         self.interface = interface
 
         if path:
-            self.native = UIImage.initWithContentsOfFile(str(path))
+            self.native = UIImage.imageWithContentsOfFile(str(path))
             if self.native is None:
                 raise ValueError(f"Unable to load image from {path}")
         else:
