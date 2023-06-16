@@ -1,5 +1,6 @@
 import io
 import os
+import re
 import shutil
 from importlib import import_module
 
@@ -25,7 +26,7 @@ async def test_bad_image_file(app):
     "If a file isn't a loadable image, an error is raised"
     with pytest.raises(
         ValueError,
-        match=rf"Unable to load image from {__file__}",
+        match=rf"Unable to load image from {re.escape(__file__)}",
     ):
         toga.Image(__file__)
 
