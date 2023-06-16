@@ -28,7 +28,7 @@ class SplitContainer(Widget):
             :attr:`~toga.widgets.SplitContainer.VERTICAL`; defaults to
             :attr:`~toga.widgets.SplitContainer.VERTICAL`
         :param content: The content that will fill the panels of the SplitContainer. A
-            list; each item in the list is either:
+            list with 2 elements; each item in the list is either:
 
             * A tuple containing of a widget and the initial flex value to apply to
               that widget in the split.
@@ -81,9 +81,9 @@ class SplitContainer(Widget):
 
     @content.setter
     def content(self, content):
-        if content is None or len(content) < 2:
+        if content is None or len(content) != 2:
             raise ValueError(
-                "SplitContainer content must be a list of at least 2 elements"
+                "SplitContainer content must be a list with exactly 2 elements"
             )
 
         _content = []
@@ -110,7 +110,7 @@ class SplitContainer(Widget):
             widget.app = self.app
             widget.window = self.window
 
-        self._impl.set_content(_content, flex)
+        self._impl.set_content([w._impl for w in _content], flex)
         self._content = _content
         self.refresh()
 

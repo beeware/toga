@@ -48,24 +48,24 @@ def test_widget_created():
     assert splitcontainer.direction == toga.SplitContainer.VERTICAL
 
 
-def test_widget_created_with_values(content1, content2, content3):
+def test_widget_created_with_values(content1, content2):
     "A scroll container can be created with arguments"
     splitcontainer = toga.SplitContainer(
-        content=[content1, content2, content3],
+        content=[content1, content2],
         direction=toga.SplitContainer.HORIZONTAL,
     )
     assert splitcontainer._impl.interface == splitcontainer
     assert_action_performed(splitcontainer, "create SplitContainer")
 
-    assert splitcontainer.content == [content1, content2, content3]
+    assert splitcontainer.content == [content1, content2]
     assert splitcontainer.direction == toga.SplitContainer.HORIZONTAL
 
     # The content has been assigned to the widget
     assert_action_performed_with(
         splitcontainer,
         "set content",
-        content=[content1, content2, content3],
-        flex=[1, 1, 1],
+        content=[content1._impl, content2._impl],
+        flex=[1, 1],
     )
 
     # The scroll container has been refreshed
@@ -157,42 +157,42 @@ def test_set_content_widgets(
     content3,
 ):
     """Widget content can be set to a list of widgets"""
-    splitcontainer.content = [content1, content2, content3]
+    splitcontainer.content = [content2, content3]
 
     assert_action_performed_with(
         splitcontainer,
         "set content",
-        content=[content1, content2, content3],
-        flex=[1, 1, 1],
+        content=[content2._impl, content3._impl],
+        flex=[1, 1],
     )
 
     # The scroll container has been refreshed
     assert_action_performed(splitcontainer, "refresh")
 
 
-def test_set_content_flex(splitcontainer, content1, content2, content3):
+def test_set_content_flex(splitcontainer, content2, content3):
     """Widget content can be set to a list of widgets with flex values"""
-    splitcontainer.content = [(content1, 1), (content2, 2), (content3, 3)]
+    splitcontainer.content = [(content2, 2), (content3, 3)]
 
     assert_action_performed_with(
         splitcontainer,
         "set content",
-        content=[content1, content2, content3],
-        flex=[1, 2, 3],
+        content=[content2._impl, content3._impl],
+        flex=[2, 3],
     )
 
     # The scroll container has been refreshed
     assert_action_performed(splitcontainer, "refresh")
 
 
-def test_set_content_flex_altered(splitcontainer, content1, content2):
+def test_set_content_flex_altered(splitcontainer, content2, content3):
     """Flex values will be manipulated if out of range, and defaulted if missing"""
-    splitcontainer.content = [content1, (content2, 0)]
+    splitcontainer.content = [content2, (content3, 0)]
 
     assert_action_performed_with(
         splitcontainer,
         "set content",
-        content=[content1, content2],
+        content=[content2._impl, content3._impl],
         flex=[1, 1],
     )
 
@@ -205,15 +205,19 @@ def test_set_content_flex_altered(splitcontainer, content1, content2):
     [
         (
             None,
-            r"SplitContainer content must be a list of at least 2 elements",
+            r"SplitContainer content must be a list with exactly 2 elements",
         ),
         (
             [],
-            r"SplitContainer content must be a list of at least 2 elements",
+            r"SplitContainer content must be a list with exactly 2 elements",
         ),
         (
             [toga.Box()],
-            r"SplitContainer content must be a list of at least 2 elements",
+            r"SplitContainer content must be a list with exactly 2 elements",
+        ),
+        (
+            [toga.Box(), toga.Box(), toga.Box()],
+            r"SplitContainer content must be a list with exactly 2 elements",
         ),
         (
             [toga.Box(), (toga.Box(),)],

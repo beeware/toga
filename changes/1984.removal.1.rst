@@ -1,1 +1,1 @@
-Support for 3-tuple form of SplitContainer instantiation, used to prevent panels from resizing, has been removed.
+Support for SplitContainers with more than 2 panels of content has been removed.

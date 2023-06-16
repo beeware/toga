@@ -239,8 +239,8 @@ class Window:
             self.interface.content,
             MinimumContainer(),
         )
-        self.container.set_min_width(self.interface.content.layout.width)
-        self.container.set_min_height(self.interface.content.layout.height)
+        self.container.min_width = self.interface.content.layout.width
+        self.container.min_height = self.interface.content.layout.height
 
         # Refresh with the actual viewport to do the proper rendering.
         self.interface.content.refresh()
