@@ -75,6 +75,7 @@ async def test_set_content(
     # Move content2 to the first panel, replace the second panel with content3
     # and apply an uneven content split.
     widget.content = [(content2, 2), (content3, 3)]
+    await probe.wait_for_split()
     await probe.redraw("Content should have a 40:60 split")
     assert content2_probe.width == pytest.approx(probe.width * 2 / 5, abs=20)
     assert content3_probe.width == pytest.approx(probe.width * 3 / 5, abs=20)
@@ -98,17 +99,16 @@ async def test_set_direction(
     assert content2_probe.height == probe.height
 
     widget.direction = toga.SplitContainer.HORIZONTAL
+    await probe.wait_for_split()
     await probe.redraw("Split should now be horizontal")
 
     # Both widgets are the width of the outer container
     assert content1_probe.width == probe.width
     assert content2_probe.width == probe.width
-
-    # Both widgets are within 20px of an even split vertically
-    assert content1_probe.height == pytest.approx(probe.height / 2, abs=20)
-    assert content2_probe.height == pytest.approx(probe.height / 2, abs=20)
+    # Widget height is not determinate
 
     widget.content = [(content1, 3), (content2, 1)]
+    await probe.wait_for_split()
     await probe.redraw("Split should be a horizontal 75:25 split")
 
     # Both widgets are the width of the outer container
@@ -120,12 +120,10 @@ async def test_set_direction(
     assert content2_probe.height == pytest.approx(probe.height * 1 / 4, abs=20)
 
     widget.direction = toga.SplitContainer.VERTICAL
+    await probe.wait_for_split()
     await probe.redraw("Split should now be vertical again")
 
-    # The widths are now within 20px of a 50:50 split
-    assert content1_probe.width == pytest.approx(probe.width / 2, abs=20)
-    assert content2_probe.width == pytest.approx(probe.width / 2, abs=20)
-
+    # Widget width is not determinate
     # Both widgets are the height of the outer container
     assert content1_probe.height == probe.height
     assert content2_probe.height == probe.height
@@ -143,6 +141,7 @@ async def test_move_splitter(
     assert content2_probe.width == pytest.approx(probe.width / 2, abs=20)
 
     probe.move_split(400)
+    await probe.wait_for_split()
     await probe.redraw("Split has been moved right")
 
     # Content1 is now 400 pixels wide.
@@ -151,6 +150,7 @@ async def test_move_splitter(
 
     # Try to move the splitter to the very end.
     probe.move_split(probe.width)
+    await probe.wait_for_split()
     await probe.redraw("Split has been moved past the minimum size limit")
 
     # Content2 is not 0 sized.

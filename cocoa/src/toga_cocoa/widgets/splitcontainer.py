@@ -70,7 +70,7 @@ class SplitContainer(Widget):
         for container in self.sub_containers:
             container.content = None
 
-        for index, (widget, widget_flex) in enumerate(zip(content, flex)):
+        for index, widget in enumerate(content):
             # Compute the minimum layout for the content
             widget.interface.style.layout(widget.interface, MinimumContainer())
             min_width = widget.interface.layout.width
@@ -94,15 +94,34 @@ class SplitContainer(Widget):
         self.native.vertical = value
 
     def rehint(self):
-        min_width = 0
-        min_height = 0
-        for container in self.sub_containers:
-            min_width += container.min_width
-            min_height += container.min_height
+        # This is a SWAG (scientific wild-ass guess). There doesn't appear to be
+        # an actual API to get the true size of the splitter. 10px seems enough.
+        SPLITTER_WIDTH = 10
+        if self.interface.direction == self.interface.HORIZONTAL:
+            # When the splitter is horizontal, the splitcontainer must be
+            # at least as wide as it's widest sub-container, and at least
+            # as tall as the minimum height of all subcontainers, plus the
+            # height of the splitter itself. Enforce a minimum size in both
+            # axies
+            min_width = self.interface._MIN_WIDTH
+            min_height = 0
+            for sub_container in self.sub_containers:
+                min_width = max(min_width, sub_container.min_width)
+                min_height += sub_container.min_height
 
-        self.interface.intrinsic.width = at_least(
-            max(self.interface._MIN_WIDTH, min_width)
-        )
-        self.interface.intrinsic.height = at_least(
-            max(self.interface._MIN_HEIGHT, min_height)
-        )
+            min_height = max(min_height, self.interface._MIN_HEIGHT) + SPLITTER_WIDTH
+        else:
+            # When the splitter is vertical, the splitcontainer must be
+            # at least as tall as it's tallest sub-container, and at least
+            # as wide as the minimum width of all subcontainers, plus the
+            # width of the splitter itself.
+            min_width = 0
+            min_height = self.interface._MIN_HEIGHT
+            for sub_container in self.sub_containers:
+                min_width += sub_container.min_width
+                min_height = max(min_height, sub_container.min_height)
+
+            min_width = max(min_width, self.interface._MIN_WIDTH) + SPLITTER_WIDTH
+
+        self.interface.intrinsic.width = at_least(min_width)
+        self.interface.intrinsic.height = at_least(min_height)

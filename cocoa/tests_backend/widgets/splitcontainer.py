@@ -1,3 +1,5 @@
+import asyncio
+
 from toga_cocoa.libs import NSSplitView
 
 from .base import SimpleProbe
@@ -6,17 +8,14 @@ from .base import SimpleProbe
 class SplitContainerProbe(SimpleProbe):
     native_class = NSSplitView
 
-    @property
-    def has_content(self):
-        return len(self.native.documentView.subviews) > 0
-
-    @property
-    def document_height(self):
-        return self.native.documentView.bounds.size.height
-
-    @property
-    def document_width(self):
-        return self.native.documentView.bounds.size.width
-
     def move_split(self, position):
         self.native.setPosition(position, ofDividerAtIndex=0)
+
+    async def wait_for_split(self):
+        sub1 = self.impl.sub_containers[0].native.frame.size
+        position = sub1.height, sub1.width
+        current = None
+        while position != current:
+            position = current
+            await asyncio.sleep(0.05)
+            current = sub1.height, sub1.width
