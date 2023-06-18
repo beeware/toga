@@ -16,6 +16,7 @@ from .properties import (  # noqa: F401
     test_flex_horizontal_widget_size,
 )
 from .test_dateinput import (  # noqa: F401
+    NONE_ACCURACY,
     test_change,
     test_max,
     test_min,
@@ -26,11 +27,6 @@ from .test_dateinput import (  # noqa: F401
 @fixture
 def initial_value():
     return time(12, 34, 56)
-
-
-@fixture
-def none_value():
-    return datetime.now().time().replace(second=0, microsecond=0)
 
 
 @fixture
@@ -55,9 +51,22 @@ def assert_value(probe):
 
 
 @fixture
-async def widget(initial_value):
+def assert_none_value():
+    def assert_none_time(actual):
+        now = datetime.now()
+        min, max = (
+            (now - NONE_ACCURACY).time().replace(second=0, microsecond=0),
+            now.time().replace(second=0, microsecond=0),
+        )
+        assert min <= actual <= max, f"FIXME {min=}, {actual=}, {max=}"
+
+    return assert_none_time
+
+
+@fixture
+async def widget():
     skip_on_platforms("macOS", "iOS", "linux")
-    return toga.TimeInput(value=initial_value)
+    return toga.TimeInput()
 
 
 async def test_init(assert_value):

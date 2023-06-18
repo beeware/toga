@@ -25,7 +25,6 @@ test_requires = [
     "coverage==7.2.0",
     "pytest==7.2.0",
     "pytest-asyncio==0.20.3",
-    "pytest-freezegun == 0.4.2",
 ]
 
 [tool.briefcase.app.testbed.macOS]

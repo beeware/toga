@@ -1,7 +1,6 @@
-from datetime import date
+from datetime import date, datetime, timedelta
 from unittest.mock import Mock, call
 
-import pytest
 from pytest import fixture
 
 import toga
@@ -17,15 +16,16 @@ from .properties import (  # noqa: F401
     test_flex_horizontal_widget_size,
 )
 
+# When setting `value` to None, how close the resulting value must be to the current
+# time. This allows for the delay between setting the value and getting it, which can be
+# a long time on a mobile emulator.
+NONE_ACCURACY = timedelta(seconds=1)
+
 
 @fixture
-def initial_value():
-    return date(2023, 5, 25)
-
-
-@fixture
-def none_value():
-    return date.today()
+async def initial_value(widget):
+    value = widget.value = date(2023, 5, 25)
+    return value
 
 
 @fixture
@@ -47,12 +47,25 @@ def assert_value(probe):
 
 
 @fixture
-async def widget(initial_value):
+def assert_none_value():
+    def assert_none_date(actual):
+        now = datetime.now()
+        min, max = (
+            (now - NONE_ACCURACY).date(),
+            now.date(),
+        )
+        assert min <= actual <= max
+
+    return assert_none_date
+
+
+@fixture
+async def widget():
     skip_on_platforms("macOS", "iOS", "linux")
-    return toga.DateInput(value=initial_value)
+    return toga.DateInput()
 
 
-async def test_init():
+async def test_init(assert_value):
     "Properties can be set in the constructor"
     skip_on_platforms("macOS", "iOS", "linux")
 
@@ -64,26 +77,26 @@ async def test_init():
     widget = toga.DateInput(
         value=value, min_value=min, max_value=max, on_change=on_change
     )
-    assert widget.value == value
+    assert_value(widget.value, value)
     assert widget.min_value == min
     assert widget.max_value == max
     assert widget.on_change._raw is on_change
 
 
-@pytest.mark.freeze_time  # For none_value, especially in TimeInput
-async def test_value(
-    widget, probe, assert_value, initial_value, none_value, values, on_change
-):
+async def test_value(widget, probe, assert_value, assert_none_value, values, on_change):
     "The value can be changed"
-    assert_value(probe.value, initial_value)
+    assert_none_value(widget.value)
 
-    for value in [None] + values:
-        widget.value = value
-        expected = none_value if value is None else value
-        assert_value(widget.value, expected)
+    for expected in values + [None]:
+        widget.value = expected
+        actual = widget.value
+        if expected is None:
+            assert_none_value(actual)
+        else:
+            assert_value(actual, expected)
 
-        await probe.redraw(f"Value set to {value}")
-        assert_value(probe.value, expected)
+        await probe.redraw(f"Value set to {expected}")
+        assert_value(probe.value, actual)  # `expected` may be None
         on_change.assert_called_once_with(widget)
         on_change.reset_mock()
 
