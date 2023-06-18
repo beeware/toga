@@ -46,7 +46,7 @@ General widgets
  :doc:`Table </reference/api/widgets/table>`                             Table of data
  :doc:`TextInput </reference/api/widgets/textinput>`                     A widget for the display and editing of a single line of text.
  :doc:`Tree </reference/api/widgets/tree>`                               Tree of data
- :doc:`WebView </reference/api/widgets/webview>`                         A panel for displaying HTML
+ :doc:`WebView </reference/api/widgets/webview>`                         An embedded web browser.
  :doc:`Widget </reference/api/widgets/widget>`                           The abstract base class of all widgets. This class should not be be
                                                                          instantiated directly.
 ======================================================================= ========================================================================
