@@ -20,7 +20,7 @@ async def probe(main_window, widget):
     box = toga.Box(children=[widget])
     main_window.content = box
     probe = get_probe(widget)
-    await probe.redraw(f"\nConstructing {widget.__class__.__name__} probe")
+    await probe.redraw(f"Constructing {widget.__class__.__name__} probe")
     probe.assert_container(box)
     yield probe
 

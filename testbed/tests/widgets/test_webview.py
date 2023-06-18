@@ -26,7 +26,7 @@ async def get_content(widget):
             widget.evaluate_javascript("document.body.innerHTML"),
             JS_TIMEOUT,
         )
-    except TimeoutError:
+    except asyncio.TimeoutError:
         # On Android, if you call evaluate_javascript while a page is loading, the
         # callback may never be called. This seems to be associated with the log message
         # "Uncaught TypeError: Cannot read property 'innerHTML' of null".
