@@ -1,11 +1,27 @@
-from asyncio import get_event_loop
-
 from rubicon.objc import objc_method, objc_property, py_from_ns
 from rubicon.objc.runtime import objc_id
 from travertino.size import at_least
 
+from toga.widgets.webview import JavaScriptResult
 from toga_iOS.libs import NSURL, NSURLRequest, WKWebView
 from toga_iOS.widgets.base import Widget
+
+
+def js_completion_handler(future, on_result=None):
+    def _completion_handler(res: objc_id, error: objc_id) -> None:
+        if error:
+            error = py_from_ns(error)
+            exc = RuntimeError(str(error))
+            future.set_exception(exc)
+            if on_result:
+                on_result(None, exception=exc)
+        else:
+            result = py_from_ns(res)
+            future.set_result(result)
+            if on_result:
+                on_result(result)
+
+    return _completion_handler
 
 
 class TogaWebView(WKWebView):
@@ -14,17 +30,11 @@ class TogaWebView(WKWebView):
 
     @objc_method
     def webView_didFinishNavigation_(self, navigation) -> None:
-        if self.interface.on_webview_load:
-            self.interface.on_webview_load(self.interface)
+        self.interface.on_webview_load(self.interface)
 
-    @objc_method
-    def acceptsFirstResponder(self) -> bool:
-        return True
-
-    @objc_method
-    def keyDown_(self, event) -> None:
-        if self.interface.on_key_down:
-            self.interface.on_key_down(event.keyCode, event.modifierFlags)
+        if self.impl.loaded_future:
+            self.impl.loaded_future.set_result(None)
+            self.impl.loaded_future = None
 
 
 class WebView(Widget):
@@ -36,61 +46,44 @@ class WebView(Widget):
         self.native.navigationDelegate = self.native
         self.native.uIDelegate = self.native
 
+        self.loaded_future = None
+
         # Add the layout constraints
         self.add_constraints()
 
-    def set_on_key_down(self, handler):
-        pass
-
-    def set_on_webview_load(self, handler):
-        pass
-
-    def get_dom(self):
-        html = self.native.DOMDocument.documentElement.outerHTML
-        return html
-
     def get_url(self):
-        url = self.native.URL
-        if url:
-            return str(url)
+        url = str(self.native.URL)
+        return None if url == "about:blank" else url
 
-    def set_url(self, value):
+    def set_url(self, value, future=None):
         if value:
             request = NSURLRequest.requestWithURL(NSURL.URLWithString(value))
-            self.native.loadRequest(request)
+        else:
+            request = NSURLRequest.requestWithURL(NSURL.URLWithString("about:blank"))
+
+        self.loaded_future = future
+        self.native.loadRequest(request)
 
     def set_content(self, root_url, content):
         self.native.loadHTMLString(content, baseURL=NSURL.URLWithString(root_url))
 
+    def get_user_agent(self):
+        return str(self.native.valueForKey("userAgent"))
+
     def set_user_agent(self, value):
-        user_agent = (
-            value
-            if value
-            else (
-                "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/603.3.8 "
-                "(KHTML, like Gecko) Version/10.1.2 Safari/603.3.8"
-            )
+        self.native.customUserAgent = value
+
+    def evaluate_javascript(self, javascript, on_result=None):
+        result = JavaScriptResult()
+        self.native.evaluateJavaScript(
+            javascript,
+            completionHandler=js_completion_handler(
+                future=result.future,
+                on_result=on_result,
+            ),
         )
-        self.native.customUserAgent = user_agent
 
-    async def evaluate_javascript(self, javascript):
-        loop = get_event_loop()
-        future = loop.create_future()
-
-        def completion_handler(res: objc_id, error: objc_id) -> None:
-            if error:
-                error = py_from_ns(error)
-                exc = RuntimeError(str(error))
-                future.set_exception(exc)
-            else:
-                future.set_result(py_from_ns(res))
-
-        self.native.evaluateJavaScript(javascript, completionHandler=completion_handler)
-
-        return await future
-
-    def invoke_javascript(self, javascript):
-        self.native.evaluateJavaScript(javascript, completionHandler=None)
+        return result
 
     def rehint(self):
         self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)

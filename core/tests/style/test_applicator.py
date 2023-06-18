@@ -9,7 +9,7 @@ from toga_dummy.utils import assert_action_performed_with
 
 # Create the simplest possible widget with a concrete implementation that will
 # allow children
-class TestWidget(toga.Widget):
+class ExampleWidget(toga.Widget):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._impl = self.factory.Widget(self)
@@ -18,7 +18,7 @@ class TestWidget(toga.Widget):
 
 # Create the simplest possible widget with a concrete implementation that cannot
 # have children.
-class TestLeafWidget(toga.Widget):
+class ExampleLeafWidget(toga.Widget):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._impl = self.factory.Widget(self)
@@ -26,12 +26,12 @@ class TestLeafWidget(toga.Widget):
 
 @pytest.fixture
 def grandchild():
-    return TestLeafWidget(id="grandchild_id")
+    return ExampleLeafWidget(id="grandchild_id")
 
 
 @pytest.fixture
 def child(grandchild):
-    child = TestWidget(id="child_id")
+    child = ExampleWidget(id="child_id")
     child.add(grandchild)
 
     return child
@@ -39,7 +39,7 @@ def child(grandchild):
 
 @pytest.fixture
 def widget(child):
-    widget = TestWidget(id="widget_id")
+    widget = ExampleWidget(id="widget_id")
     widget.add(child)
 
     return widget
