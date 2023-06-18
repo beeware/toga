@@ -147,9 +147,9 @@ async def test_load_empty_url(widget, probe, on_load):
     await assert_content_change(
         widget,
         probe,
-        message="Page has been loaded",
+        message="Page has been cleared",
         url=None,
-        content=ANY,
+        content="",
         on_load=on_load,
     )
 
