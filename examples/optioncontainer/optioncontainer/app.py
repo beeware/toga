@@ -13,9 +13,9 @@ class ExampleOptionContainerApp(toga.App):
         box1 = toga.Box(children=[label_box1])
         box2 = toga.Box(children=[label_box2])
 
-        self.optioncontainer.add("Option 0", box0)
-        self.optioncontainer.add("Option 1", box1)
-        self.optioncontainer.add("Option 2", box2)
+        self.optioncontainer.content.append("Option 0", box0)
+        self.optioncontainer.content.append("Option 1", box1)
+        self.optioncontainer.content.append("Option 2", box2)
         self._refresh_select()
 
     def _refresh_select(self):

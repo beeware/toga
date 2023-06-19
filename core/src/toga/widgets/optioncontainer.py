@@ -51,9 +51,6 @@ class OptionItem:
         """The content widget displayed in this tab of the OptionContainer."""
         return self._content
 
-    def refresh(self):
-        self._content.refresh()
-
 
 class OptionList:
     def __init__(self, interface):
@@ -171,7 +168,7 @@ class OptionList:
         # The option now exists on the implementation;
         # finalize the display properties that can't be resolved until the
         # implementation exists.
-        widget.refresh()
+        self.interface.refresh()
         item.enabled = enabled
 
 
@@ -203,7 +200,7 @@ class OptionContainer(Widget):
 
         if content:
             for text, widget in content:
-                self.append(text, widget)
+                self.content.append(text, widget)
 
         self.on_select = on_select
 
@@ -231,18 +228,11 @@ class OptionContainer(Widget):
 
     @property
     def current_tab(self) -> OptionItem:
-        """The currently selected item of content.
-
-        When setting the current item, you can use:
-
-        * The integer index of the item
-
-        * An OptionItem reference
-
-        * The string label of the item. The first item whose label matches
-          will be selected.
-        """
-        return self._content[self._impl.get_current_tab_index()]
+        """The currently selected tab of content."""
+        index = self._impl.get_current_tab_index()
+        if index is None:
+            return None
+        return self._content[index]
 
     @current_tab.setter
     def current_tab(self, value):
@@ -266,36 +256,6 @@ class OptionContainer(Widget):
         # Also assign the window to the content in the container
         for item in self._content:
             item._content.window = window
-
-    def append(self, text: str, widget: Widget):
-        """Append a new tab of content to the OptionContainer.
-
-        :param text: The text label for the new tab
-        :param widget: The content widget to use for the new tab.
-        """
-        self._content.append(text, widget)
-
-    def insert(self, index: int | str | OptionItem, text: str, widget: Widget):
-        """Insert a new tab of content to the OptionContainer at the specified index.
-
-        :param index: The index where the new item should be inserted (or a specifier
-            that can be converted into an index).
-        :param text: The text label for the new tab.
-        :param widget: The content widget to use for the new tab.
-        """
-        self._content.insert(index, text, widget)
-
-    def remove(self, item: int | str | OptionItem):
-        """Remove a tab of content from the OptionContainer.
-
-        :param item: The tab of content to remove.
-        """
-        self._content.remove(item)
-
-    def refresh_sublayouts(self):
-        """Refresh the layout and appearance of this widget."""
-        for widget in self._content:
-            widget.refresh()
 
     @property
     def on_select(self) -> callable:
