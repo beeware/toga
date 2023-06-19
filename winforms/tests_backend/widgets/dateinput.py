@@ -21,17 +21,11 @@ class DateTimeInputProbe(SimpleProbe, ABC):
 
     @property
     def min_value(self):
-        if self.native.MinDate.Year < 1800:
-            return None
-        else:
-            return self.py_value(self.native.MinDate)
+        return self.py_value(self.native.MinDate)
 
     @property
     def max_value(self):
-        if self.native.MaxDate.Year > 9000:
-            return None
-        else:
-            return self.py_value(self.native.MaxDate)
+        return self.py_value(self.native.MaxDate)
 
     async def change(self):
         self.widget.focus()

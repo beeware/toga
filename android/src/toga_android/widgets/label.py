@@ -20,7 +20,7 @@ class TextViewWidget(Widget):
         font._impl.apply(self.native, self._default_text_size, self._default_typeface)
 
     def set_background_color(self, value):
-        # In the case of EditText, his causes any custom color to hide the bottom border
+        # In the case of EditText, this causes any custom color to hide the bottom border
         # line, but it's better than set_background_filter, which affects *only* the
         # bottom border line.
         self.set_background_simple(value)

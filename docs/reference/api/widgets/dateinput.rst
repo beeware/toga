@@ -26,6 +26,8 @@ Usage
 Notes
 -----
 
+* This widget supports years from 1800 to 8999 inclusive.
+
 * Properties that return :any:`datetime.date` objects can also accept:
 
   * :any:`datetime.datetime`: The date portion will be extracted.

@@ -7,9 +7,6 @@ from ..libs.android.widget import (
 )
 from .internal.pickers import PickerBase
 
-NO_MIN = date(1799, 1, 1)
-NO_MAX = date(9999, 1, 1)
-
 
 def py_date(native_date):
     return date.fromtimestamp(native_date / 1000)
@@ -35,7 +32,7 @@ class DateInput(PickerBase):
 
     def create(self):
         super().create()
-        self.native.setText("1970-01-01")  # Dummy value used during initialization
+        self.native.setText("2000-01-01")  # Dummy initial value
 
     def get_value(self):
         return date.fromisoformat(str(self.native.getText()))
@@ -46,24 +43,22 @@ class DateInput(PickerBase):
         self.interface.on_change(None)
 
     def get_min_date(self):
-        result = py_date(self._picker.getMinDate())
-        return None if (result == NO_MIN) else result
+        return py_date(self._picker.getMinDate())
 
     def set_min_date(self, value):
-        self._picker.setMinDate(native_date(NO_MIN if value is None else value))
+        self._picker.setMinDate(native_date(value))
 
     def get_max_date(self):
-        result = py_date(self._picker.getMaxDate())
-        return None if (result == NO_MAX) else result
+        return py_date(self._picker.getMaxDate())
 
     def set_max_date(self, value):
-        self._picker.setMaxDate(native_date(NO_MAX if value is None else value))
+        self._picker.setMaxDate(native_date(value))
 
     def _create_dialog(self):
         return DatePickerDialog(
             self._native_activity,
             DatePickerListener(self),
-            2000,  # year
+            2000,  # year (dummy initial value)
             0,  # month (0 = January)
             1,  # day
         )

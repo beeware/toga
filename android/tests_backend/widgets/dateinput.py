@@ -48,13 +48,11 @@ class DateInputProbe(DateTimeInputProbe):
 
     @property
     def min_value(self):
-        result = py_date(self._picker.getMinDate())
-        return None if (result.year < 1800) else result
+        return py_date(self._picker.getMinDate())
 
     @property
     def max_value(self):
-        result = py_date(self._picker.getMaxDate())
-        return None if (result.year > 9000) else result
+        return py_date(self._picker.getMaxDate())
 
     async def _check_dialog_value(self):
         dialog_value = date(

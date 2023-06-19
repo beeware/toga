@@ -31,10 +31,11 @@ async def initial_value(widget):
 @fixture
 def values():
     return [
-        date(1850, 1, 1),
+        date(1800, 1, 1),
         date(1960, 12, 31),
         date(2020, 2, 29),  # Leap day
-        date(2340, 9, 10),
+        date(2100, 1, 1),
+        date(8999, 12, 31),
     ]
 
 
@@ -114,13 +115,13 @@ async def test_change(widget, probe, on_change):
 async def test_min(widget, probe, initial_value, values):
     "The minimum can be changed"
     value = initial_value
-    assert probe.min_value is None
+    assert probe.min_value == date(1800, 1, 1)
 
-    for min in values + [None]:
+    for min in values:
         widget.min_value = min
         assert widget.min_value == min
 
-        if (min is not None) and (value < min):
+        if value < min:
             assert widget.value == min
             value = min
         else:
@@ -133,13 +134,13 @@ async def test_min(widget, probe, initial_value, values):
 async def test_max(widget, probe, initial_value, values):
     "The maximum can be changed"
     value = initial_value
-    assert probe.max_value is None
+    assert probe.max_value == date(8999, 12, 31)
 
-    for max in values + [None]:
+    for max in values:
         widget.max_value = max
         assert widget.max_value == max
 
-        if (max is not None) and (value > max):
+        if value > max:
             assert widget.value == max
             value = max
         else:
