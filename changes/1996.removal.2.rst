@@ -1,0 +1,1 @@
+``OptionContainer.add()`` has been renamed ``OptionContainer.append()`` for consistency with List APIs.

@@ -62,7 +62,7 @@ Layout widgets
                                                                       the container, with overflow controlled by scroll bars.
  :doc:`SplitContainer </reference/api/containers/splitcontainer>`     A container that divides an area into multiple panels with a movable
                                                                       border.
- :doc:`OptionContainer </reference/api/containers/optioncontainer>`   Option Container
+ :doc:`OptionContainer </reference/api/containers/optioncontainer>`   A container that can display multiple labeled tabs of content.
 ==================================================================== ========================================================================
 
 Resources

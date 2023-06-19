@@ -109,17 +109,17 @@ class ExampleOptionContainerApp(toga.App):
             children=[label_select, self.select_option],
         )
         box_actions_1 = toga.Box(
-            style=Pack(direction=ROW, flex=1),
+            style=Pack(direction=ROW),
             children=[btn_activate, btn_remove, btn_enabled],
         )
         box_actions_2 = toga.Box(
-            style=Pack(direction=ROW, flex=1),
+            style=Pack(direction=ROW),
             children=[self.input_change_title, btn_change_title],
         )
 
         self.selected_label = toga.Label("")
         self.optioncontainer = toga.OptionContainer(
-            on_select=self.on_select_tab, style=Pack(padding_bottom=20)
+            on_select=self.on_select_tab, style=Pack(padding_bottom=20, flex=1)
         )
         self._create_options()
 
