@@ -16,7 +16,6 @@ description = "A testing app"
 sources = ['imageview']
 requires = [
     '../../core',
-    "Pillow",
 ]
 
 
@@ -24,16 +23,19 @@ requires = [
 requires = [
     '../../cocoa',
     'std-nslog>=1.0.0',
+    'Pillow',
 ]
 
 [tool.briefcase.app.imageview.linux]
 requires = [
     '../../gtk',
+    'Pillow',
 ]
 
 [tool.briefcase.app.imageview.windows]
 requires = [
     '../../winforms',
+    'Pillow',
 ]
 
 # Mobile deployments
@@ -46,6 +48,8 @@ requires = [
 [tool.briefcase.app.imageview.android]
 requires = [
     '../../android',
+    'Pillow==9.2.0; python_version=="3.10" or python_version=="3.9"',
+    'Pillow==8.4.0; python_version=="3.8"',
 ]
 
 # Web deployment
