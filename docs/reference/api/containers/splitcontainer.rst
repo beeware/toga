@@ -4,7 +4,8 @@ Split Container
 A container that divides an area into multiple panels with a movable border.
 
 .. figure:: /reference/images/SplitContainer.png
-    :align: center
+   :align: center
+   :width: 300px
 
 .. rst-class:: widget-support
 .. csv-filter:: Availability (:ref:`Key <api-status-key>`)
