@@ -27,10 +27,8 @@ class TimeInput(Widget):
             will be applied to the widget.
         :param value: The initial time to display. If not specified, the current time
             will be used.
-        :param min_value: The earliest time (inclusive) that can be selected, or ``None``
-            if there is no limit.
-        :param max_value: The latest time (inclusive) that can be selected, or ``None``
-            if there is no limit.
+        :param min_value: The earliest time (inclusive) that can be selected.
+        :param max_value: The latest time (inclusive) that can be selected.
         :param on_change: A handler that will be invoked when the value changes.
         """
         super().__init__(id=id, style=style)
@@ -47,27 +45,27 @@ class TimeInput(Widget):
 
     @property
     def value(self) -> datetime.time:
-        """The currently selected time.
+        """The currently selected time. A value of ``None`` will be converted into the
+        current time.
 
         If this property is set to a value outside of the min/max range, it will be
         clipped.
-
-        A value of ``None`` will be converted into the current time, rounded down to the
-        minute.
         """
         return self._impl.get_value()
 
     def _convert_time(self, value):
         if value is None:
-            return datetime.datetime.now().time().replace(second=0, microsecond=0)
+            value = datetime.datetime.now().time()
         elif isinstance(value, datetime.datetime):
-            return value.time()
+            value = value.time()
         elif isinstance(value, datetime.time):
-            return value
+            pass
         elif isinstance(value, str):
-            return datetime.time.fromisoformat(value)
+            value = datetime.time.fromisoformat(value)
         else:
             raise TypeError("Not a valid time value")
+
+        return value.replace(microsecond=0)
 
     @value.setter
     def value(self, value):
@@ -81,54 +79,48 @@ class TimeInput(Widget):
         self._impl.set_value(value)
 
     @property
-    def min_value(self) -> datetime.time | None:
-        """The minimum allowable time (inclusive), or ``None`` if there is no limit.
+    def min_value(self) -> datetime.time:
+        """The minimum allowable time (inclusive). A value of ``None`` will be converted
+        into 00:00:00.
 
-        Any existing time value will be clipped to the new minimum.
-
-        If a new minimum time falls after the currently specified maximum time,
-        a ``ValueError`` is raised.
+        The existing ``value`` and ``max_value`` will be clipped to the new minimum.
         """
         return self._impl.get_min_time()
 
     @min_value.setter
     def min_value(self, value):
         if value is None:
-            min_value = None
+            min_value = datetime.time(0, 0, 0)
         else:
             min_value = self._convert_time(value)
-            max_value = self.max_value
-            if max_value and min_value > max_value:
-                raise ValueError("min_value is after the current max_value")
-            if self.value < min_value:
-                self.value = min_value
 
+        if self.max_value < min_value:
+            self._impl.set_max_time(min_value)
         self._impl.set_min_time(min_value)
+        if self.value < min_value:
+            self.value = min_value
 
     @property
-    def max_value(self) -> datetime.time | None:
-        """The maximum allowable time (inclusive), or ``None`` if there is no limit.
+    def max_value(self) -> datetime.time:
+        """The maximum allowable time (inclusive). A value of ``None`` will be converted
+        into 23:59:59.
 
-        Any existing time value will be clipped to the new maximum.
-
-        If a new maximum time falls before the currently specified minimum time,
-        a ``ValueError`` is raised.
+        The existing ``value`` and ``min_value`` will be clipped to the new maximum.
         """
         return self._impl.get_max_time()
 
     @max_value.setter
     def max_value(self, value):
         if value is None:
-            max_value = None
+            max_value = datetime.time(23, 59, 59)
         else:
             max_value = self._convert_time(value)
-            min_value = self.min_value
-            if min_value and max_value < min_value:
-                raise ValueError("max_value is before the current min_value")
-            if self.value > max_value:
-                self.value = max_value
 
+        if self.min_value > max_value:
+            self._impl.set_min_time(max_value)
         self._impl.set_max_time(max_value)
+        if self.value > max_value:
+            self.value = max_value
 
     @property
     def on_change(self) -> callable:

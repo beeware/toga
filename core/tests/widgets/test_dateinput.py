@@ -58,10 +58,10 @@ def test_widget_created_with_values(on_change_handler):
 @pytest.mark.parametrize(
     "value, expected",
     [
-        (None, date(2023, 5, 25)),
         (date(2023, 1, 11), date(2023, 1, 11)),
         (datetime(2023, 2, 11, 10, 42, 37), date(2023, 2, 11)),
         ("2023-03-11", date(2023, 3, 11)),
+        (None, date(2023, 5, 25)),
     ],
 )
 def test_value(widget, value, expected, on_change_handler):
@@ -92,7 +92,11 @@ def test_invalid_value(widget, value, exc, message):
     "value, clipped",
     [
         (date(2005, 6, 12), date(2010, 1, 1)),
+        (date(2009, 12, 31), date(2010, 1, 1)),
+        (date(2010, 1, 1), date(2010, 1, 1)),
         (date(2015, 6, 12), date(2015, 6, 12)),
+        (date(2020, 1, 1), date(2020, 1, 1)),
+        (date(2020, 1, 2), date(2020, 1, 1)),
         (date(2023, 6, 12), date(2020, 1, 1)),
         # Unlike `min` and `max`, `value` accepts and clips dates outside of the
         # supported range.
