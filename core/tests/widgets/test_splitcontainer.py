@@ -49,7 +49,7 @@ def test_widget_created():
 
 
 def test_widget_created_with_values(content1, content2):
-    "A scroll container can be created with arguments"
+    "A split container can be created with arguments"
     splitcontainer = toga.SplitContainer(
         content=[content1, content2],
         direction=toga.SplitContainer.HORIZONTAL,
@@ -68,19 +68,19 @@ def test_widget_created_with_values(content1, content2):
         flex=[1, 1],
     )
 
-    # The scroll container has been refreshed
+    # The split container has been refreshed
     assert_action_performed(splitcontainer, "refresh")
 
 
 def test_assign_to_app(app, splitcontainer, content1, content2):
     """If the widget is assigned to an app, the content is also assigned"""
-    # Scroll container is initially unassigned
+    # Split container is initially unassigned
     assert splitcontainer.app is None
 
-    # Assign the scroll container to the app
+    # Assign the split container to the app
     splitcontainer.app = app
 
-    # Scroll container is on the app
+    # Split container is on the app
     assert splitcontainer.app == app
 
     # Content is also on the app
@@ -104,13 +104,13 @@ def test_assign_to_app_no_content(app):
 
 def test_assign_to_window(window, splitcontainer, content1, content2):
     """If the widget is assigned to a window, the content is also assigned"""
-    # Scroll container is initially unassigned
+    # Split container is initially unassigned
     assert splitcontainer.window is None
 
-    # Assign the scroll container to the window
+    # Assign the split container to the window
     splitcontainer.window = window
 
-    # Scroll container is on the window
+    # Split container is on the window
     assert splitcontainer.window == window
     # Content is also on the window
     assert content1.window == window
@@ -166,7 +166,7 @@ def test_set_content_widgets(
         flex=[1, 1],
     )
 
-    # The scroll container has been refreshed
+    # The split container has been refreshed
     assert_action_performed(splitcontainer, "refresh")
 
 
@@ -181,7 +181,7 @@ def test_set_content_flex(splitcontainer, content2, content3):
         flex=[2, 3],
     )
 
-    # The scroll container has been refreshed
+    # The split container has been refreshed
     assert_action_performed(splitcontainer, "refresh")
 
 
@@ -196,7 +196,7 @@ def test_set_content_flex_altered(splitcontainer, content2, content3):
         flex=[1, 1],
     )
 
-    # The scroll container has been refreshed
+    # The split container has been refreshed
     assert_action_performed(splitcontainer, "refresh")
 
 
@@ -246,5 +246,5 @@ def test_direction(splitcontainer):
     # The direction has been set
     assert splitcontainer.direction == toga.SplitContainer.HORIZONTAL
 
-    # The scroll container has been refreshed
+    # The split container has been refreshed
     assert_action_performed(splitcontainer, "refresh")
