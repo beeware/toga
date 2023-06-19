@@ -6,6 +6,7 @@ overflow controlled by scroll bars.
 
 .. figure:: /reference/images/ScrollContainer.png
    :align: center
+   :width: 300px
 
 .. rst-class:: widget-support
 .. csv-filter:: Availability (:ref:`Key <api-status-key>`)
