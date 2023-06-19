@@ -18,23 +18,23 @@ class TogaSplitView(NSSplitView):
         for container in self.impl.sub_containers:
             container.content.interface.refresh()
 
-        # If there's a pending split assignment, apply it.
-        if self.impl._split_proportion:
-            self.performSelector(
-                SEL("applySplit"),
-                withObject=None,
-                afterDelay=0,
-            )
+        # Apply any pending split
+        self.performSelector(
+            SEL("applySplit"),
+            withObject=None,
+            afterDelay=0,
+        )
 
     @objc_method
     def applySplit(self) -> None:
-        if self.interface.direction == self.interface.VERTICAL:
-            position = self.impl._split_proportion * self.frame.size.width
-        else:
-            position = self.impl._split_proportion * self.frame.size.height
+        if self.impl._split_proportion:
+            if self.interface.direction == self.interface.VERTICAL:
+                position = self.impl._split_proportion * self.frame.size.width
+            else:
+                position = self.impl._split_proportion * self.frame.size.height
 
-        self.setPosition(position, ofDividerAtIndex=0)
-        self.impl._split_proportion = None
+            self.setPosition(position, ofDividerAtIndex=0)
+            self.impl._split_proportion = None
 
 
 class SplitContainer(Widget):
@@ -58,12 +58,12 @@ class SplitContainer(Widget):
         for container in self.sub_containers:
             container.content.interface.refresh()
 
-        if self._split_proportion:
-            self.native.performSelector(
-                SEL("applySplit"),
-                withObject=None,
-                afterDelay=0,
-            )
+        # Apply any pending split
+        self.native.performSelector(
+            SEL("applySplit"),
+            withObject=None,
+            afterDelay=0,
+        )
 
     def set_content(self, content, flex):
         # Clear any existing content
