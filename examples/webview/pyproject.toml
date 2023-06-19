@@ -7,48 +7,48 @@ bundle = "org.beeware"
 version = "0.0.1"
 url = "https://beeware.org"
 license = "BSD license"
-author = 'Tiberius Yak'
+author = "Tiberius Yak"
 author_email = "tiberius@beeware.org"
 
 [tool.briefcase.app.webview]
 formal_name = "WebView Demo"
 description = "A demo app using all WebView features"
-sources = ['webview']
+sources = ["webview"]
 requires = [
-    '../../core',
+    "../../core",
 ]
 
 [tool.briefcase.app.webview.macOS]
 requires = [
-    '../../cocoa',
-    'std-nslog>=1.0.0',
+    "../../cocoa",
+    "std-nslog>=1.0.0",
 ]
 
 [tool.briefcase.app.webview.linux]
 requires = [
-    '../../gtk',
+    "../../gtk",
 ]
 
 [tool.briefcase.app.webview.windows]
 requires = [
-    '../../winforms',
+    "../../winforms",
 ]
 
 # Mobile deployments
 [tool.briefcase.app.webview.iOS]
 requires = [
-    '../../iOS',
-    'std-nslog>=1.0.0',
+    "../../iOS",
+    "std-nslog>=1.0.0",
 ]
 
 [tool.briefcase.app.webview.android]
 requires = [
-    '../../android',
+    "../../android",
 ]
 
 # Web deployment
 [tool.briefcase.app.webview.web]
 requires = [
-    '../../web',
+    "../../web",
 ]
 style_framework = "Shoelace v2.3"
