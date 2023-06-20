@@ -111,7 +111,7 @@ async def test_on_change_user(widget, probe, on_change):
 
     for count, char in enumerate("Hello world", start=1):
         await probe.type_character(char)
-        await probe.redraw(f"Typed {char!r}")
+        await probe.redraw(f"Typed {char!r}", delay=0.02)
 
         # The number of events equals the number of characters typed.
         assert on_change.mock_calls == [call(widget)] * count
