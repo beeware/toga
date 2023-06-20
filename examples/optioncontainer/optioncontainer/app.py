@@ -5,9 +5,9 @@ from toga.style import Pack
 
 class ExampleOptionContainerApp(toga.App):
     def _create_options(self):
-        label_box0 = toga.Label("This is Box 0 ", style=Pack(padding=10))
-        label_box1 = toga.Label("This is Box 1 ", style=Pack(padding=10))
-        label_box2 = toga.Label("This is Box 2 ", style=Pack(padding=10))
+        label_box0 = toga.Label("This is Box 0", style=Pack(padding=10))
+        label_box1 = toga.Label("This is Box 1", style=Pack(padding=10))
+        label_box2 = toga.Label("This is Box 2", style=Pack(padding=10))
 
         box0 = toga.Box(children=[label_box0])
         box1 = toga.Box(children=[label_box1])
@@ -39,7 +39,7 @@ class ExampleOptionContainerApp(toga.App):
             self.optioncontainer.content[
                 index
             ].enabled = not self.optioncontainer.content[index].enabled
-        except toga.OptionContainer.OptionException as e:
+        except ValueError as e:
             self.main_window.info_dialog("Oops", str(e))
 
     def on_change_option_title(self, button):
@@ -50,7 +50,7 @@ class ExampleOptionContainerApp(toga.App):
         try:
             index = int(self.select_option.value)
             self.optioncontainer.current_tab = index
-        except toga.OptionContainer.OptionException as e:
+        except ValueError as e:
             self.main_window.info_dialog("Oops", str(e))
 
     def on_remove_option(self, button):
@@ -58,7 +58,7 @@ class ExampleOptionContainerApp(toga.App):
             index = int(self.select_option.value)
             del self.optioncontainer.content[index]
             self._refresh_select()
-        except toga.OptionContainer.OptionException as e:
+        except ValueError as e:
             self.main_window.info_dialog("Oops", str(e))
 
     def set_next_tab(self, widget):
@@ -72,10 +72,9 @@ class ExampleOptionContainerApp(toga.App):
         if self.optioncontainer.current_tab.index > 0:
             self.optioncontainer.current_tab -= 1
 
-    def on_select_tab(self, widget, option):
-        self.selected_label.text = "Tab {} has been chosen: {}".format(
-            option.index,
-            option.text,
+    def on_select_tab(self, widget, **kwargs):
+        self.selected_label.text = (
+            f"Tab {widget.current_tab.index} has been chosen: {widget.current_tab.text}"
         )
 
     def startup(self):

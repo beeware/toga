@@ -22,8 +22,12 @@ class OptionItem:
         return self._interface._impl.is_option_enabled(self.index)
 
     @enabled.setter
-    def enabled(self, enabled):
-        self._interface._impl.set_option_enabled(self.index, bool(enabled))
+    def enabled(self, value):
+        enable = bool(value)
+        if not enable and self.index == self._interface._impl.get_current_tab_index():
+            raise ValueError("The currently selected tab cannot be disabled.")
+
+        self._interface._impl.set_option_enabled(self.index, enable)
 
     @property
     def text(self) -> str:
@@ -237,6 +241,9 @@ class OptionContainer(Widget):
     @current_tab.setter
     def current_tab(self, value):
         index = self._content.index(value)
+        if not self._impl.is_option_enabled(index):
+            raise ValueError("A disabled tab cannot be made the current tab.")
+
         self._impl.set_current_tab_index(index)
 
     @Widget.app.setter

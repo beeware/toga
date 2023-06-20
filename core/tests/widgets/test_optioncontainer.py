@@ -179,6 +179,24 @@ def test_item_enabled(optioncontainer, value, expected):
     assert item.enabled == expected
 
 
+def test_disable_current_item(optioncontainer):
+    """The currently selected item cannot be disabled"""
+    # Item 0 is selected by default
+    item = optioncontainer.content[0]
+    with pytest.raises(
+        ValueError,
+        match=r"The currently selected tab cannot be disabled.",
+    ):
+        item.enabled = False
+
+    # Try disabling the current tab directly
+    with pytest.raises(
+        ValueError,
+        match=r"The currently selected tab cannot be disabled.",
+    ):
+        optioncontainer.current_tab.enabled = False
+
+
 class MyTitle:
     def __init__(self, title):
         self.title = title
@@ -437,3 +455,17 @@ def test_current_tab(optioncontainer, index, on_select_handler):
 
     # on_select handler was invoked
     on_select_handler.assert_called_once_with(optioncontainer)
+
+
+def test_select_disabled_tab(optioncontainer):
+    """A disabled tab cannot be selected."""
+
+    # Disable item 1
+    item = optioncontainer.content[1]
+    item.enabled = False
+
+    with pytest.raises(
+        ValueError,
+        match=r"A disabled tab cannot be made the current tab.",
+    ):
+        optioncontainer.current_tab = 1
