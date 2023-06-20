@@ -16,6 +16,3 @@ class Paths:
 
     def get_logs_path(self):
         return Path.home() / "log"
-
-
-paths = Paths()
