@@ -1,0 +1,1 @@
+A more informative error message is returned when a platform backend doesn't support a widget.

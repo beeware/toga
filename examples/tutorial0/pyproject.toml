@@ -53,5 +53,3 @@ requires = [
     '../../web',
 ]
 style_framework = "Shoelace v2.3"
-
-template = "../../../templates/briefcase-web-static-template"
