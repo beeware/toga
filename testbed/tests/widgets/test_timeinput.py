@@ -1,5 +1,5 @@
 from datetime import datetime, time
-from unittest.mock import Mock
+from unittest.mock import Mock, call
 
 from pytest import fixture
 
@@ -17,7 +17,7 @@ from .properties import (  # noqa: F401
 )
 from .test_dateinput import (  # noqa: F401
     NONE_ACCURACY,
-    test_change,
+    assert_none_value,
     test_max,
     test_min,
     test_value,
@@ -25,8 +25,19 @@ from .test_dateinput import (  # noqa: F401
 
 
 @fixture
-def initial_value():
-    return time(12, 34, 56)
+async def initial_value(widget):
+    value = widget.value = time(12, 34, 56)
+    return value
+
+
+@fixture
+async def min_value(widget):
+    return time(0, 0, 0)
+
+
+@fixture
+async def max_value(widget):
+    return time(23, 59, 59)
 
 
 @fixture
@@ -34,33 +45,31 @@ def values():
     return [
         time(0, 0, 0),
         time(0, 0, 1),
-        time(12, 0, 0),
+        time(12, 34, 56),
         time(14, 59, 0),
         time(23, 59, 59),
     ]
 
 
 @fixture
-def assert_value(probe):
-    def assert_time(actual, expected):
+def normalize(probe):
+    """Returns a function that converts a datetime or time into the time that would be
+    returned by the widget."""
+
+    def normalize_time(value):
+        if isinstance(value, datetime):
+            value = value.time()
+        elif isinstance(value, time):
+            pass
+        else:
+            raise TypeError(value)
+
+        replace_kwargs = {"microsecond": 0}
         if not probe.supports_seconds:
-            expected = expected.replace(second=0)
-        assert actual == expected
+            replace_kwargs.update({"second": 0})
+        return value.replace(**replace_kwargs)
 
-    return assert_time
-
-
-@fixture
-def assert_none_value():
-    def assert_none_time(actual):
-        now = datetime.now()
-        min, max = (
-            (now - NONE_ACCURACY).time().replace(second=0, microsecond=0),
-            now.time().replace(second=0, microsecond=0),
-        )
-        assert min <= actual <= max, f"FIXME {min=}, {actual=}, {max=}"
-
-    return assert_none_time
+    return normalize_time
 
 
 @fixture
@@ -69,7 +78,7 @@ async def widget():
     return toga.TimeInput()
 
 
-async def test_init(assert_value):
+async def test_init(normalize):
     "Properties can be set in the constructor"
     skip_on_platforms("macOS", "iOS", "linux")
 
@@ -81,7 +90,45 @@ async def test_init(assert_value):
     widget = toga.TimeInput(
         value=value, min_value=min, max_value=max, on_change=on_change
     )
-    assert_value(widget.value, value)
+    assert widget.value == normalize(value)
     assert widget.min_value == min
     assert widget.max_value == max
     assert widget.on_change._raw is on_change
+
+
+async def test_change(widget, probe, on_change):
+    "The on_change handler is triggered on user input"
+
+    # The probe `change` method operates on minutes, because not all backends support
+    # seconds.
+    widget.min_value = time(5, 7)
+    widget.value = time(5, 10)
+    widget.max_value = time(5, 13)
+    on_change.reset_mock()
+
+    for i in range(1, 4):
+        await probe.change(1)
+        expected = time(5, 10 + i)
+        assert widget.value == expected
+        assert probe.value == expected
+        assert on_change.mock_calls == [call(widget)] * i
+
+    # Can't go past the maximum
+    assert widget.value == widget.max_value
+    await probe.change(1)
+    assert widget.value == widget.max_value
+
+    widget.value = time(5, 10)
+    on_change.reset_mock()
+
+    for i in range(1, 4):
+        await probe.change(-1)
+        expected = time(5, 10 - i)
+        assert widget.value == expected
+        assert probe.value == expected
+        assert on_change.mock_calls == [call(widget)] * i
+
+    # Can't go past the minimum
+    assert widget.value == widget.min_value
+    await probe.change(-1)
+    assert widget.value == widget.min_value

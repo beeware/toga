@@ -88,9 +88,9 @@ class DateInput(Widget):
     def value(self, value):
         value = self._convert_date(value, check_range=False)
 
-        if self.min_value and value < self.min_value:
+        if value < self.min_value:
             value = self.min_value
-        elif self.max_value and value > self.max_value:
+        elif value > self.max_value:
             value = self.max_value
 
         self._impl.set_value(value)

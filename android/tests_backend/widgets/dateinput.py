@@ -20,18 +20,20 @@ class DateTimeInputProbe(TextInputProbe, ABC):
     async def _change_dialog_value(self):
         pass
 
-    async def change(self):
+    async def change(self, delta):
         try:
-            self._dialog.show()
+            self.native.performClick()
             await self.redraw("Show dialog")
+            assert self._dialog.isShowing()
 
             await self._check_dialog_value()
-            await self._change_dialog_value()
+            await self._change_dialog_value(delta)
 
             self._dialog.getButton(DialogInterface.BUTTON_POSITIVE).performClick()
             await self.redraw("Click OK")
+            assert not self._dialog.isShowing()
         except Exception:
-            self._dialog.dismiss()
+            self._dialog.dismiss()  # Clean up for the next test
             raise
 
     @property
@@ -40,6 +42,8 @@ class DateTimeInputProbe(TextInputProbe, ABC):
 
 
 class DateInputProbe(DateTimeInputProbe):
+    supports_limits = True
+
     @property
     def value(self):
         text = str(self.native.getText())
@@ -62,15 +66,15 @@ class DateInputProbe(DateTimeInputProbe):
         )
         assert dialog_value == self.value
 
-    async def _change_dialog_value(self):
-        next_day = self._picker.getDayOfMonth() + 1
-        if next_day > 28:
-            next_day = 1
+    async def _change_dialog_value(self, delta):
+        new_day = self._picker.getDayOfMonth() + delta
+        if not (1 <= new_day <= 28):
+            raise ValueError("Cannot cross month boundaries")
 
         self._dialog.updateDate(
-            self._picker.getYear(), self._picker.getMonth(), next_day
+            self._picker.getYear(), self._picker.getMonth(), new_day
         )
-        await self.redraw("Increment day")
+        await self.redraw(f"Change value by {delta} days")
 
     @property
     def _picker(self):

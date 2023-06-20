@@ -1,8 +1,6 @@
 import re
 from datetime import time
 
-from pytest import xfail
-
 from android import R as android_R
 from android.view import ViewGroup
 from android.widget import TimePicker
@@ -22,6 +20,7 @@ def findViewByType(root, cls):
 
 
 class TimeInputProbe(DateTimeInputProbe):
+    supports_limits = False
     supports_seconds = False
 
     @property
@@ -30,24 +29,19 @@ class TimeInputProbe(DateTimeInputProbe):
         assert re.fullmatch(r"\d{2}:\d{2}", text)
         return time.fromisoformat(text)
 
-    @property
-    def min_value(self):
-        xfail("This backend doesn't support min/max limits")
-
-    @property
-    def max_value(self):
-        xfail("This backend doesn't support min/max limits")
-
     async def _check_dialog_value(self):
         dialog_value = time(
             self._picker.getCurrentHour(), self._picker.getCurrentMinute()
         )
         assert dialog_value == self.value
 
-    async def _change_dialog_value(self):
-        next_minute = (self._picker.getCurrentMinute() + 1) % 60
-        self._dialog.updateTime(self._picker.getCurrentHour(), next_minute)
-        await self.redraw("Increment minute")
+    async def _change_dialog_value(self, delta):
+        new_minute = self._picker.getCurrentMinute() + delta
+        if not (0 <= new_minute <= 59):
+            raise ValueError("Cannot cross minute boundaries")
+
+        self._dialog.updateTime(self._picker.getCurrentHour(), new_minute)
+        await self.redraw(f"Change value by {delta} minutes")
 
     @property
     def _picker(self):

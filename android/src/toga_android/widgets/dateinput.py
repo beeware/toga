@@ -22,7 +22,10 @@ class DatePickerListener(OnDateSetListener):
         self.impl = impl
 
     def onDateSet(self, view, year, month_0, day):
-        self.impl.set_value(date(year, month_0 + 1, day))
+        # It should be impossible for the dialog to return an out-of-range value in
+        # normal use, but it can happen in the testbed, so go via the interface to clip
+        # the value.
+        self.impl.interface.value = date(year, month_0 + 1, day)
 
 
 class DateInput(PickerBase):

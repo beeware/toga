@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from datetime import date
 
+from System import ArgumentOutOfRangeException
 from System.Windows.Forms import DateTimePicker, DateTimePickerFormat
 
 from .base import SimpleProbe
@@ -10,6 +11,7 @@ class DateTimeInputProbe(SimpleProbe, ABC):
     native_class = DateTimePicker
     background_supports_alpha = False
     fixed_height = 18
+    supports_limits = True
 
     @abstractmethod
     def py_value(self, native_value):
@@ -27,10 +29,6 @@ class DateTimeInputProbe(SimpleProbe, ABC):
     def max_value(self):
         return self.py_value(self.native.MaxDate)
 
-    async def change(self):
-        self.widget.focus()
-        await self.type_character("<up>")
-
 
 class DateInputProbe(DateTimeInputProbe):
     def __init__(self, widget):
@@ -40,3 +38,10 @@ class DateInputProbe(DateTimeInputProbe):
 
     def py_value(self, native_value):
         return date(native_value.Year, native_value.Month, native_value.Day)
+
+    async def change(self, delta):
+        try:
+            self.native.Value = self.native.Value.AddDays(delta)
+        except ArgumentOutOfRangeException:
+            pass
+        await self.redraw(f"Change value by {delta} days")

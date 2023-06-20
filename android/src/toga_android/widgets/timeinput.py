@@ -14,7 +14,10 @@ class TimePickerListener(OnTimeSetListener):
         self.impl = impl
 
     def onTimeSet(self, view, hour, minute):
-        self.impl.set_value(time(hour, minute))
+        # Unlike DatePicker, TimePicker does not natively support a min or max. So the
+        # dialog allows the user to select any time, and we then clip the result by
+        # assigning it via the interface.
+        self.impl.interface.value = time(hour, minute)
 
 
 class TimeInput(PickerBase):
@@ -25,10 +28,10 @@ class TimeInput(PickerBase):
     def create(self):
         super().create()
 
-        # Dummy values used during initialization
+        # Dummy initial values
         self.native.setText("00:00")
-        self._min_time = None
-        self._max_time = None
+        self._min_time = time(0, 0, 0)
+        self._max_time = time(23, 59, 59)
 
     def get_value(self):
         return time.fromisoformat(str(self.native.getText()))
@@ -38,8 +41,6 @@ class TimeInput(PickerBase):
         self._dialog.updateTime(value.hour, value.minute)
         self.interface.on_change(None)
 
-    # Unlike DatePicker, TimePicker does not natively support min or max, so these
-    # properties currently have no effect.
     def get_min_time(self):
         return self._min_time
 
@@ -56,7 +57,7 @@ class TimeInput(PickerBase):
         return TimePickerDialog(
             self._native_activity,
             TimePickerListener(self),
-            0,  # hour
+            0,  # hour (dummy initial value)
             0,  # minute
             True,  # is24HourView
         )

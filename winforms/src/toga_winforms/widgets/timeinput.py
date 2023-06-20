@@ -5,7 +5,6 @@ from travertino.size import at_least
 from toga_winforms.libs import WinDateTime, WinForms
 
 from .base import Widget
-from .dateinput import NO_MAX, NO_MIN
 
 
 def py_time(native_time):
@@ -34,20 +33,16 @@ class TimeInput(Widget):
         self.native.Value = native_time(value)
 
     def get_min_time(self):
-        if self.native.MinDate == NO_MIN:
-            return None
         return py_time(self.native.MinDate)
 
     def set_min_time(self, value):
-        self.native.MinDate = NO_MIN if value is None else native_time(value)
+        self.native.MinDate = native_time(value)
 
     def get_max_time(self):
-        if self.native.MaxDate == NO_MAX:
-            return None
         return py_time(self.native.MaxDate)
 
     def set_max_time(self, value):
-        self.native.MaxDate = NO_MAX if value is None else native_time(value)
+        self.native.MaxDate = native_time(value)
 
     def rehint(self):
         self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)

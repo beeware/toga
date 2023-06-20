@@ -29,6 +29,16 @@ async def initial_value(widget):
 
 
 @fixture
+async def min_value(widget):
+    return date(1800, 1, 1)
+
+
+@fixture
+async def max_value(widget):
+    return date(8999, 12, 31)
+
+
+@fixture
 def values():
     return [
         date(1800, 1, 1),
@@ -40,24 +50,30 @@ def values():
 
 
 @fixture
-def assert_value(probe):
-    def assert_date(actual, expected):
-        assert actual == expected
+def normalize():
+    """Returns a function that converts a datetime or date into the date that would be
+    returned by the widget."""
 
-    return assert_date
+    def normalize_date(value):
+        if isinstance(value, datetime):
+            return value.date()
+        elif isinstance(value, date):
+            return value
+        else:
+            raise TypeError(value)
+
+    return normalize_date
 
 
 @fixture
-def assert_none_value():
-    def assert_none_date(actual):
+def assert_none_value(normalize):
+    def assert_approx_now(actual):
         now = datetime.now()
-        min, max = (
-            (now - NONE_ACCURACY).date(),
-            now.date(),
-        )
+        min = normalize(now - NONE_ACCURACY)
+        max = normalize(now)
         assert min <= actual <= max
 
-    return assert_none_date
+    return assert_approx_now
 
 
 @fixture
@@ -66,7 +82,7 @@ async def widget():
     return toga.DateInput()
 
 
-async def test_init(assert_value):
+async def test_init():
     "Properties can be set in the constructor"
     skip_on_platforms("macOS", "iOS", "linux")
 
@@ -78,13 +94,13 @@ async def test_init(assert_value):
     widget = toga.DateInput(
         value=value, min_value=min, max_value=max, on_change=on_change
     )
-    assert_value(widget.value, value)
+    assert widget.value == value
     assert widget.min_value == min
     assert widget.max_value == max
     assert widget.on_change._raw is on_change
 
 
-async def test_value(widget, probe, assert_value, assert_none_value, values, on_change):
+async def test_value(widget, probe, normalize, assert_none_value, values, on_change):
     "The value can be changed"
     assert_none_value(widget.value)
 
@@ -94,57 +110,84 @@ async def test_value(widget, probe, assert_value, assert_none_value, values, on_
         if expected is None:
             assert_none_value(actual)
         else:
-            assert_value(actual, expected)
+            assert actual == normalize(expected)
 
         await probe.redraw(f"Value set to {expected}")
-        assert_value(probe.value, actual)  # `expected` may be None
+        assert probe.value == actual  # `expected` may be None
         on_change.assert_called_once_with(widget)
         on_change.reset_mock()
 
 
-# The change mechanism varies significantly between backends, and can be quite complex,
-# so we don't attempt to set any particular value.
 async def test_change(widget, probe, on_change):
     "The on_change handler is triggered on user input"
+
+    widget.min_value = date(2023, 5, 17)
+    widget.value = date(2023, 5, 20)
+    widget.max_value = date(2023, 5, 23)
+
+    on_change.reset_mock()
+
     for i in range(1, 4):
-        await probe.change()
-        await probe.redraw("User set value")
+        await probe.change(1)
+        expected = date(2023, 5, 20 + i)
+        assert widget.value == expected
+        assert probe.value == expected
         assert on_change.mock_calls == [call(widget)] * i
 
+    # Can't go past the maximum
+    assert widget.value == widget.max_value
+    await probe.change(1)
+    assert widget.value == widget.max_value
 
-async def test_min(widget, probe, initial_value, values):
+    widget.value = date(2023, 5, 20)
+    on_change.reset_mock()
+
+    for i in range(1, 4):
+        await probe.change(-1)
+        expected = date(2023, 5, 20 - i)
+        assert widget.value == expected
+        assert probe.value == expected
+        assert on_change.mock_calls == [call(widget)] * i
+
+    # Can't go past the minimum
+    assert widget.value == widget.min_value
+    await probe.change(-1)
+    assert widget.value == widget.min_value
+
+
+async def test_min(widget, probe, initial_value, min_value, values, normalize):
     "The minimum can be changed"
-    value = initial_value
-    assert probe.min_value == date(1800, 1, 1)
+    value = normalize(initial_value)
+    if probe.supports_limits:
+        assert probe.min_value == min_value
 
     for min in values:
         widget.min_value = min
         assert widget.min_value == min
 
         if value < min:
-            assert widget.value == min
-            value = min
-        else:
-            assert widget.value == value
+            value = normalize(min)
+        assert widget.value == value
 
         await probe.redraw(f"Minimum set to {min}")
-        assert probe.min_value == min
+        if probe.supports_limits:
+            assert probe.min_value == min
 
 
-async def test_max(widget, probe, initial_value, values):
+async def test_max(widget, probe, initial_value, max_value, values, normalize):
     "The maximum can be changed"
-    value = initial_value
-    assert probe.max_value == date(8999, 12, 31)
+    value = normalize(initial_value)
+    if probe.supports_limits:
+        assert probe.max_value == max_value
 
-    for max in values:
+    for max in reversed(values):
         widget.max_value = max
         assert widget.max_value == max
 
         if value > max:
-            assert widget.value == max
-            value = max
-        else:
-            assert widget.value == value
+            value = normalize(max)
+        assert widget.value == value
 
         await probe.redraw(f"Maximum set to {max}")
-        assert probe.max_value == max
+        if probe.supports_limits:
+            assert probe.max_value == max
