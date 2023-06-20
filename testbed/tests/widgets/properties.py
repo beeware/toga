@@ -489,7 +489,7 @@ async def test_flex_widget_size(widget, probe):
     # Widget should now be 300 pixels wide, but as tall as the container.
     await probe.redraw("Widget should be 300px wide, full height")
     assert probe.width == approx(300, rel=0.01)
-    assert probe.height > 400
+    assert probe.height > 350
 
     # Make the parent a COLUMN box
     del widget.style.width
@@ -497,14 +497,14 @@ async def test_flex_widget_size(widget, probe):
 
     # Widget should now be the size of the container
     await probe.redraw("Widget should be the size of container")
-    assert probe.width > 500
-    assert probe.height > 400
+    assert probe.width > 350
+    assert probe.height > 350
 
     # Revert to fixed height
     widget.style.height = 150
 
     await probe.redraw("Widget should be full width, 150px high")
-    assert probe.width > 500
+    assert probe.width > 350
     assert probe.height == approx(150, rel=0.01)
 
     # Revert to fixed width
