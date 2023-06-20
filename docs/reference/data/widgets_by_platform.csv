@@ -27,7 +27,7 @@ Box,Layout Widget,:class:`~toga.widgets.box.Box`,Container for components,|y|,|y
 ScrollContainer,Layout Widget,:class:`~toga.widgets.scrollcontainer.ScrollContainer`,"A container that can display a layout larger that the area of the container, with overflow controlled by scroll bars.",|b|,|b|,|b|,|b|,|b|,
 SplitContainer,Layout Widget,:class:`~toga.widgets.splitcontainer.SplitContainer`,Split Container,|b|,|b|,|b|,,,
 OptionContainer,Layout Widget,:class:`~toga.widgets.optioncontainer.OptionContainer`,Option Container,|b|,|b|,|b|,,,
-App Paths,Resource,:class:~`toga.paths.Paths`,A mechanism for obtaining platform-appropriate filesystem locations for an application.,|y|,|y|,|y|,|y|,|y|,
+App Paths,Resource,:class:`~toga.paths.Paths`,A mechanism for obtaining platform-appropriate filesystem locations for an application.,|y|,|y|,|y|,|y|,|y|,
 Font,Resource,:class:`~toga.fonts.Font`,Fonts,|b|,|b|,|b|,|b|,|b|,
 Command,Resource,:class:`~toga.command.Command`,Command,|b|,|b|,|b|,,|b|,
 Group,Resource,:class:`~toga.command.Group`,Command group,|b|,|b|,|b|,|b|,|b|,

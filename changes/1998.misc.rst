@@ -1,0 +1,1 @@
+The reference to ``toga.paths.Paths`` in API Reference was corrected to resolve correctly.
