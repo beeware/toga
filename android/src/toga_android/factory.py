@@ -62,3 +62,7 @@ __all__ = [
     "Paths",
     "dialogs",
 ]
+
+
+def __getattr__(name):  # pragma: no cover
+    raise NotImplementedError(f"Toga's Android backend doesn't implement {name}")

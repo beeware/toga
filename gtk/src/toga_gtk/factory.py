@@ -73,3 +73,7 @@ __all__ = [
     "WebView",
     "Window",
 ]
+
+
+def __getattr__(name):  # pragma: no cover
+    raise NotImplementedError(f"Toga's GTK backend doesn't implement {name}")
