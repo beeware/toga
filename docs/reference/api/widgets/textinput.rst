@@ -54,6 +54,6 @@ Notes
 Reference
 ---------
 
-.. autoclass:: toga.widgets.textinput.TextInput
+.. autoclass:: toga.TextInput
    :members:
    :undoc-members:

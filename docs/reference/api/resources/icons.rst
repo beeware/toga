@@ -36,6 +36,6 @@ one of the platform's allowed extensions.
 Reference
 ---------
 
-.. autoclass:: toga.icons.Icon
+.. autoclass:: toga.Icon
    :members:
    :undoc-members:

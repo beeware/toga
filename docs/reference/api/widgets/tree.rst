@@ -34,6 +34,6 @@ Usage
 Reference
 ---------
 
-.. autoclass:: toga.widgets.tree.Tree
+.. autoclass:: toga.Tree
    :members:
    :undoc-members:

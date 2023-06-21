@@ -16,6 +16,6 @@ Usage
 Reference
 ---------
 
-.. autoclass:: toga.command.Group
+.. autoclass:: toga.Group
    :members:
    :undoc-members:

@@ -36,6 +36,6 @@ Notes
 Reference
 ---------
 
-.. autoclass:: toga.widgets.dateinput.DateInput
+.. autoclass:: toga.DateInput
    :members:
    :undoc-members:

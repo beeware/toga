@@ -39,6 +39,6 @@ Notes
 Reference
 ---------
 
-.. autoclass:: toga.widgets.activityindicator.ActivityIndicator
+.. autoclass:: toga.ActivityIndicator
    :members:
    :undoc-members:

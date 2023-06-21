@@ -39,15 +39,15 @@ Alternatively, children can be specified at the time the box is constructed:
 
     box = toga.Box(children=[label1, label2])
 
-In most apps, a layout is constructed by building a tree of boxes inside boxes,
-with concrete widgets (such as :class:`~toga.widgets.label.Label` or
-:class:`~toga.widgets.button.Button`) forming the leaf nodes of the tree. Style
-directives can be applied to enforce padding around the outside of the box,
-direction of child stacking inside the box, and background color of the box.
+In most apps, a layout is constructed by building a tree of boxes inside boxes, with
+concrete widgets (such as :class:`~toga.Label` or :class:`~toga.Button`) forming the
+leaf nodes of the tree. Style directives can be applied to enforce padding around the
+outside of the box, direction of child stacking inside the box, and background color of
+the box.
 
 Reference
 ---------
 
-.. autoclass:: toga.widgets.box.Box
+.. autoclass:: toga.Box
    :members:
    :undoc-members:
