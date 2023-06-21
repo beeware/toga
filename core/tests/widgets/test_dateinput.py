@@ -262,3 +262,9 @@ def test_deprecated_names():
     widget.max_date = MAX
     assert widget.max_date == MAX
     assert widget.max_value == MAX
+
+    with warns(DeprecationWarning, match="DatePicker has been renamed DateInput"):
+        widget = toga.DatePicker()
+
+    assert widget.min_date == date(1800, 1, 1)
+    assert widget.max_date == date(8999, 12, 31)

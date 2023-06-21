@@ -250,3 +250,9 @@ def test_deprecated_names():
     widget.max_time = MAX
     assert widget.max_time == MAX
     assert widget.max_value == MAX
+
+    with warns(DeprecationWarning, match="TimePicker has been renamed TimeInput"):
+        widget = toga.TimePicker()
+
+    assert widget.min_time == time(0, 0, 0)
+    assert widget.max_time == time(23, 59, 59)
