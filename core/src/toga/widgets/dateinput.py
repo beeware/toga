@@ -23,8 +23,8 @@ class DateInput(Widget):
         id=None,
         style=None,
         value: datetime.date | None = None,
-        min_value: datetime.date | None = None,
-        max_value: datetime.date | None = None,
+        min: datetime.date | None = None,
+        max: datetime.date | None = None,
         on_change: callable | None = None,
     ):
         """Create a new DateInput widget.
@@ -36,8 +36,8 @@ class DateInput(Widget):
             will be applied to the widget.
         :param value: The initial date to display. If not specified, the current date
             will be used.
-        :param min_value: The earliest date (inclusive) that can be selected.
-        :param max_value: The latest date (inclusive) that can be selected.
+        :param min: The earliest date (inclusive) that can be selected.
+        :param max: The latest date (inclusive) that can be selected.
         :param on_change: A handler that will be invoked when the value changes.
         """
         super().__init__(id=id, style=style)
@@ -46,8 +46,8 @@ class DateInput(Widget):
         self._impl = self.factory.DateInput(interface=self)
 
         self.on_change = None
-        self.min_value = min_value
-        self.max_value = max_value
+        self.min = min
+        self.max = max
 
         self.value = value
         self.on_change = on_change
@@ -88,60 +88,60 @@ class DateInput(Widget):
     def value(self, value):
         value = self._convert_date(value, check_range=False)
 
-        if value < self.min_value:
-            value = self.min_value
-        elif value > self.max_value:
-            value = self.max_value
+        if value < self.min:
+            value = self.min
+        elif value > self.max:
+            value = self.max
 
         self._impl.set_value(value)
 
     @property
-    def min_value(self) -> datetime.date:
+    def min(self) -> datetime.date:
         """The minimum allowable date (inclusive). A value of ``None`` will be converted
         into the lowest supported date of 1800-01-01.
 
-        The existing ``value`` and ``max_value`` will be clipped to the new minimum.
+        The existing ``value`` and ``max`` will be clipped to the new minimum.
 
         :raises ValueError: If set to a date outside of the supported range.
         """
         return self._impl.get_min_date()
 
-    @min_value.setter
-    def min_value(self, value):
+    @min.setter
+    def min(self, value):
         if value is None:
-            min_value = MIN_DATE
+            min = MIN_DATE
         else:
-            min_value = self._convert_date(value, check_range=True)
+            min = self._convert_date(value, check_range=True)
 
-        if self.max_value < min_value:
-            self._impl.set_max_date(min_value)
-        self._impl.set_min_date(min_value)
-        if self.value < min_value:
-            self.value = min_value
+        if self.max < min:
+            self._impl.set_max_date(min)
+        self._impl.set_min_date(min)
+        if self.value < min:
+            self.value = min
 
     @property
-    def max_value(self) -> datetime.date:
+    def max(self) -> datetime.date:
         """The maximum allowable date (inclusive). A value of ``None`` will be converted
         into the highest supported date of 8999-12-31.
 
-        The existing ``value`` and ``min_value`` will be clipped to the new maximum.
+        The existing ``value`` and ``min`` will be clipped to the new maximum.
 
         :raises ValueError: If set to a date outside of the supported range.
         """
         return self._impl.get_max_date()
 
-    @max_value.setter
-    def max_value(self, value):
+    @max.setter
+    def max(self, value):
         if value is None:
-            max_value = MAX_DATE
+            max = MAX_DATE
         else:
-            max_value = self._convert_date(value, check_range=True)
+            max = self._convert_date(value, check_range=True)
 
-        if self.min_value > max_value:
-            self._impl.set_min_date(max_value)
-        self._impl.set_max_date(max_value)
-        if self.value > max_value:
-            self.value = max_value
+        if self.min > max:
+            self._impl.set_min_date(max)
+        self._impl.set_max_date(max)
+        if self.value > max:
+            self.value = max
 
     @property
     def on_change(self) -> callable:
@@ -159,11 +159,15 @@ class DatePicker(DateInput):
         warnings.warn("DatePicker has been renamed DateInput.", DeprecationWarning)
 
         for old_name, new_name in [
-            ("min_date", "min_value"),
-            ("max_date", "max_value"),
+            ("min_date", "min"),
+            ("max_date", "max"),
         ]:
             try:
                 value = kwargs.pop(old_name)
+                warnings.warn(
+                    f"DatePicker.{old_name} has been renamed DateInput.{new_name}",
+                    DeprecationWarning,
+                )
             except KeyError:
                 pass
             else:
@@ -173,16 +177,28 @@ class DatePicker(DateInput):
 
     @property
     def min_date(self):
-        return self.min_value
+        warnings.warn(
+            "DatePicker.min_date has been renamed DateInput.min", DeprecationWarning
+        )
+        return self.min
 
     @min_date.setter
     def min_date(self, value):
-        self.min_value = value
+        warnings.warn(
+            "DatePicker.min_date has been renamed DateInput.min", DeprecationWarning
+        )
+        self.min = value
 
     @property
     def max_date(self):
-        return self.max_value
+        warnings.warn(
+            "DatePicker.max_date has been renamed DateInput.max", DeprecationWarning
+        )
+        return self.max
 
     @max_date.setter
     def max_date(self, value):
-        self.max_value = value
+        warnings.warn(
+            "DatePicker.max_date has been renamed DateInput.max", DeprecationWarning
+        )
+        self.max = value
