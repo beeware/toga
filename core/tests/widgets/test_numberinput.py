@@ -27,8 +27,8 @@ def test_widget_created():
     assert not widget.readonly
     assert widget.value is None
     assert widget.step == Decimal("1")
-    assert widget.min_value is None
-    assert widget.max_value is None
+    assert widget.min is None
+    assert widget.max is None
     assert widget._on_change._raw is None
 
 
@@ -39,8 +39,8 @@ def test_create_with_values():
     widget = toga.NumberInput(
         value=Decimal("2.71828"),
         step=0.001,
-        min_value=-42,
-        max_value=420,
+        min=-42,
+        max=420,
         readonly=True,
         on_change=on_change,
     )
@@ -50,8 +50,8 @@ def test_create_with_values():
     assert widget.readonly
     assert widget.value == Decimal("2.718")
     assert widget.step == Decimal("0.001")
-    assert widget.min_value == Decimal("-42")
-    assert widget.max_value == Decimal("420")
+    assert widget.min == Decimal("-42")
+    assert widget.max == Decimal("420")
     assert widget._on_change._raw == on_change
 
     # Change handler hasn't been invoked
@@ -216,13 +216,13 @@ def test_bad_step(widget, value):
         (None, None),
     ],
 )
-def test_min_value(widget, value, expected):
-    "The min_value of the widget can be set"
-    widget.min_value = value
-    assert widget.min_value == expected
+def test_min(widget, value, expected):
+    "The min of the widget can be set"
+    widget.min = value
+    assert widget.min == expected
 
     # test backend has the right value
-    assert attribute_value(widget, "min_value") == expected
+    assert attribute_value(widget, "min") == expected
 
 
 @pytest.mark.parametrize(
@@ -232,34 +232,34 @@ def test_min_value(widget, value, expected):
         "Not a number",  # Non-numerical string
     ],
 )
-def test_bad_min_value(widget, value):
-    "If a min_value can't be converted into a decimal, an error is raised"
-    with pytest.raises(ValueError, match=r"min_value must be a number or None"):
-        widget.min_value = value
+def test_bad_min(widget, value):
+    "If a min can't be converted into a decimal, an error is raised"
+    with pytest.raises(ValueError, match=r"min must be a number or None"):
+        widget.min = value
 
 
 def test_min_greater_than_max(widget):
     "If the new min value exceeds the max value, an error is raised"
-    widget.max_value = 10
+    widget.max = 10
     with pytest.raises(
         ValueError,
-        match=r"min value of 100.00 is greater than the current max_value of 10.00",
+        match=r"min value of 100.00 is greater than the current max of 10.00",
     ):
-        widget.min_value = 100
+        widget.min = 100
 
 
 @pytest.mark.parametrize(*QUANTIZE_PARAMS)
-def test_min_value_quantized(widget, step, expected):
+def test_min_quantized(widget, step, expected):
     "An existing min value is re-quantized after a change in step"
     # Set a small step so that the min value isn't quantized
     widget.step = 0.00000001
-    widget.min_value = 12.3456
+    widget.min = 12.3456
 
     # Set a new minimum
     widget.step = step
 
     # The minimum has been re-quantized
-    assert widget.min_value == expected
+    assert widget.min == expected
 
 
 @pytest.mark.parametrize(
@@ -286,13 +286,13 @@ def test_min_value_quantized(widget, step, expected):
         (None, None),
     ],
 )
-def test_max_value(widget, value, expected):
-    "The max_value of the widget can be set"
-    widget.max_value = value
-    assert widget.max_value == expected
+def test_max(widget, value, expected):
+    "The max of the widget can be set"
+    widget.max = value
+    assert widget.max == expected
 
     # test backend has the right value
-    assert attribute_value(widget, "max_value") == expected
+    assert attribute_value(widget, "max") == expected
 
 
 @pytest.mark.parametrize(
@@ -302,38 +302,38 @@ def test_max_value(widget, value, expected):
         "Not a number",  # Non-numerical string
     ],
 )
-def test_bad_max_value(widget, value):
-    "If a max_value can't be converted into a decimal, an error is raised"
-    with pytest.raises(ValueError, match=r"max_value must be a number or None"):
-        widget.max_value = value
+def test_bad_max(widget, value):
+    "If a max can't be converted into a decimal, an error is raised"
+    with pytest.raises(ValueError, match=r"max must be a number or None"):
+        widget.max = value
 
 
 def test_max_less_than_min(widget):
     "If the new max value is less than the min value, an error is raised"
-    widget.min_value = 100
+    widget.min = 100
     with pytest.raises(
         ValueError,
-        match=r"max value of 10.00 is less than the current min_value of 100.00",
+        match=r"max value of 10.00 is less than the current min of 100.00",
     ):
-        widget.max_value = 10
+        widget.max = 10
 
 
 @pytest.mark.parametrize(*QUANTIZE_PARAMS)
-def test_max_value_quantized(widget, step, expected):
+def test_max_quantized(widget, step, expected):
     "An existing max value is re-quantized after a change in step"
     # Set a small step so that the max value isn't quantized
     widget.step = 0.00000001
-    widget.max_value = 12.3456
+    widget.max = 12.3456
 
     # Set a new maximum
     widget.step = step
 
     # The maximum has been re-quantized
-    assert widget.max_value == expected
+    assert widget.max == expected
 
 
 @pytest.mark.parametrize(
-    "min_value, max_value, provided, clipped",
+    "min, max, provided, clipped",
     [
         (10, 20, 15, Decimal(15)),
         (10, 20, 25, Decimal(20)),
@@ -344,17 +344,17 @@ def test_max_value_quantized(widget, step, expected):
         (-10, 0, 25, Decimal(0)),
     ],
 )
-def test_clip_on_value_change(widget, min_value, max_value, provided, clipped):
+def test_clip_on_value_change(widget, min, max, provided, clipped):
     "A widget's value will be clipped inside the min/max range."
-    widget.min_value = min_value
-    widget.max_value = max_value
+    widget.min = min
+    widget.max = max
 
     widget.value = provided
     assert widget.value == clipped
 
 
 @pytest.mark.parametrize(
-    "min_value, max_value, provided, clipped",
+    "min, max, provided, clipped",
     [
         (10, 20, 15, Decimal(15)),
         (10, 20, 25, Decimal(20)),
@@ -368,10 +368,10 @@ def test_clip_on_value_change(widget, min_value, max_value, provided, clipped):
         (-20, -10, 0, Decimal(-10)),
     ],
 )
-def test_clip_on_retrieval(widget, min_value, max_value, provided, clipped):
+def test_clip_on_retrieval(widget, min, max, provided, clipped):
     "A widget's value will be clipped if the widget has a value outside the min/max range."
-    widget.min_value = min_value
-    widget.max_value = max_value
+    widget.min = min
+    widget.max = max
 
     # Inject a raw attribute value.
     widget._impl._set_value("value", provided)
@@ -391,11 +391,11 @@ def test_clip_on_retrieval(widget, min_value, max_value, provided, clipped):
 def test_clip_on_max_change(widget, value, new_max, clipped):
     "A widget's value will be clipped if the max value changes"
     # Set an initial max, and a value that is less than it.
-    widget.max_value = 20
+    widget.max = 20
     widget.value = value
 
     # Set a new max
-    widget.max_value = new_max
+    widget.max = new_max
     # Value might be clipped
     assert widget.value == clipped
 
@@ -413,11 +413,11 @@ def test_clip_on_max_change(widget, value, new_max, clipped):
 def test_clip_on_min_change(widget, value, new_min, clipped):
     "A widget's value will be clipped if the min value changes"
     # Set an initial max, and a value that is less than it.
-    widget.min_value = 10
+    widget.min = 10
     widget.value = value
 
     # Set a new max
-    widget.min_value = new_min
+    widget.min = new_min
     # Value might be clipped
     assert widget.value == clipped
 
@@ -496,3 +496,66 @@ def test_clean_decimal_str(value, clean):
 )
 def test_clean_decimal(value, step, clean):
     assert _clean_decimal(value, Decimal(step) if step else step) == Decimal(clean)
+
+
+def test_deprecated_names():
+    """The deprecated min_value/max_value names still work"""
+    # Can't specify min and min_value
+    with pytest.raises(
+        ValueError,
+        match=r"Cannot specify both min and min_value",
+    ):
+        toga.NumberInput(min=2, min_value=4)
+
+    # Can't specify min and min_value
+    with pytest.raises(
+        ValueError,
+        match=r"Cannot specify both max and max_value",
+    ):
+        toga.NumberInput(max=2, max_value=4)
+
+    # min_value is deprecated
+    with pytest.warns(
+        DeprecationWarning,
+        match="NumberInput.min_value has been renamed NumberInput.min",
+    ):
+        widget = toga.NumberInput(min_value=2)
+
+    assert widget.min == 2
+
+    with pytest.warns(
+        DeprecationWarning,
+        match="NumberInput.min_value has been renamed NumberInput.min",
+    ):
+        assert widget.min_value == 2
+
+    with pytest.warns(
+        DeprecationWarning,
+        match="NumberInput.min_value has been renamed NumberInput.min",
+    ):
+        widget.min_value = 4
+
+    assert widget.min == 4
+
+    # max_value is deprecated
+    with pytest.warns(
+        DeprecationWarning,
+        match="NumberInput.max_value has been renamed NumberInput.max",
+    ):
+        widget = toga.NumberInput(max_value=2)
+
+    assert widget.max == 2
+
+    with pytest.warns(
+        DeprecationWarning,
+        match="NumberInput.max_value has been renamed NumberInput.max",
+    ):
+        assert widget.max_value == 2
+
+    with pytest.warns(
+        DeprecationWarning,
+        match="NumberInput.max_value has been renamed NumberInput.max",
+    ):
+        widget.max_value = 4
+
+    assert widget.max == 4

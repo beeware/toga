@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import re
+import warnings
 from decimal import ROUND_HALF_UP, Decimal, InvalidOperation
 
 from toga.handlers import wrapped_handler
@@ -10,7 +11,7 @@ from .base import Widget
 # Implementation notes
 # ====================
 #
-# * `step`, `min_value` and `max_value` maintain an interface shadow copy of
+# * `step`, `min` and `max` maintain an interface shadow copy of
 #   their current values. This is because we use Decimal as a representation,
 #   but all the implementations use floats. To ensure that we can round-trip
 #   step/min/max values, we need to keep a local copy.
@@ -66,11 +67,13 @@ class NumberInput(Widget):
         id=None,
         style=None,
         step: Decimal = 1,
-        min_value: Decimal | None = None,
-        max_value: Decimal | None = None,
+        min: Decimal | None = None,
+        max: Decimal | None = None,
         value: Decimal | None = None,
         readonly: bool = False,
         on_change: callable | None = None,
+        min_value: Decimal | None = None,  # DEPRECATED
+        max_value: Decimal | None = None,  # DEPRECATED
     ):
         """Create a new number input widget.
 
@@ -81,31 +84,55 @@ class NumberInput(Widget):
             will be applied to the widget.
         :param step: The amount that any increment/decrement operations will
             apply to the widget's current value.
-        :param min_value: If provided, ``value`` will be guaranteed to
+        :param min: If provided, ``value`` will be guaranteed to
             be greater than or equal to this minimum.
-        :param max_value: If provided, ``value`` will be guaranteed to
+        :param max: If provided, ``value`` will be guaranteed to
             be less than or equal to this maximum.
         :param value: The initial value for the widget.
         :param readonly: Can the value of the widget be modified by the user?
         :param on_change: A handler that will be invoked when the the value of
             the widget changes.
         """
-
         super().__init__(id=id, style=style)
 
-        # The initial setting of min/min_value requires calling get_value(),
-        # which in turn interrogates min/max_value. Prime those values with
+        ######################################################################
+        # 2023-06: Backwards compatibility
+        ######################################################################
+        if min_value is not None:
+            if min is not None:
+                raise ValueError("Cannot specify both min and min_value")
+            else:
+                warnings.warn(
+                    "NumberInput.min_value has been renamed NumberInput.min",
+                    DeprecationWarning,
+                )
+                min = min_value
+        if max_value is not None:
+            if max is not None:
+                raise ValueError("Cannot specify both max and max_value")
+            else:
+                warnings.warn(
+                    "NumberInput.max_value has been renamed NumberInput.max",
+                    DeprecationWarning,
+                )
+                max = max_value
+        ######################################################################
+        # End backwards compatibility
+        ######################################################################
+
+        # The initial setting of min requires calling get_value(),
+        # which in turn interrogates min. Prime those values with
         # an empty starting value
-        self._min_value = None
-        self._max_value = None
+        self._min = None
+        self._max = None
 
         self.on_change = None
         self._impl = self.factory.NumberInput(interface=self)
 
         self.readonly = readonly
         self.step = step
-        self.min_value = min_value
-        self.max_value = max_value
+        self.min = min
+        self.max = max
         self.value = value
 
         self.on_change = on_change
@@ -142,22 +169,22 @@ class NumberInput(Widget):
         self._impl.set_step(self._step)
 
         # Re-assigning the min and max value forces the min/max to be requantized.
-        self.min_value = self.min_value
-        self.max_value = self.max_value
+        self.min = self.min
+        self.max = self.max
 
     @property
-    def min_value(self) -> Decimal | None:
+    def min(self) -> Decimal | None:
         """The minimum bound for the widget's value.
 
         Returns ``None`` if there is no minimum bound.
 
-        If the current ``value`` is less than a newly specified ``min_value``,
+        If the current ``value`` is less than a newly specified ``min``,
         ``value`` will be clipped to conform to the new minimum.
         """
-        return self._min_value
+        return self._min
 
-    @min_value.setter
-    def min_value(self, new_min):
+    @min.setter
+    def min(self, new_min):
         try:
             new_min = _clean_decimal(new_min, self.step)
 
@@ -168,33 +195,29 @@ class NumberInput(Widget):
             if new_min is None or new_min == "":
                 new_min = None
             else:
-                raise ValueError("min_value must be a number or None")
+                raise ValueError("min must be a number or None")
 
-        if (
-            self.max_value is not None
-            and new_min is not None
-            and new_min > self.max_value
-        ):
+        if self.max is not None and new_min is not None and new_min > self.max:
             raise ValueError(
-                f"min value of {new_min} is greater than the current max_value of {self.max_value}"
+                f"min value of {new_min} is greater than the current max of {self.max}"
             )
 
-        self._min_value = new_min
+        self._min = new_min
         self._impl.set_min_value(new_min)
 
     @property
-    def max_value(self) -> Decimal | None:
+    def max(self) -> Decimal | None:
         """The maximum bound for the widget's value.
 
         Returns ``None`` if there is no maximum bound.
 
-        If the current ``value`` exceeds a newly specified ``max_value``,
+        If the current ``value`` exceeds a newly specified ``max``,
         ``value`` will be clipped to conform to the new maximum.
         """
-        return self._max_value
+        return self._max
 
-    @max_value.setter
-    def max_value(self, new_max):
+    @max.setter
+    def max(self, new_max):
         try:
             new_max = _clean_decimal(new_max, self.step)
 
@@ -205,18 +228,14 @@ class NumberInput(Widget):
             if new_max is None or new_max == "":
                 new_max = None
             else:
-                raise ValueError("max_value must be a number or None")
+                raise ValueError("max must be a number or None")
 
-        if (
-            self.min_value is not None
-            and new_max is not None
-            and new_max < self.min_value
-        ):
+        if self.min is not None and new_max is not None and new_max < self.min:
             raise ValueError(
-                f"max value of {new_max} is less than the current min_value of {self.min_value}"
+                f"max value of {new_max} is less than the current min of {self.min}"
             )
 
-        self._max_value = new_max
+        self._max = new_max
         self._impl.set_max_value(new_max)
 
     @property
@@ -239,10 +258,10 @@ class NumberInput(Widget):
 
         # If the widget has a current value, clip it
         if value is not None:
-            if self.min_value is not None and value < self.min_value:
-                return self.min_value
-            elif self.max_value is not None and value > self.max_value:
-                return self.max_value
+            if self.min is not None and value < self.min:
+                return self.min
+            elif self.max is not None and value > self.max:
+                return self.max
         return value
 
     @value.setter
@@ -250,10 +269,10 @@ class NumberInput(Widget):
         try:
             value = _clean_decimal(value, self.step)
 
-            if self.min_value is not None and value < self.min_value:
-                value = self.min_value
-            elif self.max_value is not None and value > self.max_value:
-                value = self.max_value
+            if self.min is not None and value < self.min:
+                value = self.min
+            elif self.max is not None and value > self.max:
+                value = self.max
         except (TypeError, ValueError, InvalidOperation):
             if value is None or value == "":
                 value = None
@@ -271,3 +290,39 @@ class NumberInput(Widget):
     @on_change.setter
     def on_change(self, handler):
         self._on_change = wrapped_handler(self, handler)
+
+    ######################################################################
+    # 2023-06: Backwards compatibility
+    ######################################################################
+
+    @property
+    def min_value(self) -> Decimal | None:
+        warnings.warn(
+            "NumberInput.min_value has been renamed NumberInput.min",
+            DeprecationWarning,
+        )
+        return self.min
+
+    @min_value.setter
+    def min_value(self, value):
+        warnings.warn(
+            "NumberInput.min_value has been renamed NumberInput.min",
+            DeprecationWarning,
+        )
+        self.min = value
+
+    @property
+    def max_value(self) -> Decimal | None:
+        warnings.warn(
+            "NumberInput.max_value has been renamed NumberInput.max",
+            DeprecationWarning,
+        )
+        return self.max
+
+    @max_value.setter
+    def max_value(self, value):
+        warnings.warn(
+            "NumberInput.max_value has been renamed NumberInput.max",
+            DeprecationWarning,
+        )
+        self.max = value

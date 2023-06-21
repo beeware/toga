@@ -102,8 +102,8 @@ async def test_on_change_handler(widget, probe):
 async def test_focus_value_clipping(widget, probe, other):
     "Widget value is clipped to min/max values when focus is lost."
     # Set min/max values, and a granular step
-    widget.min_value = Decimal(100)
-    widget.max_value = Decimal(2000)
+    widget.min = Decimal(100)
+    widget.max = Decimal(2000)
     widget.step = 1
 
     # Install a handler, and give the widget focus.
