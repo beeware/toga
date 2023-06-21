@@ -1,0 +1,1 @@
+``Slider.range`` has been replaced by ``Slider.min`` and ``Slider.max``.

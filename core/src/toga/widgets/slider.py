@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import warnings
 from abc import ABC, abstractmethod
 from contextlib import contextmanager
 
@@ -14,12 +15,14 @@ class Slider(Widget):
         id=None,
         style=None,
         value: float | None = None,
-        range: tuple[float, float] = (0.0, 1.0),
+        min: float = None,  # Default to 0.0 when range is removed
+        max: float = None,  # Default to 1.0 when range is removed
         tick_count: int | None = None,
         on_change: callable | None = None,
         on_press: callable | None = None,
         on_release: callable | None = None,
         enabled: bool = True,
+        range: tuple[float, float] = None,  # DEPRECATED
     ):
         """Create a new slider widget.
 
@@ -42,13 +45,38 @@ class Slider(Widget):
         super().__init__(id=id, style=style)
         self._impl = self.factory.Slider(interface=self)
 
+        ######################################################################
+        # 2023-06: Backwards compatibility
+        ######################################################################
+        if range is not None:
+            if min is not None or max is not None:
+                raise ValueError(
+                    "range cannot be specifed if min and max are specified"
+                )
+            else:
+                warnings.warn(
+                    "Slider.range has been deprecated in favor of Slider.min and Slider.max",
+                    DeprecationWarning,
+                )
+                min, max = range
+        else:
+            # This inserts defau.
+            if min is None:
+                min = 0.0
+            if max is None:
+                max = 1.0
+        ######################################################################
+        # End backwards compatibility
+        ######################################################################
+
         # Set a dummy handler before installing the actual on_change, because we do not want
         # on_change triggered by the initial value being set
         self.on_change = None
-        self.range = range
+        self.min = min
+        self.max = max
         self.tick_count = tick_count
         if value is None:
-            value = (range[0] + range[1]) / 2
+            value = (min + max) / 2
         self.value = value
 
         self.on_change = on_change
@@ -84,11 +112,15 @@ class Slider(Widget):
 
     @value.setter
     def value(self, value):
-        if not (self.min <= value <= self.max):
-            raise ValueError(f"value {value} is not in range {self.min} - {self.max}")
-
+        if value < self.min:
+            value = self.min
+        elif value > self.max:
+            value = self.max
         with self._programmatic_change():
-            self._impl.set_value(self._round_value(float(value)))
+            self._set_value(value)
+
+    def _set_value(self, value):
+        self._impl.set_value(self._round_value(float(value)))
 
     def _round_value(self, value):
         step = self.tick_step
@@ -98,44 +130,52 @@ class Slider(Widget):
         return value
 
     @property
-    def range(self) -> tuple[float, float]:
-        """Range of allowed values, in the form (min, max).
+    def min(self) -> float:
+        """Minimum allowed value.
 
-        If a range is set which doesn't include the current value, the value will be
-        changed to the min or the max, whichever is closest.
-
-        :raises ValueError: If the min is not strictly less than the max.
+        If the new minimum value is greater than the current maximum value,
+        the maximum value will be increased to the new minimum value.
         """
-        return self._impl.get_range()
+        return self._impl.get_min()
 
-    @range.setter
-    def range(self, range):
-        _min, _max = range
-        if _min >= _max:
-            raise ValueError(f"min value {_min} is not smaller than max value {_max}")
-
+    @min.setter
+    def min(self, value):
         with self._programmatic_change() as old_value:
             # Some backends will clip the current value within the range automatically,
             # but do it ourselves to be certain. In discrete mode, setting self.value also
             # rounds to the new positions of the ticks.
-            self._impl.set_range((float(_min), float(_max)))
-            self.value = max(_min, min(_max, old_value))
+            _min = float(value)
+            _max = self.max
+            if _max < _min:
+                _max = _min
+                self._impl.set_max(_max)
 
-    @property
-    def min(self) -> float:
-        """Minimum allowed value.
-
-        This property is read-only, and depends on the value of :any:`range`.
-        """
-        return self.range[0]
+            self._impl.set_min(_min)
+            self._set_value(max(_min, min(_max, old_value)))
 
     @property
     def max(self) -> float:
         """Maximum allowed value.
 
-        This property is read-only, and depends on the value of :any:`range`.
+        If the new maximum value is less than the current minimum value,
+        the minimum value will be decreaed to the new maximum value.
         """
-        return self.range[1]
+        return self._impl.get_max()
+
+    @max.setter
+    def max(self, value):
+        with self._programmatic_change() as old_value:
+            # Some backends will clip the current value within the range automatically,
+            # but do it ourselves to be certain. In discrete mode, setting self.value also
+            # rounds to the new positions of the ticks.
+            _min = self.min
+            _max = float(value)
+            if _min > _max:
+                _min = _max
+                self._impl.set_min(_min)
+
+            self._impl.set_max(_max)
+            self._set_value(max(_min, min(_max, old_value)))
 
     @property
     def tick_count(self) -> int | None:
@@ -181,7 +221,7 @@ class Slider(Widget):
         This property is read-only, and depends on the values of :any:`tick_count` and
         :any:`range`.
         """
-        if self.tick_count is None:
+        if self.tick_count is None or self.max == self.min:
             return None
         return (self.max - self.min) / (self.tick_count - 1)
 
@@ -243,6 +283,23 @@ class Slider(Widget):
     def on_release(self, handler):
         self._on_release = wrapped_handler(self, handler)
 
+    ######################################################################
+    # 2023-06: Backwards compatibility
+    ######################################################################
+    @property
+    def range(self) -> tuple[float, float]:
+        warnings.warn(
+            "Slider.range has been deprecated in favor of Slider.min and Slider.max",
+            DeprecationWarning,
+        )
+        return (self.min, self.max)
+
+    @range.setter
+    def range(self, range):
+        _min, _max = range
+        self.min = _min
+        self.max = _max
+
 
 class SliderImpl(ABC):
     @abstractmethod
@@ -254,11 +311,19 @@ class SliderImpl(ABC):
         ...
 
     @abstractmethod
-    def get_range(self):
+    def get_min(self):
         ...
 
     @abstractmethod
-    def set_range(self, range):
+    def set_min(self, value):
+        ...
+
+    @abstractmethod
+    def get_max(self):
+        ...
+
+    @abstractmethod
+    def set_max(self, value):
         ...
 
     @abstractmethod
@@ -281,6 +346,8 @@ class IntSliderImpl(SliderImpl):
 
         # Dummy values used during initialization.
         self.value = 0
+        self.min = 0
+        self.max = 1
         self.discrete = False
 
     def get_value(self):
@@ -291,11 +358,17 @@ class IntSliderImpl(SliderImpl):
         self.set_int_value(round((value - self.min) / span * self.get_int_max()))
         self.value = value  # Cache the original value so we can round-trip it.
 
-    def get_range(self):
-        return self.min, self.max
+    def get_min(self):
+        return self.min
 
-    def set_range(self, range):
-        self.min, self.max = range
+    def set_min(self, value):
+        self.min = value
+
+    def get_max(self):
+        return self.max
+
+    def set_max(self, value):
+        self.max = value
 
     def get_tick_count(self):
         return (self.get_int_max() + 1) if self.discrete else None

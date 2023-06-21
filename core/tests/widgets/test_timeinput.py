@@ -2,7 +2,6 @@ from datetime import date, datetime, time
 from unittest.mock import Mock
 
 import pytest
-from pytest import warns
 
 import toga
 from toga_dummy.utils import assert_action_performed
@@ -237,7 +236,9 @@ def test_deprecated_names():
     MIN = time(8, 30, 59)
     MAX = time(10, 0, 0)
 
-    with warns(DeprecationWarning, match="TimePicker has been renamed TimeInput"):
+    with pytest.warns(
+        DeprecationWarning, match="TimePicker has been renamed TimeInput"
+    ):
         widget = toga.TimePicker(min_time=MIN, max_time=MAX)
     assert widget.min_value == MIN
     assert widget.max_value == MAX
@@ -251,7 +252,9 @@ def test_deprecated_names():
     assert widget.max_time == MAX
     assert widget.max_value == MAX
 
-    with warns(DeprecationWarning, match="TimePicker has been renamed TimeInput"):
+    with pytest.warns(
+        DeprecationWarning, match="TimePicker has been renamed TimeInput"
+    ):
         widget = toga.TimePicker()
 
     assert widget.min_time == time(0, 0, 0)

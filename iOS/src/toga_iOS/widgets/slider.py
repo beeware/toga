@@ -81,13 +81,17 @@ class Slider(Widget):
         self.value = value
         self.native.setValue(value, animated=True)
 
-    def get_range(self):
-        return self.range
+    def get_min(self):
+        return self.native.minimumValue
 
-    def set_range(self, range):
-        self.native.minimumValue = range[0]
-        self.native.maximumValue = range[1]
-        self.range = range
+    def set_min(self, value):
+        self.native.minimumValue = value
+
+    def get_max(self):
+        return self.native.maximumValue
+
+    def set_max(self, value):
+        self.native.maximumValue = value
 
     def get_tick_count(self):
         return self.tick_count
