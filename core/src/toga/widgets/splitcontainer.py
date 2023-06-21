@@ -13,10 +13,10 @@ class SplitContainer(Widget):
             If no style is provided then a new one will be created for the widget.
         direction: The direction for the container split,
             either `SplitContainer.HORIZONTAL` or `SplitContainer.VERTICAL`
-        content(``list`` of :class:`~toga.widgets.base.Widget`): The list of components to be
+        content(``list`` of :class:`~toga.Widget`): The list of components to be
             split or tuples of components to be split and adjusting parameters
             in the following order:
-            widget (:class:`~toga.widgets.base.Widget`): The widget that will be added.
+            widget (:class:`~toga.Widget`): The widget that will be added.
             weight (float): Specifying the weighted splits.
             flex (Boolean): Should the content expand when the widget is resized. (optional)
     """
@@ -58,7 +58,7 @@ class SplitContainer(Widget):
         """The sub layouts of the `SplitContainer`.
 
         Returns:
-            A ``list`` of :class:`~toga.widgets.base.Widget`. Each element of the list
+            A ``list`` of :class:`toga.Widget`. Each element of the list
             is a sub layout of the `SplitContainer`
 
         Raises:

@@ -6,7 +6,7 @@ from .textinput import TextInput
 class PasswordInput(TextInput):
     """Create a new password input widget.
 
-    Inherits from :class:`~toga.widgets.textinput.TextInput`.
+    Inherits from :class:`~toga.TextInput`.
     """
 
     def _create(self):
