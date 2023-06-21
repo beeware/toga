@@ -18,26 +18,60 @@ class ImageViewApp(toga.App):
             )
         )
 
-        # image from relative path, specified as a string load brutus.png from
-        # the package. We set the style width/height parameters; image is
-        # 876x256, but we scale to height=72
+        # image from relative path, specified as a string to load brutus.png from
+        # the package.
         image_from_path = toga.Image("resources/pride-brutus.png")
-        imageview_from_path = toga.ImageView(
-            image_from_path,
-            style=Pack(height=72),
+
+        # First display the image at its intrinsic size.
+        box.add(
+            toga.ImageView(
+                image_from_path,
+            )
         )
-        box.add(imageview_from_path)
+
+        # Scale ONE of the width or height, and the aspect ratio should be retained.
+        box.add(
+            toga.ImageView(
+                image_from_path,
+                style=Pack(width=72),
+            )
+        )
+        box.add(
+            toga.ImageView(
+                image_from_path,
+                style=Pack(height=72),
+            )
+        )
 
         # image from pathlib.Path object
         # same as the above image, just with a different argument type
         image_from_pathlib_path = toga.Image(
             self.paths.app / "resources" / "pride-brutus.png"
         )
-        imageview_from_pathlib_path = toga.ImageView(
-            image_from_pathlib_path,
-            style=Pack(width=256, flex=1),
+
+        # Scale BOTH of the width or height, and the aspect ratio should be overridden.
+        box.add(
+            toga.ImageView(
+                image_from_pathlib_path,
+                style=Pack(width=72, height=72),
+            )
         )
-        box.add(imageview_from_pathlib_path)
+
+        # Flex with unpecified cross axis size: aspect ratio should be retained.
+        box.add(
+            toga.ImageView(
+                image_from_pathlib_path,
+                style=Pack(flex=1),
+            )
+        )
+
+        # Flex with fixed cross axis size: aspect ratio should be retained.
+        box.add(
+            toga.ImageView(
+                image_from_pathlib_path,
+                style=Pack(flex=1, width=150),
+            )
+        )
 
         # image from bytes
         # generate an image using pillow
