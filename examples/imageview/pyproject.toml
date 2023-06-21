@@ -43,6 +43,7 @@ requires = [
 requires = [
     "../../iOS",
     "std-nslog>=1.0.0",
+    "Pillow==9.4.0",
 ]
 
 [tool.briefcase.app.imageview.android]
