@@ -158,7 +158,7 @@ class Slider(Widget):
         """Maximum allowed value.
 
         If the new maximum value is less than the current minimum value,
-        the minimum value will be decreaed to the new maximum value.
+        the minimum value will be decreased to the new maximum value.
         """
         return self._impl.get_max()
 
