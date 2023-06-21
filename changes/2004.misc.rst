@@ -1,0 +1,1 @@
+Test coverage was restored for DateInput, TimeInput and Button widgets.
