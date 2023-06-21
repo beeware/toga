@@ -545,7 +545,11 @@ def test_deprecated():
         assert widget.range == (pytest.approx(2), pytest.approx(4))
 
     # range is converted to min/max
-    widget.range = (6, 8)
+    with pytest.warns(
+        DeprecationWarning,
+        match="Slider.range has been deprecated in favor of Slider.min and Slider.max",
+    ):
+        widget.range = (6, 8)
 
     assert widget.min == pytest.approx(6)
     assert widget.max == pytest.approx(8)

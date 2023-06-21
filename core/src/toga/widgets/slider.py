@@ -60,7 +60,7 @@ class Slider(Widget):
                 )
                 min, max = range
         else:
-            # This inserts defau.
+            # This provides defaults values for min/max.
             if min is None:
                 min = 0.0
             if max is None:
@@ -296,6 +296,10 @@ class Slider(Widget):
 
     @range.setter
     def range(self, range):
+        warnings.warn(
+            "Slider.range has been deprecated in favor of Slider.min and Slider.max",
+            DeprecationWarning,
+        )
         _min, _max = range
         self.min = _min
         self.max = _max
