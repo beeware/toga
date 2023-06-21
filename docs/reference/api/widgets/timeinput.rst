@@ -40,6 +40,6 @@ Notes
 Reference
 ---------
 
-.. autoclass:: toga.widgets.timeinput.TimeInput
+.. autoclass:: toga.TimeInput
    :members:
    :undoc-members:

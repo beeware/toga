@@ -44,6 +44,6 @@ Split direction is set on instantiation using the ``direction`` keyword argument
 Reference
 ---------
 
-.. autoclass:: toga.widgets.splitcontainer.SplitContainer
+.. autoclass:: toga.SplitContainer
    :members:
    :undoc-members:
