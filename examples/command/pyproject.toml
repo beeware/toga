@@ -32,7 +32,7 @@ requires = [
 
 [tool.briefcase.app.command.windows]
 requires = [
-	"toga-winforms",
+    "../../winforms",
 ]
 
 # Mobile deployments
