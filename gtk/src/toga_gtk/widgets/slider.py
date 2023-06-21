@@ -59,7 +59,6 @@ class Slider(Widget, toga.widgets.slider.SliderImpl):
 
     def set_min(self, value):
         self.adj.set_lower(value)
-        self.adj.set_upper(range[1])
 
     def get_max(self):
         return self.adj.get_upper()
@@ -71,7 +70,8 @@ class Slider(Widget, toga.widgets.slider.SliderImpl):
         self.tick_count = tick_count
         self.native.clear_marks()
         if tick_count is not None:
-            min, max = self.get_range()
+            min = self.get_min()
+            max = self.get_max()
             span = max - min
             for i in range(tick_count):
                 value = min + (span * (i / (tick_count - 1)))
