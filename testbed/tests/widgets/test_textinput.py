@@ -94,6 +94,9 @@ async def test_on_change_user(widget, probe, on_change):
 
     for count, char in enumerate("Hello world", start=1):
         await probe.type_character(char)
+        # GTK has an intermittent failure because on_change handler
+        # caused by typing a character doesn't fully propegate. A
+        # short delay fixes this.
         await probe.redraw(f"Typed {char!r}", delay=0.02)
 
         # The number of events equals the number of characters typed.

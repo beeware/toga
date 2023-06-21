@@ -267,7 +267,12 @@ def test_deprecated_names():
         DeprecationWarning, match="DatePicker.max_date has been renamed DateInput.max"
     ):
         widget.max_date = MAX
+
+    with pytest.warns(
+        DeprecationWarning, match="DatePicker.max_date has been renamed DateInput.max"
+    ):
         assert widget.max_date == MAX
+
     assert widget.max == MAX
 
     with pytest.warns(

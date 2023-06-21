@@ -257,7 +257,13 @@ def test_deprecated_names():
         match="TimePicker.max_time has been renamed TimeInput.max",
     ):
         widget.max_time = MAX
+
+    with pytest.warns(
+        DeprecationWarning,
+        match="TimePicker.max_time has been renamed TimeInput.max",
+    ):
         assert widget.max_time == MAX
+
     assert widget.max == MAX
 
     with pytest.warns(

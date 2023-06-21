@@ -80,18 +80,22 @@ class NumberInput(Widget):
         Inherits from :class:`~toga.widgets.base.Widget`.
 
         :param id: The ID for the widget.
-        :param style: A style object. If no style is provided, a default style
-            will be applied to the widget.
-        :param step: The amount that any increment/decrement operations will
-            apply to the widget's current value.
-        :param min: If provided, ``value`` will be guaranteed to
-            be greater than or equal to this minimum.
-        :param max: If provided, ``value`` will be guaranteed to
-            be less than or equal to this maximum.
+        :param style: A style object. If no style is provided, a default style will be
+            applied to the widget.
+        :param step: The amount that any increment/decrement operations will apply to
+            the widget's current value.
+        :param min: If provided, :any:`value` will be guaranteed to be greater than or
+            equal to this minimum.
+        :param max: If provided, :any:`value` will be guaranteed to be less than or
+            equal to this maximum.
         :param value: The initial value for the widget.
         :param readonly: Can the value of the widget be modified by the user?
-        :param on_change: A handler that will be invoked when the the value of
-            the widget changes.
+        :param on_change: A handler that will be invoked when the the value of the
+            widget changes.
+        :param min_value: **DEPRECATED**; use :any`min`. If provided, :any`value` will
+            be guaranteed to be greater than or equal to this minimum.
+        :param max_value: **DEPRECATED**; use :any:`max`. If provided, :any:`value` will
+            be guaranteed to be less than or equal to this maximum.
         """
         super().__init__(id=id, style=style)
 
@@ -176,10 +180,10 @@ class NumberInput(Widget):
     def min(self) -> Decimal | None:
         """The minimum bound for the widget's value.
 
-        Returns ``None`` if there is no minimum bound.
+        Returns :any:`None` if there is no minimum bound.
 
-        If the current ``value`` is less than a newly specified ``min``,
-        ``value`` will be clipped to conform to the new minimum.
+        When setting this property, the current :attr:`value` and :attr:`max` will be
+        clipped to the to the new minimum value.
         """
         return self._min
 
@@ -208,10 +212,10 @@ class NumberInput(Widget):
     def max(self) -> Decimal | None:
         """The maximum bound for the widget's value.
 
-        Returns ``None`` if there is no maximum bound.
+        Returns :any:`None` if there is no maximum bound.
 
-        If the current ``value`` exceeds a newly specified ``max``,
-        ``value`` will be clipped to conform to the new maximum.
+        When setting this property, the current :attr:`value` and :attr:`min` will be
+        clipped to the to the new maximum value.
         """
         return self._max
 
@@ -295,6 +299,15 @@ class NumberInput(Widget):
 
     @property
     def min_value(self) -> Decimal | None:
+        """The minimum bound for the widget's value.
+
+        **DEPRECATED**; use :attr:`min`.
+
+        Returns :any:`None` if there is no minimum bound.
+
+        When setting this property, the current :attr:`value` and :attr:`max` will be
+        clipped to the to the new minimum value.
+        """
         warnings.warn(
             "NumberInput.min_value has been renamed NumberInput.min",
             DeprecationWarning,
@@ -311,6 +324,15 @@ class NumberInput(Widget):
 
     @property
     def max_value(self) -> Decimal | None:
+        """The maximum bound for the widget's value.
+
+        **DEPRECATED**; use :attr:`max`.
+
+        Returns :any:`None` if there is no maximum bound.
+
+        When setting this property, the current :attr:`value` and :attr:`min` will be
+        clipped to the to the new maximum value.
+        """
         warnings.warn(
             "NumberInput.max_value has been renamed NumberInput.max",
             DeprecationWarning,

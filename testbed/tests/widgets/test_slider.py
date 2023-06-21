@@ -80,7 +80,7 @@ async def test_value(widget, probe, on_change):
 def assert_set_value(widget, value_in, value_out=None):
     if value_out is None:
         value_out = value_in
-    value_out = assert_set_get(widget, "value", value_in, pytest.approx(value_out))
+    value_out = assert_set_get(widget, "value", value_in, value_out)
     assert isinstance(value_out, float)
 
 
@@ -106,17 +106,17 @@ async def test_change(widget, probe, on_change):
 async def test_min(widget, probe, on_change):
     for min in POSITIONS[:-1]:
         on_change.reset_mock()
-        min_out = assert_set_get(widget, "min", min, expected=pytest.approx(min))
+        min_out = assert_set_get(widget, "min", min)
         assert isinstance(min_out, float)
 
         if min <= 0.5:
             # The existing value is in the range, so it should not change.
-            assert widget.value == pytest.approx(0.5)
+            assert widget.value == 0.5
             assert probe.position == approx((0.5 - min) / (1 - min), abs=ACCURACY)
             on_change.assert_not_called()
         else:
             # The existing value is out of the range, so it should be clipped.
-            assert widget.value == pytest.approx(min)
+            assert widget.value == min
             assert probe.position == 0
             on_change.assert_called_once_with(widget)
         await probe.redraw("Slider min property should be %s" % min)
@@ -127,17 +127,17 @@ async def test_max(widget, probe, on_change):
     # If the existing value is in the range, it should not change.
     for max in POSITIONS[-1:0:-1]:
         on_change.reset_mock()
-        max_out = assert_set_get(widget, "max", max, expected=pytest.approx(max))
+        max_out = assert_set_get(widget, "max", max)
         assert isinstance(max_out, float)
 
         if max >= 0.5:
             # The existing value is in the range, so it should not change.
-            assert widget.value == pytest.approx(0.5)
+            assert widget.value == 0.5
             assert probe.position == approx(0.5 / max, abs=ACCURACY)
             on_change.assert_not_called()
         else:
             # The existing value is out of the range, so it should be clipped.
-            assert widget.value == pytest.approx(max)
+            assert widget.value == max
             assert probe.position == 1
             on_change.assert_called_once_with(widget)
         await probe.redraw("Slider max property should be %s" % max)
@@ -219,7 +219,7 @@ async def test_range_with_ticks(widget, probe, on_change):
         on_change.reset_mock()
         widget.min = min
         widget.max = max
-        assert widget.value == pytest.approx(value)
+        assert widget.value == value
         assert probe.position == approx((value - min) / (max - min), abs=ACCURACY)
 
         if value == prev_value:

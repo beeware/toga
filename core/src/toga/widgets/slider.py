@@ -29,18 +29,20 @@ class Slider(Widget):
         Inherits from :class:`~toga.widgets.base.Widget`.
 
         :param id: The ID for the widget.
-        :param style: A style object. If no style is provided, a default style
-            will be applied to the widget.
-        :param value: Initial :any:`value` of the slider. Defaults to the
-            mid-point of the range.
-        :param range: Initial :any:`range` range of the slider. Defaults to ``(0,
-            1)``.
-        :param tick_count: Initial :any:`tick_count` for the slider. If ``None``,
-            the slider will be continuous.
+        :param style: A style object. If no style is provided, a default style will be
+            applied to the widget.
+        :param value: Initial :any:`value` of the slider. Defaults to the mid-point of
+            the range.
+        :param min: Initial minimum value of the slider. Defaults to 0.
+        :param max: Initial maximum value of the slider. Defaults to 1.
+        :param tick_count: Initial :any:`tick_count` for the slider. If :any:`None`, the
+            slider will be continuous.
         :param on_change: Initial :any:`on_change` handler.
         :param on_press: Initial :any:`on_press` handler.
         :param on_release: Initial :any:`on_release` handler.
         :param enabled: Whether the user can interact with the widget.
+        :param range: **DEPRECATED**; use :any:`min` and :any:`max`. Initial
+            :any:`range` range of the slider. Defaults to ``(0, 1)``.
         """
         super().__init__(id=id, style=style)
         self._impl = self.factory.Slider(interface=self)
@@ -133,8 +135,8 @@ class Slider(Widget):
     def min(self) -> float:
         """Minimum allowed value.
 
-        If the new minimum value is greater than the current maximum value,
-        the maximum value will be increased to the new minimum value.
+        When setting this property, the current :attr:`value` and :attr:`max` will be
+        clipped to the to the new minimum value.
         """
         return self._impl.get_min()
 
@@ -157,8 +159,8 @@ class Slider(Widget):
     def max(self) -> float:
         """Maximum allowed value.
 
-        If the new maximum value is less than the current minimum value,
-        the minimum value will be decreased to the new maximum value.
+        When setting this property, the current :attr:`value` and :attr:`min` will be
+        clipped to the to the new maximum value.
         """
         return self._impl.get_max()
 
@@ -288,6 +290,17 @@ class Slider(Widget):
     ######################################################################
     @property
     def range(self) -> tuple[float, float]:
+        """Range of allowed values, in the form (min, max).
+
+        **DEPRECATED**; use ``Slider.min`` and ``Slider.max``.
+
+        If the provided min is greater than the max, both values will assume the value
+        of the max.
+
+        If the current value is less than the provided ``min``, the current value will
+        be clipped to the minimum value. If the current value is greater than the
+        provided ``max``, the current value will be clipped than the maximum value.
+        """
         warnings.warn(
             "Slider.range has been deprecated in favor of Slider.min and Slider.max",
             DeprecationWarning,
