@@ -239,13 +239,12 @@ def test_bad_min(widget, value):
 
 
 def test_min_greater_than_max(widget):
-    "If the new min value exceeds the max value, an error is raised"
+    "If the new min value exceeds the max value, the max value is clipped"
     widget.max = 10
-    with pytest.raises(
-        ValueError,
-        match=r"min value of 100.00 is greater than the current max of 10.00",
-    ):
-        widget.min = 100
+    widget.min = 100
+
+    assert widget.max == 100
+    assert widget.min == 100
 
 
 @pytest.mark.parametrize(*QUANTIZE_PARAMS)
@@ -309,13 +308,12 @@ def test_bad_max(widget, value):
 
 
 def test_max_less_than_min(widget):
-    "If the new max value is less than the min value, an error is raised"
+    "If the new max value is less than the min value, the min value is clipped"
     widget.min = 100
-    with pytest.raises(
-        ValueError,
-        match=r"max value of 10.00 is less than the current min of 100.00",
-    ):
-        widget.max = 10
+    widget.max = 10
+
+    assert widget.max == 10
+    assert widget.min == 10
 
 
 @pytest.mark.parametrize(*QUANTIZE_PARAMS)

@@ -197,10 +197,9 @@ class NumberInput(Widget):
             else:
                 raise ValueError("min must be a number or None")
 
+        # Clip the max value if it's inconsistent with the new min
         if self.max is not None and new_min is not None and new_min > self.max:
-            raise ValueError(
-                f"min value of {new_min} is greater than the current max of {self.max}"
-            )
+            self.max = new_min
 
         self._min = new_min
         self._impl.set_min_value(new_min)
@@ -230,10 +229,9 @@ class NumberInput(Widget):
             else:
                 raise ValueError("max must be a number or None")
 
+        # Clip the min value if it's inconsistent with the new max
         if self.min is not None and new_max is not None and new_max < self.min:
-            raise ValueError(
-                f"max value of {new_max} is less than the current min of {self.min}"
-            )
+            self.min = new_max
 
         self._max = new_max
         self._impl.set_max_value(new_max)
