@@ -2,6 +2,7 @@ from travertino.size import at_least
 
 from toga.colors import TRANSPARENT
 from toga.fonts import SYSTEM_DEFAULT_FONT_SIZE
+from toga.style.pack import NONE
 from toga_cocoa.colors import native_color
 from toga_cocoa.libs import (
     SEL,
@@ -46,7 +47,7 @@ class Button(Widget):
         # RegularSquare button.
         if (
             self.interface.style.font_size != SYSTEM_DEFAULT_FONT_SIZE
-            or self.interface.style.height
+            or self.interface.style.height != NONE
         ):
             self.native.bezelStyle = NSBezelStyle.RegularSquare
         else:

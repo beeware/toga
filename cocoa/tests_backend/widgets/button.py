@@ -1,5 +1,6 @@
 from pytest import xfail
 
+from toga.style.pack import NONE
 from toga_cocoa.libs import NSBezelStyle, NSButton, NSFont
 
 from .base import SimpleProbe
@@ -33,7 +34,7 @@ class ButtonProbe(SimpleProbe):
         # If the button has a manual height set, or has a non-default font size
         # it should have a different bezel style.
         if (
-            self.widget.style.height
+            self.widget.style.height != NONE
             or self.native.font.pointSize != NSFont.systemFontSize
         ):
             assert self.native.bezelStyle == NSBezelStyle.RegularSquare
