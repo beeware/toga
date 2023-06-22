@@ -32,7 +32,7 @@ Usage
 Notes
 -----
 
-* When saving an Image, PNG and JPEG formats are guaranteed to be available.
+* PNG and JPEG formats are guaranteed to be supported.
   Other formats are available on some platforms:
 
   - macOS: GIF, BMP, TIFF
