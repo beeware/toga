@@ -1,7 +1,7 @@
 Selection
 =========
 
-A widget to select an single option from a list of alternatives.
+A widget to select a single option from a list of alternatives.
 
 .. figure:: /reference/images/Selection.png
     :align: center

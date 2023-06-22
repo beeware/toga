@@ -34,6 +34,12 @@ async def widget():
     return toga.Selection(items=["first", "second", "third"])
 
 
+@pytest.fixture
+def verify_font_sizes():
+    # Font size does not affect the width of this widget.
+    return False, True
+
+
 async def test_item_titles(widget, probe):
     """The selection is able to build display titles from a range of data types"""
     on_change_handler = Mock()
@@ -115,13 +121,14 @@ async def test_selection_change(widget, probe):
     widget.on_change = on_change_handler
 
     # Change the selection programatically
-    widget.value = "first"
+    assert widget.value == "first"
+    widget.value = "third"
 
     await probe.redraw("Selected item has been changed programmatically")
     on_change_handler.assert_called_once_with(widget)
     on_change_handler.reset_mock()
 
-    assert widget.value == "first"
+    assert widget.value == "third"
 
     # Change the selection via GUI action
     await probe.select_item()
@@ -155,13 +162,14 @@ async def test_source_changes(widget, probe):
 
     # Store the original selection
     selected_item = widget.value
+    assert selected_item.name == "first"
 
     # Append a new item
     source.append(dict(name="new 1", value=999))
     await probe.redraw("New item has been appended to selection")
 
     assert probe.titles == ["first", "second", "third", "new 1"]
-    assert probe.selected_title == selected_item.name
+    assert probe.selected_title == selected_item.name == "first"
     on_change_handler.assert_not_called()
 
     # Insert a new item
@@ -169,7 +177,7 @@ async def test_source_changes(widget, probe):
     await probe.redraw("New item has been inserted into selection")
 
     assert probe.titles == ["new 2", "first", "second", "third", "new 1"]
-    assert probe.selected_title == selected_item.name
+    assert probe.selected_title == selected_item.name == "first"
     on_change_handler.assert_not_called()
 
     # Change the selected item
@@ -177,7 +185,7 @@ async def test_source_changes(widget, probe):
     await probe.redraw("Value of selected item has been changed")
 
     assert probe.titles == ["new 2", "updated", "second", "third", "new 1"]
-    assert probe.selected_title == selected_item.name
+    assert probe.selected_title == selected_item.name == "updated"
     on_change_handler.assert_not_called()
 
     # Change a non-selected item
@@ -185,7 +193,7 @@ async def test_source_changes(widget, probe):
     await probe.redraw("Value of non-selected item has been changed")
 
     assert probe.titles == ["revised", "updated", "second", "third", "new 1"]
-    assert probe.selected_title == selected_item.name
+    assert probe.selected_title == selected_item.name == "updated"
     on_change_handler.assert_not_called()
 
     # Remove the selected item

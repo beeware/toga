@@ -103,8 +103,7 @@ class Widget:
         self.native.Visible = not hidden
 
     def set_font(self, font):
-        # By default, font can't be changed
-        pass
+        self.native.Font = font._impl.native
 
     def set_color(self, color):
         if color is None:
