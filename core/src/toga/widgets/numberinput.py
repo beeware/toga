@@ -92,10 +92,8 @@ class NumberInput(Widget):
         :param readonly: Can the value of the widget be modified by the user?
         :param on_change: A handler that will be invoked when the the value of the
             widget changes.
-        :param min_value: **DEPRECATED**; use :any`min`. If provided, :any`value` will
-            be guaranteed to be greater than or equal to this minimum.
-        :param max_value: **DEPRECATED**; use :any:`max`. If provided, :any:`value` will
-            be guaranteed to be less than or equal to this maximum.
+        :param min_value: **DEPRECATED**; alias of ``min``.
+        :param max_value: **DEPRECATED**; alias of ``max``.
         """
         super().__init__(id=id, style=style)
 
@@ -183,7 +181,7 @@ class NumberInput(Widget):
         Returns :any:`None` if there is no minimum bound.
 
         When setting this property, the current :attr:`value` and :attr:`max` will be
-        clipped to the to the new minimum value.
+        clipped against the new minimum value.
         """
         return self._min
 
@@ -215,7 +213,7 @@ class NumberInput(Widget):
         Returns :any:`None` if there is no maximum bound.
 
         When setting this property, the current :attr:`value` and :attr:`min` will be
-        clipped to the to the new maximum value.
+        clipped against the new maximum value.
         """
         return self._max
 
@@ -299,15 +297,7 @@ class NumberInput(Widget):
 
     @property
     def min_value(self) -> Decimal | None:
-        """The minimum bound for the widget's value.
-
-        **DEPRECATED**; use :attr:`min`.
-
-        Returns :any:`None` if there is no minimum bound.
-
-        When setting this property, the current :attr:`value` and :attr:`max` will be
-        clipped to the to the new minimum value.
-        """
+        """**DEPRECATED**; alias of :attr:`min`."""
         warnings.warn(
             "NumberInput.min_value has been renamed NumberInput.min",
             DeprecationWarning,
@@ -324,15 +314,7 @@ class NumberInput(Widget):
 
     @property
     def max_value(self) -> Decimal | None:
-        """The maximum bound for the widget's value.
-
-        **DEPRECATED**; use :attr:`max`.
-
-        Returns :any:`None` if there is no maximum bound.
-
-        When setting this property, the current :attr:`value` and :attr:`min` will be
-        clipped to the to the new maximum value.
-        """
+        """**DEPRECATED**; alias of :attr:`max`."""
         warnings.warn(
             "NumberInput.max_value has been renamed NumberInput.max",
             DeprecationWarning,

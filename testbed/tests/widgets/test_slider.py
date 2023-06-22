@@ -102,7 +102,7 @@ async def test_change(widget, probe, on_change):
     await probe.redraw("Slider scale should be reset")
 
 
-# Bounds checks and the `min` property are covered by the core tests.
+# All other aspects of this property are covered by the core tests.
 async def test_min(widget, probe, on_change):
     for min in POSITIONS[:-1]:
         on_change.reset_mock()
@@ -122,7 +122,7 @@ async def test_min(widget, probe, on_change):
         await probe.redraw("Slider min property should be %s" % min)
 
 
-# Bounds checks and the `max` property are covered by the core tests.
+# All other aspects of this property are covered by the core tests.
 async def test_max(widget, probe, on_change):
     # If the existing value is in the range, it should not change.
     for max in POSITIONS[-1:0:-1]:

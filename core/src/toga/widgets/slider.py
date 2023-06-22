@@ -41,8 +41,8 @@ class Slider(Widget):
         :param on_press: Initial :any:`on_press` handler.
         :param on_release: Initial :any:`on_release` handler.
         :param enabled: Whether the user can interact with the widget.
-        :param range: **DEPRECATED**; use :any:`min` and :any:`max`. Initial
-            :any:`range` range of the slider. Defaults to ``(0, 1)``.
+        :param range: **DEPRECATED**; use ``min`` and ``max`` instead. Initial
+            :any:`range` of the slider. Defaults to ``(0, 1)``.
         """
         super().__init__(id=id, style=style)
         self._impl = self.factory.Slider(interface=self)
@@ -136,7 +136,7 @@ class Slider(Widget):
         """Minimum allowed value.
 
         When setting this property, the current :attr:`value` and :attr:`max` will be
-        clipped to the to the new minimum value.
+        clipped against the new minimum value.
         """
         return self._impl.get_min()
 
@@ -160,7 +160,7 @@ class Slider(Widget):
         """Maximum allowed value.
 
         When setting this property, the current :attr:`value` and :attr:`min` will be
-        clipped to the to the new maximum value.
+        clipped against the new maximum value.
         """
         return self._impl.get_max()
 
@@ -290,16 +290,16 @@ class Slider(Widget):
     ######################################################################
     @property
     def range(self) -> tuple[float, float]:
-        """Range of allowed values, in the form (min, max).
+        """**DEPRECATED**; use :any:`min` and :any:`max` instead.
 
-        **DEPRECATED**; use ``Slider.min`` and ``Slider.max``.
+        Range of allowed values, in the form (min, max).
 
         If the provided min is greater than the max, both values will assume the value
         of the max.
 
         If the current value is less than the provided ``min``, the current value will
         be clipped to the minimum value. If the current value is greater than the
-        provided ``max``, the current value will be clipped than the maximum value.
+        provided ``max``, the current value will be clipped to the maximum value.
         """
         warnings.warn(
             "Slider.range has been deprecated in favor of Slider.min and Slider.max",

@@ -83,7 +83,8 @@ class TimeInput(Widget):
         """The minimum allowable time (inclusive). A value of ``None`` will be converted
         into 00:00:00.
 
-        The existing ``value`` and ``max`` will be clipped to the new minimum.
+        When setting this property, the current :attr:`value` and :attr:`max` will be
+        clipped against the new minimum value.
         """
         return self._impl.get_min_time()
 
@@ -105,7 +106,8 @@ class TimeInput(Widget):
         """The maximum allowable time (inclusive). A value of ``None`` will be converted
         into 23:59:59.
 
-        The existing ``value`` and ``min`` will be clipped to the new maximum.
+        When setting this property, the current :attr:`value` and :attr:`min` will be
+        clipped against the new maximum value.
         """
         return self._impl.get_max_time()
 

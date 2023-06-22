@@ -260,6 +260,10 @@ def test_deprecated_names():
         DeprecationWarning, match="DatePicker.min_date has been renamed DateInput.min"
     ):
         widget.min_date = MIN
+
+    with pytest.warns(
+        DeprecationWarning, match="DatePicker.min_date has been renamed DateInput.min"
+    ):
         assert widget.min_date == MIN
     assert widget.min == MIN
 
@@ -272,20 +276,11 @@ def test_deprecated_names():
         DeprecationWarning, match="DatePicker.max_date has been renamed DateInput.max"
     ):
         assert widget.max_date == MAX
-
     assert widget.max == MAX
 
     with pytest.warns(
         DeprecationWarning, match="DatePicker has been renamed DateInput"
     ):
         widget = toga.DatePicker()
-
-    with pytest.warns(
-        DeprecationWarning, match="DatePicker.min_date has been renamed DateInput.min"
-    ):
-        assert widget.min_date == date(1800, 1, 1)
-
-    with pytest.warns(
-        DeprecationWarning, match="DatePicker.max_date has been renamed DateInput.max"
-    ):
-        assert widget.max_date == date(8999, 12, 31)
+    assert widget.min == date(1800, 1, 1)
+    assert widget.max == date(8999, 12, 31)

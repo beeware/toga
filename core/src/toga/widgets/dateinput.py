@@ -100,7 +100,8 @@ class DateInput(Widget):
         """The minimum allowable date (inclusive). A value of ``None`` will be converted
         into the lowest supported date of 1800-01-01.
 
-        The existing ``value`` and ``max`` will be clipped to the new minimum.
+        When setting this property, the current :attr:`value` and :attr:`max` will be
+        clipped against the new minimum value.
 
         :raises ValueError: If set to a date outside of the supported range.
         """
@@ -124,7 +125,8 @@ class DateInput(Widget):
         """The maximum allowable date (inclusive). A value of ``None`` will be converted
         into the highest supported date of 8999-12-31.
 
-        The existing ``value`` and ``min`` will be clipped to the new maximum.
+        When setting this property, the current :attr:`value` and :attr:`min` will be
+        clipped against the new maximum value.
 
         :raises ValueError: If set to a date outside of the supported range.
         """
