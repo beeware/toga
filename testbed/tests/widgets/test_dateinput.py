@@ -91,12 +91,10 @@ async def test_init():
     max = date(2000, 1, 1)
     on_change = Mock()
 
-    widget = toga.DateInput(
-        value=value, min_value=min, max_value=max, on_change=on_change
-    )
+    widget = toga.DateInput(value=value, min=min, max=max, on_change=on_change)
     assert widget.value == value
-    assert widget.min_value == min
-    assert widget.max_value == max
+    assert widget.min == min
+    assert widget.max == max
     assert widget.on_change._raw is on_change
 
 
@@ -121,9 +119,9 @@ async def test_value(widget, probe, normalize, assert_none_value, values, on_cha
 async def test_change(widget, probe, on_change):
     "The on_change handler is triggered on user input"
 
-    widget.min_value = date(2023, 5, 17)
+    widget.min = date(2023, 5, 17)
     widget.value = date(2023, 5, 20)
-    widget.max_value = date(2023, 5, 23)
+    widget.max = date(2023, 5, 23)
 
     on_change.reset_mock()
 
@@ -135,9 +133,9 @@ async def test_change(widget, probe, on_change):
         assert on_change.mock_calls == [call(widget)] * i
 
     # Can't go past the maximum
-    assert widget.value == widget.max_value
+    assert widget.value == widget.max
     await probe.change(1)
-    assert widget.value == widget.max_value
+    assert widget.value == widget.max
 
     widget.value = date(2023, 5, 20)
     on_change.reset_mock()
@@ -150,9 +148,9 @@ async def test_change(widget, probe, on_change):
         assert on_change.mock_calls == [call(widget)] * i
 
     # Can't go past the minimum
-    assert widget.value == widget.min_value
+    assert widget.value == widget.min
     await probe.change(-1)
-    assert widget.value == widget.min_value
+    assert widget.value == widget.min
 
 
 async def test_min(widget, probe, initial_value, min_value, values, normalize):
@@ -162,8 +160,8 @@ async def test_min(widget, probe, initial_value, min_value, values, normalize):
         assert probe.min_value == min_value
 
     for min in values:
-        widget.min_value = min
-        assert widget.min_value == min
+        widget.min = min
+        assert widget.min == min
 
         if value < min:
             value = normalize(min)
@@ -181,8 +179,8 @@ async def test_max(widget, probe, initial_value, max_value, values, normalize):
         assert probe.max_value == max_value
 
     for max in reversed(values):
-        widget.max_value = max
-        assert widget.max_value == max
+        widget.max = max
+        assert widget.max == max
 
         if value > max:
             value = normalize(max)

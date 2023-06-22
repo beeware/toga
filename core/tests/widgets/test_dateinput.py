@@ -2,7 +2,6 @@ from datetime import date, datetime, time
 from unittest.mock import Mock
 
 import pytest
-from pytest import warns
 
 import toga
 from toga_dummy.utils import assert_action_performed
@@ -28,8 +27,8 @@ def test_widget_created():
     assert_action_performed(widget, "create DateInput")
 
     assert widget.value == date(2023, 5, 25)
-    assert widget.min_value == date(1800, 1, 1)
-    assert widget.max_value == date(8999, 12, 31)
+    assert widget.min == date(1800, 1, 1)
+    assert widget.max == date(8999, 12, 31)
     assert widget.on_change._raw is None
 
 
@@ -38,16 +37,16 @@ def test_widget_created_with_values(on_change_handler):
     # Round trip the impl/interface
     widget = toga.DateInput(
         value=date(2015, 6, 15),
-        min_value=date(2013, 5, 14),
-        max_value=date(2017, 7, 16),
+        min=date(2013, 5, 14),
+        max=date(2017, 7, 16),
         on_change=on_change_handler,
     )
     assert widget._impl.interface == widget
     assert_action_performed(widget, "create DateInput")
 
     assert widget.value == date(2015, 6, 15)
-    assert widget.min_value == date(2013, 5, 14)
-    assert widget.max_value == date(2017, 7, 16)
+    assert widget.min == date(2013, 5, 14)
+    assert widget.max == date(2017, 7, 16)
     assert widget.on_change._raw == on_change_handler
 
     # The change handler isn't invoked at construction.
@@ -107,8 +106,8 @@ def test_invalid_value(widget, value, exc, message):
 def test_value_clipping(widget, value, clipped, on_change_handler):
     "It the value is inconsistent with min/max, it is clipped."
     # Set min/max dates, and clear the on_change mock
-    widget.min_value = date(2010, 1, 1)
-    widget.max_value = date(2020, 1, 1)
+    widget.min = date(2010, 1, 1)
+    widget.max = date(2020, 1, 1)
     on_change_handler.reset_mock()
 
     # Set the new value
@@ -130,11 +129,11 @@ def test_value_clipping(widget, value, clipped, on_change_handler):
         ("2023-03-11", date(2023, 3, 11)),
     ],
 )
-def test_min_value(widget, value, expected):
-    "The min_value of the datepicker can be set"
-    widget.min_value = value
+def test_min(widget, value, expected):
+    "The min of the datepicker can be set"
+    widget.min = value
 
-    assert widget.min_value == expected
+    assert widget.min == expected
 
 
 INVALID_LIMITS = INVALID_VALUES + [
@@ -144,16 +143,16 @@ INVALID_LIMITS = INVALID_VALUES + [
 
 
 @pytest.mark.parametrize("value, exc, message", INVALID_LIMITS)
-def test_invalid_min_value(widget, value, exc, message):
-    "Invalid min_value values raise an exception"
-    widget.max_value = date(2025, 6, 12)
+def test_invalid_min(widget, value, exc, message):
+    "Invalid min values raise an exception"
+    widget.max = date(2025, 6, 12)
 
     with pytest.raises(exc, match=message):
-        widget.min_value = value
+        widget.min = value
 
 
 @pytest.mark.parametrize(
-    "min_value, clip_value, clip_max",
+    "min, clip_value, clip_max",
     [
         (date(2005, 6, 1), False, False),
         (date(2005, 6, 25), False, False),
@@ -164,26 +163,26 @@ def test_invalid_min_value(widget, value, exc, message):
         (date(2006, 7, 4), True, True),
     ],
 )
-def test_min_value_clip(widget, on_change_handler, min_value, clip_value, clip_max):
+def test_min_clip(widget, on_change_handler, min, clip_value, clip_max):
     "If the current value or max is before a new min date, it is clipped"
     widget.value = date(2005, 6, 25)
-    widget.max_value = date(2005, 12, 31)
+    widget.max = date(2005, 12, 31)
     on_change_handler.reset_mock()
 
-    widget.min_value = min_value
-    assert widget.min_value == min_value
+    widget.min = min
+    assert widget.min == min
 
     if clip_value:
-        assert widget.value == min_value
+        assert widget.value == min
         on_change_handler.assert_called_once_with(widget)
     else:
         assert widget.value == date(2005, 6, 25)
         on_change_handler.assert_not_called()
 
     if clip_max:
-        assert widget.max_value == min_value
+        assert widget.max == min
     else:
-        assert widget.max_value == date(2005, 12, 31)
+        assert widget.max == date(2005, 12, 31)
 
 
 @pytest.mark.parametrize(
@@ -195,24 +194,24 @@ def test_min_value_clip(widget, on_change_handler, min_value, clip_value, clip_m
         ("2023-03-11", date(2023, 3, 11)),
     ],
 )
-def test_max_value(widget, value, expected):
-    "The max_value of the datepicker can be set"
-    widget.max_value = value
+def test_max(widget, value, expected):
+    "The max of the datepicker can be set"
+    widget.max = value
 
-    assert widget.max_value == expected
+    assert widget.max == expected
 
 
 @pytest.mark.parametrize("value, exc, message", INVALID_LIMITS)
-def test_invalid_max_value(widget, value, exc, message):
-    "Invalid max_value values raise an exception"
-    widget.min_value = date(2015, 6, 12)
+def test_invalid_max(widget, value, exc, message):
+    "Invalid max values raise an exception"
+    widget.min = date(2015, 6, 12)
 
     with pytest.raises(exc, match=message):
-        widget.max_value = value
+        widget.max = value
 
 
 @pytest.mark.parametrize(
-    "max_value, clip_value, clip_min",
+    "max, clip_value, clip_min",
     [
         (date(2005, 6, 1), True, True),
         (date(2005, 6, 24), True, True),
@@ -223,42 +222,65 @@ def test_invalid_max_value(widget, value, exc, message):
         (date(2006, 7, 4), False, False),
     ],
 )
-def test_max_value_clip(widget, on_change_handler, max_value, clip_value, clip_min):
+def test_max_clip(widget, on_change_handler, max, clip_value, clip_min):
     "If the current value or min is after a new max date, it is clipped"
-    widget.min_value = date(2005, 6, 25)
+    widget.min = date(2005, 6, 25)
     widget.value = date(2005, 12, 31)
     on_change_handler.reset_mock()
 
-    widget.max_value = max_value
-    assert widget.max_value == max_value
+    widget.max = max
+    assert widget.max == max
 
     if clip_value:
-        assert widget.value == max_value
+        assert widget.value == max
         on_change_handler.assert_called_once_with(widget)
     else:
         assert widget.value == date(2005, 12, 31)
         on_change_handler.assert_not_called()
 
     if clip_min:
-        assert widget.min_value == max_value
+        assert widget.min == max
     else:
-        assert widget.min_value == date(2005, 6, 25)
+        assert widget.min == date(2005, 6, 25)
 
 
 def test_deprecated_names():
     MIN = date(2012, 8, 3)
     MAX = date(2016, 11, 15)
 
-    with warns(DeprecationWarning, match="DatePicker has been renamed DateInput"):
+    with pytest.warns(
+        DeprecationWarning, match="DatePicker has been renamed DateInput"
+    ):
         widget = toga.DatePicker(min_date=MIN, max_date=MAX)
-    assert widget.min_value == MIN
-    assert widget.max_value == MAX
-    widget.min_value = widget.max_value = None
+    assert widget.min == MIN
+    assert widget.max == MAX
+    widget.min = widget.max = None
 
-    widget.min_date = MIN
-    assert widget.min_date == MIN
-    assert widget.min_value == MIN
+    with pytest.warns(
+        DeprecationWarning, match="DatePicker.min_date has been renamed DateInput.min"
+    ):
+        widget.min_date = MIN
 
-    widget.max_date = MAX
-    assert widget.max_date == MAX
-    assert widget.max_value == MAX
+    with pytest.warns(
+        DeprecationWarning, match="DatePicker.min_date has been renamed DateInput.min"
+    ):
+        assert widget.min_date == MIN
+    assert widget.min == MIN
+
+    with pytest.warns(
+        DeprecationWarning, match="DatePicker.max_date has been renamed DateInput.max"
+    ):
+        widget.max_date = MAX
+
+    with pytest.warns(
+        DeprecationWarning, match="DatePicker.max_date has been renamed DateInput.max"
+    ):
+        assert widget.max_date == MAX
+    assert widget.max == MAX
+
+    with pytest.warns(
+        DeprecationWarning, match="DatePicker has been renamed DateInput"
+    ):
+        widget = toga.DatePicker()
+    assert widget.min == date(1800, 1, 1)
+    assert widget.max == date(8999, 12, 31)

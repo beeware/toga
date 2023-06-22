@@ -19,10 +19,10 @@ class NumberInput(Widget):
         self._set_value("step", step)
 
     def set_min_value(self, value):
-        self._set_value("min_value", value)
+        self._set_value("min", value)
 
     def set_max_value(self, value):
-        self._set_value("max_value", value)
+        self._set_value("max", value)
 
     def set_value(self, value):
         self._set_value("value", value)
