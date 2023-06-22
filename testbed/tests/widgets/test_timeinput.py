@@ -87,12 +87,10 @@ async def test_init(normalize):
     max = time(20, 30, 40)
     on_change = Mock()
 
-    widget = toga.TimeInput(
-        value=value, min_value=min, max_value=max, on_change=on_change
-    )
+    widget = toga.TimeInput(value=value, min=min, max=max, on_change=on_change)
     assert widget.value == normalize(value)
-    assert widget.min_value == min
-    assert widget.max_value == max
+    assert widget.min == min
+    assert widget.max == max
     assert widget.on_change._raw is on_change
 
 
@@ -101,9 +99,9 @@ async def test_change(widget, probe, on_change):
 
     # The probe `change` method operates on minutes, because not all backends support
     # seconds.
-    widget.min_value = time(5, 7)
+    widget.min = time(5, 7)
     widget.value = time(5, 10)
-    widget.max_value = time(5, 13)
+    widget.max = time(5, 13)
     on_change.reset_mock()
 
     for i in range(1, 4):
@@ -114,9 +112,9 @@ async def test_change(widget, probe, on_change):
         assert on_change.mock_calls == [call(widget)] * i
 
     # Can't go past the maximum
-    assert widget.value == widget.max_value
+    assert widget.value == widget.max
     await probe.change(1)
-    assert widget.value == widget.max_value
+    assert widget.value == widget.max
 
     widget.value = time(5, 10)
     on_change.reset_mock()
@@ -129,6 +127,6 @@ async def test_change(widget, probe, on_change):
         assert on_change.mock_calls == [call(widget)] * i
 
     # Can't go past the minimum
-    assert widget.value == widget.min_value
+    assert widget.value == widget.min
     await probe.change(-1)
-    assert widget.value == widget.min_value
+    assert widget.value == widget.min

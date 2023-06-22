@@ -1,0 +1,1 @@
+``DatePicker.min_date`` and ``DatePicker.max_date`` has been renamed ``DateInput.min`` and ``DateInput.max``, respectively.
