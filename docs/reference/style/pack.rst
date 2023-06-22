@@ -291,7 +291,8 @@ The mapping that can be used to establish the reference implementation is:
   the HTML reference document. The rendering area of the browser window becomes
   the view area that Pack will fill.
 
-* Images map to ``<img>`` elements.
+* Images map to ``<img>`` elements, with a style of ``object-fit: contain`` if
+  neither ``height`` or ``width`` is defined.
 
 * All other elements in the DOM tree are mapped to ``<div>`` elements.
 
