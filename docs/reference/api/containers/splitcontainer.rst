@@ -64,7 +64,7 @@ The minimum flex weight is 1; any smaller value will be interpreted as 1.
 Reference
 ---------
 
-.. autoclass:: toga.widgets.splitcontainer.SplitContainer
+.. autoclass:: toga.SplitContainer
    :members:
    :undoc-members:
    :exclude-members: HORIZONTAL, VERTICAL, window, app

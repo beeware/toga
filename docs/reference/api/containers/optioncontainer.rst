@@ -74,7 +74,7 @@ currently selected item, you can specify an item using:
 Reference
 ---------
 
-.. autoclass:: toga.widgets.optioncontainer.OptionContainer
+.. autoclass:: toga.OptionContainer
    :members:
    :undoc-members: app, window
 

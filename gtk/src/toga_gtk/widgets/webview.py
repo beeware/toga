@@ -2,7 +2,7 @@ from travertino.size import at_least
 
 from toga.widgets.webview import JavaScriptResult
 
-from ..libs import WebKit2
+from ..libs import GLib, WebKit2
 from .base import Widget
 
 
@@ -34,7 +34,7 @@ class WebView(Widget):
 
     def gtk_on_load_changed(self, widget, load_event, *args):
         if load_event == WebKit2.LoadEvent.FINISHED:
-            self.interface.on_webview_load(self.interface)
+            self.interface.on_webview_load(None)
 
             if self.load_future:
                 self.load_future.set_result(None)
@@ -44,12 +44,22 @@ class WebView(Widget):
         url = self.native.get_uri()
         return None if url == "about:blank" else url
 
+    def _loaded(self, data):
+        # Internal method to fake a load event.
+        self.native.emit("load-changed", WebKit2.LoadEvent.FINISHED)
+        return False
+
     def set_url(self, value, future=None):
         if value:
             self.native.load_uri(value)
         else:
             self.native.load_plain_text("")
-            self.interface.on_webview_load(self.interface)
+            # GTK doesn't emit a load-changed signal when plain text is loaded; so we
+            # fake it. We can't emit the signal directly because it will be handled
+            # immediately. During creation of an empty webview, the URL is set to None,
+            # which means an event can be triggered before the widget instance has
+            # finished construction. So, we defer the call with a 0 timeout.
+            GLib.timeout_add(0, self._loaded, None)
 
         self.load_future = future
 

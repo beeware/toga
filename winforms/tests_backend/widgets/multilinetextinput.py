@@ -1,13 +1,13 @@
 import System.Windows.Forms
 from System.Drawing import SystemColors
 
-from .base import SimpleProbe
 from .properties import toga_xalignment
 from .textinput import TextInputProbe
 
 
 class MultilineTextInputProbe(TextInputProbe):
     native_class = System.Windows.Forms.RichTextBox
+    fixed_height = None
 
     @property
     def value(self):
@@ -59,6 +59,3 @@ class MultilineTextInputProbe(TextInputProbe):
     def alignment(self):
         self.native.SelectAll()
         return toga_xalignment(self.native.SelectionAlignment)
-
-    def assert_height(self, min_height, max_height):
-        SimpleProbe.assert_height(self, min_height, max_height)

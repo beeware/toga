@@ -106,12 +106,11 @@ class OptionList:
     def index(self, value: str | int | OptionItem):
         """Find the index of the tab that matches the given specifier
 
-        Raises :any:`ValueError` if no tab matching the value can be found.
-
         :param value: The value to look for. An integer is returned as-is;
             if an :any:`OptionItem` is provided, that item's index is returned;
             any other value will be converted into a string, and the first
             tab with a label matching that string will be returned.
+        :raises ValueError: If no tab matching the value can be found.
         """
         if isinstance(value, int):
             return value
@@ -186,7 +185,7 @@ class OptionContainer(Widget):
     ):
         """Create a new OptionContainer.
 
-        Inherits from :class:`~toga.widgets.base.Widget`.
+        Inherits from :class:`toga.Widget`.
 
         :param id: The ID for the widget.
         :param style: A style object. If no style is provided, a default style will be

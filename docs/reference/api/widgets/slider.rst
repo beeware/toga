@@ -39,6 +39,6 @@ A slider can either be continuous (allowing any value within the range), or disc
 Reference
 ---------
 
-.. autoclass:: toga.widgets.slider.Slider
+.. autoclass:: toga.Slider
    :members:
    :undoc-members:

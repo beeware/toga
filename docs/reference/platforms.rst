@@ -21,8 +21,7 @@ report ``sys.platform == 'darwin'``), or can be manually installed by invoking:
 
     $ pip install toga-cocoa
 
-The macOS backend has seen the most development to date. It uses `Rubicon`_ to
-provide a bridge to native macOS libraries.
+The macOS backend uses `Rubicon`_ to provide a bridge to native macOS libraries.
 
 .. _toga-cocoa: https://github.com/beeware/toga/tree/main/cocoa
 .. _Rubicon: https://github.com/beeware/rubicon-objc
@@ -32,8 +31,8 @@ Linux
 
 .. image:: /reference/screenshots/gtk.png
 
-The backend for Linux platforms is named `toga-gtk`_. It supports GTK 3.4
-and later. It is installed automatically on Linux machines (machines that
+The backend for Linux platforms is named `toga-gtk`_. It supports GTK 3.10
+or newer. It is installed automatically on Linux machines (machines that
 report ``sys.platform == 'linux'``), or can be manually installed by
 invoking:
 
@@ -41,8 +40,7 @@ invoking:
 
     $ pip install toga-gtk
 
-The GTK backend is reasonably well developed, but currently has some known issues
-with widget layout. It uses the native GObject Python bindings.
+The GTK backend uses the native GObject Python bindings.
 
 .. _toga-gtk: https://github.com/beeware/toga/tree/main/gtk
 
@@ -60,7 +58,7 @@ installed by invoking:
 
     $ pip install toga-winforms
 
-It uses `Python.net`_.
+The Winforms backend uses `Python.net`_.
 
 .. _toga-winforms: https://github.com/beeware/toga/tree/main/winforms
 .. _Python.net: https://pythonnet.github.io
@@ -71,32 +69,33 @@ Mobile platforms
 iOS
 ~~~
 
-The backend for iOS is named `toga-iOS`_. It supports iOS 6 or later. It
-must be manually installed into an iOS Python project. It can be manually
-installed by invoking:
+The backend for iOS is named `toga-iOS`_; it supports iOS 12 or later. It must be
+manually installed into an iOS project; you may find it helpful to use a tool like
+`Briefcase`_ with this deployment process. It can be manually installed by invoking:
 
 .. code-block:: console
 
     $ pip install toga-iOS
 
-The iOS backend is currently proof-of-concept only. Most widgets have not been
-implemented. It uses `Rubicon`_ to provide a bridge to native macOS libraries.
+The iOS backend uses `Rubicon`_ to provide a bridge to native iOS libraries.
 
 .. _toga-iOS: https://github.com/beeware/toga/tree/main/iOS
+.. _Briefcase: https://github.com/beeware/briefcase
 
 Android
 ~~~~~~~
 
-The backend for Android is named `toga-android`_. It can be manually installed
-by invoking:
+The backend for Android is named `toga-android`_; It support Android 8 or later. It must
+be manually installed into an Android project; you may find it helpful to use a tool
+like `Briefcase`_ with this deployment process. It can be manually installed by
+invoking:
 
 .. code-block:: console
 
     $ pip install toga-android
 
-The android backend is currently proof-of-concept only. Most widgets have not
-been implemented. It uses `Chaquopy`_ to provide a way to access the Android
-Java libraries and implement Java interfaces in Python.
+The Android backend uses `Chaquopy`_ to provide a way to access the Android Java
+libraries and implement Java interfaces in Python.
 
 .. _toga-android: https://github.com/beeware/toga/tree/main/android
 .. _Chaquopy: https://chaquo.com/chaquopy/
@@ -104,8 +103,9 @@ Java libraries and implement Java interfaces in Python.
 Web
 ---
 
-The Web backend is named `toga-web`_. It can be manually installed
-by invoking:
+The Web backend is named `toga-web`_. It must be manually installed into an Android
+project; you may find it helpful to use a tool like `Briefcase`_ with this deployment
+process. It can be manually installed by invoking:
 
 .. code-block:: console
 
@@ -130,11 +130,11 @@ Planned platform support
 
 Eventually, the Toga project would like to provide support for the following platforms:
 
- * UWP (Native Windows 8 and Windows mobile)
+ * WinUI (Modern Windows look and feel)
  * Qt (for KDE based desktops)
  * tvOS (for AppleTV devices)
  * watchOS (for AppleWatch devices)
- * Curses (for console)
+ * Curses/Textual (for console)
 
 If you are interested in these platforms and would like to contribute, please
 get in touch on `Mastodon <https://fosstodon.org/@beeware>`__ or

@@ -1,36 +1,36 @@
 Component,Type,Component,Description,macOS,GTK,Windows,iOS,Android,Web
-Application,Core Component,:class:`~toga.app.App`,The application itself,|b|,|b|,|b|,|b|,|b|,|b|
-Window,Core Component,:class:`~toga.window.Window`,Window object,|b|,|b|,|b|,|b|,|b|,|b|
-MainWindow,Core Component,:class:`~toga.app.MainWindow`,Main window of the application,|b|,|b|,|b|,|b|,|b|,|b|
-ActivityIndicator,General Widget,:class:`~toga.widgets.activityindicator.ActivityIndicator`,A spinning activity animation,|y|,|y|,,,,
-Button,General Widget,:class:`~toga.widgets.button.Button`,Basic clickable Button,|y|,|y|,|y|,|y|,|y|,|b|
-Canvas,General Widget,:class:`~toga.widgets.canvas.Canvas`,Area you can draw on,|b|,|b|,|b|,|b|,,
-DatePicker,General Widget,:class:`~toga.widgets.datepicker.DatePicker`,An input for dates,,,|b|,,|b|,
-DetailedList,General Widget,:class:`~toga.widgets.detailedlist.DetailedList`,A list of complex content,|b|,|b|,,|b|,|b|,
-Divider,General Widget,:class:`~toga.widgets.divider.Divider`,A horizontal or vertical line,|y|,|y|,|y|,,,
-ImageView,General Widget,:class:`~toga.widgets.imageview.ImageView`,Image Viewer,|b|,|b|,|b|,|b|,|b|,
-Label,General Widget,:class:`~toga.widgets.label.Label`,Text label,|y|,|y|,|y|,|y|,|y|,|b|
-MultilineTextInput,General Widget,:class:`~toga.widgets.multilinetextinput.MultilineTextInput`,Multi-line Text Input field,|y|,|y|,|y|,|y|,|y|,
-NumberInput,General Widget,:class:`~toga.widgets.numberinput.NumberInput`,A text input that is limited to numeric input,|y|,|y|,|y|,|y|,|y|,
-PasswordInput,General Widget,:class:`~toga.widgets.passwordinput.PasswordInput`,A text input that hides its input,|y|,|y|,|y|,|y|,|y|,
-ProgressBar,General Widget,:class:`~toga.widgets.progressbar.ProgressBar`,Progress Bar,|y|,|y|,|y|,|y|,|y|,|b|
-Selection,General Widget,:class:`~toga.widgets.selection.Selection`,Selection,|b|,|b|,|b|,|b|,|b|,
-Slider,General Widget,:class:`~toga.widgets.slider.Slider`,Slider,|y|,|y|,|y|,|y|,|y|,
-Switch,General Widget,:class:`~toga.widgets.switch.Switch`,Switch,|y|,|y|,|y|,|y|,|y|,|b|
-Table,General Widget,:class:`~toga.widgets.table.Table`,Table of data,|b|,|b|,|b|,,|b|,
-TextInput,General Widget,:class:`~toga.widgets.textinput.TextInput`,Text input field,|y|,|y|,|y|,|y|,|y|,|b|
-TimePicker,General Widget,:class:`~toga.widgets.timepicker.TimePicker`,An input for times,,,|b|,,|b|,
-Tree,General Widget,:class:`~toga.widgets.tree.Tree`,Tree of data,|b|,|b|,|b|,,,
-WebView,General Widget,:class:`~toga.widgets.webview.WebView`,A panel for displaying HTML,|y|,|y|,|y|,|y|,|y|,
-Widget,General Widget,:class:`~toga.widgets.base.Widget`,The base widget,|y|,|y|,|y|,|y|,|y|,|b|
-Box,Layout Widget,:class:`~toga.widgets.box.Box`,Container for components,|y|,|y|,|y|,|y|,|y|,|b|
-ScrollContainer,Layout Widget,:class:`~toga.widgets.scrollcontainer.ScrollContainer`,"A container that can display a layout larger that the area of the container, with overflow controlled by scroll bars.",|b|,|b|,|b|,|b|,|b|,
-SplitContainer,Layout Widget,:class:`~toga.widgets.splitcontainer.SplitContainer`,A container that divides an area into multiple panels with a movable border.,|b|,|b|,|b|,,,
-OptionContainer,Layout Widget,:class:`~toga.widgets.optioncontainer.OptionContainer`,A container that can display multiple labeled tabs of content.,|b|,|b|,|b|,,,
+Application,Core Component,:class:`~toga.App`,The application itself,|b|,|b|,|b|,|b|,|b|,|b|
+Window,Core Component,:class:`~toga.Window`,Window object,|b|,|b|,|b|,|b|,|b|,|b|
+MainWindow,Core Component,:class:`~toga.MainWindow`,Main window of the application,|b|,|b|,|b|,|b|,|b|,|b|
+ActivityIndicator,General Widget,:class:`~toga.ActivityIndicator`,A spinning activity animation,|y|,|y|,,,,
+Button,General Widget,:class:`~toga.Button`,Basic clickable Button,|y|,|y|,|y|,|y|,|y|,|b|
+Canvas,General Widget,:class:`~toga.Canvas`,Area you can draw on,|b|,|b|,|b|,|b|,,
+DateInput,General Widget,:class:`~toga.DateInput`,A widget to select a calendar date,,,|y|,,|y|,
+DetailedList,General Widget,:class:`~toga.DetailedList`,A list of complex content,|b|,|b|,,|b|,|b|,
+Divider,General Widget,:class:`~toga.Divider`,A horizontal or vertical line,|y|,|y|,|y|,,,
+ImageView,General Widget,:class:`~toga.ImageView`,Image Viewer,|b|,|b|,|b|,|b|,|b|,
+Label,General Widget,:class:`~toga.Label`,Text label,|y|,|y|,|y|,|y|,|y|,|b|
+MultilineTextInput,General Widget,:class:`~toga.MultilineTextInput`,Multi-line Text Input field,|y|,|y|,|y|,|y|,|y|,
+NumberInput,General Widget,:class:`~toga.NumberInput`,A text input that is limited to numeric input,|y|,|y|,|y|,|y|,|y|,
+PasswordInput,General Widget,:class:`~toga.PasswordInput`,A text input that hides its input,|y|,|y|,|y|,|y|,|y|,
+ProgressBar,General Widget,:class:`~toga.ProgressBar`,Progress Bar,|y|,|y|,|y|,|y|,|y|,|b|
+Selection,General Widget,:class:`~toga.Selection`,Selection,|b|,|b|,|b|,|b|,|b|,
+Slider,General Widget,:class:`~toga.Slider`,Slider,|y|,|y|,|y|,|y|,|y|,
+Switch,General Widget,:class:`~toga.Switch`,Switch,|y|,|y|,|y|,|y|,|y|,|b|
+Table,General Widget,:class:`~toga.Table`,Table of data,|b|,|b|,|b|,,|b|,
+TextInput,General Widget,:class:`~toga.TextInput`,A widget for the display and editing of a single line of text.,|y|,|y|,|y|,|y|,|y|,|b|
+TimeInput,General Widget,:class:`~toga.TimeInput`,A widget to select a clock time,,,|y|,,|y|,
+Tree,General Widget,:class:`~toga.Tree`,Tree of data,|b|,|b|,|b|,,,
+WebView,General Widget,:class:`~toga.WebView`,A panel for displaying HTML,|y|,|y|,|y|,|y|,|y|,
+Widget,General Widget,:class:`~toga.Widget`,The base widget,|y|,|y|,|y|,|y|,|y|,|b|
+Box,Layout Widget,:class:`~toga.Box`,Container for components,|y|,|y|,|y|,|y|,|y|,|b|
+ScrollContainer,Layout Widget,:class:`~toga.ScrollContainer`,"A container that can display a layout larger that the area of the container, with overflow controlled by scroll bars.",|b|,|b|,|b|,|b|,|b|,
+SplitContainer,Layout Widget,:class:`~toga.SplitContainer`,A container that divides an area into multiple panels with a movable border.,|b|,|b|,|b|,,,
+OptionContainer,Layout Widget,:class:`~toga.OptionContainer`,A container that can display multiple labeled tabs of content.,|b|,|b|,|b|,,,
 App Paths,Resource,:class:`~toga.paths.Paths`,A mechanism for obtaining platform-appropriate filesystem locations for an application.,|y|,|y|,|y|,|y|,|y|,
-Font,Resource,:class:`~toga.fonts.Font`,Fonts,|b|,|b|,|b|,|b|,|b|,
-Command,Resource,:class:`~toga.command.Command`,Command,|b|,|b|,|b|,,|b|,
-Group,Resource,:class:`~toga.command.Group`,Command group,|b|,|b|,|b|,|b|,|b|,
-Icon,Resource,:class:`~toga.icons.Icon`,"An icon for buttons, menus, etc",|b|,|b|,|b|,|b|,|b|,
-Image,Resource,:class:`~toga.images.Image`,An image,|b|,|b|,|b|,|b|,|b|,
+Font,Resource,:class:`~toga.Font`,Fonts,|b|,|b|,|b|,|b|,|b|,
+Command,Resource,:class:`~toga.Command`,Command,|b|,|b|,|b|,,|b|,
+Group,Resource,:class:`~toga.Group`,Command group,|b|,|b|,|b|,|b|,|b|,
+Icon,Resource,:class:`~toga.Icon`,"An icon for buttons, menus, etc",|b|,|b|,|b|,|b|,|b|,
+Image,Resource,:class:`~toga.Image`,An image,|b|,|b|,|b|,|b|,|b|,
 Validators,Resource,:ref:`Validators <validators>`,A mechanism for validating that input meets a given set of criteria.,|y|,|y|,|y|,|y|,|y|,

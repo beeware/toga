@@ -18,7 +18,7 @@ class SplitContainer(Widget):
     ):
         """Create a new SplitContainer.
 
-        Inherits from :class:`~toga.widgets.base.Widget`.
+        Inherits from :class:`toga.Widget`.
 
         :param id: The ID for the widget.
         :param style: A style object. If no style is provided, a default style will be
@@ -70,7 +70,7 @@ class SplitContainer(Widget):
         When retrieved, only the list of widgets is returned.
 
         When setting the value, the list must have at least 2 elements; each item in the
-        list can be is either:
+        list can be either:
 
         * A tuple containing of a widget and the initial flex value to apply to that
           widget in the split.

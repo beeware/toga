@@ -17,7 +17,7 @@ class ScrollContainer(Widget):
     ):
         """Create a new Scroll Container.
 
-        Inherits from :class:`~toga.widgets.base.Widget`.
+        Inherits from :class:`toga.Widget`.
 
         :param id: The ID for the widget.
         :param style: A style object. If no style is provided, a default style
@@ -145,9 +145,10 @@ class ScrollContainer(Widget):
         If the value provided is negative, or greater than the maximum
         horizontal position, the value will be clipped to the valid range.
 
-        If horizontal scrolling is disabled, returns ``None`` as the current
-        position, and raises :any:`ValueError` if an attempt is made to change
-        the position.
+        :returns: The current horizontal scroll position, or :any:`None` if horizontal
+            scrolling is disabled.
+        :raises ValueError: If an attempt is made to change the horizontal position
+            when horizontal scrolling is disabled.
         """
         if not self.horizontal:
             return None
@@ -179,9 +180,10 @@ class ScrollContainer(Widget):
         If the value provided is negative, or greater than the maximum
         vertical position, the value will be clipped to the valid range.
 
-        If vertical scrolling is disabled, returns ``None`` as the current
-        position, and raises :any:`ValueError` if an attempt is made to change
-        the position.
+        :returns: The current vertical scroll position, or :any:`None` if vertical
+            scrolling is disabled.
+        :raises ValueError: If an attempt is made to change the vertical position
+            when vertical scrolling is disabled.
         """
         if not self.vertical:
             return None
@@ -203,9 +205,11 @@ class ScrollContainer(Widget):
         If the value provided for either axis is negative, or greater than the maximum
         position in that axis, the value will be clipped to the valid range.
 
-        If scrolling is disabled in either axis, returns ``None`` as the current
-        position for that axis, and raises :any:`ValueError` if an attempt is made to
-        change the position.
+        :returns: A tuple containing the current scroll position in the horizontal and
+            vertical axis. A value of :any:`None` is returned if scrolling is disabled
+            in that axis.
+        :raises ValueError: If an attempt is made to change the position when scrolling
+            in either axis is disabled.
         """
         return (self.horizontal_position, self.vertical_position)
 

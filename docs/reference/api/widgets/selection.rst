@@ -25,6 +25,6 @@ Usage
 Reference
 ---------
 
-.. autoclass:: toga.widgets.selection.Selection
+.. autoclass:: toga.Selection
    :members:
    :undoc-members:
