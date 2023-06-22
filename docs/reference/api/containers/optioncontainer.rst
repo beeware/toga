@@ -31,6 +31,6 @@ Usage
 Reference
 ---------
 
-.. autoclass:: toga.widgets.optioncontainer.OptionContainer
+.. autoclass:: toga.OptionContainer
    :members:
    :undoc-members:

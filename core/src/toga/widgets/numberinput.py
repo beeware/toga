@@ -74,7 +74,7 @@ class NumberInput(Widget):
     ):
         """Create a new number input widget.
 
-        Inherits from :class:`~toga.widgets.base.Widget`.
+        Inherits from :class:`toga.Widget`.
 
         :param id: The ID for the widget.
         :param style: A style object. If no style is provided, a default style
@@ -222,14 +222,16 @@ class NumberInput(Widget):
     @property
     def value(self) -> Decimal | None:
         """Current value of the widget, rounded to the same number of decimal
-        places as :any:`step`.
+        places as :any:`step`, or ``None`` if no value has been set.
 
-        Returns ``None`` if no value has been set on the widget.
+        If this property is set to a value outside of the min/max range, it will be
+        clipped.
 
         While the widget is being edited by the user, it is possible for the UI
-        to contain text that isn't a valid value according to the min/max range.
-        In this case, the widget will return a value that has been clipped to
-        the min/max range.
+        to contain a value which is outside of the min/max range, or has too many
+        decimal places. In this case, this property will return a value that has been
+        clipped and rounded, and the visible text will be updated to match as soon as
+        the widget loses focus.
         """
         # Get the value currently displayed by the widget. This *could*
         # be outside the min/max range.

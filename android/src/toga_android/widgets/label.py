@@ -19,6 +19,12 @@ class TextViewWidget(Widget):
     def set_font(self, font):
         font._impl.apply(self.native, self._default_text_size, self._default_typeface)
 
+    def set_background_color(self, value):
+        # In the case of EditText, this causes any custom color to hide the bottom border
+        # line, but it's better than set_background_filter, which affects *only* the
+        # bottom border line.
+        self.set_background_simple(value)
+
     def set_color(self, value):
         if value is None:
             self.native.setTextColor(self._default_text_color)
@@ -48,9 +54,6 @@ class Label(TextViewWidget):
 
     def set_text(self, value):
         self.native.setText(value)
-
-    def set_background_color(self, value):
-        self.set_background_simple(value)
 
     def rehint(self):
         # Refuse to rehint an Android TextView if it has no LayoutParams yet.

@@ -29,7 +29,7 @@ sandbox and security policies will prevent sometimes prevent reading or
 writing files in any location other than these pre-approved locations.
 
 To assist with finding an appropriate location to store application files, every
-Toga application instance has a :attr:`~toga.app.App.paths` attribute that
+Toga application instance has a :attr:`~toga.App.paths` attribute that
 returns an instance of :class:`~toga.paths.Paths`. This object provides known
 file system locations that are appropriate for storing files of given types,
 such as configuration files, log files, cache files, or user data.

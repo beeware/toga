@@ -42,6 +42,6 @@ Notes
 Reference
 ---------
 
-.. autoclass:: toga.images.Image
+.. autoclass:: toga.Image
    :members:
    :undoc-members:

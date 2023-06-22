@@ -70,12 +70,12 @@ class ImageView(Widget):
         """
         Create a new image view.
 
-        Inherits from :class:`~toga.widgets.base.Widget`.
+        Inherits from :class:`toga.Widget`.
 
         :param image: The image to display.
         :param id: The ID for the widget.
-        :param style: A style object. If no style is provided, a default style
-            will be applied to the widget.
+        :param style: A style object. If no style is provided, a default style will be
+            applied to the widget.
         """
         super().__init__(id=id, style=style)
         # Prime the image attribute

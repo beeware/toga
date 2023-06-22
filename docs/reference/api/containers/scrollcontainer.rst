@@ -43,6 +43,6 @@ Horizontal or vertical scroll can be set via the initializer or using the proper
 Reference
 ---------
 
-.. autoclass:: toga.widgets.scrollcontainer.ScrollContainer
+.. autoclass:: toga.ScrollContainer
    :members:
    :undoc-members:

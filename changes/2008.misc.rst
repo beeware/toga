@@ -1,0 +1,1 @@
+The import for Pyodide's ``create_proxy`` function was updated to import from the ``ffi`` submodule.
