@@ -26,7 +26,7 @@ async def get_content(widget):
             widget.evaluate_javascript("document.body.innerHTML"),
             JS_TIMEOUT,
         )
-    except TimeoutError:
+    except asyncio.TimeoutError:
         # On Android, if you call evaluate_javascript while a page is loading, the
         # callback may never be called. This seems to be associated with the log message
         # "Uncaught TypeError: Cannot read property 'innerHTML' of null".
@@ -71,8 +71,17 @@ async def assert_content_change(widget, probe, message, url, content, on_load):
 
 
 @pytest.fixture
-async def widget():
-    widget = toga.WebView(style=Pack(flex=1))
+async def on_load():
+    on_load = Mock()
+    return on_load
+
+
+@pytest.fixture
+async def widget(on_load):
+    widget = toga.WebView(style=Pack(flex=1), on_webview_load=on_load)
+    # We shouldn't be able to get a callback until at least one tick of the event loop
+    # has completed.
+    on_load.assert_not_called()
 
     # On Windows, the WebView has an asynchronous initialization process. Before we
     # start the test, make sure initialization is complete by checking the user agent.
@@ -97,13 +106,6 @@ async def widget():
     return widget
 
 
-@pytest.fixture
-async def on_load(widget):
-    on_load = Mock()
-    widget.on_webview_load = on_load
-    return on_load
-
-
 async def test_set_url(widget, probe, on_load):
     "The URL can be set"
     widget.url = "https://github.com/beeware"
@@ -124,6 +126,24 @@ async def test_clear_url(widget, probe, on_load):
     widget.url = None
 
     # Wait for the content to be cleared
+    await assert_content_change(
+        widget,
+        probe,
+        message="Page has been cleared",
+        url=None,
+        content="",
+        on_load=on_load,
+    )
+
+
+async def test_load_empty_url(widget, probe, on_load):
+    "An empty URL can be loaded asynchronously into the view"
+    await wait_for(
+        widget.load_url(None),
+        LOAD_TIMEOUT,
+    )
+
+    # DOM loads aren't instantaneous; wait for the URL to appear
     await assert_content_change(
         widget,
         probe,

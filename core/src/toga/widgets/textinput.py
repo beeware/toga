@@ -8,7 +8,7 @@ from .base import Widget
 class TextInput(Widget):
     """Create a new single-line text input widget.
 
-    Inherits from :class:`~toga.widgets.base.Widget`.
+    Inherits from :class:`toga.Widget`.
     """
 
     def __init__(

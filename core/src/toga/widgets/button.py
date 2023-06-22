@@ -16,7 +16,7 @@ class Button(Widget):
     ):
         """Create a new button widget.
 
-        Inherits from :class:`~toga.widgets.base.Widget`.
+        Inherits from :class:`toga.Widget`.
 
         :param text: The text to display on the button.
         :param id: The ID for the widget.

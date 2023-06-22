@@ -14,7 +14,7 @@ The abstract base class of all widgets. This class should not be be instantiated
 Reference
 ---------
 
-.. autoclass:: toga.widgets.base.Widget
+.. autoclass:: toga.Widget
    :members:
    :undoc-members:
    :inherited-members:

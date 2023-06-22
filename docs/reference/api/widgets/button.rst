@@ -42,6 +42,6 @@ Notes
 Reference
 ---------
 
-.. autoclass:: toga.widgets.button.Button
+.. autoclass:: toga.Button
    :members:
    :undoc-members:

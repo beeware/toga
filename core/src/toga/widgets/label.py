@@ -12,7 +12,7 @@ class Label(Widget):
     ):
         """Create a new text label.
 
-        Inherits from :class:`~toga.widgets.base.Widget`.
+        Inherits from :class:`toga.Widget`.
 
         :param text: Text of the label.
         :param id: The ID for the widget.

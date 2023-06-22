@@ -7,50 +7,55 @@ bundle = "org.beeware"
 version = "0.0.1"
 url = "https://beeware.org"
 license = "BSD license"
-author = 'Tiberius Yak'
+author = "Tiberius Yak"
 author_email = "tiberius@beeware.org"
 
 [tool.briefcase.app.imageview]
 formal_name = "ImageView Demo"
 description = "A testing app"
-sources = ['imageview']
+sources = ["imageview"]
 requires = [
-    '../../core',
-    "Pillow",
+    "../../core",
 ]
 
 
 [tool.briefcase.app.imageview.macOS]
 requires = [
-    '../../cocoa',
-    'std-nslog>=1.0.0',
+    "../../cocoa",
+    "std-nslog>=1.0.0",
+    "Pillow",
 ]
 
 [tool.briefcase.app.imageview.linux]
 requires = [
-    '../../gtk',
+    "../../gtk",
+    "Pillow",
 ]
 
 [tool.briefcase.app.imageview.windows]
 requires = [
-    '../../winforms',
+    "../../winforms",
+    "Pillow",
 ]
 
 # Mobile deployments
 [tool.briefcase.app.imageview.iOS]
 requires = [
-    '../../iOS',
-    'std-nslog>=1.0.0',
+    "../../iOS",
+    "std-nslog>=1.0.0",
+    "Pillow==9.4.0",
 ]
 
 [tool.briefcase.app.imageview.android]
 requires = [
-    '../../android',
+    "../../android",
+    "Pillow==9.2.0; python_version=='3.10' or python_version=='3.9'",
+    "Pillow==8.4.0; python_version=='3.8'",
 ]
 
 # Web deployment
 [tool.briefcase.app.imageview.web]
 requires = [
-    '../../web',
+    "../../web",
 ]
 style_framework = "Shoelace v2.3"
