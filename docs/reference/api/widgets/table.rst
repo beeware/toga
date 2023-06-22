@@ -29,9 +29,31 @@ Usage
     # Insert to row 2
     table.data.insert(2, 'Value 1', 'Value 2')
 
+        Examples:
+            >>> headings = ['Head 1', 'Head 2', 'Head 3']
+            >>> data = []
+            >>> table = Table(headings, data=data)
+
+            Data can be in several forms. A list of dictionaries, where the keys match
+            the heading names:
+
+            >>> data = [{'head_1': 'value 1', 'head_2': 'value 2', 'head_3': 'value3'}),
+            >>>         {'head_1': 'value 1', 'head_2': 'value 2', 'head_3': 'value3'}]
+
+            A list of lists. These will be mapped to the headings in order:
+
+            >>> data = [('value 1', 'value 2', 'value3'),
+            >>>         ('value 1', 'value 2', 'value3')]
+
+            A list of values. This is only accepted if there is a single heading.
+
+            >>> data = ['item 1', 'item 2', 'item 3']
+        """
+
+
 Reference
 ---------
 
-.. autoclass:: toga.widgets.table.Table
+.. autoclass:: toga.Table
    :members:
    :undoc-members:

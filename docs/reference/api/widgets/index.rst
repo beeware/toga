@@ -5,6 +5,7 @@ Widgets
    activityindicator
    button
    canvas
+   dateinput
    detailedlist
    divider
    imageview
@@ -18,6 +19,7 @@ Widgets
    switch
    table
    textinput
+   timeinput
    tree
    webview
    widget

@@ -30,6 +30,6 @@ precision is retained.
 Reference
 ---------
 
-.. autoclass:: toga.widgets.numberinput.NumberInput
+.. autoclass:: toga.NumberInput
    :members:
    :undoc-members:

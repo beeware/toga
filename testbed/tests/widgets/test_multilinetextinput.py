@@ -22,8 +22,6 @@ from .properties import (  # noqa: F401
     test_text_value,
 )
 from .test_textinput import (  # noqa: F401
-    focused,
-    on_change,
     placeholder,
     test_on_change_focus,
     test_on_change_programmatic,

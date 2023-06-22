@@ -21,6 +21,8 @@ KEY_CODES.update(
 
 
 class SimpleProbe(BaseProbe):
+    fixed_height = None
+
     def __init__(self, widget):
         super().__init__()
         self.app = widget.app
@@ -89,9 +91,10 @@ class SimpleProbe(BaseProbe):
         ), f"Width ({self.width}) not in range ({min_width}, {max_width})"
 
     def assert_height(self, min_height, max_height):
-        assert (
-            min_height <= self.height <= max_height
-        ), f"Height ({self.height}) not in range ({min_height}, {max_height})"
+        if self.fixed_height is not None:
+            assert self.height == approx(self.fixed_height, rel=0.2)
+        else:
+            assert min_height <= self.height <= max_height
 
     @property
     def shrink_on_resize(self):

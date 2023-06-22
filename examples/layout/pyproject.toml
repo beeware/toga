@@ -7,49 +7,49 @@ bundle = "org.beeware"
 version = "0.0.1"
 url = "https://beeware.org"
 license = "BSD license"
-author = 'Tiberius Yak'
+author = "Tiberius Yak"
 author_email = "tiberius@beeware.org"
 
 [tool.briefcase.app.layout]
 formal_name = "Layout Test"
 description = "A testing app"
-sources = ['layout']
+sources = ["layout"]
 requires = [
-    '../../core',
+    "../../core",
 ]
 
 
 [tool.briefcase.app.layout.macOS]
 requires = [
-    '../../cocoa',
-    'std-nslog>=1.0.0',
+    "../../cocoa",
+    "std-nslog>=1.0.0",
 ]
 
 [tool.briefcase.app.layout.linux]
 requires = [
-    '../../gtk',
+    "../../gtk",
 ]
 
 [tool.briefcase.app.layout.windows]
 requires = [
-    '../../winforms',
+    "../../winforms",
 ]
 
 # Mobile deployments
 [tool.briefcase.app.layout.iOS]
 requires = [
-    '../../iOS',
-    'std-nslog>=1.0.0',
+    "../../iOS",
+    "std-nslog>=1.0.0",
 ]
 
 [tool.briefcase.app.layout.android]
 requires = [
-    '../../android',
+    "../../android",
 ]
 
 # Web deployment
 [tool.briefcase.app.layout.web]
 requires = [
-    '../../web',
+    "../../web",
 ]
 style_framework = "Shoelace v2.3"

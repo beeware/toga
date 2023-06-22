@@ -15,7 +15,7 @@ from .widgets.base import Widget
 from .widgets.box import Box
 from .widgets.button import Button
 from .widgets.canvas import Canvas
-from .widgets.datepicker import DatePicker
+from .widgets.dateinput import DateInput, DatePicker
 from .widgets.detailedlist import DetailedList
 from .widgets.divider import Divider
 from .widgets.imageview import ImageView
@@ -32,7 +32,7 @@ from .widgets.splitcontainer import SplitContainer
 from .widgets.switch import Switch
 from .widgets.table import Table
 from .widgets.textinput import TextInput
-from .widgets.timepicker import TimePicker
+from .widgets.timeinput import TimeInput, TimePicker
 from .widgets.tree import Tree
 from .widgets.webview import WebView
 from .window import Window
@@ -65,14 +65,11 @@ __all__ = [
     "Box",
     "Button",
     "Canvas",
+    "DateInput",
     "DetailedList",
     "Divider",
-    "Window",
-    "Widget",
     "ImageView",
     "Label",
-    "DatePicker",
-    "TimePicker",
     "MultilineTextInput",
     "NumberInput",
     "OptionContainer",
@@ -85,8 +82,14 @@ __all__ = [
     "Switch",
     "Table",
     "TextInput",
+    "TimeInput",
     "Tree",
     "WebView",
+    "Widget",
+    "Window",
+    # Deprecated widget names
+    "DatePicker",
+    "TimePicker",
 ]
 
 

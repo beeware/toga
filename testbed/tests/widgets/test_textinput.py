@@ -46,23 +46,6 @@ def verify_focus_handlers():
     return True
 
 
-@pytest.fixture
-async def on_change(widget):
-    on_change = Mock()
-    widget.on_change = on_change
-    on_change.assert_not_called()
-    return on_change
-
-
-@pytest.fixture(params=[True, False])
-async def focused(request, widget, other):
-    if request.param:
-        widget.focus()
-    else:
-        other.focus()
-    return request.param
-
-
 @pytest.fixture(params=["", "placeholder"])
 async def placeholder(request, widget):
     widget.placeholder = request.param
