@@ -7,49 +7,49 @@ bundle = "org.beeware"
 version = "0.0.1"
 url = "https://beeware.org"
 license = "BSD license"
-author = 'Tiberius Yak'
+author = "Tiberius Yak"
 author_email = "tiberius@beeware.org"
 
 [tool.briefcase.app.command]
 formal_name = "Command Example"
 description = "A testing app"
-sources = ['command']
+sources = ["command"]
 requires = [
-    '../../core',
+    "../../core",
 ]
 
 
 [tool.briefcase.app.command.macOS]
 requires = [
-    '../../cocoa',
-    'std-nslog>=1.0.0',
+    "../../cocoa",
+    "std-nslog>=1.0.0",
 ]
 
 [tool.briefcase.app.command.linux]
 requires = [
-    '../../gtk',
+    "../../gtk",
 ]
 
 [tool.briefcase.app.command.windows]
 requires = [
-	'toga-winforms',
+    "../../winforms",
 ]
 
 # Mobile deployments
 [tool.briefcase.app.command.iOS]
 requires = [
-    '../../iOS',
-    'std-nslog>=1.0.0',
+    "../../iOS",
+    "std-nslog>=1.0.0",
 ]
 
 [tool.briefcase.app.command.android]
 requires = [
-    '../../android',
+    "../../android",
 ]
 
 # Web deployment
 [tool.briefcase.app.command.web]
 requires = [
-    '../../web',
+    "../../web",
 ]
 style_framework = "Shoelace v2.3"

@@ -46,23 +46,6 @@ def verify_focus_handlers():
     return True
 
 
-@pytest.fixture
-async def on_change(widget):
-    on_change = Mock()
-    widget.on_change = on_change
-    on_change.assert_not_called()
-    return on_change
-
-
-@pytest.fixture(params=[True, False])
-async def focused(request, widget, other):
-    if request.param:
-        widget.focus()
-    else:
-        other.focus()
-    return request.param
-
-
 @pytest.fixture(params=["", "placeholder"])
 async def placeholder(request, widget):
     widget.placeholder = request.param
@@ -111,7 +94,10 @@ async def test_on_change_user(widget, probe, on_change):
 
     for count, char in enumerate("Hello world", start=1):
         await probe.type_character(char)
-        await probe.redraw(f"Typed {char!r}")
+        # GTK has an intermittent failure because on_change handler
+        # caused by typing a character doesn't fully propegate. A
+        # short delay fixes this.
+        await probe.redraw(f"Typed {char!r}", delay=0.02)
 
         # The number of events equals the number of characters typed.
         assert on_change.mock_calls == [call(widget)] * count

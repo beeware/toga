@@ -7,49 +7,49 @@ bundle = "org.beeware"
 version = "0.0.1"
 url = "https://beeware.org"
 license = "BSD license"
-author = 'Tiberius Yak'
+author = "Tiberius Yak"
 author_email = "tiberius@beeware.org"
 
 [tool.briefcase.app.tree_source]
 formal_name = "TreeSource Demo"
 description = "A testing app"
-sources = ['tree_source']
+sources = ["tree_source"]
 requires = [
-    '../../core',
+    "../../core",
 ]
 
 
 [tool.briefcase.app.tree_source.macOS]
 requires = [
-    '../../cocoa',
-    'std-nslog>=1.0.0',
+    "../../cocoa",
+    "std-nslog>=1.0.0",
 ]
 
 [tool.briefcase.app.tree_source.linux]
 requires = [
-    '../../gtk',
+    "../../gtk",
 ]
 
 [tool.briefcase.app.tree_source.windows]
 requires = [
-    '../../winforms',
+    "../../winforms",
 ]
 
 # Mobile deployments
 [tool.briefcase.app.tree_source.iOS]
 requires = [
-    '../../iOS',
-    'std-nslog>=1.0.0',
+    "../../iOS",
+    "std-nslog>=1.0.0",
 ]
 
 [tool.briefcase.app.tree_source.android]
 requires = [
-    '../../android',
+    "../../android",
 ]
 
 # Web deployment
 [tool.briefcase.app.tree_source.web]
 requires = [
-    '../../web',
+    "../../web",
 ]
 style_framework = "Shoelace v2.3"

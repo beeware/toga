@@ -60,6 +60,6 @@ Notes
 Reference
 ---------
 
-.. autoclass:: toga.widgets.webview.WebView
+.. autoclass:: toga.WebView
    :members:
    :undoc-members:

@@ -11,7 +11,7 @@ from .widgets.base import Widget
 from .widgets.box import Box
 from .widgets.button import Button
 from .widgets.canvas import Canvas
-from .widgets.datepicker import DatePicker
+from .widgets.dateinput import DateInput
 from .widgets.detailedlist import DetailedList
 from .widgets.divider import Divider
 from .widgets.imageview import ImageView
@@ -28,7 +28,7 @@ from .widgets.splitcontainer import SplitContainer
 from .widgets.switch import Switch
 from .widgets.table import Table
 from .widgets.textinput import TextInput
-from .widgets.timepicker import TimePicker
+from .widgets.timeinput import TimeInput
 from .widgets.tree import Tree
 from .widgets.webview import WebView
 from .window import Window
@@ -50,15 +50,15 @@ __all__ = [
     "Image",
     "Paths",
     "dialogs",
+    # Widgets
     "ActivityIndicator",
     "Box",
     "Button",
     "Canvas",
+    "DateInput",
     "DetailedList",
     "Divider",
     "ImageView",
-    "DatePicker",
-    "TimePicker",
     "Label",
     "MultilineTextInput",
     "NumberInput",
@@ -72,6 +72,7 @@ __all__ = [
     "Switch",
     "Table",
     "TextInput",
+    "TimeInput",
     "Tree",
     "WebView",
     "Window",

@@ -22,6 +22,6 @@ Usage
 Reference
 ---------
 
-.. autoclass:: toga.widgets.imageview.ImageView
+.. autoclass:: toga.ImageView
    :members:
    :undoc-members:
