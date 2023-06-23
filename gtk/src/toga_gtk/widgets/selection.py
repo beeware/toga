@@ -81,7 +81,6 @@ class Selection(Widget):
 
     def select_item(self, index, item):
         self.native.set_active(index)
-        self.interface.on_change(None)
 
     def get_selected_index(self):
         index = self.native.get_active()

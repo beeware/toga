@@ -46,8 +46,8 @@ class SelectionProbe(SimpleProbe):
         # Use a short delaly instead.
         await self.mouse_event(NSEventType.LeftMouseDown, point, delay=0.1)
 
-        # macOS coordinate systems are backwards, so to select the item *below*
-        # the current selection, you need to *subtract* height.
-        point.y = point.y - self.height
+        # macOS coordinate systems are backwards, so to select the item *above*
+        # the current selection, you need to *add* height.
+        point.y = point.y + self.height
         await self.mouse_event(NSEventType.LeftMouseDown, point, delay=0.1)
         await self.mouse_event(NSEventType.LeftMouseUp, point, delay=0.1)
