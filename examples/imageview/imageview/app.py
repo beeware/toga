@@ -83,7 +83,10 @@ class ImageViewApp(toga.App):
         img.save(buffer, format="png", compress_level=0)
 
         image_from_bytes = toga.Image(data=buffer.getvalue())
-        imageview_from_bytes = toga.ImageView(image_from_bytes, style=Pack(height=72))
+        imageview_from_bytes = toga.ImageView(
+            image_from_bytes,
+            style=Pack(height=72, background_color="lightgray"),
+        )
         box.add(imageview_from_bytes)
 
         # An empty imageview.
