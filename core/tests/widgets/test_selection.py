@@ -48,7 +48,7 @@ def test_widget_created():
     assert len(widget.items) == 0
     assert widget._accessor is None
     assert widget.value is None
-    assert widget._on_change._raw is None
+    assert widget.on_change._raw is None
     assert widget.enabled
 
 
@@ -68,7 +68,7 @@ def test_create_with_value():
     assert len(widget.items) == 3
     assert widget._accessor is None
     assert widget.value == "second"
-    assert widget._on_change._raw == on_change
+    assert widget.on_change._raw == on_change
     assert not widget.enabled
 
 
@@ -100,7 +100,7 @@ def test_create_with_value():
     ],
 )
 def test_value_no_accessor(items, value):
-    "If there's no accessor, the items can be set and te"
+    "If there's no accessor, the items can be set and values will be dereferenced"
     on_change_handler = Mock()
     widget = toga.Selection(on_change=on_change_handler)
 
