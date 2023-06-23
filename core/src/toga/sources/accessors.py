@@ -9,9 +9,9 @@ def to_accessor(heading: str) -> str:
 
     This is done by:
 
-    1. converting the heading to lower case;
+    1. Converting the heading to lower case;
     2. Removing any character that can't be used in a Python identifier
-    3. Replacing all whitespace with " "
+    3. Replacing all whitespace with "_"
     4. Prepending ``_`` if the first character is a digit.
 
     Examples:
