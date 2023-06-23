@@ -2,7 +2,6 @@ from datetime import date, datetime, time
 from unittest.mock import Mock
 
 import pytest
-from pytest import warns
 
 import toga
 from toga_dummy.utils import assert_action_performed
@@ -36,16 +35,16 @@ def test_widget_created_with_values(on_change_handler):
     # Round trip the impl/interface
     widget = toga.TimeInput(
         value=time(13, 37, 42),
-        min_value=time(6, 1, 2),
-        max_value=time(18, 58, 59),
+        min=time(6, 1, 2),
+        max=time(18, 58, 59),
         on_change=on_change_handler,
     )
     assert widget._impl.interface == widget
     assert_action_performed(widget, "create TimeInput")
 
     assert widget.value == time(13, 37, 42)
-    assert widget.min_value == time(6, 1, 2)
-    assert widget.max_value == time(18, 58, 59)
+    assert widget.min == time(6, 1, 2)
+    assert widget.max == time(18, 58, 59)
     assert widget.on_change._raw == on_change_handler
 
     # The change handler isn't invoked at construction.
@@ -101,8 +100,8 @@ def test_invalid_value(widget, value, exc, message):
 def test_value_clipping(widget, value, clipped, on_change_handler):
     "It the value is inconsistent with min/max, it is clipped."
     # Set min/max dates, and clear the on_change mock
-    widget.min_value = time(6, 0, 0)
-    widget.max_value = time(18, 0, 0)
+    widget.min = time(6, 0, 0)
+    widget.max = time(18, 0, 0)
     on_change_handler.reset_mock()
 
     # Set the new value
@@ -124,24 +123,24 @@ def test_value_clipping(widget, value, clipped, on_change_handler):
         ("06:03:11", time(6, 3, 11)),
     ],
 )
-def test_min_value(widget, value, expected):
-    "The min_value of the datepicker can be set"
-    widget.min_value = value
+def test_min(widget, value, expected):
+    "The min of the datepicker can be set"
+    widget.min = value
 
-    assert widget.min_value == expected
+    assert widget.min == expected
 
 
 @pytest.mark.parametrize("value, exc, message", INVALID_VALUES)
-def test_invalid_min_value(widget, value, exc, message):
-    "Invalid min_value values raise an exception"
-    widget.max_value = time(18, 0, 0)
+def test_invalid_min(widget, value, exc, message):
+    "Invalid min values raise an exception"
+    widget.max = time(18, 0, 0)
 
     with pytest.raises(exc, match=message):
-        widget.min_value = value
+        widget.min = value
 
 
 @pytest.mark.parametrize(
-    "min_value, clip_value, clip_max",
+    "min, clip_value, clip_max",
     [
         (time(1, 2, 3), False, False),
         (time(3, 42, 37), False, False),
@@ -152,26 +151,26 @@ def test_invalid_min_value(widget, value, exc, message):
         (time(13, 14, 15), True, True),
     ],
 )
-def test_min_value_clip(widget, on_change_handler, min_value, clip_value, clip_max):
+def test_min_clip(widget, on_change_handler, min, clip_value, clip_max):
     "If the current value or max is before a new min time, it is clipped"
     widget.value = time(3, 42, 37)
-    widget.max_value = time(12, 0, 0)
+    widget.max = time(12, 0, 0)
     on_change_handler.reset_mock()
 
-    widget.min_value = min_value
-    assert widget.min_value == min_value
+    widget.min = min
+    assert widget.min == min
 
     if clip_value:
-        assert widget.value == min_value
+        assert widget.value == min
         on_change_handler.assert_called_once_with(widget)
     else:
         assert widget.value == time(3, 42, 37)
         on_change_handler.assert_not_called()
 
     if clip_max:
-        assert widget.max_value == min_value
+        assert widget.max == min
     else:
-        assert widget.max_value == time(12, 0, 0)
+        assert widget.max == time(12, 0, 0)
 
 
 @pytest.mark.parametrize(
@@ -183,24 +182,24 @@ def test_min_value_clip(widget, on_change_handler, min_value, clip_value, clip_m
         ("18:03:11", time(18, 3, 11)),
     ],
 )
-def test_max_value(widget, value, expected):
-    "The max_value of the datepicker can be set"
-    widget.max_value = value
+def test_max(widget, value, expected):
+    "The max of the datepicker can be set"
+    widget.max = value
 
-    assert widget.max_value == expected
+    assert widget.max == expected
 
 
 @pytest.mark.parametrize("value, exc, message", INVALID_VALUES)
-def test_invalid_max_value(widget, value, exc, message):
-    "Invalid max_value values raise an exception"
-    widget.min_value = time(18, 0, 0)
+def test_invalid_max(widget, value, exc, message):
+    "Invalid max values raise an exception"
+    widget.min = time(18, 0, 0)
 
     with pytest.raises(exc, match=message):
-        widget.max_value = value
+        widget.max = value
 
 
 @pytest.mark.parametrize(
-    "max_value, clip_value, clip_min",
+    "max, clip_value, clip_min",
     [
         (time(1, 2, 3), True, True),
         (time(3, 42, 36), True, True),
@@ -211,42 +210,65 @@ def test_invalid_max_value(widget, value, exc, message):
         (time(13, 14, 15), False, False),
     ],
 )
-def test_max_value_clip(widget, on_change_handler, max_value, clip_value, clip_min):
+def test_max_clip(widget, on_change_handler, max, clip_value, clip_min):
     "If the current value is after a new max date, the value is clipped"
-    widget.min_value = time(3, 42, 37)
+    widget.min = time(3, 42, 37)
     widget.value = time(12, 0, 0)
     on_change_handler.reset_mock()
 
-    widget.max_value = max_value
-    assert widget.max_value == max_value
+    widget.max = max
+    assert widget.max == max
 
     if clip_value:
-        assert widget.value == max_value
+        assert widget.value == max
         on_change_handler.assert_called_once_with(widget)
     else:
         assert widget.value == time(12, 0, 0)
         on_change_handler.assert_not_called()
 
     if clip_min:
-        assert widget.min_value == max_value
+        assert widget.min == max
     else:
-        assert widget.min_value == time(3, 42, 37)
+        assert widget.min == time(3, 42, 37)
 
 
 def test_deprecated_names():
     MIN = time(8, 30, 59)
     MAX = time(10, 0, 0)
 
-    with warns(DeprecationWarning, match="TimePicker has been renamed TimeInput"):
+    with pytest.warns(
+        DeprecationWarning, match="TimePicker has been renamed TimeInput"
+    ):
         widget = toga.TimePicker(min_time=MIN, max_time=MAX)
-    assert widget.min_value == MIN
-    assert widget.max_value == MAX
-    widget.min_value = widget.max_value = None
+    assert widget.min == MIN
+    assert widget.max == MAX
+    widget.min = widget.max = None
 
-    widget.min_time = MIN
-    assert widget.min_time == MIN
-    assert widget.min_value == MIN
+    with pytest.warns(
+        DeprecationWarning, match="TimePicker.min_time has been renamed TimeInput.min"
+    ):
+        widget.min_time = MIN
 
-    widget.max_time = MAX
-    assert widget.max_time == MAX
-    assert widget.max_value == MAX
+    with pytest.warns(
+        DeprecationWarning, match="TimePicker.min_time has been renamed TimeInput.min"
+    ):
+        assert widget.min_time == MIN
+    assert widget.min == MIN
+
+    with pytest.warns(
+        DeprecationWarning, match="TimePicker.max_time has been renamed TimeInput.max"
+    ):
+        widget.max_time = MAX
+
+    with pytest.warns(
+        DeprecationWarning, match="TimePicker.max_time has been renamed TimeInput.max"
+    ):
+        assert widget.max_time == MAX
+    assert widget.max == MAX
+
+    with pytest.warns(
+        DeprecationWarning, match="TimePicker has been renamed TimeInput"
+    ):
+        widget = toga.TimePicker()
+    assert widget.min == time(0, 0, 0)
+    assert widget.max == time(23, 59, 59)

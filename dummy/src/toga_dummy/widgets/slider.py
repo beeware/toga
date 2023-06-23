@@ -15,11 +15,17 @@ class Slider(Widget, toga.widgets.slider.SliderImpl):
     def set_value(self, value):
         self._set_value("value", value)
 
-    def get_range(self):
-        return self._get_value("range")
+    def get_min(self):
+        return self._get_value("min", 0)
 
-    def set_range(self, range):
-        self._set_value("range", range)
+    def set_min(self, value):
+        self._set_value("min", value)
+
+    def get_max(self):
+        return self._get_value("max", 0)
+
+    def set_max(self, value):
+        self._set_value("max", value)
 
     def get_tick_count(self):
         return self._get_value("tick_count", None)
