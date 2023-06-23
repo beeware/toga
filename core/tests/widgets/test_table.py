@@ -1,191 +1,545 @@
+from unittest.mock import Mock
+
+import pytest
+
 import toga
-from toga.sources import ListSource, Source
-from toga_dummy.utils import TestCase
+from toga.sources import ListSource
+from toga_dummy.utils import (
+    assert_action_performed,
+    assert_action_performed_with,
+)
 
 
-class CustomSource(Source):
-    pass
+@pytest.fixture
+def on_select_handler():
+    return Mock()
 
 
-class TableTests(TestCase):
-    def setUp(self):
-        super().setUp()
+@pytest.fixture
+def on_activate_handler():
+    return Mock()
 
-        self.headings = ["Heading 1", "Heading 2", "Heading 3"]
 
-        def select_handler(widget, row):
-            pass
+@pytest.fixture
+def source():
+    return ListSource(
+        accessors=["key", "value"],
+        data=[
+            {"key": "first", "value": 111, "other": "aaa"},
+            {"key": "second", "value": 222, "other": "bbb"},
+            {"key": "third", "value": 333, "other": "ccc"},
+        ],
+    )
 
-        def double_click_handler(widget, row):
-            pass
 
-        self.on_select = select_handler
-        self.on_double_click = double_click_handler
+@pytest.fixture
+def table(source, on_select_handler, on_activate_handler):
+    return toga.Table(
+        ["Title", "Value"],
+        accessors=["key", "value"],
+        data=source,
+        on_select=on_select_handler,
+        on_activate=on_activate_handler,
+    )
 
-        self.table = toga.Table(
-            self.headings,
-            on_select=self.on_select,
-            on_double_click=self.on_double_click,
-        )
 
-    def test_widget_created(self):
-        self.assertEqual(self.table._impl.interface, self.table)
-        self.assertActionPerformed(self.table, "create Table")
+def test_table_created():
+    "An minimal Table can be created"
+    table = toga.Table(["First", "Second"])
+    assert table._impl.interface == table
+    assert_action_performed(table, "create Table")
 
-        self.assertEqual(self.table.headings, self.headings)
-        self.assertIsInstance(self.table.data, ListSource)
+    assert len(table.data) == 0
+    assert table.headings == ["First", "Second"]
+    assert table.accessors == ["first", "second"]
+    assert not table.multiple_select
+    assert table.missing_value == ""
+    assert table.on_select._raw is None
+    assert table.on_activate._raw is None
 
-    def test_list_of_lists_data_source(self):
-        self.table.data = [
-            ["a1", "b1", "c1"],
-            ["a2", "b2", "c2"],
-        ]
 
-        self.assertIsInstance(self.table.data, ListSource)
+def test_create_with_values(source, on_select_handler, on_activate_handler):
+    "A Table can be created with initial values"
+    table = toga.Table(
+        ["First", "Second"],
+        data=source,
+        accessors=["primus", "secondus"],
+        multiple_select=True,
+        on_select=on_select_handler,
+        on_activate=on_activate_handler,
+        missing_value="Boo!",
+    )
+    assert table._impl.interface == table
+    assert_action_performed(table, "create Table")
 
-    def test_custom_data_source(self):
-        data_source = CustomSource()
-        self.table.data = data_source
-        self.assertIs(self.table.data, data_source)
+    assert len(table.data) == 3
+    assert table.headings == ["First", "Second"]
+    assert table.accessors == ["primus", "secondus"]
+    assert table.multiple_select
+    assert table.missing_value == "Boo!"
+    assert table.on_select._raw == on_select_handler
+    assert table.on_activate._raw == on_activate_handler
 
-    def test_nothing_selected(self):
-        self.assertEqual(self.table.selection, None)
 
-    def test_scroll_to_row(self):
-        self.table.data = [
-            ["a1", "b1", "c1"],
-            ["a2", "b2", "c2"],
-            ["a3", "b3", "c3"],
-            ["a4", "b3", "c4"],
-        ]
-        self.table.scroll_to_row(2)
-        self.assertValueSet(self.table, "scroll to", 2)
+def test_create_with_acessor_overrides():
+    "A Table can partially override accessors"
+    table = toga.Table(
+        ["First", "Second"],
+        accessors={"First": "override"},
+    )
+    assert table._impl.interface == table
+    assert_action_performed(table, "create Table")
 
-    def test_scroll_to_top(self):
-        self.table.data = [
-            ["a1", "b1", "c1"],
-            ["a2", "b2", "c2"],
-            ["a3", "b3", "c3"],
-            ["a4", "b3", "c4"],
-        ]
-        self.table.scroll_to_top()
-        self.assertValueSet(self.table, "scroll to", 0)
+    assert len(table.data) == 0
+    assert table.headings == ["First", "Second"]
+    assert table.accessors == ["override", "second"]
 
-    def test_scroll_to_bottom(self):
-        self.table.data = [
-            ["a1", "b1", "c1"],
-            ["a2", "b2", "c2"],
-            ["a3", "b3", "c3"],
-            ["a4", "b3", "c4"],
-        ]
-        self.table.scroll_to_bottom()
-        self.assertValueSet(self.table, "scroll to", len(self.table.data) - 1)
 
-    def test_multiple_select(self):
-        self.assertEqual(self.table.multiple_select, False)
-        secondtable = toga.Table(
-            self.headings,
-            multiple_select=True,
-        )
-        self.assertEqual(secondtable.multiple_select, True)
+def test_create_no_headings():
+    "A Table can be created with no headings"
+    table = toga.Table(
+        headings=None,
+        accessors=["primus", "secondus"],
+    )
+    assert table._impl.interface == table
+    assert_action_performed(table, "create Table")
 
-    def test_on_select(self):
-        def dummy_handler(widget, row):
-            pass
+    assert len(table.data) == 0
+    assert table.headings is None
+    assert table.accessors == ["primus", "secondus"]
 
-        self.assertValueSet(self.table, "on_select", self.table.on_select)
 
-        on_select = self.table.on_select
-        self.assertEqual(on_select._raw, self.on_select)
+def test_create_headings_required():
+    "A Table requires either headingscan be created with no headings"
+    with pytest.raises(
+        ValueError,
+        match=r"Cannot create a table without either headings or accessors",
+    ):
+        toga.Table()
 
-        self.table.on_select = dummy_handler
-        on_select = self.table.on_select
-        self.assertEqual(on_select._raw, dummy_handler)
 
-    def test_on_double_click(self):
-        def dummy_handler(widget, row):
-            pass
+def test_set_data_list(table, on_select_handler):
+    "Data can be set from a list of lists"
 
-        self.assertValueSet(self.table, "on_double_click", self.table.on_double_click)
+    # The selection hasn't changed yet.
+    on_select_handler.assert_not_called()
 
-        on_double_click = self.table.on_double_click
-        self.assertEqual(on_double_click._raw, self.on_double_click)
+    # Change the data
+    table.data = [
+        ["Alice", 123, "extra1"],
+        ["Bob", 234, "extra2"],
+        ["Charlie", 345, "extra3"],
+    ]
 
-        self.table.on_double_click = dummy_handler
-        on_double_click = self.table.on_double_click
-        self.assertEqual(on_double_click._raw, dummy_handler)
+    # This triggered the select handler
+    on_select_handler.assert_called_once_with(table)
 
-    def test_add_column(self):
-        new_heading = "Heading 4"
-        dummy_data = [
-            ["a1", "b1", "c1"],
-            ["a2", "b2", "c2"],
-            ["a3", "b3", "c3"],
-            ["a4", "b3", "c4"],
-        ]
-        self.table.data = dummy_data
+    # A ListSource has been constructed
+    assert isinstance(table.data, ListSource)
+    assert len(table.data) == 3
 
-        expecting_headings = self.headings + [new_heading]
-        self.table.add_column(new_heading)
+    # The accessors are mapped in order.
+    assert table.data[1].key == "Bob"
+    assert table.data[1].value == 234
 
-        self.assertEqual(self.table.headings, expecting_headings)
 
-    def test_add_columns_accessor_in_use(self):
-        new_heading = "Heading 4"
-        accessor = "heading_2"
+def test_set_data_tuple(table, on_select_handler):
+    "Data can be set from a list of tuples"
 
-        with self.assertRaises(ValueError):
-            self.table.add_column(new_heading, accessor)
+    # The selection hasn't changed yet.
+    on_select_handler.assert_not_called()
 
-    def test_remove_column_by_accessor(self):
-        remove = "heading_2"
-        dummy_data = [
-            ["a1", "b1", "c1"],
-        ]
-        self.table.data = dummy_data
+    # Change the data
+    table.data = [
+        ("Alice", 123, "extra1"),
+        ("Bob", 234, "extra2"),
+        ("Charlie", 345, "extra3"),
+    ]
 
-        expecting_accessors = [h for h in self.table._accessors if h != remove]
-        self.table.remove_column(remove)
-        self.assertEqual(self.table._accessors, expecting_accessors)
+    # This triggered the select handler
+    on_select_handler.assert_called_once_with(table)
 
-    def test_remove_column_by_position(self):
-        remove = 2
-        dummy_data = [
-            ["a1", "b1", "c1"],
-        ]
-        self.table.data = dummy_data
+    # A ListSource has been constructed
+    assert isinstance(table.data, ListSource)
+    assert len(table.data) == 3
 
-        heading = self.table.headings[remove]
-        expecting_headings = [h for h in self.table.headings if h != heading]
-        self.table.remove_column(remove)
-        self.assertEqual(self.table.headings, expecting_headings)
+    # The accessors are mapped in order.
+    assert table.data[1].key == "Bob"
+    assert table.data[1].value == 234
 
-    def test_remove_column_invalid_name(self):
-        dummy_data = [
-            ["a1", "b1", "c1"],
-        ]
-        self.table.data = dummy_data
 
-        # Remove a column that doesn't exist
-        with self.assertRaises(ValueError):
-            self.table.remove_column("Not a column")
+def test_set_data_dict(table, on_select_handler):
+    "Data can be set from a list of dicts"
 
-    def test_remove_column_invalid_index(self):
-        dummy_data = [
-            ["a1", "b1", "c1"],
-        ]
-        self.table.data = dummy_data
+    # The selection hasn't changed yet.
+    on_select_handler.assert_not_called()
 
-        # Remove a column using an index that doesn't exist
-        with self.assertRaises(ValueError):
-            self.table.remove_column(42)
+    # Change the data
+    table.data = [
+        {"key": "Alice", "value": 123, "extra": "extra1"},
+        {"key": "Bob", "value": 234, "extra": "extra2"},
+        {"key": "Charlie", "value": 345, "extra": "extra3"},
+    ]
 
-    def test_remove_column_invalid_type(self):
-        dummy_data = [
-            ["a1", "b1", "c1"],
-        ]
-        self.table.data = dummy_data
+    # This triggered the select handler
+    on_select_handler.assert_called_once_with(table)
 
-        # Remove a column using a data type that isn't valid
-        with self.assertRaises(ValueError):
-            self.table.remove_column(3.14159)
+    # A ListSource has been constructed
+    assert isinstance(table.data, ListSource)
+    assert len(table.data) == 3
+
+    # The accessors are all available
+    assert table.data[1].key == "Bob"
+    assert table.data[1].value == 234
+    assert table.data[1].extra == "extra2"
+
+
+def test_set_data_other(table, on_select_handler):
+    "Data can be set from a list of values"
+
+    # The selection hasn't changed yet.
+    on_select_handler.assert_not_called()
+
+    # Change the data
+    table.data = [
+        "Alice",
+        1234,
+        "other",
+    ]
+
+    # This triggered the select handler
+    on_select_handler.assert_called_once_with(table)
+
+    # A ListSource has been constructed
+    assert isinstance(table.data, ListSource)
+    assert len(table.data) == 3
+
+    # The values are mapped to the first accessor.
+    assert table.data[0].key == "Alice"
+    assert table.data[1].key == 1234
+    assert table.data[2].key == "other"
+
+
+def test_single_selection(table, on_select_handler):
+    "The current selection can be retrieved"
+    # Selection is initially empty
+    assert table.selection is None
+    on_select_handler.assert_not_called()
+
+    # Select an item
+    table._impl.simulate_selection(1)
+
+    # Selection returns a single row
+    assert table.selection == table.data[1]
+
+    # Selection handler was triggered
+    on_select_handler.assert_called_once_with(table)
+
+
+def test_multiple_selection(source, on_select_handler):
+    "A multi-select table can have the selection retrieved"
+    table = toga.Table(
+        ["Title", "Value"],
+        data=source,
+        multiple_select=True,
+        on_select=on_select_handler,
+    )
+    # Selection is initially empty
+    assert table.selection == []
+    on_select_handler.assert_not_called()
+
+    # Select an item
+    table._impl.simulate_selection([0, 2])
+
+    # Selection returns a list of rows
+    assert table.selection == [table.data[0], table.data[2]]
+
+    # Selection handler was triggered
+    on_select_handler.assert_called_once_with(table)
+
+
+def test_scroll_to_top(table):
+    "A table can be scrolled to the top"
+    table.scroll_to_top()
+
+    assert_action_performed_with(table, "scroll to row", row=0)
+
+
+def test_scroll_to_row(table):
+    "A table can be scrolled to a specific row"
+    table.scroll_to_row(1)
+
+    assert_action_performed_with(table, "scroll to row", row=1)
+
+
+def test_scroll_to_row_negative(table):
+    "A table can be scrolled to a specific row with a negative index"
+    table.scroll_to_row(-1)
+
+    assert_action_performed_with(table, "scroll to row", row=2)
+
+
+def test_scroll_to_bottom(table):
+    "A table can be scrolled to the top"
+    table.scroll_to_bottom()
+
+    assert_action_performed_with(table, "scroll to row", row=2)
+
+
+def test_insert_column_accessor(table):
+    """A column can be inserted at an accessor"""
+    table.insert_column("value", "New Column", accessor="extra")
+
+    # The column was added
+    assert_action_performed_with(
+        table,
+        "insert column",
+        index=1,
+        heading="New Column",
+        accessor="extra",
+    )
+    assert table.headings == ["Title", "New Column", "Value"]
+    assert table.accessors == ["key", "extra", "value"]
+
+
+def test_insert_column_unknown_accessor(table):
+    """If the insertion index accessor is unknown, an error is raised"""
+    with pytest.raises(ValueError, match=r"'unknown' is not in list"):
+        table.insert_column("unknown", "New Column", accessor="extra")
+
+
+def test_insert_column_index(table):
+    """A column can be inserted"""
+
+    table.insert_column(1, "New Column", accessor="extra")
+
+    # The column was added
+    assert_action_performed_with(
+        table,
+        "insert column",
+        index=1,
+        heading="New Column",
+        accessor="extra",
+    )
+    assert table.headings == ["Title", "New Column", "Value"]
+    assert table.accessors == ["key", "extra", "value"]
+
+
+def test_insert_column_big_index(table):
+    """A column can be inserted at an index bigger than the number of columns"""
+
+    table.insert_column(100, "New Column", accessor="extra")
+
+    # The column was added
+    assert_action_performed_with(
+        table,
+        "insert column",
+        index=2,
+        heading="New Column",
+        accessor="extra",
+    )
+    assert table.headings == ["Title", "Value", "New Column"]
+    assert table.accessors == ["key", "value", "extra"]
+
+
+def test_insert_column_negative_index(table):
+    """A column can be inserted at a negative index"""
+
+    table.insert_column(-2, "New Column", accessor="extra")
+
+    # The column was added
+    assert_action_performed_with(
+        table,
+        "insert column",
+        index=0,
+        heading="New Column",
+        accessor="extra",
+    )
+    assert table.headings == ["New Column", "Title", "Value"]
+    assert table.accessors == ["extra", "key", "value"]
+
+
+def test_insert_column_big_negative_index(table):
+    """A column can be inserted at a negative index larger than the number of columns"""
+
+    table.insert_column(-100, "New Column", accessor="extra")
+
+    # The column was added
+    assert_action_performed_with(
+        table,
+        "insert column",
+        index=0,
+        heading="New Column",
+        accessor="extra",
+    )
+    assert table.headings == ["New Column", "Title", "Value"]
+    assert table.accessors == ["extra", "key", "value"]
+
+
+def test_insert_column_no_accessor(table):
+    """A column can be inserted with a default accessor"""
+
+    table.insert_column(1, "New Column")
+
+    # The column was added
+    assert_action_performed_with(
+        table,
+        "insert column",
+        index=1,
+        heading="New Column",
+        accessor="new_column",
+    )
+    assert table.headings == ["Title", "New Column", "Value"]
+    assert table.accessors == ["key", "new_column", "value"]
+
+
+def test_insert_column_no_headings(source):
+    """A column can be inserted into a table with no headings"""
+    table = toga.Table(headings=None, accessors=["key", "value"], data=source)
+
+    table.insert_column(1, "New Column", accessor="extra")
+
+    # The column was added
+    assert_action_performed_with(
+        table,
+        "insert column",
+        index=1,
+        heading=None,
+        accessor="extra",
+    )
+    assert table.headings is None
+    assert table.accessors == ["key", "extra", "value"]
+
+
+def test_insert_column_no_headings_missing_accessor(source):
+    """An accessor is mandatory when adding a column to a table with no headings"""
+    table = toga.Table(headings=None, accessors=["key", "value"], data=source)
+
+    with pytest.raises(
+        ValueError,
+        match=r"Must specify an accessor on a table without headings",
+    ):
+        table.insert_column(1, "New Column")
+
+
+def test_append_column(table):
+    """A column can be appended"""
+    table.append_column("New Column", accessor="extra")
+
+    # The column was added
+    assert_action_performed_with(
+        table,
+        "insert column",
+        index=2,
+        heading="New Column",
+        accessor="extra",
+    )
+    assert table.headings == ["Title", "Value", "New Column"]
+    assert table.accessors == ["key", "value", "extra"]
+
+
+def test_remove_column_accessor(table):
+    "A column can be removed by accessor"
+
+    table.remove_column("value")
+
+    # The column was removed
+    assert_action_performed_with(
+        table,
+        "remove column",
+        index=1,
+    )
+    assert table.headings == ["Title"]
+    assert table.accessors == ["key"]
+
+
+def test_remove_column_unknown_accessor(table):
+    "If the column named for removal doesn't exist, an error is raised"
+    with pytest.raises(ValueError, match=r"'unknown' is not in list"):
+        table.remove_column("unknown")
+
+
+def test_remove_column_invalid_index(table):
+    "If the index specified doesn't exist, an error is raised"
+    with pytest.raises(IndexError, match=r"list assignment index out of range"):
+        table.remove_column(100)
+
+
+def test_remove_column_index(table):
+    "A column can be removed by index"
+
+    table.remove_column(1)
+
+    # The column was removed
+    assert_action_performed_with(
+        table,
+        "remove column",
+        index=1,
+    )
+    assert table.headings == ["Title"]
+    assert table.accessors == ["key"]
+
+
+def test_remove_column_negative_index(table):
+    "A column can be removed by index"
+
+    table.remove_column(-2)
+
+    # The column was removed
+    assert_action_performed_with(
+        table,
+        "remove column",
+        index=0,
+    )
+    assert table.headings == ["Value"]
+    assert table.accessors == ["value"]
+
+
+def test_deprecated_names(on_activate_handler):
+    "Deprecated names still work"
+
+    # Can't specify both on_double_click and on_activate
+    with pytest.raises(
+        ValueError,
+        match=r"Cannot specify both on_double_click and on_activate",
+    ):
+        toga.Table(["First", "Second"], on_double_click=Mock(), on_activate=Mock())
+
+    # on_double_click is redirected at construction
+    with pytest.warns(
+        DeprecationWarning,
+        match="Table.on_double_click has been renamed Table.on_activate",
+    ):
+        table = toga.Table(["First", "Second"], on_double_click=on_activate_handler)
+
+    # on_double_click accessor is redirected to on_activate
+    with pytest.warns(
+        DeprecationWarning,
+        match="Table.on_double_click has been renamed Table.on_activate",
+    ):
+        assert table.on_double_click._raw == on_activate_handler
+
+    assert table.on_activate._raw == on_activate_handler
+
+    # on_double_click mutator is redirected to on_activate
+    new_handler = Mock()
+    with pytest.warns(
+        DeprecationWarning,
+        match="Table.on_double_click has been renamed Table.on_activate",
+    ):
+        table.on_double_click = new_handler
+
+    assert table.on_activate._raw == new_handler
+
+    # add_column redirects to insert
+    table.add_column("New Column", "new_accessor")
+
+    assert_action_performed_with(
+        table,
+        "insert column",
+        index=2,
+        heading="New Column",
+        accessor="new_accessor",
+    )
+    assert table.headings == ["First", "Second", "New Column"]
+    assert table.accessors == ["first", "second", "new_accessor"]
