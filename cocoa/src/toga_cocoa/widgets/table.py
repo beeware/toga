@@ -45,27 +45,15 @@ class TogaTable(NSTableView):
             # for encoding an icon in a table cell. Otherwise, look
             # for an icon attribute.
             elif isinstance(value, tuple):
-                icon_iface, value = value
+                icon, value = value
             else:
                 try:
-                    icon_iface = value.icon
+                    icon = value.icon
                 except AttributeError:
-                    icon_iface = None
+                    icon = None
         except AttributeError:
             # The accessor doesn't exist in the data. Use the missing value.
-            try:
-                value = self.interface.missing_value
-            except ValueError as e:
-                # There is no explicit missing value. Warn the user.
-                message, value = e.args
-                print(message.format(row, col_identifier))
-            icon_iface = None
-
-        # If the value has an icon, get the _impl.
-        # Icons are deferred resources, so we provide the factory.
-        if icon_iface:
-            icon = icon_iface._impl
-        else:
+            value = self.interface.missing_value
             icon = None
 
         # creates a NSTableCellView from interface-builder template (does not exist)
@@ -85,17 +73,14 @@ class TogaTable(NSTableView):
 
         tcv.setText(str(value))
         if icon:
-            tcv.setImage(icon.native)
+            tcv.setImage(icon._impl.native)
         else:
             tcv.setImage(None)
-
-        # Keep track of last visible view for row
-        self.impl._view_for_row[data_row] = tcv
 
         return tcv
 
     @objc_method
-    def tableView_pasteboardWriterForRow_(self, table, row) -> None:
+    def tableView_pasteboardWriterForRow_(self, table, row) -> None:  # pragma: no cover
         # this seems to be required to prevent issue 21562075 in AppKit
         return None
 
@@ -108,13 +93,7 @@ class TogaTable(NSTableView):
 
     @objc_method
     def tableViewSelectionDidChange_(self, notification) -> None:
-        if notification.object.selectedRow == -1:
-            selected = None
-        else:
-            selected = self.interface.data[notification.object.selectedRow]
-
-        if self.interface.on_select:
-            self.interface.on_select(self.interface, row=selected)
+        self.interface.on_select(None)
 
     # 2021-09-04: Commented out this method because it appears to be a
     # source of significant slowdown when the table has a lot of data
@@ -143,19 +122,14 @@ class TogaTable(NSTableView):
     # target methods
     @objc_method
     def onDoubleClick_(self, sender) -> None:
-        if self.clickedRow == -1:
-            clicked = None
-        else:
+        if self.clickedRow != -1:
             clicked = self.interface.data[self.clickedRow]
 
-        if self.interface.on_double_click:
-            self.interface.on_double_click(self.interface, row=clicked)
+            self.interface.on_activate(None, row=clicked)
 
 
 class Table(Widget):
     def create(self):
-        self._view_for_row = dict()
-
         # Create a table view, and put it in a scroll view.
         # The scroll view is the native, because it's the outer container.
         self.native = NSScrollView.alloc().init()
@@ -164,117 +138,117 @@ class Table(Widget):
         self.native.autohidesScrollers = False
         self.native.borderType = NSBezelBorder
 
-        self.table = TogaTable.alloc().init()
-        self.table.interface = self.interface
-        self.table.impl = self
-        self.table.columnAutoresizingStyle = NSTableViewColumnAutoresizingStyle.Uniform
-        self.table.usesAlternatingRowBackgroundColors = True
-        self.table.allowsMultipleSelection = self.interface.multiple_select
+        self.native_table = TogaTable.alloc().init()
+        self.native_table.interface = self.interface
+        self.native_table.impl = self
+        self.native_table.columnAutoresizingStyle = (
+            NSTableViewColumnAutoresizingStyle.Uniform
+        )
+        self.native_table.usesAlternatingRowBackgroundColors = True
+        self.native_table.allowsMultipleSelection = self.interface.multiple_select
 
         # Create columns for the table
         self.columns = []
-        # Cocoa identifies columns by an accessor; to avoid repeated
-        # conversion from ObjC string to Python String, create the
-        # ObjC string once and cache it.
-        self.column_identifiers = {}
-        for heading, accessor in zip(
-            self.interface.headings, self.interface._accessors
-        ):
-            self._add_column(heading, accessor)
+        if self.interface.headings:
+            for index, (heading, accessor) in enumerate(
+                zip(self.interface.headings, self.interface.accessors)
+            ):
+                self._insert_column(index, heading, accessor)
+        else:
+            self.native_table.setHeaderView(None)
+            for index, accessor in enumerate(self.interface.accessors):
+                self._insert_column(index, None, accessor)
 
-        self.table.delegate = self.table
-        self.table.dataSource = self.table
-        self.table.target = self.table
-        self.table.doubleAction = SEL("onDoubleClick:")
+        self.native_table.delegate = self.native_table
+        self.native_table.dataSource = self.native_table
+        self.native_table.target = self.native_table
+        self.native_table.doubleAction = SEL("onDoubleClick:")
 
         # Embed the table view in the scroll view
-        self.native.documentView = self.table
+        self.native.documentView = self.native_table
 
         # Add the layout constraints
         self.add_constraints()
 
     def change_source(self, source):
-        self.table.reloadData()
+        self.native_table.reloadData()
 
     def insert(self, index, item):
         # set parent = None if inserting to the root item
         index_set = NSIndexSet.indexSetWithIndex(index)
 
-        self.table.insertRowsAtIndexes(
+        self.native_table.insertRowsAtIndexes(
             index_set, withAnimation=NSTableViewAnimation.EffectNone
         )
 
     def change(self, item):
-        row_index = self.table.rowForView(self._view_for_row[item])
+        row_index = self.interface.data.index(item)
         row_indexes = NSIndexSet.indexSetWithIndex(row_index)
         column_indexes = NSIndexSet.indexSetWithIndexesInRange(
             NSRange(0, len(self.columns))
         )
-        self.table.reloadDataForRowIndexes(row_indexes, columnIndexes=column_indexes)
+
+        self.native_table.reloadDataForRowIndexes(
+            row_indexes, columnIndexes=column_indexes
+        )
 
     def remove(self, index, item):
         indexes = NSIndexSet.indexSetWithIndex(index)
-        self.table.removeRowsAtIndexes(
+        self.native_table.removeRowsAtIndexes(
             indexes, withAnimation=NSTableViewAnimation.EffectNone
         )
 
     def clear(self):
-        self._view_for_row.clear()
-        self.table.reloadData()
+        self.native_table.reloadData()
 
     def get_selection(self):
         if self.interface.multiple_select:
             selection = []
 
-            current_index = self.table.selectedRowIndexes.firstIndex
-            for i in range(self.table.selectedRowIndexes.count):
-                selection.append(self.interface.data[current_index])
-                current_index = self.table.selectedRowIndexes.indexGreaterThanIndex(
-                    current_index
+            current_index = self.native_table.selectedRowIndexes.firstIndex
+            for i in range(self.native_table.selectedRowIndexes.count):
+                selection.append(current_index)
+                current_index = (
+                    self.native_table.selectedRowIndexes.indexGreaterThanIndex(
+                        current_index
+                    )
                 )
 
             return selection
         else:
-            index = self.table.selectedRow
+            index = self.native_table.selectedRow
             if index != -1:
-                return self.interface.data[index]
+                return index
             else:
                 return None
 
-    def set_on_select(self, handler):
-        pass
-
-    def set_on_double_click(self, handler):
-        pass
-
     def scroll_to_row(self, row):
-        self.table.scrollRowToVisible(row)
+        self.native_table.scrollRowToVisible(row)
 
     def rehint(self):
         self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
         self.interface.intrinsic.height = at_least(self.interface._MIN_HEIGHT)
 
-    def _add_column(self, heading, accessor):
-        column_identifier = at(accessor)
-        self.column_identifiers[accessor] = column_identifier
-        column = NSTableColumn.alloc().initWithIdentifier(column_identifier)
+    def _insert_column(self, index, heading, accessor):
+        column = NSTableColumn.alloc().initWithIdentifier(accessor)
         column.minWidth = 16
-        self.table.addTableColumn(column)
-        self.columns.append(column)
 
-        column.headerCell.stringValue = heading
+        self.columns.insert(index, column)
+        self.native_table.addTableColumn(column)
+        if index != len(self.columns) - 1:
+            self.native_table.moveColumn(len(self.columns) - 1, toColumn=index)
 
-    def add_column(self, heading, accessor):
-        self._add_column(heading, accessor)
-        self.table.sizeToFit()
+        if heading is not None:
+            column.headerCell.stringValue = heading
 
-    def remove_column(self, accessor):
-        column_identifier = self.column_identifiers[accessor]
-        column = self.table.tableColumnWithIdentifier(column_identifier)
-        self.table.removeTableColumn(column)
+    def insert_column(self, index, heading, accessor):
+        self._insert_column(index, heading, accessor)
+        self.native_table.sizeToFit()
+
+    def remove_column(self, index):
+        column = self.columns[index]
+        self.native_table.removeTableColumn(column)
 
         # delete column and identifier
         self.columns.remove(column)
-        del self.column_identifiers[accessor]
-
-        self.table.sizeToFit()
+        self.native_table.sizeToFit()

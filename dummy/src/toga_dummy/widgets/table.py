@@ -38,6 +38,9 @@ class Table(Widget):
     def remove_column(self, index):
         self._action("remove column", index=index)
 
-    def simulate_selection(self, selection):
-        self._set_value("selection", selection)
+    def simulate_selection(self, row):
+        self._set_value("selection", row)
         self.interface.on_select(None)
+
+    def simulate_activate(self, row):
+        self.interface.on_activate(None, row=self.interface.data[row])

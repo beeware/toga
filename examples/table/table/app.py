@@ -35,16 +35,16 @@ class ExampleTableApp(toga.App):
         else:
             self.label_table2.text = "No row selected"
 
-    def on_double_click1(self, widget, row, **kwargs):
+    def on_activate1(self, widget, row, **kwargs):
         self.main_window.info_dialog(
             title="movie selection",
-            message=self.build_double_click_message(row=row, table_index=1),
+            message=self.build_activate_message(row=row, table_index=1),
         )
 
-    def on_double_click2(self, widget, row, **kwargs):
+    def on_activate2(self, widget, row, **kwargs):
         self.main_window.info_dialog(
             title="movie selection",
-            message=self.build_double_click_message(row=row, table_index=2),
+            message=self.build_activate_message(row=row, table_index=2),
         )
 
     # Button callback functions
@@ -129,7 +129,7 @@ class ExampleTableApp(toga.App):
             ),
             multiple_select=False,
             on_select=self.on_select_handler1,
-            on_double_click=self.on_double_click1,
+            on_activate=self.on_activate1,
             missing_value="Unknown",
         )
 
@@ -139,7 +139,7 @@ class ExampleTableApp(toga.App):
             multiple_select=True,
             style=Pack(flex=1, padding_left=5),
             on_select=self.on_select_handler2,
-            on_double_click=self.on_double_click2,
+            on_activate=self.on_activate2,
             missing_value="?",
         )
 
@@ -196,7 +196,7 @@ class ExampleTableApp(toga.App):
         self.table1._impl.set_font(font)
 
     @classmethod
-    def build_double_click_message(cls, row, table_index):
+    def build_activate_message(cls, row, table_index):
         adjective = random.choice(
             ["magnificent", "amazing", "awesome", "life-changing"]
         )

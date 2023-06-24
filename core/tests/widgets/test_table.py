@@ -5,6 +5,7 @@ import pytest
 import toga
 from toga.sources import ListSource
 from toga_dummy.utils import (
+    assert_action_not_performed,
     assert_action_performed,
     assert_action_performed_with,
 )
@@ -116,6 +117,25 @@ def test_create_headings_required():
         match=r"Cannot create a table without either headings or accessors",
     ):
         toga.Table()
+
+
+def test_disable_no_op(table):
+    "Table doesn't have a disabled state"
+    # Enabled by default
+    assert table.enabled
+
+    # Try to disable the widget
+    table.enabled = False
+
+    # Still enabled.
+    assert table.enabled
+
+
+def test_focus_noop(table):
+    "Focus is a no-op."
+
+    table.focus()
+    assert_action_not_performed(table, "focus")
 
 
 def test_set_data_list(table, on_select_handler):
@@ -256,6 +276,16 @@ def test_multiple_selection(source, on_select_handler):
 
     # Selection handler was triggered
     on_select_handler.assert_called_once_with(table)
+
+
+def test_activation(table, on_activate_handler):
+    "A row can be activated"
+
+    # Activate an item
+    table._impl.simulate_activate(1)
+
+    # Activate handler was triggered; the activated row is provided
+    on_activate_handler.assert_called_once_with(table, row=table.data[1])
 
 
 def test_scroll_to_top(table):
@@ -493,6 +523,25 @@ def test_remove_column_negative_index(table):
     )
     assert table.headings == ["Value"]
     assert table.accessors == ["value"]
+
+
+def test_remove_column_no_headings(table):
+    "A column can be removed when there are no headings"
+    table = toga.Table(
+        headings=None,
+        accessors=["primus", "secondus"],
+    )
+
+    table.remove_column(1)
+
+    # The column was removed
+    assert_action_performed_with(
+        table,
+        "remove column",
+        index=1,
+    )
+    assert table.headings is None
+    assert table.accessors == ["primus"]
 
 
 def test_deprecated_names(on_activate_handler):

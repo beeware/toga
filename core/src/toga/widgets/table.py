@@ -77,16 +77,34 @@ class Table(Widget):
             )
 
         self._multiple_select = multiple_select
+        self._missing_value = missing_value or ""
+
+        # Prime some properties that need to exist before the table is created.
         self.on_select = None
         self.on_activate = None
-
-        self._missing_value = missing_value or ""
+        self._data = None
 
         self._impl = self.factory.Table(interface=self)
         self.data = data
 
         self.on_select = on_select
         self.on_activate = on_activate
+
+    @property
+    def enabled(self) -> bool:
+        """Is the widget currently enabled? i.e., can the user interact with the widget?
+        Table widgets cannot be disabled; this property will always return True; any
+        attempt to modify it will be ignored.
+        """
+        return True
+
+    @enabled.setter
+    def enabled(self, value):
+        pass
+
+    def focus(self):
+        "No-op; Table cannot accept input focus"
+        pass
 
     @property
     def data(self) -> ListSource:
@@ -237,7 +255,7 @@ class Table(Widget):
             else:
                 index = min(len(self._accessors), index)
 
-        if self._headings:
+        if self._headings is not None:
             self._headings.insert(index, heading)
         self._accessors.insert(index, accessor)
 
@@ -259,7 +277,8 @@ class Table(Widget):
                 index = column
 
         # Remove column
-        del self._headings[index]
+        if self._headings is not None:
+            del self._headings[index]
         del self._accessors[index]
         self._impl.remove_column(index)
 
