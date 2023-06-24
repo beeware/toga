@@ -73,7 +73,7 @@ class ExampleBoxApp(toga.App):
         self.outer_box.style.background_color = GREEN
 
     def reset_color(self, widget):
-        self.outer_box.style.background_color = None
+        del self.outer_box.style.background_color
 
     def toggle_yellow_button(self, widget):
         if widget.value:

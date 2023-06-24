@@ -1,3 +1,4 @@
+import errno
 import os
 import sys
 import tempfile
@@ -78,6 +79,14 @@ def run_tests(app, cov, args, report_coverage, run_slow):
 
 
 if __name__ == "__main__":
+    # Prevent the log being cluttered with "avc: denied" messages
+    # (https://github.com/beeware/toga/issues/1962).
+    def get_terminal_size(*args, **kwargs):
+        error = errno.ENOTTY
+        raise OSError(error, os.strerror(error))
+
+    os.get_terminal_size = get_terminal_size
+
     # Determine the toga backend. This replicates the behavior in toga/platform.py;
     # we can't use that module directly because we need to capture all the import
     # side effects as part of the coverage data.

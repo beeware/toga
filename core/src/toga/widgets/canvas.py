@@ -337,7 +337,7 @@ class Context:
             text (str): The text to fill.
             x (float, Optional): The x coordinate of the text. Default to 0.
             y (float, Optional): The y coordinate of the text. Default to 0.
-            font (:class:`~toga.fonts.Font`, Optional): The font to write with.
+            font (:class:`toga.Font`, Optional): The font to write with.
 
         Returns:
             :class:`WriteText` object.
@@ -1109,7 +1109,7 @@ class WriteText:
         text (str): The text to fill.
         x (float, Optional): The x coordinate of the text. Default to 0.
         y (float, Optional): The y coordinate of the text. Default to 0.
-        font (:class:`toga.fonts.Font`, Optional): The font to write with.
+        font (:class:`toga.Font`, Optional): The font to write with.
     """
 
     def __init__(self, text, x, y, font):

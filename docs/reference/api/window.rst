@@ -44,6 +44,6 @@ instantiation and support displaying multiple widgets, toolbars and resizing.
 Reference
 ---------
 
-.. autoclass:: toga.window.Window
+.. autoclass:: toga.Window
    :members:
    :undoc-members:

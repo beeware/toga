@@ -94,11 +94,6 @@ class TextInput(TextViewWidget):
     def set_alignment(self, value):
         self.set_textview_alignment(value, Gravity.CENTER_VERTICAL)
 
-    def set_background_color(self, value):
-        # This causes any custom color to hide the bottom border line, but it's better
-        # than set_background_filter, which affects *only* the bottom border line.
-        self.set_background_simple(value)
-
     def set_error(self, error_message):
         self.native.setError(error_message)
 

@@ -1,4 +1,3 @@
-import sys
 from pathlib import Path
 from typing import Any
 
@@ -22,13 +21,6 @@ from .conftest import skip_on_platforms
 async def widget() -> toga.Label:
     skip_on_platforms("android", "iOS", "macOS")
     return toga.Label("hello, this is a label")
-
-
-@pytest.fixture
-async def app_path(app):
-    # This *should* be app.paths.app, but under test conditions,
-    # the mainline is the test module, which confuses the app path.
-    return Path(sys.modules[app.__module__].__file__).parent
 
 
 async def test_use_system_font_fallback(
@@ -83,18 +75,18 @@ async def test_font_options(widget: toga.Label, widget_probe: Any):
     ],
 )
 async def test_font_file_loaded(
+    app: toga.App,
     widget: toga.Label,
     widget_probe: Any,
     font_family: str,
     font_path: str,
     font_kwargs,
     capsys: pytest.CaptureFixture[str],
-    app_path: Path,
 ):
     """Custom fonts can be loaded and used."""
     Font.register(
         family=font_family,
-        path=app_path / font_path,
+        path=app.paths.app / font_path,
         **font_kwargs,
     )
 
@@ -127,11 +119,11 @@ async def test_font_file_loaded(
     assert "could not be found" not in stdout
 
 
-async def test_non_existent_font_file(widget: toga.Label, app_path: Path):
+async def test_non_existent_font_file(widget: toga.Label, app: toga.App):
     "Invalid font files fail registration"
     Font.register(
         family="non-existent",
-        path=app_path / "resources" / "fonts" / "nonexistent.ttf",
+        path=app.paths.app / "resources" / "fonts" / "nonexistent.ttf",
     )
     with pytest.raises(
         ValueError, match=r"Font file .*nonexistent.ttf could not be found"

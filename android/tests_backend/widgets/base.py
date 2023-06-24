@@ -25,7 +25,6 @@ class LayoutListener(dynamic_proxy(ViewTreeObserver.OnGlobalLayoutListener)):
 
     def onGlobalLayout(self):
         self.event.set()
-        self.event.clear()
 
 
 class SimpleProbe(BaseProbe):
@@ -72,12 +71,17 @@ class SimpleProbe(BaseProbe):
         else:
             assert actual == expected
 
-    async def redraw(self, message=None):
+    async def redraw(self, message=None, delay=None):
         """Request a redraw of the app, waiting until that redraw has completed."""
         self.native.requestLayout()
-        await self.layout_listener.event.wait()
+        try:
+            event = self.layout_listener.event
+            event.clear()
+            await asyncio.wait_for(event.wait(), 5)
+        except asyncio.TimeoutError:
+            print("Redraw timed out")
 
-        await super().redraw(message=message)
+        await super().redraw(message=message, delay=delay)
 
     @property
     def enabled(self):

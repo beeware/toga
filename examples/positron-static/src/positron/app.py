@@ -1,4 +1,4 @@
-from http.server import HTTPServer, SimpleHTTPRequestHandler
+from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from threading import Event, Thread
 
 import toga
@@ -9,7 +9,7 @@ class HTTPHandler(SimpleHTTPRequestHandler):
         return str(self.server.base_path / path[1:])
 
 
-class LocalHTTPServer(HTTPServer):
+class LocalHTTPServer(ThreadingHTTPServer):
     def __init__(self, base_path, RequestHandlerClass=HTTPHandler):
         self.base_path = base_path
         # Use port 0 to let the server select an available port.

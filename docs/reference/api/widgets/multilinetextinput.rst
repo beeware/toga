@@ -41,6 +41,6 @@ Notes
 Reference
 ---------
 
-.. autoclass:: toga.widgets.multilinetextinput.MultilineTextInput
+.. autoclass:: toga.MultilineTextInput
    :members:
    :undoc-members:

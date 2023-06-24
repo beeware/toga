@@ -16,6 +16,6 @@ Usage
 Reference
 ---------
 
-.. autoclass:: toga.widgets.detailedlist.DetailedList
+.. autoclass:: toga.DetailedList
    :members:
    :undoc-members:

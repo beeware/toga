@@ -17,7 +17,7 @@ class Switch(Widget):
     ):
         """Create a new Switch widget.
 
-        Inherits from :class:`~toga.widgets.base.Widget`.
+        Inherits from :class:`toga.Widget`.
 
         :param text: The text to display beside the switch.
         :param id: The ID for the widget.
