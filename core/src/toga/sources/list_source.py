@@ -15,13 +15,16 @@ class Row:
         When any of the named attributes are modified, the source to which the
         row belongs will be notified.
         """
-        self._attrs = list(data.keys())
         self._source = None
         for name, value in data.items():
             setattr(self, name, value)
 
     def __repr__(self):
-        descriptor = " ".join(f"{attr}={getattr(self, attr)!r}" for attr in self._attrs)
+        descriptor = " ".join(
+            f"{attr}={getattr(self, attr)!r}"
+            for attr in sorted(dir(self))
+            if not attr.startswith("_")
+        )
         return f"<Row {id(self):x} {descriptor if descriptor else '(no attributes)'}>"
 
     ######################################################################
@@ -35,7 +38,7 @@ class Row:
         :param value: The new attribute value.
         """
         super().__setattr__(attr, value)
-        if attr in self._attrs:
+        if not attr.startswith("_"):
             if self._source is not None:
                 self._source.notify("change", item=self)
 
@@ -73,6 +76,11 @@ class ListSource(Source):
 
     def __getitem__(self, index: int) -> Row:
         return self._data[index]
+
+    def __delitem__(self, index):
+        row = self._data[index]
+        del self._data[index]
+        self.notify("remove", index=index, item=row)
 
     ######################################################################
     # Factory methods for new rows
@@ -154,8 +162,7 @@ class ListSource(Source):
         :param row: The row to remove from the data source.
         """
         i = self._data.index(row)
-        del self._data[i]
-        self.notify("remove", index=i, item=row)
+        del self[i]
         return row
 
     def index(self, row):

@@ -29,6 +29,13 @@ def test_row():
 
     row.val1 = "new value"
     source.notify.assert_called_once_with("change", item=row)
+    source.notify.reset_mock()
+
+    # An attribute that wasn't in the original attribute set
+    # still causes a change notification
+    row.val3 = "other value"
+    source.notify.assert_called_once_with("change", item=row)
+    source.notify.reset_mock()
 
 
 @pytest.mark.parametrize(
@@ -329,6 +336,25 @@ def test_append_positional(source):
     assert row.val2 == 999
 
     listener.insert.assert_called_once_with(index=3, item=row)
+
+
+def test_del(source):
+    "You can delete an item from a list source by index"
+    listener = Mock()
+    source.add_listener(listener)
+
+    # Delete the second element
+    row = source[1]
+    del source[1]
+
+    assert len(source) == 2
+    assert source[0].val1 == "first"
+    assert source[0].val2 == 111
+
+    assert source[1].val1 == "third"
+    assert source[1].val2 == 333
+
+    listener.remove.assert_called_once_with(item=row, index=1)
 
 
 def test_remove(source):
