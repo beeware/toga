@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import re
 
 NON_ACCESSOR_CHARS = re.compile(r"[^\w ]")

@@ -23,13 +23,14 @@ def app():
     [
         # Relative path
         (Path("resources/red"), False, None, [".png"], APP_RESOURCES / "red.png"),
-        # Absolute path (points at a file in the system resource folder, but is declared as non-system)
+        # Absolute path (points at a file in the system resource folder,
+        # but that's just because it's a location we know exists.)
         (
             Path(__file__).parent.parent / "src" / "toga" / "resources" / "toga",
             False,
             None,
             [".png"],
-            TOGA_RESOURCES / "toga.png",
+            Path(__file__).parent.parent / "src" / "toga" / "resources" / "toga.png",
         ),
         # PNG format
         ("resources/red", False, None, [".png"], APP_RESOURCES / "red.png"),
