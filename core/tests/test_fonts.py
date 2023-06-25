@@ -146,11 +146,16 @@ def test_registered_font_key(app, family, style, weight, variant, key):
     "path, registered",
     [
         # Absolute path
-        ("/path/to/custom/font.otf", "/path/to/custom/font.otf"),
+        (Path("/path/to/custom/font.otf"), Path("/path/to/custom/font.otf")),
+        (str(Path("/path/to/custom/font.otf")), Path("/path/to/custom/font.otf")),
         # Relative path
         (
+            Path("path/to/custom/font.otf"),
+            Path(toga.__file__).parent / "path" / "to" / "custom" / "font.otf",
+        ),
+        (
             "path/to/custom/font.otf",
-            str(Path(toga.__file__).parent / "path" / "to" / "custom" / "font.otf"),
+            Path(toga.__file__).parent / "path" / "to" / "custom" / "font.otf",
         ),
     ],
 )
@@ -158,18 +163,27 @@ def test_register_font(app, path, registered):
     "A custom font can be registered"
     toga.Font.register("Custom Font", path)
 
-    assert _REGISTERED_FONT_CACHE[("Custom Font", NORMAL, NORMAL, NORMAL)] == registered
+    # Test fixture has paths in Path format; fully resolve and convert into a string for
+    # test comparison. This gets around Windows path separator and absolute path
+    # discrepancies.
+    resolved = str(registered.resolve())
+    assert _REGISTERED_FONT_CACHE[("Custom Font", NORMAL, NORMAL, NORMAL)] == resolved
 
 
 @pytest.mark.parametrize(
     "path, registered",
     [
         # Absolute path
-        ("/path/to/custom/font.otf", "/path/to/custom/font.otf"),
+        (Path("/path/to/custom/font.otf"), Path("/path/to/custom/font.otf")),
+        (str(Path("/path/to/custom/font.otf")), Path("/path/to/custom/font.otf")),
         # Relative path
         (
-            "path/to/custom/font.otf",
-            str(Path(toga.__file__).parent / "path" / "to" / "custom" / "font.otf"),
+            Path("path/to/custom/font.otf"),
+            Path(toga.__file__).parent / "path" / "to" / "custom" / "font.otf",
+        ),
+        (
+            str(Path("path/to/custom/font.otf")),
+            Path(toga.__file__).parent / "path" / "to" / "custom" / "font.otf",
         ),
     ],
 )
@@ -177,4 +191,8 @@ def test_register_font_variant(app, path, registered):
     "A custom font can be registered as a variant"
     toga.Font.register("Custom Font", path, weight=BOLD)
 
-    assert _REGISTERED_FONT_CACHE[("Custom Font", BOLD, NORMAL, NORMAL)] == registered
+    # Test fixture has paths in Path format; fully resolve and convert into a string for
+    # test comparison. This gets around Windows path separator and absolute path
+    # discrepancies.
+    resolved = str(registered.resolve())
+    assert _REGISTERED_FONT_CACHE[("Custom Font", BOLD, NORMAL, NORMAL)] == resolved

@@ -1,4 +1,3 @@
-from pathlib import Path
 from typing import Any
 
 import pytest
@@ -131,11 +130,11 @@ async def test_non_existent_font_file(widget: toga.Label, app: toga.App):
         widget.style.font_family = "non-existent"
 
 
-async def test_corrupted_font_file(widget: toga.Label, app_path: Path):
+async def test_corrupted_font_file(widget: toga.Label, app: toga.App):
     "Corrupted font files fail registration"
     Font.register(
         family="corrupted",
-        path=app_path / "resources" / "fonts" / "Corrupted.ttf",
+        path=app.paths.app / "resources" / "fonts" / "Corrupted.ttf",
     )
     with pytest.raises(ValueError, match=r"Unable to load font file .*Corrupted.ttf"):
         widget.style.font_family = "corrupted"
