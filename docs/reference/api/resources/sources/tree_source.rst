@@ -8,7 +8,7 @@ Usage
 
 Data sources are abstractions that allow you to define the data being managed by your
 application independent of the GUI representation of that data. For details on the use
-of data sources, see the :doc:`background guide </background/data-sources>`.
+of data sources, see the :doc:`background guide </background/topics/data-sources>`.
 
 TreeSource is an implementation of an ordered hierarchical tree of values. Each node in
 the tree can have children; those children can in turn have their own children.

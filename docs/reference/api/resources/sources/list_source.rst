@@ -8,7 +8,7 @@ Usage
 
 Data sources are abstractions that allow you to define the data being managed by your
 application independent of the GUI representation of that data. For details on the use
-of data sources, see the :doc:`background guide </background/data-sources>`.
+of data sources, see the :doc:`background guide </background/topics/data-sources>`.
 
 ListSource is an implementation of an ordered list of data. When a ListSource is
 created, it is given a list of ``accessors`` - these are the attributes that
@@ -43,12 +43,12 @@ all items managed by the ListSource will have.
 When initially constructing the ListSource, or when assigning a specific item in
 the ListSource, each item can be:
 
- * A dictionary, with the accessors mapping to the keys in the dictionary
+* A dictionary, with the accessors mapping to the keys in the dictionary
 
- * Any iterable object (except for a string), with the accessors being mapped
-   onto the items in the iterable in order of definition
+* Any iterable object (except for a string), with the accessors being mapped
+  onto the items in the iterable in order of definition
 
- * Any other object, which will be mapped onto the *first* accessor.
+* Any other object, which will be mapped onto the *first* accessor.
 
 The ListSource manages a list of :class:`~toga.sources.Row` objects. Each Row object in
 the ListSource is an object that has all the attributes described by the ``accessors``.
