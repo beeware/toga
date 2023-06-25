@@ -3,6 +3,7 @@ from unittest.mock import Mock
 import pytest
 
 import toga
+from toga.constants import CENTER
 from toga.sources import ListSource
 
 from .properties import (  # noqa: F401
@@ -25,7 +26,12 @@ from .properties import (  # noqa: F401
 # make out, there's an internal private widget that actually gets the focus, but
 # that widget isn't visible to GObject. We can't use test_focus_noop because
 # the textinput *does* lose focus when focus() is invoked on selection.
-if toga.platform.current_platform not in {"linux"}:
+if toga.platform.current_platform == "linux":
+    pass
+elif toga.platform.current_platform == "android":
+    # This widget can't be given focus on Android.
+    from .properties import test_focus_noop  # noqa: F401
+else:
     from .properties import test_focus  # noqa: F401
 
 
@@ -38,6 +44,11 @@ async def widget():
 def verify_font_sizes():
     # Font size does not affect the width of this widget.
     return False, True
+
+
+@pytest.fixture
+def verify_vertical_alignment():
+    return CENTER
 
 
 async def test_item_titles(widget, probe):
@@ -235,6 +246,16 @@ async def test_source_changes(widget, probe):
     assert probe.selected_title == "new 3"
     selected = source[0]
     assert widget.value == selected
+    on_change_handler.assert_called_once_with(widget)
+    on_change_handler.reset_mock()
+
+    # Remove the only item
+    source.remove(selected)
+    await probe.redraw("Last item has been removed")
+
+    assert probe.titles == []
+    assert probe.selected_title is None
+    assert widget.value is None
     on_change_handler.assert_called_once_with(widget)
     on_change_handler.reset_mock()
 

@@ -15,7 +15,7 @@ from toga.colors import TRANSPARENT
 from toga.style.pack import JUSTIFY, LEFT
 
 from ..probe import BaseProbe
-from .properties import toga_color
+from .properties import toga_color, toga_vertical_alignment
 
 
 class LayoutListener(dynamic_proxy(ViewTreeObserver.OnGlobalLayoutListener)):
@@ -66,10 +66,15 @@ class SimpleProbe(BaseProbe):
 
     def assert_alignment(self, expected):
         actual = self.alignment
-        if expected == JUSTIFY and Build.VERSION.SDK_INT < 26:
+        if expected == JUSTIFY and (
+            Build.VERSION.SDK_INT < 26 or not self.supports_justify
+        ):
             assert actual == LEFT
         else:
             assert actual == expected
+
+    def assert_vertical_alignment(self, expected):
+        assert toga_vertical_alignment(self.native.getGravity()) == expected
 
     async def redraw(self, message=None, delay=None):
         """Request a redraw of the app, waiting until that redraw has completed."""

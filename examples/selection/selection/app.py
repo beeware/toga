@@ -29,7 +29,6 @@ class SelectionApp(toga.App):
             accessor="name",
             items=self.DATA_OPTIONS,
         )
-        self.report_label = toga.Label("", style=label_style)
 
         self.main_window.content = toga.Box(
             children=[
@@ -57,29 +56,17 @@ class SelectionApp(toga.App):
                 toga.Box(
                     style=box_style,
                     children=[
-                        toga.Button(
-                            "Report on selection", on_press=self.report_selection
-                        ),
-                        self.report_label,
+                        toga.Button("Print", on_press=self.report_selection),
+                        toga.Button("Carbon", on_press=self.set_carbon),
+                        toga.Button("Ytterbium", on_press=self.set_ytterbium),
+                        toga.Button("Thulium", on_press=self.set_thulium),
                     ],
                 ),
                 toga.Box(
                     style=box_style,
                     children=[
                         toga.Label(
-                            "Selection value can be set by property setter",
-                            style=label_style,
-                        ),
-                        toga.Button(text="Set Carbon", on_press=self.set_carbon),
-                        toga.Button(text="Set Ytterbium", on_press=self.set_ytterbium),
-                        toga.Button(text="Set THULIUM", on_press=self.set_thulium),
-                    ],
-                ),
-                toga.Box(
-                    style=box_style,
-                    children=[
-                        toga.Label(
-                            "use the 'on_change' callback to respond to changes",
+                            "on_change callback",
                             style=label_style,
                         ),
                         toga.Selection(
@@ -91,9 +78,7 @@ class SelectionApp(toga.App):
                 toga.Box(
                     style=box_style,
                     children=[
-                        toga.Label(
-                            "Long lists of items should scroll", style=label_style
-                        ),
+                        toga.Label("Long lists should scroll", style=label_style),
                         toga.Selection(items=dir(toga)),
                     ],
                 ),
@@ -110,9 +95,7 @@ class SelectionApp(toga.App):
                 toga.Box(
                     style=box_style,
                     children=[
-                        toga.Label(
-                            "Selection widgets can be disabled", style=label_style
-                        ),
+                        toga.Label("Disabled", style=label_style),
                         toga.Selection(
                             items=[
                                 "Helium",
@@ -148,7 +131,7 @@ class SelectionApp(toga.App):
         print(f"The selection widget changed to {selection.value}")
 
     def report_selection(self, widget):
-        self.report_label.text = (
+        print(
             f"Element: {self.selection.value!r}; "
             f"Empty: {self.empty_selection.value!r}; "
             f"Source: {self.source_selection.value.name} has weight {self.source_selection.value.weight}"
