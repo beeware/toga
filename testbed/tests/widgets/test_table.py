@@ -6,6 +6,7 @@ import toga
 from toga.sources import ListSource
 from toga.style.pack import Pack
 
+from ..conftest import skip_on_platforms
 from .probe import get_probe
 from .properties import (  # noqa: F401
     test_background_color,
@@ -39,6 +40,7 @@ def source():
 
 @pytest.fixture
 async def widget(source, on_select_handler, on_activate_handler):
+    skip_on_platforms("iOS")
     return toga.Table(
         ["A", "B", "C"],
         data=source,
@@ -51,6 +53,7 @@ async def widget(source, on_select_handler, on_activate_handler):
 
 @pytest.fixture
 def headerless_widget(source, on_select_handler):
+    skip_on_platforms("iOS")
     return toga.Table(
         data=source,
         missing_value="MISSING!",
@@ -76,6 +79,7 @@ async def headerless_probe(main_window, headerless_widget):
 
 @pytest.fixture
 def multiselect_widget(source, on_select_handler):
+    skip_on_platforms("iOS")
     return toga.Table(
         ["A", "B", "C"],
         data=source,
