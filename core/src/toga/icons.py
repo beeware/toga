@@ -1,5 +1,4 @@
-import os
-import warnings
+from pathlib import Path
 
 import toga
 from toga.platform import get_platform_factory
@@ -27,14 +26,6 @@ class cachedicon:
 
 
 class Icon:
-    """A representation of an Icon image.
-
-    :param path: The path to the icon file, relative to the application's
-        module directory.
-    :param system: Is this a system resource? Set to ``True`` if the icon is
-        one of the Toga-provided icons. Default is False.
-    """
-
     @cachedicon
     def TOGA_ICON(cls):
         return Icon("resources/toga", system=True)
@@ -43,8 +34,23 @@ class Icon:
     def DEFAULT_ICON(cls):
         return Icon("resources/toga", system=True)
 
-    def __init__(self, path, system=False):
-        self.path = path
+    # System is
+    def __init__(
+        self,
+        path=None,
+        *,
+        system=False,  # Deliberately undocumented; for internal use only
+    ):
+        """Create a new icon.
+
+        :param path: Base filename for the icon. This can be specified as a string, or
+            as a :any:`pathlib.Path` object. The path can be an absolute file system
+            path, or a path relative to the module that defines your Toga application
+            class. This base filename should *not* contain an extension; a platform will
+            modify this base filename and add an extension to define the final icon
+            filename ( or filenames). If an extension is specified, it will be ignored.
+        """
+        self.path = Path(path)
         self.system = system
 
         self.factory = get_platform_factory()
@@ -72,43 +78,24 @@ class Icon:
 
             self._impl = self.factory.Icon(interface=self, path=full_path)
         except FileNotFoundError:
-            print(
-                "WARNING: Can't find icon {self.path}; falling back to default icon".format(
-                    self=self
-                )
-            )
-            self._impl = Icon.DEFAULT_ICON._impl
-
-    def bind(self, factory=None):
-        warnings.warn(
-            "Icons no longer need to be explicitly bound.", DeprecationWarning
-        )
-        return self._impl
+            print(f"WARNING: Can't find icon {self.path}; falling back to default icon")
+            self._impl = self.DEFAULT_ICON._impl
 
     def _full_path(self, size, extensions, resource_path):
-        basename, file_extension = os.path.splitext(self.path)
-
-        if not file_extension:
-            # If no extension is provided, look for one of the allowed
-            # icon types, in preferred format order.
-            for extension in extensions:
-                icon_path = resource_path / f"{basename}-{size}{extension}"
-
+        for extension in extensions:
+            if size:
+                icon_path = (
+                    resource_path
+                    / self.path.parent
+                    / f"{self.path.stem}-{size}{extension}"
+                )
                 if icon_path.exists():
                     return icon_path
 
-                # look for an icon file without a size in the filename
-                icon_path = resource_path / f"{basename}{extension}"
-                if icon_path.exists():
-                    return icon_path
-
-        elif file_extension.lower() in extensions:
-            # If an icon *is* provided, it must be one of the acceptable types
-            icon_path = resource_path / self.path
+            icon_path = (
+                resource_path / self.path.parent / f"{self.path.stem}{extension}"
+            )
             if icon_path.exists():
                 return icon_path
-        else:
-            # An icon has been specified, but it's not a valid format.
-            raise FileNotFoundError(f"{self.path} is not a valid icon")
 
         raise FileNotFoundError(f"Can't find icon {self.path}")

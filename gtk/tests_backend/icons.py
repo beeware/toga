@@ -1,0 +1,36 @@
+import pytest
+
+from toga_gtk.libs import Gtk
+
+from .probe import BaseProbe
+
+
+class IconProbe(BaseProbe):
+    alternate_resource = "resources/icons/orange"
+
+    def __init__(self, app, icon):
+        super().__init__()
+        self.app = app
+        self.icon = icon
+        assert isinstance(self.icon._impl.native_32, Gtk.Image)
+        assert isinstance(self.icon._impl.native_72, Gtk.Image)
+
+    def assert_icon_content(self, path):
+        if path == "resources/icons/green":
+            assert self.icon._impl.paths == {
+                32: self.app.paths.app / "resources" / "icons" / "green-32.png",
+                72: self.app.paths.app / "resources" / "icons" / "green-72.png",
+            }
+        elif path == "resources/icons/orange":
+            assert self.icon._impl.paths == {
+                32: self.app.paths.app / "resources" / "icons" / "orange.ico",
+                72: self.app.paths.app / "resources" / "icons" / "orange.ico",
+            }
+        else:
+            pytest.fail("Unknown icon resource")
+
+    def assert_default_icon_content(self):
+        assert self.icon._impl.paths == {
+            32: self.app.paths.toga / "resources" / "toga.png",
+            72: self.app.paths.toga / "resources" / "toga.png",
+        }

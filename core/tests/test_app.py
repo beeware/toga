@@ -1,3 +1,4 @@
+from pathlib import Path
 from unittest.mock import MagicMock
 
 import toga
@@ -35,19 +36,13 @@ class AppTests(TestCase):
 
     def test_app_icon(self):
         # App icon will default to a name autodetected from the running module
-        self.assertEqual(self.app.icon.path, "resources/toga")
-
+        self.assertEqual(self.app.icon.path, Path("resources/toga"))
         # This icon will be bound
-        self.assertIsNotNone(self.app.icon._impl)
-
-        # Binding is a no op.
-        with self.assertWarns(DeprecationWarning):
-            self.app.icon.bind()
         self.assertIsNotNone(self.app.icon._impl)
 
         # Set the icon to a different resource
         self.app.icon = "other.icns"
-        self.assertEqual(self.app.icon.path, "other.icns")
+        self.assertEqual(self.app.icon.path, Path("other.icns"))
 
         # This icon name will *not* exist. The Impl will be the DEFAULT_ICON's impl
         self.assertEqual(self.app.icon._impl, toga.Icon.DEFAULT_ICON._impl)
