@@ -22,12 +22,13 @@ class ExampleTableApp(toga.App):
     lbl_fontsize = None
 
     # Table callback functions
-    def on_select_handler1(self, widget, row, **kwargs):
+    def on_select_handler1(self, widget, **kwargs):
+        row = self.table1.selection
         self.label_table1.text = (
             f"You selected row: {row.title}" if row is not None else "No row selected"
         )
 
-    def on_select_handler2(self, widget, row, **kwargs):
+    def on_select_handler2(self, widget, **kwargs):
         if self.table2.selection is not None:
             self.label_table2.text = "Rows selected: {}".format(
                 len(self.table2.selection)
@@ -201,7 +202,7 @@ class ExampleTableApp(toga.App):
             ["magnificent", "amazing", "awesome", "life-changing"]
         )
         return (
-            f"You selected the {adjective} {row.genre.lower()} movie "
+            f"You selected the {adjective} {getattr(row, 'genre', '').lower()} movie "
             f"{row.title} ({row.year}) from Table {table_index}"
         )
 
