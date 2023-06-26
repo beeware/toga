@@ -11,6 +11,7 @@ class SimpleProbe(BaseProbe):
     def __init__(self, widget):
         super().__init__()
         self.app = widget.app
+        self.window = widget.window
         self.widget = widget
         self.impl = widget._impl
         self.native = widget._impl.native
@@ -54,6 +55,10 @@ class SimpleProbe(BaseProbe):
     @property
     def height(self):
         return self.native.frame.size.height
+
+    @property
+    def shrink_on_resize(self):
+        return True
 
     def assert_layout(self, size, position):
         # Widget is contained and in a window.
@@ -161,7 +166,7 @@ class SimpleProbe(BaseProbe):
             ),
         )
 
-    async def mouse_event(self, event_type, location):
+    async def mouse_event(self, event_type, location, delay=None):
         await self.post_event(
             NSEvent.mouseEventWithType(
                 event_type,
@@ -174,4 +179,5 @@ class SimpleProbe(BaseProbe):
                 clickCount=1,
                 pressure=1.0 if event_type == NSEventType.LeftMouseDown else 0.0,
             ),
+            delay=delay,
         )

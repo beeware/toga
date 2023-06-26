@@ -33,9 +33,6 @@ class Switch(Widget):
     def set_value(self, value):
         self.native.Checked = value
 
-    def set_font(self, font):
-        self.native.Font = font._impl.native
-
     def rehint(self):
         self.interface.intrinsic.width = at_least(self.native.PreferredSize.Width)
         self.interface.intrinsic.height = self.native.PreferredSize.Height

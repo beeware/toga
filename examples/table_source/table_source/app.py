@@ -44,17 +44,17 @@ class MovieSource(Source):
         movie = Movie(*entry)
         self._movies.append(movie)
         self._movies.sort(key=lambda m: m.year)
-        self._notify("insert", index=self._movies.index(movie), item=movie)
+        self.notify("insert", index=self._movies.index(movie), item=movie)
 
     def remove(self, item):
         index = self.index(item)
-        self._notify("pre_remove", index=index, item=item)
+        self.notify("pre_remove", index=index, item=item)
         del self._movies[index]
-        self._notify("remove", index=index, item=item)
+        self.notify("remove", index=index, item=item)
 
     def clear(self):
         self._movies = []
-        self._notify("clear")
+        self.notify("clear")
 
 
 class GoodMovieSource(Source):
@@ -90,7 +90,7 @@ class GoodMovieSource(Source):
             if filtered_item == item:
                 # Propagate the insertion, with the position in the
                 # *filtered* list.
-                self._notify("insert", index=i, item=item)
+                self.notify("insert", index=i, item=item)
 
     def pre_remove(self, index, item):
         # If the item exists in the filtered list, track that it is being
@@ -106,13 +106,13 @@ class GoodMovieSource(Source):
         # propagate the removal notification.
         try:
             i = self._removals.pop(item)
-            self._notify("remove", index=i, item=item)
+            self.notify("remove", index=i, item=item)
         except KeyError:
             # object wasn't previously in the data source
             pass
 
     def clear(self):
-        self._notify("clear")
+        self.notify("clear")
 
 
 class ExampleTableSourceApp(toga.App):

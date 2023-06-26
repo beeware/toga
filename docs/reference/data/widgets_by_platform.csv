@@ -14,7 +14,7 @@ MultilineTextInput,General Widget,:class:`~toga.MultilineTextInput`,Multi-line T
 NumberInput,General Widget,:class:`~toga.NumberInput`,A text input that is limited to numeric input,|y|,|y|,|y|,|y|,|y|,
 PasswordInput,General Widget,:class:`~toga.PasswordInput`,A text input that hides its input,|y|,|y|,|y|,|y|,|y|,
 ProgressBar,General Widget,:class:`~toga.ProgressBar`,Progress Bar,|y|,|y|,|y|,|y|,|y|,|b|
-Selection,General Widget,:class:`~toga.Selection`,Selection,|b|,|b|,|b|,|b|,|b|,
+Selection,General Widget,:class:`~toga.Selection`,A widget to select a single option from a list of alternatives.,|y|,|y|,|y|,|y|,|y|,
 Slider,General Widget,:class:`~toga.Slider`,Slider,|y|,|y|,|y|,|y|,|y|,
 Switch,General Widget,:class:`~toga.Switch`,Switch,|y|,|y|,|y|,|y|,|y|,|b|
 Table,General Widget,:class:`~toga.Table`,Table of data,|b|,|b|,|b|,,|b|,
@@ -33,4 +33,3 @@ Command,Resource,:class:`~toga.Command`,Command,|b|,|b|,|b|,,|b|,
 Group,Resource,:class:`~toga.Group`,Command group,|b|,|b|,|b|,|b|,|b|,
 Icon,Resource,:class:`~toga.Icon`,"An icon for buttons, menus, etc",|b|,|b|,|b|,|b|,|b|,
 Image,Resource,:class:`~toga.Image`,An image,|y|,|y|,|y|,|y|,|y|,
-Validators,Resource,:ref:`Validators <validators>`,A mechanism for validating that input meets a given set of criteria.,|y|,|y|,|y|,|y|,|y|,
