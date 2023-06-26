@@ -61,8 +61,11 @@ class Selection(Widget):
 
         # Removing the selected item will initially cause *nothing* to be selected.
         # Select an adjacent item if there is one.
-        if selection_change and self.native.Items.Count > 0:
-            self.native.SelectedIndex = max(0, index - 1)
+        if selection_change:
+            if self.native.Items.Count == 0:
+                self.on_change()
+            else:
+                self.native.SelectedIndex = max(0, index - 1)
 
     def select_item(self, index, item):
         self.native.SelectedIndex = index
