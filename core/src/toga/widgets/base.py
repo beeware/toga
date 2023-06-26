@@ -98,9 +98,8 @@ class Widget(Node):
         child of this widget. If the child widget is already a child of this
         widget, there is no change.
 
-        Raises ``ValueError`` if this widget cannot have children.
-
         :param children: The widgets to add as children of this widget.
+        :raises ValueError: If this widget cannot have children.
         """
         for child in children:
             if child.parent is not self:
@@ -127,11 +126,10 @@ class Widget(Node):
         child of this widget. If the child widget is already a child of this
         widget, there is no change.
 
-        Raises ``ValueError`` if this node cannot have children.
-
         :param index: The position in the list of children where the new widget
             should be added.
         :param child: The child to insert as a child of this node.
+        :raises ValueError: If this widget cannot have children.
         """
         if child.parent is not self:
             # remove from old parent
@@ -158,9 +156,8 @@ class Widget(Node):
 
         Refreshes the widget after removal if any children were removed.
 
-        Raises ``ValueError`` if this widget cannot have children.
-
         :param children: The child nodes to remove.
+        :raises ValueError: If this widget cannot have children.
         """
         removed = False
 
@@ -183,7 +180,7 @@ class Widget(Node):
 
         Refreshes the widget after removal if any children were removed.
 
-        Raises ``ValueError`` if this widget cannot have children.
+        :raises ValueError: If this widget cannot have children.
         """
         self.remove(*self.children)
 
@@ -194,8 +191,7 @@ class Widget(Node):
         When setting the app for a widget, all children of this widget will be
         recursively assigned to the same app.
 
-        Raises ``ValueError`` if the widget is already associated with another
-        app.
+        :raises ValueError: If this widget is already associated with another app.
         """
         return self._app
 

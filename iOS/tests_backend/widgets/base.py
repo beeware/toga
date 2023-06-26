@@ -87,7 +87,12 @@ class SimpleProbe(BaseProbe):
 
     @property
     def height(self):
-        return self.native.frame.size.height
+        height = self.native.frame.size.height
+        # If the widget is the top level container, the frame height will
+        # include the allocation for the app titlebar.
+        if self.impl.container is None:
+            height = height - self.impl.viewport.top_offset
+        return height
 
     def assert_layout(self, size, position):
         # Widget is contained and in a window.
