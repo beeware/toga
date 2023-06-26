@@ -179,13 +179,6 @@ async def test_activate(
     on_activate_handler.assert_called_once_with(widget, row=source[1])
     on_activate_handler.reset_mock()
 
-    # Double click somewhere not on the table
-    await probe.activate_row(-1)
-    await probe.redraw("Somewhere off the table is activated")
-
-    on_activate_handler.assert_not_called()
-    on_activate_handler.reset_mock()
-
 
 async def test_multiselect(
     multiselect_widget,

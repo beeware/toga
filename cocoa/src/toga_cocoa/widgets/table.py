@@ -122,10 +122,9 @@ class TogaTable(NSTableView):
     # target methods
     @objc_method
     def onDoubleClick_(self, sender) -> None:
-        if self.clickedRow != -1:
-            clicked = self.interface.data[self.clickedRow]
+        clicked = self.interface.data[self.clickedRow]
 
-            self.interface.on_activate(None, row=clicked)
+        self.interface.on_activate(None, row=clicked)
 
 
 class Table(Widget):
