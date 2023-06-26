@@ -65,7 +65,3 @@ class OptionContainer(Widget):
             self.interface.on_select(
                 self.interface, option=self.interface.content[self.native.SelectedIndex]
             )
-
-    def set_font(self, font):
-        if font:
-            self.native.Font = font._impl.native

@@ -24,7 +24,7 @@ class Slider(Widget):
         enabled: bool = True,
         range: tuple[float, float] = None,  # DEPRECATED
     ):
-        """Create a new slider widget.
+        """Create a new Slider widget.
 
         Inherits from :class:`toga.Widget`.
 

@@ -1,0 +1,5 @@
+The ``insert`` and ``append`` APIs on ``ListSource`` and ``TreeSource`` have been
+modified to provide an interface that is closer to that ``list`` API. These methods
+previously accepted a variable list of positional and keyword arguments; these arguments
+should be combined into a single tuple or dictionary. This matches the API provided by
+``__setitem__()``.
