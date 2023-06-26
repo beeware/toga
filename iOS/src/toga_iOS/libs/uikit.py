@@ -16,6 +16,12 @@ uikit = cdll.LoadLibrary(util.find_library("UIKit"))
 uikit.UIApplicationMain.restype = c_int
 uikit.UIApplicationMain.argtypes = [c_int, POINTER(c_char_p), c_void_p, c_void_p]
 
+uikit.UIImageJPEGRepresentation.restype = c_void_p
+uikit.UIImageJPEGRepresentation.argtypes = [c_void_p]
+
+uikit.UIImagePNGRepresentation.restype = c_void_p
+uikit.UIImagePNGRepresentation.argtypes = [c_void_p]
+
 ######################################################################
 # NSAttributedString.h
 NSAttributedString = ObjCClass("NSAttributedString")
