@@ -39,7 +39,7 @@ General widgets
                                                                          characters they have typed, but not the actual characters.
  :doc:`ProgressBar </reference/api/widgets/progressbar>`                 A horizontal bar to visualize task progress. The task being monitored
                                                                          can be of known or indeterminate length.
- :doc:`Selection </reference/api/widgets/selection>`                     Selection
+ :doc:`Selection </reference/api/widgets/selection>`                     A widget to select an single option from a list of alternatives.
  :doc:`Slider </reference/api/widgets/slider>`                           A widget for selecting a value within a range. The range is shown as a
                                                                          horizontal line, and the selected value is shown as a draggable marker.
  :doc:`Switch </reference/api/widgets/switch>`                           A clickable button with two stable states: True (on, checked); and
@@ -70,18 +70,22 @@ Layout widgets
 Resources
 ---------
 
-========================================================= ========================================================================
- Component                                                 Description
-========================================================= ========================================================================
- :doc:`App Paths </reference/api/resources/app_paths>`     A mechanism for obtaining platform-appropriate file system locations
-                                                           for an application.
- :doc:`Font </reference/api/resources/fonts>`              Fonts
- :doc:`Command </reference/api/resources/command>`         Command
- :doc:`Group </reference/api/resources/group>`             Command group
- :doc:`Icon </reference/api/resources/icons>`              An icon for buttons, menus, etc
- :doc:`Image </reference/api/resources/images>`            An image
- :doc:`Validators </reference/api/resources/validators>`   A mechanism for validating that input meets a given set of criteria.
-========================================================= ========================================================================
+==================================================================== ========================================================================
+ Component                                                            Description
+==================================================================== ========================================================================
+ :doc:`App Paths </reference/api/resources/app_paths>`                A mechanism for obtaining platform-appropriate file system locations
+                                                                      for an application.
+ :doc:`Font </reference/api/resources/fonts>`                         Fonts
+ :doc:`Command </reference/api/resources/command>`                    Command
+ :doc:`Group </reference/api/resources/group>`                        Command group
+ :doc:`Icon </reference/api/resources/icons>`                         An icon for buttons, menus, etc
+ :doc:`Image </reference/api/resources/images>`                       An image
+ :doc:`ListSource </reference/api/resources/sources/list_source>`     A data source describing an ordered list of data.
+ :doc:`Source </reference/api/resources/sources/source>`              A base class for data source implementations.
+ :doc:`TreeSource </reference/api/resources/sources/tree_source>`     A data source describing an ordered hierarchical tree of data.
+ :doc:`Validators </reference/api/resources/validators>`              A mechanism for validating that input meets a given set of criteria.
+ :doc:`ValueSource </reference/api/resources/sources/value_source>`   A data source describing a single value.
+==================================================================== ========================================================================
 
 .. toctree::
    :hidden:

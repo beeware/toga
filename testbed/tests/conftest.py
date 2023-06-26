@@ -17,7 +17,7 @@ register_assert_rewrite("tests_backend")
 def skip_on_platforms(*platforms):
     current_platform = toga.platform.current_platform
     if current_platform in platforms:
-        skip(f"not implemented on {current_platform}")
+        skip(f"not yet implemented on {current_platform}")
 
 
 def xfail_on_platforms(*platforms):

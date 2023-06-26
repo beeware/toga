@@ -15,6 +15,8 @@ class TogaOnClickListener(OnClickListener):
 
 
 class Button(TextViewWidget):
+    focusable = False
+
     def create(self):
         self.native = A_Button(self._native_activity)
         self.native.setOnClickListener(TogaOnClickListener(button_impl=self))
@@ -28,11 +30,6 @@ class Button(TextViewWidget):
 
     def set_enabled(self, value):
         self.native.setEnabled(value)
-
-    # Disable programmatic focus, otherwise whether this widget is focusable will depend
-    # on whether previous tests have generated keyboard input.
-    def focus(self):
-        pass
 
     def set_background_color(self, value):
         self.set_background_filter(value)

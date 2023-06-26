@@ -1,0 +1,1 @@
+The ``on_select`` handler on the Selection widget has been renamed ``on_change`` for consistency with other widgets.

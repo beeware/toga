@@ -110,10 +110,6 @@ class DetailedList(Widget):
     def set_on_select(self, handler):
         pass
 
-    def set_font(self, font):
-        if font:
-            self.native.Font = font._impl.native
-
     def set_on_double_click(self, handler):
         self.interface.factory.not_implemented("Table.set_on_double_click()")
 

@@ -34,16 +34,13 @@ class Node(Row):
     def __setitem__(self, index, value):
         node = self._source._create_node(value)
         self._children[index] = node
-        self._source._notify("change", item=node)
+        self._source.notify("change", item=node)
 
-    def insert(self, index, *values, **named):
-        self._source.insert(self, index, *values, **named)
+    def insert(self, index, value):
+        self._source.insert(self, index, value)
 
-    def prepend(self, *values, **named):
-        self._source.prepend(self, *values, **named)
-
-    def append(self, *values, **named):
-        self._source.append(self, *values, **named)
+    def append(self, value):
+        self._source.append(self, value)
 
     def remove(self, node):
         self._source.remove(self, node)
@@ -105,17 +102,17 @@ class TreeSource(Source):
     def __setitem__(self, index, value):
         root = self._create_node(value)
         self._roots[index] = root
-        self._notify("change", item=root)
+        self.notify("change", item=root)
 
     def __iter__(self):
         return iter(self._roots)
 
     def clear(self):
         self._roots = []
-        self._notify("clear")
+        self.notify("clear")
 
-    def insert(self, parent, index, *values, **named):
-        node = self._create_node(dict(zip(self._accessors, values), **named))
+    def insert(self, parent, index, value):
+        node = self._create_node(value)
 
         if parent is None:
             self._roots.insert(index, node)
@@ -125,14 +122,11 @@ class TreeSource(Source):
             parent._children.insert(index, node)
 
         node._parent = parent
-        self._notify("insert", parent=parent, index=index, item=node)
+        self.notify("insert", parent=parent, index=index, item=node)
         return node
 
-    def prepend(self, parent, *values, **named):
-        return self.insert(parent, 0, *values, **named)
-
-    def append(self, parent, *values, **named):
-        return self.insert(parent, len(parent or self), *values, **named)
+    def append(self, parent, value):
+        return self.insert(parent, len(parent or self), value)
 
     def remove(self, node):
         i = self.index(node)
@@ -144,7 +138,7 @@ class TreeSource(Source):
             # node is not in parent's children so it shouldn't keep a link to parent
             del node._parent
 
-        self._notify("remove", parent=parent, index=i, item=node)
+        self.notify("remove", parent=parent, index=i, item=node)
         return node
 
     def index(self, node):
