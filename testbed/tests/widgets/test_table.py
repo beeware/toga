@@ -106,9 +106,8 @@ async def multiselect_probe(main_window, multiselect_widget):
 async def test_scroll(widget, probe):
     """The table can be scrolled"""
 
-    # Store the initial position; it might be <0 for implementation reasons.
-    initial_position = probe.scroll_position
-    assert initial_position <= 0
+    # Due to the interaction of scrolling with the header row, the scroll might be <0.
+    assert probe.scroll_position <= 0
 
     # Scroll to the bottom of the table
     widget.scroll_to_bottom()
@@ -133,7 +132,9 @@ async def test_scroll(widget, probe):
     widget.scroll_to_top()
     await probe.wait_for_scroll_completion()
     await probe.redraw("Table scrolled to bottom")
-    assert probe.scroll_position == initial_position
+
+    # Due to the interaction of scrolling with the header row, the scroll might be <0.
+    assert probe.scroll_position <= 0
 
 
 async def test_select(widget, probe, source, on_select_handler):

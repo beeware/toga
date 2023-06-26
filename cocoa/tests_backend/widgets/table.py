@@ -74,17 +74,17 @@ class TableProbe(SimpleProbe):
         # Pick a point half way across horizontally, and half way down the row,
         # taking into account the size of the rows and the header
         row_height = self.native_table.rowHeight
-        return self.native.convertPoint(
+        return self.native_table.convertPoint(
             NSPoint(
                 self.width / 2,
-                row * row_height + self.header_height + row_height / 2,
+                (row * row_height) + (row_height / 2),
             ),
             toView=None,
         )
 
     async def select_row(self, row, add=False):
         point = self.row_position(row)
-        # Selection maintains an inner mouse event loop, so we can't
+        # Table maintains an inner mouse event loop, so we can't
         # use the "wait for another event" approach for the mouse events.
         # Use a short delay instead.
         await self.mouse_event(
@@ -102,14 +102,30 @@ class TableProbe(SimpleProbe):
 
     async def activate_row(self, row):
         point = self.row_position(row)
-        # Selection maintains an inner mouse event loop, so we can't
+        # Table maintains an inner mouse event loop, so we can't
         # use the "wait for another event" approach for the mouse events.
         # Use a short delay instead.
-        await self.mouse_event(NSEventType.LeftMouseDown, point, delay=0.1)
-        await self.mouse_event(NSEventType.LeftMouseUp, point, delay=0.1)
+        await self.mouse_event(
+            NSEventType.LeftMouseDown,
+            point,
+            delay=0.1,
+        )
+        await self.mouse_event(
+            NSEventType.LeftMouseUp,
+            point,
+            delay=0.1,
+        )
 
         # Second click, with a click count.
         await self.mouse_event(
-            NSEventType.LeftMouseDown, point, delay=0.1, clickCount=2
+            NSEventType.LeftMouseDown,
+            point,
+            delay=0.1,
+            clickCount=2,
         )
-        await self.mouse_event(NSEventType.LeftMouseUp, point, delay=0.1, clickCount=2)
+        await self.mouse_event(
+            NSEventType.LeftMouseUp,
+            point,
+            delay=0.1,
+            clickCount=2,
+        )
