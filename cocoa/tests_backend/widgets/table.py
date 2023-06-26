@@ -33,16 +33,21 @@ class TableProbe(SimpleProbe):
     def column_count(self):
         return len(self.native_table.tableColumns)
 
-    def assert_cell_content(self, row, col, value, icon=None):
+    def assert_cell_content(self, row, col, value=None, icon=None, widget=None):
         view = self.native_table.tableView(
             self.native_table,
             viewForTableColumn=self.native_table.tableColumns[col],
             row=row,
         )
-        assert str(view.textField.stringValue) == value
+        if widget:
+            assert view == widget._impl.native
+        else:
+            assert str(view.textField.stringValue) == value
 
-        if icon:
-            assert view.imageView.image == icon._impl.native
+            if icon:
+                assert view.imageView.image == icon._impl.native
+            else:
+                assert view.imageView.image is None
 
     @property
     def max_scroll_position(self):

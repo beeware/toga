@@ -346,19 +346,65 @@ async def test_headerless_column_changes(headerless_widget, headerless_probe):
     await _column_change_test(headerless_widget, headerless_probe)
 
 
-# async def test_crash(widget, probe):
-#     import random
+class MyIconData:
+    def __init__(self, text, icon):
+        self.text = text
+        self.icon = icon
 
-#     for i in range(0, 1000):
-#         row = random.randint(0, 17)
-#         await probe.select_row(row)
-#         await probe.redraw(f"{i}: select {row}", delay=0.2)
+    def __str__(self):
+        return f"<icondata {self.text}>"
 
 
-# async def test_cell_widget(widget, probe):
-#     "A widget can be used as a cell value"
+async def test_cell_icon(widget, probe):
+    "An icon can be used as a cell value"
+    red = toga.Icon("resources/icons/red")
+    green = toga.Icon("resources/icons/green")
+    widget.data = [
+        {
+            # Normal text,
+            "a": f"A{i}",
+            # A tuple
+            "b": ({0: None, 1: red, 2: green}[i % 3], f"B{i}"),
+            # An object with an icon attribute.
+            "c": MyIconData(f"C{i}", {0: red, 1: green, 2: None}[i % 3]),
+        }
+        for i in range(0, 50)
+    ]
+    await probe.redraw("Table has data with icons")
 
-# async def test_cell_icon(widget, probe):
-#     "A widget can be used as a cell value"
-#     # icon in table as tuple
-#     # icon in table as attribute/value
+    probe.assert_cell_content(0, 0, "A0")
+    probe.assert_cell_content(0, 1, "B0", icon=None)
+    probe.assert_cell_content(0, 2, "<icondata C0>", icon=red)
+
+    probe.assert_cell_content(1, 0, "A1")
+    probe.assert_cell_content(1, 1, "B1", icon=red)
+    probe.assert_cell_content(1, 2, "<icondata C1>", icon=green)
+
+    probe.assert_cell_content(2, 0, "A2")
+    probe.assert_cell_content(2, 1, "B2", icon=green)
+    probe.assert_cell_content(2, 2, "<icondata C2>", icon=None)
+
+
+async def test_cell_widget(widget, probe):
+    "A widget can be used as a cell value"
+    widget.data = [
+        {
+            # Normal text,
+            "a": f"A{i}",
+            "b": f"B{i}",
+            # Toga widgets.
+            "c": toga.Button(f"C{i}")
+            if i % 2 == 0
+            else toga.TextInput(value=f"edit C{i}"),
+        }
+        for i in range(0, 50)
+    ]
+    await probe.redraw("Table has data with widgets")
+
+    probe.assert_cell_content(0, 0, "A0")
+    probe.assert_cell_content(0, 1, "B0")
+    probe.assert_cell_content(0, 2, widget=widget.data[0].c)
+
+    probe.assert_cell_content(1, 0, "A1")
+    probe.assert_cell_content(1, 1, "B1")
+    probe.assert_cell_content(1, 2, widget=widget.data[1].c)
