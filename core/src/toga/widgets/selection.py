@@ -40,6 +40,22 @@ class Selection(Widget):
         """
         super().__init__(id=id, style=style)
 
+        ######################################################################
+        # 2023-05: Backwards compatibility
+        ######################################################################
+        if on_select:  # pragma: no cover
+            if on_change:
+                raise ValueError("Cannot specify both on_select and on_change")
+            else:
+                warnings.warn(
+                    "Selection.on_select has been renamed Selection.on_change",
+                    DeprecationWarning,
+                )
+                on_change = on_select
+        ######################################################################
+        # End backwards compatibility.
+        ######################################################################
+
         self.on_change = None  # needed for _impl initialization
         self._impl = self.factory.Selection(interface=self)
 
@@ -47,19 +63,6 @@ class Selection(Widget):
         self.items = items
         if value:
             self.value = value
-
-        # 2023-05-29: Rename on_select to on_change
-        if on_select:  # pragma: no cover
-            if on_change:
-                raise ValueError(
-                    "Cannot specify both `on_select` and `on_change`; "
-                    "`on_select` has been deprecated, use `on_change`"
-                )
-            else:
-                warnings.warn(
-                    "Selection.on_select has been renamed Selection.on_change"
-                )
-                on_change = on_select
 
         self.on_change = on_change
         self.enabled = enabled
@@ -185,3 +188,24 @@ class Selection(Widget):
     @on_change.setter
     def on_change(self, handler):
         self._on_change = wrapped_handler(self, handler)
+
+    ######################################################################
+    # 2023-05: Backwards compatibility
+    ######################################################################
+
+    @property
+    def on_select(self) -> callable:
+        """**DEPRECATED**: Use ``on_change``"""
+        warnings.warn(
+            "Selection.on_select has been renamed Selection.on_change.",
+            DeprecationWarning,
+        )
+        return self.on_change
+
+    @on_select.setter
+    def on_select(self, handler):
+        warnings.warn(
+            "Selection.on_select has been renamed Selection.on_change.",
+            DeprecationWarning,
+        )
+        self.on_change = handler
