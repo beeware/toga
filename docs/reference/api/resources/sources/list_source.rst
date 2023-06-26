@@ -11,8 +11,10 @@ application independent of the GUI representation of that data. For details on t
 of data sources, see the :doc:`background guide </background/topics/data-sources>`.
 
 ListSource is an implementation of an ordered list of data. When a ListSource is
-created, it is given a list of ``accessors`` - these are the attributes that
-all items managed by the ListSource will have.
+created, it is given a list of ``accessors`` - these are the attributes that all items
+managed by the ListSource will have. The API provided by ListSource is :any:`list`-like;
+the operations you'd expect on a normal Python list, such as ``insert``, ``remove``,
+``index``, and indexing with ``[]``, are also possible on a ListSource:
 
 .. code-block:: python
 
