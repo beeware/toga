@@ -76,7 +76,12 @@ class SimpleProbe(BaseProbe):
 
     @property
     def height(self):
-        return self.native.frame.size.height
+        height = self.native.frame.size.height
+        # If the widget is the top level container, the frame height will
+        # include the allocation for the app titlebar.
+        if self.impl.container is None:
+            height = height - self.impl.viewport.top_offset
+        return height
 
     @property
     def shrink_on_resize(self):
