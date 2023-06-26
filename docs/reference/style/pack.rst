@@ -291,6 +291,9 @@ The mapping that can be used to establish the reference implementation is:
   the HTML reference document. The rendering area of the browser window becomes
   the view area that Pack will fill.
 
+* Images map to ``<img>`` elements. The ``<img>`` element has an additional style of
+  ``object-fit: contain`` unless *both* ``height`` and ``width`` are defined.
+
 * All other elements in the DOM tree are mapped to ``<div>`` elements.
 
 * The following Pack declarations can be mapped to equivalent CSS declarations:
@@ -313,13 +316,15 @@ The mapping that can be used to establish the reference implementation is:
                                  or ``direction = column`` and ``height`` is set,
                                  ignore. Otherwise, ``flex: <int> 0 0``.
    ``font_size: <int>``          ``font-size: <int>pt``
-   ``height: <int>``             ``height: <int>px``
+   ``height: <value>``           ``height: <value>px`` if value is an integer;
+                                 ``height: auto`` if value is ``none``.
    ``padding_top: <int>``        ``margin-top: <int>px``
    ``padding_bottom: <int>``     ``margin-bottom: <int>px``
    ``padding_left: <int>``       ``margin-left: <int>px``
    ``padding_right: <int>``      ``margin-right: <int>px``
    ``text_direction: <str>``     ``direction: <str>``
-   ``width: <int>``              ``width: <int>px``
+   ``width: <value>``            ``width: <value>px`` if value is an integer;
+                                 ``width: auto`` if value is ``none``.
    ============================= ===================================================
 
 * All other Pack declarations should be used as-is as CSS declarations, with
