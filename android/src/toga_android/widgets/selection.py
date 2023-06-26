@@ -19,6 +19,8 @@ class TogaOnItemSelectedListener(OnItemSelectedListener):
 
 
 class Selection(Widget):
+    focusable = False
+
     def create(self):
         self.native = Spinner(self._native_activity, Spinner.MODE_DROPDOWN)
         self.native.setOnItemSelectedListener(TogaOnItemSelectedListener(impl=self))
