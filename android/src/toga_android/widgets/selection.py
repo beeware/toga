@@ -9,14 +9,18 @@ from .base import Widget, align
 class TogaOnItemSelectedListener(OnItemSelectedListener):
     def __init__(self, impl):
         super().__init__()
-        self._impl = impl
+        self.impl = impl
 
-    def onItemSelected(self, _parent, _view, _position, _id):
-        if self._impl.interface.on_select:
-            self._impl.interface.on_select(widget=self._impl.interface)
+    def onItemSelected(self, parent, view, position, id):
+        self.impl.on_change(position)
+
+    def onNothingSelected(self, parent):
+        self.impl.on_change(None)
 
 
 class Selection(Widget):
+    focusable = False
+
     def create(self):
         self.native = Spinner(self._native_activity, Spinner.MODE_DROPDOWN)
         self.native.setOnItemSelectedListener(TogaOnItemSelectedListener(impl=self))
@@ -25,26 +29,59 @@ class Selection(Widget):
         )
         self.adapter.setDropDownViewResource(R__layout.simple_spinner_dropdown_item)
         self.native.setAdapter(self.adapter)
-        # Create a mapping from text to numeric index to support `select_item()`.
-        self._indexByItem = {}
+        self.last_selection = None
 
-    def add_item(self, item):
-        new_index = self.adapter.getCount()
-        self.adapter.add(str(item))
-        self._indexByItem[item] = new_index
+    # Programmatic selection changes do cause callbacks, but they may be delayed until a
+    # later iteration of the main loop. So we always generate events immediately after
+    # the change, and use self.last_selection to prevent duplication.
+    def on_change(self, index):
+        if index != self.last_selection:
+            self.interface.on_change(None)
+            self.last_selection = index
 
-    def select_item(self, item):
-        self.native.setSelection(self._indexByItem[item])
+    def insert(self, index, item):
+        self.adapter.insert(self.interface._title_for_item(item), index)
+        if self.last_selection is None:
+            self.select_item(0)
+        elif index <= self.last_selection:
+            # Adjust the selection index, but do not generate an event.
+            self.last_selection += 1
+            self.select_item(self.last_selection)
 
-    def get_selected_item(self):
-        selected = self.native.getSelectedItem()
-        if selected:
-            return str(selected)
-        else:
-            return None
+    def change(self, item):
+        # Instead of calling self.insert and self.remove, use direct native calls to
+        # avoid disturbing the selection.
+        index = self.interface._items.index(item)
+        self.adapter.insert(self.interface._title_for_item(item), index)
+        self.adapter.remove(self.adapter.getItem(index + 1))
 
-    def remove_all_items(self):
+    def remove(self, index, item=None):
+        self.adapter.remove(self.adapter.getItem(index))
+
+        # Adjust the selection index, but only generate an event if the selected item
+        # has been removed.
+        removed_selection = self.last_selection == index
+        if index <= self.last_selection:
+            if self.adapter.getCount() == 0:
+                self.last_selection = None
+            else:
+                self.last_selection = max(0, self.last_selection - 1)
+                self.select_item(self.last_selection)
+
+        if removed_selection:
+            self.interface.on_change(None)
+
+    def select_item(self, index, item=None):
+        self.native.setSelection(index)
+        self.on_change(index)
+
+    def get_selected_index(self):
+        selected = self.native.getSelectedItemPosition()
+        return None if selected == Spinner.INVALID_POSITION else selected
+
+    def clear(self):
         self.adapter.clear()
+        self.on_change(None)
 
     def rehint(self):
         self.native.measure(
@@ -55,7 +92,3 @@ class Selection(Widget):
 
     def set_alignment(self, value):
         self.native.setGravity(Gravity.CENTER_VERTICAL | align(value))
-
-    def set_on_select(self, handler):
-        # No special handling is required.
-        pass

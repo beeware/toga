@@ -94,6 +94,10 @@ class SimpleProbe(BaseProbe):
             height = height - self.impl.viewport.top_offset
         return height
 
+    @property
+    def shrink_on_resize(self):
+        return True
+
     def assert_layout(self, size, position):
         # Widget is contained and in a window.
         assert self.widget._impl.container is not None

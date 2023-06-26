@@ -73,7 +73,7 @@ class TestGtkTree(unittest.TestCase):
 
         # Insert a node
         node_data = ("1", "2")
-        node = self.tree.data.insert(None, 0, *node_data)
+        node = self.tree.data.insert(None, 0, node_data)
 
         # Make sure it's in there
         self.assertIsNotNone(listener.inserted_it)
@@ -106,13 +106,13 @@ class TestGtkTree(unittest.TestCase):
         self.tree.data = []
 
         # Insert blank node as parent
-        parent = self.tree.data.insert(None, 0, *(None, None))
+        parent = self.tree.data.insert(None, 0, (None, None))
 
         listener.clear()
 
         # Insert a child node
         node_data = ("1", "2")
-        node = self.tree.data.insert(parent, 0, *node_data)
+        node = self.tree.data.insert(parent, 0, node_data)
 
         # Make sure it's in there
         self.assertIsNotNone(listener.inserted_path)
@@ -143,7 +143,7 @@ class TestGtkTree(unittest.TestCase):
         listener = TreeModelListener(self.gtk_tree.store)
 
         # Insert a node
-        node = self.tree.data.insert(None, 0, "1", "2")
+        node = self.tree.data.insert(None, 0, ("1", "2"))
 
         # Make sure it's in there
         self.assertIsNotNone(listener.inserted_it)
@@ -158,7 +158,7 @@ class TestGtkTree(unittest.TestCase):
         listener = TreeModelListener(self.gtk_tree.store)
 
         # Insert a node
-        node = self.tree.data.insert(None, 0, "1", "2")
+        node = self.tree.data.insert(None, 0, ("1", "2"))
 
         # Make sure it's in there
         self.assertIsNotNone(listener.inserted_path)
@@ -185,8 +185,8 @@ class TestGtkTree(unittest.TestCase):
 
     def test_node_persistence_for_replacement(self):
         self.tree.data = []
-        self.tree.data.insert(None, 0, one="A1", two="A2")
-        self.tree.data.insert(None, 0, one="B1", two="B2")
+        self.tree.data.insert(None, 0, dict(one="A1", two="A2"))
+        self.tree.data.insert(None, 0, dict(one="B1", two="B2"))
 
         # B should now precede A
         # test passes if A "knows" it has moved to index 1
@@ -196,8 +196,8 @@ class TestGtkTree(unittest.TestCase):
 
     def test_node_persistence_for_deletion(self):
         self.tree.data = []
-        a = self.tree.data.append(None, one="A1", two="A2")
-        self.tree.data.append(None, one="B1", two="B2")
+        a = self.tree.data.append(None, dict(one="A1", two="A2"))
+        self.tree.data.append(None, dict(one="B1", two="B2"))
 
         self.tree.data.remove(a)
 
@@ -209,9 +209,9 @@ class TestGtkTree(unittest.TestCase):
 
         # Insert dummy nodes
         self.tree.data = []
-        self.tree.data.append(None, one="A1", two="A2")
+        self.tree.data.append(None, dict(one="A1", two="A2"))
         listener.clear()
-        b = self.tree.data.append(None, one="B1", two="B2")
+        b = self.tree.data.append(None, dict(one="B1", two="B2"))
 
         # Create a flag
         succeed = False
@@ -238,10 +238,10 @@ class TestGtkTree(unittest.TestCase):
 
         # Insert two nodes
         self.tree.data = []
-        a = self.tree.data.append(None, one="A1", two="A2")
+        a = self.tree.data.append(None, dict(one="A1", two="A2"))
         a_iter = listener.inserted_it
         listener.clear()
-        b = self.tree.data.append(a, one="B1", two="B2")
+        b = self.tree.data.append(a, dict(one="B1", two="B2"))
 
         # Create a flag
         succeed = False
@@ -271,8 +271,8 @@ class TestGtkTree(unittest.TestCase):
 
         # Insert two nodes
         self.tree.data = []
-        self.tree.data.append(None, one="A1", two="A2")
-        b = self.tree.data.append(None, one="B1", two="B2")
+        self.tree.data.append(None, dict(one="A1", two="A2"))
+        b = self.tree.data.append(None, dict(one="B1", two="B2"))
 
         # Create a flag
         succeed = False

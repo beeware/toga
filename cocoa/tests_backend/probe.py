@@ -28,19 +28,24 @@ class BaseProbe:
     def __init__(self):
         self.event_listener = EventListener.alloc().init()
 
-    async def post_event(self, event):
-        self.native.window.postEvent(event, atStart=False)
+    async def post_event(self, event, delay=None):
+        self.window._impl.native.postEvent(event, atStart=False)
 
-        # Add another event to the queue behind the original event, to notify us once
-        # it's been processed.
-        NSRunLoop.currentRunLoop.performSelector(
-            SEL("onEvent"),
-            target=self.event_listener,
-            argument=None,
-            order=0,
-            modes=NSArray.arrayWithObject(NSDefaultRunLoopMode),
-        )
-        await self.event_listener.event.wait()
+        if delay:
+            # Some widgets enter an internal runloop when processing certain events;
+            # this prevents
+            await asyncio.sleep(delay)
+        else:
+            # Add another event to the queue behind the original event, to notify us once
+            # it's been processed.
+            NSRunLoop.currentRunLoop.performSelector(
+                SEL("onEvent"),
+                target=self.event_listener,
+                argument=None,
+                order=0,
+                modes=NSArray.arrayWithObject(NSDefaultRunLoopMode),
+            )
+            await self.event_listener.event.wait()
 
     def assert_font_family(self, expected):
         assert self.font.family == {

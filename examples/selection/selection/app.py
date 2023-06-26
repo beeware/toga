@@ -8,6 +8,11 @@ class SelectionApp(toga.App):
     YTTERBIUM = "Ytterbium"
     THULIUM = "Thulium"
     OPTIONS = [CARBON, YTTERBIUM, THULIUM]
+    DATA_OPTIONS = [
+        {"name": CARBON, "number": 6, "weight": 12.011},
+        {"name": YTTERBIUM, "number": 70, "weight": 173.04},
+        {"name": THULIUM, "number": 69, "weight": 168.93},
+    ]
 
     def startup(self):
         # Main window of the application with title and size
@@ -20,8 +25,10 @@ class SelectionApp(toga.App):
         # Add the content on the main window
         self.selection = toga.Selection(items=self.OPTIONS)
         self.empty_selection = toga.Selection()
-
-        self.report_label = toga.Label("", style=label_style)
+        self.source_selection = toga.Selection(
+            accessor="name",
+            items=self.DATA_OPTIONS,
+        )
 
         self.main_window.content = toga.Box(
             children=[
@@ -42,33 +49,28 @@ class SelectionApp(toga.App):
                 toga.Box(
                     style=box_style,
                     children=[
-                        toga.Button(
-                            "Report on selection", on_press=self.report_selection
-                        ),
-                        self.report_label,
+                        toga.Label("Selection from source", style=label_style),
+                        self.source_selection,
+                    ],
+                ),
+                toga.Box(
+                    style=box_style,
+                    children=[
+                        toga.Button("Print", on_press=self.report_selection),
+                        toga.Button("Carbon", on_press=self.set_carbon),
+                        toga.Button("Ytterbium", on_press=self.set_ytterbium),
+                        toga.Button("Thulium", on_press=self.set_thulium),
                     ],
                 ),
                 toga.Box(
                     style=box_style,
                     children=[
                         toga.Label(
-                            "Selection value can be set by property setter",
-                            style=label_style,
-                        ),
-                        toga.Button(text="Set Carbon", on_press=self.set_carbon),
-                        toga.Button(text="Set Ytterbium", on_press=self.set_ytterbium),
-                        toga.Button(text="Set THULIUM", on_press=self.set_thulium),
-                    ],
-                ),
-                toga.Box(
-                    style=box_style,
-                    children=[
-                        toga.Label(
-                            "use the 'on_select' callback to respond to changes",
+                            "on_change callback",
                             style=label_style,
                         ),
                         toga.Selection(
-                            on_select=self.my_on_select,
+                            on_change=self.my_on_change,
                             items=["Dubnium", "Holmium", "Zirconium"],
                         ),
                     ],
@@ -76,9 +78,7 @@ class SelectionApp(toga.App):
                 toga.Box(
                     style=box_style,
                     children=[
-                        toga.Label(
-                            "Long lists of items should scroll", style=label_style
-                        ),
+                        toga.Label("Long lists should scroll", style=label_style),
                         toga.Selection(items=dir(toga)),
                     ],
                 ),
@@ -95,9 +95,7 @@ class SelectionApp(toga.App):
                 toga.Box(
                     style=box_style,
                     children=[
-                        toga.Label(
-                            "Selection widgets can be disabled", style=label_style
-                        ),
+                        toga.Label("Disabled", style=label_style),
                         toga.Selection(
                             items=[
                                 "Helium",
@@ -127,14 +125,16 @@ class SelectionApp(toga.App):
     def set_thulium(self, widget):
         self.selection.value = self.THULIUM
 
-    def my_on_select(self, selection):
+    def my_on_change(self, selection):
         # get the current value of the slider with `selection.value`
 
         print(f"The selection widget changed to {selection.value}")
 
     def report_selection(self, widget):
-        self.report_label.text = (
-            f"Element: {self.selection.value!r}; Empty: {self.empty_selection.value!r}"
+        print(
+            f"Element: {self.selection.value!r}; "
+            f"Empty: {self.empty_selection.value!r}; "
+            f"Source: {self.source_selection.value.name} has weight {self.source_selection.value.weight}"
         )
 
 

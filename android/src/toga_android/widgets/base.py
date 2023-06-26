@@ -31,6 +31,11 @@ def _get_activity(_cache=[]):
 
 
 class Widget:
+    # Some widgets are not generally focusable, but become focusable if there has been a
+    # keyboard event since the last touch event. To avoid this complicating the tests,
+    # these widgets disable programmatic focus entirely by setting focusable = False.
+    focusable = True
+
     def __init__(self, interface):
         super().__init__()
         self.interface = interface
@@ -86,7 +91,8 @@ class Widget:
         self.native.setEnabled(value)
 
     def focus(self):
-        self.native.requestFocus()
+        if self.focusable:
+            self.native.requestFocus()
 
     def get_tab_index(self):
         self.interface.factory.not_implemented("Widget.get_tab_index()")

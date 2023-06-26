@@ -73,7 +73,7 @@ class TestGtkTable(unittest.TestCase):
         # Insert a row
         row_data = ("1", "2")
         INSERTED_AT = 0
-        row = self.table.data.insert(INSERTED_AT, *row_data)
+        row = self.table.data.insert(INSERTED_AT, row_data)
 
         # Make sure it's in there
         self.assertIsNotNone(listener.inserted_it)
@@ -104,7 +104,7 @@ class TestGtkTable(unittest.TestCase):
     def test_remove(self):
         listener = TreeModelListener(self.gtk_table.store)
         # Insert a row
-        row = self.table.data.insert(0, "1", "2")
+        row = self.table.data.insert(0, ("1", "2"))
 
         # Make sure it's in there
         self.assertIsNotNone(listener.inserted_it)
@@ -119,7 +119,7 @@ class TestGtkTable(unittest.TestCase):
         listener = TreeModelListener(self.gtk_table.store)
 
         # Insert a row
-        row = self.table.data.insert(0, "1", "2")
+        row = self.table.data.insert(0, ("1", "2"))
 
         # Make sure it's in there
         self.assertIsNotNone(listener.inserted_it)
@@ -144,8 +144,8 @@ class TestGtkTable(unittest.TestCase):
         self.assertRowEqual(result_row, (row.one, row.two))
 
     def test_row_persistence(self):
-        self.table.data.insert(0, one="A1", two="A2")
-        self.table.data.insert(0, one="B1", two="B2")
+        self.table.data.insert(0, dict(one="A1", two="A2"))
+        self.table.data.insert(0, dict(one="B1", two="B2"))
 
         # B should now precede A
         # tests passes if A "knows" it has moved to index 1
@@ -156,8 +156,8 @@ class TestGtkTable(unittest.TestCase):
     def test_on_select_root_row(self):
         # Insert two dummy rows
         self.table.data = []
-        self.table.data.append(None, one="A1", two="A2")
-        b = self.table.data.append(None, one="B1", two="B2")
+        self.table.data.append(dict(one="A1", two="A2"))
+        b = self.table.data.append(dict(one="B1", two="B2"))
 
         # Create a flag
         succeed = False
@@ -185,8 +185,8 @@ class TestGtkTable(unittest.TestCase):
 
         listener = TreeModelListener(self.gtk_table.store)
 
-        a = self.table.data.append(None, one="A1", two="A2")
-        b = self.table.data.append(a, one="B1", two="B2")
+        self.table.data.append(dict(one="A1", two="A2"))
+        b = self.table.data.append(dict(one="B1", two="B2"))
 
         # Create a flag
         succeed = False
@@ -214,9 +214,9 @@ class TestGtkTable(unittest.TestCase):
 
         listener = TreeModelListener(self.gtk_table.store)
 
-        self.table.data.append(None, one="A1", two="A2")
+        self.table.data.append(dict(one="A1", two="A2"))
         listener.clear()
-        b = self.table.data.append(None, one="B1", two="B2")
+        b = self.table.data.append(dict(one="B1", two="B2"))
 
         # Create a flag
         succeed = False
