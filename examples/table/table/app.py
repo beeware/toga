@@ -50,7 +50,7 @@ class ExampleTableApp(toga.App):
 
     # Button callback functions
     def insert_handler(self, widget, **kwargs):
-        self.table1.data.insert(0, *choice(bee_movies))
+        self.table1.data.insert(0, choice(bee_movies))
 
     def delete_handler(self, widget, **kwargs):
         if self.table1.selection:

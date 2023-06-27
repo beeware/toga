@@ -295,18 +295,35 @@ def test_scroll_to_top(table):
     assert_action_performed_with(table, "scroll to row", row=0)
 
 
-def test_scroll_to_row(table):
+@pytest.mark.parametrize(
+    "row, effective",
+    [
+        # Positive index
+        (0, 0),
+        (2, 2),
+        # Greater index than available rows
+        (10, 3),
+        # Negative index
+        (-1, 2),
+        (-3, 0),
+        # Greater negative index than available rows
+        (-10, 0),
+    ],
+)
+def test_scroll_to_row(table, row, effective):
     "A table can be scrolled to a specific row"
-    table.scroll_to_row(1)
+    table.scroll_to_row(row)
 
-    assert_action_performed_with(table, "scroll to row", row=1)
+    assert_action_performed_with(table, "scroll to row", row=effective)
 
 
-def test_scroll_to_row_negative(table):
-    "A table can be scrolled to a specific row with a negative index"
-    table.scroll_to_row(-1)
+def test_scroll_to_row_no_data(table):
+    "If there's no data, scrolling is a no-op"
+    table.data.clear()
 
-    assert_action_performed_with(table, "scroll to row", row=2)
+    table.scroll_to_row(5)
+
+    assert_action_not_performed(table, "scroll to row")
 
 
 def test_scroll_to_bottom(table):

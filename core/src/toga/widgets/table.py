@@ -181,10 +181,11 @@ class Table(Widget):
         :param row: The index of the row to make visible. Negative values refer to the
             nth last row (-1 is the last row, -2 second last, and so on).
         """
-        if row >= 0:
-            self._impl.scroll_to_row(row)
-        else:
-            self._impl.scroll_to_row(len(self.data) + row)
+        if len(self.data) > 1:
+            if row >= 0:
+                self._impl.scroll_to_row(min(row, len(self.data)))
+            else:
+                self._impl.scroll_to_row(max(len(self.data) + row, 0))
 
     def scroll_to_bottom(self):
         """Scroll the view so that the bottom of the list (last row) is visible."""

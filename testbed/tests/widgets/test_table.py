@@ -287,14 +287,14 @@ async def _row_change_test(widget, probe):
 async def test_row_changes(widget, probe):
     """Rows can be added and removed"""
     # Header is visible
-    assert probe.header_height > 10
+    assert probe.header_visible
     await _row_change_test(widget, probe)
 
 
 async def test_headerless_row_changes(headerless_widget, headerless_probe):
     """Rows can be added and removed to a headerless table"""
     # Header doesn't exist
-    assert headerless_probe.header_height == 0
+    assert not headerless_probe.header_visible
     await _row_change_test(headerless_widget, headerless_probe)
 
 
@@ -332,11 +332,20 @@ async def _column_change_test(widget, probe):
 
 async def test_column_changes(widget, probe):
     """Columns can be added and removed"""
+    # Header is visible, and has the right titles
+    assert probe.header_visible
+    assert probe.header_titles == ["A", "B", "C"]
+
     await _column_change_test(widget, probe)
+
+    assert probe.header_titles == ["A", "B", "D", "E"]
 
 
 async def test_headerless_column_changes(headerless_widget, headerless_probe):
     """Columns can be added and removed to a headerless table"""
+    # Header is not visible
+    assert not headerless_probe.header_visible
+
     await _column_change_test(headerless_widget, headerless_probe)
 
 

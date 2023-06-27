@@ -64,11 +64,14 @@ class TableProbe(SimpleProbe):
         pass
 
     @property
-    def header_height(self):
-        if self.native_table.headerView:
-            return self.native_table.headerView.frame.size.height
-        else:
-            return 0
+    def header_visible(self):
+        return self.native_table.headerView is not None
+
+    @property
+    def header_titles(self):
+        return [
+            str(col.headerCell.stringValue) for col in self.native_table.tableColumns
+        ]
 
     def row_position(self, row):
         # Pick a point half way across horizontally, and half way down the row,
