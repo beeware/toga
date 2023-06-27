@@ -104,6 +104,30 @@ attribute "character" will be used:
 You can also create a table *without* a heading row. However, if you do this, you *must*
 specify accessors.
 
+If the value provided by an accessor is :any:`None`, or the accessor isn't defined for a
+given row, the value of ``missing_value`` provided when constructing the Table will
+be used to populate the cell in the Table.
+
+If the value provided by an accessor is any type other than a tuple :any:`tuple` or
+:any:`toga.Widget`, the value will be converted into a string. If the value has an
+``icon`` attribute, the cell will use that icon in the Table cell, displayed to the left
+of the text label. If the value of the ``icon`` attribute is :any:`None`, no icon will
+be displayed.
+
+If the value provided by an accessor is a :any:`tuple`, the first element in the tuple
+must be an :class:`toga.Icon`, and the second value in the tuple will be used to provide
+the text label (again, by converting the value to a string, or using ``missing_value``
+if the value is :any:`None`, as appropriate).
+
+If the value provided by an accessor is a :class:`toga.Widget`, that widget will be displayed
+in the table. Note that this is currently a beta API, and may change in future.
+
+Notes
+-----
+
+* The use of Widgets as table values is currently a beta API. It is currently only
+  supported on macOS; the API is subject to change.
+
 Reference
 ---------
 
