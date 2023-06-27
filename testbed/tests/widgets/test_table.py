@@ -40,7 +40,8 @@ def source():
 
 @pytest.fixture
 async def widget(source, on_select_handler, on_activate_handler):
-    skip_on_platforms("iOS")
+    # Although Android *has* a table implementation, it needs to be rebuilt.
+    skip_on_platforms("iOS", "android")
     return toga.Table(
         ["A", "B", "C"],
         data=source,
@@ -53,7 +54,8 @@ async def widget(source, on_select_handler, on_activate_handler):
 
 @pytest.fixture
 def headerless_widget(source, on_select_handler):
-    skip_on_platforms("iOS")
+    # Although Android *has* a table implementation, it needs to be rebuilt.
+    skip_on_platforms("iOS", "android")
     return toga.Table(
         data=source,
         missing_value="MISSING!",
@@ -79,7 +81,8 @@ async def headerless_probe(main_window, headerless_widget):
 
 @pytest.fixture
 def multiselect_widget(source, on_select_handler):
-    skip_on_platforms("iOS")
+    # Although Android *has* a table implementation, it needs to be rebuilt.
+    skip_on_platforms("iOS", "android")
     return toga.Table(
         ["A", "B", "C"],
         data=source,

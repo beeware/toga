@@ -18,7 +18,7 @@ from ..libs.android.widget import (
 from .base import Widget
 
 
-class TogaOnClickListener(OnClickListener):
+class TogaOnClickListener(OnClickListener):  # pragma: no cover
     def __init__(self, impl):
         super().__init__()
         self.impl = impl
@@ -41,7 +41,7 @@ class TogaOnClickListener(OnClickListener):
             self.impl.interface.on_select(self.impl.interface, row=row)
 
 
-class Table(Widget):
+class Table(Widget):  # pragma: no cover
     table_layout = None
     color_selected = None
     color_unselected = None
@@ -184,7 +184,7 @@ class Table(Widget):
         selection = []
         for row_index in range(len(self.interface.data)):
             if row_index in self.selection:
-                selection.append(self.selection[row_index])
+                selection.append(row_index)
         if len(selection) == 0:
             selection = None
         elif not self.interface.multiple_select:
@@ -209,13 +209,7 @@ class Table(Widget):
     def scroll_to_row(self, row):
         pass
 
-    def set_on_select(self, handler):
-        pass
-
-    def set_on_double_click(self, handler):
-        self.interface.factory.not_implemented("Table.set_on_double_click()")
-
-    def add_column(self, heading, accessor):
+    def insert_column(self, index, heading, accessor):
         self.change_source(self.interface.data)
 
     def remove_column(self, accessor):
