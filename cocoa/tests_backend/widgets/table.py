@@ -73,6 +73,9 @@ class TableProbe(SimpleProbe):
             str(col.headerCell.stringValue) for col in self.native_table.tableColumns
         ]
 
+    def column_width(self, col):
+        return self.native_table.tableColumns[col].width
+
     def row_position(self, row):
         # Pick a point half way across horizontally, and half way down the row,
         # taking into account the size of the rows and the header

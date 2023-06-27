@@ -26,10 +26,7 @@ class TogaRow(GObject.Object):
         if isinstance(data, tuple):
             text = data[1]
         else:
-            try:
-                text = data.value
-            except AttributeError:
-                text = data
+            text = data
 
         if text is None:
             return missing_value

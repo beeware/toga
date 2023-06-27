@@ -33,6 +33,9 @@ class TableProbe(SimpleProbe):
     def header_titles(self):
         return [col.get_title() for col in self.native_table.get_columns()]
 
+    def column_width(self, col):
+        return self.native_table.get_column(col).get_width()
+
     def assert_cell_content(self, row, col, value=None, icon=None, widget=None):
         if widget:
             pytest.skip("GTK doesn't support widgets in Tables")
