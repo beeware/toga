@@ -93,48 +93,135 @@ async def test_clear_content(widget, probe, small_content):
 
 async def test_enable_horizontal_scrolling(widget, probe, content, on_scroll):
     "Horizontal scrolling can be disabled"
-    content.style.direction = ROW
-
-    widget.horizontal = False
-    await probe.redraw("Horizontal scrolling is disabled")
-
-    assert widget.horizontal_position is None
-    assert widget.max_horizontal_position is None
-    with pytest.raises(ValueError):
-        widget.horizontal_position = 120
-
-    widget.horizontal = True
-    await probe.redraw("Horizontal scrolling is enabled")
+    # Add some wide content
+    content.insert(
+        0,
+        toga.Label(
+            "This is a long label",
+            style=Pack(
+                width=2000,
+                background_color=CORNFLOWERBLUE,
+                padding=20,
+                height=20,
+            ),
+        ),
+    )
 
     # clear any scroll events caused by setup
     on_scroll.reset_mock()
+
+    # Disable horizontal scrolling
+    widget.horizontal = False
+    await probe.redraw("Horizontal scrolling is disabled")
+
+    assert widget.horizontal_position == 0
+    assert widget.max_horizontal_position == 0
+
+    # Setting *just* the horizontal position is an error
+    with pytest.raises(ValueError):
+        widget.horizontal_position = 120
+
+    # If setting a *full* position, the horizontal coordinate is ignored.
+    widget.position = (120, 200)
+    await probe.wait_for_scroll_completion()
+    await probe.redraw("Horizontal scroll distance is ignored")
+
+    assert widget.horizontal_position == 0
+    assert widget.vertical_position == 200
+    on_scroll.assert_called_with(widget)
+    on_scroll.reset_mock()
+
+    # If horizontal scrolling is disabled, you can still set the vertical position.
+    widget.vertical_position = 0
+    await probe.wait_for_scroll_completion()
+    await probe.redraw("Vertical position has been set")
+
+    assert widget.horizontal_position == 0
+    assert widget.vertical_position == 0
+    on_scroll.assert_called_with(widget)
+    on_scroll.reset_mock()
+
+    widget.horizontal = True
+    await probe.redraw("Horizontal scrolling is enabled")
 
     widget.horizontal_position = 120
     await probe.wait_for_scroll_completion()
     await probe.redraw("Horizontal scroll was allowed")
     assert widget.horizontal_position == 120
     on_scroll.assert_called_with(widget)
+    on_scroll.reset_mock()
+
+    # Disabling horizontal scrolling resets horizontal position and emits an event.
+    widget.horizontal = False
+    await probe.wait_for_scroll_completion()
+    await probe.redraw("Horizontal scrolling is disabled again")
+    assert widget.horizontal_position == 0
+    on_scroll.assert_called_with(widget)
 
 
-async def test_enable_vertical_scrolling(widget, probe, on_scroll):
-    widget.vertical = False
-    await probe.redraw("Vertical scrolling is disabled")
-
-    assert widget.vertical_position is None
-    assert widget.max_vertical_position is None
-    with pytest.raises(ValueError):
-        widget.vertical_position = 120
-
-    widget.vertical = True
-    await probe.redraw("Vertical scrolling is enabled")
+async def test_enable_vertical_scrolling(widget, probe, content, on_scroll):
+    "Vertical scrolling can be disabled"
+    # Add some wide content
+    content.insert(
+        0,
+        toga.Label(
+            "This is a long label",
+            style=Pack(
+                width=2000,
+                background_color=CORNFLOWERBLUE,
+                padding=20,
+                height=20,
+            ),
+        ),
+    )
 
     # clear any scroll events caused by setup
     on_scroll.reset_mock()
+
+    widget.vertical = False
+    await probe.redraw("Vertical scrolling is disabled")
+
+    assert widget.vertical_position == 0
+    assert widget.max_vertical_position == 0
+
+    # Setting *just* the vertical position is an error
+    with pytest.raises(ValueError):
+        widget.vertical_position = 120
+
+    # If setting a *full* position, the horizontal coordinate is ignored.
+    widget.position = (120, 200)
+    await probe.wait_for_scroll_completion()
+    await probe.redraw("Vertical scroll distance is ignored")
+
+    assert widget.horizontal_position == 120
+    assert widget.vertical_position == 0
+    on_scroll.assert_called_with(widget)
+    on_scroll.reset_mock()
+
+    # If vertical scrolling is disabled, you can still set the horizontal position.
+    widget.horizontal_position = 0
+    await probe.wait_for_scroll_completion()
+    await probe.redraw("Horizontal position has been set")
+
+    assert widget.horizontal_position == 0
+    assert widget.vertical_position == 0
+    on_scroll.assert_called_with(widget)
+    on_scroll.reset_mock()
+
+    widget.vertical = True
+    await probe.redraw("Vertical scrolling is enabled")
 
     widget.vertical_position = 120
     await probe.wait_for_scroll_completion()
     await probe.redraw("Vertical scroll was allowed")
     assert widget.vertical_position == 120
+    on_scroll.assert_called_with(widget)
+    on_scroll.reset_mock()
+
+    widget.vertical = False
+    await probe.wait_for_scroll_completion()
+    await probe.redraw("Vertical scrolling is disabled again")
+    assert widget.vertical_position == 0
     on_scroll.assert_called_with(widget)
 
 

@@ -103,6 +103,10 @@ class ScrollContainer(Widget):
         if self.interface.content:
             self.interface.refresh()
 
+        # Disabling scrolling implies a position reset; that's a scroll event.
+        if value is False:
+            self.interface.on_scroll(None)
+
     def get_horizontal(self):
         return self.native.hasHorizontalScroller
 
@@ -112,6 +116,10 @@ class ScrollContainer(Widget):
         # to let the scroll container know how large its content is.
         if self.interface.content:
             self.interface.refresh()
+
+        # Disabling scrolling implies a position reset; that's a scroll event.
+        if value is False:
+            self.interface.on_scroll(None)
 
     def rehint(self):
         self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
