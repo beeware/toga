@@ -339,7 +339,7 @@ class TreeSource(Source):
     def remove(self, node: Node):
         """Remove a node from the data source.
 
-        This will also remove the node if it is a descendent of a root node.
+        This will also remove the node if it is a descendant of a root node.
 
         :param node: The node to remove from the data source.
         """

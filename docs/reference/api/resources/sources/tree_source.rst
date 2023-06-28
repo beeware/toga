@@ -67,7 +67,7 @@ Each Node object in the TreeSource can have children; those children can in turn
 their own children. A child that *cannot* have children is called a *leaf Node*. Whether
 a child *can* have children is independent of whether it *does* have children - it is
 possible for a Node to have no children and *not* be a leaf node. This is analogous to
-files and directories on a filesystem: a file is a leaf Node, as it cannot have
+files and directories on a file system: a file is a leaf Node, as it cannot have
 children; a directory *can* contain files and other directories in it, but it can also
 be empty. An empty directory would *not* be a leaf Node.
 

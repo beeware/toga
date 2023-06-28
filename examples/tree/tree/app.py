@@ -79,7 +79,7 @@ class ExampleTreeApp(toga.App):
         else:
             root = self.decade_1940s
 
-        self.tree.data.append(root, item)
+        root.append(item)
 
     def remove_handler(self, widget, **kwargs):
         selection = self.tree.selection
@@ -101,25 +101,25 @@ class ExampleTreeApp(toga.App):
         )
 
         self.decade_1940s = self.tree.data.append(
-            None, dict(year="1940s", title="", rating="", genre="")
+            dict(year="1940s", title="", rating="", genre="")
         )
         self.decade_1950s = self.tree.data.append(
-            None, dict(year="1950s", title="", rating="", genre="")
+            dict(year="1950s", title="", rating="", genre="")
         )
         self.decade_1960s = self.tree.data.append(
-            None, dict(year="1960s", title="", rating="", genre="")
+            dict(year="1960s", title="", rating="", genre="")
         )
         self.decade_1970s = self.tree.data.append(
-            None, dict(year="1970s", title="", rating="", genre="")
+            dict(year="1970s", title="", rating="", genre="")
         )
         self.decade_1980s = self.tree.data.append(
-            None, dict(year="1980s", title="", rating="", genre="")
+            dict(year="1980s", title="", rating="", genre="")
         )
         self.decade_1990s = self.tree.data.append(
-            None, dict(year="1990s", title="", rating="", genre="")
+            dict(year="1990s", title="", rating="", genre="")
         )
         self.decade_2000s = self.tree.data.append(
-            None, dict(year="2000s", title="", rating="", genre="")
+            dict(year="2000s", title="", rating="", genre="")
         )
 
         # Buttons
