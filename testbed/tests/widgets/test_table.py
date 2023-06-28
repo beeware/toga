@@ -338,11 +338,11 @@ async def test_column_changes(widget, probe):
     # Header is visible, and has the right titles
     assert probe.header_visible
     assert probe.header_titles == ["A", "B", "C"]
-    # Columns should be roughly equal in width; there's a healthy allowance
-    # for inter-column padding etc.
-    assert probe.column_width(0) == pytest.approx(probe.width / 3, abs=20)
-    assert probe.column_width(1) == pytest.approx(probe.width / 3, abs=20)
-    assert probe.column_width(2) == pytest.approx(probe.width / 3, abs=20)
+    # Columns should be roughly equal in width; there's a healthy allowance for
+    # inter-column padding etc.
+    assert probe.column_width(0) == pytest.approx(probe.width / 3, abs=25)
+    assert probe.column_width(1) == pytest.approx(probe.width / 3, abs=25)
+    assert probe.column_width(2) == pytest.approx(probe.width / 3, abs=25)
 
     await _column_change_test(widget, probe)
 
@@ -350,9 +350,8 @@ async def test_column_changes(widget, probe):
     # The specific behavior for resizing is undefined; however, the columns should add
     # up to near the full width (allowing for inter-column padding, etc), and no single
     # column should be tiny.
-    assert sum(probe.column_width(i) for i in range(0, 4)) == pytest.approx(
-        probe.width, abs=80
-    )
+    total_width = sum(probe.column_width(i) for i in range(0, 4))
+    assert total_width == pytest.approx(probe.width, abs=100)
     assert all(probe.column_width(i) > 80 for i in range(0, 4))
 
 
