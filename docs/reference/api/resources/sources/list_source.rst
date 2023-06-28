@@ -33,35 +33,41 @@ the operations you'd expect on a normal Python list, such as ``insert``, ``remov
     item = source[0]
     print(f"Animal's name is {item.name}")
 
-    # Find a row with a name of "Thylacine"
-    row = source.find(name="Thylacine")
+    # Find an item with a name of "Thylacine"
+    item = source.find({"name": "Thylacine"})
 
-    # Remove that row from the data
-    source.remove(row)
+    # Remove that item from the data
+    source.remove(item)
 
-    # Insert a new row at the start of the data
-    source.insert(0, name="Bettong", weight=1.2)
-
-When initially constructing the ListSource, or when assigning a specific item in
-the ListSource, each item can be:
-
-* A dictionary, with the accessors mapping to the keys in the dictionary
-
-* Any iterable object (except for a string), with the accessors being mapped
-  onto the items in the iterable in order of definition
-
-* Any other object, which will be mapped onto the *first* accessor.
+    # Insert a new item at the start of the data
+    source.insert(0, {"name": "Bettong", "weight": 1.2})
 
 The ListSource manages a list of :class:`~toga.sources.Row` objects. Each Row object in
 the ListSource is an object that has all the attributes described by the ``accessors``.
 A Row object will be constructed by the source for each item that is added or removed
 from the ListSource.
 
+When creating a single Row for a ListSource (e.g., when inserting a new
+item), the data for the Row can be specified as:
+
+* A dictionary, with the accessors mapping to the keys in the dictionary
+
+* Any iterable object (except for a string), with the accessors being mapped
+  onto the items in the iterable in order of definition. This requires that the
+  iterable object have *at least* as many values as the number of accessors
+  defined on the TreeSource.
+
+* Any other object, which will be mapped onto the *first* accessor.
+
+When initially constructing the ListSource, the data must be an iterable of values, each
+of which can be converted into a Row.
+
 Although Toga provides ListSource, you are not required to use it directly. A ListSource
 will be transparently constructed for you if you provide a Python ``list`` object to a
-GUI widget that displays list-like data (e.g., Table or Selection). Any object that
-adheres to the same interface can be used as an alternative source of data for widgets
-that support using a ListSource. See the background guide on :ref:`custom data sources
+GUI widget that displays list-like data (i.e., :class:`toga.Table`,
+:class:`toga.Selection`, or :class:`toga.DetailedList`). Any object that adheres to the
+same interface can be used as an alternative source of data for widgets that support
+using a ListSource. See the background guide on :ref:`custom data sources
 <custom-data-sources>` for more details.
 
 Custom List Sources
