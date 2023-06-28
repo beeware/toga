@@ -24,27 +24,25 @@ class ScrollContainerApp(toga.App):
     def startup(self):
         main_box = toga.Box(style=Pack(direction=COLUMN))
 
-        switch_box = toga.Box(style=Pack(direction=ROW))
-        switch_box.add(
-            toga.Switch(
-                "vertical scrolling",
-                value=self.vscrolling,
-                on_change=self.handle_vscrolling,
-            )
+        self.vswitch = toga.Switch(
+            "Vertical",
+            value=self.vscrolling,
+            on_change=self.handle_vscrolling,
         )
-        switch_box.add(
-            toga.Switch(
-                "horizontal scrolling",
-                value=self.hscrolling,
-                on_change=self.handle_hscrolling,
-            )
+        self.hswitch = toga.Switch(
+            "Horizontal",
+            value=self.hscrolling,
+            on_change=self.handle_hscrolling,
         )
-        main_box.add(switch_box)
+        main_box.add(
+            toga.Box(style=Pack(direction=ROW), children=[self.vswitch, self.hswitch])
+        )
 
         box = toga.Box(style=Pack(direction=COLUMN, padding=10))
         self.scroller = toga.ScrollContainer(
             horizontal=self.hscrolling,
             vertical=self.vscrolling,
+            on_scroll=self.on_scroll,
             style=Pack(flex=1),
         )
 
@@ -64,28 +62,28 @@ class ScrollContainerApp(toga.App):
                 self.toggle_up,
                 "Toggle Up",
                 shortcut=toga.Key.MOD_1 + toga.Key.UP,
-                group=toga.Group.VIEW,
+                group=toga.Group.COMMANDS,
                 order=1,
             ),
             toga.Command(
                 self.toggle_down,
                 "Toggle Down",
                 shortcut=toga.Key.MOD_1 + toga.Key.DOWN,
-                group=toga.Group.VIEW,
+                group=toga.Group.COMMANDS,
                 order=2,
             ),
             toga.Command(
                 self.toggle_left,
                 "Toggle Left",
                 shortcut=toga.Key.MOD_1 + toga.Key.LEFT,
-                group=toga.Group.VIEW,
+                group=toga.Group.COMMANDS,
                 order=3,
             ),
             toga.Command(
                 self.toggle_right,
                 "Toggle Right",
                 shortcut=toga.Key.MOD_1 + toga.Key.RIGHT,
-                group=toga.Group.VIEW,
+                group=toga.Group.COMMANDS,
                 order=4,
             ),
         )
@@ -97,6 +95,14 @@ class ScrollContainerApp(toga.App):
     def handle_vscrolling(self, widget):
         self.vscrolling = widget.value
         self.scroller.vertical = self.vscrolling
+
+    def on_scroll(self, scroller):
+        self.hswitch.text = "Horizontal " + (
+            f"({scroller.horizontal_position} / {scroller.max_horizontal_position})"
+        )
+        self.vswitch.text = "Vertical " + (
+            f"({scroller.vertical_position} / {scroller.max_vertical_position})"
+        )
 
     def toggle_up(self, widget):
         if not self.vscrolling:
