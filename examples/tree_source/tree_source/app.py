@@ -112,11 +112,7 @@ class FileSystemSource(Node, Source):
 
 
 class ExampleTreeSourceApp(toga.App):
-    def selection_handler(self, widget, node):
-        # A node is a dictionary of the last item that was clicked in the tree.
-        # node['node'].path would get you the file path to only that one item.
-        # self.label.text = f'Selected {node["node"].path}'
-
+    def selection_handler(self, widget):
         # If you iterate over widget.selection, you can get the names and the
         # paths of everything selected (if multiple_select is enabled.)
         # filepaths = [node.path for node in widget.selection]
