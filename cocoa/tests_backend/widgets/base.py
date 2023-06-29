@@ -101,7 +101,7 @@ class SimpleProbe(BaseProbe):
     def has_focus(self):
         return self.native.window.firstResponder == self.native
 
-    async def type_character(self, char):
+    async def type_character(self, char, modifierFlags=0):
         # Convert the requested character into a Cocoa keycode.
         # This table is incomplete, but covers all the basics.
         key_code = {
@@ -141,7 +141,7 @@ class SimpleProbe(BaseProbe):
             NSEvent.keyEventWithType(
                 NSEventType.KeyDown,
                 location=NSPoint(0, 0),  # key presses don't have a location.
-                modifierFlags=0,
+                modifierFlags=modifierFlags,
                 timestamp=0,
                 windowNumber=self.native.window.windowNumber,
                 context=None,
@@ -155,7 +155,7 @@ class SimpleProbe(BaseProbe):
             NSEvent.keyEventWithType(
                 NSEventType.KeyUp,
                 location=NSPoint(0, 0),  # key presses don't have a location.
-                modifierFlags=0,
+                modifierFlags=modifierFlags,
                 timestamp=0,
                 windowNumber=self.native.window.windowNumber,
                 context=None,

@@ -1,8 +1,12 @@
+from ctypes import c_void_p
+
+from rubicon.objc import SEL, at, objc_method, objc_property, send_super
 from travertino.size import at_least
 
 import toga
+from toga.keys import Key
+from toga_cocoa.keys import toga_key
 from toga_cocoa.libs import (
-    SEL,
     NSBezelBorder,
     NSIndexSet,
     NSRange,
@@ -11,9 +15,6 @@ from toga_cocoa.libs import (
     NSTableView,
     NSTableViewAnimation,
     NSTableViewColumnAutoresizingStyle,
-    at,
-    objc_method,
-    objc_property,
 )
 
 from .base import Widget
@@ -83,6 +84,16 @@ class TogaTable(NSTableView):
     def tableView_pasteboardWriterForRow_(self, table, row) -> None:  # pragma: no cover
         # this seems to be required to prevent issue 21562075 in AppKit
         return None
+
+    @objc_method
+    def keyDown_(self, event) -> None:
+        # any time this table is in focus and a key is pressed, this method will be called
+        if toga_key(event) == {"key": Key.A, "modifiers": {Key.MOD_1}}:
+            if self.interface.multiple_select:
+                self.selectAll(self)
+        else:
+            # forward call to super
+            send_super(__class__, self, "keyDown:", event, argtypes=[c_void_p])
 
     # TableDelegate methods
     @objc_method

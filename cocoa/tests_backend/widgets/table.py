@@ -10,8 +10,7 @@ NSEventModifierFlagCommand = 1 << 20
 
 class TableProbe(SimpleProbe):
     native_class = NSScrollView
-    supports_cell_widgets = True
-    supports_cell_icons = True
+    supports_keyboard_shortcuts = True
 
     def __init__(self, widget):
         super().__init__(widget)
@@ -87,6 +86,9 @@ class TableProbe(SimpleProbe):
             ),
             toView=None,
         )
+
+    async def select_all(self):
+        await self.type_character("A", modifierFlags=NSEventModifierFlagCommand),
 
     async def select_row(self, row, add=False):
         point = self.row_position(row)

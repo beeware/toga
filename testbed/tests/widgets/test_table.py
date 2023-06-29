@@ -161,6 +161,17 @@ async def test_select(widget, probe, source, on_select_handler):
     on_select_handler.assert_called_once_with(widget)
     on_select_handler.reset_mock()
 
+    if probe.supports_keyboard_shortcuts:
+        # Keyboard responds to selectAll
+        await probe.select_all()
+        await probe.redraw("Select all keyboard shortcut is ignored")
+        assert widget.selection == source[2]
+
+        # Other keystrokes are ignored
+        await probe.type_character("x")
+        await probe.redraw("A non-shortcut key was pressed")
+        assert widget.selection == source[2]
+
 
 async def test_activate(
     widget,
@@ -216,6 +227,12 @@ async def test_multiselect(
     assert multiselect_widget.selection == [source[2]]
     on_select_handler.assert_called_once_with(multiselect_widget)
     on_select_handler.reset_mock()
+
+    if multiselect_probe.supports_keyboard_shortcuts:
+        # Keyboard responds to selectAll
+        await multiselect_probe.select_all()
+        await multiselect_probe.redraw("All rows selected by keyboard")
+        assert len(multiselect_widget.selection) == 100
 
 
 class MyData:
