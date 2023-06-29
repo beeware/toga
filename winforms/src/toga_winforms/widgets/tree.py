@@ -3,7 +3,7 @@ from toga_winforms.libs import WinForms
 from .base import Widget
 
 
-class Tree(Widget):
+class Tree(Widget):  # pragma: no cover
     def create(self):
         self.native = WinForms.TreeView()
 

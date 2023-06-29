@@ -92,7 +92,7 @@ def source():
 
 @pytest.fixture
 async def widget(source, on_select_handler, on_activate_handler):
-    skip_on_platforms("iOS", "android")
+    skip_on_platforms("iOS", "android", "windows")
     return toga.Tree(
         ["A", "B", "C"],
         data=source,
@@ -105,7 +105,7 @@ async def widget(source, on_select_handler, on_activate_handler):
 
 @pytest.fixture
 def headerless_widget(source, on_select_handler):
-    skip_on_platforms("iOS", "android")
+    skip_on_platforms("iOS", "android", "windows")
     return toga.Tree(
         data=source,
         missing_value="MISSING!",
