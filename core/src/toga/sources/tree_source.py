@@ -261,7 +261,8 @@ class TreeSource(Source):
             ]
         elif hasattr(value, "__iter__") and not isinstance(value, str):
             return [
-                self._create_node(data, children) for data, children in value.items()
+                self._create_node(parent=parent, data=item[0], children=item[1])
+                for item in value
             ]
         else:
             return [self._create_node(parent=parent, data=value)]
