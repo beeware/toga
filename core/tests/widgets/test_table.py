@@ -82,7 +82,7 @@ def test_create_with_values(source, on_select_handler, on_activate_handler):
     assert table.on_activate._raw == on_activate_handler
 
 
-def test_create_with_acessor_overrides():
+def test_create_with_accessor_overrides():
     "A Table can partially override accessors"
     table = toga.Table(
         ["First", "Second"],
@@ -138,18 +138,59 @@ def test_focus_noop(table):
     assert_action_not_performed(table, "focus")
 
 
-def test_set_data_list(table, on_select_handler):
-    "Data can be set from a list of lists"
+@pytest.mark.parametrize(
+    "data, all_attributes, extra_attributes",
+    [
+        # List of lists
+        (
+            [
+                ["Alice", 123, "extra1"],
+                ["Bob", 234, "extra2"],
+                ["Charlie", 345, "extra3"],
+            ],
+            True,
+            False,
+        ),
+        # List of tuples
+        (
+            [
+                ("Alice", 123, "extra1"),
+                ("Bob", 234, "extra2"),
+                ("Charlie", 345, "extra3"),
+            ],
+            True,
+            False,
+        ),
+        # List of dictionaries
+        (
+            [
+                {"key": "Alice", "value": 123, "extra": "extra1"},
+                {"key": "Bob", "value": 234, "extra": "extra2"},
+                {"key": "Charlie", "value": 345, "extra": "extra3"},
+            ],
+            True,
+            True,
+        ),
+        # List of bare data
+        (
+            [
+                "Alice",
+                1234,
+                "Charlie",
+            ],
+            False,
+            False,
+        ),
+    ],
+)
+def test_set_data(table, on_select_handler, data, all_attributes, extra_attributes):
+    "Data can be set from a variety of sources"
 
     # The selection hasn't changed yet.
     on_select_handler.assert_not_called()
 
     # Change the data
-    table.data = [
-        ["Alice", 123, "extra1"],
-        ["Bob", 234, "extra2"],
-        ["Charlie", 345, "extra3"],
-    ]
+    table.data = data
 
     # This triggered the select handler
     on_select_handler.assert_called_once_with(table)
@@ -159,85 +200,21 @@ def test_set_data_list(table, on_select_handler):
     assert len(table.data) == 3
 
     # The accessors are mapped in order.
-    assert table.data[1].key == "Bob"
-    assert table.data[1].value == 234
-
-
-def test_set_data_tuple(table, on_select_handler):
-    "Data can be set from a list of tuples"
-
-    # The selection hasn't changed yet.
-    on_select_handler.assert_not_called()
-
-    # Change the data
-    table.data = [
-        ("Alice", 123, "extra1"),
-        ("Bob", 234, "extra2"),
-        ("Charlie", 345, "extra3"),
-    ]
-
-    # This triggered the select handler
-    on_select_handler.assert_called_once_with(table)
-
-    # A ListSource has been constructed
-    assert isinstance(table.data, ListSource)
-    assert len(table.data) == 3
-
-    # The accessors are mapped in order.
-    assert table.data[1].key == "Bob"
-    assert table.data[1].value == 234
-
-
-def test_set_data_dict(table, on_select_handler):
-    "Data can be set from a list of dicts"
-
-    # The selection hasn't changed yet.
-    on_select_handler.assert_not_called()
-
-    # Change the data
-    table.data = [
-        {"key": "Alice", "value": 123, "extra": "extra1"},
-        {"key": "Bob", "value": 234, "extra": "extra2"},
-        {"key": "Charlie", "value": 345, "extra": "extra3"},
-    ]
-
-    # This triggered the select handler
-    on_select_handler.assert_called_once_with(table)
-
-    # A ListSource has been constructed
-    assert isinstance(table.data, ListSource)
-    assert len(table.data) == 3
-
-    # The accessors are all available
-    assert table.data[1].key == "Bob"
-    assert table.data[1].value == 234
-    assert table.data[1].extra == "extra2"
-
-
-def test_set_data_other(table, on_select_handler):
-    "Data can be set from a list of values"
-
-    # The selection hasn't changed yet.
-    on_select_handler.assert_not_called()
-
-    # Change the data
-    table.data = [
-        "Alice",
-        1234,
-        "other",
-    ]
-
-    # This triggered the select handler
-    on_select_handler.assert_called_once_with(table)
-
-    # A ListSource has been constructed
-    assert isinstance(table.data, ListSource)
-    assert len(table.data) == 3
-
-    # The values are mapped to the first accessor.
     assert table.data[0].key == "Alice"
-    assert table.data[1].key == 1234
-    assert table.data[2].key == "other"
+    assert table.data[2].key == "Charlie"
+
+    if all_attributes:
+        assert table.data[1].key == "Bob"
+        assert table.data[0].value == 123
+        assert table.data[1].value == 234
+        assert table.data[2].value == 345
+    else:
+        assert table.data[1].key == 1234
+
+    if extra_attributes:
+        assert table.data[0].extra == "extra1"
+        assert table.data[1].extra == "extra2"
+        assert table.data[2].extra == "extra3"
 
 
 def test_single_selection(table, on_select_handler):

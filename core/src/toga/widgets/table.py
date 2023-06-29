@@ -1,9 +1,10 @@
 from __future__ import annotations
 
 import warnings
+from typing import Any
 
 from toga.handlers import wrapped_handler
-from toga.sources import ListSource, Row
+from toga.sources import ListSource, Row, Source
 from toga.sources.accessors import build_accessors, to_accessor
 
 from .base import Widget
@@ -15,7 +16,7 @@ class Table(Widget):
         headings: list[str] | None = None,
         id=None,
         style=None,
-        data: list | ListSource | None = None,
+        data: Any = None,
         accessors: list[str] | None = None,
         multiple_select: bool = False,
         on_select: callable | None = None,
@@ -135,13 +136,13 @@ class Table(Widget):
         return self._data
 
     @data.setter
-    def data(self, data: list | ListSource | None):
+    def data(self, data: Any):
         if data is None:
             self._data = ListSource(accessors=self._accessors, data=[])
-        elif isinstance(data, (list, tuple)):
-            self._data = ListSource(accessors=self._accessors, data=data)
-        else:
+        elif isinstance(data, Source):
             self._data = data
+        else:
+            self._data = ListSource(accessors=self._accessors, data=data)
 
         self._data.add_listener(self._impl)
         self._impl.change_source(source=self._data)
