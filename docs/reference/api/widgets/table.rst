@@ -24,8 +24,10 @@ ListSource at runtime.
 The simplest instantiation of a Table is to use a list of lists (or list of tuples),
 containing the items to display in the table. When creating the table, you must also
 specify the headings to use on the table; those headings will be converted into
-accessors on the Row data objects created for the table data. In this example,
-we will display a table of 2 columns, with 3 initial rows of data:
+accessors on the Row data objects created for the table data. The values in the tuples
+provided will then be mapped sequentially to the accessors.
+
+In this example, we will display a table of 2 columns, with 3 initial rows of data:
 
 .. code-block:: python
 
@@ -59,7 +61,7 @@ to control the display order of columns independent of the storage of that data.
         data=[
             {"name": "Arthur Dent", "age": 42, "planet": "Earth"},
             {"name", "Ford Prefect", "age": 37, "planet": "Betelgeuse Five"},
-            {"name": "Tricia McMillan", "age": 38, "plaent": "Earth"},
+            {"name": "Tricia McMillan", "age": 38, "planet": "Earth"},
         ]
     )
 
