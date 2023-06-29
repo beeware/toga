@@ -135,6 +135,8 @@ class ScrollContainer(Widget):
         )
 
     def get_vertical_position(self):
+        if not self.get_vertical():
+            return 0
         return int(self.native.contentView.bounds.origin.y)
 
     def get_max_horizontal_position(self):
@@ -147,6 +149,8 @@ class ScrollContainer(Widget):
         )
 
     def get_horizontal_position(self):
+        if not self.get_horizontal():
+            return 0
         return int(self.native.contentView.bounds.origin.x)
 
     def set_position(self, horizontal_position, vertical_position):

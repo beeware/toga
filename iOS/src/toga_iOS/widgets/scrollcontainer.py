@@ -100,6 +100,8 @@ class ScrollContainer(Widget):
             self.interface.on_scroll(None)
 
     def get_horizontal_position(self):
+        if not self.get_horizontal():
+            return 0
         return int(self.native.contentOffset.x)
 
     def get_max_vertical_position(self):
@@ -115,6 +117,8 @@ class ScrollContainer(Widget):
         )
 
     def get_vertical_position(self):
+        if not self.get_vertical():
+            return 0
         return int(self.native.contentOffset.y)
 
     def set_position(self, horizontal_position, vertical_position):
