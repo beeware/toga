@@ -130,7 +130,7 @@ class ScrollContainer(Widget):
 
     @property
     def max_horizontal_position(self) -> int | None:
-        """The maximum horizontal scroll position.
+        """The maximum horizontal scroll position (read-only).
 
         Returns ``None`` if horizontal scrolling is disabled.
         """
@@ -165,7 +165,7 @@ class ScrollContainer(Widget):
 
     @property
     def max_vertical_position(self) -> int | None:
-        """The maximum vertical scroll position.
+        """The maximum vertical scroll position (read-only).
 
         Returns ``None`` if vertical scrolling is disabled.
         """
@@ -198,6 +198,9 @@ class ScrollContainer(Widget):
 
         self.position = (self._impl.get_horizontal_position(), vertical_position)
 
+    # This combined property is necessary because on some platforms (e.g. iOS), setting
+    # the horizontal and vertical position separately would cause the horizontal and
+    # vertical movement to appear as two separate animations.
     @property
     def position(self) -> tuple[int | None, int | None]:
         """The current scroll position.

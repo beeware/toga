@@ -84,6 +84,11 @@ class Widget:
 
         self.rehint()
 
+    @property
+    def scale(self):
+        viewport = self.viewport if self.viewport else self.container.viewport
+        return viewport.scale
+
     def get_enabled(self):
         return self.native.isEnabled()
 
