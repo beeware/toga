@@ -1,12 +1,23 @@
 from .base import Widget
 
 
+def node_for_path(data, path):
+    "Convert a path tuple into a specific node"
+    if path is None:
+        return None
+    result = data
+    for index in path:
+        result = result[index]
+    return result
+
+
 class Tree(Widget):
     def create(self):
         self._action("create Tree")
 
     def change_source(self, source):
         self._action("change source", source=source)
+        self.interface.on_select(None)
 
     def insert(self, parent, index, item):
         self._action("insert node", parent=parent, index=index, item=item)
@@ -21,17 +32,25 @@ class Tree(Widget):
         self._action("clear")
 
     def get_selection(self):
-        self._action("get selection")
-        return None
+        if self.interface.multiple_select:
+            return [
+                node_for_path(self.interface.data, path)
+                for path in self._get_value("selection", [])
+            ]
+        else:
+            return node_for_path(
+                self.interface.data, self._get_value("selection", None)
+            )
 
-    def set_on_select(self, handler):
-        self._set_value("on_select", handler)
+    def insert_column(self, index, heading, accessor):
+        self._action("insert column", index=index, heading=heading, accessor=accessor)
 
-    def set_on_double_click(self, handler):
-        self._set_value("on_double_click", handler)
+    def remove_column(self, index):
+        self._action("remove column", index=index)
 
-    def simulate_select(self):
+    def simulate_selection(self, path):
+        self._set_value("selection", path)
         self.interface.on_select(None)
 
-    def simulate_double_click(self):
-        self.interface.on_double_click(None)
+    def simulate_activate(self, path):
+        self.interface.on_activate(None, node=node_for_path(self.interface.data, path))
