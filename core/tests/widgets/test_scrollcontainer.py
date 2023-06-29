@@ -235,10 +235,15 @@ def test_clear_content(app, window, scroll_container, content):
         (object(), True),
     ],
 )
-def test_horizontal(scroll_container, content, value, expected):
+def test_horizontal(scroll_container, on_scroll_handler, content, value, expected):
     "Horizontal scrolling can be enabled/disabled."
     scroll_container.horizontal = value
     scroll_container.horizontal == expected
+
+    if not expected:
+        on_scroll_handler.assert_called_with(scroll_container)
+    else:
+        on_scroll_handler.assert_not_called()
 
     # Content is refreshed as a result of the change
     assert_action_performed(content, "refresh")
@@ -257,10 +262,15 @@ def test_horizontal(scroll_container, content, value, expected):
         (object(), True),
     ],
 )
-def test_vertical(scroll_container, content, value, expected):
+def test_vertical(scroll_container, on_scroll_handler, content, value, expected):
     "Vertical scrolling can be enabled/disabled."
     scroll_container.vertical = value
     scroll_container.vertical == expected
+
+    if not expected:
+        on_scroll_handler.assert_called_with(scroll_container)
+    else:
+        on_scroll_handler.assert_not_called()
 
     # Content is refreshed as a result of the change
     assert_action_performed(content, "refresh")
@@ -276,20 +286,38 @@ def test_vertical(scroll_container, content, value, expected):
         (10.1, 10),  # Float, converted to int
     ],
 )
-def test_horizontal_position(scroll_container, position, expected):
+def test_horizontal_position(scroll_container, on_scroll_handler, position, expected):
     "The horizontal position can be set (clipped if necessary) and retrieved"
     scroll_container.horizontal_position = position
+
+    # scroll handler fired
+    on_scroll_handler.assert_called_with(scroll_container)
 
     assert scroll_container.horizontal_position == expected
     assert scroll_container.max_horizontal_position == 1000
 
 
-def test_get_horizontal_position_when_not_horizontal(scroll_container):
-    "If horizontal scrolling isn't enabled, getting the horizontal position raises an error"
+def test_disable_horizontal_scrolling(scroll_container, on_scroll_handler):
+    "When disabling horizontal scrolling, horizontal position resets"
+    scroll_container.horizontal_position = 100
+    on_scroll_handler.reset_mock()
+
     scroll_container.horizontal = False
 
-    assert scroll_container.horizontal_position is None
-    assert scroll_container.max_horizontal_position is None
+    # scroll handler fired as a result of reset
+    on_scroll_handler.assert_called_with(scroll_container)
+
+    assert scroll_container.horizontal_position == 0
+    assert scroll_container.max_horizontal_position == 0
+
+    # Vertical position is unaffected by horizontal setting
+    scroll_container.vertical_position = 100
+
+    assert scroll_container.vertical_position == 100
+
+    # scroll handler fired
+    on_scroll_handler.assert_called_with(scroll_container)
+    on_scroll_handler.reset_mock()
 
 
 def test_horizontal_position_when_not_horizontal(scroll_container):
@@ -301,11 +329,11 @@ def test_horizontal_position_when_not_horizontal(scroll_container):
     ):
         scroll_container.horizontal_position = 37
 
-    with pytest.raises(
-        ValueError,
-        match=r"Cannot set scroll position when horizontal scrolling is not enabled.",
-    ):
-        scroll_container.position = (37, 42)
+    # horizontal coordinate is ignored when setting a full position
+    scroll_container.position = (37, 42)
+
+    assert scroll_container.horizontal_position == 0
+    assert scroll_container.vertical_position == 42
 
 
 @pytest.mark.parametrize(
@@ -318,20 +346,38 @@ def test_horizontal_position_when_not_horizontal(scroll_container):
         (10.1, 10),  # Float, converted to int
     ],
 )
-def test_vertical_position(scroll_container, position, expected):
+def test_vertical_position(scroll_container, on_scroll_handler, position, expected):
     "The vertical position can be set (clipped if necessary) and retrieved"
     scroll_container.vertical_position = position
+
+    # scroll handler fired
+    on_scroll_handler.assert_called_with(scroll_container)
 
     assert scroll_container.vertical_position == expected
     assert scroll_container.max_vertical_position == 2000
 
 
-def test_get_vertical_position_when_not_vertical(scroll_container):
-    "If vertical scrolling isn't enabled, getting the vertical position raises an error"
+def test_disable_vertical_scrolling(scroll_container, on_scroll_handler):
+    "When vertical scrolling is disabled, vertical position resets"
+    scroll_container.vertical_position = 100
+
     scroll_container.vertical = False
 
-    assert scroll_container.vertical_position is None
-    assert scroll_container.max_vertical_position is None
+    # scroll handler fired as a result of reset
+    on_scroll_handler.assert_called_with(scroll_container)
+    on_scroll_handler.reset_mock()
+
+    assert scroll_container.vertical_position == 0
+    assert scroll_container.max_vertical_position == 0
+
+    # Horizontal position is unaffected by vertical setting
+    scroll_container.horizontal_position = 100
+
+    assert scroll_container.horizontal_position == 100
+
+    # scroll handler fired
+    on_scroll_handler.assert_called_with(scroll_container)
+    on_scroll_handler.reset_mock()
 
 
 def test_set_vertical_position_when_not_vertical(scroll_container):
@@ -343,11 +389,11 @@ def test_set_vertical_position_when_not_vertical(scroll_container):
     ):
         scroll_container.vertical_position = 42
 
-    with pytest.raises(
-        ValueError,
-        match=r"Cannot set scroll position when vertical scrolling is not enabled.",
-    ):
-        scroll_container.position = (37, 42)
+    # vertical coordinate is ignored when setting a full position
+    scroll_container.position = (37, 42)
+
+    assert scroll_container.horizontal_position == 37
+    assert scroll_container.vertical_position == 0
 
 
 @pytest.mark.parametrize(
@@ -362,8 +408,11 @@ def test_set_vertical_position_when_not_vertical(scroll_container):
         ((1500, 2500), (1000, 2000)),  # Clipped to maximum
     ],
 )
-def test_position(scroll_container, position, expected):
+def test_position(scroll_container, on_scroll_handler, position, expected):
     "The scroll position can be set (clipped if necessary) and retrieved"
     scroll_container.position = position
 
     assert scroll_container.position == expected
+
+    # scroll handler fired
+    on_scroll_handler.assert_called_with(scroll_container)
