@@ -76,7 +76,9 @@ class TextIconRow(HiddenButtonsRow):
             return None
         else:
             dpr = self.get_scale_factor()
-            return getattr(row.icon._impl, "native_" + str(32 * dpr))
+            return Gtk.Image.new_from_pixbuf(
+                getattr(row.icon._impl, "native_" + str(32 * dpr))
+            )
 
     @staticmethod
     def markup(row):
