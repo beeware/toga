@@ -124,7 +124,7 @@ class Tree(Widget):
                 return None
             return store[iter][0].value
 
-    def insert_column(self, position, heading, accessor):
+    def insert_column(self, index, heading, accessor):
         # Adding/removing a column means completely rebuilding the ListStore
         self.change_source(self.interface.data)
 
