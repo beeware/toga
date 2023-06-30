@@ -127,7 +127,7 @@ class ExampleTreeSourceApp(toga.App):
         else:
             self.label.text = f"You selected {files} items"
 
-    def double_click_handler(self, widget, node):
+    def activate_handler(self, widget, node):
         # open the file or folder in the platform's default app
         self.label.text = f"You started {node.path}"
         if platform.system() == "Darwin":
@@ -149,7 +149,7 @@ class ExampleTreeSourceApp(toga.App):
             style=Pack(flex=1),
             multiple_select=True,
             on_select=self.selection_handler,
-            on_double_click=self.double_click_handler,
+            on_activate=self.activate_handler,
         )
         self.label = toga.Label(
             "A view of the current directory!", style=Pack(padding=10)

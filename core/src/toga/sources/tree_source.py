@@ -220,14 +220,6 @@ class TreeSource(Source):
         node._source = None
         self.notify("remove", parent=None, index=index, item=node)
 
-    def can_have_children(self) -> bool:
-        """Can the tree have children.
-
-        This method is required for consistency with the Node interface; always returns
-        True.
-        """
-        return True
-
     ######################################################################
     # Factory methods for new nodes
     ######################################################################

@@ -80,18 +80,6 @@ class Tree(Widget):
 
         self.native_tree.set_model(self.store)
 
-    def path_for_node(self, node):
-        root = node._parent
-        row_path = []
-        while root is not None:
-            row_path.append(root.index(node))
-            node = root
-            root = root._parent
-        row_path.append(self.interface.data.index(node))
-        row_path.reverse()
-
-        return row_path
-
     def insert(self, parent, index, item):
         row = TogaRow(item)
         values = [row]
@@ -106,27 +94,22 @@ class Tree(Widget):
         if parent is None:
             iter = None
         else:
-            path = self.path_for_node(parent)
-            iter = self.store.get_iter(Gtk.TreePath(path))
+            iter = parent._impl
 
-        self.store.insert(iter, index, values)
+        item._impl = self.store.insert(iter, index, values)
 
         for i, child in enumerate(item):
             self.insert(item, i, child)
 
     def change(self, item):
-        row = self.store[self.path_for_node(item)]
+        row = self.store[item._impl]
         for i, accessor in enumerate(self.interface.accessors):
             row[i * 2 + 1] = row[0].icon(accessor)
             row[i * 2 + 2] = row[0].text(accessor, self.interface.missing_value)
 
     def remove(self, item, index, parent):
-        if parent is None:
-            path = [index]
-        else:
-            path = self.path_for_node(parent) + [index]
-
-        del self.store[path]
+        del self.store[item._impl]
+        item._impl = None
 
     def clear(self):
         self.store.clear()

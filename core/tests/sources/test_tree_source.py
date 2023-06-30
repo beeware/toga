@@ -106,7 +106,6 @@ def test_create_empty(data):
     source = TreeSource(data=data, accessors=["val1", "val2"])
 
     assert len(source) == 0
-    assert source.can_have_children()
 
 
 @pytest.mark.parametrize(
@@ -276,7 +275,6 @@ def test_create(data, all_accessor_levels):
 
     # Source has 2 roots
     assert len(source) == 2
-    assert source.can_have_children()
 
     # Root0 has 2 children
     assert source[0].val1 == "root0"

@@ -115,14 +115,15 @@ Any object that adheres to the TreeSource interface can be used as a data source
 TreeSource, plus every node managed by the TreeSource, must provide the following
 methods:
 
-* ``__len__(self)`` - returns the number of children of this node, or the number of root
+* ``__len__()`` - returns the number of children of this node, or the number of root
   nodes for the TreeSource.
 
-* ``__getitem__(self, index)`` - returns the child at position ``index`` of a node, or
-  the root node at position ``index`` of the TreeSource.
+* ``__getitem__(index)`` - returns the child at position ``index`` of a node, or the
+  root node at position ``index`` of the TreeSource.
 
-* ``can_have_children(self)`` - returns ``False`` if the node is a leaf node. TreeSource
-  should always return ``True``.
+Every node on the TreeSource must also provide:
+
+* ``can_have_children()`` - returns ``False`` if the node is a leaf node.
 
 A custom TreeSource must also generate ``insert``, ``remove`` and ``clear``
 notifications when items are added or removed from the source, or when children are
