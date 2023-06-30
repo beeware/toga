@@ -8,6 +8,7 @@ from .base import SimpleProbe
 class TableProbe(SimpleProbe):
     native_class = Gtk.ScrolledWindow
     supports_keyboard_shortcuts = False
+    supports_cell_widgets = False
 
     def __init__(self, widget):
         super().__init__(widget)

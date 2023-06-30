@@ -1,3 +1,4 @@
+import contextlib
 from unittest.mock import Mock
 
 import pytest
@@ -166,21 +167,21 @@ async def test_select(widget, probe, source, on_select_handler):
     await probe.expand_tree()
 
     # A single row can be selected
-    await probe.select_row(1)
+    await probe.select_row((0, 0))
     await probe.redraw("Second row is selected")
     assert widget.selection == source[0][0]
     on_select_handler.assert_called_once_with(widget)
     on_select_handler.reset_mock()
 
     # Trying to multi-select only does a single select
-    await probe.select_row(2, add=True)
+    await probe.select_row((0, 1), add=True)
     await probe.redraw("Third row is selected")
     assert widget.selection == source[0][1]
     on_select_handler.assert_called_once_with(widget)
     on_select_handler.reset_mock()
 
     # A deeper row can be selected
-    await probe.select_row(11)
+    await probe.select_row((1, 2, 0))
     await probe.redraw("Deep row in second group is selected")
     assert widget.selection == source[1][2][0]
     on_select_handler.assert_called_once_with(widget)
@@ -208,7 +209,7 @@ async def test_activate(
     """Rows can be activated"""
     await probe.expand_tree()
 
-    await probe.activate_row(1)
+    await probe.activate_row((0, 0))
     await probe.redraw("Second row is activated")
 
     # Activation selects the row.
@@ -236,28 +237,28 @@ async def test_multiselect(
     await multiselect_probe.expand_tree()
 
     # A single row can be selected
-    await multiselect_probe.select_row(1)
+    await multiselect_probe.select_row((0, 0))
     assert multiselect_widget.selection == [source[0][0]]
     await multiselect_probe.redraw("One row is selected in multiselect table")
     on_select_handler.assert_called_once_with(multiselect_widget)
     on_select_handler.reset_mock()
 
     # A row can be added to the selection
-    await multiselect_probe.select_row(2, add=True)
+    await multiselect_probe.select_row((0, 1), add=True)
     await multiselect_probe.redraw("Two rows are selected in multiselect table")
     assert multiselect_widget.selection == [source[0][0], source[0][1]]
     on_select_handler.assert_called_once_with(multiselect_widget)
     on_select_handler.reset_mock()
 
     # A deeper row can be added to the selection
-    await multiselect_probe.select_row(11, add=True)
+    await multiselect_probe.select_row((1, 2, 0), add=True)
     await multiselect_probe.redraw("Three rows are selected in multiselect table")
     assert multiselect_widget.selection == [source[0][0], source[0][1], source[1][2][0]]
     on_select_handler.assert_called_once_with(multiselect_widget)
     on_select_handler.reset_mock()
 
     # A row can be removed from the selection
-    await multiselect_probe.select_row(1, add=True)
+    await multiselect_probe.select_row((0, 0), add=True)
     await multiselect_probe.redraw("First row has been removed from the selection")
     assert multiselect_widget.selection == [source[0][1], source[1][2][0]]
     on_select_handler.assert_called_once_with(multiselect_widget)
@@ -341,12 +342,19 @@ async def _row_change_test(widget, probe):
     probe.assert_cell_content((0, 4), 0, "A4")
     probe.assert_cell_content((0, 5), 0, "AX")
 
-    # Insert a new root;
-    # Row is missing a B accessor
+    # Insert a new root
     widget.data.insert(0, {"a": "A!", "b": "B!", "c": "C!"})
     await probe.redraw("New root row has been appended")
 
     assert probe.child_count() == 2
+    assert probe.child_count((0,)) == 0
+    probe.assert_cell_content((0,), 0, "A!")
+
+    # Delete a root
+    del widget.data[1]
+    await probe.redraw("Old root row has been removed")
+
+    assert probe.child_count() == 1
     assert probe.child_count((0,)) == 0
     probe.assert_cell_content((0,), 0, "A!")
 
@@ -483,7 +491,7 @@ async def test_cell_icon(widget, probe):
 
 async def test_cell_widget(widget, probe):
     "A widget can be used as a cell value"
-    widget.data = [
+    data = [
         (
             {"a": "A0", "b": "", "c": ""},
             [
@@ -503,13 +511,30 @@ async def test_cell_widget(widget, probe):
             ],
         ),
     ]
+    if probe.supports_cell_widgets:
+        warning_check = contextlib.nullcontext()
+    else:
+        warning_check = pytest.warns(
+            match=".* does not support the use of widgets in cells"
+        )
+
+    with warning_check:
+        widget.data = data
+
     await probe.expand_tree()
     await probe.redraw("Tree has data with widgets")
 
     probe.assert_cell_content((0, 0), 0, "A0")
     probe.assert_cell_content((0, 0), 1, "B0")
-    probe.assert_cell_content((0, 0), 2, widget=widget.data[0][0].c)
 
     probe.assert_cell_content((0, 1), 0, "A1")
     probe.assert_cell_content((0, 1), 1, "B1")
-    probe.assert_cell_content((0, 1), 2, widget=widget.data[0][1].c)
+
+    if probe.supports_cell_widgets:
+        probe.assert_cell_content((0, 0), 2, widget=widget.data[0][0].c)
+        probe.assert_cell_content((0, 1), 2, widget=widget.data[0][1].c)
+    else:
+        # If the platform doesn't support cell widgets, the test should still *run* -
+        # we just won't have widgets in the cells.
+        probe.assert_cell_content((0, 0), 2, "MISSING!")
+        probe.assert_cell_content((0, 1), 2, "MISSING!")

@@ -20,7 +20,7 @@ Switch,General Widget,:class:`~toga.Switch`,Switch,|y|,|y|,|y|,|y|,|y|,|b|
 Table,General Widget,:class:`~toga.Table`,A widget for displaying columns of tabular data.,|b|,|b|,|b|,,|b|,
 TextInput,General Widget,:class:`~toga.TextInput`,A widget for the display and editing of a single line of text.,|y|,|y|,|y|,|y|,|y|,|b|
 TimeInput,General Widget,:class:`~toga.TimeInput`,A widget to select a clock time,,,|y|,,|y|,
-Tree,General Widget,:class:`~toga.Tree`,A widget for displaying a hierarchical tree of tabular data.,|b|,|b|,|b|,,,
+Tree,General Widget,:class:`~toga.Tree`,A widget for displaying a hierarchical tree of tabular data.,|y|,|y|,,,,
 WebView,General Widget,:class:`~toga.WebView`,A panel for displaying HTML,|y|,|y|,|y|,|y|,|y|,
 Widget,General Widget,:class:`~toga.Widget`,The base widget,|y|,|y|,|y|,|y|,|y|,|b|
 Box,Layout Widget,:class:`~toga.Box`,Container for components,|y|,|y|,|y|,|y|,|y|,|b|

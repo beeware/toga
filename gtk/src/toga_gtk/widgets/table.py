@@ -1,16 +1,20 @@
+import warnings
+
 from travertino.size import at_least
+
+import toga
 
 from ..libs import GdkPixbuf, GObject, Gtk
 from .base import Widget
 
 
 class TogaRow(GObject.Object):
-    def __init__(self, row):
+    def __init__(self, value):
         super().__init__()
-        self.row = row
+        self.value = value
 
     def icon(self, attr):
-        data = getattr(self.row, attr, None)
+        data = getattr(self.value, attr, None)
         if isinstance(data, tuple):
             if data[0] is not None:
                 return data[0]._impl.native_16
@@ -22,8 +26,11 @@ class TogaRow(GObject.Object):
                 return None
 
     def text(self, attr, missing_value):
-        data = getattr(self.row, attr, None)
-        if isinstance(data, tuple):
+        data = getattr(self.value, attr, None)
+        if isinstance(data, toga.Widget):
+            warnings.warn("GTK does not support the use of widgets in cells")
+            text = None
+        elif isinstance(data, tuple):
             text = data[1]
         else:
             text = data
@@ -82,8 +89,8 @@ class Table(Widget):
             self.native_table.append_column(column)
 
     def gtk_on_row_activated(self, widget, path, column):
-        row = self.store.get(self.store.get_iter(path[-1]), 0)[0]
-        self.interface.on_activate(None, row=row.row)
+        row = self.store[path][0].value
+        self.interface.on_activate(None, row=row)
 
     def gtk_on_select(self, selection):
         self.interface.on_select(None)
@@ -136,12 +143,12 @@ class Table(Widget):
     def get_selection(self):
         if self.interface.multiple_select:
             store, itrs = self.selection.get_selected_rows()
-            return [self.interface.data.index(store[itr][0].row) for itr in itrs]
+            return [self.interface.data.index(store[itr][0].value) for itr in itrs]
         else:
             store, iter = self.selection.get_selected()
             if iter is None:
                 return None
-            return self.interface.data.index(store[iter][0].row)
+            return self.interface.data.index(store[iter][0].value)
 
     def scroll_to_row(self, row):
         # Core API guarantees row exists, and there's > 1 row.
