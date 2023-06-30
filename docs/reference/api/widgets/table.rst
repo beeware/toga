@@ -130,6 +130,8 @@ Notes
 * The use of Widgets as table values is currently a beta API. It is currently only
   supported on macOS; the API is subject to change.
 
+* On macOS, you cannot change the font used in a Table.
+
 Reference
 ---------
 

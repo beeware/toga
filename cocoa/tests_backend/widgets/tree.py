@@ -1,5 +1,6 @@
 import asyncio
 
+from pytest import skip
 from rubicon.objc import NSPoint
 
 from toga_cocoa.libs import NSEventType, NSOutlineView, NSScrollView
@@ -19,6 +20,10 @@ class TreeProbe(SimpleProbe):
         super().__init__(widget)
         self.native_tree = widget._impl.native_tree
         assert isinstance(self.native_tree, NSOutlineView)
+
+    @property
+    def font(self):
+        skip("Font changes not implemented for Tree on macOS")
 
     @property
     def background_color(self):

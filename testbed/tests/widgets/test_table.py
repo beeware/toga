@@ -15,7 +15,14 @@ from .properties import (  # noqa: F401
     test_enable_noop,
     test_flex_widget_size,
     test_focus_noop,
+    test_font,
 )
+
+
+@pytest.fixture
+def verify_font_sizes():
+    # We can't verify font sizes inside the Table
+    return False, False
 
 
 @pytest.fixture

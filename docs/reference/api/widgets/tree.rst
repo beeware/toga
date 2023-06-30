@@ -148,6 +148,16 @@ if the value is :any:`None`, as appropriate).
 If the value provided by an accessor is a :class:`toga.Widget`, that widget will be displayed
 in the tree. Note that this is currently a beta API, and may change in future.
 
+
+Notes
+-----
+
+* The use of Widgets as tree values is currently a beta API. It is currently only
+  supported on macOS; the API is subject to change.
+
+* On macOS, you cannot change the font used in a Tree.
+
+
 Reference
 ---------
 

@@ -1,3 +1,4 @@
+from pytest import skip
 from rubicon.objc import NSPoint
 
 from toga_cocoa.libs import NSEventType, NSScrollView, NSTableView
@@ -17,6 +18,10 @@ class TableProbe(SimpleProbe):
         super().__init__(widget)
         self.native_table = widget._impl.native_table
         assert isinstance(self.native_table, NSTableView)
+
+    @property
+    def font(self):
+        skip("Font changes not implemented for Tree on macOS")
 
     @property
     def background_color(self):
