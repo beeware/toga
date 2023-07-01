@@ -107,7 +107,7 @@ def test_row_flex():
     root.style.layout(root, ExampleViewport(640, 480))
     assert_layout(
         root,
-        (200, 100),
+        (300, 100),
         (640, 480),
         {
             "origin": (0, 0),
@@ -316,7 +316,7 @@ def test_column_flex():
     root.style.layout(root, ExampleViewport(640, 480))
     assert_layout(
         root,
-        (100, 200),
+        (100, 300),
         (640, 480),
         {
             "origin": (0, 0),

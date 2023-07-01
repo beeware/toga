@@ -266,7 +266,7 @@ class Pack(BaseStyle):
         # intrinsic non-flexible width. While iterating, collect the flex
         # total of remaining elements.
         flex_total = 0
-        min_flex_width = 0
+        min_flex = 0
         width = 0
         min_width = 0
         remaining_width = available_width
@@ -281,37 +281,24 @@ class Pack(BaseStyle):
                     use_all_width=False,
                     use_all_height=child.style.direction == ROW,
                 )
-                child_width = (
-                    child.style.padding_left
-                    + child.layout.content_width
-                    + child.style.padding_right
-                )
-                width += child_width
-                remaining_width -= child_width
-
-                min_child_width = (
-                    child.style.padding_left
-                    + child.layout.min_content_width
-                    + child.style.padding_right
-                )
-                min_width += min_child_width
+                child_content_width = child.layout.content_width
+                # It doesn't matter how small the children can be laid out;
+                # we have an intrinsic size; so don't use min_content_width
+                min_child_content_width = child.layout.content_width
             elif child.intrinsic.width is not None:
                 if hasattr(child.intrinsic.width, "value"):
                     if child.style.flex:
                         # self._debug(f"- intrinsic flex width {child.intrinsic.width}")
                         flex_total += child.style.flex
-                        child_width = child.intrinsic.width.value
-                        remaining_width -= child_width
-                        min_flex_width += child_width
-
-                        min_child_width = (
+                        child_content_width = child.intrinsic.width.value
+                        min_child_content_width = child.intrinsic.width.value
+                        min_flex += (
                             child.style.padding_left
-                            + child_width
+                            + child.intrinsic.width.value
                             + child.style.padding_right
                         )
-                        min_width += min_child_width
                     else:
-                        # self._debug(f"- intrinsic non-flex width {child.intrinsic.width}")
+                        # self._debug(f"- intrinsic non-flex {child.intrinsic.width=}")
                         child.style._layout_node(
                             child,
                             alloc_width=0,
@@ -319,22 +306,12 @@ class Pack(BaseStyle):
                             use_all_width=False,
                             use_all_height=child.style.direction == ROW,
                         )
-                        child_width = (
-                            child.style.padding_left
-                            + child.layout.content_width
-                            + child.style.padding_right
-                        )
-                        width += child_width
-                        remaining_width -= child_width
-
-                        min_child_width = (
-                            child.style.padding_left
-                            + child.layout.min_content_width
-                            + child.style.padding_right
-                        )
-                        min_width += min_child_width
+                        child_content_width = child.layout.content_width
+                        # It doesn't matter how small the children can be laid out;
+                        # we have an intrinsic size; so don't use min_content_width
+                        min_child_content_width = child.layout.content_width
                 else:
-                    # self._debug(f"- intrinsic width {child.intrinsic.width}")
+                    # self._debug(f"- intrinsic {child.intrinsic.width=}")
                     child.style._layout_node(
                         child,
                         alloc_width=remaining_width,
@@ -342,26 +319,16 @@ class Pack(BaseStyle):
                         use_all_width=False,
                         use_all_height=child.style.direction == ROW,
                     )
-                    child_width = (
-                        child.style.padding_left
-                        + child.layout.content_width
-                        + child.style.padding_right
-                    )
-                    width += child_width
-                    remaining_width -= child_width
-
-                    min_child_width = (
-                        child.style.padding_left
-                        + child.layout.min_content_width
-                        + child.style.padding_right
-                    )
-                    min_width += min_child_width
+                    child_content_width = child.layout.content_width
+                    # It doesn't matter how small the children can be laid out;
+                    # we have an intrinsic size; so don't use min_content_width
+                    min_child_content_width = child.layout.content_width
             else:
                 if child.style.flex:
                     # self._debug("- unspecified flex width")
                     flex_total += child.style.flex
-                    child_width = None
-                    min_child_width = None
+                    child_content_width = 0
+                    min_child_content_width = 0
                 else:
                     # self._debug("- unspecified non-flex width")
                     child.style._layout_node(
@@ -371,25 +338,29 @@ class Pack(BaseStyle):
                         use_all_width=False,
                         use_all_height=child.style.direction == ROW,
                     )
-                    child_width = (
-                        child.style.padding_left
-                        + child.layout.content_width
-                        + child.style.padding_right
-                    )
-                    width += child_width
-                    remaining_width -= child_width
+                    child_content_width = child.layout.content_width
+                    min_child_content_width = child.layout.min_content_width
 
-                    min_child_width = (
-                        child.style.padding_left
-                        + child.layout.min_content_width
-                        + child.style.padding_right
-                    )
-                    min_width += min_child_width
+            child_width = (
+                child.style.padding_left
+                + child_content_width
+                + child.style.padding_right
+            )
+            width += child_width
+            remaining_width -= child_width
 
-            # self._debug(f"  {min_child_width=} {child_width=} {width=} {remaining_width=} {min_flex_width=}")
+            min_child_width = (
+                child.style.padding_left
+                + min_child_content_width
+                + child.style.padding_right
+            )
+            min_width += min_child_width
+
+            # self._debug(f"  {min_child_width=} {min_width=} {min_flex=}")
+            # self._debug(f"  {child_width=} {width=} {remaining_width=}")
 
         if flex_total > 0:
-            quantum = (remaining_width + min_flex_width) / flex_total
+            quantum = (remaining_width + min_flex) / flex_total
             # In an ideal flex layout, all flex children will have a width proportional
             # to their flex value. However, if a flex child has a flexible minimum width
             # constraint that is greater than the ideal width for a balanced flex layout,
@@ -402,18 +373,22 @@ class Pack(BaseStyle):
                         if child.intrinsic.width.value > ideal_width:
                             # self._debug(f"- {child} overflows ideal width")
                             flex_total -= child.style.flex
-                            min_flex_width -= child.intrinsic.width.value
+                            min_flex -= (
+                                child.style.padding_left
+                                + child.intrinsic.width.value
+                                + child.style.padding_right
+                            )
                     except AttributeError:
                         # Intrinsic width isn't flexible
                         pass
 
             if flex_total > 0:
-                quantum = (remaining_width + min_flex_width) / flex_total
+                quantum = (remaining_width + min_flex) / flex_total
             else:
                 quantum = 0
         else:
             quantum = 0
-        # self._debug(f"END PASS 1; {min_flex_width=} {quantum=}")
+        # self._debug(f"END PASS 1; {min_width=} {width=} {min_flex=} {quantum=}")
 
         # Pass 2: Lay out children with an intrinsic flexible width,
         # or no width specification at all.
@@ -425,14 +400,16 @@ class Pack(BaseStyle):
             elif child.style.flex:
                 if child.intrinsic.width is not None:
                     try:
-                        child_alloc_width = child.intrinsic.width.value
+                        child_alloc_width = (
+                            child.style.padding_left
+                            + child.intrinsic.width.value
+                            + child.style.padding_right
+                        )
                         ideal_width = quantum * child.style.flex
+                        # self._debug(f"- flexible intrinsic {child_alloc_width=}")
                         if ideal_width > child_alloc_width:
+                            # self._debug(f"  {ideal_width=}")
                             child_alloc_width = ideal_width
-                            # self._debug(f"- flexible intrinsic {child_alloc_width=}")
-                        else:
-                            # self._debug(f"- overflow flex intrinsic {ideal_width=} {child_alloc_width=}")
-                            pass
 
                         child.style._layout_node(
                             child,
@@ -441,22 +418,29 @@ class Pack(BaseStyle):
                             use_all_width=True,
                             use_all_height=child.style.direction == ROW,
                         )
-                        child_width = (
-                            child.style.padding_left
+                        # Our width calculation already takes into account the intrinsic
+                        # width; that has now expanded as a result of layout, so adjust
+                        # to use the new layout size. Min width doesn't change, because
+                        # thats the "no flex" case.
+                        # self._debug(f"  sub {child.intrinsic.width.value=}")
+                        # self._debug(f"  add {child.layout.content_width=}")
+                        width = (
+                            width
+                            - child.intrinsic.width.value
                             + child.layout.content_width
-                            + child.style.padding_right
                         )
-                        width += child_width
                     except AttributeError:
                         # self._debug("- already laid out (fixed intrinsic width)")
-                        child_width = None
+                        pass
                 else:
                     if quantum:
                         # self._debug(f"- unspecified flex width with {quantum=}")
                         child_alloc_width = quantum * child.style.flex
                     else:
                         # self._debug("- unspecified flex width")
-                        child_alloc_width = 0
+                        child_alloc_width = (
+                            child.style.padding_left + child.style.padding_right
+                        )
 
                     child.style._layout_node(
                         child,
@@ -465,25 +449,18 @@ class Pack(BaseStyle):
                         use_all_width=True,
                         use_all_height=child.style.direction == ROW,
                     )
-                    child_width = (
-                        child.style.padding_left
-                        + child.layout.content_width
-                        + child.style.padding_right
-                    )
-                    width += child_width
-
-                    min_child_width = (
-                        child.style.padding_left
-                        + child.layout.min_content_width
-                        + child.style.padding_right
-                    )
-                    min_width += min_child_width
-
+                    # Our min_width/width calculation already takes into account the
+                    # intrinsic width; that has now expanded as a result of layout, so
+                    # adjust to use the new layout size.
+                    # self._debug(f"  add {child.layout.min_content_width=}")
+                    # self._debug(f"  add {child.layout.content_width=}")
+                    width += child.layout.content_width
+                    min_width += child.layout.min_content_width
             else:
                 # self._debug("- already laid out (intrinsic non-flex width)")
-                child_width = None
+                pass
 
-            # self._debug(f"  {min_child_width=} {child_width=}")
+            # self._debug(f"  {min_width=} {width=}")
 
         # self._debug(f"PASS 2 COMPLETE; USED {width=}")
         if use_all_width:
@@ -497,12 +474,12 @@ class Pack(BaseStyle):
         for child in node.children:
             # self._debug(f"PASS 3: {child} AT HORIZONTAL {offset=}")
             if node.style.text_direction is RTL:
-                # self._debug(f"- RTL")
+                # self._debug("- RTL")
                 offset += child.layout.content_width + child.style.padding_right
                 child.layout.content_left = width - offset
                 offset += child.style.padding_left
             else:
-                # self._debug(f"- LTR")
+                # self._debug("- LTR")
                 offset += child.style.padding_left
                 child.layout.content_left = offset
                 offset += child.layout.content_width + child.style.padding_right
@@ -560,7 +537,7 @@ class Pack(BaseStyle):
         # intrinsic non-flexible height. While iterating, collect the flex
         # total of remaining elements.
         flex_total = 0
-        min_flex_height = 0
+        min_flex = 0
         height = 0
         min_height = 0
         remaining_height = available_height
@@ -575,37 +552,24 @@ class Pack(BaseStyle):
                     use_all_width=child.style.direction == COLUMN,
                     use_all_height=False,
                 )
-                child_height = (
-                    child.style.padding_top
-                    + child.layout.content_height
-                    + child.style.padding_bottom
-                )
-                height += child_height
-                remaining_height -= child_height
-
-                min_child_height = (
-                    child.style.padding_top
-                    + child.layout.min_content_height
-                    + child.style.padding_bottom
-                )
-                min_height += min_child_height
+                child_content_height = child.layout.content_height
+                # It doesn't matter how small the children can be laid out;
+                # we have an intrinsic size; so don't use min_content_height
+                min_child_content_height = child.layout.content_height
             elif child.intrinsic.height is not None:
                 if hasattr(child.intrinsic.height, "value"):
                     if child.style.flex:
                         # self._debug(f"- intrinsic flex height {child.intrinsic.height}")
                         flex_total += child.style.flex
-                        child_height = child.intrinsic.height.value
-                        remaining_height -= child_height
-                        min_flex_height += child_height
-
-                        min_child_height = (
+                        child_content_height = child.intrinsic.height.value
+                        min_child_content_height = child.intrinsic.height.value
+                        min_flex += (
                             child.style.padding_top
-                            + child_height
+                            + child_content_height
                             + child.style.padding_bottom
                         )
-                        min_height += min_child_height
                     else:
-                        # self._debug(f"- intrinsic non-flex height {child.intrinsic.height}")
+                        # self._debug(f"- intrinsic non-flex {child.intrinsic.height=}")
                         child.style._layout_node(
                             child,
                             alloc_width=available_width,
@@ -613,22 +577,12 @@ class Pack(BaseStyle):
                             use_all_width=child.style.direction == COLUMN,
                             use_all_height=False,
                         )
-                        child_height = (
-                            child.style.padding_top
-                            + child.layout.content_height
-                            + child.style.padding_bottom
-                        )
-                        height += child_height
-                        remaining_height -= child_height
-
-                        min_child_height = (
-                            child.style.padding_top
-                            + child.layout.min_content_height
-                            + child.style.padding_bottom
-                        )
-                        min_height += min_child_height
+                        child_content_height = child.layout.content_height
+                        # It doesn't matter how small the children can be laid out;
+                        # we have an intrinsic size; so don't use min_content_height
+                        min_child_content_height = child.layout.content_height
                 else:
-                    # self._debug(f"- intrinsic height {child.intrinsic.height}")
+                    # self._debug(f"- intrinsic {child.intrinsic.height=}")
                     child.style._layout_node(
                         child,
                         alloc_width=available_width,
@@ -636,26 +590,16 @@ class Pack(BaseStyle):
                         use_all_width=child.style.direction == COLUMN,
                         use_all_height=False,
                     )
-                    child_height = (
-                        child.style.padding_top
-                        + child.layout.content_height
-                        + child.style.padding_bottom
-                    )
-                    height += child_height
-                    remaining_height -= child_height
-
-                    min_child_height = (
-                        child.style.padding_top
-                        + child.layout.min_content_height
-                        + child.style.padding_bottom
-                    )
-                    min_height += min_child_height
+                    child_content_height = child.layout.content_height
+                    # It doesn't matter how small the children can be laid out;
+                    # we have an intrinsic size; so don't use min_content_height
+                    min_child_content_height = child.layout.content_height
             else:
                 if child.style.flex:
                     # self._debug("- unspecified flex height")
                     flex_total += child.style.flex
-                    child_height = None
-                    min_child_height = None
+                    child_content_height = 0
+                    min_child_content_height = 0
                 else:
                     # self._debug("- unspecified non-flex height")
                     child.style._layout_node(
@@ -665,25 +609,29 @@ class Pack(BaseStyle):
                         use_all_width=child.style.direction == COLUMN,
                         use_all_height=False,
                     )
-                    child_height = (
-                        child.style.padding_top
-                        + child.layout.content_height
-                        + child.style.padding_bottom
-                    )
-                    height += child_height
-                    remaining_height -= child_height
+                    child_content_height = child.layout.content_height
+                    min_child_content_height = child.layout.min_content_height
 
-                    min_child_height = (
-                        child.style.padding_top
-                        + child.layout.min_content_height
-                        + child.style.padding_bottom
-                    )
-                    min_height += min_child_height
+            child_height = (
+                child.style.padding_top
+                + child_content_height
+                + child.style.padding_bottom
+            )
+            height += child_height
+            remaining_height -= child_height
 
-            # self._debug(f"  {min_child_height=} {child_height=} {height=} {remaining_height=} {min_flex_height=}")
+            min_child_height = (
+                child.style.padding_top
+                + min_child_content_height
+                + child.style.padding_bottom
+            )
+            min_height += min_child_height
+
+            # self._debug(f"  {min_child_height=} {min_height=} {min_flex=}")
+            # self._debug(f"  {child_height=} {height=} {remaining_height=}")
 
         if flex_total > 0:
-            quantum = (remaining_height + min_flex_height) / flex_total
+            quantum = (remaining_height + min_flex) / flex_total
             # In an ideal flex layout, all flex children will have a height proportional
             # to their flex value. However, if a flex child has a flexible minimum
             # height constraint that is greater than the ideal height for a balanced
@@ -696,19 +644,23 @@ class Pack(BaseStyle):
                         if child.intrinsic.height.value > ideal_height:
                             # self._debug(f"- {child} overflows ideal height")
                             flex_total -= child.style.flex
-                            min_flex_height -= child.intrinsic.height.value
+                            min_flex -= (
+                                child.style.padding_top
+                                + child.intrinsic.height.value
+                                + child.style.padding_bottom
+                            )
                     except AttributeError:
                         # Intrinsic height isn't flexible
                         pass
 
             if flex_total > 0:
-                quantum = (min_flex_height + remaining_height) / flex_total
+                quantum = (min_flex + remaining_height) / flex_total
             else:
                 quantum = 0
         else:
             quantum = 0
 
-        # self._debug(f"END PASS 1; {min_flex_height=} {quantum=}")
+        # self._debug(f"END PASS 1; {min_height=} {height=} {min_flex=} {quantum=}")
 
         # Pass 2: Lay out children with an intrinsic flexible height,
         # or no height specification at all.
@@ -720,14 +672,16 @@ class Pack(BaseStyle):
             elif child.style.flex:
                 if child.intrinsic.height is not None:
                     try:
-                        child_alloc_height = child.intrinsic.height.value
+                        child_alloc_height = (
+                            child.style.padding_top
+                            + child.intrinsic.height.value
+                            + child.style.padding_bottom
+                        )
                         ideal_height = quantum * child.style.flex
+                        # self._debug(f"- flexible intrinsic {child_alloc_height=}")
                         if ideal_height > child_alloc_height:
+                            # self._debug(f"  {ideal_height=}")
                             child_alloc_height = ideal_height
-                            # self._debug(f"- flexible intrinsic {child_alloc_height=}")
-                        else:
-                            # self._debug(f"- overflow flex intrinsic {ideal_height=} {child_alloc_height=}")
-                            pass
 
                         child.style._layout_node(
                             child,
@@ -736,22 +690,29 @@ class Pack(BaseStyle):
                             use_all_width=child.style.direction == COLUMN,
                             use_all_height=True,
                         )
-                        child_height = (
-                            child.style.padding_top
+                        # Our height calculation already takes into account the
+                        # intrinsic height; that has now expanded as a result of layout,
+                        # so adjust to use the new layout size. Min height doesn't
+                        # change, because thats the "no flex" case.
+                        # self._debug(f"  sub {child.intrinsic.height.value=}")
+                        # self._debug(f"  add {child.layout.content_height}")
+                        height = (
+                            height
+                            - child.intrinsic.height.value
                             + child.layout.content_height
-                            + child.style.padding_bottom
                         )
-                        height += child_height
                     except AttributeError:
                         # self._debug("- already laid out (fixed intrinsic height)")
-                        child_height = None
+                        pass
                 else:
                     if quantum:
                         # self._debug(f"- unspecified flex height with {quantum=}")
                         child_alloc_height = quantum * child.style.flex
                     else:
                         # self._debug("- unspecified flex height")
-                        child_alloc_height = 0
+                        child_alloc_height = (
+                            child.style.padding_top + child.style.padding_bottom
+                        )
 
                     child.style._layout_node(
                         child,
@@ -760,25 +721,19 @@ class Pack(BaseStyle):
                         use_all_width=child.style.direction == COLUMN,
                         use_all_height=True,
                     )
+                    # Our min_width/width calculation already takes into account the
+                    # intrinsic height; that has now expanded as a result of layout, so
+                    # adjust to use the new layout size.
+                    # self._debug(f"  add {child.layout.min_content_height=}")
+                    # self._debug(f"  add {child.layout.content_height=}")
+                    height += child.layout.content_height
+                    min_height += child.layout.min_content_height
 
-                    child_height = (
-                        child.style.padding_top
-                        + child.layout.content_height
-                        + child.style.padding_bottom
-                    )
-                    height += child_height
-
-                    min_child_height = (
-                        child.style.padding_top
-                        + child.layout.min_content_height
-                        + child.style.padding_bottom
-                    )
-                    min_height += min_child_height
             else:
                 # self._debug("- already laid out (intrinsic non-flex height)")
-                child_height = None
+                pass
 
-            # self._debug(f"  {child_height=}")
+            self._debug(f"  {min_height=} {height=}")
 
         # self._debug(f"PASS 2 COMPLETE; USED {height=}")
         if use_all_height:
