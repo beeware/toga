@@ -2,7 +2,7 @@ from rubicon.objc import SEL, objc_method, objc_property
 from travertino.size import at_least
 
 from toga.constants import Direction
-from toga_cocoa.container import Container, MinimumContainer
+from toga_cocoa.container import Container
 from toga_cocoa.libs import NSSplitView
 
 from .base import Widget
@@ -44,7 +44,10 @@ class SplitContainer(Widget):
         self.native.impl = self
         self.native.delegate = self.native
 
-        self.sub_containers = [Container(), Container()]
+        self.sub_containers = [
+            Container(on_refresh=self.content_refreshed),
+            Container(on_refresh=self.content_refreshed),
+        ]
         self.native.addSubview(self.sub_containers[0].native)
         self.native.addSubview(self.sub_containers[1].native)
 
@@ -65,21 +68,16 @@ class SplitContainer(Widget):
             afterDelay=0,
         )
 
+    def content_refreshed(self, container):
+        container.min_width = container.content.interface.layout.min_width
+        container.min_height = container.content.interface.layout.min_width
+
     def set_content(self, content, flex):
         # Clear any existing content
         for container in self.sub_containers:
             container.content = None
 
         for index, widget in enumerate(content):
-            # Compute the minimum layout for the content
-            widget.interface.style.layout(widget.interface, MinimumContainer())
-            min_width = widget.interface.layout.width
-            min_height = widget.interface.layout.height
-
-            # Create a container with that minimum size, and assign the widget as content
-            self.sub_containers[index].min_width = min_width
-            self.sub_containers[index].min_height = min_height
-
             self.sub_containers[index].content = widget
 
         # We now know the initial positions of the split. However, we can't *set* the

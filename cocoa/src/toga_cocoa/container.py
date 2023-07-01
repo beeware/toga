@@ -18,55 +18,7 @@ class TogaView(NSView):
         return True
 
 
-class BaseContainer:
-    def __init__(self, on_refresh=None):
-        """A base class for macOS containers.
-
-        :param on_refresh: The callback to be notified when this container's layout is
-            refreshed.
-        """
-        self._content = None
-        self.on_refresh = on_refresh
-        # macOS always renders at 96dpi. Scaling is handled
-        # transparently at the level of the screen compositor.
-        self.dpi = 96
-        self.baseline_dpi = self.dpi
-
-    @property
-    def content(self):
-        """The Toga implementation widget that is the root content of this container.
-
-        All children of the root content will also be added to the container as a result
-        of assigning content.
-
-        If the container already has content, the old content will be replaced. The old
-        root content and all it's children will be removed from the container.
-        """
-        return self._content
-
-    @content.setter
-    def content(self, widget):
-        if self._content:
-            self._content.container = None
-
-        self._content = widget
-        if widget:
-            widget.container = self
-
-    def refreshed(self):
-        if self.on_refresh:
-            self.on_refresh()
-
-
-class MinimumContainer(BaseContainer):
-    def __init__(self):
-        """A container for evaluating the minumum possible size for a layout"""
-        super().__init__()
-        self.width = 0
-        self.height = 0
-
-
-class Container(BaseContainer):
+class Container:
     def __init__(
         self,
         min_width=100,
@@ -74,7 +26,7 @@ class Container(BaseContainer):
         layout_native=None,
         on_refresh=None,
     ):
-        """A container for real layouts.
+        """A container for layouts.
 
         Creates and enforces minimum size constraints on the container widget.
 
@@ -88,7 +40,13 @@ class Container(BaseContainer):
         :param on_refresh: The callback to be notified when this container's layout is
             refreshed.
         """
-        super().__init__(on_refresh=on_refresh)
+        self._content = None
+        self.on_refresh = on_refresh
+
+        # macOS always renders at 96dpi. Scaling is handled
+        # transparently at the level of the screen compositor.
+        self.dpi = 96
+        self.baseline_dpi = self.dpi
 
         self.native = TogaView.alloc().init()
         self.layout_native = self.native if layout_native is None else layout_native
@@ -119,6 +77,31 @@ class Container(BaseContainer):
             min_height,
         )
         self.native.addConstraint(self._min_height_constraint)
+
+    @property
+    def content(self):
+        """The Toga implementation widget that is the root content of this container.
+
+        All children of the root content will also be added to the container as a result
+        of assigning content.
+
+        If the container already has content, the old content will be replaced. The old
+        root content and all it's children will be removed from the container.
+        """
+        return self._content
+
+    @content.setter
+    def content(self, widget):
+        if self._content:
+            self._content.container = None
+
+        self._content = widget
+        if widget:
+            widget.container = self
+
+    def refreshed(self):
+        if self.on_refresh:
+            self.on_refresh(self)
 
     @property
     def width(self):

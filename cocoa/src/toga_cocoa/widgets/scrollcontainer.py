@@ -81,7 +81,7 @@ class ScrollContainer(Widget):
             SEL("refreshContent"), withObject=None, afterDelay=0
         )
 
-    def content_refreshed(self):
+    def content_refreshed(self, container):
         width = self.native.frame.size.width
         height = self.native.frame.size.height
 
