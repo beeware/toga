@@ -258,10 +258,10 @@ class Widget(Node):
             # defer the refresh call to the root node.
             self._root.refresh()
         else:
-            # We can't compute a layout until we have a viewport
-            if self._impl.viewport:
-                super().refresh(self._impl.viewport)
-                self._impl.viewport.refreshed()
+            # We can't compute a layout until we have a container
+            if self._impl.container:
+                super().refresh(self._impl.container)
+                self._impl.container.refreshed()
 
     def focus(self):
         """Give this widget the input focus.

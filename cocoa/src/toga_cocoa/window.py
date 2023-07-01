@@ -183,6 +183,8 @@ class Window:
         min_width = self.interface.content.layout.min_width
         min_height = self.interface.content.layout.min_height
 
+        # If the minimum layout is bigger than the current window,
+        # increase the size of the window.
         frame = self.native.frame
         if frame.size.width < min_width and frame.size.height < min_height:
             self.set_size((min_width, min_height))

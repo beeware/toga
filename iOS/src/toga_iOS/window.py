@@ -71,9 +71,6 @@ class Window:
     def show(self):
         self.native.makeKeyAndVisible()
 
-        # Refresh with the actual viewport to do the proper rendering.
-        self.interface.content.refresh()
-
     def hide(self):
         # A no-op, as the window cannot be hidden.
         pass
