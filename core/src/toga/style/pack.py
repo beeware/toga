@@ -494,44 +494,32 @@ class Pack(BaseStyle):
         offset = 0
         height = 0
         min_height = 0
-        if node.style.text_direction is RTL:
-            for child in node.children:
-                # self._debug(f"PASS 3 RTL: {child} AT HORIZONTAL {offset=}")
+        for child in node.children:
+            # self._debug(f"PASS 3: {child} AT HORIZONTAL {offset=}")
+            if node.style.text_direction is RTL:
+                # self._debug(f"- RTL")
                 offset += child.layout.content_width + child.style.padding_right
                 child.layout.content_left = width - offset
                 offset += child.style.padding_left
-                child_height = (
-                    child.style.padding_top
-                    + child.layout.content_height
-                    + child.style.padding_bottom
-                )
-                height = max(height, child_height)
-
-                min_child_height = (
-                    child.style.padding_top
-                    + child.layout.min_content_height
-                    + child.style.padding_bottom
-                )
-                min_height = max(min_height, min_child_height)
-        else:
-            for child in node.children:
-                # self._debug(f"PASS 3 LTR: {child} AT HORIZONTAL {offset=}")
+            else:
+                # self._debug(f"- LTR")
                 offset += child.style.padding_left
                 child.layout.content_left = offset
                 offset += child.layout.content_width + child.style.padding_right
-                child_height = (
-                    child.style.padding_top
-                    + child.layout.content_height
-                    + child.style.padding_bottom
-                )
-                height = max(height, child_height)
 
-                min_child_height = (
-                    child.style.padding_top
-                    + child.layout.min_content_height
-                    + child.style.padding_bottom
-                )
-                min_height = max(min_height, min_child_height)
+            child_height = (
+                child.style.padding_top
+                + child.layout.content_height
+                + child.style.padding_bottom
+            )
+            height = max(height, child_height)
+
+            min_child_height = (
+                child.style.padding_top
+                + child.layout.min_content_height
+                + child.style.padding_bottom
+            )
+            min_height = max(min_height, min_child_height)
 
         # self._debug(f"ROW {min_height=} {height=}")
         if use_all_height:
