@@ -51,41 +51,10 @@ def test_tutorial_1():
         ],
     )
 
-    # Minimum size
-    root.style.layout(root, ExampleViewport(0, 0, dpi=96))
+    root.style.layout(root, ExampleViewport(640, 480))
     assert_layout(
         root,
         (380, 120),
-        {
-            "origin": (0, 10),
-            "content": (380, 110),
-            "children": [
-                {
-                    "origin": (5, 15),
-                    "content": (370, 15),
-                    "children": [
-                        {"origin": (165, 15), "content": (100, 15)},
-                        {"origin": (275, 15), "content": (100, 10)},
-                    ],
-                },
-                {
-                    "origin": (5, 40),
-                    "content": (370, 15),
-                    "children": [
-                        {"origin": (5, 40), "content": (150, 10)},
-                        {"origin": (165, 40), "content": (100, 15)},
-                        {"origin": (275, 40), "content": (100, 10)},
-                    ],
-                },
-                {"origin": (15, 75), "content": (120, 30)},
-            ],
-        },
-    )
-
-    # Normal size
-    root.style.layout(root, ExampleViewport(640, 480, dpi=96))
-    assert_layout(
-        root,
         (640, 480),
         {
             "origin": (0, 10),
@@ -109,36 +78,6 @@ def test_tutorial_1():
                     ],
                 },
                 {"origin": (15, 75), "content": (610, 30)},
-            ],
-        },
-    )
-    # HiDPI Normal size
-    root.style.layout(root, ExampleViewport(640, 480, dpi=144))
-    assert_layout(
-        root,
-        (640, 480),
-        {
-            "origin": (0, 15),
-            "content": (640, 465),
-            "children": [
-                {
-                    "origin": (7, 22),
-                    "content": (626, 15),
-                    "children": [
-                        {"origin": (247, 22), "content": (221, 15)},
-                        {"origin": (483, 22), "content": (150, 10)},
-                    ],
-                },
-                {
-                    "origin": (7, 51),
-                    "content": (626, 15),
-                    "children": [
-                        {"origin": (7, 51), "content": (225, 10)},
-                        {"origin": (247, 51), "content": (221, 15)},
-                        {"origin": (483, 51), "content": (150, 10)},
-                    ],
-                },
-                {"origin": (22, 95), "content": (596, 30)},
             ],
         },
     )

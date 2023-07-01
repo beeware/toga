@@ -124,34 +124,28 @@ class Pack(BaseStyle):
                 self._applicator.refresh()
 
     def layout(self, node, viewport):
-        # Precompute `scale_factor` by providing it as a default param.
         # self._debug("=" * 80)
         # self._debug(f"Layout root {node}, available {viewport.width}x{viewport.height}")
         self.__class__._depth = -1
-
-        def scale(value, scale_factor=viewport.dpi / viewport.baseline_dpi):
-            return int(value * scale_factor)
 
         self._layout_node(
             node,
             alloc_width=viewport.width,
             alloc_height=viewport.height,
-            scale=scale,
             use_all_height=True,  # root node uses all height
             use_all_width=True,  # root node uses all width
         )
-        node.layout.content_top = scale(node.style.padding_top)
-        node.layout.content_bottom = scale(node.style.padding_bottom)
+        node.layout.content_top = node.style.padding_top
+        node.layout.content_bottom = node.style.padding_bottom
 
-        node.layout.content_left = scale(node.style.padding_left)
-        node.layout.content_right = scale(node.style.padding_right)
+        node.layout.content_left = node.style.padding_left
+        node.layout.content_right = node.style.padding_right
 
     def _layout_node(
         self,
         node,
         alloc_width,
         alloc_height,
-        scale,
         use_all_width,
         use_all_height,
     ):
@@ -166,87 +160,95 @@ class Pack(BaseStyle):
         # Establish available width
         if self.width != NONE:
             # If width is specified, use it
-            available_width = scale(self.width)
-            # self._debug(f"SPECIFIED WIDTH {self.width} (scaled to {available_width})")
+            available_width = self.width
+            min_width = self.width
+            # self._debug(f"SPECIFIED WIDTH {self.width}")
         else:
             # If no width is specified, assume we're going to use all
             # the available width. If there is an intrinsic width,
             # use it to make sure the width is at least the amount specified.
             available_width = max(
-                0, (alloc_width - scale(self.padding_left) - scale(self.padding_right))
+                0, (alloc_width - self.padding_left - self.padding_right)
             )
             # self._debug(f"INITIAL {available_width=}")
             if node.intrinsic.width is not None:
                 # self._debug(f"INTRINSIC WIDTH {node.intrinsic.width}")
                 try:
-                    available_width = max(available_width, node.intrinsic.width.value)
+                    min_width = node.intrinsic.width.value
+                    available_width = max(available_width, min_width)
                 except AttributeError:
                     available_width = node.intrinsic.width
+                    min_width = node.intrinsic.width
 
                 # self._debug(f"ADJUSTED {available_width=}")
             else:
                 # self._debug(f"AUTO {available_width=}")
-                pass
+                min_width = 0
 
         # Establish available height
         if self.height != NONE:
             # If height is specified, use it.
-            available_height = scale(self.height)
-            # self._debug(f"SPECIFIED HEIGHT {self.height} (scaled to {available_height})")
+            available_height = self.height
+            min_height = self.height
+            # self._debug(f"SPECIFIED HEIGHT {self.height}")
         else:
             available_height = max(
-                0, alloc_height - scale(self.padding_top) - scale(self.padding_bottom)
+                0,
+                alloc_height - self.padding_top - self.padding_bottom,
             )
             # self._debug(f"INITIAL {available_height=}")
             if node.intrinsic.height is not None:
                 # self._debug(f"INTRINSIC HEIGHT {node.intrinsic.height}")
                 try:
-                    available_height = max(
-                        available_height, node.intrinsic.height.value
-                    )
+                    min_height = node.intrinsic.height.value
+                    available_height = max(available_height, min_height)
                 except AttributeError:
                     available_height = node.intrinsic.height
+                    min_height = node.intrinsic.height
 
                 # self._debug(f"ADJUSTED {available_height=}")
             else:
                 # self._debug(f"AUTO {available_height=}")
-                pass
+                min_height = 0
 
         if node.children:
             if self.direction == COLUMN:
-                width, height = self._layout_column_children(
+                min_width, width, min_height, height = self._layout_column_children(
                     node,
                     available_width=available_width,
                     available_height=available_height,
-                    scale=scale,
                     use_all_height=use_all_height,
                     use_all_width=use_all_width,
                 )
             else:
-                width, height = self._layout_row_children(
+                min_width, width, min_height, height = self._layout_row_children(
                     node,
                     available_width=available_width,
                     available_height=available_height,
-                    scale=scale,
                     use_all_height=use_all_height,
                     use_all_width=use_all_width,
                 )
-            # self._debug(f"HAS CHILDREN {width=} {height=}")
+            # self._debug(f"HAS CHILDREN {min_width=} {width=} {min_height=} {height=}")
         else:
             width = available_width
             height = available_height
-            # self._debug(f"NO CHILDREN {width=} {height=}")
+            # self._debug(f"NO CHILDREN {min_width=} {width=} {min_height=} {height=}")
 
         # If an explicit width/height was given, that specification
         # overrides the width/height evaluated by the layout of children
         if self.width != NONE:
-            width = scale(self.width)
+            width = self.width
+            min_width = width
         if self.height != NONE:
-            height = scale(self.height)
+            height = self.height
+            min_height = height
 
-        # self._debug(f"FINAL SIZE {width}x{height}")
+        # self._debug(f"FINAL SIZE {min_width}x{min_height} {width}x{height}")
         node.layout.content_width = int(width)
         node.layout.content_height = int(height)
+
+        node.layout.min_content_width = int(min_width)
+        node.layout.min_content_height = int(min_height)
 
         # self._debug("END LAYOUT", node, node.layout)
         self.__class__._depth -= 1
@@ -256,7 +258,6 @@ class Pack(BaseStyle):
         node,
         available_width,
         available_height,
-        scale,
         use_all_width,
         use_all_height,
     ):
@@ -267,6 +268,7 @@ class Pack(BaseStyle):
         flex_total = 0
         min_flex_width = 0
         width = 0
+        min_width = 0
         remaining_width = available_width
         for child in node.children:
             # self._debug(f"PASS 1 {child}")
@@ -276,17 +278,23 @@ class Pack(BaseStyle):
                     child,
                     alloc_width=remaining_width,
                     alloc_height=available_height,
-                    scale=scale,
                     use_all_width=False,
                     use_all_height=child.style.direction == ROW,
                 )
                 child_width = (
-                    scale(child.style.padding_left)
+                    child.style.padding_left
                     + child.layout.content_width
-                    + scale(child.style.padding_right)
+                    + child.style.padding_right
                 )
                 width += child_width
                 remaining_width -= child_width
+
+                min_child_width = (
+                    child.style.padding_left
+                    + child.layout.min_content_width
+                    + child.style.padding_right
+                )
+                min_width += min_child_width
             elif child.intrinsic.width is not None:
                 if hasattr(child.intrinsic.width, "value"):
                     if child.style.flex:
@@ -295,64 +303,90 @@ class Pack(BaseStyle):
                         child_width = child.intrinsic.width.value
                         remaining_width -= child_width
                         min_flex_width += child_width
+
+                        min_child_width = (
+                            child.style.padding_left
+                            + child_width
+                            + child.style.padding_right
+                        )
+                        min_width += min_child_width
                     else:
                         # self._debug(f"- intrinsic non-flex width {child.intrinsic.width}")
                         child.style._layout_node(
                             child,
                             alloc_width=0,
                             alloc_height=available_height,
-                            scale=scale,
                             use_all_width=False,
                             use_all_height=child.style.direction == ROW,
                         )
                         child_width = (
-                            scale(child.style.padding_left)
+                            child.style.padding_left
                             + child.layout.content_width
-                            + scale(child.style.padding_right)
+                            + child.style.padding_right
                         )
                         width += child_width
                         remaining_width -= child_width
+
+                        min_child_width = (
+                            child.style.padding_left
+                            + child.layout.min_content_width
+                            + child.style.padding_right
+                        )
+                        min_width += min_child_width
                 else:
                     # self._debug(f"- intrinsic width {child.intrinsic.width}")
                     child.style._layout_node(
                         child,
                         alloc_width=remaining_width,
                         alloc_height=available_height,
-                        scale=scale,
                         use_all_width=False,
                         use_all_height=child.style.direction == ROW,
                     )
                     child_width = (
-                        scale(child.style.padding_left)
+                        child.style.padding_left
                         + child.layout.content_width
-                        + scale(child.style.padding_right)
+                        + child.style.padding_right
                     )
                     width += child_width
                     remaining_width -= child_width
+
+                    min_child_width = (
+                        child.style.padding_left
+                        + child.layout.min_content_width
+                        + child.style.padding_right
+                    )
+                    min_width += min_child_width
             else:
                 if child.style.flex:
                     # self._debug("- unspecified flex width")
                     flex_total += child.style.flex
                     child_width = None
+                    min_child_width = None
                 else:
                     # self._debug("- unspecified non-flex width")
                     child.style._layout_node(
                         child,
                         alloc_width=remaining_width,
                         alloc_height=available_height,
-                        scale=scale,
                         use_all_width=False,
                         use_all_height=child.style.direction == ROW,
                     )
                     child_width = (
-                        scale(child.style.padding_left)
+                        child.style.padding_left
                         + child.layout.content_width
-                        + scale(child.style.padding_right)
+                        + child.style.padding_right
                     )
                     width += child_width
                     remaining_width -= child_width
 
-            # self._debug(f"  {child_width=} {width=} {remaining_width=} {min_flex_width=}")
+                    min_child_width = (
+                        child.style.padding_left
+                        + child.layout.min_content_width
+                        + child.style.padding_right
+                    )
+                    min_width += min_child_width
+
+            # self._debug(f"  {min_child_width=} {child_width=} {width=} {remaining_width=} {min_flex_width=}")
 
         if flex_total > 0:
             quantum = (remaining_width + min_flex_width) / flex_total
@@ -404,14 +438,13 @@ class Pack(BaseStyle):
                             child,
                             alloc_width=child_alloc_width,
                             alloc_height=available_height,
-                            scale=scale,
                             use_all_width=True,
                             use_all_height=child.style.direction == ROW,
                         )
                         child_width = (
-                            scale(child.style.padding_left)
+                            child.style.padding_left
                             + child.layout.content_width
-                            + scale(child.style.padding_right)
+                            + child.style.padding_right
                         )
                         width += child_width
                     except AttributeError:
@@ -420,97 +453,117 @@ class Pack(BaseStyle):
                 else:
                     if quantum:
                         # self._debug(f"- unspecified flex width with {quantum=}")
-                        child_width = quantum * child.style.flex
+                        child_alloc_width = quantum * child.style.flex
                     else:
                         # self._debug("- unspecified flex width")
-                        child_width = 0
+                        child_alloc_width = 0
 
                     child.style._layout_node(
                         child,
-                        alloc_width=child_width,
+                        alloc_width=child_alloc_width,
                         alloc_height=available_height,
-                        scale=scale,
                         use_all_width=True,
                         use_all_height=child.style.direction == ROW,
                     )
-                    width += (
-                        scale(child.style.padding_left)
+                    child_width = (
+                        child.style.padding_left
                         + child.layout.content_width
-                        + scale(child.style.padding_right)
+                        + child.style.padding_right
                     )
+                    width += child_width
+
+                    min_child_width = (
+                        child.style.padding_left
+                        + child.layout.min_content_width
+                        + child.style.padding_right
+                    )
+                    min_width += min_child_width
+
             else:
                 # self._debug("- already laid out (intrinsic non-flex width)")
                 child_width = None
 
-            # self._debug(f"  {child_width=}")
+            # self._debug(f"  {min_child_width=} {child_width=}")
 
         # self._debug(f"PASS 2 COMPLETE; USED {width=}")
         if use_all_width:
             width = max(width, available_width)
-        # self._debug(f"COMPUTED {width=}")
+        # self._debug(f"COMPUTED {min_width=} {width=}")
 
         # Pass 3: Set the horizontal position of each child, and establish row height
         offset = 0
         height = 0
+        min_height = 0
         if node.style.text_direction is RTL:
             for child in node.children:
                 # self._debug(f"PASS 3 RTL: {child} AT HORIZONTAL {offset=}")
-                offset += child.layout.content_width + scale(child.style.padding_right)
+                offset += child.layout.content_width + child.style.padding_right
                 child.layout.content_left = width - offset
-                offset += scale(child.style.padding_left)
+                offset += child.style.padding_left
                 child_height = (
-                    child.layout.content_height
-                    + scale(child.style.padding_top)
-                    + scale(child.style.padding_bottom)
-                )
-                height = max(height, child_height)
-        else:
-            for child in node.children:
-                # self._debug(f"PASS 3 LTR: {child} AT HORIZONTAL {offset=}")
-                offset += scale(child.style.padding_left)
-                child.layout.content_left = offset
-                offset += child.layout.content_width + scale(child.style.padding_right)
-                child_height = (
-                    child.layout.content_height
-                    + scale(child.style.padding_top)
-                    + scale(child.style.padding_bottom)
+                    child.style.padding_top
+                    + child.layout.content_height
+                    + child.style.padding_bottom
                 )
                 height = max(height, child_height)
 
-        # self._debug(f"ROW {height=}")
+                min_child_height = (
+                    child.style.padding_top
+                    + child.layout.min_content_height
+                    + child.style.padding_bottom
+                )
+                min_height = max(min_height, min_child_height)
+        else:
+            for child in node.children:
+                # self._debug(f"PASS 3 LTR: {child} AT HORIZONTAL {offset=}")
+                offset += child.style.padding_left
+                child.layout.content_left = offset
+                offset += child.layout.content_width + child.style.padding_right
+                child_height = (
+                    child.style.padding_top
+                    + child.layout.content_height
+                    + child.style.padding_bottom
+                )
+                height = max(height, child_height)
+
+                min_child_height = (
+                    child.style.padding_top
+                    + child.layout.min_content_height
+                    + child.style.padding_bottom
+                )
+                min_height = max(min_height, min_child_height)
+
+        # self._debug(f"ROW {min_height=} {height=}")
         if use_all_height:
             height = max(height, available_height)
-        # self._debug(f"FINAL ROW {height=}")
+        # self._debug(f"FINAL ROW {min_height=} {height=}")
 
         # Pass 4: set vertical position of each child.
         for child in node.children:
             # self._debug(f"PASS 4: {child}")
             extra = height - (
                 child.layout.content_height
-                + scale(child.style.padding_top)
-                + scale(child.style.padding_bottom)
+                + child.style.padding_top
+                + child.style.padding_bottom
             )
             # self._debug(f"- row extra width {extra}")
             if self.alignment is BOTTOM:
-                child.layout.content_top = extra + scale(child.style.padding_top)
+                child.layout.content_top = extra + child.style.padding_top
                 # self._debug(f"  align {child} to bottom {child.layout.content_top=}")
             elif self.alignment is CENTER:
-                child.layout.content_top = int(extra / 2) + scale(
-                    child.style.padding_top
-                )
+                child.layout.content_top = int(extra / 2) + child.style.padding_top
                 # self._debug(f"  align {child} to center {child.layout.content_top=}")
             else:
-                child.layout.content_top = scale(child.style.padding_top)
+                child.layout.content_top = child.style.padding_top
                 # self._debug(f"  align {child} to top {child.layout.content_top=}")
 
-        return width, height
+        return min_width, width, min_height, height
 
     def _layout_column_children(
         self,
         node,
         available_width,
         available_height,
-        scale,
         use_all_width,
         use_all_height,
     ):
@@ -521,6 +574,7 @@ class Pack(BaseStyle):
         flex_total = 0
         min_flex_height = 0
         height = 0
+        min_height = 0
         remaining_height = available_height
         for child in node.children:
             # self._debug(f"PASS 1 {child}")
@@ -530,17 +584,23 @@ class Pack(BaseStyle):
                     child,
                     alloc_width=available_width,
                     alloc_height=remaining_height,
-                    scale=scale,
                     use_all_width=child.style.direction == COLUMN,
                     use_all_height=False,
                 )
                 child_height = (
-                    scale(child.style.padding_top)
+                    child.style.padding_top
                     + child.layout.content_height
-                    + scale(child.style.padding_bottom)
+                    + child.style.padding_bottom
                 )
                 height += child_height
                 remaining_height -= child_height
+
+                min_child_height = (
+                    child.style.padding_top
+                    + child.layout.min_content_height
+                    + child.style.padding_bottom
+                )
+                min_height += min_child_height
             elif child.intrinsic.height is not None:
                 if hasattr(child.intrinsic.height, "value"):
                     if child.style.flex:
@@ -549,63 +609,90 @@ class Pack(BaseStyle):
                         child_height = child.intrinsic.height.value
                         remaining_height -= child_height
                         min_flex_height += child_height
+
+                        min_child_height = (
+                            child.style.padding_top
+                            + child_height
+                            + child.style.padding_bottom
+                        )
+                        min_height += min_child_height
                     else:
                         # self._debug(f"- intrinsic non-flex height {child.intrinsic.height}")
                         child.style._layout_node(
                             child,
                             alloc_width=available_width,
                             alloc_height=0,
-                            scale=scale,
                             use_all_width=child.style.direction == COLUMN,
                             use_all_height=False,
                         )
                         child_height = (
-                            scale(child.style.padding_top)
+                            child.style.padding_top
                             + child.layout.content_height
-                            + scale(child.style.padding_bottom)
+                            + child.style.padding_bottom
                         )
                         height += child_height
                         remaining_height -= child_height
+
+                        min_child_height = (
+                            child.style.padding_top
+                            + child.layout.min_content_height
+                            + child.style.padding_bottom
+                        )
+                        min_height += min_child_height
                 else:
                     # self._debug(f"- intrinsic height {child.intrinsic.height}")
                     child.style._layout_node(
                         child,
                         alloc_width=available_width,
                         alloc_height=remaining_height,
-                        scale=scale,
                         use_all_width=child.style.direction == COLUMN,
                         use_all_height=False,
                     )
                     child_height = (
-                        scale(child.style.padding_top)
+                        child.style.padding_top
                         + child.layout.content_height
-                        + scale(child.style.padding_bottom)
+                        + child.style.padding_bottom
                     )
                     height += child_height
                     remaining_height -= child_height
+
+                    min_child_height = (
+                        child.style.padding_top
+                        + child.layout.min_content_height
+                        + child.style.padding_bottom
+                    )
+                    min_height += min_child_height
             else:
                 if child.style.flex:
                     # self._debug("- unspecified flex height")
                     flex_total += child.style.flex
                     child_height = None
+                    min_child_height = None
                 else:
                     # self._debug("- unspecified non-flex height")
                     child.style._layout_node(
                         child,
                         alloc_width=available_width,
                         alloc_height=remaining_height,
-                        scale=scale,
                         use_all_width=child.style.direction == COLUMN,
                         use_all_height=False,
                     )
                     child_height = (
-                        scale(child.style.padding_top)
+                        child.style.padding_top
                         + child.layout.content_height
-                        + scale(child.style.padding_bottom)
+                        + child.style.padding_bottom
                     )
                     height += child_height
                     remaining_height -= child_height
-            # self._debug(f"  {child_height=} {height=} {remaining_height=} {min_flex_height=}")
+
+                    min_child_height = (
+                        child.style.padding_top
+                        + child.layout.min_content_height
+                        + child.style.padding_bottom
+                    )
+                    min_height += min_child_height
+
+            # self._debug(f"  {min_child_height=} {child_height=} {height=} {remaining_height=} {min_flex_height=}")
 
         if flex_total > 0:
             quantum = (remaining_height + min_flex_height) / flex_total
@@ -658,14 +745,13 @@ class Pack(BaseStyle):
                             child,
                             alloc_width=available_width,
                             alloc_height=child_alloc_height,
-                            scale=scale,
                             use_all_width=child.style.direction == COLUMN,
                             use_all_height=True,
                         )
                         child_height = (
-                            scale(child.style.padding_top)
+                            child.style.padding_top
                             + child.layout.content_height
-                            + scale(child.style.padding_bottom)
+                            + child.style.padding_bottom
                         )
                         height += child_height
                     except AttributeError:
@@ -674,25 +760,32 @@ class Pack(BaseStyle):
                 else:
                     if quantum:
                         # self._debug(f"- unspecified flex height with {quantum=}")
-                        child_height = quantum * child.style.flex
+                        child_alloc_height = quantum * child.style.flex
                     else:
                         # self._debug("- unspecified flex height")
-                        child_height = 0
+                        child_alloc_height = 0
 
                     child.style._layout_node(
                         child,
                         alloc_width=available_width,
-                        alloc_height=child_height,
-                        scale=scale,
+                        alloc_height=child_alloc_height,
                         use_all_width=child.style.direction == COLUMN,
                         use_all_height=True,
                     )
+
                     child_height = (
-                        scale(child.style.padding_top)
+                        child.style.padding_top
                         + child.layout.content_height
-                        + scale(child.style.padding_bottom)
+                        + child.style.padding_bottom
                     )
                     height += child_height
+
+                    min_child_height = (
+                        child.style.padding_top
+                        + child.layout.min_content_height
+                        + child.style.padding_bottom
+                    )
+                    min_height += min_child_height
             else:
                 # self._debug("- already laid out (intrinsic non-flex height)")
                 child_height = None
@@ -702,50 +795,56 @@ class Pack(BaseStyle):
         # self._debug(f"PASS 2 COMPLETE; USED {height=}")
         if use_all_height:
             height = max(height, available_height)
-        # self._debug(f"COMPUTED {height=}")
+        # self._debug(f"COMPUTED {min_height=} {height=}")
 
         # Pass 3: Set the vertical position of each element, and establish column width
         offset = 0
         width = 0
+        min_width = 0
         for child in node.children:
             # self._debug(f"PASS 3: {child} AT VERTICAL OFFSET {offset}")
-            offset += scale(child.style.padding_top)
+            offset += child.style.padding_top
             child.layout.content_top = offset
-            offset += child.layout.content_height + scale(child.style.padding_bottom)
+            offset += child.layout.content_height + child.style.padding_bottom
             child_width = (
                 child.layout.content_width
-                + scale(child.style.padding_left)
-                + scale(child.style.padding_right)
+                + child.style.padding_left
+                + child.style.padding_right
             )
             width = max(width, child_width)
 
-        # self._debug(f"ROW {width=}")
+            min_child_width = (
+                child.style.padding_left
+                + child.layout.min_content_width
+                + child.style.padding_right
+            )
+            min_width = max(min_width, min_child_width)
+
+        # self._debug(f"ROW {min_width=} {width=}")
         if use_all_width:
             width = max(width, available_width)
-        # self._debug(f"FINAL ROW {width=}")
+        # self._debug(f"FINAL ROW {min_width=} {width=}")
 
         # Pass 4: set horizontal position of each child.
         for child in node.children:
             # self._debug(f"PASS 4: {child}")
             extra = width - (
                 child.layout.content_width
-                + scale(child.style.padding_left)
-                + scale(child.style.padding_right)
+                + child.style.padding_left
+                + child.style.padding_right
             )
             # self._debug(f"-  row extra width {extra}")
             if self.alignment is RIGHT:
-                child.layout.content_left = extra + scale(child.style.padding_left)
+                child.layout.content_left = extra + child.style.padding_left
                 # self._debug(f"  align {child} to right {child.layout.content_left=}")
             elif self.alignment is CENTER:
-                child.layout.content_left = int(extra / 2) + scale(
-                    child.style.padding_left
-                )
+                child.layout.content_left = int(extra / 2) + child.style.padding_left
                 # self._debug(f"  align {child} to center {child.layout.content_left=}")
             else:
-                child.layout.content_left = scale(child.style.padding_left)
+                child.layout.content_left = child.style.padding_left
                 # self._debug(f"  align {child} to left {child.layout.content_left=}")
 
-        return width, height
+        return min_width, width, min_height, height
 
     def __css__(self):
         css = []
