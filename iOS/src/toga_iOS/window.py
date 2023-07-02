@@ -15,7 +15,7 @@ class Window:
 
         # Set up a container for the window's content
         # RootContainer provides a titlebar for the window.
-        self.container = RootContainer()
+        self.container = RootContainer(on_refresh=self.content_refreshed)
 
         # Set the size of the content to the size of the window
         self.container.native.frame = self.native.bounds
@@ -33,11 +33,16 @@ class Window:
 
         self.set_title(title)
 
-    def clear_content(self):
-        pass
-
     def set_content(self, widget):
         self.container.content = widget
+
+    def content_refreshed(self, container):
+        min_width = self.interface.content.layout.min_width
+        min_height = self.interface.content.layout.min_height
+
+        # If the minimum layout is bigger than the current window, log a warning
+        if self.container.width < min_width or self.container.height < min_height:
+            print("**WARNING** Window content exceeds available space")
 
     def get_title(self):
         return str(self.container.title)

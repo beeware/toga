@@ -44,7 +44,7 @@ class BaseContainer:
 
     def refreshed(self):
         if self.on_refresh:
-            self.on_refresh()
+            self.on_refresh(self)
 
 
 class Container(BaseContainer):
