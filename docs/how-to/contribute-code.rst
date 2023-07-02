@@ -84,27 +84,27 @@ Next, install any additional dependencies for your operating system:
 
     .. code-block:: console
 
-      (venv) $ sudo apt-get update
-      (venv) $ sudo apt-get install python3-dev libgirepository1.0-dev libcairo2-dev libpango1.0-dev libwebkit2gtk-4.0-37 gir1.2-webkit2-4.0
+      (venv) $ sudo apt update
+      (venv) $ sudo apt install pkg-config python3-dev libgirepository1.0-dev libcairo2-dev gir1.2-webkit2-4.0 libcanberra-gtk3-module
 
     Fedora
 
     .. code-block:: console
 
-      (venv) $ sudo dnf install pkg-config python3-devel gobject-introspection-devel cairo-devel cairo-gobject-devel pango-devel webkitgtk3
+      (venv) $ sudo dnf install pkg-config python3-devel gobject-introspection-devel cairo-gobject-devel webkitgtk4 libcanberra-gtk3
 
     Arch / Manjaro
 
     .. code-block:: console
 
-      (venv) $ sudo pacman -Syu git pkgconf cairo python-cairo pango gobject-introspection gobject-introspection-runtime python-gobject webkit2gtk
+      (venv) $ sudo pacman -Syu git pkgconf gobject-introspection cairo webkit2gtk libcanberra
 
     FreeBSD
 
     .. code-block:: console
 
       (venv) $ sudo pkg update
-      (venv) $ sudo pkg install gtk3 pango gobject-introspection cairo webkit2-gtk3
+      (venv) $ sudo pkg install gobject-introspection cairo webkit2-gtk3
 
   .. group-tab:: Windows
 

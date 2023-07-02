@@ -73,30 +73,30 @@ Next, install Toga into your virtual environment:
 
     .. code-block:: console
 
-      (venv) $ sudo apt-get update
-      (venv) $ sudo apt-get install python3-dev python3-cairo-dev python3-gi-cairo libgirepository1.0-dev libcairo2-dev libpango1.0-dev gir1.2-webkit2-4.0 pkg-config
+      (venv) $ sudo apt update
+      (venv) $ sudo apt install pkg-config python3-dev libgirepository1.0-dev libcairo2-dev gir1.2-webkit2-4.0 libcanberra-gtk3-module
 
     Fedora
 
     .. code-block:: console
 
-      (venv) $ sudo dnf install pkg-config python3-devel gobject-introspection-devel cairo-devel cairo-gobject-devel pango-devel webkitgtk3
+      (venv) $ sudo dnf install pkg-config python3-devel gobject-introspection-devel cairo-gobject-devel webkitgtk4 libcanberra-gtk3
 
     Arch / Manjaro
 
     .. code-block:: console
 
-      (venv) $ sudo pacman -Syu git pkgconf cairo python-cairo pango gobject-introspection gobject-introspection-runtime python-gobject webkit2gtk
+      (venv) $ sudo pacman -Syu git pkgconf gobject-introspection cairo webkit2gtk libcanberra
 
     FreeBSD
 
     .. code-block:: console
 
       (venv) $ sudo pkg update
-      (venv) $ sudo pkg install gtk3 pango gobject-introspection cairo webkit2-gtk3
+      (venv) $ sudo pkg install gobject-introspection cairo webkit2-gtk3 libcanberra-gtk3
 
     If you're not using one of these, you'll need to work out how to install
-    the developer libraries for ``python3``, ``cairo``, ``pango``, and
+    the developer libraries for ``python3``, ``cairo``, and
     ``gobject-introspection`` (and please let us know so we can improve this
     documentation!)
 
