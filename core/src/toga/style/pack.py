@@ -290,6 +290,10 @@ class Pack(BaseStyle):
                     if child.style.flex:
                         # self._debug(f"- intrinsic flex width {child.intrinsic.width}")
                         flex_total += child.style.flex
+                        # Final child content size will be computed in pass 2, after the
+                        # amount of flexible space is known. For now, set an initial
+                        # content height based on the intrinsic size, which will be the
+                        # minimum possible allocation.
                         child_content_width = child.intrinsic.width.value
                         min_child_content_width = child.intrinsic.width.value
                         min_flex += (
@@ -327,6 +331,9 @@ class Pack(BaseStyle):
                 if child.style.flex:
                     # self._debug("- unspecified flex width")
                     flex_total += child.style.flex
+                    # Final child content size will be computed in pass 2, after the
+                    # amount of flexible space is known. For now, use 0 as the minimum,
+                    # as that's the best hint the widget style can give.
                     child_content_width = 0
                     min_child_content_width = 0
                 else:
@@ -420,8 +427,8 @@ class Pack(BaseStyle):
                         )
                         # Our width calculation already takes into account the intrinsic
                         # width; that has now expanded as a result of layout, so adjust
-                        # to use the new layout size. Min width doesn't change, because
-                        # thats the "no flex" case.
+                        # to use the new layout size. Min height doesn't change, because
+                        # that's the "no flex" case.
                         # self._debug(f"  sub {child.intrinsic.width.value=}")
                         # self._debug(f"  add {child.layout.content_width=}")
                         width = (
@@ -449,9 +456,8 @@ class Pack(BaseStyle):
                         use_all_width=True,
                         use_all_height=child.style.direction == ROW,
                     )
-                    # Our min_width/width calculation already takes into account the
-                    # intrinsic width; that has now expanded as a result of layout, so
-                    # adjust to use the new layout size.
+                    # We now know the final min_width/width that accounts for flexible
+                    # sizing; add that to the overall.
                     # self._debug(f"  add {child.layout.min_content_width=}")
                     # self._debug(f"  add {child.layout.content_width=}")
                     width += child.layout.content_width
@@ -561,6 +567,10 @@ class Pack(BaseStyle):
                     if child.style.flex:
                         # self._debug(f"- intrinsic flex height {child.intrinsic.height}")
                         flex_total += child.style.flex
+                        # Final child content size will be computed in pass 2, after the
+                        # amount of flexible space is known. For now, set an initial
+                        # content height based on the intrinsic size, which will be the
+                        # minimum possible allocation.
                         child_content_height = child.intrinsic.height.value
                         min_child_content_height = child.intrinsic.height.value
                         min_flex += (
@@ -598,6 +608,9 @@ class Pack(BaseStyle):
                 if child.style.flex:
                     # self._debug("- unspecified flex height")
                     flex_total += child.style.flex
+                    # Final child content size will be computed in pass 2, after the
+                    # amount of flexible space is known. For now, use 0 as the minimum,
+                    # as that's the best hint the widget style can give.
                     child_content_height = 0
                     min_child_content_height = 0
                 else:
@@ -693,7 +706,7 @@ class Pack(BaseStyle):
                         # Our height calculation already takes into account the
                         # intrinsic height; that has now expanded as a result of layout,
                         # so adjust to use the new layout size. Min height doesn't
-                        # change, because thats the "no flex" case.
+                        # change, because that's the "no flex" case.
                         # self._debug(f"  sub {child.intrinsic.height.value=}")
                         # self._debug(f"  add {child.layout.content_height}")
                         height = (
@@ -721,9 +734,8 @@ class Pack(BaseStyle):
                         use_all_width=child.style.direction == COLUMN,
                         use_all_height=True,
                     )
-                    # Our min_width/width calculation already takes into account the
-                    # intrinsic height; that has now expanded as a result of layout, so
-                    # adjust to use the new layout size.
+                    # We now know the final min_height/height that accounts for flexible
+                    # sizing; add that to the overall.
                     # self._debug(f"  add {child.layout.min_content_height=}")
                     # self._debug(f"  add {child.layout.content_height=}")
                     height += child.layout.content_height
@@ -733,7 +745,7 @@ class Pack(BaseStyle):
                 # self._debug("- already laid out (intrinsic non-flex height)")
                 pass
 
-            self._debug(f"  {min_height=} {height=}")
+            # self._debug(f"  {min_height=} {height=}")
 
         # self._debug(f"PASS 2 COMPLETE; USED {height=}")
         if use_all_height:
