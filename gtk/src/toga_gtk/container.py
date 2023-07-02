@@ -89,7 +89,7 @@ class TogaContainer(Gtk.Fixed):
         Any widgets known to be dirty will be rehinted. The minimum possible layout size
         for the container will also be recomputed.
         """
-        if self._content and self.needs_redraw:
+        if self._content and self._dirty_widgets:
             # If any of the widgets have been marked as dirty,
             # recompute their bounds, and re-evaluate the minimum
             # allowed size fo the layout.
@@ -97,14 +97,11 @@ class TogaContainer(Gtk.Fixed):
                 widget = self._dirty_widgets.pop()
                 widget.rehint()
 
-            # Compute the layout using a 0-size container
-            self._content.interface.style.layout(
-                self._content.interface, TogaContainer()
-            )
+            # Recompute the layout
+            self._content.interface.style.layout(self._content.interface, self)
 
-            # print(" computed min layout", self._content.interface.layout)
-            self.min_width = self._content.interface.layout.width
-            self.min_height = self._content.interface.layout.height
+            self.min_width = self._content.interface.layout.min_width
+            self.min_height = self._content.interface.layout.min_height
 
     def do_get_preferred_width(self):
         """Return (recomputing if necessary) the preferred width for the container.
@@ -166,7 +163,11 @@ class TogaContainer(Gtk.Fixed):
             if resized or self.needs_redraw:
                 # Re-evaluate the layout using the allocation size as the basis for geometry
                 # print("REFRESH LAYOUT", allocation.width, allocation.height)
-                self._content.interface.refresh()
+                self._content.interface.style.layout(self._content.interface, self)
+
+                # Ensure the minimum content size from the layout is retained
+                self.min_width = self._content.interface.layout.min_width
+                self.min_height = self._content.interface.layout.min_height
 
             # WARNING! This is the list of children of the *container*, not
             # the Toga widget. Toga maintains a tree of children; all nodes
