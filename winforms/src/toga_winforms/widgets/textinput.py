@@ -62,9 +62,6 @@ class TextInput(Widget):
     def set_alignment(self, value):
         self.native.TextAlign = HorizontalTextAlignment(value)
 
-    def set_font(self, font):
-        self.native.Font = font._impl.native
-
     def set_color(self, color):
         if color:
             self.native.ForeColor = native_color(color)

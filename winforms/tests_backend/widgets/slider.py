@@ -10,7 +10,7 @@ class SliderProbe(SimpleProbe):
     def position(self):
         return (self.native.Value - self._min) / (self._max - self._min)
 
-    def change(self, position):
+    async def change(self, position):
         self.native.Value = self._min + round(position * (self._max - self._min))
 
     @property

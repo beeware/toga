@@ -54,13 +54,6 @@ class DeprecatedFactoryTests(TestCase):
         self.assertEqual(widget._impl.interface, widget)
         self.assertNotEqual(widget.factory, self.factory)
 
-    def test_image(self):
-        resource_path = toga.App.app.paths.toga
-        image = toga.Image(resource_path / "resources/toga.png")
-        with self.assertWarns(DeprecationWarning):
-            image.bind(factory=self.factory)
-        self.assertEqual(image._impl.interface, image)
-
     def test_window(self):
         with self.assertWarns(DeprecationWarning):
             widget = toga.Window(factory=self.factory)
@@ -79,12 +72,6 @@ class DeprecatedFactoryTests(TestCase):
         self.assertEqual(widget._impl.interface, widget)
         self.assertNotEqual(widget.factory, self.factory)
 
-    def test_image_view_created(self):
-        with self.assertWarns(DeprecationWarning):
-            widget = toga.ImageView(factory=self.factory)
-        self.assertEqual(widget._impl.interface, widget)
-        self.assertNotEqual(widget.factory, self.factory)
-
     def test_option_container_created(self):
         with self.assertWarns(DeprecationWarning):
             widget = toga.OptionContainer(factory=self.factory)
@@ -94,12 +81,6 @@ class DeprecatedFactoryTests(TestCase):
     def test_scroll_container_created(self):
         with self.assertWarns(DeprecationWarning):
             widget = toga.ScrollContainer(factory=self.factory)
-        self.assertEqual(widget._impl.interface, widget)
-        self.assertNotEqual(widget.factory, self.factory)
-
-    def test_selection_created(self):
-        with self.assertWarns(DeprecationWarning):
-            widget = toga.Selection(factory=self.factory)
         self.assertEqual(widget._impl.interface, widget)
         self.assertNotEqual(widget.factory, self.factory)
 

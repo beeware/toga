@@ -1,35 +1,54 @@
-from unittest import TestCase
 from unittest.mock import Mock
 
 from toga.sources.value_source import ValueSource
 
 
-class ValueTests(TestCase):
-    def setUp(self):
-        self.source = Mock()
-        self.example = ValueSource("label")
-        self.example._source = self.source
+def test_empty():
+    """An empty ValueSource can be created"""
+    source = ValueSource()
 
-    def test_initial_state(self):
-        "A test value holds data as expected"
-        # Value is rendered as-is
-        self.assertEqual(self.example.value, "label")
+    assert source.accessor == "value"
+    assert source.value is None
+    assert str(source) == "None"
 
-        # Object string rendering is the same as 'value'
-        self.assertEqual(str(self.example), "label")
 
-    def test_set_value(self):
-        "If the value is modified, internal representation is updated, and notifications are propagated"
-        self.example.value = 42
+def test_value():
+    """A ValueSource can be created with a value"""
+    source = ValueSource(42)
 
-        self.assertEqual(self.example.value, 42)
-        self.assertEqual(str(self.example), "42")
-        self.source._notify.assert_called_once_with("change", item=self.example)
+    assert source.accessor == "value"
+    assert source.value == 42
+    assert str(source) == "42"
 
-    def test_clear_value(self):
-        "If the value is cleared, internal representation is updated, and notifications are propagated"
-        self.example.value = None
 
-        self.assertIsNone(self.example.value)
-        self.assertEqual(str(self.example), "")
-        self.source._notify.assert_called_once_with("change", item=self.example)
+def test_value_with_accessor():
+    """A ValueSource can be created with a custom accessro"""
+    source = ValueSource(42, accessor="something")
+
+    assert source.accessor == "something"
+    assert source.something == 42
+    assert str(source) == "42"
+
+
+def test_listener():
+    """A listener will be notified of ValueSource changes"""
+    source = ValueSource(42)
+    listener = Mock()
+
+    source.add_listener(listener)
+
+    source.value = 37
+
+    listener.change.assert_called_once_with(item=37)
+
+    # Reset the mock; clear the value
+    listener.reset_mock()
+    source.value = None
+
+    listener.change.assert_called_once_with(item=None)
+
+    # Reset the mock; set a *different* attribute on the source
+    listener.reset_mock()
+    source.something = 1234
+
+    listener.change.assert_not_called()

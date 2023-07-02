@@ -1,18 +1,18 @@
+from __future__ import annotations
+
 from .base import Source
 
 
 class ValueSource(Source):
-    def __init__(self, value=None):
-        self._source = None
-        self.value = value
+    def __init__(self, value=None, accessor="value"):
+        super().__init__()
+        self.accessor = accessor
+        setattr(self, accessor, value)
 
     def __str__(self):
-        if self.value is None:
-            return ""
-        return str(self.value)
+        return str(getattr(self, self.accessor, None))
 
     def __setattr__(self, attr, value):
         super().__setattr__(attr, value)
-        if not attr.startswith("_"):
-            if self._source is not None:
-                self._source._notify("change", item=self)
+        if attr == getattr(self, "accessor", None):
+            self.notify("change", item=value)

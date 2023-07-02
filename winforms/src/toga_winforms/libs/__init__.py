@@ -6,6 +6,7 @@ from .extensions import (  # noqa: F401
 from .fonts import HorizontalTextAlignment, TextAlignment  # noqa: F401
 from .winforms import (  # noqa: F401
     Action,
+    ArgumentException,
     Bitmap,
     Color,
     ContentAlignment,
@@ -20,6 +21,7 @@ from .winforms import (  # noqa: F401
     ImageFormat,
     Matrix,
     MemoryStream,
+    OutOfMemoryException,
     Pen,
     Point,
     PointF,
@@ -34,6 +36,7 @@ from .winforms import (  # noqa: F401
     StringFormat,
     SystemColors,
     SystemFonts,
+    SystemSounds,
     Task,
     TaskScheduler,
     Threading,

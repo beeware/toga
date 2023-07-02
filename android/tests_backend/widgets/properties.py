@@ -68,11 +68,10 @@ def toga_font(typeface, size, resources):
     )
 
 
-def toga_alignment(gravity, justification_mode):
+def toga_alignment(gravity, justification_mode=None):
     horizontal_gravity = gravity & Gravity.HORIZONTAL_GRAVITY_MASK
-    if (
-        Build.VERSION.SDK_INT < 26
-        or justification_mode == Layout.JUSTIFICATION_MODE_NONE
+    if (Build.VERSION.SDK_INT < 26) or (
+        justification_mode in (None, Layout.JUSTIFICATION_MODE_NONE)
     ):
         return {
             Gravity.LEFT: LEFT,

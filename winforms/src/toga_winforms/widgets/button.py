@@ -28,9 +28,6 @@ class Button(Widget):
             text = "\u200B"
         self.native.Text = text
 
-    def set_font(self, font):
-        self.native.Font = font._impl.native
-
     def rehint(self):
         # self.native.Size = Size(0, 0)
         # print("REHINT Button", self, self.native.PreferredSize)

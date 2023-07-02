@@ -147,10 +147,6 @@ class Table(Widget):
     def set_on_select(self, handler):
         pass
 
-    def set_font(self, font):
-        if font:
-            self.native.Font = font._impl.native
-
     def set_on_double_click(self, handler):
         pass
 

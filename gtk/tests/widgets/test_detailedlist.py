@@ -92,7 +92,7 @@ class TestGtkDetailedList(unittest.TestCase):
         row_data = dict(icon=None, title="A", subtitle="a subtitle")
 
         INSERTED_AT = 0
-        self.dl.data.insert(INSERTED_AT, **row_data)
+        self.dl.data.insert(INSERTED_AT, row_data)
 
         # Make sure it's in there
         self.assertEqual(len(self.gtk_dl.store), 1)
@@ -106,7 +106,7 @@ class TestGtkDetailedList(unittest.TestCase):
         row_data = dict(icon=None, title="1", subtitle="2")
 
         INSERTED_AT = 0
-        row = self.dl.data.insert(INSERTED_AT, **row_data)
+        row = self.dl.data.insert(INSERTED_AT, row_data)
 
         # Make sure it's in there
         self.assertEqual(len(self.gtk_dl.store), 1)
@@ -122,7 +122,7 @@ class TestGtkDetailedList(unittest.TestCase):
         row_data = dict(icon=None, title="1", subtitle="2")
 
         INSERTED_AT = 0
-        row = self.dl.data.insert(INSERTED_AT, **row_data)
+        row = self.dl.data.insert(INSERTED_AT, row_data)
 
         # Make sure it's in there
         self.assertEqual(len(self.gtk_dl.store), 1)
@@ -142,8 +142,8 @@ class TestGtkDetailedList(unittest.TestCase):
         self.assertEqual(len(self.gtk_dl.store), 1)
 
     def test_row_persistence(self):
-        self.dl.data.insert(0, icon=None, title="A1", subtitle="A2")
-        self.dl.data.insert(0, icon=None, title="B1", subtitle="B2")
+        self.dl.data.insert(0, dict(icon=None, title="A1", subtitle="A2"))
+        self.dl.data.insert(0, dict(icon=None, title="B1", subtitle="B2"))
 
         # B should now precede A
         # tests passes if A "knows" it has moved to index 1
@@ -158,8 +158,8 @@ class TestGtkDetailedList(unittest.TestCase):
     def test_on_select_row(self):
         # Insert two dummy rows
         self.dl.data = []
-        self.dl.data.append(None, icon=None, title="A1", subtitle="A2")
-        b = self.dl.data.append(None, icon=None, title="B1", subtitle="B2")
+        self.dl.data.append(dict(icon=None, title="A1", subtitle="A2"))
+        b = self.dl.data.append(dict(icon=None, title="B1", subtitle="B2"))
 
         # Create a flag
         succeed = False
@@ -185,8 +185,8 @@ class TestGtkDetailedList(unittest.TestCase):
         # Insert two nodes
         self.dl.data = []
 
-        self.dl.data.append(None, icon=None, title="A1", subtitle="A2")
-        b = self.dl.data.append(None, icon=None, title="B1", subtitle="B2")
+        self.dl.data.append(dict(icon=None, title="A1", subtitle="A2"))
+        b = self.dl.data.append(dict(icon=None, title="B1", subtitle="B2"))
 
         # Create a flag
         succeed = False
