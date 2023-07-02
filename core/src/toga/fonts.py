@@ -49,11 +49,11 @@ class Font(BaseFont):
     @staticmethod
     def register(family, path, weight=NORMAL, style=NORMAL, variant=NORMAL):
         """Registers a file-based font with its family name, style, variant
-        and weight. When invalid values for style, variant or weight are
-        passed, ``NORMAL`` will be used.
+        and weight. When invalid values for style, variant or weight are passed,
+        ``NORMAL`` will be used.
 
-        When a font file includes multiple font weight/style/etc, each variant
-        must be registered separately::
+        When a font file includes multiple font weight/style/etc, each variant must be
+        registered separately::
 
             # Register a simple regular font
             Font.register("Font Awesome 5 Free Solid", "resources/Font Awesome 5 Free-Solid-900.otf")
@@ -62,13 +62,12 @@ class Font(BaseFont):
             Font.register("Roboto", "resources/Roboto-Regular.ttf")
             Font.register("Roboto", "resources/Roboto-Bold.ttf", weight=Font.BOLD)
 
-            # Register a single font file that contains both
-            # a regular and bold weight
+            # Register a single font file that contains both # a regular and bold weight
             Font.register("Bahnschrift", "resources/Bahnschrift.ttf")
             Font.register("Bahnschrift", "resources/Bahnschrift.ttf", weight=Font.BOLD)
 
-        :param family: The font family name. This is the name that can be
-                referenced in style definitions.
+        :param family: The font family name. This is the name that can be referenced in
+            style definitions.
         :param path: The path to the font file.
         :param weight: The font weight. Default value is ``NORMAL``.
         :param style: The font style. Default value is ``NORMAL``.

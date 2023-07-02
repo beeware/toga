@@ -163,11 +163,12 @@ def test_register_font(app, path, registered):
     "A custom font can be registered"
     toga.Font.register("Custom Font", path)
 
-    # Test fixture has paths in Path format; fully resolve and convert into a string for
-    # test comparison. This gets around Windows path separator and absolute path
-    # discrepancies.
-    resolved = str(registered.resolve())
-    assert _REGISTERED_FONT_CACHE[("Custom Font", NORMAL, NORMAL, NORMAL)] == resolved
+    # Test fixture has paths in Path format; fully resolve for test comparison. This
+    # gets around Windows path separator and absolute path discrepancies.
+    assert (
+        Path(_REGISTERED_FONT_CACHE[("Custom Font", NORMAL, NORMAL, NORMAL)]).resolve()
+        == registered.resolve()
+    )
 
 
 @pytest.mark.parametrize(
@@ -191,8 +192,9 @@ def test_register_font_variant(app, path, registered):
     "A custom font can be registered as a variant"
     toga.Font.register("Custom Font", path, weight=BOLD)
 
-    # Test fixture has paths in Path format; fully resolve and convert into a string for
-    # test comparison. This gets around Windows path separator and absolute path
-    # discrepancies.
-    resolved = str(registered.resolve())
-    assert _REGISTERED_FONT_CACHE[("Custom Font", BOLD, NORMAL, NORMAL)] == resolved
+    # Test fixture has paths in Path format; fully resolve for test comparison. This
+    # gets around Windows path separator and absolute path discrepancies.
+    assert (
+        Path(_REGISTERED_FONT_CACHE[("Custom Font", BOLD, NORMAL, NORMAL)]).resolve()
+        == registered.resolve()
+    )
