@@ -1,13 +1,11 @@
 from pathlib import Path
 
-from toga.constants import (
+from toga.fonts import (
+    _REGISTERED_FONT_CACHE,
     BOLD,
     ITALIC,
     OBLIQUE,
     SMALL_CAPS,
-)
-from toga.fonts import (
-    _REGISTERED_FONT_CACHE,
     SYSTEM,
     SYSTEM_DEFAULT_FONT_SIZE,
     SYSTEM_DEFAULT_FONTS,

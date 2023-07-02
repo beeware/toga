@@ -6,6 +6,7 @@ from toga.fonts import (
     CURSIVE,
     FANTASY,
     ITALIC,
+    MESSAGE,
     MONOSPACE,
     OBLIQUE,
     SANS_SERIF,
@@ -16,6 +17,8 @@ from toga.fonts import (
 
 
 class BaseProbe:
+    supports_custom_fonts = True
+
     def assert_font_options(self, weight, style, variant):
         assert self.font.weight == weight
 
@@ -34,6 +37,7 @@ class BaseProbe:
         assert self.font.family == {
             CURSIVE: "Comic Sans MS",
             FANTASY: "Impact",
+            MESSAGE: SystemFonts.MenuFont.FontFamily.Name,
             MONOSPACE: FontFamily.GenericMonospace.Name,
             SANS_SERIF: FontFamily.GenericSansSerif.Name,
             SERIF: FontFamily.GenericSerif.Name,

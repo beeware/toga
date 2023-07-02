@@ -4,7 +4,18 @@ from ctypes import c_void_p
 from rubicon.objc import SEL, NSArray, NSObject, ObjCClass, objc_method
 from rubicon.objc.api import NSString
 
-from toga.fonts import CURSIVE, FANTASY, MONOSPACE, SANS_SERIF, SERIF, SYSTEM
+from toga.fonts import (
+    CURSIVE,
+    FANTASY,
+    ITALIC,
+    MESSAGE,
+    MONOSPACE,
+    OBLIQUE,
+    SANS_SERIF,
+    SERIF,
+    SMALL_CAPS,
+    SYSTEM,
+)
 from toga_cocoa.libs.appkit import appkit
 
 NSRunLoop = ObjCClass("NSRunLoop")
@@ -25,6 +36,8 @@ class EventListener(NSObject):
 
 
 class BaseProbe:
+    supports_custom_fonts = False
+
     def __init__(self):
         self.event_listener = EventListener.alloc().init()
 
@@ -48,9 +61,27 @@ class BaseProbe:
             await self.event_listener.event.wait()
 
     def assert_font_options(self, weight, style, variant):
+        # Cocoa's FANTASY (Papyrus) and CURSIVE (Apple Chancery) system
+        # fonts don't have any bold/italic variants.
+        if self.font.family == "Papyrus":
+            print("Ignoring options on FANTASY system font")
+            return
+        elif self.font.family == "Apple Chancery":
+            print("Ignoring options on CURSIVE system font")
+            return
+
         assert self.font.weight == weight
-        assert self.font.style == style
-        assert self.font.variant == variant
+
+        if style == OBLIQUE:
+            print("Intepreting OBLIQUE font as ITALIC")
+            assert self.font.style == ITALIC
+        else:
+            assert self.font.style == style
+
+        if variant == SMALL_CAPS:
+            print("Ignoring SMALL CAPS font test")
+        else:
+            assert self.font.variant == variant
 
     def assert_font_family(self, expected):
         assert self.font.family == {
@@ -60,6 +91,7 @@ class BaseProbe:
             SANS_SERIF: "Helvetica",
             SERIF: "Times",
             SYSTEM: ".AppleSystemUIFont",
+            MESSAGE: ".AppleSystemUIFont",
         }.get(expected, expected)
 
     async def redraw(self, message=None, delay=None):

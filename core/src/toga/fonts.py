@@ -82,11 +82,11 @@ class Font(BaseFont):
     def registered_font_key(family, weight, style, variant):
         """Creates a key for storing a registered font in the font cache.
 
-        If weight, style or variant contain an invalid value, ``NORMAL`` is
-        used instead.
+        If weight, style or variant contain an invalid value, ``NORMAL`` is used
+        instead.
 
-        :param family: The font family name. This is the name that can be
-            referenced in style definitions.
+        :param family: The font family name. This is the name that can be referenced in
+            style definitions.
         :param weight: The font weight. Default value is ``NORMAL``.
         :param style: The font style. Default value is ``NORMAL``.
         :param variant: The font variant. Default value is ``NORMAL``.

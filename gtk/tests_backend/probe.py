@@ -4,6 +4,8 @@ from toga_gtk.libs import Gtk
 
 
 class BaseProbe:
+    supports_custom_fonts = True
+
     def assert_font_family(self, expected):
         assert self.font.family == expected
 

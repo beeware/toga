@@ -10,6 +10,7 @@ from toga.fonts import (
     FONT_WEIGHTS,
     ITALIC,
     SYSTEM,
+    SYSTEM_DEFAULT_FONTS,
     Font,
 )
 
@@ -18,7 +19,7 @@ from .conftest import skip_on_platforms
 
 @pytest.fixture
 async def widget() -> toga.Label:
-    skip_on_platforms("android", "iOS", "macOS")
+    skip_on_platforms("android", "iOS")
     return toga.Label("hello, this is a label")
 
 
@@ -37,17 +38,23 @@ async def test_use_system_font_fallback(
 
 async def test_font_options(widget: toga.Label, widget_probe: Any):
     """Every combination of weight, style and variant can be used on a font."""
-    for font_weight in FONT_WEIGHTS:
-        for font_style in FONT_STYLES:
-            for font_variant in FONT_VARIANTS:
-                widget.style.font_style = font_style
-                widget.style.font_variant = font_variant
-                widget.style.font_weight = font_weight
-                await widget_probe.redraw(
-                    f"Using a {font_weight} {font_style} {font_variant} font"
-                )
+    for font_family in SYSTEM_DEFAULT_FONTS:
+        for font_weight in FONT_WEIGHTS:
+            for font_style in FONT_STYLES:
+                for font_variant in FONT_VARIANTS:
+                    widget.style.font_family = font_family
+                    widget.style.font_style = font_style
+                    widget.style.font_variant = font_variant
+                    widget.style.font_weight = font_weight
+                    await widget_probe.redraw(
+                        f"Using a {font_family} {font_weight} {font_style} {font_variant} font"
+                    )
 
-                widget_probe.assert_font_options(font_weight, font_style, font_variant)
+                    widget_probe.assert_font_family(font_family)
+
+                    widget_probe.assert_font_options(
+                        font_weight, font_style, font_variant
+                    )
 
 
 @pytest.mark.parametrize(
@@ -83,6 +90,9 @@ async def test_font_file_loaded(
     capsys: pytest.CaptureFixture[str],
 ):
     """Custom fonts can be loaded and used."""
+    if not widget_probe.supports_custom_fonts:
+        pytest.skip("Platform doesn't support registering and loading custom fonts")
+
     Font.register(
         family=font_family,
         path=app.paths.app / font_path,
@@ -130,8 +140,15 @@ async def test_non_existent_font_file(widget: toga.Label, app: toga.App):
         widget.style.font_family = "non-existent"
 
 
-async def test_corrupted_font_file(widget: toga.Label, app: toga.App):
+async def test_corrupted_font_file(
+    widget: toga.Label,
+    widget_probe: Any,
+    app: toga.App,
+):
     "Corrupted font files fail registration"
+    if not widget_probe.supports_custom_fonts:
+        pytest.skip("Platform doesn't support registering and loading custom fonts")
+
     Font.register(
         family="corrupted",
         path=app.paths.app / "resources" / "fonts" / "Corrupted.ttf",
