@@ -15,6 +15,8 @@ from toga.constants import CENTER, JUSTIFY, LEFT, RIGHT
 appkit = load_library("AppKit")
 ######################################################################
 
+NSBeep = appkit.NSBeep
+
 ######################################################################
 # NSAffineTransform.h
 NSAffineTransform = ObjCClass("NSAffineTransform")

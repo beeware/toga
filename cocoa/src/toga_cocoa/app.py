@@ -18,6 +18,7 @@ from .libs import (
     NSAboutPanelOptionApplicationVersion,
     NSApplication,
     NSApplicationActivationPolicyRegular,
+    NSBeep,
     NSBundle,
     NSCursor,
     NSDocumentController,
@@ -362,6 +363,9 @@ class App:
             )
 
         self.native.orderFrontStandardAboutPanelWithOptions(options)
+
+    def beep(self):
+        NSBeep()
 
     def exit(self):
         self.loop.stop()

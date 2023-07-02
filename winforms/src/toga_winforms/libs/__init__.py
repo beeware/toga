@@ -36,6 +36,7 @@ from .winforms import (  # noqa: F401
     StringFormat,
     SystemColors,
     SystemFonts,
+    SystemSounds,
     Task,
     TaskScheduler,
     Threading,
