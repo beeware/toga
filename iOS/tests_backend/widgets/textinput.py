@@ -3,7 +3,7 @@ from rubicon.objc import SEL, send_message
 from toga_iOS.libs import UITextField
 
 from .base import SimpleProbe
-from .properties import toga_alignment, toga_color, toga_font
+from .properties import toga_alignment, toga_color
 
 
 class TextInputProbe(SimpleProbe):
@@ -40,10 +40,6 @@ class TextInputProbe(SimpleProbe):
     @property
     def color(self):
         return toga_color(self.native.textColor)
-
-    @property
-    def font(self):
-        return toga_font(self.native.font)
 
     @property
     def alignment(self):
