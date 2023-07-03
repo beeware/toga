@@ -74,7 +74,7 @@ class Font:
                     MONOSPACE: "Courier New",
                 }.get(self.interface.family, self.interface.family)
 
-                font = NSFont.fontWithName(family, size=self.interface.size)
+                font = NSFont.fontWithName(family, size=font_size)
 
                 if font is None:
                     print(
@@ -93,6 +93,7 @@ class Font:
                 attributes_mask |= NSFontMask.Italic.value
             if self.interface.variant == SMALL_CAPS:
                 attributes_mask |= NSFontMask.SmallCaps.value
+
             if attributes_mask:
                 # If there is no font with the requested traits, this returns the original
                 # font unchanged.

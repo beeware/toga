@@ -4,16 +4,6 @@ from toga_gtk.libs import Gtk
 
 
 class BaseProbe:
-    supports_custom_fonts = True
-
-    def assert_font_family(self, expected):
-        assert self.font.family == expected
-
-    def assert_font_options(self, weight, style, variant):
-        assert self.font.weight == weight
-        assert self.font.style == style
-        assert self.font.variant == variant
-
     def repaint_needed(self):
         return Gtk.events_pending()
 

@@ -2,11 +2,12 @@ from threading import Event
 
 from toga_gtk.libs import Gdk, Gtk
 
+from ..fonts import FontMixin
 from ..probe import BaseProbe
-from .properties import toga_color, toga_font
+from .properties import toga_color
 
 
-class SimpleProbe(BaseProbe):
+class SimpleProbe(BaseProbe, FontMixin):
     def __init__(self, widget):
         super().__init__()
         self.app = widget.app
@@ -97,7 +98,7 @@ class SimpleProbe(BaseProbe):
     @property
     def font(self):
         sc = self.native.get_style_context()
-        return toga_font(sc.get_property("font", sc.get_state()))
+        return sc.get_property("font", sc.get_state())
 
     @property
     def is_hidden(self):

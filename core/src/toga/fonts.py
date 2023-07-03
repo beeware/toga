@@ -1,10 +1,10 @@
 # Use the Travertino font definitions as-is
 from travertino import constants
-from travertino.constants import ITALIC  # noqa: F401
-from travertino.constants import (  # noqa: F401
+from travertino.constants import (
     BOLD,
     CURSIVE,
     FANTASY,
+    ITALIC,
     MESSAGE,
     MONOSPACE,
     NORMAL,
@@ -14,7 +14,6 @@ from travertino.constants import (  # noqa: F401
     SMALL_CAPS,
     SYSTEM,
 )
-from travertino.fonts import font  # noqa: F401
 from travertino.fonts import Font as BaseFont
 
 import toga

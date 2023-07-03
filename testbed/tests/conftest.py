@@ -46,28 +46,6 @@ def event_loop(app):
     return ProxyEventLoop(app._impl.loop)
 
 
-# Identical to widgets/probe, but usable by all tests.
-# Should replace generic "probe" fixture when window_probe and others are added
-@fixture
-async def widget_probe(main_window, widget):
-    box = toga.Box(children=[widget])
-    main_window.content = box
-
-    probe = get_widget_probe(widget)
-    await probe.redraw(f"\nConstructing {widget.__class__.__name__} probe")
-    probe.assert_container(box)
-
-    yield probe
-
-    main_window.content = toga.Box()
-
-
-def get_widget_probe(widget):
-    name = type(widget).__name__
-    module = import_module(f"tests_backend.widgets.{name.lower()}")
-    return getattr(module, f"{name}Probe")(widget)
-
-
 # Proxy which forwards all tasks to another event loop in a thread-safe manner. It
 # implements only the methods used by pytest-asyncio.
 @dataclass
