@@ -125,8 +125,7 @@ async def test_font_file_loaded(
 
     # Check that font properties are updated
     font_probe.assert_font_family(font_family)
-    for prop, value in font_kwargs.items():
-        assert getattr(font_probe.font, prop) == value
+    font_probe.assert_font_options(**font_kwargs)
 
     # Ensure the font was actually loaded.
     stdout = capsys.readouterr().out
