@@ -1,4 +1,4 @@
-import os
+from pathlib import Path
 
 from toga.fonts import (
     _REGISTERED_FONT_CACHE,
@@ -6,11 +6,14 @@ from toga.fonts import (
     CURSIVE,
     FANTASY,
     ITALIC,
+    MESSAGE,
     MONOSPACE,
+    OBLIQUE,
     SANS_SERIF,
     SERIF,
     SYSTEM,
     SYSTEM_DEFAULT_FONT_SIZE,
+    SYSTEM_DEFAULT_FONTS,
 )
 from toga_android.libs.android.graphics import Typeface
 from toga_android.libs.android.util import TypedValue
@@ -49,16 +52,24 @@ class Font:
                 style=self.interface.style,
                 variant=self.interface.variant,
             )
-            if font_key in _REGISTERED_FONT_CACHE:
+            try:
                 font_path = _REGISTERED_FONT_CACHE[font_key]
-                if os.path.isfile(font_path):
+            except KeyError:
+                # Not a pre-registered font
+                if self.interface.family not in SYSTEM_DEFAULT_FONTS:
+                    print(
+                        f"Unknown font '{self.interface}'; "
+                        "using system font as a fallback"
+                    )
+            else:
+                if Path(font_path).is_file():
                     typeface = Typeface.createFromFile(font_path)
                     # If the typeface cannot be created, following Exception is thrown:
                     # E/Minikin: addFont failed to create font, invalid request
                     # It does not kill the app, but there is currently no way to
                     # catch this Exception on Android
                 else:
-                    print(f"Registered font path {font_path!r} could not be found")
+                    raise ValueError(f"Font file {font_path} could not be found")
 
             if typeface is None:
                 if self.interface.family is SYSTEM:
@@ -67,6 +78,8 @@ class Font:
                     # (600 or 700). To preserve this, we use the widget's original
                     # typeface as a starting point rather than Typeface.DEFAULT.
                     typeface = default_typeface
+                elif self.interface.family is MESSAGE:
+                    typeface = Typeface.DEFAULT
                 elif self.interface.family is SERIF:
                     typeface = Typeface.SERIF
                 elif self.interface.family is SANS_SERIF:
@@ -84,25 +97,14 @@ class Font:
                     typeface = Typeface.create(self.interface.family, Typeface.NORMAL)
 
             native_style = typeface.getStyle()
-            if self.interface.weight is not None:
-                native_style = set_bits(
-                    native_style, Typeface.BOLD, self.interface.weight == BOLD
-                )
-            if self.interface.style is not None:
-                native_style = set_bits(
-                    native_style, Typeface.ITALIC, self.interface.style == ITALIC
-                )
+            if self.interface.weight == BOLD:
+                native_style |= Typeface.BOLD
+            if self.interface.style in {ITALIC, OBLIQUE}:
+                native_style |= Typeface.ITALIC
+
             if native_style != typeface.getStyle():
                 typeface = Typeface.create(typeface, native_style)
 
             _FONT_CACHE[cache_key] = typeface
 
         tv.setTypeface(typeface)
-
-
-def set_bits(input, mask, enable=True):
-    if enable:
-        output = input | mask
-    else:
-        output = input & ~mask
-    return output
