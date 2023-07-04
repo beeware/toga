@@ -1,7 +1,8 @@
 DetailedList
 ============
 
-An ordered list of content where each item has an icon, a main heading, and a line of supplementary text.
+An ordered list of content where each item has an icon, a main heading, and a line of
+supplementary text.
 
 .. figure:: /reference/images/DetailedList.png
    :width: 300px
