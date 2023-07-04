@@ -87,7 +87,7 @@ class DetailedList(Widget):
 
           * All other values will be converted into a Row with attributes matching the
             ``accessors`` provided at time of construction (with the default accessors
-            of ``("icon", "title", "subtitle")``.
+            of ``("title", "subtitle", "icon")``.
 
             If the value is a string, or any other a non-iterable object, the Row will
             have a single attribute matching the title's accessor.
@@ -100,11 +100,11 @@ class DetailedList(Widget):
     @data.setter
     def data(self, data: Any):
         if data is None:
-            self._data = ListSource(data=[], accessors=self._accessors)
+            self._data = ListSource(data=[], accessors=self.accessors)
         elif isinstance(data, Source):
             self._data = data
         else:
-            self._data = ListSource(data=data, accessors=self._accessors)
+            self._data = ListSource(data=data, accessors=self.accessors)
 
         self._data.add_listener(self._impl)
         self._impl.change_source(source=self._data)

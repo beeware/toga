@@ -67,12 +67,6 @@ class DeprecatedFactoryTests(TestCase):
         self.assertEqual(widget._impl.interface, widget)
         self.assertNotEqual(widget.factory, self.factory)
 
-    def test_detailed_list_created(self):
-        with self.assertWarns(DeprecationWarning):
-            widget = toga.DetailedList(factory=self.factory)
-        self.assertEqual(widget._impl.interface, widget)
-        self.assertNotEqual(widget.factory, self.factory)
-
     def test_option_container_created(self):
         with self.assertWarns(DeprecationWarning):
             widget = toga.OptionContainer(factory=self.factory)
