@@ -1,73 +1,51 @@
-import warnings
+from __future__ import annotations
+
+from typing import Any
 
 from toga.handlers import wrapped_handler
-from toga.sources import ListSource
+from toga.sources import ListSource, Row, Source
 
 from .base import Widget
 
 
 class DetailedList(Widget):
-    """A widget to hold data in a list form. Rows are selectable and can be deleted. An
-    updated function can be invoked by pulling the list down.
-
-    Args:
-        id (str): An identifier for this widget.
-        data (list of `dict`): List of dictionaries with required 'icon', 'title', and
-            'subtitle' keys as well as optional custom keys to store additional
-            info like 'pk' for a database primary key (think Django ORM)
-        on_delete (``Callable``): Function that is invoked on row deletion.
-        on_refresh (``Callable``): Function that is invoked on user initialized refresh.
-        on_select (``Callable``): Function that is invoked on row selection.
-        style (:obj:`Style`): An optional style object. If no style is provided then
-            a new one will be created for the widget.
-
-    Examples:
-        >>> import toga
-        >>> def selection_handler(widget, row):
-        >>>     print('Row {} of widget {} was selected.'.format(row, widget))
-        >>>
-        >>> dlist = toga.DetailedList(
-        ...     data=[
-        ...         {
-        ...             'icon': '',
-        ...             'title': 'John Doe',
-        ...             'subtitle': 'Employee of the Month',
-        ...             'pk': 100
-        ...          }
-        ...      ],
-        ...      on_select=selection_handler
-        ... )
-    """
-
-    MIN_HEIGHT = 100
-    MIN_WIDTH = 100
-
     def __init__(
         self,
         id=None,
-        data=None,
-        on_delete=None,
-        on_refresh=None,
-        on_select=None,
         style=None,
-        factory=None,  # DEPRECATED!
+        data: Any = None,
+        accessors: tuple[str, str, str] = ("title", "subtitle", "icon"),
+        missing_value: str = "",
+        on_delete: callable = None,
+        on_refresh: callable = None,
+        on_select: callable = None,
     ):
-        super().__init__(id=id, style=style)
-        ######################################################################
-        # 2022-09: Backwards compatibility
-        ######################################################################
-        # factory no longer used
-        if factory:
-            warnings.warn("The factory argument is no longer used.", DeprecationWarning)
-        ######################################################################
-        # End backwards compatibility.
-        ######################################################################
+        """Create a new DetailedList widget.
 
+        Inherits from :class:`toga.Widget`.
+
+        :param id: The ID for the widget.
+        :param style: A style object. If no style is provided, a default style will be
+            applied to the widget.
+        :param data: The data to be displayed on the table. Can be a list of values or a
+            ListSource. See the definition of the :attr:`data` property for details on
+            how data can be specified and used.
+        :param accessors: The accessors to use to retrieve the data for each item. A tuple,
+            specifying the accessors for (title, subtitle, icon).
+        :param missing_value: The data to use subtitle to use when the data source doesn't provide a
+            title for a data item.
+        :param on_select: Initial :any:`on_select` handler.
+        :param on_refresh: Initial :any:`on_refresh` handler.
+        :param on_delete: Initial :any:`on_delete` handler.
+        """
+        super().__init__(id=id, style=style)
+        self._accessors = accessors
+        self._missing_value = missing_value
         self._data = None
-        self._on_delete = None
-        self._on_refresh = None
-        # at least _on_select must be defined before setting data for the Gtk impl
-        self._on_select = None
+        self.on_delete = None
+        self.on_refresh = None
+        self.on_select = None
+
         self._impl = self.factory.DetailedList(interface=self)
 
         self.data = data
@@ -76,23 +54,57 @@ class DetailedList(Widget):
         self.on_select = on_select
 
     @property
-    def data(self):
-        """The data source of the widget. It accepts data in the form of
-        ``list`` of ``dict`` or :class:`ListSource`
+    def enabled(self) -> bool:
+        """Is the widget currently enabled? i.e., can the user interact with the widget?
+        DetailList widgets cannot be disabled; this property will always return True; any
+        attempt to modify it will be ignored.
+        """
+        return True
 
-        Returns:
-            Returns a (:obj:`ListSource`).
+    @enabled.setter
+    def enabled(self, value):
+        pass
+
+    def focus(self):
+        "No-op; DetailList cannot accept input focus"
+        pass
+
+    @property
+    def data(self) -> ListSource:
+        """The data to display in the DetailedList, as a ListSource.
+
+        When specifying data:
+
+        * A ListSource will be used as-is
+
+        * A value of None is turned into an empty ListSource.
+
+        * A list or tuple of values will be converted into a ListSource. Each item in
+          the list will be converted into a Row object.
+
+          * If the item in the list is a dictionary, the keys of the dictionary will
+            become the attributes of the Row.
+
+          * All other values will be converted into a Row with attributes matching the
+            ``accessors`` provided at time of construction (with the default accessors
+            of ``("icon", "title", "subtitle")``.
+
+            If the value is a string, or any other a non-iterable object, the Row will
+            have a single attribute matching the title's accessor.
+
+            If the value is a list, tuple, or any other iterable, values in the iterable
+            will be mapped in order to the accessors.
         """
         return self._data
 
     @data.setter
-    def data(self, data):
+    def data(self, data: Any):
         if data is None:
-            self._data = ListSource(data=[], accessors=["icon", "title", "subtitle"])
-        elif isinstance(data, (list, tuple)):
-            self._data = ListSource(data=data, accessors=["icon", "title", "subtitle"])
-        else:
+            self._data = ListSource(data=[], accessors=self._accessors)
+        elif isinstance(data, Source):
             self._data = data
+        else:
+            self._data = ListSource(data=data, accessors=self._accessors)
 
         self._data.add_listener(self._impl)
         self._impl.change_source(source=self._data)
@@ -101,74 +113,70 @@ class DetailedList(Widget):
         """Scroll the view so that the top of the list (first row) is visible."""
         self.scroll_to_row(0)
 
-    def scroll_to_row(self, row):
+    def scroll_to_row(self, row: int):
         """Scroll the view so that the specified row index is visible.
 
-        Args:
-            row: The index of the row to make visible. Negative values refer
-                 to the nth last row (-1 is the last row, -2 second last,
-                 and so on)
+        :param row: The index of the row to make visible. Negative values refer to the
+            nth last row (-1 is the last row, -2 second last, and so on).
         """
-        if row >= 0:
-            self._impl.scroll_to_row(row)
-        else:
-            self._impl.scroll_to_row(len(self.data) + row)
+        if len(self.data) > 1:
+            if row >= 0:
+                self._impl.scroll_to_row(min(row, len(self.data)))
+            else:
+                self._impl.scroll_to_row(max(len(self.data) + row, 0))
 
     def scroll_to_bottom(self):
         """Scroll the view so that the bottom of the list (last row) is visible."""
         self.scroll_to_row(-1)
 
     @property
-    def on_delete(self):
-        """The function invoked on row deletion. The delete handler must accept two
-        arguments. The first is a ref. to the widget and the second the row that is
-        about to be deleted.
+    def accessors(self) -> list[str]:
+        """The accessors used to populate the table"""
+        return self._accessors
 
-        Examples:
-            >>> def delete_handler(widget, row):
-            >>>     print('row ', row, 'is going to be deleted from widget', widget)
-
-        Returns:
-            The function that is invoked when deleting a row.
+    @property
+    def missing_value(self) -> str:
+        """The value that will be used when a data row doesn't provide an value for an
+        attribute.
         """
+        return self._missing_value
+
+    @property
+    def selection(self) -> Row | None:
+        """The current selection of the table.
+
+        Returns the selected Row object, or :any:`None` if no row is currently selected.
+        """
+        try:
+            return self.data[self._impl.get_selection()]
+        except TypeError:
+            return None
+
+    @property
+    def on_delete(self) -> callable:
+        """The handler to invoke when the user performs a deletion action on a row of the
+        DetailedList."""
         return self._on_delete
 
     @on_delete.setter
     def on_delete(self, handler: callable):
         self._on_delete = wrapped_handler(self, handler)
-        self._impl.set_on_delete(self._on_delete)
 
     @property
-    def on_refresh(self):
-        """
-        Returns:
-            The function to be invoked on user initialized refresh.
-        """
+    def on_refresh(self) -> callable:
+        """The callback function to invoke when the user performs a refresh action on the
+        DetailedList."""
         return self._on_refresh
 
     @on_refresh.setter
     def on_refresh(self, handler: callable):
-        self._on_refresh = wrapped_handler(self, handler, self._impl.after_on_refresh)
-        self._impl.set_on_refresh(self._on_refresh)
+        self._on_refresh = wrapped_handler(self, handler)
 
     @property
-    def selection(self):
-        """The current selection.
-
-        A value of None indicates no selection.
-        """
-        return self._impl.get_selection()
-
-    @property
-    def on_select(self):
-        """The handler function must accept two arguments, widget and row.
-
-        Returns:
-            The function to be invoked on selecting a row.
-        """
+    def on_select(self) -> callable:
+        """The callback function that is invoked when a row of the DetailedList is selected."""
         return self._on_select
 
     @on_select.setter
     def on_select(self, handler: callable):
         self._on_select = wrapped_handler(self, handler)
-        self._impl.set_on_select(self._on_select)
