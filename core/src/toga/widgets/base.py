@@ -114,7 +114,11 @@ class Widget(Node):
                 child.app = self.app
                 child.window = self.window
 
-                self._impl.add_child(child._impl)
+                # add() can be invoked inside a constructor of a widget with children;
+                # in this case, the impl may not yet exist. In this case, the addition
+                # of children will be handled when this widget is assigned to a container.
+                if self._impl:
+                    self._impl.add_child(child._impl)
 
         if self.window:
             self.window.content.refresh()
@@ -143,6 +147,8 @@ class Widget(Node):
             child.app = self.app
             child.window = self.window
 
+            # The impl must exist, because we're invoking
+            # remove() on a fully instantiated widget.
             self._impl.insert_child(index, child._impl)
 
         if self.window:
@@ -169,6 +175,8 @@ class Widget(Node):
                 child.app = None
                 child.window = None
 
+                # The impl must exist, because we're invoking
+                # remove() on a fully instantiated widget.
                 self._impl.remove_child(child._impl)
 
         if self.window and removed:

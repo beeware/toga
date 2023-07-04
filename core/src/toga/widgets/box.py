@@ -21,13 +21,14 @@ class Box(Widget):
         """
         super().__init__(id=id, style=style)
 
-        # Create a platform specific implementation of a Box
-        self._impl = self.factory.Box(interface=self)
-
-        # Children need to be added *after* the impl has been created.
+        # Children need to be added *before* the impl is created. Otherwise, GTK
+        # doesn't apply custom loaded fonts that have been on child widgets.
         self._children = []
         if children:
             self.add(*children)
+
+        # Create a platform specific implementation of a Box
+        self._impl = self.factory.Box(interface=self)
 
     @property
     def enabled(self) -> bool:
