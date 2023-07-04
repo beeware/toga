@@ -152,7 +152,7 @@ jobs:
           - backend: gtk
             pre-command: |
               sudo apt update -y
-              sudo apt install -y libfuse2 pkg-config python3-dev libgirepository1.0-dev libcairo2-dev gir1.2-gtk-3.0
+              sudo apt install -y pkg-config python3-dev libgirepository1.0-dev libcairo2-dev gir1.2-gtk-3.0
 
           - backend: iOS
             runs-on: macos-latest
