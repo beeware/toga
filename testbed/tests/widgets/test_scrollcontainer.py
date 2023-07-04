@@ -418,10 +418,14 @@ async def test_manual_scroll(widget, probe, content, on_scroll):
     assert widget.vertical_position > 0
     on_scroll.assert_called_with(widget)
 
-    # Try again with scrolling disabled.
-    widget.vertical_position = 0
+    # Disabling scrolling should scroll back to zero
     widget.vertical = False
+    await probe.wait_for_scroll_completion()
+    await probe.redraw("Scroll back to origin, and disable scrolling")
+    assert widget.vertical_position == 0
     on_scroll.reset_mock()
+
+    # With scrolling disabled, `scroll` method should have no effect.
     await probe.scroll()
     await probe.wait_for_scroll_completion()
     await probe.redraw("Attempted scroll with scrolling disabled")
