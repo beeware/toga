@@ -1,4 +1,6 @@
-from android.widget import HorizontalScrollView, ScrollView
+import asyncio
+
+from android.widget import HorizontalScrollView, RelativeLayout, ScrollView
 
 from .base import SimpleProbe
 
@@ -10,35 +12,34 @@ class ScrollContainerProbe(SimpleProbe):
         super().__init__(widget)
 
         assert self.native.getChildCount() == 1
-        self.native_inner = self.native.getChildAt(0)
-        assert isinstance(self.native_inner, HorizontalScrollView)
+        self.native_horizontal = self.native.getChildAt(0)
+        assert isinstance(self.native_horizontal, HorizontalScrollView)
+
+        assert self.native_horizontal.getChildCount() == 1
+        self.native_content = self.native_horizontal.getChildAt(0)
+        assert isinstance(self.native_content, RelativeLayout)
 
     @property
     def has_content(self):
-        child_count = self.native_inner.getChildCount()
-        if child_count == 0:
-            return False
-        elif child_count == 1:
-            return True
-        else:
-            raise AssertionError(child_count)
-
-    @property
-    def _content(self):
-        return self.native_inner.getChildAt(0)
+        return self.native_content.getChildCount() != 0
 
     @property
     def document_height(self):
-        return self._content.getHeight() / self.scale_factor
+        return self.native_content.getHeight() / self.scale_factor
 
     @property
     def document_width(self):
-        return self._content.getWidth() / self.scale_factor
+        return self.native_content.getWidth() / self.scale_factor
 
     async def scroll(self):
-        self.native.setScrollY(200)
-        self.native_inner.setScrollX(0)
+        await self.swipe(0, -30)  # Swipe up
 
     async def wait_for_scroll_completion(self):
-        # No animation associated with scroll, so this is a no-op
-        pass
+        position = self.widget.position
+        current = None
+        # Iterate until 2 successive reads of the scroll position,
+        # 0.05s apart, return the same value
+        while position != current:
+            position = current
+            await asyncio.sleep(0.05)
+            current = self.widget.position

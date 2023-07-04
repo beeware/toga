@@ -268,8 +268,8 @@ async def test_vertical_scroll(widget, probe, on_scroll):
     on_scroll.reset_mock()
 
 
-async def test_vertical_scroll_small_content(widget, probe, small_content, on_scroll):
-    "The widget can be scrolled vertically when the content doesn't need scrolling."
+async def test_vertical_scroll_small_content(widget, probe, small_content):
+    "When the content doesn't need vertical scrolling, attempts to scroll are ignored"
     widget.content = small_content
     await probe.redraw("Content has been switched for a small document")
 
@@ -282,22 +282,11 @@ async def test_vertical_scroll_small_content(widget, probe, small_content, on_sc
     assert widget.horizontal_position == 0
     assert widget.vertical_position == 0
 
-    # clear any scroll events caused by setup
-    on_scroll.reset_mock()
-
+    # This doesn't change the position, so whether it calls on_scroll is undefined.
     widget.vertical_position = probe.height * 3
     await probe.wait_for_scroll_completion()
     await probe.redraw("Scroll down 3 pages")
     assert widget.vertical_position == 0
-    on_scroll.assert_called_with(widget)
-    on_scroll.reset_mock()
-
-    widget.vertical_position = 0
-    await probe.wait_for_scroll_completion()
-    await probe.redraw("Scroll back to origin")
-    assert widget.vertical_position == 0
-    on_scroll.assert_called_with(widget)
-    on_scroll.reset_mock()
 
 
 async def test_horizontal_scroll(widget, probe, content, on_scroll):
@@ -346,8 +335,8 @@ async def test_horizontal_scroll(widget, probe, content, on_scroll):
     on_scroll.reset_mock()
 
 
-async def test_horizontal_scroll_small_content(widget, probe, small_content, on_scroll):
-    "The widget can be scrolled horizontally when the content doesn't need scrolling."
+async def test_horizontal_scroll_small_content(widget, probe, small_content):
+    "When the content doesn't need horizontal scrolling, attempts to scroll are ignored"
     small_content.style.direction = ROW
     widget.content = small_content
     await probe.redraw("Content has been switched for a small wide document")
@@ -361,22 +350,11 @@ async def test_horizontal_scroll_small_content(widget, probe, small_content, on_
     assert widget.horizontal_position == 0
     assert widget.vertical_position == 0
 
-    # clear any scroll events caused by setup
-    on_scroll.reset_mock()
-
+    # This doesn't change the position, so whether it calls on_scroll is undefined.
     widget.horizontal_position = probe.height * 3
     await probe.wait_for_scroll_completion()
-    await probe.redraw("Scroll down 3 pages")
+    await probe.redraw("Scroll right 3 pages")
     assert widget.horizontal_position == 0
-    on_scroll.assert_called_with(widget)
-    on_scroll.reset_mock()
-
-    widget.horizontal_position = 0
-    await probe.wait_for_scroll_completion()
-    await probe.redraw("Scroll back to origin")
-    assert widget.horizontal_position == 0
-    on_scroll.assert_called_with(widget)
-    on_scroll.reset_mock()
 
 
 async def test_scroll_both(widget, probe, content, on_scroll):
@@ -432,10 +410,21 @@ async def test_manual_scroll(widget, probe, content, on_scroll):
     "The widget can be scrolled manually."
     await probe.scroll()
     await probe.wait_for_scroll_completion()
-    await probe.redraw("Widget has been manually scrolled manually")
+    await probe.redraw("Widget has been scrolled manually")
     assert widget.horizontal_position == 0
 
     # We don't care where it's been scrolled to; and there may have been
     # multiple scroll events.
     assert widget.vertical_position > 0
     on_scroll.assert_called_with(widget)
+
+    # Try again with scrolling disabled.
+    widget.vertical_position = 0
+    widget.vertical = False
+    on_scroll.reset_mock()
+    await probe.scroll()
+    await probe.wait_for_scroll_completion()
+    await probe.redraw("Attempted scroll with scrolling disabled")
+    assert widget.horizontal_position == 0
+    assert widget.vertical_position == 0
+    on_scroll.assert_not_called()

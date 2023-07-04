@@ -1,10 +1,8 @@
 from travertino.size import at_least
 
-from toga_android.window import AndroidViewport
-
+from ..container import Container, Viewport
 from ..libs.android.view import (
     Gravity,
-    View__MeasureSpec,
     View__OnScrollChangeListener,
     View__OnTouchListener,
 )
@@ -37,7 +35,7 @@ class TogaOnScrollListener(View__OnScrollChangeListener):
         self.impl.interface.on_scroll(None)
 
 
-class ScrollContainer(Widget):
+class ScrollContainer(Widget, Container):
     def create(self):
         scroll_listener = TogaOnScrollListener(self)
 
@@ -63,70 +61,62 @@ class ScrollContainer(Widget):
         self.hScrollView.setOnScrollChangeListener(scroll_listener)
         self.vScrollView.addView(self.hScrollView, hScrollView_layout_params)
 
-        self.content = None
+        self.content_viewport = Viewport(self.hScrollView, self.interface)
 
-    def set_content(self, widget):
-        if self.content:
-            self.hScrollView.removeAllViews()
-            for child in self.content.interface.children:
-                child._impl.container = None
-
-        self.content = widget
-        if widget:
-            widget.viewport = AndroidViewport(self.native, self.interface)
-            content_view_params = LinearLayout__LayoutParams(
-                LinearLayout__LayoutParams.MATCH_PARENT,
-                LinearLayout__LayoutParams.MATCH_PARENT,
-            )
-            if widget.container:
-                widget.container = None
-            self.hScrollView.addView(widget.native, content_view_params)
-
-            for child in widget.interface.children:
-                if child._impl.container:
-                    child._impl.container = None
-                child._impl.container = widget
+    def set_bounds(self, x, y, width, height):
+        super().set_bounds(x, y, width, height)
+        self.content_viewport.size = (width, height)
 
     def get_vertical(self):
         return self.vScrollListener.is_scrolling_enabled
 
     def set_vertical(self, value):
+        if not value:
+            self.vScrollView.setScrollY(0)
         self.vScrollListener.is_scrolling_enabled = value
 
     def get_horizontal(self):
         return self.hScrollListener.is_scrolling_enabled
 
     def set_horizontal(self, value):
+        if not value:
+            self.hScrollView.setScrollX(0)
         self.hScrollListener.is_scrolling_enabled = value
 
     def get_vertical_position(self):
-        return self.vScrollView.getScrollY() / self.scale
+        return int(self.vScrollView.getScrollY() / self.viewport.scale)
 
     def get_horizontal_position(self):
-        return self.hScrollView.getScrollX() / self.scale
+        return int(self.hScrollView.getScrollX() / self.viewport.scale)
 
     def get_max_horizontal_position(self):
-        content_width = 0 if self.content is None else self.content.native.getWidth()
-        return max(0, content_width - self.native.getWidth()) / self.scale
+        if not self.get_horizontal():
+            return 0
+        else:
+            return int(
+                max(0, self.content_viewport.native.getWidth() - self.native.getWidth())
+                / self.viewport.scale
+            )
 
     def get_max_vertical_position(self):
-        content_height = 0 if self.content is None else self.content.native.getHeight()
-        return max(0, content_height - self.native.getHeight()) / self.scale
+        if not self.get_vertical():
+            return 0
+        else:
+            return int(
+                max(
+                    0,
+                    self.content_viewport.native.getHeight() - self.native.getHeight(),
+                )
+                / self.viewport.scale
+            )
 
     def set_position(self, horizontal_position, vertical_position):
-        self.hScrollView.setScrollX(horizontal_position * self.scale)
-        self.vScrollView.setScrollY(vertical_position * self.scale)
+        self.hScrollView.setScrollX(int(horizontal_position * self.viewport.scale))
+        self.vScrollView.setScrollY(int(vertical_position * self.viewport.scale))
 
     def set_background_color(self, value):
         self.set_background_simple(value)
 
     def rehint(self):
-        # Android can crash when rendering some widgets until they have their layout params set. Guard for that case.
-        if not self.native.getLayoutParams():
-            return
-        self.native.measure(
-            View__MeasureSpec.UNSPECIFIED,
-            View__MeasureSpec.UNSPECIFIED,
-        )
-        self.interface.intrinsic.width = at_least(self.native.getMeasuredWidth())
-        self.interface.intrinsic.height = at_least(self.native.getMeasuredHeight())
+        self.interface.intrinsic.width = at_least(0)
+        self.interface.intrinsic.height = at_least(0)

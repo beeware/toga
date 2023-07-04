@@ -40,8 +40,7 @@ class Widget:
         super().__init__()
         self.interface = interface
         self.interface._impl = self
-        self._container = None
-        self.viewport = None
+        self._viewport = None
         self.native = None
         self._native_activity = _get_activity()
         self.create()
@@ -60,34 +59,22 @@ class Widget:
         pass
 
     @property
-    def container(self):
-        return self._container
+    def viewport(self):
+        return self._viewport
 
-    @container.setter
-    def container(self, container):
-        if self.container:
-            assert container is None, "Widget already has a container"
+    @viewport.setter
+    def viewport(self, viewport):
+        if self._viewport:
+            self._viewport.remove_widget(self)
 
-            # container is set to None, removing self from the container.native
-            self._container.native.removeView(self.native)
-            self._container.native.invalidate()
-            self._container = None
-        elif container:
-            self._container = container
-            # When initially setting the container and adding widgets to the container,
-            # we provide no `LayoutParams`. Those are promptly added when Toga
-            # calls `widget.rehint()` and `widget.set_bounds()`.
-            self._container.native.addView(self.native)
+        self._viewport = viewport
+        if viewport:
+            viewport.add_widget(self)
 
         for child in self.interface.children:
-            child._impl.container = container
+            child._impl.viewport = viewport
 
         self.rehint()
-
-    @property
-    def scale(self):
-        viewport = self.viewport if self.viewport else self.container.viewport
-        return viewport.scale
 
     def get_enabled(self):
         return self.native.isEnabled()
@@ -108,9 +95,7 @@ class Widget:
     # APPLICATOR
 
     def set_bounds(self, x, y, width, height):
-        if self.container:
-            # Ask the container widget to set our bounds.
-            self.container.set_child_bounds(self, x, y, width, height)
+        self.viewport.set_widget_bounds(self, x, y, width, height)
 
     def set_hidden(self, hidden):
         if hidden:
@@ -165,17 +150,13 @@ class Widget:
     # INTERFACE
 
     def add_child(self, child):
-        if self.viewport:
-            # we are the top level widget
-            child.container = self
-        else:
-            child.container = self.container
+        child.viewport = self.viewport
 
     def insert_child(self, index, child):
         self.add_child(child)
 
     def remove_child(self, child):
-        child.container = None
+        child.viewport = None
 
     def refresh(self):
         self.rehint()
