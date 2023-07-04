@@ -25,11 +25,11 @@ class ScrollContainerProbe(SimpleProbe):
 
     @property
     def document_height(self):
-        return self.native_content.getHeight() / self.scale_factor
+        return round(self.native_content.getHeight() / self.scale_factor)
 
     @property
     def document_width(self):
-        return self.native_content.getWidth() / self.scale_factor
+        return round(self.native_content.getWidth() / self.scale_factor)
 
     async def scroll(self):
         await self.swipe(0, -30)  # Swipe up

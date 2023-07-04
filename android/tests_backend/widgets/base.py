@@ -90,12 +90,12 @@ class SimpleProbe(BaseProbe):
     @property
     def width(self):
         # Return the value in DP
-        return self.native.getWidth() / self.scale_factor
+        return round(self.native.getWidth() / self.scale_factor)
 
     @property
     def height(self):
         # Return the value in DP
-        return self.native.getHeight() / self.scale_factor
+        return round(self.native.getHeight() / self.scale_factor)
 
     def assert_width(self, min_width, max_width):
         assert (

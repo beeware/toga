@@ -84,35 +84,33 @@ class ScrollContainer(Widget, Container):
         self.hScrollListener.is_scrolling_enabled = value
 
     def get_vertical_position(self):
-        return int(self.vScrollView.getScrollY() / self.viewport.scale)
+        return self.scale_out(self.vScrollView.getScrollY())
 
     def get_horizontal_position(self):
-        return int(self.hScrollView.getScrollX() / self.viewport.scale)
+        return self.scale_out(self.hScrollView.getScrollX())
 
     def get_max_horizontal_position(self):
         if not self.get_horizontal():
             return 0
         else:
-            return int(
+            return self.scale_out(
                 max(0, self.content_viewport.native.getWidth() - self.native.getWidth())
-                / self.viewport.scale
             )
 
     def get_max_vertical_position(self):
         if not self.get_vertical():
             return 0
         else:
-            return int(
+            return self.scale_out(
                 max(
                     0,
                     self.content_viewport.native.getHeight() - self.native.getHeight(),
                 )
-                / self.viewport.scale
             )
 
     def set_position(self, horizontal_position, vertical_position):
-        self.hScrollView.setScrollX(int(horizontal_position * self.viewport.scale))
-        self.vScrollView.setScrollY(int(vertical_position * self.viewport.scale))
+        self.hScrollView.setScrollX(self.scale_in(horizontal_position))
+        self.vScrollView.setScrollY(self.scale_in(vertical_position))
 
     def set_background_color(self, value):
         self.set_background_simple(value)

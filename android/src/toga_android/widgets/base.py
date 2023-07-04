@@ -76,6 +76,12 @@ class Widget:
 
         self.rehint()
 
+    def scale_in(self, value):
+        return int(round(value * self.viewport.scale))
+
+    def scale_out(self, value):
+        return int(round(value / self.viewport.scale))
+
     def get_enabled(self):
         return self.native.isEnabled()
 

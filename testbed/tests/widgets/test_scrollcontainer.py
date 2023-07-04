@@ -1,6 +1,7 @@
 from unittest.mock import Mock
 
 import pytest
+from pytest import approx
 
 import toga
 from toga.colors import CORNFLOWERBLUE, REBECCAPURPLE, TRANSPARENT
@@ -14,6 +15,10 @@ from .properties import (  # noqa: F401
     test_flex_widget_size,
     test_focus_noop,
 )
+
+# DPI note: document_width and document_height may be subject to cumulative rounding
+# error. This should be fixed by #2020, at which time the `approx` calls with rel=0.01
+# can be removed. The calls with abs=1 will probably have to stay.
 
 
 @pytest.fixture
@@ -74,7 +79,7 @@ async def widget(content, on_scroll):
 async def test_clear_content(widget, probe, small_content):
     "Widget content can be cleared and reset"
     assert probe.document_width == probe.width
-    assert probe.document_height == 6000
+    assert probe.document_height == approx(6000, rel=0.01)  # TODO: see DPI note
 
     widget.content = None
     await probe.redraw("Widget content has been cleared")
@@ -228,10 +233,13 @@ async def test_enable_vertical_scrolling(widget, probe, content, on_scroll):
 async def test_vertical_scroll(widget, probe, on_scroll):
     "The widget can be scrolled vertically."
     assert probe.document_width == probe.width
-    assert probe.document_height == 6000
+    assert probe.document_height == approx(6000, rel=0.01)  # TODO: see DPI note
 
     assert widget.max_horizontal_position == 0
-    assert widget.max_vertical_position == 6000 - probe.height
+    assert widget.max_vertical_position == approx(
+        probe.document_height - probe.height, abs=1
+    )
+    assert isinstance(widget.max_vertical_position, int)
 
     assert widget.horizontal_position == 0
     assert widget.vertical_position == 0
@@ -294,10 +302,13 @@ async def test_horizontal_scroll(widget, probe, content, on_scroll):
     content.style.direction = ROW
     await probe.redraw("Content has been switched for a wide document")
 
-    assert probe.document_width == 20000
+    assert probe.document_width == approx(20000, rel=0.01)  # TODO: see DPI note
     assert probe.document_height == probe.height
 
-    assert widget.max_horizontal_position == 20000 - probe.width
+    assert widget.max_horizontal_position == approx(
+        probe.document_width - probe.width, abs=1
+    )
+    assert isinstance(widget.max_horizontal_position, int)
     assert widget.max_vertical_position == 0
 
     assert widget.horizontal_position == 0
@@ -373,7 +384,7 @@ async def test_scroll_both(widget, probe, content, on_scroll):
     )
     await probe.redraw("Content has been modified to be wide as well as tall")
     assert probe.document_width == 2040
-    assert probe.document_height == 6060
+    assert probe.document_height == approx(6060, rel=0.01)  # TODO: see DPI note
 
     assert widget.horizontal_position == 0
     assert widget.vertical_position == 0
@@ -385,7 +396,9 @@ async def test_scroll_both(widget, probe, content, on_scroll):
     await probe.wait_for_scroll_completion()
     await probe.redraw("Scroll to mid document")
     assert widget.horizontal_position == 1000
+    assert isinstance(widget.horizontal_position, int)
     assert widget.vertical_position == 2000
+    assert isinstance(widget.vertical_position, int)
     on_scroll.assert_called_with(widget)
     on_scroll.reset_mock()
 
@@ -393,15 +406,21 @@ async def test_scroll_both(widget, probe, content, on_scroll):
     await probe.wait_for_scroll_completion()
     await probe.redraw("Scroll to bottom left")
     assert widget.horizontal_position == 0
-    assert widget.vertical_position == 6060 - probe.height
+    assert widget.vertical_position == approx(
+        probe.document_height - probe.height, abs=1
+    )
     on_scroll.assert_called_with(widget)
     on_scroll.reset_mock()
 
     widget.position = 10000, 20000
     await probe.wait_for_scroll_completion()
     await probe.redraw("Scroll to bottom right")
-    assert widget.horizontal_position == 2040 - probe.width
-    assert widget.vertical_position == 6060 - probe.height
+    assert widget.horizontal_position == approx(
+        probe.document_width - probe.width, abs=1
+    )
+    assert widget.vertical_position == approx(
+        probe.document_height - probe.height, abs=1
+    )
     on_scroll.assert_called_with(widget)
     on_scroll.reset_mock()
 

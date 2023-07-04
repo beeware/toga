@@ -107,13 +107,13 @@ class ScrollContainer(Widget):
     def get_max_vertical_position(self):
         return max(
             0,
-            self.native.contentSize.height - self.native.frame.size.height,
+            int(self.native.contentSize.height - self.native.frame.size.height),
         )
 
     def get_max_horizontal_position(self):
         return max(
             0,
-            self.native.contentSize.width - self.native.frame.size.width,
+            int(self.native.contentSize.width - self.native.frame.size.width),
         )
 
     def get_vertical_position(self):
