@@ -46,7 +46,7 @@ class Row:
         name doesn't start with ``_``), the source to which the row belongs will be
         notified.
         """
-        self._source: Source = None
+        self._source: Source | None = None
         for name, value in data.items():
             setattr(self, name, value)
 
@@ -69,6 +69,17 @@ class Row:
         :param value: The new attribute value.
         """
         super().__setattr__(attr, value)
+        if not attr.startswith("_"):
+            if self._source is not None:
+                self._source.notify("change", item=self)
+
+    def __delattr__(self, attr: str):
+        """Remove an attribute from the Row object, notifying the source of the change.
+
+        :param attr: The attribute to change.
+        :param value: The new attribute value.
+        """
+        super().__delattr__(attr)
         if not attr.startswith("_"):
             if self._source is not None:
                 self._source.notify("change", item=self)
