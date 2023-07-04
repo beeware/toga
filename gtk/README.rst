@@ -24,7 +24,7 @@ to install the following:
 
 * **Ubuntu 18.04+ / Debian 10+** ``sudo apt install python3-gi python3-gi-cairo gir1.2-webkit2-4.0``
 
-* **Fedora** ``sudo dnf install python3-gobject webkitgtk4``
+* **Fedora** ``sudo dnf install python3-gobject webkit2gtk3``
 
 * **Arch Linux** ``sudo pacman -S python-gobject webkit2gtk``
 

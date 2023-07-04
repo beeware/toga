@@ -80,7 +80,7 @@ Next, install Toga into your virtual environment:
 
     .. code-block:: console
 
-      (venv) $ sudo dnf install pkg-config python3-devel gobject-introspection-devel cairo-gobject-devel webkitgtk4 libcanberra-gtk3
+      (venv) $ sudo dnf install pkg-config python3-devel gobject-introspection-devel cairo-gobject-devel webkit2gtk3 libcanberra-gtk3
 
     Arch / Manjaro
 
