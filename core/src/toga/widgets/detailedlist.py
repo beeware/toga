@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import warnings
 from typing import Any
 
 from toga.handlers import wrapped_handler
@@ -16,9 +17,13 @@ class DetailedList(Widget):
         data: Any = None,
         accessors: tuple[str, str, str] = ("title", "subtitle", "icon"),
         missing_value: str = "",
-        on_delete: callable = None,
+        primary_action: str | None = "Delete",
+        on_primary_action: callable = None,
+        secondary_action: str | None = "Action",
+        on_secondary_action: callable = None,
         on_refresh: callable = None,
         on_select: callable = None,
+        on_delete: callable = None,  # DEPRECATED
     ):
         """Create a new DetailedList widget.
 
@@ -35,21 +40,44 @@ class DetailedList(Widget):
         :param missing_value: The data to use subtitle to use when the data source doesn't provide a
             title for a data item.
         :param on_select: Initial :any:`on_select` handler.
+        :param primary_action: The name for the primary action.
+        :param on_primary_action: Initial :any:`on_primary_action` handler.
+        :param secondary_action: The name for the primary action.
+        :param on_secondary_action: Initial :any:`on_secondary_action` handler.
         :param on_refresh: Initial :any:`on_refresh` handler.
-        :param on_delete: Initial :any:`on_delete` handler.
+        :param on_delete: **DEPRECATED**; use :attr:`on_activate`.
         """
         super().__init__(id=id, style=style)
+
+        ######################################################################
+        # 2023-06: Backwards compatibility
+        ######################################################################
+        if on_delete:
+            if on_primary_action:
+                raise ValueError("Cannot specify both on_delete and on_primary_action")
+            else:
+                warnings.warn(
+                    "DetailedList.on_delete has been renamed DetailedList.on_primary_action.",
+                    DeprecationWarning,
+                )
+                on_primary_action = on_delete
+        ######################################################################
+        # End backwards compatibility.
+        ######################################################################
+
+        # Prime the attributes and handlers that need to exist when the widget is created.
         self._accessors = accessors
+        self._primary_action = primary_action
+        self._secondary_action = secondary_action
         self._missing_value = missing_value
         self._data = None
-        self.on_delete = None
-        self.on_refresh = None
         self.on_select = None
 
         self._impl = self.factory.DetailedList(interface=self)
 
         self.data = data
-        self.on_delete = on_delete
+        self.on_primary_action = on_primary_action
+        self.on_secondary_action = on_secondary_action
         self.on_refresh = on_refresh
         self.on_select = on_select
 
@@ -66,7 +94,7 @@ class DetailedList(Widget):
         pass
 
     def focus(self):
-        "No-op; DetailList cannot accept input focus"
+        "No-op; DetailedList cannot accept input focus"
         pass
 
     @property
@@ -153,24 +181,59 @@ class DetailedList(Widget):
             return None
 
     @property
-    def on_delete(self) -> callable:
-        """The handler to invoke when the user performs a deletion action on a row of the
-        DetailedList."""
-        return self._on_delete
+    def on_primary_action(self) -> callable:
+        """The handler to invoke when the user performs the primary action on a row of
+        the DetailedList.
 
-    @on_delete.setter
-    def on_delete(self, handler: callable):
-        self._on_delete = wrapped_handler(self, handler)
+        The primary action is "swipe left" on UIs that support swipe interactions;
+        platforms that don't use swipe interactions may manifest this action in other
+        ways (e.g, a context menu).
+
+        If no ``on_primary_action`` handler is provided, the primary action will be
+        disabled in the UI.
+        """
+        return self._on_primary_action
+
+    @on_primary_action.setter
+    def on_primary_action(self, handler: callable):
+        self._on_primary_action = wrapped_handler(self, handler)
+        self._impl.set_primary_action_enabled(handler is not None)
+
+    @property
+    def on_secondary_action(self) -> callable:
+        """The handler to invoke when the user performs the secondary action on a row of
+        the DetailedList.
+
+        The secondary action is "swipe right" on UIs that support swipe interactions;
+        platforms that don't use swipe interactions may manifest this action in other
+        ways (e.g, a context menu).
+
+        If no ``on_secondary_action`` handler is provided, the secondary action will be
+        disabled in the UI.
+        """
+        return self._on_secondary_action
+
+    @on_secondary_action.setter
+    def on_secondary_action(self, handler: callable):
+        self._on_secondary_action = wrapped_handler(self, handler)
+        self._impl.set_secondary_action_enabled(handler is not None)
 
     @property
     def on_refresh(self) -> callable:
-        """The callback function to invoke when the user performs a refresh action on the
-        DetailedList."""
+        """The callback function to invoke when the user performs a refresh action
+        (usually "pull down to refresh") on the DetailedList.
+
+        If no ``on_refresh`` handler is provided, the refresh UI action will be
+        disabled.
+        """
         return self._on_refresh
 
     @on_refresh.setter
     def on_refresh(self, handler: callable):
-        self._on_refresh = wrapped_handler(self, handler)
+        self._on_refresh = wrapped_handler(
+            self, handler, cleanup=self._impl.after_on_refresh
+        )
+        self._impl.set_refresh_enabled(handler is not None)
 
     @property
     def on_select(self) -> callable:
@@ -180,3 +243,24 @@ class DetailedList(Widget):
     @on_select.setter
     def on_select(self, handler: callable):
         self._on_select = wrapped_handler(self, handler)
+
+    ######################################################################
+    # 2023-06: Backwards compatibility
+    ######################################################################
+
+    @property
+    def on_delete(self):
+        """**DEPRECATED**: Use ``on_primary_action``"""
+        warnings.warn(
+            "DetailedList.on_delete has been renamed DetailedList.on_primary_action.",
+            DeprecationWarning,
+        )
+        return self.on_primary_action
+
+    @on_delete.setter
+    def on_delete(self, handler):
+        warnings.warn(
+            "DetailedList.on_delete has been renamed DetailedList.on_primary_action.",
+            DeprecationWarning,
+        )
+        self.on_primary_action = handler

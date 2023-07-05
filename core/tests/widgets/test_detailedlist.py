@@ -18,11 +18,16 @@ def on_select_handler():
 
 @pytest.fixture
 def on_refresh_handler():
+    return Mock(return_value=None)
+
+
+@pytest.fixture
+def on_primary_action_handler():
     return Mock()
 
 
 @pytest.fixture
-def on_delete_handler():
+def on_secondary_action_handler():
     return Mock()
 
 
@@ -39,13 +44,20 @@ def source():
 
 
 @pytest.fixture
-def detailedlist(source, on_select_handler, on_refresh_handler, on_delete_handler):
+def detailedlist(
+    source,
+    on_select_handler,
+    on_refresh_handler,
+    on_primary_action_handler,
+    on_secondary_action_handler,
+):
     return toga.DetailedList(
         accessors=["key", "value", "icon"],
         data=source,
         on_select=on_select_handler,
         on_refresh=on_refresh_handler,
-        on_delete=on_delete_handler,
+        on_primary_action=on_primary_action_handler,
+        on_secondary_action=on_secondary_action_handler,
     )
 
 
@@ -60,14 +72,24 @@ def test_detailedlist_created():
     assert detailedlist.missing_value == ""
     assert detailedlist.on_select._raw is None
     assert detailedlist.on_refresh._raw is None
-    assert detailedlist.on_delete._raw is None
+    assert detailedlist.on_primary_action._raw is None
+    assert detailedlist.on_secondary_action._raw is None
+    assert detailedlist._primary_action == "Delete"
+    assert detailedlist._secondary_action == "Action"
+
+    assert_action_performed_with(detailedlist, "refresh enabled", enabled=False)
+    assert_action_performed_with(detailedlist, "primary action enabled", enabled=False)
+    assert_action_performed_with(
+        detailedlist, "secondary action enabled", enabled=False
+    )
 
 
 def test_create_with_values(
     source,
     on_select_handler,
     on_refresh_handler,
-    on_delete_handler,
+    on_primary_action_handler,
+    on_secondary_action_handler,
 ):
     "A DetailedList can be created with initial values"
     detailedlist = toga.DetailedList(
@@ -76,7 +98,10 @@ def test_create_with_values(
         missing_value="Boo!",
         on_select=on_select_handler,
         on_refresh=on_refresh_handler,
-        on_delete=on_delete_handler,
+        primary_action="Primary",
+        on_primary_action=on_primary_action_handler,
+        secondary_action="Secondary",
+        on_secondary_action=on_secondary_action_handler,
     )
     assert detailedlist._impl.interface == detailedlist
     assert_action_performed(detailedlist, "create DetailedList")
@@ -86,7 +111,14 @@ def test_create_with_values(
     assert detailedlist.missing_value == "Boo!"
     assert detailedlist.on_select._raw == on_select_handler
     assert detailedlist.on_refresh._raw == on_refresh_handler
-    assert detailedlist.on_delete._raw == on_delete_handler
+    assert detailedlist.on_primary_action._raw == on_primary_action_handler
+    assert detailedlist.on_secondary_action._raw == on_secondary_action_handler
+    assert detailedlist._primary_action == "Primary"
+    assert detailedlist._secondary_action == "Secondary"
+
+    assert_action_performed_with(detailedlist, "refresh enabled", enabled=True)
+    assert_action_performed_with(detailedlist, "primary action enabled", enabled=True)
+    assert_action_performed_with(detailedlist, "secondary action enabled", enabled=True)
 
 
 def test_disable_no_op(detailedlist):
@@ -214,6 +246,23 @@ def test_selection(detailedlist, on_select_handler):
     on_select_handler.assert_called_once_with(detailedlist)
 
 
+def test_refresh(detailedlist, on_refresh_handler):
+    "Completion of a refresh event triggers the cleanup handler"
+    # Stimulate a refresh.
+    detailedlist._impl.stimulate_refresh()
+
+    # refresh handler was invoked
+    on_refresh_handler.assert_called_once_with(detailedlist)
+
+    # The post-refresh handler was invoked on the backend
+    assert_action_performed_with(
+        detailedlist,
+        "after on refresh",
+        widget=detailedlist,
+        result=None,
+    )
+
+
 def test_scroll_to_top(detailedlist):
     "A DetailedList can be scrolled to the top"
     detailedlist.scroll_to_top()
@@ -257,3 +306,43 @@ def test_scroll_to_bottom(detailedlist):
     detailedlist.scroll_to_bottom()
 
     assert_action_performed_with(detailedlist, "scroll to row", row=2)
+
+
+######################################################################
+# 2023-07: Backwards compatibility
+######################################################################
+def test_deprecated_names(on_primary_action_handler):
+    "Deprecated names still work"
+
+    # Can't specify both on_delete and on_primary_action
+    with pytest.raises(
+        ValueError,
+        match=r"Cannot specify both on_delete and on_primary_action",
+    ):
+        toga.DetailedList(on_delete=Mock(), on_primary_action=Mock())
+
+    # on_delete is redirected at construction
+    with pytest.warns(
+        DeprecationWarning,
+        match="DetailedList.on_delete has been renamed DetailedList.on_primary_action",
+    ):
+        select = toga.DetailedList(on_delete=on_primary_action_handler)
+
+    # on_delete accessor is redirected to on_primary_action
+    with pytest.warns(
+        DeprecationWarning,
+        match="DetailedList.on_delete has been renamed DetailedList.on_primary_action",
+    ):
+        assert select.on_delete._raw == on_primary_action_handler
+
+    assert select.on_primary_action._raw == on_primary_action_handler
+
+    # on_delete mutator is redirected to on_primary_action
+    new_handler = Mock()
+    with pytest.warns(
+        DeprecationWarning,
+        match="DetailedList.on_delete has been renamed DetailedList.on_primary_action",
+    ):
+        select.on_delete = new_handler
+
+    assert select.on_primary_action._raw == new_handler

@@ -26,6 +26,15 @@ class DetailedList(Widget):
     def get_selection(self):
         return self._get_value("selection", None)
 
+    def set_refresh_enabled(self, enabled):
+        self._action("refresh enabled", enabled=enabled)
+
+    def set_primary_action_enabled(self, enabled):
+        self._action("primary action enabled", enabled=enabled)
+
+    def set_secondary_action_enabled(self, enabled):
+        self._action("secondary action enabled", enabled=enabled)
+
     def after_on_refresh(self, widget, result):
         self._action("after on refresh", widget=widget, result=result)
 
@@ -35,3 +44,6 @@ class DetailedList(Widget):
     def simulate_selection(self, row):
         self._set_value("selection", row)
         self.interface.on_select(None)
+
+    def stimulate_refresh(self):
+        self.interface.on_refresh(None)

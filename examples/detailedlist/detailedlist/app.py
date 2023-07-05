@@ -9,7 +9,8 @@ from .translations import bee_translations
 
 class ExampleDetailedListApp(toga.App):
     # Detailed list callback functions
-    def on_select_handler(self, widget, row, **kwargs):
+    def on_select_handler(self, widget, **kwargs):
+        row = widget.selection
         self.label.text = (
             f"Bee is {row.title} in {row.subtitle}"
             if row is not None
@@ -26,6 +27,10 @@ class ExampleDetailedListApp(toga.App):
 
     def on_delete_handler(self, widget, row, **kwargs):
         self.label.text = f"Row {row.subtitle} is going to be deleted."
+        self.dl.data.remove(row)
+
+    def on_visit_handler(self, widget, row, **kwargs):
+        self.label.text = "We're not a travel agent."
 
     # Button callback functions
     def insert_handler(self, widget, **kwargs):
@@ -71,7 +76,9 @@ class ExampleDetailedListApp(toga.App):
                 for translation in bee_translations
             ],
             on_select=self.on_select_handler,
-            on_delete=self.on_delete_handler,
+            on_primary_action=self.on_delete_handler,
+            secondary_action="Visit",
+            on_secondary_action=self.on_visit_handler,
             on_refresh=self.on_refresh_handler,
             style=Pack(flex=1),
         )

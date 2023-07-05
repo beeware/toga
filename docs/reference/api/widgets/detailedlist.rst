@@ -88,6 +88,27 @@ converted into a string.
 If the value provided by the accessor for icon is :any:`None`, or the accessor isn't
 defined, a no icon will be displayed, but space for the icon will remain the the layout.
 
+Items in a DetailedList can respond to a primary and secondary action. On platforms that
+support swipe interactions, the primary action will be associated with "swipe left"; the
+secondary action will be associated with "swipe right". However, a platform may
+implement the primary and secondary actions using a different UI interaction (e.g., a
+right-click context menu). The primary and secondary actions will only be enabled in
+the DetailedList UI if a handler has been provided.
+
+By default, the primary and secondary action will be labeled as "Delete" and "Action",
+respectively. These names can be overridden by providing a ``primary_action`` and
+``secondary_action`` argument when constructing the DetailedList. Although the primary
+action is labeled "Delete" by default, the DetailedList will not perform any data
+deletion as part of the UI interaction. It is the responsibility of the application to
+implement any data deletion behavior as part of the ``on_primary_action`` handler.
+
+The DetailedList as a whole can also respond to a refresh UI action. This is usually
+implemented as a "pull down to refresh" action, such as you might see on a social media
+timeline. If a DetailedList widget provides an ``on_refresh`` handler, the DetailedList
+will respond to the refresh UI action, and the ``on_refresh`` handler will be invoked.
+If no ``on_refresh`` handler is provided, the DetailedList will behave as a static list,
+and will *not* respond to the refresh UI action.
+
 Reference
 ---------
 
