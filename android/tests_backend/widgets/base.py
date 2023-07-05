@@ -52,11 +52,11 @@ class SimpleProbe(BaseProbe):
         )
 
     def assert_container(self, container):
-        assert self.widget._impl.viewport is container._impl.viewport
-        assert self.native.getParent() is container._impl.viewport.native
+        assert self.widget._impl.container is container._impl.container
+        assert self.native.getParent() is container._impl.container.native_content
 
     def assert_not_contained(self):
-        assert self.widget._impl.viewport is None
+        assert self.widget._impl.container is None
         assert self.native.getParent() is None
 
     def assert_alignment(self, expected):
@@ -113,7 +113,7 @@ class SimpleProbe(BaseProbe):
 
     def assert_layout(self, size, position):
         # Widget is contained
-        assert self.widget._impl.viewport is not None
+        assert self.widget._impl.container is not None
         assert self.native.getParent() is not None
 
         # Size and position is as expected. Values must be scaled from DP, and

@@ -96,6 +96,28 @@ async def test_clear_content(widget, probe, small_content):
     assert probe.document_height == probe.height
 
 
+async def test_padding(widget, probe, content):
+    "Padding works correctly on the root widget"
+    original_width = probe.width
+    original_height = probe.height
+    original_document_width = probe.document_width
+    original_document_height = probe.document_height
+
+    content.style.padding = 21
+    await probe.redraw("Add padding")
+    assert probe.width == original_width
+    assert probe.height == original_height
+    assert probe.document_width == original_document_width
+    assert probe.document_height == original_document_height + 42
+
+    content.style.padding = 0
+    await probe.redraw("Remove padding")
+    assert probe.width == original_width
+    assert probe.height == original_height
+    assert probe.document_width == original_document_width
+    assert probe.document_height == original_document_height
+
+
 async def test_enable_horizontal_scrolling(widget, probe, content, on_scroll):
     "Horizontal scrolling can be disabled"
     # Add some wide content
@@ -233,6 +255,7 @@ async def test_enable_vertical_scrolling(widget, probe, content, on_scroll):
 async def test_vertical_scroll(widget, probe, on_scroll):
     "The widget can be scrolled vertically."
     assert probe.document_width == probe.width
+    assert probe.document_height > probe.height
     assert probe.document_height == approx(6000, abs=100)  # TODO: see DPI note
 
     assert widget.max_horizontal_position == 0
@@ -302,6 +325,7 @@ async def test_horizontal_scroll(widget, probe, content, on_scroll):
     content.style.direction = ROW
     await probe.redraw("Content has been switched for a wide document")
 
+    assert probe.document_width > probe.width
     assert probe.document_width == approx(20000, abs=100)  # TODO: see DPI note
     assert probe.document_height == probe.height
 

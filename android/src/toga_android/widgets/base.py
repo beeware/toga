@@ -40,7 +40,7 @@ class Widget:
         super().__init__()
         self.interface = interface
         self.interface._impl = self
-        self._viewport = None
+        self._container = None
         self.native = None
         self._native_activity = _get_activity()
         self.create()
@@ -59,28 +59,32 @@ class Widget:
         pass
 
     @property
-    def viewport(self):
-        return self._viewport
+    def container(self):
+        return self._container
 
-    @viewport.setter
-    def viewport(self, viewport):
-        if self._viewport:
-            self._viewport.remove_widget(self)
+    @container.setter
+    def container(self, container):
+        if self._container:
+            self._container.remove_content(self)
 
-        self._viewport = viewport
-        if viewport:
-            viewport.add_widget(self)
+        self._container = container
+        if container:
+            container.add_content(self)
 
         for child in self.interface.children:
-            child._impl.viewport = viewport
+            child._impl.container = container
 
         self.rehint()
 
+    @property
+    def viewport(self):
+        return self._container
+
     def scale_in(self, value):
-        return int(round(value * self.viewport.scale))
+        return int(round(value * self.container.scale))
 
     def scale_out(self, value):
-        return int(round(value / self.viewport.scale))
+        return int(round(value / self.container.scale))
 
     def get_enabled(self):
         return self.native.isEnabled()
@@ -101,7 +105,7 @@ class Widget:
     # APPLICATOR
 
     def set_bounds(self, x, y, width, height):
-        self.viewport.set_widget_bounds(self, x, y, width, height)
+        self.container.set_content_bounds(self, x, y, width, height)
 
     def set_hidden(self, hidden):
         if hidden:
@@ -156,13 +160,13 @@ class Widget:
     # INTERFACE
 
     def add_child(self, child):
-        child.viewport = self.viewport
+        child.container = self.container
 
     def insert_child(self, index, child):
         self.add_child(child)
 
     def remove_child(self, child):
-        child.viewport = None
+        child.container = None
 
     def refresh(self):
         self.rehint()

@@ -1,39 +1,13 @@
-from .libs.android.view import ViewGroup__LayoutParams
 from .libs.android.widget import RelativeLayout, RelativeLayout__LayoutParams
 
 
-# Common base class of Window, ScrollContainer, and potentially other containers.
 class Container:
-    def clear_content(self):
-        if self.interface.content:
-            self.interface.content._impl.viewport = None
-
-    def set_content(self, widget):
-        self.clear_content()
-        if widget:
-            widget.viewport = self.content_viewport
-
-
-class Viewport:
-    def __init__(self, parent, container):
-        """
-        :param parent: A native widget to display the viewport within.
-        :param container: An object with a `content` attribute, which, if not None,
-            will have `refresh()` called on it whenever the viewport size changes.
-        """
-        self.parent = parent
-        self.container = container
+    def init_container(self, native_parent):
         self.width = self.height = 0
 
-        context = parent.getContext()
-        self.native = RelativeLayout(context)
-        self.parent.addView(
-            self.native,
-            ViewGroup__LayoutParams(
-                ViewGroup__LayoutParams.MATCH_PARENT,
-                ViewGroup__LayoutParams.MATCH_PARENT,
-            ),
-        )
+        context = native_parent.getContext()
+        self.native_content = RelativeLayout(context)
+        native_parent.addView(self.native_content)
 
         self.dpi = context.getResources().getDisplayMetrics().densityDpi
         # Toga needs to know how the current DPI compares to the platform default,
@@ -41,30 +15,40 @@ class Viewport:
         self.baseline_dpi = 160
         self.scale = self.dpi / self.baseline_dpi
 
+    def set_content(self, widget):
+        self.clear_content()
+        if widget:
+            widget.container = self
+
+    def clear_content(self):
+        if self.interface.content:
+            self.interface.content._impl.container = None
+
+    def resize_content(self, width, height):
+        if (self.width, self.height) != (width, height):
+            self.width, self.height = (width, height)
+            if self.interface.content:
+                self.interface.content.refresh()
+
     def refreshed(self):
-        pass
+        # We must use the correct LayoutParams class, but we don't know what that class
+        # is, so reuse the existing object. Calling the constructor of type(lp) is also
+        # an option, but would probably be less safe because a subclass might change the
+        # meaning of the (int, int) constructor.
+        lp = self.native_content.getLayoutParams()
+        layout = self.interface.content.layout
+        lp.width = max(self.width, layout.width)
+        lp.height = max(self.height, layout.height)
+        self.native_content.setLayoutParams(lp)
 
-    @property
-    def size(self):
-        return (self.width, self.height)
+    def add_content(self, widget):
+        self.native_content.addView(widget.native)
 
-    @size.setter
-    def size(self, size):
-        if size != (self.width, self.height):
-            self.width, self.height = size
-            self.native.setMinimumWidth(self.width)
-            self.native.setMinimumHeight(self.height)
-            if self.container.content is not None:
-                self.container.content.refresh()
+    def remove_content(self, widget):
+        self.native_content.removeView(widget.native)
 
-    def add_widget(self, widget):
-        self.native.addView(widget.native)
-
-    def remove_widget(self, widget):
-        self.native.removeView(widget.native)
-
-    def set_widget_bounds(self, widget, x, y, width, height):
-        layout_params = RelativeLayout__LayoutParams(width, height)
-        layout_params.topMargin = y
-        layout_params.leftMargin = x
-        self.native.updateViewLayout(widget.native, layout_params)
+    def set_content_bounds(self, widget, x, y, width, height):
+        lp = RelativeLayout__LayoutParams(width, height)
+        lp.topMargin = y
+        lp.leftMargin = x
+        widget.native.setLayoutParams(lp)

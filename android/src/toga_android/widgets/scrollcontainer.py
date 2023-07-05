@@ -1,6 +1,6 @@
 from travertino.size import at_least
 
-from ..container import Container, Viewport
+from ..container import Container
 from ..libs.android.view import (
     Gravity,
     View__OnScrollChangeListener,
@@ -61,11 +61,13 @@ class ScrollContainer(Widget, Container):
         self.hScrollView.setOnScrollChangeListener(scroll_listener)
         self.vScrollView.addView(self.hScrollView, hScrollView_layout_params)
 
-        self.content_viewport = Viewport(self.hScrollView, self.interface)
+        self.init_container(self.hScrollView)
 
     def set_bounds(self, x, y, width, height):
         super().set_bounds(x, y, width, height)
-        self.content_viewport.size = (width, height)
+        self.resize_content(width, height)
+        if self.interface.content:
+            self.interface.content.refresh()
 
     def get_vertical(self):
         return self.vScrollListener.is_scrolling_enabled
@@ -94,7 +96,7 @@ class ScrollContainer(Widget, Container):
             return 0
         else:
             return self.scale_out(
-                max(0, self.content_viewport.native.getWidth() - self.native.getWidth())
+                max(0, self.native_content.getWidth() - self.native.getWidth())
             )
 
     def get_max_vertical_position(self):
@@ -102,10 +104,7 @@ class ScrollContainer(Widget, Container):
             return 0
         else:
             return self.scale_out(
-                max(
-                    0,
-                    self.content_viewport.native.getHeight() - self.native.getHeight(),
-                )
+                max(0, self.native_content.getHeight() - self.native.getHeight())
             )
 
     def set_position(self, horizontal_position, vertical_position):

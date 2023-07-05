@@ -1,22 +1,20 @@
-from .container import Container, Viewport
+from .container import Container
 from .libs.android import R__id
 from .libs.android.view import ViewTreeObserver__OnGlobalLayoutListener
 
 
 class LayoutListener(ViewTreeObserver__OnGlobalLayoutListener):
-    def __init__(self, viewport):
+    def __init__(self, window):
         super().__init__()
-        self.viewport = viewport
+        self.window = window
 
     def onGlobalLayout(self):
         """This listener is run after each native layout pass.
 
         If any view's size or position has changed, the new values will be visible here.
         """
-        self.viewport.size = (
-            self.viewport.parent.getWidth(),
-            self.viewport.parent.getHeight(),
-        )
+        native_parent = self.window.native_content.getParent()
+        self.window.resize_content(native_parent.getWidth(), native_parent.getHeight())
 
 
 class Window(Container):
@@ -28,10 +26,10 @@ class Window(Container):
 
     def set_app(self, app):
         self.app = app
-        viewport_parent = app.native.findViewById(R__id.content)
-        self.content_viewport = Viewport(viewport_parent, self.interface)
-        viewport_parent.getViewTreeObserver().addOnGlobalLayoutListener(
-            LayoutListener(self.content_viewport)
+        native_parent = app.native.findViewById(R__id.content)
+        self.init_container(native_parent)
+        native_parent.getViewTreeObserver().addOnGlobalLayoutListener(
+            LayoutListener(self)
         )
 
     def get_title(self):
@@ -48,7 +46,7 @@ class Window(Container):
         pass
 
     def get_size(self):
-        return self.content_viewport.size
+        return (self.width, self.height)
 
     def set_size(self, size):
         # Does nothing on mobile

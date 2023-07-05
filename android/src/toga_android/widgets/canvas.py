@@ -64,29 +64,29 @@ class Canvas(Widget):
         path.close()
 
     def move_to(self, x, y, path, *args, **kwargs):
-        path.moveTo(self.viewport.scale * x, self.viewport.scale * y)
+        path.moveTo(self.container.scale * x, self.container.scale * y)
 
     def line_to(self, x, y, path, *args, **kwargs):
-        path.lineTo(self.viewport.scale * x, self.viewport.scale * y)
+        path.lineTo(self.container.scale * x, self.container.scale * y)
 
     # Basic shapes
 
     def bezier_curve_to(self, cp1x, cp1y, cp2x, cp2y, x, y, path, *args, **kwargs):
         path.cubicTo(
-            cp1x * self.viewport.scale,
-            cp1y * self.viewport.scale,
-            cp2x * self.viewport.scale,
-            cp2y * self.viewport.scale,
-            x * self.viewport.scale,
-            y * self.viewport.scale,
+            cp1x * self.container.scale,
+            cp1y * self.container.scale,
+            cp2x * self.container.scale,
+            cp2y * self.container.scale,
+            x * self.container.scale,
+            y * self.container.scale,
         )
 
     def quadratic_curve_to(self, cpx, cpy, x, y, path, *args, **kwargs):
         path.quadTo(
-            cpx * self.viewport.scale,
-            cpy * self.viewport.scale,
-            x * self.viewport.scale,
-            y * self.viewport.scale,
+            cpx * self.container.scale,
+            cpy * self.container.scale,
+            x * self.container.scale,
+            y * self.container.scale,
         )
 
     def arc(
@@ -96,10 +96,10 @@ class Canvas(Widget):
         if anticlockwise:
             sweep_angle -= math.radians(360)
         path.arcTo(
-            self.viewport.scale * (x - radius),
-            self.viewport.scale * (y - radius),
-            self.viewport.scale * (x + radius),
-            self.viewport.scale * (y + radius),
+            self.container.scale * (x - radius),
+            self.container.scale * (y - radius),
+            self.container.scale * (x + radius),
+            self.container.scale * (y + radius),
             math.degrees(startangle),
             math.degrees(sweep_angle),
             False,
@@ -124,28 +124,28 @@ class Canvas(Widget):
             sweep_angle -= math.radians(360)
         ellipse_path = Path()
         ellipse_path.addArc(
-            self.viewport.scale * (x - radiusx),
-            self.viewport.scale * (y - radiusy),
-            self.viewport.scale * (x + radiusx),
-            self.viewport.scale * (y + radiusy),
+            self.container.scale * (x - radiusx),
+            self.container.scale * (y - radiusy),
+            self.container.scale * (x + radiusx),
+            self.container.scale * (y + radiusy),
             math.degrees(startangle),
             math.degrees(sweep_angle),
         )
         rotation_matrix = Matrix()
         rotation_matrix.postRotate(
             math.degrees(rotation),
-            self.viewport.scale * x,
-            self.viewport.scale * y,
+            self.container.scale * x,
+            self.container.scale * y,
         )
         ellipse_path.transform(rotation_matrix)
         path.addPath(ellipse_path)
 
     def rect(self, x, y, width, height, path, *args, **kwargs):
         path.addRect(
-            self.viewport.scale * x,
-            self.viewport.scale * y,
-            self.viewport.scale * (x + width),
-            self.viewport.scale * (y + height),
+            self.container.scale * x,
+            self.container.scale * y,
+            self.container.scale * (x + width),
+            self.container.scale * (y + height),
             Path__Direction.CW,
         )
 
@@ -167,7 +167,7 @@ class Canvas(Widget):
     def stroke(self, color, line_width, line_dash, path, canvas, *args, **kwargs):
         draw_paint = Paint()
         draw_paint.setAntiAlias(True)
-        draw_paint.setStrokeWidth(self.viewport.scale * line_width)
+        draw_paint.setStrokeWidth(self.container.scale * line_width)
         draw_paint.setStyle(Paint__Style.STROKE)
         if color is None:
             a, r, g, b = 255, 0, 0, 0
@@ -176,7 +176,7 @@ class Canvas(Widget):
         if line_dash is not None:
             draw_paint.setPathEffect(
                 DashPathEffect(
-                    [(self.viewport.scale * float(d)) for d in line_dash], 0.0
+                    [(self.container.scale * float(d)) for d in line_dash], 0.0
                 )
             )
         draw_paint.setARGB(a, r, g, b)
@@ -193,7 +193,7 @@ class Canvas(Widget):
         canvas.scale(float(sx), float(sy))
 
     def translate(self, tx, ty, canvas, *args, **kwargs):
-        canvas.translate(self.viewport.scale * tx, self.viewport.scale * ty)
+        canvas.translate(self.container.scale * tx, self.container.scale * ty)
 
     def reset_transform(self, canvas, *args, **kwargs):
         canvas.restore()
