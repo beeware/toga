@@ -1,7 +1,7 @@
 Scroll Container
 ================
 
-A container that can display a layout larger that the area of the container, with
+A container that can display a layout larger than the area of the container, with
 overflow controlled by scroll bars.
 
 .. figure:: /reference/images/ScrollContainer.png
