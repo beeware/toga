@@ -77,12 +77,14 @@ class ScrollContainer(Widget):
 
         return max(
             0,
-            self.native.get_vadjustment().get_upper()
-            - self.native.get_allocation().height,
+            int(
+                self.native.get_vadjustment().get_upper()
+                - self.native.get_allocation().height
+            ),
         )
 
     def get_vertical_position(self):
-        return self.native.get_vadjustment().get_value()
+        return int(self.native.get_vadjustment().get_value())
 
     def get_max_horizontal_position(self):
         if not self.get_horizontal():
@@ -90,12 +92,14 @@ class ScrollContainer(Widget):
 
         return max(
             0,
-            self.native.get_hadjustment().get_upper()
-            - self.native.get_allocation().width,
+            int(
+                self.native.get_hadjustment().get_upper()
+                - self.native.get_allocation().width
+            ),
         )
 
     def get_horizontal_position(self):
-        return self.native.get_hadjustment().get_value()
+        return int(self.native.get_hadjustment().get_value())
 
     def set_position(self, horizontal_position, vertical_position):
         self.native.get_hadjustment().set_value(horizontal_position)

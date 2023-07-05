@@ -17,8 +17,8 @@ from .properties import (  # noqa: F401
 )
 
 # DPI note: document_width and document_height may be subject to cumulative rounding
-# error. This should be fixed by #2020, at which time the `approx` calls with rel=0.01
-# can be removed. The calls with abs=1 will probably have to stay.
+# error. This should be fixed by #2020, at which time the `approx` calls with abs=100
+# can be removed, or at least reduced to abs=1.
 
 
 @pytest.fixture
@@ -79,7 +79,7 @@ async def widget(content, on_scroll):
 async def test_clear_content(widget, probe, small_content):
     "Widget content can be cleared and reset"
     assert probe.document_width == probe.width
-    assert probe.document_height == approx(6000, rel=0.01)  # TODO: see DPI note
+    assert probe.document_height == approx(6000, abs=100)  # TODO: see DPI note
 
     widget.content = None
     await probe.redraw("Widget content has been cleared")
@@ -233,7 +233,7 @@ async def test_enable_vertical_scrolling(widget, probe, content, on_scroll):
 async def test_vertical_scroll(widget, probe, on_scroll):
     "The widget can be scrolled vertically."
     assert probe.document_width == probe.width
-    assert probe.document_height == approx(6000, rel=0.01)  # TODO: see DPI note
+    assert probe.document_height == approx(6000, abs=100)  # TODO: see DPI note
 
     assert widget.max_horizontal_position == 0
     assert widget.max_vertical_position == approx(
@@ -302,7 +302,7 @@ async def test_horizontal_scroll(widget, probe, content, on_scroll):
     content.style.direction = ROW
     await probe.redraw("Content has been switched for a wide document")
 
-    assert probe.document_width == approx(20000, rel=0.01)  # TODO: see DPI note
+    assert probe.document_width == approx(20000, abs=100)  # TODO: see DPI note
     assert probe.document_height == probe.height
 
     assert widget.max_horizontal_position == approx(
@@ -384,7 +384,7 @@ async def test_scroll_both(widget, probe, content, on_scroll):
     )
     await probe.redraw("Content has been modified to be wide as well as tall")
     assert probe.document_width == 2040
-    assert probe.document_height == approx(6060, rel=0.01)  # TODO: see DPI note
+    assert probe.document_height == approx(6060, abs=100)  # TODO: see DPI note
 
     assert widget.horizontal_position == 0
     assert widget.vertical_position == 0
