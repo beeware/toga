@@ -21,6 +21,10 @@ class Image:
             )
             if self.native is None:
                 raise ValueError("Unable to load image from data")
+        self.native.retain()
+
+    def __del__(self):
+        self.native.release()
 
     def get_width(self):
         return self.native.size.width

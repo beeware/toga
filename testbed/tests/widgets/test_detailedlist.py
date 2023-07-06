@@ -96,7 +96,7 @@ async def test_scroll(widget, probe):
     # the detailedList; we don't really care which - as long as it's roughly in the middle of
     # the scroll range, call it a win.
     assert probe.scroll_position == pytest.approx(
-        probe.max_scroll_position / 2, abs=250
+        probe.max_scroll_position / 2, abs=probe.height / 2
     )
 
     # Scroll to the top of the detailedList
@@ -249,8 +249,11 @@ async def test_refresh(widget, probe):
     await probe.redraw("A non-refresh action has occurred")
     assert len(widget.data) == 101
 
+    # Disable refresh a second time, ensuring it's a no-op
+    widget.on_refresh = None
+
     # A full refresh action doesn't reload data
-    await probe.refresh_action()
+    await probe.refresh_action(active=False)
     await probe.redraw("A refresh action was performed without triggering refresh")
     assert len(widget.data) == 101
 
@@ -275,13 +278,13 @@ async def test_actions(
 
     # Disable secondary action
     widget.on_secondary_action = None
-    await probe.perform_secondary_action(5)
+    await probe.perform_secondary_action(5, active=False)
     await probe.redraw("An attempt at a secondary action was made")
     on_secondary_action_handler.assert_not_called()
 
     # Disable primary action
     widget.on_primary_action = None
-    await probe.perform_primary_action(5)
+    await probe.perform_primary_action(5, active=False)
     await probe.redraw("An attempt at a primary action was made")
     on_primary_action_handler.assert_not_called()
 

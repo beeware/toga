@@ -109,6 +109,13 @@ will respond to the refresh UI action, and the ``on_refresh`` handler will be in
 If no ``on_refresh`` handler is provided, the DetailedList will behave as a static list,
 and will *not* respond to the refresh UI action.
 
+Notes
+-----
+
+* The iOS Human Interface Guidelines differentiate between "Normal" and "Destructive"
+  actions on a row. Toga will interpret any action with a name of "Delete" or "Remove"
+  as destructive, and will render the action appropriately.
+
 Reference
 ---------
 

@@ -158,16 +158,18 @@ class DetailedListProbe(SimpleProbe):
         await asyncio.sleep(0.1)
         self.scroll_to_top()
 
-    async def refresh_action(self):
+    async def refresh_action(self, active=True):
         # 50px is enough to trigger a refresh
         await self._refresh_action(50)
 
-        if self.native.refresh_indicator.isHidden():
+        if not active:
+            assert self.native.refresh_indicator.isHidden()
             # If refresh is disabled, simulate a short delay before releasing the
             # pull-to-refresh
             await asyncio.sleep(0.1)
             self.scroll_to_top()
         else:
+            assert not self.native.refresh_indicator.isHidden()
             # Wait for the scroll to relax after reload completion
             while self.scroll_position < 0:
                 await asyncio.sleep(0.01)
@@ -196,11 +198,15 @@ class DetailedListProbe(SimpleProbe):
             delay=0.1,
         )
 
-    async def perform_primary_action(self, row):
-        # 10px is enough to select the first menu item
+    async def perform_primary_action(self, row, active=True):
+        # 10px is enough to select the first menu item. It doesn't matter whether the
+        # action is active or not; if the action is inactive, it will either press the
+        # wrong action, or press empty space.
         await self._perform_action(row, 10)
 
-    async def perform_secondary_action(self, row):
+    async def perform_secondary_action(self, row, active=True):
         # 30px is enough to select the second menu item. However the secondary action
-        # will be in position 1 on the menu if the primary action is disabled.
+        # will be in position 1 on the menu if the primary action is disabled. It
+        # doesn't matter whether the action is active or not; if the action is inactive,
+        # it will either press the wrong action, or press empty space.
         await self._perform_action(row, 30 if self.impl.primary_action_enabled else 10)

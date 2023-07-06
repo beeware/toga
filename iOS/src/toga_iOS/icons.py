@@ -8,4 +8,7 @@ class Icon:
     def __init__(self, interface, path):
         self.interface = interface
         self.path = path
-        self.native = UIImage.imageWithContentsOfFile(str(path))
+        self.native = UIImage.imageWithContentsOfFile(str(path)).retain()
+
+    def __del__(self):
+        self.native.release()
