@@ -1,5 +1,5 @@
+from toga_winforms.container import Container
 from toga_winforms.libs import WinForms
-from toga_winforms.window import WinFormsViewport
 
 from .base import Widget
 
@@ -10,7 +10,7 @@ class OptionContainer(Widget):
         self.native.Selected += self.winforms_selected
 
     def add_content(self, index, text, widget):
-        widget.viewport = WinFormsViewport(self.native, self)
+        widget.viewport = Container(self.native)
         widget.frame = self
         # Add all children to the content widget.
         for child in widget.interface.children:

@@ -1,5 +1,5 @@
+from toga_winforms.container import Container
 from toga_winforms.libs import WinForms
-from toga_winforms.window import WinFormsViewport
 
 from .base import Widget
 
@@ -19,7 +19,7 @@ class ScrollContainer(Widget):
     def set_content(self, widget):
         self.inner_container = widget
 
-        widget.viewport = WinFormsViewport(self.native, self)
+        widget.viewport = Container(self.native)
         widget.frame = self
 
         for child in widget.interface.children:
@@ -42,10 +42,6 @@ class ScrollContainer(Widget):
     def set_window(self, window):
         if self.interface.content:
             self.interface.content.window = window
-
-    def set_on_scroll(self, on_scroll):
-        # Do nothing
-        pass
 
     def get_vertical_position(self):
         return self.native.VerticalScroll.Value
@@ -85,3 +81,7 @@ class ScrollContainer(Widget):
     @property
     def maximum_horizontal_position(self):
         return self.native.HorizontalScroll.Maximum
+
+    def set_position(self, horizontal_position, vertical_position):
+        self.set_horizontal_position(horizontal_position)
+        self.set_vertical_position(vertical_position)

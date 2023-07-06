@@ -17,7 +17,6 @@ class Widget:
 
         self._container = None
         self.native = None
-        self.viewport = None
         self.create()
         self.interface.style.reapply()
 
@@ -39,29 +38,22 @@ class Widget:
 
     @container.setter
     def container(self, container):
-        if self.container:
-            assert container is None, "Widget already has a container"
-            # container is set to None, removing self from the container.native
-            self._container.native.Controls.Remove(self.native)
-            self._container = None
-        elif container:
-            # setting container, adding self to container.native
-            self._container = container
-            self._container.native.Controls.Add(self.native)
-            self.native.BringToFront()
-
+        # To obtain the correct Z-order, add children before self.
         for child in self.interface.children:
             child._impl.container = container
+
+        if self._container:
+            self._container.remove_content(self)
+
+        self._container = container
+        if container:
+            container.add_content(self)
 
         self.rehint()
 
     @property
     def viewport(self):
-        return self._viewport
-
-    @viewport.setter
-    def viewport(self, viewport):
-        self._viewport = viewport
+        return self._container
 
     def get_tab_index(self):
         return self.native.TabIndex
@@ -80,20 +72,9 @@ class Widget:
 
     # APPLICATOR
 
-    @property
-    def vertical_shift(self):
-        return 0
-
     def set_bounds(self, x, y, width, height):
-        # Root level widgets may require vertical adjustment to
-        # account for toolbars, etc.
-        if self.interface.parent is None:
-            vertical_shift = self.frame.vertical_shift
-        else:
-            vertical_shift = 0
-
         self.native.Size = Size(width, height)
-        self.native.Location = Point(x, y + vertical_shift)
+        self.native.Location = Point(x, y)
 
     def set_alignment(self, alignment):
         # By default, alignment can't be changed
@@ -125,18 +106,10 @@ class Widget:
     # INTERFACE
 
     def add_child(self, child):
-        if self.viewport:
-            # we are the top level container
-            child.container = self
-        else:
-            child.container = self.container
+        child.container = self.container
 
     def insert_child(self, index, child):
-        if self.viewport:
-            # we are the the top level container
-            child.container = self
-        else:
-            child.container = self.container
+        self.add_child(child)
 
     def remove_child(self, child):
         child.container = None
