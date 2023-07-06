@@ -1,5 +1,13 @@
 from .libs import Gdk, Gtk
 
+#######################################################################################
+# Implementation notes:
+#
+# GDK/GTK renders everything at 96dpi. When HiDPI mode is enabled, it is managed at the
+# compositor level. See https://wiki.archlinux.org/index.php/HiDPI#GDK_3_(GTK_3) for
+# details.
+#######################################################################################
+
 
 class TogaContainer(Gtk.Fixed):
     """A GTK container widget implementing Toga's layout.
@@ -13,9 +21,6 @@ class TogaContainer(Gtk.Fixed):
         self.min_width = 100
         self.min_height = 100
 
-        # GDK/GTK always renders at 96dpi. When HiDPI mode is enabled, it is
-        # managed at the compositor level. See
-        # https://wiki.archlinux.org/index.php/HiDPI#GDK_3_(GTK_3) for details
         self.dpi = 96
         self.baseline_dpi = self.dpi
 
