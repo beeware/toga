@@ -24,7 +24,8 @@ class Image:
         self.native.retain()
 
     def __del__(self):
-        self.native.release()
+        if self.native:
+            self.native.release()
 
     def get_width(self):
         return self.native.size.width

@@ -11,4 +11,5 @@ class Icon:
         self.native = UIImage.imageWithContentsOfFile(str(path)).retain()
 
     def __del__(self):
-        self.native.release()
+        if self.native:
+            self.native.release()
