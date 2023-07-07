@@ -19,7 +19,7 @@ class SimpleProbe(BaseProbe):
         self._keypress_target = self.native
 
         # Ensure that the theme isn't using animations for the widget.
-        settings = Gtk.Settings.get_for_screen(self.native.get_screen())
+        settings = Gtk.Settings.get_for_display(self.native.get_display())
         settings.set_property("gtk-enable-animations", False)
 
     def assert_container(self, container):
