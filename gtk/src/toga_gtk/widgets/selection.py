@@ -52,7 +52,7 @@ class Selection(Widget):
         # Insert a new entry at the same index,
         # then delete the old entry (at the increased index)
         with self.suspend_notifications():
-            self.string_list.splice(index, 1, self.interface._title_for_item(item))
+            self.string_list.splice(index, 1, [self.interface._title_for_item(item)])
             if selection_index == index:
                 self.native.set_selected(index)
 
@@ -63,7 +63,9 @@ class Selection(Widget):
         with self.suspend_notifications():
             item_at_index = self.string_list.get_string(index)
             if item_at_index is None:
-                self.string_list.splice(index, 0, self.interface._title_for_item(item))
+                self.string_list.splice(
+                    index, 0, [self.interface._title_for_item(item)]
+                )
             else:
                 self.string_list.splice(
                     index, 1, [self.interface._title_for_item(item), item_at_index]
