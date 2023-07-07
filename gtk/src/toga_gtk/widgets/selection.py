@@ -63,9 +63,7 @@ class Selection(Widget):
         with self.suspend_notifications():
             item_at_index = self.string_list.get_string(index)
             if item_at_index is None:
-                self.string_list.splice(
-                    index, 0, self.interface._title_for_item(item)
-                )
+                self.string_list.splice(index, 0, self.interface._title_for_item(item))
             else:
                 self.string_list.splice(
                     index, 1, [self.interface._title_for_item(item), item_at_index]
