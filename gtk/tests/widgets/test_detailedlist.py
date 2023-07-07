@@ -53,7 +53,7 @@ class TestGtkDetailedList(unittest.TestCase):
         self.gtk_dl = self.dl._impl
 
         self.window = Gtk.Window()
-        self.window.add(self.dl._impl.native)
+        self.window.set_child(self.dl._impl.native)
 
     def assertRowEqual(self, row, data):
         for attr in ("icon", "title", "subtitle"):

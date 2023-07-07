@@ -37,7 +37,7 @@ class TestGtkTable(unittest.TestCase):
         self.gtk_table = self.table._impl
 
         self.window = Gtk.Window()
-        self.window.add(self.table._impl.native)
+        self.window.set_child(self.table._impl.native)
 
     def assertRowEqual(self, row, data):
         self.assertEqual(tuple(row)[1:], data)

@@ -37,7 +37,7 @@ class TestGtkTree(unittest.TestCase):
         self.gtk_tree = self.tree._impl
 
         self.window = Gtk.Window()
-        self.window.add(self.tree._impl.native)
+        self.window.set_child(self.tree._impl.native)
 
     def assertNodeEqual(self, node, data):
         self.assertEqual(tuple(node)[1:], data)
