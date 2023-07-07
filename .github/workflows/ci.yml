@@ -152,7 +152,7 @@ jobs:
           - backend: gtk
             pre-command: |
               sudo apt update -y
-              sudo apt install -y pkg-config python3-dev libgirepository1.0-dev libcairo2-dev gir1.2-gtk-3.0
+              sudo apt install -y pkg-config python3-dev libgirepository1.0-dev libcairo2-dev gir1.2-gtk-3.0 libgtk-4-1
 
           - backend: iOS
             runs-on: macos-latest
@@ -210,7 +210,7 @@ jobs:
             # tutorial, plus flwm to provide a window manager
             pre-command: |
               sudo apt update -y
-              sudo apt install -y flwm pkg-config python3-dev libgirepository1.0-dev libcairo2-dev gir1.2-webkit2-4.0
+              sudo apt install -y flwm pkg-config python3-dev libgirepository1.0-dev libcairo2-dev gir1.2-webkit2-4.0 libgtk-4-1
 
               # Start Virtual X server
               echo "Start X server..."
