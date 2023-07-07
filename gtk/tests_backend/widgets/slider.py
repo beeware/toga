@@ -11,7 +11,7 @@ class SliderProbe(SimpleProbe):
         assert self.native.get_draw_value() is False
         return (self.native.get_value() - self._min) / (self._max - self._min)
 
-    def change(self, position):
+    async def change(self, position):
         self.native.emit(
             "change-value",
             Gtk.ScrollType.JUMP,

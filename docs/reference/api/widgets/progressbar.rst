@@ -65,6 +65,6 @@ Notes
 Reference
 ---------
 
-.. autoclass:: toga.widgets.progressbar.ProgressBar
+.. autoclass:: toga.ProgressBar
    :members:
    :undoc-members:

@@ -276,6 +276,9 @@ class App:
         about.run()
         about.destroy()
 
+    def beep(self):
+        Gdk.gdk_beep()
+
     def exit(self):
         self.native.quit()
 

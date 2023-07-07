@@ -3,11 +3,12 @@ from java import jclass
 from android.os import Build
 
 from .base import SimpleProbe
-from .properties import toga_alignment, toga_color, toga_font, toga_vertical_alignment
+from .properties import toga_alignment, toga_color, toga_font
 
 
 class LabelProbe(SimpleProbe):
     native_class = jclass("android.widget.TextView")
+    supports_justify = True
 
     @property
     def color(self):
@@ -31,6 +32,3 @@ class LabelProbe(SimpleProbe):
             None if Build.VERSION.SDK_INT < 26 else self.native.getJustificationMode()
         )
         return toga_alignment(self.native.getGravity(), justification_mode)
-
-    def assert_vertical_alignment(self, expected):
-        assert toga_vertical_alignment(self.native.getGravity()) == expected

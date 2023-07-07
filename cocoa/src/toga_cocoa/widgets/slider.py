@@ -59,12 +59,17 @@ class Slider(Widget, toga.widgets.slider.SliderImpl):
     def set_value(self, value):
         self.native.doubleValue = value
 
-    def get_range(self):
-        return self.native.minValue, self.native.maxValue
+    def get_min(self):
+        return self.native.minValue
 
-    def set_range(self, range):
-        self.native.minValue = range[0]
-        self.native.maxValue = range[1]
+    def set_min(self, value):
+        self.native.minValue = value
+
+    def get_max(self):
+        return self.native.maxValue
+
+    def set_max(self, value):
+        self.native.maxValue = value
 
     def rehint(self):
         content_size = self.native.intrinsicContentSize()

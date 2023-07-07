@@ -50,6 +50,6 @@ Notes
 Reference
 ---------
 
-.. autoclass:: toga.widgets.switch.Switch
+.. autoclass:: toga.Switch
    :members:
    :undoc-members:

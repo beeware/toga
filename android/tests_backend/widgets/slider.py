@@ -13,7 +13,7 @@ class SliderProbe(SimpleProbe):
     def position(self):
         return (self.native.getProgress() - self._min) / (self._max - self._min)
 
-    def change(self, position):
+    async def change(self, position):
         self.native.setProgress(self._min + round(position * (self._max - self._min)))
 
     @property

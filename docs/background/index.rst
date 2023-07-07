@@ -1,18 +1,12 @@
 .. _background:
 
-=============
+==========
 Background
-=============
+==========
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
 
-   philosophy
-   faq
-   success
-   releases
-   roadmap
-   architecture
-   layout
-   commands
-   data-sources
+   project/index
+   topics/index
+   internals/index

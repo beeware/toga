@@ -28,19 +28,24 @@ class BaseProbe:
     def __init__(self):
         self.event_listener = EventListener.alloc().init()
 
-    async def post_event(self, event):
-        self.native.window.postEvent(event, atStart=False)
+    async def post_event(self, event, delay=None):
+        self.window._impl.native.postEvent(event, atStart=False)
 
-        # Add another event to the queue behind the original event, to notify us once
-        # it's been processed.
-        NSRunLoop.currentRunLoop.performSelector(
-            SEL("onEvent"),
-            target=self.event_listener,
-            argument=None,
-            order=0,
-            modes=NSArray.arrayWithObject(NSDefaultRunLoopMode),
-        )
-        await self.event_listener.event.wait()
+        if delay:
+            # Some widgets enter an internal runloop when processing certain events;
+            # this prevents
+            await asyncio.sleep(delay)
+        else:
+            # Add another event to the queue behind the original event, to notify us once
+            # it's been processed.
+            NSRunLoop.currentRunLoop.performSelector(
+                SEL("onEvent"),
+                target=self.event_listener,
+                argument=None,
+                order=0,
+                modes=NSArray.arrayWithObject(NSDefaultRunLoopMode),
+            )
+            await self.event_listener.event.wait()
 
     def assert_font_family(self, expected):
         assert self.font.family == {
@@ -52,12 +57,15 @@ class BaseProbe:
             SYSTEM: ".AppleSystemUIFont",
         }.get(expected, expected)
 
-    async def redraw(self, message=None):
+    async def redraw(self, message=None, delay=None):
         """Request a redraw of the app, waiting until that redraw has completed."""
         if self.app.run_slow:
             # If we're running slow, wait for a second
             print("Waiting for redraw" if message is None else message)
-            await asyncio.sleep(1)
+            delay = 1
+
+        if delay:
+            await asyncio.sleep(delay)
         else:
             # Running at "normal" speed, we need to release to the event loop
             # for at least one iteration. `runUntilDate:None` does this.

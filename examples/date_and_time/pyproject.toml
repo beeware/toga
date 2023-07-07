@@ -7,49 +7,49 @@ bundle = "org.beeware"
 version = "0.0.1"
 url = "https://beeware.org"
 license = "BSD license"
-author = 'Tiberius Yak'
+author = "Tiberius Yak"
 author_email = "tiberius@beeware.org"
 
 [tool.briefcase.app.date_and_time]
 formal_name = "Date And Time"
 description = "A testing app"
-sources = ['date_and_time']
+sources = ["date_and_time"]
 requires = [
-    '../../core',
+    "../../core",
 ]
 
 
 [tool.briefcase.app.date_and_time.macOS]
 requires = [
-    '../../cocoa',
-    'std-nslog>=1.0.0',
+    "../../cocoa",
+    "std-nslog>=1.0.0",
 ]
 
 [tool.briefcase.app.date_and_time.linux]
 requires = [
-    '../../gtk',
+    "../../gtk",
 ]
 
 [tool.briefcase.app.date_and_time.windows]
 requires = [
-    '../../winforms',
+    "../../winforms",
 ]
 
 # Mobile deployments
 [tool.briefcase.app.date_and_time.iOS]
 requires = [
-    '../../iOS',
-    'std-nslog>=1.0.0',
+    "../../iOS",
+    "std-nslog>=1.0.0",
 ]
 
 [tool.briefcase.app.date_and_time.android]
 requires = [
-    '../../android',
+    "../../android",
 ]
 
 # Web deployment
 [tool.briefcase.app.date_and_time.web]
 requires = [
-    '../../web',
+    "../../web",
 ]
 style_framework = "Shoelace v2.3"

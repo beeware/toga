@@ -11,6 +11,7 @@ from .properties import toga_xalignment
 class TextInputProbe(SimpleProbe):
     native_class = TextBox
     background_supports_alpha = False
+    fixed_height = 18
 
     @property
     def value(self):
@@ -48,10 +49,6 @@ class TextInputProbe(SimpleProbe):
     @property
     def alignment(self):
         return toga_xalignment(self.native.TextAlign)
-
-    def assert_height(self, min_height, max_height):
-        # Height isn't configurable in this native widget.
-        assert 12 <= self.height <= 22
 
     def assert_vertical_alignment(self, expected):
         # Vertical alignment isn't configurable in this native widget.

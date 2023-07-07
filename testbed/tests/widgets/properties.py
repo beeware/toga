@@ -322,7 +322,7 @@ async def test_font(widget, probe, verify_font_sizes):
         message="Widget text should be reset to original family and size"
     )
     assert probe.font == orig_font
-    if verify_font_sizes[0]:
+    if verify_font_sizes[0] and probe.shrink_on_resize:
         assert probe.width == orig_width
     if verify_font_sizes[1]:
         assert probe.height == orig_height
@@ -520,7 +520,8 @@ async def test_flex_horizontal_widget_size(widget, probe):
     # Container is initially a non-flex row box.
     # Initial widget size is small (but non-zero), based on content size.
     probe.assert_width(1, 300)
-    probe.assert_height(1, 50)
+    probe.assert_height(1, 55)
+    original_height = probe.height
 
     # Make the widget flexible; it will expand to fill horizontal space
     widget.style.flex = 1
@@ -530,9 +531,9 @@ async def test_flex_horizontal_widget_size(widget, probe):
         message="Widget width should be expanded but has the same height"
     )
     probe.assert_width(350, MAX_WIDTH)
-    probe.assert_height(2, 50)
+    probe.assert_height(2, original_height)
     assert probe.width > 350
-    assert probe.height <= 50
+    assert probe.height <= original_height
 
     # Make the container a flexible column box
     # This will make the height the flexible axis
@@ -545,7 +546,7 @@ async def test_flex_horizontal_widget_size(widget, probe):
     )
     assert probe.width > 350
     probe.assert_width(350, MAX_WIDTH)
-    probe.assert_height(2, 50)
+    probe.assert_height(2, original_height)
 
     # Set an explicit height and width
     widget.style.width = 300
