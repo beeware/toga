@@ -5,13 +5,6 @@ Validators
 
 A mechanism for validating that input meets a given set of criteria.
 
-.. rst-class:: widget-support
-.. csv-filter:: Availability (:ref:`Key <api-status-key>`)
-   :header-rows: 1
-   :file: ../../data/widgets_by_platform.csv
-   :included_cols: 4,5,6,7,8,9
-   :exclude: {0: '(?!(Validators|Component)$)'}
-
 Usage
 -----
 
@@ -30,10 +23,10 @@ the user's input starts with the text "Hello":
 Toga provides built-in validators for a range of common validation types, as well
 as some base classes that can be used as a starting point for custom validators.
 
-A list of validators can then be provided to any widget that performs
-validation, such as the :class:`~toga.widgets.textinput.TextInput` widget. In
-the following example, a ``TextInput`` will validate that the user has entered
-text that starts with "hello", and has provided at least 10 characters of input:
+A list of validators can then be provided to any widget that performs validation, such
+as the :class:`~toga.TextInput` widget. In the following example, a ``TextInput`` will
+validate that the user has entered text that starts with "hello", and has provided at
+least 10 characters of input:
 
 .. code-block:: python
 

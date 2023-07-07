@@ -25,7 +25,7 @@ class Window:
         title (str): Title for the window (optional).
         position (``tuple`` of (int, int)): Position of the window, as x,y coordinates.
         size (``tuple`` of (int, int)):  Size of the window, as (width, height) sizes, in pixels.
-        toolbar (``list`` of :class:`~toga.widgets.base.Widget`): A list of widgets to add to a toolbar
+        toolbar (``list`` of :class:`~toga.Widget`): A list of widgets to add to a toolbar
         resizeable (bool): Toggle if the window is resizable by the user, defaults to `True`.
         closeable (bool): Toggle if the window is closable by the user, defaults to `True`.
         minimizable (bool): Toggle if the window is minimizable by the user, defaults to `True`.
@@ -93,10 +93,10 @@ class Window:
 
     @property
     def app(self):
-        """Instance of the :class:`toga.app.App` that this window belongs to.
+        """Instance of the :class:`toga.App` that this window belongs to.
 
         Returns:
-            The app that it belongs to :class:`toga.app.App`.
+            The app that it belongs to :class:`toga.App`.
 
         Raises:
             Exception: If the window already is associated with another app.
@@ -135,7 +135,7 @@ class Window:
         """Toolbar for the window.
 
         Returns:
-            A ``list`` of :class:`~toga.widgets.base.Widget`
+            A ``list`` of :class:`toga.Widget`
         """
         return self._toolbar
 
@@ -145,7 +145,7 @@ class Window:
         the window and to the same app.
 
         Returns:
-            A :class:`~toga.widgets.base.Widget`
+            A :class:`toga.Widget`
         """
         return self._content
 

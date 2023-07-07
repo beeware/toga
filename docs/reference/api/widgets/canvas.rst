@@ -67,7 +67,7 @@ Reference
 Main Interface
 ^^^^^^^^^^^^^^
 
-.. autoclass:: toga.widgets.canvas.Canvas
+.. autoclass:: toga.Canvas
    :members:
    :undoc-members:
    :exclude-members: canvas, add_draw_obj

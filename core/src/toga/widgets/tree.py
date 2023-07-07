@@ -21,7 +21,7 @@ class Tree(Widget):
 
           - any Python object ``value`` with a string representation. This
             string will be shown in the widget. If ``value`` has an attribute
-            ``icon``, instance of (:class:`~toga.icons.Icon`), the icon will be
+            ``icon``, instance of (:class:`~toga.Icon`), the icon will be
             shown in front of the text.
 
           - a tuple ``(icon, value)`` where again the string representation of

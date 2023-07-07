@@ -7,49 +7,49 @@ bundle = "org.beeware"
 version = "0.0.1"
 url = "https://beeware.org"
 license = "BSD license"
-author = 'Tiberius Yak'
+author = "Tiberius Yak"
 author_email = "tiberius@beeware.org"
 
 [tool.briefcase.app.beeliza]
 formal_name = "Beeliza"
 description = "A testing app"
-sources = ['beeliza']
+sources = ["beeliza"]
 requires = [
-    '../../core',
+    "../../core",
 ]
 
 
 [tool.briefcase.app.beeliza.macOS]
 requires = [
-    '../../cocoa',
-    'std-nslog>=1.0.0',
+    "../../cocoa",
+    "std-nslog>=1.0.0",
 ]
 
 [tool.briefcase.app.beeliza.linux]
 requires = [
-    '../../gtk',
+    "../../gtk",
 ]
 
 [tool.briefcase.app.beeliza.windows]
 requires = [
-    '../../winforms',
+    "../../winforms",
 ]
 
 # Mobile deployments
 [tool.briefcase.app.beeliza.iOS]
 requires = [
-    '../../iOS',
-    'std-nslog>=1.0.0',
+    "../../iOS",
+    "std-nslog>=1.0.0",
 ]
 
 [tool.briefcase.app.beeliza.android]
 requires = [
-    '../../android',
+    "../../android",
 ]
 
 # Web deployment
 [tool.briefcase.app.beeliza.web]
 requires = [
-    '../../web',
+    "../../web",
 ]
 style_framework = "Shoelace v2.3"

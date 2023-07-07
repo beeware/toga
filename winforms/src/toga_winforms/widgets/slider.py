@@ -37,8 +37,8 @@ class Slider(Widget, toga.widgets.slider.IntSliderImpl):
     def get_int_max(self):
         return self.native.Maximum
 
-    def set_int_max(self, max):
-        self.native.Maximum = max
+    def set_int_max(self, value):
+        self.native.Maximum = value
 
     def set_ticks_visible(self, visible):
         self.native.TickStyle = BOTTOM_RIGHT_TICK_STYLE if visible else NONE_TICK_STYLE

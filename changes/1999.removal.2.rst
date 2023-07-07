@@ -1,0 +1,1 @@
+``NumberInput.min_value`` and ``NumberInput.max_value`` have been renamed ``NumberInput.min`` and ``NumberInput.max``, respectively.

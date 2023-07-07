@@ -10,6 +10,7 @@ class NumberInputProbe(SimpleProbe):
     allows_empty_value = True
     allows_extra_digits = True
     background_supports_alpha = False
+    fixed_height = 18
 
     @property
     def value(self):
@@ -33,10 +34,6 @@ class NumberInputProbe(SimpleProbe):
     @property
     def alignment(self):
         return toga_xalignment(self.native.TextAlign)
-
-    def assert_height(self, min_height, max_height):
-        # Height isn't configurable in this native widget.
-        assert 12 <= self.height <= 22
 
     def assert_vertical_alignment(self, expected):
         # Vertical alignment isn't configurable in this native widget.

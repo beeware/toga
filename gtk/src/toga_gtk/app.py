@@ -156,6 +156,9 @@ class App:
         about.set_transient_for(self.get_current_window().native)
         about.present()
 
+    def beep(self):
+        Gdk.gdk_beep()
+
     def exit(self):
         self.native.quit()
 

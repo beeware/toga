@@ -67,18 +67,24 @@ class Slider(Widget, toga.widgets.slider.SliderImpl):
     def get_value(self):
         return self.native.get_value()
 
-    def set_range(self, range):
-        self.adj.set_lower(range[0])
-        self.adj.set_upper(range[1])
+    def get_min(self):
+        return self.adj.get_lower()
 
-    def get_range(self):
-        return self.adj.get_lower(), self.adj.get_upper()
+    def set_min(self, value):
+        self.adj.set_lower(value)
+
+    def get_max(self):
+        return self.adj.get_upper()
+
+    def set_max(self, value):
+        self.adj.set_upper(value)
 
     def set_tick_count(self, tick_count):
         self.tick_count = tick_count
         self.native.clear_marks()
         if tick_count is not None:
-            min, max = self.get_range()
+            min = self.get_min()
+            max = self.get_max()
             span = max - min
             for i in range(tick_count):
                 value = min + (span * (i / (tick_count - 1)))

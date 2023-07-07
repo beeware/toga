@@ -169,8 +169,8 @@ class App:
         derived from packaging metadata if not provided.
     :param startup: The callback method before starting the app, typically to
         add the components. Must be a ``callable`` that expects a single
-        argument of :class:`~toga.app.App`.
-    :param windows: An iterable with objects of :class:`~toga.window.Window`
+        argument of :class:`~toga.App`.
+    :param windows: An iterable with objects of :class:`~toga.Window`
         that will be the app's secondary windows.
     """
 
@@ -458,7 +458,7 @@ class App:
     def icon(self):
         """The Icon for the app.
 
-        :returns: A ``toga.Icon`` instance for the app's icon.
+        :returns: A :class:`toga.Icon` instance for the app's icon.
         """
         return self._icon
 
@@ -568,6 +568,10 @@ class App:
         """
         if self.home_page is not None:
             webbrowser.open(self.home_page)
+
+    def beep(self):
+        """Play the default system notification sound."""
+        self._impl.beep()
 
     def main_loop(self):
         """Invoke the application to handle user input.

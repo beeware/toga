@@ -20,10 +20,9 @@ not the actual characters.
 Usage
 -----
 
-The ``PasswordInput`` is functionally identical to a
-:class:`~toga.widgets.textinput.TextInput`, except for how the text is
-displayed. All features supported by :class:`~toga.widgets.textinput.TextInput`
-are also supported by PasswordInput.
+The ``PasswordInput`` is functionally identical to a :class:`~toga.TextInput`, except
+for how the text is displayed. All features supported by :class:`~toga.TextInput` are
+also supported by PasswordInput.
 
 .. code-block:: python
 
@@ -47,6 +46,6 @@ Notes
 Reference
 ---------
 
-.. autoclass:: toga.widgets.passwordinput.PasswordInput
+.. autoclass:: toga.PasswordInput
    :members:
    :undoc-members:

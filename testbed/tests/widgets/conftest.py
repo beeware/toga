@@ -1,3 +1,5 @@
+from unittest.mock import Mock
+
 from pytest import fixture
 
 import toga
@@ -18,11 +20,16 @@ async def probe(main_window, widget):
     box = toga.Box(children=[widget])
     main_window.content = box
     probe = get_probe(widget)
-    await probe.redraw(f"\nConstructing {widget.__class__.__name__} probe")
+    await probe.redraw(f"Constructing {widget.__class__.__name__} probe")
     probe.assert_container(box)
     yield probe
 
     main_window.content = old_content
+
+
+@fixture
+async def container_probe(widget):
+    return get_probe(widget.parent)
 
 
 @fixture
@@ -36,6 +43,23 @@ async def other(widget):
 @fixture
 async def other_probe(other):
     return get_probe(other)
+
+
+@fixture(params=[True, False])
+async def focused(request, widget, other):
+    if request.param:
+        widget.focus()
+    else:
+        other.focus()
+    return request.param
+
+
+@fixture
+async def on_change(widget):
+    on_change = Mock()
+    widget.on_change = on_change
+    on_change.assert_not_called()
+    return on_change
 
 
 @fixture
