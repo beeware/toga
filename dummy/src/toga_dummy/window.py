@@ -50,7 +50,8 @@ class Window(LoggedObject):
     def create_toolbar(self):
         self._action("create toolbar")
 
-    @not_required_on("android")  # Android inherits this method from a base class.
+    # Some platforms inherit this method from a base class.
+    @not_required_on("android", "winforms")
     def clear_content(self):
         try:
             widget = self._get_value("content")
@@ -59,7 +60,8 @@ class Window(LoggedObject):
             pass
         self._action("clear content")
 
-    @not_required_on("android")  # Android inherits this method from a base class.
+    # Some platforms inherit this method from a base class.
+    @not_required_on("android", "winforms")
     def set_content(self, widget):
         self.container.content = widget
         self._action("set content", widget=widget)
