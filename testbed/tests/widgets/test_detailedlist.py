@@ -79,11 +79,15 @@ async def test_scroll(widget, probe):
 
     # Due to the interaction of scrolling with the header row, the scroll might be <0.
     assert probe.scroll_position <= 0
+    # Refresh is available at the top of the page.
+    assert probe.refresh_available()
 
     # Scroll to the bottom of the detailedList
     widget.scroll_to_bottom()
     await probe.wait_for_scroll_completion()
     await probe.redraw("DetailedList scrolled to bottom")
+    # Refresh is not available when we're not at the top of the page.
+    assert not probe.refresh_available()
 
     assert probe.scroll_position == probe.max_scroll_position
 
@@ -91,6 +95,8 @@ async def test_scroll(widget, probe):
     widget.scroll_to_row(50)
     await probe.wait_for_scroll_completion()
     await probe.redraw("DetailedList scrolled to mid row")
+    # Refresh is not available when we're not at the top of the page.
+    assert not probe.refresh_available()
 
     # Row 50 should be visible. It could be at the top of the detailedList, or the bottom of
     # the detailedList; we don't really care which - as long as it's roughly in the middle of
@@ -103,6 +109,8 @@ async def test_scroll(widget, probe):
     widget.scroll_to_top()
     await probe.wait_for_scroll_completion()
     await probe.redraw("DetailedList scrolled to bottom")
+    # Refresh is available at the top of the page.
+    assert probe.refresh_available()
 
     # Due to the interaction of scrolling with the header row, the scroll might be <0.
     assert probe.scroll_position <= 0

@@ -103,95 +103,100 @@ class DetailedList(Widget):
         self._active_row = None
 
         # Main functional widget is a ListBox.
-        self.list_box = Gtk.ListBox()
-        self.list_box.set_selection_mode(Gtk.SelectionMode.SINGLE)
-        self.list_box.connect("row-selected", self.gtk_on_row_selected)
+        self.native_detailedlist = Gtk.ListBox()
+        self.native_detailedlist.set_selection_mode(Gtk.SelectionMode.SINGLE)
+        self.native_detailedlist.connect("row-selected", self.gtk_on_row_selected)
 
         self.store = Gio.ListStore()
         # We need to provide a function that transforms whatever is in the store into a
         # `Gtk.ListBoxRow`, but the items in the store already are `Gtk.ListBoxRow`, so
         # this is the identity function.
-        self.list_box.bind_model(self.store, lambda a: a)
+        self.native_detailedlist.bind_model(self.store, lambda a: a)
 
         # Put the ListBox into a vertically scrolling window.
-        self.scrolled_window = Gtk.ScrolledWindow()
-        self.scrolled_window.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
-        self.scrolled_window.set_min_content_width(self.interface._MIN_WIDTH)
-        self.scrolled_window.set_min_content_height(self.interface._MIN_HEIGHT)
-        self.scrolled_window.add(self.list_box)
+        scrolled_window = Gtk.ScrolledWindow()
+        scrolled_window.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
+        scrolled_window.set_min_content_width(self.interface._MIN_WIDTH)
+        scrolled_window.set_min_content_height(self.interface._MIN_HEIGHT)
+        scrolled_window.add(self.native_detailedlist)
 
-        self.native_vadj = self.scrolled_window.get_vadjustment()
+        self.native_vadj = scrolled_window.get_vadjustment()
         self.native_vadj.connect("value-changed", self.gtk_on_value_changed)
 
         # Define a revealer widget that can be used to show/hide with a crossfade.
-        self.revealer = Gtk.Revealer()
-        self.revealer.set_transition_type(Gtk.RevealerTransitionType.CROSSFADE)
-        self.revealer.set_valign(Gtk.Align.END)
-        self.revealer.set_halign(Gtk.Align.CENTER)
-        self.revealer.set_margin_bottom(12)
-        self.revealer.set_reveal_child(False)
+        self.native_revealer = Gtk.Revealer()
+        self.native_revealer.set_transition_type(Gtk.RevealerTransitionType.CROSSFADE)
+        self.native_revealer.set_valign(Gtk.Align.END)
+        self.native_revealer.set_halign(Gtk.Align.CENTER)
+        self.native_revealer.set_margin_bottom(12)
+        self.native_revealer.set_reveal_child(False)
 
         # Define a refresh button.
-        self.refresh_button = Gtk.Button.new_from_icon_name(
+        self.native_refresh_button = Gtk.Button.new_from_icon_name(
             "view-refresh-symbolic", Gtk.IconSize.BUTTON
         )
-        self.refresh_button.set_can_focus(False)
-        self.refresh_button.connect("clicked", self.gtk_on_refresh_clicked)
+        self.native_refresh_button.set_can_focus(False)
+        self.native_refresh_button.connect("clicked", self.gtk_on_refresh_clicked)
 
-        style_context = self.refresh_button.get_style_context()
+        style_context = self.native_refresh_button.get_style_context()
         style_context.add_class("osd")
         style_context.add_class("toga-detailed-list-floating-buttons")
         style_context.remove_class("button")
 
         # Add the refresh button to the revealer
-        self.revealer.add(self.refresh_button)
+        self.native_revealer.add(self.native_refresh_button)
 
         # The actual native widget is an overlay, made up of the scrolled window, with
         # the revealer over the top.
         self.native = Gtk.Overlay()
-        self.native.add_overlay(self.scrolled_window)
-        self.native.add_overlay(self.revealer)
+        self.native.add_overlay(scrolled_window)
+        self.native.add_overlay(self.native_revealer)
 
-        # Set up a gesture to capture right clicks;
-        # don't connect the signal handler until an actions is enabled.
-        self.right_click_gesture = Gtk.GestureMultiPress.new(self.list_box)
-        self.right_click_gesture.set_button(3)
-        self.right_click_gesture.set_propagation_phase(Gtk.PropagationPhase.BUBBLE)
-        self.right_click_gesture.connect("pressed", self.gtk_on_right_click)
+        # Set up a gesture to capture right clicks.
+        self.gesture = Gtk.GestureMultiPress.new(self.native_detailedlist)
+        self.gesture.set_button(3)
+        self.gesture.set_propagation_phase(Gtk.PropagationPhase.BUBBLE)
+        self.gesture.connect("pressed", self.gtk_on_right_click)
 
         # Set up a box that contains action buttons. This widget can be can be re-used
         # for any row when it is activated.
-        self.action_buttons = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
-        self.action_buttons_hbox = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
+        self.native_action_buttons = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+        action_buttons_hbox = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
 
-        # self.primary_action_button = Gtk.Button.new_from_icon_name(
+        # TODO: Can we replace "magic words" like delete with an appropriate icon?
+        # self.native_primary_action_button = Gtk.Button.new_from_icon_name(
         #     "user-trash-symbolic", Gtk.IconSize.BUTTON
         # )
-        self.action_buttons_hbox.pack_start(Gtk.Box(), True, True, 0)
+        action_buttons_hbox.pack_start(Gtk.Box(), True, True, 0)
 
-        self.primary_action_button = Gtk.Button.new_with_label(
+        self.native_primary_action_button = Gtk.Button.new_with_label(
             self.interface._primary_action
         )
-        self.primary_action_button.connect("clicked", self.gtk_on_primary_clicked)
-        self.action_buttons_hbox.pack_start(
-            self.primary_action_button, False, False, 10
+        self.native_primary_action_button.connect(
+            "clicked", self.gtk_on_primary_clicked
+        )
+        action_buttons_hbox.pack_start(
+            self.native_primary_action_button, False, False, 10
         )
 
-        # self.secondary_action_button = Gtk.Button.new_from_icon_name(
+        # TODO: Can we replace "magic words" like delete with an appropriate icon?
+        # self.native_secondary_action_button = Gtk.Button.new_from_icon_name(
         #     "user-trash-symbolic", Gtk.IconSize.BUTTON
         # )
-        self.secondary_action_button = Gtk.Button.new_with_label(
+        self.native_secondary_action_button = Gtk.Button.new_with_label(
             self.interface._secondary_action
         )
-        self.secondary_action_button.connect("clicked", self.gtk_on_secondary_clicked)
-        self.action_buttons_hbox.pack_start(
-            self.secondary_action_button, False, False, 10
+        self.native_secondary_action_button.connect(
+            "clicked", self.gtk_on_secondary_clicked
+        )
+        action_buttons_hbox.pack_start(
+            self.native_secondary_action_button, False, False, 10
         )
 
-        self.action_buttons_hbox.pack_start(Gtk.Box(), True, True, 0)
+        action_buttons_hbox.pack_start(Gtk.Box(), True, True, 0)
 
-        self.action_buttons.pack_start(self.action_buttons_hbox, True, False, 0)
-        self.action_buttons.show_all()
+        self.native_action_buttons.pack_start(action_buttons_hbox, True, False, 0)
+        self.native_action_buttons.show_all()
 
     def row_factory(self, item):
         return DetailedListRow(self.interface, item)
@@ -205,7 +210,7 @@ class DetailedList(Widget):
         self.hide_actions()
         item_impl = self.row_factory(item)
         self.store.insert(index, item_impl)
-        self.list_box.show_all()
+        self.native_detailedlist.show_all()
         self.update_refresh_button()
 
     def change(self, item):
@@ -222,18 +227,21 @@ class DetailedList(Widget):
         self.update_refresh_button()
 
     def get_selection(self):
-        item_impl = self.list_box.get_selected_row()
+        item_impl = self.native_detailedlist.get_selected_row()
         if item_impl is None:
             return None
         else:
             return item_impl.get_index()
 
     def scroll_to_row(self, row: int):
-        upper = self.native_vadj.get_upper()
+        # Rows are equally spaced; so the top of row N of M is at N/M of the overall height.
+        # We set the position based on the top of the window, so aim to put the scroller
+        # half the widget height above the start of the selected row, clipping at 0
         self.native_vadj.set_value(
-            min(
-                row / len(self.store) * upper + self.native.get_allocation().height,
-                upper,
+            max(
+                row / len(self.store) * self.native_vadj.get_upper()
+                - self.native.get_allocation().height / 2,
+                0,
             )
         )
 
@@ -245,10 +253,10 @@ class DetailedList(Widget):
         return self.interface.on_refresh._raw is not None
 
     def set_primary_action_enabled(self, enabled):
-        self.primary_action_button.set_visible(enabled)
+        self.native_primary_action_button.set_visible(enabled)
 
     def set_secondary_action_enabled(self, enabled):
-        self.secondary_action_button.set_visible(enabled)
+        self.native_secondary_action_button.set_visible(enabled)
 
     @property
     def primary_action_enabled(self):
@@ -279,19 +287,16 @@ class DetailedList(Widget):
         self.interface.on_select(self.interface)
 
     def gtk_on_right_click(self, gesture, n_press, x, y):
-        item_impl = self.list_box.get_row_at_y(y)
-        if item_impl is None or self._active_row == item_impl:
-            return
-
         rect = Gdk.Rectangle()
-        rect.x, rect.y = item_impl.translate_coordinates(self.list_box, x, y)
+        item_impl = self.native_detailedlist.get_row_at_y(y)
+        rect.x, rect.y = item_impl.translate_coordinates(self.native_detailedlist, x, y)
 
         self.hide_actions()
 
         if self.actions_enabled:
-            self.list_box.select_row(item_impl)
+            self.native_detailedlist.select_row(item_impl)
             self._active_row = item_impl
-            self._active_row.show_actions(self.action_buttons)
+            self._active_row.show_actions(self.native_action_buttons)
 
     def hide_actions(self):
         if self._active_row is not None:
@@ -300,9 +305,11 @@ class DetailedList(Widget):
 
     def gtk_on_primary_clicked(self, widget):
         self.interface.on_primary_action(None, row=self._active_row.row)
+        self.hide_actions()
 
     def gtk_on_secondary_clicked(self, widget):
         self.interface.on_secondary_action(None, row=self._active_row.row)
+        self.hide_actions()
 
     def update_refresh_button(self):
         # If the scroll is currently at the top, and refresh is currently enabled,
@@ -310,7 +317,7 @@ class DetailedList(Widget):
         show_refresh = self.refresh_enabled and (
             self.native_vadj.get_value() == self.native_vadj.get_lower()
         )
-        self.revealer.set_reveal_child(show_refresh)
+        self.native_revealer.set_reveal_child(show_refresh)
 
     def rehint(self):
         self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)

@@ -151,6 +151,9 @@ class DetailedListProbe(SimpleProbe):
         is_disabled = self.widget.on_refresh._raw is None
         assert self.native.refresh_indicator.isHidden() == is_disabled
 
+    def refresh_available(self):
+        return self.scroll_position <= 0
+
     async def non_refresh_action(self):
         # 20px is enough to be visible, but not enough
         await self._refresh_action(20)

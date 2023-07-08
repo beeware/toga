@@ -63,6 +63,9 @@ class DetailedListProbe(SimpleProbe):
         self.native.selectRowAtIndexPath(path, animated=False, scrollPosition=0)
         self.native.delegate.tableView(self.native, didSelectRowAtIndexPath=path)
 
+    def refresh_available(self):
+        return self.scroll_position <= 0
+
     async def non_refresh_action(self):
         # iOS completely handles refresh actions, so there's no testing path
         pass
