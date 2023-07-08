@@ -130,7 +130,7 @@ class Widget:
         if css:
             style_provider = Gtk.CssProvider()
             styles = " ".join(f"{key}: {value};" for key, value in css.items())
-            declaration = selector + f"#{native.get_name()}" + " {" + styles + "}"
+            declaration = f"#{native.get_name()}" + selector + " {" + styles + "}"
 
             # Backward compatibility fix for different gtk versions ===========
             if Gtk.get_major_version() >= 4 and Gtk.get_minor_version() >= 12:

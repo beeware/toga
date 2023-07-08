@@ -2,7 +2,7 @@ from contextlib import contextmanager
 
 from travertino.size import at_least
 
-from ..libs import Gtk
+from ..libs import Gtk, get_background_color_css, get_color_css
 from .base import Widget
 
 
@@ -25,25 +25,19 @@ class Selection(Widget):
         if self.interface.on_select and self._send_notifications:
             self.interface.on_select(widget)
 
-    # FIXME: 2023-05-31 Everything I can find in documentation, and every test I
-    # do with manual stylesheet in the GTK Inspector, says that `.toga button`
-    # should target the colors of a GTK ComboBoxText widget. But when applied to
-    # the widget, it either doesn't hit, or it's being overridden, and I can't
-    # work out why.
+    def set_color(self, color):
+        self.apply_css(
+            "color",
+            get_color_css(color),
+            selector=".toga *",
+        )
 
-    # def set_color(self, color):
-    #     self.apply_css(
-    #         "color",
-    #         get_color_css(color),
-    #         selector=".toga, .toga button",
-    #     )
-
-    # def set_background_color(self, color):
-    #     self.apply_css(
-    #         "background_color",
-    #         get_background_color_css(color),
-    #         selector=".toga, .toga button",
-    #     )
+    def set_background_color(self, color):
+        self.apply_css(
+            "background_color",
+            get_background_color_css(color),
+            selector=".toga *",
+        )
 
     def change(self, item):
         index = self.interface._items.index(item)
