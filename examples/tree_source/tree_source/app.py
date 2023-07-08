@@ -70,7 +70,7 @@ class Node:
 
     def can_have_children(self):
         # this will trigger loading of children, if not yet done
-        return len(self.children) > 0
+        return not self.path.is_file()
 
     # Property that returns the first column value as (icon, label)
     @property
