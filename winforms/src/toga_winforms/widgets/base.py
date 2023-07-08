@@ -18,6 +18,7 @@ class Widget:
         self._container = None
         self.native = None
         self.create()
+        self.scale = self.native.CreateGraphics().DpiX / 96
         self.interface.style.reapply()
 
     @abstractmethod
@@ -54,6 +55,12 @@ class Widget:
     @property
     def viewport(self):
         return self._container
+
+    def scale_in(self, value):
+        return int(round(value * self.scale))
+
+    def scale_out(self, value):
+        return int(round(value / self.scale))
 
     def get_tab_index(self):
         return self.native.TabIndex
