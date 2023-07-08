@@ -90,7 +90,9 @@ class Widget:
     def set_tab_index(self, tab_index):
         self.interface.factory.not_implemented("Widget.set_tab_index()")
 
-    # CSS tools ===============================================================
+    ######################################################################
+    # CSS tools
+    ######################################################################
 
     def apply_css(self, property, css, native=None, selector=".toga"):
         """Apply a CSS style controlling a specific property type.
