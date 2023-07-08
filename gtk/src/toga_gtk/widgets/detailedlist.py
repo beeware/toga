@@ -40,6 +40,9 @@ class DetailedListRow(Gtk.ListBoxRow):
 
         self.stack.add_named(self.content, "content")
 
+        # Make sure the widgets have been made visible.
+        self.show_all()
+
     def update(self, dl, row):
         """Update the contents of the rendered row, using data from `row`, and accessors from the detailedList"""
 
