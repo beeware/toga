@@ -1,4 +1,4 @@
-from .libs import GdkPixbuf
+from .libs import GdkPixbuf, GLib
 
 
 class Icon:
@@ -10,8 +10,11 @@ class Icon:
         self.paths = path
 
         # Preload all the required icon sizes
-        for size, path in self.paths.items():
-            native = GdkPixbuf.Pixbuf.new_from_file(str(path)).scale_simple(
-                size, size, GdkPixbuf.InterpType.BILINEAR
-            )
-            setattr(self, f"native_{size}", native)
+        try:
+            for size, path in self.paths.items():
+                native = GdkPixbuf.Pixbuf.new_from_file(str(path)).scale_simple(
+                    size, size, GdkPixbuf.InterpType.BILINEAR
+                )
+                setattr(self, f"native_{size}", native)
+        except GLib.GError:
+            raise ValueError(f"Unable to load icon from {path}")
