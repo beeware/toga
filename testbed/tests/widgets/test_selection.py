@@ -278,8 +278,7 @@ async def test_resize_on_content_change(widget, probe):
 
     widget.items = ["first", "second", "third"]
     await probe.redraw("The list no longer has a long item")
-    if probe.shrink_on_resize:
-        assert probe.width == original_width
+    assert probe.width == original_width
 
     widget.items = ["first", "second", LONG_LABEL]
     await probe.redraw("A long item has been added to the list again")
@@ -287,5 +286,4 @@ async def test_resize_on_content_change(widget, probe):
 
     widget._items[2].value = "third"
     await probe.redraw("The long item has been renamed")
-    if probe.shrink_on_resize:
-        assert probe.width == original_width
+    assert probe.width == original_width

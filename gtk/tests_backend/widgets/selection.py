@@ -12,10 +12,6 @@ class SelectionProbe(SimpleProbe):
         pass
 
     @property
-    def shrink_on_resize(self):
-        return False
-
-    @property
     def alignment(self):
         xfail("Can't change the alignment of Selection on GTK")
 
