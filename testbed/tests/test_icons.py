@@ -1,4 +1,7 @@
+import re
 from importlib import import_module
+
+import pytest
 
 import toga
 
@@ -26,3 +29,12 @@ async def test_system_icon(app):
     "The default icon can be obtained"
     probe = icon_probe(app, toga.Icon.DEFAULT_ICON)
     probe.assert_default_icon_content()
+
+
+async def test_bad_icon_file(app):
+    "If a file isn't a loadable icon, an error is raised"
+    with pytest.raises(
+        ValueError,
+        match=rf"Unable to load icon from {re.escape(str(app.paths.app / 'resources' / 'icons' / 'bad'))}",
+    ):
+        toga.Icon("resources/icons/bad")
