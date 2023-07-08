@@ -155,8 +155,9 @@ class Widget:
     # APPLICATOR ==============================================================
 
     def set_bounds(self, x, y, width, height):
-        # Any position changes are applied by the container during do_size_allocate.
-        self.container.make_dirty()
+        # Any position changes are applied by the container during
+        # do_size_allocate after rehinting.
+        pass
 
     def set_alignment(self, alignment):
         # By default, alignment can't be changed
@@ -189,8 +190,7 @@ class Widget:
         # GTK doesn't/can't immediately evaluate the hinted size of the widget.
         # Instead, put the widget onto a dirty list to be rehinted before the
         # next layout.
-        if self.container:
-            self.container.make_dirty(self)
+        pass
 
     def rehint(self):
         # Perform the actual GTK rehint.

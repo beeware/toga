@@ -77,9 +77,6 @@ class TogaContainerLayoutManager(Gtk.LayoutManager):
 
                     child_widget = child_widget.get_prev_sibling()
 
-        # The layout has been redrawn
-        widget.needs_redraw = False
-
 
 class TogaContainer(Gtk.Fixed):
     """A GTK container widget implementing Toga's layout.
@@ -104,23 +101,6 @@ class TogaContainer(Gtk.Fixed):
         # https://wiki.archlinux.org/index.php/HiDPI#GDK_3_(GTK_3) for details
         self.dpi = 96
         self.baseline_dpi = self.dpi
-
-        # The dirty widgets are the set of widgets that are known to need
-        # re-hinting before any redraw occurs.
-        self._dirty_widgets = set()
-
-        # A flag that can be used to explicitly flag that a redraw is required.
-        self.needs_redraw = True
-
-    def make_dirty(self, widget=None):
-        """Mark the container (or a specific widget in the container) as dirty.
-
-        :param widget: If provided, this widget will be rehinted before the next layout.
-        """
-        self.needs_redraw = True
-        if widget is not None:
-            self._dirty_widgets.add(widget)
-        self.queue_resize()
 
     @property
     def width(self):
@@ -177,13 +157,14 @@ class TogaContainer(Gtk.Fixed):
         Any widgets known to be dirty will be rehinted. The minimum possible
         layout size for the container will also be recomputed.
         """
-        if self._content and self.needs_redraw:
+        if self._content:
             # If any of the widgets have been marked as dirty,
             # recompute their bounds, and re-evaluate the minimum
             # allowed size of the layout.
-            while self._dirty_widgets:
-                widget = self._dirty_widgets.pop()
-                widget.rehint()
+            child_widget = self.get_last_child()
+            while child_widget is not None:
+                child_widget._impl.rehint()
+                child_widget = child_widget.get_prev_sibling()
 
             # Compute the layout using a 0-size container
             self._content.interface.style.layout(
