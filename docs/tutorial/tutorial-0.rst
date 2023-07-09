@@ -11,9 +11,10 @@ button, that prints to the console when you press the button.
 Set up your development environment
 ===================================
 
-Make sure you installed the `Toga prerequisites
-<https://github.com/beeware/toga#prerequisites>`_, such as Python 3 and the
-other libraries. Then create a working directory for your code and change to it.
+Make sure you installed the `Toga minimum requirements
+<https://github.com/beeware/toga#minimum-requirements>`_, such as Python 3 and other
+required system libraries. Then create a working directory for your code and change to
+it.
 
 If Python 3 is *not* installed, you can do so via `the official installer
 <https://www.python.org/downloads>`_, or via `pyenv
@@ -276,32 +277,8 @@ at the top of this guide.
 
 .. _virtual environment: https://docs.python-guide.org/dev/virtualenvs/
 
-.. note:: Minimum versions
-
-    Toga has some minimum requirements:
-
-    * If you're on macOS, you need to be on 10.10 (Yosemite) or newer.
-
-    * If you're on Linux (or another Unix-based operating system), you need to
-      have GTK+ 3.10 or newer. This is the version that ships starting with
-      Ubuntu 14.04 and Fedora 20.
-
-    * If you're on Windows, you need to have Windows 10 or newer.
-
-    If these requirements aren't met, Toga either won't work at all, or won't
-    have full functionality.
-
-Once you've got toga installed, you can run your script:
+Once you've got Toga installed, you can run your script:
 
 .. code-block:: console
 
     (venv) $ python -m helloworld
-
-.. note:: ``python -m helloworld`` vs ``python helloworld.py``
-
-    Note the ``-m`` flag and absence of the ``.py`` extension in this command
-    line. If you run ``python helloworld.py``, you may see some errors like::
-
-        NotImplementedError: Application does not define open_document()
-
-    Toga apps must be executed as modules - hence the ``-m`` flag.
