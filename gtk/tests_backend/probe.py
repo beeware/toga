@@ -1,6 +1,6 @@
 import asyncio
 
-from toga_gtk.libs import Gtk
+from toga_gtk.libs import GLib
 
 
 class BaseProbe:
@@ -8,13 +8,13 @@ class BaseProbe:
         assert self.font.family == expected
 
     def repaint_needed(self):
-        return Gtk.events_pending()
+        return GLib.main_context_default().pending()
 
     async def redraw(self, message=None, delay=None):
         """Request a redraw of the app, waiting until that redraw has completed."""
         # Force a repaint
         while self.repaint_needed():
-            Gtk.main_iteration_do(blocking=False)
+            GLib.main_context_default().iteration(may_block=False)
 
         # If we're running slow, wait for a second
         if self.app.run_slow:
