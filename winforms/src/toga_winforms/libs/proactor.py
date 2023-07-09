@@ -99,12 +99,7 @@ class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
             self._thread_id = None
             events._set_running_loop(None)
             self._set_coroutine_origin_tracking(False)
-            try:
-                sys.set_asyncgen_hooks(*self._old_agen_hooks)
-            except AttributeError:
-                # Python < 3.6 didn't have set_asyncgen_hooks.
-                # No action required for those versions.
-                pass
+            sys.set_asyncgen_hooks(*self._old_agen_hooks)
             # === END BaseEventLoop.run_forever() finally handling ===
         else:
             # Otherwise, live to tick another day. Enqueue the next tick,
