@@ -1,14 +1,18 @@
 Canvas
 ======
 
+A drawing area for 2D vector graphics.
+
+.. figure:: /reference/images/Canvas.png
+    :align: center
+    :width: 300
+
 .. rst-class:: widget-support
 .. csv-filter:: Availability (:ref:`Key <api-status-key>`)
    :header-rows: 1
    :file: ../../data/widgets_by_platform.csv
    :included_cols: 4,5,6,7,8,9
    :exclude: {0: '(?!(Canvas|Component))'}
-
-The canvas is used for creating a blank widget that you can draw on.
 
 Usage
 -----
