@@ -23,12 +23,18 @@ class DetailedListProbe(SimpleProbe):
 
     @property
     def row_count(self):
-        return int(self.native.delegate.tableView(self.native, numberOfRowsInSection=0))
+        # Need to use the long form of this method because the first argument when used
+        # as a selector is ambiguous with a property of the same name on the object.
+        return int(
+            self.native.delegate.tableView_numberOfRowsInSection_(self.native, 0)
+        )
 
     def assert_cell_content(self, row, title, subtitle, icon=None):
-        cell = self.native.delegate.tableView(
+        # Need to use the long form of this method because the first argument when used
+        # as a selector is ambiguous with a property of the same name on the object.
+        cell = self.native.delegate.tableView_cellForRowAtIndexPath_(
             self.native,
-            cellForRowAtIndexPath=NSIndexPath.indexPathForRow(row, inSection=0),
+            NSIndexPath.indexPathForRow(row, inSection=0),
         )
         assert str(cell.textLabel.text) == title
         assert str(cell.detailTextLabel.text) == subtitle
@@ -61,7 +67,9 @@ class DetailedListProbe(SimpleProbe):
     async def select_row(self, row, add=False):
         path = NSIndexPath.indexPathForRow(row, inSection=0)
         self.native.selectRowAtIndexPath(path, animated=False, scrollPosition=0)
-        self.native.delegate.tableView(self.native, didSelectRowAtIndexPath=path)
+        # Need to use the long form of this method because the first argument when used
+        # as a selector is ambiguous with a property of the same name on the object.
+        self.native.delegate.tableView_didSelectRowAtIndexPath_(self.native, path)
 
     def refresh_available(self):
         return self.scroll_position <= 0
@@ -115,8 +123,10 @@ class DetailedListProbe(SimpleProbe):
 
     async def perform_primary_action(self, row, active=True):
         path = NSIndexPath.indexPathForRow(row, inSection=0)
-        config = self.native.delegate.tableView(
-            self.native, trailingSwipeActionsConfigurationForRowAtIndexPath=path
+        # Need to use the long form of this method because the first argument when used
+        # as a selector is ambiguous with a property of the same name on the object.
+        config = self.native.delegate.tableView_trailingSwipeActionsConfigurationForRowAtIndexPath_(
+            self.native, path
         )
 
         if active:
@@ -132,8 +142,10 @@ class DetailedListProbe(SimpleProbe):
 
     async def perform_secondary_action(self, row, active=True):
         path = NSIndexPath.indexPathForRow(row, inSection=0)
-        config = self.native.delegate.tableView(
-            self.native, leadingSwipeActionsConfigurationForRowAtIndexPath=path
+        # Need to use the long form of this method because the first argument when used
+        # as a selector is ambiguous with a property of the same name on the object.
+        config = self.native.delegate.tableView_leadingSwipeActionsConfigurationForRowAtIndexPath_(
+            self.native, path
         )
 
         if active:

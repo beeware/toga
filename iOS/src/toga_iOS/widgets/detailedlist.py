@@ -1,6 +1,5 @@
 from rubicon.objc import (
     SEL,
-    NSObject,
     ObjCBlock,
     ObjCInstance,
     objc_method,
@@ -24,7 +23,7 @@ from toga_iOS.libs import (
 from toga_iOS.widgets.base import Widget
 
 
-class TogaTableViewDelegate(NSObject):
+class TogaTableViewController(UITableViewController):
     interface = objc_property(object, weak=True)
     impl = objc_property(object, weak=True)
 
@@ -127,15 +126,13 @@ class DetailedList(Widget):
     DESTRUCTIVE_NAMES = {"Delete", "Remove"}
 
     def create(self):
-        self.native_controller = UITableViewController.alloc().init()
+        self.native_controller = TogaTableViewController.alloc().init()
+        self.native_controller.interface = self.interface
+        self.native_controller.impl = self
+
         self.native = self.native_controller.tableView
         self.native.separatorStyle = UITableViewCellSeparatorStyleNone
-
-        self.native_delegate = TogaTableViewDelegate.alloc().init()
-        self.native_delegate.interface = self.interface
-        self.native_delegate.impl = self
-        self.native.delegate = self.native_delegate
-        self.native.dataSource = self.native_delegate
+        self.native.delegate = self.native_controller
 
         self.primary_action_enabled = False
         self.secondary_action_enabled = False
@@ -148,7 +145,7 @@ class DetailedList(Widget):
             if self.native_controller.refreshControl is None:
                 self.native_controller.refreshControl = UIRefreshControl.alloc().init()
                 self.native_controller.refreshControl.addTarget(
-                    self.native_delegate,
+                    self.native_controller,
                     action=SEL("refresh"),
                     forControlEvents=UIControlEventValueChanged,
                 )
