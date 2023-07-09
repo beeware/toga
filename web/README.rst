@@ -3,6 +3,8 @@ toga-web
 
 A backend for the `Toga widget toolkit`_ on web platforms.
 
+This package isn't much use by itself; it needs to be combined with `the core Toga library`_.
+
 For more details, see the `Toga project on Github`_.
 
 .. _Toga widget toolkit: https://beeware.org/toga
@@ -16,7 +18,7 @@ This backend requires:
 
 * **Python 3.8** or newer. Python 2 is not supported.
 
-* **Pyscript 2023.05.01** or newer.
+* **PyScript 2023.05.01** or newer.
 
 Community
 ---------

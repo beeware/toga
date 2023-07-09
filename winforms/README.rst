@@ -18,7 +18,7 @@ This backend requires:
 
 * **Python 3.8** or higher. Python 2 is not supported.
 
-* **Window 10** or higher. If you are using Windows 10 and want to use a WebView to
+* **Windows 10** or higher. If you are using Windows 10 and want to use a WebView to
   display web content, you will also need to install the `Edge WebView2 Evergreen
   Runtime.
   <https://developer.microsoft.com/en-us/microsoft-edge/webview2/#download-section>`__
