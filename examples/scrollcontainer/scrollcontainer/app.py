@@ -21,26 +21,29 @@ class ScrollContainerApp(toga.App):
     def startup(self):
         main_box = toga.Box(style=Pack(direction=COLUMN))
 
-        self.vswitch = toga.Switch(
-            "Vert",
-            value=True,
-            on_change=self.handle_vscrolling,
-        )
         self.hswitch = toga.Switch(
-            "Horiz",
+            "Horizontal",
             value=False,
             on_change=self.handle_hscrolling,
         )
-        self.big_switch = toga.Switch(
-            "Big",
+        self.vswitch = toga.Switch(
+            "Vertical",
+            value=True,
+            on_change=self.handle_vscrolling,
+        )
+        self.wide_switch = toga.Switch(
+            "Wide",
+            value=True,
+            on_change=lambda widget: self.update_content(),
+        )
+        self.tall_switch = toga.Switch(
+            "Tall",
             value=True,
             on_change=lambda widget: self.update_content(),
         )
         main_box.add(
-            toga.Box(
-                style=Pack(direction=ROW),
-                children=[self.vswitch, self.hswitch, self.big_switch],
-            )
+            toga.Box(children=[self.hswitch, self.vswitch]),
+            toga.Box(children=[self.wide_switch, self.tall_switch]),
         )
 
         self.inner_box = toga.Box(
@@ -101,16 +104,17 @@ class ScrollContainerApp(toga.App):
     def update_content(self):
         self.inner_box.clear()
 
-        width, height = (10, 50) if self.big_switch.value else (2, 2)
+        width = 10 if self.wide_switch.value else 2
+        height = 30 if self.tall_switch.value else 2
         for x in range(height):
             label_text = f"Label {x}"
             self.inner_box.add(Item(width, label_text))
 
     def on_scroll(self, scroller):
-        self.hswitch.text = "Horiz " + (
+        self.hswitch.text = "Horizontal " + (
             f"({scroller.horizontal_position} / {scroller.max_horizontal_position})"
         )
-        self.vswitch.text = "Vert " + (
+        self.vswitch.text = "Vertical " + (
             f"({scroller.vertical_position} / {scroller.max_vertical_position})"
         )
 

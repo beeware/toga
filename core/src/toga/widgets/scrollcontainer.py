@@ -89,13 +89,13 @@ class ScrollContainer(Widget):
         if widget:
             widget.app = self.app
             widget.window = self.window
-
             self._impl.set_content(widget._impl)
         else:
             self._impl.set_content(None)
 
         self._content = widget
-        self.refresh()
+        if widget:
+            widget.refresh()
 
     @property
     def vertical(self) -> bool:

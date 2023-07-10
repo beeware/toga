@@ -1,10 +1,12 @@
-from System.Windows.Forms import Panel
+from System.Drawing import Point
+from System.Windows.Forms import Panel, ScrollEventArgs, ScrollEventType
 
 from .base import SimpleProbe
 
 
 class ScrollContainerProbe(SimpleProbe):
     native_class = Panel
+    scrollbar_inset = 17
 
     def __init__(self, widget):
         super().__init__(widget)
@@ -26,7 +28,12 @@ class ScrollContainerProbe(SimpleProbe):
         return round(self.native_content.Width / self.scale_factor)
 
     async def scroll(self):
-        self.native.VerticalScroll.Value = 100
+        if self.document_height > self.height:
+            position = 100
+            self.native.AutoScrollPosition = Point(0, position)
+            self.native.OnScroll(
+                ScrollEventArgs(ScrollEventType.ThumbPosition, position)
+            )
 
     async def wait_for_scroll_completion(self):
         pass

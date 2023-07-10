@@ -7,6 +7,7 @@ from .base import SimpleProbe
 
 class ScrollContainerProbe(SimpleProbe):
     native_class = ScrollView
+    scrollbar_inset = 0
 
     def __init__(self, widget):
         super().__init__(widget)

@@ -66,8 +66,6 @@ class ScrollContainer(Widget, Container):
     def set_bounds(self, x, y, width, height):
         super().set_bounds(x, y, width, height)
         self.resize_content(width, height)
-        if self.interface.content:
-            self.interface.content.refresh()
 
     def get_vertical(self):
         return self.vScrollListener.is_scrolling_enabled

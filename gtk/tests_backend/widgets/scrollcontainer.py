@@ -5,6 +5,7 @@ from .base import SimpleProbe
 
 class ScrollContainerProbe(SimpleProbe):
     native_class = Gtk.ScrolledWindow
+    scrollbar_inset = 0
 
     @property
     def has_content(self):
