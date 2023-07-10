@@ -215,7 +215,7 @@ async def test_enable_vertical_scrolling(widget, probe, content, on_scroll):
     with pytest.raises(ValueError):
         widget.vertical_position = 120
 
-    # If setting a *full* position, the horizontal coordinate is ignored.
+    # If setting a *full* position, the vertical coordinate is ignored.
     widget.position = (120, 200)
     await probe.wait_for_scroll_completion()
     await probe.redraw("Vertical scroll distance is ignored")

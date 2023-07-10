@@ -131,7 +131,10 @@ class ScrollContainer(Widget):
     @property
     def max_horizontal_position(self) -> int:
         """The maximum horizontal scroll position (read-only)."""
-        return self._impl.get_max_horizontal_position()
+        if not self.horizontal:
+            return 0
+        else:
+            return self._impl.get_max_horizontal_position()
 
     @property
     def horizontal_position(self) -> int:
@@ -158,7 +161,10 @@ class ScrollContainer(Widget):
     @property
     def max_vertical_position(self) -> int:
         """The maximum vertical scroll position (read-only)."""
-        return self._impl.get_max_vertical_position()
+        if not self.vertical:
+            return 0
+        else:
+            return self._impl.get_max_vertical_position()
 
     @property
     def vertical_position(self) -> int:
@@ -187,23 +193,20 @@ class ScrollContainer(Widget):
     # vertical movement to appear as two separate animations.
     @property
     def position(self) -> tuple[int, int]:
-        """The current scroll position.
+        """The current scroll position, in the form (horizontal, vertical).
 
         If the value provided for either axis is negative, or greater than the maximum
         position in that axis, the value will be clipped to the valid range.
 
-        If scrolling is disabled in either axis, the value provided for the scroll position
-        in that axis will be ignored.
-
-        :returns: A tuple containing the current scroll position in the horizontal and
-            vertical axis.
+        If scrolling is disabled in either axis, the value provided for that axis will
+        be ignored.
         """
         return (self.horizontal_position, self.vertical_position)
 
     @position.setter
     def position(self, position):
+        horizontal_position, vertical_position = map(int, position)
         if self.horizontal:
-            horizontal_position = int(position[0])
             if horizontal_position < 0:
                 horizontal_position = 0
             else:
@@ -214,7 +217,6 @@ class ScrollContainer(Widget):
             horizontal_position = self.horizontal_position
 
         if self.vertical:
-            vertical_position = int(position[1])
             if vertical_position < 0:
                 vertical_position = 0
             else:

@@ -92,20 +92,14 @@ class ScrollContainer(Widget, Container):
         return self.scale_out(self.hScrollView.getScrollX())
 
     def get_max_horizontal_position(self):
-        if not self.get_horizontal():
-            return 0
-        else:
-            return self.scale_out(
-                max(0, self.native_content.getWidth() - self.native.getWidth())
-            )
+        return self.scale_out(
+            max(0, self.native_content.getWidth() - self.native.getWidth())
+        )
 
     def get_max_vertical_position(self):
-        if not self.get_vertical():
-            return 0
-        else:
-            return self.scale_out(
-                max(0, self.native_content.getHeight() - self.native.getHeight())
-            )
+        return self.scale_out(
+            max(0, self.native_content.getHeight() - self.native.getHeight())
+        )
 
     def set_position(self, horizontal_position, vertical_position):
         self.hScrollView.setScrollX(self.scale_in(horizontal_position))
