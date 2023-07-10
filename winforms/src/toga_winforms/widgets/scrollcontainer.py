@@ -4,84 +4,76 @@ from toga_winforms.libs import WinForms
 from .base import Widget
 
 
-class ScrollContainer(Widget):
+class ScrollContainer(Widget, Container):
     def create(self):
         self.native = WinForms.Panel()
-        self.native.interface = self.interface
         self.native.AutoScroll = True
         self.native.Scroll += self.winforms_scroll
         self.native.MouseWheel += self.winforms_scroll
+        self.init_container(self.native)
 
     def winforms_scroll(self, sender, event):
-        if self.interface.on_scroll is not None:
-            self.interface.on_scroll(self.interface)
+        self.interface.on_scroll(None)
 
-    def set_content(self, widget):
-        self.inner_container = widget
+    def resize_content(self):
+        client_size = self.native.ClientSize  # Size not including scroll bars
+        super().resize_content(client_size.Width, client_size.Height)
+        if self.interface.content:
+            self.interface.content.refresh()
 
-        widget.viewport = Container(self.native)
-        widget.frame = self
+        self.native.HorizontalScroll.Maximum = max(
+            0, self.native_content.Width - client_size.Width
+        )
+        self.native.VerticalScroll.Maximum = max(
+            0, self.native_content.Height - client_size.Height
+        )
 
-        for child in widget.interface.children:
-            child._impl.container = widget
+    def set_bounds(self, x, y, width, height):
+        super().set_bounds(x, y, width, height)
+        self.resize_content()
 
-        self.native.Controls.Add(self.inner_container.native)
+    def get_horizontal(self):
+        return self.native.HorizontalScroll.Enabled
 
     def set_horizontal(self, value):
+        if not value:
+            self.native.HorizontalScroll.Value = 0
+
         self.native.AutoScroll = False
         self.native.HorizontalScroll.Enabled = value
         self.native.HorizontalScroll.Visible = value
         self.native.AutoScroll = True
+        self.resize_content()
+
+    def get_vertical(self):
+        return self.native.VerticalScroll.Enabled
 
     def set_vertical(self, value):
+        if not value:
+            self.native.VerticalScroll.Value = 0
+
         self.native.AutoScroll = False
         self.native.VerticalScroll.Enabled = value
         self.native.VerticalScroll.Visible = value
         self.native.AutoScroll = True
+        self.resize_content()
 
     def set_window(self, window):
         if self.interface.content:
             self.interface.content.window = window
 
     def get_vertical_position(self):
-        return self.native.VerticalScroll.Value
-
-    def set_vertical_position(self, vertical_position):
-        if vertical_position < 0 or vertical_position > self.maximum_vertical_position:
-            raise ValueError(
-                "Vertical position should be between 0 and {}, got {}".format(
-                    self.maximum_vertical_position, vertical_position
-                )
-            )
-        self.native.VerticalScroll.Value = vertical_position
-        if self.interface.on_scroll is not None:
-            self.interface.on_scroll(self.interface)
+        return self.scale_out(self.native.VerticalScroll.Value)
 
     def get_horizontal_position(self):
-        return self.native.HorizontalScroll.Value
+        return self.scale_out(self.native.HorizontalScroll.Value)
 
-    def set_horizontal_position(self, horizontal_position):
-        if (
-            horizontal_position < 0
-            or horizontal_position > self.maximum_horizontal_position
-        ):
-            raise ValueError(
-                "Horizontal position should be between 0 and {}, got {}".format(
-                    self.maximum_horizontal_position, horizontal_position
-                )
-            )
-        self.native.HorizontalScroll.Value = horizontal_position
-        if self.interface.on_scroll is not None:
-            self.interface.on_scroll(self.interface)
+    def get_max_vertical_position(self):
+        return self.scale_out(self.native.VerticalScroll.Maximum)
 
-    @property
-    def maximum_vertical_position(self):
-        return self.native.VerticalScroll.Maximum
-
-    @property
-    def maximum_horizontal_position(self):
-        return self.native.HorizontalScroll.Maximum
+    def get_max_horizontal_position(self):
+        return self.scale_out(self.native.HorizontalScroll.Maximum)
 
     def set_position(self, horizontal_position, vertical_position):
-        self.set_horizontal_position(horizontal_position)
-        self.set_vertical_position(vertical_position)
+        self.native.HorizontalScroll.Value = self.scale_in(horizontal_position)
+        self.native.VerticalScroll.Value = self.scale_in(vertical_position)

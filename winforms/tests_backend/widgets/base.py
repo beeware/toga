@@ -79,11 +79,11 @@ class SimpleProbe(BaseProbe):
 
     @property
     def width(self):
-        return self.native.Width / self.scale_factor
+        return round(self.native.Width / self.scale_factor)
 
     @property
     def height(self):
-        return self.native.Height / self.scale_factor
+        return round(self.native.Height / self.scale_factor)
 
     def assert_width(self, min_width, max_width):
         assert (

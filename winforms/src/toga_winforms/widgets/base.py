@@ -39,16 +39,15 @@ class Widget:
 
     @container.setter
     def container(self, container):
-        # To obtain the correct Z-order, add children before self.
-        for child in self.interface.children:
-            child._impl.container = container
-
         if self._container:
             self._container.remove_content(self)
 
         self._container = container
         if container:
             container.add_content(self)
+
+        for child in self.interface.children:
+            child._impl.container = container
 
         self.rehint()
 
