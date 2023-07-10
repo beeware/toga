@@ -4,6 +4,14 @@
 Tutorials
 =========
 
+.. note:: Is this the tutorial you're looking for?
+
+    If this is your first time using BeeWare, we suggestion you start with the `BeeWare
+    tutorial <https://docs.beeware.org>`__. This tutorial only covers BeeWare's GUI
+    toolkit, Toga, and doesn't cover any of the details of getting your code running on
+    specific hardware platforms. Once you've completed the BeeWare tutorial, this
+    tutorial will introduce more details about Toga's capabilities as a GUI toolkit.
+
 .. toctree::
    :maxdepth: 1
    :titlesonly:

@@ -11,7 +11,7 @@ on:
         value: ${{ jobs.package.outputs.artifact-name }}
 
 env:
-  min_python_version: "3.7"
+  min_python_version: "3.8"
   max_python_version: "3.11"
 
 defaults:
@@ -64,7 +64,7 @@ jobs:
     strategy:
       matrix:
         platform: [ "macos", "ubuntu", "windows" ]
-        python-version: [ "3.7", "3.8", "3.9", "3.10", "3.11", "3.12-dev" ]
+        python-version: [ "3.8", "3.9", "3.10", "3.11", "3.12-dev" ]
         include:
           - experimental: false
 
@@ -143,7 +143,7 @@ jobs:
         backend: [ "android", "cocoa", "gtk", "iOS", "web", "winforms" ]
         include:
           - runs-on: ubuntu-latest
-          - python-version: "3.7"  # Should be env.min_python_version (https://github.com/actions/runner/issues/480)
+          - python-version: "3.8"  # Should be env.min_python_version (https://github.com/actions/runner/issues/480)
           - pre-command:
 
           - backend: cocoa
