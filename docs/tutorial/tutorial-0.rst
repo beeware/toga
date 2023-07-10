@@ -8,20 +8,12 @@ button, that prints to the console when you press the button.
 Set up your development environment
 ===================================
 
-Make sure you installed the `Toga minimum requirements
-<https://github.com/beeware/toga#minimum-requirements>`_, such as Python 3 and other
-required system libraries. Then create a working directory for your code and change to
-it.
+If you haven't got Python 3 installed, you can do so via `the official installer
+<https://www.python.org/downloads>`_, or using your operating system's package manager.
 
-If Python 3 is *not* installed, you can do so via `the official installer
-<https://www.python.org/downloads>`_, or via `pyenv
-<https://github.com/pyenv/pyenv#simple-python-version-management-pyenv>`_, as
-described in the `environment page
-<https://beeware.org/contributing/how/first-time/setup>`_.
-
-The recommended way of setting up your development environment for Toga
-is to install a virtual environment, install the required dependencies and
-start coding. To set up a virtual environment, run:
+The recommended way of setting up your development environment for Toga is to install a
+virtual environment, install the required dependencies and start coding. To set up a
+virtual environment, open a fresh terminal session, and run:
 
 .. tabs::
 
@@ -29,6 +21,8 @@ start coding. To set up a virtual environment, run:
 
     .. code-block:: console
 
+      $ mkdir toga-tutorial
+      $ cd toga-tutorial
       $ python3 -m venv venv
       $ source venv/bin/activate
 
@@ -36,6 +30,8 @@ start coding. To set up a virtual environment, run:
 
     .. code-block:: console
 
+      $ mkdir toga-tutorial
+      $ cd toga-tutorial
       $ python3 -m venv venv
       $ source venv/bin/activate
 
@@ -43,6 +39,8 @@ start coding. To set up a virtual environment, run:
 
     .. code-block:: doscon
 
+      C:\...>mkdir toga-tutorial
+      C:\...>cd toga-tutorial
       C:\...>py -m venv venv
       C:\...>venv\Scripts\activate
 
@@ -60,58 +58,27 @@ Next, install Toga into your virtual environment:
 
   .. group-tab:: Linux
 
-    Before you install toga, you'll need to install some system packages.
-    These instructions are different on almost every version of Linux; here are
-    some of the common alternatives:
+    Before you install Toga, you'll need to install some system packages.
 
-    ..
-      The package list should be the same as in ci.yml, and the BeeWare tutorial.
+    .. include:: /reference/platforms/unix-prerequisites.rst
 
-    Ubuntu 18.04+ / Debian 10+
-
-    .. code-block:: console
-
-      (venv) $ sudo apt update
-      (venv) $ sudo apt install pkg-config python3-dev libgirepository1.0-dev libcairo2-dev gir1.2-webkit2-4.0 libcanberra-gtk3-module
-
-    Fedora
-
-    .. code-block:: console
-
-      (venv) $ sudo dnf install pkg-config python3-devel gobject-introspection-devel cairo-gobject-devel webkit2gtk3 libcanberra-gtk3
-
-    Arch / Manjaro
-
-    .. code-block:: console
-
-      (venv) $ sudo pacman -Syu git pkgconf gobject-introspection cairo webkit2gtk libcanberra
-
-    FreeBSD
-
-    .. code-block:: console
-
-      (venv) $ sudo pkg update
-      (venv) $ sudo pkg install gobject-introspection cairo webkit2-gtk3 libcanberra-gtk3
-
-    If you're not using one of these, you'll need to work out how to install
-    the developer libraries for ``python3``, ``cairo``, and
-    ``gobject-introspection`` (and please let us know so we can improve this
-    documentation!)
-
-    Then, install toga:
+    Then, install Toga:
 
     .. code-block:: console
 
       (venv) $ python -m pip install toga
 
+    If you get an error when installing Toga, please ensure that you have fully installed
+    all the platform prerequisites.
+
   .. group-tab:: Windows
+
+    Confirm that your system meets the :ref:`Windows prerequisites
+    <windows-prerequisites>`; then run:
 
     .. code-block:: doscon
 
       (venv) C:\...>python -m pip install toga
-
-If you get other errors, please check that you followed `the prerequisite
-<https://github.com/beeware/toga#prerequisites>`_ instructions.
 
 After a successful installation of Toga you are ready to get coding.
 

@@ -5,24 +5,14 @@ A Microsoft .NET backend for the `Toga widget toolkit`_ utilizing the WinForms A
 
 This package isn't much use by itself; it needs to be combined with `the core Toga library`_.
 
+For platform requirements, see the `Windows platform documentation
+<https://toga.readthedocs.io/en/stable/reference/platforms/windows.html#prerequisites>`__.
+
 For more details, see the `Toga project on Github`_.
 
 .. _Toga widget toolkit: https://beeware.org/toga
 .. _the core Toga library: https://pypi.python.org/pypi/toga-core
 .. _Toga project on Github: https://github.com/beeware/toga
-
-Minimum requirements
---------------------
-
-This backend requires:
-
-* **Python 3.8** or higher. Python 2 is not supported.
-
-* **Windows 10** or higher. If you are using Windows 10 and want to use a WebView to
-  display web content, you will also need to install the `Edge WebView2 Evergreen
-  Runtime.
-  <https://developer.microsoft.com/en-us/microsoft-edge/webview2/#download-section>`__
-  Windows 11 has this runtime installed by default.
 
 Community
 ---------

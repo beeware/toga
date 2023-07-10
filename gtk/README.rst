@@ -5,22 +5,14 @@ A GTK backend for the `Toga widget toolkit`_.
 
 This package isn't much use by itself; it needs to be combined with `the core Toga library`_.
 
+For platform requirements, see the `Linux platform documentation
+<https://toga.readthedocs.io/en/stable/reference/platforms/linux.html#prerequisites>`__.
+
 For more details, see the `Toga project on Github`_.
 
 .. _Toga widget toolkit: https://beeware.org/toga
 .. _the core Toga library: https://pypi.python.org/pypi/toga-core
 .. _Toga project on Github: https://github.com/beeware/toga
-
-Minimum requirements
---------------------
-
-This backend requires:
-
-* **Python 3.8** or newer. Python 2 is not supported.
-
-* **GTK 3.10** or newer. This is the version that ships starting with Ubuntu 14.04 and
-  Fedora 20. You also need to install the system packages listed in `Tutorial 0
-  <docs/tutorial/tutorial-0.rst>`__.
 
 Community
 ---------

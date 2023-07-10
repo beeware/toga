@@ -16,31 +16,18 @@ install a backend that implements the core Toga API for that platform:
 Minimum requirements
 --------------------
 
-* Toga requires **Python 3.8** or newer. Python 2 is not supported.
+Toga requires **Python 3.8** or newer. Python 2 is not supported.
 
-* If you're on macOS, you need to be on 10.10 (Yosemite) or newer.
-
-* If you're on Windows, you'll need Windows 10 or newer. If you are using
-  Windows 10 and want to use a WebView to display web content, you will also
-  need to install the `Edge WebView2 Evergreen
-  Runtime. <https://developer.microsoft.com/en-us/microsoft-edge/webview2/#download-section>`__
-  Windows 11 has this runtime installed by default.
-
-* If you're on Linux (or another Unix-based operating system), you need to have
-  GTK+ 3.10 or newer. This is the version that ships starting with Ubuntu 14.04
-  and Fedora 20. You also need to install the system packages listed
-  in `Tutorial 0 <docs/tutorial/tutorial-0.rst>`__.
-
-* If you're on Android, you'll need Android SDK 24 (Android 7 / Nougat) or newer.
-
-* If you're on iOS, you'll need iOS 11 or newer.
+Each backend also has specific requirements and pre-requisites. See the `platform
+documentation <https://toga.readthedocs.io/en/stable/reference/platforms.html> for
+details`__.
 
 Quickstart
 ----------
 
 To get a demonstration of the capabilities of Toga, run the following::
 
-    $ pip install toga-demo
+    $ python -m pip install toga-demo
     $ toga-demo
 
 This will pop up a GUI window with some sample widgets.

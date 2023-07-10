@@ -5,20 +5,14 @@ A Cocoa backend for the `Toga widget toolkit`_.
 
 This package isn't much use by itself; it needs to be combined with `the core Toga library`_.
 
+For platform requirements, see the `macOS platform documentation
+<https://toga.readthedocs.io/en/stable/reference/platforms/macOS.html#prerequisites>`__.
+
 For more details, see the `Toga project on Github`_.
 
 .. _Toga widget toolkit: https://beeware.org/toga
 .. _the core Toga library: https://pypi.python.org/pypi/toga-core
 .. _Toga project on Github: https://github.com/beeware/toga
-
-Minimum requirements
---------------------
-
-This backend requires:
-
-* **Python 3.8** or newer. Python 2 is not supported.
-
-* **macOS 10.10** (Yosemite) or newer.
 
 Community
 ---------
