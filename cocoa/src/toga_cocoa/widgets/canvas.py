@@ -1,3 +1,5 @@
+from travertino.size import at_least
+
 from toga.widgets.canvas import FillRule
 from toga_cocoa.colors import native_color
 from toga_cocoa.libs import (
@@ -33,10 +35,7 @@ class TogaCanvas(NSView):
     @objc_method
     def drawRect_(self, rect: NSRect) -> None:
         context = NSGraphicsContext.currentContext.CGContext
-        # Save the "clean" state of the graphics context.
-        core_graphics.CGContextSaveGState(context)
-        if self.interface.redraw:
-            self.interface._draw(self.impl, draw_context=context)
+        self.interface.context._draw(self.impl, draw_context=context)
 
     @objc_method
     def isFlipped(self) -> bool:
@@ -45,57 +44,33 @@ class TogaCanvas(NSView):
 
     @objc_method
     def mouseDown_(self, event) -> None:
-        """Invoke the on_press handler if configured."""
-        if self.interface.on_press:
-            position = self.convertPoint(event.locationInWindow, fromView=None)
-            self.interface.on_press(
-                self.interface, position.x, position.y, event.clickCount
-            )
+        position = self.convertPoint(event.locationInWindow, fromView=None)
+        self.interface.on_press(None, position.x, position.y, event.clickCount)
 
     @objc_method
     def rightMouseDown_(self, event) -> None:
-        """Invoke the on_alt_press handler if configured."""
-        if self.interface.on_alt_press:
-            position = self.convertPoint(event.locationInWindow, fromView=None)
-            self.interface.on_alt_press(
-                self.interface, position.x, position.y, event.clickCount
-            )
+        position = self.convertPoint(event.locationInWindow, fromView=None)
+        self.interface.on_alt_press(None, position.x, position.y, event.clickCount)
 
     @objc_method
     def mouseUp_(self, event) -> None:
-        """Invoke the on_release handler if configured."""
-        if self.interface.on_release:
-            position = self.convertPoint(event.locationInWindow, fromView=None)
-            self.interface.on_release(
-                self.interface, position.x, position.y, event.clickCount
-            )
+        position = self.convertPoint(event.locationInWindow, fromView=None)
+        self.interface.on_release(None, position.x, position.y, event.clickCount)
 
     @objc_method
     def rightMouseUp_(self, event) -> None:
-        """Invoke the on_alt_release handler if configured."""
-        if self.interface.on_alt_release:
-            position = self.convertPoint(event.locationInWindow, fromView=None)
-            self.interface.on_alt_release(
-                self.interface, position.x, position.y, event.clickCount
-            )
+        position = self.convertPoint(event.locationInWindow, fromView=None)
+        self.interface.on_alt_release(None, position.x, position.y, event.clickCount)
 
     @objc_method
     def mouseDragged_(self, event) -> None:
-        """Invoke the on_drag handler if configured."""
-        if self.interface.on_drag:
-            position = self.convertPoint(event.locationInWindow, fromView=None)
-            self.interface.on_drag(
-                self.interface, position.x, position.y, event.clickCount
-            )
+        position = self.convertPoint(event.locationInWindow, fromView=None)
+        self.interface.on_drag(None, position.x, position.y, event.clickCount)
 
     @objc_method
     def rightMouseDragged_(self, event) -> None:
-        """Invoke the on_alt_drag handler if configured."""
-        if self.interface.on_alt_drag:
-            position = self.convertPoint(event.locationInWindow, fromView=None)
-            self.interface.on_alt_drag(
-                self.interface, position.x, position.y, event.clickCount
-            )
+        position = self.convertPoint(event.locationInWindow, fromView=None)
+        self.interface.on_alt_drag(None, position.x, position.y, event.clickCount)
 
 
 class Canvas(Widget):
@@ -112,33 +87,49 @@ class Canvas(Widget):
 
     def set_bounds(self, x, y, width, height):
         super().set_bounds(x, y, width, height)
-        if self.interface.window and self.interface.on_resize:
-            self.interface.on_resize(self.interface)
+        if self.interface.window:
+            self.interface.on_resize(None, width=width, height=height)
+
+    # Context management
+    def push_context(self, draw_context, **kwargs):
+        core_graphics.CGContextSaveGState(draw_context)
+
+    def pop_context(self, draw_context, **kwargs):
+        print("POP")
+        core_graphics.CGContextRestoreGState(draw_context)
 
     # Basic paths
-
-    def new_path(self, draw_context, *args, **kwargs):
+    def begin_path(self, draw_context, **kwargs):
         core_graphics.CGContextBeginPath(draw_context)
 
-    def closed_path(self, x, y, draw_context, *args, **kwargs):
+    def close_path(self, x, y, draw_context, **kwargs):
         core_graphics.CGContextClosePath(draw_context)
 
-    def move_to(self, x, y, draw_context, *args, **kwargs):
+    def move_to(self, x, y, draw_context, **kwargs):
         core_graphics.CGContextMoveToPoint(draw_context, x, y)
 
-    def line_to(self, x, y, draw_context, *args, **kwargs):
+    def line_to(self, x, y, draw_context, **kwargs):
         core_graphics.CGContextAddLineToPoint(draw_context, x, y)
 
     # Basic shapes
 
     def bezier_curve_to(
-        self, cp1x, cp1y, cp2x, cp2y, x, y, draw_context, *args, **kwargs
+        self,
+        cp1x,
+        cp1y,
+        cp2x,
+        cp2y,
+        x,
+        y,
+        draw_context,
+        *args,
+        **kwargs,
     ):
         core_graphics.CGContextAddCurveToPoint(
             draw_context, cp1x, cp1y, cp2x, cp2y, x, y
         )
 
-    def quadratic_curve_to(self, cpx, cpy, x, y, draw_context, *args, **kwargs):
+    def quadratic_curve_to(self, cpx, cpy, x, y, draw_context, **kwargs):
         core_graphics.CGContextAddQuadCurveToPoint(draw_context, cpx, cpy, x, y)
 
     def arc(
@@ -151,7 +142,7 @@ class Canvas(Widget):
         anticlockwise,
         draw_context,
         *args,
-        **kwargs
+        **kwargs,
     ):
         # Cocoa Box Widget is using a flipped coordinate system, so clockwise
         # is actually anticlockwise
@@ -175,7 +166,7 @@ class Canvas(Widget):
         anticlockwise,
         draw_context,
         *args,
-        **kwargs
+        **kwargs,
     ):
         core_graphics.CGContextSaveGState(draw_context)
         self.translate(x, y, draw_context)
@@ -189,13 +180,13 @@ class Canvas(Widget):
         self.reset_transform(draw_context)
         core_graphics.CGContextRestoreGState(draw_context)
 
-    def rect(self, x, y, width, height, draw_context, *args, **kwargs):
+    def rect(self, x, y, width, height, draw_context, **kwargs):
         rectangle = CGRectMake(x, y, width, height)
         core_graphics.CGContextAddRect(draw_context, rectangle)
 
     # Drawing Paths
 
-    def fill(self, color, fill_rule, preserve, draw_context, *args, **kwargs):
+    def fill(self, color, fill_rule, draw_context, **kwargs):
         if fill_rule == FillRule.EVENODD:
             mode = CGPathDrawingMode(kCGPathEOFill)
         else:
@@ -209,7 +200,7 @@ class Canvas(Widget):
             core_graphics.CGContextSetRGBFillColor(draw_context, 0, 0, 0, 1)
         core_graphics.CGContextDrawPath(draw_context, mode)
 
-    def stroke(self, color, line_width, line_dash, draw_context, *args, **kwargs):
+    def stroke(self, color, line_width, line_dash, draw_context, **kwargs):
         core_graphics.CGContextSetLineWidth(draw_context, line_width)
         mode = CGPathDrawingMode(kCGPathStroke)
         if color is not None:
@@ -228,17 +219,16 @@ class Canvas(Widget):
         core_graphics.CGContextDrawPath(draw_context, mode)
 
     # Transformations
-
-    def rotate(self, radians, draw_context, *args, **kwargs):
+    def rotate(self, radians, draw_context, **kwargs):
         core_graphics.CGContextRotateCTM(draw_context, radians)
 
-    def scale(self, sx, sy, draw_context, *args, **kwargs):
+    def scale(self, sx, sy, draw_context, **kwargs):
         core_graphics.CGContextScaleCTM(draw_context, sx, sy)
 
-    def translate(self, tx, ty, draw_context, *args, **kwargs):
+    def translate(self, tx, ty, draw_context, **kwargs):
         core_graphics.CGContextTranslateCTM(draw_context, tx, ty)
 
-    def reset_transform(self, draw_context, *args, **kwargs):
+    def reset_transform(self, draw_context, **kwargs):
         # Restore the "clean" state of the graphics context.
         core_graphics.CGContextRestoreGState(draw_context)
         # CoreGraphics has a stack-based state representation,
@@ -247,24 +237,19 @@ class Canvas(Widget):
         core_graphics.CGContextSaveGState(draw_context)
 
     # Text
-
     def measure_text(self, text, font, tight=False):
         textAttributes = NSMutableDictionary.alloc().init()
-        textAttributes[NSFontAttributeName] = self.native
+        textAttributes[NSFontAttributeName] = font.native
         text_string = NSAttributedString.alloc().initWithString(
             text, attributes=textAttributes
         )
         size = text_string.size()
-
-        # TODO: This is a magic fudge factor...
-        # Replace the magic with SCIENCE.
-        size.width += 3
         return size.width, size.height
 
-    def write_text(self, text, x, y, font, *args, **kwargs):
+    def write_text(self, text, x, y, font, **kwargs):
         width, height = self.measure_text(text, font)
         textAttributes = NSMutableDictionary.alloc().init()
-        textAttributes[NSFontAttributeName] = font._impl.native
+        textAttributes[NSFontAttributeName] = font.native
 
         if "stroke_color" in kwargs and "fill_color" in kwargs:
             textAttributes[NSStrokeColorAttributeName] = native_color(
@@ -304,36 +289,7 @@ class Canvas(Widget):
         return data
 
     # Rehint
-
     def rehint(self):
         fitting_size = self.native.fittingSize()
-        self.interface.intrinsic.height = fitting_size.height
-        self.interface.intrinsic.width = fitting_size.width
-
-    def set_on_resize(self, handler):
-        """No special handling required."""
-        pass
-
-    def set_on_press(self, handler):
-        """No special handling required."""
-        pass
-
-    def set_on_release(self, handler):
-        """No special handling required."""
-        pass
-
-    def set_on_drag(self, handler):
-        """No special handling required."""
-        pass
-
-    def set_on_alt_press(self, handler):
-        """No special handling required."""
-        pass
-
-    def set_on_alt_release(self, handler):
-        """No special handling required."""
-        pass
-
-    def set_on_alt_drag(self, handler):
-        """No special handling required."""
-        pass
+        self.interface.intrinsic.height = at_least(fitting_size.height)
+        self.interface.intrinsic.width = at_least(fitting_size.width)
