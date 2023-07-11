@@ -72,9 +72,6 @@ class ScrollContainer(Widget):
             self.interface.on_scroll(None)
 
     def get_max_vertical_position(self):
-        if not self.get_vertical():
-            return 0
-
         return max(
             0,
             int(
@@ -87,9 +84,6 @@ class ScrollContainer(Widget):
         return int(self.native.get_vadjustment().get_value())
 
     def get_max_horizontal_position(self):
-        if not self.get_horizontal():
-            return 0
-
         return max(
             0,
             int(
