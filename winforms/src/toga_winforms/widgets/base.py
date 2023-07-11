@@ -55,9 +55,11 @@ class Widget:
     def viewport(self):
         return self._container
 
+    # Convert CSS pixels to native pixels
     def scale_in(self, value):
         return int(round(value * self.scale))
 
+    # Convert native pixels to CSS pixels
     def scale_out(self, value):
         return int(round(value / self.scale))
 
