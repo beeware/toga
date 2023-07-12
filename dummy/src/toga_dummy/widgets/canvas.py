@@ -195,20 +195,23 @@ class Canvas(Widget):
 
     # 'Mouse' button handlers
 
-    def simulate_press(self, x, y, click_count):
-        self.interface.on_press(None, x=x, y=y, click_count=click_count)
+    def simulate_press(self, x, y):
+        self.interface.on_press(None, x=x, y=y)
 
-    def simulate_alt_press(self, x, y, click_count):
-        self.interface.on_alt_press(None, x=x, y=y, click_count=click_count)
+    def simulate_activate(self, x, y):
+        self.interface.on_activate(None, x=x, y=y)
 
-    def simulate_release(self, x, y, click_count):
-        self.interface.on_release(None, x=x, y=y, click_count=click_count)
+    def simulate_alt_press(self, x, y):
+        self.interface.on_alt_press(None, x=x, y=y)
 
-    def simulate_alt_release(self, x, y, click_count):
-        self.interface.on_alt_release(None, x=x, y=y, click_count=click_count)
+    def simulate_release(self, x, y):
+        self.interface.on_release(None, x=x, y=y)
 
-    def simulate_drag(self, x, y, click_count):
-        self.interface.on_drag(None, x=x, y=y, click_count=click_count)
+    def simulate_alt_release(self, x, y):
+        self.interface.on_alt_release(None, x=x, y=y)
 
-    def simulate_alt_drag(self, x, y, click_count):
-        self.interface.on_alt_drag(None, x=x, y=y, click_count=click_count)
+    def simulate_drag(self, x, y):
+        self.interface.on_drag(None, x=x, y=y)
+
+    def simulate_alt_drag(self, x, y):
+        self.interface.on_alt_drag(None, x=x, y=y)

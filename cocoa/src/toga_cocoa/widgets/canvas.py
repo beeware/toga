@@ -1,3 +1,4 @@
+from rubicon.objc import objc_method, objc_property
 from travertino.size import at_least
 
 from toga.widgets.canvas import FillRule
@@ -21,8 +22,6 @@ from toga_cocoa.libs import (
     kCGPathEOFill,
     kCGPathFill,
     kCGPathStroke,
-    objc_method,
-    objc_property,
 )
 
 from .base import Widget
@@ -45,32 +44,35 @@ class TogaCanvas(NSView):
     @objc_method
     def mouseDown_(self, event) -> None:
         position = self.convertPoint(event.locationInWindow, fromView=None)
-        self.interface.on_press(None, position.x, position.y, event.clickCount)
+        if event.clickCount == 1:
+            self.interface.on_press(None, position.x, position.y)
+        else:
+            self.interface.on_activate(None, position.x, position.y)
 
     @objc_method
     def rightMouseDown_(self, event) -> None:
         position = self.convertPoint(event.locationInWindow, fromView=None)
-        self.interface.on_alt_press(None, position.x, position.y, event.clickCount)
+        self.interface.on_alt_press(None, position.x, position.y)
 
     @objc_method
     def mouseUp_(self, event) -> None:
         position = self.convertPoint(event.locationInWindow, fromView=None)
-        self.interface.on_release(None, position.x, position.y, event.clickCount)
+        self.interface.on_release(None, position.x, position.y)
 
     @objc_method
     def rightMouseUp_(self, event) -> None:
         position = self.convertPoint(event.locationInWindow, fromView=None)
-        self.interface.on_alt_release(None, position.x, position.y, event.clickCount)
+        self.interface.on_alt_release(None, position.x, position.y)
 
     @objc_method
     def mouseDragged_(self, event) -> None:
         position = self.convertPoint(event.locationInWindow, fromView=None)
-        self.interface.on_drag(None, position.x, position.y, event.clickCount)
+        self.interface.on_drag(None, position.x, position.y)
 
     @objc_method
     def rightMouseDragged_(self, event) -> None:
         position = self.convertPoint(event.locationInWindow, fromView=None)
-        self.interface.on_alt_drag(None, position.x, position.y, event.clickCount)
+        self.interface.on_alt_drag(None, position.x, position.y)
 
 
 class Canvas(Widget):
@@ -95,7 +97,6 @@ class Canvas(Widget):
         core_graphics.CGContextSaveGState(draw_context)
 
     def pop_context(self, draw_context, **kwargs):
-        print("POP")
         core_graphics.CGContextRestoreGState(draw_context)
 
     # Basic paths
@@ -237,7 +238,7 @@ class Canvas(Widget):
         core_graphics.CGContextSaveGState(draw_context)
 
     # Text
-    def measure_text(self, text, font, tight=False):
+    def measure_text(self, text, font):
         textAttributes = NSMutableDictionary.alloc().init()
         textAttributes[NSFontAttributeName] = font.native
         text_string = NSAttributedString.alloc().initWithString(

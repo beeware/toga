@@ -40,6 +40,7 @@ class ExampleCanvasApp(toga.App):
             style=Pack(flex=1),
             on_resize=self.refresh_canvas,
             on_press=self.on_press,
+            on_activate=self.on_activate,
             on_drag=self.on_drag,
             on_release=self.on_release,
             on_alt_press=self.on_alt_press,
@@ -88,10 +89,10 @@ class ExampleCanvasApp(toga.App):
         self.translation = None
         self.rotation = 0
         self.scale_x_slider = toga.Slider(
-            range=(0, 2), value=1, tick_count=10, on_change=self.refresh_canvas
+            min=0, max=2, value=1, tick_count=10, on_change=self.refresh_canvas
         )
         self.scale_y_slider = toga.Slider(
-            range=(0, 2), value=1, tick_count=10, on_change=self.refresh_canvas
+            min=0, max=2, value=1, tick_count=10, on_change=self.refresh_canvas
         )
         self.font_selection = toga.Selection(
             items=[SYSTEM, MESSAGE, SERIF, SANS_SERIF, CURSIVE, FANTASY, MONOSPACE],
@@ -288,36 +289,39 @@ class ExampleCanvasApp(toga.App):
         self.change_shape()
         self.refresh_canvas(widget)
 
-    def on_press(self, widget, x, y, clicks):
+    def on_press(self, widget, x, y):
         self.clicked_point = (x, y)
         self.render_drawing()
 
-    def on_drag(self, widget, x, y, clicks):
+    def on_drag(self, widget, x, y):
         tx = self.x_translation + x - self.clicked_point[0]
         ty = self.y_translation + y - self.clicked_point[1]
         self.translation = (tx, ty)
         self.clicked_point = (x, y)
         self.render_drawing()
 
-    def on_release(self, widget, x, y, clicks):
-        if clicks >= 2:
-            self.x_translation = x - self.width / 2
-            self.y_translation = y - self.height / 2
+    def on_release(self, widget, x, y):
         self.clicked_point = None
         self.render_drawing()
 
-    def on_alt_press(self, widget, x, y, clicks):
+    def on_activate(self, widget, x, y):
+        self.x_translation = x - self.width / 2
+        self.y_translation = y - self.height / 2
+        self.clicked_point = None
+        self.render_drawing()
+
+    def on_alt_press(self, widget, x, y):
         self.clicked_point = (x, y)
         self.render_drawing()
 
-    def on_alt_drag(self, widget, x, y, clicks):
+    def on_alt_drag(self, widget, x, y):
         location_vector1 = self.get_location_vector(x, y)
         location_vector2 = self.get_location_vector(*self.clicked_point)
         self.rotation += self.get_rotation_angle(location_vector1, location_vector2)
         self.clicked_point = (x, y)
         self.render_drawing()
 
-    def on_alt_release(self, widget, x, y, clicks):
+    def on_alt_release(self, widget, x, y):
         self.clicked_point = None
         self.render_drawing()
 
@@ -367,7 +371,7 @@ class ExampleCanvasApp(toga.App):
         self.render_drawing()
 
     def render_drawing(self):
-        self.canvas.clear()
+        self.canvas.context.clear()
         self.canvas.context.translate(
             self.width / 2 + self.x_translation, self.height / 2 + self.y_translation
         )
@@ -506,7 +510,7 @@ class ExampleCanvasApp(toga.App):
             weight=self.get_weight(),
             style=self.get_style(),
         )
-        width, height = self.canvas.measure_text(text, font, tight=True)
+        width, height = self.canvas.measure_text(text, font)
         context.write_text(text, self.x_middle - width / 2, self.y_middle, font)
 
     def get_weight(self):

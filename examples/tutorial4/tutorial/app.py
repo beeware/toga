@@ -87,7 +87,7 @@ class StartApp(toga.App):
 
     def draw_text(self):
         font = toga.Font(family=SANS_SERIF, size=20)
-        width, height = self.canvas.measure_text("Tiberius", font, tight=True)
+        width, height = self.canvas.measure_text("Tiberius", font)
 
         x = (self.canvas.layout.width - width) // 2
         y = 200

@@ -22,8 +22,6 @@ class Canvas(Widget):
             | Gdk.EventMask.BUTTON_RELEASE_MASK
             | Gdk.EventMask.BUTTON_MOTION_MASK
         )
-        # count number of active clicks
-        self.clicks = 0
 
     def gtk_draw_callback(self, canvas, gtk_context):
         """Creates a draw callback.
@@ -39,83 +37,61 @@ class Canvas(Widget):
     def gtk_on_size_allocate(self, widget, allocation):
         """Called on widget resize, and calls the handler set on the interface, if
         any."""
-        if self.interface.on_resize:
-            self.interface.on_resize(self.interface)
-
-    def set_on_resize(self, handler):
-        pass
-
-    def set_on_press(self, handler):
-        """No special handling required."""
-        pass
-
-    def set_on_release(self, handler):
-        """No special handling required."""
-        pass
-
-    def set_on_drag(self, handler):
-        """No special handling required."""
-        pass
-
-    def set_on_alt_press(self, handler):
-        """No special handling required."""
-        pass
-
-    def set_on_alt_release(self, handler):
-        """No special handling required."""
-        pass
-
-    def set_on_alt_drag(self, handler):
-        """No special handling required."""
-        pass
+        self.interface.on_resize(None, allocation.width, allocation.height)
 
     def mouse_down(self, obj, event):
-        self.clicks = 2 if event.type == Gdk.EventType._2BUTTON_PRESS else 1
-        if event.button == 1 and self.interface.on_press:
-            self.interface.on_press(self.interface, event.x, event.y, self.clicks)
-        if event.button == 3 and self.interface.on_alt_press:
-            self.interface.on_alt_press(self.interface, event.x, event.y, self.clicks)
+        if event.button == 1:
+            if event.type == Gdk.EventType._2BUTTON_PRESS:
+                self.interface.on_activate(None, event.x, event.y)
+            else:
+                self.interface.on_press(None, event.x, event.y)
+        if event.button == 3:
+            self.interface.on_alt_press(None, event.x, event.y)
 
     def mouse_move(self, obj, event):
-        if self.clicks == 0:
-            return
-        if event.state == Gdk.ModifierType.BUTTON1_MASK and self.interface.on_drag:
-            self.interface.on_drag(self.interface, event.x, event.y, self.clicks)
-        if event.state == Gdk.ModifierType.BUTTON3_MASK and self.interface.on_alt_drag:
-            self.interface.on_alt_drag(self.interface, event.x, event.y, self.clicks)
+        # TODO? Is mouse pressed
+        # if self.clicks == 0:
+        #     return
+        if event.state == Gdk.ModifierType.BUTTON1_MASK:
+            self.interface.on_drag(None, event.x, event.y)
+        if event.state == Gdk.ModifierType.BUTTON3_MASK:
+            self.interface.on_alt_drag(None, event.x, event.y)
 
     def mouse_up(self, obj, event):
-        if event.button == 1 and self.interface.on_release:
-            self.interface.on_release(self.interface, event.x, event.y, self.clicks)
-        if event.button == 3 and self.interface.on_alt_release:
-            self.interface.on_alt_release(self.interface, event.x, event.y, self.clicks)
-        self.clicks = 0
+        if event.button == 1:
+            self.interface.on_release(None, event.x, event.y)
+        if event.button == 3:
+            self.interface.on_alt_release(None, event.x, event.y)
 
     def redraw(self):
         self.native.queue_draw()
 
-    # Basic paths
+    # Context management
+    def push_context(self, draw_context, **kwargs):
+        draw_context.save()
 
-    def new_path(self, draw_context, *args, **kwargs):
+    def pop_context(self, draw_context, **kwargs):
+        draw_context.restore()
+
+    # Basic paths
+    def begin_path(self, draw_context, **kwargs):
         draw_context.new_path()
 
-    def closed_path(self, x, y, draw_context, *args, **kwargs):
+    def close_path(self, x, y, draw_context, **kwargs):
         draw_context.close_path()
 
-    def move_to(self, x, y, draw_context, *args, **kwargs):
+    def move_to(self, x, y, draw_context, **kwargs):
         draw_context.move_to(x, y)
 
-    def line_to(self, x, y, draw_context, *args, **kwargs):
+    def line_to(self, x, y, draw_context, **kwargs):
         draw_context.line_to(x, y)
 
     # Basic shapes
 
-    def bezier_curve_to(
-        self, cp1x, cp1y, cp2x, cp2y, x, y, draw_context, *args, **kwargs
-    ):
+    def bezier_curve_to(self, cp1x, cp1y, cp2x, cp2y, x, y, draw_context, **kwargs):
         draw_context.curve_to(cp1x, cp1y, cp2x, cp2y, x, y)
 
-    def quadratic_curve_to(self, cpx, cpy, x, y, draw_context, *args, **kwargs):
+    def quadratic_curve_to(self, cpx, cpy, x, y, draw_context, **kwargs):
         draw_context.curve_to(cpx, cpy, cpx, cpy, x, y)
 
     def arc(
@@ -127,8 +103,7 @@ class Canvas(Widget):
         endangle,
         anticlockwise,
         draw_context,
-        *args,
-        **kwargs
+        **kwargs,
     ):
         if anticlockwise:
             draw_context.arc_negative(x, y, radius, startangle, endangle)
@@ -147,7 +122,7 @@ class Canvas(Widget):
         anticlockwise,
         draw_context,
         *args,
-        **kwargs
+        **kwargs,
     ):
         draw_context.save()
         draw_context.translate(x, y)
@@ -161,30 +136,28 @@ class Canvas(Widget):
         draw_context.identity_matrix()
         draw_context.restore()
 
-    def rect(self, x, y, width, height, draw_context, *args, **kwargs):
+    def rect(self, x, y, width, height, draw_context, **kwargs):
         draw_context.rectangle(x, y, width, height)
 
     # Drawing Paths
 
-    def apply_color(self, color, draw_context, *args, **kwargs):
+    def apply_color(self, color, draw_context, **kwargs):
         if color is not None:
             draw_context.set_source_rgba(*native_color(color))
         else:
             # set color to black
             draw_context.set_source_rgba(0, 0, 0, 1.0)
 
-    def fill(self, color, fill_rule, preserve, draw_context, *args, **kwargs):
+    def fill(self, color, fill_rule, draw_context, **kwargs):
         self.apply_color(color, draw_context)
         if fill_rule == "evenodd":
             draw_context.set_fill_rule(cairo.FILL_RULE_EVEN_ODD)
         else:
             draw_context.set_fill_rule(cairo.FILL_RULE_WINDING)
-        if preserve:
-            draw_context.fill_preserve()
-        else:
-            draw_context.fill()
 
-    def stroke(self, color, line_width, line_dash, draw_context, *args, **kwargs):
+        draw_context.fill()
+
+    def stroke(self, color, line_width, line_dash, draw_context, **kwargs):
         self.apply_color(color, draw_context)
         draw_context.set_line_width(line_width)
         if line_dash is not None:
@@ -194,21 +167,21 @@ class Canvas(Widget):
 
     # Transformations
 
-    def rotate(self, radians, draw_context, *args, **kwargs):
+    def rotate(self, radians, draw_context, **kwargs):
         draw_context.rotate(radians)
 
-    def scale(self, sx, sy, draw_context, *args, **kwargs):
+    def scale(self, sx, sy, draw_context, **kwargs):
         draw_context.scale(sx, sy)
 
-    def translate(self, tx, ty, draw_context, *args, **kwargs):
+    def translate(self, tx, ty, draw_context, **kwargs):
         draw_context.translate(tx, ty)
 
-    def reset_transform(self, draw_context, *args, **kwargs):
+    def reset_transform(self, draw_context, **kwargs):
         draw_context.set_matrix(self.original_transform_matrix)
 
     # Text
 
-    def write_text(self, text, x, y, font, draw_context, *args, **kwargs):
+    def write_text(self, text, x, y, font, draw_context, **kwargs):
         # Set font family and size
         if font:
             write_font = font
@@ -226,17 +199,14 @@ class Canvas(Widget):
             draw_context.text_path(line)
             y += height
 
-    def measure_text(self, text, font, tight=False):
+    def measure_text(self, text, font):
         layout = self.native.create_pango_layout(text)
 
-        layout.set_font_description(self.native)
-        ink, logical = layout.get_extents()
-        if tight:
-            width = (ink.width / Pango.SCALE) - (ink.width * 0.2) / Pango.SCALE
-            height = ink.height / Pango.SCALE
-        else:
-            width = (logical.width / Pango.SCALE) - (logical.width * 0.2) / Pango.SCALE
-            height = logical.height / Pango.SCALE
+        layout.set_font_description(font.native)
+        _, logical = layout.get_extents()
+
+        width = (logical.width / Pango.SCALE) - (logical.width * 0.2) / Pango.SCALE
+        height = logical.height / Pango.SCALE
 
         return width, height
 
