@@ -16,8 +16,7 @@ class TogaScrollView(UIScrollView):
 
     @objc_method
     def refreshContent(self):
-        if self.interface._content:
-            self.interface._content.refresh()
+        self.interface._content.refresh()
 
 
 class ScrollContainer(Widget):
