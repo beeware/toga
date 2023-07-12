@@ -1,6 +1,6 @@
-import random
 import uuid
-from unittest.mock import Mock
+
+from toga.fonts import SYSTEM, SYSTEM_DEFAULT_FONT_SIZE
 
 from .base import Widget
 
@@ -8,36 +8,33 @@ from .base import Widget
 class Canvas(Widget):
     def create(self):
         self._action("create Canvas")
-        self.native_context = Mock()
 
     def redraw(self):
         self._action("redraw")
-        self.interface._draw(self, native_context=self.native_context)
+        self.draw_instructions = []
+        self.interface.context._draw(self, draw_instructions=self.draw_instructions)
 
     # Context management
+    def push_context(self, draw_instructions, **kwargs):
+        draw_instructions.append(("push context", kwargs))
 
-    def push_context(self, native_context, **kwargs):
-        self._action("push context", native_context=native_context)
-
-    def pop_context(self, native_context, **kwargs):
-        self._action("pop context", native_context=native_context)
+    def pop_context(self, draw_instructions, **kwargs):
+        draw_instructions.append(("pop context", kwargs))
 
     # Basic paths
+    def begin_path(self, draw_instructions, **kwargs):
+        draw_instructions.append(("begin path", kwargs))
 
-    def begin_path(self, native_context, **kwargs):
-        self._action("begin path", native_context=native_context)
+    def close_path(self, draw_instructions, **kwargs):
+        draw_instructions.append(("close path", kwargs))
 
-    def close_path(self, x, y, native_context, **kwargs):
-        self._action("close path", x=x, y=y, native_context=native_context)
+    def move_to(self, x, y, draw_instructions, **kwargs):
+        draw_instructions.append(("move to", dict(**{"x": x, "y": y}, **kwargs)))
 
-    def move_to(self, x, y, native_context, **kwargs):
-        self._action("move to", x=x, y=y, native_context=native_context)
-
-    def line_to(self, x, y, native_context, **kwargs):
-        self._action("line to", x=x, y=y, native_context=native_context)
+    def line_to(self, x, y, draw_instructions, **kwargs):
+        draw_instructions.append(("line to", dict(**{"x": x, "y": y}, **kwargs)))
 
     # Basic shapes
-
     def bezier_curve_to(
         self,
         cp1x,
@@ -46,29 +43,41 @@ class Canvas(Widget):
         cp2y,
         x,
         y,
-        native_context,
+        draw_instructions,
         *args,
         **kwargs,
     ):
-        self._action(
-            "bezier curve to",
-            cp1x=cp1x,
-            cp1y=cp1y,
-            cp2x=cp2x,
-            cp2y=cp2y,
-            x=x,
-            y=y,
-            native_context=native_context,
+        draw_instructions.append(
+            (
+                "bezier curve to",
+                dict(
+                    **{
+                        "cp1x": cp1x,
+                        "cp1y": cp1y,
+                        "cp2x": cp2x,
+                        "cp2y": cp2y,
+                        "x": x,
+                        "y": y,
+                    },
+                    **kwargs,
+                ),
+            )
         )
 
-    def quadratic_curve_to(self, cpx, cpy, x, y, native_context, **kwargs):
-        self._action(
-            "quadratic curve to",
-            cpx=cpx,
-            cpy=cpy,
-            x=x,
-            y=y,
-            native_context=native_context,
+    def quadratic_curve_to(self, cpx, cpy, x, y, draw_instructions, **kwargs):
+        draw_instructions.append(
+            (
+                "quadratic curve to",
+                dict(
+                    **{
+                        "cpx": cpx,
+                        "cpy": cpy,
+                        "x": x,
+                        "y": y,
+                    },
+                    **kwargs,
+                ),
+            )
         )
 
     def arc(
@@ -79,19 +88,25 @@ class Canvas(Widget):
         startangle,
         endangle,
         anticlockwise,
-        native_context,
+        draw_instructions,
         *args,
         **kwargs,
     ):
-        self._action(
-            "arc",
-            x=x,
-            y=y,
-            radius=radius,
-            startangle=startangle,
-            endangle=endangle,
-            anticlockwise=anticlockwise,
-            native_context=native_context,
+        draw_instructions.append(
+            (
+                "arc",
+                dict(
+                    **{
+                        "x": x,
+                        "y": y,
+                        "radius": radius,
+                        "startangle": startangle,
+                        "endangle": endangle,
+                        "anticlockwise": anticlockwise,
+                    },
+                    **kwargs,
+                ),
+            )
         )
 
     def ellipse(
@@ -104,82 +119,119 @@ class Canvas(Widget):
         startangle,
         endangle,
         anticlockwise,
-        native_context,
+        draw_instructions,
         *args,
         **kwargs,
     ):
-        self._action(
-            "ellipse",
-            x=x,
-            y=y,
-            radiusx=radiusx,
-            radiusy=radiusy,
-            rotation=rotation,
-            startangle=startangle,
-            endangle=endangle,
-            anticlockwise=anticlockwise,
-            native_context=native_context,
+        draw_instructions.append(
+            (
+                "ellipse",
+                dict(
+                    **{
+                        "x": x,
+                        "y": y,
+                        "radiusx": radiusx,
+                        "radiusy": radiusy,
+                        "rotation": rotation,
+                        "startangle": startangle,
+                        "endangle": endangle,
+                        "anticlockwise": anticlockwise,
+                    },
+                    **kwargs,
+                ),
+            )
         )
 
-    def rect(self, x, y, width, height, native_context, **kwargs):
-        self._action(
-            "rect",
-            x=x,
-            y=y,
-            width=width,
-            height=height,
-            native_context=native_context,
+    def rect(self, x, y, width, height, draw_instructions, **kwargs):
+        draw_instructions.append(
+            (
+                "rect",
+                dict(
+                    **{
+                        "x": x,
+                        "y": y,
+                        "width": width,
+                        "height": height,
+                    },
+                    **kwargs,
+                ),
+            )
         )
 
     # Drawing Paths
-
-    def fill(self, color, fill_rule, preserve, native_context, **kwargs):
-        self._action(
-            "fill",
-            color=color,
-            fill_rule=fill_rule,
-            preserve=preserve,
-            native_context=native_context,
+    def fill(self, color, fill_rule, draw_instructions, **kwargs):
+        draw_instructions.append(
+            (
+                "fill",
+                dict(
+                    **{
+                        "color": color,
+                        "fill_rule": fill_rule,
+                    },
+                    **kwargs,
+                ),
+            )
         )
 
-    def stroke(self, color, line_width, line_dash, native_context, **kwargs):
-        self._action(
-            "stroke",
-            color=color,
-            line_width=line_width,
-            line_dash=line_dash,
-            native_context=native_context,
+    def stroke(self, color, line_width, line_dash, draw_instructions, **kwargs):
+        draw_instructions.append(
+            (
+                "stroke",
+                dict(
+                    **{
+                        "color": color,
+                        "line_width": line_width,
+                        "line_dash": line_dash,
+                    },
+                    **kwargs,
+                ),
+            )
         )
 
     # Transformations
 
-    def rotate(self, radians, native_context, **kwargs):
-        self._action("rotate", radians=radians, native_context=native_context)
+    def rotate(self, radians, draw_instructions, **kwargs):
+        draw_instructions.append(("rotate", dict(**{"radians": radians}, **kwargs)))
 
-    def scale(self, sx, sy, native_context, **kwargs):
-        self._action("scale", sx=sx, sy=sy, native_context=native_context)
+    def scale(self, sx, sy, draw_instructions, **kwargs):
+        draw_instructions.append(("scale", dict(**{"sx": sx, "sy": sy}, **kwargs)))
 
-    def translate(self, tx, ty, native_context, **kwargs):
-        self._action("translate", tx=tx, ty=ty, native_context=native_context)
+    def translate(self, tx, ty, draw_instructions, **kwargs):
+        draw_instructions.append(("translate", dict(**{"tx": tx, "ty": ty}, **kwargs)))
 
-    def reset_transform(self, native_context, **kwargs):
-        self._action("reset transform", native_context=native_context)
+    def reset_transform(self, draw_instructions, **kwargs):
+        draw_instructions.append(("reset transform", kwargs))
 
     # Text
 
-    def write_text(self, text, x, y, font, native_context, **kwargs):
-        self._action(
-            "write text",
-            text=text,
-            x=x,
-            y=y,
-            font=font,
-            native_context=native_context,
+    def write_text(self, text, x, y, font, draw_instructions, **kwargs):
+        draw_instructions.append(
+            (
+                "write text",
+                dict(**{"text": text, "x": x, "y": y, "font": font}, **kwargs),
+            )
         )
 
-    def measure_text(self, text, font, tight=False):
-        self._action("measure text", text=text, font=font, tight=tight)
-        return random.randint(100, 300), random.randint(100, 200)
+    def measure_text(self, text, font):
+        # Assume system font produces characters that have the same width and height as
+        # the point size, with a default point size of 12. Any other font is 1.5 times
+        # bigger.
+        if font.interface.family == SYSTEM:
+            if font.interface.size == SYSTEM_DEFAULT_FONT_SIZE:
+                width = len(text) * 12
+                height = 12
+            else:
+                width = len(text) * font.interface.size
+                height = font.interface.size
+        else:
+            if font.interface.size == SYSTEM_DEFAULT_FONT_SIZE:
+                width = len(text) * 18
+                height = 18
+            else:
+                width = int(len(text) * font.interface.size * 1.5)
+                height = int(font.interface.size * 1.5)
+
+        return width, height
 
     # Image
 

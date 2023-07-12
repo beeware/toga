@@ -105,7 +105,9 @@ class Fill(DrawingObject):
     def __enter__(self):
         raise RuntimeError("Context.fill() has been renamed Context.Fill().")
 
-    def __exit__(self, exc_type, exc_value, traceback):
+    def __exit__(self):  # pragma: no cover
+        # This method is required to make the object a context manager, but as the
+        # __enter__ method raises an exception, the __exit__ can't be called.
         pass
 
 
@@ -176,7 +178,9 @@ class Stroke(DrawingObject):
     def __enter__(self):
         raise RuntimeError("Context.stroke() has been renamed Context.Stroke().")
 
-    def __exit__(self, exc_type, exc_value, traceback):
+    def __exit__(self):  # pragma: no cover
+        # This method is required to make the object a context manager, but as the
+        # __enter__ method raises an exception, the __exit__ can't be called.
         pass
 
 
@@ -185,7 +189,7 @@ class MoveTo(DrawingObject):
         """A drawing object that moves the current point of the canvas context without
         drawing.
 
-        :param x: The x coordinate  of the new current point.
+        :param x: The x coordinate of the new current point.
         :param y: The y coordinate of the new current point.
         """
         self.x = x
@@ -317,8 +321,8 @@ class Arc(DrawingObject):
     def __repr__(self):
         return (
             f"{self.__class__.__name__}(x={self.x}, y={self.y}, "
-            f"radius={self.radius}, startangle={self.startangle}, "
-            f"endangle={self.endangle}, anticlockwise={self.anticlockwise})"
+            f"radius={self.radius}, startangle={self.startangle:.3f}, "
+            f"endangle={self.endangle:.3f}, anticlockwise={self.anticlockwise})"
         )
 
     def _draw(self, impl, **kwargs):
@@ -375,8 +379,8 @@ class Ellipse(DrawingObject):
         return (
             f"{self.__class__.__name__}(x={self.x}, y={self.y}, "
             f"radiusx={self.radiusx}, radiusy={self.radiusy}, "
-            f"rotation={self.rotation}, startangle={self.startangle}, endangle={self.endangle}, "
-            f"anticlockwise={self.anticlockwise})"
+            f"rotation={self.rotation:.3f}, startangle={self.startangle:.3f}, "
+            f"endangle={self.endangle:.3f}, anticlockwise={self.anticlockwise})"
         )
 
     def _draw(self, impl, **kwargs):
@@ -467,7 +471,7 @@ class Rotate(DrawingObject):
         self.radians = radians
 
     def __repr__(self):
-        return f"{self.__class__.__name__}(radians={self.radians})"
+        return f"{self.__class__.__name__}(radians={self.radians:.3f})"
 
     def _draw(self, impl, **kwargs):
         impl.rotate(self.radians, **kwargs)
@@ -484,7 +488,7 @@ class Scale(DrawingObject):
         self.sy = sy
 
     def __repr__(self):
-        return f"{self.__class__.__name__}(sx={self.sx}, sy={self.sy})"
+        return f"{self.__class__.__name__}(sx={self.sx:.3f}, sy={self.sy:.3f})"
 
     def _draw(self, impl, **kwargs):
         impl.scale(self.sx, self.sy, **kwargs)
@@ -527,11 +531,10 @@ class Context(DrawingObject):
     or use :attr:`toga.Canvas.context` to access the root context of the canvas.
     """
 
-    def __init__(self, canvas: toga.Canvas, context: Context = None, **kwargs):
+    def __init__(self, canvas: toga.Canvas, **kwargs):
         # kwargs used to support multiple inheritance
         super().__init__(**kwargs)
         self._canvas = canvas
-        self._context = context
         self.drawing_objects = []
 
     def _draw(self, impl, **kwargs):
@@ -801,9 +804,12 @@ class Context(DrawingObject):
             operation.
         """
         if preserve is not None:
-            warnings.warn("The `preserve` argument on fill() has been deprecated.")
+            warnings.warn(
+                "The `preserve` argument on fill() has been deprecated.",
+                DeprecationWarning,
+            )
 
-        fill = self.Fill(color, fill_rule)
+        fill = Fill(color, fill_rule)
         self.append(fill)
         return fill
 
@@ -822,7 +828,7 @@ class Context(DrawingObject):
         :returns: The :class:`~toga.widgets.canvas.Stroke` drawing object for the
             operation.
         """
-        stroke = self.Stroke(color, line_width, line_dash)
+        stroke = Stroke(color, line_width, line_dash)
         self.append(stroke)
         return stroke
 
@@ -916,13 +922,13 @@ class Context(DrawingObject):
 
         :yields: The new :class:`~toga.widgets.canvas.Context` object.
         """
-        context = Context(canvas=self._canvas, context=self)
+        context = Context(canvas=self._canvas)
         self.append(context)
         yield context
         self.redraw()
 
     @contextmanager
-    def ClosedPath(self, x: float, y: float):
+    def ClosedPath(self, x: float | None = None, y: float | None = None):
         """Construct and yield a new :class:`~toga.widgets.canvas.ClosedPath`
         sub-context that will draw a closed path, starting from an origin.
 
@@ -935,11 +941,9 @@ class Context(DrawingObject):
         :param y: The y coordinate of the path's starting point.
         :yields: The :class:`~toga.widgets.canvas.ClosedPathContext` context object.
         """
-        closed_path = ClosedPathContext(canvas=self.canvas, context=self, x=x, y=y)
-        closed_path._canvas = self.canvas
+        closed_path = ClosedPathContext(canvas=self.canvas, x=x, y=y)
         self.append(closed_path)
         yield closed_path
-        self.redraw()
 
     @contextmanager
     def Fill(
@@ -971,11 +975,14 @@ class Context(DrawingObject):
         :yields: The new :class:`~toga.widgets.canvas.FillContext` context object.
         """
         fill = FillContext(
-            canvas=self.canvas, context=self, x=x, y=y, color=color, fill_rule=fill_rule
+            canvas=self.canvas,
+            x=x,
+            y=y,
+            color=color,
+            fill_rule=fill_rule,
         )
         self.append(fill)
         yield fill
-        self.redraw()
 
     @contextmanager
     def Stroke(
@@ -1010,7 +1017,6 @@ class Context(DrawingObject):
         """
         stroke = StrokeContext(
             canvas=self.canvas,
-            context=self,
             x=x,
             y=y,
             color=color,
@@ -1019,7 +1025,6 @@ class Context(DrawingObject):
         )
         self.append(stroke)
         yield stroke
-        self.redraw()
 
     ###########################################################################
     # 2023-07 Backwards incompatibility
@@ -1027,17 +1032,25 @@ class Context(DrawingObject):
 
     def new_path(self):
         """**DEPRECATED** - Use :meth:`~toga.widgets.canvas.Context.begin_path`."""
-        warnings.warn("Context.new_path() has been renamed Context.begin_path()")
+        warnings.warn(
+            "Context.new_path() has been renamed Context.begin_path()",
+            DeprecationWarning,
+        )
         return self.begin_path()
 
     def context(self):
         """**DEPRECATED** - use :meth:`~toga.widgets.canvas.Context.Context`"""
-        warnings.warn("Context.context() has been renamed Context.Context().")
+        warnings.warn(
+            "Context.context() has been renamed Context.Context()", DeprecationWarning
+        )
         return self.Context()
 
     def closed_path(self, x: float, y: float):
         """**DEPRECATED** - use :meth:`~toga.widgets.canvas.Context.ClosedPath`"""
-        warnings.warn("Context.closed_path() has been renamed Context.ClosedPath().")
+        warnings.warn(
+            "Context.closed_path() has been renamed Context.ClosedPath()",
+            DeprecationWarning,
+        )
         return self.ClosedPath(x, y)
 
 
@@ -1051,6 +1064,9 @@ class ClosedPathContext(Context):
     :class:`~toga.widgets.canvas.Context.move_to` and
     :class:`~toga.widgets.canvas.Context.close_path` primitives.
 
+    If both an x and y coordinate is provided, the drawing context will begin with
+    a ``move_to`` operation in that context.
+
     You should not create a :class:`~toga.widgets.canvas.ClosedPathContext` context
     directly; instead, you should use a the
     :meth:`~toga.widgets.canvas.Context.ClosedPath` method on an existing context.
@@ -1059,11 +1075,10 @@ class ClosedPathContext(Context):
     def __init__(
         self,
         canvas: toga.Canvas,
-        context: Context,
-        x: float,
-        y: float,
+        x: float | None = None,
+        y: float | None = None,
     ):
-        super().__init__(canvas=canvas, context=context)
+        super().__init__(canvas=canvas)
         self.x = x
         self.y = y
 
@@ -1074,29 +1089,15 @@ class ClosedPathContext(Context):
         """Used by parent to draw all objects that are part of the context."""
         impl.push_context(**kwargs)
         impl.begin_path(**kwargs)
-        impl.move_to(x=self.x, y=self.y, **kwargs)
+        if self.x is not None and self.y is not None:
+            impl.move_to(x=self.x, y=self.y, **kwargs)
+
+        sub_kwargs = kwargs.copy()
         for obj in self.drawing_objects:
-            obj._draw(impl, **kwargs)
-        impl.close_path(x=self.x, y=self.y, **kwargs)
+            obj._draw(impl, **sub_kwargs)
+
+        impl.close_path(**kwargs)
         impl.pop_context(**kwargs)
-
-    @property
-    def x(self) -> float:
-        """The x coordinate of the path's starting point."""
-        return self._x
-
-    @x.setter
-    def x(self, value: float):
-        self._x = value
-
-    @property
-    def y(self) -> float:
-        """The y coordinate of the path's starting point."""
-        return self._y
-
-    @y.setter
-    def y(self, value: float):
-        self._y = value
 
 
 class FillContext(ClosedPathContext):
@@ -1125,13 +1126,12 @@ class FillContext(ClosedPathContext):
     def __init__(
         self,
         canvas: toga.Canvas,
-        context: Context | None,
         x: float | None = None,
         y: float | None = None,
         color: str = BLACK,
         fill_rule: FillRule = FillRule.NONZERO,
     ):
-        super().__init__(canvas=canvas, context=context, x=x, y=y)
+        super().__init__(canvas=canvas, x=x, y=y)
         self.color = color
         self.fill_rule = fill_rule
 
@@ -1146,20 +1146,14 @@ class FillContext(ClosedPathContext):
         impl.begin_path(**kwargs)
         if self.x is not None and self.y is not None:
             impl.move_to(x=self.x, y=self.y, **kwargs)
+
+        sub_kwargs = kwargs.copy()
+        sub_kwargs["fill_color"] = self.color
         for obj in self.drawing_objects:
-            kwargs["fill_color"] = self.color
-            obj._draw(impl, **kwargs)
+            obj._draw(impl, **sub_kwargs)
+
         impl.fill(self.color, self.fill_rule, **kwargs)
         impl.pop_context(**kwargs)
-
-    @property
-    def fill_rule(self) -> FillRule:
-        """The fill rule to use."""
-        return self._fill_rule
-
-    @fill_rule.setter
-    def fill_rule(self, fill_rule: FillRule):
-        self._fill_rule = fill_rule
 
     @property
     def color(self) -> Color:
@@ -1196,14 +1190,13 @@ class StrokeContext(ClosedPathContext):
     def __init__(
         self,
         canvas: toga.Canvas,
-        context: Context,
         x: float | None = None,
         y: float | None = None,
         color: str | None = BLACK,
         line_width: float = 2.0,
         line_dash: list[float] | None = None,
     ):
-        super().__init__(canvas=canvas, context=context, x=x, y=y)
+        super().__init__(canvas=canvas, x=x, y=y)
         self.color = color
         self.line_width = line_width
         self.line_dash = line_dash
@@ -1217,14 +1210,26 @@ class StrokeContext(ClosedPathContext):
     def _draw(self, impl, **kwargs):
         impl.push_context(**kwargs)
         impl.begin_path(**kwargs)
+
         if self.x is not None and self.y is not None:
             impl.move_to(x=self.x, y=self.y, **kwargs)
+
+        sub_kwargs = kwargs.copy()
+        sub_kwargs["stroke_color"] = self.color
+        sub_kwargs["line_width"] = self.line_width
+        sub_kwargs["line_dash"] = self.line_dash
         for obj in self.drawing_objects:
-            kwargs["stroke_color"] = self.color
-            kwargs["text_line_width"] = self.line_width
-            kwargs["text_line_dash"] = self.line_dash
-            obj._draw(impl, **kwargs)
-        impl.stroke(self.color, self.line_width, self.line_dash, **kwargs)
+            obj._draw(impl, **sub_kwargs)
+
+        # Stroke passes line_width and line_dash to its children; but those two are also
+        # valid arguments for stroke, so if a stroke context is a child of stroke
+        # context, there's an argument collision. Duplicate the kwargs and explicitly
+        # overwrite to avoid the collision
+        draw_kwargs = kwargs.copy()
+        draw_kwargs["line_width"] = self.line_width
+        draw_kwargs["line_dash"] = self.line_dash
+        impl.stroke(self.color, **draw_kwargs)
+
         impl.pop_context(**kwargs)
 
     @property
@@ -1238,24 +1243,6 @@ class StrokeContext(ClosedPathContext):
             self._color = parse_color(BLACK)
         else:
             self._color = parse_color(value)
-
-    @property
-    def line_width(self) -> float:
-        """The line_width of the stroke."""
-        return self._line_width
-
-    @line_width.setter
-    def line_width(self, value: float):
-        self._line_width = float(value)
-
-    @property
-    def line_dash(self) -> list[float] | None:
-        """The line_dash of the stroke."""
-        return self._line_dash
-
-    @line_dash.setter
-    def line_dash(self, value: list[float] | None):
-        self._line_dash = value
 
 
 #######################################################################################
@@ -1296,7 +1283,7 @@ class Canvas(Widget):
 
         super().__init__(id=id, style=style)
 
-        self._context = Context(canvas=self, context=None)
+        self._context = Context(canvas=self)
 
         # Create a platform specific implementation of Canvas
         self._impl = self.factory.Canvas(interface=self)
@@ -1310,6 +1297,22 @@ class Canvas(Widget):
         self.on_alt_press = on_alt_press
         self.on_alt_release = on_alt_release
         self.on_alt_drag = on_alt_drag
+
+    @property
+    def enabled(self) -> bool:
+        """Is the widget currently enabled? i.e., can the user interact with the widget?
+        ScrollContainer widgets cannot be disabled; this property will always return
+        True; any attempt to modify it will be ignored.
+        """
+        return True
+
+    @enabled.setter
+    def enabled(self, value):
+        pass
+
+    def focus(self):
+        "No-op; ScrollContainer cannot accept input focus"
+        pass
 
     @property
     def context(self) -> Context:
@@ -1328,7 +1331,7 @@ class Canvas(Widget):
         """
         return self.context.Context()
 
-    def ClosedPath(self, x: float, y: float):
+    def ClosedPath(self, x: float | None = None, y: float | None = None):
         """Construct and yield a new :class:`~toga.widgets.canvas.ClosedPathContext` context in
         the root context of this canvas.
 
@@ -1497,7 +1500,8 @@ class Canvas(Widget):
         """
         if tight is not None:
             warnings.warn(
-                "The `tight` argument on Canvas.measure_text() has been deprecated."
+                "The `tight` argument on Canvas.measure_text() has been deprecated.",
+                DeprecationWarning,
             )
         return self._impl.measure_text(str(text), font._impl)
 
@@ -1604,7 +1608,7 @@ class Canvas(Widget):
             "Direct canvas operations have been deprecated; use context.rect()",
             DeprecationWarning,
         )
-        return self.context.write_text(x, y, width, height)
+        return self.context.rect(x, y, width, height)
 
     def write_text(self, text: str, x=0, y=0, font=None):
         """**DEPRECATED** - Use :meth:`~toga.widgets.canvas.Context.write_text` on
@@ -1652,7 +1656,10 @@ class Canvas(Widget):
 
     def closed_path(self, x, y):
         """**DEPRECATED** - use :meth:`~toga.Canvas.ClosedPath`"""
-        warnings.warn("Canvas.closed_path() has been renamed Canvas.ClosedPath()")
+        warnings.warn(
+            "Canvas.closed_path() has been renamed Canvas.ClosedPath()",
+            DeprecationWarning,
+        )
         return self.ClosedPath(x, y)
 
     def fill(
@@ -1662,9 +1669,15 @@ class Canvas(Widget):
         preserve=None,  # DEPRECATED
     ):
         """**DEPRECATED** - use :meth:`~toga.Canvas.Fill`"""
-        warnings.warn("Canvas.fill() has been renamed Canvas.Fill()")
+        warnings.warn(
+            "Canvas.fill() has been renamed Canvas.Fill()",
+            DeprecationWarning,
+        )
         if preserve is not None:
-            warnings.warn("The `preserve` argument on fill() has been deprecated.")
+            warnings.warn(
+                "The `preserve` argument on fill() has been deprecated.",
+                DeprecationWarning,
+            )
         return self.Fill(color=color, fill_rule=fill_rule)
 
     def stroke(
@@ -1674,5 +1687,8 @@ class Canvas(Widget):
         line_dash: list[float] | None = None,
     ):
         """**DEPRECATED** - use :meth:`~toga.Canvas.Stroke`"""
-        warnings.warn("Canvas.stroke() has been renamed Canvas.Stroke().")
+        warnings.warn(
+            "Canvas.stroke() has been renamed Canvas.Stroke().",
+            DeprecationWarning,
+        )
         return self.Stroke(color=color, line_width=line_width, line_dash=line_dash)
