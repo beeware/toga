@@ -3,13 +3,14 @@ toga-winforms
 
 A Microsoft .NET backend for the `Toga widget toolkit`_ utilizing the WinForms API.
 
-**Toga requires Python 3**
-
 This package isn't much use by itself; it needs to be combined with `the core Toga library`_.
+
+For platform requirements, see the `Windows platform documentation
+<https://toga.readthedocs.io/en/stable/reference/platforms/windows.html#prerequisites>`__.
 
 For more details, see the `Toga project on Github`_.
 
-.. _Toga widget toolkit: http://beeware.org/toga
+.. _Toga widget toolkit: https://beeware.org/toga
 .. _the core Toga library: https://pypi.python.org/pypi/toga-core
 .. _Toga project on Github: https://github.com/beeware/toga
 
@@ -25,11 +26,11 @@ Toga is part of the `BeeWare suite`_. You can talk to the community through:
 We foster a welcoming and respectful community as described in our
 `BeeWare Community Code of Conduct`_.
 
-.. _BeeWare suite: http://beeware.org
+.. _BeeWare suite: https://beeware.org
 .. _@beeware@fosstodon.org on Mastodon: https://fosstodon.org/@beeware
 .. _Discord: https://beeware.org/bee/chat/
 .. _Github Discussions forum: https://github.com/beeware/toga/discussions
-.. _BeeWare Community Code of Conduct: http://beeware.org/community/behavior/
+.. _BeeWare Community Code of Conduct: https://beeware.org/community/behavior/
 
 Contributing
 ------------

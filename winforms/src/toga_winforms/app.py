@@ -10,6 +10,7 @@ from .keys import toga_to_winforms_key
 from .libs import (
     SecurityProtocolType,
     ServicePointManager,
+    SystemSounds,
     Threading,
     WinForms,
     shcore,
@@ -288,6 +289,9 @@ class App:
         self.interface.main_window.info_dialog(
             f"About {self.interface.name}", "\n".join(message_parts)
         )
+
+    def beep(self):
+        SystemSounds.Beep.Play()
 
     def exit(self):
         self._is_exiting = True

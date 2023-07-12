@@ -206,6 +206,9 @@ class App:
     def show_about_dialog(self):
         self.interface.factory.not_implemented("App.show_about_dialog()")
 
+    def beep(self):
+        self.interface.factory.not_implemented("App.beep()")
+
     def exit(self):
         pass
 

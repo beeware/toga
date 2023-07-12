@@ -31,13 +31,10 @@ Toga
 
 A Python native, OS native GUI toolkit.
 
-Prerequisites
-~~~~~~~~~~~~~
-
 Minimum requirements
-^^^^^^^^^^^^^^^^^^^^
+--------------------
 
-* Toga requires **Python 3.7 or higher**. Python 2 is not supported.
+* Toga requires **Python 3.8 or higher**. Python 2 is not supported.
 
 * If you're on macOS, you need to be on 10.10 (Yosemite) or newer.
 
@@ -53,7 +50,7 @@ Minimum requirements
   in `Tutorial 0 <docs/tutorial/tutorial-0.rst>`__.
 
 Quickstart
-~~~~~~~~~~
+----------
 
 To get a demonstration of the capabilities of Toga, run the following::
 
@@ -63,14 +60,14 @@ To get a demonstration of the capabilities of Toga, run the following::
 This will pop up a GUI window with some sample widgets.
 
 Documentation
-~~~~~~~~~~~~~
+-------------
 
 Documentation for Toga can be found on `Read The Docs`_.
 
 .. _Read The Docs: https://toga.readthedocs.io
 
 Community
-~~~~~~~~~
+---------
 
 Toga is part of the `BeeWare suite`_. You can talk to the community through:
 
@@ -88,7 +85,7 @@ We foster a welcoming and respectful community as described in our
 .. _BeeWare Community Code of Conduct: http://beeware.org/community/behavior/
 
 Contributing
-~~~~~~~~~~~~
+------------
 
 If you'd like to contribute to Toga development, our `guide for first time
 contributors`_ will help you get started.
