@@ -605,6 +605,14 @@ NSScrollElasticityAutomatic = 0
 NSScrollElasticityNone = 1
 NSScrollElasticityAllowed = 2
 
+NSScrollViewDidLiveScrollNotification = objc_const(
+    appkit, "NSScrollViewDidLiveScrollNotification"
+)
+NSScrollViewDidEndLiveScrollNotification = objc_const(
+    appkit, "NSScrollViewDidEndLiveScrollNotification"
+)
+
+
 ######################################################################
 # NSSecureTextField.h
 NSSecureTextField = ObjCClass("NSSecureTextField")
