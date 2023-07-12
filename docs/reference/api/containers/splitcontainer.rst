@@ -1,5 +1,5 @@
-Split Container
-===============
+SplitContainer
+==============
 
 A container that divides an area into multiple panels with a movable border.
 
