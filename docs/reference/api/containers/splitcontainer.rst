@@ -34,8 +34,9 @@ at time of creation, or by setting the ``direction`` attribute:
 .. code-block:: python
 
     import toga
+    from toga.constants import Direction
 
-    split = toga.SplitContainer(direction=toga.SplitContainer.HORIZONTAL)
+    split = toga.SplitContainer(direction=Direction.HORIZONTAL)
 
     left_container = toga.Box()
     right_container = toga.ScrollContainer()

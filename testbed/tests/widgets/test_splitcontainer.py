@@ -2,6 +2,7 @@ import pytest
 
 import toga
 from toga.colors import CORNFLOWERBLUE, GOLDENROD, REBECCAPURPLE
+from toga.constants import Direction
 from toga.style.pack import Pack
 
 from ..conftest import xfail_on_platforms
@@ -80,6 +81,18 @@ async def test_set_content(
     assert content2_probe.width == pytest.approx(probe.width * 2 / 5, abs=20)
     assert content3_probe.width == pytest.approx(probe.width * 3 / 5, abs=20)
 
+    # Clear content2, but keep the split proportion.
+    widget.content = [(None, 2), (content3, 3)]
+    await probe.wait_for_split()
+    await probe.redraw("Content should have a 40:60 split, but only right content")
+    assert content3_probe.width == pytest.approx(probe.width * 3 / 5, abs=20)
+
+    # Bring back content2, and drop content 3
+    widget.content = [content2, None]
+    await probe.wait_for_split()
+    await probe.redraw("Content should have a 50:50 split, but only left content")
+    assert content2_probe.width == pytest.approx(probe.width / 2, abs=20)
+
 
 async def test_set_direction(
     widget,
@@ -98,7 +111,7 @@ async def test_set_direction(
     assert content1_probe.height == probe.height
     assert content2_probe.height == probe.height
 
-    widget.direction = toga.SplitContainer.HORIZONTAL
+    widget.direction = Direction.HORIZONTAL
     await probe.wait_for_split()
     await probe.redraw("Split should now be horizontal")
 
@@ -119,7 +132,7 @@ async def test_set_direction(
     assert content1_probe.height == pytest.approx(probe.height * 3 / 4, abs=20)
     assert content2_probe.height == pytest.approx(probe.height * 1 / 4, abs=20)
 
-    widget.direction = toga.SplitContainer.VERTICAL
+    widget.direction = Direction.VERTICAL
     await probe.wait_for_split()
     await probe.redraw("Split should now be vertical again")
 
