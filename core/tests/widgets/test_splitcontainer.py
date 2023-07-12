@@ -44,7 +44,7 @@ def test_widget_created():
     assert splitcontainer._impl.interface == splitcontainer
     assert_action_performed(splitcontainer, "create SplitContainer")
 
-    assert splitcontainer.content == []
+    assert splitcontainer.content == (None, None)
     assert splitcontainer.direction == toga.SplitContainer.VERTICAL
 
 
@@ -57,14 +57,14 @@ def test_widget_created_with_values(content1, content2):
     assert splitcontainer._impl.interface == splitcontainer
     assert_action_performed(splitcontainer, "create SplitContainer")
 
-    assert splitcontainer.content == [content1, content2]
+    assert splitcontainer.content == (content1, content2)
     assert splitcontainer.direction == toga.SplitContainer.HORIZONTAL
 
     # The content has been assigned to the widget
     assert_action_performed_with(
         splitcontainer,
         "set content",
-        content=[content1._impl, content2._impl],
+        content=(content1._impl, content2._impl),
         flex=[1, 1],
     )
 
@@ -72,8 +72,25 @@ def test_widget_created_with_values(content1, content2):
     assert_action_performed(splitcontainer, "refresh")
 
 
-def test_assign_to_app(app, splitcontainer, content1, content2):
+@pytest.mark.parametrize(
+    "include_left, include_right",
+    [
+        (False, False),
+        (True, True),
+        (False, True),
+        (True, False),
+        (True, True),
+    ],
+)
+def test_assign_to_app(app, content1, content2, include_left, include_right):
     """If the widget is assigned to an app, the content is also assigned"""
+    splitcontainer = toga.SplitContainer(
+        content=[
+            content1 if include_left else None,
+            content2 if include_right else None,
+        ]
+    )
+
     # Split container is initially unassigned
     assert splitcontainer.app is None
 
@@ -84,8 +101,11 @@ def test_assign_to_app(app, splitcontainer, content1, content2):
     assert splitcontainer.app == app
 
     # Content is also on the app
-    assert content1.app == app
-    assert content2.app == app
+    if include_left:
+        assert content1.app == app
+
+    if include_right:
+        assert content2.app == app
 
 
 def test_assign_to_app_no_content(app):
@@ -102,8 +122,25 @@ def test_assign_to_app_no_content(app):
     assert splitcontainer.app == app
 
 
-def test_assign_to_window(window, splitcontainer, content1, content2):
+@pytest.mark.parametrize(
+    "include_left, include_right",
+    [
+        (False, False),
+        (True, True),
+        (False, True),
+        (True, False),
+        (True, True),
+    ],
+)
+def test_assign_to_window(window, content1, content2, include_left, include_right):
     """If the widget is assigned to a window, the content is also assigned"""
+    splitcontainer = toga.SplitContainer(
+        content=[
+            content1 if include_left else None,
+            content2 if include_right else None,
+        ]
+    )
+
     # Split container is initially unassigned
     assert splitcontainer.window is None
 
@@ -112,9 +149,13 @@ def test_assign_to_window(window, splitcontainer, content1, content2):
 
     # Split container is on the window
     assert splitcontainer.window == window
+
     # Content is also on the window
-    assert content1.window == window
-    assert content2.window == window
+    if include_left:
+        assert content1.window == window
+
+    if include_right:
+        assert content2.window == window
 
 
 def test_assign_to_window_no_content(window):
@@ -150,19 +191,37 @@ def test_focus_noop(splitcontainer):
     assert_action_not_performed(splitcontainer, "focus")
 
 
+@pytest.mark.parametrize(
+    "include_left, include_right",
+    [
+        (False, False),
+        (True, True),
+        (False, True),
+        (True, False),
+        (True, True),
+    ],
+)
 def test_set_content_widgets(
     splitcontainer,
     content1,
     content2,
     content3,
+    include_left,
+    include_right,
 ):
     """Widget content can be set to a list of widgets"""
-    splitcontainer.content = [content2, content3]
+    splitcontainer.content = [
+        content2 if include_left else None,
+        content3 if include_right else None,
+    ]
 
     assert_action_performed_with(
         splitcontainer,
         "set content",
-        content=[content2._impl, content3._impl],
+        content=(
+            content2._impl if include_left else None,
+            content3._impl if include_right else None,
+        ),
         flex=[1, 1],
     )
 
@@ -170,14 +229,36 @@ def test_set_content_widgets(
     assert_action_performed(splitcontainer, "refresh")
 
 
-def test_set_content_flex(splitcontainer, content2, content3):
+@pytest.mark.parametrize(
+    "include_left, include_right",
+    [
+        (False, False),
+        (True, True),
+        (False, True),
+        (True, False),
+        (True, True),
+    ],
+)
+def test_set_content_flex(
+    splitcontainer,
+    content2,
+    content3,
+    include_left,
+    include_right,
+):
     """Widget content can be set to a list of widgets with flex values"""
-    splitcontainer.content = [(content2, 2), (content3, 3)]
+    splitcontainer.content = [
+        (content2 if include_left else None, 2),
+        (content3 if include_right else None, 3),
+    ]
 
     assert_action_performed_with(
         splitcontainer,
         "set content",
-        content=[content2._impl, content3._impl],
+        content=(
+            content2._impl if include_left else None,
+            content3._impl if include_right else None,
+        ),
         flex=[2, 3],
     )
 
@@ -185,15 +266,37 @@ def test_set_content_flex(splitcontainer, content2, content3):
     assert_action_performed(splitcontainer, "refresh")
 
 
-def test_set_content_flex_altered(splitcontainer, content2, content3):
-    """Flex values will be manipulated if out of range, and defaulted if missing"""
-    splitcontainer.content = [content2, (content3, 0)]
+@pytest.mark.parametrize(
+    "include_left, include_right",
+    [
+        (False, False),
+        (True, True),
+        (False, True),
+        (True, False),
+        (True, True),
+    ],
+)
+def test_set_content_flex_mixed(
+    splitcontainer,
+    content2,
+    content3,
+    include_left,
+    include_right,
+):
+    """Flex values will be defaulted if missing"""
+    splitcontainer.content = [
+        content2 if include_left else None,
+        (content3 if include_right else None, 3),
+    ]
 
     assert_action_performed_with(
         splitcontainer,
         "set content",
-        content=[content2._impl, content3._impl],
-        flex=[1, 1],
+        content=(
+            content2._impl if include_left else None,
+            content3._impl if include_right else None,
+        ),
+        flex=[1, 3],
     )
 
     # The split container has been refreshed
@@ -205,19 +308,19 @@ def test_set_content_flex_altered(splitcontainer, content2, content3):
     [
         (
             None,
-            r"SplitContainer content must be a list with exactly 2 elements",
+            r"SplitContainer content must be a sequence with exactly 2 elements",
         ),
         (
             [],
-            r"SplitContainer content must be a list with exactly 2 elements",
+            r"SplitContainer content must be a sequence with exactly 2 elements",
         ),
         (
             [toga.Box()],
-            r"SplitContainer content must be a list with exactly 2 elements",
+            r"SplitContainer content must be a sequence with exactly 2 elements",
         ),
         (
             [toga.Box(), toga.Box(), toga.Box()],
-            r"SplitContainer content must be a list with exactly 2 elements",
+            r"SplitContainer content must be a sequence with exactly 2 elements",
         ),
         (
             [toga.Box(), (toga.Box(),)],
@@ -228,6 +331,14 @@ def test_set_content_flex_altered(splitcontainer, content2, content3):
             [toga.Box(), (toga.Box(), 42, True)],
             r"An item in SplitContainer content must be a 2-tuple containing "
             r"the widget, and the flex weight to assign to that widget.",
+        ),
+        (
+            [toga.Box(), (toga.Box(), 0)],
+            r"The flex value for an item in a SplitContainer must be >0",
+        ),
+        (
+            [toga.Box(), (toga.Box(), -1)],
+            r"The flex value for an item in a SplitContainer must be >0",
         ),
     ],
 )

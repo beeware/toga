@@ -14,7 +14,10 @@ class SplitContainer(Widget):
         id=None,
         style=None,
         direction: Direction = Direction.VERTICAL,
-        content: list[Widget | tuple[Widget, int]] | None = None,
+        content: tuple[Widget | tuple[Widget, int], Widget | tuple[Widget, int]] = (
+            None,
+            None,
+        ),
     ):
         """Create a new SplitContainer.
 
@@ -28,7 +31,7 @@ class SplitContainer(Widget):
             :attr:`~toga.constants.Direction.VERTICAL`; defaults to
             :attr:`~toga.constants.Direction.VERTICAL`
         :param content: The content that will fill the panels of the SplitContainer. A
-            list with 2 elements; each item in the list is either:
+            tuple with 2 elements; each item in the tuple is either:
 
             * A tuple consisting of a widget and the initial flex value to apply to
               that widget in the split.
@@ -37,13 +40,10 @@ class SplitContainer(Widget):
         """
         super().__init__(id=id, style=style)
 
-        self._content = []
-
         # Create a platform specific implementation of a SplitContainer
         self._impl = self.factory.SplitContainer(interface=self)
 
-        if content:
-            self.content = content
+        self.content = content
         self.direction = direction
 
     @property
@@ -64,7 +64,7 @@ class SplitContainer(Widget):
         pass
 
     @property
-    def content(self) -> list[Widget]:
+    def content(self) -> tuple[Widget, Widget]:
         """The widgets displayed in the SplitContainer.
 
         When retrieved, only the list of widgets is returned.
@@ -80,10 +80,15 @@ class SplitContainer(Widget):
         return self._content
 
     @content.setter
-    def content(self, content):
-        if content is None or len(content) != 2:
+    def content(
+        self, content: tuple[Widget | tuple[Widget, int], Widget | tuple[Widget, int]]
+    ):
+        try:
+            if len(content) != 2:
+                raise TypeError()
+        except TypeError:
             raise ValueError(
-                "SplitContainer content must be a list with exactly 2 elements"
+                "SplitContainer content must be a sequence with exactly 2 elements"
             )
 
         _content = []
@@ -92,8 +97,10 @@ class SplitContainer(Widget):
             if isinstance(item, tuple):
                 if len(item) == 2:
                     widget, flex_value = item
-                    if flex_value < 1:
-                        flex_value = 1
+                    if flex_value <= 0:
+                        raise ValueError(
+                            "The flex value for an item in a SplitContainer must be >0"
+                        )
                 else:
                     raise ValueError(
                         "An item in SplitContainer content must be a 2-tuple "
@@ -107,11 +114,15 @@ class SplitContainer(Widget):
             _content.append(widget)
             flex.append(flex_value)
 
-            widget.app = self.app
-            widget.window = self.window
+            if widget:
+                widget.app = self.app
+                widget.window = self.window
 
-        self._impl.set_content([w._impl for w in _content], flex)
-        self._content = _content
+        self._impl.set_content(
+            tuple(w._impl if w is not None else None for w in _content),
+            flex,
+        )
+        self._content = tuple(_content)
         self.refresh()
 
     @Widget.app.setter
@@ -120,8 +131,8 @@ class SplitContainer(Widget):
         Widget.app.fset(self, app)
 
         # Also assign the app to the content in the container
-        if self.content:
-            for content in self.content:
+        for content in self.content:
+            if content:
                 content.app = app
 
     @Widget.window.setter
@@ -130,8 +141,8 @@ class SplitContainer(Widget):
         Widget.window.fset(self, window)
 
         # Also assign the window to the content in the container
-        if self._content:
-            for content in self._content:
+        for content in self._content:
+            if content:
                 content.window = window
 
     @property
