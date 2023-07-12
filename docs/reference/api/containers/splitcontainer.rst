@@ -42,8 +42,8 @@ at time of creation, or by setting the ``direction`` attribute:
 
     split.content = [left_container, right_container]
 
-By default, the content of the SplitContainer will be evenly divided between the
-content. To specify an uneven split, you can provide a flex value when specifying
+By default, the space of the SplitContainer will be evenly divided between the
+two panels. To specify an uneven split, you can provide a flex value when specifying
 content. In the following example, there will be a 60/40 split between the left
 and right panels.
 

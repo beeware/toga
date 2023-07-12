@@ -30,7 +30,7 @@ class SplitContainer(Widget):
         :param content: The content that will fill the panels of the SplitContainer. A
             list with 2 elements; each item in the list is either:
 
-            * A tuple containing of a widget and the initial flex value to apply to
+            * A tuple consisting of a widget and the initial flex value to apply to
               that widget in the split.
             * A widget. The widget will be given a flex value of 1.
 
@@ -69,10 +69,10 @@ class SplitContainer(Widget):
 
         When retrieved, only the list of widgets is returned.
 
-        When setting the value, the list must have at least 2 elements; each item in the
+        When setting the value, the list must have exactly 2 elements; each item in the
         list can be either:
 
-        * A tuple containing of a widget and the initial flex value to apply to that
+        * A tuple consisting of a widget and the initial flex value to apply to that
           widget in the split.
         * A widget. The widget will be given a flex value of 1.
 
