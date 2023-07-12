@@ -75,8 +75,8 @@ Resources
 ==================================================================== ========================================================================
  :doc:`App Paths </reference/api/resources/app_paths>`                A mechanism for obtaining platform-appropriate file system locations
                                                                       for an application.
- :doc:`Font </reference/api/resources/fonts>`                         Fonts
  :doc:`Command </reference/api/resources/command>`                    Command
+ :doc:`Font </reference/api/resources/fonts>`                         Fonts
  :doc:`Group </reference/api/resources/group>`                        Command group
  :doc:`Icon </reference/api/resources/icons>`                         An icon for buttons, menus, etc
  :doc:`Image </reference/api/resources/images>`                       An image
@@ -87,6 +87,15 @@ Resources
  :doc:`ValueSource </reference/api/resources/sources/value_source>`   A data source describing a single value.
 ==================================================================== ========================================================================
 
+Other
+-----
+
+============================================== ========================================================================
+ Component                                      Description
+============================================== ========================================================================
+ :doc:`Constants </reference/api/constants>`    Symbolic constants used by various APIs.
+============================================== ========================================================================
+
 .. toctree::
    :hidden:
 
@@ -96,3 +105,4 @@ Resources
    containers/index
    resources/index
    widgets/index
+   constants

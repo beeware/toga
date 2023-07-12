@@ -24,9 +24,9 @@ class SplitContainer(Widget):
         :param style: A style object. If no style is provided, a default style will be
             applied to the widget.
         :param direction: The direction in which the divider will be drawn. Either
-            :attr:`~toga.widgets.SplitContainer.HORIZONTAL` or
-            :attr:`~toga.widgets.SplitContainer.VERTICAL`; defaults to
-            :attr:`~toga.widgets.SplitContainer.VERTICAL`
+            :attr:`~toga.constants.Direction.HORIZONTAL` or
+            :attr:`~toga.constants.Direction.VERTICAL`; defaults to
+            :attr:`~toga.constants.Direction.VERTICAL`
         :param content: The content that will fill the panels of the SplitContainer. A
             list with 2 elements; each item in the list is either:
 
