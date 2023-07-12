@@ -475,3 +475,20 @@ async def test_manual_scroll(widget, probe, content, on_scroll):
     assert widget.horizontal_position == 0
     assert widget.vertical_position == 0
     on_scroll.assert_not_called()
+
+
+async def test_no_content(widget, probe, content):
+    "The content of the scroll container can be cleared"
+    widget.content = None
+    await probe.redraw("Content of the scroll container has been cleared")
+
+    # Force a refresh to see the impact of a set_bounds() when there's
+    # no inner content.
+    widget.refresh()
+    await probe.redraw("Scroll container layout has been refreshed")
+
+    widget.content = content
+    await probe.redraw("Content of the scroll container has been restored")
+
+    widget.refresh()
+    await probe.redraw("Scroll container layout has been refreshed")

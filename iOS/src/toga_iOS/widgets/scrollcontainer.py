@@ -16,7 +16,10 @@ class TogaScrollView(UIScrollView):
 
     @objc_method
     def refreshContent(self):
-        self.interface._content.refresh()
+        # Now that we have an updated size for the ScrollContainer, re-evaluate
+        # the size of the document content (assuming there is a document)
+        if self.interface._content:
+            self.interface._content.refresh()
 
 
 class ScrollContainer(Widget):
