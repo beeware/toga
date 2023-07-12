@@ -60,7 +60,7 @@ and right panels.
 
 This only specifies the initial split; the split can be modified by the user
 once it is displayed. If a flex weight isn't specified, a value of 1 is assumed.
-The minimum flex weight is 1; any smaller value will be interpreted as 1.
+The flex weight must be greater than 0 for all widgets.
 
 Reference
 ---------
