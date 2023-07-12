@@ -76,7 +76,6 @@ def test_widget_created_with_values(content1, content2):
     "include_left, include_right",
     [
         (False, False),
-        (True, True),
         (False, True),
         (True, False),
         (True, True),
@@ -126,7 +125,6 @@ def test_assign_to_app_no_content(app):
     "include_left, include_right",
     [
         (False, False),
-        (True, True),
         (False, True),
         (True, False),
         (True, True),
@@ -195,7 +193,6 @@ def test_focus_noop(splitcontainer):
     "include_left, include_right",
     [
         (False, False),
-        (True, True),
         (False, True),
         (True, False),
         (True, True),
@@ -233,7 +230,6 @@ def test_set_content_widgets(
     "include_left, include_right",
     [
         (False, False),
-        (True, True),
         (False, True),
         (True, False),
         (True, True),
@@ -270,7 +266,6 @@ def test_set_content_flex(
     "include_left, include_right",
     [
         (False, False),
-        (True, True),
         (False, True),
         (True, False),
         (True, True),
