@@ -14,10 +14,7 @@ class SplitContainer(Widget):
         id=None,
         style=None,
         direction: Direction = Direction.VERTICAL,
-        content: tuple[Widget | tuple[Widget, int], Widget | tuple[Widget, int]] = (
-            None,
-            None,
-        ),
+        content: tuple[Widget | None | tuple, Widget | None | tuple] = (None, None),
     ):
         """Create a new SplitContainer.
 
@@ -30,13 +27,8 @@ class SplitContainer(Widget):
             :attr:`~toga.constants.Direction.HORIZONTAL` or
             :attr:`~toga.constants.Direction.VERTICAL`; defaults to
             :attr:`~toga.constants.Direction.VERTICAL`
-        :param content: The content that will fill the panels of the SplitContainer. A
-            tuple with 2 elements; each item in the tuple is either:
-
-            * A tuple consisting of a widget and the initial flex value to apply to
-              that widget in the split.
-            * A widget. The widget will be given a flex value of 1.
-
+        :param content: Initial :any:`content` of the container. Defaults to both panels
+            being empty.
         """
         super().__init__(id=id, style=style)
 
@@ -63,26 +55,28 @@ class SplitContainer(Widget):
         "No-op; SplitContainer cannot accept input focus"
         pass
 
+    # The inner tuple's full type is tuple[Widget | None, float], but that would make
+    # the documentation unreadable.
     @property
-    def content(self) -> tuple[Widget, Widget]:
+    def content(self) -> tuple[Widget | None | tuple, Widget | None | tuple]:
         """The widgets displayed in the SplitContainer.
 
-        When retrieved, only the list of widgets is returned.
+        This property accepts a sequence of exactly 2 elements, each of which can be
+        either:
 
-        When setting the value, the list must have exactly 2 elements; each item in the
-        list can be either:
+        * A :any:`Widget` to display in the panel.
+        * ``None``, to make the panel empty.
+        * A tuple consisting of a Widget (or ``None``) and the initial flex value to
+          apply to that panel in the split, which must be greater than 0.
 
-        * A tuple consisting of a widget and the initial flex value to apply to that
-          widget in the split.
-        * A widget. The widget will be given a flex value of 1.
+        If a flex weight isn’t specified, a value of 1 is assumed.
 
+        When reading this property, only the widgets are returned, not the flex values.
         """
         return self._content
 
     @content.setter
-    def content(
-        self, content: tuple[Widget | tuple[Widget, int], Widget | tuple[Widget, int]]
-    ):
+    def content(self, content):
         try:
             if len(content) != 2:
                 raise TypeError()

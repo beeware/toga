@@ -1,7 +1,7 @@
 SplitContainer
 ==============
 
-A container that divides an area into multiple panels with a movable border.
+A container that divides an area into two panels with a movable border.
 
 .. figure:: /reference/images/SplitContainer.png
    :align: center
@@ -59,8 +59,7 @@ and right panels.
     split.content = [(left_container, 3), (right_container, 2)]
 
 This only specifies the initial split; the split can be modified by the user
-once it is displayed. If a flex weight isn't specified, a value of 1 is assumed.
-The flex weight must be greater than 0 for all widgets.
+once it is displayed.
 
 Reference
 ---------
