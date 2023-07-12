@@ -69,7 +69,7 @@ class SplitContainer(Widget):
         * A tuple consisting of a Widget (or ``None``) and the initial flex value to
           apply to that panel in the split, which must be greater than 0.
 
-        If a flex weight isn’t specified, a value of 1 is assumed.
+        If a flex value isn't specified, a value of 1 is assumed.
 
         When reading this property, only the widgets are returned, not the flex values.
         """
