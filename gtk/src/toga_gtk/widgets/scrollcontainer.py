@@ -51,6 +51,10 @@ class ScrollContainer(Widget):
             if self.interface.vertical
             else Gtk.PolicyType.NEVER,
         )
+        # Disabling scrolling implies a position reset; that's a scroll event.
+        if not value:
+            self.native.get_hadjustment().set_value(0)
+            self.interface.on_scroll(None)
 
     def get_vertical(self):
         return self.native.get_policy()[1] == Gtk.PolicyType.AUTOMATIC
@@ -62,26 +66,34 @@ class ScrollContainer(Widget):
             else Gtk.PolicyType.NEVER,
             Gtk.PolicyType.AUTOMATIC if value else Gtk.PolicyType.NEVER,
         )
+        # Disabling scrolling implies a position reset; that's a scroll event.
+        if not value:
+            self.native.get_vadjustment().set_value(0)
+            self.interface.on_scroll(None)
 
     def get_max_vertical_position(self):
         return max(
             0,
-            self.native.get_vadjustment().get_upper()
-            - self.native.get_allocation().height,
+            int(
+                self.native.get_vadjustment().get_upper()
+                - self.native.get_allocation().height
+            ),
         )
 
     def get_vertical_position(self):
-        return self.native.get_vadjustment().get_value()
+        return int(self.native.get_vadjustment().get_value())
 
     def get_max_horizontal_position(self):
         return max(
             0,
-            self.native.get_hadjustment().get_upper()
-            - self.native.get_allocation().width,
+            int(
+                self.native.get_hadjustment().get_upper()
+                - self.native.get_allocation().width
+            ),
         )
 
     def get_horizontal_position(self):
-        return self.native.get_hadjustment().get_value()
+        return int(self.native.get_hadjustment().get_value())
 
     def set_position(self, horizontal_position, vertical_position):
         self.native.get_hadjustment().set_value(horizontal_position)

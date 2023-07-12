@@ -11,6 +11,7 @@ from .base import SimpleProbe
 
 class ScrollContainerProbe(SimpleProbe):
     native_class = NSScrollView
+    scrollbar_inset = 0
 
     @property
     def has_content(self):
@@ -25,6 +26,9 @@ class ScrollContainerProbe(SimpleProbe):
         return self.native.documentView.bounds.size.width
 
     async def scroll(self):
+        if not self.native.hasVerticalScroller:
+            return
+
         self.native.contentView.scrollToPoint(NSMakePoint(0, 600))
         self.native.reflectScrolledClipView(self.native.contentView)
 
