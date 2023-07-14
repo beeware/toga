@@ -1,14 +1,9 @@
 from toga.command import Command as BaseCommand
+from toga_cocoa.container import Container, MinimumContainer
 from toga_cocoa.libs import (
     SEL,
     NSBackingStoreBuffered,
     NSClosableWindowMask,
-    NSLayoutAttributeBottom,
-    NSLayoutAttributeLeft,
-    NSLayoutAttributeRight,
-    NSLayoutAttributeTop,
-    NSLayoutConstraint,
-    NSLayoutRelationGreaterThanOrEqual,
     NSMakeRect,
     NSMiniaturizableWindowMask,
     NSMutableArray,
@@ -28,24 +23,6 @@ from toga_cocoa.libs import (
 
 def toolbar_identifier(cmd):
     return "ToolbarItem-%s" % id(cmd)
-
-
-class CocoaViewport:
-    def __init__(self, view):
-        self.view = view
-        # macOS always renders at 96dpi. Scaling is handled
-        # transparently at the level of the screen compositor.
-        self.dpi = 96
-        self.baseline_dpi = self.dpi
-
-    @property
-    def width(self):
-        # If `view` is `None`, we'll treat this a 0x0 viewport.
-        return 0 if self.view is None else self.view.frame.size.width
-
-    @property
-    def height(self):
-        return 0 if self.view is None else self.view.frame.size.height
 
 
 class WindowDelegate(NSObject):
@@ -179,61 +156,28 @@ class Window:
 
         self.native.delegate = self.delegate
 
+        self.container = Container()
+        self.native.contentView = self.container.native
+
     def create_toolbar(self):
         self._toolbar_items = {}
         for cmd in self.interface.toolbar:
             if isinstance(cmd, BaseCommand):
                 self._toolbar_items[toolbar_identifier(cmd)] = cmd
 
-        self._toolbar_native = NSToolbar.alloc().initWithIdentifier_(
+        self._toolbar_native = NSToolbar.alloc().initWithIdentifier(
             "Toolbar-%s" % id(self)
         )
-        self._toolbar_native.setDelegate_(self.delegate)
+        self._toolbar_native.setDelegate(self.delegate)
 
-        self.native.setToolbar_(self._toolbar_native)
+        self.native.setToolbar(self._toolbar_native)
 
     def clear_content(self):
-        if self.interface.content:
-            for child in self.interface.content.children:
-                child._impl.container = None
+        pass
 
     def set_content(self, widget):
-        # Set the window's view to be the widget's native object.
-        self.native.contentView = widget.native
-
-        # Set the widget's viewport to be based on the window's content.
-        widget.viewport = CocoaViewport(view=widget.native)
-
-        # Add all children to the content widget.
-        for child in widget.interface.children:
-            child._impl.container = widget
-
-        # Enforce a minimum size based on the content size.
-        # This is enforcing the *minimum* size; the window might actually be
-        # bigger. If the window is resizable, using >= allows the window to
-        # be dragged larger; if not resizable, it enforces the smallest
-        # size that can be programmatically set on the window.
-        self._min_width_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(  # noqa: E501
-            widget.native,
-            NSLayoutAttributeRight,
-            NSLayoutRelationGreaterThanOrEqual,
-            widget.native,
-            NSLayoutAttributeLeft,
-            1.0,
-            100,
-        )
-        widget.native.addConstraint(self._min_width_constraint)
-
-        self._min_height_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(  # noqa: E501
-            widget.native,
-            NSLayoutAttributeBottom,
-            NSLayoutRelationGreaterThanOrEqual,
-            widget.native,
-            NSLayoutAttributeTop,
-            1.0,
-            100,
-        )
-        widget.native.addConstraint(self._min_height_constraint)
+        # Set the content of the window's container
+        self.container.content = widget
 
     def get_title(self):
         return str(self.native.title)
@@ -293,10 +237,10 @@ class Window:
         # a minimum window size.
         self.interface.content.style.layout(
             self.interface.content,
-            CocoaViewport(view=None),
+            MinimumContainer(),
         )
-        self._min_width_constraint.constant = self.interface.content.layout.width
-        self._min_height_constraint.constant = self.interface.content.layout.height
+        self.container.set_min_width(self.interface.content.layout.width)
+        self.container.set_min_height(self.interface.content.layout.height)
 
         # Refresh with the actual viewport to do the proper rendering.
         self.interface.content.refresh()
