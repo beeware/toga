@@ -1,5 +1,5 @@
+from toga_winforms.container import Container
 from toga_winforms.libs import WinForms
-from toga_winforms.window import WinFormsViewport
 
 from .base import Widget
 
@@ -25,11 +25,11 @@ class SplitContainer(Widget):
 
         if position == 0:
             self.native.Panel1.Controls.Add(widget.native)
-            widget.viewport = WinFormsViewport(self.native.Panel1, self)
+            widget.viewport = Container(self.native.Panel1)
 
         elif position == 1:
             self.native.Panel2.Controls.Add(widget.native)
-            widget.viewport = WinFormsViewport(self.native.Panel2, self)
+            widget.viewport = Container(self.native.Panel2)
 
             # Turn all the weights into a fraction of 1.0
             total = sum(self.interface._weight)

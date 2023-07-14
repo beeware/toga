@@ -335,4 +335,4 @@ class Canvas(Box):
         return stream.ToArray()
 
     def _points_to_pixels(self, points):
-        return points * 72 / self.container.viewport.dpi
+        return points * 72 / self.container.dpi

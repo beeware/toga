@@ -2,8 +2,6 @@
 Let's build a browser!
 ======================
 
-.. include:: /tutorial/tutorial-issues-note.rst
-
 Although it's possible to build complex GUI layouts, you can get a lot
 of functionality with very little code, utilizing the rich components that
 are native on modern platforms.

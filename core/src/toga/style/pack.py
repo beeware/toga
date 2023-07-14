@@ -130,6 +130,7 @@ class Pack(BaseStyle):
     def layout(self, node, viewport):
         # Precompute `scale_factor` by providing it as a default param.
         # self._debug("=" * 80)
+        # self._debug(f"Layout root {node}, available {viewport.width}x{viewport.height}")
         self.__class__._depth = -1
 
         def scale(value, scale_factor=viewport.dpi / viewport.baseline_dpi):

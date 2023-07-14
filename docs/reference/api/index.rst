@@ -60,7 +60,8 @@ Layout widgets
  Usage                                                                Description
 ==================================================================== ========================================================================
  :doc:`Box </reference/api/containers/box>`                           A generic container for other widgets. Used to construct layouts.
- :doc:`ScrollContainer </reference/api/containers/scrollcontainer>`   Scrollable Container
+ :doc:`ScrollContainer </reference/api/containers/scrollcontainer>`   A container that can display a layout larger that the area of
+                                                                      the container, with overflow controlled by scroll bars.
  :doc:`SplitContainer </reference/api/containers/splitcontainer>`     Split Container
  :doc:`OptionContainer </reference/api/containers/optioncontainer>`   Option Container
 ==================================================================== ========================================================================

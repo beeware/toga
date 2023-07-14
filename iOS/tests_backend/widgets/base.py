@@ -1,3 +1,5 @@
+from rubicon.objc import ObjCClass
+
 from toga_iOS.libs import UIApplication
 
 from ..fonts import FontMixin
@@ -32,6 +34,9 @@ UIControlEventSystemReserved = 0xF0000000  # range reserved for internal framewo
 UIControlEventAllEvents = 0xFFFFFFFF
 
 
+CATransaction = ObjCClass("CATransaction")
+
+
 class SimpleProbe(BaseProbe, FontMixin):
     def __init__(self, widget):
         super().__init__()
@@ -42,7 +47,9 @@ class SimpleProbe(BaseProbe, FontMixin):
         assert isinstance(self.native, self.native_class)
 
     def assert_container(self, container):
-        container_native = container._impl.native
+        assert container._impl.container == self.impl.container
+
+        container_native = container._impl.container.native
         for control in container_native.subviews():
             if control == self.native:
                 break
@@ -60,6 +67,10 @@ class SimpleProbe(BaseProbe, FontMixin):
         """Request a redraw of the app, waiting until that redraw has completed."""
         # Force a widget repaint
         self.widget.window.content._impl.native.layer.displayIfNeeded()
+
+        # Flush CoreAnimation; this ensures all animations are complete
+        # and all constraints have been evaluated.
+        CATransaction.flush()
 
         await super().redraw(message=message, delay=delay)
 
@@ -98,8 +109,8 @@ class SimpleProbe(BaseProbe, FontMixin):
 
         # Allow for the status bar and navigation bar in vertical position
         statusbar_frame = UIApplication.sharedApplication.statusBarFrame
-        navbar = self.widget.window._impl.controller.navigationController
-        navbar_frame = navbar.navigationBar.frame
+        nav_controller = self.widget.window._impl.native.rootViewController
+        navbar_frame = nav_controller.navigationBar.frame
         offset = statusbar_frame.size.height + navbar_frame.size.height
         assert (
             self.native.frame.origin.x,

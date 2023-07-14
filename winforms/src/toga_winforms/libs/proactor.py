@@ -23,8 +23,7 @@ class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
         # it now needs to be created as part of run_forever; otherwise the
         # event loop locks up, because there won't be anything for the
         # select call to process.
-        if sys.version_info >= (3, 8):
-            self.call_soon(self._loop_self_reading)
+        self.call_soon(self._loop_self_reading)
 
         # Remember the application context.
         self.app_context = app_context
@@ -44,16 +43,11 @@ class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
             )
         self._set_coroutine_origin_tracking(self._debug)
         self._thread_id = threading.get_ident()
-        try:
-            self._old_agen_hooks = sys.get_asyncgen_hooks()
-            sys.set_asyncgen_hooks(
-                firstiter=self._asyncgen_firstiter_hook,
-                finalizer=self._asyncgen_finalizer_hook,
-            )
-        except AttributeError:
-            # Python < 3.6 didn't have sys.get_asyncgen_hooks();
-            # No action required for those versions.
-            pass
+        self._old_agen_hooks = sys.get_asyncgen_hooks()
+        sys.set_asyncgen_hooks(
+            firstiter=self._asyncgen_firstiter_hook,
+            finalizer=self._asyncgen_finalizer_hook,
+        )
 
         events._set_running_loop(self)
         # === END BaseEventLoop.run_forever() setup ===
@@ -105,12 +99,7 @@ class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
             self._thread_id = None
             events._set_running_loop(None)
             self._set_coroutine_origin_tracking(False)
-            try:
-                sys.set_asyncgen_hooks(*self._old_agen_hooks)
-            except AttributeError:
-                # Python < 3.6 didn't have set_asyncgen_hooks.
-                # No action required for those versions.
-                pass
+            sys.set_asyncgen_hooks(*self._old_agen_hooks)
             # === END BaseEventLoop.run_forever() finally handling ===
         else:
             # Otherwise, live to tick another day. Enqueue the next tick,
