@@ -1,13 +1,19 @@
-from ..colors import native_color
-from ..libs import Gdk, Gtk, Pango, cairo
+from io import BytesIO
+
+from travertino.size import at_least
+
+from toga_gtk.colors import native_color
+from toga_gtk.libs import Gdk, Gtk, Pango, cairo
+
 from .base import Widget
 
 
 class Canvas(Widget):
     def create(self):
-        if cairo is None:
+        if cairo is None:  # pragma: no cover
             raise RuntimeError(
-                "'import cairo' failed; may need to install python-gi-cairo."
+                "Unable to import Cairo. Ensure that the system package "
+                "providing Cairo and its GTK bindings have been installed."
             )
 
         self.native = Gtk.DrawingArea()
@@ -23,16 +29,32 @@ class Canvas(Widget):
             | Gdk.EventMask.BUTTON_MOTION_MASK
         )
 
-    def gtk_draw_callback(self, canvas, gtk_context):
+    def gtk_draw_callback(self, widget, cairo_context):
         """Creates a draw callback.
 
         Gtk+ uses a drawing callback to draw on a DrawingArea. Assignment of the
         callback function creates a Gtk+ canvas and Gtk+ context automatically using the
-        canvas and gtk_context function arguments. This method calls the draw method on
-        the interface Canvas to draw the objects.
+        canvas and cairo_context function arguments. This method calls the draw method
+        on the interface Canvas to draw the objects.
         """
-        self.original_transform_matrix = gtk_context.get_matrix()
-        self.interface._draw(self, draw_context=gtk_context)
+
+        # Explicitly render the background
+        sc = self.native.get_style_context()
+        bg = sc.get_property("background-color", sc.get_state())
+        if bg:
+            cairo_context.set_source_rgba(
+                255 * bg.red,
+                255 * bg.green,
+                255 * bg.blue,
+                bg.alpha,
+            )
+            width = self.native.get_allocation().width
+            height = self.native.get_allocation().height
+            cairo_context.rectangle(0, 0, width, height)
+            cairo_context.fill()
+
+        self.original_transform_matrix = cairo_context.get_matrix()
+        self.interface.context._draw(self, cairo_context=cairo_context)
 
     def gtk_on_size_allocate(self, widget, allocation):
         """Called on widget resize, and calls the handler set on the interface, if
@@ -45,13 +67,10 @@ class Canvas(Widget):
                 self.interface.on_activate(None, event.x, event.y)
             else:
                 self.interface.on_press(None, event.x, event.y)
-        if event.button == 3:
+        elif event.button == 3:
             self.interface.on_alt_press(None, event.x, event.y)
 
     def mouse_move(self, obj, event):
-        # TODO? Is mouse pressed
-        # if self.clicks == 0:
-        #     return
         if event.state == Gdk.ModifierType.BUTTON1_MASK:
             self.interface.on_drag(None, event.x, event.y)
         if event.state == Gdk.ModifierType.BUTTON3_MASK:
@@ -60,39 +79,39 @@ class Canvas(Widget):
     def mouse_up(self, obj, event):
         if event.button == 1:
             self.interface.on_release(None, event.x, event.y)
-        if event.button == 3:
+        elif event.button == 3:
             self.interface.on_alt_release(None, event.x, event.y)
 
     def redraw(self):
         self.native.queue_draw()
 
     # Context management
-    def push_context(self, draw_context, **kwargs):
-        draw_context.save()
+    def push_context(self, cairo_context, **kwargs):
+        cairo_context.save()
 
-    def pop_context(self, draw_context, **kwargs):
-        draw_context.restore()
+    def pop_context(self, cairo_context, **kwargs):
+        cairo_context.restore()
 
     # Basic paths
-    def begin_path(self, draw_context, **kwargs):
-        draw_context.new_path()
+    def begin_path(self, cairo_context, **kwargs):
+        cairo_context.new_path()
 
-    def close_path(self, x, y, draw_context, **kwargs):
-        draw_context.close_path()
+    def close_path(self, cairo_context, **kwargs):
+        cairo_context.close_path()
 
-    def move_to(self, x, y, draw_context, **kwargs):
-        draw_context.move_to(x, y)
+    def move_to(self, x, y, cairo_context, **kwargs):
+        cairo_context.move_to(x, y)
 
-    def line_to(self, x, y, draw_context, **kwargs):
-        draw_context.line_to(x, y)
+    def line_to(self, x, y, cairo_context, **kwargs):
+        cairo_context.line_to(x, y)
 
     # Basic shapes
 
-    def bezier_curve_to(self, cp1x, cp1y, cp2x, cp2y, x, y, draw_context, **kwargs):
-        draw_context.curve_to(cp1x, cp1y, cp2x, cp2y, x, y)
+    def bezier_curve_to(self, cp1x, cp1y, cp2x, cp2y, x, y, cairo_context, **kwargs):
+        cairo_context.curve_to(cp1x, cp1y, cp2x, cp2y, x, y)
 
-    def quadratic_curve_to(self, cpx, cpy, x, y, draw_context, **kwargs):
-        draw_context.curve_to(cpx, cpy, cpx, cpy, x, y)
+    def quadratic_curve_to(self, cpx, cpy, x, y, cairo_context, **kwargs):
+        cairo_context.curve_to(cpx, cpy, cpx, cpy, x, y)
 
     def arc(
         self,
@@ -102,13 +121,13 @@ class Canvas(Widget):
         startangle,
         endangle,
         anticlockwise,
-        draw_context,
+        cairo_context,
         **kwargs,
     ):
         if anticlockwise:
-            draw_context.arc_negative(x, y, radius, startangle, endangle)
+            cairo_context.arc_negative(x, y, radius, startangle, endangle)
         else:
-            draw_context.arc(x, y, radius, startangle, endangle)
+            cairo_context.arc(x, y, radius, startangle, endangle)
 
     def ellipse(
         self,
@@ -120,83 +139,83 @@ class Canvas(Widget):
         startangle,
         endangle,
         anticlockwise,
-        draw_context,
-        *args,
+        cairo_context,
         **kwargs,
     ):
-        draw_context.save()
-        draw_context.translate(x, y)
+        cairo_context.save()
+        cairo_context.translate(x, y)
         if radiusx >= radiusy:
-            draw_context.scale(1, radiusy / radiusx)
-            self.arc(0, 0, radiusx, startangle, endangle, anticlockwise, draw_context)
+            cairo_context.scale(1, radiusy / radiusx)
+            self.arc(0, 0, radiusx, startangle, endangle, anticlockwise, cairo_context)
         else:
-            draw_context.scale(radiusx / radiusy, 1)
-            self.arc(0, 0, radiusy, startangle, endangle, anticlockwise, draw_context)
-        draw_context.rotate(rotation)
-        draw_context.identity_matrix()
-        draw_context.restore()
+            cairo_context.scale(radiusx / radiusy, 1)
+            self.arc(0, 0, radiusy, startangle, endangle, anticlockwise, cairo_context)
+        cairo_context.rotate(rotation)
+        cairo_context.identity_matrix()
+        cairo_context.restore()
 
-    def rect(self, x, y, width, height, draw_context, **kwargs):
-        draw_context.rectangle(x, y, width, height)
+    def rect(self, x, y, width, height, cairo_context, **kwargs):
+        cairo_context.rectangle(x, y, width, height)
 
     # Drawing Paths
 
-    def apply_color(self, color, draw_context, **kwargs):
+    def apply_color(self, color, cairo_context, **kwargs):
         if color is not None:
-            draw_context.set_source_rgba(*native_color(color))
+            cairo_context.set_source_rgba(*native_color(color))
         else:
             # set color to black
-            draw_context.set_source_rgba(0, 0, 0, 1.0)
+            cairo_context.set_source_rgba(0, 0, 0, 1.0)
 
-    def fill(self, color, fill_rule, draw_context, **kwargs):
-        self.apply_color(color, draw_context)
+    def fill(self, color, fill_rule, cairo_context, **kwargs):
+        self.apply_color(color, cairo_context)
         if fill_rule == "evenodd":
-            draw_context.set_fill_rule(cairo.FILL_RULE_EVEN_ODD)
+            cairo_context.set_fill_rule(cairo.FILL_RULE_EVEN_ODD)
         else:
-            draw_context.set_fill_rule(cairo.FILL_RULE_WINDING)
+            cairo_context.set_fill_rule(cairo.FILL_RULE_WINDING)
 
-        draw_context.fill()
+        cairo_context.fill()
 
-    def stroke(self, color, line_width, line_dash, draw_context, **kwargs):
-        self.apply_color(color, draw_context)
-        draw_context.set_line_width(line_width)
+    def stroke(self, color, line_width, line_dash, cairo_context, **kwargs):
+        self.apply_color(color, cairo_context)
+        cairo_context.set_line_width(line_width)
         if line_dash is not None:
-            draw_context.set_dash(line_dash)
-        draw_context.stroke()
-        draw_context.set_dash([])
+            cairo_context.set_dash(line_dash)
+        cairo_context.stroke()
+        cairo_context.set_dash([])
 
     # Transformations
 
-    def rotate(self, radians, draw_context, **kwargs):
-        draw_context.rotate(radians)
+    def rotate(self, radians, cairo_context, **kwargs):
+        cairo_context.rotate(radians)
 
-    def scale(self, sx, sy, draw_context, **kwargs):
-        draw_context.scale(sx, sy)
+    def scale(self, sx, sy, cairo_context, **kwargs):
+        cairo_context.scale(sx, sy)
 
-    def translate(self, tx, ty, draw_context, **kwargs):
-        draw_context.translate(tx, ty)
+    def translate(self, tx, ty, cairo_context, **kwargs):
+        cairo_context.translate(tx, ty)
 
-    def reset_transform(self, draw_context, **kwargs):
-        draw_context.set_matrix(self.original_transform_matrix)
+    def reset_transform(self, cairo_context, **kwargs):
+        cairo_context.set_matrix(self.original_transform_matrix)
 
     # Text
 
-    def write_text(self, text, x, y, font, draw_context, **kwargs):
+    def write_text(self, text, x, y, font, cairo_context, **kwargs):
         # Set font family and size
         if font:
-            write_font = font
+            write_font = font.interface
         elif self.native.font:
             write_font = self.native.font
             write_font.family = self.native.font.get_family()
             write_font.size = self.native.font.get_size() / Pango.SCALE
-        draw_context.select_font_face(write_font.family)
-        draw_context.set_font_size(write_font.size)
+
+        cairo_context.select_font_face(write_font.family)
+        cairo_context.set_font_size(write_font.size)
 
         # Support writing multiline text
         for line in text.splitlines():
-            width, height = self.measure_text(line, write_font)
-            draw_context.move_to(x, y)
-            draw_context.text_path(line)
+            width, height = self.measure_text(line, write_font._impl)
+            cairo_context.move_to(x, y)
+            cairo_context.text_path(line)
             y += height
 
     def measure_text(self, text, font):
@@ -211,12 +230,24 @@ class Canvas(Widget):
         return width, height
 
     def get_image_data(self):
-        self.interface.factory.not_implemented("Canvas.get_image_data()")
+        width = self.native.get_allocation().width
+        height = self.native.get_allocation().height
+
+        surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, width, height)
+        context = cairo.Context(surface)
+
+        self.native.draw(context)
+
+        data = BytesIO()
+        surface.write_to_png(data)
+        return data.getbuffer()
 
     # Rehint
-
     def rehint(self):
         # print("REHINT", self, self.native.get_preferred_width(), self.native.get_preferred_height())
-        # width = self.native.get_preferred_width()
-        # height = self.native.get_preferred_height()
-        pass
+        # width = self.native.get_allocation().width
+        # height = self.native.get_allocation().height
+        width = self.interface._MIN_WIDTH
+        height = self.interface._MIN_HEIGHT
+        self.interface.intrinsic.height = at_least(width)
+        self.interface.intrinsic.width = at_least(height)

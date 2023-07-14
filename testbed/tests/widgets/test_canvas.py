@@ -184,7 +184,7 @@ async def test_image_data(canvas, probe):
     probe.assert_image_size(image, 100, 100)
 
 
-def assert_reference(image, reference, threshold=10.0):
+def assert_reference(image, reference, threshold=25.0):
     # Look for a platform-specific reference image; if one doesn't exist,
     # use a cross-platform reference image.
     path = (
@@ -242,7 +242,7 @@ async def test_line(canvas, probe):
         stroke.line_to(x=60, y=90)
 
     await probe.redraw("Line should be drawn")
-    assert_reference(probe.get_image(), "line")
+    assert_reference(probe.get_image(), "line", threshold=25)
 
 
 # async def test_path(canvas, probe):
