@@ -193,8 +193,5 @@ kCGBitmapByteOrder32Big = 4 << 12
 # CGGeometry.h
 
 
-class CGRectMake(Structure):
-    _fields_ = [
-        ("origin", CGPoint),
-        ("size", CGSize),
-    ]
+def CGRectMake(x, y, w, h):
+    return CGRect(CGPoint(x, y), CGSize(w, h))

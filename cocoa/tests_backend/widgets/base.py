@@ -171,17 +171,24 @@ class SimpleProbe(BaseProbe, FontMixin):
             ),
         )
 
-    async def mouse_event(self, event_type, location, delay=None):
+    async def mouse_event(
+        self,
+        event_type,
+        location,
+        delay=None,
+        modifierFlags=0,
+        clickCount=1,
+    ):
         await self.post_event(
             NSEvent.mouseEventWithType(
                 event_type,
                 location=location,
-                modifierFlags=0,
+                modifierFlags=modifierFlags,
                 timestamp=0,
                 windowNumber=self.native.window.windowNumber,
                 context=None,
                 eventNumber=0,
-                clickCount=1,
+                clickCount=clickCount,
                 pressure=1.0 if event_type == NSEventType.LeftMouseDown else 0.0,
             ),
             delay=delay,

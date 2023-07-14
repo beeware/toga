@@ -1,6 +1,9 @@
+from ctypes import POINTER, c_char, cast
+
 from rubicon.objc import objc_method, objc_property
 from travertino.size import at_least
 
+from toga.colors import BLACK, color
 from toga.widgets.canvas import FillRule
 from toga_cocoa.colors import native_color
 from toga_cocoa.libs import (
@@ -103,7 +106,7 @@ class Canvas(Widget):
     def begin_path(self, draw_context, **kwargs):
         core_graphics.CGContextBeginPath(draw_context)
 
-    def close_path(self, x, y, draw_context, **kwargs):
+    def close_path(self, draw_context, **kwargs):
         core_graphics.CGContextClosePath(draw_context)
 
     def move_to(self, x, y, draw_context, **kwargs):
@@ -123,7 +126,6 @@ class Canvas(Widget):
         x,
         y,
         draw_context,
-        *args,
         **kwargs,
     ):
         core_graphics.CGContextAddCurveToPoint(
@@ -142,7 +144,6 @@ class Canvas(Widget):
         endangle,
         anticlockwise,
         draw_context,
-        *args,
         **kwargs,
     ):
         # Cocoa Box Widget is using a flipped coordinate system, so clockwise
@@ -166,7 +167,6 @@ class Canvas(Widget):
         endangle,
         anticlockwise,
         draw_context,
-        *args,
         **kwargs,
     ):
         core_graphics.CGContextSaveGState(draw_context)
@@ -238,17 +238,7 @@ class Canvas(Widget):
         core_graphics.CGContextSaveGState(draw_context)
 
     # Text
-    def measure_text(self, text, font):
-        textAttributes = NSMutableDictionary.alloc().init()
-        textAttributes[NSFontAttributeName] = font.native
-        text_string = NSAttributedString.alloc().initWithString(
-            text, attributes=textAttributes
-        )
-        size = text_string.size()
-        return size.width, size.height
-
-    def write_text(self, text, x, y, font, **kwargs):
-        width, height = self.measure_text(text, font)
+    def _render_string(self, text, font, **kwargs):
         textAttributes = NSMutableDictionary.alloc().init()
         textAttributes[NSFontAttributeName] = font.native
 
@@ -257,7 +247,7 @@ class Canvas(Widget):
                 kwargs["stroke_color"]
             )
             # Apply negative NSStrokeWidthAttributeName to get stroke and fill
-            textAttributes[NSStrokeWidthAttributeName] = -1 * kwargs["text_line_width"]
+            textAttributes[NSStrokeWidthAttributeName] = -1 * kwargs["line_width"]
             textAttributes[NSForegroundColorAttributeName] = native_color(
                 kwargs["fill_color"]
             )
@@ -265,7 +255,7 @@ class Canvas(Widget):
             textAttributes[NSStrokeColorAttributeName] = native_color(
                 kwargs["stroke_color"]
             )
-            textAttributes[NSStrokeWidthAttributeName] = kwargs["text_line_width"]
+            textAttributes[NSStrokeWidthAttributeName] = kwargs["line_width"]
         elif "fill_color" in kwargs:
             textAttributes[NSForegroundColorAttributeName] = native_color(
                 kwargs["fill_color"]
@@ -276,7 +266,18 @@ class Canvas(Widget):
         text_string = NSAttributedString.alloc().initWithString(
             text, attributes=textAttributes
         )
-        text_string.drawAtPoint(NSPoint(x, y - height))
+        return text_string
+
+    def measure_text(self, text, font):
+        # We need at least a fill color to render, but that won't change the size.
+        rendered_string = self._render_string(text, font, fill_color=color(BLACK))
+        size = rendered_string.size()
+        return size.width, size.height
+
+    def write_text(self, text, x, y, font, **kwargs):
+        rendered_string = self._render_string(text, font, **kwargs)
+        size = rendered_string.size()
+        rendered_string.drawAtPoint(NSPoint(x, y - size.height))
 
     def get_image_data(self):
         bitmap = self.native.bitmapImageRepForCachingDisplayInRect(self.native.bounds)
@@ -287,7 +288,11 @@ class Canvas(Widget):
             NSBitmapImageFileType.PNG,
             properties=None,
         )
-        return data
+        # data is an NSData object that has .bytes as a c_void_p, and a .length. Cast to
+        # POINTER(c_char) to get an addressable array of bytes, and slice that array to
+        # the known length. We don't use c_char_p because it has handling of NUL
+        # termination, and POINTER(c_char) allows array subscripting.
+        return cast(data.bytes, POINTER(c_char))[: data.length]
 
     # Rehint
     def rehint(self):
