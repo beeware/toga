@@ -90,7 +90,7 @@ class Canvas(Box):
         context.graphics = event.Graphics
         context.graphics.Clear(native_color(WHITE))
         context.graphics.SmoothingMode = Drawing2D.SmoothingMode.AntiAlias
-        self.interface._draw(self, draw_context=context)
+        self.interface.context._draw(self, draw_context=context)
 
     def winforms_resize(self, *args):
         """Called on widget resize, and calls the handler set on the interface, if
@@ -160,17 +160,17 @@ class Canvas(Box):
 
     # Basic paths
 
-    def new_path(self, draw_context, *args, **kwargs):
+    def begin_path(self, draw_context, **kwargs):
         draw_context.add_path()
 
-    def closed_path(self, x, y, draw_context, *args, **kwargs):
-        self.line_to(x, y, draw_context, *args, **kwargs)
+    def close_path(self, x, y, draw_context, **kwargs):
+        self.line_to(x, y, draw_context, **kwargs)
 
-    def move_to(self, x, y, draw_context, *args, **kwargs):
+    def move_to(self, x, y, draw_context, **kwargs):
         draw_context.add_path()
         draw_context.last_point = (x, y)
 
-    def line_to(self, x, y, draw_context, *args, **kwargs):
+    def line_to(self, x, y, draw_context, **kwargs):
         draw_context.current_path.AddLine(
             draw_context.last_point[0], draw_context.last_point[1], x, y
         )
@@ -178,9 +178,7 @@ class Canvas(Box):
 
     # Basic shapes
 
-    def bezier_curve_to(
-        self, cp1x, cp1y, cp2x, cp2y, x, y, draw_context, *args, **kwargs
-    ):
+    def bezier_curve_to(self, cp1x, cp1y, cp2x, cp2y, x, y, draw_context, **kwargs):
         draw_context.current_path.AddBezier(
             PointF(draw_context.last_point[0], draw_context.last_point[1]),
             PointF(cp1x, cp1y),
@@ -189,7 +187,7 @@ class Canvas(Box):
         )
         draw_context.last_point = (x, y)
 
-    def quadratic_curve_to(self, cpx, cpy, x, y, draw_context, *args, **kwargs):
+    def quadratic_curve_to(self, cpx, cpy, x, y, draw_context, **kwargs):
         draw_context.current_path.AddCurve(
             [
                 PointF(draw_context.last_point[0], draw_context.last_point[1]),
@@ -200,16 +198,7 @@ class Canvas(Box):
         draw_context.last_point = (x, y)
 
     def arc(
-        self,
-        x,
-        y,
-        radius,
-        startangle,
-        endangle,
-        anticlockwise,
-        draw_context,
-        *args,
-        **kwargs
+        self, x, y, radius, startangle, endangle, anticlockwise, draw_context, **kwargs
     ):
         self.ellipse(
             x,
@@ -221,7 +210,6 @@ class Canvas(Box):
             endangle,
             anticlockwise,
             draw_context,
-            *args,
             **kwargs
         )
 
@@ -236,7 +224,6 @@ class Canvas(Box):
         endangle,
         anticlockwise,
         draw_context,
-        *args,
         **kwargs
     ):
         rect = RectangleF(x - radiusx, y - radiusy, 2 * radiusx, 2 * radiusy)
@@ -248,16 +235,13 @@ class Canvas(Box):
             y + radiusy * math.sin(endangle),
         )
 
-    def rect(self, x, y, width, height, draw_context, *args, **kwargs):
+    def rect(self, x, y, width, height, draw_context, **kwargs):
         rect = RectangleF(x, y, width, height)
         draw_context.current_path.AddRectangle(rect)
 
     # Drawing Paths
 
-    def apply_color(self, color, draw_context, *args, **kwargs):
-        self.interface.factory.not_implemented("Canvas.apply_color()")
-
-    def fill(self, color, fill_rule, preserve, draw_context, *args, **kwargs):
+    def fill(self, color, fill_rule, draw_context, **kwargs):
         brush = self.create_brush(color)
         fill_mode = self.native_fill_rule(fill_rule)
         for path in draw_context.paths:
@@ -275,7 +259,7 @@ class Canvas(Box):
             return FillMode.Winding
         return None
 
-    def stroke(self, color, line_width, line_dash, draw_context, *args, **kwargs):
+    def stroke(self, color, line_width, line_dash, draw_context, **kwargs):
         pen = self.create_pen(color=color, line_width=line_width, line_dash=line_dash)
         for path in draw_context.paths:
             if draw_context.matrix is not None:
@@ -285,20 +269,20 @@ class Canvas(Box):
 
     # Transformations
 
-    def rotate(self, radians, draw_context, *args, **kwargs):
+    def rotate(self, radians, draw_context, **kwargs):
         draw_context.matrix.Rotate(math.degrees(radians))
 
-    def scale(self, sx, sy, draw_context, *args, **kwargs):
+    def scale(self, sx, sy, draw_context, **kwargs):
         draw_context.matrix.Scale(sx, sy)
 
-    def translate(self, tx, ty, draw_context, *args, **kwargs):
+    def translate(self, tx, ty, draw_context, **kwargs):
         draw_context.matrix.Translate(tx, ty)
 
-    def reset_transform(self, draw_context, *args, **kwargs):
+    def reset_transform(self, draw_context, **kwargs):
         draw_context.matrix = None
 
     # Text
-    def write_text(self, text, x, y, font, draw_context, *args, **kwargs):
+    def write_text(self, text, x, y, font, draw_context, **kwargs):
         full_height = 0
         font_family = font._impl.native.FontFamily
         font_style = font._impl.native.Style
@@ -310,7 +294,7 @@ class Canvas(Box):
             )
             full_height += height
 
-    def measure_text(self, text, font, tight=False):
+    def measure_text(self, text, font):
         sizes = [
             WinForms.TextRenderer.MeasureText(line, font._impl.native)
             for line in text.splitlines()

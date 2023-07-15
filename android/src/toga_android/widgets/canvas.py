@@ -19,7 +19,7 @@ class DrawHandler(activity.IDrawHandler):
 
     def handleDraw(self, canvas):
         canvas.save()
-        self.interface._draw(self.interface._impl, path=Path(), canvas=canvas)
+        self.interface.context._draw(self.interface._impl, path=Path(), canvas=canvas)
 
 
 class Canvas(Widget):
@@ -57,21 +57,28 @@ class Canvas(Widget):
 
     # Basic paths
 
-    def new_path(self, *args, **kwargs):
-        self.interface.factory.not_implemented("Canvas.new_path()")
+    # Context management
+    def push_context(self, **kwargs):
+        self.interface.factory.not_implemented("Canvas.push_context()")
 
-    def closed_path(self, x, y, path, *args, **kwargs):
+    def pop_context(self, **kwargs):
+        self.interface.factory.not_implemented("Canvas.pop_context()")
+
+    def begin_path(self, **kwargs):
+        self.interface.factory.not_implemented("Canvas.begin_path()")
+
+    def close_path(self, path, **kwargs):
         path.close()
 
-    def move_to(self, x, y, path, *args, **kwargs):
+    def move_to(self, x, y, path, **kwargs):
         path.moveTo(self.container.scale * x, self.container.scale * y)
 
-    def line_to(self, x, y, path, *args, **kwargs):
+    def line_to(self, x, y, path, **kwargs):
         path.lineTo(self.container.scale * x, self.container.scale * y)
 
     # Basic shapes
 
-    def bezier_curve_to(self, cp1x, cp1y, cp2x, cp2y, x, y, path, *args, **kwargs):
+    def bezier_curve_to(self, cp1x, cp1y, cp2x, cp2y, x, y, path, **kwargs):
         path.cubicTo(
             cp1x * self.container.scale,
             cp1y * self.container.scale,
@@ -81,7 +88,7 @@ class Canvas(Widget):
             y * self.container.scale,
         )
 
-    def quadratic_curve_to(self, cpx, cpy, x, y, path, *args, **kwargs):
+    def quadratic_curve_to(self, cpx, cpy, x, y, path, **kwargs):
         path.quadTo(
             cpx * self.container.scale,
             cpy * self.container.scale,
@@ -90,7 +97,15 @@ class Canvas(Widget):
         )
 
     def arc(
-        self, x, y, radius, startangle, endangle, anticlockwise, path, *args, **kwargs
+        self,
+        x,
+        y,
+        radius,
+        startangle,
+        endangle,
+        anticlockwise,
+        path,
+        **kwargs,
     ):
         sweep_angle = endangle - startangle
         if anticlockwise:
@@ -116,8 +131,7 @@ class Canvas(Widget):
         endangle,
         anticlockwise,
         path,
-        *args,
-        **kwargs
+        **kwargs,
     ):
         sweep_angle = endangle - startangle
         if anticlockwise:
@@ -140,7 +154,7 @@ class Canvas(Widget):
         ellipse_path.transform(rotation_matrix)
         path.addPath(ellipse_path)
 
-    def rect(self, x, y, width, height, path, *args, **kwargs):
+    def rect(self, x, y, width, height, path, **kwargs):
         path.addRect(
             self.container.scale * x,
             self.container.scale * y,
@@ -151,7 +165,7 @@ class Canvas(Widget):
 
     # Drawing Paths
 
-    def fill(self, color, fill_rule, preserve, path, canvas, *args, **kwargs):
+    def fill(self, color, fill_rule, path, canvas, **kwargs):
         draw_paint = Paint()
         draw_paint.setAntiAlias(True)
         draw_paint.setStyle(Paint__Style.FILL)
@@ -164,7 +178,7 @@ class Canvas(Widget):
         canvas.drawPath(path, draw_paint)
         path.reset()
 
-    def stroke(self, color, line_width, line_dash, path, canvas, *args, **kwargs):
+    def stroke(self, color, line_width, line_dash, path, canvas, **kwargs):
         draw_paint = Paint()
         draw_paint.setAntiAlias(True)
         draw_paint.setStrokeWidth(self.container.scale * line_width)
@@ -186,25 +200,25 @@ class Canvas(Widget):
 
     # Transformations
 
-    def rotate(self, radians, canvas, *args, **kwargs):
+    def rotate(self, radians, canvas, **kwargs):
         canvas.rotate(math.degrees(radians))
 
-    def scale(self, sx, sy, canvas, *args, **kwargs):
+    def scale(self, sx, sy, canvas, **kwargs):
         canvas.scale(float(sx), float(sy))
 
-    def translate(self, tx, ty, canvas, *args, **kwargs):
+    def translate(self, tx, ty, canvas, **kwargs):
         canvas.translate(self.container.scale * tx, self.container.scale * ty)
 
-    def reset_transform(self, canvas, *args, **kwargs):
+    def reset_transform(self, canvas, **kwargs):
         canvas.restore()
         canvas.save()
 
     # Text
 
-    def measure_text(self, text, font, tight=False):
+    def measure_text(self, text, font):
         self.interface.factory.not_implemented("Canvas.measure_text")
 
-    def write_text(self, text, x, y, font, *args, **kwargs):
+    def write_text(self, text, x, y, font, **kwargs):
         self.interface.factory.not_implemented("Canvas.write_text")
 
     def get_image_data(self):
