@@ -13,7 +13,7 @@ from rubicon.objc import (
 from rubicon.objc.runtime import objc_id
 from travertino.size import at_least
 
-from toga.colors import BLACK, color
+from toga.colors import BLACK, TRANSPARENT, color
 from toga.constants import FillRule
 from toga_iOS.colors import native_color
 from toga_iOS.libs import (
@@ -24,6 +24,7 @@ from toga_iOS.libs import (
     NSForegroundColorAttributeName,
     NSStrokeColorAttributeName,
     NSStrokeWidthAttributeName,
+    UIColor,
     UIGraphicsImageRenderer,
     UIView,
     core_graphics,
@@ -76,8 +77,11 @@ class Canvas(Widget):
     def redraw(self):
         self.native.setNeedsDisplay()
 
-    def set_background_color(self, value):
-        self.set_background_color_simple(value)
+    def set_background_color(self, color):
+        if color == TRANSPARENT or color is None:
+            self.native.backgroundColor = UIColor.clearColor
+        else:
+            self.native.backgroundColor = native_color(color)
 
     # Context management
     def push_context(self, draw_context, **kwargs):

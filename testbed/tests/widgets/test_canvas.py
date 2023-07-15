@@ -257,9 +257,9 @@ def assert_reference(probe, reference, threshold=0.0):
                 actual = scaled_image.getpixel((x, y))
                 expected = reference_image.getpixel((x, y))
 
-                for a, e in zip(actual, expected):
-                    sq_error = ((a / 255) - (e / 255)) * ((a / 255) - (e / 255))
-                    total += sq_error
+                for act, exp in zip(actual, expected):
+                    err = (act / 255) - (exp / 255)
+                    total += err * err
 
         rmse = math.sqrt(total / (reference_image.size[0] * reference_image.size[1]))
         # If the delta exceeds threshold, save the test image and fail the test.
@@ -296,7 +296,9 @@ async def test_transparency(canvas, probe):
     canvas.context.fill(color=rgba(0x33, 0x66, 0x99, 0.5))
 
     await probe.redraw("Image with transparent content and background")
-    assert_reference(probe, "transparency", threshold=0.02)
+    # Linux seems to have a different calculation for alpha transparency,
+    # so it has different reference image.
+    assert_reference(probe, "transparency", threshold=0.03)
 
 
 async def test_paths(canvas, probe):
