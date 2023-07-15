@@ -413,6 +413,9 @@ def test_deprecated_drawing_operations(widget):
 
 def test_order_change(widget):
     """The order of context objects can be changed"""
+    # Initially nothing on the context.
+    assert len(widget.context) == 0
+
     # Set up an inner context that has contained operations, including a subcontext
     widget.context.line_to(0, 0)
     with widget.Context() as context:
@@ -423,6 +426,11 @@ def test_order_change(widget):
         context.line_to(30, 40)
         context.line_to(40, 50)
     widget.context.line_to(99, 99)
+
+    # Counts are as expected
+    assert len(widget.context) == 3
+    assert len(context) == 5
+    assert len(fill) == 1
 
     # Initial draw instructions are as expected
     assert widget._impl.draw_instructions == [
@@ -448,6 +456,11 @@ def test_order_change(widget):
     # Remove the second draw instruction
     context.remove(second)
 
+    # Counts are as expected
+    assert len(widget.context) == 3
+    assert len(context) == 4
+    assert len(fill) == 1
+
     # Draw instructions no longer have the second
     assert widget._impl.draw_instructions == [
         ("push context", {}),
@@ -470,6 +483,11 @@ def test_order_change(widget):
 
     # Insert the second draw instruction at index 3
     context.insert(3, second)
+
+    # Counts are as expected
+    assert len(widget.context) == 3
+    assert len(context) == 5
+    assert len(fill) == 1
 
     # Draw instructions show the new position
     assert widget._impl.draw_instructions == [
@@ -494,6 +512,11 @@ def test_order_change(widget):
 
     # Remove the fill context
     context.remove(fill)
+
+    # Counts are as expected
+    assert len(widget.context) == 3
+    assert len(context) == 4
+    assert len(fill) == 1
 
     # Draw instructions show the new position
     assert widget._impl.draw_instructions == [
@@ -534,6 +557,10 @@ def test_order_change(widget):
 
     # Clear the context
     context.clear()
+
+    # Counts are as expected
+    assert len(widget.context) == 3
+    assert len(context) == 0
 
     # No draw instructions other than the outer context.
     assert widget._impl.draw_instructions == [

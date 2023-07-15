@@ -9,15 +9,20 @@ from toga.style import Pack
 class StartApp(toga.App):
     def startup(self):
         # Main window of the application with title and size
-        self.main_window = toga.MainWindow(title=self.name, size=(148, 250))
+        self.main_window = toga.MainWindow(title=self.name, size=(150, 250))
 
-        # Create canvas and draw tiberius on it
-        self.canvas = toga.Canvas(style=Pack(flex=1))
+        # Create empty canvas
+        self.canvas = toga.Canvas(
+            style=Pack(flex=1),
+            on_resize=self.on_resize,
+            on_press=self.on_press,
+        )
         box = toga.Box(children=[self.canvas])
 
         # Add the content on the main window
         self.main_window.content = box
 
+        # Draw tiberius on the canvas
         self.draw_tiberius()
 
         # Show the main window
@@ -87,15 +92,20 @@ class StartApp(toga.App):
 
     def draw_text(self):
         font = toga.Font(family=SANS_SERIF, size=20)
-        width, height = self.canvas.measure_text("Tiberius", font)
+        self.text_width, text_height = self.canvas.measure_text("Tiberius", font)
 
-        x = (self.canvas.layout.width - width) // 2
+        x = (150 - self.text_width) // 2
         y = 200
 
         with self.canvas.Stroke(color="REBECCAPURPLE", line_width=4.0) as rect_stroker:
-            rect_stroker.rect(x - 5, y - height - 5, width + 10, height + 10)
+            self.text_border = rect_stroker.rect(
+                x - 5,
+                y - text_height - 5,
+                self.text_width + 10,
+                text_height + 10,
+            )
         with self.canvas.Fill(color=rgb(149, 119, 73)) as text_filler:
-            text_filler.write_text("Tiberius", x, y, font)
+            self.text = text_filler.write_text("Tiberius", x, y, font)
 
     def draw_tiberius(self):
         self.fill_head()
@@ -104,6 +114,19 @@ class StartApp(toga.App):
         self.draw_nostrils()
         self.stroke_head()
         self.draw_text()
+
+    def on_resize(self, widget, width, height, **kwargs):
+        # On resize, center the text horizontally on the canvas. on_resize will be
+        # called when the canvas is initially created, when the drawing objects won't
+        # exist yet. Only attempt to reposition the text if there's context objects on
+        # the canvas.
+        if widget.context:
+            left_pad = (width - self.text_width) // 2
+            self.text.x = left_pad
+            self.text_border.x = left_pad - 5
+
+    def on_press(self, widget, x, y, **kwargs):
+        self.main_window.info_dialog("Hey!", f"You poked the yak at ({x}, {y})")
 
 
 def main():

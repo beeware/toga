@@ -565,6 +565,10 @@ class Context(DrawingObject):
     # Operations on drawing objects
     ###########################################################################
 
+    def __len__(self) -> int:
+        """The number of drawing objects are on this canvas?"""
+        return len(self.drawing_objects)
+
     def append(self, obj: DrawingObject) -> DrawingObject:
         """Append a drawing object to the context.
 
