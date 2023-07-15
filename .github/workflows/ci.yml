@@ -192,7 +192,7 @@ jobs:
       fail-fast: false
       matrix:
         # backend: [ "macOS", "windows", "linux", "android", "iOS" ]
-        backend: [ "macOS", "iOS" ]
+        backend: [ "macOS", "iOS", "linux" ]
         include:
           - pre-command:
             briefcase-run-prefix:
@@ -201,30 +201,32 @@ jobs:
 
           - backend: macOS
             runs-on: macos-12
+            app-user-data-path: /Users/runner/Library/Application Support/org.beeware.toga.testbed
 
-          # # We use a fixed Ubuntu version rather than `-latest` because at some point,
-          # # `-latest` will be updated, but it will be a soft changeover, which would cause
-          # # the system Python version to become inconsistent from run to run.
-          # - backend: linux
-          #   runs-on: ubuntu-22.04
-          #   # The package list should be the same as in tutorial-0.rst, and the BeeWare
-          #   # tutorial, plus flwm to provide a window manager
-          #   pre-command: |
-          #     sudo apt update -y
-          #     sudo apt install -y flwm pkg-config python3-dev libgirepository1.0-dev libcairo2-dev gir1.2-webkit2-4.0
+          # We use a fixed Ubuntu version rather than `-latest` because at some point,
+          # `-latest` will be updated, but it will be a soft changeover, which would cause
+          # the system Python version to become inconsistent from run to run.
+          - backend: linux
+            runs-on: ubuntu-22.04
+            # The package list should be the same as in tutorial-0.rst, and the BeeWare
+            # tutorial, plus flwm to provide a window manager
+            pre-command: |
+              sudo apt update -y
+              sudo apt install -y flwm pkg-config python3-dev libgirepository1.0-dev libcairo2-dev gir1.2-webkit2-4.0
 
-          #     # Start Virtual X server
-          #     echo "Start X server..."
-          #     Xvfb :99 -screen 0 2048x1536x24 &
-          #     sleep 1
+              # Start Virtual X server
+              echo "Start X server..."
+              Xvfb :99 -screen 0 2048x1536x24 &
+              sleep 1
 
-          #     # Start Window manager
-          #     echo "Start window manager..."
-          #     DISPLAY=:99 flwm &
-          #     sleep 1
+              # Start Window manager
+              echo "Start window manager..."
+              DISPLAY=:99 flwm &
+              sleep 1
 
-          #   briefcase-run-prefix: 'DISPLAY=:99'
-          #   setup-python: false  # Use the system Python packages.
+            briefcase-run-prefix: 'DISPLAY=:99'
+            setup-python: false  # Use the system Python packages.
+            app-user-data-path: /home/runner/.local/share/testbed
 
           # - backend: windows
           #   runs-on: windows-latest
@@ -232,6 +234,7 @@ jobs:
           - backend: iOS
             runs-on: macos-12
             briefcase-run-args: ' -d "iPhone SE (3rd generation)"'
+            # app data path is determined at runtime, as the path contains the Simulator and app ID.
 
           # - backend: android
           #   runs-on: macos-12
@@ -264,9 +267,19 @@ jobs:
       with:
         name: testbed-failure-logs-${{ matrix.backend }}
         path: testbed/logs/*
-    # - name: Upload reference images
-    #   uses: actions/upload-artifact@v3.1.2
-    #   if: failure()
-    #   with:
-    #     name: testbed-failure-screenshots
-    #     path: testbed/logs/*
+    - name: Copy app generated user data
+      if: failure()
+      run: |
+        mkdir testbed/app_data
+        if [ "${{ matrix.backend }}" = "iOS" ]; then
+          APP_DATA_PATH="$(xcrun simctl get_app_container booted org.beeware.toga.testbed data)/Documents"
+        else
+          APP_DATA_PATH="${{ matrix.app-user-data-path }}"
+        fi
+        cp -r "$APP_DATA_PATH" testbed/app_data/testbed-app_data-${{ matrix.backend }}
+    - name: Upload app data
+      uses: actions/upload-artifact@v3.1.2
+      if: failure()
+      with:
+        name: testbed-failure-app-data-${{ matrix.backend }}
+        path: testbed/app_data/*

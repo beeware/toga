@@ -1,6 +1,6 @@
 from io import BytesIO
 
-import pytest
+# import pytest
 from PIL import Image
 
 from toga_gtk.libs import Gdk, Gtk
@@ -11,11 +11,11 @@ from .base import SimpleProbe
 class CanvasProbe(SimpleProbe):
     native_class = Gtk.DrawingArea
 
-    def test_write_text(self):
-        pytest.skip("GTK canvas font and stroke handling isn't quite right")
+    # def test_write_text(self):
+    #     pytest.skip("GTK canvas font and stroke handling isn't quite right")
 
-    def test_multiline_text(self):
-        pytest.skip("GTK canvas font and stroke handling isn't quite right")
+    # def test_multiline_text(self):
+    #     pytest.skip("GTK canvas font and stroke handling isn't quite right")
 
     def scale(self):
         return 1
