@@ -246,6 +246,12 @@ def assert_reference(probe, reference, threshold=0.0):
     if not path.exists():
         path = toga.App.app.paths.app / "resources" / "canvas" / f"{reference}.png"
 
+    save_path = (
+        toga.App.app.paths.data
+        / "canvas"
+        / f"{reference}-{toga.platform.current_platform}.png"
+    )
+
     # If a reference image exists, scale the image to the same size as the reference,
     # and do an MSE comparison on every pixel in 0-1 RGBA colorspace.
     if path.exists():
@@ -264,20 +270,14 @@ def assert_reference(probe, reference, threshold=0.0):
         rmse = math.sqrt(total / (reference_image.size[0] * reference_image.size[1]))
         # If the delta exceeds threshold, save the test image and fail the test.
         if rmse > threshold:
-            scaled_image.save(
-                toga.App.app.paths.app
-                / "resources"
-                / "canvas"
-                / f"test-{reference}-{toga.platform.current_platform}.png"
-            )
+            print(f"Saving {save_path}")
+            save_path.parent.mkdir(parents=True, exist_ok=True)
+            scaled_image.save(save_path)
             assert pytest.fail(f"Rendered image doesn't match reference (RMSE=={rmse})")
     else:
-        scaled_image.save(
-            toga.App.app.paths.app
-            / "resources"
-            / "canvas"
-            / f"test-{reference}-{toga.platform.current_platform}.png"
-        )
+        print(f"Saving {save_path}")
+        save_path.parent.mkdir(parents=True, exist_ok=True)
+        scaled_image.save(save_path)
         assert pytest.fail(f"Couldn't find {reference!r} reference image")
 
 
