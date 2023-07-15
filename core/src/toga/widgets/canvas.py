@@ -431,9 +431,9 @@ class WriteText(DrawingObject):
         the color and fill properties of the canvas context.
 
         :param text: The text to write.
-        :param x: The x coordinate of the top left corner of the text's bounding
+        :param x: The x coordinate of the bottom left corner of the text's bounding
             rectangle.
-        :param y: The y coordinate of the top left corner of the text's bounding
+        :param y: The y coordinate of the bottom left corner of the text's bounding
             rectangle.
         :param font: The font in which to draw the text.
         """
@@ -855,9 +855,9 @@ class Context(DrawingObject):
         the color and fill properties of the canvas context.
 
         :param text: The text to write.
-        :param x: The x coordinate of the top left corner of the text's bounding
+        :param x: The x coordinate of the bottom left corner of the text's bounding
             rectangle.
-        :param y: The y coordinate of the top left corner of the text's bounding
+        :param y: The y coordinate of the bottom left corner of the text's bounding
             rectangle.
         :param font: The font in which to draw the text.
         :returns: The :class:`~toga.widgets.canvas.WriteText` drawing object for the
@@ -1177,7 +1177,7 @@ class StrokeContext(ClosedPathContext):
     within the context.
 
     This is a context manager; it creates a new path, and moves to the start coordinate;
-    when the context exits, the path is closed with a fill. For fine-grained control of
+    when the context exits, the path is drawn with the stroke. For fine-grained control of
     a path, you can use :class:`~toga.widgets.canvas.Context.begin_path`,
     :class:`~toga.widgets.canvas.Context.move_to`,
     :class:`~toga.widgets.canvas.Context.close_path` and.
@@ -1492,8 +1492,8 @@ class Canvas(Widget):
 
     def measure_text(
         self,
-        text,
-        font,
+        text: str,
+        font: Font | None = None,
         tight=None,  # DEPRECATED
     ):
         """Measure the rendered size of some text on the current canvas.
@@ -1507,6 +1507,9 @@ class Canvas(Widget):
                 "The `tight` argument on Canvas.measure_text() has been deprecated.",
                 DeprecationWarning,
             )
+        if font is None:
+            font = Font(family=SYSTEM, size=SYSTEM_DEFAULT_FONT_SIZE)
+
         return self._impl.measure_text(str(text), font._impl)
 
     ###########################################################################

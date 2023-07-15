@@ -139,20 +139,18 @@ def test_stroke(widget):
 
 
 @pytest.mark.parametrize(
-    "family, size, expected",
+    "font, expected",
     [
-        (SYSTEM, SYSTEM_DEFAULT_FONT_SIZE, (132, 12)),
-        (SYSTEM, 20, (220, 20)),
-        ("Cutive", SYSTEM_DEFAULT_FONT_SIZE, (198, 18)),
-        ("Cutive", 20, (330, 30)),
+        (None, (132, 12)),
+        (Font(family=SYSTEM, size=SYSTEM_DEFAULT_FONT_SIZE), (132, 12)),
+        (Font(family=SYSTEM, size=20), (220, 20)),
+        (Font(family="Cutive", size=SYSTEM_DEFAULT_FONT_SIZE), (198, 18)),
+        (Font(family="Cutive", size=20), (330, 30)),
     ],
 )
-def test_measure_text(widget, family, size, expected):
+def test_measure_text(widget, font, expected):
     "Canvas can measure rendered text size"
-    assert (
-        widget.measure_text("Hello world", font=Font(family=family, size=size))
-        == expected
-    )
+    assert widget.measure_text("Hello world", font=font) == expected
 
 
 def test_as_image(widget):
