@@ -18,13 +18,16 @@ class CanvasProbe(SimpleProbe):
     def get_image(self):
         image = Image.open(BytesIO(self.impl.get_image_data()))
 
-        # Convert image data into sRGB colorspace.
-        icc = image.info.get("icc_profile", "")
-        src_profile = ImageCms.ImageCmsProfile(BytesIO(icc))
-        dst_profile = ImageCms.createProfile("sRGB")
-        image_srgb = ImageCms.profileToProfile(image, src_profile, dst_profile)
-
-        return image_srgb
+        try:
+            # If the image has an ICC profile, convert it into sRGB colorspace.
+            # This is needed when attached to an laptop display; otherwise the RGB
+            # values in colors in the image won't *quite* match.
+            icc = image.info["icc_profile"]
+            src_profile = ImageCms.ImageCmsProfile(BytesIO(icc))
+            dst_profile = ImageCms.createProfile("sRGB")
+            return ImageCms.profileToProfile(image, src_profile, dst_profile)
+        except KeyError:
+            return image
 
     def assert_image_size(self, image, width, height):
         # Cocoa reports image sizing in the natural screen coordinates, not the size of
