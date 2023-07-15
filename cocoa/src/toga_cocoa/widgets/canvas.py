@@ -251,7 +251,7 @@ class Canvas(Widget):
                 kwargs["fill_color"]
             )
         else:  # pragma: no cover
-            # Shouldn't ever happen, but just in case...
+            # Shouldn't be able to happen, but just in case...
             raise ValueError("No stroke or fill of write text")
 
         text_string = NSAttributedString.alloc().initWithString(

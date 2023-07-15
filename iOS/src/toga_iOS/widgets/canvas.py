@@ -14,6 +14,7 @@ from rubicon.objc.runtime import objc_id
 from travertino.size import at_least
 
 from toga.colors import BLACK, color
+from toga.constants import FillRule
 from toga_iOS.colors import native_color
 from toga_iOS.libs import (
     CGPathDrawingMode,
@@ -67,6 +68,10 @@ class Canvas(Widget):
 
         # Add the layout constraints
         self.add_constraints()
+
+    def set_bounds(self, x, y, width, height):
+        super().set_bounds(x, y, width, height)
+        self.interface.on_resize(None, width=width, height=height)
 
     def redraw(self):
         self.native.setNeedsDisplay()
@@ -150,14 +155,13 @@ class Canvas(Widget):
     ):
         core_graphics.CGContextSaveGState(draw_context)
         self.translate(x, y, draw_context)
+        self.rotate(rotation, draw_context)
         if radiusx >= radiusy:
             self.scale(1, radiusy / radiusx, draw_context)
             self.arc(0, 0, radiusx, startangle, endangle, anticlockwise, draw_context)
-        elif radiusy > radiusx:
+        else:
             self.scale(radiusx / radiusy, 1, draw_context)
             self.arc(0, 0, radiusy, startangle, endangle, anticlockwise, draw_context)
-        self.rotate(rotation, draw_context)
-        self.reset_transform(draw_context)
         core_graphics.CGContextRestoreGState(draw_context)
 
     def rect(self, x, y, width, height, draw_context, **kwargs):
@@ -166,29 +170,21 @@ class Canvas(Widget):
 
     # Drawing Paths
     def fill(self, color, fill_rule, draw_context, **kwargs):
-        if fill_rule == "evenodd":
+        if fill_rule == FillRule.EVENODD:
             mode = CGPathDrawingMode(kCGPathEOFill)
         else:
             mode = CGPathDrawingMode(kCGPathFill)
-        if color is not None:
-            core_graphics.CGContextSetRGBFillColor(
-                draw_context, color.r / 255, color.g / 255, color.b / 255, color.a
-            )
-        else:
-            # Set color to black
-            core_graphics.CGContextSetRGBFillColor(draw_context, 0, 0, 0, 1)
+        core_graphics.CGContextSetRGBFillColor(
+            draw_context, color.r / 255, color.g / 255, color.b / 255, color.a
+        )
         core_graphics.CGContextDrawPath(draw_context, mode)
 
     def stroke(self, color, line_width, line_dash, draw_context, **kwargs):
         core_graphics.CGContextSetLineWidth(draw_context, line_width)
         mode = CGPathDrawingMode(kCGPathStroke)
-        if color is not None:
-            core_graphics.CGContextSetRGBStrokeColor(
-                draw_context, color.r / 255, color.g / 255, color.b / 255, color.a
-            )
-        else:
-            # Set color to black
-            core_graphics.CGContextSetRGBStrokeColor(draw_context, 0, 0, 0, 1)
+        core_graphics.CGContextSetRGBStrokeColor(
+            draw_context, color.r / 255, color.g / 255, color.b / 255, color.a
+        )
         if line_dash is not None:
             core_graphics.CGContextSetLineDash(
                 draw_context, 0, (CGFloat * len(line_dash))(*line_dash), len(line_dash)
@@ -208,9 +204,12 @@ class Canvas(Widget):
         core_graphics.CGContextTranslateCTM(draw_context, tx, ty)
 
     def reset_transform(self, draw_context, **kwargs):
-        ctm = core_graphics.CGContextGetCTM(draw_context)
-        invert_transform = core_graphics.CGAffineTransformInvert(ctm)
-        core_graphics.CGContextConcatCTM(draw_context, invert_transform)
+        # Restore the "clean" state of the graphics context.
+        core_graphics.CGContextRestoreGState(draw_context)
+        # CoreGraphics has a stack-based state representation,
+        # so ensure that there is a new, clean version of the "clean"
+        # state on the stack.
+        core_graphics.CGContextSaveGState(draw_context)
 
     # Text
     def _render_string(self, text, font, **kwargs):
@@ -235,7 +234,8 @@ class Canvas(Widget):
             textAttributes[NSForegroundColorAttributeName] = native_color(
                 kwargs["fill_color"]
             )
-        else:
+        else:  # pragma: no cover
+            # Shouldn't be able to happen, but just in case...
             raise ValueError("No stroke or fill of write text")
 
         text_string = NSAttributedString.alloc().initWithString(
