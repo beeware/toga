@@ -7,6 +7,8 @@ from .base import SimpleProbe
 
 class SplitContainerProbe(SimpleProbe):
     native_class = NSSplitView
+    border_size = 0
+    direction_change_preserves_position = False
 
     def move_split(self, position):
         self.native.setPosition(position, ofDividerAtIndex=0)

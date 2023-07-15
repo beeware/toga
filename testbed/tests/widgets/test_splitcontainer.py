@@ -1,11 +1,12 @@
 import pytest
+from pytest import approx
 
 import toga
 from toga.colors import CORNFLOWERBLUE, GOLDENROD, REBECCAPURPLE
 from toga.constants import Direction
 from toga.style.pack import Pack
 
-from ..conftest import xfail_on_platforms
+from ..conftest import skip_on_platforms
 from .probe import get_probe
 from .properties import (  # noqa: F401
     test_enable_noop,
@@ -55,7 +56,7 @@ async def content3_probe(content3):
 
 @pytest.fixture
 async def widget(content1, content2):
-    xfail_on_platforms("android", "iOS")
+    skip_on_platforms("android", "iOS")
     return toga.SplitContainer(content=[content1, content2], style=Pack(flex=1))
 
 
@@ -103,43 +104,53 @@ async def test_set_direction(
     content2_probe,
 ):
     """Splitview direction can be changed"""
-    # Both widgets are initially within 20px of an even split horizontally
-    assert content1_probe.width == pytest.approx(probe.width / 2, abs=20)
-    assert content2_probe.width == pytest.approx(probe.width / 2, abs=20)
+    two_borders = probe.border_size * 2
 
-    # Both widgets are the height of the outer container
-    assert content1_probe.height == probe.height
-    assert content2_probe.height == probe.height
+    def assert_full_width():
+        expected = approx(probe.width - two_borders, abs=1)
+        assert content1_probe.width == expected
+        assert content2_probe.width == expected
+
+    def assert_full_height():
+        expected = approx(probe.height - two_borders, abs=1)
+        assert content1_probe.height == expected
+        assert content2_probe.height == expected
+
+    def assert_split_width(flex1, flex2):
+        total = flex1 + flex2
+        assert content1_probe.width == approx(probe.width * flex1 / total, abs=20)
+        assert content2_probe.width == approx(probe.width * flex2 / total, abs=20)
+
+    def assert_split_height(flex1, flex2):
+        total = flex1 + flex2
+        assert content1_probe.height == approx(probe.height * flex1 / total, abs=20)
+        assert content2_probe.height == approx(probe.height * flex2 / total, abs=20)
+
+    assert_full_height()
+    assert_split_width(1, 1)
 
     widget.direction = Direction.HORIZONTAL
     await probe.wait_for_split()
     await probe.redraw("Split should now be horizontal")
 
-    # Both widgets are the width of the outer container
-    assert content1_probe.width == probe.width
-    assert content2_probe.width == probe.width
-    # Widget height is not determinate
+    assert_full_width()
+    if probe.direction_change_preserves_position:
+        assert_split_height(1, 1)
 
     widget.content = [(content1, 3), (content2, 1)]
     await probe.wait_for_split()
     await probe.redraw("Split should be a horizontal 75:25 split")
 
-    # Both widgets are the width of the outer container
-    assert content1_probe.width == probe.width
-    assert content2_probe.width == probe.width
-
-    # The heights have a 75/25 split
-    assert content1_probe.height == pytest.approx(probe.height * 3 / 4, abs=20)
-    assert content2_probe.height == pytest.approx(probe.height * 1 / 4, abs=20)
+    assert_full_width()
+    assert_split_height(3, 1)
 
     widget.direction = Direction.VERTICAL
     await probe.wait_for_split()
     await probe.redraw("Split should now be vertical again")
 
-    # Widget width is not determinate
-    # Both widgets are the height of the outer container
-    assert content1_probe.height == probe.height
-    assert content2_probe.height == probe.height
+    assert_full_height()
+    if probe.direction_change_preserves_position:
+        assert_split_width(3, 1)
 
 
 async def test_move_splitter(

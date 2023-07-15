@@ -31,6 +31,7 @@ class SplitContainer(Widget):
             being empty.
         """
         super().__init__(id=id, style=style)
+        self._content = (None, None)
 
         # Create a platform specific implementation of a SplitContainer
         self._impl = self.factory.SplitContainer(interface=self)
