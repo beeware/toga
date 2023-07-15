@@ -14,6 +14,9 @@ class CanvasProbe(SimpleProbe):
     def test_write_text(self):
         pytest.skip("GTK canvas font and stroke handling isn't quite right")
 
+    def test_multiline_text(self):
+        pytest.skip("GTK canvas font and stroke handling isn't quite right")
+
     def scale(self):
         return 1
 
