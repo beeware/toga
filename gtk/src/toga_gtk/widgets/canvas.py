@@ -217,21 +217,54 @@ class Canvas(Widget):
             cairo_context.set_font_size(font.native.get_size() / Pango.SCALE)
 
         # Support writing multiline text
-        for line in text.splitlines():
-            width, height = self.measure_text(line, font)
-            cairo_context.move_to(x, y)
-            cairo_context.text_path(line)
-            y += height
+        offsets = []
+        lines = text.splitlines()
+        if len(lines) > 1:
+            for line in lines:
+                _, height = self._measure_text_line(line, font, tight=False)
+                y -= height
+                offsets.append(height)
 
-    def measure_text(self, text, font):
+            # Draw the lines in reverse order, so we can pop the offsets
+            for line in lines:
+                y += offsets.pop()
+                cairo_context.move_to(x, y)
+                cairo_context.text_path(line)
+        else:
+            _, height = self._measure_text_line(text, font, tight=True)
+            cairo_context.move_to(x, y)
+            cairo_context.text_path(text)
+
+    def _measure_text_line(self, text, font, tight=True):
+        # A tight measure only includes the drawn text; non-tight includes line leading.
+        # We only need leading if the test is multi line.
         layout = self.native.create_pango_layout(text)
 
         layout.set_font_description(font.native)
         ink, logical = layout.get_extents()
 
-        width = (ink.width / Pango.SCALE) - (ink.width * 0.2) / Pango.SCALE
-        height = ink.height / Pango.SCALE
+        if tight:
+            width = (ink.width / Pango.SCALE) - (ink.width * 0.2) / Pango.SCALE
+            height = ink.height / Pango.SCALE
+        else:
+            width = (logical.width / Pango.SCALE) - (logical.width * 0.2) / Pango.SCALE
+            height = logical.height / Pango.SCALE
 
+        return width, height
+
+    def measure_text(self, text, font):
+        lines = text.split()
+        if len(lines) > 1:
+            width = 0
+            height = 0
+            for line in lines:
+                line_width, line_height = self._measure_text_line(
+                    line, font, tight=False
+                )
+                width = max(width, line_width)
+                height = height + line_height
+        else:
+            width, height = self._measure_text_line(text, font, tight=True)
         return width, height
 
     def get_image_data(self):

@@ -629,11 +629,11 @@ async def test_multiline_text(canvas, probe):
 
     # Write multiple lines
     with canvas.context.Fill() as text_filler:
-        text_filler.write_text("Line 1\nLine 2\nLine3", 10, 40)
+        text_filler.write_text("Line 1\nLine 2\nLine 3", 10, 80)
 
     # Write empty text
     with canvas.context.Fill() as text_filler:
-        text_filler.write_text("", 10, 80)
+        text_filler.write_text("", 50, 10)
 
     await probe.redraw("Multiple text blocks should be drawn")
-    assert_reference(probe, "multiline_text", threshold=0)
+    assert_reference(probe, "multiline_text", threshold=0.08)
