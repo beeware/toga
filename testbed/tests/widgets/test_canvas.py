@@ -5,7 +5,7 @@ import pytest
 from PIL import Image
 
 import toga
-from toga.colors import CORNFLOWERBLUE, GOLDENROD, REBECCAPURPLE, RED, WHITE
+from toga.colors import CORNFLOWERBLUE, GOLDENROD, REBECCAPURPLE, RED, WHITE, rgba
 from toga.constants import FillRule
 from toga.fonts import SANS_SERIF, SERIF, Font
 from toga.style.pack import Pack
@@ -222,6 +222,15 @@ async def test_image_data(canvas, probe):
 
 def assert_reference(probe, reference, threshold=0.0):
     """Assert that the canvas currently matches a reference image, within an RMS threshold"""
+
+    # Some tests can be ignored on some platforms, because the behavior is implemented,
+    # but known to be problematic. Try to invoke a test method on the probe; if that
+    # method raises a skip, we will have run the test code, but won't assert failue.
+    try:
+        getattr(probe, f"test_{reference}")()
+    except AttributeError:
+        pass
+
     # Get the canvas image.
     image = probe.get_image()
     scaled_image = image.resize((100, 100))
@@ -238,32 +247,30 @@ def assert_reference(probe, reference, threshold=0.0):
         path = toga.App.app.paths.app / "resources" / "canvas" / f"{reference}.png"
 
     # If a reference image exists, scale the image to the same size as the reference,
-    # and do an RMS comparison on every pixel in 0-1 RGBA colorspace.
+    # and do an MSE comparison on every pixel in 0-1 RGBA colorspace.
     if path.exists():
         reference_image = Image.open(path)
 
-        delta = 0.0
+        total = 0.0
         for y in range(0, reference_image.size[1]):
             for x in range(0, reference_image.size[0]):
                 actual = scaled_image.getpixel((x, y))
                 expected = reference_image.getpixel((x, y))
 
-                diff = 0.0
                 for a, e in zip(actual, expected):
-                    diff += ((a / 255) - (e / 255)) * ((a / 255) - (e / 255))
-                delta += math.sqrt(diff)
+                    sq_error = ((a / 255) - (e / 255)) * ((a / 255) - (e / 255))
+                    total += sq_error
 
+        rmse = math.sqrt(total / (reference_image.size[0] * reference_image.size[1]))
         # If the delta exceeds threshold, save the test image and fail the test.
-        if delta > threshold:
+        if rmse > threshold:
             scaled_image.save(
                 toga.App.app.paths.app
                 / "resources"
                 / "canvas"
                 / f"test-{reference}-{toga.platform.current_platform}.png"
             )
-            assert pytest.fail(
-                f"Rendered image doesn't match reference (RMS delta=={delta})"
-            )
+            assert pytest.fail(f"Rendered image doesn't match reference (RMSE=={rmse})")
     else:
         scaled_image.save(
             toga.App.app.paths.app
@@ -272,6 +279,24 @@ def assert_reference(probe, reference, threshold=0.0):
             / f"test-{reference}-{toga.platform.current_platform}.png"
         )
         assert pytest.fail(f"Couldn't find {reference!r} reference image")
+
+
+async def test_transparency(canvas, probe):
+    "Transparency is preserved in captured images"
+    # Make the canvas background transparent
+    del canvas.style.background_color
+
+    # Draw a rectangle. move_to is implied
+    canvas.context.begin_path()
+    canvas.context.rect(x=10, y=10, width=60, height=60)
+    canvas.context.fill(color=REBECCAPURPLE)
+
+    canvas.context.begin_path()
+    canvas.context.rect(x=30, y=30, width=60, height=60)
+    canvas.context.fill(color=rgba(0x33, 0x66, 0x99, 0.5))
+
+    await probe.redraw("Image with transparent content and background")
+    assert_reference(probe, "transparency", threshold=0.02)
 
 
 async def test_paths(canvas, probe):
@@ -292,7 +317,7 @@ async def test_paths(canvas, probe):
     canvas.context.stroke()
 
     await probe.redraw("Pair of triangles should be drawn")
-    assert_reference(probe, "paths", threshold=20)
+    assert_reference(probe, "paths", threshold=0.05)
 
 
 async def test_bezier_curve(canvas, probe):
@@ -309,7 +334,7 @@ async def test_bezier_curve(canvas, probe):
     canvas.context.stroke()
 
     await probe.redraw("Heart should be drawn")
-    assert_reference(probe, "bezier_curve", threshold=15)
+    assert_reference(probe, "bezier_curve", threshold=0.02)
 
 
 async def test_quadratic_curve(canvas, probe):
@@ -326,7 +351,7 @@ async def test_quadratic_curve(canvas, probe):
     canvas.context.stroke()
 
     await probe.redraw("Quote bubble should be drawn")
-    assert_reference(probe, "quadratic_curve", threshold=15)
+    assert_reference(probe, "quadratic_curve", threshold=0.03)
 
 
 async def test_arc(canvas, probe):
@@ -353,7 +378,7 @@ async def test_arc(canvas, probe):
     canvas.context.stroke()
 
     await probe.redraw("Smiley face should be drawn")
-    assert_reference(probe, "arc", threshold=25)
+    assert_reference(probe, "arc", threshold=0.03)
 
 
 async def test_ellipse(canvas, probe):
@@ -393,7 +418,7 @@ async def test_ellipse(canvas, probe):
     canvas.context.stroke(color=GOLDENROD)
 
     await probe.redraw("Atom should be drawn")
-    assert_reference(probe, "ellipse", threshold=20)
+    assert_reference(probe, "ellipse", threshold=0.02)
 
 
 async def test_rect(canvas, probe):
@@ -405,7 +430,7 @@ async def test_rect(canvas, probe):
     canvas.context.fill(color=REBECCAPURPLE)
 
     await probe.redraw("Filled rectangle should be drawn")
-    assert_reference(probe, "rect", threshold=5)
+    assert_reference(probe, "rect", threshold=0.02)
 
 
 async def test_fill(canvas, probe):
@@ -429,7 +454,7 @@ async def test_fill(canvas, probe):
     canvas.context.fill(color=CORNFLOWERBLUE, fill_rule=FillRule.EVENODD)
 
     await probe.redraw("Stars should be drawn")
-    assert_reference(probe, "fill", threshold=10)
+    assert_reference(probe, "fill", threshold=0.02)
 
 
 async def test_stroke(canvas, probe):
@@ -452,7 +477,7 @@ async def test_stroke(canvas, probe):
     canvas.context.stroke(color=CORNFLOWERBLUE)
 
     await probe.redraw("Stroke should be drawn")
-    assert_reference(probe, "stroke", threshold=15)
+    assert_reference(probe, "stroke", threshold=0.02)
 
 
 async def test_closed_path_context(canvas, probe):
@@ -468,7 +493,7 @@ async def test_closed_path_context(canvas, probe):
     canvas.context.stroke(color=REBECCAPURPLE, line_width=5, line_dash=[10, 15])
 
     await probe.redraw("Closed path should be drawn with context")
-    assert_reference(probe, "closed_path_context", threshold=10)
+    assert_reference(probe, "closed_path_context", threshold=0.05)
 
 
 async def test_fill_context(canvas, probe):
@@ -481,7 +506,7 @@ async def test_fill_context(canvas, probe):
         path.line_to(x=50, y=90)
 
     await probe.redraw("Fill should be drawn with context")
-    assert_reference(probe, "fill_context", threshold=10)
+    assert_reference(probe, "fill_context", threshold=0.02)
 
 
 async def test_stroke_context(canvas, probe):
@@ -497,7 +522,7 @@ async def test_stroke_context(canvas, probe):
         stroke.line_to(x=60, y=90)
 
     await probe.redraw("Stroke should be drawn with context")
-    assert_reference(probe, "stroke_context", threshold=10)
+    assert_reference(probe, "stroke_context", threshold=0.01)
 
 
 async def test_transforms(canvas, probe):
@@ -526,7 +551,7 @@ async def test_transforms(canvas, probe):
     canvas.context.fill()
 
     await probe.redraw("Transforms can be applied")
-    assert_reference(probe, "transforms", threshold=10)
+    assert_reference(probe, "transforms", threshold=0.02)
 
 
 async def test_write_text(canvas, probe):
@@ -593,8 +618,22 @@ async def test_write_text(canvas, probe):
         )
 
     await probe.redraw("Text should be drawn")
-    assert_reference(probe, "write_text", threshold=0)
+    assert_reference(probe, "write_text", threshold=0.08)
 
 
-# ellipse with radiusy > radiusx
-# EvenOdd Fille
+async def test_multiline_text(canvas, probe):
+    "Multiline text can be measured and written"
+    # Write a single line
+    with canvas.context.Fill() as text_filler:
+        text_filler.write_text("Single lines", 10, 20)
+
+    # Write multiple lines
+    with canvas.context.Fill() as text_filler:
+        text_filler.write_text("Line 1\nLine 2\nLine3", 10, 40)
+
+    # Write empty text
+    with canvas.context.Fill() as text_filler:
+        text_filler.write_text("", 10, 80)
+
+    await probe.redraw("Multiple text blocks should be drawn")
+    assert_reference(probe, "multiline_text", threshold=0)

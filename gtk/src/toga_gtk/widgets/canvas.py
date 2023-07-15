@@ -2,6 +2,8 @@ from io import BytesIO
 
 from travertino.size import at_least
 
+from toga.constants import FillRule
+from toga.fonts import SYSTEM, SYSTEM_DEFAULT_FONT_SIZE
 from toga_gtk.colors import native_color
 from toga_gtk.libs import Gdk, Gtk, Pango, cairo
 
@@ -41,17 +43,16 @@ class Canvas(Widget):
         # Explicitly render the background
         sc = self.native.get_style_context()
         bg = sc.get_property("background-color", sc.get_state())
-        if bg:
-            cairo_context.set_source_rgba(
-                255 * bg.red,
-                255 * bg.green,
-                255 * bg.blue,
-                bg.alpha,
-            )
-            width = self.native.get_allocation().width
-            height = self.native.get_allocation().height
-            cairo_context.rectangle(0, 0, width, height)
-            cairo_context.fill()
+        cairo_context.set_source_rgba(
+            255 * bg.red,
+            255 * bg.green,
+            255 * bg.blue,
+            bg.alpha,
+        )
+        width = self.native.get_allocation().width
+        height = self.native.get_allocation().height
+        cairo_context.rectangle(0, 0, width, height)
+        cairo_context.fill()
 
         self.original_transform_matrix = cairo_context.get_matrix()
         self.interface.context._draw(self, cairo_context=cairo_context)
@@ -59,7 +60,7 @@ class Canvas(Widget):
     def gtk_on_size_allocate(self, widget, allocation):
         """Called on widget resize, and calls the handler set on the interface, if
         any."""
-        self.interface.on_resize(None, allocation.width, allocation.height)
+        self.interface.on_resize(None, width=allocation.width, height=allocation.height)
 
     def mouse_down(self, obj, event):
         if event.button == 1:
@@ -69,6 +70,9 @@ class Canvas(Widget):
                 self.interface.on_press(None, event.x, event.y)
         elif event.button == 3:
             self.interface.on_alt_press(None, event.x, event.y)
+        else:  # pragma: no cover
+            # Don't handle other button presses
+            pass
 
     def mouse_move(self, obj, event):
         if event.state == Gdk.ModifierType.BUTTON1_MASK:
@@ -81,6 +85,9 @@ class Canvas(Widget):
             self.interface.on_release(None, event.x, event.y)
         elif event.button == 3:
             self.interface.on_alt_release(None, event.x, event.y)
+        else:  # pragma: no cover
+            # Don't handle other button presses
+            pass
 
     def redraw(self):
         self.native.queue_draw()
@@ -111,7 +118,18 @@ class Canvas(Widget):
         cairo_context.curve_to(cp1x, cp1y, cp2x, cp2y, x, y)
 
     def quadratic_curve_to(self, cpx, cpy, x, y, cairo_context, **kwargs):
-        cairo_context.curve_to(cpx, cpy, cpx, cpy, x, y)
+        # A Quadratic curve is a dimensionally reduced Bézier Cubic curve;
+        # we can convert the single Quadratic control point into the
+        # 2 control points required for the cubic Bézier.
+        x0, y0 = cairo_context.get_current_point()
+        cairo_context.curve_to(
+            x0 + 2 / 3 * (cpx - x0),
+            y0 + 2 / 3 * (cpy - y0),
+            x + 2 / 3 * (cpx - x),
+            y + 2 / 3 * (cpy - y),
+            x,
+            y,
+        )
 
     def arc(
         self,
@@ -144,13 +162,13 @@ class Canvas(Widget):
     ):
         cairo_context.save()
         cairo_context.translate(x, y)
+        cairo_context.rotate(rotation)
         if radiusx >= radiusy:
             cairo_context.scale(1, radiusy / radiusx)
             self.arc(0, 0, radiusx, startangle, endangle, anticlockwise, cairo_context)
         else:
             cairo_context.scale(radiusx / radiusy, 1)
             self.arc(0, 0, radiusy, startangle, endangle, anticlockwise, cairo_context)
-        cairo_context.rotate(rotation)
         cairo_context.identity_matrix()
         cairo_context.restore()
 
@@ -159,16 +177,9 @@ class Canvas(Widget):
 
     # Drawing Paths
 
-    def apply_color(self, color, cairo_context, **kwargs):
-        if color is not None:
-            cairo_context.set_source_rgba(*native_color(color))
-        else:
-            # set color to black
-            cairo_context.set_source_rgba(0, 0, 0, 1.0)
-
     def fill(self, color, fill_rule, cairo_context, **kwargs):
-        self.apply_color(color, cairo_context)
-        if fill_rule == "evenodd":
+        cairo_context.set_source_rgba(*native_color(color))
+        if fill_rule == FillRule.EVENODD:
             cairo_context.set_fill_rule(cairo.FILL_RULE_EVEN_ODD)
         else:
             cairo_context.set_fill_rule(cairo.FILL_RULE_WINDING)
@@ -176,7 +187,7 @@ class Canvas(Widget):
         cairo_context.fill()
 
     def stroke(self, color, line_width, line_dash, cairo_context, **kwargs):
-        self.apply_color(color, cairo_context)
+        cairo_context.set_source_rgba(*native_color(color))
         cairo_context.set_line_width(line_width)
         if line_dash is not None:
             cairo_context.set_dash(line_dash)
@@ -198,22 +209,16 @@ class Canvas(Widget):
         cairo_context.set_matrix(self.original_transform_matrix)
 
     # Text
-
     def write_text(self, text, x, y, font, cairo_context, **kwargs):
         # Set font family and size
-        if font:
-            write_font = font.interface
-        elif self.native.font:
-            write_font = self.native.font
-            write_font.family = self.native.font.get_family()
-            write_font.size = self.native.font.get_size() / Pango.SCALE
-
-        cairo_context.select_font_face(write_font.family)
-        cairo_context.set_font_size(write_font.size)
+        if font.interface.family != SYSTEM:
+            cairo_context.select_font_face(font.native.get_family())
+        if font.interface.size != SYSTEM_DEFAULT_FONT_SIZE:
+            cairo_context.set_font_size(font.native.get_size() / Pango.SCALE)
 
         # Support writing multiline text
         for line in text.splitlines():
-            width, height = self.measure_text(line, write_font._impl)
+            width, height = self.measure_text(line, font)
             cairo_context.move_to(x, y)
             cairo_context.text_path(line)
             y += height
@@ -222,10 +227,10 @@ class Canvas(Widget):
         layout = self.native.create_pango_layout(text)
 
         layout.set_font_description(font.native)
-        _, logical = layout.get_extents()
+        ink, logical = layout.get_extents()
 
-        width = (logical.width / Pango.SCALE) - (logical.width * 0.2) / Pango.SCALE
-        height = logical.height / Pango.SCALE
+        width = (ink.width / Pango.SCALE) - (ink.width * 0.2) / Pango.SCALE
+        height = ink.height / Pango.SCALE
 
         return width, height
 
