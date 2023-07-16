@@ -1,3 +1,4 @@
+import platform
 from io import BytesIO
 
 from PIL import Image, ImageCms
@@ -10,6 +11,25 @@ from .base import SimpleProbe
 
 class CanvasProbe(SimpleProbe):
     native_class = NSView
+
+    def reference_variant(self, reference):
+        if reference == "transparency":
+            # New macOS laptops use an sRGB colorspace; older machines don't.
+            # If the captured image exposes an ICC profile, use the sRGB reference image.
+            image = Image.open(BytesIO(self.impl.get_image_data()))
+            if "icc_profile" in image.info:
+                return "transparency-macOS-sRGB"
+            else:
+                return "transparency-macOS"
+        elif reference == "multiline_text":
+            # Font leading varies between macOS versions, because of minor differences
+            # in the font definitions.
+            macOS_version = platform.platform().split("-")[1].split(".")[0]
+            return f"multiline_text-macOS-{macOS_version}"
+        elif reference in {"write_text"}:
+            # System font and default size is platform dependent.
+            return f"{reference}-macOS"
+        return reference
 
     def scale(self):
         # Cocoa's backing store might not be at display coordinates.

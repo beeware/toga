@@ -222,35 +222,14 @@ async def test_image_data(canvas, probe):
 
 def assert_reference(probe, reference, threshold=0.0):
     """Assert that the canvas currently matches a reference image, within an RMS threshold"""
-
-    # Some tests can be ignored on some platforms, because the behavior is implemented,
-    # but known to be problematic. Try to invoke a test method on the probe; if that
-    # method raises a skip, we will have run the test code, but won't assert failue.
-    try:
-        getattr(probe, f"test_{reference}")()
-    except AttributeError:
-        pass
-
     # Get the canvas image.
     image = probe.get_image()
     scaled_image = image.resize((100, 100))
 
-    # Look for a platform-specific reference image; if one doesn't exist,
-    # use a cross-platform reference image.
-    path = (
-        toga.App.app.paths.app
-        / "resources"
-        / "canvas"
-        / f"{reference}-{toga.platform.current_platform}.png"
-    )
-    if not path.exists():
-        path = toga.App.app.paths.app / "resources" / "canvas" / f"{reference}.png"
-
-    save_path = (
-        toga.App.app.paths.data
-        / "canvas"
-        / f"{reference}-{toga.platform.current_platform}.png"
-    )
+    # Look for a platform-specific reference variant.
+    reference_variant = probe.reference_variant(reference)
+    path = toga.App.app.paths.app / "resources" / "canvas" / f"{reference_variant}.png"
+    save_path = toga.App.app.paths.data / "canvas" / f"{reference_variant}.png"
 
     # If a reference image exists, scale the image to the same size as the reference,
     # and do an MSE comparison on every pixel in 0-1 RGBA colorspace.
@@ -278,7 +257,7 @@ def assert_reference(probe, reference, threshold=0.0):
         print(f"Saving {save_path}")
         save_path.parent.mkdir(parents=True, exist_ok=True)
         scaled_image.save(save_path)
-        assert pytest.fail(f"Couldn't find {reference!r} reference image")
+        assert pytest.fail(f"Couldn't find {reference_variant!r} reference image")
 
 
 async def test_transparency(canvas, probe):
@@ -296,9 +275,7 @@ async def test_transparency(canvas, probe):
     canvas.context.fill(color=rgba(0x33, 0x66, 0x99, 0.5))
 
     await probe.redraw("Image with transparent content and background")
-    # Linux seems to have a different calculation for alpha transparency,
-    # so it has different reference image.
-    assert_reference(probe, "transparency", threshold=0.03)
+    assert_reference(probe, "transparency", threshold=0.0)
 
 
 async def test_paths(canvas, probe):
@@ -627,7 +604,7 @@ async def test_multiline_text(canvas, probe):
     "Multiline text can be measured and written"
     # Write a single line
     with canvas.context.Fill() as text_filler:
-        text_filler.write_text("Single lines", 10, 20)
+        text_filler.write_text("Single line", 10, 20)
 
     # Write multiple lines
     with canvas.context.Fill() as text_filler:

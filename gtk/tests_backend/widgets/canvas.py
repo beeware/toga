@@ -11,11 +11,14 @@ from .base import SimpleProbe
 class CanvasProbe(SimpleProbe):
     native_class = Gtk.DrawingArea
 
-    def test_write_text(self):
-        pytest.skip("GTK canvas font and stroke handling isn't quite right")
-
-    def test_multiline_text(self):
-        pytest.skip("GTK canvas font and stroke handling isn't quite right")
+    def reference_variant(self, reference):
+        # Transparency calculations are platform specific
+        if reference in {"transparency"}:
+            return f"{reference}-linux"
+        elif reference in {"write_text", "multiline_text"}:
+            pytest.skip("GTK canvas font and stroke handling isn't quite right")
+        else:
+            return reference
 
     def scale(self):
         return 1

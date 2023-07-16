@@ -23,6 +23,14 @@ class MockTouch(NSObject):
 class CanvasProbe(SimpleProbe):
     native_class = UIView
 
+    def reference_variant(self, reference):
+        # Transparency calculations are platform specific
+        # System fonts and sizes are platform specific
+        if reference in {"transparency", "write_text", "multiline_text"}:
+            return f"{reference}-iOS"
+        else:
+            return reference
+
     def scale(self):
         # Retina displays render images at a higher resolution than their reported size;
         # This is why @2x and @3x images are needed. This returns the scale factor.
