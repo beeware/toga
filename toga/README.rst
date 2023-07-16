@@ -17,7 +17,7 @@ Backends are also available for `Android <https://pypi.org/project/toga-android>
 
 Toga requires **Python 3.8** or newer. It does not support Python 2. Some platforms have
 additional prerequisites; see the `Toga plaform guide
-<https://toga.readthedocs.io/en/stable/reference/platforms/index.html>`__ for details.
+<https://toga.readthedocs.io/en/latest/reference/platforms/index.html>`__ for details.
 
 For more details, see the `Toga project on Github`_.
 
