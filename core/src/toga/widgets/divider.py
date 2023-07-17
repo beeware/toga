@@ -23,9 +23,9 @@ class Divider(Widget):
         :param style: A style object. If no style is provided, a default style will be
             applied to the widget.
         :param direction: The direction in which the divider will be drawn. Either
-            :attr:`~toga.widgets.SplitContainer.HORIZONTAL` or
-            :attr:`~toga.widgets.SplitContainer.VERTICAL`; defaults to
-            :attr:`~toga.widgets.SplitContainer.HORIZONTAL`
+            :attr:`~toga.constants.Direction.HORIZONTAL` or
+            :attr:`~toga.constants.Direction.VERTICAL`; defaults to
+            :attr:`~toga.constants.Direction.HORIZONTAL`
         """
         super().__init__(id=id, style=style)
 

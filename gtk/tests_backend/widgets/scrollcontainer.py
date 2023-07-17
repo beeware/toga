@@ -5,6 +5,7 @@ from .base import SimpleProbe
 
 class ScrollContainerProbe(SimpleProbe):
     native_class = Gtk.ScrolledWindow
+    scrollbar_inset = 0
 
     @property
     def has_content(self):
@@ -19,6 +20,9 @@ class ScrollContainerProbe(SimpleProbe):
         return self.native.get_hadjustment().get_upper()
 
     async def scroll(self):
+        if self.native.get_policy()[1] == Gtk.PolicyType.NEVER:
+            return
+
         # Fake a vertical scroll
         self.native.get_vadjustment().set_value(200)
         self.native.get_vadjustment().emit("changed")

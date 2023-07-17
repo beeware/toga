@@ -7,7 +7,7 @@ Reference
 .. toctree::
    :maxdepth: 1
 
-   platforms
+   platforms/index
    widgets_by_platform
    api/index
    style/index

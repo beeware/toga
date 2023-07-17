@@ -9,6 +9,7 @@ from .base import SimpleProbe
 
 class ScrollContainerProbe(SimpleProbe):
     native_class = UIScrollView
+    scrollbar_inset = 0
 
     @property
     def has_content(self):
@@ -23,6 +24,9 @@ class ScrollContainerProbe(SimpleProbe):
         return self.native.contentSize.width
 
     async def scroll(self):
+        if self.document_height <= self.height:
+            return
+
         self.native.contentOffset = NSMakePoint(0, 600)
 
     async def wait_for_scroll_completion(self):

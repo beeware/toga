@@ -16,6 +16,8 @@ class TogaScrollView(UIScrollView):
 
     @objc_method
     def refreshContent(self):
+        # Now that we have an updated size for the ScrollContainer, re-evaluate
+        # the size of the document content (assuming there is a document)
         if self.interface._content:
             self.interface._content.refresh()
 
@@ -81,6 +83,10 @@ class ScrollContainer(Widget):
         if self.interface.content:
             self.interface.refresh()
 
+        # Disabling scrolling implies a position reset; that's a scroll event.
+        if not value:
+            self.interface.on_scroll(None)
+
     def get_horizontal(self):
         return self._allow_horizontal
 
@@ -91,22 +97,30 @@ class ScrollContainer(Widget):
         if self.interface.content:
             self.interface.refresh()
 
+        # Disabling scrolling implies a position reset; that's a scroll event.
+        if not value:
+            self.interface.on_scroll(None)
+
     def get_horizontal_position(self):
+        if not self.get_horizontal():
+            return 0
         return int(self.native.contentOffset.x)
 
     def get_max_vertical_position(self):
         return max(
             0,
-            self.native.contentSize.height - self.native.frame.size.height,
+            int(self.native.contentSize.height - self.native.frame.size.height),
         )
 
     def get_max_horizontal_position(self):
         return max(
             0,
-            self.native.contentSize.width - self.native.frame.size.width,
+            int(self.native.contentSize.width - self.native.frame.size.width),
         )
 
     def get_vertical_position(self):
+        if not self.get_vertical():
+            return 0
         return int(self.native.contentOffset.y)
 
     def set_position(self, horizontal_position, vertical_position):

@@ -59,7 +59,8 @@ class SplitContainer(Widget):
     def set_bounds(self, x, y, width, height):
         super().set_bounds(x, y, width, height)
         for container in self.sub_containers:
-            container.content.interface.refresh()
+            if container.content:
+                container.content.interface.refresh()
 
         # Apply any pending split
         self.native.performSelector(
