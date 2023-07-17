@@ -34,9 +34,6 @@ class MultilineTextInput(Widget):
         self.native.autohidesScrollers = False
         self.native.borderType = NSBezelBorder
 
-        # Disable all autolayout functionality on the outer widget
-        self.native.translatesAutoresizingMaskIntoConstraints = False
-
         # Create the actual text widget
         self.native_text = TogaTextView.alloc().init()
         self.native_text.interface = self.interface
