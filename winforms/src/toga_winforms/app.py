@@ -10,6 +10,7 @@ from .keys import toga_to_winforms_key
 from .libs import (
     SecurityProtocolType,
     ServicePointManager,
+    SystemSounds,
     Threading,
     WinForms,
     shcore,
@@ -163,9 +164,11 @@ class App:
                 self._menu_items[item] = cmd
                 submenu.DropDownItems.Add(item)
 
+        # The menu bar doesn't need to be positioned, because its `Dock` property
+        # defaults to `Top`.
         self.interface.main_window._impl.native.Controls.Add(menubar)
         self.interface.main_window._impl.native.MainMenuStrip = menubar
-        self.interface.main_window.content.refresh()
+        self.interface.main_window._impl.resize_content()
 
     def _submenu(self, group, menubar):
         try:
@@ -286,6 +289,9 @@ class App:
         self.interface.main_window.info_dialog(
             f"About {self.interface.name}", "\n".join(message_parts)
         )
+
+    def beep(self):
+        SystemSounds.Beep.Play()
 
     def exit(self):
         self._is_exiting = True

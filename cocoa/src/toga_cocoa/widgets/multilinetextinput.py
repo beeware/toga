@@ -1,3 +1,4 @@
+from rubicon.objc import objc_method, objc_property
 from travertino.size import at_least
 
 from toga.colors import TRANSPARENT
@@ -9,13 +10,15 @@ from toga_cocoa.libs import (
     NSTextView,
     NSViewHeightSizable,
     NSViewWidthSizable,
-    objc_method,
 )
 
 from .base import Widget
 
 
 class TogaTextView(NSTextView):
+    interface = objc_property(object, weak=True)
+    impl = objc_property(object, weak=True)
+
     @objc_method
     def textDidChange_(self, notification) -> None:
         self.interface.on_change(None)
@@ -30,9 +33,6 @@ class MultilineTextInput(Widget):
         self.native.hasHorizontalScroller = False
         self.native.autohidesScrollers = False
         self.native.borderType = NSBezelBorder
-
-        # Disable all autolayout functionality on the outer widget
-        self.native.translatesAutoresizingMaskIntoConstraints = False
 
         # Create the actual text widget
         self.native_text = TogaTextView.alloc().init()

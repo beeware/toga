@@ -1,0 +1,55 @@
+[build-system]
+requires = ["briefcase"]
+
+[tool.briefcase]
+project_name = "SplitContainer Demo"
+bundle = "org.beeware"
+version = "0.0.1"
+url = "https://beeware.org"
+license = "BSD license"
+author = "Tiberius Yak"
+author_email = "tiberius@beeware.org"
+
+[tool.briefcase.app.splitcontainer]
+formal_name = "SplitContainer Demo"
+description = "A testing app"
+sources = ["splitcontainer"]
+requires = [
+    "../../core",
+]
+
+
+[tool.briefcase.app.splitcontainer.macOS]
+requires = [
+    "../../cocoa",
+    "std-nslog>=1.0.0",
+]
+
+[tool.briefcase.app.splitcontainer.linux]
+requires = [
+    "../../gtk",
+]
+
+[tool.briefcase.app.splitcontainer.windows]
+requires = [
+    "../../winforms",
+]
+
+# Mobile deployments
+[tool.briefcase.app.splitcontainer.iOS]
+requires = [
+    "../../iOS",
+    "std-nslog>=1.0.0",
+]
+
+[tool.briefcase.app.splitcontainer.android]
+requires = [
+    "../../android",
+]
+
+# Web deployment
+[tool.briefcase.app.splitcontainer.web]
+requires = [
+    "../../web",
+]
+style_framework = "Shoelace v2.3"
