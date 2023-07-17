@@ -1,69 +1,84 @@
-from toga_winforms.container import Container
-from toga_winforms.libs import WinForms
+from System.Windows.Forms import (
+    BorderStyle,
+    Orientation,
+    SplitContainer as NativeSplitContainer,
+)
 
+from toga.constants import Direction
+
+from ..container import Container
 from .base import Widget
+
+
+class SplitPanel(Container):
+    def resize_content(self, **kwargs):
+        size = self.native_parent.ClientSize
+        super().resize_content(size.Width, size.Height, **kwargs)
 
 
 class SplitContainer(Widget):
     def create(self):
-        self.native = WinForms.SplitContainer()
-        self.native.interface = self.interface
-        self.native.Resize += self.winforms_resize
-        self.native.SplitterMoved += self.winforms_resize
-        self.ratio = None
+        self.native = NativeSplitContainer()
+        self.native.SplitterMoved += lambda sender, event: self.resize_content()
 
-    def add_content(self, position, widget, flex):
-        # TODO: Add flex option to the implementation
-        widget.frame = self
+        # Despite what the BorderStyle documentation says, there is no border by default
+        # (at least on Windows 10), which would make the split bar invisible.
+        self.native.BorderStyle = BorderStyle.Fixed3D
 
-        # Add all children to the content widget.
-        for child in widget.interface.children:
-            child._impl.container = widget
+        self.panels = (SplitPanel(self.native.Panel1), SplitPanel(self.native.Panel2))
+        self.pending_position = None
 
-        if position >= 2:
-            raise ValueError("SplitContainer content must be a 2-tuple")
+    def set_bounds(self, x, y, width, height):
+        super().set_bounds(x, y, width, height)
 
-        if position == 0:
-            self.native.Panel1.Controls.Add(widget.native)
-            widget.viewport = Container(self.native.Panel1)
+        force_refresh = False
+        if self.pending_position:
+            self.set_position(self.pending_position)
+            self.pending_position = None
+            force_refresh = True  # Content has changed
 
-        elif position == 1:
-            self.native.Panel2.Controls.Add(widget.native)
-            widget.viewport = Container(self.native.Panel2)
+        self.resize_content(force_refresh=force_refresh)
 
-            # Turn all the weights into a fraction of 1.0
-            total = sum(self.interface._weight)
-            self.interface._weight = [
-                weight / total for weight in self.interface._weight
-            ]
+    def set_content(self, content, flex):
+        # In case content moves from one panel to another, make sure it's removed first
+        # so it doesn't get removed again by set_content.
+        for panel in self.panels:
+            panel.clear_content()
 
-            # Set the position of splitter depending on the weight of splits.
-            total_distance = (
-                self.native.Width
-                if self.interface.direction == self.interface.VERTICAL
-                else self.native.Height
-            )
-            self.native.SplitterDistance = int(
-                self.interface._weight[0] * total_distance
-            )
+        for panel, widget in zip(self.panels, content):
+            panel.set_content(widget)
 
-    def set_app(self, app):
-        if self.interface.content:
-            for content in self.interface.content:
-                content.app = self.interface.app
+        self.pending_position = flex[0] / sum(flex)
 
-    def set_window(self, window):
-        if self.interface.content:
-            for content in self.interface.content:
-                content.window = self.interface.window
+    def get_direction(self):
+        return {
+            Orientation.Vertical: Direction.VERTICAL,
+            Orientation.Horizontal: Direction.HORIZONTAL,
+        }[self.native.Orientation]
 
     def set_direction(self, value):
-        self.native.Orientation = (
-            WinForms.Orientation.Vertical if value else WinForms.Orientation.Horizontal
+        position = self.get_position()
+
+        self.native.Orientation = {
+            Direction.VERTICAL: Orientation.Vertical,
+            Direction.HORIZONTAL: Orientation.Horizontal,
+        }[value]
+
+        self.set_position(position)
+
+    def get_position(self):
+        return self.native.SplitterDistance / self.get_max_position()
+
+    def set_position(self, position):
+        self.native.SplitterDistance = round(position * self.get_max_position())
+
+    def get_max_position(self):
+        return (
+            self.native.Width
+            if self.get_direction() == Direction.VERTICAL
+            else self.native.Height
         )
 
-    def winforms_resize(self, sender, args):
-        if self.interface.content:
-            # Re-layout the content
-            for content in self.interface.content:
-                content.refresh()
+    def resize_content(self, **kwargs):
+        for panel in self.panels:
+            panel.resize_content(**kwargs)

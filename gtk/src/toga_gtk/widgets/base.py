@@ -68,7 +68,7 @@ class Widget:
         for child in self.interface.children:
             child._impl.container = container
 
-        self.rehint()
+        self.refresh()
 
     def get_enabled(self):
         return self.native.get_sensitive()
