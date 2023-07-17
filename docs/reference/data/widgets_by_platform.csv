@@ -25,7 +25,7 @@ WebView,General Widget,:class:`~toga.WebView`,A panel for displaying HTML,|y|,|y
 Widget,General Widget,:class:`~toga.Widget`,The base widget,|y|,|y|,|y|,|y|,|y|,|b|
 Box,Layout Widget,:class:`~toga.Box`,Container for components,|y|,|y|,|y|,|y|,|y|,|b|
 ScrollContainer,Layout Widget,:class:`~toga.ScrollContainer`,A container that can display a layout larger than the area of the container,|y|,|y|,|y|,|y|,|y|,
-SplitContainer,Layout Widget,:class:`~toga.SplitContainer`,Split Container,|b|,|b|,|b|,,,
+SplitContainer,Layout Widget,:class:`~toga.SplitContainer`,A container that divides an area into two panels with a movable border,|y|,|y|,|y|,,,
 OptionContainer,Layout Widget,:class:`~toga.OptionContainer`,Option Container,|b|,|b|,|b|,,,
 App Paths,Resource,:class:`~toga.paths.Paths`,A mechanism for obtaining platform-appropriate filesystem locations for an application.,|y|,|y|,|y|,|y|,|y|,
 Font,Resource,:class:`~toga.Font`,A text font,|b|,|y|,|y|,|b|,|b|,

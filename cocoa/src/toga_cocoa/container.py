@@ -19,14 +19,13 @@ class TogaView(NSView):
 
 
 class BaseContainer:
-    def __init__(self, content=None, on_refresh=None):
+    def __init__(self, on_refresh=None):
         """A base class for macOS containers.
 
-        :param content: The widget impl that is the container's initial content.
         :param on_refresh: The callback to be notified when this container's layout is
             refreshed.
         """
-        self._content = content
+        self._content = None
         self.on_refresh = on_refresh
         # macOS always renders at 96dpi. Scaling is handled
         # transparently at the level of the screen compositor.
@@ -60,12 +59,9 @@ class BaseContainer:
 
 
 class MinimumContainer(BaseContainer):
-    def __init__(self, content=None):
-        """A container for evaluating the minumum possible size for a layout
-
-        :param content: The widget impl that is the container's initial content.
-        """
-        super().__init__(content=content)
+    def __init__(self):
+        """A container for evaluating the minumum possible size for a layout"""
+        super().__init__()
         self.width = 0
         self.height = 0
 
@@ -73,7 +69,6 @@ class MinimumContainer(BaseContainer):
 class Container(BaseContainer):
     def __init__(
         self,
-        content=None,
         min_width=100,
         min_height=100,
         layout_native=None,
@@ -83,7 +78,6 @@ class Container(BaseContainer):
 
         Creates and enforces minimum size constraints on the container widget.
 
-        :param content: The widget impl that is the container's initial content.
         :param min_width: The minimum width to enforce on the container
         :param min_height: The minimum height to enforce on the container
         :param layout_native: The native widget that should be used to provide size
@@ -94,7 +88,8 @@ class Container(BaseContainer):
         :param on_refresh: The callback to be notified when this container's layout is
             refreshed.
         """
-        super().__init__(content=content, on_refresh=on_refresh)
+        super().__init__(on_refresh=on_refresh)
+
         self.native = TogaView.alloc().init()
         self.layout_native = self.native if layout_native is None else layout_native
 
@@ -133,8 +128,18 @@ class Container(BaseContainer):
     def height(self):
         return self.layout_native.frame.size.height
 
-    def set_min_width(self, width):
+    @property
+    def min_width(self):
+        return self._min_width_constraint.constant
+
+    @min_width.setter
+    def min_width(self, width):
         self._min_width_constraint.constant = width
 
-    def set_min_height(self, height):
+    @property
+    def min_height(self):
+        return self._min_height_constraint.constant
+
+    @min_height.setter
+    def min_height(self, height):
         self._min_height_constraint.constant = height

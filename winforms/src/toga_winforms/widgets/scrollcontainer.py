@@ -28,7 +28,7 @@ class ScrollContainer(Widget, Container):
     def create(self):
         self.native = Panel()
         self.native.AutoScroll = True
-        self.init_container(self.native)
+        Container.__init__(self, self.native)
 
         # The Scroll event only fires on direct interaction with the scroll bar. It
         # doesn't fire when using the mouse wheel, and it doesn't fire when setting
