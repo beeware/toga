@@ -41,6 +41,8 @@ class MultilineTextInput(Widget):
 
         self.native_text.editable = True
         self.native_text.selectable = True
+        self.native_text.richText = False
+        self.native_text.allowsUndo = True
         self.native_text.verticallyResizable = True
         self.native_text.horizontallyResizable = False
         self.native_text.usesAdaptiveColorMappingForDarkAppearance = True
