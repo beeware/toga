@@ -2,9 +2,9 @@
 Toga
 ====
 
-Toga is a Python native, OS native, cross platform GUI toolkit. Toga consists of
-a library of base components with a shared interface to simplify
-platform-agnostic GUI development.
+Toga is a Python native, OS native, cross platform GUI toolkit. Toga consists of a
+library of base components with a shared interface to simplify platform-agnostic GUI
+development.
 
 Toga is available on macOS, Windows, Linux (GTK), Android, iOS, and for
 single-page web apps.
@@ -20,7 +20,7 @@ Table of contents
 =================
 
 :ref:`Tutorial <tutorial>`
-------------------------------
+--------------------------
 
 Get started with a hands-on introduction to Toga for beginners.
 
@@ -35,7 +35,7 @@ Guides and recipes for common problems and tasks.
 Explanation and discussion of key topics and concepts.
 
 :ref:`Reference <reference>`
-------------------------------
+----------------------------
 
 Technical reference - commands, modules, classes, methods.
 

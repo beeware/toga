@@ -32,12 +32,12 @@ class SimpleProbe(BaseProbe):
         self.scale_factor = self.native.CreateGraphics().DpiX / 96
 
     def assert_container(self, container):
-        container_native = container._impl.native
-        for control in container_native.Controls:
-            if Object.ReferenceEquals(control, self.native):
-                break
-        else:
-            raise ValueError(f"cannot find {self.native} in {container_native}")
+        assert self.widget._impl.container is container._impl.container
+        assert self.native.Parent is not None
+        assert Object.ReferenceEquals(
+            self.native.Parent,
+            container._impl.container.native_content,
+        )
 
     def assert_not_contained(self):
         assert self.widget._impl.container is None
@@ -79,11 +79,11 @@ class SimpleProbe(BaseProbe):
 
     @property
     def width(self):
-        return self.native.Width / self.scale_factor
+        return round(self.native.Width / self.scale_factor)
 
     @property
     def height(self):
-        return self.native.Height / self.scale_factor
+        return round(self.native.Height / self.scale_factor)
 
     def assert_width(self, min_width, max_width):
         assert (
@@ -109,10 +109,7 @@ class SimpleProbe(BaseProbe):
         assert (self.width, self.height) == approx(size, abs=1)
         assert (
             self.native.Left / self.scale_factor,
-            (
-                (self.native.Top - self.widget._impl.container.vertical_shift)
-                / self.scale_factor
-            ),
+            self.native.Top / self.scale_factor,
         ) == approx(position, abs=1)
 
     async def press(self):

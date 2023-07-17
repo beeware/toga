@@ -3,75 +3,34 @@ Toga
 
 A Python native, OS native GUI toolkit.
 
+This package provides the core Toga API. In order to use Toga, you'll also need to
+install a backend that implements the core Toga API for that platform:
+
+* **Android** `toga-android <https://pypi.org/project/toga-android>`__
+* **iOS** `toga-iOS <https://pypi.org/project/toga-iOS>`__
+* **Linux** `toga-gtk <https://pypi.org/project/toga-gtk>`__
+* **macOS** `toga-cocoa <https://pypi.org/project/toga-cocoa>`__
+* **Web** `toga-web <https://pypi.org/project/toga-web>`__
+* **Windows** `toga-winforms <https://pypi.org/project/toga-winforms>`__
+
+Minimum requirements
+--------------------
+
+Toga requires **Python 3.8** or newer. Python 2 is not supported.
+
+Each backend also has specific requirements and pre-requisites. See the `platform
+documentation <https://toga.readthedocs.io/en/stable/reference/platforms.html>`__ for
+details.
+
 Quickstart
 ----------
 
 To get a demonstration of the capabilities of Toga, run the following::
 
-    $ pip install toga-demo
+    $ python -m pip install toga-demo
     $ toga-demo
 
 This will pop up a GUI window with some sample widgets.
-
-Prerequisites
-~~~~~~~~~~~~~
-
-Toga has some minimum requirements:
-
-* If you're on OS X, you need to be on 10.10 (Yosemite) or newer.
-
-* If you're on Linux, you need to have GTK+ 3.4 or later. This is the version
-  that ships starting with Ubuntu 12.04 and Fedora 17.
-
-* If you want to use the WebView widget, you'll also need to have WebKit, plus
-  the GI bindings to WebKit installed.
-
-    * For Ubuntu that's provided by the (``libwebkitgtk-3.0-0``) and
-      (``gir1.2-webkit-3.0``) packages.
-
-    * For Fedora it's all provided in the (``webkitgtk3``) package.
-
-If these requirements aren't met, Toga either won't work at all, or won't have
-full functionality.
-
-
-Problems with source installs
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Internally, Toga is comprised of a number of subpackages - one for each
-platform it supports. If you install using wheels, the install process will
-correctly identify the required packages and install them. However, if you
-install from source using pip, there is a `known bug in pip`_ that causes
-dependencies to not be installed. It may be necessary to manually install
-the following pre-requisites:
-
-* OS X: ``pip install toga-cocoa``
-* Linux: ``pip install toga-gtk toga-cassowary cassowary``
-* Win32: ``pip install toga-win32 toga-cassowary cassowary``
-
-.. _known bug in pip: https://github.com/pypa/pip/issues/1951
-
-Problems using virtualenv under Linux
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-When running under Linux, Toga uses the system native python GTK+3 bindings
-for display purposes. However, if you're using a ``--no-site-packages``
-virtualenv, the Python bindings for GTK won't be in your ``PYTHONPATH``.
-
-Unfortunately, you can't ``pip install`` GTK+ bindings, so you have to use a
-workaround. To make the system GTK+ bindings available to your virtualenv,
-symlink the ``gi`` module from the system dist-packages directory into your
-virtualenv's site-packages::
-
-    For a Ubuntu 32bit system (assuming Python 3.5)::
-
-        $ cd $VIRTUAL_ENV/lib/python3.5/site-packages
-        $ ln -si /usr/lib/python3.5/dist-packages/gi
-
-    For a Fedora 64bit system (assuming Python 3.5)::
-
-        $ cd $VIRTUAL_ENV/lib/python3.5/site-packages
-        $ ln -si /usr/lib64/python3.5/site-packages/gi/
 
 Documentation
 -------------
@@ -79,19 +38,6 @@ Documentation
 Documentation for Toga can be found on `Read The Docs`_.
 
 .. _Read The Docs: https://toga.readthedocs.io
-
-Related projects
-----------------
-
-This package is a top level package. It depends on the use of platform-specific
-backends to provide real functionality:
-
-* ``toga-cocoa``: for macOS
-* ``toga-gtk``: GTK+ backend for Linux desktops
-* ``toga-iOS``: for iOS devices (iPhone, iPad, iPod)
-* ``toga-android``: for Android devices (limited support)
-* ``toga-winforms``: for recent Window devices (limited support)
-* ``toga-django``: for web deployment (limited support)
 
 Community
 ---------
@@ -105,18 +51,22 @@ Toga is part of the `BeeWare suite`_. You can talk to the community through:
 We foster a welcoming and respectful community as described in our
 `BeeWare Community Code of Conduct`_.
 
-.. _BeeWare suite: http://beeware.org
+.. _BeeWare suite: https://beeware.org
 .. _@beeware@fosstodon.org on Mastodon: https://fosstodon.org/@beeware
 .. _Discord: https://beeware.org/bee/chat/
 .. _Github Discussions forum: https://github.com/beeware/toga/discussions
-.. _BeeWare Community Code of Conduct: http://beeware.org/community/behavior/
+.. _BeeWare Community Code of Conduct: https://beeware.org/community/behavior/
 
 Contributing
 ------------
 
-If you experience problems with Toga, `log them on GitHub`_. If you
-want to contribute code, please `fork the code`_ and `submit a pull request`_.
+If you'd like to contribute to Toga development, our `guide for first time
+contributors`_ will help you get started.
 
+If you experience problems with Toga, `log them on GitHub`_. If you want to
+contribute code, please `fork the code`_ and `submit a pull request`_.
+
+.. _guide for first time contributors: https://toga.readthedocs.io/en/latest/how-to/contribute-code.html
 .. _log them on Github: https://github.com/beeware/toga/issues
 .. _fork the code: https://github.com/beeware/toga
 .. _submit a pull request: https://github.com/beeware/toga/pulls

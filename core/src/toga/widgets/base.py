@@ -116,8 +116,8 @@ class Widget(Node):
 
                 self._impl.add_child(child._impl)
 
-        if self.window:
-            self.window.content.refresh()
+        # Whatever layout we're a part of needs to be refreshed
+        self.refresh()
 
     def insert(self, index: int, child: Widget):
         """Insert a widget as a child of this widget.
@@ -145,8 +145,8 @@ class Widget(Node):
 
             self._impl.insert_child(index, child._impl)
 
-        if self.window:
-            self.window.content.refresh()
+        # Whatever layout we're a part of needs to be refreshed
+        self.refresh()
 
     def remove(self, *children: list[Widget]):
         """Remove the provided widgets as children of this node.
@@ -171,8 +171,9 @@ class Widget(Node):
 
                 self._impl.remove_child(child._impl)
 
-        if self.window and removed:
-            self.window.content.refresh()
+        # If we removed something, whatever layout we're a part of needs to be refreshed
+        if removed:
+            self.refresh()
 
     def clear(self):
         """Remove all child widgets of this node.
@@ -261,6 +262,7 @@ class Widget(Node):
             # We can't compute a layout until we have a viewport
             if self._impl.viewport:
                 super().refresh(self._impl.viewport)
+                self._impl.viewport.refreshed()
 
     def refresh_sublayouts(self):
         for child in self.children:

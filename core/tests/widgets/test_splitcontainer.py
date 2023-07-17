@@ -1,119 +1,356 @@
-from unittest import mock
+import pytest
 
 import toga
-from toga_dummy.utils import TestCase, TestStyle
+from toga_dummy.utils import (
+    assert_action_not_performed,
+    assert_action_performed,
+    assert_action_performed_with,
+)
 
 
-class SplitContainerTests(TestCase):
-    def setUp(self):
-        super().setUp()
-        self.content = [toga.Box(style=TestStyle()), toga.Box(style=TestStyle())]
-        self.split = toga.SplitContainer(style=TestStyle())
+@pytest.fixture
+def app():
+    return toga.App("Split Container Test", "org.beeware.toga.split_container")
 
-    def test_widget_created(self):
-        self.assertEqual(self.split._impl.interface, self.split)
-        self.assertActionPerformed(self.split, "create SplitContainer")
 
-    def test_setting_content_valid_input(self):
-        new_content = [toga.Box(style=TestStyle()), toga.Box(style=TestStyle())]
-        self.split.content = new_content
-        self.assertEqual(self.split.content, new_content)
+@pytest.fixture
+def window():
+    return toga.Window()
 
-    def test_setting_content_false_input(self):
-        with self.assertRaises(Exception):
-            self.split.content = toga.Box()
 
-        with self.assertRaises(ValueError):
-            self.split.content = [toga.Box()]
+@pytest.fixture
+def content1():
+    return toga.Box()
 
-    def test_setting_content_invokes_impl_method(self):
-        new_content = [toga.Box(style=TestStyle()), toga.Box(style=TestStyle())]
-        self.split.content = new_content
-        self.assertActionPerformedWith(
-            self.split, "add content", position=0, widget=new_content[0]._impl
-        )
-        self.assertActionPerformedWith(
-            self.split, "add content", position=1, widget=new_content[1]._impl
-        )
 
-    def test_direction_property_default(self):
-        self.assertEqual(self.split.direction, True)
+@pytest.fixture
+def content2():
+    return toga.Box()
 
-    def test_setting_direction_property_invokes_impl_method(self):
-        new_value = False
-        self.split.direction = new_value
-        self.assertValueSet(self.split, "direction", new_value)
 
-    def test_setting_content_valid_input_with_tuple_of2(self):
-        new_content = [
-            (toga.Box(style=TestStyle()), 1.2),
-            (toga.Box(style=TestStyle()), 2.5),
+@pytest.fixture
+def content3():
+    return toga.Box()
+
+
+@pytest.fixture
+def splitcontainer(content1, content2):
+    return toga.SplitContainer(content=[content1, content2])
+
+
+def test_widget_created():
+    "A scroll container can be created with no arguments"
+    splitcontainer = toga.SplitContainer()
+    assert splitcontainer._impl.interface == splitcontainer
+    assert_action_performed(splitcontainer, "create SplitContainer")
+
+    assert splitcontainer.content == (None, None)
+    assert splitcontainer.direction == toga.SplitContainer.VERTICAL
+
+
+def test_widget_created_with_values(content1, content2):
+    "A split container can be created with arguments"
+    splitcontainer = toga.SplitContainer(
+        content=[content1, content2],
+        direction=toga.SplitContainer.HORIZONTAL,
+    )
+    assert splitcontainer._impl.interface == splitcontainer
+    assert_action_performed(splitcontainer, "create SplitContainer")
+
+    assert splitcontainer.content == (content1, content2)
+    assert splitcontainer.direction == toga.SplitContainer.HORIZONTAL
+
+    # The content has been assigned to the widget
+    assert_action_performed_with(
+        splitcontainer,
+        "set content",
+        content=(content1._impl, content2._impl),
+        flex=[1, 1],
+    )
+
+    # The split container has been refreshed
+    assert_action_performed(splitcontainer, "refresh")
+
+
+@pytest.mark.parametrize(
+    "include_left, include_right",
+    [
+        (False, False),
+        (False, True),
+        (True, False),
+        (True, True),
+    ],
+)
+def test_assign_to_app(app, content1, content2, include_left, include_right):
+    """If the widget is assigned to an app, the content is also assigned"""
+    splitcontainer = toga.SplitContainer(
+        content=[
+            content1 if include_left else None,
+            content2 if include_right else None,
         ]
-        self.split.content = new_content
-        self.assertEqual(self.split._weight[0], 1.2)
-        self.assertEqual(self.split._weight[1], 2.5)
+    )
 
-    def test_setting_content_valid_input_with_tuple_of3(self):
-        new_content = [
-            (toga.Box(style=TestStyle()), 1.2),
-            (toga.Box(style=TestStyle()), 2.5, False),
+    # Split container is initially unassigned
+    assert splitcontainer.app is None
+
+    # Assign the split container to the app
+    splitcontainer.app = app
+
+    # Split container is on the app
+    assert splitcontainer.app == app
+
+    # Content is also on the app
+    if include_left:
+        assert content1.app == app
+
+    if include_right:
+        assert content2.app == app
+
+
+def test_assign_to_app_no_content(app):
+    """If the widget is assigned to an app, and there is no content, there's no error"""
+    splitcontainer = toga.SplitContainer()
+
+    # Scroll container is initially unassigned
+    assert splitcontainer.app is None
+
+    # Assign the scroll container to the app
+    splitcontainer.app = app
+
+    # Scroll container is on the app
+    assert splitcontainer.app == app
+
+
+@pytest.mark.parametrize(
+    "include_left, include_right",
+    [
+        (False, False),
+        (False, True),
+        (True, False),
+        (True, True),
+    ],
+)
+def test_assign_to_window(window, content1, content2, include_left, include_right):
+    """If the widget is assigned to a window, the content is also assigned"""
+    splitcontainer = toga.SplitContainer(
+        content=[
+            content1 if include_left else None,
+            content2 if include_right else None,
         ]
-        self.split.content = new_content
-        self.assertEqual(self.split._weight[0], 1.2)
-        self.assertEqual(self.split._weight[1], 2.5)
-        self.assertActionPerformedWith(
-            self.split,
-            "add content",
-            position=0,
-            widget=new_content[0][0]._impl,
-            flex=True,
-        )
-        self.assertActionPerformedWith(
-            self.split,
-            "add content",
-            position=1,
-            widget=new_content[1][0]._impl,
-            flex=False,
-        )
+    )
 
-    def test_setting_content_valid_input_with_tuple_of_more3(self):
-        new_content = [
-            (toga.Box(style=TestStyle()), 1.2, True, True),
-            (toga.Box(style=TestStyle()), 2.5, False, True),
-        ]
-        with self.assertRaises(ValueError):
-            self.split.content = new_content
+    # Split container is initially unassigned
+    assert splitcontainer.window is None
 
-    def test_set_window_without_content(self):
-        window = mock.Mock()
-        self.split.window = window
-        self.assertEqual(self.split.window, window)
+    # Assign the split container to the window
+    splitcontainer.window = window
 
-    def test_set_window_with_content(self):
-        self.split.content = self.content
-        for content in self.content:
-            self.assertIsNone(content.window)
+    # Split container is on the window
+    assert splitcontainer.window == window
 
-        window = mock.Mock()
-        self.split.window = window
+    # Content is also on the window
+    if include_left:
+        assert content1.window == window
 
-        self.assertEqual(self.split.window, window)
-        for content in self.content:
-            self.assertEqual(content.window, window)
+    if include_right:
+        assert content2.window == window
 
-    def test_set_app_without_content(self):
-        app = mock.Mock()
-        self.split.app = app
-        self.assertEqual(self.split.app, app)
 
-    def test_set_app_with_content(self):
-        self.split.content = self.content
-        for content in self.content:
-            self.assertIsNone(content.app)
+def test_assign_to_window_no_content(window):
+    """If the widget is assigned to an app, and there is no content, there's no error"""
+    splitcontainer = toga.SplitContainer()
 
-        app = mock.Mock()
-        self.split.app = app
+    # Scroll container is initially unassigned
+    assert splitcontainer.window is None
 
-        self.assertEqual(self.split.app, app)
-        for content in self.content:
-            self.assertEqual(content.app, app)
+    # Assign the scroll container to the window
+    splitcontainer.window = window
+
+    # Scroll container is on the window
+    assert splitcontainer.window == window
+
+
+def test_disable_no_op(splitcontainer):
+    "SplitContainer doesn't have a disabled state"
+    # Enabled by default
+    assert splitcontainer.enabled
+
+    # Try to disable the widget
+    splitcontainer.enabled = False
+
+    # Still enabled.
+    assert splitcontainer.enabled
+
+
+def test_focus_noop(splitcontainer):
+    "Focus is a no-op."
+
+    splitcontainer.focus()
+    assert_action_not_performed(splitcontainer, "focus")
+
+
+@pytest.mark.parametrize(
+    "include_left, include_right",
+    [
+        (False, False),
+        (False, True),
+        (True, False),
+        (True, True),
+    ],
+)
+def test_set_content_widgets(
+    splitcontainer,
+    content1,
+    content2,
+    content3,
+    include_left,
+    include_right,
+):
+    """Widget content can be set to a list of widgets"""
+    splitcontainer.content = [
+        content2 if include_left else None,
+        content3 if include_right else None,
+    ]
+
+    assert_action_performed_with(
+        splitcontainer,
+        "set content",
+        content=(
+            content2._impl if include_left else None,
+            content3._impl if include_right else None,
+        ),
+        flex=[1, 1],
+    )
+
+    # The split container has been refreshed
+    assert_action_performed(splitcontainer, "refresh")
+
+
+@pytest.mark.parametrize(
+    "include_left, include_right",
+    [
+        (False, False),
+        (False, True),
+        (True, False),
+        (True, True),
+    ],
+)
+def test_set_content_flex(
+    splitcontainer,
+    content2,
+    content3,
+    include_left,
+    include_right,
+):
+    """Widget content can be set to a list of widgets with flex values"""
+    splitcontainer.content = [
+        (content2 if include_left else None, 2),
+        (content3 if include_right else None, 3),
+    ]
+
+    assert_action_performed_with(
+        splitcontainer,
+        "set content",
+        content=(
+            content2._impl if include_left else None,
+            content3._impl if include_right else None,
+        ),
+        flex=[2, 3],
+    )
+
+    # The split container has been refreshed
+    assert_action_performed(splitcontainer, "refresh")
+
+
+@pytest.mark.parametrize(
+    "include_left, include_right",
+    [
+        (False, False),
+        (False, True),
+        (True, False),
+        (True, True),
+    ],
+)
+def test_set_content_flex_mixed(
+    splitcontainer,
+    content2,
+    content3,
+    include_left,
+    include_right,
+):
+    """Flex values will be defaulted if missing"""
+    splitcontainer.content = [
+        content2 if include_left else None,
+        (content3 if include_right else None, 3),
+    ]
+
+    assert_action_performed_with(
+        splitcontainer,
+        "set content",
+        content=(
+            content2._impl if include_left else None,
+            content3._impl if include_right else None,
+        ),
+        flex=[1, 3],
+    )
+
+    # The split container has been refreshed
+    assert_action_performed(splitcontainer, "refresh")
+
+
+@pytest.mark.parametrize(
+    "content, message",
+    [
+        (
+            None,
+            r"SplitContainer content must be a sequence with exactly 2 elements",
+        ),
+        (
+            [],
+            r"SplitContainer content must be a sequence with exactly 2 elements",
+        ),
+        (
+            [toga.Box()],
+            r"SplitContainer content must be a sequence with exactly 2 elements",
+        ),
+        (
+            [toga.Box(), toga.Box(), toga.Box()],
+            r"SplitContainer content must be a sequence with exactly 2 elements",
+        ),
+        (
+            [toga.Box(), (toga.Box(),)],
+            r"An item in SplitContainer content must be a 2-tuple containing "
+            r"the widget, and the flex weight to assign to that widget.",
+        ),
+        (
+            [toga.Box(), (toga.Box(), 42, True)],
+            r"An item in SplitContainer content must be a 2-tuple containing "
+            r"the widget, and the flex weight to assign to that widget.",
+        ),
+        (
+            [toga.Box(), (toga.Box(), 0)],
+            r"The flex value for an item in a SplitContainer must be >0",
+        ),
+        (
+            [toga.Box(), (toga.Box(), -1)],
+            r"The flex value for an item in a SplitContainer must be >0",
+        ),
+    ],
+)
+def test_set_content_invalid(splitcontainer, content, message):
+    """Widget content can only be set to valid values"""
+
+    with pytest.raises(ValueError, match=message):
+        splitcontainer.content = content
+
+
+def test_direction(splitcontainer):
+    """The direction of the splitcontainer can be changed"""
+
+    splitcontainer.direction = toga.SplitContainer.HORIZONTAL
+
+    # The direction has been set
+    assert splitcontainer.direction == toga.SplitContainer.HORIZONTAL
+
+    # The split container has been refreshed
+    assert_action_performed(splitcontainer, "refresh")

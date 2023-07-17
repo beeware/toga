@@ -569,6 +569,10 @@ class App:
         if self.home_page is not None:
             webbrowser.open(self.home_page)
 
+    def beep(self):
+        """Play the default system notification sound."""
+        self._impl.beep()
+
     def main_loop(self):
         """Invoke the application to handle user input.
 

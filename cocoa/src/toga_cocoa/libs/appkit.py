@@ -15,6 +15,8 @@ from toga.constants import CENTER, JUSTIFY, LEFT, RIGHT
 appkit = load_library("AppKit")
 ######################################################################
 
+NSBeep = appkit.NSBeep
+
 ######################################################################
 # NSAffineTransform.h
 NSAffineTransform = ObjCClass("NSAffineTransform")
@@ -602,6 +604,14 @@ NSScrollView = ObjCClass("NSScrollView")
 NSScrollElasticityAutomatic = 0
 NSScrollElasticityNone = 1
 NSScrollElasticityAllowed = 2
+
+NSScrollViewDidLiveScrollNotification = objc_const(
+    appkit, "NSScrollViewDidLiveScrollNotification"
+)
+NSScrollViewDidEndLiveScrollNotification = objc_const(
+    appkit, "NSScrollViewDidEndLiveScrollNotification"
+)
+
 
 ######################################################################
 # NSSecureTextField.h
