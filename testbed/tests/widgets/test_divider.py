@@ -1,6 +1,7 @@
 import pytest
 
 import toga
+from toga.constants import Direction
 from toga.style.pack import COLUMN, ROW
 
 from ..conftest import skip_on_platforms
@@ -21,7 +22,7 @@ async def test_directions(widget, probe):
     # Widget should be initially horizontal.
     # Container is initially a row box, so the divider will be
     # both narrow and short
-    assert widget.direction == toga.Divider.HORIZONTAL
+    assert widget.direction == Direction.HORIZONTAL
     assert probe.height < 10
     assert probe.width < 10
 
@@ -30,16 +31,16 @@ async def test_directions(widget, probe):
     await probe.redraw("Divider should become wide")
 
     # The divider will now be wide, but short.
-    assert widget.direction == toga.Divider.HORIZONTAL
+    assert widget.direction == Direction.HORIZONTAL
     assert probe.height < 10
     assert probe.width > 100
 
     # Make the divider vertical
-    widget.direction = toga.Divider.VERTICAL
+    widget.direction = Direction.VERTICAL
     await probe.redraw("Divider should be VERTICAL")
 
     # In a column box, a vertical divider will be narrow and short.
-    assert widget.direction == toga.Divider.VERTICAL
+    assert widget.direction == Direction.VERTICAL
     assert probe.height < 10
     assert probe.width < 10
 
@@ -48,6 +49,24 @@ async def test_directions(widget, probe):
     await probe.redraw("Divider should become tall")
 
     # In a row box, a vertical divider will be narrow and tall.
-    assert widget.direction == toga.Divider.VERTICAL
+    assert widget.direction == Direction.VERTICAL
     assert probe.height > 100
     assert probe.width < 10
+
+    # Make the divider horizontal
+    widget.direction = Direction.HORIZONTAL
+    await probe.redraw("Divider should be HORIZONTAL")
+
+    # In a row box, a horizontal divider will be narrow and short.
+    assert widget.direction == Direction.HORIZONTAL
+    assert probe.height < 10
+    assert probe.width < 10
+
+    # Make the container a COLUMN box again
+    widget.parent.style.direction = COLUMN
+    await probe.redraw("Divider should become wide")
+
+    # In a column box, a horizontal divider will be narrow and short.
+    assert widget.direction == Direction.HORIZONTAL
+    assert probe.height < 10
+    assert probe.width > 100

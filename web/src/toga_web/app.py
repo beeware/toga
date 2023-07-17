@@ -176,6 +176,9 @@ class App:
 
         js.customElements.whenDefined("sl-dialog").then(show_dialog)
 
+    def beep(self):
+        self.interface.factory.not_implemented("App.beep()")
+
     def exit(self):
         pass
 

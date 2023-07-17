@@ -61,8 +61,10 @@ Layout widgets
  Usage                                                                Description
 ==================================================================== ========================================================================
  :doc:`Box </reference/api/containers/box>`                           A generic container for other widgets. Used to construct layouts.
- :doc:`ScrollContainer </reference/api/containers/scrollcontainer>`   Scrollable Container
- :doc:`SplitContainer </reference/api/containers/splitcontainer>`     Split Container
+ :doc:`ScrollContainer </reference/api/containers/scrollcontainer>`   A container that can display a layout larger that the area of
+                                                                      the container, with overflow controlled by scroll bars.
+ :doc:`SplitContainer </reference/api/containers/splitcontainer>`     A container that divides an area into two panels with a movable
+                                                                      border.
  :doc:`OptionContainer </reference/api/containers/optioncontainer>`   Option Container
 ==================================================================== ========================================================================
 
@@ -74,8 +76,8 @@ Resources
 ==================================================================== ========================================================================
  :doc:`App Paths </reference/api/resources/app_paths>`                A mechanism for obtaining platform-appropriate file system locations
                                                                       for an application.
- :doc:`Font </reference/api/resources/fonts>`                         Fonts
  :doc:`Command </reference/api/resources/command>`                    Command
+ :doc:`Font </reference/api/resources/fonts>`                         Fonts
  :doc:`Group </reference/api/resources/group>`                        Command group
  :doc:`Icon </reference/api/resources/icons>`                         An icon for buttons, menus, etc
  :doc:`Image </reference/api/resources/images>`                       An image
@@ -86,6 +88,15 @@ Resources
  :doc:`ValueSource </reference/api/resources/sources/value_source>`   A data source describing a single value.
 ==================================================================== ========================================================================
 
+Other
+-----
+
+============================================== ========================================================================
+ Component                                      Description
+============================================== ========================================================================
+ :doc:`Constants </reference/api/constants>`    Symbolic constants used by various APIs.
+============================================== ========================================================================
+
 .. toctree::
    :hidden:
 
@@ -95,3 +106,4 @@ Resources
    containers/index
    resources/index
    widgets/index
+   constants

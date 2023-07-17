@@ -39,6 +39,9 @@ class App(LoggedObject):
     def show_about_dialog(self):
         self._action("show_about_dialog")
 
+    def beep(self):
+        self._action("beep")
+
     def exit(self):
         self._action("exit")
 

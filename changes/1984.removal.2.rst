@@ -1,0 +1,1 @@
+Support for 3-tuple form of specifying SplitContainer items, used to prevent panels from resizing, has been removed.

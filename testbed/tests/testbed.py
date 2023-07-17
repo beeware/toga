@@ -79,14 +79,6 @@ def run_tests(app, cov, args, report_coverage, run_slow):
 
 
 if __name__ == "__main__":
-    # Prevent the log being cluttered with "avc: denied" messages
-    # (https://github.com/beeware/toga/issues/1962).
-    def get_terminal_size(*args, **kwargs):
-        error = errno.ENOTTY
-        raise OSError(error, os.strerror(error))
-
-    os.get_terminal_size = get_terminal_size
-
     # Determine the toga backend. This replicates the behavior in toga/platform.py;
     # we can't use that module directly because we need to capture all the import
     # side effects as part of the coverage data.
@@ -103,6 +95,15 @@ if __name__ == "__main__":
                 "emscripten": "toga_web",
                 "win32": "toga_winforms",
             }.get(sys.platform)
+
+    if toga_backend == "toga_android":
+        # Prevent the log being cluttered with "avc: denied" messages
+        # (https://github.com/beeware/toga/issues/1962).
+        def get_terminal_size(*args, **kwargs):
+            error = errno.ENOTTY
+            raise OSError(error, os.strerror(error))
+
+        os.get_terminal_size = get_terminal_size
 
     # Start coverage tracking.
     # This needs to happen in the main thread, before the app has been created
