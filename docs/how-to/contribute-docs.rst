@@ -44,8 +44,8 @@ You'll also need to install the Enchant spell checking library.
 
     .. code-block:: console
 
-      $ sudo apt-get update
-      $ sudo apt-get install enchant-2
+      $ sudo apt update
+      $ sudo apt install enchant-2
 
     **Fedora**
 

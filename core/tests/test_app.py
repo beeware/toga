@@ -156,6 +156,10 @@ class AppTests(TestCase):
         for window in self.app.windows:
             self.assertIn(window, test_windows)
 
+    def test_beep(self):
+        self.app.beep()
+        self.assertActionPerformed(self.app, "beep")
+
     def test_add_background_task(self):
         async def test_handler(sender):
             pass

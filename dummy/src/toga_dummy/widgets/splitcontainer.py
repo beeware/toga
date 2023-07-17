@@ -1,4 +1,4 @@
-import toga
+from toga.constants import Direction
 
 from ..utils import not_required
 from ..window import Container
@@ -17,7 +17,7 @@ class SplitContainer(Widget):
             self._content.append(Container(widget))
 
     def get_direction(self):
-        return self._get_value("direction", toga.SplitContainer.VERTICAL)
+        return self._get_value("direction", Direction.VERTICAL)
 
     def set_direction(self, value):
         self._set_value("direction", value)

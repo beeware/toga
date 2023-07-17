@@ -89,13 +89,13 @@ class ScrollContainer(Widget):
         if widget:
             widget.app = self.app
             widget.window = self.window
-
             self._impl.set_content(widget._impl)
         else:
             self._impl.set_content(None)
 
         self._content = widget
-        self.refresh()
+        if widget:
+            widget.refresh()
 
     @property
     def vertical(self) -> bool:
@@ -129,29 +129,24 @@ class ScrollContainer(Widget):
         self._on_scroll = wrapped_handler(self, on_scroll)
 
     @property
-    def max_horizontal_position(self) -> int | None:
-        """The maximum horizontal scroll position.
-
-        Returns ``None`` if horizontal scrolling is disabled.
-        """
+    def max_horizontal_position(self) -> int:
+        """The maximum horizontal scroll position (read-only)."""
         if not self.horizontal:
-            return None
-        return self._impl.get_max_horizontal_position()
+            return 0
+        else:
+            return self._impl.get_max_horizontal_position()
 
     @property
-    def horizontal_position(self) -> int | None:
+    def horizontal_position(self) -> int:
         """The current horizontal scroll position.
 
-        If the value provided is negative, or greater than the maximum
-        horizontal position, the value will be clipped to the valid range.
+        If the value provided is negative, or greater than the maximum horizontal
+        position, the value will be clipped to the valid range.
 
-        :returns: The current horizontal scroll position, or :any:`None` if horizontal
-            scrolling is disabled.
-        :raises ValueError: If an attempt is made to change the horizontal position
-            when horizontal scrolling is disabled.
+        :returns: The current horizontal scroll position.
+        :raises ValueError: If an attempt is made to change the horizontal position when
+            horizontal scrolling is disabled.
         """
-        if not self.horizontal:
-            return None
         return self._impl.get_horizontal_position()
 
     @horizontal_position.setter
@@ -164,29 +159,24 @@ class ScrollContainer(Widget):
         self.position = (horizontal_position, self._impl.get_vertical_position())
 
     @property
-    def max_vertical_position(self) -> int | None:
-        """The maximum vertical scroll position.
-
-        Returns ``None`` if vertical scrolling is disabled.
-        """
+    def max_vertical_position(self) -> int:
+        """The maximum vertical scroll position (read-only)."""
         if not self.vertical:
-            return None
-        return self._impl.get_max_vertical_position()
+            return 0
+        else:
+            return self._impl.get_max_vertical_position()
 
     @property
-    def vertical_position(self) -> int | None:
+    def vertical_position(self) -> int:
         """The current vertical scroll position.
 
         If the value provided is negative, or greater than the maximum
         vertical position, the value will be clipped to the valid range.
 
-        :returns: The current vertical scroll position, or :any:`None` if vertical
-            scrolling is disabled.
+        :returns: The current vertical scroll position.
         :raises ValueError: If an attempt is made to change the vertical position
             when vertical scrolling is disabled.
         """
-        if not self.vertical:
-            return None
         return self._impl.get_vertical_position()
 
     @vertical_position.setter
@@ -198,46 +188,42 @@ class ScrollContainer(Widget):
 
         self.position = (self._impl.get_horizontal_position(), vertical_position)
 
+    # This combined property is necessary because on some platforms (e.g. iOS), setting
+    # the horizontal and vertical position separately would cause the horizontal and
+    # vertical movement to appear as two separate animations.
     @property
-    def position(self) -> tuple[int | None, int | None]:
-        """The current scroll position.
+    def position(self) -> tuple[int, int]:
+        """The current scroll position, in the form (horizontal, vertical).
 
         If the value provided for either axis is negative, or greater than the maximum
         position in that axis, the value will be clipped to the valid range.
 
-        :returns: A tuple containing the current scroll position in the horizontal and
-            vertical axis. A value of :any:`None` is returned if scrolling is disabled
-            in that axis.
-        :raises ValueError: If an attempt is made to change the position when scrolling
-            in either axis is disabled.
+        If scrolling is disabled in either axis, the value provided for that axis will
+        be ignored.
         """
         return (self.horizontal_position, self.vertical_position)
 
     @position.setter
     def position(self, position):
-        if not self.vertical:
-            raise ValueError(
-                "Cannot set scroll position when vertical scrolling is not enabled."
-            )
-        if not self.horizontal:
-            raise ValueError(
-                "Cannot set scroll position when horizontal scrolling is not enabled."
-            )
-
-        horizontal_position = int(position[0])
-        if horizontal_position < 0:
-            horizontal_position = 0
+        horizontal_position, vertical_position = map(int, position)
+        if self.horizontal:
+            if horizontal_position < 0:
+                horizontal_position = 0
+            else:
+                max_value = self.max_horizontal_position
+                if horizontal_position > max_value:
+                    horizontal_position = max_value
         else:
-            max_value = self.max_horizontal_position
-            if horizontal_position > max_value:
-                horizontal_position = max_value
+            horizontal_position = self.horizontal_position
 
-        vertical_position = int(position[1])
-        if vertical_position < 0:
-            vertical_position = 0
+        if self.vertical:
+            if vertical_position < 0:
+                vertical_position = 0
+            else:
+                max_value = self.max_vertical_position
+                if vertical_position > max_value:
+                    vertical_position = max_value
         else:
-            max_value = self.max_vertical_position
-            if vertical_position > max_value:
-                vertical_position = max_value
+            vertical_position = self.vertical_position
 
         self._impl.set_position(horizontal_position, vertical_position)

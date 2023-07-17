@@ -1,6 +1,6 @@
 from travertino.size import at_least
 
-import toga
+from toga.widgets.slider import IntSliderImpl
 from toga_winforms.libs import WinForms
 
 from .base import Widget
@@ -17,8 +17,9 @@ NONE_TICK_STYLE = getattr(WinForms.TickStyle, "None")
 BOTTOM_RIGHT_TICK_STYLE = WinForms.TickStyle.BottomRight
 
 
-class Slider(Widget, toga.widgets.slider.IntSliderImpl):
+class Slider(Widget, IntSliderImpl):
     def create(self):
+        IntSliderImpl.__init__(self)
         self.native = WinForms.TrackBar()
         self.native.AutoSize = False
 

@@ -1,5 +1,5 @@
-Option Container
-================
+OptionContainer
+===============
 
 A container that can display multiple labeled tabs of content.
 

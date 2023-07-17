@@ -1,7 +1,7 @@
-Split Container
-===============
+SplitContainer
+==============
 
-A container that divides an area into multiple panels with a movable border.
+A container that divides an area into two panels with a movable border.
 
 .. figure:: /reference/images/SplitContainer.png
    :align: center
@@ -34,16 +34,17 @@ at time of creation, or by setting the ``direction`` attribute:
 .. code-block:: python
 
     import toga
+    from toga.constants import Direction
 
-    split = toga.SplitContainer(direction=toga.SplitContainer.HORIZONTAL)
+    split = toga.SplitContainer(direction=Direction.HORIZONTAL)
 
     left_container = toga.Box()
     right_container = toga.ScrollContainer()
 
     split.content = [left_container, right_container]
 
-By default, the content of the SplitContainer will be evenly divided between the
-content. To specify an uneven split, you can provide a flex value when specifying
+By default, the space of the SplitContainer will be evenly divided between the
+two panels. To specify an uneven split, you can provide a flex value when specifying
 content. In the following example, there will be a 60/40 split between the left
 and right panels.
 
@@ -58,8 +59,7 @@ and right panels.
     split.content = [(left_container, 3), (right_container, 2)]
 
 This only specifies the initial split; the split can be modified by the user
-once it is displayed. If a flex weight isn't specified, a value of 1 is assumed.
-The minimum flex weight is 1; any smaller value will be interpreted as 1.
+once it is displayed.
 
 Reference
 ---------

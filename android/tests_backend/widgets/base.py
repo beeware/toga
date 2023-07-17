@@ -9,8 +9,8 @@ from android.graphics.drawable import (
     DrawableWrapper,
     LayerDrawable,
 )
-from android.os import Build
-from android.view import View, ViewTreeObserver
+from android.os import Build, SystemClock
+from android.view import MotionEvent, View, ViewTreeObserver
 from toga.colors import TRANSPARENT
 from toga.style.pack import JUSTIFY, LEFT
 
@@ -52,13 +52,8 @@ class SimpleProbe(BaseProbe):
         )
 
     def assert_container(self, container):
-        container_native = container._impl.native
-        for i in range(container_native.getChildCount()):
-            child = container_native.getChildAt(i)
-            if child is self.native:
-                break
-        else:
-            raise AssertionError(f"cannot find {self.native} in {container_native}")
+        assert self.widget._impl.container is container._impl.container
+        assert self.native.getParent() is container._impl.container.native_content
 
     def assert_not_contained(self):
         assert self.widget._impl.container is None
@@ -95,12 +90,12 @@ class SimpleProbe(BaseProbe):
     @property
     def width(self):
         # Return the value in DP
-        return self.native.getWidth() / self.scale_factor
+        return round(self.native.getWidth() / self.scale_factor)
 
     @property
     def height(self):
         # Return the value in DP
-        return self.native.getHeight() / self.scale_factor
+        return round(self.native.getHeight() / self.scale_factor)
 
     def assert_width(self, min_width, max_width):
         assert (
@@ -165,6 +160,26 @@ class SimpleProbe(BaseProbe):
 
     async def press(self):
         self.native.performClick()
+
+    def motion_event(self, down_time, action, x, y):
+        event = MotionEvent.obtain(
+            down_time,
+            SystemClock.uptimeMillis(),  # eventTime
+            action,
+            x,
+            y,
+            0,  # metaState
+        )
+        self.native.dispatchTouchEvent(event)
+        event.recycle()
+
+    async def swipe(self, dx, dy):
+        down_time = SystemClock.uptimeMillis()
+        start_x, start_y = (self.width / 2, self.height / 2)
+        end_x, end_y = (start_x + dx, start_y + dy)
+        self.motion_event(down_time, MotionEvent.ACTION_DOWN, start_x, start_y)
+        self.motion_event(down_time, MotionEvent.ACTION_MOVE, end_x, end_y)
+        self.motion_event(down_time, MotionEvent.ACTION_UP, end_x, end_y)
 
     @property
     def is_hidden(self):

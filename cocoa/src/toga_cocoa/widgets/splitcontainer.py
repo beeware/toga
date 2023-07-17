@@ -56,7 +56,8 @@ class SplitContainer(Widget):
     def set_bounds(self, x, y, width, height):
         super().set_bounds(x, y, width, height)
         for container in self.sub_containers:
-            container.content.interface.refresh()
+            if container.content:
+                container.content.interface.refresh()
 
         # Apply any pending split
         self.native.performSelector(
@@ -72,15 +73,19 @@ class SplitContainer(Widget):
 
         for index, widget in enumerate(content):
             # Compute the minimum layout for the content
-            widget.interface.style.layout(widget.interface, MinimumContainer())
-            min_width = widget.interface.layout.width
-            min_height = widget.interface.layout.height
+            if widget:
+                widget.interface.style.layout(widget.interface, MinimumContainer())
+                min_width = widget.interface.layout.width
+                min_height = widget.interface.layout.height
 
-            # Create a container with that minimum size, and assign the widget as content
-            self.sub_containers[index].min_width = min_width
-            self.sub_containers[index].min_height = min_height
+                # Create a container with that minimum size, and assign the widget as content
+                self.sub_containers[index].min_width = min_width
+                self.sub_containers[index].min_height = min_height
 
-            self.sub_containers[index].content = widget
+                self.sub_containers[index].content = widget
+            else:
+                self.sub_containers[index].min_width = 0
+                self.sub_containers[index].min_height = 0
 
         # We now know the initial positions of the split. However, we can't *set* the
         # because Cocoa requires a pixel position, and the widget isn't visible yet.
