@@ -73,7 +73,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3.5.3
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v4.6.1
+      uses: actions/setup-python@v4.7.0
       with:
         python-version: ${{ matrix.python-version }}
     - name: Install dev dependencies
@@ -108,7 +108,7 @@ jobs:
     - uses: actions/checkout@v3.5.3
       with:
         fetch-depth: 0
-    - uses: actions/setup-python@v4.6.1
+    - uses: actions/setup-python@v4.7.0
       with:
         # Use latest, so it understands all syntax.
         python-version: ${{ env.max_python_version }}
@@ -165,7 +165,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3.5.3
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v4.6.1
+      uses: actions/setup-python@v4.7.0
       with:
         python-version: ${{ matrix.python-version }}
     - name: Get packages
@@ -240,7 +240,7 @@ jobs:
       with:
         fetch-depth: 0
     - name: Set up Python
-      uses: actions/setup-python@v4.6.1
+      uses: actions/setup-python@v4.7.0
       if: ${{ matrix.setup-python }}
       with:
         # We're not using Python 3.11 yet, because:
