@@ -1,16 +1,18 @@
+from __future__ import annotations
+
 from .base import Widget
 
 
 class Label(Widget):
     def __init__(
         self,
-        text,
+        text: str,
         id=None,
         style=None,
     ):
         """Create a new text label.
 
-        Inherits from :class:`~toga.widgets.base.Widget`.
+        Inherits from :class:`toga.Widget`.
 
         :param text: Text of the label.
         :param id: The ID for the widget.
@@ -29,7 +31,7 @@ class Label(Widget):
         pass
 
     @property
-    def text(self):
+    def text(self) -> str:
         """The text displayed by the label.
 
         ``None``, and the Unicode codepoint U+200B (ZERO WIDTH SPACE), will be

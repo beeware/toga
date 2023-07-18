@@ -10,7 +10,7 @@ class SliderProbe(SimpleProbe):
     def position(self):
         return (self.native.value - self._min) / (self._max - self._min)
 
-    def change(self, position):
+    async def change(self, position):
         self.native.value = self._min + (position * (self._max - self._min))
         self.native.sendActionsForControlEvents(UIControlEventValueChanged)
 

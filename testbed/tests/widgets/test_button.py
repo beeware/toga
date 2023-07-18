@@ -37,10 +37,10 @@ async def test_text(widget, probe):
 
     for text in TEXTS:
         widget.text = text
-        await probe.redraw("Button text should be %s" % text)
+        await probe.redraw(f"Button text should be {text}")
 
         # Text after a newline will be stripped.
-        expected = text.split("\n")[0]
+        expected = str(text).split("\n")[0]
         assert widget.text == expected
         assert probe.text == expected
         assert probe.height == initial_height

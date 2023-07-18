@@ -1,5 +1,5 @@
-Option Container
-================
+OptionContainer
+===============
 
 .. rst-class:: widget-support
 .. csv-filter:: Availability (:ref:`Key <api-status-key>`)
@@ -31,6 +31,6 @@ Usage
 Reference
 ---------
 
-.. autoclass:: toga.widgets.optioncontainer.OptionContainer
+.. autoclass:: toga.OptionContainer
    :members:
    :undoc-members:

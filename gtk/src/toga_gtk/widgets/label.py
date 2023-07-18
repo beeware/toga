@@ -12,7 +12,7 @@ class Label(Widget):
     def set_alignment(self, value):
         xalign, justify = gtk_alignment(value)
         self.native.set_xalign(xalign)  # Aligns the whole text block within the widget.
-        self.native.set_yalign(0.5)
+        self.native.set_yalign(0.0)  # Aligns the text block to the top
         self.native.set_justify(
             justify
         )  # Aligns multiple lines relative to each other.

@@ -1,59 +1,68 @@
-import pathlib
-import warnings
+from __future__ import annotations
 
+from pathlib import Path
+
+import toga
 from toga.platform import get_platform_factory
 
 
 class Image:
-    """A representation of graphical content.
+    def __init__(
+        self,
+        path: str | None | Path = None,
+        *,
+        data: bytes | None = None,
+    ):
+        """Create a new image.
 
-    :param path: Path to the image. Allowed values can be local file
-        (relative or absolute path) or URL (HTTP or HTTPS). Relative paths
-        will be interpreted relative to the application module directory.
-    :param data: A bytes object with the contents of an image in a supported
-        format.
-    """
+        An image must be provided either a ``path`` or ``data``, but not both.
 
-    def __init__(self, path=None, *, data=None):
+        :param path: Path to the image to load. This can be specified as a string, or as
+            a :any:`pathlib.Path` object. The path can be an absolute file system path,
+            or a path relative to the module that defines your Toga application class.
+        :param data: A bytes object with the contents of an image in a supported format.
+        :raises FileNotFoundError: If a path is provided, but that path does not exist.
+        :raises ValueError: If the path or data cannot be loaded as an image.
+        """
         if path is None and data is None:
             raise ValueError("Either path or data must be set.")
         if path is not None and data is not None:
             raise ValueError("Only either path or data can be set.")
 
-        if path:
-            if isinstance(path, pathlib.Path):
-                self.path = path
-            elif path.startswith("http://") or path.startswith("https://"):
+        if path is not None:
+            if isinstance(path, Path):
                 self.path = path
             else:
-                self.path = pathlib.Path(path)
+                self.path = Path(path)
+            self.data = None
         else:
             self.path = None
-        self.data = data
+            self.data = data
 
         self.factory = get_platform_factory()
         if self.data is not None:
             self._impl = self.factory.Image(interface=self, data=self.data)
-        elif isinstance(self.path, pathlib.Path):
-            full_path = self.factory.paths.app / self.path
-            if not full_path.exists():
-                raise FileNotFoundError(
-                    "Image file {full_path!r} does not exist".format(
-                        full_path=full_path
-                    )
-                )
-            self._impl = self.factory.Image(interface=self, path=full_path)
         else:
-            self._impl = self.factory.Image(interface=self, url=self.path)
+            self.path = toga.App.app.paths.app / self.path
+            if not self.path.is_file():
+                raise FileNotFoundError(f"Image file {self.path} does not exist")
+            self._impl = self.factory.Image(interface=self, path=self.path)
 
-    def bind(self, factory=None):
-        warnings.warn(
-            "Icons no longer need to be explicitly bound.", DeprecationWarning
-        )
-        return self._impl
+    @property
+    def width(self) -> int:
+        """The width of the image, in pixels."""
+        return self._impl.get_width()
 
-    def save(self, path):
+    @property
+    def height(self) -> int:
+        """The height of the image, in pixels."""
+        return self._impl.get_height()
+
+    def save(self, path: str | Path):
         """Save image to given path.
+
+        The file format of the saved image will be determined by the extension of
+        the filename provided (e.g ``path/to/mypicture.png`` will save a PNG file).
 
         :param path: Path where to save the image.
         """

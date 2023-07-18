@@ -3,9 +3,18 @@ from builtins import id as identifier
 from pathlib import Path
 
 from toga.command import CommandSet
-from toga.handlers import wrapped_handler
+from toga.handlers import AsyncResult, wrapped_handler
 from toga.platform import get_platform_factory
 from toga.widgets.base import WidgetRegistry
+
+
+class Dialog(AsyncResult):
+    RESULT_TYPE = "dialog"
+
+    def __init__(self, window):
+        super().__init__()
+        self.window = window
+        self.app = window.app
 
 
 class Window:
@@ -16,7 +25,7 @@ class Window:
         title (str): Title for the window (optional).
         position (``tuple`` of (int, int)): Position of the window, as x,y coordinates.
         size (``tuple`` of (int, int)):  Size of the window, as (width, height) sizes, in pixels.
-        toolbar (``list`` of :class:`~toga.widgets.base.Widget`): A list of widgets to add to a toolbar
+        toolbar (``list`` of :class:`~toga.Widget`): A list of widgets to add to a toolbar
         resizeable (bool): Toggle if the window is resizable by the user, defaults to `True`.
         closeable (bool): Toggle if the window is closable by the user, defaults to `True`.
         minimizable (bool): Toggle if the window is minimizable by the user, defaults to `True`.
@@ -84,10 +93,10 @@ class Window:
 
     @property
     def app(self):
-        """Instance of the :class:`toga.app.App` that this window belongs to.
+        """Instance of the :class:`toga.App` that this window belongs to.
 
         Returns:
-            The app that it belongs to :class:`toga.app.App`.
+            The app that it belongs to :class:`toga.App`.
 
         Raises:
             Exception: If the window already is associated with another app.
@@ -126,7 +135,7 @@ class Window:
         """Toolbar for the window.
 
         Returns:
-            A ``list`` of :class:`~toga.widgets.base.Widget`
+            A ``list`` of :class:`toga.Widget`
         """
         return self._toolbar
 
@@ -136,7 +145,7 @@ class Window:
         the window and to the same app.
 
         Returns:
-            A :class:`~toga.widgets.base.Widget`
+            A :class:`toga.Widget`
         """
         return self._content
 
@@ -274,9 +283,11 @@ class Window:
         :returns: An awaitable Dialog object. The Dialog object returns
             ``None`` after the user pressed the 'OK' button.
         """
-        return self.factory.dialogs.InfoDialog(
-            self, title, message, on_result=wrapped_handler(self, on_result)
+        dialog = Dialog(self)
+        self.factory.dialogs.InfoDialog(
+            dialog, title, message, on_result=wrapped_handler(self, on_result)
         )
+        return dialog
 
     def question_dialog(self, title, message, on_result=None):
         """Ask the user a yes/no question.
@@ -291,9 +302,11 @@ class Window:
             ``True`` when the 'YES' button was pressed, ``False`` when
             the 'NO' button was pressed.
         """
-        return self.factory.dialogs.QuestionDialog(
-            self, title, message, on_result=wrapped_handler(self, on_result)
+        dialog = Dialog(self)
+        self.factory.dialogs.QuestionDialog(
+            dialog, title, message, on_result=wrapped_handler(self, on_result)
         )
+        return dialog
 
     def confirm_dialog(self, title, message, on_result=None):
         """Ask the user to confirm if they wish to proceed with an action.
@@ -309,9 +322,11 @@ class Window:
             ``True`` when the 'OK' button was pressed, ``False`` when
             the 'CANCEL' button was pressed.
         """
-        return self.factory.dialogs.ConfirmDialog(
-            self, title, message, on_result=wrapped_handler(self, on_result)
+        dialog = Dialog(self)
+        self.factory.dialogs.ConfirmDialog(
+            dialog, title, message, on_result=wrapped_handler(self, on_result)
         )
+        return dialog
 
     def error_dialog(self, title, message, on_result=None):
         """Ask the user to acknowledge an error state.
@@ -325,9 +340,11 @@ class Window:
         :returns: An awaitable Dialog object. The Dialog object returns
             ``None`` after the user pressed the 'OK' button.
         """
-        return self.factory.dialogs.ErrorDialog(
-            self, title, message, on_result=wrapped_handler(self, on_result)
+        dialog = Dialog(self)
+        self.factory.dialogs.ErrorDialog(
+            dialog, title, message, on_result=wrapped_handler(self, on_result)
         )
+        return dialog
 
     def stack_trace_dialog(self, title, message, content, retry=False, on_result=None):
         """Open a dialog that allows to display a large text body, such as a stack
@@ -345,17 +362,23 @@ class Window:
             returns ``True`` if the user selected retry, and ``False`` otherwise;
             if retry is not enabled, the dialog object returns ``None``.
         """
-        return self.factory.dialogs.StackTraceDialog(
-            self,
+        dialog = Dialog(self)
+        self.factory.dialogs.StackTraceDialog(
+            dialog,
             title,
             message,
             content=content,
             retry=retry,
             on_result=wrapped_handler(self, on_result),
         )
+        return dialog
 
     def save_file_dialog(
-        self, title, suggested_filename, file_types=None, on_result=None
+        self,
+        title,
+        suggested_filename,
+        file_types=None,
+        on_result=None,
     ):
         """Prompt the user for a location to save a file.
 
@@ -374,6 +397,7 @@ class Window:
             a path object for the selected file location, or ``None`` if
             the user cancelled the save operation.
         """
+        dialog = Dialog(self)
         # Convert suggested filename to a path (if it isn't already),
         # and break it into a filename and a directory
         suggested_path = Path(suggested_filename)
@@ -382,14 +406,15 @@ class Window:
             initial_directory = None
         filename = suggested_path.name
 
-        return self.factory.dialogs.SaveFileDialog(
-            self,
+        self.factory.dialogs.SaveFileDialog(
+            dialog,
             title,
             filename=filename,
             initial_directory=initial_directory,
             file_types=file_types,
             on_result=wrapped_handler(self, on_result),
         )
+        return dialog
 
     def open_file_dialog(
         self,
@@ -417,17 +442,23 @@ class Window:
             ``Path`` otherwise. Returns ``None`` if the open operation is
             cancelled by the user.
         """
-        return self.factory.dialogs.OpenFileDialog(
-            self,
+        dialog = Dialog(self)
+        self.factory.dialogs.OpenFileDialog(
+            dialog,
             title,
             initial_directory=Path(initial_directory) if initial_directory else None,
             file_types=file_types,
             multiselect=multiselect,
             on_result=wrapped_handler(self, on_result),
         )
+        return dialog
 
     def select_folder_dialog(
-        self, title, initial_directory=None, multiselect=False, on_result=None
+        self,
+        title,
+        initial_directory=None,
+        multiselect=False,
+        on_result=None,
     ):
         """Ask the user to select a directory/folder (or folders) to open.
 
@@ -446,10 +477,12 @@ class Window:
             ``Path`` otherwise. Returns ``None`` if the open operation is
             cancelled by the user.
         """
-        return self.factory.dialogs.SelectFolderDialog(
-            self,
+        dialog = Dialog(self)
+        self.factory.dialogs.SelectFolderDialog(
+            dialog,
             title,
             initial_directory=Path(initial_directory) if initial_directory else None,
             multiselect=multiselect,
             on_result=wrapped_handler(self, on_result),
         )
+        return dialog

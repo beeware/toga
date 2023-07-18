@@ -1,3 +1,4 @@
+import toga
 from toga.fonts import _REGISTERED_FONT_CACHE
 from toga_winforms.libs import WinFont, WinForms, win_font_family
 from toga_winforms.libs.fonts import win_font_size, win_font_style
@@ -30,7 +31,7 @@ class Font:
             )
             try:
                 font_path = str(
-                    self.interface.factory.paths.app / _REGISTERED_FONT_CACHE[font_key]
+                    toga.App.app.paths.app / _REGISTERED_FONT_CACHE[font_key]
                 )
                 try:
                     self._pfc = PrivateFontCollection()

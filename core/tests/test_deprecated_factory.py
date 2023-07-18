@@ -1,5 +1,4 @@
 import toga
-import toga_dummy
 from toga.fonts import SANS_SERIF
 from toga_dummy.utils import TestCase
 
@@ -63,13 +62,6 @@ class DeprecatedFactoryTests(TestCase):
         self.assertEqual(widget._impl.interface, widget)
         self.assertNotEqual(widget.factory, self.factory)
 
-    def test_image(self):
-        resource_path = toga_dummy.factory.paths.toga
-        image = toga.Image(resource_path / "resources/toga.png")
-        with self.assertWarns(DeprecationWarning):
-            image.bind(factory=self.factory)
-        self.assertEqual(image._impl.interface, image)
-
     def test_window(self):
         with self.assertWarns(DeprecationWarning):
             widget = toga.Window(factory=self.factory)
@@ -82,57 +74,15 @@ class DeprecatedFactoryTests(TestCase):
         self.assertEqual(widget._impl.interface, widget)
         self.assertNotEqual(widget.factory, self.factory)
 
-    def test_date_picker_created(self):
-        with self.assertWarns(DeprecationWarning):
-            widget = toga.DatePicker(factory=self.factory)
-        self.assertEqual(widget._impl.interface, widget)
-        self.assertNotEqual(widget.factory, self.factory)
-
     def test_detailed_list_created(self):
         with self.assertWarns(DeprecationWarning):
             widget = toga.DetailedList(factory=self.factory)
         self.assertEqual(widget._impl.interface, widget)
         self.assertNotEqual(widget.factory, self.factory)
 
-    def test_image_view_created(self):
-        with self.assertWarns(DeprecationWarning):
-            widget = toga.ImageView(factory=self.factory)
-        self.assertEqual(widget._impl.interface, widget)
-        self.assertNotEqual(widget.factory, self.factory)
-
-    def test_multiline_text_input_created(self):
-        with self.assertWarns(DeprecationWarning):
-            widget = toga.MultilineTextInput(factory=self.factory)
-        self.assertEqual(widget._impl.interface, widget)
-        self.assertNotEqual(widget.factory, self.factory)
-
-    def test_number_input_created(self):
-        with self.assertWarns(DeprecationWarning):
-            widget = toga.NumberInput(factory=self.factory)
-        self.assertEqual(widget._impl.interface, widget)
-        self.assertNotEqual(widget.factory, self.factory)
-
     def test_option_container_created(self):
         with self.assertWarns(DeprecationWarning):
             widget = toga.OptionContainer(factory=self.factory)
-        self.assertEqual(widget._impl.interface, widget)
-        self.assertNotEqual(widget.factory, self.factory)
-
-    def test_scroll_container_created(self):
-        with self.assertWarns(DeprecationWarning):
-            widget = toga.ScrollContainer(factory=self.factory)
-        self.assertEqual(widget._impl.interface, widget)
-        self.assertNotEqual(widget.factory, self.factory)
-
-    def test_selection_created(self):
-        with self.assertWarns(DeprecationWarning):
-            widget = toga.Selection(factory=self.factory)
-        self.assertEqual(widget._impl.interface, widget)
-        self.assertNotEqual(widget.factory, self.factory)
-
-    def test_split_container_created(self):
-        with self.assertWarns(DeprecationWarning):
-            widget = toga.SplitContainer(factory=self.factory)
         self.assertEqual(widget._impl.interface, widget)
         self.assertNotEqual(widget.factory, self.factory)
 
@@ -144,27 +94,9 @@ class DeprecatedFactoryTests(TestCase):
         self.assertEqual(widget._impl.interface, widget)
         self.assertNotEqual(widget.factory, self.factory)
 
-    def test_text_input_created(self):
-        with self.assertWarns(DeprecationWarning):
-            widget = toga.TextInput(factory=self.factory)
-        self.assertEqual(widget._impl.interface, widget)
-        self.assertNotEqual(widget.factory, self.factory)
-
-    def test_time_picker_created(self):
-        with self.assertWarns(DeprecationWarning):
-            widget = toga.TimePicker(factory=self.factory)
-        self.assertEqual(widget._impl.interface, widget)
-        self.assertNotEqual(widget.factory, self.factory)
-
     def test_tree_created(self):
         with self.assertWarns(DeprecationWarning):
             widget = toga.Tree(headings=["Test"], factory=self.factory)
-        self.assertEqual(widget._impl.interface, widget)
-        self.assertNotEqual(widget.factory, self.factory)
-
-    def test_web_view_created(self):
-        with self.assertWarns(DeprecationWarning):
-            widget = toga.WebView(factory=self.factory)
         self.assertEqual(widget._impl.interface, widget)
         self.assertNotEqual(widget.factory, self.factory)
 

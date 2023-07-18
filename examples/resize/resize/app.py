@@ -59,8 +59,24 @@ class Resize(toga.App):
                     style=Pack(direction=ROW),
                     children=[
                         self.text_label,
-                        toga.Label("", style=Pack(background_color="pink", flex=1)),
-                        toga.Label("", style=Pack(background_color="yellow", flex=1)),
+                        toga.Label(
+                            "Left",
+                            style=Pack(
+                                text_align="left",
+                                background_color="pink",
+                                height=50,
+                                flex=1,
+                            ),
+                        ),
+                        toga.Label(
+                            "Center",
+                            style=Pack(
+                                text_align="center",
+                                background_color="yellow",
+                                height=50,
+                                flex=1,
+                            ),
+                        ),
                         self.style_label,
                     ],
                 ),

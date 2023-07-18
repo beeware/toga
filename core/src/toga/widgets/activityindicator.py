@@ -1,11 +1,18 @@
+from __future__ import annotations
+
 from .base import Widget
 
 
 class ActivityIndicator(Widget):
-    def __init__(self, id=None, style=None, running=False):
+    def __init__(
+        self,
+        id=None,
+        style=None,
+        running: bool = False,
+    ):
         """Create a new ActivityIndicator widget.
 
-        Inherits from :class:`~toga.widgets.base.Widget`.
+        Inherits from :class:`toga.Widget`.
 
         :param id: The ID for the widget.
         :param style: A style object. If no style is provided, a default style
@@ -21,7 +28,7 @@ class ActivityIndicator(Widget):
             self.start()
 
     @property
-    def enabled(self):
+    def enabled(self) -> bool:
         """Is the widget currently enabled? i.e., can the user interact with the widget?
 
         ActivityIndicator widgets cannot be disabled; this property will always return
@@ -38,7 +45,7 @@ class ActivityIndicator(Widget):
         pass
 
     @property
-    def is_running(self):
+    def is_running(self) -> bool:
         """Determine if the activity indicator is currently running.
 
         Use ``start()`` and ``stop()`` to change the running state.

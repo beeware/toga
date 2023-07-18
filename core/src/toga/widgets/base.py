@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from builtins import id as identifier
 
 from travertino.node import Node
@@ -19,18 +21,18 @@ class WidgetRegistry(dict):
         # method instead.
         raise RuntimeError("Widgets cannot be directly added to a registry")
 
-    def update(self, widgets):
+    def update(self, widgets: list[Widget]):
         for widget in widgets:
             self.add(widget)
 
-    def add(self, widget):
+    def add(self, widget: Widget):
         if widget.id in self:
             # Prevent from adding the same widget twice
             # or adding 2 widgets with the same id
             raise KeyError(f"There is already a widget with the id {widget.id!r}")
         super().__setitem__(widget.id, widget)
 
-    def remove(self, id):
+    def remove(self, id: str):
         del self[id]
 
     def __iter__(self):
@@ -70,7 +72,7 @@ class Widget(Node):
         return f"<{self.__class__.__name__}:0x{identifier(self):x}>"
 
     @property
-    def id(self):
+    def id(self) -> str:
         """The unique identifier for the widget."""
         return self._id
 
@@ -89,16 +91,15 @@ class Widget(Node):
     def tab_index(self, tab_index):
         self._impl.set_tab_index(tab_index)
 
-    def add(self, *children):
+    def add(self, *children: list[Widget]):
         """Add the provided widgets as children of this widget.
 
         If a child widget already has a parent, it will be re-parented as a
         child of this widget. If the child widget is already a child of this
         widget, there is no change.
 
-        Raises ``ValueError`` if this widget cannot have children.
-
         :param children: The widgets to add as children of this widget.
+        :raises ValueError: If this widget cannot have children.
         """
         for child in children:
             if child.parent is not self:
@@ -115,21 +116,20 @@ class Widget(Node):
 
                 self._impl.add_child(child._impl)
 
-        if self.window:
-            self.window.content.refresh()
+        # Whatever layout we're a part of needs to be refreshed
+        self.refresh()
 
-    def insert(self, index, child):
+    def insert(self, index: int, child: Widget):
         """Insert a widget as a child of this widget.
 
         If a child widget already has a parent, it will be re-parented as a
         child of this widget. If the child widget is already a child of this
         widget, there is no change.
 
-        Raises ``ValueError`` if this node cannot have children.
-
         :param index: The position in the list of children where the new widget
             should be added.
         :param child: The child to insert as a child of this node.
+        :raises ValueError: If this widget cannot have children.
         """
         if child.parent is not self:
             # remove from old parent
@@ -145,10 +145,10 @@ class Widget(Node):
 
             self._impl.insert_child(index, child._impl)
 
-        if self.window:
-            self.window.content.refresh()
+        # Whatever layout we're a part of needs to be refreshed
+        self.refresh()
 
-    def remove(self, *children):
+    def remove(self, *children: list[Widget]):
         """Remove the provided widgets as children of this node.
 
         Any nominated child widget that is not a child of this widget will
@@ -156,9 +156,8 @@ class Widget(Node):
 
         Refreshes the widget after removal if any children were removed.
 
-        Raises ``ValueError`` if this widget cannot have children.
-
         :param children: The child nodes to remove.
+        :raises ValueError: If this widget cannot have children.
         """
         removed = False
 
@@ -172,15 +171,16 @@ class Widget(Node):
 
                 self._impl.remove_child(child._impl)
 
-        if self.window and removed:
-            self.window.content.refresh()
+        # If we removed something, whatever layout we're a part of needs to be refreshed
+        if removed:
+            self.refresh()
 
     def clear(self):
         """Remove all child widgets of this node.
 
         Refreshes the widget after removal if any children were removed.
 
-        Raises ``ValueError`` if this widget cannot have children.
+        :raises ValueError: If this widget cannot have children.
         """
         self.remove(*self.children)
 
@@ -191,8 +191,7 @@ class Widget(Node):
         When setting the app for a widget, all children of this widget will be
         recursively assigned to the same app.
 
-        Raises ``ValueError`` if the widget is already associated with another
-        app.
+        :raises ValueError: If this widget is already associated with another app.
         """
         return self._app
 
@@ -242,7 +241,7 @@ class Widget(Node):
             window.widgets.add(self)
 
     @property
-    def enabled(self):
+    def enabled(self) -> bool:
         """Is the widget currently enabled? i.e., can the user interact with the widget?"""
         return self._impl.get_enabled()
 
@@ -263,6 +262,7 @@ class Widget(Node):
             # We can't compute a layout until we have a viewport
             if self._impl.viewport:
                 super().refresh(self._impl.viewport)
+                self._impl.viewport.refreshed()
 
     def refresh_sublayouts(self):
         for child in self.children:

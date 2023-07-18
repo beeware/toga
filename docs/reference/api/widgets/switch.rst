@@ -39,12 +39,17 @@ Notes
   as a switch, the label will be left-aligned, and the switch will be
   right-aligned.
 
+* You should avoid setting a ``height`` style property on Switch widgets. The
+  rendered height of the Switch widget will be whatever the platform style guide
+  considers appropriate; explicitly setting a ``height`` for the widget can
+  lead to widgets that have a distorted appearance.
+
 * On macOS, the text color of the label cannot be set directly; any ``color`` style
   directive will be ignored.
 
 Reference
 ---------
 
-.. autoclass:: toga.widgets.switch.Switch
+.. autoclass:: toga.Switch
    :members:
    :undoc-members:

@@ -16,7 +16,7 @@ except ModuleNotFoundError:
     pyodide = None
 
 
-create_proxy = pyodide.create_proxy if pyodide else lambda f: f
+create_proxy = pyodide.ffi.create_proxy if pyodide else lambda f: f
 
 
 def create_element(

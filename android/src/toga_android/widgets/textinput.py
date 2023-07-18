@@ -3,9 +3,13 @@ from travertino.size import at_least
 from toga_android.keys import toga_key
 
 from ..libs.android.text import InputType, TextWatcher
-from ..libs.android.view import Gravity, OnKeyListener, View__MeasureSpec
+from ..libs.android.view import (
+    Gravity,
+    OnKeyListener,
+    View__MeasureSpec,
+    View__OnFocusChangeListener,
+)
 from ..libs.android.widget import EditText
-from .base import align
 from .label import TextViewWidget
 
 
@@ -13,14 +17,12 @@ class TogaTextWatcher(TextWatcher):
     def __init__(self, impl):
         super().__init__()
         self.impl = impl
-        self.interface = impl.interface
 
     def beforeTextChanged(self, _charSequence, _start, _count, _after):
         pass
 
     def afterTextChanged(self, _editable):
-        if self.interface.on_change:
-            self.interface.on_change(widget=self.interface)
+        self.impl._on_change()
 
     def onTextChanged(self, _charSequence, _start, _before, _count):
         pass
@@ -30,64 +32,89 @@ class TogaKeyListener(OnKeyListener):
     def __init__(self, impl):
         super().__init__()
         self.impl = impl
-        self.interface = impl.interface
 
     def onKey(self, _view, _key, _event):
-        try:
-            key_pressed = toga_key(_event)["key"].value
-            if (key_pressed == "<enter>" or key_pressed == "numpad:enter") and int(
-                _event.getAction()
-            ) == 1:
-                self.interface.on_confirm(None)
-            return False
-        except TypeError:
-            return False
+        event_info = toga_key(_event)
+        if event_info is None:
+            pass  # pragma: nocover
+        else:
+            key_pressed = event_info["key"].value
+            if (key_pressed == "<enter>" or key_pressed == "numpad:enter") and (
+                int(_event.getAction()) == 1
+            ):
+                self.impl._on_confirm()
+        return False
+
+
+class TogaFocusListener(View__OnFocusChangeListener):
+    def __init__(self, impl):
+        super().__init__()
+        self.impl = impl
+
+    def onFocusChange(self, view, has_focus):
+        if has_focus:
+            self.impl._on_gain_focus()
+        else:
+            self.impl._on_lose_focus()
 
 
 class TextInput(TextViewWidget):
-    def create(self):
-        self._textChangedListener = None
+    def create(self, input_type=InputType.TYPE_CLASS_TEXT):
         self.native = EditText(self._native_activity)
-        self.native.setInputType(InputType.TYPE_CLASS_TEXT)
+        self.native.setInputType(input_type)
         self.cache_textview_defaults()
-        self._on_key_listener = TogaKeyListener(self)
-        self.native.setOnKeyListener(self._on_key_listener)
+
+        self.native.addTextChangedListener(TogaTextWatcher(self))
+        self.native.setOnKeyListener(TogaKeyListener(self))
+        self.native.setOnFocusChangeListener(TogaFocusListener(self))
 
     def get_value(self):
-        return self.native.getText().toString()
-
-    def set_readonly(self, value):
-        self.native.setFocusable(not value)
-
-    def set_placeholder(self, value):
-        # Android EditText's setHint() requires a Python string.
-        self.native.setHint(value if value is not None else "")
-
-    def set_alignment(self, value):
-        # Refuse to set alignment unless widget has been added to a container.
-        # This is because Android EditText requires LayoutParams before
-        # setGravity() can be called.
-        if not self.native.getLayoutParams():
-            return
-        self.native.setGravity(Gravity.CENTER_VERTICAL | align(value))
+        return str(self.native.getText())
 
     def set_value(self, value):
         self.native.setText(value)
 
-    def set_on_change(self, handler):
-        if self._textChangedListener:
-            self.native.removeTextChangedListener(self._textChangedListener)
-        self._textChangedListener = TogaTextWatcher(self)
-        self.native.addTextChangedListener(self._textChangedListener)
+    def get_readonly(self):
+        return not self.native.isFocusable()
+
+    def set_readonly(self, readonly):
+        if readonly:
+            # Implicitly calls setFocusableInTouchMode(False)
+            self.native.setFocusable(False)
+        else:
+            # Implicitly calls setFocusable(True)
+            self.native.setFocusableInTouchMode(True)
+
+    def get_placeholder(self):
+        return str(self.native.getHint())
+
+    def set_placeholder(self, value):
+        self.native.setHint(value)
+
+    def set_alignment(self, value):
+        self.set_textview_alignment(value, Gravity.CENTER_VERTICAL)
 
     def set_error(self, error_message):
-        self.interface.factory.not_implemented("TextInput.set_error()")
+        self.native.setError(error_message)
 
     def clear_error(self):
-        self.interface.factory.not_implemented("TextInput.clear_error()")
+        self.native.setError(None)
 
     def is_valid(self):
-        self.interface.factory.not_implemented("TextInput.is_valid()")
+        return self.native.getError() is None
+
+    def _on_change(self):
+        self.interface.on_change(None)
+        self.interface._validate()
+
+    def _on_confirm(self):
+        self.interface.on_confirm(None)
+
+    def _on_gain_focus(self):
+        self.interface.on_gain_focus(None)
+
+    def _on_lose_focus(self):
+        self.interface.on_lose_focus(None)
 
     def rehint(self):
         self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
@@ -100,9 +127,3 @@ class TextInput(TextViewWidget):
             View__MeasureSpec.UNSPECIFIED, View__MeasureSpec.UNSPECIFIED
         )
         self.interface.intrinsic.height = self.native.getMeasuredHeight()
-
-    def set_on_gain_focus(self, handler):
-        self.interface.factory.not_implemented("TextInput.set_on_gain_focus()")
-
-    def set_on_lose_focus(self, handler):
-        self.interface.factory.not_implemented("TextInput.set_on_lose_focus()")

@@ -18,6 +18,8 @@ class OnCheckedChangeListener(CompoundButton__OnCheckedChangeListener):
 
 
 class Switch(TextViewWidget):
+    focusable = False
+
     def create(self):
         self.native = A_Switch(self._native_activity)
         self.native.setOnCheckedChangeListener(OnCheckedChangeListener(self))

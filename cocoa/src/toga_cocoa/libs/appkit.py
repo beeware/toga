@@ -2,34 +2,20 @@
 # System/Library/Frameworks/AppKit.framework
 ##########################################################################
 import platform
-from ctypes import Structure, c_void_p
+from ctypes import c_void_p
 from enum import Enum, IntEnum
 
-from rubicon.objc import CGFloat, ObjCClass, objc_const
+from rubicon.objc import ObjCClass, objc_const
 from rubicon.objc.api import NSString
 from rubicon.objc.runtime import load_library
-from travertino.colors import (
-    BLACK,
-    BLUE,
-    BROWN,
-    CYAN,
-    DARKGRAY,
-    GRAY,
-    GREEN,
-    LIGHTGRAY,
-    MAGENTA,
-    ORANGE,
-    PURPLE,
-    RED,
-    WHITE,
-    YELLOW,
-)
 
 from toga.constants import CENTER, JUSTIFY, LEFT, RIGHT
 
 ######################################################################
 appkit = load_library("AppKit")
 ######################################################################
+
+NSBeep = appkit.NSBeep
 
 ######################################################################
 # NSAffineTransform.h
@@ -87,7 +73,7 @@ try:
     NSAboutPanelOptionVersion = NSString(
         c_void_p.in_dll(appkit, "NSAboutPanelOptionVersion")
     )
-except ValueError:
+except ValueError:  # pragma: no cover
     NSAboutPanelOptionApplicationIcon = None
     NSAboutPanelOptionApplicationName = None
     NSAboutPanelOptionApplicationVersion = None
@@ -292,25 +278,6 @@ NSColor.declare_class_property("whiteColor")
 NSColor.declare_class_property("yellowColor")
 
 
-def NSColorUsingColorName(background_color):
-    return {
-        BLACK: NSColor.blackColor,
-        BLUE: NSColor.blueColor,
-        BROWN: NSColor.brownColor,
-        CYAN: NSColor.cyanColor,
-        DARKGRAY: NSColor.darkGrayColor,
-        GRAY: NSColor.grayColor,
-        GREEN: NSColor.greenColor,
-        LIGHTGRAY: NSColor.lightGrayColor,
-        MAGENTA: NSColor.magentaColor,
-        ORANGE: NSColor.orangeColor,
-        PURPLE: NSColor.purpleColor,
-        RED: NSColor.redColor,
-        WHITE: NSColor.whiteColor,
-        YELLOW: NSColor.yellowColor,
-    }[background_color]
-
-
 ######################################################################
 # NSCursor.h
 
@@ -379,6 +346,9 @@ class NSEventType(IntEnum):
     RightMouseDragged = 7
     MouseEntered = 8
 
+    KeyDown = 10
+    KeyUp = 11
+
 
 ######################################################################
 # NSFont.h
@@ -440,10 +410,10 @@ NSImageScaleAxesIndependently = 1
 NSImageScaleNone = 2
 NSImageScaleProportionallyUpOrDown = 3
 
-if platform.machine() == "arm64":
+if platform.machine() == "arm64":  # pragma: no cover
     NSImageResizingModeTile = 1
     NSImageResizingModeStretch = 0
-else:
+else:  # pragma: no cover
     NSImageResizingModeTile = 0
     NSImageResizingModeStretch = 1
 
@@ -511,19 +481,6 @@ NSLayoutAttributeNotAnAttribute = 0
 
 # NSLayoutConstraintOrientationHorizontal = 0,
 # NSLayoutConstraintOrientationVertical = 1
-
-
-class NSEdgeInsets(Structure):
-    _fields_ = [
-        ("top", CGFloat),
-        ("left", CGFloat),
-        ("bottom", CGFloat),
-        ("right", CGFloat),
-    ]
-
-
-def NSEdgeInsetsMake(top, left, bottom, right):
-    return NSEdgeInsets(top, left, bottom, right)
 
 
 class NSLayoutPriority(Enum):
@@ -648,6 +605,14 @@ NSScrollElasticityAutomatic = 0
 NSScrollElasticityNone = 1
 NSScrollElasticityAllowed = 2
 
+NSScrollViewDidLiveScrollNotification = objc_const(
+    appkit, "NSScrollViewDidLiveScrollNotification"
+)
+NSScrollViewDidEndLiveScrollNotification = objc_const(
+    appkit, "NSScrollViewDidEndLiveScrollNotification"
+)
+
+
 ######################################################################
 # NSSecureTextField.h
 NSSecureTextField = ObjCClass("NSSecureTextField")
@@ -716,10 +681,10 @@ NSTabViewItem = ObjCClass("NSTabViewItem")
 ######################################################################
 # NSText.h
 NSLeftTextAlignment = 0
-if platform.machine() == "arm64":
+if platform.machine() == "arm64":  # pragma: no cover
     NSRightTextAlignment = 2
     NSCenterTextAlignment = 1
-else:
+else:  # pragma: no cover
     NSRightTextAlignment = 1
     NSCenterTextAlignment = 2
 

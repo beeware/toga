@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from .base import Widget
 
 
@@ -6,11 +8,11 @@ class Box(Widget):
         self,
         id=None,
         style=None,
-        children=None,
+        children: list[Widget] | None = None,
     ):
         """Create a new Box container widget.
 
-        Inherits from :class:`~toga.widgets.base.Widget`.
+        Inherits from :class:`toga.Widget`.
 
         :param id: The ID for the widget.
         :param style: A style object. If no style is provided, a default style
@@ -28,7 +30,7 @@ class Box(Widget):
             self.add(*children)
 
     @property
-    def enabled(self):
+    def enabled(self) -> bool:
         """Is the widget currently enabled? i.e., can the user interact with the widget?
 
         Box widgets cannot be disabled; this property will always return True; any

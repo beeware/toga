@@ -31,6 +31,6 @@ Notes
 Reference
 ---------
 
-.. autoclass:: toga.widgets.label.Label
+.. autoclass:: toga.Label
    :members:
    :undoc-members:

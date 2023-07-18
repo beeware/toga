@@ -1,33 +1,33 @@
 from abc import ABC, abstractmethod
 
+from travertino.size import at_least
+
 from ...libs.android.view import OnClickListener, View__MeasureSpec
 from ...libs.android.widget import EditText
-from ..base import Widget
+from ..label import TextViewWidget
 
 
 class TogaPickerClickListener(OnClickListener):
-    def __init__(self, picker_impl):
+    def __init__(self, impl):
         super().__init__()
-        self.picker_impl = picker_impl
+        self.impl = impl
 
     def onClick(self, _):
-        self.picker_impl._create_dialog()
+        self.impl._dialog.show()
 
 
-class PickerBase(Widget, ABC):
+class PickerBase(TextViewWidget, ABC):
     @classmethod
     @abstractmethod
     def _get_icon(cls):
         raise NotImplementedError
 
-    @classmethod
     @abstractmethod
-    def _get_hint(cls):
+    def _create_dialog(self):
         raise NotImplementedError
 
     def create(self):
-        self._value = None
-        self._dialog = None
+        self._dialog = self._create_dialog()
         self.native = EditText(self._native_activity)
         self.native.setFocusable(False)
         self.native.setClickable(False)
@@ -36,10 +36,10 @@ class PickerBase(Widget, ABC):
         self.native.setLongClickable(False)
         self.native.setOnClickListener(TogaPickerClickListener(self))
         self.native.setCompoundDrawablesWithIntrinsicBounds(self._get_icon(), 0, 0, 0)
-        self.native.setHint(self._get_hint())
+        self.cache_textview_defaults()
 
     def rehint(self):
-        self.interface.intrinsic.width = self.native.getMeasuredWidth()
+        self.interface.intrinsic.width = at_least(300)
         # Refuse to call measure() if widget has no container, i.e., has no LayoutParams.
         # On Android, EditText's measure() throws NullPointerException if the widget has no
         # LayoutParams.

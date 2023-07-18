@@ -9,6 +9,7 @@ from email.message import Message
 from toga.command import CommandSet
 from toga.handlers import wrapped_handler
 from toga.icons import Icon
+from toga.paths import Paths
 from toga.platform import get_platform_factory
 from toga.widgets.base import WidgetRegistry
 from toga.window import Window
@@ -168,8 +169,8 @@ class App:
         derived from packaging metadata if not provided.
     :param startup: The callback method before starting the app, typically to
         add the components. Must be a ``callable`` that expects a single
-        argument of :class:`~toga.app.App`.
-    :param windows: An iterable with objects of :class:`~toga.window.Window`
+        argument of :class:`~toga.App`.
+    :param windows: An iterable with objects of :class:`~toga.Window`
         that will be the app's secondary windows.
     """
 
@@ -317,9 +318,11 @@ class App:
         # Set the application DOM ID; create an ID if one hasn't been provided.
         self._id = id if id else identifier(self)
 
-        # Get a platform factory, and a paths instance from the factory.
+        # Get a platform factory.
         self.factory = get_platform_factory()
-        self._paths = self.factory.paths
+
+        # Instantiate the paths instance for this app.
+        self._paths = Paths()
 
         # If an icon (or icon name) has been explicitly provided, use it;
         # otherwise, the icon will be based on the app name.
@@ -348,36 +351,16 @@ class App:
         return self.factory.App(interface=self)
 
     @property
-    def paths(self):
+    def paths(self) -> Paths:
         """Paths for platform appropriate locations on the user's file system.
 
         Some platforms do not allow arbitrary file access to any location on
         disk; even when arbitrary file system access is allowed, there are
         "preferred" locations for some types of content.
 
-        The ``paths`` object has a set of sub-properties that return
-        ``pathlib.Path`` instances of platform-appropriate paths on the
-        file system.
-
-        :PROPERTIES:
-            * **app** – The directory containing the app's ``__main__`` module.
-              This location should be considered read-only, and only used to
-              retrieve app-specific resources (e.g., resource files bundled with
-              the app).
-
-            * **data** – Platform-appropriate location for user data (e.g., user
-              settings)
-
-            * **cache** – Platform-appropriate location for temporary files. It
-              should be assumed that the operating system will purge the
-              contents of this directory without warning if it needs to recover
-              disk space.
-
-            * **logs** – Platform-appropriate location for log files for this
-              app.
-
-            * **toga** – The path of the ``toga`` core module. This location
-              should be considered read-only.
+        The :class:`~toga.paths.Paths` object has a set of sub-properties that
+        return :class:`pathlib.Path` instances of platform-appropriate paths on
+        the file system.
         """
         return self._paths
 
@@ -475,7 +458,7 @@ class App:
     def icon(self):
         """The Icon for the app.
 
-        :returns: A ``toga.Icon`` instance for the app's icon.
+        :returns: A :class:`toga.Icon` instance for the app's icon.
         """
         return self._icon
 
@@ -585,6 +568,10 @@ class App:
         """
         if self.home_page is not None:
             webbrowser.open(self.home_page)
+
+    def beep(self):
+        """Play the default system notification sound."""
+        self._impl.beep()
 
     def main_loop(self):
         """Invoke the application to handle user input.

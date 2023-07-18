@@ -8,6 +8,7 @@ from .properties import toga_alignment, toga_color, toga_font
 
 class LabelProbe(SimpleProbe):
     native_class = jclass("android.widget.TextView")
+    supports_justify = True
 
     @property
     def color(self):

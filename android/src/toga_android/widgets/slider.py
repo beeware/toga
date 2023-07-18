@@ -30,6 +30,7 @@ class TogaOnSeekBarChangeListener(SeekBar__OnSeekBarChangeListener):
 
 
 class Slider(Widget, toga.widgets.slider.IntSliderImpl):
+    focusable = False
     TICK_DRAWABLE = None
 
     def create(self):

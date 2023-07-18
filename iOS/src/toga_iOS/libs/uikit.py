@@ -1,10 +1,10 @@
 ##########################################################################
 # System/Library/Frameworks/UIKit.framework
 ##########################################################################
-from ctypes import POINTER, Structure, c_char_p, c_int, c_void_p, cdll, util
+from ctypes import POINTER, c_char_p, c_int, c_void_p, cdll, util
 from enum import Enum
 
-from rubicon.objc import CGFloat, ObjCClass, objc_const
+from rubicon.objc import ObjCClass, ObjCProtocol, objc_const
 
 from toga.constants import CENTER, JUSTIFY, LEFT, RIGHT
 from toga_iOS.libs.core_graphics import CGContextRef
@@ -15,6 +15,12 @@ uikit = cdll.LoadLibrary(util.find_library("UIKit"))
 
 uikit.UIApplicationMain.restype = c_int
 uikit.UIApplicationMain.argtypes = [c_int, POINTER(c_char_p), c_void_p, c_void_p]
+
+uikit.UIImageJPEGRepresentation.restype = c_void_p
+uikit.UIImageJPEGRepresentation.argtypes = [c_void_p]
+
+uikit.UIImagePNGRepresentation.restype = c_void_p
+uikit.UIImagePNGRepresentation.argtypes = [c_void_p]
 
 ######################################################################
 # NSAttributedString.h
@@ -69,19 +75,6 @@ NSLayoutConstraintOrientationHorizontal = (0,)
 NSLayoutConstraintOrientationVertical = 1
 
 
-class NSEdgeInsets(Structure):
-    _fields_ = [
-        ("top", CGFloat),
-        ("left", CGFloat),
-        ("bottom", CGFloat),
-        ("right", CGFloat),
-    ]
-
-
-def NSEdgeInsetsMake(top, left, bottom, right):
-    return NSEdgeInsets(top, left, bottom, right)
-
-
 class NSLayoutPriority(Enum):
     Required = 1000
     DefaultHigh = 750
@@ -118,6 +111,11 @@ def NSTextAlignment(alignment):
         JUSTIFY: NSJustifiedTextAlignment,
     }[alignment]
 
+
+######################################################################
+# UIAction.h
+
+UIKeyInput = ObjCProtocol("UIKeyInput")
 
 ######################################################################
 # UIAlertController.h

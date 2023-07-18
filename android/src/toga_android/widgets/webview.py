@@ -1,25 +1,34 @@
-import asyncio
-import base64
+import json
 
 from travertino.size import at_least
 
-from ..libs.android.view import Gravity, View__MeasureSpec
+from toga.widgets.webview import JavaScriptResult
+
 from ..libs.android.webkit import ValueCallback, WebView as A_WebView, WebViewClient
-from .base import Widget, align
+from .base import Widget
 
 
 class ReceiveString(ValueCallback):
-    def __init__(self, fn=None):
+    def __init__(self, future, on_result):
         super().__init__()
-        self._fn = fn
+        self.future = future
+        self.on_result = on_result
 
     def onReceiveValue(self, value):
-        if self._fn:
-            if value is None:
-                self._fn(None)
-            else:
-                # Ensure we send a string to the function.
-                self._fn(value.toString())
+        # If the evaluation fails, a message is written to Logcat, but the value sent to
+        # the callback will be "null", with no way to distinguish it from an actual null
+        # return value.
+        result = json.loads(value)
+
+        # Because this method is called directly from the Android event loop, calling
+        # set_result on a timed-out future would crash the whole testbed with an
+        # InvalidStateError.
+        if self.future.cancelled():  # pragma: nocover
+            pass
+        else:
+            self.future.set_result(result)
+            if self.on_result:
+                self.on_result(result)
 
 
 class WebView(Widget):
@@ -28,66 +37,50 @@ class WebView(Widget):
         # Set a WebViewClient so that new links open in this activity,
         # rather than triggering the phone's web browser.
         self.native.setWebViewClient(WebViewClient())
-        # Enable JS.
-        self.native.getSettings().setJavaScriptEnabled(True)
 
-    def set_on_key_down(self, handler):
-        # Android isn't a platform that usually has a keyboard attached, so this is unimplemented for now.
-        self.interface.factory.not_implemented("WebView.set_on_key_down()")
-
-    def set_on_webview_load(self, handler):
-        # This requires subclassing WebViewClient, which is not yet possible with rubicon-java.
-        self.interface.factory.not_implemented("WebView.set_on_webview_load()")
-
-    def get_dom(self):
-        # Android has no straightforward way to get the DOM from the browser synchronously.
-        self.interface.factory.not_implemented("WebView.get_dom()")
+        self.settings = self.native.getSettings()
+        self.default_user_agent = self.settings.getUserAgentString()
+        self.settings.setJavaScriptEnabled(True)
 
     def get_url(self):
-        return self.native.getUrl()
+        url = self.native.getUrl()
+        if url == "about:blank" or url.startswith("data:"):
+            return None
+        else:
+            return url
 
-    def set_url(self, value):
-        if value:
-            self.native.loadUrl(str(value))
+    def set_url(self, value, future=None):
+        if value is None:
+            value = "about:blank"
+        self.native.loadUrl(value)
+
+        # Detecting when the load is complete requires subclassing WebViewClient
+        # (https://github.com/beeware/toga/issues/1020).
+        if future:
+            future.set_result(None)
 
     def set_content(self, root_url, content):
-        # Android WebView lacks an underlying set_content() primitive, so we navigate to
-        # a data URL. This means we ignore the root_url parameter.
-        data_url = "data:text/html; charset=utf-8; base64," + base64.b64encode(
-            content.encode("utf-8")
-        ).decode("ascii")
-        self.set_url(data_url)
+        # There is a loadDataWithBaseURL method, but it's inconsistent about whether
+        # getUrl returns the given URL or a data: URL. Rather than support this feature
+        # intermittently, it's better to not support it at all.
+        self.native.loadData(content, "text/html", "utf-8")
+
+    def get_user_agent(self):
+        return self.settings.getUserAgentString()
 
     def set_user_agent(self, value):
-        if value is not None:
-            self.native.getSettings().setUserAgentString(value)
-
-    async def evaluate_javascript(self, javascript):
-        js_value = asyncio.Future()
-        self.native.evaluateJavascript(
-            str(javascript), ReceiveString(js_value.set_result)
+        self.settings.setUserAgentString(
+            self.default_user_agent if value is None else value
         )
-        return await js_value
 
-    def invoke_javascript(self, javascript):
-        self.native.evaluateJavascript(str(javascript), ReceiveString())
+    def evaluate_javascript(self, javascript, on_result=None):
+        result = JavaScriptResult()
 
-    def set_alignment(self, value):
-        # Refuse to set alignment unless widget has been added to a container.
-        # This is because this widget's setGravity() requires LayoutParams before it can be called.
-        if not self.native.getLayoutParams():
-            return
-        self.native.setGravity(Gravity.CENTER_VERTICAL | align(value))
+        self.native.evaluateJavascript(
+            javascript, ReceiveString(result.future, on_result)
+        )
+        return result
 
     def rehint(self):
         self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
-        # Refuse to call measure() if widget has no container, i.e., has no LayoutParams.
-        # Android's measure() throws NullPointerException if the widget has no LayoutParams.
-        if not self.native.getLayoutParams():
-            return
-        self.native.measure(
-            View__MeasureSpec.UNSPECIFIED,
-            View__MeasureSpec.UNSPECIFIED,
-        )
-        self.interface.intrinsic.width = at_least(self.native.getMeasuredWidth())
-        self.interface.intrinsic.height = self.native.getMeasuredHeight()
+        self.interface.intrinsic.height = at_least(self.interface._MIN_HEIGHT)

@@ -3,7 +3,7 @@ from ctypes import byref
 from rubicon.objc import CGFloat
 from travertino.fonts import Font
 
-from toga.colors import rgba
+from toga.colors import TRANSPARENT, rgba
 from toga.fonts import BOLD, ITALIC, NORMAL
 from toga.style.pack import CENTER, JUSTIFY, LEFT, RIGHT
 from toga_iOS.libs import (
@@ -11,6 +11,7 @@ from toga_iOS.libs import (
     NSJustifiedTextAlignment,
     NSLeftTextAlignment,
     NSRightTextAlignment,
+    UIColor,
     UIFontDescriptorTraitBold,
     UIFontDescriptorTraitItalic,
 )
@@ -18,6 +19,12 @@ from toga_iOS.libs import (
 
 def toga_color(color):
     if color:
+        # Label color is a default foregroud value, equivalent to setting `color=None`
+        if color == UIColor.labelColor():
+            return None
+        elif color == UIColor.clearColor:
+            return TRANSPARENT
+
         red = CGFloat()
         green = CGFloat()
         blue = CGFloat()

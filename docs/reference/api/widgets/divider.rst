@@ -38,6 +38,6 @@ specified, it will default to horizontal.
 Reference
 ---------
 
-.. autoclass:: toga.widgets.divider.Divider
+.. autoclass:: toga.Divider
    :members:
    :undoc-members:

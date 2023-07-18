@@ -1,5 +1,6 @@
 import os
 
+import toga
 from toga.fonts import (
     _REGISTERED_FONT_CACHE,
     BOLD,
@@ -51,7 +52,7 @@ class Font:
             )
             if font_key in _REGISTERED_FONT_CACHE:
                 font_path = str(
-                    self.interface.factory.paths.app / _REGISTERED_FONT_CACHE[font_key]
+                    toga.App.app.paths.app / _REGISTERED_FONT_CACHE[font_key]
                 )
                 if os.path.isfile(font_path):
                     typeface = Typeface.createFromFile(font_path)

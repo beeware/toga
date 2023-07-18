@@ -16,6 +16,8 @@ class Constraints:
         :param widget: The Widget implementation to be constrained.
         """
         self.widget = widget
+        self.widget.native.translatesAutoresizingMaskIntoConstraints = False
+
         self._container = None
 
         self.width_constraint = None
@@ -100,10 +102,9 @@ class Constraints:
             self.container.native.addConstraint(self.height_constraint)
 
     def update(self, x, y, width, height):
-        if self.container:
-            # print(f"UPDATE CONSTRAINTS {self.widget} in {self.container} {width}x{height}@{x},{y}")
-            self.left_constraint.constant = x
-            self.top_constraint.constant = y
+        # print(f"UPDATE CONSTRAINTS {self.widget} in {self.container} {width}x{height}@{x},{y}")
+        self.left_constraint.constant = x
+        self.top_constraint.constant = y
 
-            self.width_constraint.constant = width
-            self.height_constraint.constant = height
+        self.width_constraint.constant = width
+        self.height_constraint.constant = height

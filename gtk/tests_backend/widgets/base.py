@@ -1,18 +1,22 @@
-import asyncio
+from threading import Event
 
-import pytest
+from toga_gtk.libs import Gdk, Gtk
 
-from toga_gtk.libs import Gtk
-
+from ..probe import BaseProbe
 from .properties import toga_color, toga_font
 
 
-class SimpleProbe:
+class SimpleProbe(BaseProbe):
     def __init__(self, widget):
+        super().__init__()
+        self.app = widget.app
         self.widget = widget
         self.impl = widget._impl
         self.native = widget._impl.native
         assert isinstance(self.native, self.native_class)
+
+        # Set the target for keypress events
+        self._keypress_target = self.native
 
         # Ensure that the theme isn't using animations for the widget.
         settings = Gtk.Settings.get_for_screen(self.native.get_screen())
@@ -33,19 +37,8 @@ class SimpleProbe:
     def assert_alignment(self, expected):
         assert self.alignment == expected
 
-    def assert_font_family(self, expected):
-        assert self.font.family == expected
-
-    async def redraw(self, message=None):
-        """Request a redraw of the app, waiting until that redraw has completed."""
-        # Force a repaint
-        while self.impl.container.needs_redraw or Gtk.events_pending():
-            Gtk.main_iteration_do(blocking=False)
-
-        # If we're running slow, wait for a second
-        if self.widget.app.run_slow:
-            print("Waiting for redraw" if message is None else message)
-            await asyncio.sleep(1)
+    def repaint_needed(self):
+        return self.impl.container.needs_redraw or super().repaint_needed()
 
     @property
     def enabled(self):
@@ -88,6 +81,10 @@ class SimpleProbe:
         ), f"Height ({self.height}) not in range ({min_height}, {max_height})"
 
     @property
+    def shrink_on_resize(self):
+        return True
+
+    @property
     def color(self):
         sc = self.native.get_style_context()
         return toga_color(sc.get_property("color", sc.get_state()))
@@ -108,7 +105,58 @@ class SimpleProbe:
 
     @property
     def has_focus(self):
-        # FIXME: This works when running standalone, but fails under CI.
-        # I *think* this is because CI is using xvfb.
-        # return self.native.has_focus()
-        pytest.skip("Focus changes don't work on GTK inside XVFB")
+        return self.native.has_focus()
+
+    async def type_character(self, char):
+        # Construct a GDK KeyPress event.
+        keyval = getattr(
+            Gdk,
+            f"KEY_{char}",
+            {
+                " ": Gdk.KEY_space,
+                "-": Gdk.KEY_minus,
+                ".": Gdk.KEY_period,
+                "\n": Gdk.KEY_Return,
+                "<esc>": Gdk.KEY_Escape,
+            }.get(char, Gdk.KEY_question),
+        )
+
+        event = Gdk.Event.new(Gdk.EventType.KEY_PRESS)
+        event.window = self.widget.window._impl.native.get_window()
+        event.time = Gtk.get_current_event_time()
+        event.keyval = keyval
+        event.length = 1
+        event.string = char
+        # event.group =
+        # event.hardware_keycode =
+        event.is_modifier = 0
+
+        # Mock the event coming from the keyboard
+        device = Gdk.Display.get_default().get_default_seat().get_keyboard()
+        event.set_device(device)
+
+        # There might be more than one event loop iteration before the key
+        # event is fully handled; and there may be iterations of the event loop
+        # where there are no pending events. However, we need to know for
+        # certain that the key event has been handled.
+        #
+        # Set up a temporary handler to listen for events being processed.
+        # When the key is pressed, use a threading.Event to signal that
+        # we can continue.
+        handled = Event()
+
+        def event_handled(widget, e):
+            if e.type == Gdk.EventType.KEY_PRESS and e.keyval == event.keyval:
+                handled.set()
+
+        handler_id = self._keypress_target.connect("event-after", event_handled)
+
+        # Inject the event
+        Gtk.main_do_event(event)
+
+        # Run the event loop until the keypress has been handled.
+        while not handled.is_set():
+            Gtk.main_iteration_do(blocking=False)
+
+        # Remove the temporary handler
+        self._keypress_target.disconnect(handler_id)

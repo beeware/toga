@@ -19,11 +19,29 @@ class TextViewWidget(Widget):
     def set_font(self, font):
         font._impl.apply(self.native, self._default_text_size, self._default_typeface)
 
+    def set_background_color(self, value):
+        # In the case of EditText, this causes any custom color to hide the bottom border
+        # line, but it's better than set_background_filter, which affects *only* the
+        # bottom border line.
+        self.set_background_simple(value)
+
     def set_color(self, value):
         if value is None:
             self.native.setTextColor(self._default_text_color)
         else:
             self.native.setTextColor(native_color(value))
+
+    def set_textview_alignment(self, value, vertical_gravity):
+        # Justified text wasn't added until API level 26.
+        # We only run the test suite on API 31, so we need to disable branch coverage.
+        if Build.VERSION.SDK_INT >= 26:  # pragma: no branch
+            self.native.setJustificationMode(
+                Layout.JUSTIFICATION_MODE_INTER_WORD
+                if value == JUSTIFY
+                else Layout.JUSTIFICATION_MODE_NONE
+            )
+
+        self.native.setGravity(vertical_gravity | align(value))
 
 
 class Label(TextViewWidget):
@@ -36,9 +54,6 @@ class Label(TextViewWidget):
 
     def set_text(self, value):
         self.native.setText(value)
-
-    def set_background_color(self, value):
-        self.set_background_color_simple(value)
 
     def rehint(self):
         # Refuse to rehint an Android TextView if it has no LayoutParams yet.
@@ -60,19 +75,4 @@ class Label(TextViewWidget):
         self.interface.intrinsic.width = at_least(self.native.getMeasuredWidth())
 
     def set_alignment(self, value):
-        # Refuse to set alignment if widget has no container.
-        # On Android, calling setGravity() when the widget has no LayoutParams
-        # results in a NullPointerException.
-        if not self.native.getLayoutParams():
-            return
-
-        # Justified text wasn't added until API level 26.
-        # We only run the test suite on API 31, so we need to disable branch coverage.
-        if Build.VERSION.SDK_INT >= 26:  # pragma: no branch
-            self.native.setJustificationMode(
-                Layout.JUSTIFICATION_MODE_INTER_WORD
-                if value == JUSTIFY
-                else Layout.JUSTIFICATION_MODE_NONE
-            )
-
-        self.native.setGravity(Gravity.CENTER_VERTICAL | align(value))
+        self.set_textview_alignment(value, Gravity.TOP)

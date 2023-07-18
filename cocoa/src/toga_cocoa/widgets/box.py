@@ -1,15 +1,8 @@
 from travertino.size import at_least
 
-from toga_cocoa.libs import NSView, objc_method
+from toga_cocoa.container import TogaView
 
 from .base import Widget
-
-
-class TogaView(NSView):
-    @objc_method
-    def isFlipped(self) -> bool:
-        # Default Cocoa coordinate frame is around the wrong way.
-        return True
 
 
 class Box(Widget):

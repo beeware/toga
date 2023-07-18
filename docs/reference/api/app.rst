@@ -51,6 +51,6 @@ Alternatively, you can subclass App and implement the startup method
 Reference
 ---------
 
-.. autoclass:: toga.app.App
+.. autoclass:: toga.App
    :members:
    :undoc-members:
