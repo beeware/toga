@@ -32,7 +32,8 @@ from .widgets.switch import Switch
 from .widgets.textinput import TextInput
 
 # from .widgets.tree import Tree
-# from .widgets.webview import WebView
+from .widgets.webview import WebView
+
 # from .window import Window
 
 
@@ -72,7 +73,7 @@ __all__ = [
     # 'Table',
     "TextInput",
     # 'Tree',
-    # 'WebView',
+    "WebView",
     # 'Window',
 ]
 

@@ -1,5 +1,5 @@
 import toga
-from toga.style.pack import CENTER, COLUMN, ROW, Pack
+from toga.style.pack import COLUMN, ROW, Pack
 
 
 class Graze(toga.App):
@@ -7,10 +7,12 @@ class Graze(toga.App):
         self.main_window = toga.MainWindow(title=self.name)
 
         self.webview = toga.WebView(
-            on_webview_load=self.on_webview_loaded, style=Pack(flex=1)
+            on_webview_load=self.on_webview_loaded,
+            style=Pack(flex=1),
         )
         self.url_input = toga.TextInput(
-            value="https://beeware.org/", style=Pack(flex=1)
+            value="https://beeware.org/",
+            style=Pack(flex=1),
         )
 
         box = toga.Box(
@@ -24,11 +26,7 @@ class Graze(toga.App):
                             style=Pack(width=50, padding_left=5),
                         ),
                     ],
-                    style=Pack(
-                        direction=ROW,
-                        alignment=CENTER,
-                        padding=5,
-                    ),
+                    style=Pack(direction=ROW, padding=5),
                 ),
                 self.webview,
             ],
