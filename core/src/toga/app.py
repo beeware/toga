@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import signal
 import sys
 import warnings
@@ -5,13 +7,14 @@ import webbrowser
 from builtins import id as identifier
 from collections.abc import MutableSet
 from email.message import Message
+from typing import Optional, Iterable, Union
 
 from toga.command import CommandSet
 from toga.handlers import wrapped_handler
 from toga.icons import Icon
 from toga.paths import Paths
 from toga.platform import get_platform_factory
-from toga.widgets.base import WidgetRegistry
+from toga.widgets.base import WidgetRegistry, Widget
 from toga.window import Window
 
 try:
@@ -32,9 +35,9 @@ class WindowSet(MutableSet):
     sets `window.app` property to the app.
     """
 
-    def __init__(self, app, iterable=None):
+    def __init__(self, app: "App", iterable: Iterable[Window] = ()):
         self.app = app
-        self.elements = set() if iterable is None else set(iterable)
+        self.elements = set(iterable)
 
     def add(self, window: Window) -> None:
         if not isinstance(window, Window):
@@ -78,16 +81,16 @@ class MainWindow(Window):
 
     def __init__(
         self,
-        id=None,
-        title=None,
-        position=(100, 100),
-        size=(640, 480),
-        toolbar=None,
-        resizeable=True,
-        minimizable=True,
-        factory=None,  # DEPRECATED !
+        id: Optional[str] = None,
+        title: Optional[str] = None,
+        position: tuple[int, int] = (100, 100),
+        size: tuple[int, int] = (640, 480),
+        toolbar: Optional[list[Widget]] = None,
+        resizeable: bool = True,
+        minimizable: bool = True,
+        factory: None = None,  # DEPRECATED !
         on_close=None,
-    ):
+    ) -> None:
         ######################################################################
         # 2022-09: Backwards compatibility
         ######################################################################
@@ -178,19 +181,19 @@ class App:
 
     def __init__(
         self,
-        formal_name=None,
-        app_id=None,
-        app_name=None,
-        id=None,
-        icon=None,
-        author=None,
-        version=None,
-        home_page=None,
-        description=None,
+        formal_name: Optional[str] = None,
+        app_id: Optional[str] = None,
+        app_name: Optional[str] = None,
+        id: Optional[str] = None,
+        icon: Optional[Union[Icon, str]] = None,
+        author: Optional[str] = None,
+        version: Optional[str] = None,
+        home_page: Optional[str] = None,
+        description: Optional[str] = None,
         startup=None,
-        windows=None,
+        windows: Iterable[Window] = (),
         on_exit=None,
-        factory=None,  # DEPRECATED !
+        factory: None = None,  # DEPRECATED !
     ):
         ######################################################################
         # 2022-09: Backwards compatibility
@@ -365,35 +368,23 @@ class App:
         return self._paths
 
     @property
-    def name(self):
-        """The formal name of the app.
-
-        :returns: The formal name of the app, as a ``str``.
-        """
+    def name(self) -> str:
+        """The formal name of the app."""
         return self._formal_name
 
     @property
-    def formal_name(self):
-        """The formal name of the app.
-
-        :returns: The formal name of the app, as a ``str``.
-        """
+    def formal_name(self) -> str:
+        """The formal name of the app."""
         return self._formal_name
 
     @property
-    def app_name(self):
-        """The machine-readable, PEP508-compliant name of the app.
-
-        :returns: The machine-readable app name, as a ``str``.
-        """
+    def app_name(self) -> str:
+        """The machine-readable, PEP508-compliant name of the app."""
         return self._app_name
 
     @property
-    def module_name(self):
-        """The module name for the app.
-
-        :returns: The module name for the app, as a ``str``.
-        """
+    def module_name(self) -> str:
+        """The module name for the app."""
         try:
             return self._app_name.replace("-", "_")
         except AttributeError:
@@ -402,46 +393,32 @@ class App:
             return None
 
     @property
-    def app_id(self):
+    def app_id(self) -> str:
         """The identifier for the app.
 
         This is a reversed domain name, often used for targeting resources,
         etc.
-
-        :returns: The identifier as a ``str``.
         """
         return self._app_id
 
     @property
-    def author(self):
-        """The author of the app. This may be an organization name.
-
-        :returns: The author of the app, as a ``str``.
-        """
+    def author(self) -> str:
+        """The author of the app. This may be an organization name."""
         return self._author
 
     @property
-    def version(self):
-        """The version number of the app.
-
-        :returns: The version number of the app, as a ``str``.
-        """
+    def version(self) -> str:
+        """The version number of the app."""
         return self._version
 
     @property
-    def home_page(self):
-        """The URL of a web page for the app.
-
-        :returns: The URL of the app's home page, as a ``str``.
-        """
+    def home_page(self) -> str:
+        """The URL of a web page for the app."""
         return self._home_page
 
     @property
-    def description(self):
-        """A brief description of the app.
-
-        :returns: A brief description of the app, as a ``str``.
-        """
+    def description(self) -> str:
+        """A brief description of the app."""
         return self._description
 
     @property
@@ -453,7 +430,7 @@ class App:
         return self._id
 
     @property
-    def icon(self):
+    def icon(self) -> Icon:
         """The Icon for the app.
 
         :returns: A :class:`toga.Icon` instance for the app's icon.
@@ -461,34 +438,29 @@ class App:
         return self._icon
 
     @icon.setter
-    def icon(self, icon_or_name):
+    def icon(self, icon_or_name: Union[Icon, str]) -> None:
         if isinstance(icon_or_name, Icon):
             self._icon = icon_or_name
         else:
             self._icon = Icon(icon_or_name)
 
     @property
-    def widgets(self):
+    def widgets(self) -> WidgetRegistry:
         """The widgets collection of the entire app.
 
         Can be used to lookup widgets over the entire app through widget
         id or manually iterating through it.
         Example: ``app.widgets["my_id"]``
-
-        :returns: The reference to the widgets collection of the entire app.
         """
         return self._widgets
 
     @property
-    def main_window(self):
-        """The main window for the app.
-
-        :returns: The main Window of the app.
-        """
+    def main_window(self) -> MainWindow:
+        """The main window for the app."""
         return self._main_window
 
     @main_window.setter
-    def main_window(self, window):
+    def main_window(self, window: MainWindow) -> None:
         self._main_window = window
         self.windows += window
         self._impl.set_main_window(window)
@@ -504,11 +476,11 @@ class App:
         self._impl.set_current_window(window)
 
     @property
-    def is_full_screen(self):
+    def is_full_screen(self) -> bool:
         """Is the app currently in full screen mode?"""
         return self._full_screen_windows is not None
 
-    def set_full_screen(self, *windows):
+    def set_full_screen(self, *windows: Window) -> None:
         """Make one or more windows full screen.
 
         Full screen is not the same as "maximized"; full screen mode
@@ -528,21 +500,21 @@ class App:
             self._impl.enter_full_screen(windows)
             self._full_screen_windows = windows
 
-    def exit_full_screen(self):
+    def exit_full_screen(self) -> None:
         """Exit full screen mode."""
         if self.is_full_screen:
             self._impl.exit_full_screen(self._full_screen_windows)
             self._full_screen_windows = None
 
-    def show_cursor(self):
+    def show_cursor(self) -> None:
         """Show cursor."""
         self._impl.show_cursor()
 
-    def hide_cursor(self):
+    def hide_cursor(self) -> None:
         """Hide cursor from view."""
         self._impl.hide_cursor()
 
-    def startup(self):
+    def startup(self) -> None:
         """Create and show the main window for the application."""
         self.main_window = MainWindow(title=self.formal_name)
 
@@ -564,7 +536,7 @@ class App:
                 "Does your startup() method assign a value to self.main_window?"
             )
 
-    def about(self):
+    def about(self) -> None:
         """Display the About dialog for the app.
 
         Default implementation shows a platform-appropriate about dialog using app
@@ -572,7 +544,7 @@ class App:
         """
         self._impl.show_about_dialog()
 
-    def visit_homepage(self):
+    def visit_homepage(self) -> None:
         """Open the application's homepage in the default browser.
 
         If the application metadata doesn't define a homepage, this is a no-op.
@@ -580,11 +552,11 @@ class App:
         if self.home_page is not None:
             webbrowser.open(self.home_page)
 
-    def beep(self):
+    def beep(self) -> None:
         """Play the default system notification sound."""
         self._impl.beep()
 
-    def main_loop(self):
+    def main_loop(self) -> None:
         """Invoke the application to handle user input.
 
         This method typically only returns once the application is exiting.
@@ -594,7 +566,7 @@ class App:
 
         self._impl.main_loop()
 
-    def exit(self):
+    def exit(self) -> None:
         """Quit the application gracefully."""
         self.on_exit(None)
 
@@ -608,7 +580,7 @@ class App:
         return self._on_exit
 
     @on_exit.setter
-    def on_exit(self, handler):
+    def on_exit(self, handler) -> None:
         """Set the handler to invoke before the app exits.
 
         Args:
@@ -650,19 +622,19 @@ class DocumentApp(App):
 
     def __init__(
         self,
-        formal_name=None,
-        app_id=None,
-        app_name=None,
-        id=None,
-        icon=None,
-        author=None,
-        version=None,
-        home_page=None,
-        description=None,
+        formal_name: Optional[str] = None,
+        app_id: Optional[str] = None,
+        app_name: Optional[str] = None,
+        id: Optional[str] = None,
+        icon: Optional[str] = None,
+        author: Optional[str] = None,
+        version: Optional[str] = None,
+        home_page: Optional[str] = None,
+        description: Optional[str] = None,
         startup=None,
-        document_types=None,
+        document_types: Optional[list[str]] = None,
         on_exit=None,
-        factory=None,  # DEPRECATED !
+        factory: None = None,  # DEPRECATED !
     ):
         ######################################################################
         # 2022-09: Backwards compatibility

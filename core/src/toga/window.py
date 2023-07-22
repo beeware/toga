@@ -1,17 +1,24 @@
+from __future__ import annotations
+
 import warnings
 from builtins import id as identifier
 from pathlib import Path
+from typing import Optional, TYPE_CHECKING
 
 from toga.command import CommandSet
 from toga.handlers import AsyncResult, wrapped_handler
 from toga.platform import get_platform_factory
 from toga.widgets.base import WidgetRegistry
 
+if TYPE_CHECKING:
+    from toga.app import App
+    from toga.widgets.base import Widget
+
 
 class Dialog(AsyncResult):
     RESULT_TYPE = "dialog"
 
-    def __init__(self, window):
+    def __init__(self, window: "Window"):
         super().__init__()
         self.window = window
         self.app = window.app
@@ -36,17 +43,17 @@ class Window:
 
     def __init__(
         self,
-        id=None,
-        title=None,
-        position=(100, 100),
-        size=(640, 480),
-        toolbar=None,
-        resizeable=True,
-        closeable=True,
-        minimizable=True,
-        factory=None,  # DEPRECATED !
+        id: Optional[str] = None,
+        title: Optional[str] = None,
+        position: tuple[int, int] = (100, 100),
+        size: tuple[int, int] = (640, 480),
+        toolbar: Optional[list[Widget]] = None,
+        resizeable: bool = True,
+        closeable: bool = True,
+        minimizable: bool = True,
+        factory: None = None,  # DEPRECATED !
         on_close=None,
-    ):
+    ) -> None:
         ######################################################################
         # 2022-09: Backwards compatibility
         ######################################################################
@@ -90,7 +97,7 @@ class Window:
         return self._id
 
     @property
-    def app(self):
+    def app(self) -> Optional[App]:
         """Instance of the :class:`toga.App` that this window belongs to.
 
         Returns:
@@ -102,7 +109,7 @@ class Window:
         return self._app
 
     @app.setter
-    def app(self, app):
+    def app(self, app: App) -> None:
         if self._app:
             raise Exception("Window is already associated with an App")
 
@@ -113,7 +120,7 @@ class Window:
             self.content.app = app
 
     @property
-    def title(self):
+    def title(self) -> str:
         """Title of the window. If no title is given it defaults to "Toga".
 
         Returns:
@@ -122,33 +129,25 @@ class Window:
         return self._impl.get_title()
 
     @title.setter
-    def title(self, title):
+    def title(self, title: str) -> None:
         if not title:
             title = "Toga"
 
         self._impl.set_title(title)
 
     @property
-    def toolbar(self):
-        """Toolbar for the window.
-
-        Returns:
-            A ``list`` of :class:`toga.Widget`
-        """
+    def toolbar(self) -> CommandSet:
+        """Toolbar for the window. """
         return self._toolbar
 
     @property
-    def content(self):
+    def content(self) -> Optional[Widget]:
         """Content of the window. On setting, the content is added to the same app as
-        the window and to the same app.
-
-        Returns:
-            A :class:`toga.Widget`
-        """
+        the window and to the same app."""
         return self._content
 
     @content.setter
-    def content(self, widget):
+    def content(self, widget: Widget) -> None:
         # Set window of old content to None
         if self._content:
             self._content.window = None
@@ -172,35 +171,26 @@ class Window:
         widget.refresh()
 
     @property
-    def size(self):
-        """Size of the window, as width, height.
-
-        Returns:
-            A ``tuple`` of (``int``, ``int``) where the first value is
-            the width and the second it the height of the window.
-        """
+    def size(self) -> tuple[int, int]:
+        """Size of the window, as width, height."""
         return self._impl.get_size()
 
     @size.setter
-    def size(self, size):
+    def size(self, size: tuple[int, int]) -> None:
         self._impl.set_size(size)
         if self.content:
             self.content.refresh()
 
     @property
-    def position(self):
-        """Position of the window, as x, y.
-
-        Returns:
-            A ``tuple`` of (``int``, ``int``) int the from (x, y).
-        """
+    def position(self) -> tuple[int, int]:
+        """Position of the window, as x, y."""
         return self._impl.get_position()
 
     @position.setter
-    def position(self, position):
+    def position(self, position: tuple[int, int]) -> None:
         self._impl.set_position(position)
 
-    def show(self):
+    def show(self) -> None:
         """Show window, if hidden."""
         if self.app is None:
             raise AttributeError(
@@ -208,7 +198,7 @@ class Window:
             )
         self._impl.show()
 
-    def hide(self):
+    def hide(self) -> None:
         """Hide window, if shown."""
         if self.app is None:
             raise AttributeError(
@@ -217,20 +207,20 @@ class Window:
         self._impl.hide()
 
     @property
-    def full_screen(self):
+    def full_screen(self) -> bool:
         return self._is_full_screen
 
     @full_screen.setter
-    def full_screen(self, is_full_screen):
+    def full_screen(self, is_full_screen: bool) -> None:
         self._is_full_screen = is_full_screen
         self._impl.set_full_screen(is_full_screen)
 
     @property
-    def visible(self):
+    def visible(self) -> bool:
         return self._impl.get_visible()
 
     @visible.setter
-    def visible(self, visible):
+    def visible(self, visible: bool) -> None:
         if visible:
             self.show()
         else:
@@ -246,7 +236,7 @@ class Window:
         return self._on_close
 
     @on_close.setter
-    def on_close(self, handler):
+    def on_close(self, handler) -> None:
         """Set the handler to invoke when before window is closed. If the
         handler returns ``False``, the window will not be closed. This can be
         used for example for confirmation dialogs.
@@ -261,7 +251,7 @@ class Window:
 
         self._on_close = wrapped_handler(self, handler, cleanup=cleanup)
 
-    def close(self):
+    def close(self) -> None:
         self.app.windows -= self
         self._impl.close()
 
