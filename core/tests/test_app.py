@@ -173,7 +173,7 @@ class AppTests(TestCase):
         )
 
 
-class BadAppTests(TestCase):
+class StartupTests(TestCase):
     def test_override_startup(self):
         class BadApp(toga.App):
             # issue 760. A bogus startup function should raise
@@ -185,6 +185,17 @@ class BadAppTests(TestCase):
         app = BadApp(app_name="pytest", formal_name="pytest", app_id="org.beeware")
         with self.assertRaisesRegex(ValueError, msg):
             app.main_loop()
+
+    def test_startup_called(self):
+        called = []
+
+        class DocApp(toga.DocumentApp):
+            def startup(self):
+                called.append("called")
+
+        app = DocApp(app_name="pytest", formal_name="pytest", app_id="org.beeware")
+        app.main_loop()
+        self.assertEqual(called, ["called"])
 
 
 class DocumentAppTests(TestCase):
