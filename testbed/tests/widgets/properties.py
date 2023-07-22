@@ -108,6 +108,7 @@ async def test_text(widget, probe):
         widget.text = text
         await probe.redraw(f"Widget text should be {str(text)!r}")
 
+        assert isinstance(widget.text, str)
         assert widget.text == str(text)
         assert probe.text == str(text)
 
@@ -130,6 +131,7 @@ async def test_placeholder(widget, probe):
     widget.value = "Hello"
     widget.placeholder = "placeholder"
     await probe.redraw("Widget placeholder should not be visible")
+    assert isinstance(widget.placeholder, str)
     assert widget.value == "Hello"
     assert widget.placeholder == "placeholder"
     assert probe.value == "Hello"
