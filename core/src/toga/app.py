@@ -554,9 +554,7 @@ class App:
         self.main_window.show()
 
     def _startup(self):
-        """Since startup can and is overridden by users, verify
-        they did the right thing in their code
-        """
+# This is a wrapper around the user's startup method that performs any post-setup validation.
         self.startup()
         self._verify_startup()
 
@@ -697,7 +695,7 @@ class DocumentApp(App):
         return self.factory.DocumentApp(interface=self)
 
     def _verify_startup(self):
-        """The class 'startup()' method has no restrictions"""
+# No post-startup validation required for DocumentApps
         pass
 
     @property

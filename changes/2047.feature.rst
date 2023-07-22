@@ -1,1 +1,1 @@
-Verify that ``app.startup`` creates a ``MainWindow``
+Applications now verify that a main window has been created as part of the ``startup()`` method.
