@@ -118,6 +118,7 @@ async def test_text_value(widget, probe):
         widget.value = text
         await probe.redraw(f"Widget value should be {str(text)!r}")
 
+        assert isinstance(widget.value, str)
         assert widget.value == str(text)
         assert probe.value == str(text)
 
