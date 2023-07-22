@@ -54,7 +54,7 @@ class MultilineTextInput(Widget):
         self.add_constraints()
 
     def get_placeholder(self):
-        return self.native_text.placeholderString
+        return str(self.native_text.placeholderString)
 
     def set_placeholder(self, value):
         self.native_text.placeholderString = value
