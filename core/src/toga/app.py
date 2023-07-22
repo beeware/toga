@@ -553,6 +553,19 @@ class App:
 
         self.main_window.show()
 
+    def _startup(self):
+        """Since startup can and is overridden by users, verify
+        they did the right thing in their code
+        """
+        self.startup()
+        self._verify_startup()
+
+    def _verify_startup(self):
+        if not isinstance(self.main_window, MainWindow):
+            raise ValueError(
+                "user-defined startup() did not instaniate self.main_window"
+            )
+
     def about(self):
         """Display the About dialog for the app.
 
@@ -682,6 +695,10 @@ class DocumentApp(App):
 
     def _create_impl(self):
         return self.factory.DocumentApp(interface=self)
+
+    def _verify_startup(self):
+        """The class 'startup()' method has no restrictions"""
+        pass
 
     @property
     def documents(self):

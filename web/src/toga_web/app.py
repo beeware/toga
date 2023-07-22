@@ -37,7 +37,7 @@ class App:
         self.create_menus()
 
         # Call user code to populate the main window
-        self.interface.startup()
+        self.interface._startup()
 
     def _create_submenu(self, group, items):
         submenu = create_element(

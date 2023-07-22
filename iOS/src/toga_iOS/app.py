@@ -65,7 +65,7 @@ class App:
 
     def create(self):
         """Calls the startup method on the interface."""
-        self.interface.startup()
+        self.interface._startup()
 
     def open_document(self, fileURL):
         """Add a new document to this app."""

@@ -173,6 +173,20 @@ class AppTests(TestCase):
         )
 
 
+class BadAppTests(TestCase):
+    def test_override_startup(self):
+        class BadApp(toga.App):
+            # issue 760. A bogus startup function should raise
+            def startup(self):
+                # This is bogus, it does not create the main window
+                pass
+
+        msg = "did not instaniate"
+        app = BadApp(app_name="pytest", formal_name="pytest", app_id="org.beeware")
+        with self.assertRaisesRegex(ValueError, msg):
+            app.main_loop()
+
+
 class DocumentAppTests(TestCase):
     def setUp(self):
         super().setUp()
