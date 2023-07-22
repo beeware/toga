@@ -1,0 +1,1 @@
+Fixing a macOS bug where text fields were returning with the wrong type, and adding checks to the testbed.
