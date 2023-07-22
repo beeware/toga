@@ -59,7 +59,7 @@ class Window:
 
         self.widgets = WidgetRegistry()
 
-        self._id = id if id else identifier(self)
+        self._id = str(id if id else identifier(self))
         self._impl = None
         self._app = None
         self._content = None

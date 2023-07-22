@@ -61,7 +61,7 @@ class Widget(Node):
             applicator=TogaApplicator(self),
         )
 
-        self._id = str(id) if id else str(identifier(self))
+        self._id = str(id if id else identifier(self))
         self._window = None
         self._app = None
         self._impl = None

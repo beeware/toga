@@ -316,7 +316,7 @@ class App:
             self._description = self.metadata.get("Summary", None)
 
         # Set the application DOM ID; create an ID if one hasn't been provided.
-        self._id = id if id else identifier(self)
+        self._id = str(id if id else identifier(self))
 
         # Get a platform factory.
         self.factory = get_platform_factory()
