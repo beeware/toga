@@ -86,8 +86,6 @@ class Window:
         """The DOM identifier for the window.
 
         This id can be used to target CSS directives.
-
-        :returns: A DOM identifier for the window.
         """
         return self._id
 

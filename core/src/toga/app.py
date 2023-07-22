@@ -449,8 +449,6 @@ class App:
         """The DOM identifier for the app.
 
         This id can be used to target CSS directives.
-
-        :returns: A DOM identifier for the app.
         """
         return self._id
 
