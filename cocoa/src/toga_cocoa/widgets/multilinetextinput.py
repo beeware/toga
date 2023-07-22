@@ -73,7 +73,7 @@ class MultilineTextInput(Widget):
         self.native_text.editable = not value
 
     def get_value(self):
-        return self.native_text.string
+        return str(self.native_text.string)
 
     def set_value(self, value):
         self.native_text.string = value
