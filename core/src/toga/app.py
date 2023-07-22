@@ -445,7 +445,7 @@ class App:
         return self._description
 
     @property
-    def id(self):
+    def id(self) -> str:
         """The DOM identifier for the app.
 
         This id can be used to target CSS directives.

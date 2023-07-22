@@ -73,7 +73,12 @@ class Widget(Node):
 
     @property
     def id(self) -> str:
-        """The unique identifier for the widget."""
+        """The DOM identifier for the widget.
+
+        This id can be used to target CSS directives.
+
+        :returns: A DOM identifier for the widget.
+        """
         return self._id
 
     @property

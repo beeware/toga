@@ -82,12 +82,12 @@ class Window:
         self.on_close = on_close
 
     @property
-    def id(self):
-        """The DOM identifier for the window. This id can be used to target CSS
-        directives.
+    def id(self) -> str:
+        """The DOM identifier for the window.
 
-        Returns:
-            The identifier as a ``str``.
+        This id can be used to target CSS directives.
+
+        :returns: A DOM identifier for the window.
         """
         return self._id
 
