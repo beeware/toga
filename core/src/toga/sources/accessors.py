@@ -1,10 +1,13 @@
+from __future__ import annotations
+
 import re
+from typing import Union, Optional
 
 NON_ACCESSOR_CHARS = re.compile(r"[^\w ]")
 WHITESPACE = re.compile(r"\s+")
 
 
-def to_accessor(heading):
+def to_accessor(heading: str) -> str:
     """Convert a human-readable heading into a data attribute accessor.
 
     This won't be infallible; for ambiguous cases, you'll need to manually
@@ -34,7 +37,14 @@ def to_accessor(heading):
     return value
 
 
-def build_accessors(headings, accessors):
+def build_accessors(
+    headings: list[str],
+    accessors: Union[
+        list[Optional[str]],
+        dict[str, str],
+        None,
+    ],
+) -> list[str]:
     """Convert a list of headings (with accessor overrides) to a finalised list of
     accessors.
 
