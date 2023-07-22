@@ -1,17 +1,23 @@
 from __future__ import annotations
 
+from typing import Optional, Protocol, Any
+
 from toga.handlers import wrapped_handler
 
 from .base import Widget
+
+
+class ButtonPressedCallback(Protocol):
+    def __call__(self, widget: "Button", **kwargs: Any) -> Any: ...
 
 
 class Button(Widget):
     def __init__(
         self,
         text,
-        id=None,
+        id: Optional[str] = None,
         style=None,
-        on_press: callable | None = None,
+        on_press: Optional[ButtonPressedCallback] = None,
         enabled: bool = True,
     ):
         """Create a new button widget.
