@@ -88,8 +88,8 @@ class CountValidator:
 class LengthBetween(BooleanValidator):
     def __init__(
         self,
-        min_length: int,
-        max_length: int,
+        min_length: Optional[int],
+        max_length: Optional[int],
         error_message: Optional[str] = None,
         allow_empty: bool = True,
     ):
