@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from builtins import id as identifier
+from typing import Optional
 
 from travertino.node import Node
 
@@ -45,7 +46,7 @@ class Widget(Node):
 
     def __init__(
         self,
-        id=None,
+        id: Optional[str] = None,
         style=None,
     ):
         """Create a base Toga widget.
@@ -94,7 +95,7 @@ class Widget(Node):
     def tab_index(self, tab_index):
         self._impl.set_tab_index(tab_index)
 
-    def add(self, *children: list[Widget]):
+    def add(self, *children: Widget):
         """Add the provided widgets as children of this widget.
 
         If a child widget already has a parent, it will be re-parented as a
@@ -151,7 +152,7 @@ class Widget(Node):
         # Whatever layout we're a part of needs to be refreshed
         self.refresh()
 
-    def remove(self, *children: list[Widget]):
+    def remove(self, *children: Widget):
         """Remove the provided widgets as children of this node.
 
         Any nominated child widget that is not a child of this widget will
