@@ -554,7 +554,8 @@ class App:
         self.main_window.show()
 
     def _startup(self):
-# This is a wrapper around the user's startup method that performs any post-setup validation.
+        # This is a wrapper around the user's startup method that performs any
+        # post-setup validation.
         self.startup()
         self._verify_startup()
 
@@ -695,7 +696,7 @@ class DocumentApp(App):
         return self.factory.DocumentApp(interface=self)
 
     def _verify_startup(self):
-# No post-startup validation required for DocumentApps
+        # No post-startup validation required for DocumentApps
         pass
 
     @property
