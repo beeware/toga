@@ -40,6 +40,7 @@ async def test_text(widget, probe):
         await probe.redraw(f"Button text should be {text}")
 
         # Text after a newline will be stripped.
+        assert isinstance(widget.text, str)
         expected = str(text).split("\n")[0]
         assert widget.text == expected
         assert probe.text == expected
