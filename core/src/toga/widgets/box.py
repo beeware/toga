@@ -1,14 +1,16 @@
 from __future__ import annotations
 
+from typing import Optional
+
 from .base import Widget
 
 
 class Box(Widget):
     def __init__(
         self,
-        id=None,
+        id: Optional[str] = None,
         style=None,
-        children: list[Widget] | None = None,
+        children: Optional[list[Widget]] = None,
     ):
         """Create a new Box container widget.
 
@@ -39,9 +41,9 @@ class Box(Widget):
         return True
 
     @enabled.setter
-    def enabled(self, value):
+    def enabled(self, value: bool) -> None:
         pass
 
-    def focus(self):
+    def focus(self) -> None:
         """No-op; Box cannot accept input focus."""
         pass
