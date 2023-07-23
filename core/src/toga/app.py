@@ -553,6 +553,19 @@ class App:
 
         self.main_window.show()
 
+    def _startup(self):
+        # This is a wrapper around the user's startup method that performs any
+        # post-setup validation.
+        self.startup()
+        self._verify_startup()
+
+    def _verify_startup(self):
+        if not isinstance(self.main_window, MainWindow):
+            raise ValueError(
+                "Application does not have a main window. "
+                "Does your startup() method assign a value to self.main_window?"
+            )
+
     def about(self):
         """Display the About dialog for the app.
 
@@ -682,6 +695,10 @@ class DocumentApp(App):
 
     def _create_impl(self):
         return self.factory.DocumentApp(interface=self)
+
+    def _verify_startup(self):
+        # No post-startup validation required for DocumentApps
+        pass
 
     @property
     def documents(self):
