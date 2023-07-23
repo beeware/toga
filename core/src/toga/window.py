@@ -383,6 +383,39 @@ class Window:
         )
         return dialog
 
+    @overload
+    def stack_trace_dialog(
+        self,
+        title: str,
+        message: str,
+        content: str,
+        retry: Literal[False] = False,
+        on_result: DialogResultCallback[None] | None = None,
+    ) -> Dialog:
+        ...
+
+    @overload
+    def stack_trace_dialog(
+        self,
+        title: str,
+        message: str,
+        content: str,
+        retry: Literal[True] = False,
+        on_result: DialogResultCallback[bool] | None = None,
+    ) -> Dialog:
+        ...
+
+    @overload
+    def stack_trace_dialog(
+        self,
+        title: str,
+        message: str,
+        content: str,
+        retry: bool = False,
+        on_result: DialogResultCallback[bool | None] | None = None,
+    ) -> Dialog:
+        ...
+
     def stack_trace_dialog(
         self,
         title: str,
@@ -459,6 +492,39 @@ class Window:
             on_result=wrapped_handler(self, on_result),
         )
         return dialog
+
+    @overload
+    def open_file_dialog(
+        self,
+        title: str,
+        initial_directory: Path | str | None = None,
+        file_types: list[str] | None = None,
+        multiselect: Literal[False] = False,
+        on_result: DialogResultCallback[Path | None] | None = None,
+    ) -> Dialog:
+        ...
+
+    @overload
+    def open_file_dialog(
+        self,
+        title: str,
+        initial_directory: Path | str | None = None,
+        file_types: list[str] | None = None,
+        multiselect: Literal[True] = True,
+        on_result: DialogResultCallback[list[Path] | None] | None = None,
+    ) -> Dialog:
+        ...
+
+    @overload
+    def open_file_dialog(
+        self,
+        title: str,
+        initial_directory: Path | str | None = None,
+        file_types: list[str] | None = None,
+        multiselect: bool = False,
+        on_result: DialogResultCallback[list[Path] | Path | None] | None = None,
+    ) -> Dialog:
+        ...
 
     def open_file_dialog(
         self,
