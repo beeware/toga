@@ -1,7 +1,10 @@
+from __future__ import annotations
+
 import warnings
 from contextlib import contextmanager
 from enum import Enum
 from math import pi
+from typing import Optional
 
 from toga.colors import BLACK, color as parse_color
 from toga.fonts import SYSTEM, Font
@@ -355,14 +358,19 @@ class Fill(Context):
     fill rule, (each sub-path is implicitly closed before being filled).
 
     Args:
-        color (str, Optional): Color value in any valid color format,
+        color: Color value in any valid color format,
             default to black.
-        fill_rule (str, Optional): `nonzero` if the non-zero winding rule and
+        fill_rule: `nonzero` if the non-zero winding rule and
                                    `evenodd` if the even-odd winding rule.
-        preserve (bool, Optional): Preserves the path within the Context.
+        preserve: Preserves the path within the Context.
     """
 
-    def __init__(self, color=BLACK, fill_rule=FillRule.NONZERO, preserve=False):
+    def __init__(
+        self,
+        color=BLACK,
+        fill_rule: FillRule = FillRule.NONZERO,
+        preserve: bool = False,
+    ):
         super().__init__()
         self.color = color
         self.fill_rule = fill_rule
@@ -417,13 +425,18 @@ class Stroke(Context):
     current line style settings.
 
     Args:
-        color (str, Optional): Color value in any valid color format,
+        color: Color value in any valid color format,
             default to black.
-        line_width (float, Optional): Stroke line width, default is 2.0.
-        line_dash (array of floats, Optional): Stroke line dash pattern, default is None.
+        line_width: Stroke line width, default is 2.0.
+        line_dash: Stroke line dash pattern, default is None.
     """
 
-    def __init__(self, color=BLACK, line_width=2.0, line_dash=None):
+    def __init__(
+        self,
+        color=BLACK,
+        line_width: float = 2.0,
+        line_dash: Optional[list[float]] = None
+    ):
         super().__init__()
         self._color = None
         self.color = color
@@ -462,11 +475,11 @@ class ClosedPath(Context):
     Creates a new path and then closes it.
 
     Args:
-        x (float): The x axis of the beginning point.
-        y (float): The y axis of the beginning point.
+        x: The x-axis of the beginning point.
+        y: The y-axis of the beginning point.
     """
 
-    def __init__(self, x, y):
+    def __init__(self, x: float, y: float):
         super().__init__()
         self.x = x
         self.y = y
@@ -486,8 +499,8 @@ class Canvas(Context, Widget):
     """Create new canvas.
 
     Args:
-        id (str):  An identifier for this widget.
-        style (:obj:`Style`): An optional style object. If no
+        id:  An identifier for this widget.
+        style: An optional style object. If no
             style is provided then a new one will be created for the widget.
         on_resize (:obj:`Callable`): Handler to invoke when the canvas is resized.
         on_press (:obj:`Callable`): Handler to invoke when the primary
@@ -506,7 +519,7 @@ class Canvas(Context, Widget):
 
     def __init__(
         self,
-        id=None,
+        id: Optional[str] = None,
         style=None,
         on_resize=None,
         on_press=None,
@@ -515,7 +528,7 @@ class Canvas(Context, Widget):
         on_alt_press=None,
         on_alt_release=None,
         on_alt_drag=None,
-        factory=None,  # DEPRECATED!
+        factory: None = None,  # DEPRECATED!
     ):
         super().__init__(id=id, style=style)
         ######################################################################
@@ -763,11 +776,11 @@ class MoveTo:
 
 
     Args:
-        x (float): The x axis of the point.
-        y (float): The y axis of the point.
+        x: The x axis of the point.
+        y: The y axis of the point.
     """
 
-    def __init__(self, x, y):
+    def __init__(self, x: float, y: float):
         self.x = x
         self.y = y
 
@@ -786,11 +799,11 @@ class LineTo:
     with a straight line (but does not actually draw it).
 
     Args:
-        x (float): The x axis of the coordinate for the end of the line.
-        y (float): The y axis of the coordinate for the end of the line.
+        x: The x axis of the coordinate for the end of the line.
+        y: The y axis of the coordinate for the end of the line.
     """
 
-    def __init__(self, x, y):
+    def __init__(self, x: float, y: float):
         self.x = x
         self.y = y
 
@@ -811,15 +824,15 @@ class BezierCurveTo:
     creating the Bézier curve.
 
     Args:
-        cp1x (float): x coordinate for the first control point.
-        cp1y (float): y coordinate for first control point.
-        cp2x (float): x coordinate for the second control point.
-        cp2y (float): y coordinate for the second control point.
-        x (float): x coordinate for the end point.
-        y (float): y coordinate for the end point.
+        cp1x: x coordinate for the first control point.
+        cp1y: y coordinate for first control point.
+        cp2x: x coordinate for the second control point.
+        cp2y: y coordinate for the second control point.
+        x: x coordinate for the end point.
+        y: y coordinate for the end point.
     """
 
-    def __init__(self, cp1x, cp1y, cp2x, cp2y, x, y):
+    def __init__(self, cp1x: float, cp1y: float, cp2x: float, cp2y: float, x: float, y: float):
         self.cp1x = cp1x
         self.cp1y = cp1y
         self.cp2x = cp2x
@@ -860,7 +873,7 @@ class QuadraticCurveTo:
     :param y: he y axis of the coordinate for the end point.
     """
 
-    def __init__(self, cpx, cpy, x, y):
+    def __init__(self, cpx: float, cpy: float, x: float, y: float):
         self.cpx = cpx
         self.cpy = cpy
         self.x = x
@@ -883,8 +896,8 @@ class Ellipse:
     and ``radiusy`` starting at ``startangle`` and ending at ``endangle`` going
     in the given direction by anticlockwise (defaulting to clockwise).
 
-    :param x: The x axis of the coordinate for the ellipse's center.
-    :param y: The y axis of the coordinate for the ellipse's center.
+    :param x: The x-axis of the coordinate for the ellipse's center.
+    :param y: The y-axis of the coordinate for the ellipse's center.
     :param radiusx: The ellipse's major-axis radius.
     :param radiusy: The ellipse's minor-axis radius.
     :param rotation: The rotation for this ellipse, expressed in radians, default
@@ -899,14 +912,14 @@ class Ellipse:
 
     def __init__(
         self,
-        x,
-        y,
-        radiusx,
-        radiusy,
-        rotation=0.0,
-        startangle=0.0,
-        endangle=2 * pi,
-        anticlockwise=False,
+        x: float,
+        y: float,
+        radiusx: float,
+        radiusy: float,
+        rotation: float = 0.0,
+        startangle: float = 0.0,
+        endangle: float = 2 * pi,
+        anticlockwise: bool = False,
     ):
         self.x = x
         self.y = y
@@ -968,7 +981,13 @@ class Arc:
     """
 
     def __init__(
-        self, x, y, radius, startangle=0.0, endangle=2 * pi, anticlockwise=False
+        self,
+        x: float,
+        y: float,
+        radius: float,
+        startangle: float = 0.0,
+        endangle: float = 2 * pi,
+        anticlockwise: bool = False,
     ):
         self.x = x
         self.y = y
@@ -1011,13 +1030,13 @@ class Rect:
     rectangle.
 
     Args:
-        x (float): x coordinate for the rectangle starting point.
-        y (float): y coordinate for the rectangle starting point.
-        width (float): The rectangle's width.
-        height (float): The rectangle's width.
+        x: x coordinate for the rectangle starting point.
+        y: y coordinate for the rectangle starting point.
+        width: The rectangle's width.
+        height: The rectangle's width.
     """
 
-    def __init__(self, x, y, width, height):
+    def __init__(self, x: float, y: float, width: float, height: float):
         self.x = x
         self.y = y
         self.width = width
@@ -1042,10 +1061,10 @@ class Rotate:
     translate() method.
 
     Args:
-        radians (float): The angle to rotate clockwise in radians.
+        radians: The angle to rotate clockwise in radians.
     """
 
-    def __init__(self, radians):
+    def __init__(self, radians: float):
         self.radians = radians
 
     def __repr__(self):
@@ -1066,7 +1085,7 @@ class Scale:
     :param sy: scale factor for the Y dimension.
     """
 
-    def __init__(self, sx, sy):
+    def __init__(self, sx: float, sy: float):
         self.sx = sx
         self.sy = sy
 
@@ -1087,7 +1106,7 @@ class Translate:
     :param ty: Y value of coordinate.
     """
 
-    def __init__(self, tx, ty):
+    def __init__(self, tx: float, ty: float):
         self.tx = tx
         self.ty = ty
 
@@ -1127,7 +1146,7 @@ class WriteText:
         font (:class:`toga.Font`, Optional): The font to write with.
     """
 
-    def __init__(self, text, x, y, font):
+    def __init__(self, text: str, x: float = 0, y: float = 0, font: Optional[Font] = None):
         self.text = text
         self.x = x
         self.y = y
