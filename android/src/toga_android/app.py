@@ -233,3 +233,9 @@ class App:
             return result_future.result()
         except AttributeError:
             raise RuntimeError("No appropriate Activity found to handle this intent.")
+
+    def hide_cursor(self):
+        pass
+
+    def show_cursor(self):
+        pass
