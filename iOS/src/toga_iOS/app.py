@@ -89,3 +89,9 @@ class App:
 
     def exit(self):
         pass
+
+    def hide_cursor(self):
+        pass
+
+    def show_cursor(self):
+        pass

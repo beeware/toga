@@ -1,0 +1,1 @@
+Android and iOS apps won't crash anymore if you call App.hide_cursor() or App.show_cursor().
