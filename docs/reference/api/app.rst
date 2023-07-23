@@ -54,3 +54,6 @@ Reference
 .. autoclass:: toga.App
    :members:
    :undoc-members:
+
+.. autoprotocol:: toga.app.WindowContentProvider
+.. autoprotocol:: toga.app.OnExitCallback
