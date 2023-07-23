@@ -19,7 +19,7 @@ def to_accessor(heading: str) -> str:
         'Heading!' -> 'heading'
 
     Args:
-        heading (``str``): The column heading.
+        heading: The column heading.
 
     Returns:
         the accessor derived from the heading.

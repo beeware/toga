@@ -641,7 +641,7 @@ class DocumentApp(App):
     Definition and arguments are the same as a base App, plus the following:
 
     Args:
-        document_types (:obj:`list` of :obj:`str`): Document types.
+        document_types: Document types.
     """
 
     def __init__(
