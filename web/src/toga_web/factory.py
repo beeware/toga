@@ -10,6 +10,7 @@ from .icons import Icon
 from .paths import Paths
 from .widgets.box import Box
 from .widgets.button import Button
+from .widgets.divider import Divider
 
 # from .widgets.canvas import Canvas
 # from .widgets.detailedlist import DetailedList
@@ -56,6 +57,7 @@ __all__ = [
     "Box",
     "Button",
     # 'Canvas',
+    "Divider",
     # 'DetailedList',
     # 'ImageView',
     "Label",
