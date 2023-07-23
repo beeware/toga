@@ -3,7 +3,7 @@ from __future__ import annotations
 import warnings
 from builtins import id as identifier
 from pathlib import Path
-from typing import TYPE_CHECKING, Protocol, Any
+from typing import TYPE_CHECKING, Protocol, Any, TypeVar
 
 from toga.command import CommandSet
 from toga.handlers import AsyncResult, wrapped_handler
@@ -18,6 +18,22 @@ if TYPE_CHECKING:
 class OnCloseCallback(Protocol):
     def __call__(self, window: Window, **kwargs: Any) -> bool:
         """Called when the associated window is closed.
+
+        :return: ``True`` if the window should be closed, ``False`` otherwise.
+
+        .. note::
+            ``**kwargs`` ensures compatibility with additional arguments
+            introduced in future versions.
+        """
+        ...
+
+
+T = TypeVar("T")
+
+
+class DialogResultCallback(Protocol[T]):
+    def __call__(self, window: Window, result: T, **kwargs: Any) -> Any:
+        """Called when the associated dialog is closed.
 
         :return: ``True`` if the window should be closed, ``False`` otherwise.
 
@@ -272,7 +288,12 @@ class Window:
     # Dialogs
     ############################################################
 
-    def info_dialog(self, title: str, message: str, on_result=None) -> Dialog:
+    def info_dialog(
+        self,
+        title: str,
+        message: str,
+        on_result: DialogResultCallback[None] | None = None,
+    ) -> Dialog:
         """Ask the user to acknowledge some information.
 
         Presents as a dialog with a single 'OK' button to close the dialog.
@@ -290,7 +311,12 @@ class Window:
         )
         return dialog
 
-    def question_dialog(self, title: str, message: str, on_result=None) -> Dialog:
+    def question_dialog(
+        self,
+        title: str,
+        message: str,
+        on_result: DialogResultCallback[bool] | None = None,
+    ) -> Dialog:
         """Ask the user a yes/no question.
 
         Presents as a dialog with a 'YES' and 'NO' button.
@@ -309,7 +335,12 @@ class Window:
         )
         return dialog
 
-    def confirm_dialog(self, title, message, on_result=None):
+    def confirm_dialog(
+        self,
+        title: str,
+        message: str,
+        on_result: DialogResultCallback[bool] | None = None,
+    ) -> Dialog:
         """Ask the user to confirm if they wish to proceed with an action.
 
         Presents as a dialog with 'Cancel' and 'OK' buttons (or whatever labels
@@ -329,7 +360,12 @@ class Window:
         )
         return dialog
 
-    def error_dialog(self, title: str, message: str, on_result=None) -> Dialog:
+    def error_dialog(
+        self,
+        title: str,
+        message: str,
+        on_result: DialogResultCallback[None] | None = None,
+    ) -> Dialog:
         """Ask the user to acknowledge an error state.
 
         Presents as an error dialog with a 'OK' button to close the dialog.
@@ -353,8 +389,8 @@ class Window:
         message: str,
         content: str,
         retry: bool = False,
-        on_result=None,
-    ):
+        on_result: DialogResultCallback[bool | None] | None = None,
+    ) -> Dialog:
         """Open a dialog that allows to display a large text body, such as a stack
         trace.
 
@@ -386,8 +422,8 @@ class Window:
         title: str,
         suggested_filename: Path | str,
         file_types: list[str] | None = None,
-        on_result=None,
-    ):
+        on_result: DialogResultCallback[Path | None] | None = None,
+    ) -> Dialog:
         """Prompt the user for a location to save a file.
 
         Presents the user a system-native "Save file" dialog.
@@ -430,8 +466,8 @@ class Window:
         initial_directory: Path | str | None = None,
         file_types: list[str] | None = None,
         multiselect: bool = False,
-        on_result=None,
-    ):
+        on_result: DialogResultCallback[list[Path] | Path | None] | None = None,
+    ) -> Dialog:
         """Ask the user to select a file (or files) to open.
 
         Presents the user a system-native "Open file" dialog.
@@ -466,8 +502,8 @@ class Window:
         title: str,
         initial_directory: Path | str | None = None,
         multiselect: bool = False,
-        on_result=None,
-    ):
+        on_result: DialogResultCallback[list[Path] | Path | None] | None = None,
+    ) -> Dialog:
         """Ask the user to select a directory/folder (or folders) to open.
 
         Presents the user a system-native "Open folder" dialog.
