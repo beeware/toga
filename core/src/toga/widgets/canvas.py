@@ -431,10 +431,7 @@ class Stroke(Context):
     """
 
     def __init__(
-        self,
-        color=BLACK,
-        line_width: float = 2.0,
-        line_dash: list[float] | None = None
+        self, color=BLACK, line_width: float = 2.0, line_dash: list[float] | None = None
     ):
         super().__init__()
         self._color = None
@@ -831,7 +828,9 @@ class BezierCurveTo:
         y: y coordinate for the end point.
     """
 
-    def __init__(self, cp1x: float, cp1y: float, cp2x: float, cp2y: float, x: float, y: float):
+    def __init__(
+        self, cp1x: float, cp1y: float, cp2x: float, cp2y: float, x: float, y: float
+    ):
         self.cp1x = cp1x
         self.cp1y = cp1y
         self.cp2x = cp2x

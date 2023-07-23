@@ -28,7 +28,7 @@ warnings.filterwarnings("default", category=DeprecationWarning)
 
 
 class WindowContentProvider(Protocol):
-    def __call__(self, app: "App", **kwargs: Any) -> Widget | None:
+    def __call__(self, app: App, **kwargs: Any) -> Widget | None:
         """Called during app startup to set the initial main window content.
 
         .. note::
@@ -39,7 +39,7 @@ class WindowContentProvider(Protocol):
 
 
 class OnExitCallback(Protocol):
-    def __call__(self, app: "App", **kwargs: Any) -> bool:
+    def __call__(self, app: App, **kwargs: Any) -> bool:
         """Called when the associated app is exited.
 
         :return: ``True`` if the app should be closed, ``False`` otherwise.
@@ -59,7 +59,7 @@ class WindowSet(MutableSet):
     sets `window.app` property to the app.
     """
 
-    def __init__(self, app: "App", iterable: Iterable[Window] = ()):
+    def __init__(self, app: App, iterable: Iterable[Window] = ()):
         self.app = app
         self.elements = set(iterable)
 

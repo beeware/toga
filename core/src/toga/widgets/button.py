@@ -8,7 +8,7 @@ from .base import Widget
 
 
 class OnPressCallback(Protocol):
-    def __call__(self, widget: "Button", **kwargs: Any) -> Any:
+    def __call__(self, widget: Button, **kwargs: Any) -> Any:
         """Called when the associated button is pressed.
 
         .. note::

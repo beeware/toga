@@ -47,7 +47,7 @@ class DialogResultCallback(Protocol[T]):
 class Dialog(AsyncResult):
     RESULT_TYPE = "dialog"
 
-    def __init__(self, window: "Window"):
+    def __init__(self, window: Window):
         super().__init__()
         self.window = window
         self.app = window.app
@@ -166,7 +166,7 @@ class Window:
 
     @property
     def toolbar(self) -> CommandSet:
-        """Toolbar for the window. """
+        """Toolbar for the window."""
         return self._toolbar
 
     @property
