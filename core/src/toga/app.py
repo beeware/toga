@@ -113,7 +113,7 @@ class MainWindow(Window):
         resizeable: bool = True,
         minimizable: bool = True,
         factory: None = None,  # DEPRECATED !
-        on_close=None,
+        on_close: None = None,
     ) -> None:
         ######################################################################
         # 2022-09: Backwards compatibility
