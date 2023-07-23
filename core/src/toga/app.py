@@ -562,7 +562,8 @@ class App:
     def _verify_startup(self):
         if not isinstance(self.main_window, MainWindow):
             raise ValueError(
-                "user-defined startup() did not instaniate self.main_window"
+                "Application does not have a main window. "
+                "Does your startup() method assign a value to self.main_window?"
             )
 
     def about(self):

@@ -172,30 +172,20 @@ class AppTests(TestCase):
             args=(None,),
         )
 
-
-class StartupTests(TestCase):
     def test_override_startup(self):
         class BadApp(toga.App):
-            # issue 760. A bogus startup function should raise
+            "A startup method that doesn't assign main window raises an error (#760)"
+
             def startup(self):
-                # This is bogus, it does not create the main window
+                # Override startup but don't create a main window
                 pass
 
-        msg = "did not instaniate"
-        app = BadApp(app_name="pytest", formal_name="pytest", app_id="org.beeware")
-        with self.assertRaisesRegex(ValueError, msg):
+        app = BadApp(app_name="bad_app", formal_name="Bad Aoo", app_id="org.beeware")
+        with self.assertRaisesRegex(
+            ValueError,
+            r"Application does not have a main window.",
+        ):
             app.main_loop()
-
-    def test_startup_called(self):
-        called = []
-
-        class DocApp(toga.DocumentApp):
-            def startup(self):
-                called.append("called")
-
-        app = DocApp(app_name="pytest", formal_name="pytest", app_id="org.beeware")
-        app.main_loop()
-        self.assertEqual(called, ["called"])
 
 
 class DocumentAppTests(TestCase):
@@ -216,3 +206,15 @@ class DocumentAppTests(TestCase):
         doc = MagicMock()
         self.app._documents.append(doc)
         self.assertEqual(self.app.documents, [doc])
+
+    def test_override_startup(self):
+        mock = MagicMock()
+
+        class DocApp(toga.DocumentApp):
+            def startup(self):
+                # A document app doesn't have to provide a Main Window.
+                mock()
+
+        app = DocApp(app_name="docapp", formal_name="Doc App", app_id="org.beeware")
+        app.main_loop()
+        mock.assert_called_once()
