@@ -7,7 +7,7 @@ import webbrowser
 from builtins import id as identifier
 from collections.abc import MutableSet
 from email.message import Message
-from typing import Iterable, Union, Protocol, Any
+from typing import Iterable, Protocol, Any
 
 from toga.command import CommandSet
 from toga.handlers import wrapped_handler
@@ -462,7 +462,7 @@ class App:
         return self._icon
 
     @icon.setter
-    def icon(self, icon_or_name: Union[Icon, str]) -> None:
+    def icon(self, icon_or_name: Icon | str) -> None:
         if isinstance(icon_or_name, Icon):
             self._icon = icon_or_name
         else:

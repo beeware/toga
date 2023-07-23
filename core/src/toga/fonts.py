@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import warnings
-from typing import Union
 
 # Use the Travertino font definitions as-is
 from travertino import constants
@@ -30,7 +29,7 @@ _REGISTERED_FONT_CACHE = {}
 
 class Font(BaseFont):
     def __init__(
-        self, family: str, size: Union[int, str], style: str = NORMAL, variant: str = NORMAL, weight: str = NORMAL
+        self, family: str, size: int | str, style: str = NORMAL, variant: str = NORMAL, weight: str = NORMAL
     ):
         super().__init__(family, size, style, variant, weight)
         self.factory = get_platform_factory()
