@@ -3,7 +3,7 @@ from __future__ import annotations
 import warnings
 from builtins import id as identifier
 from pathlib import Path
-from typing import Optional, TYPE_CHECKING
+from typing import Optional, TYPE_CHECKING, Protocol, Any
 
 from toga.command import CommandSet
 from toga.handlers import AsyncResult, wrapped_handler
@@ -13,6 +13,19 @@ from toga.widgets.base import WidgetRegistry
 if TYPE_CHECKING:
     from toga.app import App
     from toga.widgets.base import Widget
+
+
+class OnCloseCallback(Protocol):
+    def __call__(self, window: Window, **kwargs: Any) -> bool:
+        """Called when the associated window is closed.
+
+        :return: ``True`` if the window should be closed, ``False`` otherwise.
+
+        .. note::
+            ``**kwargs`` ensures compatibility with additional arguments
+            introduced in future versions.
+        """
+        ...
 
 
 class Dialog(AsyncResult):
@@ -28,14 +41,14 @@ class Window:
     """The top level container of an application.
 
     Args:
-        id (str): The ID of the window (optional).
-        title (str): Title for the window (optional).
-        position (``tuple`` of (int, int)): Position of the window, as x,y coordinates.
-        size (``tuple`` of (int, int)):  Size of the window, as (width, height) sizes, in pixels.
-        toolbar (``list`` of :class:`~toga.Widget`): A list of widgets to add to a toolbar
-        resizeable (bool): Toggle if the window is resizable by the user, defaults to `True`.
-        closeable (bool): Toggle if the window is closable by the user, defaults to `True`.
-        minimizable (bool): Toggle if the window is minimizable by the user, defaults to `True`.
+        id: The ID of the window.
+        title: Title for the window.
+        position: Position of the window, as x,y coordinates.
+        size:  Size of the window, as (width, height) sizes, in pixels.
+        toolbar: (Deprecated, will have no effect)
+        resizeable: Toggle if the window is resizable by the user.
+        closeable: Toggle if the window is closable by the user.
+        minimizable: Toggle if the window is minimizable by the user.
         on_close: A callback to invoke when the user makes a request to close the window.
     """
 
@@ -52,7 +65,7 @@ class Window:
         closeable: bool = True,
         minimizable: bool = True,
         factory: None = None,  # DEPRECATED !
-        on_close=None,
+        on_close: Optional[OnCloseCallback] = None,
     ) -> None:
         ######################################################################
         # 2022-09: Backwards compatibility
@@ -236,16 +249,16 @@ class Window:
         return self._on_close
 
     @on_close.setter
-    def on_close(self, handler) -> None:
+    def on_close(self, handler: Optional[OnCloseCallback]) -> None:
         """Set the handler to invoke when before window is closed. If the
         handler returns ``False``, the window will not be closed. This can be
         used for example for confirmation dialogs.
 
         Args:
-            handler (:obj:`callable`): The handler to invoke before the window is closed.
+            handler: The handler to invoke before the window is closed.
         """
 
-        def cleanup(window, should_close):
+        def cleanup(window: Window, should_close: bool) -> None:
             if should_close:
                 window.close()
 

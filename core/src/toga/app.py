@@ -7,7 +7,7 @@ import webbrowser
 from builtins import id as identifier
 from collections.abc import MutableSet
 from email.message import Message
-from typing import Optional, Iterable, Union
+from typing import Optional, Iterable, Union, Protocol, Any
 
 from toga.command import CommandSet
 from toga.handlers import wrapped_handler
@@ -25,6 +25,30 @@ except ImportError:
 
 # Make sure deprecation warnings are shown by default
 warnings.filterwarnings("default", category=DeprecationWarning)
+
+
+class WindowContentProvider(Protocol):
+    def __call__(self, app: "App", **kwargs: Any) -> Optional[Widget]:
+        """Called during app startup to set the initial main window content.
+
+        .. note::
+            ``**kwargs`` ensures compatibility with additional arguments
+            introduced in future versions.
+        """
+        ...
+
+
+class OnExitCallback(Protocol):
+    def __call__(self, app: "App", **kwargs: Any) -> bool:
+        """Called when the associated app is exited.
+
+        :return: ``True`` if the app should be closed, ``False`` otherwise.
+
+        .. note::
+            ``**kwargs`` ensures compatibility with additional arguments
+            introduced in future versions.
+        """
+        ...
 
 
 class WindowSet(MutableSet):
@@ -190,9 +214,9 @@ class App:
         version: Optional[str] = None,
         home_page: Optional[str] = None,
         description: Optional[str] = None,
-        startup=None,
+        startup: Optional[WindowContentProvider] = None,
         windows: Iterable[Window] = (),
-        on_exit=None,
+        on_exit: Optional[OnExitCallback] = None,
         factory: None = None,  # DEPRECATED !
     ):
         ######################################################################
@@ -383,7 +407,7 @@ class App:
         return self._app_name
 
     @property
-    def module_name(self) -> str:
+    def module_name(self) -> Optional[str]:
         """The module name for the app."""
         try:
             return self._app_name.replace("-", "_")
@@ -580,7 +604,7 @@ class App:
         return self._on_exit
 
     @on_exit.setter
-    def on_exit(self, handler) -> None:
+    def on_exit(self, handler: Optional[OnExitCallback]) -> None:
         """Set the handler to invoke before the app exits.
 
         Args:
@@ -631,9 +655,9 @@ class DocumentApp(App):
         version: Optional[str] = None,
         home_page: Optional[str] = None,
         description: Optional[str] = None,
-        startup=None,
+        startup: Optional[WindowContentProvider] = None,
         document_types: Optional[list[str]] = None,
-        on_exit=None,
+        on_exit: Optional[OnExitCallback] = None,
         factory: None = None,  # DEPRECATED !
     ):
         ######################################################################
