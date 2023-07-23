@@ -240,7 +240,7 @@ class Window:
             self.hide()
 
     @property
-    def on_close(self):
+    def on_close(self) -> None:
         """The handler to invoke before the window is closed.
 
         Returns:
@@ -272,7 +272,7 @@ class Window:
     # Dialogs
     ############################################################
 
-    def info_dialog(self, title, message, on_result=None):
+    def info_dialog(self, title: str, message: str, on_result=None) -> Dialog:
         """Ask the user to acknowledge some information.
 
         Presents as a dialog with a single 'OK' button to close the dialog.
@@ -290,7 +290,7 @@ class Window:
         )
         return dialog
 
-    def question_dialog(self, title, message, on_result=None):
+    def question_dialog(self, title: str, message: str, on_result=None) -> Dialog:
         """Ask the user a yes/no question.
 
         Presents as a dialog with a 'YES' and 'NO' button.
@@ -329,7 +329,7 @@ class Window:
         )
         return dialog
 
-    def error_dialog(self, title, message, on_result=None):
+    def error_dialog(self, title: str, message: str, on_result=None) -> Dialog:
         """Ask the user to acknowledge an error state.
 
         Presents as an error dialog with a 'OK' button to close the dialog.
@@ -347,7 +347,14 @@ class Window:
         )
         return dialog
 
-    def stack_trace_dialog(self, title, message, content, retry=False, on_result=None):
+    def stack_trace_dialog(
+        self,
+        title: str,
+        message: str,
+        content: str,
+        retry: bool = False,
+        on_result=None,
+    ):
         """Open a dialog that allows to display a large text body, such as a stack
         trace.
 
@@ -376,9 +383,9 @@ class Window:
 
     def save_file_dialog(
         self,
-        title,
-        suggested_filename,
-        file_types=None,
+        title: str,
+        suggested_filename: Path | str,
+        file_types: list[str] | None = None,
         on_result=None,
     ):
         """Prompt the user for a location to save a file.
@@ -419,10 +426,10 @@ class Window:
 
     def open_file_dialog(
         self,
-        title,
-        initial_directory=None,
-        file_types=None,
-        multiselect=False,
+        title: str,
+        initial_directory: Path | str | None = None,
+        file_types: list[str] | None = None,
+        multiselect: bool = False,
         on_result=None,
     ):
         """Ask the user to select a file (or files) to open.
@@ -456,9 +463,9 @@ class Window:
 
     def select_folder_dialog(
         self,
-        title,
-        initial_directory=None,
-        multiselect=False,
+        title: str,
+        initial_directory: Path | str | None = None,
+        multiselect: bool = False,
         on_result=None,
     ):
         """Ask the user to select a directory/folder (or folders) to open.
