@@ -35,8 +35,6 @@ class DialogResultCallback(Protocol[T]):
     def __call__(self, window: Window, result: T, **kwargs: Any) -> Any:
         """Called when the associated dialog is closed.
 
-        :return: ``True`` if the window should be closed, ``False`` otherwise.
-
         .. note::
             ``**kwargs`` ensures compatibility with additional arguments
             introduced in future versions.
