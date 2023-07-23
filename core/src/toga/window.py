@@ -3,7 +3,7 @@ from __future__ import annotations
 import warnings
 from builtins import id as identifier
 from pathlib import Path
-from typing import TYPE_CHECKING, Protocol, Any, TypeVar, overload, Literal
+from typing import TYPE_CHECKING, Any, Literal, Protocol, TypeVar, overload
 
 from toga.command import CommandSet
 from toga.handlers import AsyncResult, wrapped_handler

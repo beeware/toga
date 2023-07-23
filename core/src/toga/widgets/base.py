@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from builtins import id as identifier
-from typing import NoReturn, Iterator, TYPE_CHECKING
+from typing import TYPE_CHECKING, Iterator, NoReturn
 
 from travertino.node import Node
 

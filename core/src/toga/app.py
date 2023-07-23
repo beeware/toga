@@ -7,14 +7,14 @@ import webbrowser
 from builtins import id as identifier
 from collections.abc import MutableSet
 from email.message import Message
-from typing import Iterable, Protocol, Any
+from typing import Any, Iterable, Protocol
 
 from toga.command import CommandSet
 from toga.handlers import wrapped_handler
 from toga.icons import Icon
 from toga.paths import Paths
 from toga.platform import get_platform_factory
-from toga.widgets.base import WidgetRegistry, Widget
+from toga.widgets.base import Widget, WidgetRegistry
 from toga.window import Window
 
 try:
