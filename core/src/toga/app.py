@@ -7,7 +7,7 @@ import webbrowser
 from builtins import id as identifier
 from collections.abc import MutableSet
 from email.message import Message
-from typing import Optional, Iterable, Union, Protocol, Any
+from typing import Iterable, Union, Protocol, Any
 
 from toga.command import CommandSet
 from toga.handlers import wrapped_handler
@@ -28,7 +28,7 @@ warnings.filterwarnings("default", category=DeprecationWarning)
 
 
 class WindowContentProvider(Protocol):
-    def __call__(self, app: "App", **kwargs: Any) -> Optional[Widget]:
+    def __call__(self, app: "App", **kwargs: Any) -> Widget | None:
         """Called during app startup to set the initial main window content.
 
         .. note::
@@ -105,11 +105,11 @@ class MainWindow(Window):
 
     def __init__(
         self,
-        id: Optional[str] = None,
-        title: Optional[str] = None,
+        id: str | None = None,
+        title: str | None = None,
         position: tuple[int, int] = (100, 100),
         size: tuple[int, int] = (640, 480),
-        toolbar: Optional[list[Widget]] = None,
+        toolbar: list[Widget] | None = None,
         resizeable: bool = True,
         minimizable: bool = True,
         factory: None = None,  # DEPRECATED !
@@ -205,18 +205,18 @@ class App:
 
     def __init__(
         self,
-        formal_name: Optional[str] = None,
-        app_id: Optional[str] = None,
-        app_name: Optional[str] = None,
-        id: Optional[str] = None,
-        icon: Optional[Union[Icon, str]] = None,
-        author: Optional[str] = None,
-        version: Optional[str] = None,
-        home_page: Optional[str] = None,
-        description: Optional[str] = None,
-        startup: Optional[WindowContentProvider] = None,
+        formal_name: str | None = None,
+        app_id: str | None = None,
+        app_name: str | None = None,
+        id: str | None = None,
+        icon: Icon | str | None = None,
+        author: str | None = None,
+        version: str | None = None,
+        home_page: str | None = None,
+        description: str | None = None,
+        startup: WindowContentProvider | None = None,
         windows: Iterable[Window] = (),
-        on_exit: Optional[OnExitCallback] = None,
+        on_exit: OnExitCallback | None = None,
         factory: None = None,  # DEPRECATED !
     ):
         ######################################################################
@@ -407,7 +407,7 @@ class App:
         return self._app_name
 
     @property
-    def module_name(self) -> Optional[str]:
+    def module_name(self) -> str | None:
         """The module name for the app."""
         try:
             return self._app_name.replace("-", "_")
@@ -604,7 +604,7 @@ class App:
         return self._on_exit
 
     @on_exit.setter
-    def on_exit(self, handler: Optional[OnExitCallback]) -> None:
+    def on_exit(self, handler: OnExitCallback | None) -> None:
         """Set the handler to invoke before the app exits.
 
         Args:
@@ -646,18 +646,18 @@ class DocumentApp(App):
 
     def __init__(
         self,
-        formal_name: Optional[str] = None,
-        app_id: Optional[str] = None,
-        app_name: Optional[str] = None,
-        id: Optional[str] = None,
-        icon: Optional[str] = None,
-        author: Optional[str] = None,
-        version: Optional[str] = None,
-        home_page: Optional[str] = None,
-        description: Optional[str] = None,
-        startup: Optional[WindowContentProvider] = None,
-        document_types: Optional[list[str]] = None,
-        on_exit: Optional[OnExitCallback] = None,
+        formal_name: str | None = None,
+        app_id: str | None = None,
+        app_name: str | None = None,
+        id: str | None = None,
+        icon: str | None = None,
+        author: str | None = None,
+        version: str | None = None,
+        home_page: str | None = None,
+        description: str | None = None,
+        startup: WindowContentProvider | None = None,
+        document_types: list[str] | None = None,
+        on_exit: OnExitCallback | None = None,
         factory: None = None,  # DEPRECATED !
     ):
         ######################################################################

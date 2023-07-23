@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Optional, Protocol, Any
+from typing import Protocol, Any
 
 from toga.handlers import wrapped_handler
 
@@ -21,10 +21,10 @@ class OnPressCallback(Protocol):
 class Button(Widget):
     def __init__(
         self,
-        text: Optional[str],
-        id: Optional[str] = None,
+        text: str | None,
+        id: str | None = None,
         style=None,
-        on_press: Optional[OnPressCallback] = None,
+        on_press: OnPressCallback | None = None,
         enabled: bool = True,
     ):
         """Create a new button widget.
@@ -67,7 +67,7 @@ class Button(Widget):
         return self._impl.get_text()
 
     @text.setter
-    def text(self, value: Optional[str]) -> None:
+    def text(self, value: str | None) -> None:
         if value is None or value == "\u200B":
             value = ""
         else:

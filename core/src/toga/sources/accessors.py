@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import re
-from typing import Union, Optional
+from typing import Union
 
 NON_ACCESSOR_CHARS = re.compile(r"[^\w ]")
 WHITESPACE = re.compile(r"\s+")
@@ -40,7 +40,7 @@ def to_accessor(heading: str) -> str:
 def build_accessors(
     headings: list[str],
     accessors: Union[
-        list[Optional[str]],
+        list[str | None],
         dict[str, str],
         None,
     ],

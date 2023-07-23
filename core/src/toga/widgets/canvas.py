@@ -4,7 +4,6 @@ import warnings
 from contextlib import contextmanager
 from enum import Enum
 from math import pi
-from typing import Optional
 
 from toga.colors import BLACK, color as parse_color
 from toga.fonts import SYSTEM, Font
@@ -435,7 +434,7 @@ class Stroke(Context):
         self,
         color=BLACK,
         line_width: float = 2.0,
-        line_dash: Optional[list[float]] = None
+        line_dash: list[float] | None = None
     ):
         super().__init__()
         self._color = None
@@ -519,7 +518,7 @@ class Canvas(Context, Widget):
 
     def __init__(
         self,
-        id: Optional[str] = None,
+        id: str | None = None,
         style=None,
         on_resize=None,
         on_press=None,
@@ -1146,7 +1145,7 @@ class WriteText:
         font (:class:`toga.Font`, Optional): The font to write with.
     """
 
-    def __init__(self, text: str, x: float = 0, y: float = 0, font: Optional[Font] = None):
+    def __init__(self, text: str, x: float = 0, y: float = 0, font: Font | None = None):
         self.text = text
         self.x = x
         self.y = y

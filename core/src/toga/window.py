@@ -3,7 +3,7 @@ from __future__ import annotations
 import warnings
 from builtins import id as identifier
 from pathlib import Path
-from typing import Optional, TYPE_CHECKING, Protocol, Any
+from typing import TYPE_CHECKING, Protocol, Any
 
 from toga.command import CommandSet
 from toga.handlers import AsyncResult, wrapped_handler
@@ -56,16 +56,16 @@ class Window:
 
     def __init__(
         self,
-        id: Optional[str] = None,
-        title: Optional[str] = None,
+        id: str | None = None,
+        title: str | None = None,
         position: tuple[int, int] = (100, 100),
         size: tuple[int, int] = (640, 480),
-        toolbar: Optional[list[Widget]] = None,
+        toolbar: list[Widget | None] = None,
         resizeable: bool = True,
         closeable: bool = True,
         minimizable: bool = True,
         factory: None = None,  # DEPRECATED !
-        on_close: Optional[OnCloseCallback] = None,
+        on_close: OnCloseCallback | None = None,
     ) -> None:
         ######################################################################
         # 2022-09: Backwards compatibility
@@ -110,7 +110,7 @@ class Window:
         return self._id
 
     @property
-    def app(self) -> Optional[App]:
+    def app(self) -> App | None:
         """Instance of the :class:`toga.App` that this window belongs to.
 
         Returns:
@@ -154,7 +154,7 @@ class Window:
         return self._toolbar
 
     @property
-    def content(self) -> Optional[Widget]:
+    def content(self) -> Widget | None:
         """Content of the window. On setting, the content is added to the same app as
         the window and to the same app."""
         return self._content
@@ -249,7 +249,7 @@ class Window:
         return self._on_close
 
     @on_close.setter
-    def on_close(self, handler: Optional[OnCloseCallback]) -> None:
+    def on_close(self, handler: OnCloseCallback | None) -> None:
         """Set the handler to invoke when before window is closed. If the
         handler returns ``False``, the window will not be closed. This can be
         used for example for confirmation dialogs.

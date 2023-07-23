@@ -1,16 +1,14 @@
 from __future__ import annotations
 
-from typing import Optional
-
 from .base import Widget
 
 
 class Box(Widget):
     def __init__(
         self,
-        id: Optional[str] = None,
+        id: str | None = None,
         style=None,
-        children: Optional[list[Widget]] = None,
+        children: list[Widget] | None = None,
     ):
         """Create a new Box container widget.
 

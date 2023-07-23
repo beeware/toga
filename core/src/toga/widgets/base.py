@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from builtins import id as identifier
-from typing import Optional
 
 from travertino.node import Node
 
@@ -46,7 +45,7 @@ class Widget(Node):
 
     def __init__(
         self,
-        id: Optional[str] = None,
+        id: str | None = None,
         style=None,
     ):
         """Create a base Toga widget.
