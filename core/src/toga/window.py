@@ -3,7 +3,7 @@ from __future__ import annotations
 import warnings
 from builtins import id as identifier
 from pathlib import Path
-from typing import TYPE_CHECKING, Protocol, Any, TypeVar
+from typing import TYPE_CHECKING, Protocol, Any, TypeVar, overload, Literal
 
 from toga.command import CommandSet
 from toga.handlers import AsyncResult, wrapped_handler
@@ -496,6 +496,36 @@ class Window:
             on_result=wrapped_handler(self, on_result),
         )
         return dialog
+
+    @overload
+    def select_folder_dialog(
+        self,
+        title: str,
+        initial_directory: Path | str | None = None,
+        multiselect: Literal[False] = False,
+        on_result: DialogResultCallback[Path | None] | None = None,
+    ) -> Dialog:
+        ...
+
+    @overload
+    def select_folder_dialog(
+        self,
+        title: str,
+        initial_directory: Path | str | None = None,
+        multiselect: Literal[True] = True,
+        on_result: DialogResultCallback[list[Path] | None] | None = None,
+    ) -> Dialog:
+        ...
+
+    @overload
+    def select_folder_dialog(
+        self,
+        title: str,
+        initial_directory: Path | str | None = None,
+        multiselect: bool = False,
+        on_result: DialogResultCallback[list[Path] | Path | None] | None = None,
+    ) -> Dialog:
+        ...
 
     def select_folder_dialog(
         self,
