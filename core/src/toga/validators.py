@@ -5,7 +5,7 @@ from abc import abstractmethod
 
 
 class BooleanValidator:
-    def __init__(self, error_message: str, allow_empty: bool = True):
+    def __init__(self, error_message: str, allow_empty: bool = True) -> None:
         """An abstract base class for defining a simple validator.
 
         Subclasses should implement the ``is_valid()`` method
@@ -18,7 +18,7 @@ class BooleanValidator:
         self.error_message = error_message
         self.allow_empty = allow_empty
 
-    def __call__(self, input_string: str):
+    def __call__(self, input_string: str) -> str | None:
         if self.allow_empty and input_string == "":
             return None
         return None if self.is_valid(input_string) else self.error_message
@@ -41,7 +41,7 @@ class CountValidator:
         expected_non_existence_message: str,
         expected_count_message: str,
         allow_empty: bool = True,
-    ):
+    ) -> None:
         """An abstract base class for validators that are based on counting
         instances of some content in the overall content.
 
@@ -64,7 +64,7 @@ class CountValidator:
         self.expected_count_message = expected_count_message
         self.allow_empty = allow_empty
 
-    def __call__(self, input_string: str):
+    def __call__(self, input_string: str) -> str | None:
         if self.allow_empty and input_string == "":
             return None
         actual_count = self.count(input_string)
@@ -93,7 +93,7 @@ class LengthBetween(BooleanValidator):
         max_length: int | None,
         error_message: str | None = None,
         allow_empty: bool = True,
-    ):
+    ) -> None:
         """A validator confirming that the length of input falls in a given
         range.
 
@@ -120,7 +120,7 @@ class LengthBetween(BooleanValidator):
         self.min_length = min_length
         self.max_length = max_length
 
-    def is_valid(self, input_string: str):
+    def is_valid(self, input_string: str) -> bool:
         if self.min_length is not None:
             if len(input_string) < self.min_length:
                 return False
@@ -136,7 +136,7 @@ class MinLength(LengthBetween):
         length: int,
         error_message: str | None = None,
         allow_empty: bool = True,
-    ):
+    ) -> None:
         """A validator confirming that the length of input exceeds a minimum size.
 
         :param length: The minimum length of the string (inclusive).
@@ -162,7 +162,7 @@ class MaxLength(LengthBetween):
         self,
         length: int,
         error_message: str | None = None,
-    ):
+    ) -> None:
         """A validator confirming that the length of input does not exceed a maximum size.
 
         :param length: The maximum length of the string (inclusive).
@@ -186,7 +186,7 @@ class StartsWith(BooleanValidator):
         substring: str,
         error_message: str | None = None,
         allow_empty: bool = True,
-    ):
+    ) -> None:
         """A validator confirming that the input starts with a given substring.
 
         :param substring: The substring that the input must start with.
@@ -201,7 +201,7 @@ class StartsWith(BooleanValidator):
         super().__init__(error_message=error_message, allow_empty=allow_empty)
         self.substring = substring
 
-    def is_valid(self, input_string: str):
+    def is_valid(self, input_string: str) -> bool:
         return input_string.startswith(self.substring)
 
 
@@ -211,7 +211,7 @@ class EndsWith(BooleanValidator):
         substring: str,
         error_message: str | None = None,
         allow_empty: bool = True,
-    ):
+    ) -> None:
         """A validator confirming that the string ends with a given substring.
 
         :param substring: The substring that the input must end with.
@@ -226,7 +226,7 @@ class EndsWith(BooleanValidator):
         super().__init__(error_message=error_message, allow_empty=allow_empty)
         self.substring = substring
 
-    def is_valid(self, input_string: str):
+    def is_valid(self, input_string: str) -> bool:
         return input_string.endswith(self.substring)
 
 
@@ -237,7 +237,7 @@ class Contains(CountValidator):
         count: int | None = None,
         error_message: str | None = None,
         allow_empty: bool = True,
-    ):
+    ) -> None:
         """A validator confirming that the string contains one or more
         copies of a substring.
 
@@ -268,7 +268,7 @@ class Contains(CountValidator):
         )
         self.substring = substring
 
-    def count(self, input_string: str):
+    def count(self, input_string: str) -> int:
         return input_string.count(self.substring)
 
 
@@ -277,7 +277,7 @@ class NotContains(Contains):
         self,
         substring: str,
         error_message: str | None = None,
-    ):
+    ) -> None:
         """A validator confirming that the string does not contain a substring.
 
         :param substring: A substring that must not exist in the input.
@@ -297,7 +297,7 @@ class MatchRegex(BooleanValidator):
         regex_string,
         error_message: str | None = None,
         allow_empty: bool = True,
-    ):
+    ) -> None:
         """A validator confirming that the string matches a given regular expression.
 
         :param regex_string: A regular expression that the input must match.
@@ -312,7 +312,7 @@ class MatchRegex(BooleanValidator):
         super().__init__(error_message=error_message, allow_empty=allow_empty)
         self.regex_string = regex_string
 
-    def is_valid(self, input_string: str):
+    def is_valid(self, input_string: str) -> bool:
         return bool(re.search(self.regex_string, input_string))
 
 
@@ -322,7 +322,7 @@ class ContainsUppercase(CountValidator):
         count: int | None = None,
         error_message: str | None = None,
         allow_empty: bool = True,
-    ):
+    ) -> None:
         """A validator confirming that the string contains upper case letters.
 
         :param count: Optional; if provided, the exact count of upper
@@ -357,7 +357,7 @@ class ContainsUppercase(CountValidator):
             allow_empty=allow_empty,
         )
 
-    def count(self, input_string: str):
+    def count(self, input_string: str) -> int:
         return len([char for char in input_string if char.isupper()])
 
 
@@ -367,7 +367,7 @@ class ContainsLowercase(CountValidator):
         count: int | None = None,
         error_message: str | None = None,
         allow_empty: bool = True,
-    ):
+    ) -> None:
         """A validator confirming that the string contains lower case letters.
 
         :param count: Optional; if provided, the exact count of lower
@@ -402,7 +402,7 @@ class ContainsLowercase(CountValidator):
             allow_empty=allow_empty,
         )
 
-    def count(self, input_string: str):
+    def count(self, input_string: str) -> int:
         return len([char for char in input_string if char.islower()])
 
 
@@ -412,7 +412,7 @@ class ContainsDigit(CountValidator):
         count: int | None = None,
         error_message: str | None = None,
         allow_empty: bool = True,
-    ):
+    ) -> None:
         """A validator confirming that the string contains digits.
 
         :param count: Optional; if provided, the exact count of digits
@@ -442,7 +442,7 @@ class ContainsDigit(CountValidator):
             allow_empty=allow_empty,
         )
 
-    def count(self, input_string: str):
+    def count(self, input_string: str) -> int:
         return len([char for char in input_string if char.isdigit()])
 
 
@@ -452,7 +452,7 @@ class ContainsSpecial(CountValidator):
         count: int | None = None,
         error_message: str | None = None,
         allow_empty: bool = True,
-    ):
+    ) -> None:
         """A validator confirming that the string contains "special" (i.e.,
         non-alphanumeric) characters.
 
@@ -488,7 +488,7 @@ class ContainsSpecial(CountValidator):
             allow_empty=allow_empty,
         )
 
-    def count(self, input_string: str):
+    def count(self, input_string: str) -> int:
         return len(
             [
                 char
@@ -499,7 +499,9 @@ class ContainsSpecial(CountValidator):
 
 
 class Integer(BooleanValidator):
-    def __init__(self, error_message: str | None = None, allow_empty: bool = True):
+    def __init__(
+        self, error_message: str | None = None, allow_empty: bool = True
+    ) -> None:
         """A validator confirming that the string is an integer.
 
         :param error_message: Optional; the error message to display when the
