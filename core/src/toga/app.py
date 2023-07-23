@@ -31,6 +31,8 @@ class WindowContentProvider(Protocol):
     def __call__(self, app: App, **kwargs: Any) -> Widget | None:
         """Called during app startup to set the initial main window content.
 
+        :return: The widget to add to the main window, or ``None``.
+
         .. note::
             ``**kwargs`` ensures compatibility with additional arguments
             introduced in future versions.

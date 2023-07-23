@@ -11,6 +11,8 @@ class OnPressCallback(Protocol):
     def __call__(self, widget: Button, **kwargs: Any) -> Any:
         """Called when the associated button is pressed.
 
+        :return: The return value is ignored.
+
         .. note::
             ``**kwargs`` ensures compatibility with additional arguments
             introduced in future versions.
