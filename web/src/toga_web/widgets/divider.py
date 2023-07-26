@@ -1,18 +1,10 @@
-"""
-A web widget to display a divider.
-
-This is a web implementation of the `toga.Divider` widget.
-Details can be found in https://shoelace.style/components/divider
-"""
 from toga.constants import Direction
 
 from .base import Widget
 
 
 class Divider(Widget):
-    def create(
-        self,
-    ):
+    def create(self):
         self.native = self._create_native_widget("sl-divider")
 
     def get_direction(self):

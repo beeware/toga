@@ -44,7 +44,8 @@ def not_implemented(feature):
 __all__ = [
     "not_implemented",
     "App",
-    "MainWindow",  # 'DocumentApp',
+    "MainWindow",
+    # 'DocumentApp',
     "Command",
     # 'Document',
     # # Resources
