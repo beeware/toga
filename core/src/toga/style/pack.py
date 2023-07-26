@@ -764,11 +764,10 @@ class Pack(BaseStyle):
         # direction
         css.append(f"flex-direction: {self.direction.lower()};")
         # flex
-        if (
-            (self.width == NONE and self.direction == ROW)
-            or (self.height == NONE and self.direction == COLUMN)
-        ) and getattr(self, "_use_default_width", True):
-            css.append(f"flex: {self.flex} 0 0;")
+        if (self.width == NONE and self.direction == ROW) or (
+            self.height == NONE and self.direction == COLUMN
+        ):
+            css.append(f"flex: {self.flex} 0 auto;")
 
         # width/flex
         if self.width != NONE:

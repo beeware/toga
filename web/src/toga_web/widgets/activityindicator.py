@@ -1,17 +1,8 @@
-"""
-A web widget to display an activity indicator.
-
-This is a web implementation of the `toga.ActivityIndicator` widget.
-
-Details can be found in
-https://shoelace.style/components/spinner
-"""
 from .base import Widget
 
 
 class ActivityIndicator(Widget):
     def create(self):
-        self.interface.style._use_default_width = False
         self.native = self._create_native_widget("sl-spinner")
         self.stop()
 
