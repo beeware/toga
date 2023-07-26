@@ -55,5 +55,6 @@ Reference
    :members:
    :undoc-members:
 
-.. autoprotocol:: toga.app.WindowContentProvider
-.. autoprotocol:: toga.app.OnExitCallback
+.. autoprotocol:: toga.app.AppStartupMethod
+.. autoprotocol:: toga.app.BackgroundTask
+.. autoprotocol:: toga.app.OnExitHandler

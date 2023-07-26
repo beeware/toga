@@ -48,5 +48,5 @@ Reference
    :members:
    :undoc-members:
 
-.. autoprotocol:: toga.window.OnCloseCallback
-.. autoprotocol:: toga.window.DialogResultCallback
+.. autoprotocol:: toga.window.OnCloseHandler
+.. autoprotocol:: toga.window.DialogResultHandler

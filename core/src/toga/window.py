@@ -15,15 +15,20 @@ if TYPE_CHECKING:
     from toga.widgets.base import Widget
 
 
-class OnCloseCallback(Protocol):
+class OnCloseHandler(Protocol):
     def __call__(self, window: Window, **kwargs: Any) -> bool:
-        """Called when the associated window is closed.
+        """A handler to invoke when a window is about to close.
 
-        :return: ``True`` if the window should be closed, ``False`` otherwise.
+        The return value of this callback controls whether the window is allowed to close.
+        This can be used to prevent a window closing with unsaved changes, etc.
 
         .. note::
             ``**kwargs`` ensures compatibility with additional arguments
             introduced in future versions.
+
+        :param window: The window instance that is closing.
+        :returns: ``True`` if the window is allowed to close; ``False`` if the window is not
+            allowed to close.
         """
         ...
 
@@ -31,15 +36,16 @@ class OnCloseCallback(Protocol):
 T = TypeVar("T")
 
 
-class DialogResultCallback(Protocol[T]):
-    def __call__(self, window: Window, result: T, **kwargs: Any) -> Any:
-        """Called when the associated dialog is closed.
-
-        :return: The return value is ignored.
+class DialogResultHandler(Protocol[T]):
+    def __call__(self, window: Window, result: T, **kwargs: Any) -> None:
+        """A handler to invoke when a dialog is closed.
 
         .. note::
             ``**kwargs`` ensures compatibility with additional arguments
             introduced in future versions.
+
+        :param window: The window that opened the dialog.
+        :param result: The result returned by the dialog.
         """
         ...
 
@@ -81,7 +87,7 @@ class Window:
         closeable: bool = True,
         minimizable: bool = True,
         factory: None = None,  # DEPRECATED !
-        on_close: OnCloseCallback | None = None,
+        on_close: OnCloseHandler | None = None,
     ) -> None:
         ######################################################################
         # 2022-09: Backwards compatibility
@@ -150,11 +156,7 @@ class Window:
 
     @property
     def title(self) -> str:
-        """Title of the window. If no title is given it defaults to "Toga".
-
-        Returns:
-            The current title of the window as a ``str``.
-        """
+        """Title of the window. If no title is given it defaults to ``"Toga"``."""
         return self._impl.get_title()
 
     @title.setter
@@ -201,7 +203,7 @@ class Window:
 
     @property
     def size(self) -> tuple[int, int]:
-        """Size of the window, as width, height."""
+        """Size of the window, as a ``(width, height)`` tuple."""
         return self._impl.get_size()
 
     @size.setter
@@ -212,7 +214,7 @@ class Window:
 
     @property
     def position(self) -> tuple[int, int]:
-        """Position of the window, as x, y."""
+        """Position of the window, as an ``(x, y)`` tuple."""
         return self._impl.get_position()
 
     @position.setter
@@ -256,24 +258,12 @@ class Window:
             self.hide()
 
     @property
-    def on_close(self) -> None:
-        """The handler to invoke before the window is closed.
-
-        Returns:
-            The function ``callable`` that is called before the window is closed.
-        """
+    def on_close(self) -> OnCloseHandler:
+        """The handler to invoke before the window is closed."""
         return self._on_close
 
     @on_close.setter
-    def on_close(self, handler: OnCloseCallback | None) -> None:
-        """Set the handler to invoke when before window is closed. If the
-        handler returns ``False``, the window will not be closed. This can be
-        used for example for confirmation dialogs.
-
-        Args:
-            handler: The handler to invoke before the window is closed.
-        """
-
+    def on_close(self, handler: OnCloseHandler | None) -> None:
         def cleanup(window: Window, should_close: bool) -> None:
             if should_close:
                 window.close()
@@ -292,7 +282,7 @@ class Window:
         self,
         title: str,
         message: str,
-        on_result: DialogResultCallback[None] | None = None,
+        on_result: DialogResultHandler[None] | None = None,
     ) -> Dialog:
         """Ask the user to acknowledge some information.
 
@@ -315,7 +305,7 @@ class Window:
         self,
         title: str,
         message: str,
-        on_result: DialogResultCallback[bool] | None = None,
+        on_result: DialogResultHandler[bool] | None = None,
     ) -> Dialog:
         """Ask the user a yes/no question.
 
@@ -339,7 +329,7 @@ class Window:
         self,
         title: str,
         message: str,
-        on_result: DialogResultCallback[bool] | None = None,
+        on_result: DialogResultHandler[bool] | None = None,
     ) -> Dialog:
         """Ask the user to confirm if they wish to proceed with an action.
 
@@ -364,7 +354,7 @@ class Window:
         self,
         title: str,
         message: str,
-        on_result: DialogResultCallback[None] | None = None,
+        on_result: DialogResultHandler[None] | None = None,
     ) -> Dialog:
         """Ask the user to acknowledge an error state.
 
@@ -390,7 +380,7 @@ class Window:
         message: str,
         content: str,
         retry: Literal[False] = False,
-        on_result: DialogResultCallback[None] | None = None,
+        on_result: DialogResultHandler[None] | None = None,
     ) -> Dialog:
         ...
 
@@ -401,7 +391,7 @@ class Window:
         message: str,
         content: str,
         retry: Literal[True] = False,
-        on_result: DialogResultCallback[bool] | None = None,
+        on_result: DialogResultHandler[bool] | None = None,
     ) -> Dialog:
         ...
 
@@ -412,7 +402,7 @@ class Window:
         message: str,
         content: str,
         retry: bool = False,
-        on_result: DialogResultCallback[bool | None] | None = None,
+        on_result: DialogResultHandler[bool | None] | None = None,
     ) -> Dialog:
         ...
 
@@ -422,7 +412,7 @@ class Window:
         message: str,
         content: str,
         retry: bool = False,
-        on_result: DialogResultCallback[bool | None] | None = None,
+        on_result: DialogResultHandler[bool | None] | None = None,
     ) -> Dialog:
         """Open a dialog that allows to display a large text body, such as a stack
         trace.
@@ -455,7 +445,7 @@ class Window:
         title: str,
         suggested_filename: Path | str,
         file_types: list[str] | None = None,
-        on_result: DialogResultCallback[Path | None] | None = None,
+        on_result: DialogResultHandler[Path | None] | None = None,
     ) -> Dialog:
         """Prompt the user for a location to save a file.
 
@@ -500,7 +490,7 @@ class Window:
         initial_directory: Path | str | None = None,
         file_types: list[str] | None = None,
         multiselect: Literal[False] = False,
-        on_result: DialogResultCallback[Path | None] | None = None,
+        on_result: DialogResultHandler[Path | None] | None = None,
     ) -> Dialog:
         ...
 
@@ -511,7 +501,7 @@ class Window:
         initial_directory: Path | str | None = None,
         file_types: list[str] | None = None,
         multiselect: Literal[True] = True,
-        on_result: DialogResultCallback[list[Path] | None] | None = None,
+        on_result: DialogResultHandler[list[Path] | None] | None = None,
     ) -> Dialog:
         ...
 
@@ -522,7 +512,7 @@ class Window:
         initial_directory: Path | str | None = None,
         file_types: list[str] | None = None,
         multiselect: bool = False,
-        on_result: DialogResultCallback[list[Path] | Path | None] | None = None,
+        on_result: DialogResultHandler[list[Path] | Path | None] | None = None,
     ) -> Dialog:
         ...
 
@@ -532,7 +522,7 @@ class Window:
         initial_directory: Path | str | None = None,
         file_types: list[str] | None = None,
         multiselect: bool = False,
-        on_result: DialogResultCallback[list[Path] | Path | None] | None = None,
+        on_result: DialogResultHandler[list[Path] | Path | None] | None = None,
     ) -> Dialog:
         """Ask the user to select a file (or files) to open.
 
@@ -569,7 +559,7 @@ class Window:
         title: str,
         initial_directory: Path | str | None = None,
         multiselect: Literal[False] = False,
-        on_result: DialogResultCallback[Path | None] | None = None,
+        on_result: DialogResultHandler[Path | None] | None = None,
     ) -> Dialog:
         ...
 
@@ -579,7 +569,7 @@ class Window:
         title: str,
         initial_directory: Path | str | None = None,
         multiselect: Literal[True] = True,
-        on_result: DialogResultCallback[list[Path] | None] | None = None,
+        on_result: DialogResultHandler[list[Path] | None] | None = None,
     ) -> Dialog:
         ...
 
@@ -589,7 +579,7 @@ class Window:
         title: str,
         initial_directory: Path | str | None = None,
         multiselect: bool = False,
-        on_result: DialogResultCallback[list[Path] | Path | None] | None = None,
+        on_result: DialogResultHandler[list[Path] | Path | None] | None = None,
     ) -> Dialog:
         ...
 
@@ -598,7 +588,7 @@ class Window:
         title: str,
         initial_directory: Path | str | None = None,
         multiselect: bool = False,
-        on_result: DialogResultCallback[list[Path] | Path | None] | None = None,
+        on_result: DialogResultHandler[list[Path] | Path | None] | None = None,
     ) -> Dialog:
         """Ask the user to select a directory/folder (or folders) to open.
 

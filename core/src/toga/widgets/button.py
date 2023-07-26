@@ -7,15 +7,15 @@ from toga.handlers import wrapped_handler
 from .base import Widget
 
 
-class OnPressCallback(Protocol):
-    def __call__(self, widget: Button, **kwargs: Any) -> Any:
-        """Called when the associated button is pressed.
-
-        :return: The return value is ignored.
+class OnPressHandler(Protocol):
+    def __call__(self, widget: Button, **kwargs: Any) -> None:
+        """A handler that will be invoked when a button is pressed.
 
         .. note::
             ``**kwargs`` ensures compatibility with additional arguments
             introduced in future versions.
+
+        :param widget: The button that was pressed.
         """
         ...
 
@@ -26,7 +26,7 @@ class Button(Widget):
         text: str | None,
         id: str | None = None,
         style=None,
-        on_press: OnPressCallback | None = None,
+        on_press: OnPressHandler | None = None,
         enabled: bool = True,
     ):
         """Create a new button widget.
@@ -81,7 +81,7 @@ class Button(Widget):
         self.refresh()
 
     @property
-    def on_press(self) -> OnPressCallback:
+    def on_press(self) -> OnPressHandler:
         """The handler to invoke when the button is pressed."""
         return self._on_press
 

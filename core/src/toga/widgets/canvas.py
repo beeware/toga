@@ -171,8 +171,8 @@ class Context:
         :class:`ClosedPath`.
 
         Args:
-            x (float): The x-axis of the beginning point.
-            y (float): The y-axis of the beginning point.
+            x (float): The x axis of the beginning point.
+            y (float): The y axis of the beginning point.
 
         Yields:
             :class:`ClosedPath` object.
@@ -200,8 +200,8 @@ class Context:
         """Constructs and returns a :class:`MoveTo`.
 
         Args:
-            x (float): The x-axis of the point.
-            y (float): The y-axis of the point.
+            x (float): The x axis of the point.
+            y (float): The y axis of the point.
 
         Returns:
             :class:`MoveTo` object.
@@ -213,8 +213,8 @@ class Context:
         """Constructs and returns a :class:`LineTo`.
 
         Args:
-            x (float): The x-axis of the coordinate for the end of the line.
-            y (float): The y-axis of the coordinate for the end of the line.
+            x (float): The x axis of the coordinate for the end of the line.
+            y (float): The y axis of the coordinate for the end of the line.
 
         Returns:
             :class:`LineTo` object.
@@ -243,10 +243,10 @@ class Context:
         """Constructs and returns a :class:`QuadraticCurveTo`.
 
         Args:
-            cpx (float): The x-axis of the coordinate for the control point.
-            cpy (float): The y-axis of the coordinate for the control point.
-            x (float): The x-axis of the coordinate for the end point.
-            y (float): The y-axis of the coordinate for the end point.
+            cpx (float): The x axis of the coordinate for the control point.
+            cpy (float): The y axis of the coordinate for the control point.
+            x (float): The x axis of the coordinate for the end point.
+            y (float): The y axis of the coordinate for the end point.
 
         Returns:
             :class:`QuadraticCurveTo` object.
@@ -261,10 +261,10 @@ class Context:
         :param y: The y coordinate of the arc's center.
         :param radius: The arc's radius.
         :param startangle: The angle (in radians) at which the
-                arc starts, measured clockwise from the positive x-axis,
+                arc starts, measured clockwise from the positive x axis,
                 default 0.0.
         :param endangle: The angle (in radians) at which the arc ends,
-                measured clockwise from the positive x-axis, default 2*pi.
+                measured clockwise from the positive x axis, default 2*pi.
         :param anticlockwise: If true, causes the arc to be drawn
                 counter-clockwise between the two angles instead of clockwise,
                 default false.
@@ -287,14 +287,14 @@ class Context:
     ):
         """Constructs and returns a :class:`Ellipse`.
 
-        :param x: The x-axis of the coordinate for the ellipse's center.
-        :param y: The y-axis of the coordinate for the ellipse's center.
+        :param x: The x axis of the coordinate for the ellipse's center.
+        :param y: The y axis of the coordinate for the ellipse's center.
         :param radiusx: The ellipse's major-axis radius.
         :param radiusy: The ellipse's minor-axis radius.
         :param rotation: The rotation for this ellipse, expressed in radians,
             default 0.0.
         :param startangle: The starting point in radians, measured from the
-            x-axis, from which it will be drawn, default 0.0.
+            x axis, from which it will be drawn, default 0.0.
         :param endangle: The end ellipse's angle in radians to which it will e
             drawn, default 2*pi.
         :param anticlockwise: If true, draws the ellipse anticlockwise
@@ -471,8 +471,8 @@ class ClosedPath(Context):
     Creates a new path and then closes it.
 
     Args:
-        x: The x-axis of the beginning point.
-        y: The y-axis of the beginning point.
+        x: The x axis of the beginning point.
+        y: The y axis of the beginning point.
     """
 
     def __init__(self, x: float, y: float):
@@ -772,8 +772,8 @@ class MoveTo:
 
 
     Args:
-        x: The x-axis of the point.
-        y: The y-axis of the point.
+        x: The x axis of the point.
+        y: The y axis of the point.
     """
 
     def __init__(self, x: float, y: float):
@@ -795,8 +795,8 @@ class LineTo:
     with a straight line (but does not actually draw it).
 
     Args:
-        x: The x-axis of the coordinate for the end of the line.
-        y: The y-axis of the coordinate for the end of the line.
+        x: The x axis of the coordinate for the end of the line.
+        y: The y axis of the coordinate for the end of the line.
     """
 
     def __init__(self, x: float, y: float):
@@ -865,10 +865,10 @@ class QuadraticCurveTo:
     current path, which can be changed using ``moveTo()`` before creating the
     quadratic Bézier curve.
 
-    :param cpx: The x-axis of the coordinate for the control point.
-    :param cpy: The y-axis of the coordinate for the control point.
-    :param x: The x-axis of the coordinate for the end point.
-    :param y: The y-axis of the coordinate for the end point.
+    :param cpx: The x axis of the coordinate for the control point.
+    :param cpy: The y axis of the coordinate for the control point.
+    :param x: The x axis of the coordinate for the end point.
+    :param y: The y axis of the coordinate for the end point.
     """
 
     def __init__(self, cpx: float, cpy: float, x: float, y: float):
@@ -894,13 +894,13 @@ class Ellipse:
     and ``radiusy`` starting at ``startangle`` and ending at ``endangle`` going
     in the given direction by anticlockwise (defaulting to clockwise).
 
-    :param x: The x-axis of the coordinate for the ellipse's center.
-    :param y: The y-axis of the coordinate for the ellipse's center.
+    :param x: The x axis of the coordinate for the ellipse's center.
+    :param y: The y axis of the coordinate for the ellipse's center.
     :param radiusx: The ellipse's major-axis radius.
     :param radiusy: The ellipse's minor-axis radius.
     :param rotation: The rotation for this ellipse, expressed in radians, default
         0.0.
-    :param startangle: The starting point in radians, measured from the x-axis,
+    :param startangle: The starting point in radians, measured from the x axis,
         from which it will be drawn, default 0.0.
     :param endangle: The end ellipse's angle in radians to which it will be
         drawn, default 2*pi.
@@ -971,9 +971,9 @@ class Arc:
     :param y: The y coordinate of the arc's center.
     :param radius: The arc's radius.
     :param startangle: The angle (in radians) at which the arc starts, measured
-        clockwise from the positive x-axis, default 0.0.
+        clockwise from the positive x axis, default 0.0.
     :param endangle: The angle (in radians) at which the arc ends, measured
-        clockwise from the positive x-axis, default 2*pi.
+        clockwise from the positive x axis, default 2*pi.
     :param anticlockwise: If true, causes the arc to be drawn counter-clockwise
         between the two angles instead of clockwise, default false.
     """

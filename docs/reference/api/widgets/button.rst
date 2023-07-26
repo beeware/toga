@@ -46,4 +46,4 @@ Reference
    :members:
    :undoc-members:
 
-.. autoprotocol:: toga.widgets.button.OnPressCallback
+.. autoprotocol:: toga.widgets.button.OnPressHandler

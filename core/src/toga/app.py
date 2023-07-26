@@ -27,34 +27,55 @@ except ImportError:
 warnings.filterwarnings("default", category=DeprecationWarning)
 
 
-class WindowContentProvider(Protocol):
-    def __call__(self, app: App, **kwargs: Any) -> Widget | None:
-        """Called during app startup to set the initial main window content.
+class AppStartupMethod(Protocol):
+    def __call__(self, app: App, **kwargs: Any) -> Widget:
+        """The startup method of the app.
 
-        :return: The widget to add to the main window, or ``None``.
+        Called during app startup to set the initial main window content.
 
         .. note::
             ``**kwargs`` ensures compatibility with additional arguments
             introduced in future versions.
+
+        :param app: The app instance that is starting.
+        :returns: The widget to use as the main window content.
         """
         ...
 
 
-class OnExitCallback(Protocol):
+class OnExitHandler(Protocol):
     def __call__(self, app: App, **kwargs: Any) -> bool:
-        """Called when the associated app is exited.
+        """A handler to invoke when the app is about to exit.
 
-        :return: ``True`` if the app should be closed, ``False`` otherwise.
+        The return value of this callback controls whether the app is allowed to exit.
+        This can be used to prevent the app exiting with unsaved changes, etc.
 
         .. note::
             ``**kwargs`` ensures compatibility with additional arguments
             introduced in future versions.
+
+        :param app: The app instance that is exiting.
+        :returns: ``True`` if the app is allowed to exit; ``False`` if the app is not
+            allowed to exit.
+        """
+        ...
+
+
+class BackgroundTask(Protocol):
+    def __call__(self, app: App, **kwargs: Any) -> None:
+        """Code that should be executed as a background task.
+
+        .. note::
+            ``**kwargs`` ensures compatibility with additional arguments
+            introduced in future versions.
+
+        :param app: The app that is handling the background task.
         """
         ...
 
 
 class WindowSet(MutableSet):
-    """This class represents windows of a toga app.
+    """A collection of windows managed by an app.
 
     A window can be added to app by using `app.windows.add(toga.Window(...))` or
     `app.windows += toga.Window(...)` notations. Adding a window to app automatically
@@ -140,7 +161,7 @@ class MainWindow(Window):
 
     @Window.on_close.setter
     def on_close(self, handler):
-        """Raise an exception: on_exit for the app should be used instead of on_close on
+        """Raise an exception. ``on_exit`` for the app should be used instead of ``on_close`` on
         main window.
 
         Args:
@@ -153,56 +174,6 @@ class MainWindow(Window):
 
 
 class App:
-    """The App is the top level of any GUI program. It is the manager of all the other
-    bits of the GUI app: the main window and events that window generates like user
-    input.
-
-    When you create an App you need to provide it a name, an id for uniqueness
-    (by convention, the identifier is a reversed domain name.) and an
-    optional startup function which should run once the App has initialized.
-    The startup function typically constructs some initial user interface.
-
-    If the name and app_id are *not* provided, the application will attempt
-    to find application metadata. This process will determine the module in
-    which the App class is defined, and look for a ``.dist-info`` file
-    matching that name.
-
-    Once the app is created you should invoke the main_loop() method, which
-    will hand over execution of your program to Toga to make the App interface
-    do its thing.
-
-    The absolute minimum App would be::
-
-        >>> app = toga.App(formal_name='Empty App', app_id='org.beeware.empty')
-        >>> app.main_loop()
-
-    :param formal_name: The formal name of the application. Will be derived from
-        packaging metadata if not provided.
-    :param app_id: The unique application identifier. This will usually be a
-        reversed domain name, e.g. ``org.beeware.myapp``. Will be derived from
-        packaging metadata if not provided.
-    :param app_name: The name of the Python module containing the app.
-        Will be derived from the module defining the instance of the App class
-        if not provided.
-    :param id: The DOM identifier for the app (optional)
-    :param icon: Identifier for the application's icon.
-    :param author: The person or organization to be credited as the author
-        of the application. Will be derived from application metadata if not
-        provided.
-    :param version: The version number of the app. Will be derived from
-        packaging metadata if not provided.
-    :param home_page: A URL for a home page for the app. Used in auto-generated
-        help menu items. Will be derived from packaging metadata if not
-        provided.
-    :param description: A brief (one line) description of the app. Will be
-        derived from packaging metadata if not provided.
-    :param startup: The callback method before starting the app, typically to
-        add the components. Must be a ``callable`` that expects a single
-        argument of :class:`~toga.App`.
-    :param windows: An iterable with objects of :class:`~toga.Window`
-        that will be the app's secondary windows.
-    """
-
     app = None
 
     def __init__(
@@ -216,11 +187,55 @@ class App:
         version: str | None = None,
         home_page: str | None = None,
         description: str | None = None,
-        startup: WindowContentProvider | None = None,
+        startup: AppStartupMethod | None = None,
         windows: Iterable[Window] = (),
-        on_exit: OnExitCallback | None = None,
+        on_exit: OnExitHandler | None = None,
         factory: None = None,  # DEPRECATED !
     ):
+        """An App is the top level of any GUI program.
+
+        The App is the manager of all the other aspects of execution. An app will
+        usually have a main window; this window will hold the widgets with which the
+        user will interact.
+
+        When you create an App you need to provide a name, an id for uniqueness (by
+        convention, the identifier is a reversed domain name) and an optional startup
+        function which should run once the App has initialized. The startup function
+        constructs the initial user interface. If a startup function is not provided as
+        an argument, you must subclass the App class and define a ``startup()`` method.
+
+        If the name and app_id are *not* provided, the application will attempt to find
+        application metadata. This process will determine the module in which the App
+        class is defined, and look for a ``.dist-info`` file matching that name.
+
+        Once the app is created you should invoke the ``main_loop()`` method, which will
+        start the event loop of your App.
+
+        :param formal_name: The formal name of the application. Will be derived from
+            packaging metadata if not provided.
+        :param app_id: The unique application identifier. This will usually be a
+            reversed domain name, e.g. ``org.beeware.myapp``. Will be derived from
+            packaging metadata if not provided.
+        :param app_name: The name of the Python module containing the app. Will be
+            derived from the module defining the instance of the App class if not
+            provided.
+        :param id: The DOM identifier for the app (optional)
+        :param icon: Identifier for the application's icon.
+        :param author: The person or organization to be credited as the author of the
+            application. Will be derived from application metadata if not provided.
+        :param version: The version number of the app. Will be derived from packaging
+            metadata if not provided.
+        :param home_page: A URL for a home page for the app. Used in auto-generated help
+            menu items. Will be derived from packaging metadata if not provided.
+        :param description: A brief (one line) description of the app. Will be derived
+            from packaging metadata if not provided.
+        :param startup: The callback method before starting the app, typically to add
+            the components. Must be a ``callable`` that expects a single argument of
+            :class:`~toga.App`.
+        :param windows: An iterable with objects of :class:`~toga.Window` that will be
+            the app's secondary windows.
+        """
+
         ######################################################################
         # 2022-09: Backwards compatibility
         ######################################################################
@@ -246,8 +261,10 @@ class App:
             # If the code is contained in appname.py, and you start the app
             # using `python -m appname`, the main module package will report
             # as ''. Set the initial app name as None.
+            #
             # If the code is contained in appname.py, and you start the app
             # using `python appname.py`, the main module will report as None.
+            #
             # If the code is contained in a folder, and you start the app
             # using `python -m appname`, the main module will report as the
             # name of the folder.
@@ -365,10 +382,6 @@ class App:
         self._startup_method = startup
 
         self._main_window = None
-        # In this world, TogaApp.windows would be a set-like object
-        # that has add/remove methods (including support for
-        # the + and += operators); adding a window to TogaApp.windows
-        # would assign the window to the app.
         self.windows = WindowSet(self, windows)
 
         self._full_screen_windows = None
@@ -457,10 +470,7 @@ class App:
 
     @property
     def icon(self) -> Icon:
-        """The Icon for the app.
-
-        :returns: A :class:`toga.Icon` instance for the app's icon.
-        """
+        """The Icon for the app."""
         return self._icon
 
     @icon.setter
@@ -472,11 +482,10 @@ class App:
 
     @property
     def widgets(self) -> WidgetRegistry:
-        """The widgets collection of the entire app.
+        """The widgets managed by the app, over all windows.
 
-        Can be used to lookup widgets over the entire app through widget
-        id or manually iterating through it.
-        Example: ``app.widgets["my_id"]``
+        Can be used to look up widgets by ID over the entire app (e.g.,
+        ``app.widgets["my_id"]``).
         """
         return self._widgets
 
@@ -509,16 +518,13 @@ class App:
     def set_full_screen(self, *windows: Window) -> None:
         """Make one or more windows full screen.
 
-        Full screen is not the same as "maximized"; full screen mode
-        is when all window borders and other chrome is no longer
-        visible.
+        Full screen is not the same as "maximized"; full screen mode is when all window
+        borders and other window decorations are no longer visible.
 
-        Args:
-            windows: The list of windows to go full screen,
-                in order of allocation to screens. If the number of
-                windows exceeds the number of available displays,
-                those windows will not be visible. If no windows
-                are specified, the app will exit full screen mode.
+        :param windows: The list of windows to go full screen, in order of allocation to
+            screens. If the number of windows exceeds the number of available displays,
+            those windows will not be visible. If no windows are specified, the app will
+            exit full screen mode.
         """
         if not windows:
             self.exit_full_screen()
@@ -597,21 +603,12 @@ class App:
         self.on_exit(None)
 
     @property
-    def on_exit(self):
-        """The handler to invoke before the application exits.
-
-        Returns:
-            The function ``callable`` that is called on application exit.
-        """
+    def on_exit(self) -> OnExitHandler:
+        """The handler to invoke before the application exits."""
         return self._on_exit
 
     @on_exit.setter
-    def on_exit(self, handler: OnExitCallback | None) -> None:
-        """Set the handler to invoke before the app exits.
-
-        Args:
-            handler (:obj:`callable`): The handler to invoke before the app exits.
-        """
+    def on_exit(self, handler: OnExitHandler | None) -> None:
         if handler is None:
 
             def handler(app, *args, **kwargs):
@@ -623,7 +620,7 @@ class App:
 
         self._on_exit = wrapped_handler(self, handler, cleanup=cleanup)
 
-    def add_background_task(self, handler):
+    def add_background_task(self, handler: BackgroundTask) -> None:
         """Schedule a task to run in the background.
 
         Schedules a coroutine or a generator to run in the background. Control
@@ -638,14 +635,6 @@ class App:
 
 
 class DocumentApp(App):
-    """A document-based application.
-
-    Definition and arguments are the same as a base App, plus the following:
-
-    Args:
-        document_types: Document types.
-    """
-
     def __init__(
         self,
         formal_name: str | None = None,
@@ -657,11 +646,19 @@ class DocumentApp(App):
         version: str | None = None,
         home_page: str | None = None,
         description: str | None = None,
-        startup: WindowContentProvider | None = None,
+        startup: AppStartupMethod | None = None,
         document_types: list[str] | None = None,
-        on_exit: OnExitCallback | None = None,
+        on_exit: OnExitHandler | None = None,
         factory: None = None,  # DEPRECATED !
     ):
+        """Create a document-based Application.
+
+        A document-based application is the same as a normal application, with the
+        exception that there is no main window. Instead, each document managed by
+        the app will have it's own window.
+
+        :param document_types: The file extensions that this application can manage.
+        """
         ######################################################################
         # 2022-09: Backwards compatibility
         ######################################################################
@@ -697,10 +694,6 @@ class DocumentApp(App):
         pass
 
     @property
-    def documents(self):
-        """Return the list of documents associated with this app.
-
-        Returns:
-            A ``list`` of ``str``.
-        """
+    def documents(self) -> list[str]:
+        """The list of documents associated with this app."""
         return self._documents

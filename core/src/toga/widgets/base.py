@@ -52,7 +52,7 @@ class Widget(Node):
         self,
         id: str | None = None,
         style=None,
-    ) -> None:
+    ):
         """Create a base Toga widget.
 
         This is an abstract base class; it cannot be instantiated.
@@ -193,7 +193,7 @@ class Widget(Node):
         self.remove(*self.children)
 
     @property
-    def app(self) -> None:
+    def app(self) -> App | None:
         """The App to which this widget belongs.
 
         When setting the app for a widget, all children of this widget will be

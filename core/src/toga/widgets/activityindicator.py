@@ -11,7 +11,7 @@ class ActivityIndicator(Widget):
         id=None,
         style=None,
         running: bool = False,
-    ) -> None:
+    ):
         """Create a new ActivityIndicator widget.
 
         Inherits from :class:`toga.Widget`.
