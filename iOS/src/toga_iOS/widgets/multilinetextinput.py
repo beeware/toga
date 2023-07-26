@@ -117,7 +117,7 @@ class MultilineTextInput(Widget):
         )
 
     def get_placeholder(self):
-        return self.placeholder_label.text
+        return str(self.placeholder_label.text)
 
     def set_placeholder(self, value):
         self.placeholder_label.text = value
@@ -129,7 +129,7 @@ class MultilineTextInput(Widget):
         self.native.editable = not value
 
     def get_value(self):
-        return self.native.text
+        return str(self.native.text)
 
     def set_value(self, value):
         self.native.text = value

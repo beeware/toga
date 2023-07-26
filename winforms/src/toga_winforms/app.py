@@ -129,7 +129,7 @@ class App:
         self._create_app_commands()
 
         # Call user code to populate the main window
-        self.interface.startup()
+        self.interface._startup()
         self.create_menus()
         self.interface.main_window._impl.set_app(self)
 
