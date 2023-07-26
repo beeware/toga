@@ -8,6 +8,7 @@ from .icons import Icon
 
 # from .images import Image
 from .paths import Paths
+from .widgets.activityindicator import ActivityIndicator
 from .widgets.box import Box
 from .widgets.button import Button
 from .widgets.divider import Divider
@@ -67,6 +68,7 @@ __all__ = [
     # 'OptionContainer',
     # 'PasswordInput',
     "ProgressBar",
+    "ActivityIndicator",
     # 'ScrollContainer',
     # 'Selection',
     # 'Slider',
