@@ -16,7 +16,8 @@ class TogaSplitView(NSSplitView):
     def splitViewDidResizeSubviews_(self, notification) -> None:
         # If the split has moved, a resize of all the content panels is required.
         for container in self.impl.sub_containers:
-            container.content.interface.refresh()
+            if container.content:
+                container.content.interface.refresh()
 
         # Apply any pending split
         self.performSelector(
