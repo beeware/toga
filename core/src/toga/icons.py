@@ -43,7 +43,7 @@ class Icon:
     def DEFAULT_ICON(cls):
         return Icon("resources/toga", system=True)
 
-    def __init__(self, path, system=False):
+    def __init__(self, path: str, system: bool = False):
         self.path = path
         self.system = system
 
@@ -79,7 +79,7 @@ class Icon:
             )
             self._impl = Icon.DEFAULT_ICON._impl
 
-    def bind(self, factory=None):
+    def bind(self, factory: None = None):
         warnings.warn(
             "Icons no longer need to be explicitly bound.", DeprecationWarning
         )
