@@ -28,7 +28,7 @@ class AlertDialog(BaseDialog):
 
         self.populate_dialog()
 
-        interface.window._impl.controller.presentViewController(
+        interface.window._impl.native.rootViewController.presentViewController(
             self.native,
             animated=False,
             completion=None,

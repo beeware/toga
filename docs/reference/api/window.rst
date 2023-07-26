@@ -47,3 +47,6 @@ Reference
 .. autoclass:: toga.Window
    :members:
    :undoc-members:
+
+.. autoprotocol:: toga.window.OnCloseHandler
+.. autoprotocol:: toga.window.DialogResultHandler

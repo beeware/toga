@@ -35,7 +35,7 @@ async def handler_with_cleanup(handler, cleanup, interface, *args, **kwargs):
 
 
 def wrapped_handler(interface, handler, cleanup=None):
-    """Wrap a handler provided by the user so it can be invoked.
+    """Wrap a handler provided by the user, so it can be invoked.
 
     If the handler is a NativeHandler, return the handler object contained in the
     NativeHandler.
