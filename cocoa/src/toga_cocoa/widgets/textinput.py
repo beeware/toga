@@ -178,7 +178,7 @@ class TextInput(Widget):
         self.native.selectable = True
 
     def get_placeholder(self):
-        return self.native.cell.placeholderString
+        return str(self.native.cell.placeholderString)
 
     def set_placeholder(self, value):
         self.native.cell.placeholderString = value

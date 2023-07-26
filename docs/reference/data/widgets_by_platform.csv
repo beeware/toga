@@ -2,12 +2,12 @@ Component,Type,Component,Description,macOS,GTK,Windows,iOS,Android,Web
 Application,Core Component,:class:`~toga.App`,The application itself,|b|,|b|,|b|,|b|,|b|,|b|
 Window,Core Component,:class:`~toga.Window`,Window object,|b|,|b|,|b|,|b|,|b|,|b|
 MainWindow,Core Component,:class:`~toga.MainWindow`,Main window of the application,|b|,|b|,|b|,|b|,|b|,|b|
-ActivityIndicator,General Widget,:class:`~toga.ActivityIndicator`,A spinning activity animation,|y|,|y|,,,,
+ActivityIndicator,General Widget,:class:`~toga.ActivityIndicator`,A spinning activity animation,|y|,|y|,,,,|b|
 Button,General Widget,:class:`~toga.Button`,Basic clickable Button,|y|,|y|,|y|,|y|,|y|,|b|
 Canvas,General Widget,:class:`~toga.Canvas`,Area you can draw on,|b|,|b|,|b|,|b|,,
 DateInput,General Widget,:class:`~toga.DateInput`,A widget to select a calendar date,,,|y|,,|y|,
 DetailedList,General Widget,:class:`~toga.DetailedList`,"An ordered list of content where each item has an icon, a main heading, and a line of supplementary text.",|b|,|b|,,|b|,|b|,
-Divider,General Widget,:class:`~toga.Divider`,A horizontal or vertical line,|y|,|y|,|y|,,,
+Divider,General Widget,:class:`~toga.Divider`,A horizontal or vertical line,|y|,|y|,|y|,,,|b|
 ImageView,General Widget,:class:`~toga.ImageView`,A widget that displays an image,|y|,|y|,|y|,|y|,|y|,
 Label,General Widget,:class:`~toga.Label`,Text label,|y|,|y|,|y|,|y|,|y|,|b|
 MultilineTextInput,General Widget,:class:`~toga.MultilineTextInput`,Multi-line Text Input field,|y|,|y|,|y|,|y|,|y|,

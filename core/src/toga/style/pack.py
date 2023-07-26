@@ -767,7 +767,7 @@ class Pack(BaseStyle):
         if (self.width == NONE and self.direction == ROW) or (
             self.height == NONE and self.direction == COLUMN
         ):
-            css.append(f"flex: {self.flex} 0 0;")
+            css.append(f"flex: {self.flex} 0 auto;")
 
         # width/flex
         if self.width != NONE:
