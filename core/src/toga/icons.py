@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from pathlib import Path
 
 import toga
@@ -27,11 +29,11 @@ class cachedicon:
 
 class Icon:
     @cachedicon
-    def TOGA_ICON(cls):
+    def TOGA_ICON(cls) -> Icon:
         return Icon("resources/toga", system=True)
 
     @cachedicon
-    def DEFAULT_ICON(cls):
+    def DEFAULT_ICON(cls) -> Icon:
         return Icon("resources/toga", system=True)
 
     # System is
