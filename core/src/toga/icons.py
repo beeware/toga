@@ -37,9 +37,9 @@ class Icon:
     # System is
     def __init__(
         self,
-        path=None,
+        path: str | Path,
         *,
-        system=False,  # Deliberately undocumented; for internal use only
+        system: bool = False,  # Deliberately undocumented; for internal use only
     ):
         """Create a new icon.
 

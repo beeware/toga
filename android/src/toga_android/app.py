@@ -187,7 +187,7 @@ class App:
         # the app's `.native` is the listener's native Java class.
         self._listener = TogaApp(self)
         # Call user code to populate the main window
-        self.interface.startup()
+        self.interface._startup()
 
     def open_document(self, fileURL):
         print("Can't open document %s (yet)" % fileURL)
@@ -233,3 +233,9 @@ class App:
             return result_future.result()
         except AttributeError:
             raise RuntimeError("No appropriate Activity found to handle this intent.")
+
+    def hide_cursor(self):
+        pass
+
+    def show_cursor(self):
+        pass
