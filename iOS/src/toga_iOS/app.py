@@ -65,7 +65,7 @@ class App:
 
     def create(self):
         """Calls the startup method on the interface."""
-        self.interface.startup()
+        self.interface._startup()
 
     def open_document(self, fileURL):
         """Add a new document to this app."""
@@ -88,4 +88,10 @@ class App:
         self.interface.factory.not_implemented("App.beep()")
 
     def exit(self):
+        pass
+
+    def hide_cursor(self):
+        pass
+
+    def show_cursor(self):
         pass

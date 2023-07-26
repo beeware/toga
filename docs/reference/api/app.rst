@@ -54,3 +54,7 @@ Reference
 .. autoclass:: toga.App
    :members:
    :undoc-members:
+
+.. autoprotocol:: toga.app.AppStartupMethod
+.. autoprotocol:: toga.app.BackgroundTask
+.. autoprotocol:: toga.app.OnExitHandler

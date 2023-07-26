@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 # Use the Travertino font definitions as-is
 from travertino import constants
 from travertino.constants import (
@@ -29,12 +31,19 @@ _REGISTERED_FONT_CACHE = {}
 
 
 class Font(BaseFont):
-    def __init__(self, family, size, style=NORMAL, variant=NORMAL, weight=NORMAL):
+    def __init__(
+        self,
+        family: str,
+        size: int | str,
+        style: str = NORMAL,
+        variant: str = NORMAL,
+        weight: str = NORMAL,
+    ):
         super().__init__(family, size, style, variant, weight)
         self.factory = get_platform_factory()
         self._impl = self.factory.Font(self)
 
-    def __str__(self):
+    def __str__(self) -> str:
         size = (
             "default size"
             if self.size == SYSTEM_DEFAULT_FONT_SIZE

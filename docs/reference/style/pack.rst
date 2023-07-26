@@ -314,7 +314,7 @@ The mapping that can be used to establish the reference implementation is:
    ``display: pack``             ``display: flex``
    ``flex: <int>``               If ``direction = row`` and ``width`` is set,
                                  or ``direction = column`` and ``height`` is set,
-                                 ignore. Otherwise, ``flex: <int> 0 0``.
+                                 ignore. Otherwise, ``flex: <int> 0 auto``.
    ``font_size: <int>``          ``font-size: <int>pt``
    ``height: <value>``           ``height: <value>px`` if value is an integer;
                                  ``height: auto`` if value is ``none``.
