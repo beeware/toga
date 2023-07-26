@@ -12,6 +12,7 @@ html, body {
     margin: 0;
     display: flex;
     flex-direction: column;
+    font-family: sans-serif;
 }
 
 /* If a custom element hasn't been defined yet, hide it from rendering */
