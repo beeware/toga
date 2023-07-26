@@ -95,7 +95,7 @@ class App:
         )
         self._create_app_commands()
 
-        self.interface.startup()
+        self.interface._startup()
 
         # Create the lookup table of menu items,
         # then force the creation of the menus.

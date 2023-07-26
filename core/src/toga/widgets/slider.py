@@ -12,7 +12,7 @@ from .base import Widget
 class Slider(Widget):
     def __init__(
         self,
-        id=None,
+        id: str | None = None,
         style=None,
         value: float | None = None,
         min: float = None,  # Default to 0.0 when range is removed
@@ -22,7 +22,7 @@ class Slider(Widget):
         on_press: callable | None = None,
         on_release: callable | None = None,
         enabled: bool = True,
-        range: tuple[float, float] = None,  # DEPRECATED
+        range: tuple[float, float] | None = None,  # DEPRECATED
     ):
         """Create a new Slider widget.
 
