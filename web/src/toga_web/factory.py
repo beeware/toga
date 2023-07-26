@@ -10,6 +10,7 @@ from .icons import Icon
 from .paths import Paths
 from .widgets.box import Box
 from .widgets.button import Button
+from .widgets.divider import Divider
 
 # from .widgets.canvas import Canvas
 # from .widgets.detailedlist import DetailedList
@@ -43,7 +44,8 @@ def not_implemented(feature):
 __all__ = [
     "not_implemented",
     "App",
-    "MainWindow",  # 'DocumentApp',
+    "MainWindow",
+    # 'DocumentApp',
     "Command",
     # 'Document',
     # # Resources
@@ -56,6 +58,7 @@ __all__ = [
     "Box",
     "Button",
     # 'Canvas',
+    "Divider",
     # 'DetailedList',
     # 'ImageView',
     "Label",
