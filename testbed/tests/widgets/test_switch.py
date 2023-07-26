@@ -37,6 +37,7 @@ async def test_text(widget, probe):
 
         # Text after a newline will be stripped.
         expected = str(text).split("\n")[0]
+        assert isinstance(widget.text, str)
         assert widget.text == expected
         assert probe.text == expected
         assert probe.height == initial_height

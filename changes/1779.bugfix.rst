@@ -1,0 +1,1 @@
+macOS widget methods that return strings are now guaranteed to return strings, rather than native Objective C string objects.
