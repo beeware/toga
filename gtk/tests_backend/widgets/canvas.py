@@ -12,10 +12,7 @@ class CanvasProbe(SimpleProbe):
     native_class = Gtk.DrawingArea
 
     def reference_variant(self, reference):
-        # Transparency calculations are platform specific
-        if reference in {"transparency"}:
-            return f"{reference}-linux"
-        elif reference in {"write_text", "multiline_text"}:
+        if reference in {"write_text", "multiline_text"}:
             pytest.skip("GTK canvas font and stroke handling isn't quite right")
         else:
             return reference

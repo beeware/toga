@@ -24,9 +24,8 @@ class CanvasProbe(SimpleProbe):
     native_class = UIView
 
     def reference_variant(self, reference):
-        # Transparency calculations are platform specific
         # System fonts and sizes are platform specific
-        if reference in {"transparency", "write_text", "multiline_text"}:
+        if reference in {"write_text", "multiline_text"}:
             return f"{reference}-iOS"
         else:
             return reference

@@ -85,11 +85,11 @@ async def widget(
 
 
 @pytest.fixture
-async def canvas(widget, on_resize_handler):
+async def canvas(widget, probe, on_resize_handler):
     # Modify the base canvas fixture to make it more useful for drawing tests.
     widget.style.background_color = WHITE
-    widget.style.width = 100
-    widget.style.height = 100
+    widget.style.width = 200
+    widget.style.height = 200
     return widget
 
 
@@ -201,11 +201,11 @@ async def test_alt_drag(
 async def test_image_data(canvas, probe):
     "The canvas can be saved as an image"
     with canvas.Stroke(x=0, y=0, color=RED) as stroke:
-        stroke.line_to(x=100, y=100)
-        stroke.move_to(x=100, y=0)
-        stroke.line_to(x=0, y=100)
+        stroke.line_to(x=200, y=200)
+        stroke.move_to(x=200, y=0)
+        stroke.line_to(x=0, y=200)
 
-        stroke.rect(1, 1, 98, 98)
+        stroke.rect(2, 2, 198, 198)
 
     await probe.redraw("Test image has been drawn")
 
@@ -217,14 +217,14 @@ async def test_image_data(canvas, probe):
 
     # Cloned image is the right size. The platform may do DPI scaling;
     # let the probe determine the correct scaled size.
-    probe.assert_image_size(image, 100, 100)
+    probe.assert_image_size(image, 200, 200)
 
 
 def assert_reference(probe, reference, threshold=0.0):
     """Assert that the canvas currently matches a reference image, within an RMS threshold"""
     # Get the canvas image.
     image = probe.get_image()
-    scaled_image = image.resize((100, 100))
+    scaled_image = image.resize((200, 200))
 
     # Look for a platform-specific reference variant.
     reference_variant = probe.reference_variant(reference)
@@ -267,11 +267,11 @@ async def test_transparency(canvas, probe):
 
     # Draw a rectangle. move_to is implied
     canvas.context.begin_path()
-    canvas.context.rect(x=10, y=10, width=60, height=60)
+    canvas.context.rect(x=20, y=20, width=120, height=120)
     canvas.context.fill(color=REBECCAPURPLE)
 
     canvas.context.begin_path()
-    canvas.context.rect(x=30, y=30, width=60, height=60)
+    canvas.context.rect(x=60, y=60, width=120, height=120)
     canvas.context.fill(color=rgba(0x33, 0x66, 0x99, 0.5))
 
     await probe.redraw("Image with transparent content and background")
@@ -282,102 +282,102 @@ async def test_paths(canvas, probe):
     "A path can be drawn"
 
     canvas.context.begin_path()
-    canvas.context.move_to(10, 10)
-    canvas.context.line_to(70, 10)
-    canvas.context.line_to(10, 70)
+    canvas.context.move_to(20, 20)
+    canvas.context.line_to(140, 20)
+    canvas.context.line_to(20, 140)
     canvas.context.fill()
 
     # Stroked triangle requires explicit close
     canvas.context.begin_path()
-    canvas.context.move_to(90, 90)
-    canvas.context.line_to(90, 30)
-    canvas.context.line_to(30, 90)
+    canvas.context.move_to(180, 180)
+    canvas.context.line_to(180, 60)
+    canvas.context.line_to(60, 180)
     canvas.context.close_path()
     canvas.context.stroke()
 
     await probe.redraw("Pair of triangles should be drawn")
-    assert_reference(probe, "paths", threshold=0.05)
+    assert_reference(probe, "paths", threshold=0.0)
 
 
 async def test_bezier_curve(canvas, probe):
     "A Bézier curve can be drawn"
 
     canvas.context.begin_path()
-    canvas.context.move_to(50, 22)
-    canvas.context.bezier_curve_to(50, 20, 46, 10, 30, 10)
-    canvas.context.bezier_curve_to(6, 10, 6, 40, 6, 40)
-    canvas.context.bezier_curve_to(6, 54, 22, 72, 50, 86)
-    canvas.context.bezier_curve_to(78, 72, 94, 54, 94, 40)
-    canvas.context.bezier_curve_to(94, 40, 94, 10, 70, 10)
-    canvas.context.bezier_curve_to(58, 10, 50, 20, 50, 22)
+    canvas.context.move_to(100, 44)
+    canvas.context.bezier_curve_to(100, 40, 92, 20, 60, 20)
+    canvas.context.bezier_curve_to(12, 20, 12, 80, 12, 80)
+    canvas.context.bezier_curve_to(12, 108, 44, 144, 100, 172)
+    canvas.context.bezier_curve_to(156, 144, 188, 108, 188, 80)
+    canvas.context.bezier_curve_to(188, 80, 188, 20, 140, 20)
+    canvas.context.bezier_curve_to(116, 20, 100, 40, 100, 44)
     canvas.context.stroke()
 
     await probe.redraw("Heart should be drawn")
-    assert_reference(probe, "bezier_curve", threshold=0.02)
+    assert_reference(probe, "bezier_curve", threshold=0.0)
 
 
 async def test_quadratic_curve(canvas, probe):
     "A quadratic curve can be drawn"
 
     canvas.context.begin_path()
-    canvas.context.move_to(50, 10)
-    canvas.context.quadratic_curve_to(10, 10, 10, 40)
-    canvas.context.quadratic_curve_to(10, 70, 30, 70)
-    canvas.context.quadratic_curve_to(30, 86, 14, 90)
-    canvas.context.quadratic_curve_to(38, 86, 55, 70)
-    canvas.context.quadratic_curve_to(90, 70, 90, 40)
-    canvas.context.quadratic_curve_to(90, 10, 50, 10)
+    canvas.context.move_to(100, 20)
+    canvas.context.quadratic_curve_to(20, 20, 20, 80)
+    canvas.context.quadratic_curve_to(20, 140, 60, 140)
+    canvas.context.quadratic_curve_to(60, 172, 28, 180)
+    canvas.context.quadratic_curve_to(76, 172, 110, 140)
+    canvas.context.quadratic_curve_to(180, 140, 180, 80)
+    canvas.context.quadratic_curve_to(180, 20, 100, 20)
     canvas.context.stroke()
 
     await probe.redraw("Quote bubble should be drawn")
-    assert_reference(probe, "quadratic_curve", threshold=0.03)
+    assert_reference(probe, "quadratic_curve", threshold=0.0)
 
 
 async def test_arc(canvas, probe):
     "An arc can be drawn"
     canvas.context.begin_path()
     # Face
-    canvas.context.arc(50, 50, 40, 0)
+    canvas.context.arc(100, 100, 80, 0)
 
     # Smile
-    canvas.context.move_to(75, 50)
-    canvas.context.arc(50, 50, 25, 0, math.pi, False)
+    canvas.context.move_to(150, 100)
+    canvas.context.arc(100, 100, 50, 0, math.pi, False)
 
     # Hair
-    canvas.context.move_to(95, 50)
-    canvas.context.arc(50, 50, 45, 0, math.pi, True)
+    canvas.context.move_to(190, 100)
+    canvas.context.arc(100, 100, 90, 0, math.pi, True)
 
     # Left eye
-    canvas.context.move_to(35, 35)
-    canvas.context.arc(32, 35, 3, 0)
+    canvas.context.move_to(70, 70)
+    canvas.context.arc(64, 70, 6, 0)
 
     # Right eye
-    canvas.context.move_to(65, 35)
-    canvas.context.arc(62, 35, 3, 0)
+    canvas.context.move_to(130, 70)
+    canvas.context.arc(124, 70, 6, 0)
     canvas.context.stroke()
 
     await probe.redraw("Smiley face should be drawn")
-    assert_reference(probe, "arc", threshold=0.03)
+    assert_reference(probe, "arc", threshold=0.0)
 
 
 async def test_ellipse(canvas, probe):
     "An ellipse can be drawn"
 
     # Nucleus (filled circle)
-    canvas.context.move_to(45, 50)
-    canvas.context.ellipse(50, 50, 10, 10)
+    canvas.context.move_to(90, 100)
+    canvas.context.ellipse(100, 100, 20, 20)
     canvas.context.fill(color=RED)
 
     # Purple orbit
-    canvas.context.ellipse(50, 50, 45, 10, rotation=math.pi * 3 / 4)
+    canvas.context.ellipse(100, 100, 90, 20, rotation=math.pi * 3 / 4)
     canvas.context.stroke(color=REBECCAPURPLE)
 
     # Blue orbit
     canvas.context.ellipse(
-        50,
-        50,
-        radiusx=10,
-        radiusy=45,
+        100,
+        100,
+        radiusx=20,
+        radiusy=90,
         rotation=-math.pi / 4,
         startangle=math.pi * 7 / 4,
         endangle=math.pi / 4,
@@ -387,17 +387,17 @@ async def test_ellipse(canvas, probe):
 
     # Yellow orbit
     canvas.context.ellipse(
-        50,
-        50,
-        radiusx=10,
-        radiusy=45,
+        100,
+        100,
+        radiusx=20,
+        radiusy=90,
         startangle=math.pi / 4,
         endangle=math.pi * 7 / 4,
     )
     canvas.context.stroke(color=GOLDENROD)
 
     await probe.redraw("Atom should be drawn")
-    assert_reference(probe, "ellipse", threshold=0.02)
+    assert_reference(probe, "ellipse", threshold=0.0)
 
 
 async def test_rect(canvas, probe):
@@ -405,132 +405,132 @@ async def test_rect(canvas, probe):
 
     # Draw a rectangle. move_to is implied
     canvas.context.begin_path()
-    canvas.context.rect(x=10, y=30, width=80, height=50)
+    canvas.context.rect(x=20, y=60, width=160, height=100)
     canvas.context.fill(color=REBECCAPURPLE)
 
     await probe.redraw("Filled rectangle should be drawn")
-    assert_reference(probe, "rect", threshold=0.02)
+    assert_reference(probe, "rect", threshold=0.0)
 
 
 async def test_fill(canvas, probe):
     "A fill can be drawn with primitives"
     # Draw a closed path
     canvas.context.begin_path()
-    canvas.context.move_to(x=30, y=5)
-    canvas.context.line_to(x=15, y=55)
-    canvas.context.line_to(x=55, y=25)
-    canvas.context.line_to(x=5, y=25)
-    canvas.context.line_to(x=45, y=55)
+    canvas.context.move_to(x=60, y=10)
+    canvas.context.line_to(x=30, y=110)
+    canvas.context.line_to(x=110, y=50)
+    canvas.context.line_to(x=10, y=50)
+    canvas.context.line_to(x=90, y=110)
     canvas.context.fill(color=REBECCAPURPLE)
 
     # Same path (slightly offset), but with EVENODD winding.
     canvas.context.begin_path()
-    canvas.context.move_to(x=70, y=45)
-    canvas.context.line_to(x=55, y=95)
-    canvas.context.line_to(x=95, y=65)
-    canvas.context.line_to(x=45, y=65)
-    canvas.context.line_to(x=85, y=95)
+    canvas.context.move_to(x=140, y=90)
+    canvas.context.line_to(x=110, y=190)
+    canvas.context.line_to(x=190, y=130)
+    canvas.context.line_to(x=90, y=130)
+    canvas.context.line_to(x=170, y=190)
     canvas.context.fill(color=CORNFLOWERBLUE, fill_rule=FillRule.EVENODD)
 
     await probe.redraw("Stars should be drawn")
-    assert_reference(probe, "fill", threshold=0.02)
+    assert_reference(probe, "fill", threshold=0.0)
 
 
 async def test_stroke(canvas, probe):
     "A stroke can be drawn with primitives"
     # Draw a closed path
     canvas.context.begin_path()
-    canvas.context.move_to(x=10, y=10)
-    canvas.context.line_to(x=50, y=10)
-    canvas.context.line_to(x=90, y=90)
-    canvas.context.line_to(x=50, y=90)
+    canvas.context.move_to(x=20, y=20)
+    canvas.context.line_to(x=100, y=20)
+    canvas.context.line_to(x=180, y=180)
+    canvas.context.line_to(x=100, y=180)
     canvas.context.close_path()
     canvas.context.stroke(color=REBECCAPURPLE)
 
     # Draw an open path inside it
     canvas.context.begin_path()
-    canvas.context.move_to(x=25, y=20)
-    canvas.context.line_to(x=45, y=20)
-    canvas.context.line_to(x=75, y=80)
-    canvas.context.line_to(x=55, y=80)
+    canvas.context.move_to(x=50, y=40)
+    canvas.context.line_to(x=90, y=40)
+    canvas.context.line_to(x=150, y=160)
+    canvas.context.line_to(x=110, y=160)
     canvas.context.stroke(color=CORNFLOWERBLUE)
 
     await probe.redraw("Stroke should be drawn")
-    assert_reference(probe, "stroke", threshold=0.02)
+    assert_reference(probe, "stroke", threshold=0.0)
 
 
 async def test_closed_path_context(canvas, probe):
     "A closed path can be built with a context"
 
     # Build a parallelogram path
-    with canvas.context.ClosedPath(x=10, y=10) as path:
-        path.line_to(x=50, y=10)
-        path.line_to(x=90, y=90)
-        path.line_to(x=50, y=90)
+    with canvas.context.ClosedPath(x=20, y=20) as path:
+        path.line_to(x=100, y=20)
+        path.line_to(x=180, y=180)
+        path.line_to(x=100, y=180)
 
     # Draw it with a thick dashed line
-    canvas.context.stroke(color=REBECCAPURPLE, line_width=5, line_dash=[10, 15])
+    canvas.context.stroke(color=REBECCAPURPLE, line_width=5, line_dash=[20, 30])
 
     await probe.redraw("Closed path should be drawn with context")
-    assert_reference(probe, "closed_path_context", threshold=0.05)
+    assert_reference(probe, "closed_path_context", threshold=0.0)
 
 
 async def test_fill_context(canvas, probe):
     "A fill path can be built with a context"
 
     # Build a filled parallelogram
-    with canvas.context.Fill(x=10, y=10, color=REBECCAPURPLE) as path:
-        path.line_to(x=50, y=10)
-        path.line_to(x=90, y=90)
-        path.line_to(x=50, y=90)
+    with canvas.context.Fill(x=20, y=20, color=REBECCAPURPLE) as path:
+        path.line_to(x=100, y=20)
+        path.line_to(x=180, y=180)
+        path.line_to(x=100, y=180)
 
     await probe.redraw("Fill should be drawn with context")
-    assert_reference(probe, "fill_context", threshold=0.02)
+    assert_reference(probe, "fill_context", threshold=0.0)
 
 
 async def test_stroke_context(canvas, probe):
     "A stroke can be drawn with a context"
     # Draw a thin line
-    with canvas.context.Stroke(x=20, y=10, color=REBECCAPURPLE) as stroke:
-        stroke.line_to(x=40, y=90)
+    with canvas.context.Stroke(x=40, y=20, color=REBECCAPURPLE) as stroke:
+        stroke.line_to(x=80, y=180)
 
     # Draw a thick dashed line
     with canvas.context.Stroke(
-        x=40, y=10, line_width=10, line_dash=[10, 5], color=CORNFLOWERBLUE
+        x=80, y=20, line_width=20, line_dash=[20, 10], color=CORNFLOWERBLUE
     ) as stroke:
-        stroke.line_to(x=60, y=90)
+        stroke.line_to(x=120, y=180)
 
     await probe.redraw("Stroke should be drawn with context")
-    assert_reference(probe, "stroke_context", threshold=0.01)
+    assert_reference(probe, "stroke_context", threshold=0.0)
 
 
 async def test_transforms(canvas, probe):
     "Transforms can be applied"
 
     # Draw a rectangle after a horizontal translation
-    canvas.context.translate(80, 10)
-    canvas.context.rect(0, 0, 10, 30)
+    canvas.context.translate(160, 20)
+    canvas.context.rect(0, 0, 20, 60)
     canvas.context.fill(color=CORNFLOWERBLUE)
 
     canvas.context.reset_transform()
     canvas.context.rotate(math.pi / 4)
-    canvas.context.rect(100, 0, 10, 30)
+    canvas.context.rect(200, 0, 20, 60)
     canvas.context.fill(color=REBECCAPURPLE)
 
     canvas.context.reset_transform()
     canvas.context.scale(2, 5)
-    canvas.context.rect(5, 5, 5, 5)
+    canvas.context.rect(10, 10, 10, 10)
     canvas.context.fill(color=GOLDENROD)
 
     canvas.context.reset_transform()
-    canvas.context.translate(50, 30)
+    canvas.context.translate(100, 60)
     canvas.context.rotate(math.pi / 7 * 4)
     canvas.context.scale(5, 2)
-    canvas.context.rect(1, 1, 5, 5)
+    canvas.context.rect(2, 2, 10, 10)
     canvas.context.fill()
 
     await probe.redraw("Transforms can be applied")
-    assert_reference(probe, "transforms", threshold=0.02)
+    assert_reference(probe, "transforms", threshold=0.0)
 
 
 async def test_write_text(canvas, probe):
@@ -541,78 +541,78 @@ async def test_write_text(canvas, probe):
     with canvas.Fill(color=REBECCAPURPLE) as text_filler:
         text_filler.write_text(
             hello_text,
-            50 - (hello_size[0] // 2),
-            5 + hello_size[1],
+            100 - (hello_size[0] // 2),
+            10 + hello_size[1],
         )
     # Draw a border around the text to verify text sizing
     with canvas.Stroke(color=CORNFLOWERBLUE) as stroke:
         stroke.rect(
-            50 - (hello_size[0] // 2) - 2,
-            5 + 2,
-            hello_size[0] + 4,
-            hello_size[1] + 4,
+            100 - (hello_size[0] // 2) - 4,
+            10 + 4,
+            hello_size[0] + 8,
+            hello_size[1] + 8,
         )
 
     world_text = "World!"
-    world_font = Font(SANS_SERIF, size=12)
+    world_font = Font(SANS_SERIF, size=24)
     world_size = canvas.measure_text(world_text, font=world_font)
 
     with canvas.Stroke() as text_filler:
         text_filler.write_text(
             world_text,
-            50 - (world_size[0] // 2),
-            40,
+            100 - (world_size[0] // 2),
+            80,
             font=world_font,
         )
 
     # Draw a border around the text to verify text sizing
     with canvas.Stroke(color=CORNFLOWERBLUE) as stroke:
         stroke.rect(
-            50 - (world_size[0] // 2) - 2,
-            40 - world_size[1] + 2,
-            world_size[0] + 4,
-            world_size[1] + 4,
+            100 - (world_size[0] // 2) - 4,
+            80 - world_size[1] + 4,
+            world_size[0] + 8,
+            world_size[1] + 8,
         )
 
     toga_text = "Toga"
-    toga_font = Font(SERIF, 36)
+    toga_font = Font(SERIF, 72)
     toga_size = canvas.measure_text(toga_text, font=toga_font)
 
     with canvas.Stroke(color=REBECCAPURPLE) as stroke:
         with stroke.Fill(color=CORNFLOWERBLUE) as text_filler:
             text_filler.write_text(
                 toga_text,
-                50 - (toga_size[0] // 2),
-                65 + (toga_size[1] // 2),
+                100 - (toga_size[0] // 2),
+                130 + (toga_size[1] // 2),
                 font=toga_font,
             )
 
     # Draw a border around the text to verify text sizing
     with canvas.Stroke(color=CORNFLOWERBLUE) as stroke:
         stroke.rect(
-            50 - (toga_size[0] // 2) - 2,
-            65 - (toga_size[1] // 2) + 2,
-            toga_size[0] + 4,
-            toga_size[1] + 4,
+            100 - (toga_size[0] // 2) - 4,
+            130 - (toga_size[1] // 2) + 4,
+            toga_size[0] + 8,
+            toga_size[1] + 8,
         )
 
     await probe.redraw("Text should be drawn")
-    assert_reference(probe, "write_text", threshold=0.08)
+    assert_reference(probe, "write_text", threshold=0.0)
 
 
 async def test_multiline_text(canvas, probe):
     "Multiline text can be measured and written"
     # Write a single line
     with canvas.context.Fill() as text_filler:
-        text_filler.write_text("Single line", 10, 20)
+        text_filler.write_text("Single line", 20, 40)
 
     # Write multiple lines
     with canvas.context.Fill() as text_filler:
-        text_filler.write_text("Line 1\nLine 2\nLine 3", 10, 80)
+        text_filler.write_text("Line 1\nLine 2\nLine 3", 20, 160)
 
     # Write empty text
     with canvas.context.Fill() as text_filler:
-        text_filler.write_text("", 50, 10)
+        text_filler.write_text("", 100, 20)
 
     await probe.redraw("Multiple text blocks should be drawn")
-    assert_reference(probe, "multiline_text", threshold=0.08)
+    assert_reference(probe, "multiline_text", threshold=0.0)
