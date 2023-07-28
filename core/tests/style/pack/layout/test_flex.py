@@ -214,6 +214,67 @@ def test_row_flex_insufficient_space():
     )
 
 
+def test_row_flex_insufficient_space_no_flex():
+    """Children in a row layout with flexible containers, but insufficient_space for any
+    of the flexible content, and an explicit intrinsic width doesn't collapse row height.
+    """
+    root = ExampleNode(
+        "app",
+        style=Pack(direction=ROW),
+        children=[
+            ExampleNode(
+                "first",
+                style=Pack(flex=1),
+                size=(100, 100),
+            ),
+            ExampleNode(
+                "second",
+                style=Pack(direction=ROW, flex=1),
+                size=(100, 100),
+                children=[
+                    # All children are expanding flexible, but the intrinsic minimum
+                    # size is greater than what is available.
+                    ExampleNode(
+                        "child 1",
+                        style=Pack(flex=1),
+                        size=(at_least(60), 20),
+                    ),
+                    ExampleNode(
+                        "child 2",
+                        style=Pack(flex=1),
+                        size=(at_least(60), 30),
+                    ),
+                ],
+            ),
+        ],
+    )
+
+    root.style.layout(root, ExampleViewport(640, 480))
+    assert_layout(
+        root,
+        (220, 100),
+        (640, 480),
+        {
+            "origin": (0, 0),
+            "content": (640, 480),
+            "children": [
+                {
+                    "origin": (0, 0),
+                    "content": (100, 100),
+                },
+                {
+                    "origin": (100, 0),
+                    "content": (120, 100),
+                    "children": [
+                        {"origin": (100, 0), "content": (60, 20)},
+                        {"origin": (160, 0), "content": (60, 30)},
+                    ],
+                },
+            ],
+        },
+    )
+
+
 def test_column_flex_no_hints():
     """Children in a column layout with flexible containers, but no flex hints,
     doesn't collapse column width."""
@@ -418,6 +479,69 @@ def test_column_flex_insufficient_space():
                         {"origin": (0, 160), "content": (100, 0)},
                         {"origin": (0, 160), "content": (20, 20)},
                         {"origin": (0, 180), "content": (100, 20)},
+                    ],
+                },
+            ],
+        },
+    )
+
+
+def test_column_flex_insufficient_space_no_flex():
+    """Children in a column layout with flexible containers, but insufficient space to
+    accomodate the flexible allocations, and an explicit intrinsic width, doesn't
+    collapse column width.
+    """
+
+    root = ExampleNode(
+        "app",
+        style=Pack(direction=COLUMN),
+        children=[
+            ExampleNode(
+                "first",
+                style=Pack(flex=1),
+                size=(100, 100),
+            ),
+            ExampleNode(
+                "second",
+                style=Pack(direction=COLUMN, flex=1),
+                size=(100, 100),
+                children=[
+                    # All children are expanding flexible, but the intrinsic minimum
+                    # size is greater than what is available.
+                    ExampleNode(
+                        "child 1",
+                        style=Pack(flex=1),
+                        size=(20, at_least(60)),
+                    ),
+                    ExampleNode(
+                        "child 2",
+                        style=Pack(flex=1),
+                        size=(30, at_least(60)),
+                    ),
+                ],
+            ),
+        ],
+    )
+
+    root.style.layout(root, ExampleViewport(640, 480))
+    assert_layout(
+        root,
+        (100, 220),
+        (640, 480),
+        {
+            "origin": (0, 0),
+            "content": (640, 480),
+            "children": [
+                {
+                    "origin": (0, 0),
+                    "content": (100, 100),
+                },
+                {
+                    "origin": (0, 100),
+                    "content": (100, 120),
+                    "children": [
+                        {"origin": (0, 100), "content": (20, 60)},
+                        {"origin": (0, 160), "content": (30, 60)},
                     ],
                 },
             ],
