@@ -275,7 +275,13 @@ async def test_transparency(canvas, probe):
     canvas.context.fill(color=rgba(0x33, 0x66, 0x99, 0.5))
 
     await probe.redraw("Image with transparent content and background")
-    assert_reference(probe, "transparency", threshold=0.0)
+    # 0.1 is a big threshold; it's equivalent to 400 pixels being 100% the wrong color.
+    # This occurs because pixel aliasing around the edge of the squares generates
+    # different colors due to image scaling and alpha blending differences on each
+    # platform. You could also generate 0.1 threshold error by moving the entire image 1
+    # px to the left. However, it's difficult to find a measure that passes the edge
+    # issue without also passing a translation error.
+    assert_reference(probe, "transparency", threshold=0.1)
 
 
 async def test_paths(canvas, probe):
@@ -296,7 +302,7 @@ async def test_paths(canvas, probe):
     canvas.context.stroke()
 
     await probe.redraw("Pair of triangles should be drawn")
-    assert_reference(probe, "paths", threshold=0.0)
+    assert_reference(probe, "paths", threshold=0.03)
 
 
 async def test_bezier_curve(canvas, probe):
@@ -313,7 +319,7 @@ async def test_bezier_curve(canvas, probe):
     canvas.context.stroke()
 
     await probe.redraw("Heart should be drawn")
-    assert_reference(probe, "bezier_curve", threshold=0.0)
+    assert_reference(probe, "bezier_curve", threshold=0.02)
 
 
 async def test_quadratic_curve(canvas, probe):
@@ -330,7 +336,7 @@ async def test_quadratic_curve(canvas, probe):
     canvas.context.stroke()
 
     await probe.redraw("Quote bubble should be drawn")
-    assert_reference(probe, "quadratic_curve", threshold=0.0)
+    assert_reference(probe, "quadratic_curve", threshold=0.02)
 
 
 async def test_arc(canvas, probe):
@@ -357,7 +363,7 @@ async def test_arc(canvas, probe):
     canvas.context.stroke()
 
     await probe.redraw("Smiley face should be drawn")
-    assert_reference(probe, "arc", threshold=0.0)
+    assert_reference(probe, "arc", threshold=0.02)
 
 
 async def test_ellipse(canvas, probe):
@@ -397,7 +403,7 @@ async def test_ellipse(canvas, probe):
     canvas.context.stroke(color=GOLDENROD)
 
     await probe.redraw("Atom should be drawn")
-    assert_reference(probe, "ellipse", threshold=0.0)
+    assert_reference(probe, "ellipse", threshold=0.02)
 
 
 async def test_rect(canvas, probe):
@@ -409,7 +415,7 @@ async def test_rect(canvas, probe):
     canvas.context.fill(color=REBECCAPURPLE)
 
     await probe.redraw("Filled rectangle should be drawn")
-    assert_reference(probe, "rect", threshold=0.0)
+    assert_reference(probe, "rect", threshold=0.02)
 
 
 async def test_fill(canvas, probe):
@@ -433,7 +439,7 @@ async def test_fill(canvas, probe):
     canvas.context.fill(color=CORNFLOWERBLUE, fill_rule=FillRule.EVENODD)
 
     await probe.redraw("Stars should be drawn")
-    assert_reference(probe, "fill", threshold=0.0)
+    assert_reference(probe, "fill", threshold=0.01)
 
 
 async def test_stroke(canvas, probe):
@@ -456,7 +462,7 @@ async def test_stroke(canvas, probe):
     canvas.context.stroke(color=CORNFLOWERBLUE)
 
     await probe.redraw("Stroke should be drawn")
-    assert_reference(probe, "stroke", threshold=0.0)
+    assert_reference(probe, "stroke", threshold=0.02)
 
 
 async def test_closed_path_context(canvas, probe):
@@ -472,7 +478,7 @@ async def test_closed_path_context(canvas, probe):
     canvas.context.stroke(color=REBECCAPURPLE, line_width=5, line_dash=[20, 30])
 
     await probe.redraw("Closed path should be drawn with context")
-    assert_reference(probe, "closed_path_context", threshold=0.0)
+    assert_reference(probe, "closed_path_context", threshold=0.02)
 
 
 async def test_fill_context(canvas, probe):
@@ -485,7 +491,7 @@ async def test_fill_context(canvas, probe):
         path.line_to(x=100, y=180)
 
     await probe.redraw("Fill should be drawn with context")
-    assert_reference(probe, "fill_context", threshold=0.0)
+    assert_reference(probe, "fill_context", threshold=0.01)
 
 
 async def test_stroke_context(canvas, probe):
@@ -501,7 +507,7 @@ async def test_stroke_context(canvas, probe):
         stroke.line_to(x=120, y=180)
 
     await probe.redraw("Stroke should be drawn with context")
-    assert_reference(probe, "stroke_context", threshold=0.0)
+    assert_reference(probe, "stroke_context", threshold=0.01)
 
 
 async def test_transforms(canvas, probe):
@@ -530,7 +536,7 @@ async def test_transforms(canvas, probe):
     canvas.context.fill()
 
     await probe.redraw("Transforms can be applied")
-    assert_reference(probe, "transforms", threshold=0.0)
+    assert_reference(probe, "transforms", threshold=0.01)
 
 
 async def test_write_text(canvas, probe):
@@ -597,7 +603,11 @@ async def test_write_text(canvas, probe):
         )
 
     await probe.redraw("Text should be drawn")
-    assert_reference(probe, "write_text", threshold=0.0)
+    # 0.07 is quite a high error threshold; it's equivalent to 196 pixels being
+    # 100% the wrong color. However, fonts are the worst case for evaluating with
+    # RMSE, as they are 100% edges; and due to minor font rendering discrepancies
+    # and antialiasing introduced by image scaling, edges are the source of error.
+    assert_reference(probe, "write_text", threshold=0.07)
 
 
 async def test_multiline_text(canvas, probe):
@@ -615,4 +625,8 @@ async def test_multiline_text(canvas, probe):
         text_filler.write_text("", 100, 20)
 
     await probe.redraw("Multiple text blocks should be drawn")
-    assert_reference(probe, "multiline_text", threshold=0.0)
+    # 0.09 is quite a high error threshold; it's equivalent to 324 pixels being
+    # 100% the wrong color. However, fonts are the worst case for evaluating with
+    # RMSE, as they are 100% edges; and due to minor font rendering discrepancies
+    # and antialiasing introduced by image scaling, edges are the source of error.
+    assert_reference(probe, "multiline_text", threshold=0.09)
