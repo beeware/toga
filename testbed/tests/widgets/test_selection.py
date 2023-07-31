@@ -131,7 +131,7 @@ async def test_selection_change(widget, probe):
     on_change_handler = Mock()
     widget.on_change = on_change_handler
 
-    # Change the selection programatically
+    # Change the selection programmatically
     assert widget.value == "first"
     widget.value = "third"
 

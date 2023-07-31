@@ -509,21 +509,21 @@ def test_deprecated():
     # Can't specify min and range
     with pytest.raises(
         ValueError,
-        match=r"range cannot be specifed if min and max are specified",
+        match=r"range cannot be specified if min and max are specified",
     ):
         toga.Slider(min=2, range=(2, 4))
 
     # Can't specify max and range
     with pytest.raises(
         ValueError,
-        match=r"range cannot be specifed if min and max are specified",
+        match=r"range cannot be specified if min and max are specified",
     ):
         toga.Slider(max=4, range=(2, 4))
 
     # Can't specify min and max and range
     with pytest.raises(
         ValueError,
-        match=r"range cannot be specifed if min and max are specified",
+        match=r"range cannot be specified if min and max are specified",
     ):
         toga.Slider(min=2, max=4, range=(2, 4))
 
