@@ -127,43 +127,45 @@ class MainWindow(Window):
         title: str | None = None,
         position: tuple[int, int] = (100, 100),
         size: tuple[int, int] = (640, 480),
-        toolbar: list[Widget] | None = None,
         resizeable: bool = True,
         minimizable: bool = True,
-        factory: None = None,  # DEPRECATED !
-        on_close: None = None,
-    ) -> None:
-        ######################################################################
-        # 2022-09: Backwards compatibility
-        ######################################################################
-        # factory no longer used
-        if factory:
-            warnings.warn("The factory argument is no longer used.", DeprecationWarning)
-        ######################################################################
-        # End backwards compatibility.
-        ######################################################################
+    ):
+        """Create a new application Main Window.
+
+        :param id: The ID of the window.
+        :param title: Title for the window.
+        :param position: Position of the window, as a tuple of ``(x, y)`` coordinates.
+        :param size: Size of the window, as a tuple of ``(width, height)``, in pixels.
+        :param resizeable: Can the window be manually resized by the user?
+        :param minimizable: Can the window be minimized by the user?
+        """
         super().__init__(
             id=id,
             title=title,
             position=position,
             size=size,
-            toolbar=toolbar,
             resizeable=resizeable,
             closeable=True,
             minimizable=minimizable,
-            on_close=on_close,
         )
 
-    @Window.on_close.setter
-    def on_close(self, handler):
-        """Raise an exception. ``on_exit`` for the app should be used instead of ``on_close`` on
-        main window.
+    @property
+    def on_close(self) -> None:
+        """The handler to invoke before the window is closed in response to a user
+        action.
 
-        Args:
-            handler (:obj:`callable`): The handler passed.
+        Always returns ``None``. Main windows should use :meth:`toga.App.on_exit`,
+        rather than ``on_close``.
+
+        :raises ValueError: if an attempt is made to set the ``on_close`` handler for an
+            App.
         """
+        return None
+
+    @on_close.setter
+    def on_close(self, handler: Any):
         if handler:
-            raise AttributeError(
+            raise ValueError(
                 "Cannot set on_close handler for the main window. Use the app on_exit handler instead"
             )
 

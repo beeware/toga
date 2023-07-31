@@ -30,12 +30,6 @@ class DeprecatedFactoryTests(TestCase):
         self.assertEqual(widget._impl.interface, widget)
         self.assertNotEqual(widget.factory, self.factory)
 
-    def test_main_window(self):
-        with self.assertWarns(DeprecationWarning):
-            widget = toga.MainWindow(factory=self.factory)
-        self.assertEqual(widget._impl.interface, widget)
-        self.assertNotEqual(widget.factory, self.factory)
-
     def test_command(self):
         with self.assertWarns(DeprecationWarning):
             widget = toga.Command(self.callback, "Test", factory=self.factory)
@@ -59,12 +53,6 @@ class DeprecatedFactoryTests(TestCase):
         widget = toga.Icon("resources/toga", system=True)
         with self.assertWarns(DeprecationWarning):
             widget.bind(factory=self.factory)
-        self.assertEqual(widget._impl.interface, widget)
-        self.assertNotEqual(widget.factory, self.factory)
-
-    def test_window(self):
-        with self.assertWarns(DeprecationWarning):
-            widget = toga.Window(factory=self.factory)
         self.assertEqual(widget._impl.interface, widget)
         self.assertNotEqual(widget.factory, self.factory)
 

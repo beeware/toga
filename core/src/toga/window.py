@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import warnings
 from builtins import id as identifier
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Literal, Protocol, TypeVar, overload
@@ -60,45 +59,30 @@ class Dialog(AsyncResult):
 
 
 class Window:
-    """The top level container of an application.
-
-    Args:
-        id: The ID of the window.
-        title: Title for the window.
-        position: Position of the window, as x,y coordinates.
-        size:  Size of the window, as (width, height) sizes, in pixels.
-        toolbar: (Deprecated, will have no effect)
-        resizeable: Toggle if the window is resizable by the user.
-        closeable: Toggle if the window is closable by the user.
-        minimizable: Toggle if the window is minimizable by the user.
-        on_close: A callback to invoke when the user makes a request to close the window.
-    """
-
     _WINDOW_CLASS = "Window"
 
     def __init__(
         self,
         id: str | None = None,
-        title: str | None = None,
+        title: str = "Toga",
         position: tuple[int, int] = (100, 100),
         size: tuple[int, int] = (640, 480),
-        toolbar: list[Widget | None] = None,
         resizeable: bool = True,
         closeable: bool = True,
         minimizable: bool = True,
-        factory: None = None,  # DEPRECATED !
         on_close: OnCloseHandler | None = None,
     ) -> None:
-        ######################################################################
-        # 2022-09: Backwards compatibility
-        ######################################################################
-        # factory no longer used
-        if factory:
-            warnings.warn("The factory argument is no longer used.", DeprecationWarning)
-        ######################################################################
-        # End backwards compatibility.
-        ######################################################################
+        """Create a new Window.
 
+        :param id: The ID of the window.
+        :param title: Title for the window.
+        :param position: Position of the window, as a tuple of ``(x, y)`` coordinates.
+        :param size: Size of the window, as a tuple of ``(width, height)``, in pixels.
+        :param resizeable: Can the window be manually resized by the user?
+        :param closeable: Should the window provide the option to be manually closed?
+        :param minimizable: Can the window be minimized by the user?
+        :param on_close: The initial ``on_close`` handler.
+        """
         self.widgets = WidgetRegistry()
 
         self._id = str(id if id else identifier(self))
@@ -114,7 +98,7 @@ class Window:
         self.factory = get_platform_factory()
         self._impl = getattr(self.factory, self._WINDOW_CLASS)(
             interface=self,
-            title="Toga" if title is None else title,
+            title=title,
             position=position,
             size=size,
         )
@@ -125,28 +109,21 @@ class Window:
 
     @property
     def id(self) -> str:
-        """The DOM identifier for the window.
-
-        This id can be used to target CSS directives.
-        """
+        """The DOM identifier for the window."""
         return self._id
 
     @property
     def app(self) -> App | None:
         """Instance of the :class:`toga.App` that this window belongs to.
 
-        Returns:
-            The app that it belongs to :class:`toga.App`.
-
-        Raises:
-            Exception: If the window already is associated with another app.
-        """
+        :raises ValueError: If a window is already assigned to an app, and an attempt is made
+            to assign the window to a new app."""
         return self._app
 
     @app.setter
     def app(self, app: App) -> None:
         if self._app:
-            raise Exception("Window is already associated with an App")
+            raise ValueError("Window is already associated with an App")
 
         self._app = app
         self._impl.set_app(app._impl)
@@ -156,7 +133,7 @@ class Window:
 
     @property
     def title(self) -> str:
-        """Title of the window. If no title is given it defaults to ``"Toga"``."""
+        """Title of the window. If no title is provided, the title will default to ``"Toga"``."""
         return self._impl.get_title()
 
     @title.setter
@@ -219,23 +196,32 @@ class Window:
         self._impl.set_position(position)
 
     def show(self) -> None:
-        """Show window, if hidden."""
+        """Show the window, if hidden.
+
+        :raises ValueError: if the window hasn't been associated with an"""
         if self.app is None:
-            raise AttributeError(
-                "Can't show a window that doesn't have an associated app"
-            )
+            raise ValueError("Can't show a window that doesn't have an associated app")
         self._impl.show()
 
     def hide(self) -> None:
-        """Hide window, if shown."""
+        """Hide window, if shown.
+
+        :raises ValueError: if the window hasn't been associated with an app."""
         if self.app is None:
-            raise AttributeError(
-                "Can't hide a window that doesn't have an associated app"
-            )
+            raise ValueError("Can't hide a window that doesn't have an associated app")
         self._impl.hide()
 
     @property
     def full_screen(self) -> bool:
+        """Is the window in full screen mode?
+
+        .. note::
+            Full screen mode is *not* the same as "maximized". A full screen window
+            has no title bar, tool bar or window control widgets; some or all of these
+            controls may be visible on a maximized app. A good example of "full screen"
+            mode is a slideshow app in presentation mode - the only visible content is
+            the slide.
+        """
         return self._is_full_screen
 
     @full_screen.setter
@@ -245,6 +231,7 @@ class Window:
 
     @property
     def visible(self) -> bool:
+        "Is the window visible?"
         return self._impl.get_visible()
 
     @visible.setter
@@ -256,7 +243,12 @@ class Window:
 
     @property
     def on_close(self) -> OnCloseHandler:
-        """The handler to invoke before the window is closed."""
+        """The handler to invoke before the window is closed in response to a user
+        action.
+
+        If the handler returns ``False``, the request to close the window will be
+        cancelled.
+        """
         return self._on_close
 
     @on_close.setter
@@ -268,6 +260,10 @@ class Window:
         self._on_close = wrapped_handler(self, handler, cleanup=cleanup)
 
     def close(self) -> None:
+        """Close the window.
+
+        This *does not* invoke the ``on_close`` handler; the window will be immediately
+        and unconditionally closed."""
         self.app.windows -= self
         self._impl.close()
 
@@ -283,7 +279,7 @@ class Window:
     ) -> Dialog:
         """Ask the user to acknowledge some information.
 
-        Presents as a dialog with a single 'OK' button to close the dialog.
+        Presents as a dialog with a single "OK" button to close the dialog.
 
         :param title: The title of the dialog window.
         :param message: The message to display.
@@ -306,15 +302,15 @@ class Window:
     ) -> Dialog:
         """Ask the user a yes/no question.
 
-        Presents as a dialog with a 'YES' and 'NO' button.
+        Presents as a dialog with "Yes" and "No" buttons.
 
         :param title: The title of the dialog window.
         :param message: The question to be answered.
         :param on_result: A callback that will be invoked when the user
             selects an option on the dialog.
         :returns: An awaitable Dialog object. The Dialog object returns
-            ``True`` when the 'YES' button was pressed, ``False`` when
-            the 'NO' button was pressed.
+            ``True`` when the "Yes" button was pressed, ``False`` when
+            the "No" button was pressed.
         """
         dialog = Dialog(self)
         self.factory.dialogs.QuestionDialog(
@@ -330,16 +326,16 @@ class Window:
     ) -> Dialog:
         """Ask the user to confirm if they wish to proceed with an action.
 
-        Presents as a dialog with 'Cancel' and 'OK' buttons (or whatever labels
-        are appropriate on the current platform)
+        Presents as a dialog with "Cancel" and "OK" buttons (or whatever labels
+        are appropriate on the current platform).
 
         :param title: The title of the dialog window.
         :param message: A message describing the action to be confirmed.
         :param on_result: A callback that will be invoked when the user
             selects an option on the dialog.
         :returns: An awaitable Dialog object. The Dialog object returns
-            ``True`` when the 'OK' button was pressed, ``False`` when
-            the 'CANCEL' button was pressed.
+            ``True`` when the "OK" button was pressed, ``False`` when
+            the "CANCEL" button was pressed.
         """
         dialog = Dialog(self)
         self.factory.dialogs.ConfirmDialog(
@@ -355,14 +351,14 @@ class Window:
     ) -> Dialog:
         """Ask the user to acknowledge an error state.
 
-        Presents as an error dialog with a 'OK' button to close the dialog.
+        Presents as an error dialog with a "OK" button to close the dialog.
 
         :param title: The title of the dialog window.
         :param message: The error message to display.
         :param on_result: A callback that will be invoked when the user
             selects an option on the dialog.
         :returns: An awaitable Dialog object. The Dialog object returns
-            ``None`` after the user pressed the 'OK' button.
+            ``None`` after the user pressed the "OK" button.
         """
         dialog = Dialog(self)
         self.factory.dialogs.ErrorDialog(
@@ -448,18 +444,18 @@ class Window:
 
         Presents the user a system-native "Save file" dialog.
 
-        This opens a native dialog where the user can select a place to save a file.
-        It is possible to suggest a filename and force the user to use a specific file extension.
-        If no path is returned (e.g. dialog is canceled), a ValueError is raised.
+        This opens a native dialog where the user can select a place to save a file. It
+        is possible to suggest a filename, and constrain the list of allowed file
+        extensions.
 
         :param title: The title of the dialog window
         :param suggested_filename: A default filename
         :param file_types: A list of strings with the allowed file extensions.
-        :param on_result: A callback that will be invoked when the user
-            selects an option on the dialog.
-        :returns: An awaitable Dialog object. The Dialog object returns
-            a path object for the selected file location, or ``None`` if
-            the user cancelled the save operation.
+        :param on_result: A callback that will be invoked when the user selects an
+            option on the dialog.
+        :returns: An awaitable Dialog object. The Dialog object returns a path object
+            for the selected file location, or ``None`` if the user cancelled the save
+            operation.
         """
         dialog = Dialog(self)
         # Convert suggested filename to a path (if it isn't already),
@@ -528,10 +524,10 @@ class Window:
         :param title: The title of the dialog window
         :param initial_directory: The initial folder in which to open the dialog.
             If ``None``, use the default location provided by the operating system
-            (which will often be "last used location")
+            (which will often be the last used location)
         :param file_types: A list of strings with the allowed file extensions.
         :param multiselect: If True, the user will be able to select multiple
-            files; if False, the selection will be restricted to a single file/
+            files; if False, the selection will be restricted to a single file.
         :param on_result: A callback that will be invoked when the user
             selects an option on the dialog.
         :returns: An awaitable Dialog object. The Dialog object returns
