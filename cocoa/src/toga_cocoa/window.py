@@ -172,9 +172,6 @@ class Window:
 
         self.native.setToolbar(self._toolbar_native)
 
-    def clear_content(self):
-        pass
-
     def set_content(self, widget):
         # Set the content of the window's container
         self.container.content = widget

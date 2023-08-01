@@ -20,6 +20,7 @@ test_sources = [
 ]
 requires = [
     "../core",
+    # Temporary until beeware/travertino#78 is merged
     "git+https://github.com/beeware/travertino.git@min-width",
 ]
 test_requires = [
