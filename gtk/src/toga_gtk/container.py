@@ -97,7 +97,7 @@ class TogaContainer(Gtk.Fixed):
         if self._content and self._dirty_widgets:
             # If any of the widgets have been marked as dirty,
             # recompute their bounds, and re-evaluate the minimum
-            # allowed size fo the layout.
+            # allowed size for the layout.
             while self._dirty_widgets:
                 widget = self._dirty_widgets.pop()
                 widget.rehint()

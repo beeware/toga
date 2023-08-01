@@ -87,7 +87,7 @@ async def test_select_tab(
     # on_select hasn't been invoked.
     on_select_handler.assert_not_called()
 
-    # Select item 1 programatically
+    # Select item 1 programmatically
     widget.current_tab = "Tab 2"
     await probe.redraw("Tab 2 should be selected")
 

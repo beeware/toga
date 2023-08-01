@@ -106,7 +106,7 @@ class RootContainer(Container):
         )
 
         # Construct a NavigationController that provides a navigation bar, and
-        # is able to maintain a stack of navigable content. This is intialized
+        # is able to maintain a stack of navigable content. This is initialized
         # with a root UIViewController that is the actual content
         self.content_controller = UIViewController.alloc().init()
         self.controller = UINavigationController.alloc().initWithRootViewController(

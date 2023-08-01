@@ -216,7 +216,8 @@ def test_row_flex_insufficient_space():
 
 def test_row_flex_insufficient_space_no_flex():
     """Children in a row layout with flexible containers, but insufficient_space for any
-    of the flexible content, and an explicit intrinsic width doesn't collapse row height.
+    of the flexible content, and an explicit intrinsic width, doesn't collapse row
+    height.
     """
     root = ExampleNode(
         "app",
@@ -406,7 +407,7 @@ def test_column_flex():
 
 def test_column_flex_insufficient_space():
     """Children in a column layout with flexible containers, but insufficient space to
-    accomodate them, and an explicit intrinsic width, doesn't collapse column width.
+    accommodate them, and an explicit intrinsic width, doesn't collapse column width.
     """
 
     root = ExampleNode(
@@ -487,9 +488,9 @@ def test_column_flex_insufficient_space():
 
 
 def test_column_flex_insufficient_space_no_flex():
-    """Children in a column layout with flexible containers, but insufficient space to
-    accomodate the flexible allocations, and an explicit intrinsic width, doesn't
-    collapse column width.
+    """Children in a column layout with flexible containers, but insufficient space for
+    any of the flexible content, and an explicit intrinsic width, doesn't collapse
+    column width.
     """
 
     root = ExampleNode(
