@@ -94,7 +94,7 @@ class Window(LoggedObject):
         self._set_value("visible", False)
 
     def set_full_screen(self, is_full_screen):
-        self._set_value("is_full_screen", is_full_screen)
+        self._action("set full screen", full_screen=is_full_screen)
 
     def simulate_close(self):
         self.interface.on_close(None)

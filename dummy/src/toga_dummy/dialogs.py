@@ -1,50 +1,63 @@
 class BaseDialog:
-    def __init__(self, interface):
+    def __init__(self, interface, on_result):
         self.interface = interface
         self.interface._impl = self
+        self.on_result = on_result
+
+    def simulate_result(self, result):
+        self.on_result(None, result)
+        self.interface.future.set_result(result)
 
 
 class InfoDialog(BaseDialog):
     def __init__(self, interface, title, message, on_result=None):
-        super().__init__(interface)
+        super().__init__(interface, on_result=on_result)
         interface.window._impl._action(
-            "info_dialog", title=title, message=message, on_result=on_result
+            "show info dialog",
+            title=title,
+            message=message,
         )
 
 
 class QuestionDialog(BaseDialog):
     def __init__(self, interface, title, message, on_result=None):
-        super().__init__(interface)
+        super().__init__(interface, on_result=on_result)
         interface.window._impl._action(
-            "question_dialog", title=title, message=message, on_result=on_result
+            "show question dialog",
+            title=title,
+            message=message,
         )
 
 
 class ConfirmDialog(BaseDialog):
     def __init__(self, interface, title, message, on_result=None):
-        super().__init__(interface)
+        super().__init__(interface, on_result=on_result)
         interface.window._impl._action(
-            "confirm_dialog", title=title, message=message, on_result=on_result
+            "show confirm dialog",
+            title=title,
+            message=message,
         )
 
 
 class ErrorDialog(BaseDialog):
     def __init__(self, interface, title, message, on_result=None):
-        super().__init__(interface)
+        super().__init__(interface, on_result=on_result)
         interface.window._impl._action(
-            "error_dialog", title=title, message=message, on_result=on_result
+            "show error dialog",
+            title=title,
+            message=message,
         )
 
 
 class StackTraceDialog(BaseDialog):
-    def __init__(self, interface, title, message, on_result=None, **kwargs):
-        super().__init__(interface)
+    def __init__(self, interface, title, message, content, retry, on_result=None):
+        super().__init__(interface, on_result=on_result)
         interface.window._impl._action(
-            "stack_trace_dialog",
+            "show stack trace dialog",
             title=title,
             message=message,
-            on_result=on_result,
-            **kwargs
+            content=content,
+            retry=retry,
         )
 
 
@@ -58,14 +71,13 @@ class SaveFileDialog(BaseDialog):
         file_types=None,
         on_result=None,
     ):
-        super().__init__(interface)
+        super().__init__(interface, on_result=on_result)
         interface.window._impl._action(
-            "save_file_dialog",
+            "show save file dialog",
             title=title,
             filename=filename,
             initial_directory=initial_directory,
             file_types=file_types,
-            on_result=on_result,
         )
 
 
@@ -76,17 +88,16 @@ class OpenFileDialog(BaseDialog):
         title,
         initial_directory,
         file_types,
-        multiselect,
+        multiple_select,
         on_result=None,
     ):
-        super().__init__(interface)
+        super().__init__(interface, on_result=on_result)
         interface.window._impl._action(
-            "open_file_dialog",
+            "show open file dialog",
             title=title,
             initial_directory=initial_directory,
             file_types=file_types,
-            multiselect=multiselect,
-            on_result=on_result,
+            multiple_select=multiple_select,
         )
 
 
@@ -96,14 +107,13 @@ class SelectFolderDialog(BaseDialog):
         interface,
         title,
         initial_directory,
-        multiselect,
+        multiple_select,
         on_result=None,
     ):
-        super().__init__(interface)
+        super().__init__(interface, on_result=on_result)
         interface.window._impl._action(
-            "select_folder_dialog",
+            "show select folder dialog",
             title=title,
             initial_directory=initial_directory,
-            multiselect=multiselect,
-            on_result=on_result,
+            multiple_select=multiple_select,
         )

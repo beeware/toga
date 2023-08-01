@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import warnings
 from builtins import id as identifier
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Literal, Protocol, TypeVar, overload
@@ -503,8 +504,9 @@ class Window:
         title: str,
         initial_directory: Path | str | None = None,
         file_types: list[str] | None = None,
-        multiselect: Literal[False] = False,
+        multiple_select: Literal[False] = False,
         on_result: DialogResultHandler[Path | None] | None = None,
+        multiselect=None,  # DEPRECATED
     ) -> Dialog:
         ...
 
@@ -514,8 +516,9 @@ class Window:
         title: str,
         initial_directory: Path | str | None = None,
         file_types: list[str] | None = None,
-        multiselect: Literal[True] = True,
+        multiple_select: Literal[True] = True,
         on_result: DialogResultHandler[list[Path] | None] | None = None,
+        multiselect=None,  # DEPRECATED
     ) -> Dialog:
         ...
 
@@ -525,8 +528,9 @@ class Window:
         title: str,
         initial_directory: Path | str | None = None,
         file_types: list[str] | None = None,
-        multiselect: bool = False,
+        multiple_select: bool = False,
         on_result: DialogResultHandler[list[Path] | Path | None] | None = None,
+        multiselect=None,  # DEPRECATED
     ) -> Dialog:
         ...
 
@@ -535,8 +539,9 @@ class Window:
         title: str,
         initial_directory: Path | str | None = None,
         file_types: list[str] | None = None,
-        multiselect: bool = False,
+        multiple_select: bool = False,
         on_result: DialogResultHandler[list[Path] | Path | None] | None = None,
+        multiselect=None,  # DEPRECATED
     ) -> Dialog:
         """Ask the user to select a file (or files) to open.
 
@@ -547,22 +552,36 @@ class Window:
             If ``None``, use the default location provided by the operating system
             (which will often be the last used location)
         :param file_types: A list of strings with the allowed file extensions.
-        :param multiselect: If True, the user will be able to select multiple
+        :param multiple_select: If True, the user will be able to select multiple
             files; if False, the selection will be restricted to a single file.
         :param on_result: A callback that will be invoked when the user
             selects an option on the dialog.
+        :param multiselect: **DEPRECATED** Use ``multiple_select``.
         :returns: An awaitable Dialog object. The Dialog object returns
-            a list of ``Path`` objects if ``multiselect`` is ``True``, or a single
+            a list of ``Path`` objects if ``multiple_select`` is ``True``, or a single
             ``Path`` otherwise. Returns ``None`` if the open operation is
             cancelled by the user.
         """
+        ######################################################################
+        # 2023-08: Backwards compatibility
+        ######################################################################
+        if multiselect is not None:
+            warnings.warn(
+                "open_file_dialog(multiselect) has been renamed multiple_select",
+                DeprecationWarning,
+            )
+            multiple_select = multiselect
+        ######################################################################
+        # End Backwards compatibility
+        ######################################################################
+
         dialog = Dialog(self)
         self.factory.dialogs.OpenFileDialog(
             dialog,
             title,
             initial_directory=Path(initial_directory) if initial_directory else None,
             file_types=file_types,
-            multiselect=multiselect,
+            multiple_select=multiple_select,
             on_result=wrapped_handler(self, on_result),
         )
         return dialog
@@ -572,8 +591,9 @@ class Window:
         self,
         title: str,
         initial_directory: Path | str | None = None,
-        multiselect: Literal[False] = False,
+        multiple_select: Literal[False] = False,
         on_result: DialogResultHandler[Path | None] | None = None,
+        multiselect=None,  # DEPRECATED
     ) -> Dialog:
         ...
 
@@ -582,8 +602,9 @@ class Window:
         self,
         title: str,
         initial_directory: Path | str | None = None,
-        multiselect: Literal[True] = True,
+        multiple_select: Literal[True] = True,
         on_result: DialogResultHandler[list[Path] | None] | None = None,
+        multiselect=None,  # DEPRECATED
     ) -> Dialog:
         ...
 
@@ -592,8 +613,9 @@ class Window:
         self,
         title: str,
         initial_directory: Path | str | None = None,
-        multiselect: bool = False,
+        multiple_select: bool = False,
         on_result: DialogResultHandler[list[Path] | Path | None] | None = None,
+        multiselect=None,  # DEPRECATED
     ) -> Dialog:
         ...
 
@@ -601,8 +623,9 @@ class Window:
         self,
         title: str,
         initial_directory: Path | str | None = None,
-        multiselect: bool = False,
+        multiple_select: bool = False,
         on_result: DialogResultHandler[list[Path] | Path | None] | None = None,
+        multiselect=None,  # DEPRECATED
     ) -> Dialog:
         """Ask the user to select a directory/folder (or folders) to open.
 
@@ -612,21 +635,35 @@ class Window:
         :param initial_directory: The initial folder in which to open the dialog.
             If ``None``, use the default location provided by the operating system
             (which will often be "last used location")
-        :param multiselect: If True, the user will be able to select multiple
+        :param multiple_select: If True, the user will be able to select multiple
             files; if False, the selection will be restricted to a single file/
         :param on_result: A callback that will be invoked when the user
             selects an option on the dialog.
+        :param multiselect: **DEPRECATED** Use ``multiple_select``.
         :returns: An awaitable Dialog object. The Dialog object returns
-            a list of ``Path`` objects if ``multiselect`` is ``True``, or a single
+            a list of ``Path`` objects if ``multiple_select`` is ``True``, or a single
             ``Path`` otherwise. Returns ``None`` if the open operation is
             cancelled by the user.
         """
+        ######################################################################
+        # 2023-08: Backwards compatibility
+        ######################################################################
+        if multiselect is not None:
+            warnings.warn(
+                "select_folder_dialog(multiselect) has been renamed multiple_select",
+                DeprecationWarning,
+            )
+            multiple_select = multiselect
+        ######################################################################
+        # End Backwards compatibility
+        ######################################################################
+
         dialog = Dialog(self)
         self.factory.dialogs.SelectFolderDialog(
             dialog,
             title,
             initial_directory=Path(initial_directory) if initial_directory else None,
-            multiselect=multiselect,
+            multiple_select=multiple_select,
             on_result=wrapped_handler(self, on_result),
         )
         return dialog

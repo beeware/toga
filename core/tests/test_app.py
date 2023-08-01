@@ -1,4 +1,5 @@
-from unittest.mock import MagicMock
+import asyncio
+from unittest.mock import Mock
 
 import toga
 from toga.widgets.base import WidgetRegistry
@@ -13,7 +14,7 @@ class AppTests(TestCase):
         self.app_id = "org.beeware.test-app"
         self.id = "dom-id"
 
-        self.content = MagicMock()
+        self.content = Mock()
         self.content_id = "content-id"
         self.content.id = self.content_id
 
@@ -161,16 +162,19 @@ class AppTests(TestCase):
         self.assertActionPerformed(self.app, "beep")
 
     def test_add_background_task(self):
+        thing = Mock()
+
         async def test_handler(sender):
-            pass
+            thing()
 
         self.app.add_background_task(test_handler)
-        self.assertActionPerformedWith(
-            self.app,
-            "loop:call_soon_threadsafe",
-            handler=test_handler,
-            args=(None,),
-        )
+
+        async def run_test():
+            # Give the background task time to run.
+            await asyncio.sleep(0.1)
+            thing.assert_called_once()
+
+        self.app._impl.loop.run_until_complete(run_test())
 
     def test_override_startup(self):
         class BadApp(toga.App):
@@ -196,19 +200,19 @@ class DocumentAppTests(TestCase):
         self.app_id = "beeware.org"
         self.id = "id"
 
-        self.content = MagicMock()
+        self.content = Mock()
 
         self.app = toga.DocumentApp(self.name, self.app_id, id=self.id)
 
     def test_app_documents(self):
         self.assertEqual(self.app.documents, [])
 
-        doc = MagicMock()
+        doc = Mock()
         self.app._documents.append(doc)
         self.assertEqual(self.app.documents, [doc])
 
     def test_override_startup(self):
-        mock = MagicMock()
+        mock = Mock()
 
         class DocApp(toga.DocumentApp):
             def startup(self):

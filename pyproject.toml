@@ -29,7 +29,8 @@ exclude_lines = [
     "@(abc\\.)?abstractmethod",
     "NotImplementedError\\(\\)",
     "if TYPE_CHECKING:",
-    "class .+?\\(Protocol\\):",
+    "class .+?\\(Protocol.*\\):",
+    "@overload",
 ]
 
 [tool.isort]

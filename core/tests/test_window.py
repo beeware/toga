@@ -1,3 +1,4 @@
+from pathlib import Path
 from unittest.mock import Mock
 
 import pytest
@@ -11,7 +12,7 @@ from toga_dummy.utils import (
 
 
 @pytest.fixture
-def app():
+def app(event_loop):
     return toga.App("Test App", "org.beeware.toga.window")
 
 
@@ -238,6 +239,19 @@ def test_visibility(window, app):
     assert not window.visible
 
 
+def test_full_screen(window, app):
+    """A window can be set full screen."""
+    assert not window.full_screen
+
+    window.full_screen = True
+    assert window.full_screen
+    assert_action_performed_with(window, "set full screen", full_screen=True)
+
+    window.full_screen = False
+    assert not window.full_screen
+    assert_action_performed_with(window, "set full screen", full_screen=False)
+
+
 def test_close_no_handler(window, app):
     """A window without a close handler can be closed"""
     window.show()
@@ -289,3 +303,464 @@ def test_close_rejected_handler(window, app):
     assert window in app.windows
     assert_action_not_performed(window, "close")
     on_close_handler.assert_called_once_with(window)
+
+
+def test_info_dialog(window, app):
+    """An info dialog can be shown"""
+    window.app = app
+    on_result_handler = Mock()
+    dialog = window.info_dialog("Title", "Body", on_result=on_result_handler)
+
+    assert dialog.window == window
+    assert dialog.app == app
+
+    with pytest.raises(
+        RuntimeError,
+        match=r"Can't check dialog result directly; use await or an on_result handler",
+    ):
+        # Perform a synchronous comparison; this will raise a runtime error
+        dialog == 1
+
+    async def run_dialog(dialog):
+        dialog._impl.simulate_result(None)
+        assert await dialog is None
+
+    app._impl.loop.run_until_complete(run_dialog(dialog))
+
+    assert_action_performed_with(
+        window,
+        "show info dialog",
+        title="Title",
+        message="Body",
+    )
+    on_result_handler.assert_called_once_with(window, None)
+
+
+def test_question_dialog(window, app):
+    """A question dialog can be shown"""
+    window.app = app
+    on_result_handler = Mock()
+    dialog = window.question_dialog("Title", "Body", on_result=on_result_handler)
+
+    assert dialog.window == window
+    assert dialog.app == app
+
+    with pytest.raises(
+        RuntimeError,
+        match=r"Can't check dialog result directly; use await or an on_result handler",
+    ):
+        # Perform a synchronous comparison; this will raise a runtime error
+        dialog == 1
+
+    async def run_dialog(dialog):
+        dialog._impl.simulate_result(True)
+        assert await dialog is True
+
+    app._impl.loop.run_until_complete(run_dialog(dialog))
+
+    assert_action_performed_with(
+        window,
+        "show question dialog",
+        title="Title",
+        message="Body",
+    )
+    on_result_handler.assert_called_once_with(window, True)
+
+
+def test_confirm_dialog(window, app):
+    """A confirm dialog can be shown"""
+    window.app = app
+    on_result_handler = Mock()
+    dialog = window.confirm_dialog("Title", "Body", on_result=on_result_handler)
+
+    assert dialog.window == window
+    assert dialog.app == app
+
+    with pytest.raises(
+        RuntimeError,
+        match=r"Can't check dialog result directly; use await or an on_result handler",
+    ):
+        # Perform a synchronous comparison; this will raise a runtime error
+        dialog == 1
+
+    async def run_dialog(dialog):
+        dialog._impl.simulate_result(True)
+        assert await dialog is True
+
+    app._impl.loop.run_until_complete(run_dialog(dialog))
+
+    assert_action_performed_with(
+        window,
+        "show confirm dialog",
+        title="Title",
+        message="Body",
+    )
+    on_result_handler.assert_called_once_with(window, True)
+
+
+def test_error_dialog(window, app):
+    """An error dialog can be shown"""
+    window.app = app
+    on_result_handler = Mock()
+    dialog = window.error_dialog("Title", "Body", on_result=on_result_handler)
+
+    assert dialog.window == window
+    assert dialog.app == app
+
+    with pytest.raises(
+        RuntimeError,
+        match=r"Can't check dialog result directly; use await or an on_result handler",
+    ):
+        # Perform a synchronous comparison; this will raise a runtime error
+        dialog == 1
+
+    async def run_dialog(dialog):
+        dialog._impl.simulate_result(None)
+        assert await dialog is None
+
+    app._impl.loop.run_until_complete(run_dialog(dialog))
+
+    assert_action_performed_with(
+        window,
+        "show error dialog",
+        title="Title",
+        message="Body",
+    )
+    on_result_handler.assert_called_once_with(window, None)
+
+
+def test_stack_trace_dialog(window, app):
+    """A stack trace dialog can be shown"""
+    window.app = app
+    on_result_handler = Mock()
+    dialog = window.stack_trace_dialog(
+        "Title",
+        "Body",
+        "The error",
+        on_result=on_result_handler,
+    )
+
+    assert dialog.window == window
+    assert dialog.app == app
+
+    with pytest.raises(
+        RuntimeError,
+        match=r"Can't check dialog result directly; use await or an on_result handler",
+    ):
+        # Perform a synchronous comparison; this will raise a runtime error
+        dialog == 1
+
+    async def run_dialog(dialog):
+        dialog._impl.simulate_result(None)
+        assert await dialog is None
+
+    app._impl.loop.run_until_complete(run_dialog(dialog))
+
+    assert_action_performed_with(
+        window,
+        "show stack trace dialog",
+        title="Title",
+        message="Body",
+        content="The error",
+        retry=False,
+    )
+    on_result_handler.assert_called_once_with(window, None)
+
+
+def test_save_file_dialog(window, app):
+    """A save file dialog can be shown"""
+    window.app = app
+    on_result_handler = Mock()
+    dialog = window.save_file_dialog(
+        "Title",
+        Path("/path/to/initial_file.txt"),
+        on_result=on_result_handler,
+    )
+
+    assert dialog.window == window
+    assert dialog.app == app
+
+    with pytest.raises(
+        RuntimeError,
+        match=r"Can't check dialog result directly; use await or an on_result handler",
+    ):
+        # Perform a synchronous comparison; this will raise a runtime error
+        dialog == 1
+
+    saved_file = Path("/saved/path/filename.txt")
+
+    async def run_dialog(dialog):
+        dialog._impl.simulate_result(saved_file)
+        assert await dialog is saved_file
+
+    app._impl.loop.run_until_complete(run_dialog(dialog))
+
+    assert_action_performed_with(
+        window,
+        "show save file dialog",
+        title="Title",
+        filename="initial_file.txt",
+        initial_directory=Path("/path/to"),
+        file_types=None,
+    )
+    on_result_handler.assert_called_once_with(window, saved_file)
+
+
+def test_save_file_dialog_default_directory(window, app):
+    """If no path is provided, a save file dialog will use the default directory"""
+    window.app = app
+    on_result_handler = Mock()
+    dialog = window.save_file_dialog(
+        "Title",
+        "initial_file.txt",
+        file_types=[".txt", ".pdf"],
+        on_result=on_result_handler,
+    )
+
+    assert dialog.window == window
+    assert dialog.app == app
+
+    with pytest.raises(
+        RuntimeError,
+        match=r"Can't check dialog result directly; use await or an on_result handler",
+    ):
+        # Perform a synchronous comparison; this will raise a runtime error
+        dialog == 1
+
+    saved_file = Path("/saved/path/filename.txt")
+
+    async def run_dialog(dialog):
+        dialog._impl.simulate_result(saved_file)
+        assert await dialog is saved_file
+
+    app._impl.loop.run_until_complete(run_dialog(dialog))
+
+    assert_action_performed_with(
+        window,
+        "show save file dialog",
+        title="Title",
+        filename="initial_file.txt",
+        initial_directory=None,
+        file_types=[".txt", ".pdf"],
+    )
+    on_result_handler.assert_called_once_with(window, saved_file)
+
+
+def test_open_file_dialog(window, app):
+    """A open file dialog can be shown"""
+    window.app = app
+    on_result_handler = Mock()
+    dialog = window.open_file_dialog(
+        "Title",
+        "/path/to/folder",
+        on_result=on_result_handler,
+    )
+
+    assert dialog.window == window
+    assert dialog.app == app
+
+    with pytest.raises(
+        RuntimeError,
+        match=r"Can't check dialog result directly; use await or an on_result handler",
+    ):
+        # Perform a synchronous comparison; this will raise a runtime error
+        dialog == 1
+
+    opened_file = Path("/opened/path/filename.txt")
+
+    async def run_dialog(dialog):
+        dialog._impl.simulate_result(opened_file)
+        assert await dialog is opened_file
+
+    app._impl.loop.run_until_complete(run_dialog(dialog))
+
+    assert_action_performed_with(
+        window,
+        "show open file dialog",
+        title="Title",
+        initial_directory=Path("/path/to/folder"),
+        file_types=None,
+        multiple_select=False,
+    )
+    on_result_handler.assert_called_once_with(window, opened_file)
+
+
+def test_open_file_dialog_default_directory(window, app):
+    """If no path is provided, a open file dialog will use the default directory"""
+    window.app = app
+    on_result_handler = Mock()
+    dialog = window.open_file_dialog(
+        "Title",
+        file_types=[".txt", ".pdf"],
+        multiple_select=True,
+        on_result=on_result_handler,
+    )
+
+    assert dialog.window == window
+    assert dialog.app == app
+
+    with pytest.raises(
+        RuntimeError,
+        match=r"Can't check dialog result directly; use await or an on_result handler",
+    ):
+        # Perform a synchronous comparison; this will raise a runtime error
+        dialog == 1
+
+    opened_files = [
+        Path("/opened/path/filename.txt"),
+        Path("/other/path/filename2.txt"),
+    ]
+
+    async def run_dialog(dialog):
+        dialog._impl.simulate_result(opened_files)
+        assert await dialog is opened_files
+
+    app._impl.loop.run_until_complete(run_dialog(dialog))
+
+    assert_action_performed_with(
+        window,
+        "show open file dialog",
+        title="Title",
+        initial_directory=None,
+        file_types=[".txt", ".pdf"],
+        multiple_select=True,
+    )
+    on_result_handler.assert_called_once_with(window, opened_files)
+
+
+def test_select_folder_dialog(window, app):
+    """A select folder dialog can be shown"""
+    window.app = app
+    on_result_handler = Mock()
+    dialog = window.select_folder_dialog(
+        "Title",
+        Path("/path/to/folder"),
+        on_result=on_result_handler,
+    )
+
+    assert dialog.window == window
+    assert dialog.app == app
+
+    with pytest.raises(
+        RuntimeError,
+        match=r"Can't check dialog result directly; use await or an on_result handler",
+    ):
+        # Perform a synchronous comparison; this will raise a runtime error
+        dialog == 1
+
+    opened_file = Path("/opened/path/filename.txt")
+
+    async def run_dialog(dialog):
+        dialog._impl.simulate_result(opened_file)
+        assert await dialog is opened_file
+
+    app._impl.loop.run_until_complete(run_dialog(dialog))
+
+    assert_action_performed_with(
+        window,
+        "show select folder dialog",
+        title="Title",
+        initial_directory=Path("/path/to/folder"),
+        multiple_select=False,
+    )
+    on_result_handler.assert_called_once_with(window, opened_file)
+
+
+def test_select_folder_dialog_default_directory(window, app):
+    """If no path is provided, a select folder dialog will use the default directory"""
+    window.app = app
+    on_result_handler = Mock()
+    dialog = window.select_folder_dialog(
+        "Title",
+        multiple_select=True,
+        on_result=on_result_handler,
+    )
+
+    assert dialog.window == window
+    assert dialog.app == app
+
+    with pytest.raises(
+        RuntimeError,
+        match=r"Can't check dialog result directly; use await or an on_result handler",
+    ):
+        # Perform a synchronous comparison; this will raise a runtime error
+        dialog == 1
+
+    opened_files = [
+        Path("/opened/path/filename.txt"),
+        Path("/other/path/filename2.txt"),
+    ]
+
+    async def run_dialog(dialog):
+        dialog._impl.simulate_result(opened_files)
+        assert await dialog is opened_files
+
+    app._impl.loop.run_until_complete(run_dialog(dialog))
+
+    assert_action_performed_with(
+        window,
+        "show select folder dialog",
+        title="Title",
+        initial_directory=None,
+        multiple_select=True,
+    )
+    on_result_handler.assert_called_once_with(window, opened_files)
+
+
+def test_deprecated_names_open_file_dialog(window, app):
+    "Deprecated names still work on open file dialogs"
+    window.app = app
+    on_result_handler = Mock()
+    with pytest.warns(
+        DeprecationWarning,
+        match=r"open_file_dialog\(multiselect\) has been renamed multiple_select",
+    ):
+        dialog = window.open_file_dialog(
+            "Title",
+            "/path/to/folder",
+            multiselect=True,
+            on_result=on_result_handler,
+        )
+
+    opened_files = [Path("/opened/path/filename.txt")]
+
+    dialog._impl.simulate_result(opened_files)
+
+    assert_action_performed_with(
+        window,
+        "show open file dialog",
+        title="Title",
+        initial_directory=Path("/path/to/folder"),
+        file_types=None,
+        multiple_select=True,
+    )
+    on_result_handler.assert_called_once_with(window, opened_files)
+
+
+def test_deprecated_names_select_folder_dialog(window, app):
+    "Deprecated names still work on open file dialogs"
+    window.app = app
+    on_result_handler = Mock()
+    with pytest.warns(
+        DeprecationWarning,
+        match=r"select_folder_dialog\(multiselect\) has been renamed multiple_select",
+    ):
+        dialog = window.select_folder_dialog(
+            "Title",
+            "/path/to/folder",
+            multiselect=True,
+            on_result=on_result_handler,
+        )
+
+    opened_files = [Path("/opened/path")]
+
+    dialog._impl.simulate_result(opened_files)
+
+    assert_action_performed_with(
+        window,
+        "show select folder dialog",
+        title="Title",
+        initial_directory=Path("/path/to/folder"),
+        multiple_select=True,
+    )
+    on_result_handler.assert_called_once_with(window, opened_files)
