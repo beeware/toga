@@ -21,9 +21,9 @@ A window is the top-level container that the operating system uses to contain wi
 The window has content, which will usually be a container widget of some kind. A window
 may also have other decorations, such as a title bar or toolbar.
 
-By default, a window is not visible. A window must be associated with an application
-before it can be displayed. The content of the window can be changed by re-assigning the
-content of the window to a new widget.
+By default, a window is not visible. When the window is shown, it will be associated
+with the currently active application. The content of the window can be changed by
+re-assigning the content of the window to a new widget.
 
 .. code-block:: python
 
@@ -31,7 +31,6 @@ content of the window to a new widget.
 
     window = toga.Window()
     window.content = toga.Box(children=[...])
-    toga.App.app.windows += window
     window.show()
 
     # Change the window's content to something new

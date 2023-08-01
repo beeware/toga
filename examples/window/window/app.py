@@ -43,7 +43,6 @@ class WindowDemoApp(toga.App):
         non_resize_window.content = toga.Box(
             children=[toga.Label("This window is not resizable")]
         )
-        self.app.windows += non_resize_window
         non_resize_window.show()
 
         non_close_window = toga.Window(
@@ -55,7 +54,6 @@ class WindowDemoApp(toga.App):
         non_close_window.content = toga.Box(
             children=[toga.Label("This window is not closeable")]
         )
-        self.app.windows += non_close_window
         non_close_window.show()
 
         no_close_handler_window = toga.Window(
@@ -66,7 +64,6 @@ class WindowDemoApp(toga.App):
         no_close_handler_window.content = toga.Box(
             children=[toga.Label("This window has no close handler")]
         )
-        self.app.windows += no_close_handler_window
         no_close_handler_window.show()
 
     async def do_current_window_cycling(self, widget, **kwargs):

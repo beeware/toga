@@ -392,6 +392,9 @@ class CommandSet:
         if self.on_change:
             self.on_change()
 
+    def __len__(self):
+        return len(self._commands)
+
     def __iter__(self):
         prev_cmd = None
         for cmd in sorted(self._commands):

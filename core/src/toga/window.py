@@ -91,9 +91,9 @@ class Window:
         self._content = None
         self._is_full_screen = False
 
-        self.resizeable = resizeable
-        self.closeable = closeable
-        self.minimizable = minimizable
+        self._resizeable = resizeable
+        self._closeable = closeable
+        self._minimizable = minimizable
 
         self.factory = get_platform_factory()
         self._impl = getattr(self.factory, self._WINDOW_CLASS)(
@@ -141,7 +141,22 @@ class Window:
         if not title:
             title = "Toga"
 
-        self._impl.set_title(title)
+        self._impl.set_title(str(title).split("\n")[0])
+
+    @property
+    def resizeable(self) -> bool:
+        """Is the window resizeable?"""
+        return self._resizeable
+
+    @property
+    def closeable(self) -> bool:
+        """Can the window be closed by a user action?"""
+        return self._closeable
+
+    @property
+    def minimizable(self) -> bool:
+        """Can the window be minimized?"""
+        return self._minimizable
 
     @property
     def toolbar(self) -> CommandSet:
@@ -196,19 +211,24 @@ class Window:
         self._impl.set_position(position)
 
     def show(self) -> None:
-        """Show the window, if hidden.
+        """Show the window, if hidden."""
 
-        :raises ValueError: if the window hasn't been associated with an"""
         if self.app is None:
-            raise ValueError("Can't show a window that doesn't have an associated app")
+            # Needs to be a late import to avoid circular dependencies.
+            from toga import App
+
+            App.app.windows += self
+
         self._impl.show()
 
     def hide(self) -> None:
-        """Hide window, if shown.
-
-        :raises ValueError: if the window hasn't been associated with an app."""
+        """Hide window, if shown."""
         if self.app is None:
-            raise ValueError("Can't hide a window that doesn't have an associated app")
+            # Needs to be a late import to avoid circular dependencies.
+            from toga import App
+
+            App.app.windows += self
+
         self._impl.hide()
 
     @property
@@ -254,7 +274,7 @@ class Window:
     @on_close.setter
     def on_close(self, handler: OnCloseHandler | None) -> None:
         def cleanup(window: Window, should_close: bool) -> None:
-            if should_close:
+            if should_close or handler is None:
                 window.close()
 
         self._on_close = wrapped_handler(self, handler, cleanup=cleanup)
@@ -263,7 +283,8 @@ class Window:
         """Close the window.
 
         This *does not* invoke the ``on_close`` handler; the window will be immediately
-        and unconditionally closed."""
+        and unconditionally closed.
+        """
         self.app.windows -= self
         self._impl.close()
 

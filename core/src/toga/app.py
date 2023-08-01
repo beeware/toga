@@ -494,7 +494,6 @@ class App:
     @main_window.setter
     def main_window(self, window: MainWindow) -> None:
         self._main_window = window
-        self.windows += window
         self._impl.set_main_window(window)
 
     @property
