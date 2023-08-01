@@ -1,7 +1,7 @@
 from .utils import LoggedObject, not_required
 
 
-@not_required
+@not_required  # not part of the formal API spec
 class Container:
     def __init__(self, content=None):
         self.baseline_dpi = 96
@@ -37,7 +37,7 @@ class Container:
             self.content.refresh()
 
 
-@not_required
+@not_required  # Testbed coverage is complete
 class Window(LoggedObject):
     def __init__(self, interface, title, position, size):
         super().__init__()
