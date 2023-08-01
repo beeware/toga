@@ -13,7 +13,7 @@ class Table(Tree):
             else:
                 tree_model, tree_iter = selection.get_selected()
 
-            # Covert the tree iter into the actual row.
+            # Convert the tree iter into the actual row.
             if tree_iter:
                 row = tree_model.get(tree_iter, 0)[0]
             else:

@@ -34,7 +34,7 @@ async def test_multiline(widget, probe):
     await probe.redraw("Label should be resized vertically")
     line_height = probe.height
 
-    # Label should have a signficant width.
+    # Label should have a significant width.
     assert probe.width > 50
 
     # Empty text should not cause the widget to collapse.
@@ -57,5 +57,5 @@ async def test_multiline(widget, probe):
             (line_height * n) + (line_spacing * (n - 1)),
             rel=0.1,
         )
-        # Label should have a signficant width.
+        # Label should have a significant width.
         assert probe.width > 50

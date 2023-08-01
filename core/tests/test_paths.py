@@ -27,7 +27,7 @@ def run_app(args, cwd):
         text=True,
     )
     # When called as a subprocess, coverage drops it's coverage report in CWD.
-    # Move it to the projet root for combination with the main test report.
+    # Move it to the project root for combination with the main test report.
     for file in cwd.glob(".coverage*"):
         os.rename(file, Path(__file__).parent.parent / file.name)
     return output
