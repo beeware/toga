@@ -137,6 +137,7 @@ if __name__ == "__main__":
     else:
         report_coverage = False
 
+    report_coverage = True
     thread = Thread(
         target=partial(
             run_tests,

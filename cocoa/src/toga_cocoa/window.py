@@ -7,7 +7,6 @@ from toga_cocoa.libs import (
     NSMakeRect,
     NSMiniaturizableWindowMask,
     NSMutableArray,
-    NSObject,
     NSPoint,
     NSResizableWindowMask,
     NSScreen,
@@ -25,7 +24,7 @@ def toolbar_identifier(cmd):
     return "ToolbarItem-%s" % id(cmd)
 
 
-class WindowDelegate(NSObject):
+class TogaWindow(NSWindow):
     interface = objc_property(object, weak=True)
     impl = objc_property(object, weak=True)
 
@@ -36,17 +35,8 @@ class WindowDelegate(NSObject):
     @objc_method
     def windowDidResize_(self, notification) -> None:
         if self.interface.content:
-            # print()
-            # print("Window resize", (
-            #   notification.object.contentView.frame.size.width,
-            #   notification.object.contentView.frame.size.height
-            # ))
-            if (
-                notification.object.contentView.frame.size.width > 0.0
-                and notification.object.contentView.frame.size.height > 0.0
-            ):
-                # Set the window to the new size
-                self.interface.content.refresh()
+            # Set the window to the new size
+            self.interface.content.refresh()
 
     ######################################################################
     # Toolbar delegate methods
@@ -115,11 +105,6 @@ class WindowDelegate(NSObject):
         item.action(obj)
 
 
-class TogaWindow(NSWindow):
-    interface = objc_property(object, weak=True)
-    impl = objc_property(object, weak=True)
-
-
 class Window:
     def __init__(self, interface, title, position, size):
         self.interface = interface
@@ -146,18 +131,22 @@ class Window:
         self.native.interface = self.interface
         self.native.impl = self
 
+        # Cocoa releases windows when they are closed; this causes havoc with
+        # Toga's widget cleanup because the ObjC runtime thinks there's no
+        # references to the object left. Add an explicit reference to the window.
+        self.native.retain()
+
         self.set_title(title)
         self.set_size(size)
         self.set_position(position)
 
-        self.delegate = WindowDelegate.alloc().init()
-        self.delegate.interface = self.interface
-        self.delegate.impl = self
-
-        self.native.delegate = self.delegate
+        self.native.delegate = self.native
 
         self.container = Container(on_refresh=self.content_refreshed)
         self.native.contentView = self.container.native
+
+    def __del__(self):
+        self.native.release()
 
     def create_toolbar(self):
         self._toolbar_items = {}
@@ -200,10 +189,6 @@ class Window:
         self.native.title = title
 
     def get_position(self):
-        # If there is no active screen, we can't get a position
-        if len(NSScreen.screens) == 0:
-            return 0, 0
-
         # The "primary" screen has index 0 and origin (0, 0).
         primary_screen = NSScreen.screens[0].frame
         window_frame = self.native.frame
@@ -217,10 +202,6 @@ class Window:
         )
 
     def set_position(self, position):
-        # If there is no active screen, we can't set a position
-        if len(NSScreen.screens) == 0:
-            return
-
         # The "primary" screen has index 0 and origin (0, 0).
         primary_screen = NSScreen.screens[0].frame
 
@@ -256,14 +237,11 @@ class Window:
         self.interface.factory.not_implemented("Window.set_full_screen()")
 
     def cocoa_windowShouldClose(self):
-        if self.interface.on_close._raw:
-            # The on_close handler has a cleanup method that will enforce
-            # the close if the on_close handler requests it; this initial
-            # "should close" request can always return False.
-            self.interface.on_close(self)
-            return False
-        else:
-            return True
+        # The on_close handler has a cleanup method that will enforce
+        # the close if the on_close handler requests it; this initial
+        # "should close" request can always return False.
+        self.interface.on_close(None)
+        return False
 
     def close(self):
         self.native.close()

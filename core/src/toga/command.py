@@ -248,8 +248,6 @@ class Command:
         ##################################################################
         # End backwards compatibility.
         ##################################################################
-        orig_action = action
-        self.action = wrapped_handler(self, action)
         self.text = text
 
         self.shortcut = shortcut
@@ -259,6 +257,9 @@ class Command:
         self.group = group if group else Group.COMMANDS
         self.section = section if section else 0
         self.order = order if order else 0
+
+        orig_action = action
+        self.action = wrapped_handler(self, action)
 
         self.factory = get_platform_factory()
         self._impl = self.factory.Command(interface=self)
