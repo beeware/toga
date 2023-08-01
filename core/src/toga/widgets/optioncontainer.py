@@ -96,7 +96,7 @@ class OptionList:
         self.interface.refresh()
 
     def __iter__(self):
-        """Obtain an interator over all tabs in the OptionContainer."""
+        """Obtain an iterator over all tabs in the OptionContainer."""
         return iter(self._options)
 
     def __len__(self) -> int:

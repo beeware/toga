@@ -446,7 +446,7 @@ def test_current_tab(optioncontainer, index, on_select_handler):
     assert optioncontainer.current_tab.index == 0
     assert optioncontainer.current_tab.text == "Item 1"
 
-    # Programatically select item 2
+    # Programmatically select item 2
     optioncontainer.current_tab = index
 
     # Current tab values have changed

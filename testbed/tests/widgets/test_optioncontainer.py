@@ -79,6 +79,7 @@ async def test_select_tab(
 ):
     """Tabs of content can be selected"""
     # Initially selected tab has content that is the full size of the widget
+    await probe.redraw("Tab 1 should be selected")
     assert widget.current_tab.index == 0
     assert content1_probe.width > 500
     assert content1_probe.height > 400
@@ -86,7 +87,7 @@ async def test_select_tab(
     # on_select hasn't been invoked.
     on_select_handler.assert_not_called()
 
-    # Select item 1 programatically
+    # Select item 1 programmatically
     widget.current_tab = "Tab 2"
     await probe.redraw("Tab 2 should be selected")
 
