@@ -20,6 +20,7 @@ test_sources = [
 ]
 requires = [
     "../core",
+    "git+https://github.com/beeware/travertino.git@min-width",
 ]
 test_requires = [
     "coverage==7.2.0",
