@@ -140,7 +140,7 @@ class App:
         self.interface.commands.add(
             # ---- App menu -----------------------------------
             toga.Command(
-                lambda _: self.interface.about(),
+                lambda _, **kwargs: self.interface.about(),
                 "About " + formal_name,
                 group=toga.Group.APP,
             ),
@@ -176,11 +176,35 @@ class App:
             ),
             # Quit should always be the last item, in a section on its own
             toga.Command(
-                lambda _: self.interface.exit(),
+                lambda _, **kwargs: self.interface.exit(),
                 "Quit " + formal_name,
                 shortcut=toga.Key.MOD_1 + "q",
                 group=toga.Group.APP,
                 section=sys.maxsize,
+            ),
+            # ---- File menu ----------------------------------
+            toga.Command(
+                lambda _, **kwargs: self.interface.current_window._impl.native.performClose(
+                    None
+                )
+                if self.interface.current_window
+                else None,
+                "Close Window",
+                shortcut=toga.Key.MOD_1 + "W",
+                group=toga.Group.FILE,
+                order=1,
+                section=50,
+            ),
+            toga.Command(
+                lambda _, **kwargs: [
+                    window._impl.native.performClose(None)
+                    for window in set(self.interface.windows)
+                ],
+                "Close All Windows",
+                shortcut=toga.Key.MOD_2 + toga.Key.MOD_1 + "W",
+                group=toga.Group.FILE,
+                order=2,
+                section=50,
             ),
             # ---- Edit menu ----------------------------------
             toga.Command(
@@ -244,9 +268,20 @@ class App:
                 section=10,
                 order=60,
             ),
+            # ---- Edit menu ----------------------------------
+            toga.Command(
+                lambda _, **kwargs: self.interface.current_window._impl.native.miniaturize(
+                    None
+                )
+                if self.interface.current_window
+                else None,
+                "Minimize",
+                shortcut=toga.Key.MOD_1 + "m",
+                group=toga.Group.WINDOW,
+            ),
             # ---- Help menu ----------------------------------
             toga.Command(
-                lambda _: self.interface.visit_homepage(),
+                lambda _, **kwargs: self.interface.visit_homepage(),
                 "Visit homepage",
                 enabled=self.interface.home_page is not None,
                 group=toga.Group.HELP,

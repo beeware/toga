@@ -157,7 +157,7 @@ class Window:
         self._toolbar_native = NSToolbar.alloc().initWithIdentifier(
             "Toolbar-%s" % id(self)
         )
-        self._toolbar_native.setDelegate(self.delegate)
+        self._toolbar_native.setDelegate(self.native)
 
         self.native.setToolbar(self._toolbar_native)
 

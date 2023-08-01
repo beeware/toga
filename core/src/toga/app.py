@@ -499,7 +499,10 @@ class App:
     @property
     def current_window(self):
         """Return the currently active content window."""
-        return self._impl.get_current_window().interface
+        window = self._impl.get_current_window()
+        if window is None:
+            return window
+        return window.interface
 
     @current_window.setter
     def current_window(self, window):
