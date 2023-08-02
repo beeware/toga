@@ -82,48 +82,55 @@ if toga.platform.current_platform in {"iOS", "android"}:
         assert main_window.size == initial_size
         assert main_window.position == (0, 0)
 
-        box1 = toga.Box(style=Pack(background_color=REBECCAPURPLE, width=10, height=10))
-        box2 = toga.Box(style=Pack(background_color=GOLDENROD, width=10, height=20))
-        main_window.content = toga.Box(
-            children=[box1, box2],
-            style=Pack(direction=COLUMN, background_color=CORNFLOWERBLUE),
-        )
-        await main_window_probe.redraw("Main window content has been set")
-        assert main_window.size == initial_size
-        assert main_window_probe.content_size == content_size
+        try:
+            orig_content = main_window.content
 
-        # Alter the content width to exceed window width
-        box1.style.width = 1000
-        await main_window_probe.redraw("Content is too wide for the window")
-        assert main_window.size == initial_size
-        assert main_window_probe.content_size == content_size
+            box1 = toga.Box(
+                style=Pack(background_color=REBECCAPURPLE, width=10, height=10)
+            )
+            box2 = toga.Box(style=Pack(background_color=GOLDENROD, width=10, height=20))
+            main_window.content = toga.Box(
+                children=[box1, box2],
+                style=Pack(direction=COLUMN, background_color=CORNFLOWERBLUE),
+            )
+            await main_window_probe.redraw("Main window content has been set")
+            assert main_window.size == initial_size
+            assert main_window_probe.content_size == content_size
 
-        assert (
-            "**WARNING** Window content exceeds available space"
-            in capsys.readouterr().out
-        )
+            # Alter the content width to exceed window width
+            box1.style.width = 1000
+            await main_window_probe.redraw("Content is too wide for the window")
+            assert main_window.size == initial_size
+            assert main_window_probe.content_size == content_size
 
-        # Resize content to fit
-        box1.style.width = 100
-        await main_window_probe.redraw("Content fits in window")
-        assert main_window.size == initial_size
-        assert main_window_probe.content_size == content_size
+            assert (
+                "**WARNING** Window content exceeds available space"
+                in capsys.readouterr().out
+            )
 
-        assert (
-            "**WARNING** Window content exceeds available space"
-            not in capsys.readouterr().out
-        )
+            # Resize content to fit
+            box1.style.width = 100
+            await main_window_probe.redraw("Content fits in window")
+            assert main_window.size == initial_size
+            assert main_window_probe.content_size == content_size
 
-        # Alter the content width to exceed window height
-        box1.style.height = 2000
-        await main_window_probe.redraw("Content is too tall for the window")
-        assert main_window.size == initial_size
-        assert main_window_probe.content_size == content_size
+            assert (
+                "**WARNING** Window content exceeds available space"
+                not in capsys.readouterr().out
+            )
 
-        assert (
-            "**WARNING** Window content exceeds available space"
-            in capsys.readouterr().out
-        )
+            # Alter the content width to exceed window height
+            box1.style.height = 2000
+            await main_window_probe.redraw("Content is too tall for the window")
+            assert main_window.size == initial_size
+            assert main_window_probe.content_size == content_size
+
+            assert (
+                "**WARNING** Window content exceeds available space"
+                in capsys.readouterr().out
+            )
+        finally:
+            main_window.content = orig_content
 
     async def test_full_screen(main_window, main_window_probe):
         """Window can be made full screen"""
