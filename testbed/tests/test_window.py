@@ -1,5 +1,10 @@
+import io
+import traceback
 from importlib import import_module
+from pathlib import Path
 from unittest.mock import Mock
+
+import pytest
 
 import toga
 from toga.colors import CORNFLOWERBLUE, GOLDENROD, REBECCAPURPLE
@@ -9,6 +14,11 @@ from toga.style.pack import COLUMN, Pack
 def window_probe(app, window):
     module = import_module("tests_backend.window")
     return getattr(module, "WindowProbe")(app, window)
+
+
+@pytest.fixture
+async def main_window_probe(app, main_window):
+    yield window_probe(app, main_window)
 
 
 async def test_secondary_window(app):
@@ -77,7 +87,7 @@ async def test_secondary_window_with_args(app):
 async def test_non_resizable(app):
     """A non-resizable window can be created"""
     new_window = toga.Window(
-        title="Not Resizable", resizeable=False, position=(150, 150)
+        title="Not Resizable", resizable=False, position=(150, 150)
     )
 
     new_window.show()
@@ -264,3 +274,235 @@ async def test_full_screen(app):
     assert probe.content_size == initial_content_size
 
     new_window.close()
+
+
+async def test_info_dialog(main_window, main_window_probe):
+    """An info dialog can be displayed and acknowledged."""
+    on_result_handler = Mock()
+    dialog_result = main_window.info_dialog(
+        "Info", "Some info", on_result=on_result_handler
+    )
+    await main_window_probe.redraw("Info dialog displayed")
+    await main_window_probe.close_info_dialog(dialog_result._impl)
+
+    on_result_handler.assert_called_once_with(main_window, None)
+    assert await dialog_result is None
+
+
+@pytest.mark.parametrize("result", [False, True])
+async def test_question_dialog(main_window, main_window_probe, result):
+    """An question dialog can be displayed and acknowledged."""
+    on_result_handler = Mock()
+    dialog_result = main_window.question_dialog(
+        "Question",
+        "Some question",
+        on_result=on_result_handler,
+    )
+    await main_window_probe.redraw("Question dialog displayed")
+    await main_window_probe.close_question_dialog(dialog_result._impl, result)
+
+    on_result_handler.assert_called_once_with(main_window, result)
+    assert await dialog_result is result
+
+
+@pytest.mark.parametrize("result", [False, True])
+async def test_confirm_dialog(main_window, main_window_probe, result):
+    """A confirmation dialog can be displayed and acknowledged."""
+    on_result_handler = Mock()
+    dialog_result = main_window.confirm_dialog(
+        "Confirm",
+        "Some confirmation",
+        on_result=on_result_handler,
+    )
+    await main_window_probe.redraw("Confirmation dialog displayed")
+    await main_window_probe.close_confirm_dialog(dialog_result._impl, result)
+
+    on_result_handler.assert_called_once_with(main_window, result)
+    assert await dialog_result is result
+
+
+async def test_error_dialog(main_window, main_window_probe):
+    """An error dialog can be displayed and acknowledged."""
+    on_result_handler = Mock()
+    dialog_result = main_window.error_dialog(
+        "Error", "Some error", on_result=on_result_handler
+    )
+    await main_window_probe.redraw("Error dialog displayed")
+    await main_window_probe.close_error_dialog(dialog_result._impl)
+
+    on_result_handler.assert_called_once_with(main_window, None)
+    assert await dialog_result is None
+
+
+@pytest.mark.parametrize("result", [None, False, True])
+async def test_stack_trace_dialog(main_window, main_window_probe, result):
+    """A confirmation dialog can be displayed and acknowledged."""
+    on_result_handler = Mock()
+    stack = io.StringIO()
+    traceback.print_stack(file=stack)
+    dialog_result = main_window.stack_trace_dialog(
+        "Stack Trace",
+        "Some stack trace",
+        stack.getvalue(),
+        retry=result is not None,
+        on_result=on_result_handler,
+    )
+    await main_window_probe.redraw(
+        f"Stack trace dialog (with{'out' if result is None else ''} retry) displayed"
+    )
+    await main_window_probe.close_stack_trace_dialog(dialog_result._impl, result)
+
+    on_result_handler.assert_called_once_with(main_window, result)
+    assert await dialog_result is result
+
+
+@pytest.mark.parametrize(
+    "filename, file_types, result",
+    [
+        ("/path/to/file.txt", None, Path("/path/to/file.txt")),
+        ("/path/to/file.txt", None, None),
+        ("/path/to/file.txt", [".txt", ".doc"], Path("/path/to/file.txt")),
+        ("/path/to/file.txt", [".txt", ".doc"], None),
+    ],
+)
+async def test_save_file_dialog(
+    main_window,
+    main_window_probe,
+    filename,
+    file_types,
+    result,
+):
+    """A file open dialog can be displayed and acknowledged."""
+    on_result_handler = Mock()
+    dialog_result = main_window.save_file_dialog(
+        "Save file",
+        suggested_filename=filename,
+        file_types=file_types,
+        on_result=on_result_handler,
+    )
+    await main_window_probe.redraw("Save File dialog displayed")
+    await main_window_probe.close_save_file_dialog(dialog_result._impl, result)
+
+    if result:
+        # The directory where the file dialog is opened can't be 100% predicted
+        # so we need to modify the check to only inspect the filename.
+        on_result_handler.call_count == 1
+        assert on_result_handler.mock_calls[0].args[0] == main_window
+        assert on_result_handler.mock_calls[0].args[1].name == Path(filename).name
+        assert (await dialog_result).name == Path(filename).name
+    else:
+        on_result_handler.assert_called_once_with(main_window, None)
+        assert await dialog_result is None
+
+
+@pytest.mark.parametrize(
+    "initial_directory, file_types, multiple_select, result",
+    [
+        # Successful single select
+        (Path(__file__).parent, None, False, Path("/path/to/file1.txt")),
+        # Cancelled single select
+        (Path(__file__).parent, None, False, None),
+        # Successful single select with no initial directory
+        (None, None, False, Path("/path/to/file1.txt")),
+        # Successful single select with file types
+        (Path(__file__).parent, [".txt", ".doc"], False, Path("/path/to/file1.txt")),
+        # Successful multiple selection
+        (
+            Path(__file__).parent,
+            None,
+            True,
+            [Path("/path/to/file1.txt"), Path("/path/to/file2.txt")],
+        ),
+        # Successful multiple selection of no items
+        (Path(__file__).parent, None, True, []),
+        # Cancelled multiple selection
+        (Path(__file__).parent, None, True, None),
+        # Successful multiple selection with no initial directory
+        (None, None, True, [Path("/path/to/file1.txt"), Path("/path/to/file2.txt")]),
+        # Successful multiple selection with file types
+        (
+            Path(__file__).parent,
+            [".txt", ".doc"],
+            True,
+            [Path("/path/to/file1.txt"), Path("/path/to/file2.txt")],
+        ),
+    ],
+)
+async def test_open_file_dialog(
+    main_window,
+    main_window_probe,
+    initial_directory,
+    file_types,
+    multiple_select,
+    result,
+):
+    """A file open dialog can be displayed and acknowledged."""
+    on_result_handler = Mock()
+    dialog_result = main_window.open_file_dialog(
+        "Open file",
+        initial_directory=initial_directory,
+        file_types=file_types,
+        multiple_select=multiple_select,
+        on_result=on_result_handler,
+    )
+    await main_window_probe.redraw("Open File dialog displayed")
+    await main_window_probe.close_open_file_dialog(
+        dialog_result._impl,
+        result,
+        multiple_select=multiple_select,
+    )
+
+    if result is not None:
+        on_result_handler.assert_called_once_with(main_window, result)
+        assert await dialog_result == result
+    else:
+        print(dialog_result._impl, on_result_handler, on_result_handler.mock_calls)
+        on_result_handler.assert_called_once_with(main_window, None)
+        assert await dialog_result is None
+
+
+@pytest.mark.parametrize(
+    "initial_directory, multiple_select, result",
+    [
+        # Successful single select
+        (Path(__file__).parent, False, Path("/path/to/dir1")),
+        # Cancelled single select
+        (Path(__file__).parent, False, None),
+        # Successful single select with no initial directory
+        (None, False, Path("/path/to/dir1")),
+        # Successful multiple selection
+        (Path(__file__).parent, True, [Path("/path/to/dir1"), Path("/path/to/dir2")]),
+        # Successful multiple selection with no items
+        (Path(__file__).parent, True, []),
+        # Cancelled multiple selection
+        (Path(__file__).parent, True, None),
+    ],
+)
+async def test_select_folder_dialog(
+    main_window,
+    main_window_probe,
+    initial_directory,
+    multiple_select,
+    result,
+):
+    """A folder selection dialog can be displayed and acknowledged."""
+    on_result_handler = Mock()
+    dialog_result = main_window.select_folder_dialog(
+        "Select folder",
+        initial_directory=initial_directory,
+        multiple_select=multiple_select,
+        on_result=on_result_handler,
+    )
+    await main_window_probe.redraw("Select Folder dialog displayed")
+    await main_window_probe.close_select_folder_dialog(
+        dialog_result._impl,
+        result,
+        multiple_select=multiple_select,
+    )
+
+    if result is not None:
+        on_result_handler.assert_called_once_with(main_window, result)
+        assert await dialog_result == result
+    else:
+        on_result_handler.assert_called_once_with(main_window, None)
+        assert await dialog_result is None

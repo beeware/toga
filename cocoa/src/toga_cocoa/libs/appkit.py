@@ -589,8 +589,6 @@ NSApplicationActivationPolicyProhibited = 2
 # NSSavePanel.h
 NSSavePanel = ObjCClass("NSSavePanel")
 
-NSFileHandlingPanelOKButton = 1
-
 ######################################################################
 # NSScreen.h
 NSScreen = ObjCClass("NSScreen")
@@ -773,6 +771,9 @@ class NSWindowStyleMask(IntEnum):
     NonactivatingPanel = 1 << 7
     HUDWindow = 1 << 13
 
+
+NSModalResponseOK = 1
+NSModalResponseCancel = 0
 
 # NSCompositingOperationXXX is equivalent to NSCompositeXXX
 NSCompositingOperationClear = 0
