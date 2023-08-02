@@ -8,7 +8,7 @@ from toga_iOS.window import Window
 
 
 class MainWindow(Window):
-    pass
+    _is_main_window = True
 
 
 class PythonAppDelegate(UIResponder):

@@ -45,6 +45,14 @@ If the operating system provides a way to close the window, Toga will call the
 permitted. This can be used to implement protections against closing a window with
 unsaved changes.
 
+Notes
+-----
+
+* A mobile application can only have a single window (the :class:`~toga.MainWindow`),
+  and that window cannot be moved, resized, hidden, or made full screen. Toga will raise
+  an exception if you attempt to create a secondary window on a mobile platform. If you try
+  to modify the size, position, or visibility of the main window, the request will be ignored.
+
 Reference
 ---------
 

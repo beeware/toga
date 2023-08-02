@@ -7,9 +7,16 @@ from toga_iOS.libs import (
 
 
 class Window:
+    _is_main_window = False
+
     def __init__(self, interface, title, position, size):
         self.interface = interface
         self.interface._impl = self
+
+        if not self._is_main_window:
+            raise RuntimeError(
+                "Secondary windows cannot be created on mobile platforms"
+            )
 
         self.native = UIWindow.alloc().initWithFrame(UIScreen.mainScreen.bounds)
 
@@ -83,6 +90,10 @@ class Window:
     def get_visible(self):
         # The window is always visible
         return True
+
+    def set_full_screen(self, is_full_screen):
+        # Windows are always full screen
+        pass
 
     def close(self):
         pass
