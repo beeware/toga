@@ -40,7 +40,7 @@ class WindowDemoApp(toga.App):
             "Non-resizable Window",
             position=(200, 200),
             size=(300, 300),
-            resizeable=False,
+            resizable=False,
             on_close=self.close_handler,
         )
         non_resize_window.content = toga.Box(
@@ -52,10 +52,10 @@ class WindowDemoApp(toga.App):
             "Non-closeable Window",
             position=(300, 300),
             size=(300, 300),
-            closeable=False,
+            closable=False,
         )
         non_close_window.content = toga.Box(
-            children=[toga.Label("This window is not closeable")]
+            children=[toga.Label("This window is not closable")]
         )
         non_close_window.show()
 

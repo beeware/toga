@@ -26,7 +26,7 @@ async def test_secondary_window(app):
     assert new_window.size == (640, 480)
     assert new_window.position == (100, 100)
     assert probe.is_resizable
-    assert probe.is_closeable
+    assert probe.is_closable
     assert probe.is_minimizable
 
     new_window.close()
@@ -92,19 +92,16 @@ async def test_non_resizable(app):
     new_window.close()
 
 
-async def test_non_closeable(app):
-    """A non-closeable window can be created"""
-    new_window = toga.Window(
-        title="Not Closeable", closeable=False, position=(150, 150)
-    )
-
+async def test_non_closable(app):
+    """A non-closable window can be created"""
+    new_window = toga.Window(title="Not Closeable", closable=False, position=(150, 150))
     new_window.show()
 
     probe = window_probe(app, new_window)
-    await probe.redraw("Non-closeable window has been shown")
+    await probe.redraw("Non-closable window has been shown")
 
     assert new_window.visible
-    assert not probe.is_closeable
+    assert not probe.is_closable
 
     # Do a UI close on the window
     probe.close()
@@ -123,7 +120,6 @@ async def test_non_minimizable(app):
     new_window = toga.Window(
         title="Not Minimizable", minimizable=False, position=(150, 150)
     )
-
     new_window.show()
 
     probe = window_probe(app, new_window)

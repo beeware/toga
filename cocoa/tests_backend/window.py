@@ -31,7 +31,7 @@ class WindowProbe(BaseProbe):
         return bool(self.native.styleMask & NSWindowStyleMask.Resizable)
 
     @property
-    def is_closeable(self):
+    def is_closable(self):
         return bool(self.native.styleMask & NSWindowStyleMask.Closable)
 
     @property

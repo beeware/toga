@@ -127,7 +127,7 @@ class MainWindow(Window):
         title: str | None = None,
         position: tuple[int, int] = (100, 100),
         size: tuple[int, int] = (640, 480),
-        resizeable: bool = True,
+        resizable: bool = True,
         minimizable: bool = True,
     ):
         """Create a new application Main Window.
@@ -144,8 +144,8 @@ class MainWindow(Window):
             title=title,
             position=position,
             size=size,
-            resizeable=resizeable,
-            closeable=True,
+            resizable=resizable,
+            closable=True,
             minimizable=minimizable,
         )
 

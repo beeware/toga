@@ -26,12 +26,12 @@ class Window:
         self.set_title(title)
         self.set_position(position)
 
-        # Set the window deletable/closeable.
-        self.native.set_deletable(self.interface.closeable)
+        # Set the window deletable/closable.
+        self.native.set_deletable(self.interface.closable)
 
         # Added to set Window Resizable - removes Window Maximize button from
         # Window Decorator when resizable == False
-        self.native.set_resizable(self.interface.resizeable)
+        self.native.set_resizable(self.interface.resizable)
 
         self.toolbar_native = None
         self.toolbar_items = None

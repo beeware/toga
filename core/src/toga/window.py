@@ -68,10 +68,12 @@ class Window:
         title: str = "Toga",
         position: tuple[int, int] = (100, 100),
         size: tuple[int, int] = (640, 480),
-        resizeable: bool = True,
-        closeable: bool = True,
+        resizable: bool = True,
+        closable: bool = True,
         minimizable: bool = True,
         on_close: OnCloseHandler | None = None,
+        resizeable=None,  # DEPRECATED
+        closeable=None,  # DEPRECATED
     ) -> None:
         """Create a new Window.
 
@@ -79,11 +81,33 @@ class Window:
         :param title: Title for the window.
         :param position: Position of the window, as a tuple of ``(x, y)`` coordinates.
         :param size: Size of the window, as a tuple of ``(width, height)``, in pixels.
-        :param resizeable: Can the window be manually resized by the user?
-        :param closeable: Should the window provide the option to be manually closed?
+        :param resizable: Can the window be manually resized by the user?
+        :param closable: Should the window provide the option to be manually closed?
         :param minimizable: Can the window be minimized by the user?
         :param on_close: The initial ``on_close`` handler.
+        :param resizeable: **DEPRECATED** - Use ``resizable``.
+        :param closeable: **DEPRECATED** - Use ``closable``.
         """
+        ######################################################################
+        # 2023-08: Backwards compatibility
+        ######################################################################
+        if resizeable is not None:
+            warnings.warn(
+                "Window.resizeable has been renamed Window.resizable",
+                DeprecationWarning,
+            )
+            resizable = resizeable
+
+        if closeable is not None:
+            warnings.warn(
+                "Window.closeable has been renamed Window.closable",
+                DeprecationWarning,
+            )
+            closable = closeable
+        ######################################################################
+        # End backwards compatibility
+        ######################################################################
+
         self.widgets = WidgetRegistry()
 
         self._id = str(id if id else identifier(self))
@@ -92,8 +116,8 @@ class Window:
         self._content = None
         self._is_full_screen = False
 
-        self._resizeable = resizeable
-        self._closeable = closeable
+        self._resizable = resizable
+        self._closable = closable
         self._minimizable = minimizable
 
         self.factory = get_platform_factory()
@@ -145,14 +169,14 @@ class Window:
         self._impl.set_title(str(title).split("\n")[0])
 
     @property
-    def resizeable(self) -> bool:
-        """Is the window resizeable?"""
-        return self._resizeable
+    def resizable(self) -> bool:
+        """Is the window resizable?"""
+        return self._resizable
 
     @property
-    def closeable(self) -> bool:
+    def closable(self) -> bool:
         """Can the window be closed by a user action?"""
-        return self._closeable
+        return self._closable
 
     @property
     def minimizable(self) -> bool:
@@ -667,3 +691,25 @@ class Window:
             on_result=wrapped_handler(self, on_result),
         )
         return dialog
+
+    ######################################################################
+    # 2023-08: Backwards compatibility
+    ######################################################################
+
+    @property
+    def resizeable(self) -> bool:
+        """**DEPRECATED** Use :attr:`resizable`"""
+        warnings.warn(
+            "Window.resizeable has been renamed Window.resizable",
+            DeprecationWarning,
+        )
+        return self._resizable
+
+    @property
+    def closeable(self) -> bool:
+        """**DEPRECATED** Use :attr:`closable`"""
+        warnings.warn(
+            "Window.closeable has been renamed Window.closable",
+            DeprecationWarning,
+        )
+        return self._closable

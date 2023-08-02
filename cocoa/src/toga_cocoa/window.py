@@ -108,10 +108,10 @@ class Window:
         self.interface._impl = self
 
         mask = NSWindowStyleMask.Titled
-        if self.interface.closeable:
+        if self.interface.closable:
             mask |= NSWindowStyleMask.Closable
 
-        if self.interface.resizeable:
+        if self.interface.resizable:
             mask |= NSWindowStyleMask.Resizable
 
         if self.interface.minimizable:

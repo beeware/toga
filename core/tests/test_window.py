@@ -36,8 +36,8 @@ def test_window_created():
     assert window.title == "Toga"
     assert window.position == (100, 100)
     assert window.size == (640, 480)
-    assert window.resizeable
-    assert window.closeable
+    assert window.resizable
+    assert window.closable
     assert window.minimizable
     assert len(window.toolbar) == 0
     assert window.on_close._raw is None
@@ -52,8 +52,8 @@ def test_window_created_explicit():
         title="My Window",
         position=(10, 20),
         size=(200, 300),
-        resizeable=False,
-        closeable=False,
+        resizable=False,
+        closable=False,
         minimizable=False,
         on_close=on_close_handler,
     )
@@ -68,8 +68,8 @@ def test_window_created_explicit():
     assert window.title == "My Window"
     assert window.position == (10, 20)
     assert window.size == (200, 300)
-    assert not window.resizeable
-    assert not window.closeable
+    assert not window.resizable
+    assert not window.closable
     assert not window.minimizable
     assert len(window.toolbar) == 0
     assert window.on_close._raw == on_close_handler
@@ -708,7 +708,7 @@ def test_select_folder_dialog_default_directory(window, app):
 
 
 def test_deprecated_names_open_file_dialog(window, app):
-    "Deprecated names still work on open file dialogs"
+    """Deprecated names still work on open file dialogs."""
     window.app = app
     on_result_handler = Mock()
     with pytest.warns(
@@ -738,7 +738,7 @@ def test_deprecated_names_open_file_dialog(window, app):
 
 
 def test_deprecated_names_select_folder_dialog(window, app):
-    "Deprecated names still work on open file dialogs"
+    """Deprecated names still work on open file dialogs."""
     window.app = app
     on_result_handler = Mock()
     with pytest.warns(
@@ -764,3 +764,33 @@ def test_deprecated_names_select_folder_dialog(window, app):
         multiple_select=True,
     )
     on_result_handler.assert_called_once_with(window, opened_files)
+
+
+def test_deprecated_names_resizeable():
+    """Deprecated spelling of resizable still works"""
+    with pytest.warns(
+        DeprecationWarning,
+        match=r"Window.resizeable has been renamed Window.resizable",
+    ):
+        window = toga.Window(title="Deprecated", resizeable=True)
+
+    with pytest.warns(
+        DeprecationWarning,
+        match=r"Window.resizeable has been renamed Window.resizable",
+    ):
+        assert window.resizeable
+
+
+def test_deprecated_names_closeable():
+    """Deprecated spelling of closable still works"""
+    with pytest.warns(
+        DeprecationWarning,
+        match=r"Window.closeable has been renamed Window.closable",
+    ):
+        window = toga.Window(title="Deprecated", closeable=True)
+
+    with pytest.warns(
+        DeprecationWarning,
+        match=r"Window.closeable has been renamed Window.closable",
+    ):
+        assert window.closeable

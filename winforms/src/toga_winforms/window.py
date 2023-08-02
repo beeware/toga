@@ -35,7 +35,7 @@ class Window(Container):
         self.native.Resize += lambda sender, args: self.resize_content()
         self.resize_content()  # Store initial size
 
-        if not self.native.interface.resizeable:
+        if not self.native.interface.resizable:
             self.native.FormBorderStyle = self.native.FormBorderStyle.FixedSingle
             self.native.MaximizeBox = False
 
@@ -130,7 +130,7 @@ class Window(Container):
         # If the app is exiting, or a manual close has been requested,
         # don't get confirmation; just close.
         if not self.interface.app._impl._is_exiting and not self._is_closing:
-            if not self.interface.closeable:
+            if not self.interface.closable:
                 # Closeability is implemented by shortcutting the close handler.
                 event.Cancel = True
             elif self.interface.on_close._raw:
