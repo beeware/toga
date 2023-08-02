@@ -102,7 +102,7 @@ def test_function_handler_with_cleanup():
 
 
 def test_function_handler_with_cleanup_error(capsys):
-    """A function handler can have a cleanup method that raises an erro"""
+    """A function handler can have a cleanup method that raises an error"""
     obj = Mock()
     cleanup = Mock(side_effect=Exception("Problem in cleanup"))
     handler_call = {}
