@@ -167,6 +167,20 @@ class WindowDemoApp(toga.App):
             "Change content", on_press=self.do_next_content, style=btn_style
         )
         btn_hide = toga.Button("Hide", on_press=self.do_hide, style=btn_style)
+        screen_change_btns_box = toga.Box(
+            children=[toga.Label(text="Move current window to:")]
+        )
+
+        def do_screen_change(screen):
+            self.current_window.screen = screen
+
+        for screen in self.screens:
+            screen_change_btns_box.add(
+                toga.Button(
+                    text=screen.name,
+                    on_press=lambda x, screen=screen: do_screen_change(screen),
+                )
+            )
         self.main_box = toga.Box(
             children=[
                 self.label,
@@ -183,6 +197,7 @@ class WindowDemoApp(toga.App):
                 btn_do_report,
                 btn_change_content,
                 btn_hide,
+                screen_change_btns_box,
             ],
             style=Pack(direction=COLUMN),
         )

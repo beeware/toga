@@ -166,3 +166,13 @@ class Window(Container):
             self.native.ClientSize.Width,
             self.native.ClientSize.Height - vertical_shift,
         )
+
+    def get_current_screen(self):
+        screen_native = WinForms.Screen.FromControl(self.native)
+        for screen in self.interface._app.screens:
+            if screen_native == screen._impl.native:
+                return screen._impl
+
+    def set_current_screen(self, app_screen):
+        self.native.StartPosition = WinForms.FormStartPosition.Manual
+        self.native.Location = app_screen._impl.native.WorkingArea.Location

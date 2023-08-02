@@ -2,7 +2,7 @@ from toga.command import GROUP_BREAK, SECTION_BREAK
 from toga.handlers import wrapped_handler
 
 from .container import TogaContainer
-from .libs import Gtk
+from .libs import Gdk, Gtk
 
 
 class Window:
@@ -141,3 +141,14 @@ class Window:
             self.native.fullscreen()
         else:
             self.native.unfullscreen()
+
+    def get_current_screen(self):
+        display = Gdk.Display.get_default()
+        monitor_native = display.get_monitor_at_window(self.native.get_window())
+        for screen in self.interface._app.screens:
+            if monitor_native == screen._impl.native:
+                return screen._impl
+
+    def set_current_screen(self, app_screen):
+        geometry = app_screen._impl.native.get_geometry()
+        self.native.move(geometry.x, geometry.y)

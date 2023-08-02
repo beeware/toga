@@ -47,6 +47,10 @@ class App(LoggedObject):
     def exit(self):
         self._action("exit")
 
+    @not_required_on("mobile", "web")
+    def get_screens(self):
+        self._get_value("screens")
+
     @not_required_on("mobile")
     def get_current_window(self):
         self._action("get_current_window")

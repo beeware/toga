@@ -13,6 +13,7 @@ from toga.command import GROUP_BREAK, SECTION_BREAK, Command
 
 from .keys import gtk_accel
 from .libs import TOGA_DEFAULT_STYLES, Gdk, Gio, GLib, Gtk
+from .screen import Screen as ScreenImpl
 from .window import Window
 
 
@@ -194,6 +195,11 @@ class App:
         signal.signal(signal.SIGINT, signal.SIG_DFL)
 
         self.loop.run_forever(application=self.native)
+
+    def get_screens(self):
+        display = Gdk.Display.get_default()
+        n_monitors = display.get_n_monitors()
+        return [ScreenImpl(native=display.get_monitor(i)) for i in range(n_monitors)]
 
     def set_main_window(self, window):
         pass

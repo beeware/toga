@@ -388,6 +388,10 @@ class App:
         return self.factory.App(interface=self)
 
     @property
+    def screens(self):
+        return [screen.interface for screen in self._impl.get_screens()]
+
+    @property
     def paths(self) -> Paths:
         """Paths for platform appropriate locations on the user's file system.
 

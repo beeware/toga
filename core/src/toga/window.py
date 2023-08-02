@@ -124,6 +124,14 @@ class Window:
         self.on_close = on_close
 
     @property
+    def screen(self):
+        return self._impl.get_current_screen().interface
+
+    @screen.setter
+    def screen(self, app_screen):
+        self._impl.set_current_screen(app_screen)
+
+    @property
     def id(self) -> str:
         """The DOM identifier for the window.
 

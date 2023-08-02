@@ -266,3 +266,12 @@ class Window:
 
     def close(self):
         self.native.close()
+
+    def get_current_screen(self):
+        frame_native = self.native.frame()
+        for screen in self.interface._app.screens:
+            if frame_native.origin in screen._impl.native.frame:
+                return screen._impl
+
+    def set_current_screen(self, app_screen):
+        self.native.setFrameOrigin(app_screen._impl.native.visibleFrame.origin)

@@ -34,6 +34,7 @@ from .libs import (
     objc_method,
     objc_property,
 )
+from .screen import Screen as ScreenImpl
 from .window import Window
 
 
@@ -338,6 +339,9 @@ class App:
         self.create()
 
         self.loop.run_forever(lifecycle=CocoaLifecycle(self.native))
+
+    def get_screens(self):
+        return [ScreenImpl(native=screen) for screen in NSScreen.screens]
 
     def set_main_window(self, window):
         pass

@@ -18,6 +18,7 @@ from .libs import (
     win_version,
 )
 from .libs.proactor import WinformsProactorEventLoop
+from .screen import Screen as ScreenImpl
 from .window import Window
 
 
@@ -296,6 +297,9 @@ class App:
     def exit(self):
         self._is_exiting = True
         self.native.Exit()
+
+    def get_screens(self):
+        return [ScreenImpl(native=screen) for screen in WinForms.Screen.AllScreens]
 
     def set_main_window(self, window):
         self.app_context.MainForm = window._impl.native
