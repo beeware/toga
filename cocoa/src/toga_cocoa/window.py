@@ -3,18 +3,15 @@ from toga_cocoa.container import Container
 from toga_cocoa.libs import (
     SEL,
     NSBackingStoreBuffered,
-    NSClosableWindowMask,
     NSMakeRect,
-    NSMiniaturizableWindowMask,
     NSMutableArray,
     NSPoint,
-    NSResizableWindowMask,
     NSScreen,
     NSSize,
-    NSTitledWindowMask,
     NSToolbar,
     NSToolbarItem,
     NSWindow,
+    NSWindowStyleMask,
     objc_method,
     objc_property,
 )
@@ -110,15 +107,15 @@ class Window:
         self.interface = interface
         self.interface._impl = self
 
-        mask = NSTitledWindowMask
+        mask = NSWindowStyleMask.Titled
         if self.interface.closeable:
-            mask |= NSClosableWindowMask
+            mask |= NSWindowStyleMask.Closable
 
         if self.interface.resizeable:
-            mask |= NSResizableWindowMask
+            mask |= NSWindowStyleMask.Resizable
 
         if self.interface.minimizable:
-            mask |= NSMiniaturizableWindowMask
+            mask |= NSWindowStyleMask.Miniaturizable
 
         # Create the window with a default frame;
         # we'll update size and position later.
@@ -234,7 +231,9 @@ class Window:
         return bool(self.native.isVisible)
 
     def set_full_screen(self, is_full_screen):
-        self.interface.factory.not_implemented("Window.set_full_screen()")
+        current_state = bool(self.native.styleMask & NSWindowStyleMask.FullScreen)
+        if is_full_screen != current_state:
+            self.native.toggleFullScreen(self.native)
 
     def cocoa_windowShouldClose(self):
         # The on_close handler has a cleanup method that will enforce

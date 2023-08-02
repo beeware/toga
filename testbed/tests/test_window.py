@@ -231,3 +231,40 @@ async def test_move_and_resize(app):
     assert probe.content_size == (250, 210)
 
     new_window.close()
+
+
+async def test_full_screen(app):
+    """Window can be made full screen"""
+    new_window = toga.Window(title="New Window", size=(400, 300), position=(150, 150))
+    new_window.content = toga.Box(style=Pack(background_color=CORNFLOWERBLUE))
+    probe = window_probe(app, new_window)
+    new_window.show()
+    await probe.redraw("New window has been shown")
+    assert not probe.is_full_screen
+    initial_content_size = probe.content_size
+
+    new_window.full_screen = True
+    # A short delay to allow for genie animations
+    await probe.redraw("New window is full screen", delay=1)
+    assert probe.is_full_screen
+    assert probe.content_size[0] > initial_content_size[0]
+    assert probe.content_size[1] > initial_content_size[1]
+
+    new_window.full_screen = True
+    await probe.redraw("New window is still full screen")
+    assert probe.is_full_screen
+    assert probe.content_size[0] > initial_content_size[0]
+    assert probe.content_size[1] > initial_content_size[1]
+
+    new_window.full_screen = False
+    # A short delay to allow for genie animations
+    await probe.redraw("New window is not full screen", delay=1)
+    assert not probe.is_full_screen
+    assert probe.content_size == initial_content_size
+
+    new_window.full_screen = False
+    await probe.redraw("New window is still not full screen")
+    assert not probe.is_full_screen
+    assert probe.content_size == initial_content_size
+
+    new_window.close()

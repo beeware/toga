@@ -1,9 +1,4 @@
-from toga_cocoa.libs import (
-    NSClosableWindowMask,
-    NSMiniaturizableWindowMask,
-    NSResizableWindowMask,
-    NSWindow,
-)
+from toga_cocoa.libs import NSWindow, NSWindowStyleMask
 
 from .probe import BaseProbe
 
@@ -28,16 +23,20 @@ class WindowProbe(BaseProbe):
         )
 
     @property
+    def is_full_screen(self):
+        return bool(self.native.styleMask & NSWindowStyleMask.FullScreen)
+
+    @property
     def is_resizable(self):
-        return bool(self.native.styleMask & NSResizableWindowMask)
+        return bool(self.native.styleMask & NSWindowStyleMask.Resizable)
 
     @property
     def is_closeable(self):
-        return bool(self.native.styleMask & NSClosableWindowMask)
+        return bool(self.native.styleMask & NSWindowStyleMask.Closable)
 
     @property
     def is_minimizable(self):
-        return bool(self.native.styleMask & NSMiniaturizableWindowMask)
+        return bool(self.native.styleMask & NSWindowStyleMask.Miniaturizable)
 
     @property
     def is_minimized(self):
