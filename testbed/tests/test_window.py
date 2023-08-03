@@ -17,6 +17,21 @@ def window_probe(app, window):
 
 
 @pytest.fixture
+async def second_window(second_window_kwargs):
+    yield toga.Window(**second_window_kwargs)
+
+
+@pytest.fixture
+async def second_window_probe(app, second_window):
+    second_window.show()
+    probe = window_probe(app, second_window)
+    await probe.wait_for_window(f"Window ({second_window.title}) has been created")
+    yield probe
+    if second_window in app.windows:
+        second_window.close()
+
+
+@pytest.fixture
 async def main_window_probe(app, main_window):
     yield window_probe(app, main_window)
 
@@ -25,16 +40,16 @@ async def test_title(main_window, main_window_probe):
     """The title of a window can be changed"""
     original_title = main_window.title
     assert original_title == "Toga Testbed"
-    await main_window_probe.redraw("Window title can be retrieved")
+    await main_window_probe.wait_for_window("Window title can be retrieved")
 
     try:
         main_window.title = "A Different Title"
         assert main_window.title == "A Different Title"
-        await main_window_probe.redraw("Window title can be changed")
+        await main_window_probe.wait_for_window("Window title can be changed")
     finally:
         main_window.title = original_title
         assert main_window.title == "Toga Testbed"
-        await main_window_probe.redraw("Window title can be reverted")
+        await main_window_probe.wait_for_window("Window title can be reverted")
 
 
 # Mobile platforms have different windowing characterics, so they have different tests.
@@ -48,14 +63,14 @@ if toga.platform.current_platform in {"iOS", "android"}:
         assert main_window.visible
 
         main_window.hide()
-        await main_window_probe.redraw("Window.hide is a no-op")
+        await main_window_probe.wait_for_window("Window.hide is a no-op")
         assert main_window.visible
 
         main_window.close()
-        await main_window_probe.redraw("Window.close is a no-op")
+        await main_window_probe.wait_for_window("Window.close is a no-op")
         assert main_window.visible
 
-    async def test_secondary_window(app):
+    async def test_secondary_window():
         """A secondary window cannot be created"""
         with pytest.raises(
             RuntimeError,
@@ -73,12 +88,12 @@ if toga.platform.current_platform in {"iOS", "android"}:
         assert main_window.position == (0, 0)
 
         main_window.position = (150, 50)
-        await main_window_probe.redraw("Main window can't be moved")
+        await main_window_probe.wait_for_window("Main window can't be moved")
         assert main_window.size == initial_size
         assert main_window.position == (0, 0)
 
         main_window.size = (200, 150)
-        await main_window_probe.redraw("Main window cannot be resized")
+        await main_window_probe.wait_for_window("Main window cannot be resized")
         assert main_window.size == initial_size
         assert main_window.position == (0, 0)
 
@@ -93,13 +108,15 @@ if toga.platform.current_platform in {"iOS", "android"}:
                 children=[box1, box2],
                 style=Pack(direction=COLUMN, background_color=CORNFLOWERBLUE),
             )
-            await main_window_probe.redraw("Main window content has been set")
+            await main_window_probe.wait_for_window("Main window content has been set")
             assert main_window.size == initial_size
             assert main_window_probe.content_size == content_size
 
             # Alter the content width to exceed window width
             box1.style.width = 1000
-            await main_window_probe.redraw("Content is too wide for the window")
+            await main_window_probe.wait_for_window(
+                "Content is too wide for the window"
+            )
             assert main_window.size == initial_size
             assert main_window_probe.content_size == content_size
 
@@ -110,7 +127,7 @@ if toga.platform.current_platform in {"iOS", "android"}:
 
             # Resize content to fit
             box1.style.width = 100
-            await main_window_probe.redraw("Content fits in window")
+            await main_window_probe.wait_for_window("Content fits in window")
             assert main_window.size == initial_size
             assert main_window_probe.content_size == content_size
 
@@ -121,7 +138,9 @@ if toga.platform.current_platform in {"iOS", "android"}:
 
             # Alter the content width to exceed window height
             box1.style.height = 2000
-            await main_window_probe.redraw("Content is too tall for the window")
+            await main_window_probe.wait_for_window(
+                "Content is too tall for the window"
+            )
             assert main_window.size == initial_size
             assert main_window_probe.content_size == content_size
 
@@ -135,266 +154,284 @@ if toga.platform.current_platform in {"iOS", "android"}:
     async def test_full_screen(main_window, main_window_probe):
         """Window can be made full screen"""
         main_window.full_screen = True
-        await main_window_probe.redraw("Full screen is a no-op")
+        await main_window_probe.wait_for_window("Full screen is a no-op")
 
         main_window.full_screen = False
-        await main_window_probe.redraw("Full screen is a no-op")
+        await main_window_probe.wait_for_window("Full screen is a no-op")
 
 else:
     ####################################################################################
     # Desktop platform tests
     ####################################################################################
 
-    async def test_secondary_window(app):
+    @pytest.mark.parametrize("second_window_kwargs", [{}])
+    async def test_secondary_window(app, second_window, second_window_probe):
         """A secondary window can be created"""
-        new_window = toga.Window()
-        probe = window_probe(app, new_window)
+        assert second_window.app == app
+        assert second_window in app.windows
 
-        new_window.show()
-        await probe.redraw("New window has been shown")
+        assert second_window.title == "Toga"
+        assert second_window.size == (640, 480)
+        assert second_window.position == (100, 100)
+        assert second_window_probe.is_resizable
+        assert second_window_probe.is_closable
+        if second_window_probe.supports_minimize_control:
+            assert second_window_probe.is_minimizable
 
-        assert new_window.app == app
-        assert new_window in app.windows
+        second_window.close()
+        await second_window_probe.wait_for_window("Secondary window has been closed")
 
-        assert new_window.title == "Toga"
-        assert new_window.size == (640, 480)
-        assert new_window.position == (100, 100)
-        assert probe.is_resizable
-        assert probe.is_closable
-        assert probe.is_minimizable
+        assert second_window not in app.windows
 
-        new_window.close()
-        await probe.redraw("New window has been closed")
-
-        assert new_window not in app.windows
-
-    async def test_secondary_window_with_args(app):
+    @pytest.mark.parametrize(
+        "second_window_kwargs",
+        [dict(title="Secondary Window", position=(200, 300), size=(300, 200))],
+    )
+    async def test_secondary_window_with_args(app, second_window, second_window_probe):
         """A secondary window can be created with a specific size and position."""
         on_close_handler = Mock(return_value=False)
+        second_window.on_close = on_close_handler
 
-        new_window = toga.Window(
-            title="New Window",
-            position=(200, 300),
-            size=(300, 200),
-            on_close=on_close_handler,
+        second_window.show()
+        await second_window_probe.wait_for_window("Secondary window has been shown")
+
+        assert second_window.app == app
+        assert second_window in app.windows
+
+        assert second_window.title == "Secondary Window"
+        assert second_window.size == (300, 200)
+        assert second_window.position == (200, 300)
+
+        second_window_probe.close()
+        await second_window_probe.wait_for_window(
+            "Attempt to close second window that is rejected"
         )
-        probe = window_probe(app, new_window)
+        on_close_handler.assert_called_once_with(second_window)
 
-        new_window.show()
-        await probe.redraw("New window has been shown")
-
-        assert new_window.app == app
-        assert new_window in app.windows
-
-        assert new_window.title == "New Window"
-        assert new_window.size == (300, 200)
-        assert new_window.position == (200, 300)
-
-        probe.close()
-        await probe.redraw("Attempt to close second window that is rejected")
-        on_close_handler.assert_called_once_with(new_window)
-
-        assert new_window in app.windows
+        assert second_window in app.windows
 
         # Reset, and try again, this time allowing the
         on_close_handler.reset_mock()
         on_close_handler.return_value = True
 
-        probe.close()
-        await probe.redraw("Attempt to close second window that succeeds")
-        on_close_handler.assert_called_once_with(new_window)
+        second_window_probe.close()
+        await second_window_probe.wait_for_window(
+            "Attempt to close second window that succeeds"
+        )
+        on_close_handler.assert_called_once_with(second_window)
 
-        assert new_window not in app.windows
+        assert second_window not in app.windows
 
-    async def test_non_resizable(app):
+    @pytest.mark.parametrize(
+        "second_window_kwargs",
+        [dict(title="Not Resizable", resizable=False, position=(200, 150))],
+    )
+    async def test_non_resizable(second_window, second_window_probe):
         """A non-resizable window can be created"""
-        new_window = toga.Window(
-            title="Not Resizable", resizable=False, position=(150, 150)
-        )
+        assert second_window.visible
+        assert not second_window_probe.is_resizable
 
-        new_window.show()
-
-        probe = window_probe(app, new_window)
-        await probe.redraw("Non resizable window has been shown")
-
-        assert new_window.visible
-        assert not probe.is_resizable
-
-        # Clean up
-        new_window.close()
-
-    async def test_non_closable(app):
+    @pytest.mark.parametrize(
+        "second_window_kwargs",
+        [dict(title="Not Closeable", closable=False, position=(200, 150))],
+    )
+    async def test_non_closable(second_window, second_window_probe):
         """A non-closable window can be created"""
-        new_window = toga.Window(
-            title="Not Closeable", closable=False, position=(150, 150)
-        )
-        new_window.show()
-
-        probe = window_probe(app, new_window)
-        await probe.redraw("Non-closable window has been shown")
-
-        assert new_window.visible
-        assert not probe.is_closable
+        assert second_window.visible
+        assert not second_window_probe.is_closable
 
         # Do a UI close on the window
-        probe.close()
-        await probe.redraw("Close request was ignored")
-        assert new_window.visible
+        second_window_probe.close()
+        await second_window_probe.wait_for_window("Close request was ignored")
+        assert second_window.visible
 
         # Do an explicit close on the window
-        new_window.close()
-        await probe.redraw("Explicit close was honored")
+        second_window.close()
+        await second_window_probe.wait_for_window("Explicit close was honored")
 
-        assert not new_window.visible
+        assert not second_window.visible
 
-    async def test_non_minimizable(app):
+    @pytest.mark.parametrize(
+        "second_window_kwargs",
+        [dict(title="Not Minimizable", minimizable=False, position=(200, 150))],
+    )
+    async def test_non_minimizable(second_window, second_window_probe):
         """A non-minimizable window can be created"""
-        new_window = toga.Window(
-            title="Not Minimizable", minimizable=False, position=(150, 150)
-        )
-        new_window.show()
+        assert second_window.visible
+        assert not second_window_probe.is_minimizable
 
-        probe = window_probe(app, new_window)
-        await probe.redraw("Non-minimizable window has been shown")
-        assert new_window.visible
-        assert not probe.is_minimizable
+        second_window_probe.minimize()
+        await second_window_probe.wait_for_window("Minimize request has been ignored")
+        assert not second_window_probe.is_minimized
 
-        probe.minimize()
-        await probe.redraw("Minimize request has been ignored")
-        assert not probe.is_minimized
-
-        # Clean up
-        new_window.close()
-
-    async def test_visibility(app):
+    @pytest.mark.parametrize(
+        "second_window_kwargs",
+        [dict(title="Secondary Window", position=(200, 150))],
+    )
+    async def test_visibility(app, second_window, second_window_probe):
         """Visibility of a window can be controlled"""
-        new_window = toga.Window(title="New Window", position=(200, 250))
-        probe = window_probe(app, new_window)
+        assert second_window.app == app
+        assert second_window in app.windows
 
-        new_window.show()
-        await probe.redraw("New window has been shown")
+        assert second_window.visible
+        assert second_window.size == (640, 480)
+        assert second_window.position == (200, 150)
 
-        assert new_window.app == app
-        assert new_window in app.windows
+        # Move the window
+        second_window.position = (250, 200)
 
-        assert new_window.visible
-        assert new_window.size == (640, 480)
-        assert new_window.position == (200, 250)
+        await second_window_probe.wait_for_window("Secondary window has been moved")
+        assert second_window.size == (640, 480)
+        assert second_window.position == (250, 200)
 
-        new_window.hide()
-        await probe.redraw("New window has been hidden")
+        # Resize the window
+        second_window.size = (300, 250)
 
-        assert not new_window.visible
+        await second_window_probe.wait_for_window(
+            "Secondary window has been resized; position has not changed"
+        )
 
-        # Move and resie the window while offscreen
-        new_window.size = (250, 200)
-        new_window.position = (300, 150)
+        assert second_window.size == (300, 250)
+        # We can't confirm position here, because it may have changed. macOS rescales
+        # windows relative to the bottom-left corner, which means the position of the
+        # window has changed relative to the Toga coordinate frame.
 
-        new_window.show()
-        await probe.redraw("New window has been made visible again")
+        second_window.hide()
+        await second_window_probe.wait_for_window("Secondary window has been hidden")
 
-        assert new_window.visible
-        assert new_window.size == (250, 200)
-        assert new_window.position == (300, 150)
+        assert not second_window.visible
 
-        probe.minimize()
+        # Move and resize the window while offscreen
+        second_window.size = (250, 200)
+        second_window.position = (300, 150)
+
+        second_window.show()
+        await second_window_probe.wait_for_window(
+            "Secondary window has been made visible again; window has moved"
+        )
+
+        assert second_window.visible
+        assert second_window.size == (250, 200)
+        if second_window_probe.supports_move_while_hidden:
+            assert second_window.position == (300, 150)
+
+        second_window_probe.minimize()
         # Delay is required to account for "genie" animations
-        await probe.redraw("Window has been minimized", delay=0.5)
+        await second_window_probe.wait_for_window(
+            "Window has been minimized",
+            minimize=True,
+        )
 
-        assert probe.is_minimized
+        assert second_window_probe.is_minimized
 
-        probe.unminimize()
-        # Delay is required to account for "genie" animations
-        await probe.redraw("Window has been unminimized", delay=0.5)
+        if second_window_probe.supports_unminimize:
+            second_window_probe.unminimize()
+            # Delay is required to account for "genie" animations
+            await second_window_probe.wait_for_window(
+                "Window has been unminimized",
+                minimize=True,
+            )
 
-        assert not probe.is_minimized
+            assert not second_window_probe.is_minimized
 
-        probe.close()
-        await probe.redraw("New window has been closed")
+        second_window_probe.close()
+        await second_window_probe.wait_for_window("Secondary window has been closed")
 
-        assert new_window not in app.windows
+        assert second_window not in app.windows
 
-    async def test_move_and_resize(app):
+    @pytest.mark.parametrize(
+        "second_window_kwargs",
+        [dict(title="Secondary Window", position=(200, 150))],
+    )
+    async def test_move_and_resize(second_window, second_window_probe):
         """A window can be moved and resized."""
-        new_window = toga.Window(title="New Window")
-        probe = window_probe(app, new_window)
-        new_window.show()
-        await probe.redraw("New window has been shown")
 
         # Determine the extra width consumed by window chrome (e.g., title bars, borders etc)
-        extra_width = new_window.size[0] - probe.content_size[0]
-        extra_height = new_window.size[1] - probe.content_size[1]
+        extra_width = second_window.size[0] - second_window_probe.content_size[0]
+        extra_height = second_window.size[1] - second_window_probe.content_size[1]
 
-        new_window.position = (150, 50)
-        await probe.redraw("New window has been moved")
-        assert new_window.position == (150, 50)
+        second_window.position = (150, 50)
+        await second_window_probe.wait_for_window("Secondary window has been moved")
+        assert second_window.position == (150, 50)
 
-        new_window.size = (200, 150)
-        await probe.redraw("New window has been resized")
-        assert new_window.size == (200, 150)
-        assert probe.content_size == (200 - extra_width, 150 - extra_height)
+        second_window.size = (200, 150)
+        await second_window_probe.wait_for_window("Secondary window has been resized")
+        assert second_window.size == (200, 150)
+        assert second_window_probe.content_size == (
+            200 - extra_width,
+            150 - extra_height,
+        )
 
         box1 = toga.Box(style=Pack(background_color=REBECCAPURPLE, width=10, height=10))
         box2 = toga.Box(style=Pack(background_color=GOLDENROD, width=10, height=200))
-        new_window.content = toga.Box(
+        second_window.content = toga.Box(
             children=[box1, box2],
             style=Pack(direction=COLUMN, background_color=CORNFLOWERBLUE),
         )
-        await probe.redraw("New window has had height adjusted due to content")
-        assert new_window.size == (200 + extra_width, 210 + extra_height)
-        assert probe.content_size == (200, 210)
+        await second_window_probe.wait_for_window(
+            "Secondary window has had height adjusted due to content"
+        )
+        assert second_window.size == (200 + extra_width, 210 + extra_height)
+        assert second_window_probe.content_size == (200, 210)
 
         # Alter the content width to exceed window size
         box1.style.width = 250
-        await probe.redraw("New window has had width adjusted due to content")
-        assert new_window.size == (250 + extra_width, 210 + extra_height)
-        assert probe.content_size == (250, 210)
+        await second_window_probe.wait_for_window(
+            "Secondary window has had width adjusted due to content"
+        )
+        assert second_window.size == (250 + extra_width, 210 + extra_height)
+        assert second_window_probe.content_size == (250, 210)
 
         # Try to resize to a size less than the content size
-        new_window.size = (200, 150)
-        await probe.redraw("New window forced resize fails")
-        assert new_window.size == (250 + extra_width, 210 + extra_height)
-        assert probe.content_size == (250, 210)
-
-        new_window.close()
-
-    async def test_full_screen(app):
-        """Window can be made full screen"""
-        new_window = toga.Window(
-            title="New Window", size=(400, 300), position=(150, 150)
+        second_window.size = (200, 150)
+        await second_window_probe.wait_for_window(
+            "Secondary window forced resize fails"
         )
-        new_window.content = toga.Box(style=Pack(background_color=CORNFLOWERBLUE))
-        probe = window_probe(app, new_window)
-        new_window.show()
-        await probe.redraw("New window has been shown")
-        assert not probe.is_full_screen
-        initial_content_size = probe.content_size
+        assert second_window.size == (250 + extra_width, 210 + extra_height)
+        assert second_window_probe.content_size == (250, 210)
 
-        new_window.full_screen = True
-        # A short delay to allow for genie animations
-        await probe.redraw("New window is full screen", delay=1)
-        assert probe.is_full_screen
-        assert probe.content_size[0] > initial_content_size[0]
-        assert probe.content_size[1] > initial_content_size[1]
+    @pytest.mark.parametrize(
+        "second_window_kwargs",
+        [dict(title="Secondary Window", position=(200, 150))],
+    )
+    async def test_full_screen(second_window, second_window_probe):
+        """Window can be made full screen"""
+        assert not second_window_probe.is_full_screen
+        initial_content_size = second_window_probe.content_size
 
-        new_window.full_screen = True
-        await probe.redraw("New window is still full screen")
-        assert probe.is_full_screen
-        assert probe.content_size[0] > initial_content_size[0]
-        assert probe.content_size[1] > initial_content_size[1]
+        second_window.full_screen = True
+        # A longer delay to allow for genie animations
+        await second_window_probe.wait_for_window(
+            "Secondary window is full screen",
+            full_screen=True,
+        )
+        assert second_window_probe.is_full_screen
+        assert second_window_probe.content_size[0] > initial_content_size[0]
+        assert second_window_probe.content_size[1] > initial_content_size[1]
 
-        new_window.full_screen = False
-        # A short delay to allow for genie animations
-        await probe.redraw("New window is not full screen", delay=1)
-        assert not probe.is_full_screen
-        assert probe.content_size == initial_content_size
+        second_window.full_screen = True
+        await second_window_probe.wait_for_window(
+            "Secondary window is still full screen"
+        )
+        assert second_window_probe.is_full_screen
+        assert second_window_probe.content_size[0] > initial_content_size[0]
+        assert second_window_probe.content_size[1] > initial_content_size[1]
 
-        new_window.full_screen = False
-        await probe.redraw("New window is still not full screen")
-        assert not probe.is_full_screen
-        assert probe.content_size == initial_content_size
+        second_window.full_screen = False
+        # A longer delay to allow for genie animations
+        await second_window_probe.wait_for_window(
+            "Secondary window is not full screen",
+            full_screen=True,
+        )
+        assert not second_window_probe.is_full_screen
+        assert second_window_probe.content_size == initial_content_size
 
-        new_window.close()
+        second_window.full_screen = False
+        await second_window_probe.wait_for_window(
+            "Secondary window is still not full screen"
+        )
+        assert not second_window_probe.is_full_screen
+        assert second_window_probe.content_size == initial_content_size
 
 
 ########################################################################################
@@ -578,11 +615,10 @@ async def test_open_file_dialog(
         multiple_select=multiple_select,
     )
 
-    if result is not None:
+    if result:
         on_result_handler.assert_called_once_with(main_window, result)
         assert await dialog_result == result
     else:
-        print(dialog_result._impl, on_result_handler, on_result_handler.mock_calls)
         on_result_handler.assert_called_once_with(main_window, None)
         assert await dialog_result is None
 
@@ -626,7 +662,7 @@ async def test_select_folder_dialog(
         multiple_select=multiple_select,
     )
 
-    if result is not None:
+    if result:
         on_result_handler.assert_called_once_with(main_window, result)
         assert await dialog_result == result
     else:

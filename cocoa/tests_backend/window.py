@@ -1,5 +1,7 @@
 from unittest.mock import Mock
 
+from rubicon.objc.collections import ObjCListInstance
+
 from toga_cocoa.libs import (
     NSURL,
     NSAlertFirstButtonReturn,
@@ -16,6 +18,10 @@ from .probe import BaseProbe
 
 
 class WindowProbe(BaseProbe):
+    supports_minimize_control = True
+    supports_move_while_hidden = True
+    supports_unminimize = True
+
     def __init__(self, app, window):
         super().__init__()
         self.app = app
@@ -23,6 +29,12 @@ class WindowProbe(BaseProbe):
         self.impl = window._impl
         self.native = window._impl.native
         assert isinstance(self.native, NSWindow)
+
+    async def wait_for_window(self, message, minimize=False, full_screen=False):
+        await self.redraw(
+            message,
+            delay=0.75 if full_screen else 0.5 if minimize else None,
+        )
 
     def close(self):
         self.native.performClose(None)
@@ -148,6 +160,11 @@ class WindowProbe(BaseProbe):
         if result is not None:
             if multiple_select:
                 if result:
+                    # Since we are mocking selected_path(), it's never actually invoked
+                    # under test conditions. Call it just to confirm that it returns the
+                    # type we think it does.
+                    assert isinstance(dialog.selected_paths(), ObjCListInstance)
+
                     dialog.selected_paths = Mock(
                         return_value=[
                             NSURL.fileURLWithPath(str(path), isDirectory=False)
@@ -162,10 +179,17 @@ class WindowProbe(BaseProbe):
                     )
                 )
 
-            self.native.endSheet(
-                self.native.attachedSheet,
-                returnCode=NSModalResponseOK,
-            )
+            # If there's nothing selected, you can't press OK.
+            if result:
+                self.native.endSheet(
+                    self.native.attachedSheet,
+                    returnCode=NSModalResponseOK,
+                )
+            else:
+                self.native.endSheet(
+                    self.native.attachedSheet,
+                    returnCode=NSModalResponseCancel,
+                )
         else:
             self.native.endSheet(
                 self.native.attachedSheet,
@@ -174,7 +198,7 @@ class WindowProbe(BaseProbe):
 
         await self.redraw(
             f"Open {'multiselect ' if multiple_select else ''}file dialog "
-            f"({'SAVE' if result else 'CANCEL'}) dismissed"
+            f"({'OPEN' if result else 'CANCEL'}) dismissed"
         )
 
     async def close_select_folder_dialog(self, dialog, result, multiple_select):
@@ -183,6 +207,11 @@ class WindowProbe(BaseProbe):
         if result is not None:
             if multiple_select:
                 if result:
+                    # Since we are mocking selected_path(), it's never actually invoked
+                    # under test conditions. Call it just to confirm that it returns the
+                    # type we think it does.
+                    assert isinstance(dialog.selected_paths(), ObjCListInstance)
+
                     dialog.selected_paths = Mock(
                         return_value=[
                             NSURL.fileURLWithPath(str(path), isDirectory=True)
@@ -197,10 +226,17 @@ class WindowProbe(BaseProbe):
                     )
                 )
 
-            self.native.endSheet(
-                self.native.attachedSheet,
-                returnCode=NSModalResponseOK,
-            )
+            # If there's nothing selected, you can't press OK.
+            if result:
+                self.native.endSheet(
+                    self.native.attachedSheet,
+                    returnCode=NSModalResponseOK,
+                )
+            else:
+                self.native.endSheet(
+                    self.native.attachedSheet,
+                    returnCode=NSModalResponseCancel,
+                )
         else:
             self.native.endSheet(
                 self.native.attachedSheet,
@@ -209,5 +245,5 @@ class WindowProbe(BaseProbe):
 
         await self.redraw(
             f"{'Multiselect' if multiple_select else ' Select'} folder dialog "
-            f"({'SAVE' if result else 'CANCEL'}) dismissed"
+            f"({'OPEN' if result else 'CANCEL'}) dismissed"
         )

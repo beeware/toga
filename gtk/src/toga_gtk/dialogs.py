@@ -7,7 +7,7 @@ from .libs import Gtk
 class BaseDialog(ABC):
     def __init__(self, interface):
         self.interface = interface
-        self.interface.impl = self
+        self.interface._impl = self
 
 
 class MessageDialog(BaseDialog):
@@ -15,14 +15,15 @@ class MessageDialog(BaseDialog):
         self,
         interface,
         title,
-        message,
         message_type,
         buttons,
         success_result=None,
         on_result=None,
+        **kwargs,
     ):
         super().__init__(interface=interface)
         self.on_result = on_result
+        self.success_result = success_result
 
         self.native = Gtk.MessageDialog(
             transient_for=interface.window._impl.native,
@@ -31,21 +32,24 @@ class MessageDialog(BaseDialog):
             buttons=buttons,
             text=title,
         )
+        self.build_dialog(**kwargs)
+
+        self.native.connect("response", self.gtk_response)
+        self.native.show()
+
+    def build_dialog(self, message):
         self.native.format_secondary_text(message)
 
-        return_value = self.native.run()
-        self.native.destroy()
-
-        if success_result:
-            result = return_value == success_result
+    def gtk_response(self, dialog, response):
+        if self.success_result:
+            result = response == self.success_result
         else:
             result = None
 
-        # def completion_handler(self, return_value: bool) -> None:
-        if self.on_result:
-            self.on_result(self, result)
-
+        self.on_result(self, result)
         self.interface.future.set_result(result)
+
+        self.native.destroy()
 
 
 class InfoDialog(MessageDialog):
@@ -98,10 +102,59 @@ class ErrorDialog(MessageDialog):
         )
 
 
-class StackTraceDialog(BaseDialog):
-    def __init__(self, interface, title, message, on_result=None, **kwargs):
-        super().__init__(interface=interface)
-        interface.window.factory.not_implemented("Window.stack_trace_dialog()")
+class StackTraceDialog(MessageDialog):
+    def __init__(self, interface, title, on_result=None, **kwargs):
+        super().__init__(
+            interface=interface,
+            title=title,
+            message_type=Gtk.MessageType.ERROR,
+            buttons=(
+                Gtk.ButtonsType.CANCEL if kwargs.get("retry") else Gtk.ButtonsType.OK
+            ),
+            success_result=Gtk.ResponseType.OK if kwargs.get("retry") else None,
+            on_result=on_result,
+            **kwargs,
+        )
+
+    def build_dialog(self, message, content, retry):
+        container = self.native.get_message_area()
+
+        self.native.format_secondary_text(message)
+
+        # Create a scrolling readonly text area, in monospace font, to contain the stack trace.
+        buffer = Gtk.TextBuffer()
+        buffer.set_text(content)
+
+        trace = Gtk.TextView()
+        trace.set_buffer(buffer)
+        trace.set_wrap_mode(Gtk.WrapMode.WORD_CHAR)
+        trace.set_property("editable", False)
+        trace.set_property("cursor-visible", False)
+
+        trace.get_style_context().add_class("toga")
+        trace.get_style_context().add_class("stacktrace")
+        trace.get_style_context().add_class("dialog")
+
+        style_provider = Gtk.CssProvider()
+        style_provider.load_from_data(b".toga.stacktrace {font-family: monospace;}")
+
+        trace.get_style_context().add_provider(
+            style_provider,
+            Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION,
+        )
+
+        scroll = Gtk.ScrolledWindow()
+        scroll.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
+        scroll.set_size_request(500, 200)
+        scroll.add(trace)
+
+        container.pack_end(scroll, False, False, 0)
+
+        container.show_all()
+
+        # If this is a retry dialog, add a retry button (which maps to OK).
+        if retry:
+            self.native.add_button("Retry", Gtk.ResponseType.OK)
 
 
 class FileDialog(BaseDialog):
@@ -112,7 +165,7 @@ class FileDialog(BaseDialog):
         filename,
         initial_directory,
         file_types,
-        multiselect,
+        multiple_select,
         action,
         ok_icon,
         on_result=None,
@@ -141,25 +194,34 @@ class FileDialog(BaseDialog):
                 filter_filetype.add_pattern("*." + file_type)
                 self.native.add_filter(filter_filetype)
 
-        if multiselect:
+        self.multiple_select = multiple_select
+        if self.multiple_select:
             self.native.set_select_multiple(True)
 
-        response = self.native.run()
+        self.native.connect("response", self.gtk_response)
+        self.native.show()
 
+    # Provided as a stub that can be mocked in test conditions
+    def selected_path(self):
+        return self.native.get_filename()
+
+    # Provided as a stub that can be mocked in test conditions
+    def selected_paths(self):
+        return self.native.get_filenames()
+
+    def gtk_response(self, dialog, response):
         if response == Gtk.ResponseType.OK:
-            if multiselect:
-                result = [Path(filename) for filename in self.native.get_filenames()]
+            if self.multiple_select:
+                result = [Path(filename) for filename in self.selected_paths()]
             else:
-                result = Path(self.native.get_filename())
+                result = Path(self.selected_path())
         else:
             result = None
 
-        self.native.destroy()
-
-        if self.on_result:
-            self.on_result(self, result)
-
+        self.on_result(self, result)
         self.interface.future.set_result(result)
+
+        self.native.destroy()
 
 
 class SaveFileDialog(FileDialog):
@@ -178,7 +240,7 @@ class SaveFileDialog(FileDialog):
             filename=filename,
             initial_directory=initial_directory,
             file_types=file_types,
-            multiselect=False,
+            multiple_select=False,
             action=Gtk.FileChooserAction.SAVE,
             ok_icon=Gtk.STOCK_SAVE,
             on_result=on_result,
@@ -192,7 +254,7 @@ class OpenFileDialog(FileDialog):
         title,
         initial_directory,
         file_types,
-        multiselect,
+        multiple_select,
         on_result=None,
     ):
         super().__init__(
@@ -201,7 +263,7 @@ class OpenFileDialog(FileDialog):
             filename=None,
             initial_directory=initial_directory,
             file_types=file_types,
-            multiselect=multiselect,
+            multiple_select=multiple_select,
             action=Gtk.FileChooserAction.OPEN,
             ok_icon=Gtk.STOCK_OPEN,
             on_result=on_result,
@@ -214,7 +276,7 @@ class SelectFolderDialog(FileDialog):
         interface,
         title,
         initial_directory,
-        multiselect,
+        multiple_select,
         on_result=None,
     ):
         super().__init__(
@@ -223,7 +285,7 @@ class SelectFolderDialog(FileDialog):
             filename=None,
             initial_directory=initial_directory,
             file_types=None,
-            multiselect=multiselect,
+            multiple_select=multiple_select,
             action=Gtk.FileChooserAction.SELECT_FOLDER,
             ok_icon=Gtk.STOCK_OPEN,
             on_result=on_result,

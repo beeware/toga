@@ -472,7 +472,7 @@ class Window:
         self.factory.dialogs.StackTraceDialog(
             dialog,
             title,
-            message,
+            message=message,
             content=content,
             retry=retry,
             on_result=wrapped_handler(self, on_result),

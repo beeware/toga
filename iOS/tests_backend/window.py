@@ -14,6 +14,9 @@ class WindowProbe(BaseProbe):
         self.native = window._impl.native
         assert isinstance(self.native, UIWindow)
 
+    async def wait_for_window(self, message, minimize=False, full_screen=False):
+        await self.redraw(message)
+
     @property
     def content_size(self):
         return (
