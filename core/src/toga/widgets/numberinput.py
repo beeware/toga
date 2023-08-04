@@ -190,7 +190,7 @@ class NumberInput(Widget):
         try:
             new_min = _clean_decimal(new_min, self.step)
 
-            # Clip widget's value to the new minumum
+            # Clip widget's value to the new minimum
             if self.value is not None and self.value < new_min:
                 self.value = new_min
         except (TypeError, ValueError, InvalidOperation):

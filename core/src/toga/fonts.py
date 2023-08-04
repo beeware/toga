@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import warnings
 
 # Use the Travertino font definitions as-is
@@ -26,18 +28,25 @@ _REGISTERED_FONT_CACHE = {}
 
 
 class Font(BaseFont):
-    def __init__(self, family, size, style=NORMAL, variant=NORMAL, weight=NORMAL):
+    def __init__(
+        self,
+        family: str,
+        size: int | str,
+        style: str = NORMAL,
+        variant: str = NORMAL,
+        weight: str = NORMAL,
+    ):
         super().__init__(family, size, style, variant, weight)
         self.factory = get_platform_factory()
         self._impl = self.factory.Font(self)
 
-    def bind(self, factory=None):
+    def bind(self, factory: None = None):
         warnings.warn(
             "Fonts no longer need to be explicitly bound.", DeprecationWarning
         )
         return self._impl
 
-    def measure(self, text, dpi, tight=False):
+    def measure(self, text, dpi, tight=False) -> tuple[int, int]:
         return self._impl.measure(text, dpi=dpi, tight=tight)
 
     @staticmethod

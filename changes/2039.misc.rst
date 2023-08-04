@@ -1,0 +1,1 @@
+Fixing a bug introduced in #1969 that clashes the dialog display on iOS

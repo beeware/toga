@@ -6,7 +6,7 @@ from .base import Widget
 class Box(Widget):
     def __init__(
         self,
-        id=None,
+        id: str | None = None,
         style=None,
         children: list[Widget] | None = None,
     ):
@@ -39,9 +39,9 @@ class Box(Widget):
         return True
 
     @enabled.setter
-    def enabled(self, value):
+    def enabled(self, value: bool) -> None:
         pass
 
-    def focus(self):
+    def focus(self) -> None:
         """No-op; Box cannot accept input focus."""
         pass

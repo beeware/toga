@@ -1,11 +1,6 @@
 from __future__ import annotations
 
-import sys
-
-if sys.version_info >= (3, 8):
-    from typing import Protocol
-else:
-    Protocol = object
+from typing import Protocol
 
 
 class Listener(Protocol):
@@ -14,7 +9,7 @@ class Listener(Protocol):
     """
 
     def change(self, item):
-        """A change has occurred in a item.
+        """A change has occurred in an item.
 
         :param item: The data object that has changed.
         """

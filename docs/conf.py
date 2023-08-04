@@ -34,6 +34,7 @@ extensions = [
     "sphinx_tabs.tabs",
     "crate.sphinx.csv",
     "sphinx_copybutton",
+    "sphinx_toolbox.more_autodoc.autoprotocol",
     "sphinx.ext.intersphinx",
 ]
 # Add any paths that contain templates here, relative to this directory.

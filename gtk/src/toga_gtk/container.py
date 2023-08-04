@@ -26,6 +26,9 @@ class TogaContainer(Gtk.Fixed):
         # A flag that can be used to explicitly flag that a redraw is required.
         self.needs_redraw = True
 
+    def refreshed(self):
+        pass
+
     def make_dirty(self, widget=None):
         """Mark the container (or a specific widget in the container) as dirty.
 
@@ -76,6 +79,9 @@ class TogaContainer(Gtk.Fixed):
         self._content = widget
         if widget:
             widget.container = self
+            self.make_dirty(widget)
+        else:
+            self.make_dirty()
 
     def recompute(self):
         """Rehint and re-layout the container's content, if necessary.
@@ -86,7 +92,7 @@ class TogaContainer(Gtk.Fixed):
         if self._content and self.needs_redraw:
             # If any of the widgets have been marked as dirty,
             # recompute their bounds, and re-evaluate the minimum
-            # allowed size fo the layout.
+            # allowed size for the layout.
             while self._dirty_widgets:
                 widget = self._dirty_widgets.pop()
                 widget.rehint()

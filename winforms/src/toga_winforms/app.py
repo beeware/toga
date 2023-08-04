@@ -129,7 +129,7 @@ class App:
         self._create_app_commands()
 
         # Call user code to populate the main window
-        self.interface.startup()
+        self.interface._startup()
         self.create_menus()
         self.interface.main_window._impl.set_app(self)
 
@@ -164,9 +164,11 @@ class App:
                 self._menu_items[item] = cmd
                 submenu.DropDownItems.Add(item)
 
+        # The menu bar doesn't need to be positioned, because its `Dock` property
+        # defaults to `Top`.
         self.interface.main_window._impl.native.Controls.Add(menubar)
         self.interface.main_window._impl.native.MainMenuStrip = menubar
-        self.interface.main_window.content.refresh()
+        self.interface.main_window._impl.resize_content()
 
     def _submenu(self, group, menubar):
         try:

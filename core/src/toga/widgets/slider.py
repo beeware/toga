@@ -12,7 +12,7 @@ from .base import Widget
 class Slider(Widget):
     def __init__(
         self,
-        id=None,
+        id: str | None = None,
         style=None,
         value: float | None = None,
         min: float = None,  # Default to 0.0 when range is removed
@@ -22,7 +22,7 @@ class Slider(Widget):
         on_press: callable | None = None,
         on_release: callable | None = None,
         enabled: bool = True,
-        range: tuple[float, float] = None,  # DEPRECATED
+        range: tuple[float, float] | None = None,  # DEPRECATED
     ):
         """Create a new Slider widget.
 
@@ -53,7 +53,7 @@ class Slider(Widget):
         if range is not None:
             if min is not None or max is not None:
                 raise ValueError(
-                    "range cannot be specifed if min and max are specified"
+                    "range cannot be specified if min and max are specified"
                 )
             else:
                 warnings.warn(

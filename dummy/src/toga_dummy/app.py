@@ -25,6 +25,7 @@ class App(LoggedObject):
 
     def create(self):
         self._action("create")
+        self.interface._startup()
 
     @not_required_on("mobile")
     def create_menus(self):
@@ -32,6 +33,7 @@ class App(LoggedObject):
 
     def main_loop(self):
         self._action("main loop")
+        self.create()
 
     def set_main_window(self, window):
         self._set_value("main_window", window)
