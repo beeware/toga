@@ -35,7 +35,7 @@ class ExampledialogsApp(toga.App):
         await self.main_window.error_dialog(
             "Toga", "Well that didn't work... or did it?"
         )
-        self.label.text = "Oh noes..."
+        self.label.text = "Oh no..."
 
     async def action_stack_trace(self, widget):
         await self.main_window.stack_trace_dialog(

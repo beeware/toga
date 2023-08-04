@@ -132,7 +132,7 @@ class CanvasTests(TestCase):
 
         self.assertRaisesRegex(
             ValueError,
-            "^fill rule should be one of the followings: evenodd, nonzero$",
+            "^fill rule should be one of the following: evenodd, nonzero$",
             fill_context,
         )
         self.assertActionNotPerformed(self.testing_canvas, "fill")

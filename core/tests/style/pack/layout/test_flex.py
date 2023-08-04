@@ -615,7 +615,7 @@ def test_column_flex():
 
 def test_column_flex_insufficient_space():
     """Children in a column layout with flexible containers, but insufficient space to
-    accomodate them, and an explicit intrinsic width, doesn't collapse column width.
+    accommodate them, and an explicit intrinsic width, doesn't collapse column width.
     """
 
     root = ExampleNode(
