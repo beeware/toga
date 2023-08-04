@@ -130,7 +130,7 @@ def test_placeholder(widget, value, expected):
 
 
 def test_scroll(widget):
-    """The widget can be scrolled programatically."""
+    """The widget can be scrolled programmatically."""
     # Clear the event log
     EventLog.reset()
 

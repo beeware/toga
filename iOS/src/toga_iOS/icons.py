@@ -13,7 +13,7 @@ class Icon:
             raise ValueError(f"Unable to load icon from {path}")
 
         # Multiple icon interface instances can end up referencing the same native
-        # instance, so make sure we retain a refernce count at the impl level.
+        # instance, so make sure we retain a reference count at the impl level.
         self.native.retain()
 
     def __del__(self):

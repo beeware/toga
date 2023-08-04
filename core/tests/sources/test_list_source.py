@@ -108,7 +108,7 @@ def test_tuples():
     # Set element 1
     source[1] = ("new element", 999)
 
-    # source is the same size, but has differen data
+    # source is the same size, but has different data
     assert len(source) == 3
     assert source[1].val1 == "new element"
     assert source[1].val2 == 999
@@ -141,7 +141,7 @@ def test_list():
     # Set element 1
     source[1] = ["new element", 999]
 
-    # source is the same size, but has differen data
+    # source is the same size, but has different data
     assert len(source) == 3
     assert source[1].val1 == "new element"
     assert source[1].val2 == 999
@@ -174,7 +174,7 @@ def test_dict():
     # Set element 1
     source[1] = ["new element", 999]
 
-    # source is the same size, but has differen data
+    # source is the same size, but has different data
     assert len(source) == 3
     assert source[1].val1 == "new element"
     assert source[1].val2 == 999

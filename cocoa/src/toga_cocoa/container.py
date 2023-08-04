@@ -60,7 +60,7 @@ class BaseContainer:
 
 class MinimumContainer(BaseContainer):
     def __init__(self):
-        """A container for evaluating the minumum possible size for a layout"""
+        """A container for evaluating the minimum possible size for a layout"""
         super().__init__()
         self.width = 0
         self.height = 0

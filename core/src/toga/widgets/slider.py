@@ -53,7 +53,7 @@ class Slider(Widget):
         if range is not None:
             if min is not None or max is not None:
                 raise ValueError(
-                    "range cannot be specifed if min and max are specified"
+                    "range cannot be specified if min and max are specified"
                 )
             else:
                 warnings.warn(
