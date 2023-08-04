@@ -7,6 +7,7 @@ import webbrowser
 from builtins import id as identifier
 from collections.abc import MutableSet
 from email.message import Message
+from importlib import metadata as importlib_metadata
 from typing import Any, Iterable, Protocol
 
 from toga.command import CommandSet
@@ -16,12 +17,6 @@ from toga.paths import Paths
 from toga.platform import get_platform_factory
 from toga.widgets.base import Widget, WidgetRegistry
 from toga.window import Window
-
-try:
-    from importlib import metadata as importlib_metadata
-except ImportError:
-    # Backwards compatibility - importlib.metadata was added in Python 3.8
-    import importlib_metadata
 
 # Make sure deprecation warnings are shown by default
 warnings.filterwarnings("default", category=DeprecationWarning)

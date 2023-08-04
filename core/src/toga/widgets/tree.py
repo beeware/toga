@@ -210,7 +210,7 @@ class Tree(Widget):
         if isinstance(index, str):
             index = self._accessors.index(index)
         else:
-            # Re-interpret negative indicies, and clip indicies outside valid range.
+            # Re-interpret negative indices, and clip indices outside valid range.
             if index < 0:
                 index = max(len(self._accessors) + index, 0)
             else:

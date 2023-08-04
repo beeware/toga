@@ -70,7 +70,7 @@ class Node(Row):
         """Can the node have children?
 
         A value of :any:`True` does not necessarily mean the node *has* any children,
-        only that the node is *allowd* to have children. The value of ``len()`` for
+        only that the node is *allowed* to have children. The value of ``len()`` for
         the node indicates the number of actual children.
         """
         return self._children is not None

@@ -26,7 +26,7 @@ class IconProbe(BaseProbe):
                 == self.app.paths.app / "resources" / "icons" / "blue.png"
             )
         else:
-            pytest.fail("Unkonwn icon resouce")
+            pytest.fail("Unknown icon resource")
 
     def assert_default_icon_content(self):
         assert self.icon._impl.path == self.app.paths.toga / "resources" / "toga.icns"

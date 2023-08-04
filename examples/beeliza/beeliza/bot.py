@@ -373,7 +373,7 @@ class Eliza:
 
     ###########################################################################
     # reflect: take an input string, and reflect the direction of any
-    # statments (i.e., "I think I'm happy" - > "you think you're happy")
+    # statements (i.e., "I think I'm happy" - > "you think you're happy")
     ###########################################################################
     def reflect(self, input):
         return " ".join(
