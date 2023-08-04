@@ -16,3 +16,6 @@ class Screen:
 
     def get_name(self):
         return self.native.DeviceName
+
+    def get_origin(self):
+        return self.native.Bounds.X, self.native.Bounds.Y

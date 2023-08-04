@@ -76,6 +76,7 @@ class Window(Container):
         return self.native.Location.X, self.native.Location.Y
 
     def set_position(self, position):
+        self.native.StartPosition = WinForms.FormStartPosition.Manual
         self.native.Location = Point(*position)
 
     def get_size(self):
@@ -173,6 +174,12 @@ class Window(Container):
             if screen_native == screen._impl.native:
                 return screen._impl
 
-    def set_current_screen(self, app_screen):
-        self.native.StartPosition = WinForms.FormStartPosition.Manual
-        self.native.Location = app_screen._impl.native.WorkingArea.Location
+    # def set_current_screen(self, app_screen):
+    #     self.native.StartPosition = WinForms.FormStartPosition.Manual
+    #     self.native.Location = app_screen._impl.native.WorkingArea.Location
+
+    def get_primary_screen(self):
+        screen_native = WinForms.Screen.PrimaryScreen
+        for screen in self.interface._app.screens:
+            if screen_native == screen._impl.native:
+                return screen._impl

@@ -12,6 +12,7 @@ from toga.widgets.base import WidgetRegistry
 
 if TYPE_CHECKING:
     from toga.app import App
+    from toga.screen import Screen
     from toga.widgets.base import Widget
 
 
@@ -124,12 +125,29 @@ class Window:
         self.on_close = on_close
 
     @property
-    def screen(self):
+    def screen(self) -> Screen:
+        """Instance of the :class:`toga.Screen` on which this window is present.
+
+        Returns:
+            The screen of :class:`toga.Screen` on which this window is present.
+
+        """
         return self._impl.get_current_screen().interface
 
     @screen.setter
-    def screen(self, app_screen):
-        self._impl.set_current_screen(app_screen)
+    def screen(self, app_screen: Screen) -> None:
+        OriginalWindowLocation = self.position
+        OriginalOrigin = self.screen.origin
+        NewOrigin = app_screen.origin
+        x = OriginalWindowLocation[0] - OriginalOrigin[0] + NewOrigin[0]
+        y = OriginalWindowLocation[1] - OriginalOrigin[1] + NewOrigin[1]
+
+        self._impl.set_position(
+            (
+                x,
+                y,
+            )
+        )
 
     @property
     def id(self) -> str:
@@ -223,11 +241,38 @@ class Window:
     @property
     def position(self) -> tuple[int, int]:
         """Position of the window, as an ``(x, y)`` tuple."""
-        return self._impl.get_position()
+        assumed_absolute_origin = self._impl.get_primary_screen().get_origin()
+        absolute_window_position = self._impl.get_position()
+        assumed_absolute_window_position = (
+            absolute_window_position[0] - assumed_absolute_origin[0],
+            absolute_window_position[1] - assumed_absolute_origin[1],
+        )
+        return assumed_absolute_window_position
 
     @position.setter
     def position(self, position: tuple[int, int]) -> None:
-        self._impl.set_position(position)
+        assumed_absolute_origin = self._impl.get_primary_screen().get_origin()
+        assumed_absolute_new_position = (
+            position[0] + assumed_absolute_origin[0],
+            position[1] + assumed_absolute_origin[1],
+        )
+        self._impl.set_position(assumed_absolute_new_position)
+
+    @property
+    def screen_position(self) -> tuple[int, int]:
+        current_relative_position = (
+            self.position[0] - self.screen.origin[0],
+            self.position[1] - self.screen.origin[1],
+        )
+        return current_relative_position
+
+    @screen_position.setter
+    def screen_position(self, position: tuple[int, int]) -> None:
+        new_relative_position = (
+            position[0] + self.screen.origin[0],
+            position[1] + self.screen.origin[1],
+        )
+        self._impl.set_position(new_relative_position)
 
     def show(self) -> None:
         """Show window, if hidden."""

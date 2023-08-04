@@ -5,3 +5,7 @@ class Screen:
     @property
     def name(self):
         return self._impl.get_name()
+
+    @property
+    def origin(self):
+        return self._impl.get_origin()

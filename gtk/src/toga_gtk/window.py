@@ -149,6 +149,14 @@ class Window:
             if monitor_native == screen._impl.native:
                 return screen._impl
 
-    def set_current_screen(self, app_screen):
-        geometry = app_screen._impl.native.get_geometry()
-        self.native.move(geometry.x, geometry.y)
+    # def set_current_screen(self, app_screen):
+    #     geometry = app_screen._impl.native.get_geometry()
+    #     self.native.move(geometry.x, geometry.y)
+
+    def get_primary_screen(self):
+        display = Gdk.Display.get_default()
+        primary_monitor = display.get_primary_monitor()
+        monitor_native = display.get_monitor(primary_monitor)
+        for screen in self.interface._app.screens:
+            if monitor_native == screen._impl.native:
+                return screen._impl

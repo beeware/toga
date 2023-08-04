@@ -17,3 +17,7 @@ class Screen:
     def get_name(self):
         display = self.native.get_display()
         return display.get_name()
+
+    def get_origin(self):
+        geometry = self.native.get_geometry()
+        return geometry.x, geometry.y

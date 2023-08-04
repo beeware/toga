@@ -114,6 +114,10 @@ class Window(LoggedObject):
     def get_current_screen(self):
         self._get_value("screen")
 
+    # @not_required_on("mobile", "web")
+    # def set_current_screen(self, app_screen):
+    #     self._set_value("screen", app_screen)
+
     @not_required_on("mobile", "web")
-    def set_current_screen(self, app_screen):
-        self._set_value("screen", app_screen)
+    def get_primary_screen(self):
+        self._get_value("screen")

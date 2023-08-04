@@ -17,3 +17,6 @@ class Screen(LoggedObject):
 
     def get_name(self):
         self._get_value("ScreenName")
+
+    def get_origin(self):
+        self._get_value("origin", (0, 0))

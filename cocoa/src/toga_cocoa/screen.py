@@ -16,3 +16,10 @@ class Screen:
 
     def get_name(self):
         return self.native.localizedName
+
+    def get_origin(self):
+        frame_native = self.native.frame()
+        return (
+            frame_native.origin.x,
+            frame_native.origin.y + frame_native.size.height,
+        )
