@@ -1,4 +1,5 @@
 import asyncio
+from pathlib import Path
 from unittest.mock import Mock
 
 import pytest
@@ -186,6 +187,25 @@ class WindowProbe(BaseProbe):
 
     async def close_select_folder_dialog(self, dialog, result, multiple_select):
         assert isinstance(dialog.native, Gtk.FileChooserDialog)
+
+        # GTK's file dialog might open on default location that doesn't have anything
+        # that can be selected, which alters closing behavior. To provide consistent
+        # test conditions, select an arbitrary folder that we know has subfolders. We
+        # don't care which folder it is, as we're mocking the return value of the
+        # dialog.
+        if result:
+            folder = str(Path(__file__).parent.parent)
+            dialog.native.set_current_folder(folder)
+            # We don't know how long it will take for the GUI to update, so iterate
+            # for a while until the change has been applied.
+            await self.redraw("Selected a single (arbitrary) folder")
+            count = 0
+            while dialog.native.get_current_folder() != folder and count < 10:
+                await asyncio.sleep(0.1)
+                count += 1
+            assert (
+                dialog.native.get_current_folder() == folder
+            ), "Dialog didn't select dummy folder"
 
         if result is not None:
             if multiple_select:
