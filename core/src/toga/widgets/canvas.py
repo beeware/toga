@@ -399,7 +399,7 @@ class Fill(Context):
                 fill_rule = FillRule[fill_rule.upper()]
             except KeyError:
                 raise ValueError(
-                    "fill rule should be one of the followings: {}".format(
+                    "fill rule should be one of the following: {}".format(
                         ", ".join([value.name.lower() for value in FillRule])
                     )
                 )

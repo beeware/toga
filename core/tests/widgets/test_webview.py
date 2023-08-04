@@ -174,9 +174,9 @@ def test_evaluate_javascript(widget):
 
 
 async def test_evaluate_javascript_async(widget):
-    "Javascript can be evaluated asyncronously, and an asynchronous result returned"
+    "Javascript can be evaluated asynchronously, and an asynchronous result returned"
 
-    # An async task that simulates evaluation of javasript after a delay
+    # An async task that simulates evaluation of Javascript after a delay
     async def delayed_page_load():
         await asyncio.sleep(0.1)
 

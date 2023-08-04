@@ -60,7 +60,7 @@ from toga_cocoa.libs import (
 #
 # RefreshableScrollView is a subclass of NSScrollView. When it is created, it is
 # provided a document (usually a List View); the RefreshableScrollView has a custom
-# clipView that accomodates an extra widget which can display the "currently loading"
+# clipView that accommodates an extra widget which can display the "currently loading"
 # spinner. When the scroll view is reloading, the clipView alters its bounds to include
 # the extra space for the refresh_view header; when the reload finishes, an artificial
 # scroll event is generated that forces the clipView to re-evaluate its bounds, removing

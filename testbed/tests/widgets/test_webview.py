@@ -93,7 +93,7 @@ async def widget(on_load):
             assert ua.startswith("Mozilla/5.0 (")
             break
         except AssertionError:
-            # On Windows, user_agent will return an empty string during intialization.
+            # On Windows, user_agent will return an empty string during initialization.
             if (
                 toga.platform.current_platform == "windows"
                 and ua == ""

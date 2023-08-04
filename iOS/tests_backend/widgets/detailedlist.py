@@ -99,7 +99,7 @@ class DetailedListProbe(SimpleProbe):
         # This is a little convoluted, and not an ideal test, but :shrug:. The
         # Primary/Secondary actions are swipe actions with confirmation buttons, but iOS
         # doesn't expose any way to programmatically generate a swipe, or to
-        # programatically reveal and press the confirmation button. However, we *can*
+        # programmatically reveal and press the confirmation button. However, we *can*
         # generate the action object that a swipe would create, and invoke the handler
         # associated with that action.
         assert str(action.title) == label

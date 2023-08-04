@@ -1,1 +1,1 @@
-Images and ImageViews no longer support loading images from URLs. If you need to display an image from a URL, use a background task to obtain the image data asynchronously, then create the Image and/or set the ImageView ``image`` property on the completion of the asychronous load.
+Images and ImageViews no longer support loading images from URLs. If you need to display an image from a URL, use a background task to obtain the image data asynchronously, then create the Image and/or set the ImageView ``image`` property on the completion of the asynchronous load.
