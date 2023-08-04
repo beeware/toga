@@ -154,7 +154,7 @@ def test_measure_text(widget, font, expected):
 
 
 def test_as_image(widget):
-    """A rendered canvas can be retreived as an image"""
+    """A rendered canvas can be retrieved as an image"""
     image = widget.as_image()
     assert image is not None
     assert_action_performed(widget, "get image data")

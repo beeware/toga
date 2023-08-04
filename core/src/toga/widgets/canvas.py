@@ -100,7 +100,7 @@ class Fill(DrawingObject):
     # 2023-07 Backwards incompatibility
     ###########################################################################
 
-    # `context.fill()` used to be a context mangager, but is now a primitive.
+    # `context.fill()` used to be a context manager, but is now a primitive.
     # If you try to use the Fill drawing object as a context, raise an exception.
     def __enter__(self):
         raise RuntimeError("Context.fill() has been renamed Context.Fill().")
@@ -173,7 +173,7 @@ class Stroke(DrawingObject):
     # 2023-07 Backwards incompatibility
     ###########################################################################
 
-    # `context.stroke()` used to be a context mangager, but is now a primitive.
+    # `context.stroke()` used to be a context managger, but is now a primitive.
     # If you try to use the Stroke drawing object as a context, raise an exception.
     def __enter__(self):
         raise RuntimeError("Context.stroke() has been renamed Context.Stroke().")

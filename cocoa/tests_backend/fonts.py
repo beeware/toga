@@ -34,7 +34,7 @@ class FontMixin:
         assert (BOLD if traits & NSFontMask.Bold else NORMAL) == weight
 
         if style == OBLIQUE:
-            print("Intepreting OBLIQUE font as ITALIC")
+            print("Interpreting OBLIQUE font as ITALIC")
             assert bool(traits & NSFontMask.Italic)
         else:
             assert ITALIC if traits & NSFontMask.Italic else NORMAL == style
