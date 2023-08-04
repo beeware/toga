@@ -207,10 +207,15 @@ jobs:
           - backend: linux
             runs-on: ubuntu-22.04
             # The package list should be the same as in tutorial-0.rst, and the BeeWare
-            # tutorial, plus flwm to provide a window manager
+            # tutorial, plus blackbox to provide a window manager. We need a window
+            # manager that is reasonably lightweight, honors full screen mode, and
+            # treats the window position as the top-left corner of the *window*, not the
+            # top-left corner of the window *content*. The default GNOME window managers of
+            # most distros meet these requirementt, but they're heavyweight; flwm doesn't
+            # work either. Blackbox is the lightest WM we've found that works.
             pre-command: |
               sudo apt update -y
-              sudo apt install -y flwm pkg-config python3-dev libgirepository1.0-dev libcairo2-dev gir1.2-webkit2-4.0
+              sudo apt install -y blackbox pkg-config python3-dev libgirepository1.0-dev libcairo2-dev gir1.2-webkit2-4.0
 
               # Start Virtual X server
               echo "Start X server..."
@@ -219,7 +224,7 @@ jobs:
 
               # Start Window manager
               echo "Start window manager..."
-              DISPLAY=:99 flwm &
+              DISPLAY=:99 blackbox &
               sleep 1
 
             briefcase-run-prefix: 'DISPLAY=:99'
