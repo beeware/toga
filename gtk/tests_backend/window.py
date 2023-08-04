@@ -1,5 +1,4 @@
 import asyncio
-from pathlib import Path
 from unittest.mock import Mock
 
 import pytest
@@ -75,6 +74,7 @@ class WindowProbe(BaseProbe):
         while dialog.native.get_visible() and count < 20:
             await asyncio.sleep(0.1)
             count += 1
+        assert not dialog.native.get_visible(), "Dialog didn't close"
 
     async def close_info_dialog(self, dialog):
         dialog.native.response(Gtk.ResponseType.OK)
@@ -137,20 +137,22 @@ class WindowProbe(BaseProbe):
     async def close_open_file_dialog(self, dialog, result, multiple_select):
         assert isinstance(dialog.native, Gtk.FileChooserDialog)
 
-        # GTK's file dialog shows folders first; but if a folder is selected
-        # when the "open" button is pressed, it opens that folder. So, we need
-        # to ensure that a file (any file) is selected so this doesn't happen.
-        # If it's a multi-select dialog, unselect everythong.
-        if result == []:
-            dialog.native.unselect_all()
-            await self.redraw("All files unselected")
-        else:
-            # Find the first file in the folder
-            for path in Path(dialog.native.get_current_folder()).glob("*"):
-                if path.is_file():
-                    break
-            dialog.native.select_filename(str(path))
+        # GTK's file dialog shows folders first; but if a folder is selected when the
+        # "open" button is pressed, it opens that folder. To prevent this, if we're
+        # expecting this dialog to return a result, ensure a file is selected. We don't
+        # care which file it is, as we're mocking the return value of the dialog.
+        if result:
+            dialog.native.select_filename(__file__)
+            # We don't know how long it will take for the GUI to update, so iterate
+            # for a while until the change has been applied.
             await self.redraw("Selected a single (arbitrary) file")
+            count = 0
+            while dialog.native.get_filename() != __file__ and count < 10:
+                await asyncio.sleep(0.1)
+                count += 1
+            assert (
+                dialog.native.get_filename() == __file__
+            ), "Dialog didn't select dummy file"
 
         if result is not None:
             if multiple_select:
