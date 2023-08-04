@@ -68,7 +68,7 @@ class OptionContainer(Widget):
 
     def add_content(self, index, text, widget):
         # Create the container for the widget
-        container = Container(on_refresh=self.content_refreshed)
+        container = Container(parent=self)
         container.content = widget
         self.sub_containers.insert(index, container)
 

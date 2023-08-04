@@ -2,6 +2,7 @@ import asyncio
 import inspect
 import os
 import sys
+import weakref
 from urllib.parse import unquote, urlparse
 
 from rubicon.objc.eventloop import CocoaLifecycle, EventLoopPolicy
@@ -112,12 +113,19 @@ class App:
 
     def __init__(self, interface):
         self.interface = interface
-        self.interface._impl = self
 
         self._cursor_visible = True
 
         asyncio.set_event_loop_policy(EventLoopPolicy())
         self.loop = asyncio.new_event_loop()
+
+    @property
+    def interface(self):
+        return self._interface()
+
+    @interface.setter
+    def interface(self, value):
+        self._interface = weakref.ref(value)
 
     def create(self):
         self.native = NSApplication.sharedApplication

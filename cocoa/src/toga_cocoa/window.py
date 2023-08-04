@@ -1,3 +1,5 @@
+import weakref
+
 from toga.command import Command as BaseCommand
 from toga_cocoa.container import Container
 from toga_cocoa.libs import (
@@ -105,7 +107,6 @@ class TogaWindow(NSWindow):
 class Window:
     def __init__(self, interface, title, position, size):
         self.interface = interface
-        self.interface._impl = self
 
         mask = NSWindowStyleMask.Titled
         if self.interface.closable:
@@ -139,10 +140,19 @@ class Window:
 
         self.native.delegate = self.native
 
-        self.container = Container(on_refresh=self.content_refreshed)
+        self.container = Container(parent=self)
         self.native.contentView = self.container.native
 
+    @property
+    def interface(self):
+        return self._interface()
+
+    @interface.setter
+    def interface(self, value):
+        self._interface = weakref.ref(value)
+
     def __del__(self):
+        print("DEL WINDOW IMPL")
         self.native.release()
 
     def create_toolbar(self):

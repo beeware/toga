@@ -47,7 +47,7 @@ class ScrollContainer(Widget):
         # of the contentView if scrolling is enabled in that axis.
         self.document_container = Container(
             layout_native=self.native.contentView,
-            on_refresh=self.content_refreshed,
+            parent=self,
         )
         self.native.documentView = self.document_container.native
 

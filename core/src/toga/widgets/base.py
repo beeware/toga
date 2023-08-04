@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import weakref
 from builtins import id as identifier
 from typing import TYPE_CHECKING, Iterator, NoReturn
 
@@ -201,20 +202,20 @@ class Widget(Node):
 
         :raises ValueError: If this widget is already associated with another app.
         """
-        return self._app
+        return self._app() if self._app else None
 
     @app.setter
     def app(self, app: App | None) -> None:
         # If the widget is already assigned to an app
-        if self._app:
-            if self._app == app:
+        if self.app:
+            if self.app == app:
                 # If app is the same as the previous app, return
                 return
 
             # Deregister the widget from the old app
-            self._app.widgets.remove(self.id)
+            self.app.widgets.remove(self.id)
 
-        self._app = app
+        self._app = weakref.ref(app) if app else None
         self._impl.set_app(app)
         for child in self.children:
             child.app = app
@@ -230,7 +231,7 @@ class Widget(Node):
         When setting the window for a widget, all children of this widget will be
         recursively assigned to the same window.
         """
-        return self._window
+        return self._window() if self._window else None
 
     @window.setter
     def window(self, window: Window | None) -> None:
@@ -238,7 +239,7 @@ class Widget(Node):
         if self.window is not None:
             self.window.widgets.remove(self.id)
 
-        self._window = window
+        self._window = weakref.ref(window) if window else None
         self._impl.set_window(window)
 
         for child in self.children:

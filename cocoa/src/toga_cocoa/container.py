@@ -1,3 +1,5 @@
+import weakref
+
 from rubicon.objc import objc_method
 
 from .libs import (
@@ -32,7 +34,7 @@ class Container:
         min_width=100,
         min_height=100,
         layout_native=None,
-        on_refresh=None,
+        parent=None,
     ):
         """A container for layouts.
 
@@ -45,11 +47,11 @@ class Container:
             itself; however, for widgets like ScrollContainer where the layout needs to
             be computed based on a different size to what will be rendered, the source
             of the size can be different.
-        :param on_refresh: The callback to be notified when this container's layout is
-            refreshed.
+        :param parent: The parent of this container; this is the object that will be
+            notified when this container's layout is refreshed.
         """
         self._content = None
-        self.on_refresh = on_refresh
+        self.parent = weakref.ref(parent)
 
         self.native = TogaView.alloc().init()
         self.layout_native = self.native if layout_native is None else layout_native
@@ -103,7 +105,7 @@ class Container:
             widget.container = self
 
     def refreshed(self):
-        self.on_refresh(self)
+        self.parent().content_refreshed(self)
 
     @property
     def width(self):

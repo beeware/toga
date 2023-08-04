@@ -45,10 +45,7 @@ class SplitContainer(Widget):
         self.native.impl = self
         self.native.delegate = self.native
 
-        self.sub_containers = [
-            Container(on_refresh=self.content_refreshed),
-            Container(on_refresh=self.content_refreshed),
-        ]
+        self.sub_containers = [Container(parent=self), Container(parent=self)]
         self.native.addSubview(self.sub_containers[0].native)
         self.native.addSubview(self.sub_containers[1].native)
 
