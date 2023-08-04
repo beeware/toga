@@ -37,7 +37,7 @@ class FontMixin:
         assert (BOLD if self.font.getTypeface().isBold() else NORMAL) == weight
 
         if style == OBLIQUE:
-            print("Intepreting OBLIQUE font as ITALIC")
+            print("Interpreting OBLIQUE font as ITALIC")
             assert self.font.getTypeface().isItalic()
         else:
             assert (ITALIC if self.font.getTypeface().isItalic() else NORMAL) == style

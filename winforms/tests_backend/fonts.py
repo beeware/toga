@@ -24,7 +24,7 @@ class FontMixin:
         assert BOLD if self.font.Bold else NORMAL == weight
 
         if style == OBLIQUE:
-            print("Intepreting OBLIQUE font as ITALIC")
+            print("Interpreting OBLIQUE font as ITALIC")
             assert self.font.Italic
         else:
             assert (ITALIC if self.font.Italic else NORMAL) == style

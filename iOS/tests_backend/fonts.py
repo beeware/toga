@@ -37,7 +37,7 @@ class FontMixin:
         assert (BOLD if traits & UIFontDescriptorTraitBold else NORMAL) == weight
 
         if style == OBLIQUE:
-            print("Intepreting OBLIQUE font as ITALIC")
+            print("Interpreting OBLIQUE font as ITALIC")
             assert bool(traits & UIFontDescriptorTraitItalic)
         else:
             assert ITALIC if traits & UIFontDescriptorTraitItalic else NORMAL == style
