@@ -1,3 +1,4 @@
+from .screen import Screen as ScreenImpl
 from .utils import LoggedObject, not_required, not_required_on
 from .window import Window
 
@@ -47,10 +48,6 @@ class App(LoggedObject):
     def exit(self):
         self._action("exit")
 
-    @not_required_on("mobile", "web")
-    def get_screens(self):
-        self._get_value("screens")
-
     @not_required_on("mobile")
     def get_current_window(self):
         self._action("get_current_window")
@@ -74,6 +71,13 @@ class App(LoggedObject):
     @not_required_on("mobile")
     def hide_cursor(self):
         self._action("hide_cursor")
+
+    @not_required_on("mobile", "web")
+    def get_screens(self):
+        return [
+            ScreenImpl(native="primary_screen"),
+            ScreenImpl(native="secondary_screen"),
+        ]
 
 
 @not_required_on("mobile", "web")

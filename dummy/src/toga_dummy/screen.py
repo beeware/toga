@@ -1,3 +1,5 @@
+from toga.screen import Screen as ScreenInterface
+
 from .utils import LoggedObject, not_required, not_required_on  # noqa
 
 
@@ -10,13 +12,16 @@ class Screen(LoggedObject):
             return cls._instances[native]
         else:
             instance = super().__new__(cls)
-            instance.interface = None
+            instance.interface = ScreenInterface(_impl=instance)
             instance.native = native
             cls._instances[native] = instance
             return instance
 
     def get_name(self):
-        self._get_value("ScreenName")
+        return self.native
 
     def get_origin(self):
-        self._get_value("origin", (0, 0))
+        if self.native == "primary_screen":
+            return (0, 0)
+        else:
+            return (-1920, 0)

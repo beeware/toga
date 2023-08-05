@@ -120,4 +120,4 @@ class Window(LoggedObject):
 
     @not_required_on("mobile", "web")
     def get_primary_screen(self):
-        self._get_value("screen")
+        return self.interface._app.screens[0]
