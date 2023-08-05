@@ -133,7 +133,7 @@ class MainWindow(Window):
         """Create a new application Main Window.
 
         :param id: The ID of the window.
-        :param title: Title for the window.
+        :param title: Title for the window. Defaults to the formal name of the app.
         :param position: Position of the window, as a tuple of ``(x, y)`` coordinates.
         :param size: Size of the window, as a tuple of ``(width, height)``, in pixels.
         :param resizeable: Can the window be manually resized by the user?
@@ -148,6 +148,10 @@ class MainWindow(Window):
             closable=True,
             minimizable=minimizable,
         )
+
+    @property
+    def _default_title(self) -> str:
+        return App.app.formal_name
 
     @property
     def on_close(self) -> None:

@@ -65,7 +65,7 @@ class Window:
     def __init__(
         self,
         id: str | None = None,
-        title: str = "Toga",
+        title: str | None = None,
         position: tuple[int, int] = (100, 100),
         size: tuple[int, int] = (640, 480),
         resizable: bool = True,
@@ -78,7 +78,7 @@ class Window:
         """Create a new Window.
 
         :param id: The ID of the window.
-        :param title: Title for the window.
+        :param title: Title for the window. Defaults to "Toga".
         :param position: Position of the window, as a tuple of ``(x, y)`` coordinates.
         :param size: Size of the window, as a tuple of ``(width, height)``, in pixels.
         :param resizable: Can the window be manually resized by the user?
@@ -123,7 +123,7 @@ class Window:
         self.factory = get_platform_factory()
         self._impl = getattr(self.factory, self._WINDOW_CLASS)(
             interface=self,
-            title=title,
+            title=title if title else self._default_title,
             position=position,
             size=size,
         )
@@ -157,6 +157,10 @@ class Window:
             self.content.app = app
 
     @property
+    def _default_title(self) -> str:
+        return "Toga"
+
+    @property
     def title(self) -> str:
         """Title of the window. If no title is provided, the title will default to ``"Toga"``."""
         return self._impl.get_title()
@@ -164,7 +168,7 @@ class Window:
     @title.setter
     def title(self, title: str) -> None:
         if not title:
-            title = "Toga"
+            title = self._default_title
 
         self._impl.set_title(str(title).split("\n")[0])
 
