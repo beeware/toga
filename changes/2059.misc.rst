@@ -1,0 +1,1 @@
+Changed spelling to prevent pre-commit(Codespell) error.

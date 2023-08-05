@@ -30,7 +30,7 @@ def test_row_expanding_intrinsic():
             ),
             ExampleNode(
                 "third",
-                style=Pack(width=0, height=0),  # Explictly 0 sized
+                style=Pack(width=0, height=0),  # Explicitly 0 sized
                 size=(at_least(0), at_least(0)),
             ),
         ],
@@ -143,7 +143,7 @@ def test_row_fixed_intrinsic():
                     ),
                 ],
             ),
-            ExampleNode(  # Explictly 0 sized
+            ExampleNode(  # Explicitly 0 sized
                 "third",
                 style=Pack(),
                 size=(0, 0),
@@ -261,7 +261,7 @@ def test_column_expanding_intrinsic():
                     ),
                 ],
             ),
-            ExampleNode(  # Explictly 0 sized
+            ExampleNode(  # Explicitly 0 sized
                 "third",
                 style=Pack(width=0, height=0),
                 size=(at_least(0), at_least(0)),
@@ -370,7 +370,7 @@ def test_column_fixed_intrinsic():
                     ),
                 ],
             ),
-            ExampleNode(  # Explictly 0 sized
+            ExampleNode(  # Explicitly 0 sized
                 "third",
                 style=Pack(),
                 size=(0, 0),

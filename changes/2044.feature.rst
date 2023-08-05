@@ -1,0 +1,1 @@
+Toga now has significantly improved type annotations for its public API

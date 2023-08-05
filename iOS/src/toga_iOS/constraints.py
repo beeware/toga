@@ -16,6 +16,8 @@ class Constraints:
         :param widget: The Widget implementation to be constrained.
         """
         self.widget = widget
+        self.widget.native.translatesAutoresizingMaskIntoConstraints = False
+
         self._container = None
 
         self.width_constraint = None
@@ -24,7 +26,7 @@ class Constraints:
         self.left_constraint = None
         self.top_constraint = None
 
-    # Deletion isn't an event we can programatically invoke; deletion
+    # Deletion isn't an event we can programmatically invoke; deletion
     # of constraints can take several iterations before it occurs.
     def __del__(self):  # pragma: nocover
         self._remove_constraints()
@@ -100,10 +102,9 @@ class Constraints:
             self.container.native.addConstraint(self.height_constraint)
 
     def update(self, x, y, width, height):
-        if self.container:
-            # print(f"UPDATE CONSTRAINTS {self.widget} in {self.container} {width}x{height}@{x},{y}")
-            self.left_constraint.constant = x
-            self.top_constraint.constant = y
+        # print(f"UPDATE CONSTRAINTS {self.widget} in {self.container} {width}x{height}@{x},{y}")
+        self.left_constraint.constant = x
+        self.top_constraint.constant = y
 
-            self.width_constraint.constant = width
-            self.height_constraint.constant = height
+        self.width_constraint.constant = width
+        self.height_constraint.constant = height

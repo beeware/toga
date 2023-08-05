@@ -11,6 +11,7 @@ class SplitContainer(Widget):
         self.native.set_wide_handle(True)
 
         self.sub_containers = [TogaContainer(), TogaContainer()]
+
         self.native.set_start_child(self.sub_containers[0])
         self.native.set_resize_start_child(True)
         self.native.set_shrink_start_child(False)

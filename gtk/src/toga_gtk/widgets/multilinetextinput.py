@@ -25,7 +25,7 @@ class MultilineTextInput(Widget):
         # This buffer is installed by default, until the value for the widget
         # becomes something non-empty. The placeholder buffer is also swapped
         # out when focus is gained, or a key press event occurs. The latter
-        # is needed because the value can be changed programatically when
+        # is needed because the value can be changed programmatically when
         # the widget already has focus.
         self.placeholder = Gtk.TextBuffer()
         self.tag_placeholder = self.placeholder.create_tag(

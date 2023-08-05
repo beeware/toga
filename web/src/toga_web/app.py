@@ -37,7 +37,7 @@ class App:
         self.create_menus()
 
         # Call user code to populate the main window
-        self.interface.startup()
+        self.interface._startup()
 
     def _create_submenu(self, group, items):
         submenu = create_element(
@@ -169,7 +169,7 @@ class App:
         # If this is the first time a dialog is being shown, the Shoelace
         # autoloader needs to construct the Dialog custom element. We can't
         # display the dialog until that element has been fully loaded and
-        # cosntructed. Only show the dialog when the promise of <sl-dialog>
+        # constructed. Only show the dialog when the promise of <sl-dialog>
         # element construction has been fulfilled.
         def show_dialog(promise):
             about_dialog.show()
