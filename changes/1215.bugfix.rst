@@ -1,0 +1,1 @@
+A memory leak associated with creation and deletion of windows has been resolved.
