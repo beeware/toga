@@ -182,6 +182,7 @@ class Window:
         # Set window of old content to None
         if self._content:
             self._content.window = None
+            self._content.app = None
 
         # Manifest the widget
         self._impl.clear_content()
@@ -272,6 +273,8 @@ class Window:
 
     def close(self) -> None:
         self.app.windows -= self
+        for widget in self.widgets:
+            self.app.widgets.remove(widget.id)
         self._impl.close()
 
     ############################################################
