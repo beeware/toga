@@ -152,7 +152,9 @@ class Widget:
             # Store the provider so it can be removed later
             self.style_providers[(property, id(native))] = style_provider
 
-    # APPLICATOR ==============================================================
+    ######################################################################
+    # APPLICATOR
+    ######################################################################
 
     def set_bounds(self, x, y, width, height):
         # Any position changes are applied by the container during
@@ -175,7 +177,9 @@ class Widget:
     def set_font(self, font):
         self.apply_css("font", get_font_css(font))
 
-    # INTERFACE ===============================================================
+    ######################################################################
+    # INTERFACE
+    ######################################################################
 
     def add_child(self, child):
         child.container = self.container
