@@ -102,6 +102,9 @@ class TogaContainer(Gtk.Fixed):
         self.dpi = 96
         self.baseline_dpi = self.dpi
 
+    def refreshed(self):
+        pass
+
     @property
     def width(self):
         """The display width of the container.
@@ -150,9 +153,6 @@ class TogaContainer(Gtk.Fixed):
         self._content = widget
         if widget:
             widget.container = self
-            self.make_dirty(widget)
-        else:
-            self.make_dirty()
 
     def recompute(self):
         """Rehint and re-layout the container's content, if necessary.
