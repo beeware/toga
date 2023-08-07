@@ -4,8 +4,8 @@ import java
 from rubicon.java import android_events
 
 import toga
-from android.net import Uri
 from android.media import Ringtone, RingtoneManager
+from android.net import Uri
 from toga.command import Group
 
 from .libs.activity import IPythonApp, MainActivity
