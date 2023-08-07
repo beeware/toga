@@ -1,4 +1,5 @@
 import asyncio
+import weakref
 
 from .utils import LoggedObject, not_required_on
 from .window import Window
@@ -13,6 +14,14 @@ class App(LoggedObject):
         super().__init__()
         self.interface = interface
         self.loop = asyncio.new_event_loop()
+
+    @property
+    def interface(self):
+        return self._interface()
+
+    @interface.setter
+    def interface(self, value):
+        self._interface = weakref.ref(value)
 
     def create(self):
         self._action("create")

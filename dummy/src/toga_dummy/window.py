@@ -1,3 +1,5 @@
+import weakref
+
 from .utils import LoggedObject, not_required
 
 
@@ -48,6 +50,14 @@ class Window(LoggedObject):
         self.set_title(title)
         self.set_position(position)
         self.set_size(size)
+
+    @property
+    def interface(self):
+        return self._interface()
+
+    @interface.setter
+    def interface(self, value):
+        self._interface = weakref.ref(value)
 
     def create_toolbar(self):
         self._action("create toolbar")
