@@ -9,6 +9,15 @@ class TogaInput(TextualInput):
         self.interface = impl.interface
         self.impl = impl
 
+    def on_focus(self, event: TextualInput.Changed) -> None:
+        self.interface.on_gain_focus(None)
+
+    def on_input_changed(self, event: TextualInput.Changed) -> None:
+        self.interface.on_change(None)
+
+    def on_input_submitted(self, event: TextualInput.Submitted) -> None:
+        self.interface.on_submit(None)
+
 
 class TextInput(Widget):
     def create(self):
