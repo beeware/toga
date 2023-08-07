@@ -105,6 +105,9 @@ class WindowDemoApp(toga.App):
         self.main_window.visible = True
         self.main_window.info_dialog("Here we go again", "I'm back!")
 
+    def do_beep(self, widget):
+        self.app.beep()
+
     def exit_handler(self, app, **kwargs):
         self.close_count += 1
         if self.close_count % 2 == 1:
@@ -167,7 +170,10 @@ class WindowDemoApp(toga.App):
             "Change content", on_press=self.do_next_content, style=btn_style
         )
         btn_hide = toga.Button("Hide", on_press=self.do_hide, style=btn_style)
-        self.main_box = toga.Box(
+        btn_beep = toga.Button("Beep", on_press=self.do_beep, style=btn_style)
+
+        self.main_box = toga.Box(style=Pack(direction=COLUMN))
+        self.inner_box = toga.Box(
             children=[
                 self.label,
                 btn_do_origin,
@@ -183,9 +189,17 @@ class WindowDemoApp(toga.App):
                 btn_do_report,
                 btn_change_content,
                 btn_hide,
+                btn_beep,
             ],
             style=Pack(direction=COLUMN),
         )
+        self.scroller = toga.ScrollContainer(
+            horizontal=False,
+            vertical=True,
+            style=Pack(flex=1, padding=10),
+        )
+        self.scroller.content = self.inner_box
+        self.main_box.add(self.scroller)
 
         btn_change_back = toga.Button(
             "Go back", on_press=self.do_prev_content, style=btn_style

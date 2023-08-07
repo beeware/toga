@@ -10,6 +10,10 @@ from .libs.android.graphics import Drawable
 from .libs.android.view import Menu, MenuItem
 from .window import Window
 
+import java
+from android.net import Uri
+from android.media import Ringtone, RingtoneManager
+
 # `MainWindow` is defined here in `app.py`, not `window.py`, to mollify the test suite.
 MainWindow = Window
 
@@ -207,7 +211,11 @@ class App:
         self.interface.factory.not_implemented("App.show_about_dialog()")
 
     def beep(self):
-        self.interface.factory.not_implemented("App.beep()")
+        uri_obj = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+        uri = java.cast(Uri, uri_obj)
+        ring_obj = RingtoneManager.getRingtone(self.native.getApplicationContext(), uri)
+        ring = java.cast(Ringtone, ring_obj)
+        ring.play()
 
     def exit(self):
         pass
