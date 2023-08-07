@@ -1,3 +1,5 @@
+import weakref
+
 from toga.command import GROUP_BREAK, SECTION_BREAK
 from toga.handlers import wrapped_handler
 
@@ -10,7 +12,6 @@ class Window:
 
     def __init__(self, interface, title, position, size):
         self.interface = interface
-        self.interface._impl = self
 
         self._is_closing = False
 
@@ -46,6 +47,14 @@ class Window:
         self.container = TogaContainer()
         self.layout.pack_end(self.container, expand=True, fill=True, padding=0)
         self.native.add(self.layout)
+
+    @property
+    def interface(self):
+        return self._interface()
+
+    @interface.setter
+    def interface(self, value):
+        self._interface = weakref.ref(value)
 
     def get_title(self):
         return self.native.get_title()

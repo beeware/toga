@@ -1,3 +1,5 @@
+import weakref
+
 from .libs import (
     UIApplication,
     UINavigationController,
@@ -15,15 +17,15 @@ from .libs import (
 
 
 class BaseContainer:
-    def __init__(self, content=None, on_refresh=None):
+    def __init__(self, content=None, parent=None):
         """A base class for iOS containers.
 
         :param content: The widget impl that is the container's initial content.
-        :param on_refresh: The callback to be notified when this container's layout is
-            refreshed.
+        :param parent: The parent of this container; this is the object that will be
+            notified when this container's layout is refreshed.
         """
         self._content = content
-        self.on_refresh = on_refresh
+        self.parent = weakref.ref(parent)
 
     @property
     def content(self):
@@ -47,7 +49,7 @@ class BaseContainer:
             widget.container = self
 
     def refreshed(self):
-        self.on_refresh(self)
+        self.parent().content_refreshed(self)
 
 
 class Container(BaseContainer):

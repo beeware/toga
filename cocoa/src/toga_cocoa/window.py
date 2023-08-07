@@ -152,7 +152,6 @@ class Window:
         self._interface = weakref.ref(value)
 
     def __del__(self):
-        print("DEL WINDOW IMPL")
         self.native.release()
 
     def create_toolbar(self):

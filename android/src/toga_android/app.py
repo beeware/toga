@@ -1,4 +1,5 @@
 import asyncio
+import weakref
 
 from rubicon.java import android_events
 
@@ -173,7 +174,6 @@ class TogaApp(IPythonApp):
 class App:
     def __init__(self, interface):
         self.interface = interface
-        self.interface._impl = self
         self._listener = None
 
         self.loop = android_events.AndroidEventLoop()
@@ -181,6 +181,14 @@ class App:
     @property
     def native(self):
         return self._listener.native if self._listener else None
+
+    @property
+    def interface(self):
+        return self._interface()
+
+    @interface.setter
+    def interface(self, value):
+        self._interface = weakref.ref(value)
 
     def create(self):
         # The `_listener` listens for activity event callbacks. For simplicity,

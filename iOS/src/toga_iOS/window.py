@@ -1,3 +1,5 @@
+import weakref
+
 from toga_iOS.container import RootContainer
 from toga_iOS.libs import (
     UIColor,
@@ -11,7 +13,6 @@ class Window:
 
     def __init__(self, interface, title, position, size):
         self.interface = interface
-        self.interface._impl = self
 
         if not self._is_main_window:
             raise RuntimeError(
@@ -22,7 +23,7 @@ class Window:
 
         # Set up a container for the window's content
         # RootContainer provides a titlebar for the window.
-        self.container = RootContainer(on_refresh=self.content_refreshed)
+        self.container = RootContainer(parent=self)
 
         # Set the size of the content to the size of the window
         self.container.native.frame = self.native.bounds
@@ -39,6 +40,14 @@ class Window:
             self.native.backgroundColor = UIColor.whiteColor
 
         self.set_title(title)
+
+    @property
+    def interface(self):
+        return self._interface()
+
+    @interface.setter
+    def interface(self, value):
+        self._interface = weakref.ref(value)
 
     def set_content(self, widget):
         self.container.content = widget

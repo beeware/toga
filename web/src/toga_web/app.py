@@ -1,3 +1,5 @@
+import weakref
+
 import toga
 from toga_web.libs import create_element, js
 from toga_web.window import Window
@@ -11,7 +13,14 @@ class MainWindow(Window):
 class App:
     def __init__(self, interface):
         self.interface = interface
-        self.interface._impl = self
+
+    @property
+    def interface(self):
+        return self._interface()
+
+    @interface.setter
+    def interface(self, value):
+        self._interface = weakref.ref(value)
 
     def create(self):
         # self.resource_path = os.path.dirname(os.path.dirname(NSBundle.mainBundle.bundlePath))

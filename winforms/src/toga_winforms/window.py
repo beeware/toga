@@ -1,3 +1,5 @@
+import weakref
+
 from toga import GROUP_BREAK, SECTION_BREAK
 
 from .container import Container
@@ -8,7 +10,6 @@ from .widgets.base import Scalable
 class Window(Container, Scalable):
     def __init__(self, interface, title, position, size):
         self.interface = interface
-        self.interface._impl = self
 
         # Winforms close handling is caught on the FormClosing handler. To allow
         # for async close handling, we need to be able to abort this close
@@ -40,6 +41,14 @@ class Window(Container, Scalable):
         if not self.native.interface.resizable:
             self.native.FormBorderStyle = self.native.FormBorderStyle.FixedSingle
             self.native.MaximizeBox = False
+
+    @property
+    def interface(self):
+        return self._interface()
+
+    @interface.setter
+    def interface(self, value):
+        self._interface = weakref.ref(value)
 
     def create_toolbar(self):
         if self.interface.toolbar:

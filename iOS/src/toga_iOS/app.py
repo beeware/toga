@@ -1,4 +1,5 @@
 import asyncio
+import weakref
 
 from rubicon.objc import objc_method
 from rubicon.objc.eventloop import EventLoopPolicy, iOSLifecycle
@@ -53,7 +54,7 @@ class PythonAppDelegate(UIResponder):
 class App:
     def __init__(self, interface):
         self.interface = interface
-        self.interface._impl = self
+
         # Native instance doesn't exist until the lifecycle completes.
         self.native = None
 
@@ -62,6 +63,14 @@ class App:
 
         asyncio.set_event_loop_policy(EventLoopPolicy())
         self.loop = asyncio.new_event_loop()
+
+    @property
+    def interface(self):
+        return self._interface()
+
+    @interface.setter
+    def interface(self, value):
+        self._interface = weakref.ref(value)
 
     def create(self):
         """Calls the startup method on the interface."""

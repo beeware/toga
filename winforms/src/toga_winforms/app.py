@@ -2,6 +2,7 @@ import asyncio
 import re
 import sys
 import threading
+import weakref
 
 import toga
 from toga import Key
@@ -39,7 +40,6 @@ class App:
 
     def __init__(self, interface):
         self.interface = interface
-        self.interface._impl = self
 
         # Winforms app exit is tightly bound to the close of the MainWindow.
         # The FormClosing message on MainWindow triggers the "on_exit" handler
@@ -57,6 +57,14 @@ class App:
 
         self.loop = WinformsProactorEventLoop()
         asyncio.set_event_loop(self.loop)
+
+    @property
+    def interface(self):
+        return self._interface()
+
+    @interface.setter
+    def interface(self, value):
+        self._interface = weakref.ref(value)
 
     def create(self):
         self.native = WinForms.Application

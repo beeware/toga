@@ -3,6 +3,7 @@ import os
 import os.path
 import signal
 import sys
+import weakref
 from urllib.parse import unquote, urlparse
 
 import gbulb
@@ -55,12 +56,19 @@ class App:
 
     def __init__(self, interface):
         self.interface = interface
-        self.interface._impl = self
 
         gbulb.install(gtk=True)
         self.loop = asyncio.new_event_loop()
 
         self.create()
+
+    @property
+    def interface(self):
+        return self._interface()
+
+    @interface.setter
+    def interface(self, value):
+        self._interface = weakref.ref(value)
 
     def create(self):
         # Stimulate the build of the app

@@ -1,10 +1,11 @@
+import weakref
+
 from toga_web.libs import create_element, js
 
 
 class Window:
     def __init__(self, interface, title, position, size):
         self.interface = interface
-        self.interface._impl = self
 
         self.native = create_element(
             "main",
@@ -17,6 +18,14 @@ class Window:
         app_placeholder.appendChild(self.native)
 
         self.set_title(title)
+
+    @property
+    def interface(self):
+        return self._interface()
+
+    @interface.setter
+    def interface(self, value):
+        self._interface = weakref.ref(value)
 
     def get_title(self):
         return js.document.title

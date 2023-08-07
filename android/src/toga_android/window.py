@@ -1,3 +1,5 @@
+import weakref
+
 from decimal import ROUND_UP
 
 from .container import Container
@@ -23,8 +25,15 @@ class Window(Container):
     def __init__(self, interface, title, position, size):
         super().__init__()
         self.interface = interface
-        self.interface._impl = self
         # self.set_title(title)
+
+    @property
+    def interface(self):
+        return self._interface()
+
+    @interface.setter
+    def interface(self, value):
+        self._interface = weakref.ref(value)
 
     def set_app(self, app):
         self.app = app
