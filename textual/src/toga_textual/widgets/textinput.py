@@ -13,13 +13,12 @@ class TogaInput(TextualInput):
 class TextInput(Widget):
     def create(self):
         self.native = TogaInput(self)
-        self.native.styles.width = 20
 
     def get_readonly(self):
-        return False
+        return self.native.disabled
 
     def set_readonly(self, value):
-        pass
+        self.native.disabled = value
 
     def get_placeholder(self):
         return self.native.placeholder
