@@ -75,8 +75,3 @@ class Widget:
 
     def refresh(self):
         pass
-
-    def mount(self, parent):
-        parent.native.mount(self.native)
-        for child in self.interface.children:
-            child._impl.mount(self)

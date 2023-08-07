@@ -35,7 +35,7 @@ class Window:
     def set_content(self, widget):
         self.container.content = widget
 
-        widget.mount(self)
+        self.native.mount(widget.native)
 
     def get_title(self):
         return self._title
