@@ -1,5 +1,5 @@
 from textual.screen import Screen as TextualScreen
-from textual.widgets import Button as TextualButton, Header as TextualHeader
+from textual.widgets import Header as TextualHeader
 
 from .container import Container
 
@@ -12,11 +12,6 @@ class TogaWindow(TextualScreen):
 
     def on_mount(self) -> None:
         self.mount(TextualHeader())
-
-    # Textual catches events at the level of the Screen/Window;
-    # redirect to the widget instance.
-    def on_button_pressed(self, event: TextualButton.Pressed) -> None:
-        event.button.on_press(event)
 
 
 class Window:
