@@ -1,8 +1,11 @@
 import asyncio
 
+import java
 from rubicon.java import android_events
 
 import toga
+from android.net import Uri
+from android.media import Ringtone, RingtoneManager
 from toga.command import Group
 
 from .libs.activity import IPythonApp, MainActivity
@@ -10,9 +13,6 @@ from .libs.android.graphics import Drawable
 from .libs.android.view import Menu, MenuItem
 from .window import Window
 
-import java
-from android.net import Uri
-from android.media import Ringtone, RingtoneManager
 
 # `MainWindow` is defined here in `app.py`, not `window.py`, to mollify the test suite.
 MainWindow = Window
