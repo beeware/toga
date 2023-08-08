@@ -1,1 +1,0 @@
-The date_and_time example now works again.
