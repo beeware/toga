@@ -28,3 +28,6 @@ class Screen(LoggedObject):
 
     def get_size(self):
         return (1920, 1080)
+
+    def get_image_data(self):
+        pass

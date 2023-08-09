@@ -22,3 +22,6 @@ class Screen:
 
     def get_size(self):
         return self.native.width, self.native.height
+
+    def get_image_data(self):
+        pass

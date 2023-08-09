@@ -24,3 +24,6 @@ class Screen:
     def get_size(self):
         frame_native = self.native.frame
         return (frame_native.size.width, frame_native.size.height)
+
+    def get_image_data(self):
+        pass

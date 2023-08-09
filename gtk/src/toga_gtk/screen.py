@@ -24,3 +24,6 @@ class Screen:
     def get_size(self):
         geometry = self.native.get_geometry()
         return geometry.width, geometry.height
+
+    def get_image_data(self):
+        pass

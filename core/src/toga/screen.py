@@ -1,3 +1,6 @@
+from .images import Image
+
+
 class Screen:
     def __init__(self, _impl):
         self._impl = _impl
@@ -16,3 +19,6 @@ class Screen:
     def size(self):
         """The size of the screen, as a ``(width, height)`` tuple."""
         return self._impl.get_size()
+
+    def as_image(self):
+        return Image(data=self._impl.get_image_data())
