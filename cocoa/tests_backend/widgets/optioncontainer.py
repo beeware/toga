@@ -5,6 +5,7 @@ from .base import SimpleProbe
 
 class OptionContainerProbe(SimpleProbe):
     native_class = NSTabView
+    disabled_tab_selectable = False
 
     # 2023-06-20: This makes no sense, but here we are. If you render an NSTabView with
     # a size constraint of (300, 200), and then ask for the frame size of the native
@@ -38,3 +39,7 @@ class OptionContainerProbe(SimpleProbe):
 
     def select_tab(self, index):
         self.native.selectTabViewItemAtIndex(index)
+
+    def tab_enabled(self, index):
+        # There appears to be no public method for this.
+        return self.native.tabViewItemAtIndex(index)._isTabEnabled()

@@ -223,11 +223,10 @@ class OptionContainer(Widget):
         return self._content
 
     @property
-    def current_tab(self) -> OptionItem:
-        """The currently selected tab of content.
+    def current_tab(self) -> OptionItem | None:
+        """The currently selected tab of content, or ``None`` if there are no tabs.
 
-        The getter of this property always returns an ``OptionItem``. The setter also
-        accepts an ``int`` index, or a ``str`` label.
+        This property can also be set with an ``int`` index, or a ``str`` label.
         """
         index = self._impl.get_current_tab_index()
         if index is None:

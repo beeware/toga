@@ -5,18 +5,21 @@ from toga.style import Pack
 
 class ExampleOptionContainerApp(toga.App):
     def _create_options(self):
-        label_box0 = toga.Label("This is Box 0", style=Pack(padding=10))
-        label_box1 = toga.Label("This is Box 1", style=Pack(padding=10))
-        label_box2 = toga.Label("This is Box 2", style=Pack(padding=10))
-
-        box0 = toga.Box(children=[label_box0])
-        box1 = toga.Box(children=[label_box1])
-        box2 = toga.Box(children=[label_box2])
-
-        self.optioncontainer.content.append("Option 0", box0)
-        self.optioncontainer.content.append("Option 1", box1)
-        self.optioncontainer.content.append("Option 2", box2)
+        self._box_count = 0
+        for i in range(3):
+            self.optioncontainer.content.append(*self._create_option())
         self._refresh_select()
+
+    def _create_option(self):
+        result = (
+            f"Option {self._box_count}",
+            toga.Box(
+                style=Pack(background_color="cyan", padding=10),
+                children=[toga.Label(f"This is Box {self._box_count}")],
+            ),
+        )
+        self._box_count += 1
+        return result
 
     def _refresh_select(self):
         items = []
@@ -25,12 +28,12 @@ class ExampleOptionContainerApp(toga.App):
         self.select_option.items = items
 
     def on_add_option(self, button):
-        self.optioncontainer.add("New Option", toga.Box())
+        self.optioncontainer.content.append(*self._create_option())
         self._refresh_select()
 
     def on_insert_option(self, button):
         index = self.optioncontainer.current_tab.index
-        self.optioncontainer.content.insert(index, "New Option", toga.Box())
+        self.optioncontainer.content.insert(index, *self._create_option())
         self._refresh_select()
 
     def on_enable_option(self, button):
