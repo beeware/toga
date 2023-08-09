@@ -8,6 +8,7 @@ from toga.command import Group
 from .libs.activity import IPythonApp, MainActivity
 from .libs.android.graphics import Drawable
 from .libs.android.view import Menu, MenuItem
+from .screen import Screen as ScreenImpl
 from .window import Window
 
 # `MainWindow` is defined here in `app.py`, not `window.py`, to mollify the test suite.
@@ -239,3 +240,6 @@ class App:
 
     def show_cursor(self):
         pass
+
+    def get_screens(self):
+        return [ScreenImpl(self.interface.main_window._impl)]

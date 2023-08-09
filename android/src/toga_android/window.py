@@ -1,6 +1,7 @@
 from .container import Container
 from .libs.android import R__id
 from .libs.android.view import ViewTreeObserver__OnGlobalLayoutListener
+from .screen import Screen as ScreenImpl
 
 
 class LayoutListener(ViewTreeObserver__OnGlobalLayoutListener):
@@ -71,3 +72,6 @@ class Window(Container):
 
     def set_full_screen(self, is_full_screen):
         self.interface.factory.not_implemented("Window.set_full_screen()")
+
+    def get_current_screen(self):
+        return ScreenImpl(self)
