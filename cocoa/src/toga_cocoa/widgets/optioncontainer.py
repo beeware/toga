@@ -1,3 +1,5 @@
+import warnings
+
 from rubicon.objc import SEL, objc_method
 from travertino.size import at_least
 
@@ -102,8 +104,14 @@ class OptionContainer(Widget):
         # This is an undocumented method, but it disables the button for the item. As an
         # extra safety mechanism, the delegate will prevent the item from being selected
         # by returning False for tabView:shouldSelectTabViewItem: if the item is in the
-        # disabled tab set.
-        tabview._setTabEnabled(enabled)
+        # disabled tab set. We catch the AttributeError and raise a warning in case the
+        # private method is ever fully deprecated; if this happens, the tab still won't
+        # be selectable (because of the delegate), but it won't be *visually* disabled,
+        # the code won't crash.
+        try:
+            tabview._setTabEnabled(enabled)
+        except AttributeError:  # pragma: no cover
+            warnings.warn("Private Cocoa method _setTabEnabled: has been removed!")
 
     def is_option_enabled(self, index):
         return index not in self._disabled_tabs
