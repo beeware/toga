@@ -126,12 +126,7 @@ class Window:
 
     @property
     def screen(self) -> Screen:
-        """Instance of the :class:`toga.Screen` on which this window is present.
-
-        Returns:
-            The screen of :class:`toga.Screen` on which this window is present.
-
-        """
+        """Instance of the :class:`toga.Screen` on which this window is present."""
         return self._impl.get_current_screen().interface
 
     @screen.setter
