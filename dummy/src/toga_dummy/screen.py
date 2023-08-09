@@ -25,3 +25,6 @@ class Screen(LoggedObject):
             return (0, 0)
         else:
             return (-1920, 0)
+
+    def get_size(self):
+        return (1920, 1080)

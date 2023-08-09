@@ -17,6 +17,12 @@ class WindowDemoApp(toga.App):
     def do_right(self, widget, **kwargs):
         self.main_window.position = (2000, 500)
 
+    def do_left_current_screen(self, widget, **kwargs):
+        self.main_window.screen_position = (0, 100)
+
+    def do_right_current_screen(self, widget, **kwargs):
+        self.main_window.screen_position = (1080, 100)
+
     def do_small(self, widget, **kwargs):
         self.main_window.size = (400, 300)
 
@@ -137,6 +143,16 @@ class WindowDemoApp(toga.App):
         )
         btn_do_left = toga.Button("Go left", on_press=self.do_left, style=btn_style)
         btn_do_right = toga.Button("Go right", on_press=self.do_right, style=btn_style)
+        btn_do_left_current_screen = toga.Button(
+            "Go left on current screen",
+            on_press=self.do_left_current_screen,
+            style=btn_style,
+        )
+        btn_do_right_current_screen = toga.Button(
+            "Go right on current screen",
+            on_press=self.do_right_current_screen,
+            style=btn_style,
+        )
         btn_do_small = toga.Button(
             "Become small", on_press=self.do_small, style=btn_style
         )
@@ -187,6 +203,8 @@ class WindowDemoApp(toga.App):
                 btn_do_origin,
                 btn_do_left,
                 btn_do_right,
+                btn_do_left_current_screen,
+                btn_do_right_current_screen,
                 btn_do_small,
                 btn_do_large,
                 btn_do_full_screen,
