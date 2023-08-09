@@ -197,6 +197,34 @@ class WindowDemoApp(toga.App):
                     on_press=lambda x, screen=screen: do_screen_change(screen),
                 )
             )
+
+        screen_as_image_btns_box = toga.Box(
+            children=[toga.Label(text="Take screenshot of screen:")]
+        )
+
+        async def do_screen_as_image(screen):
+            path = await self.main_window.save_file_dialog(
+                "Screenshot save path",
+                suggested_filename=f"Screenshot_{screen.name}.png",
+                file_types=["jpg", "png"],
+            )
+            if path is None:
+                return
+            screen.as_image().save(path)
+            self.main_window.info_dialog(
+                "Screenshot saved", f"Screenshot of {screen.name} was saved properly!"
+            )
+
+        for index, screen in sorted(enumerate(self.screens), key=lambda s: s[1].origin):
+            screen_as_image_btns_box.add(
+                toga.Button(
+                    text=f"{index}: {screen.name}",
+                    on_press=lambda _, screen=screen: asyncio.create_task(
+                        do_screen_as_image(screen)
+                    ),
+                )
+            )
+
         self.main_box = toga.Box(
             children=[
                 self.label,
@@ -216,6 +244,7 @@ class WindowDemoApp(toga.App):
                 btn_change_content,
                 btn_hide,
                 screen_change_btns_box,
+                screen_as_image_btns_box,
             ],
             style=Pack(direction=COLUMN),
         )
