@@ -7,7 +7,6 @@ from .base import Widget
 class ImageView(Widget):
     def create(self):
         self.native = WinForms.PictureBox()
-        self.native.interface = self.interface
         self.native.SizeMode = WinForms.PictureBoxSizeMode.Zoom
 
         # If self.native.Image is None, Winforms renders it as a white square
