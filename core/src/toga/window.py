@@ -230,7 +230,7 @@ class Window:
 
     @property
     def position(self) -> tuple[int, int]:
-        """Position of the window, as an ``(x, y)`` tuple."""
+        """Absolute position of the window, as a ``(x, y)`` tuple."""
         absolute_origin = self._app.screens[0].origin
         absolute_window_position = self._impl.get_position()
         assumed_absolute_window_position = (
@@ -250,6 +250,7 @@ class Window:
 
     @property
     def screen_position(self) -> tuple[int, int]:
+        """Position of the window with respect to current screen, as a ``(x, y)`` tuple."""
         current_relative_position = (
             self.position[0] - self.screen.origin[0],
             self.position[1] - self.screen.origin[1],

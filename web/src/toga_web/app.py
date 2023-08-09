@@ -2,6 +2,8 @@ import toga
 from toga_web.libs import create_element, js
 from toga_web.window import Window
 
+from .screen import Screen as ScreenImpl
+
 
 class MainWindow(Window):
     def on_close(self, *args):
@@ -199,3 +201,6 @@ class App:
 
     def hide_cursor(self):
         self.interface.factory.not_implemented("App.hide_cursor()")
+
+    def get_screens(self):
+        return [ScreenImpl(js.document.documentElement)]

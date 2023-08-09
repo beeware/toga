@@ -389,6 +389,7 @@ class App:
 
     @property
     def screens(self):
+        """Returns a list of available screens."""
         return [screen.interface for screen in self._impl.get_screens()]
 
     @property

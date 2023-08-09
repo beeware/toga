@@ -4,12 +4,15 @@ class Screen:
 
     @property
     def name(self):
+        """Unique name of the screen."""
         return self._impl.get_name()
 
     @property
     def origin(self):
+        """The absolute coordinates of the screen's origin, as a ``(x, y)`` tuple."""
         return self._impl.get_origin()
 
     @property
     def size(self):
+        """The size of the screen, as a ``(width, height)`` tuple."""
         return self._impl.get_size()
