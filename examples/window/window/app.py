@@ -174,10 +174,10 @@ class WindowDemoApp(toga.App):
         def do_screen_change(screen):
             self.current_window.screen = screen
 
-        for screen in self.screens:
+        for index, screen in sorted(enumerate(self.screens), key=lambda s: s[1].origin):
             screen_change_btns_box.add(
                 toga.Button(
-                    text=screen.name,
+                    text=f"{index}: {screen.name}",
                     on_press=lambda x, screen=screen: do_screen_change(screen),
                 )
             )
