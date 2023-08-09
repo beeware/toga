@@ -26,12 +26,12 @@ Usage
     pasta = toga.Box()
 
     container = toga.OptionContainer(
-        content=[("Pizza", first), ("Pasta", second)]
+        content=[("Pizza", pizza), ("Pasta", pasta)]
     )
 
     # Add another tab of content
     salad = toga.Box()
-    container.add("Salad", third)
+    container.content.append("Salad", salad)
 
 When retrieving or deleting items, or when specifying the
 currently selected item, you can specify an item using:
@@ -40,8 +40,8 @@ currently selected item, you can specify an item using:
 
   .. code-block:: python
 
-      # Make the second tab in the container new content
-      container.insert(1, "Soup", toga.Box())
+      # Insert a new second tab
+      container.content.insert(1, "Soup", toga.Box())
       # Make the third tab the currently active tab
       container.current_tab = 2
       # Delete the second tab
@@ -51,8 +51,8 @@ currently selected item, you can specify an item using:
 
   .. code-block:: python
 
-      # Insert content at the index currently occupied by a tab labeled "Pasta"
-      container.insert("Pasta", "Soup", toga.Box())
+      # Insert a tab at the index currently occupied by a tab labeled "Pasta"
+      container.content.insert("Pasta", "Soup", toga.Box())
       # Make the tab labeled "Pasta" the currently active tab
       container.current_tab = "Pasta"
       # Delete tab labeled "Pasta"
@@ -65,7 +65,7 @@ currently selected item, you can specify an item using:
       # Get a reference to the "Pasta" tab
       pasta_tab = container.content["Pasta"]
       # Insert content at the index currently occupied by the pasta tab
-      container.insert(pasta_tab, "Soup", toga.Box())
+      container.content.insert(pasta_tab, "Soup", toga.Box())
       # Make the pasta tab the currently active tab
       container.current_tab = pasta_tab
       # Delete the pasta tab
@@ -75,13 +75,9 @@ Reference
 ---------
 
 .. autoclass:: toga.OptionContainer
-   :members:
-   :undoc-members: app, window
+   :exclude-members: app, window
 
 .. autoclass:: toga.widgets.optioncontainer.OptionList
-   :members:
-   :undoc-members:
+    :special-members: __getitem__, __delitem__
 
 .. autoclass:: toga.widgets.optioncontainer.OptionItem
-   :members:
-   :undoc-members: refresh

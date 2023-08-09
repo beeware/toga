@@ -65,6 +65,4 @@ Reference
 ---------
 
 .. autoclass:: toga.SplitContainer
-   :members:
-   :undoc-members:
    :exclude-members: HORIZONTAL, VERTICAL, window, app
