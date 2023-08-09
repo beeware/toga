@@ -3,8 +3,10 @@ import asyncio
 from rubicon.objc import objc_method
 from rubicon.objc.eventloop import EventLoopPolicy, iOSLifecycle
 
-from toga_iOS.libs import UIResponder
+from toga_iOS.libs import UIResponder, UIScreen
 from toga_iOS.window import Window
+
+from .screen import Screen as ScreenImpl
 
 
 class MainWindow(Window):
@@ -95,3 +97,6 @@ class App:
 
     def show_cursor(self):
         pass
+
+    def get_screens(self):
+        return [ScreenImpl(UIScreen.mainScreen)]

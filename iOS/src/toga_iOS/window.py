@@ -5,6 +5,8 @@ from toga_iOS.libs import (
     UIWindow,
 )
 
+from .screen import Screen as ScreenImpl
+
 
 class Window:
     def __init__(self, interface, title, position, size):
@@ -84,3 +86,6 @@ class Window:
 
     def close(self):
         pass
+
+    def get_current_screen(self):
+        return ScreenImpl(UIScreen.mainScreen)
