@@ -9,3 +9,7 @@ class Screen:
     @property
     def origin(self):
         return self._impl.get_origin()
+
+    @property
+    def size(self):
+        return self._impl.get_size()

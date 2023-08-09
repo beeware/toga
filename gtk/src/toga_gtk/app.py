@@ -198,8 +198,13 @@ class App:
 
     def get_screens(self):
         display = Gdk.Display.get_default()
-        n_monitors = display.get_n_monitors()
-        return [ScreenImpl(native=display.get_monitor(i)) for i in range(n_monitors)]
+        primary_screen = ScreenImpl(display.get_primary_monitor())
+        screen_list = [primary_screen] + [
+            ScreenImpl(native=display.get_monitor(i))
+            for i in range(display.get_n_monitors())
+            if display.get_monitor(i) != primary_screen.native
+        ]
+        return screen_list
 
     def set_main_window(self, window):
         pass

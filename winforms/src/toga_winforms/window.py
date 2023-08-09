@@ -2,6 +2,7 @@ from toga import GROUP_BREAK, SECTION_BREAK
 
 from .container import Container, MinimumContainer
 from .libs import Point, Size, WinForms
+from .screen import Screen as ScreenImpl
 
 
 class Window(Container):
@@ -169,17 +170,4 @@ class Window(Container):
         )
 
     def get_current_screen(self):
-        screen_native = WinForms.Screen.FromControl(self.native)
-        for screen in self.interface._app.screens:
-            if screen_native == screen._impl.native:
-                return screen._impl
-
-    # def set_current_screen(self, app_screen):
-    #     self.native.StartPosition = WinForms.FormStartPosition.Manual
-    #     self.native.Location = app_screen._impl.native.WorkingArea.Location
-
-    def get_primary_screen(self):
-        screen_native = WinForms.Screen.PrimaryScreen
-        for screen in self.interface._app.screens:
-            if screen_native == screen._impl.native:
-                return screen._impl
+        return ScreenImpl(WinForms.Screen.FromControl(self.native))

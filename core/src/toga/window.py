@@ -136,18 +136,13 @@ class Window:
 
     @screen.setter
     def screen(self, app_screen: Screen) -> None:
-        OriginalWindowLocation = self.position
-        OriginalOrigin = self.screen.origin
-        NewOrigin = app_screen.origin
-        x = OriginalWindowLocation[0] - OriginalOrigin[0] + NewOrigin[0]
-        y = OriginalWindowLocation[1] - OriginalOrigin[1] + NewOrigin[1]
+        original_window_location = self.position
+        original_origin = self.screen.origin
+        new_origin = app_screen.origin
+        x = original_window_location[0] - original_origin[0] + new_origin[0]
+        y = original_window_location[1] - original_origin[1] + new_origin[1]
 
-        self._impl.set_position(
-            (
-                x,
-                y,
-            )
-        )
+        self._impl.set_position((x, y))
 
     @property
     def id(self) -> str:
@@ -241,22 +236,22 @@ class Window:
     @property
     def position(self) -> tuple[int, int]:
         """Position of the window, as an ``(x, y)`` tuple."""
-        assumed_absolute_origin = self._impl.get_primary_screen().get_origin()
+        absolute_origin = self._app.screens[0].origin
         absolute_window_position = self._impl.get_position()
         assumed_absolute_window_position = (
-            absolute_window_position[0] - assumed_absolute_origin[0],
-            absolute_window_position[1] - assumed_absolute_origin[1],
+            absolute_window_position[0] - absolute_origin[0],
+            absolute_window_position[1] - absolute_origin[1],
         )
         return assumed_absolute_window_position
 
     @position.setter
     def position(self, position: tuple[int, int]) -> None:
-        assumed_absolute_origin = self._impl.get_primary_screen().get_origin()
-        assumed_absolute_new_position = (
-            position[0] + assumed_absolute_origin[0],
-            position[1] + assumed_absolute_origin[1],
+        absolute_origin = self._app.screens[0].origin
+        absolute_new_position = (
+            position[0] + absolute_origin[0],
+            position[1] + absolute_origin[1],
         )
-        self._impl.set_position(assumed_absolute_new_position)
+        self._impl.set_position(absolute_new_position)
 
     @property
     def screen_position(self) -> tuple[int, int]:

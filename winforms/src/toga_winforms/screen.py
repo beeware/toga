@@ -19,3 +19,6 @@ class Screen:
 
     def get_origin(self):
         return self.native.Bounds.X, self.native.Bounds.Y
+
+    def get_size(self):
+        return self.native.Bounds.Width, self.native.Bounds.Height

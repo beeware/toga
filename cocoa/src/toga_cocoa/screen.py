@@ -20,3 +20,7 @@ class Screen:
     def get_origin(self):
         frame_native = self.native.frame
         return (frame_native.origin.x, frame_native.origin.y)
+
+    def get_size(self):
+        frame_native = self.native.frame
+        return (frame_native.size.width, frame_native.size.height)

@@ -20,6 +20,8 @@ from toga_cocoa.libs import (
     objc_property,
 )
 
+from .screen import Screen as ScreenImpl
+
 
 def toolbar_identifier(cmd):
     return "ToolbarItem-%s" % id(cmd)
@@ -268,16 +270,4 @@ class Window:
         self.native.close()
 
     def get_current_screen(self):
-        screen_native = self.native.screen
-        for screen in self.interface._app.screens:
-            if screen_native == screen._impl.native:
-                return screen._impl
-
-    # def set_current_screen(self, app_screen):
-    #     self.native.setFrameOrigin(app_screen._impl.native.visibleFrame.origin)
-
-    def get_primary_screen(self):
-        screen_native = NSScreen.screens[0]
-        for screen in self.interface._app.screens:
-            if screen_native == screen._impl.native:
-                return screen._impl
+        return ScreenImpl(self.native.screen)

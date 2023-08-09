@@ -299,7 +299,13 @@ class App:
         self.native.Exit()
 
     def get_screens(self):
-        return [ScreenImpl(native=screen) for screen in WinForms.Screen.AllScreens]
+        primary_screen = ScreenImpl(WinForms.Screen.PrimaryScreen)
+        screen_list = [primary_screen] + [
+            ScreenImpl(native=screen)
+            for screen in WinForms.Screen.AllScreens
+            if screen != primary_screen.native
+        ]
+        return screen_list
 
     def set_main_window(self, window):
         self.app_context.MainForm = window._impl.native
