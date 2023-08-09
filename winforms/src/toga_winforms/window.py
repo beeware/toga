@@ -18,12 +18,10 @@ class Window(Container):
         self._is_closing = False
 
         self.native = WinForms.Form()
-        self.native.interface = self.interface
-        self.native._impl = self
         self.native.FormClosing += self.winforms_FormClosing
         super().__init__(self.native)
 
-        self.native.MinimizeBox = self.native.interface.minimizable
+        self.native.MinimizeBox = self.interface.minimizable
 
         self.set_title(title)
         self.set_size(size)
@@ -35,7 +33,7 @@ class Window(Container):
         self.native.Resize += lambda sender, args: self.resize_content()
         self.resize_content()  # Store initial size
 
-        if not self.native.interface.resizeable:
+        if not self.interface.resizeable:
             self.native.FormBorderStyle = self.native.FormBorderStyle.FixedSingle
             self.native.MaximizeBox = False
 
