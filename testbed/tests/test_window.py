@@ -244,7 +244,7 @@ else:
         # Clear the local reference to the window (which should be the last reference),
         # and force a garbage collection pass. This should cause deletion of both the
         # interface and impl of the window.
-        second_window = None
+        del second_window
         gc.collect()
 
         # Assert that the weak references are now dead.
