@@ -1,3 +1,5 @@
+from rubicon.objc import SEL, send_message
+
 from toga_cocoa.libs import NSTabView
 
 from .base import SimpleProbe
@@ -23,7 +25,7 @@ class OptionContainerProbe(SimpleProbe):
     #
     # I can't find any way to reverse engineer the magic left=7, right=7, top=6,
     # bottom=10 offsets from other properties of the NSTabView. So, we'll hard code them
-    # and
+    # and hope for the best.
     LEFT_OFFSET = 7
     RIGHT_OFFSET = 7
     TOP_OFFSET = 6
@@ -41,5 +43,7 @@ class OptionContainerProbe(SimpleProbe):
         self.native.selectTabViewItemAtIndex(index)
 
     def tab_enabled(self, index):
-        # There appears to be no public method for this.
-        return self.native.tabViewItemAtIndex(index)._isTabEnabled()
+        # _isTabEnabled() is a hidden method, so the naming messes with Rubicon's
+        # property lookup mechanism. Invoke it by passing the message directly.
+        item = self.native.tabViewItemAtIndex(index)
+        return send_message(item, SEL("_isTabEnabled"), restype=bool, argtypes=[])

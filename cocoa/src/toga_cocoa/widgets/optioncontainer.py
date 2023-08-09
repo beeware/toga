@@ -13,6 +13,10 @@ class TogaTabView(NSTabView):
     impl = objc_property(object, weak=True)
 
     @objc_method
+    def tabView_shouldSelectTabViewItem_(self, view, item) -> bool:
+        return view.indexOfTabViewItem(item) not in self.impl._disabled_tabs
+
+    @objc_method
     def tabView_didSelectTabViewItem_(self, view, item) -> None:
         # Refresh the layout of the newly selected tab.
         index = view.indexOfTabViewItem(view.selectedTabViewItem)
@@ -94,6 +98,11 @@ class OptionContainer(Widget):
                 pass
         else:
             self._disabled_tabs.add(index)
+
+        # This is an undocumented method, but it disables the button for the item. As an
+        # extra safety mechanism, the delegate will prevent the item from being selected
+        # by returning False for tabView:shouldSelectTabViewItem: if the item is in the
+        # disabled tab set.
         tabview._setTabEnabled(enabled)
 
     def is_option_enabled(self, index):
