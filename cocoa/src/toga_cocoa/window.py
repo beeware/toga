@@ -146,6 +146,11 @@ class Window:
         self.native.interface = self.interface
         self.native.impl = self
 
+        # Cocoa releases windows when they are closed; this causes havoc with
+        # Toga's widget cleanup because the ObjC runtime thinks there's no
+        # references to the object left. Add an explicit reference to the window.
+        self.native.retain()
+
         self.set_title(title)
         self.set_size(size)
         self.set_position(position)
@@ -158,6 +163,9 @@ class Window:
 
         self.container = Container()
         self.native.contentView = self.container.native
+
+    def __del__(self):
+        self.native.release()
 
     def create_toolbar(self):
         self._toolbar_items = {}
