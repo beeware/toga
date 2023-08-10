@@ -34,10 +34,7 @@ class ScrollContainer(Widget):
         self._allow_horizontal = True
         self._allow_vertical = True
 
-        self.document_container = Container(
-            layout_native=self.native,
-            on_refresh=self.content_refreshed,
-        )
+        self.document_container = Container(layout_native=self.native, parent=self)
         self.native.addSubview(self.document_container.native)
         self.add_constraints()
 

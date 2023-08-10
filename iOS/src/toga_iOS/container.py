@@ -53,7 +53,7 @@ class BaseContainer:
 
 
 class Container(BaseContainer):
-    def __init__(self, content=None, layout_native=None, on_refresh=None):
+    def __init__(self, content=None, layout_native=None, parent=None):
         """
         :param content: The widget impl that is the container's initial content.
         :param layout_native: The native widget that should be used to provide size
@@ -61,10 +61,10 @@ class Container(BaseContainer):
             however, for widgets like ScrollContainer where the layout needs to be
             computed based on a different size to what will be rendered, the source of
             the size can be different.
-        :param on_refresh: The callback to be notified when this container's layout is
-            refreshed.
+        :param parent: The parent of this container; this is the object that will be
+            notified when this container's layout is refreshed.
         """
-        super().__init__(content=content, on_refresh=on_refresh)
+        super().__init__(content=content, parent=parent)
         self.native = UIView.alloc().init()
         self.native.translatesAutoresizingMaskIntoConstraints = True
 
@@ -88,7 +88,7 @@ class RootContainer(Container):
         self,
         content=None,
         layout_native=None,
-        on_refresh=None,
+        parent=None,
     ):
         """
         :param content: The widget impl that is the container's initial content.
@@ -97,13 +97,13 @@ class RootContainer(Container):
             itself; however, for widgets like ScrollContainer where the layout
             needs to be computed based on a different size to what will be
             rendered, the source of the size can be different.
-        :param on_refresh: The callback to be notified when this container's layout is
-            refreshed.
+        :param parent: The parent of this container; this is the object that will be
+            notified when this container's layout is refreshed.
         """
         super().__init__(
             content=content,
             layout_native=layout_native,
-            on_refresh=on_refresh,
+            parent=parent,
         )
 
         # Construct a NavigationController that provides a navigation bar, and
