@@ -15,7 +15,7 @@ class Screen:
             return instance
 
     def get_name(self):
-        return "IOS Screen"
+        return "iOS Screen"
 
     def get_origin(self):
         return (0, 0)
