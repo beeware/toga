@@ -398,6 +398,8 @@ class App:
         else:
             self.icon = f"resources/{self.app_name}"
 
+        self.on_exit = on_exit
+
         self.commands = CommandSet()
 
         self._startup_method = startup
@@ -411,8 +413,6 @@ class App:
 
         for window in windows:
             self.windows.add(window)
-
-        self.on_exit = on_exit
 
     def _create_impl(self):
         self.factory.App(interface=self)

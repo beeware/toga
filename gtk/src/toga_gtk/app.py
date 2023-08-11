@@ -41,7 +41,8 @@ class MainWindow(Window):
         # closing the window) should be performed; so
         # "should_exit == True" must be converted to a return
         # value of False.
-        return not self.interface.app.exit()
+        self.interface.app.on_exit(None)
+        return True
 
 
 class App:
@@ -85,7 +86,7 @@ class App:
             Command(None, "Preferences", group=toga.Group.APP),
             # Quit should always be the last item, in a section on its own
             Command(
-                lambda _: self.interface.exit(),
+                lambda _: self.interface.on_exit(None),
                 "Quit " + self.interface.name,
                 shortcut=toga.Key.MOD_1 + "q",
                 group=toga.Group.APP,

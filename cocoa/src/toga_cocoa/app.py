@@ -41,11 +41,11 @@ from .window import Window
 class MainWindow(Window):
     def cocoa_windowShouldClose(self):
         # Main Window close is a proxy for "Exit app".
-        # Defer all handling to the app's exit method.
+        # Defer all handling to the app's on_exit handler.
         # As a result of calling that method, the app will either
         # exit, or the user will cancel the exit; in which case
         # the main window shouldn't close, either.
-        self.interface.app.exit()
+        self.interface.app.on_exit(None)
         return False
 
 
@@ -300,7 +300,7 @@ class App:
         self.interface.about()
 
     def _menu_exit(self, app, **kwargs):
-        self.interface.exit()
+        self.interface.on_exit(None)
 
     def _menu_close_window(self, app, **kwargs):
         if self.interface.current_window:
