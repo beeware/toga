@@ -4,7 +4,20 @@ from toga_winforms.colors import native_color
 from toga_winforms.libs import Color, Point, Size, SystemColors
 
 
-class Widget:
+class Scalable:
+    def init_scale(self, native):
+        self.scale = native.CreateGraphics().DpiX / 96
+
+    # Convert CSS pixels to native pixels
+    def scale_in(self, value):
+        return int(round(value * self.scale))
+
+    # Convert native pixels to CSS pixels
+    def scale_out(self, value):
+        return int(round(value / self.scale))
+
+
+class Widget(Scalable):
     # In some widgets, attempting to set a background color with any alpha value other
     # than 1 raises "System.ArgumentException: Control does not support transparent
     # background colors". Those widgets should set this attribute to False.
@@ -17,7 +30,7 @@ class Widget:
         self._container = None
         self.native = None
         self.create()
-        self.scale = self.native.CreateGraphics().DpiX / 96
+        self.init_scale(self.native)
         self.interface.style.reapply()
 
     @abstractmethod
@@ -53,14 +66,6 @@ class Widget:
     @property
     def viewport(self):
         return self._container
-
-    # Convert CSS pixels to native pixels
-    def scale_in(self, value):
-        return int(round(value * self.scale))
-
-    # Convert native pixels to CSS pixels
-    def scale_out(self, value):
-        return int(round(value / self.scale))
 
     def get_tab_index(self):
         return self.native.TabIndex

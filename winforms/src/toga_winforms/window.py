@@ -2,9 +2,10 @@ from toga import GROUP_BREAK, SECTION_BREAK
 
 from .container import Container, MinimumContainer
 from .libs import Point, Size, WinForms
+from .widgets.base import Scalable
 
 
-class Window(Container):
+class Window(Container, Scalable):
     def __init__(self, interface, title, position, size):
         self.interface = interface
         self.interface._impl = self
@@ -22,6 +23,7 @@ class Window(Container):
         self.native._impl = self
         self.native.FormClosing += self.winforms_FormClosing
         super().__init__(self.native)
+        self.init_scale(self.native)
 
         self.native.MinimizeBox = self.native.interface.minimizable
 
@@ -73,16 +75,18 @@ class Window(Container):
         self.resize_content()
 
     def get_position(self):
-        return self.native.Location.X, self.native.Location.Y
+        location = self.native.Location
+        return tuple(map(self.scale_out, (location.X, location.Y)))
 
     def set_position(self, position):
-        self.native.Location = Point(*position)
+        self.native.Location = Point(*map(self.scale_in, position))
 
     def get_size(self):
-        return self.native.ClientSize.Width, self.native.ClientSize.Height
+        size = self.native.ClientSize
+        return tuple(map(self.scale_out, (size.Width, size.Height)))
 
     def set_size(self, size):
-        self.native.ClientSize = Size(*size)
+        self.native.ClientSize = Size(*map(self.scale_in, size))
 
     def set_app(self, app):
         if app is None:

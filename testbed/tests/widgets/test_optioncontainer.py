@@ -126,17 +126,24 @@ async def test_enable_tab(widget, probe, on_select_handler):
 
     assert widget.content[0].enabled
     assert not widget.content[1].enabled
+    assert probe.tab_enabled(0)
+    assert not probe.tab_enabled(1)
 
-    # Try to select tab 1
+    # Try to select a disabled tab
     probe.select_tab(1)
-    await probe.redraw("Tab 1 should still be selected")
+    await probe.redraw("Try to select tab 2")
 
-    assert widget.current_tab.index == 0
+    if probe.disabled_tab_selectable:
+        assert widget.current_tab.index == 1
+        on_select_handler.assert_called_once_with(widget)
+        widget.current_tab = 0
+        on_select_handler.reset_mock()
+    else:
+        assert widget.current_tab.index == 0
+        on_select_handler.assert_not_called()
+
     assert widget.content[0].enabled
     assert not widget.content[1].enabled
-
-    # on_select hasn't been invoked.
-    on_select_handler.assert_not_called()
 
     # Disable item 1 again, even though it's disabled
     widget.content[1].enabled = False
@@ -145,7 +152,7 @@ async def test_enable_tab(widget, probe, on_select_handler):
     assert widget.content[0].enabled
     assert not widget.content[1].enabled
 
-    # Select tab 3, which is index 2 in the widget's contentt; but on platforms
+    # Select tab 3, which is index 2 in the widget's content; but on platforms
     # where disabling a tab means hiding the tab completely, it will be *visual*
     # index 1, but content index 2. Make sure the indices are all correct.
     widget.current_tab = 2
@@ -164,6 +171,8 @@ async def test_enable_tab(widget, probe, on_select_handler):
 
     assert widget.content[0].enabled
     assert widget.content[1].enabled
+    assert probe.tab_enabled(0)
+    assert probe.tab_enabled(1)
 
     # Try to select tab 1
     probe.select_tab(1)

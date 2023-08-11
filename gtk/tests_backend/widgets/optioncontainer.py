@@ -5,6 +5,7 @@ from .base import SimpleProbe
 
 class OptionContainerProbe(SimpleProbe):
     native_class = Gtk.Notebook
+    disabled_tab_selectable = False
 
     def repaint_needed(self):
         return (
@@ -14,5 +15,8 @@ class OptionContainerProbe(SimpleProbe):
 
     def select_tab(self, index):
         # Can't select a tab that isn't visible.
-        if self.impl.sub_containers[index].get_visible():
+        if self.tab_enabled(index):
             self.native.set_current_page(index)
+
+    def tab_enabled(self, index):
+        return self.impl.sub_containers[index].get_visible()
