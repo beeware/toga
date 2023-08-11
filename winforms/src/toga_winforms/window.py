@@ -2,6 +2,7 @@ from toga import GROUP_BREAK, SECTION_BREAK
 
 from .container import Container, MinimumContainer
 from .libs import Point, Size, WinForms
+from .screen import Screen as ScreenImpl
 from .widgets.base import Scalable
 
 
