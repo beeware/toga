@@ -4,8 +4,6 @@ from .container import Container, MinimumContainer
 from .libs import Point, Size, WinForms
 from .widgets.base import Scalable
 
-from .screen import Screen as ScreenImpl
-
 
 class Window(Container):
     def __init__(self, interface, title, position, size):
