@@ -49,5 +49,3 @@ Reference
 ---------
 
 .. autoclass:: toga.Box
-   :members:
-   :undoc-members:

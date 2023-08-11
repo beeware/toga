@@ -30,6 +30,4 @@ Reference
 ---------
 
 .. autoclass:: toga.ScrollContainer
-   :members:
-   :undoc-members:
    :exclude-members: window, app

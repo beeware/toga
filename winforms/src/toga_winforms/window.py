@@ -5,7 +5,7 @@ from .libs import Point, Size, WinForms
 from .widgets.base import Scalable
 
 
-class Window(Container):
+class Window(Container, Scalable):
     def __init__(self, interface, title, position, size):
         self.interface = interface
         self.interface._impl = self
@@ -23,6 +23,7 @@ class Window(Container):
         self.native._impl = self
         self.native.FormClosing += self.winforms_FormClosing
         super().__init__(self.native)
+        self.init_scale(self.native)
 
         self.native.MinimizeBox = self.native.interface.minimizable
 
