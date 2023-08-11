@@ -252,6 +252,25 @@ def test_full_screen(window, app):
     assert_action_performed_with(window, "set full screen", full_screen=False)
 
 
+def test_close_direct(window, app):
+    """A window can be closed directly"""
+    on_close_handler = Mock(return_value=True)
+    window.on_close = on_close_handler
+
+    window.show()
+    assert window.app == app
+    assert window in app.windows
+
+    # Close the window directly
+    window.close()
+
+    # Window has been closed, but the close handler has *not* been invoked.
+    assert window.app == app
+    assert window not in app.windows
+    assert_action_performed(window, "close")
+    on_close_handler.assert_not_called()
+
+
 def test_close_no_handler(window, app):
     """A window without a close handler can be closed"""
     window.show()
@@ -298,7 +317,7 @@ def test_close_rejected_handler(window, app):
     # Close the window
     window._impl.simulate_close()
 
-    # Window has been closed, and is no longer in the app's list of windows.
+    # Window has *not* been closed
     assert window.app == app
     assert window in app.windows
     assert_action_not_performed(window, "close")
