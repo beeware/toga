@@ -128,7 +128,7 @@ class Window:
             size=size,
         )
 
-        self._toolbar = CommandSet(widget=self, on_change=self._impl.create_toolbar)
+        self._toolbar = CommandSet(window=self, on_change=self._impl.create_toolbar)
 
         self.on_close = on_close
 

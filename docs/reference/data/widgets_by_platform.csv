@@ -30,7 +30,6 @@ SplitContainer,Layout Widget,:class:`~toga.SplitContainer`,A container that divi
 OptionContainer,Layout Widget,:class:`~toga.OptionContainer`,A container that can display multiple labeled tabs of content.,|b|,|b|,|b|,,,
 App Paths,Resource,:class:`~toga.paths.Paths`,A mechanism for obtaining platform-appropriate filesystem locations for an application.,|y|,|y|,|y|,|y|,|y|,
 Font,Resource,:class:`~toga.Font`,Fonts,|b|,|b|,|b|,|b|,|b|,
-Command,Resource,:class:`~toga.Command`,Command,|b|,|b|,|b|,,|b|,
-Group,Resource,:class:`~toga.Group`,Command group,|b|,|b|,|b|,|b|,|b|,
+Command,Resource,:class:`~toga.Command`,A representation of app functionality that the user can invoke from menus or toolbars.,|b|,|b|,|b|,,|b|,
 Icon,Resource,:class:`~toga.Icon`,"An icon for buttons, menus, etc",|b|,|b|,|b|,|b|,|b|,
 Image,Resource,:class:`~toga.Image`,An image,|y|,|y|,|y|,|y|,|y|,

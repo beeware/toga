@@ -6,7 +6,6 @@ Resources
    app_paths
    fonts
    command
-   group
    icons
    images
    sources/source

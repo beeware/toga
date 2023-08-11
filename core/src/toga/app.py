@@ -144,7 +144,7 @@ class MainWindow(Window):
         :param title: Title for the window. Defaults to the formal name of the app.
         :param position: Position of the window, as a tuple of ``(x, y)`` coordinates.
         :param size: Size of the window, as a tuple of ``(width, height)``, in pixels.
-        :param resizeable: Can the window be manually resized by the user?
+        :param resizable: Can the window be manually resized by the user?
         :param minimizable: Can the window be minimized by the user?
         """
         super().__init__(
@@ -205,7 +205,7 @@ class DocumentMainWindow(Window):
         :param title: Title for the window. Defaults to the formal name of the app.
         :param position: Position of the window, as a tuple of ``(x, y)`` coordinates.
         :param size: Size of the window, as a tuple of ``(width, height)``, in pixels.
-        :param resizeable: Can the window be manually resized by the user?
+        :param resizable: Can the window be manually resized by the user?
         :param minimizable: Can the window be minimized by the user?
         """
         self.doc = doc
