@@ -30,4 +30,4 @@ class Screen(LoggedObject):
         return (1920, 1080)
 
     def get_image_data(self):
-        pass
+        self._action("get_image_data")

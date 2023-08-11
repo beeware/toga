@@ -24,4 +24,4 @@ class Screen:
         return self.native.width, self.native.height
 
     def get_image_data(self):
-        pass
+        self.interface.factory.not_implemented("Screen.get_image_data()")

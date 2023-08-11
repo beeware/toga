@@ -26,4 +26,4 @@ class Screen:
         return geometry.width, geometry.height
 
     def get_image_data(self):
-        pass
+        self.interface.factory.not_implemented("Screen.get_image_data()")

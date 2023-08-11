@@ -1,9 +1,12 @@
+from toga.platform import get_platform_factory
+
 from .images import Image
 
 
 class Screen:
     def __init__(self, _impl):
         self._impl = _impl
+        self.factory = get_platform_factory()
 
     @property
     def name(self):
