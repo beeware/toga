@@ -74,4 +74,4 @@ class Window(Container):
         self.interface.factory.not_implemented("Window.set_full_screen()")
 
     def get_current_screen(self):
-        return ScreenImpl(self)
+        return ScreenImpl(self.app.native.getContext().getResources().getDisplay())

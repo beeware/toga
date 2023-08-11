@@ -7,6 +7,7 @@ from toga.command import Group
 
 from .libs.activity import IPythonApp, MainActivity
 from .libs.android.graphics import Drawable
+from .libs.android.hardware import DisplayManager
 from .libs.android.view import Menu, MenuItem
 from .screen import Screen as ScreenImpl
 from .window import Window
@@ -242,4 +243,5 @@ class App:
         pass
 
     def get_screens(self):
-        return [ScreenImpl(self.interface.main_window._impl)]
+        screen_list = DisplayManager.getDisplays()
+        return [ScreenImpl(screen) for screen in screen_list]
