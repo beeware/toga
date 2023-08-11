@@ -5,12 +5,13 @@ import sys
 import warnings
 import webbrowser
 from builtins import id as identifier
-from collections.abc import MutableSet
+from collections.abc import Iterator, MutableSet
 from email.message import Message
 from importlib import metadata as importlib_metadata
 from typing import Any, Iterable, Protocol
 
 from toga.command import CommandSet
+from toga.documents import Document
 from toga.handlers import wrapped_handler
 from toga.icons import Icon
 from toga.paths import Paths
@@ -70,51 +71,58 @@ class BackgroundTask(Protocol):
 
 
 class WindowSet(MutableSet):
-    """A collection of windows managed by an app.
+    def __init__(self, app: App):
+        """A collection of windows managed by an app.
 
-    A window can be added to app by using `app.windows.add(toga.Window(...))` or
-    `app.windows += toga.Window(...)` notations. Adding a window to app automatically
-    sets `window.app` property to the app.
-    """
+        A window is automatically added to the app when it is shown. Alternatively, the
+        window can be explicitly added to the app (without being shown) using
+        ``app.windows.add(toga.Window(...))`` or ``app.windows += toga.Window(...)``.
+        Adding a window to an App's window set automatically sets the
+        :attr:`~toga.Window.app` property of the Window.
 
-    def __init__(self, app: App, iterable: Iterable[Window] = ()):
+        :param app: The app maintaining the window set.
+        """
         self.app = app
-        self.elements = set(iterable)
+        self.elements = set()
 
     def add(self, window: Window) -> None:
+        """Add a window to the window set.
+
+        :param window: The :class:`toga.Window` to add
+        """
         if not isinstance(window, Window):
-            raise TypeError("Toga app.windows can only add objects of toga.Window type")
+            raise TypeError("Can only add objects of type toga.Window")
         # Silently not add if duplicate
         if window not in self.elements:
             self.elements.add(window)
             window.app = self.app
 
     def discard(self, window: Window) -> None:
+        """Remove a window from the Window set.
+
+        :param window: The :class:`toga.Window` to remove.
+        """
         if not isinstance(window, Window):
-            raise TypeError(
-                "Toga app.windows can only discard an object of a toga.Window type"
-            )
+            raise TypeError("Can only discard objects of type toga.Window")
         if window not in self.elements:
-            raise AttributeError(
-                "The window you are trying to remove is not associated with this app"
-            )
+            raise ValueError(f"{window!r} is not part of this app")
         self.elements.remove(window)
 
-    def __iadd__(self, window):
+    def __iadd__(self, window: Window) -> None:
         self.add(window)
         return self
 
-    def __isub__(self, other):
+    def __isub__(self, other: Window) -> None:
         self.discard(other)
         return self
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator:
         return iter(self.elements)
 
-    def __contains__(self, value):
+    def __contains__(self, value: Window) -> bool:
         return value in self.elements
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self.elements)
 
 
@@ -161,8 +169,7 @@ class MainWindow(Window):
         Always returns ``None``. Main windows should use :meth:`toga.App.on_exit`,
         rather than ``on_close``.
 
-        :raises ValueError: if an attempt is made to set the ``on_close`` handler for an
-            App.
+        :raises ValueError: if an attempt is made to set the ``on_close`` handler.
         """
         return None
 
@@ -170,8 +177,52 @@ class MainWindow(Window):
     def on_close(self, handler: Any):
         if handler:
             raise ValueError(
-                "Cannot set on_close handler for the main window. Use the app on_exit handler instead"
+                "Cannot set on_close handler for the main window. "
+                "Use the app on_exit handler instead."
             )
+
+
+class DocumentMainWindow(Window):
+    def __init__(
+        self,
+        doc: Document,
+        id: str | None = None,
+        title: str | None = None,
+        position: tuple[int, int] = (100, 100),
+        size: tuple[int, int] = (640, 480),
+        resizable: bool = True,
+        minimizable: bool = True,
+    ):
+        """Create a new document Main Window.
+
+        This installs a default on_close handler that honors platform-specific document
+        closing behavior. If you want to control whether a document is allowed to close
+        (e.g., due to having unsaved change), override
+        :meth:`toga.Document.can_close()`, rather than implementing an on_close handler.
+
+        :param document: The document being managed by this window
+        :param id: The ID of the window.
+        :param title: Title for the window. Defaults to the formal name of the app.
+        :param position: Position of the window, as a tuple of ``(x, y)`` coordinates.
+        :param size: Size of the window, as a tuple of ``(width, height)``, in pixels.
+        :param resizeable: Can the window be manually resized by the user?
+        :param minimizable: Can the window be minimized by the user?
+        """
+        self.doc = doc
+        super().__init__(
+            id=id,
+            title=title,
+            position=position,
+            size=size,
+            resizable=resizable,
+            closable=True,
+            minimizable=minimizable,
+            on_close=doc.handle_close,
+        )
+
+    @property
+    def _default_title(self) -> str:
+        return self.doc.path.name
 
 
 class App:
@@ -191,26 +242,12 @@ class App:
         startup: AppStartupMethod | None = None,
         windows: Iterable[Window] = (),
         on_exit: OnExitHandler | None = None,
-        factory: None = None,  # DEPRECATED !
     ):
-        """An App is the top level of any GUI program.
+        """Create a new App instance.
 
-        The App is the manager of all the other aspects of execution. An app will
-        usually have a main window; this window will hold the widgets with which the
-        user will interact.
-
-        When you create an App you need to provide a name, an id for uniqueness (by
-        convention, the identifier is a reversed domain name) and an optional startup
-        function which should run once the App has initialized. The startup function
-        constructs the initial user interface. If a startup function is not provided as
-        an argument, you must subclass the App class and define a ``startup()`` method.
-
-        If the name and app_id are *not* provided, the application will attempt to find
-        application metadata. This process will determine the module in which the App
-        class is defined, and look for a ``.dist-info`` file matching that name.
-
-        Once the app is created you should invoke the ``main_loop()`` method, which will
-        start the event loop of your App.
+        Once the app has been created, you should invoke the
+        :meth:`~toga.App.main_loop()` method, which will start the event loop of your
+        App.
 
         :param formal_name: The formal name of the application. Will be derived from
             packaging metadata if not provided.
@@ -231,50 +268,39 @@ class App:
         :param description: A brief (one line) description of the app. Will be derived
             from packaging metadata if not provided.
         :param startup: The callback method before starting the app, typically to add
-            the components. Must be a ``callable`` that expects a single argument of
-            :class:`~toga.App`.
+            the components.
         :param windows: An iterable with objects of :class:`~toga.Window` that will be
             the app's secondary windows.
         """
-
-        ######################################################################
-        # 2022-09: Backwards compatibility
-        ######################################################################
-        # factory no longer used
-        if factory:
-            warnings.warn("The factory argument is no longer used.", DeprecationWarning)
-        ######################################################################
-        # End backwards compatibility.
-        ######################################################################
-
         # Initialize empty widgets registry
         self._widgets = WidgetRegistry()
 
-        # Keep an accessible copy of the app instance
+        # Keep an accessible copy of the app singleton instance
         App.app = self
 
         # We need a module name to load app metadata. If an app_name has been
         # provided, we can set the app name now, and derive the module name
         # from there.
+        self._app_name = app_name
         if app_name:
-            self._app_name = app_name
+            metadata_module_name = self.module_name
         else:
-            # If the code is contained in appname.py, and you start the app
-            # using `python -m appname`, the main module package will report
-            # as ''. Set the initial app name as None.
+            # If the code is contained in appname.py, and you start the app using
+            # `python -m appname`, the main module package will report as ''. Set the
+            # metadata module name as None.
             #
-            # If the code is contained in appname.py, and you start the app
-            # using `python appname.py`, the main module will report as None.
+            # If the code is contained in appname.py, and you start the app using
+            # `python appname.py`, the metadata module name will report as None.
             #
-            # If the code is contained in a folder, and you start the app
-            # using `python -m appname`, the main module will report as the
-            # name of the folder.
+            # If the code is contained in a folder, and you start the app using `python
+            # -m appname`, the metadata module name will report as the name of the
+            # folder.
             try:
                 main_module_pkg = sys.modules["__main__"].__package__
                 if main_module_pkg == "":
-                    self._app_name = None
+                    metadata_module_name = None
                 else:
-                    self._app_name = main_module_pkg
+                    metadata_module_name = main_module_pkg
             except KeyError:
                 # We use the existence of a __main__ module as a proxy for
                 # being in test conditions. This isn't *great*, but the __main__
@@ -282,37 +308,31 @@ class App:
                 # us to avoid having explicit "if under test conditions" checks.
                 # If there's no __main__ module, we're in a test, and we can't
                 # imply an app name from that module name.
-                self._app_name = None
+                metadata_module_name = None
 
-            # Try deconstructing the app name from the app ID
-            if self._app_name is None and app_id:
-                self._app_name = app_id.split(".")[-1]
+            # Try deconstructing the metadata module name from the app ID
+            if metadata_module_name is None and app_id:
+                metadata_module_name = app_id.split(".")[-1].replace("-", "_")
 
-        # Load the app metadata (if it is available)
-        # Apps packaged with Briefcase will have this metadata.
+            # If we still don't have a metadata module name, fall back to ``toga`` as a
+            # last resort.
+            if metadata_module_name is None:
+                metadata_module_name = "toga"
+
+        # Try to load the app metadata with our best guess of the module name.
         try:
-            self.metadata = importlib_metadata.metadata(self.module_name)
+            self.metadata = importlib_metadata.metadata(metadata_module_name)
         except importlib_metadata.PackageNotFoundError:
             self.metadata = Message()
 
-        # Now that we have metadata, we can fix the app name (in the case
-        # where the app name and the module name differ - e.g., an app name
-        # of ``hello-world`` will have a module name of ``hello_world``).
-        # We use the PEP566-compliant key ``Name```, rather than the internally
-        # consistent key ``App-Name```.
-        if self.metadata["Name"] is not None:
-            self._app_name = self.metadata["Name"]
-
-        # Whatever app name has been given, speculatively attempt to import
-        # the app module. Single-file apps won't have an app folder; apps with
-        # misleading or misconfigured app names haven't given us enough
-        # metadata to determine the app folder. In those cases, fall back to
-        # an app name that *will* exist (``toga```)
-        try:
-            sys.modules[self.module_name]
-        except KeyError:
-            # Well that didn't work...
-            self._app_name = "toga"
+        # If the app name wasn't explicitly provided, look to the app metadata. If the
+        # metadata provides a "Name" key, use that as the app name; otherwise, fall back
+        # to the metadata module name (which might be "toga")
+        if app_name is None:
+            if "Name" in self.metadata:
+                self._app_name = self.metadata["Name"]
+            else:
+                self._app_name = metadata_module_name
 
         # If a name has been provided, use it; otherwise, look to
         # the module metadata. However, a name *must* be provided.
@@ -383,27 +403,31 @@ class App:
         self._startup_method = startup
 
         self._main_window = None
-        self.windows = WindowSet(self, windows)
+        self.windows = WindowSet(self)
 
         self._full_screen_windows = None
 
-        self._impl = self._create_impl()
+        self._create_impl()
+
+        for window in windows:
+            self.windows.add(window)
+
         self.on_exit = on_exit
 
     def _create_impl(self):
-        return self.factory.App(interface=self)
+        self.factory.App(interface=self)
 
     @property
     def paths(self) -> Paths:
         """Paths for platform appropriate locations on the user's file system.
 
-        Some platforms do not allow arbitrary file access to any location on
-        disk; even when arbitrary file system access is allowed, there are
-        "preferred" locations for some types of content.
+        Some platforms do not allow arbitrary file access to any location on disk; even
+        when arbitrary file system access is allowed, there are "preferred" locations
+        for some types of content.
 
-        The :class:`~toga.paths.Paths` object has a set of sub-properties that
-        return :class:`pathlib.Path` instances of platform-appropriate paths on
-        the file system.
+        The :class:`~toga.paths.Paths` object has a set of sub-properties that return
+        :class:`pathlib.Path` instances of platform-appropriate paths on the file
+        system.
         """
         return self._paths
 
@@ -425,19 +449,13 @@ class App:
     @property
     def module_name(self) -> str | None:
         """The module name for the app."""
-        try:
-            return self._app_name.replace("-", "_")
-        except AttributeError:
-            # If the app was created from an interactive prompt,
-            # there won't be a module name.
-            return None
+        return self._app_name.replace("-", "_")
 
     @property
     def app_id(self) -> str:
         """The identifier for the app.
 
-        This is a reversed domain name, often used for targeting resources,
-        etc.
+        This is a reversed domain name, often used for targeting resources, etc.
         """
         return self._app_id
 
@@ -471,7 +489,11 @@ class App:
 
     @property
     def icon(self) -> Icon:
-        """The Icon for the app."""
+        """The Icon for the app.
+
+        When setting the icon, you can provide either an icon instance, or a string that
+        will be resolved as an Icon resource name.
+        """
         return self._icon
 
     @icon.setter
@@ -501,15 +523,15 @@ class App:
         self._impl.set_main_window(window)
 
     @property
-    def current_window(self):
+    def current_window(self) -> Window | None:
         """Return the currently active content window."""
         window = self._impl.get_current_window()
         if window is None:
-            return window
+            return None
         return window.interface
 
     @current_window.setter
-    def current_window(self, window):
+    def current_window(self, window: Window):
         """Set a window into current active focus."""
         self._impl.set_current_window(window)
 
@@ -542,7 +564,7 @@ class App:
             self._full_screen_windows = None
 
     def show_cursor(self) -> None:
-        """Show cursor."""
+        """Make the cursor visible."""
         self._impl.show_cursor()
 
     def hide_cursor(self) -> None:
@@ -550,7 +572,12 @@ class App:
         self._impl.hide_cursor()
 
     def startup(self) -> None:
-        """Create and show the main window for the application."""
+        """Create and show the main window for the application.
+
+        Subclasses can override this method to define customized startup behavior;
+        however, as a result of invoking this method, the app *must* have a
+        ``main_window``.
+        """
         self.main_window = MainWindow(title=self.formal_name)
 
         if self._startup_method:
@@ -602,8 +629,12 @@ class App:
         self._impl.main_loop()
 
     def exit(self) -> None:
-        """Quit the application gracefully."""
-        self.on_exit(None)
+        """Exit the application gracefully.
+
+        This *does not* invoke the ``on_exit`` handler; the app will be immediately
+        and unconditionally closed.
+        """
+        self._impl.exit()
 
     @property
     def on_exit(self) -> OnExitHandler:
@@ -612,14 +643,9 @@ class App:
 
     @on_exit.setter
     def on_exit(self, handler: OnExitHandler | None) -> None:
-        if handler is None:
-
-            def handler(app, *args, **kwargs):
-                app._impl.exit()
-
         def cleanup(app, should_exit):
-            if should_exit:
-                app._impl.exit()
+            if should_exit or handler is None:
+                app.exit()
 
         self._on_exit = wrapped_handler(self, handler, cleanup=cleanup)
 
@@ -650,29 +676,26 @@ class DocumentApp(App):
         home_page: str | None = None,
         description: str | None = None,
         startup: AppStartupMethod | None = None,
-        document_types: list[str] | None = None,
+        document_types: dict[str, type[Document]] = None,
         on_exit: OnExitHandler | None = None,
-        factory: None = None,  # DEPRECATED !
     ):
-        """Create a document-based Application.
+        """Create a document-based application.
 
         A document-based application is the same as a normal application, with the
-        exception that there is no main window. Instead, each document managed by
-        the app will have it's own window.
+        exception that there is no main window. Instead, each document managed by the
+        app will create and manage it's own window (or windows).
 
-        :param document_types: The file extensions that this application can manage.
+        :param document_types: A dictionary of file extensions of document types that
+            the application can managed, mapping to the :class:`toga.Document` subclass
+            that will be created when a document of with that extension is opened. The
+            :class:`toga.Document` subclass must take exactly 2 arguments in it's
+            constructor: ``path`` and ``app``
+
         """
-        ######################################################################
-        # 2022-09: Backwards compatibility
-        ######################################################################
-        # factory no longer used
-        if factory:
-            warnings.warn("The factory argument is no longer used.", DeprecationWarning)
-        ######################################################################
-        # End backwards compatibility.
-        ######################################################################
+        if document_types is None:
+            raise ValueError("A document must manage at least one document type.")
 
-        self.document_types = document_types
+        self._document_types = document_types
         self._documents = []
 
         super().__init__(
@@ -697,6 +720,38 @@ class DocumentApp(App):
         pass
 
     @property
-    def documents(self) -> list[str]:
+    def document_types(self) -> dict[str, type[Document]]:
+        """The document types this app can manage.
+
+        This is a dictionary of file extensions mapping to the Document class that will
+        be created when a document of with that extension is opened. This class will
+        usually be a subclass of :class:`toga.Document`.toga.Document`.
+        """
+        return self._document_types
+
+    @property
+    def documents(self) -> list[Document]:
         """The list of documents associated with this app."""
         return self._documents
+
+    def startup(self) -> None:
+        """No-op; a DocumentApp has no windows until a document is opened.
+
+        Subclasses can override this method to define customized startup behavior.
+        """
+
+    def _open(self, path):
+        """Internal utility method; open a new document in this app, and shows the document.
+
+        :param path: The path to the document to be opened.
+        :raises ValueError: If the document is of a type that can't be opened. Backends can
+            suppress this exception if necessary to presere platform-native behavior.
+        """
+        try:
+            DocType = self.document_types[path.suffix[1:]]
+        except KeyError:
+            raise ValueError(f"Don't know how to open documents of type {path.suffix}")
+        else:
+            document = DocType(path, app=self)
+            self._documents.append(document)
+            document.show()

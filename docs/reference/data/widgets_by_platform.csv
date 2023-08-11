@@ -1,5 +1,6 @@
 Component,Type,Component,Description,macOS,GTK,Windows,iOS,Android,Web
-Application,Core Component,:class:`~toga.App`,The application itself,|b|,|b|,|b|,|b|,|b|,|b|
+Application,Core Component,:class:`~toga.App`,The top-level representation of an application.,|b|,|b|,|b|,|b|,|b|,|b|
+DocumentApp,Core Component,:class:`~toga.DocumentApp`,An application that manages documents.,|b|,|b|,|b|,|b|,|b|,|b|
 Window,Core Component,:class:`~toga.Window`,An operating system-managed container of widgets.,|b|,|b|,|b|,|b|,|b|,|b|
 MainWindow,Core Component,:class:`~toga.MainWindow`,The main window of the application.,|b|,|b|,|b|,|b|,|b|,|b|
 ActivityIndicator,General Widget,:class:`~toga.ActivityIndicator`,A spinning activity animation,|y|,|y|,,,,|b|

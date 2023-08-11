@@ -7,13 +7,14 @@ API Reference
 Core application components
 ---------------------------
 
-=============================================== ===================================================
- Component                                       Description
-=============================================== ===================================================
- :doc:`Application </reference/api/app>`         The application itself
- :doc:`Window </reference/api/window>`           An operating system-managed container of widgets.
- :doc:`MainWindow </reference/api/mainwindow>`   The main window of the application.
-=============================================== ===================================================
+================================================= ===================================================
+ Component                                         Description
+================================================= ===================================================
+ :doc:`App </reference/api/app>`                   The top-level representation of an application.
+ :doc:`DocumentApp </reference/api/documentapp>`   An application that manages documents.
+ :doc:`Window </reference/api/window>`             An operating system-managed container of widgets.
+ :doc:`MainWindow </reference/api/mainwindow>`     The main window of the application.
+================================================= ===================================================
 
 General widgets
 ---------------
@@ -100,8 +101,9 @@ Other
    :hidden:
 
    app
-   mainwindow
+   documentapp
    window
+   mainwindow
    containers/index
    resources/index
    widgets/index

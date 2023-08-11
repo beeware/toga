@@ -1,4 +1,4 @@
-from .app import App, DocumentApp, MainWindow
+from .app import App, DocumentApp, DocumentMainWindow, MainWindow
 
 # Resources
 from .colors import hsl, hsla, rgb, rgba
@@ -42,6 +42,7 @@ __all__ = [
     "App",
     "DocumentApp",
     "MainWindow",
+    "DocumentMainWindow",
     # Commands
     "Command",
     "CommandSet",

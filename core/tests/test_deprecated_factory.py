@@ -14,22 +14,6 @@ class DeprecatedFactoryTests(TestCase):
     ######################################################################
     # factory no longer used
 
-    def test_app(self):
-        with self.assertWarns(DeprecationWarning):
-            widget = toga.App(
-                formal_name="Test", app_id="org.beeware.test-app", factory=self.factory
-            )
-        self.assertEqual(widget._impl.interface, widget)
-        self.assertNotEqual(widget.factory, self.factory)
-
-    def test_document_app(self):
-        with self.assertWarns(DeprecationWarning):
-            widget = toga.DocumentApp(
-                formal_name="Test", app_id="org.beeware.test-app", factory=self.factory
-            )
-        self.assertEqual(widget._impl.interface, widget)
-        self.assertNotEqual(widget.factory, self.factory)
-
     def test_command(self):
         with self.assertWarns(DeprecationWarning):
             widget = toga.Command(self.callback, "Test", factory=self.factory)
@@ -44,13 +28,6 @@ class DeprecatedFactoryTests(TestCase):
 
     def test_font(self):
         widget = toga.Font(SANS_SERIF, 14)
-        with self.assertWarns(DeprecationWarning):
-            widget.bind(factory=self.factory)
-        self.assertEqual(widget._impl.interface, widget)
-        self.assertNotEqual(widget.factory, self.factory)
-
-    def test_icon(self):
-        widget = toga.Icon("resources/toga", system=True)
         with self.assertWarns(DeprecationWarning):
             widget.bind(factory=self.factory)
         self.assertEqual(widget._impl.interface, widget)

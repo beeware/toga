@@ -2,6 +2,7 @@ import asyncio
 import inspect
 import os
 import sys
+from pathlib import Path
 from urllib.parse import unquote, urlparse
 
 from rubicon.objc.eventloop import CocoaLifecycle, EventLoopPolicy
@@ -118,6 +119,9 @@ class App:
 
         asyncio.set_event_loop_policy(EventLoopPolicy())
         self.loop = asyncio.new_event_loop()
+
+        # Stimulate the build of the app
+        self.create()
 
     def create(self):
         self.native = NSApplication.sharedApplication
@@ -379,9 +383,6 @@ class App:
             return submenu
 
     def main_loop(self):
-        # Stimulate the build of the app
-        self.create()
-
         self.loop.run_forever(lifecycle=CocoaLifecycle(self.native))
 
     def set_main_window(self, window):
@@ -511,13 +512,7 @@ class DocumentApp(App):
         """
         # Convert a cocoa fileURL to a file path.
         fileURL = fileURL.rstrip("/")
-        path = unquote(urlparse(fileURL).path)
-        extension = os.path.splitext(path)[1][1:]
+        path = Path(unquote(urlparse(fileURL).path))
 
-        # Create the document instance
-        DocType = self.interface.document_types[extension]
-        document = DocType(path, app=self.interface)
-        self.interface._documents.append(document)
-
-        # Show the document.
-        document.show()
+        # Create and show the document instance
+        self.interface._open(path)

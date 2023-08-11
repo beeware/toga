@@ -1,3 +1,4 @@
+import os
 from urllib.parse import quote
 
 from toga_cocoa.libs import NSURL, NSDocument, objc_method, objc_property
@@ -20,13 +21,16 @@ class TogaDocument(NSDocument):
 
 
 class Document:
+    # macOS has multiple documents in a single app instance.
+    SINGLE_DOCUMENT_APP = False
+
     def __init__(self, interface):
         self.native = TogaDocument.alloc()
         self.native.interface = interface
         self.native.impl = self
 
         self.native.initWithContentsOfURL(
-            NSURL.URLWithString(f"file://{quote(interface.filename)}"),
+            NSURL.URLWithString(f"file://{quote(os.fsdecode(interface.path))}"),
             ofType=interface.document_type,
             error=None,
         )
