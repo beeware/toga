@@ -1,0 +1,1 @@
+``App.exit()`` now unconditionally exits the app, rather than confirming that the ``on_exit`` handler will permit the exit.
