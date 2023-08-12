@@ -1,6 +1,6 @@
 from toga import GROUP_BREAK, SECTION_BREAK
 
-from .container import Container, MinimumContainer
+from .container import Container
 from .libs import Point, Size, WinForms
 from .widgets.base import Scalable
 
@@ -103,23 +103,19 @@ class Window(Container, Scalable):
     def set_title(self, title):
         self.native.Text = title
 
-    def show(self):
-        # The first render of the content will establish the
-        # minimum possible content size; use that to enforce
-        # a minimum window size.
-        TITLEBAR_HEIGHT = WinForms.SystemInformation.CaptionHeight
-        # Now that the content is visible, we can do our initial hinting,
-        # and use that as the basis for setting the minimum window size.
-        self.interface.content._impl.rehint()
-        self.interface.content.style.layout(
-            self.interface.content, MinimumContainer(self.native)
-        )
-        self.native.MinimumSize = Size(
-            int(self.interface.content.layout.width),
-            int(self.interface.content.layout.height) + TITLEBAR_HEIGHT,
-        )
-        self.interface.content.refresh()
+    def refreshed(self):
+        super().refreshed()
 
+        # Enforce a minimum window size.
+        TITLEBAR_HEIGHT = WinForms.SystemInformation.CaptionHeight
+        layout = self.interface.content.layout
+        self.native.MinimumSize = Size(
+            self.scale_in(layout.min_width),
+            self.scale_in(layout.min_height) + TITLEBAR_HEIGHT,
+        )
+
+    def show(self):
+        self.interface.content.refresh()
         if self.interface is not self.interface.app._main_window:
             self.native.Icon = self.interface.app.icon._impl.native
         self.native.Show()
