@@ -3,7 +3,7 @@ import asyncio
 from rubicon.java import android_events
 
 import toga
-from toga.command import Group
+from toga.command import GROUP_BREAK, SECTION_BREAK, Group
 
 from .libs.activity import IPythonApp, MainActivity
 from .libs.android.graphics import Drawable
@@ -92,7 +92,7 @@ class TogaApp(IPythonApp):
 
         # create option menu
         for cmd in self._impl.interface.commands:
-            if cmd == toga.SECTION_BREAK or cmd == toga.GROUP_BREAK:
+            if cmd == SECTION_BREAK or cmd == GROUP_BREAK:
                 continue
             if cmd in self._impl.interface.main_window.toolbar:
                 continue  # do not show toolbar commands in the option menu (except when overflowing)
@@ -138,7 +138,7 @@ class TogaApp(IPythonApp):
         # create toolbar actions
         if self._impl.interface.main_window:
             for cmd in self._impl.interface.main_window.toolbar:
-                if cmd == toga.SECTION_BREAK or cmd == toga.GROUP_BREAK:
+                if cmd == SECTION_BREAK or cmd == GROUP_BREAK:
                     continue
                 itemid += 1
                 order = Menu.NONE if cmd.order is None else cmd.order

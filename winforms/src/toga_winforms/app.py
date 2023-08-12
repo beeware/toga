@@ -5,6 +5,7 @@ import threading
 
 import toga
 from toga import Key
+from toga.command import GROUP_BREAK, SECTION_BREAK
 
 from .keys import toga_to_winforms_key
 from .libs import (
@@ -140,9 +141,9 @@ class App:
         menubar = WinForms.MenuStrip()
         submenu = None
         for cmd in self.interface.commands:
-            if cmd == toga.GROUP_BREAK:
+            if cmd == GROUP_BREAK:
                 submenu = None
-            elif cmd == toga.SECTION_BREAK:
+            elif cmd == SECTION_BREAK:
                 submenu.DropDownItems.Add("-")
             else:
                 submenu = self._submenu(cmd.group, menubar)
