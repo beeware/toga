@@ -1,145 +1,193 @@
-from tests.command.constants import COMMANDS_IN_ORDER, PARENT_GROUP1
-from tests.utils import order_test
+from unittest.mock import Mock
+
+import pytest
 
 import toga
-from toga_dummy.utils import TestCase
+from toga.command import Break
+from toga_dummy.utils import assert_action_performed_with
 
 
-class TestCommand(TestCase):
-    def setUp(self):
-        super().setUp()
-        # We need to define a test app to instantiate paths.
-        self.app = toga.App(
-            formal_name="Test App",
-            app_id="org.beeware.test-app",
-        )
+def assert_order(*items):
+    for i in range(0, len(items) - 1):
+        for j in range(i + 1, len(items)):
+            assert items[i] < items[j]
+            assert items[j] > items[i]
 
-    def test_command_init_defaults(self):
-        cmd = toga.Command(lambda x: print("Hello World"), "test")
-        self.assertEqual(cmd.text, "test")
-        self.assertEqual(cmd.shortcut, None)
-        self.assertEqual(cmd.tooltip, None)
-        self.assertEqual(cmd.icon, None)
-        self.assertEqual(cmd.group, toga.Group.COMMANDS)
-        self.assertEqual(cmd.section, 0)
-        self.assertEqual(cmd.order, 0)
-        self.assertTrue(cmd._enabled)
 
-    def test_command_init_kargs(self):
-        grp = toga.Group("Test group", order=10)
-        cmd = toga.Command(
-            lambda x: print("Hello World"),
-            text="test",
-            tooltip="test command",
-            shortcut="t",
-            icon="icons/none.png",
-            group=grp,
-            section=1,
-            order=1,
-        )
-        self.assertEqual(cmd.text, "test")
-        self.assertEqual(cmd.shortcut, "t")
-        self.assertEqual(cmd.tooltip, "test command")
-        self.assertEqual(cmd.icon.path, "icons/none.png")
-        self.assertEqual(cmd.group, grp)
-        self.assertEqual(cmd.section, 1)
-        self.assertEqual(cmd.order, 1)
-        self.assertTrue(cmd._enabled)
-        self.assertTrue(cmd.enabled)
-        cmd.enabled = False
-        self.assertFalse(cmd._enabled)
-        self.assertFalse(cmd.enabled)
+@pytest.fixture
+def app():
+    return toga.App("Command Test", "org.beeware.command")
 
-    def test_command_bind(self):
-        grp = toga.Group("Test group", order=10)
-        cmd = toga.Command(
-            lambda x: print("Hello World"),
-            text="test",
-            tooltip="test command",
-            shortcut="t",
-            icon="icons/none.png",
-            group=grp,
-            section=1,
-            order=1,
-        )
 
-        with self.assertWarns(DeprecationWarning):
-            return_val = cmd.bind()
-        self.assertEqual(return_val, cmd._impl)
+def test_break():
+    """A break can be created"""
 
-    def test_command_enabler(self):
-        grp = toga.Group("Test group", order=10)
-        cmd = toga.Command(
-            lambda x: print("Hello World"),
-            text="test",
-            tooltip="test command",
-            shortcut="t",
-            icon="icons/none.png",
-            group=grp,
-            section=1,
-            order=1,
-        )
+    example_break = Break("Example")
+    assert repr(example_break) == "<Example break>"
 
-        cmd.enabled = False
-        self.assertActionPerformedWith(cmd, "set enabled", value=False)
-        cmd.enabled = True
-        self.assertActionPerformedWith(cmd, "set enabled", value=True)
 
-    def test_command_repr(self):
-        self.assertEqual(
-            repr(toga.Command(None, "A", group=PARENT_GROUP1, order=1, section=4)),
-            "<Command text=A group=<Group text=P order=1 parent=None> section=4 order=1>",
-        )
+def test_create():
+    """A command can be created with defaults"""
+    cmd = toga.Command(None, "Test command")
 
-    test_order_commands_by_text = order_test(
-        toga.Command(None, "A"), toga.Command(None, "B")
+    assert cmd.text == "Test command"
+    assert cmd.shortcut is None
+    assert cmd.tooltip is None
+    assert cmd.group == toga.Group.COMMANDS
+    assert cmd.section == 0
+    assert cmd.order == 0
+    assert cmd.action._raw is None
+
+    assert (
+        repr(cmd)
+        == "<Command text='Test command' group=<Group text='Commands' order=30> section=0 order=0>"
     )
-    test_order_commands_by_number = order_test(
-        toga.Command(None, "B", order=1), toga.Command(None, "A", order=2)
+
+
+def test_create_explicit(app):
+    """A command can be created with explicit arguments"""
+    grp = toga.Group("Test group", order=10)
+
+    handler = Mock()
+    cmd = toga.Command(
+        handler,
+        text="Test command",
+        tooltip="This is a test command",
+        shortcut="t",
+        group=grp,
+        section=3,
+        order=4,
     )
-    test_order_commands_by_section = order_test(
-        toga.Command(None, "B", group=PARENT_GROUP1, section=1, order=2),
-        toga.Command(None, "A", group=PARENT_GROUP1, section=2, order=1),
+
+    assert cmd.text == "Test command"
+    assert cmd.shortcut == "t"
+    assert cmd.tooltip == "This is a test command"
+    assert cmd.group == grp
+    assert cmd.section == 3
+    assert cmd.order == 4
+
+    assert cmd.action._raw == handler
+
+    assert (
+        repr(cmd)
+        == "<Command text='Test command' group=<Group text='Test group' order=10> section=3 order=4>"
     )
-    test_order_commands_by_groups = order_test(*COMMANDS_IN_ORDER)
 
-    def test_missing_argument(self):
-        "If the no text is provided for the group, an error is raised"
-        # This test is only required as part of the backwards compatibility
-        # path renaming label->text; when that shim is removed, this teset
-        # validates default Python behavior
-        with self.assertRaises(TypeError):
-            toga.Command(lambda x: print("Hello World"))
 
-    ######################################################################
-    # 2022-07: Backwards compatibility
-    ######################################################################
+@pytest.mark.parametrize("construct", [True, False])
+def test_icon_construction(app, construct):
+    """The command icon can be set during construction"""
+    if construct:
+        icon = toga.Icon("path/to/icon")
+    else:
+        icon = "path/to/icon"
 
-    def test_label_deprecated(self):
-        cmd = toga.Command(lambda x: print("Hello World"), label="test")
-        new_text = "New Text"
-        with self.assertWarns(DeprecationWarning):
-            cmd.label = new_text
-        with self.assertWarns(DeprecationWarning):
-            self.assertEqual(cmd.label, new_text)
-        self.assertEqual(cmd.text, new_text)
+    cmd = toga.Command(None, "Test command", icon=icon)
 
-    def test_init_with_deprecated(self):
-        # label is a deprecated argument
-        with self.assertWarns(DeprecationWarning):
-            toga.Command(
-                lambda x: print("Hello World"),
-                label="test",
-            )
+    # Default icon matches app name
+    assert isinstance(cmd.icon, toga.Icon)
+    assert cmd.icon.path == "path/to/icon"
 
-        # can't specify both label *and* text
-        with self.assertRaises(ValueError):
-            toga.Command(
-                lambda x: print("Hello World"),
-                label="test",
-                text="test",
-            )
 
-    ######################################################################
-    # End backwards compatibility.
-    ######################################################################
+@pytest.mark.parametrize("construct", [True, False])
+def test_icon(app, construct):
+    """The command icon can be changed"""
+    if construct:
+        icon = toga.Icon("path/to/icon")
+    else:
+        icon = "path/to/icon"
+
+    cmd = toga.Command(None, "Test command")
+
+    # No icon by default
+    assert cmd.icon is None
+
+    # Change icon
+    cmd.icon = icon
+
+    # Icon path matches
+    assert isinstance(cmd.icon, toga.Icon)
+    assert cmd.icon.path == "path/to/icon"
+
+
+@pytest.mark.parametrize(
+    "action, enabled, initial_state",
+    [
+        (Mock(), True, True),
+        (Mock(), False, False),
+        (None, True, False),
+        (None, False, False),
+    ],
+)
+def test_enable(action, enabled, initial_state):
+    cmd = toga.Command(action, text="Test command", enabled=enabled)
+
+    assert cmd.enabled is initial_state
+
+    # Set enabled; triggers an implementation response
+    cmd.enabled = True
+    assert_action_performed_with(cmd, "set enabled", value=True)
+
+    # Disable; triggers an implementation response
+    cmd.enabled = False
+    assert_action_performed_with(cmd, "set enabled", value=False)
+
+    # Disable again; triggers an implementation response
+    cmd.enabled = False
+    assert_action_performed_with(cmd, "set enabled", value=False)
+
+    # Set enabled; triggers an implementation response
+    cmd.enabled = True
+    assert_action_performed_with(cmd, "set enabled", value=True)
+
+
+def test_order_by_text():
+    """Commands are ordered by text when group, section and order match"""
+    assert_order(
+        toga.Command(None, "A"),
+        toga.Command(None, "B"),
+    )
+
+
+def test_order_by_number():
+    """Commands are ordered by number when group and section match"""
+    assert_order(
+        toga.Command(None, "B", order=1),
+        toga.Command(None, "A", order=2),
+    )
+
+
+def test_order_by_section(parent_group_1):
+    """Section ordering takes priority over order and text"""
+    assert_order(
+        toga.Command(None, "B", group=parent_group_1, section=1, order=2),
+        toga.Command(None, "A", group=parent_group_1, section=2, order=1),
+    )
+
+
+def test_order_by_groups(parent_group_1, parent_group_2, child_group_1, child_group_2):
+    """Commands are ordered by group over"""
+
+    command_z = toga.Command(None, "Z", group=parent_group_1, order=1)
+    command_y = toga.Command(None, "Y", group=child_group_1, order=1)
+    command_x = toga.Command(None, "X", group=child_group_1, order=2)
+    command_w = toga.Command(None, "W", group=child_group_1, order=4)
+    command_b = toga.Command(None, "B", group=child_group_1, section=2, order=1)
+    command_v = toga.Command(None, "V", group=parent_group_1, order=3)
+    command_u = toga.Command(None, "U", group=child_group_2, order=1)
+    command_t = toga.Command(None, "T", group=child_group_2, order=2)
+    command_s = toga.Command(None, "S", group=parent_group_1, order=5)
+    command_a = toga.Command(None, "A", group=parent_group_2, order=1)
+
+    assert_order(
+        command_z,
+        command_y,
+        command_x,
+        command_w,
+        command_b,
+        command_v,
+        command_u,
+        command_t,
+        command_s,
+        command_a,
+    )

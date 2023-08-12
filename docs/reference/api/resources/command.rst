@@ -142,6 +142,8 @@ it wasn't explicitly added to the app commands.
 Reference
 ---------
 
+.. autoprotocol:: toga.command.ActionHandler
+
 .. autoclass:: toga.Command
    :members:
    :undoc-members:
@@ -150,6 +152,8 @@ Reference
    :members:
    :undoc-members:
 
-.. autoclass:: toga.CommandSet
+.. autoprotocol:: toga.command.CommandSetChangeHandler
+
+.. autoclass:: toga.command.CommandSet
    :members:
    :undoc-members:

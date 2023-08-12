@@ -128,7 +128,7 @@ class Window:
             size=size,
         )
 
-        self._toolbar = CommandSet(window=self, on_change=self._impl.create_toolbar)
+        self._toolbar = CommandSet(on_change=self._impl.create_toolbar)
 
         self.on_close = on_close
 
@@ -152,6 +152,7 @@ class Window:
 
         self._app = app
         self._impl.set_app(app._impl)
+        self.toolbar.app = app
 
         if self.content:
             self.content.app = app
