@@ -12,16 +12,11 @@ class Scalable:
 
     # Convert CSS pixels to native pixels
     def scale_in(self, value):
-        if value is None:
-            return None
-        else:
-            return int(round(value * self.scale))
+        return int(round(value * self.scale))
 
     # Convert native pixels to CSS pixels
     def scale_out(self, value):
-        if value is None:
-            return None
-        elif isinstance(value, at_least):
+        if isinstance(value, at_least):
             return at_least(self.scale_out(value.value))
         else:
             return int(round(value / self.scale))
