@@ -6,11 +6,6 @@ import toga
 from toga_dummy.utils import assert_action_performed
 
 
-@pytest.fixture
-def app():
-    return toga.App("Test App", "org.beeware.toga.app.main_window")
-
-
 def test_create(app):
     "A MainWindow can be created with minimal arguments"
     window = toga.MainWindow()

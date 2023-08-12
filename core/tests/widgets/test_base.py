@@ -110,10 +110,9 @@ def test_add_child_without_app(widget):
     assert_action_performed_with(widget, "refresh")
 
 
-def test_add_child(widget):
+def test_add_child(app, widget):
     "A child can be added to a node when there's an app & window"
     # Set the app and window for the widget.
-    app = toga.App("Test", "com.example.test")
     window = toga.Window()
     window.app = app
     window.content = widget
@@ -160,10 +159,9 @@ def test_add_child(widget):
     assert app.widgets["child_id"] == child
 
 
-def test_add_multiple_children(widget):
+def test_add_multiple_children(app, widget):
     "Multiple children can be added in one call"
     # Set the app and window for the widget.
-    app = toga.App("Test", "com.example.test")
     window = toga.Window()
     window.app = app
     window.content = widget
@@ -333,10 +331,9 @@ def test_insert_child_without_app(widget):
     assert_action_performed_with(widget, "refresh")
 
 
-def test_insert_child(widget):
+def test_insert_child(app, widget):
     "A child can be inserted into a node when there's an app & window"
     # Set the app and window for the widget.
-    app = toga.App("Test", "com.example.test")
     window = toga.Window()
     window.app = app
     window.content = widget
@@ -383,10 +380,9 @@ def test_insert_child(widget):
     assert app.widgets["child_id"] == child
 
 
-def test_insert_position(widget):
+def test_insert_position(app, widget):
     "Insert can put a child into a specific position"
     # Set the app and window for the widget.
-    app = toga.App("Test", "com.example.test")
     window = toga.Window()
     window.app = app
     window.content = widget
@@ -451,10 +447,9 @@ def test_insert_position(widget):
     assert app.widgets["child3_id"] == child3
 
 
-def test_insert_bad_position(widget):
+def test_insert_bad_position(app, widget):
     "If the position is invalid, an error is raised"
     # Set the app and window for the widget.
-    app = toga.App("Test", "com.example.test")
     window = toga.Window()
     window.app = app
     window.content = widget
@@ -588,13 +583,12 @@ def test_remove_child_without_app(widget):
     assert_action_performed_with(widget, "refresh")
 
 
-def test_remove_child(widget):
+def test_remove_child(app, widget):
     "A child associated with an app & window can be removed from a widget"
     # Add a child to the widget
     child = ExampleLeafWidget(id="child_id")
     widget.add(child)
 
-    app = toga.App("Test", "com.example.test")
     window = toga.Window()
     window.app = app
     window.content = widget
@@ -627,7 +621,7 @@ def test_remove_child(widget):
     assert_action_performed_with(window.content, "refresh")
 
 
-def test_remove_multiple_children(widget):
+def test_remove_multiple_children(app, widget):
     "Multiple children can be removed from a widget"
     # Add children to the widget
     child1 = ExampleLeafWidget(id="child1_id")
@@ -635,7 +629,6 @@ def test_remove_multiple_children(widget):
     child3 = ExampleLeafWidget(id="child3_id")
     widget.add(child1, child2, child3)
 
-    app = toga.App("Test", "com.example.test")
     window = toga.Window()
     window.app = app
     window.content = widget
@@ -678,7 +671,7 @@ def test_remove_multiple_children(widget):
     assert_action_performed_with(window.content, "refresh")
 
 
-def test_clear_all_children(widget):
+def test_clear_all_children(app, widget):
     "All children can be simultaneously removed from a widget"
     # Add children to the widget
     child1 = ExampleLeafWidget(id="child1_id")
@@ -686,7 +679,6 @@ def test_clear_all_children(widget):
     child3 = ExampleLeafWidget(id="child3_id")
     widget.add(child1, child2, child3)
 
-    app = toga.App("Test", "com.example.test")
     window = toga.Window()
     window.app = app
     window.content = widget
@@ -730,9 +722,8 @@ def test_clear_all_children(widget):
     assert_action_performed_with(window.content, "refresh")
 
 
-def test_clear_no_children(widget):
+def test_clear_no_children(app, widget):
     "No changes are made (no-op) if widget has no children"
-    app = toga.App("Test", "com.example.test")
     window = toga.Window()
     window.app = app
     window.content = widget
@@ -754,10 +745,9 @@ def test_clear_no_children(widget):
     assert_action_not_performed(window.content, "refresh")
 
 
-def test_clear_leaf_node():
+def test_clear_leaf_node(app):
     "No changes are made to leaf node that cannot have children"
     leaf = ExampleLeafWidget()
-    app = toga.App("Test", "com.example.test")
     window = toga.Window()
     window.app = app
     window.content = leaf
@@ -805,9 +795,8 @@ def test_remove_from_non_parent(widget):
     assert_action_not_performed(widget, "refresh")
 
 
-def test_set_app(widget):
+def test_set_app(app, widget):
     "A widget can be assigned to an app"
-    app = toga.App("Test App", "org.beeware.test")
     assert len(app.widgets) == 0
 
     # Assign the widget to an app
@@ -824,7 +813,7 @@ def test_set_app(widget):
     assert attribute_value(widget, "app") == app
 
 
-def test_set_app_with_children(widget):
+def test_set_app_with_children(app, widget):
     "If a widget has children, the children get the app assignment"
     # Add children to the widget
     child1 = ExampleLeafWidget(id="child1_id")
@@ -832,8 +821,6 @@ def test_set_app_with_children(widget):
     child3 = ExampleLeafWidget(id="child3_id")
     widget.add(child1, child2, child3)
 
-    # Set up an app
-    app = toga.App("Test App", "org.beeware.test")
     assert len(app.widgets) == 0
 
     # Assign the widget to an app
@@ -861,9 +848,8 @@ def test_set_app_with_children(widget):
     assert attribute_value(child3, "app") == app
 
 
-def test_set_same_app(widget):
+def test_set_same_app(app, widget):
     "A widget can be re-assigned to the same app"
-    app = toga.App("Test App", "org.beeware.test")
     assert len(app.widgets) == 0
 
     # Assign the widget to an app
@@ -879,9 +865,8 @@ def test_set_same_app(widget):
     assert_attribute_not_set(widget, "app")
 
 
-def test_reset_app(widget):
+def test_reset_app(app, widget):
     "A widget can be re-assigned to no app"
-    app = toga.App("Test App", "org.beeware.test")
     assert len(app.widgets) == 0
 
     # Assign the widget to an app
@@ -903,10 +888,8 @@ def test_reset_app(widget):
     assert attribute_value(widget, "app") is None
 
 
-def test_set_new_app(widget):
+def test_set_new_app(app, widget):
     "A widget can be assigned to a different app"
-    app = toga.App("Test App", "org.beeware.test")
-
     # Assign the widget to an app
     widget.app = app
     assert len(app.widgets) == 1
@@ -915,7 +898,7 @@ def test_set_new_app(widget):
     EventLog.reset()
 
     # Create a new app
-    new_app = toga.App("Test App", "org.beeware.test")
+    new_app = toga.App("Test App", "org.beeware.toga.test-app")
     assert len(new_app.widgets) == 0
 
     # Assign the widget to the same app

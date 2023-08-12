@@ -5,11 +5,6 @@ from toga.app import WindowSet
 
 
 @pytest.fixture
-def app():
-    return toga.App("Test App", "org.beeware.toga.app.main_window")
-
-
-@pytest.fixture
 def window1():
     return toga.Window(title="Window 1")
 

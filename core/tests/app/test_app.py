@@ -29,11 +29,6 @@ APP_METADATA = {
 }
 
 
-@pytest.fixture
-def app():
-    return toga.App(formal_name="Test App", app_id="org.example.test")
-
-
 @pytest.mark.parametrize(
     (
         "kwargs, metadata, main_module, expected_formal_name, expected_app_id, expected_app_name, "
@@ -399,7 +394,7 @@ def test_icon(app, construct):
 
     # Default icon matches app name
     assert isinstance(app.icon, toga.Icon)
-    assert app.icon.path == "resources/test"
+    assert app.icon.path == "resources/test_app"
 
     # Change icon
     app.icon = icon

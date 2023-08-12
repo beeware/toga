@@ -17,11 +17,6 @@ class MyDoc(toga.Document):
         pass
 
 
-@pytest.fixture
-def app():
-    return toga.App("Document Test", "org.beeware.toga.documents")
-
-
 @pytest.mark.parametrize("path", ["/path/to/doc.mydoc", Path("/path/to/doc.mydoc")])
 def test_create_document(app, path):
     doc = MyDoc(path, app)

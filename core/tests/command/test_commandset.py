@@ -7,11 +7,6 @@ import toga
 from toga.command import GROUP_BREAK, SECTION_BREAK, CommandSet
 
 
-@pytest.fixture
-def app():
-    return toga.App("CommandSet Test", "org.beeware.commandset")
-
-
 def test_create():
     """A CommandSet can be created with defaults"""
     cs = CommandSet()

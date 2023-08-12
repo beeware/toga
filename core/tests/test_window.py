@@ -12,11 +12,6 @@ from toga_dummy.utils import (
 
 
 @pytest.fixture
-def app(event_loop):
-    return toga.App("Test App", "org.beeware.toga.window")
-
-
-@pytest.fixture
 def window():
     return toga.Window()
 
@@ -83,7 +78,7 @@ def test_set_app(window, app):
 
     assert window.app == app
 
-    app2 = toga.App("Test App 2", "org.beeware.toga.window2")
+    app2 = toga.App("Test App 2", "org.beeware.toga.test-app-2")
     with pytest.raises(ValueError, match=r"Window is already associated with an App"):
         window.app = app2
 

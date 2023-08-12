@@ -20,11 +20,6 @@ def assert_order(*items):
             assert not items[i] > 42
 
 
-@pytest.fixture
-def app():
-    return toga.App("Command Test", "org.beeware.command")
-
-
 def test_break():
     """A break can be created"""
 
