@@ -13,6 +13,12 @@ def assert_order(*items):
             assert items[i] < items[j]
             assert items[j] > items[i]
 
+            # For good measure; check comparisons with other types
+            assert not items[i] < None
+            assert not items[i] < 42
+            assert not items[i] > None
+            assert not items[i] > 42
+
 
 @pytest.fixture
 def app():
