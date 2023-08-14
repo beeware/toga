@@ -1,4 +1,8 @@
+import os
+
 from toga.screen import Screen as ScreenInterface
+
+from .libs import Gdk
 
 
 class Screen:
@@ -26,4 +30,23 @@ class Screen:
         return geometry.width, geometry.height
 
     def get_image_data(self):
-        self.interface.factory.not_implemented("Screen.get_image_data()")
+        def get_image_data(self):
+            if os.environ.get("XDG_SESSION_TYPE", "").lower() == "x11":
+                # Only works for x11
+                display = self.native.get_display()
+                screen = display.get_default_screen()
+                window = screen.get_root_window()
+                geometry = self.native.get_geometry()
+                screenshot = Gdk.pixbuf_get_from_window(
+                    window, geometry.x, geometry.y, geometry.width, geometry.height
+                )
+                success, buffer = screenshot.save_to_bufferv("png", [], [])
+                if success:
+                    return bytes(buffer)
+                else:
+                    print("Failed to save screenshot to buffer.")
+                    return None
+            else:
+                # Not implemented for wayland
+                self.interface.factory.not_implemented("Screen.get_image_data()")
+                return None

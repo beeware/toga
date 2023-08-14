@@ -198,13 +198,19 @@ class App:
 
     def get_screens(self):
         display = Gdk.Display.get_default()
-        primary_screen = ScreenImpl(display.get_primary_monitor())
-        screen_list = [primary_screen] + [
-            ScreenImpl(native=display.get_monitor(i))
-            for i in range(display.get_n_monitors())
-            if display.get_monitor(i) != primary_screen.native
-        ]
-        return screen_list
+        if os.environ.get("XDG_SESSION_TYPE", "").lower() == "x11":
+            primary_screen = ScreenImpl(display.get_primary_monitor())
+            screen_list = [primary_screen] + [
+                ScreenImpl(native=display.get_monitor(i))
+                for i in range(display.get_n_monitors())
+                if display.get_monitor(i) != primary_screen.native
+            ]
+            return screen_list
+        else:
+            return [
+                ScreenImpl(native=display.get_monitor(i))
+                for i in range(display.get_n_monitors())
+            ]
 
     def set_main_window(self, window):
         pass
