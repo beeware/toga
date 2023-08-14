@@ -62,13 +62,13 @@ def get_platform_factory():
     if backend_value:
         try:
             factory = importlib.import_module(f"{backend_value}.factory")
-        except ModuleNotFoundError:
+        except ModuleNotFoundError as e:
             toga_backends_values = ", ".join(
                 [f"{backend.value!r}" for backend in toga_backends]
             )
             raise RuntimeError(
-                f"The backend specified by TOGA_BACKEND ({backend_value!r}) "
-                f"could not be loaded. It should be one of: {toga_backends_values}."
+                f"The backend specified by TOGA_BACKEND ({backend_value!r}) could "
+                f"not be loaded ({e}). It should be one of: {toga_backends_values}."
             )
     else:
         # As of Setuptools 65.5, entry points are returned duplicated if the
