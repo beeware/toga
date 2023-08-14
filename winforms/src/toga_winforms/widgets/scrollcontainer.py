@@ -1,3 +1,5 @@
+from decimal import ROUND_DOWN
+
 from System.Drawing import Point
 from System.Windows.Forms import Panel, SystemInformation
 from travertino.node import Node
@@ -42,7 +44,10 @@ class ScrollContainer(Widget, Container):
 
     def set_bounds(self, x, y, width, height):
         super().set_bounds(x, y, width, height)
-        self.resize_content(self.scale_in(width), self.scale_in(height))
+        self.resize_content(
+            self.scale_in(width, ROUND_DOWN),
+            self.scale_in(height, ROUND_DOWN),
+        )
 
     def refreshed(self):
         full_width, full_height = (self.native_width, self.native_height)

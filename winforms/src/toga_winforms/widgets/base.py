@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from decimal import ROUND_HALF_EVEN, ROUND_UP, Decimal
 
 from travertino.size import at_least
 
@@ -7,19 +8,24 @@ from toga_winforms.libs import Color, Point, Size, SystemColors
 
 
 class Scalable:
+    SCALE_DEFAULT_ROUNDING = ROUND_HALF_EVEN
+
     def init_scale(self, native):
         self.scale = native.CreateGraphics().DpiX / 96
 
     # Convert CSS pixels to native pixels
-    def scale_in(self, value):
-        return int(round(value * self.scale))
+    def scale_in(self, value, rounding=SCALE_DEFAULT_ROUNDING):
+        return self.scale_round(value * self.scale, rounding)
 
     # Convert native pixels to CSS pixels
-    def scale_out(self, value):
+    def scale_out(self, value, rounding=SCALE_DEFAULT_ROUNDING):
         if isinstance(value, at_least):
-            return at_least(self.scale_out(value.value))
+            return at_least(self.scale_out(value.value, rounding))
         else:
-            return int(round(value / self.scale))
+            return self.scale_round(value / self.scale, rounding)
+
+    def scale_round(self, value, rounding):
+        return int(Decimal(value).to_integral(rounding))
 
 
 class Widget(ABC, Scalable):
@@ -134,9 +140,8 @@ class Widget(ABC, Scalable):
         assert intrinsic.width is not None
         assert intrinsic.height is not None
 
-        intrinsic.width, intrinsic.height = map(
-            self.scale_out, (intrinsic.width, intrinsic.height)
-        )
+        intrinsic.width = self.scale_out(intrinsic.width, ROUND_UP)
+        intrinsic.height = self.scale_out(intrinsic.height, ROUND_UP)
 
     @abstractmethod
     def rehint(self):
