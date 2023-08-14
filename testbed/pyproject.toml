@@ -93,8 +93,15 @@ test_sources = [
 requires = [
     "../android",
 ]
-# Coverage requires access to individual .py files.
-build_gradle_extra_content = "android.defaultConfig.python.extractPackages 'toga_android'"
+build_gradle_extra_content = """\
+android.defaultConfig.python {
+    // Coverage requires access to individual .py files.
+    extractPackages("toga_android")
+
+    // Pytest's assertion rewriting produces its own .pyc files.
+    pyc.src = false
+}
+"""
 
 [tool.briefcase.app.testbed.web]
 requires = [
