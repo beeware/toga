@@ -106,13 +106,15 @@ class Window(Container, Scalable):
     def refreshed(self):
         super().refreshed()
 
-        # Enforce a minimum window size.
-        TITLEBAR_HEIGHT = WinForms.SystemInformation.CaptionHeight
+        # Enforce a minimum window size. This takes into account the title bar and
+        # borders, which are included in Size but not in ClientSize.
+        decor_size = self.native.Size - self.native.ClientSize
         layout = self.interface.content.layout
-        self.native.MinimumSize = Size(
+        min_client_size = Size(
             self.scale_in(layout.min_width),
-            self.scale_in(layout.min_height) + TITLEBAR_HEIGHT,
+            self.scale_in(layout.min_height) + self.top_bars_height(),
         )
+        self.native.MinimumSize = decor_size + min_client_size
 
     def show(self):
         self.interface.content.refresh()
@@ -154,13 +156,16 @@ class Window(Container, Scalable):
         self._is_closing = True
         self.native.Close()
 
-    def resize_content(self):
+    def top_bars_height(self):
         vertical_shift = 0
         if self.toolbar_native:
             vertical_shift += self.toolbar_native.Height
         if self.native.MainMenuStrip:
             vertical_shift += self.native.MainMenuStrip.Height
+        return vertical_shift
 
+    def resize_content(self):
+        vertical_shift = self.top_bars_height()
         self.native_content.Location = Point(0, vertical_shift)
         super().resize_content(
             self.native.ClientSize.Width,
