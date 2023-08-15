@@ -27,11 +27,6 @@ class Widget:
         # Ensure initial styles are applied.
         self.interface.style.reapply()
 
-    @property
-    def viewport(self):
-        # TODO: Remove the use of viewport
-        return self._container
-
     @abstractmethod
     def create(self):
         ...

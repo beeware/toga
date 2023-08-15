@@ -1,4 +1,5 @@
 from System.Windows.Forms import TabControl, TabPage
+from travertino.size import at_least
 
 from ..container import Container
 from .base import Widget
@@ -60,3 +61,7 @@ class OptionContainer(Widget):
     def resize_content(self, panel):
         size = panel.native_parent.ClientSize
         panel.resize_content(size.Width, size.Height)
+
+    def rehint(self):
+        self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
+        self.interface.intrinsic.height = at_least(self.interface._MIN_HEIGHT)

@@ -1,23 +1,34 @@
-from abc import abstractmethod
+from abc import ABC, abstractmethod
+from decimal import ROUND_HALF_EVEN, ROUND_UP, Decimal
+
+from travertino.size import at_least
 
 from toga_winforms.colors import native_color
 from toga_winforms.libs import Color, Point, Size, SystemColors
 
 
 class Scalable:
+    SCALE_DEFAULT_ROUNDING = ROUND_HALF_EVEN
+
     def init_scale(self, native):
         self.scale = native.CreateGraphics().DpiX / 96
 
     # Convert CSS pixels to native pixels
-    def scale_in(self, value):
-        return int(round(value * self.scale))
+    def scale_in(self, value, rounding=SCALE_DEFAULT_ROUNDING):
+        return self.scale_round(value * self.scale, rounding)
 
     # Convert native pixels to CSS pixels
-    def scale_out(self, value):
-        return int(round(value / self.scale))
+    def scale_out(self, value, rounding=SCALE_DEFAULT_ROUNDING):
+        if isinstance(value, at_least):
+            return at_least(self.scale_out(value.value, rounding))
+        else:
+            return self.scale_round(value / self.scale, rounding)
+
+    def scale_round(self, value, rounding):
+        return int(Decimal(value).to_integral(rounding))
 
 
-class Widget(Scalable):
+class Widget(ABC, Scalable):
     # In some widgets, attempting to set a background color with any alpha value other
     # than 1 raises "System.ArgumentException: Control does not support transparent
     # background colors". Those widgets should set this attribute to False.
@@ -61,11 +72,7 @@ class Widget(Scalable):
         for child in self.interface.children:
             child._impl.container = container
 
-        self.rehint()
-
-    @property
-    def viewport(self):
-        return self._container
+        self.refresh()
 
     def get_tab_index(self):
         return self.native.TabIndex
@@ -85,8 +92,8 @@ class Widget(Scalable):
     # APPLICATOR
 
     def set_bounds(self, x, y, width, height):
-        self.native.Size = Size(width, height)
-        self.native.Location = Point(x, y)
+        self.native.Size = Size(*map(self.scale_in, (width, height)))
+        self.native.Location = Point(*map(self.scale_in, (x, y)))
 
     def set_alignment(self, alignment):
         # By default, alignment can't be changed
@@ -127,7 +134,14 @@ class Widget(Scalable):
         child.container = None
 
     def refresh(self):
+        intrinsic = self.interface.intrinsic
+        intrinsic.width = intrinsic.height = None
         self.rehint()
+        assert intrinsic.width is not None
+        assert intrinsic.height is not None
+
+        intrinsic.width = self.scale_out(intrinsic.width, ROUND_UP)
+        intrinsic.height = self.scale_out(intrinsic.height, ROUND_UP)
 
     @abstractmethod
     def rehint(self):

@@ -1,25 +1,24 @@
-from toga_winforms.libs import Size, WinForms
+from .libs import Size, WinForms
+from .widgets.base import Scalable
 
 
-class BaseContainer:
+class Container(Scalable):
     def __init__(self, native_parent):
+        self.init_scale(native_parent)
         self.native_parent = native_parent
-        self.width = self.height = 0
-        self.baseline_dpi = 96
-        self.dpi = native_parent.CreateGraphics().DpiX
-
-
-class MinimumContainer(BaseContainer):
-    def refreshed(self):
-        pass
-
-
-class Container(BaseContainer):
-    def __init__(self, native_parent):
-        super().__init__(native_parent)
+        self.native_width = self.native_height = 0
         self.content = None
+
         self.native_content = WinForms.Panel()
         native_parent.Controls.Add(self.native_content)
+
+    @property
+    def width(self):
+        return self.scale_out(self.native_width)
+
+    @property
+    def height(self):
+        return self.scale_out(self.native_height)
 
     def set_content(self, widget):
         self.clear_content()
@@ -33,8 +32,8 @@ class Container(BaseContainer):
             self.content = None
 
     def resize_content(self, width, height, *, force_refresh=False):
-        if (self.width, self.height) != (width, height):
-            self.width, self.height = (width, height)
+        if (self.native_width, self.native_height) != (width, height):
+            self.native_width, self.native_height = (width, height)
             force_refresh = True
 
         if force_refresh and self.content:
@@ -42,9 +41,12 @@ class Container(BaseContainer):
 
     def refreshed(self):
         layout = self.content.interface.layout
+        self.apply_layout(layout.width, layout.height)
+
+    def apply_layout(self, layout_width, layout_height):
         self.native_content.Size = Size(
-            max(self.width, layout.width),
-            max(self.height, layout.height),
+            self.scale_in(max(self.width, layout_width)),
+            self.scale_in(max(self.height, layout_height)),
         )
 
     def add_content(self, widget):
