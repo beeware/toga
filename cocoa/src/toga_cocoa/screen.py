@@ -1,4 +1,10 @@
 from toga.screen import Screen as ScreenInterface
+from toga_cocoa.libs import (
+    CGDisplayCreateImage,
+    CGMainDisplayID,
+    NSBitmapImageFileType,
+    NSBitmapImageRep,
+)
 
 
 class Screen:
@@ -26,4 +32,11 @@ class Screen:
         return (frame_native.size.width, frame_native.size.height)
 
     def get_image_data(self):
-        self.interface.factory.not_implemented("Screen.get_image_data()")
+        screenshot_frame = self.native.frame()
+        cg_image = CGDisplayCreateImage(CGMainDisplayID(), screenshot_frame)
+        bitmap_rep = NSBitmapImageRep.alloc().initWithCGImage(cg_image)
+        data = bitmap_rep.representationUsingType(
+            NSBitmapImageFileType.PNG,
+            properties=None,
+        )
+        return data
