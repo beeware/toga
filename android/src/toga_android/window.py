@@ -1,3 +1,5 @@
+from decimal import ROUND_UP
+
 from .container import Container
 from .libs.android import R__id
 from .libs.android.view import ViewTreeObserver__OnGlobalLayoutListener
@@ -61,6 +63,20 @@ class Window(Container):
     def hide(self):
         # A no-op, as the window cannot be hidden.
         pass
+
+    def refreshed(self):
+        if self.native_width and self.native_height:
+            layout = self.interface.content.layout
+            available_width = self.scale_out(self.native_width, ROUND_UP)
+            available_height = self.scale_out(self.native_height, ROUND_UP)
+            if (layout.width > available_width) or (layout.height > available_height):
+                # Show the sizes in terms of CSS pixels.
+                print(
+                    f"Warning: Window content {(layout.width, layout.height)} "
+                    f"exceeds available space {(available_width, available_height)}"
+                )
+
+        super().refreshed()
 
     def get_visible(self):
         # The window is always visible

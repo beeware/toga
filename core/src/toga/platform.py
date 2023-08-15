@@ -66,6 +66,10 @@ def get_platform_factory():
             toga_backends_values = ", ".join(
                 [f"{backend.value!r}" for backend in toga_backends]
             )
+            # Android doesn't report Python exception chains in crashes
+            # (https://github.com/chaquo/chaquopy/issues/890), so include the original
+            # exception message in case the backend does exist but throws a
+            # ModuleNotFoundError from one of its internal imports.
             raise RuntimeError(
                 f"The backend specified by TOGA_BACKEND ({backend_value!r}) could "
                 f"not be loaded ({e}). It should be one of: {toga_backends_values}."
