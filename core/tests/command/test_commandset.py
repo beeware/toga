@@ -25,8 +25,8 @@ def test_create_with_values():
 
 
 @pytest.mark.parametrize("change_handler", [(None), (Mock())])
-def test_add(app, change_handler):
-    """Commands can be added to a commandset"""
+def test_add_clear(app, change_handler):
+    """Commands can be added and removed from a commandset"""
     # Put some commands into the app
     cmd_a = toga.Command(None, text="App command a")
     cmd_b = toga.Command(None, text="App command b", order=10)
@@ -69,6 +69,20 @@ def test_add(app, change_handler):
     assert list(cs) == [cmd1b, cmd2, cmd1a]
 
     # App also knows about the command
+    assert list(app.commands) == [cmd_a, cmd1b, cmd2, cmd1a, cmd_b]
+
+    # Clear the command set
+    cs.clear()
+
+    # Change handler was called once.
+    if change_handler:
+        change_handler.assert_called_once()
+        change_handler.reset_mock()
+
+    # Command set no commands.
+    assert list(cs) == []
+
+    # App command set hasn't changed.
     assert list(app.commands) == [cmd_a, cmd1b, cmd2, cmd1a, cmd_b]
 
 

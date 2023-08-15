@@ -18,6 +18,7 @@ from .libs import (
     NSAboutPanelOptionApplicationIcon,
     NSAboutPanelOptionApplicationName,
     NSAboutPanelOptionApplicationVersion,
+    NSAboutPanelOptionVersion,
     NSApplication,
     NSApplicationActivationPolicyRegular,
     NSBeep,
@@ -59,21 +60,21 @@ class AppDelegate(NSObject):
         self.native.activateIgnoringOtherApps(True)
 
     @objc_method
-    def applicationOpenUntitledFile_(self, sender) -> bool:
+    def applicationOpenUntitledFile_(self, sender) -> bool:  # pragma: no cover
         self.impl.select_file()
         return True
 
     @objc_method
-    def addDocument_(self, document) -> None:
+    def addDocument_(self, document) -> None:  # pragma: no cover
         # print("Add Document", document)
         super().addDocument_(document)
 
     @objc_method
-    def applicationShouldOpenUntitledFile_(self, sender) -> bool:
+    def applicationShouldOpenUntitledFile_(self, sender) -> bool:  # pragma: no cover
         return True
 
     @objc_method
-    def application_openFiles_(self, app, filenames) -> None:
+    def application_openFiles_(self, app, filenames) -> None:  # pragma: no cover
         for i in range(0, len(filenames)):
             filename = filenames[i]
             # If you start your Toga application as `python myapp.py` or
@@ -100,8 +101,7 @@ class AppDelegate(NSObject):
     @objc_method
     def selectMenuItem_(self, sender) -> None:
         cmd = self.impl._menu_items[sender]
-        if cmd.action:
-            cmd.action(None)
+        cmd.action(None)
 
     @objc_method
     def validateMenuItem_(self, sender) -> bool:
@@ -290,7 +290,7 @@ class App:
             ),
             # ---- Help menu ----------------------------------
             toga.Command(
-                lambda _, **kwargs: self.interface.visit_homepage(),
+                self._menu_visit_homepage,
                 "Visit homepage",
                 enabled=self.interface.home_page is not None,
                 group=toga.Group.HELP,
@@ -308,12 +308,16 @@ class App:
             self.interface.current_window._impl.native.performClose(None)
 
     def _menu_close_all_windows(self, app, **kwargs):
-        for window in self.interface.windows:
+        # Convert to a list to so that we're not altering a set while iterating
+        for window in list(self.interface.windows):
             window._impl.native.performClose(None)
 
     def _menu_minimize(self, app, **kwargs):
         if self.interface.current_window:
             self.interface.current_window._impl.native.miniaturize(None)
+
+    def _menu_visit_homepage(self, app, **kwargs):
+        self.interface.visit_homepage()
 
     def create_menus(self):
         # Recreate the menu
@@ -350,6 +354,13 @@ class App:
                 )
                 if modifier is not None:
                     item.keyEquivalentModifierMask = modifier
+
+                # Explicit set the initial enabled/disabled state on the menu item
+                item.setEnabled(cmd.enabled)
+
+                # Associated the MenuItem with the command, so that future
+                # changes to enabled etc are reflected.
+                cmd._impl.native.add(item)
 
                 self._menu_items[item] = cmd
                 submenu.addItem(item)
@@ -393,28 +404,28 @@ class App:
         options = NSMutableDictionary.alloc().init()
 
         options[NSAboutPanelOptionApplicationIcon] = self.interface.icon._impl.native
+        options[NSAboutPanelOptionApplicationName] = self.interface.name
 
-        if self.interface.name is not None:
-            options[NSAboutPanelOptionApplicationName] = self.interface.name
-
-        if self.interface.version is not None:
+        if self.interface.version is None:
+            options[NSAboutPanelOptionApplicationVersion] = "0.0"
+        else:
             options[NSAboutPanelOptionApplicationVersion] = self.interface.version
 
         # The build number
-        # if self.interface.version is not None:
-        #     options[NSAboutPanelOptionVersion] = "the build"
+        options[NSAboutPanelOptionVersion] = "1"
 
-        if self.interface.author is not None:
-            options["Copyright"] = "Copyright © {author}".format(
-                author=self.interface.author
-            )
+        if self.interface.author is None:
+            options["Copyright"] = ""
+        else:
+            options["Copyright"] = f"Copyright © {self.interface.author}"
 
         self.native.orderFrontStandardAboutPanelWithOptions(options)
 
     def beep(self):
         NSBeep()
 
-    def exit(self):
+    # We can't call this under test conditions, because it would kill the test harness
+    def exit(self):  # pragma: no cover
         self.loop.stop()
 
     def get_current_window(self):
@@ -472,18 +483,21 @@ class App:
         """No-op when the app is not a ``DocumentApp``."""
 
 
-class DocumentApp(App):
+class DocumentApp(App):  # pragma: no cover
     def _create_app_commands(self):
         super()._create_app_commands()
         self.interface.commands.add(
             toga.Command(
-                lambda _: self.select_file(),
+                self._menu_open_file,
                 text="Open...",
                 shortcut=toga.Key.MOD_1 + "o",
                 group=toga.Group.FILE,
                 section=0,
             ),
         )
+
+    def _menu_open_file(self, app, **kwargs):
+        self.select_file()
 
     def select_file(self, **kwargs):
         # FIXME This should be all we need; but for some reason, application types
@@ -506,11 +520,6 @@ class DocumentApp(App):
         self.appDelegate.application_openFiles_(None, panel.URLs)
 
     def open_document(self, fileURL):
-        """Open a new document in this app.
-
-        Args:
-            fileURL (str): The URL/path to the file to add as a document.
-        """
         # Convert a cocoa fileURL to a file path.
         fileURL = fileURL.rstrip("/")
         path = Path(unquote(urlparse(fileURL).path))

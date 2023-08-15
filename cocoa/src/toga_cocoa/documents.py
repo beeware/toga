@@ -4,7 +4,7 @@ from urllib.parse import quote
 from toga_cocoa.libs import NSURL, NSDocument, objc_method, objc_property
 
 
-class TogaDocument(NSDocument):
+class TogaDocument(NSDocument):  # pragma: no cover
     interface = objc_property(object, weak=True)
     impl = objc_property(object, weak=True)
 
@@ -20,7 +20,7 @@ class TogaDocument(NSDocument):
         return True
 
 
-class Document:
+class Document:  # pragma: no cover
     # macOS has multiple documents in a single app instance.
     SINGLE_DOCUMENT_APP = False
 

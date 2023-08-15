@@ -400,6 +400,8 @@ class App:
 
         self.on_exit = on_exit
 
+        # We need the command set to exist so that startup et al can add commands;
+        # but we don't have an impl yet, so we can't set the on_change handler
         self.commands = CommandSet()
 
         self._startup_method = startup
@@ -410,6 +412,9 @@ class App:
         self._full_screen_windows = None
 
         self._create_impl()
+
+        # Now that we have an impl, set the on_change handler for commands
+        self.commands.on_change = self._impl.create_menus
 
         for window in windows:
             self.windows.add(window)

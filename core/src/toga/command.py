@@ -197,13 +197,12 @@ class Command:
         self.section = section if section else 0
         self.order = order if order else 0
 
-        orig_action = action
         self.action = wrapped_handler(self, action)
 
         self.factory = get_platform_factory()
         self._impl = self.factory.Command(interface=self)
 
-        self.enabled = enabled and orig_action is not None
+        self.enabled = enabled
 
     @property
     def key(self) -> tuple[(int, int, str)]:
@@ -221,7 +220,7 @@ class Command:
 
     @enabled.setter
     def enabled(self, value: bool):
-        self._enabled = value
+        self._enabled = value and getattr(self.action, "_raw", True) is not None
         self._impl.set_enabled(value)
 
     @property
@@ -312,6 +311,11 @@ class CommandSet:
         if self.app and self.app is not None:
             self.app.commands.add(*commands)
         self._commands.update(commands)
+        if self.on_change:
+            self.on_change()
+
+    def clear(self):
+        self._commands = set()
         if self.on_change:
             self.on_change()
 

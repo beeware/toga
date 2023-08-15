@@ -151,7 +151,7 @@ if __name__ == "__main__":
             report_coverage=report_coverage,
         )
     )
-    app.add_background_task(lambda app, *kwargs: thread.start())
+    thread.start()
 
     # Start the test app.
     app.main_loop()

@@ -1,6 +1,8 @@
 from unittest.mock import Mock
 
+from rubicon.objc import send_message
 from rubicon.objc.collections import ObjCListInstance
+from rubicon.objc.runtime import objc_id
 
 from toga_cocoa.libs import (
     NSURL,
@@ -246,4 +248,29 @@ class WindowProbe(BaseProbe):
         await self.redraw(
             f"{'Multiselect' if multiple_select else ' Select'} folder dialog "
             f"({'OPEN' if result else 'CANCEL'}) dismissed"
+        )
+
+    def has_toolbar(self):
+        return self.native.toolbar is not None
+
+    def assert_is_toolbar_separator(self, index):
+        item = self.native.toolbar.items[index]
+        assert str(item.itemIdentifier).startswith("ToolbarSeparator-")
+
+    def assert_toolbar_item(self, index, label, tooltip, has_icon, enabled):
+        item = self.native.toolbar.items[index]
+
+        assert str(item.label) == label
+        assert (None if item.toolTip is None else str(item.toolTip)) == tooltip
+        assert (item.image is not None) == has_icon
+        assert item.isEnabled() == enabled
+
+    def press_toolbar_button(self, index):
+        item = self.native.toolbar.items[index]
+        send_message(
+            item.target,
+            item.action,
+            item,
+            restype=None,
+            argtypes=[objc_id],
         )
