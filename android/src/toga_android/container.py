@@ -4,10 +4,12 @@ from .widgets.base import Scalable
 
 class Container(Scalable):
     def init_container(self, native_parent):
-        self.native_width = self.native_height = 0
-
         context = native_parent.getContext()
+        self.native_parent = native_parent
         self.init_scale(context)
+        self.native_width = self.native_height = 0
+        self.content = None
+
         self.native_content = RelativeLayout(context)
         native_parent.addView(self.native_content)
 
@@ -23,10 +25,12 @@ class Container(Scalable):
         self.clear_content()
         if widget:
             widget.container = self
+            self.content = widget
 
     def clear_content(self):
-        if self.interface.content:
-            self.interface.content._impl.container = None
+        if self.content:
+            self.content.container = None
+            self.content = None
 
     def resize_content(self, width, height):
         if (self.native_width, self.native_height) != (width, height):

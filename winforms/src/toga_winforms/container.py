@@ -8,6 +8,7 @@ class Container(Scalable):
         self.native_parent = native_parent
         self.native_width = self.native_height = 0
         self.content = None
+
         self.native_content = WinForms.Panel()
         native_parent.Controls.Add(self.native_content)
 
