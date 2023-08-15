@@ -1,9 +1,15 @@
 from pathlib import Path
 
-from rubicon.objc import ObjCClass, send_message
+from rubicon.objc import NSPoint, ObjCClass, send_message
 from rubicon.objc.runtime import objc_id
 
-from toga_cocoa.libs import NSApplication
+from toga_cocoa.keys import cocoa_key, toga_key
+from toga_cocoa.libs import (
+    NSApplication,
+    NSEvent,
+    NSEventModifierFlagShift,
+    NSEventType,
+)
 
 from .probe import BaseProbe
 
@@ -126,3 +132,32 @@ class AppProbe(BaseProbe):
     def assert_menu_item(self, path, enabled):
         item = self._menu_item(path)
         assert item.isEnabled() == enabled
+
+    def keystroke(self, combination):
+        key, modifiers = cocoa_key(combination)
+        key_code = {
+            "a": 0,
+            "A": 0,
+            "1": 18,
+            "!": 18,
+            chr(0xF708): 96,  # F5
+            chr(0x2196): 115,  # Home
+        }[key]
+
+        # Add the shift modifier to disambiguate 1 from !
+        if key in {"!"}:
+            modifiers |= NSEventModifierFlagShift
+
+        event = NSEvent.keyEventWithType(
+            NSEventType.KeyDown,
+            location=NSPoint(0, 0),  # key presses don't have a location.
+            modifierFlags=modifiers,
+            timestamp=0,
+            windowNumber=self.app.main_window._impl.native.windowNumber,
+            context=None,
+            characters="?",
+            charactersIgnoringModifiers="?",
+            isARepeat=False,
+            keyCode=key_code,
+        )
+        return toga_key(event)
