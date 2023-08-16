@@ -376,6 +376,9 @@ async def test_current_window(app, app_probe):
         window3 = toga.Window("Test Window 3", position=(300, 400), size=(200, 200))
         window3.content = toga.Box(style=Pack(background_color=FIREBRICK))
 
+        window2_probe = window_probe(app, window2)
+        window3_probe = window_probe(app, window2)
+
         window1.show()
         window2.show()
         window3.show()
@@ -383,11 +386,11 @@ async def test_current_window(app, app_probe):
         await app_probe.redraw("Extra windows added")
 
         app.current_window = window2
-        await app_probe.redraw("Window 2 is current")
+        await window2_probe.wait_for_window("Window 2 is current")
         assert app.current_window == window2
 
         app.current_window = window3
-        await app_probe.redraw("Window 3 is current")
+        await window3_probe.wait_for_window("Window 3 is current")
         assert app.current_window == window3
 
         # app_probe.platform tests?
@@ -404,6 +407,8 @@ async def test_full_screen(app, app_probe):
         window1.content = toga.Box(style=Pack(background_color=REBECCAPURPLE))
         window2 = toga.Window("Test Window 2", position=(400, 150), size=(200, 200))
         window2.content = toga.Box(style=Pack(background_color=CORNFLOWERBLUE))
+        window1_probe = window_probe(app, window1)
+        window2_probe = window_probe(app, window2)
 
         window1.show()
         window2.show()
@@ -417,7 +422,10 @@ async def test_full_screen(app, app_probe):
 
         # Make window 2 full screen via the app
         app.set_full_screen(window2)
-        await app_probe.redraw("Second extra window is full screen")
+        await window2_probe.wait_for_window(
+            "Second extra window is full screen",
+            full_screen=True,
+        )
         assert app.is_full_screen
 
         assert not app_probe.is_full_screen(window1)
@@ -429,8 +437,10 @@ async def test_full_screen(app, app_probe):
 
         # Make window 1 full screen via the app, window 2 no longer full screen
         app.set_full_screen(window1)
-        # A longer delay to allow for genie animations
-        await app_probe.redraw("First extra window is full screen")
+        await window1_probe.wait_for_window(
+            "First extra window is full screen",
+            full_screen=True,
+        )
         assert app.is_full_screen
 
         assert app_probe.is_full_screen(window1)
@@ -442,7 +452,7 @@ async def test_full_screen(app, app_probe):
 
         # Exit full screen
         app.exit_full_screen()
-        await app_probe.redraw("No longer full screen", delay=0.1)
+        await window1_probe.wait_for_window("No longer full screen", full_screen=True)
 
         assert not app.is_full_screen
 
@@ -455,7 +465,10 @@ async def test_full_screen(app, app_probe):
         # Go full screen again on window 1
         app.set_full_screen(window1)
         # A longer delay to allow for genie animations
-        await app_probe.redraw("First extra window is full screen", delay=0.1)
+        await window1_probe.wait_for_window(
+            "First extra window is full screen",
+            full_screen=True,
+        )
         assert app.is_full_screen
 
         assert app_probe.is_full_screen(window1)
@@ -468,7 +481,7 @@ async def test_full_screen(app, app_probe):
         # Exit full screen by passing no windows
         app.set_full_screen()
 
-        await app_probe.redraw("App no longer full screen", delay=0.1)
+        await window1_probe.wait_for_window("No longer full screen", full_screen=True)
         assert not app.is_full_screen
 
         assert not app_probe.is_full_screen(window1)

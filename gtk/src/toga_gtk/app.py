@@ -68,6 +68,7 @@ class App:
             application_id=self.interface.app_id,
             flags=Gio.ApplicationFlags.FLAGS_NONE,
         )
+        self.native_about_dialog = None
 
         # Connect the GTK signal that will cause app startup to occur
         self.native.connect("startup", self.gtk_startup)
@@ -79,14 +80,19 @@ class App:
         # Set up the default commands for the interface.
         self.interface.commands.add(
             Command(
-                lambda _: self.interface.about(),
+                self._menu_about,
                 "About " + self.interface.name,
+                group=toga.Group.HELP,
+            ),
+            Command(
+                self._menu_visit_homepage,
+                "Visit homepage",
                 group=toga.Group.HELP,
             ),
             Command(None, "Preferences", group=toga.Group.APP),
             # Quit should always be the last item, in a section on its own
             Command(
-                lambda _: self.interface.on_exit(None),
+                self._menu_quit,
                 "Quit " + self.interface.name,
                 shortcut=toga.Key.MOD_1 + "q",
                 group=toga.Group.APP,
@@ -124,6 +130,15 @@ class App:
 
     def gtk_activate(self, data=None):
         pass
+
+    def _menu_about(self, app, **kwargs):
+        self.interface.about()
+
+    def _menu_quit(self, app, **kwargs):
+        self.interface.on_exit(None)
+
+    def _menu_visit_homepage(self, app, **kwargs):
+        self.interface.visit_homepage()
 
     def create_menus(self):
         # Only create the menu if the menu item index has been created.
@@ -199,27 +214,31 @@ class App:
         pass
 
     def show_about_dialog(self):
-        about = Gtk.AboutDialog()
+        self.native_about_dialog = Gtk.AboutDialog()
+        self.native_about_dialog.set_modal(True)
 
         icon_impl = toga_App.app.icon._impl
-        about.set_logo(icon_impl.native_72.get_pixbuf())
+        self.native_about_dialog.set_logo(icon_impl.native_72.get_pixbuf())
 
-        if self.interface.name is not None:
-            about.set_program_name(self.interface.name)
+        self.native_about_dialog.set_program_name(self.interface.name)
         if self.interface.version is not None:
-            about.set_version(self.interface.version)
+            self.native_about_dialog.set_version(self.interface.version)
         if self.interface.author is not None:
-            about.set_authors([self.interface.author])
+            self.native_about_dialog.set_authors([self.interface.author])
         if self.interface.description is not None:
-            about.set_comments(self.interface.description)
+            self.native_about_dialog.set_comments(self.interface.description)
         if self.interface.home_page is not None:
-            about.set_website(self.interface.home_page)
+            self.native_about_dialog.set_website(self.interface.home_page)
 
-        about.run()
-        about.destroy()
+        self.native_about_dialog.show()
+        self.native_about_dialog.connect("close", self._close_about)
+
+    def _close_about(self, dialog):
+        self.native_about_dialog.destroy()
+        self.native_about_dialog = None
 
     def beep(self):
-        Gdk.gdk_beep()
+        Gdk.beep()
 
     def exit(self):
         self.native.quit()
@@ -234,8 +253,11 @@ class App:
         window._impl.native.present()
 
     def enter_full_screen(self, windows):
-        for window in windows:
-            window._impl.set_full_screen(True)
+        for window in self.interface.windows:
+            if window in windows:
+                window._impl.set_full_screen(True)
+            else:
+                window._impl.set_full_screen(False)
 
     def exit_full_screen(self, windows):
         for window in windows:

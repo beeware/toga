@@ -190,7 +190,7 @@ class App:
             ),
             # Quit should always be the last item, in a section on its own
             toga.Command(
-                self._menu_exit,
+                self._menu_quit,
                 "Quit " + formal_name,
                 shortcut=toga.Key.MOD_1 + "q",
                 group=toga.Group.APP,
@@ -300,7 +300,7 @@ class App:
     def _menu_about(self, app, **kwargs):
         self.interface.about()
 
-    def _menu_exit(self, app, **kwargs):
+    def _menu_quit(self, app, **kwargs):
         self.interface.on_exit(None)
 
     def _menu_close_window(self, app, **kwargs):
