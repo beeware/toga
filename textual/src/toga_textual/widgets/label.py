@@ -1,3 +1,5 @@
+from travertino.size import at_least
+
 from textual.widgets import Label as TextualLabel
 
 from .base import Widget
@@ -12,3 +14,7 @@ class Label(Widget):
 
     def set_text(self, value):
         self.native.renderable = value
+
+    def rehint(self):
+        self.interface.intrinsic.width = at_least(len(self.native.renderable))
+        self.interface.intrinsic.height = 1

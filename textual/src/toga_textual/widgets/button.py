@@ -1,3 +1,5 @@
+from travertino.size import at_least
+
 from textual.widgets import Button as TextualButton
 
 from .base import Widget
@@ -18,7 +20,19 @@ class Button(Widget):
         self.native = TogaButton(self)
 
     def get_text(self):
-        return self.native.text
+        return self.native.label
 
     def set_text(self, text):
         self.native.label = text
+
+    @property
+    def width_adjustment(self):
+        return 2
+
+    @property
+    def height_adjustment(self):
+        return 2
+
+    def rehint(self):
+        self.interface.intrinsic.width = at_least(len(self.native.label) + 8)
+        self.interface.intrinsic.height = 3

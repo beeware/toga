@@ -1,3 +1,5 @@
+from travertino.size import at_least
+
 from textual.widgets import Input as TextualInput
 
 from .base import Widget
@@ -16,7 +18,7 @@ class TogaInput(TextualInput):
         self.interface.on_change(None)
 
     def on_input_submitted(self, event: TextualInput.Submitted) -> None:
-        self.interface.on_submit(None)
+        self.interface.on_confirm(None)
 
 
 class TextInput(Widget):
@@ -49,3 +51,15 @@ class TextInput(Widget):
 
     def is_valid(self):
         return True
+
+    @property
+    def width_adjustment(self):
+        return 2
+
+    @property
+    def height_adjustment(self):
+        return 2
+
+    def rehint(self):
+        self.interface.intrinsic.width = at_least(len(self.native.value) + 4)
+        self.interface.intrinsic.height = 3

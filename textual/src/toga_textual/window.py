@@ -13,12 +13,15 @@ class TogaWindow(TextualScreen):
     def on_mount(self) -> None:
         self.mount(TextualHeader())
 
+    def on_resize(self, event) -> None:
+        self.interface.content.refresh()
+
 
 class Window:
     def __init__(self, interface, title, position, size):
         self.interface = interface
         self.native = TogaWindow(self)
-        self.container = Container()
+        self.container = Container(self.native)
         self.set_title(title)
 
     def create_toolbar(self):
@@ -45,7 +48,7 @@ class Window:
         pass
 
     def get_size(self):
-        return (80, 25)
+        return (self.native.size.width, self.native.size.height)
 
     def set_size(self, size):
         pass

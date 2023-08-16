@@ -1,11 +1,11 @@
-class Container:
-    def __init__(self, on_refresh=None):
+from toga_textual.widgets.base import Scalable
+
+
+class Container(Scalable):
+    def __init__(self, native_parent, on_refresh=None):
+        self.native_parent = native_parent
         self._content = None
         self.on_refresh = on_refresh
-
-        # FIXME...
-        self.dpi = 96
-        self.baseline_dpi = self.dpi
 
     @property
     def content(self):
@@ -22,17 +22,11 @@ class Container:
 
     @property
     def width(self):
-        if self._content:
-            return self.content.native.size.width
-        else:
-            return 0
+        return self.scale_out_horizontal(self.native_parent.size[0])
 
     @property
     def height(self):
-        if self._content:
-            return self.content.native.size.height
-        else:
-            return 0
+        return self.scale_out_vertical(self.native_parent.size[1])
 
     def refreshed(self):
         if self.on_refresh:
