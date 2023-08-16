@@ -15,9 +15,11 @@ if TYPE_CHECKING:
 
 
 class WidgetRegistry(WeakValueDictionary):
-    # WidgetRegistry is implemented as a subclass of dict, because it provides
-    # a mapping from ID to widget. However, it exposes a set-like API; add()
-    # and update() take instances to be added, and iteration is over values.
+    # WidgetRegistry is implemented as a subclass of WeakValueDictionary, because it
+    # provides a mapping from ID to widget. However, it exposes a set-like API; add()
+    # and update() take instances to be added, and iteration is over values. The
+    # mapping is weak so the registry doesn't retain a strong reference to the widget,
+    # preventing memory cleanup.
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
