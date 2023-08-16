@@ -65,15 +65,12 @@ class OptionList:
         items = ", ".join(repr(option.text) for option in self)
         return f"<OptionList {items}>"
 
-    def __getitem__(self, item: int | str | OptionItem) -> OptionItem:
+    def __getitem__(self, index: int | str | OptionItem) -> OptionItem:
         """Obtain a specific tab of content."""
-        return self._options[self.index(item)]
+        return self._options[self.index(index)]
 
     def __delitem__(self, index: int | str | OptionItem):
-        """Remove the specified tab of content.
-
-        The currently selected item cannot be deleted.
-        """
+        """Same as :any:`remove`."""
         self.remove(index)
 
     def remove(self, index: int | str | OptionItem):
@@ -95,16 +92,12 @@ class OptionList:
         # Refresh the widget
         self.interface.refresh()
 
-    def __iter__(self):
-        """Obtain an iterator over all tabs in the OptionContainer."""
-        return iter(self._options)
-
     def __len__(self) -> int:
         """The number of tabs of content in the OptionContainer."""
         return len(self._options)
 
     def index(self, value: str | int | OptionItem):
-        """Find the index of the tab that matches the given specifier
+        """Find the index of the tab that matches the given value.
 
         :param value: The value to look for. An integer is returned as-is;
             if an :any:`OptionItem` is provided, that item's index is returned;
@@ -230,8 +223,11 @@ class OptionContainer(Widget):
         return self._content
 
     @property
-    def current_tab(self) -> OptionItem:
-        """The currently selected tab of content."""
+    def current_tab(self) -> OptionItem | None:
+        """The currently selected tab of content, or ``None`` if there are no tabs.
+
+        This property can also be set with an ``int`` index, or a ``str`` label.
+        """
         index = self._impl.get_current_tab_index()
         if index is None:
             return None

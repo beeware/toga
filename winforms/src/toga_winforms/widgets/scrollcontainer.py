@@ -1,6 +1,9 @@
-from System.Drawing import Point, Size
+from decimal import ROUND_DOWN
+
+from System.Drawing import Point
 from System.Windows.Forms import Panel, SystemInformation
 from travertino.node import Node
+from travertino.size import at_least
 
 from toga_winforms.container import Container
 
@@ -41,10 +44,13 @@ class ScrollContainer(Widget, Container):
 
     def set_bounds(self, x, y, width, height):
         super().set_bounds(x, y, width, height)
-        self.resize_content(width, height)
+        self.resize_content(
+            self.scale_in(width, ROUND_DOWN),
+            self.scale_in(height, ROUND_DOWN),
+        )
 
     def refreshed(self):
-        full_width, full_height = (self.width, self.height)
+        full_width, full_height = (self.native_width, self.native_height)
         inset_width = full_width - SystemInformation.VerticalScrollBarWidth
         inset_height = full_height - SystemInformation.HorizontalScrollBarHeight
         layout = self.interface.content.layout
@@ -53,12 +59,12 @@ class ScrollContainer(Widget, Container):
         # at the top of this file).
         def apply_insets():
             need_scrollbar = False
-            if self.vertical and layout.height > self.height:
+            if self.vertical and (layout.height > self.height):
                 need_scrollbar = True
-                self.width = inset_width
-            if self.horizontal and layout.width > self.width:
+                self.native_width = inset_width
+            if self.horizontal and (layout.width > self.width):
                 need_scrollbar = True
-                self.height = inset_height
+                self.native_height = inset_height
             return need_scrollbar
 
         if apply_insets():
@@ -70,14 +76,14 @@ class ScrollContainer(Widget, Container):
             apply_insets()
 
         # Crop any non-scrollable dimensions to the available size.
-        self.native_content.Size = Size(
-            max(self.width, layout.width if self.horizontal else 0),
-            max(self.height, layout.height if self.vertical else 0),
+        self.apply_layout(
+            layout.width if self.horizontal else 0,
+            layout.height if self.vertical else 0,
         )
 
         # Restore the original container size so it'll be used in the next call to
         # `refresh` or `resize_content`.
-        self.width, self.height = full_width, full_height
+        self.native_width, self.native_height = full_width, full_height
 
     def get_horizontal(self):
         return self.horizontal
@@ -121,3 +127,7 @@ class ScrollContainer(Widget, Container):
             self.scale_in(vertical_position),
         )
         self.interface.on_scroll(None)
+
+    def rehint(self):
+        self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
+        self.interface.intrinsic.height = at_least(self.interface._MIN_HEIGHT)

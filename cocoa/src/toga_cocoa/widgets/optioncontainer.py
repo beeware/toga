@@ -1,3 +1,5 @@
+import warnings
+
 from rubicon.objc import SEL, objc_method
 from travertino.size import at_least
 
@@ -11,6 +13,10 @@ from .base import Widget
 class TogaTabView(NSTabView):
     interface = objc_property(object, weak=True)
     impl = objc_property(object, weak=True)
+
+    @objc_method
+    def tabView_shouldSelectTabViewItem_(self, view, item) -> bool:
+        return view.indexOfTabViewItem(item) not in self.impl._disabled_tabs
 
     @objc_method
     def tabView_didSelectTabViewItem_(self, view, item) -> None:
@@ -91,7 +97,18 @@ class OptionContainer(Widget):
                 pass
         else:
             self._disabled_tabs.add(index)
-        tabview._setTabEnabled(enabled)
+
+        # This is an undocumented method, but it disables the button for the item. As an
+        # extra safety mechanism, the delegate will prevent the item from being selected
+        # by returning False for tabView:shouldSelectTabViewItem: if the item is in the
+        # disabled tab set. We catch the AttributeError and raise a warning in case the
+        # private method is ever fully deprecated; if this happens, the tab still won't
+        # be selectable (because of the delegate), but it won't be *visually* disabled,
+        # the code won't crash.
+        try:
+            tabview._setTabEnabled(enabled)
+        except AttributeError:  # pragma: no cover
+            warnings.warn("Private Cocoa method _setTabEnabled: has been removed!")
 
     def is_option_enabled(self, index):
         return index not in self._disabled_tabs

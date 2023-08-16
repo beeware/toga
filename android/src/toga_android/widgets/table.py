@@ -229,11 +229,6 @@ class Table(Widget):
             self.change_source(self.interface.data)
 
     def rehint(self):
-        # Android can crash when rendering some widgets until
-        # they have their layout params set. Guard for that case.
-        if not self.native.getLayoutParams():
-            return
-
         self.native.measure(
             View__MeasureSpec.UNSPECIFIED,
             View__MeasureSpec.UNSPECIFIED,
