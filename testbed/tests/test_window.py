@@ -236,7 +236,6 @@ else:
         # Create and show a window with content. We can't use the second_window fixture
         # because the fixture will retain a reference, preventing garbage collection.
         second_window = toga.Window()
-        toga.App.app.windows.add(second_window)
         second_window.content = toga.Box()
         second_window.show()
         await app_probe.redraw("Secondary Window has been created")
