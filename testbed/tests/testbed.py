@@ -2,6 +2,7 @@ import errno
 import os
 import sys
 import tempfile
+import time
 import traceback
 from functools import partial
 from pathlib import Path
@@ -15,7 +16,7 @@ from testbed.app import main
 
 def run_tests(app, cov, args, report_coverage, run_slow):
     try:
-        # Control the run speed of the
+        # Control the run speed of the test app.
         app.run_slow = run_slow
 
         project_path = Path(__file__).parent.parent
@@ -75,6 +76,9 @@ def run_tests(app, cov, args, report_coverage, run_slow):
         traceback.print_exc()
         app.returncode = 1
     finally:
+        print(f">>>>>>>>>> EXIT {app.returncode} <<<<<<<<<<")
+        # Add a short pause to make sure any log tailing gets a chance to flush
+        time.sleep(0.5)
         app.add_background_task(lambda app, **kwargs: app.exit())
 
 
@@ -147,14 +151,7 @@ if __name__ == "__main__":
             report_coverage=report_coverage,
         )
     )
-    app.add_background_task(lambda app, *kwargs: thread.start())
-
-    # Add an on_exit handler that will terminate the test suite.
-    def exit_suite(app, **kwargs):
-        print(f">>>>>>>>>> EXIT {app.returncode} <<<<<<<<<<")
-        return True
-
-    app.on_exit = exit_suite
+    thread.start()
 
     # Start the test app.
     app.main_loop()
