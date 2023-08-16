@@ -119,5 +119,38 @@ class AppProbe(BaseProbe):
 
     def keystroke(self, combination):
         accel = gtk_accel(combination)
+        state = 0
 
-        return toga_key(accel)
+        if "<Primary>" in accel:
+            state |= Gdk.ModifierType.CONTROL_MASK
+            accel = accel.replace("<Primary>", "")
+        if "<Alt>" in accel:
+            state |= Gdk.ModifierType.META_MASK
+            accel = accel.replace("<Alt>", "")
+        if "<Hyper>" in accel:
+            state |= Gdk.ModifierType.HYPER_MASK
+            accel = accel.replace("<Hyper>", "")
+        if "<CapsLock>" in accel:
+            state |= Gdk.ModifierType.LOCK_MASK
+            accel = accel.replace("<CapsLock>", "")
+        if "<Shift>" in accel:
+            state |= Gdk.ModifierType.SHIFT_MASK
+            accel = accel.replace("<Shift>", "")
+
+        keyval = getattr(
+            Gdk,
+            f"KEY_{accel}",
+            {
+                "!": Gdk.KEY_exclam,
+                "<home>": Gdk.KEY_Home,
+                "F5": Gdk.KEY_F5,
+            }.get(accel, None),
+        )
+
+        event = Gdk.Event.new(Gdk.EventType.KEY_PRESS)
+        event.keyval = keyval
+        event.length = 1
+        event.is_modifier = state != 0
+        event.state = state
+
+        return toga_key(event)

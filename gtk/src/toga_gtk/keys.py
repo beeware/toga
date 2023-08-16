@@ -217,7 +217,6 @@ GTK_KEY_CODES = {
 GTK_MODIFIER_CODES = {
     Key.CAPSLOCK: "<CapsLock>",
     Key.SHIFT: "<Shift>",
-    # TODO: Confirm the mapping of Control, Meta and Hyper are correct.
     Key.MOD_1: "<Primary>",
     Key.MOD_2: "<Alt>",
     Key.MOD_3: "<Hyper>",
@@ -231,7 +230,6 @@ def toga_key(event):
 
         modifiers = set()
 
-        # TODO: Confirm the mapping of Control, Meta and Hyper are correct.
         if event.state & Gdk.ModifierType.LOCK_MASK:
             modifiers.add(Key.CAPSLOCK)
         if event.state & Gdk.ModifierType.SHIFT_MASK:
@@ -263,6 +261,11 @@ def gtk_accel(shortcut):
         if key.value in accel:
             accel = accel.replace(key.value, "")
             modifiers.append(code)
+
+    # If the accelerator text is upper case, add a shift modifier.
+    if accel.isalpha() and accel.isupper():
+        accel = accel.lower()
+        modifiers.append("<Shift>")
 
     # Find the canonical definition of the remaining key.
     for key, code in GTK_KEY_CODES.items():

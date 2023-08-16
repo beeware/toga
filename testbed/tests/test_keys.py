@@ -14,6 +14,7 @@ from toga.keys import Key
         (Key.MOD_1 + "a", {"key": Key.A, "modifiers": {Key.MOD_1}}),
         (Key.MOD_2 + "a", {"key": Key.A, "modifiers": {Key.MOD_2}}),
         (Key.MOD_3 + "a", {"key": Key.A, "modifiers": {Key.MOD_3}}),
+        (Key.CAPSLOCK + "a", {"key": Key.A, "modifiers": {Key.CAPSLOCK}}),
         # modifier combinations
         (
             Key.MOD_1 + Key.MOD_2 + "a",

@@ -151,6 +151,8 @@ def toga_key(event):
         modifiers.add(Key.MOD_2)
     if event.modifierFlags & NSEventModifierFlagControl:
         modifiers.add(Key.MOD_3)
+    if event.modifierFlags & NSEventModifierFlagCapsLock:
+        modifiers.add(Key.CAPSLOCK)
 
     return {"key": key, "modifiers": modifiers}
 
