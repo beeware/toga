@@ -45,6 +45,10 @@ If the operating system provides a way to close the window, Toga will call the
 permitted. This can be used to implement protections against closing a window with
 unsaved changes.
 
+Once a window has been closed (either by user action, or programmatically with
+:meth:`~toga.Window.close()`), it *cannot* be reused. The behavior of any method on a
+:class:`~toga.Window` instance after it has been closed is undefined.
+
 Notes
 -----
 

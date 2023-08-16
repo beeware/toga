@@ -313,6 +313,9 @@ class Window:
 
         This *does not* invoke the ``on_close`` handler; the window will be immediately
         and unconditionally closed.
+
+        Once a window has been closed, it *cannot* be reused. The behavior of any method
+        on a :class:`~toga.Window` instance after it has been closed is undefined.
         """
         self.app.windows -= self
         self._impl.close()
