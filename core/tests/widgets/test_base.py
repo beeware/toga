@@ -640,7 +640,8 @@ def test_remove_child(widget):
     assert child.parent == widget
     assert child.app == app
     assert child.window == window
-    assert app.widgets["child_id"] == child
+    assert app.widgets == {"widget_id": widget, "child_id": child}
+    assert window.widgets == {"widget_id": widget, "child_id": child}
 
     # Remove the child
     widget.remove(child)
@@ -652,6 +653,10 @@ def test_remove_child(widget):
     # app and window have been reset.
     assert child.app is None
     assert child.window is None
+
+    # child widget no longer exists in the app or widgets registries.
+    assert app.widgets == {"widget_id": widget}
+    assert window.widgets == {"widget_id": widget}
 
     # The impl's remove_child has been invoked
     assert_action_performed_with(widget, "remove child", child=child._impl)
