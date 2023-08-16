@@ -35,10 +35,6 @@ class Button(TextViewWidget):
         self.set_background_filter(value)
 
     def rehint(self):
-        # Like other text-viewing widgets, Android crashes when rendering
-        # `Button` unless it has its layout params set. Guard for that case.
-        if not self.native.getLayoutParams():
-            return
         self.native.measure(
             View__MeasureSpec.UNSPECIFIED,
             View__MeasureSpec.UNSPECIFIED,

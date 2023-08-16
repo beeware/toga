@@ -276,6 +276,58 @@ def test_row_flex_insufficient_space_no_flex():
     )
 
 
+def test_row_flex_grandchild_min_size():
+    """The minimum intrinsic sizes of grandchild of flex row containers are honored"""
+    root = ExampleNode(
+        "app",
+        size=(at_least(0), at_least(0)),
+        style=Pack(direction=ROW),
+        children=[
+            ExampleNode(
+                "inner",
+                size=(at_least(0), at_least(0)),
+                style=Pack(direction=COLUMN, flex=1),
+                children=[
+                    ExampleNode(
+                        "textbox",
+                        size=(at_least(100), at_least(100)),
+                        style=Pack(flex=1),
+                    )
+                ],
+            ),
+            ExampleNode(
+                "Button",
+                size=(20, at_least(100)),
+                style=Pack(),
+            ),
+        ],
+    )
+
+    root.style.layout(root, ExampleViewport(640, 480))
+    assert_layout(
+        root,
+        (120, 100),
+        (640, 480),
+        {
+            "origin": (0, 0),
+            "content": (640, 480),
+            "children": [
+                {
+                    "origin": (0, 0),
+                    "content": (620, 480),
+                    "children": [
+                        {"origin": (0, 0), "content": (620, 480)},
+                    ],
+                },
+                {
+                    "origin": (620, 0),
+                    "content": (20, 480),
+                },
+            ],
+        },
+    )
+
+
 def test_column_flex_no_hints():
     """Children in a column layout with flexible containers, but no flex hints,
     doesn't collapse column width."""
@@ -544,6 +596,58 @@ def test_column_flex_insufficient_space_no_flex():
                         {"origin": (0, 100), "content": (20, 60)},
                         {"origin": (0, 160), "content": (30, 60)},
                     ],
+                },
+            ],
+        },
+    )
+
+
+def test_column_flex_grandchild_min_size():
+    """The minimum intrinsic sizes of grandchild of flex column containers are honored"""
+    root = ExampleNode(
+        "app",
+        size=(at_least(0), at_least(0)),
+        style=Pack(direction=COLUMN),
+        children=[
+            ExampleNode(
+                "inner",
+                size=(at_least(0), at_least(0)),
+                style=Pack(direction=ROW, flex=1),
+                children=[
+                    ExampleNode(
+                        "textbox",
+                        size=(at_least(100), at_least(100)),
+                        style=Pack(flex=1),
+                    )
+                ],
+            ),
+            ExampleNode(
+                "Button",
+                size=(at_least(100), 20),
+                style=Pack(),
+            ),
+        ],
+    )
+
+    root.style.layout(root, ExampleViewport(640, 480))
+    assert_layout(
+        root,
+        (100, 120),
+        (640, 480),
+        {
+            "origin": (0, 0),
+            "content": (640, 480),
+            "children": [
+                {
+                    "origin": (0, 0),
+                    "content": (640, 460),
+                    "children": [
+                        {"origin": (0, 0), "content": (640, 460)},
+                    ],
+                },
+                {
+                    "origin": (0, 460),
+                    "content": (640, 20),
                 },
             ],
         },

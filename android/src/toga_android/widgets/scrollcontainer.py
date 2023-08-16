@@ -1,3 +1,5 @@
+from decimal import ROUND_DOWN
+
 from travertino.size import at_least
 
 from ..container import Container
@@ -65,7 +67,10 @@ class ScrollContainer(Widget, Container):
 
     def set_bounds(self, x, y, width, height):
         super().set_bounds(x, y, width, height)
-        self.resize_content(width, height)
+        self.resize_content(
+            self.scale_in(width, ROUND_DOWN),
+            self.scale_in(height, ROUND_DOWN),
+        )
 
     def get_vertical(self):
         return self.vScrollListener.is_scrolling_enabled

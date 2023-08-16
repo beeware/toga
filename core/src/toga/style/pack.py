@@ -427,14 +427,21 @@ class Pack(BaseStyle):
                         )
                         # Our width calculation already takes into account the intrinsic
                         # width; that has now expanded as a result of layout, so adjust
-                        # to use the new layout size. Min height doesn't change, because
-                        # that's the "no flex" case.
+                        # to use the new layout size. Min width may also change, by the
+                        # same scheme, because the flex child can itself have children,
+                        # and those grandchildren have now been laid out.
                         # self._debug(f"  sub {child.intrinsic.width.value=}")
                         # self._debug(f"  add {child.layout.content_width=}")
+                        # self._debug(f"  add min {child.layout.min_content_width=}")
                         width = (
                             width
                             - child.intrinsic.width.value
                             + child.layout.content_width
+                        )
+                        min_width = (
+                            min_width
+                            - child.intrinsic.width.value
+                            + child.layout.min_content_width
                         )
                     except AttributeError:
                         # self._debug("- already laid out (fixed intrinsic width)")
@@ -705,14 +712,21 @@ class Pack(BaseStyle):
                         )
                         # Our height calculation already takes into account the
                         # intrinsic height; that has now expanded as a result of layout,
-                        # so adjust to use the new layout size. Min height doesn't
-                        # change, because that's the "no flex" case.
+                        # so adjust to use the new layout size. Min height may also
+                        # change, by the same scheme, because the flex child can itself
+                        # have children, and those grandchildren have now been laid out.
                         # self._debug(f"  sub {child.intrinsic.height.value=}")
                         # self._debug(f"  add {child.layout.content_height}")
+                        # self._debug(f"  add min {child.layout.min_content_height}")
                         height = (
                             height
                             - child.intrinsic.height.value
                             + child.layout.content_height
+                        )
+                        min_height = (
+                            min_height
+                            - child.intrinsic.height.value
+                            + child.layout.min_content_height
                         )
                     except AttributeError:
                         # self._debug("- already laid out (fixed intrinsic height)")
