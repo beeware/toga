@@ -265,6 +265,7 @@ def test_close_direct(window, app):
     window.close()
 
     # Window has been closed, but the close handler has *not* been invoked.
+    assert window.closed
     assert window.app == app
     assert window not in app.windows
     assert_action_performed(window, "close")
@@ -281,6 +282,7 @@ def test_close_no_handler(window, app):
     window._impl.simulate_close()
 
     # Window has been closed, and is no longer in the app's list of windows.
+    assert window.closed
     assert window.app == app
     assert window not in app.windows
     assert_action_performed(window, "close")
@@ -299,6 +301,7 @@ def test_close_sucessful_handler(window, app):
     window._impl.simulate_close()
 
     # Window has been closed, and is no longer in the app's list of windows.
+    assert window.closed
     assert window.app == app
     assert window not in app.windows
     assert_action_performed(window, "close")
@@ -318,6 +321,7 @@ def test_close_rejected_handler(window, app):
     window._impl.simulate_close()
 
     # Window has *not* been closed
+    assert not window.closed
     assert window.app == app
     assert window in app.windows
     assert_action_not_performed(window, "close")
