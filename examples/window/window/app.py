@@ -81,6 +81,7 @@ class WindowDemoApp(toga.App):
 
     async def do_screen_as_image(self, widget, **kwargs):
         screen = kwargs["screen"]
+        screenshot = screen.as_image()
         path = await self.main_window.save_file_dialog(
             "Screenshot save path",
             suggested_filename=f"Screenshot_{screen.name}.png",
@@ -88,7 +89,7 @@ class WindowDemoApp(toga.App):
         )
         if path is None:
             return
-        screen.as_image().save(path)
+        screenshot.save(path)
         self.main_window.info_dialog(
             "Screenshot saved", f"Screenshot of {screen.name} was saved properly!"
         )
