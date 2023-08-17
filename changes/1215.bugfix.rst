@@ -1,0 +1,1 @@
+Widgets are now removed from windows when the window is closed, preventing a memory leak on window closure.
