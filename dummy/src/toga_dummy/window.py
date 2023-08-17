@@ -52,16 +52,6 @@ class Window(LoggedObject):
 
     # Some platforms inherit this method from a base class.
     @not_required_on("android", "winforms")
-    def clear_content(self):
-        try:
-            widget = self._get_value("content")
-            widget.container = self.container
-        except AttributeError:
-            pass
-        self._action("clear content")
-
-    # Some platforms inherit this method from a base class.
-    @not_required_on("android", "winforms")
     def set_content(self, widget):
         self.container.content = widget
         self._action("set content", widget=widget)

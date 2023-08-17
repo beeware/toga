@@ -3,6 +3,7 @@ from System.Windows.Forms import (
     Orientation,
     SplitContainer as NativeSplitContainer,
 )
+from travertino.size import at_least
 
 from toga.constants import Direction
 
@@ -77,3 +78,7 @@ class SplitContainer(Widget):
         for panel in self.panels:
             size = panel.native_parent.ClientSize
             panel.resize_content(size.Width, size.Height, **kwargs)
+
+    def rehint(self):
+        self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
+        self.interface.intrinsic.height = at_least(self.interface._MIN_HEIGHT)

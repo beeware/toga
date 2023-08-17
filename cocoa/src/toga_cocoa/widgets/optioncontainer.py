@@ -3,7 +3,7 @@ import warnings
 from rubicon.objc import SEL, objc_method
 from travertino.size import at_least
 
-from toga_cocoa.container import Container, MinimumContainer
+from toga_cocoa.container import Container
 from toga_cocoa.libs import NSTabView, NSTabViewItem
 
 from ..libs import objc_property
@@ -62,17 +62,14 @@ class OptionContainer(Widget):
             SEL("refreshContent"), withObject=None, afterDelay=0
         )
 
-    def add_content(self, index, text, widget):
-        # Establish the minimum layout
-        widget.interface.style.layout(widget.interface, MinimumContainer())
-        min_width = widget.interface.layout.width
-        min_height = widget.interface.layout.height
+    def content_refreshed(self, container):
+        container.min_width = container.content.interface.layout.min_width
+        container.min_height = container.content.interface.layout.min_width
 
+    def add_content(self, index, text, widget):
         # Create the container for the widget
-        container = Container()
+        container = Container(on_refresh=self.content_refreshed)
         container.content = widget
-        container.min_width = min_width
-        container.min_height = min_height
         self.sub_containers.insert(index, container)
 
         # Create a NSTabViewItem for the content

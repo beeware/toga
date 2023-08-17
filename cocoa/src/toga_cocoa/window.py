@@ -1,5 +1,5 @@
 from toga.command import Command as BaseCommand
-from toga_cocoa.container import Container, MinimumContainer
+from toga_cocoa.container import Container
 from toga_cocoa.libs import (
     SEL,
     NSBackingStoreBuffered,
@@ -158,7 +158,7 @@ class Window:
 
         self.native.delegate = self.delegate
 
-        self.container = Container()
+        self.container = Container(on_refresh=self.content_refreshed)
         self.native.contentView = self.container.native
 
     def create_toolbar(self):
@@ -174,12 +174,26 @@ class Window:
 
         self.native.setToolbar(self._toolbar_native)
 
-    def clear_content(self):
-        pass
-
     def set_content(self, widget):
         # Set the content of the window's container
         self.container.content = widget
+
+    def content_refreshed(self, container):
+        min_width = self.interface.content.layout.min_width
+        min_height = self.interface.content.layout.min_height
+
+        # If the minimum layout is bigger than the current window,
+        # increase the size of the window.
+        frame = self.native.frame
+        if frame.size.width < min_width and frame.size.height < min_height:
+            self.set_size((min_width, min_height))
+        elif frame.size.width < min_width:
+            self.set_size((min_width, frame.size.height))
+        elif frame.size.height < min_height:
+            self.set_size((frame.size.width, min_height))
+
+        self.container.min_width = min_width
+        self.container.min_height = min_height
 
     def get_title(self):
         return str(self.native.title)
@@ -233,19 +247,6 @@ class Window:
 
     def show(self):
         self.native.makeKeyAndOrderFront(None)
-
-        # Render of the content with a 0 sized viewport; this will
-        # establish the minimum possible content size. Use that to enforce
-        # a minimum window size.
-        self.interface.content.style.layout(
-            self.interface.content,
-            MinimumContainer(),
-        )
-        self.container.min_width = self.interface.content.layout.width
-        self.container.min_height = self.interface.content.layout.height
-
-        # Refresh with the actual viewport to do the proper rendering.
-        self.interface.content.refresh()
 
     def hide(self):
         self.native.orderOut(self.native)
