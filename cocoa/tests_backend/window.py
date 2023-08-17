@@ -253,7 +253,7 @@ class WindowProbe(BaseProbe):
     def has_toolbar(self):
         return self.native.toolbar is not None
 
-    def assert_is_toolbar_separator(self, index):
+    def assert_is_toolbar_separator(self, index, section=False):
         item = self.native.toolbar.items[index]
         assert str(item.itemIdentifier).startswith("ToolbarSeparator-")
 

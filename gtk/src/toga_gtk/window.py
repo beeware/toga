@@ -6,8 +6,6 @@ from .libs import Gtk
 
 
 class Window:
-    _IMPL_CLASS = Gtk.Window
-
     def __init__(self, interface, title, position, size):
         self.interface = interface
         self.interface._impl = self
@@ -16,7 +14,7 @@ class Window:
 
         self.layout = None
 
-        self.native = self._IMPL_CLASS()
+        self.create()
         self.native._impl = self
 
         self.native.connect("delete-event", self.gtk_delete_event)
@@ -51,6 +49,9 @@ class Window:
 
         self.native.add(self.layout)
 
+    def create(self):
+        self.native = Gtk.Window()
+
     def get_title(self):
         return self.native.get_title()
 
@@ -64,6 +65,7 @@ class Window:
         # Remove any pre-existing toolbar content
         if self.toolbar_items:
             self.native_toolbar.set_visible(False)
+
         for cmd, item_impl in self.toolbar_items.items():
             self.native_toolbar.remove(item_impl)
             try:
@@ -73,6 +75,7 @@ class Window:
                 pass
 
         # Create the new toolbar items
+        self.toolbar_items = {}
         for cmd in self.interface.toolbar:
             if cmd == GROUP_BREAK:
                 item_impl = Gtk.SeparatorToolItem()
@@ -83,7 +86,9 @@ class Window:
             else:
                 item_impl = Gtk.ToolButton()
                 if cmd.icon:
-                    item_impl.set_icon_widget(cmd.icon._impl.native_32)
+                    item_impl.set_icon_widget(
+                        Gtk.Image.new_from_pixbuf(cmd.icon._impl.native_32.get_pixbuf())
+                    )
                 item_impl.set_label(cmd.text)
                 if cmd.tooltip:
                     item_impl.set_tooltip_text(cmd.tooltip)
@@ -91,6 +96,7 @@ class Window:
                 cmd._impl.native.append(item_impl)
             self.toolbar_items[cmd] = item_impl
             self.native_toolbar.insert(item_impl, -1)
+
         if self.toolbar_items:
             self.native_toolbar.set_visible(True)
             self.native_toolbar.show_all()

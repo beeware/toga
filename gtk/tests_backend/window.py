@@ -240,9 +240,10 @@ class WindowProbe(BaseProbe):
     def has_toolbar(self):
         return self.impl.native_toolbar.get_n_items() > 0
 
-    def assert_is_toolbar_separator(self, index):
+    def assert_is_toolbar_separator(self, index, section=False):
         item = self.impl.native_toolbar.get_nth_item(index)
         assert isinstance(item, Gtk.SeparatorToolItem)
+        assert item.get_draw() == (not section)
 
     def assert_toolbar_item(self, index, label, tooltip, has_icon, enabled):
         item = self.impl.native_toolbar.get_nth_item(index)

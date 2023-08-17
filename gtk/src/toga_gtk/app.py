@@ -25,10 +25,8 @@ def gtk_menu_item_activate(cmd):
 
 
 class MainWindow(Window):
-    _IMPL_CLASS = Gtk.ApplicationWindow
-
     def create(self):
-        super().create()
+        self.native = Gtk.ApplicationWindow()
         self.native.set_role("MainWindow")
         icon_impl = toga_App.app.icon._impl
         self.native.set_icon(icon_impl.native_72.get_pixbuf())
@@ -84,11 +82,6 @@ class App:
                 "About " + self.interface.name,
                 group=toga.Group.HELP,
             ),
-            Command(
-                self._menu_visit_homepage,
-                "Visit homepage",
-                group=toga.Group.HELP,
-            ),
             Command(None, "Preferences", group=toga.Group.APP),
             # Quit should always be the last item, in a section on its own
             Command(
@@ -137,9 +130,6 @@ class App:
     def _menu_quit(self, app, **kwargs):
         self.interface.on_exit(None)
 
-    def _menu_visit_homepage(self, app, **kwargs):
-        self.interface.visit_homepage()
-
     def create_menus(self):
         # Only create the menu if the menu item index has been created.
         self._menu_items = {}
@@ -162,8 +152,7 @@ class App:
 
                 cmd_id = "command-%s" % id(cmd)
                 action = Gio.SimpleAction.new(cmd_id, None)
-                if cmd.action:
-                    action.connect("activate", gtk_menu_item_activate(cmd))
+                action.connect("activate", gtk_menu_item_activate(cmd))
 
                 cmd._impl.native.append(action)
                 cmd._impl.set_enabled(cmd.enabled)
@@ -240,11 +229,9 @@ class App:
     def beep(self):
         Gdk.beep()
 
-    def exit(self):
+    # We can't call this under test conditions, because it would kill the test harness
+    def exit(self):  # pragma: no cover
         self.native.quit()
-
-    def set_on_exit(self, value):
-        pass
 
     def get_current_window(self):
         return self.native.get_active_window()._impl
@@ -270,7 +257,7 @@ class App:
         self.interface.factory.not_implemented("App.hide_cursor()")
 
 
-class DocumentApp(App):
+class DocumentApp(App):  # pragma: no cover
     def _create_app_commands(self):
         self.interface.commands.add(
             toga.Command(

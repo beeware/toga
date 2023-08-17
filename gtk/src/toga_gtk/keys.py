@@ -225,25 +225,22 @@ GTK_MODIFIER_CODES = {
 
 def toga_key(event):
     """Convert a GDK Key Event into a Toga key."""
-    try:
-        key = GDK_KEYS[event.keyval]
+    key = GDK_KEYS[event.keyval]
 
-        modifiers = set()
+    modifiers = set()
 
-        if event.state & Gdk.ModifierType.LOCK_MASK:
-            modifiers.add(Key.CAPSLOCK)
-        if event.state & Gdk.ModifierType.SHIFT_MASK:
-            modifiers.add(Key.SHIFT)
-        if event.state & Gdk.ModifierType.CONTROL_MASK:
-            modifiers.add(Key.MOD_1)
-        if event.state & Gdk.ModifierType.META_MASK:
-            modifiers.add(Key.MOD_2)
-        if event.state & Gdk.ModifierType.HYPER_MASK:
-            modifiers.add(Key.MOD_3)
+    if event.state & Gdk.ModifierType.LOCK_MASK:
+        modifiers.add(Key.CAPSLOCK)
+    if event.state & Gdk.ModifierType.SHIFT_MASK:
+        modifiers.add(Key.SHIFT)
+    if event.state & Gdk.ModifierType.CONTROL_MASK:
+        modifiers.add(Key.MOD_1)
+    if event.state & Gdk.ModifierType.META_MASK:
+        modifiers.add(Key.MOD_2)
+    if event.state & Gdk.ModifierType.HYPER_MASK:
+        modifiers.add(Key.MOD_3)
 
-        return {"key": key, "modifiers": modifiers}
-    except KeyError:
-        return None
+    return {"key": key, "modifiers": modifiers}
 
 
 def gtk_accel(shortcut):

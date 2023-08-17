@@ -55,7 +55,7 @@ async def test_main_window_toolbar(app, main_window, main_window_probe):
         shortcut=toga.Key.MOD_1 + "1",
         group=group,
     )
-    # A command with everything
+    # A command with no tooltip
     cmd2 = toga.Command(
         action,
         "No Tooltip",
@@ -69,8 +69,16 @@ async def test_main_window_toolbar(app, main_window, main_window_probe):
         tooltip="A command with no icon",
         shortcut=toga.Key.MOD_1 + "3",
     )
+    # A command in another section
+    cmd4 = toga.Command(
+        action,
+        "Sectioned",
+        icon=toga.Icon.DEFAULT_ICON,
+        tooltip="I'm in another section",
+        section=2,
+    )
 
-    main_window.toolbar.add(cmd1, cmd2, cmd3)
+    main_window.toolbar.add(cmd1, cmd2, cmd3, cmd4)
 
     await main_window_probe.redraw("Main window has a toolbar")
     assert main_window_probe.has_toolbar()
@@ -94,6 +102,14 @@ async def test_main_window_toolbar(app, main_window, main_window_probe):
         3,
         label="No Tooltip",
         tooltip=None,
+        has_icon=True,
+        enabled=True,
+    )
+    main_window_probe.assert_is_toolbar_separator(4, section=True)
+    main_window_probe.assert_toolbar_item(
+        5,
+        label="Sectioned",
+        tooltip="I'm in another section",
         has_icon=True,
         enabled=True,
     )
@@ -173,6 +189,8 @@ async def test_menu_about(monkeypatch, app, app_probe):
     # Make the app definition minimal to verify the dialog still displays
     monkeypatch.setattr(app, "_author", None)
     monkeypatch.setattr(app, "_version", None)
+    monkeypatch.setattr(app, "_home_page", None)
+    monkeypatch.setattr(app, "_description", None)
 
     app_probe.activate_menu_about()
     await app_probe.redraw("About dialog with no details shown")

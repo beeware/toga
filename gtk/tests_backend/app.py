@@ -92,17 +92,17 @@ class AppProbe(BaseProbe):
         self._activate_menu_item(["Help", "About Toga Testbed"])
 
     def close_about_dialog(self):
-        self.app._impl.native_about_dialog.close()
+        self.app._impl._close_about(self.app._impl.native_about_dialog)
 
     def activate_menu_visit_homepage(self):
-        self._activate_menu_item(["Help", "Visit homepage"])
+        # Homepage is a link on the GTK about page.
+        pytest.xfail("GTK doesn't have a visit homepage menu item")
 
     def assert_system_menus(self):
         self.assert_menu_item(["*", "Preferences"], enabled=False)
         self.assert_menu_item(["*", "Quit Toga Testbed"], enabled=True)
 
         self.assert_menu_item(["Help", "About Toga Testbed"], enabled=True)
-        self.assert_menu_item(["Help", "Visit homepage"], enabled=True)
 
     def activate_menu_close_window(self):
         pytest.xfail("GTK doesn't have a window management menu items")
