@@ -259,7 +259,7 @@ async def test_menu_items(app, app_probe):
     # Add all the commands
     app.commands.add(cmd1, cmd2, cmd3, disabled_item, no_action, deep_item, cmd4)
 
-    app_probe.redraw("App has custom menu items")
+    await app_probe.redraw("App has custom menu items")
 
     app_probe.assert_menu_item(
         ["Other", "Full command"],
