@@ -1,3 +1,5 @@
+import gc
+import weakref
 from math import pi
 from unittest.mock import Mock
 
@@ -32,6 +34,16 @@ SCALES = [0.0001, 0.1, 1, pi, 10000]
 @fixture
 async def widget():
     return toga.Slider()
+
+
+async def test_cleanup():
+    widget = toga.Slider()
+    ref = weakref.ref(widget)
+
+    del widget
+    gc.collect()
+
+    assert ref() is None
 
 
 @fixture

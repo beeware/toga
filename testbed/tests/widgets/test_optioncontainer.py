@@ -1,3 +1,5 @@
+import gc
+import weakref
 from unittest.mock import Mock
 
 import pytest
@@ -69,6 +71,18 @@ async def widget(content1, content2, content3, on_select_handler):
         style=Pack(flex=1),
         on_select=on_select_handler,
     )
+
+
+async def test_cleanup():
+    skip_on_platforms("android", "iOS")
+
+    widget = toga.OptionContainer(content=[("Tab 1", toga.Box())])
+    ref = weakref.ref(widget)
+
+    del widget
+    gc.collect()
+
+    assert ref() is None
 
 
 async def test_select_tab(

@@ -1,3 +1,5 @@
+import gc
+import weakref
 from decimal import Decimal
 from unittest.mock import Mock, call
 
@@ -28,6 +30,16 @@ from .test_textinput import (  # noqa: F401
 @pytest.fixture
 async def widget():
     return toga.NumberInput(value="1.23", step="0.01")
+
+
+async def test_cleanup():
+    widget = toga.NumberInput(value="1.23", step="0.01")
+    ref = weakref.ref(widget)
+
+    del widget
+    gc.collect()
+
+    assert ref() is None
 
 
 @pytest.fixture

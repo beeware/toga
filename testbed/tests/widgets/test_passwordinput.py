@@ -1,3 +1,6 @@
+import gc
+import weakref
+
 import pytest
 
 import toga
@@ -36,6 +39,16 @@ from .test_textinput import (  # noqa: F401
 @pytest.fixture
 async def widget():
     return toga.PasswordInput(value="sekrit")
+
+
+async def test_cleanup():
+    widget = toga.PasswordInput(value="sekrit")
+    ref = weakref.ref(widget)
+
+    del widget
+    gc.collect()
+
+    assert ref() is None
 
 
 @pytest.fixture

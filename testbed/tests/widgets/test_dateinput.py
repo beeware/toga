@@ -1,3 +1,5 @@
+import gc
+import weakref
 from datetime import date, datetime, timedelta
 from unittest.mock import Mock, call
 
@@ -80,6 +82,18 @@ def assert_none_value(normalize):
 async def widget():
     skip_on_platforms("macOS", "iOS", "linux")
     return toga.DateInput()
+
+
+async def test_cleanup():
+    skip_on_platforms("macOS", "iOS", "linux")
+
+    widget = toga.DateInput()
+    ref = weakref.ref(widget)
+
+    del widget
+    gc.collect()
+
+    assert ref() is None
 
 
 async def test_init():

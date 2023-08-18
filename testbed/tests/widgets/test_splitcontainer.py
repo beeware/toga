@@ -1,3 +1,6 @@
+import gc
+import weakref
+
 import pytest
 from pytest import approx
 
@@ -6,7 +9,7 @@ from toga.colors import CORNFLOWERBLUE, GOLDENROD, REBECCAPURPLE
 from toga.constants import Direction
 from toga.style.pack import Pack
 
-from ..conftest import xfail_on_platforms
+from ..conftest import skip_on_platforms
 from .probe import get_probe
 from .properties import (  # noqa: F401
     test_enable_noop,
@@ -56,8 +59,20 @@ async def content3_probe(content3):
 
 @pytest.fixture
 async def widget(content1, content2):
-    xfail_on_platforms("android", "iOS")
+    skip_on_platforms("android", "iOS")
     return toga.SplitContainer(content=[content1, content2], style=Pack(flex=1))
+
+
+async def test_cleanup():
+    skip_on_platforms("android", "iOS")
+
+    widget = toga.SplitContainer(content=[toga.Box(), toga.Box()])
+    ref = weakref.ref(widget)
+
+    del widget
+    gc.collect()
+
+    assert ref() is None
 
 
 async def test_set_content(

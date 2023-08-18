@@ -1,3 +1,5 @@
+import gc
+import weakref
 from unittest.mock import Mock
 
 from pytest import approx, fixture
@@ -29,6 +31,16 @@ else:
 @fixture
 async def widget():
     return toga.Button("Hello")
+
+
+async def test_cleanup():
+    widget = toga.Button("Hello")
+    ref = weakref.ref(widget)
+
+    del widget
+    gc.collect()
+
+    assert ref() is None
 
 
 async def test_text(widget, probe):
