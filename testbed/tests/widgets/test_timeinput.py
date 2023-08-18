@@ -1,3 +1,5 @@
+import gc
+import weakref
 from datetime import datetime, time
 from unittest.mock import Mock, call
 
@@ -76,6 +78,18 @@ def normalize(probe):
 async def widget():
     skip_on_platforms("macOS", "iOS", "linux")
     return toga.TimeInput()
+
+
+async def test_cleanup():
+    skip_on_platforms("macOS", "iOS", "linux")
+
+    widget = toga.TimeInput()
+    ref = weakref.ref(widget)
+
+    del widget
+    gc.collect()
+
+    assert ref() is None
 
 
 async def test_init(normalize):

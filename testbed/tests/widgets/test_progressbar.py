@@ -1,4 +1,6 @@
 import asyncio
+import gc
+import weakref
 
 import pytest
 
@@ -19,6 +21,16 @@ else:
 @pytest.fixture
 async def widget():
     return toga.ProgressBar(max=100, value=5)
+
+
+async def test_cleanup():
+    widget = toga.ProgressBar(max=100, value=5)
+    ref = weakref.ref(widget)
+
+    del widget
+    gc.collect()
+
+    assert ref() is None
 
 
 async def test_start_stop_determinate(widget, probe):

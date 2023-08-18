@@ -1,3 +1,6 @@
+import gc
+import weakref
+
 import pytest
 
 import toga
@@ -13,6 +16,18 @@ from .properties import (  # noqa: F401
 async def widget():
     skip_on_platforms("android", "iOS", "windows")
     return toga.ActivityIndicator()
+
+
+async def test_cleanup():
+    skip_on_platforms("android", "iOS", "windows")
+
+    widget = toga.ActivityIndicator()
+    ref = weakref.ref(widget)
+
+    del widget
+    gc.collect()
+
+    assert ref() is None
 
 
 async def test_start_stop(widget, probe):
