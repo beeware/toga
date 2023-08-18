@@ -2,13 +2,14 @@ from travertino.size import at_least
 
 from toga_winforms.libs import WinForms
 
+from ..internal.wrappers import WeakrefCallable
 from .base import Widget
 
 
 class Switch(Widget):
     def create(self):
         self.native = WinForms.CheckBox()
-        self.native.CheckedChanged += self.winforms_checked_changed
+        self.native.CheckedChanged += WeakrefCallable(self.winforms_checked_changed)
 
     def winforms_checked_changed(self, sender, event):
         self.interface.on_change(None)

@@ -6,6 +6,7 @@ from travertino.size import at_least
 from toga_winforms.colors import native_color
 from toga_winforms.libs import HorizontalTextAlignment, WinForms, user32
 
+from ..internal.wrappers import WeakrefCallable
 from .base import Widget
 
 
@@ -15,10 +16,10 @@ class TextInput(Widget):
     def create(self):
         self.native = WinForms.TextBox()
         self.native.Multiline = False
-        self.native.TextChanged += self.winforms_text_changed
-        self.native.KeyPress += self.winforms_key_press
-        self.native.GotFocus += self.winforms_got_focus
-        self.native.LostFocus += self.winforms_lost_focus
+        self.native.TextChanged += WeakrefCallable(self.winforms_text_changed)
+        self.native.KeyPress += WeakrefCallable(self.winforms_key_press)
+        self.native.GotFocus += WeakrefCallable(self.winforms_got_focus)
+        self.native.LostFocus += WeakrefCallable(self.winforms_lost_focus)
 
         self._placeholder = ""
 

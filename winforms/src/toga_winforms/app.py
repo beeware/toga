@@ -6,6 +6,7 @@ import threading
 import toga
 from toga import Key
 
+from .internal.wrappers import WeakrefCallable
 from .keys import toga_to_winforms_key
 from .libs import (
     SecurityProtocolType,
@@ -151,7 +152,7 @@ class App:
                 item = WinForms.ToolStripMenuItem(cmd.text)
 
                 if cmd.action:
-                    item.Click += cmd._impl.as_handler()
+                    item.Click += WeakrefCallable(cmd._impl.as_handler())
                 item.Enabled = cmd.enabled
 
                 if cmd.shortcut is not None:
@@ -244,7 +245,9 @@ class App:
 
             # This catches errors in handlers, and prints them
             # in a usable form.
-            self.native.ThreadException += self.winforms_thread_exception
+            self.native.ThreadException += WeakrefCallable(
+                self.winforms_thread_exception
+            )
 
             self.loop.run_forever(self.app_context)
         except Exception as e:

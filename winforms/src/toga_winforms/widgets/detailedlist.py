@@ -2,6 +2,7 @@ from travertino.size import at_least
 
 from toga_winforms.libs import WinForms
 
+from ..internal.wrappers import WeakrefCallable
 from .base import Widget
 
 
@@ -21,9 +22,15 @@ class DetailedList(Widget):
         self.native.DoubleBuffered = True
         self.native.VirtualMode = True
 
-        self.native.ItemSelectionChanged += self.winforms_item_selection_changed
-        self.native.RetrieveVirtualItem += self.winforms_retrieve_virtual_item
-        self.native.CacheVirtualItems += self.winforms_cache_virtual_items
+        self.native.ItemSelectionChanged += WeakrefCallable(
+            self.winforms_item_selection_changed
+        )
+        self.native.RetrieveVirtualItem += WeakrefCallable(
+            self.winforms_retrieve_virtual_item
+        )
+        self.native.CacheVirtualItems += WeakrefCallable(
+            self.winforms_cache_virtual_items
+        )
 
     def winforms_retrieve_virtual_item(self, sender, e):
         # Because ListView is in VirtualMode, it's necessary implement

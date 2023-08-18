@@ -22,6 +22,7 @@ from toga_winforms.libs import (
     win_font_family,
 )
 
+from ..internal.wrappers import WeakrefCallable
 from ..libs.fonts import win_font_style
 from .box import Box
 
@@ -59,11 +60,11 @@ class Canvas(Box):
     def create(self):
         super().create()
         self.native.DoubleBuffered = True
-        self.native.Paint += self.winforms_paint
-        self.native.Resize += self.winforms_resize
-        self.native.MouseDown += self.winforms_mouse_down
-        self.native.MouseMove += self.winforms_mouse_move
-        self.native.MouseUp += self.winforms_mouse_up
+        self.native.Paint += WeakrefCallable(self.winforms_paint)
+        self.native.Resize += WeakrefCallable(self.winforms_resize)
+        self.native.MouseDown += WeakrefCallable(self.winforms_mouse_down)
+        self.native.MouseMove += WeakrefCallable(self.winforms_mouse_move)
+        self.native.MouseUp += WeakrefCallable(self.winforms_mouse_up)
         self.clicks = 0
 
     def set_on_resize(self, handler):

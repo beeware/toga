@@ -4,6 +4,7 @@ from travertino.size import at_least
 
 from toga_winforms.libs import WinDateTime, WinForms
 
+from ..internal.wrappers import WeakrefCallable
 from .base import Widget
 
 
@@ -20,7 +21,7 @@ class DateInput(Widget):
 
     def create(self):
         self.native = WinForms.DateTimePicker()
-        self.native.ValueChanged += self.winforms_value_changed
+        self.native.ValueChanged += WeakrefCallable(self.winforms_value_changed)
 
     def get_value(self):
         return py_date(self.native.Value)

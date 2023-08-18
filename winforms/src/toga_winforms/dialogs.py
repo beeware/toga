@@ -2,6 +2,7 @@ import asyncio
 from abc import ABC
 from pathlib import Path
 
+from .internal.wrappers import WeakrefCallable
 from .libs import WinFont, WinForms
 from .libs.winforms import ContentAlignment, FontFamily, FontStyle, SystemFonts
 
@@ -108,7 +109,7 @@ class StackTraceDialog(BaseDialog):
         self.native.MinimizeBox = False
         self.native.FormBorderStyle = self.native.FormBorderStyle.FixedSingle
         self.native.MaximizeBox = False
-        self.native.FormClosing += self.winforms_FormClosing
+        self.native.FormClosing += WeakrefCallable(self.winforms_FormClosing)
         self.native.Width = 540
         self.native.Height = 320
         self.native.Text = title
@@ -147,7 +148,7 @@ class StackTraceDialog(BaseDialog):
             retry.Top = 250
             retry.Width = 100
             retry.Text = "Retry"
-            retry.Click += self.winforms_Click_retry
+            retry.Click += WeakrefCallable(self.winforms_Click_retry)
 
             self.native.Controls.Add(retry)
 
@@ -156,7 +157,7 @@ class StackTraceDialog(BaseDialog):
             quit.Top = 250
             quit.Width = 100
             quit.Text = "Quit"
-            quit.Click += self.winforms_Click_quit
+            quit.Click += WeakrefCallable(self.winforms_Click_quit)
 
             self.native.Controls.Add(quit)
         else:
@@ -165,7 +166,7 @@ class StackTraceDialog(BaseDialog):
             accept.Top = 250
             accept.Width = 100
             accept.Text = "Ok"
-            accept.Click += self.winforms_Click_accept
+            accept.Click += WeakrefCallable(self.winforms_Click_accept)
 
             self.native.Controls.Add(accept)
 

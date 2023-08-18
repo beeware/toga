@@ -2,6 +2,7 @@ from travertino.size import at_least
 
 from toga_winforms.libs import WinForms
 
+from ..internal.wrappers import WeakrefCallable
 from .base import Widget
 
 
@@ -24,11 +25,17 @@ class Table(Widget):
         self.native.VirtualMode = True
         self.native.Columns.AddRange(dataColumn)
 
-        self.native.ItemSelectionChanged += self.winforms_item_selection_changed
-        self.native.RetrieveVirtualItem += self.winforms_retrieve_virtual_item
-        self.native.CacheVirtualItems += self.winforms_cache_virtual_items
-        self.native.MouseDoubleClick += self.winforms_double_click
-        self.native.VirtualItemsSelectionRangeChanged += (
+        self.native.ItemSelectionChanged += WeakrefCallable(
+            self.winforms_item_selection_changed
+        )
+        self.native.RetrieveVirtualItem += WeakrefCallable(
+            self.winforms_retrieve_virtual_item
+        )
+        self.native.CacheVirtualItems += WeakrefCallable(
+            self.winforms_cache_virtual_items
+        )
+        self.native.MouseDoubleClick += WeakrefCallable(self.winforms_double_click)
+        self.native.VirtualItemsSelectionRangeChanged += WeakrefCallable(
             self.winforms_virtual_item_selection_range_changed
         )
 

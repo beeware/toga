@@ -1,6 +1,7 @@
 from toga import GROUP_BREAK, SECTION_BREAK
 
 from .container import Container
+from .internal.wrappers import WeakrefCallable
 from .libs import Point, Size, WinForms
 from .widgets.base import Scalable
 
@@ -8,7 +9,6 @@ from .widgets.base import Scalable
 class Window(Container, Scalable):
     def __init__(self, interface, title, position, size):
         self.interface = interface
-        self.interface._impl = self
 
         # Winforms close handling is caught on the FormClosing handler. To allow
         # for async close handling, we need to be able to abort this close
@@ -19,7 +19,7 @@ class Window(Container, Scalable):
         self._is_closing = False
 
         self.native = WinForms.Form()
-        self.native.FormClosing += self.winforms_FormClosing
+        self.native.FormClosing += WeakrefCallable(self.winforms_FormClosing)
         super().__init__(self.native)
         self.init_scale(self.native)
 
@@ -30,9 +30,8 @@ class Window(Container, Scalable):
         self.set_position(position)
 
         self.toolbar_native = None
-        self.toolbar_items = None
 
-        self.native.Resize += lambda sender, args: self.resize_content()
+        self.native.Resize += WeakrefCallable(self.winforms_Resize)
         self.resize_content()  # Store initial size
 
         if not self.interface.resizable:
@@ -125,6 +124,9 @@ class Window(Container, Scalable):
 
     def get_visible(self):
         return self.native.Visible
+
+    def winforms_Resize(self, sender, event):
+        self.resize_content()
 
     def winforms_FormClosing(self, sender, event):
         # If the app is exiting, or a manual close has been requested,

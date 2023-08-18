@@ -7,6 +7,7 @@ from travertino.size import at_least
 from toga.widgets.numberinput import _clean_decimal
 from toga_winforms.libs import Convert, HorizontalTextAlignment, WinForms
 
+from ..internal.wrappers import WeakrefCallable
 from .base import Widget
 
 
@@ -25,7 +26,7 @@ class NumberInput(Widget):
 
     def create(self):
         self.native = WinForms.NumericUpDown()
-        self.native.TextChanged += self.winforms_text_changed
+        self.native.TextChanged += WeakrefCallable(self.winforms_text_changed)
 
     def winforms_text_changed(self, sender, event):
         self.interface.on_change(None)
