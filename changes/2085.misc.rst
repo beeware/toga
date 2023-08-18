@@ -1,0 +1,1 @@
+WebView no longer uses the deprecated ``run_javascript`` API on Gtk.
