@@ -12,8 +12,6 @@ import toga
 from toga.colors import CORNFLOWERBLUE, GOLDENROD, REBECCAPURPLE
 from toga.style.pack import COLUMN, Pack
 
-from .conftest import skip_on_platforms
-
 
 def window_probe(app, window):
     module = import_module("tests_backend.window")
@@ -228,11 +226,6 @@ else:
 
     async def test_secondary_window_cleanup(app_probe):
         """Memory for windows is cleaned up when windows are deleted."""
-        # FIXME: This will currently fail on Windows due to reference cycles between the
-        # CLR and Python not being detected by garbage collection and preventing
-        # cleanup.
-        skip_on_platforms("windows")
-
         # Create and show a window with content. We can't use the second_window fixture
         # because the fixture will retain a reference, preventing garbage collection.
         second_window = toga.Window()
