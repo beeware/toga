@@ -2,9 +2,7 @@ from rubicon.objc import CGRectMake  # noqa: F401
 from rubicon.objc import NSArray  # noqa: F401
 from rubicon.objc import (  # noqa: F401
     SEL,
-    CGDisplayCreateImage,
     CGFloat,
-    CGMainDisplayID,
     CGRect,
     NSMakePoint,
     NSMakeRect,

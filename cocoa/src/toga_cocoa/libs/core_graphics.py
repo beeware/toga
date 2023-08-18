@@ -18,6 +18,7 @@ from rubicon.objc.types import register_preferred_encoding
 
 ######################################################################
 core_graphics = load_library("CoreGraphics")
+quartz = load_library("Quartz")
 ######################################################################
 
 ######################################################################
@@ -217,3 +218,14 @@ kCGBitmapByteOrder16Little = 1 << 12
 kCGBitmapByteOrder32Little = 2 << 12
 kCGBitmapByteOrder16Big = 3 << 12
 kCGBitmapByteOrder32Big = 4 << 12
+
+######################################################################
+# Quartz functions
+
+# CGDirectDisplayID CGMainDisplayID(void);
+quartz.CGMainDisplayID.restype = c_uint32  # CGDirectDisplayID is a UInt32
+quartz.CGMainDisplayID.argtypes = None
+
+# CGImageRef CGDisplayCreateImage(CGDirectDisplayID displayID, CGRect rect);
+quartz.CGDisplayCreateImage.restype = c_void_p  # CGImageRef is a void pointer
+quartz.CGDisplayCreateImage.argtypes = [c_uint32, CGRect]
