@@ -3,11 +3,12 @@ from travertino.size import at_least
 from toga.style.pack import ROW
 
 
-# We assume a terminal is 800x600 pixels, mapping to 80x25 characters.
-# This results in an uneven scale in the horizontal and vertical directions
+# We assume a terminal is 800x600 pixels, mapping to 80x25 characters;
+# then deduct 1 row for the titlebar of the window.
+# This results in an uneven scale in the horizontal and vertical directions.
 class Scalable:
-    HORIZONTAL_SCALE = 10
-    VERTICAL_SCALE = 25
+    HORIZONTAL_SCALE = 800 // 80
+    VERTICAL_SCALE = 600 // 24
 
     def scale_in_horizontal(self, value):
         return value // self.HORIZONTAL_SCALE
