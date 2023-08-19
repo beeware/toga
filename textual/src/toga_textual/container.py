@@ -26,7 +26,8 @@ class Container(Scalable):
 
     @property
     def height(self):
-        return self.scale_out_vertical(self.native_parent.size[1])
+        # Subtract 1 to remove the height of the header
+        return self.scale_out_vertical(self.native_parent.size[1] - 1)
 
     def refreshed(self):
         if self.on_refresh:

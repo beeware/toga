@@ -10,7 +10,7 @@ class Label(Widget):
         self.native = TextualLabel()
 
     def get_text(self):
-        return self.native.renderable
+        return str(self.native.renderable)
 
     def set_text(self, value):
         self.native.renderable = value

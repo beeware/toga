@@ -12,6 +12,9 @@ class Box(Widget):
 
     def set_bounds(self, x, y, width, height):
         super().set_bounds(x, y, width, height)
+        # The layout doesn't have a concept of flow direction; this is a property of the
+        # style language. However, we don't have any other way to establish whether this
+        # is a row or a column box.
         if self.interface.style.direction == ROW:
             self.native.styles.layout = "horizontal"
         else:
