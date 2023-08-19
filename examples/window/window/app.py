@@ -95,7 +95,7 @@ class WindowDemoApp(toga.App):
         self.main_window.content = self.next_box
 
     def do_prev_content(self, widget):
-        self.main_window.content = self.main_box
+        self.main_window.content = self.main_scroller
 
     def do_hide(self, widget):
         self.main_window.visible = False
@@ -172,7 +172,6 @@ class WindowDemoApp(toga.App):
         btn_hide = toga.Button("Hide", on_press=self.do_hide, style=btn_style)
         btn_beep = toga.Button("Beep", on_press=self.do_beep, style=btn_style)
 
-        self.main_box = toga.Box(style=Pack(direction=COLUMN))
         self.inner_box = toga.Box(
             children=[
                 self.label,
@@ -193,13 +192,12 @@ class WindowDemoApp(toga.App):
             ],
             style=Pack(direction=COLUMN),
         )
-        self.scroller = toga.ScrollContainer(
+        self.main_scroller = toga.ScrollContainer(
             horizontal=False,
             vertical=True,
-            style=Pack(flex=1, padding=10),
+            style=Pack(flex=1),
         )
-        self.scroller.content = self.inner_box
-        self.main_box.add(self.scroller)
+        self.main_scroller.content = self.inner_box
 
         btn_change_back = toga.Button(
             "Go back", on_press=self.do_prev_content, style=btn_style
@@ -218,7 +216,7 @@ class WindowDemoApp(toga.App):
         self.main_window.toolbar.add(restore_command)
 
         # Add the content on the main window
-        self.main_window.content = self.main_box
+        self.main_window.content = self.main_scroller
 
         # Show the main window
         self.main_window.show()
