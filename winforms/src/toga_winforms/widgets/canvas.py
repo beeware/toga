@@ -6,7 +6,7 @@ from toga.widgets.canvas import Context, FillRule
 from toga_winforms.colors import native_color
 from toga_winforms.libs import win_font_family
 
-from System.Drawing import (  # noqa: F401, E402
+from System.Drawing import (
     Bitmap,
     Drawing2D,
     Pen,
@@ -16,13 +16,13 @@ from System.Drawing import (  # noqa: F401, E402
     SolidBrush,
     StringFormat,
 )
-from System.Drawing.Drawing2D import (  # noqa: F401, E402
+from System.Drawing.Drawing2D import (
     FillMode,
     GraphicsPath,
     Matrix,
 )
-from System.Drawing.Imaging import ImageFormat  # noqa: F401, E402
-from System.IO import MemoryStream 
+from System.Drawing.Imaging import ImageFormat
+from System.IO import MemoryStream
 import System.Windows.Forms as WinForms
 
 from ..libs.fonts import win_font_style
