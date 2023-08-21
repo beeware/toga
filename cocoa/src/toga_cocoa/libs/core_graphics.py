@@ -222,10 +222,19 @@ kCGBitmapByteOrder32Big = 4 << 12
 ######################################################################
 # Quartz functions
 
+CGDirectDisplayID = c_uint32
+
 # CGDirectDisplayID CGMainDisplayID(void);
-quartz.CGMainDisplayID.restype = c_uint32  # CGDirectDisplayID is a UInt32
-quartz.CGMainDisplayID.argtypes = None
+core_graphics.CGMainDisplayID.restype = CGDirectDisplayID
+core_graphics.CGMainDisplayID.argtypes = None
+
+
+class CGImageRef(c_void_p):
+    pass
+
+
+register_preferred_encoding(b"^{CGImage=}", CGImageRef)
 
 # CGImageRef CGDisplayCreateImage(CGDirectDisplayID displayID, CGRect rect);
-quartz.CGDisplayCreateImage.restype = c_void_p  # CGImageRef is a void pointer
-quartz.CGDisplayCreateImage.argtypes = [c_uint32, CGRect]
+core_graphics.CGDisplayCreateImage.restype = CGImageRef
+core_graphics.CGDisplayCreateImage.argtypes = [CGDirectDisplayID, CGRect]

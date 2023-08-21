@@ -1,10 +1,10 @@
+from ctypes import POINTER, c_char, cast
+
 from toga.screen import Screen as ScreenInterface
 from toga_cocoa.libs import (
-    CGDisplayCreateImage,
-    CGMainDisplayID,
-    CGRect,
     NSBitmapImageFileType,
     NSBitmapImageRep,
+    core_graphics,
 )
 
 
@@ -33,11 +33,18 @@ class Screen:
         return (frame_native.size.width, frame_native.size.height)
 
     def get_image_data(self):
-        screenshot_frame = CGRect(self.native.frame())
-        cg_image = CGDisplayCreateImage(CGMainDisplayID(), screenshot_frame)
-        bitmap_rep = NSBitmapImageRep.alloc().initWithCGImage(cg_image)
+        image = core_graphics.CGDisplayCreateImage(
+            core_graphics.CGMainDisplayID(),
+            self.native.frame,
+        )
+        bitmap_rep = NSBitmapImageRep.alloc().initWithCGImage(image)
         data = bitmap_rep.representationUsingType(
             NSBitmapImageFileType.PNG,
             properties=None,
         )
-        return data
+
+        # data is an NSData object that has .bytes as a c_void_p, and a .length. Cast to
+        # POINTER(c_char) to get an addressable array of bytes, and slice that array to
+        # the known length. We don't use c_char_p because it has handling of NUL
+        # termination, and POINTER(c_char) allows array subscripting.
+        return cast(data.bytes, POINTER(c_char))[: data.length]
