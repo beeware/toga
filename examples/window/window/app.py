@@ -1,8 +1,9 @@
 import asyncio
 from datetime import datetime
+from functools import partial
 
 import toga
-from toga.constants import COLUMN
+from toga.constants import COLUMN, RIGHT
 from toga.style import Pack
 
 
@@ -75,24 +76,19 @@ class WindowDemoApp(toga.App):
         self.app.windows += no_close_handler_window
         no_close_handler_window.show()
 
-    def do_screen_change(self, widget, **kwargs):
-        screen = kwargs["screen"]
+    def do_screen_change(self, screen, widget, **kwargs):
         self.current_window.screen = screen
 
-    async def do_screen_as_image(self, widget, **kwargs):
-        screen = kwargs["screen"]
+    async def do_save_screenshot(self, screen, window, **kwargs):
         screenshot = screen.as_image()
         path = await self.main_window.save_file_dialog(
-            "Screenshot save path",
+            "Save screenshot",
             suggested_filename=f"Screenshot_{screen.name}.png",
-            file_types=["jpg", "png"],
+            file_types=["png"],
         )
         if path is None:
             return
         screenshot.save(path)
-        self.main_window.info_dialog(
-            "Screenshot saved", f"Screenshot of {screen.name} was saved properly!"
-        )
 
     async def do_current_window_cycling(self, widget, **kwargs):
         for window in self.windows:
@@ -204,30 +200,40 @@ class WindowDemoApp(toga.App):
         btn_hide = toga.Button("Hide", on_press=self.do_hide, style=btn_style)
 
         screen_change_btns_box = toga.Box(
-            children=[toga.Label(text="Move current window to:")]
+            children=[
+                toga.Label(
+                    text="Move current window to:",
+                    style=Pack(width=200, text_align=RIGHT),
+                )
+            ],
+            style=Pack(padding=5),
         )
 
         for index, screen in sorted(enumerate(self.screens), key=lambda s: s[1].origin):
             screen_change_btns_box.add(
                 toga.Button(
                     text=f"{index}: {screen.name}",
-                    on_press=lambda widget, screen=screen: self.do_screen_change(
-                        widget, screen=screen
-                    ),
+                    on_press=partial(self.do_screen_change, screen),
+                    style=Pack(padding_left=5),
                 )
             )
 
         screen_as_image_btns_box = toga.Box(
-            children=[toga.Label(text="Take screenshot of screen:")]
+            children=[
+                toga.Label(
+                    text="Take screenshot of screen:",
+                    style=Pack(width=200, text_align=RIGHT),
+                )
+            ],
+            style=Pack(padding=5),
         )
 
         for index, screen in sorted(enumerate(self.screens), key=lambda s: s[1].origin):
             screen_as_image_btns_box.add(
                 toga.Button(
                     text=f"{index}: {screen.name}",
-                    on_press=lambda widget, screen=screen: asyncio.create_task(
-                        self.do_screen_as_image(widget, screen=screen)
-                    ),
+                    on_press=partial(self.do_save_screenshot, screen),
+                    style=Pack(padding_left=5),
                 )
             )
 
