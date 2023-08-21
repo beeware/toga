@@ -18,7 +18,6 @@ from rubicon.objc.types import register_preferred_encoding
 
 ######################################################################
 core_graphics = load_library("CoreGraphics")
-quartz = load_library("Quartz")
 ######################################################################
 
 ######################################################################
