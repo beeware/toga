@@ -1,8 +1,5 @@
 import System.Windows.Forms as WinForms
-from System.Drawing import (
-    Point,
-    Size,
-)
+from System.Drawing import Point, Size
 
 from toga import GROUP_BREAK, SECTION_BREAK
 
