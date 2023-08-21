@@ -19,7 +19,6 @@ from toga_winforms.libs import (
     WebView2RuntimeNotFoundException,
 )
 
-
 from .base import Widget
 
 

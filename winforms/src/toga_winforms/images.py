@@ -8,6 +8,7 @@ from System.Drawing import Image as WinImage
 from System.Drawing.Imaging import ImageFormat
 from System.IO import MemoryStream
 
+
 class Image:
     def __init__(self, interface, path=None, data=None):
         self.interface = interface

@@ -2,7 +2,6 @@ import asyncio
 import re
 import sys
 import threading
-
 from ctypes import windll
 
 import System.Windows.Forms as WinForms
