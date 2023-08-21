@@ -1,3 +1,12 @@
+import System.Windows.Forms as WinForms
+from System import ArgumentException
+from System.Drawing import (
+    ContentAlignment,
+    FontFamily,
+    FontStyle,
+    SystemFonts,
+)
+
 from toga.constants import CENTER, JUSTIFY, LEFT, RIGHT
 from toga.fonts import (
     CURSIVE,
@@ -8,15 +17,6 @@ from toga.fonts import (
     SERIF,
     SYSTEM,
     SYSTEM_DEFAULT_FONT_SIZE,
-)
-
-import System.Windows.Forms as WinForms
-from System import ArgumentException
-from System.Drawing import (
-    ContentAlignment,
-    FontFamily,
-    FontStyle,
-    SystemFonts,
 )
 
 

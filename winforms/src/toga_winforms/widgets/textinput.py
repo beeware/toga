@@ -1,12 +1,11 @@
-from ctypes import c_uint
-from ctypes import windll
+from ctypes import c_uint, windll
 from ctypes.wintypes import HWND, WPARAM
 
+import System.Windows.Forms as WinForms
 from travertino.size import at_least
 
 from toga_winforms.colors import native_color
 from toga_winforms.libs import HorizontalTextAlignment
-import System.Windows.Forms as WinForms
 
 from .base import Widget
 

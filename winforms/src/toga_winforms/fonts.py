@@ -1,13 +1,13 @@
+import System.Windows.Forms as WinForms
+from System.Drawing import Font as WinFont
+from System.Drawing.Text import PrivateFontCollection
+from System.IO import FileNotFoundException
+from System.Runtime.InteropServices import ExternalException
+
 import toga
 from toga.fonts import _REGISTERED_FONT_CACHE
 from toga_winforms.libs import win_font_family
 from toga_winforms.libs.fonts import win_font_size, win_font_style
-import System.Windows.Forms as WinForms
-from System.Drawing import Font as WinFont
-
-from System.Drawing.Text import PrivateFontCollection
-from System.IO import FileNotFoundException
-from System.Runtime.InteropServices import ExternalException
 
 _FONT_CACHE = {}
 

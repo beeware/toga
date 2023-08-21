@@ -1,9 +1,8 @@
 import datetime
 
-from travertino.size import at_least
-
 import System.Windows.Forms as WinForms
 from System import DateTime as WinDateTime
+from travertino.size import at_least
 
 from .base import Widget
 

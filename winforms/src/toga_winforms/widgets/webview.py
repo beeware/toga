@@ -1,6 +1,14 @@
 import json
 import webbrowser
 
+import System.Windows.Forms as WinForms
+from System import (
+    Action,
+    String,
+    Uri,
+)
+from System.Drawing import Color
+from System.Threading.Tasks import Task, TaskScheduler
 from travertino.size import at_least
 
 import toga
@@ -10,14 +18,6 @@ from toga_winforms.libs import (
     WebView2,
     WebView2RuntimeNotFoundException,
 )
-import System.Windows.Forms as WinForms
-from System import (
-    Action,
-    String,
-    Uri,
-)
-from System.Drawing import Color
-from System.Threading.Tasks import Task, TaskScheduler
 
 
 from .base import Widget

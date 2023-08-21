@@ -1,11 +1,6 @@
 import math
 
-from travertino.colors import WHITE
-
-from toga.widgets.canvas import Context, FillRule
-from toga_winforms.colors import native_color
-from toga_winforms.libs import win_font_family
-
+import System.Windows.Forms as WinForms
 from System.Drawing import (
     Bitmap,
     Drawing2D,
@@ -23,7 +18,11 @@ from System.Drawing.Drawing2D import (
 )
 from System.Drawing.Imaging import ImageFormat
 from System.IO import MemoryStream
-import System.Windows.Forms as WinForms
+from travertino.colors import WHITE
+
+from toga.widgets.canvas import Context, FillRule
+from toga_winforms.colors import native_color
+from toga_winforms.libs import win_font_family
 
 from ..libs.fonts import win_font_style
 from .box import Box

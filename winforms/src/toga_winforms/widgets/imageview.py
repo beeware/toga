@@ -1,6 +1,7 @@
-from toga.widgets.imageview import rehint_imageview
 import System.Windows.Forms as WinForms
 from System.Drawing import Bitmap
+
+from toga.widgets.imageview import rehint_imageview
 
 from .base import Widget
 

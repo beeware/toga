@@ -1,8 +1,7 @@
 from contextlib import contextmanager
 
-from travertino.size import at_least
-
 import System.Windows.Forms as WinForms
+from travertino.size import at_least
 
 from .base import Widget
 

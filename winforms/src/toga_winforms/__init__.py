@@ -1,6 +1,6 @@
-import toga
-
 import clr
+
+import toga
 
 clr.AddReference("System.Windows.Forms")
 

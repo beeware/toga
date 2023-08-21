@@ -1,8 +1,8 @@
+import System.Windows.Forms as WinForms
 from travertino.size import at_least
 
 from toga.colors import TRANSPARENT
 from toga_winforms.colors import native_color
-import System.Windows.Forms as WinForms
 
 from .base import Widget
 

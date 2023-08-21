@@ -1,15 +1,15 @@
 from abc import ABC, abstractmethod
 from decimal import ROUND_HALF_EVEN, ROUND_UP, Decimal
 
-from travertino.size import at_least
-
-from toga_winforms.colors import native_color
 from System.Drawing import (
     Color,
     Point,
     Size,
     SystemColors,
 )
+from travertino.size import at_least
+
+from toga_winforms.colors import native_color
 
 
 class Scalable:

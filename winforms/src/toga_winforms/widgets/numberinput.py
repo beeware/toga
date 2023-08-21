@@ -1,13 +1,12 @@
 import sys
 from decimal import Decimal, InvalidOperation
 
-from System import String
+import System.Windows.Forms as WinForms
+from System import Convert, String
 from travertino.size import at_least
 
 from toga.widgets.numberinput import _clean_decimal
 from toga_winforms.libs import HorizontalTextAlignment
-import System.Windows.Forms as WinForms
-from System import Convert
 
 from .base import Widget
 

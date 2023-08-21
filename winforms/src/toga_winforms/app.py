@@ -3,20 +3,20 @@ import re
 import sys
 import threading
 
-import toga
-from toga import Key
-
-from .keys import toga_to_winforms_key
-
 from ctypes import windll
+
 import System.Windows.Forms as WinForms
 from System import (
     Environment,
     Threading,
 )
-from System.Net import SecurityProtocolType, ServicePointManager
 from System.Media import SystemSounds
+from System.Net import SecurityProtocolType, ServicePointManager
 
+import toga
+from toga import Key
+
+from .keys import toga_to_winforms_key
 from .libs.proactor import WinformsProactorEventLoop
 from .window import Window
 
