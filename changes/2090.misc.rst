@@ -1,1 +1,1 @@
-Replaced indirect imports on Winforms with direct imports. Updated tests. Removed winforms.py from toga_winforms.libs
+The use of indirect imports on Winforms has been replaced with direct imports.
