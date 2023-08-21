@@ -1,6 +1,6 @@
 from travertino.colors import NAMED_COLOR, TRANSPARENT
 
-from .libs import Color
+from System.Drawing import Color
 
 CACHE = {TRANSPARENT: Color.Empty}
 

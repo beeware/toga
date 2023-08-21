@@ -1,7 +1,7 @@
 from travertino.size import at_least
 
 from toga.widgets.slider import IntSliderImpl
-from toga_winforms.libs import WinForms
+import System.Windows.Forms as WinForms
 
 from .base import Widget
 

@@ -7,16 +7,16 @@ import toga
 from toga import Key
 
 from .keys import toga_to_winforms_key
-from .libs import (
-    SecurityProtocolType,
-    ServicePointManager,
-    SystemSounds,
+
+from ctypes import windll
+import System.Windows.Forms as WinForms
+from System import (
+    Environment,
     Threading,
-    WinForms,
-    shcore,
-    user32,
-    win_version,
 )
+from System.Net import SecurityProtocolType, ServicePointManager
+from System.Media import SystemSounds
+
 from .libs.proactor import WinformsProactorEventLoop
 from .window import Window
 
@@ -66,20 +66,25 @@ class App:
         # with the most up to date API
         # Windows Versioning Check Sources : https://www.lifewire.com/windows-version-numbers-2625171
         # and https://docs.microsoft.com/en-us/windows/release-information/
+        win_version = Environment.OSVersion.Version
         if win_version.Major >= 6:  # Checks for Windows Vista or later
             # Represents Windows 8.1 up to Windows 10 before Build 1703 which should use
             # SetProcessDpiAwareness(True)
             if (win_version.Major == 6 and win_version.Minor == 3) or (
                 win_version.Major == 10 and win_version.Build < 15063
             ):
-                shcore.SetProcessDpiAwareness(True)
+                windll.shcore.SetProcessDpiAwareness(True)
+                print(
+                    "WARNING: Your Windows version may lose support in future releases. "
+                    "We recommend you upgrade to at least Windows 10 Build 1703."
+                )
             # Represents Windows 10 Build 1703 and beyond which should use
             # SetProcessDpiAwarenessContext(-2)
             elif win_version.Major == 10 and win_version.Build >= 15063:
-                user32.SetProcessDpiAwarenessContext(-2)
+                windll.user32.SetProcessDpiAwarenessContext(-2)
             # Any other version of windows should use SetProcessDPIAware()
             else:
-                user32.SetProcessDPIAware()
+                windll.user32.SetProcessDPIAware()
 
         self.native.EnableVisualStyles()
         self.native.SetCompatibleTextRenderingDefault(False)

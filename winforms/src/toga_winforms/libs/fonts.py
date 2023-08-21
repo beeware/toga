@@ -10,13 +10,13 @@ from toga.fonts import (
     SYSTEM_DEFAULT_FONT_SIZE,
 )
 
-from .winforms import (
-    ArgumentException,
+import System.Windows.Forms as WinForms
+from System import ArgumentException
+from System.Drawing import (
     ContentAlignment,
     FontFamily,
     FontStyle,
     SystemFonts,
-    WinForms,
 )
 
 

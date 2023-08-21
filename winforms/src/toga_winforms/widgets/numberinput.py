@@ -5,7 +5,9 @@ from System import String
 from travertino.size import at_least
 
 from toga.widgets.numberinput import _clean_decimal
-from toga_winforms.libs import Convert, HorizontalTextAlignment, WinForms
+from toga_winforms.libs import HorizontalTextAlignment
+import System.Windows.Forms as WinForms
+from System import Convert
 
 from .base import Widget
 

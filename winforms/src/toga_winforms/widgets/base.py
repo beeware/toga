@@ -4,7 +4,12 @@ from decimal import ROUND_HALF_EVEN, ROUND_UP, Decimal
 from travertino.size import at_least
 
 from toga_winforms.colors import native_color
-from toga_winforms.libs import Color, Point, Size, SystemColors
+from System.Drawing import (
+    Color,
+    Point,
+    Size,
+    SystemColors,
+)
 
 
 class Scalable:

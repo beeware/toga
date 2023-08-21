@@ -4,23 +4,26 @@ from travertino.colors import WHITE
 
 from toga.widgets.canvas import Context, FillRule
 from toga_winforms.colors import native_color
-from toga_winforms.libs import (
+from toga_winforms.libs import win_font_family
+
+from System.Drawing import (  # noqa: F401, E402
     Bitmap,
     Drawing2D,
-    FillMode,
-    GraphicsPath,
-    ImageFormat,
-    Matrix,
-    MemoryStream,
     Pen,
     PointF,
     Rectangle,
     RectangleF,
     SolidBrush,
     StringFormat,
-    WinForms,
-    win_font_family,
 )
+from System.Drawing.Drawing2D import (  # noqa: F401, E402
+    FillMode,
+    GraphicsPath,
+    Matrix,
+)
+from System.Drawing.Imaging import ImageFormat  # noqa: F401, E402
+from System.IO import MemoryStream 
+import System.Windows.Forms as WinForms
 
 from ..libs.fonts import win_font_style
 from .box import Box
