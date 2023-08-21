@@ -74,7 +74,7 @@ class App:
             ):
                 windll.shcore.SetProcessDpiAwareness(True)
                 print(
-                    "WARNING: Your Windows version may lose support in future releases. "
+                    "WARNING: Your Windows version doesn't support DPI-independent rendering.  "
                     "We recommend you upgrade to at least Windows 10 Build 1703."
                 )
             # Represents Windows 10 Build 1703 and beyond which should use
