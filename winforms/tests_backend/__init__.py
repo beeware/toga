@@ -1,3 +1,1 @@
-import clr
-
-clr.AddReference("System.Windows.Forms")
+import toga_winforms
