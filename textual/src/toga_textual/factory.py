@@ -1,4 +1,4 @@
-# from . import dialogs
+from . import dialogs
 from .app import App, DocumentApp, MainWindow
 
 # from .command import Command
@@ -55,7 +55,7 @@ __all__ = [
     "Icon",
     # "Image",
     "Paths",
-    # "dialogs",
+    "dialogs",
     # # Widgets
     # "ActivityIndicator",
     "Box",
