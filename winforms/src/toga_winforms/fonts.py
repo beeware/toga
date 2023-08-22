@@ -6,8 +6,11 @@ from System.Runtime.InteropServices import ExternalException
 
 import toga
 from toga.fonts import _REGISTERED_FONT_CACHE
-from toga_winforms.libs import win_font_family
-from toga_winforms.libs.fonts import win_font_size, win_font_style
+from toga_winforms.libs.fonts import (
+    win_font_family,
+    win_font_size, 
+    win_font_style,
+)
 
 _FONT_CACHE = {}
 

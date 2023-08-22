@@ -22,9 +22,8 @@ from travertino.colors import WHITE
 
 from toga.widgets.canvas import Context, FillRule
 from toga_winforms.colors import native_color
-from toga_winforms.libs import win_font_family
+from toga_winforms.libs.fonts import win_font_family, win_font_style
 
-from ..libs.fonts import win_font_style
 from .box import Box
 
 

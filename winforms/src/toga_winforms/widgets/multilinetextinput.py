@@ -3,7 +3,7 @@ from System.Drawing import SystemColors
 from travertino.size import at_least
 
 from toga_winforms.colors import native_color
-from toga_winforms.libs import HorizontalTextAlignment
+from toga_winforms.libs.fonts import HorizontalTextAlignment
 
 from .textinput import TextInput
 

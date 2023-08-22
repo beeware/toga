@@ -13,7 +13,7 @@ from travertino.size import at_least
 
 import toga
 from toga.widgets.webview import JavaScriptResult
-from toga_winforms.libs import (
+from toga_winforms.libs.extensions import (
     CoreWebView2CreationProperties,
     WebView2,
     WebView2RuntimeNotFoundException,
