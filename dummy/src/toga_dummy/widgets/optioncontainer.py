@@ -10,48 +10,44 @@ class Option:
         self.enabled = enabled
 
 
+@not_required  # Testbed coverage is complete for this widget.
 class OptionContainer(Widget):
     def create(self):
         self._action("create OptionContainer")
         self._items = []
-        self._current_index = 0
 
     def add_content(self, index, text, widget):
         self._action("add content", index=index, text=text, widget=widget)
         self._items.insert(index, Option(text, widget, True))
 
+        # if this is the first item of content, set it as the selected item.
+        if len(self._items) == 1:
+            self.set_current_tab_index(0)
+
     def remove_content(self, index):
-        if index == self._current_index:
-            # Don't allow removal of a selected tab
-            raise self.interface.OptionException(
-                "Currently selected option cannot be removed"
-            )
         self._action("remove content", index=index)
         del self._items[index]
 
-    def set_on_select(self, handler):
-        self._set_value("on_select", handler)
-
     def set_option_enabled(self, index, enabled):
-        self._set_value(f"option_{index}_enabled", value=enabled)
+        self._action("set option enabled", index=index, value=enabled)
         self._items[index].enabled = enabled
 
     def is_option_enabled(self, index):
-        self._get_value(f"option_{index}_enabled", None)
         return self._items[index].enabled
 
     def set_option_text(self, index, value):
-        self._set_value(f"option_{index}_text", value=value)
+        self._action("set option text", index=index, value=value)
         self._items[index].text = value
 
     def get_option_text(self, index):
-        self._get_value(f"option_{index}_text", None)
         return self._items[index].text
 
     def set_current_tab_index(self, current_tab_index):
         self._set_value("current_tab_index", current_tab_index)
-        self._current_index = current_tab_index
+        self.interface.on_select(None)
 
     def get_current_tab_index(self):
-        self._get_value("current_tab_index", 0)
-        return self._current_index
+        return self._get_value("current_tab_index", None)
+
+    def simulate_select_tab(self, index):
+        self.set_current_tab_index(index)

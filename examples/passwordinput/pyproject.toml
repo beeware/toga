@@ -1,0 +1,55 @@
+[build-system]
+requires = ["briefcase"]
+
+[tool.briefcase]
+project_name = "Password Input"
+bundle = "org.beeware"
+version = "0.0.1"
+url = "https://beeware.org"
+license = "BSD license"
+author = 'Tiberius Yak'
+author_email = "tiberius@beeware.org"
+
+[tool.briefcase.app.passwordinput]
+formal_name = "Password Input Demo"
+description = "A testing app"
+sources = ['passwordinput']
+requires = [
+    '../../core',
+]
+
+
+[tool.briefcase.app.passwordinput.macOS]
+requires = [
+    '../../cocoa',
+    'std-nslog>=1.0.0',
+]
+
+[tool.briefcase.app.passwordinput.linux]
+requires = [
+    '../../gtk',
+]
+
+[tool.briefcase.app.passwordinput.windows]
+requires = [
+    '../../winforms',
+]
+
+# Mobile deployments
+[tool.briefcase.app.passwordinput.iOS]
+requires = [
+    '../../iOS',
+    'std-nslog>=1.0.0',
+]
+
+[tool.briefcase.app.passwordinput.android]
+requires = [
+    '../../android',
+]
+
+# Web deployment
+[tool.briefcase.app.passwordinput.web]
+requires = [
+    '../../web',
+]
+style_framework = "Shoelace v2.3"

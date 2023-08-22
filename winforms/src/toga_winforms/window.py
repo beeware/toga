@@ -1,10 +1,13 @@
+import System.Windows.Forms as WinForms
+from System.Drawing import Point, Size
+
 from toga import GROUP_BREAK, SECTION_BREAK
 
-from .container import Container, MinimumContainer
-from .libs import Point, Size, WinForms
+from .container import Container
+from .widgets.base import Scalable
 
 
-class Window(Container):
+class Window(Container, Scalable):
     def __init__(self, interface, title, position, size):
         self.interface = interface
         self.interface._impl = self
@@ -22,6 +25,7 @@ class Window(Container):
         self.native._impl = self
         self.native.FormClosing += self.winforms_FormClosing
         super().__init__(self.native)
+        self.init_scale(self.native)
 
         self.native.MinimizeBox = self.native.interface.minimizable
 
@@ -73,16 +77,18 @@ class Window(Container):
         self.resize_content()
 
     def get_position(self):
-        return self.native.Location.X, self.native.Location.Y
+        location = self.native.Location
+        return tuple(map(self.scale_out, (location.X, location.Y)))
 
     def set_position(self, position):
-        self.native.Location = Point(*position)
+        self.native.Location = Point(*map(self.scale_in, position))
 
     def get_size(self):
-        return self.native.ClientSize.Width, self.native.ClientSize.Height
+        size = self.native.ClientSize
+        return tuple(map(self.scale_out, (size.Width, size.Height)))
 
     def set_size(self, size):
-        self.native.ClientSize = Size(*size)
+        self.native.ClientSize = Size(*map(self.scale_in, size))
 
     def set_app(self, app):
         if app is None:
@@ -99,23 +105,21 @@ class Window(Container):
     def set_title(self, title):
         self.native.Text = title
 
-    def show(self):
-        # The first render of the content will establish the
-        # minimum possible content size; use that to enforce
-        # a minimum window size.
-        TITLEBAR_HEIGHT = WinForms.SystemInformation.CaptionHeight
-        # Now that the content is visible, we can do our initial hinting,
-        # and use that as the basis for setting the minimum window size.
-        self.interface.content._impl.rehint()
-        self.interface.content.style.layout(
-            self.interface.content, MinimumContainer(self.native)
-        )
-        self.native.MinimumSize = Size(
-            int(self.interface.content.layout.width),
-            int(self.interface.content.layout.height) + TITLEBAR_HEIGHT,
-        )
-        self.interface.content.refresh()
+    def refreshed(self):
+        super().refreshed()
 
+        # Enforce a minimum window size. This takes into account the title bar and
+        # borders, which are included in Size but not in ClientSize.
+        decor_size = self.native.Size - self.native.ClientSize
+        layout = self.interface.content.layout
+        min_client_size = Size(
+            self.scale_in(layout.min_width),
+            self.scale_in(layout.min_height) + self.top_bars_height(),
+        )
+        self.native.MinimumSize = decor_size + min_client_size
+
+    def show(self):
+        self.interface.content.refresh()
         if self.interface is not self.interface.app._main_window:
             self.native.Icon = self.interface.app.icon._impl.native
         self.native.Show()
@@ -154,13 +158,16 @@ class Window(Container):
         self._is_closing = True
         self.native.Close()
 
-    def resize_content(self):
+    def top_bars_height(self):
         vertical_shift = 0
         if self.toolbar_native:
             vertical_shift += self.toolbar_native.Height
         if self.native.MainMenuStrip:
             vertical_shift += self.native.MainMenuStrip.Height
+        return vertical_shift
 
+    def resize_content(self):
+        vertical_shift = self.top_bars_height()
         self.native_content.Location = Point(0, vertical_shift)
         super().resize_content(
             self.native.ClientSize.Width,

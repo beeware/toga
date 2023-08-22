@@ -3,7 +3,9 @@ import sys
 import threading
 from asyncio import events
 
-from .winforms import Action, Task, WinForms
+import System.Windows.Forms as WinForms
+from System import Action
+from System.Threading.Tasks import Task
 
 
 class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
