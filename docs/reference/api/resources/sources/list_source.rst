@@ -42,6 +42,8 @@ the operations you'd expect on a normal Python list, such as ``insert``, ``remov
     # Insert a new row at the start of the data
     source.insert(0, name="Bettong", weight=1.2)
 
+.. _listsource-item:
+
 When initially constructing the ListSource, or when assigning a specific item in
 the ListSource, each item can be:
 
@@ -74,8 +76,8 @@ used as a data source. This means they must provide:
 
 * ``__getitem__(self, index)`` returning the item at position ``index`` of the list.
 
-A custom ListSource must also generate ``insert``, ``remove`` and ``clear``
-notifications when items are added or removed from the source.
+A custom ListSource must also inherit from :any:`Source`, and generate ``insert``,
+``remove`` and ``clear`` notifications when items are added or removed from the source.
 
 Each item returned by the custom ListSource is required to expose attributes matching
 the accessors for any widget using the source. Any change to the values of these attributes
