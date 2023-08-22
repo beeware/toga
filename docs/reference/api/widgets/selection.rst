@@ -90,5 +90,3 @@ Reference
 ---------
 
 .. autoclass:: toga.Selection
-   :members:
-   :undoc-members:

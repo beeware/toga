@@ -43,7 +43,5 @@ Reference
 ---------
 
 .. autoclass:: toga.Button
-   :members:
-   :undoc-members:
 
 .. autoprotocol:: toga.widgets.button.OnPressHandler

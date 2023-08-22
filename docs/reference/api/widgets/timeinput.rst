@@ -41,5 +41,3 @@ Reference
 ---------
 
 .. autoclass:: toga.TimeInput
-   :members:
-   :undoc-members:

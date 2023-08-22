@@ -50,5 +50,3 @@ Reference
 ---------
 
 .. autoclass:: toga.ImageView
-   :members:
-   :undoc-members:

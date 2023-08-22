@@ -14,5 +14,3 @@ Reference
 ---------
 
 .. autoclass:: toga.Font
-   :members:
-   :undoc-members:

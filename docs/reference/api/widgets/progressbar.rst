@@ -66,5 +66,3 @@ Reference
 ---------
 
 .. autoclass:: toga.ProgressBar
-   :members:
-   :undoc-members:

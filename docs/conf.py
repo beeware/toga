@@ -68,6 +68,7 @@ os.environ["TOGA_BACKEND"] = "toga_dummy"
 autoclass_content = "both"
 autodoc_preserve_defaults = True
 autodoc_default_options = {
+    # For show-inheritance, see autodoc-process-signature below.
     "members": True,
     "undoc-members": True,
 }
@@ -115,6 +116,27 @@ rst_prolog = """
 """
 
 intersphinx_mapping = {"python": ("https://docs.python.org/3", None)}
+
+# -- Local extensions ----------------------------------------------------------
+
+
+def setup(app):
+    app.connect("autodoc-process-signature", autodoc_process_signature)
+    return {
+        "parallel_read_safe": True,
+        "parallel_write_safe": True,
+    }
+
+
+# Adding show-inheritance to autodoc_default_options adds a Bases line to ALL classes,
+# even those that only inherit from `object`, or whose bases have all been filtered out
+# by autodoc-process-bases. Instead, we enable the option here.
+def autodoc_process_signature(
+    app, what, name, obj, options, signature, return_annotation
+):
+    if (what == "class") and (obj.__bases__ != (object,)):
+        options.show_inheritance = True
+
 
 # -- Options for link checking -------------------------------------------------
 

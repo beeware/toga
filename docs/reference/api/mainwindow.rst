@@ -27,5 +27,3 @@ Reference
 ---------
 
 .. autoclass:: toga.MainWindow
-   :members:
-   :undoc-members:
