@@ -8,7 +8,7 @@ import toga
 from toga.fonts import _REGISTERED_FONT_CACHE
 from toga_winforms.libs.fonts import (
     win_font_family,
-    win_font_size, 
+    win_font_size,
     win_font_style,
 )
 
