@@ -45,12 +45,12 @@ class Icon:
     ):
         """Create a new icon.
 
-        :param path: Base filename for the icon. This can be specified as a string, or
-            as a :any:`pathlib.Path` object. The path can be an absolute file system
+        :param path: Base filename for the icon. The path can be an absolute file system
             path, or a path relative to the module that defines your Toga application
-            class. This base filename should *not* contain an extension; a platform will
-            modify this base filename and add an extension to define the final icon
-            filename ( or filenames). If an extension is specified, it will be ignored.
+            class.
+
+            This base filename should *not* contain an extension. If an extension is
+            specified, it will be ignored.
         """
         self.path = Path(path)
         self.system = system
