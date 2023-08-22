@@ -1,21 +1,22 @@
 import json
 import webbrowser
 
+import System.Windows.Forms as WinForms
+from System import (
+    Action,
+    String,
+    Uri,
+)
+from System.Drawing import Color
+from System.Threading.Tasks import Task, TaskScheduler
 from travertino.size import at_least
 
 import toga
 from toga.widgets.webview import JavaScriptResult
-from toga_winforms.libs import (
-    Action,
-    Color,
+from toga_winforms.libs.extensions import (
     CoreWebView2CreationProperties,
-    String,
-    Task,
-    TaskScheduler,
-    Uri,
     WebView2,
     WebView2RuntimeNotFoundException,
-    WinForms,
 )
 
 from .base import Widget

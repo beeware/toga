@@ -1,12 +1,12 @@
 from pathlib import Path
 
-from toga_winforms.libs import (
+from System import (
     ArgumentException,
-    ImageFormat,
-    MemoryStream,
     OutOfMemoryException,
-    WinImage,
 )
+from System.Drawing import Image as WinImage
+from System.Drawing.Imaging import ImageFormat
+from System.IO import MemoryStream
 
 
 class Image:

@@ -1,4 +1,7 @@
-from .libs import Bitmap, WinIcon
+from System.Drawing import (
+    Bitmap,
+    Icon as WinIcon,
+)
 
 
 class Icon:
