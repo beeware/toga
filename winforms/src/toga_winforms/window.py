@@ -98,7 +98,6 @@ class Window(Container, Scalable):
             return
         self.native.Icon = icon_impl.native
 
-    @property
     def get_title(self):
         return self.native.Text
 
