@@ -85,10 +85,6 @@ Reference
 
 .. autoclass:: toga.sources.Row
    :special-members: __setattr__
-   :members:
-   :undoc-members:
 
 .. autoclass:: toga.sources.ListSource
    :special-members: __len__, __getitem__, __setitem__, __delitem__
-   :members:
-   :undoc-members:

@@ -40,5 +40,3 @@ Reference
 ---------
 
 .. autoclass:: toga.Slider
-   :members:
-   :undoc-members:

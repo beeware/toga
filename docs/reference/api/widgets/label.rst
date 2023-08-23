@@ -32,5 +32,3 @@ Reference
 ---------
 
 .. autoclass:: toga.Label
-   :members:
-   :undoc-members:

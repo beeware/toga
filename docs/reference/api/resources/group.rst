@@ -17,5 +17,3 @@ Reference
 ---------
 
 .. autoclass:: toga.Group
-   :members:
-   :undoc-members:

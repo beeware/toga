@@ -110,5 +110,3 @@ Reference
 ---------
 
 .. autoclass:: toga.Table
-   :members:
-   :undoc-members:

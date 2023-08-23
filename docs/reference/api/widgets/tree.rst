@@ -35,5 +35,3 @@ Reference
 ---------
 
 .. autoclass:: toga.Tree
-   :members:
-   :undoc-members:

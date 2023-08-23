@@ -47,5 +47,3 @@ Reference
 ---------
 
 .. autoclass:: toga.PasswordInput
-   :members:
-   :undoc-members:
