@@ -10,7 +10,7 @@ A text label for annotating forms or interfaces.
 .. csv-filter:: Availability (:ref:`Key <api-status-key>`)
    :header-rows: 1
    :file: ../../data/widgets_by_platform.csv
-   :included_cols: 4,5,6,7,8,9
+   :included_cols: 4,5,6,7,8,9,10
    :exclude: {0: '(?!^(Label|Component)$)'}
 
 Usage
@@ -32,5 +32,3 @@ Reference
 ---------
 
 .. autoclass:: toga.Label
-   :members:
-   :undoc-members:

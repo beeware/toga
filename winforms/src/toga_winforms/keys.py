@@ -2,9 +2,9 @@ import operator
 from functools import reduce
 from string import ascii_uppercase
 
-from toga.keys import Key
+import System.Windows.Forms as WinForms
 
-from .libs import WinForms
+from toga.keys import Key
 
 WINFORMS_NON_PRINTABLES_MAP = {
     Key.MOD_1: WinForms.Keys.Control,
