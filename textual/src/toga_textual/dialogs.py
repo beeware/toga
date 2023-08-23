@@ -1,9 +1,12 @@
 from abc import ABC
+from pathlib import Path
+
+from toga_textual.window import TitleBar
 
 from textual.app import ComposeResult
 from textual.containers import Horizontal, Vertical, VerticalScroll
 from textual.screen import ModalScreen
-from textual.widgets import Button, Header, Label, Static
+from textual.widgets import Button, DirectoryTree, Input, Label, Static
 
 
 class TextualDialog(ModalScreen[bool]):
@@ -12,37 +15,35 @@ class TextualDialog(ModalScreen[bool]):
         self.impl = impl
 
     def compose(self) -> ComposeResult:
-        self.native_title = Header(name=self.impl.title)
+        self.title = TitleBar(self.impl.title)
         self.impl.compose_content(self)
-        self.native_buttons = self.impl.create_buttons()
-        self.native_button_box = Horizontal(*self.native_buttons)
-        self.native_dialog = Vertical(
-            self.native_title,
-            self.native_content,
-            self.native_button_box,
+        self.buttons = self.impl.create_buttons()
+        self.button_box = Horizontal(*self.buttons)
+        self.container = Vertical(
+            self.title,
+            self.content,
+            self.button_box,
             id="dialog",
         )
-        yield self.native_dialog
+        yield self.container
 
     def on_mount(self) -> None:
         self.styles.align = ("center", "middle")
 
-        self.native_dialog.styles.width = 50
-        self.native_dialog.styles.border = ("solid", "darkgray")
+        self.container.styles.width = 50
+        self.container.styles.border = ("solid", "darkgray")
 
-        self.impl.mount_content(self)
+        self.impl.style_content(self)
 
-        self.native_button_box.styles.align = ("center", "middle")
-        for native_button in self.native_buttons:
-            native_button.styles.margin = (0, 1, 0, 1)
+        self.button_box.styles.align = ("center", "middle")
+        for button in self.buttons:
+            button.styles.margin = (0, 1, 0, 1)
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
-        if event.button.id == "result-True":
-            self.dismiss(True)
-        elif event.button.id == "result-False":
-            self.dismiss(False)
-        else:
-            self.dismiss(None)
+        self.dismiss(self.impl.return_value(event.button.variant))
+
+    def on_resize(self, event) -> None:
+        self.impl.style_content(self)
 
 
 class BaseDialog(ABC):
@@ -57,13 +58,16 @@ class BaseDialog(ABC):
         self.interface.app._impl.native.push_screen(self.native, self.on_close)
 
     def compose_content(self, dialog):
-        dialog.native_content = Label(self.message, id="message")
+        dialog.content = Label(self.message, id="message")
 
-    def mount_content(self, dialog):
-        dialog.native_content.styles.margin = 1
-        dialog.native_content.styles.height = 5
+    def style_content(self, dialog):
+        dialog.content.styles.margin = 1
+        dialog.content.styles.height = 5
 
-        dialog.native_dialog.styles.height = 13
+        dialog.container.styles.height = 13
+
+    def return_value(self, variant):
+        return variant == "primary"
 
     def on_close(self, result: bool):
         self.on_result(self, result)
@@ -73,31 +77,37 @@ class BaseDialog(ABC):
 class InfoDialog(BaseDialog):
     def create_buttons(self):
         return [
-            Button("OK", variant="primary", id="result-None"),
+            Button("OK", variant="primary"),
         ]
+
+    def return_value(self, variant):
+        return None
 
 
 class QuestionDialog(BaseDialog):
     def create_buttons(self):
         return [
-            Button("Yes", variant="primary", id="result-True"),
-            Button("No", variant="error", id="result-False"),
+            Button("Yes", variant="primary"),
+            Button("No", variant="error"),
         ]
 
 
 class ConfirmDialog(BaseDialog):
     def create_buttons(self):
         return [
-            Button("Cancel", variant="error", id="result-False"),
-            Button("OK", variant="primary", id="result-True"),
+            Button("Cancel", variant="error"),
+            Button("OK", variant="primary"),
         ]
 
 
 class ErrorDialog(BaseDialog):
     def create_buttons(self):
         return [
-            Button("OK", variant="primary", id="result-None"),
+            Button("OK", variant="primary"),
         ]
+
+    def return_value(self, variant):
+        return None
 
 
 class StackTraceDialog(BaseDialog):
@@ -120,34 +130,82 @@ class StackTraceDialog(BaseDialog):
         self.content = content
 
     def compose_content(self, dialog):
-        dialog.native_label = Label(self.message, id="message")
-        dialog.native_scroll = VerticalScroll(
+        dialog.label = Label(self.message, id="message")
+        dialog.scroll = VerticalScroll(
             Static(self.content, id="content"),
         )
-        dialog.native_content = Vertical(
-            dialog.native_label,
-            dialog.native_scroll,
+        dialog.content = Vertical(
+            dialog.label,
+            dialog.scroll,
         )
 
     def create_buttons(self):
         if self.retry:
             return [
-                Button("Cancel", variant="error", id="result-False"),
-                Button("Retry", variant="primary", id="result-True"),
+                Button("Cancel", variant="error"),
+                Button("Retry", variant="primary"),
             ]
         else:
             return [
-                Button("OK", variant="primary", id="result-None"),
+                Button("OK", variant="primary"),
             ]
 
-    def mount_content(self, dialog):
-        dialog.native_content.styles.margin = 1
-        dialog.native_content.styles.height = self.interface.window.size[1] - 18
+    def style_content(self, dialog):
+        dialog.content.styles.margin = 1
+        dialog.content.styles.height = self.interface.window.size[1] - 18
 
-        dialog.native_dialog.styles.width = "80%"
-        dialog.native_dialog.styles.height = self.interface.window.size[1] - 10
+        dialog.container.styles.width = "80%"
+        dialog.container.styles.height = self.interface.window.size[1] - 10
 
-        dialog.native_label.styles.margin = (0, 0, 1, 0)
+        dialog.label.styles.margin = (0, 0, 1, 0)
+
+    def return_value(self, variant):
+        if self.retry:
+            return variant == "primary"
+        else:
+            return None
+
+
+class ParentFolderButton(Button):
+    DEFAULT_CSS = """
+    ParentFolderButton {
+        border: none;
+        min-width: 4;
+        height: 1;
+    }
+    ParentFolderButton.-active {
+        border: none;
+    }
+    """
+
+    def __init__(self, dialog):
+        super().__init__("..")
+        self.dialog = dialog
+
+    def on_button_pressed(self, event):
+        self.dialog.native.directory_tree.path = (
+            self.dialog.native.directory_tree.path.parent
+        )
+        event.stop()
+
+
+class FilteredDirectoryTree(DirectoryTree):
+    def __init__(self, dialog):
+        super().__init__(dialog.initial_directory)
+        self.dialog = dialog
+
+    def filter_paths(self, paths):
+        if self.dialog.filter_func:
+            return [
+                path
+                for path in paths
+                if (path.is_dir() or self.dialog.filter_func(path))
+            ]
+        else:
+            return paths
+
+    def on_tree_node_selected(self, event):
+        self.dialog.on_select_file(event.node.data.path)
 
 
 class SaveFileDialog(BaseDialog):
@@ -160,13 +218,64 @@ class SaveFileDialog(BaseDialog):
         file_types=None,
         on_result=None,
     ):
-        super().__init__(interface=interface)
-        self.on_result = on_result
+        super().__init__(
+            interface=interface,
+            title=title,
+            message=None,
+            on_result=on_result,
+        )
+        self.initial_filename = filename
+        self.initial_directory = initial_directory if initial_directory else Path.cwd()
+        self.file_types = file_types
+        if self.file_types:
+            self.filter_func = lambda p: p.suffix[1:] in self.file_types
+        else:
+            self.filter_func = None
 
-        interface.window.factory.not_implemented("Window.save_file_dialog()")
+    def compose_content(self, dialog):
+        dialog.directory_tree = FilteredDirectoryTree(self)
+        dialog.parent_button = ParentFolderButton(self)
+        dialog.scroll = VerticalScroll(dialog.directory_tree)
+        dialog.filename_label = Label("Filename:")
+        dialog.filename = Input(self.initial_filename)
+        dialog.file_specifier = Horizontal(
+            dialog.filename_label,
+            dialog.filename,
+        )
+        dialog.content = Vertical(
+            dialog.parent_button,
+            dialog.scroll,
+            dialog.file_specifier,
+        )
 
-        self.on_result(self, None)
-        self.interface.future.set_result(None)
+    def create_buttons(self):
+        return [
+            Button("Cancel", variant="error"),
+            Button("OK", variant="primary"),
+        ]
+
+    def style_content(self, dialog):
+        dialog.content.styles.margin = 1
+        dialog.content.styles.height = self.interface.window.size[1] - 18
+
+        dialog.filename_label.styles.margin = (1, 0)
+        dialog.scroll.styles.height = self.interface.window.size[1] - 22
+
+        dialog.container.styles.width = "80%"
+        dialog.container.styles.height = self.interface.window.size[1] - 10
+
+    def on_select_file(self, path):
+        if path.is_file():
+            self.native.filename.value = path.name
+
+    def return_value(self, variant):
+        if variant == "primary":
+            return (
+                self.native.directory_tree.cursor_node.data.path.parent
+                / self.native.filename.value
+            )
+        else:
+            return None
 
 
 class OpenFileDialog(BaseDialog):
@@ -179,13 +288,55 @@ class OpenFileDialog(BaseDialog):
         multiselect,
         on_result=None,
     ):
-        super().__init__(interface=interface)
-        self.on_result = on_result
+        super().__init__(
+            interface=interface,
+            title=title,
+            message=None,
+            on_result=on_result,
+        )
+        self.initial_directory = initial_directory if initial_directory else Path.cwd()
+        self.file_types = file_types
+        if self.file_types:
+            self.filter_func = lambda p: p.is_dir() or p.suffix[1:] in self.file_types
+        else:
+            self.filter_func = None
 
-        interface.window.factory.not_implemented("Window.open_file_dialog()")
+        self.multiselect = multiselect
 
-        self.on_result(self, None)
-        self.interface.future.set_result(None)
+    def compose_content(self, dialog):
+        dialog.directory_tree = FilteredDirectoryTree(self)
+        dialog.parent_button = ParentFolderButton(self)
+        dialog.scroll = VerticalScroll(dialog.directory_tree)
+        dialog.content = Vertical(
+            dialog.parent_button,
+            dialog.scroll,
+        )
+
+    def create_buttons(self):
+        return [
+            Button("Cancel", variant="error"),
+            Button("OK", variant="primary", disabled=True),
+        ]
+
+    def style_content(self, dialog):
+        dialog.content.styles.margin = 1
+        dialog.content.styles.height = self.interface.window.size[1] - 18
+
+        dialog.container.styles.width = "80%"
+        dialog.container.styles.height = self.interface.window.size[1] - 10
+
+    def on_select_file(self, path):
+        ok_button = self.native.buttons[-1]
+        if self.filter_func:
+            ok_button.disabled = not self.filter_func(path)
+        else:
+            ok_button.disabled = not path.is_file()
+
+    def return_value(self, variant):
+        if variant == "primary":
+            return self.native.directory_tree.cursor_node.data.path
+        else:
+            return None
 
 
 class SelectFolderDialog(BaseDialog):
@@ -197,10 +348,47 @@ class SelectFolderDialog(BaseDialog):
         multiselect,
         on_result=None,
     ):
-        super().__init__(interface=interface)
-        self.on_result = on_result
+        super().__init__(
+            interface=interface,
+            title=title,
+            message=None,
+            on_result=on_result,
+        )
+        self.initial_directory = initial_directory if initial_directory else Path.cwd()
+        self.filter_func = lambda path: path.is_dir()
+        self.multiselect = multiselect
 
-        interface.window.factory.not_implemented("Window.select_folder_dialog()")
+    def compose_content(self, dialog):
+        dialog.directory_tree = FilteredDirectoryTree(self)
+        dialog.parent_button = ParentFolderButton(self)
+        dialog.scroll = VerticalScroll(dialog.directory_tree)
+        dialog.content = Vertical(
+            dialog.parent_button,
+            dialog.scroll,
+        )
 
-        self.on_result(self, None)
-        self.interface.future.set_result(None)
+    def create_buttons(self):
+        return [
+            Button("Cancel", variant="error"),
+            Button("OK", variant="primary"),
+        ]
+
+    def style_content(self, dialog):
+        dialog.content.styles.margin = 1
+        dialog.content.styles.height = self.interface.window.size[1] - 19
+
+        dialog.container.styles.width = "80%"
+        dialog.container.styles.height = self.interface.window.size[1] - 10
+
+    def on_select_file(self, path):
+        ok_button = self.native.buttons[-1]
+        if self.filter_func:
+            ok_button.disabled = not self.filter_func(path)
+        else:
+            ok_button.disabled = not path.is_file()
+
+    def return_value(self, variant):
+        if variant == "primary":
+            return self.native.directory_tree.cursor_node.data.path
+        else:
+            return None

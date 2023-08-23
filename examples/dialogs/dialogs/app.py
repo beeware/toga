@@ -6,7 +6,7 @@ from toga.constants import COLUMN
 from toga.style import Pack
 
 
-class ExampledialogsApp(toga.App):
+class ExampleDialogsApp(toga.App):
     # Button callback functions
     def do_clear(self, widget, **kwargs):
         self.label.text = "Ready."
@@ -333,7 +333,7 @@ class ExampledialogsApp(toga.App):
 
 
 def main():
-    return ExampledialogsApp("Dialogs", "org.beeware.widgets.dialogs")
+    return ExampleDialogsApp("Dialogs", "org.beeware.widgets.dialogs")
 
 
 if __name__ == "__main__":
