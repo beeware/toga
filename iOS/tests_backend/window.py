@@ -69,3 +69,6 @@ class WindowProbe(BaseProbe):
 
     async def close_select_folder_dialog(self, dialog, result, multiple_select):
         pytest.skip("Select Folder dialog not implemented on iOS")
+
+    def has_toolbar(self):
+        pytest.skip("Toolbars not implemented on iOS")
