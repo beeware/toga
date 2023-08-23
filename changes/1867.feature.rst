@@ -1,0 +1,1 @@
+A new Textual backend was added to support terminal applications.

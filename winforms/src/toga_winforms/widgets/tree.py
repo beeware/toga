@@ -1,4 +1,4 @@
-from toga_winforms.libs import WinForms
+import System.Windows.Forms as WinForms
 
 from .base import Widget
 

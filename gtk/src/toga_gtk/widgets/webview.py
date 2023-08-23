@@ -80,11 +80,10 @@ class WebView(Widget):
         # Define a callback that will update the future when
         # the Javascript is complete.
         def gtk_js_finished(webview, task, *user_data):
-            """If `run_javascript_finish` from GTK returns a result, unmarshal it, and
+            """If `evaluate_javascript_finish` from GTK returns a result, unmarshal it, and
             call back with the result."""
             try:
-                js_result = webview.run_javascript_finish(task)
-                value = js_result.get_js_value()
+                value = webview.evaluate_javascript_finish(task)
                 if value.is_boolean():
                     value = value.to_boolean()
                 elif value.is_number():
@@ -103,7 +102,14 @@ class WebView(Widget):
 
         # Invoke the javascript method, with a callback that will set
         # the future when a result is available.
-        self.native.run_javascript(javascript, None, gtk_js_finished)
+        self.native.evaluate_javascript(
+            script=javascript,
+            length=len(javascript),
+            world_name=None,
+            source_uri=None,
+            cancellable=None,
+            callback=gtk_js_finished,
+        )
 
         # wait for the future, and return the result
         return result
