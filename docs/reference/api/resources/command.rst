@@ -7,7 +7,7 @@ A representation of app functionality that the user can invoke from menus or too
 .. csv-filter:: Availability (:ref:`Key <api-status-key>`)
    :header-rows: 1
    :file: ../../data/widgets_by_platform.csv
-   :included_cols: 4,5,6,7,8,9
+   :included_cols: 4,5,6,7,8,9,10
    :exclude: {0: '(?!(Command|Component))'}
 
 
@@ -145,15 +145,3 @@ Reference
 .. autoprotocol:: toga.command.ActionHandler
 
 .. autoclass:: toga.Command
-   :members:
-   :undoc-members:
-
-.. autoclass:: toga.Group
-   :members:
-   :undoc-members:
-
-.. autoprotocol:: toga.command.CommandSetChangeHandler
-
-.. autoclass:: toga.command.CommandSet
-   :members:
-   :undoc-members:

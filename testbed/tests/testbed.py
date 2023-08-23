@@ -17,9 +17,7 @@ from testbed.app import main
 def run_tests(app, cov, args, report_coverage, run_slow):
     try:
         # Control the run speed of the test app.
-        # FIXME: Add this in to debug why apps are crashing in CI.
-        app.run_slow = True
-        # app.run_slow = run_slow
+        app.run_slow = run_slow
 
         project_path = Path(__file__).parent.parent
         os.chdir(project_path)

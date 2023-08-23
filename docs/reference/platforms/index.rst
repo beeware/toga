@@ -24,11 +24,11 @@ Mobile
 Other
 =====
 
-
 .. toctree::
    :maxdepth: 1
 
    web
+   terminal
    testing
 
 Future Plans
@@ -40,7 +40,6 @@ Eventually, the Toga project would like to provide support for:
 * Qt (for KDE-based Unix desktops)
 * tvOS (for AppleTV devices)
 * watchOS (for Apple Watch devices)
-* Curses/Textual (for console apps)
 
 If you are interested in these platforms and would like to contribute, please get in
 touch on `Mastodon <https://fosstodon.org/@beeware>`__ or `Discord

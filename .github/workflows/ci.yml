@@ -54,6 +54,7 @@ jobs:
         - "gtk"
         - "iOS"
         - "toga"
+        - "textual"
         - "web"
         - "winforms"
 
