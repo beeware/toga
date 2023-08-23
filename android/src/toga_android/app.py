@@ -208,7 +208,9 @@ class App:
         self.interface.factory.not_implemented("App.show_about_dialog()")
 
     def beep(self):
-        uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+        uri = RingtoneManager.getActualDefaultRingtoneUri(
+            self.native.getApplicationContext(), RingtoneManager.TYPE_NOTIFICATION
+        )
         ringtone = RingtoneManager.getRingtone(self.native.getApplicationContext(), uri)
         ringtone.play()
 
