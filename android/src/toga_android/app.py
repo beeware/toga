@@ -1,11 +1,9 @@
 import asyncio
 
-import java
 from rubicon.java import android_events
 
 import toga
-from android.media import Ringtone, RingtoneManager
-from android.net import Uri
+from android.media import RingtoneManager
 from toga.command import Group
 
 from .libs.activity import IPythonApp, MainActivity
@@ -210,11 +208,9 @@ class App:
         self.interface.factory.not_implemented("App.show_about_dialog()")
 
     def beep(self):
-        uri_obj = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
-        uri = java.cast(Uri, uri_obj)
-        ring_obj = RingtoneManager.getRingtone(self.native.getApplicationContext(), uri)
-        ring = java.cast(Ringtone, ring_obj)
-        ring.play()
+        uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+        ringtone = RingtoneManager.getRingtone(self.native.getApplicationContext(), uri)
+        ringtone.play()
 
     def exit(self):
         pass
