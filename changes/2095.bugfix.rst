@@ -1,0 +1,1 @@
+Added empty window content error messages to prevent non meanigful error messages from showing up.
