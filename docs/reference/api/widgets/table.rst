@@ -17,12 +17,10 @@ A widget for displaying columns of tabular data.
 Usage
 -----
 
-A Table uses a :class:`~toga.sources.ListSource` to manage the data being displayed.
-options. If ``data`` is not specified as a ListSource, it will be converted into a
-ListSource at runtime.
+A Table will automatically provide scroll bars when necessary.
 
 The simplest instantiation of a Table is to use a list of lists (or list of tuples),
-containing the items to display in the table. When creating the table, you must also
+containing the items to display in the table. When creating the table, you can also
 specify the headings to use on the table; those headings will be converted into
 accessors on the Row data objects created for the table data. In this example,
 we will display a table of 2 columns, with 3 initial rows of data:

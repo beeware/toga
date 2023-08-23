@@ -61,35 +61,34 @@ from the ListSource.
 
 Although Toga provides ListSource, you are not required to use it directly. A ListSource
 will be transparently constructed for you if you provide a Python ``list`` object to a
-GUI widget that displays list-like data (e.g., Table or Selection). Any object that
-adheres to the same interface can be used as an alternative source of data for widgets
-that support using a ListSource. See the background guide on :ref:`custom data sources
-<custom-data-sources>` for more details.
+GUI widget that displays list-like data (e.g., Table or Selection).
 
 Custom List Sources
 -------------------
 
-Any object that adheres to the :any:`collections.abc.MutableSequence` protocol can be
-used as a data source. This means they must provide:
+For more complex applications, you can replace ListSource with a :ref:`custom data
+source <custom-data-sources>` class. Such a class must:
 
-* ``__len__(self)`` returning the number of items in the list
+* Inherit from :any:`Source`
 
-* ``__getitem__(self, index)`` returning the item at position ``index`` of the list.
+* Provide the same methods as :any:`ListSource`
 
-A custom ListSource must also inherit from :any:`Source`, and generate ``insert``,
-``remove`` and ``clear`` notifications when items are added or removed from the source.
+* Return items whose attributes match the accessors for any widget using the source
 
-Each item returned by the custom ListSource is required to expose attributes matching
-the accessors for any widget using the source. Any change to the values of these attributes
-must generate a ``change`` notification on any listener to the custom ListSource.
+* Generate a ``change`` notification when any of those attributes change
+
+* Generate ``insert``, ``remove`` and ``clear`` notifications when items are added or
+  removed
 
 Reference
 ---------
 
 .. autoclass:: toga.sources.Row
+   :special-members: __setattr__
    :members:
    :undoc-members:
 
 .. autoclass:: toga.sources.ListSource
+   :special-members: __len__, __getitem__, __setitem__, __delitem__
    :members:
    :undoc-members:

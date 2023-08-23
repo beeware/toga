@@ -74,12 +74,15 @@ class ListSource(Source):
     ######################################################################
 
     def __len__(self) -> int:
+        """Returns the number of items in the list."""
         return len(self._data)
 
     def __getitem__(self, index: int) -> Row:
+        """Returns the item at position ``index`` of the list."""
         return self._data[index]
 
     def __delitem__(self, index):
+        """Deletes the item at position ``index`` of the list."""
         row = self._data[index]
         del self._data[index]
         self.notify("remove", index=index, item=row)
@@ -113,10 +116,6 @@ class ListSource(Source):
         row = self._create_row(value)
         self._data[index] = row
         self.notify("insert", index=index, item=row)
-
-    def __iter__(self):
-        """Obtain an iterator over the Rows in the data source."""
-        return iter(self._data)
 
     def clear(self):
         """Clear all data from the data source."""

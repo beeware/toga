@@ -31,7 +31,7 @@ class Table(Widget):
         :param headings: The list of headings for the table. Headings can only contain
             one line; any text after a newline will be ignored.
 
-            A value of :any:`None` can be used to specify a table without headings.
+            A value of :any:`None` will produce a table without headings.
             However, if you do this, you *must* give a list of accessors.
 
         :param id: The ID for the widget.
@@ -129,7 +129,8 @@ class Table(Widget):
 
         When setting this property:
 
-        * A :any:`Source` will be used as-is.
+        * A :any:`Source` will be used as-is. It must either be a :any:`ListSource`, or
+          a custom class that provides the same methods.
 
         * A value of None is turned into an empty ListSource.
 

@@ -71,7 +71,8 @@ class Selection(Widget):
 
         When setting this property:
 
-        * A :any:`Source` will be used as-is.
+        * A :any:`Source` will be used as-is. It must either be a :any:`ListSource`, or
+          a custom class that provides the same methods.
 
         * A value of None is turned into an empty ListSource.
 
