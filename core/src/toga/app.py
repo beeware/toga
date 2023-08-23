@@ -132,6 +132,8 @@ class MainWindow(Window):
         minimizable: bool = True,
         factory: None = None,  # DEPRECATED !
         on_close: None = None,
+        on_gain_focus: callable | None = None,
+        on_lose_focus: callable | None = None,
     ) -> None:
         ######################################################################
         # 2022-09: Backwards compatibility
@@ -152,6 +154,8 @@ class MainWindow(Window):
             closeable=True,
             minimizable=minimizable,
             on_close=on_close,
+            on_gain_focus=on_gain_focus,
+            on_lose_focus=on_lose_focus,
         )
 
     @Window.on_close.setter
@@ -185,6 +189,8 @@ class App:
         startup: AppStartupMethod | None = None,
         windows: Iterable[Window] = (),
         on_exit: OnExitHandler | None = None,
+        on_gain_focus: callable | None = None,
+        on_lose_focus: callable | None = None,
         factory: None = None,  # DEPRECATED !
     ):
         """An App is the top level of any GUI program.
@@ -383,6 +389,9 @@ class App:
 
         self._impl = self._create_impl()
         self.on_exit = on_exit
+
+        self.on_gain_focus = on_gain_focus
+        self.on_lose_focus = on_lose_focus
 
     def _create_impl(self):
         return self.factory.App(interface=self)
@@ -627,6 +636,22 @@ class App:
         :param handler: A coroutine, generator or callable.
         """
         self._impl.loop.call_soon_threadsafe(wrapped_handler(self, handler), None)
+
+    @property
+    def on_gain_focus(self) -> callable:
+        return self._on_gain_focus
+
+    @on_gain_focus.setter
+    def on_gain_focus(self, handler):
+        self._on_gain_focus = wrapped_handler(self, handler)
+
+    @property
+    def on_lose_focus(self) -> callable:
+        return self._on_lose_focus
+
+    @on_lose_focus.setter
+    def on_lose_focus(self, handler):
+        self._on_lose_focus = wrapped_handler(self, handler)
 
 
 class DocumentApp(App):

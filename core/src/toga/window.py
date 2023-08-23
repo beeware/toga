@@ -88,6 +88,8 @@ class Window:
         minimizable: bool = True,
         factory: None = None,  # DEPRECATED !
         on_close: OnCloseHandler | None = None,
+        on_gain_focus: callable | None = None,
+        on_lose_focus: callable | None = None,
     ) -> None:
         ######################################################################
         # 2022-09: Backwards compatibility
@@ -122,6 +124,9 @@ class Window:
         self._toolbar = CommandSet(widget=self, on_change=self._impl.create_toolbar)
 
         self.on_close = on_close
+
+        self.on_gain_focus = on_gain_focus
+        self.on_lose_focus = on_lose_focus
 
     @property
     def id(self) -> str:
@@ -270,6 +275,22 @@ class Window:
     def close(self) -> None:
         self.app.windows -= self
         self._impl.close()
+
+    @property
+    def on_gain_focus(self) -> callable:
+        return self._on_gain_focus
+
+    @on_gain_focus.setter
+    def on_gain_focus(self, handler):
+        self._on_gain_focus = wrapped_handler(self, handler)
+
+    @property
+    def on_lose_focus(self) -> callable:
+        return self._on_lose_focus
+
+    @on_lose_focus.setter
+    def on_lose_focus(self, handler):
+        self._on_lose_focus = wrapped_handler(self, handler)
 
     ############################################################
     # Dialogs

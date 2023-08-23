@@ -43,6 +43,9 @@ class Window(Container, Scalable):
             self.native.FormBorderStyle = self.native.FormBorderStyle.FixedSingle
             self.native.MaximizeBox = False
 
+        self.native.Activated += self.window_on_gain_focus
+        self.native.Deactivate += self.window_on_lose_focus
+
     def create_toolbar(self):
         if self.interface.toolbar:
             if self.toolbar_native:
@@ -173,3 +176,11 @@ class Window(Container, Scalable):
             self.native.ClientSize.Width,
             self.native.ClientSize.Height - vertical_shift,
         )
+
+    def window_on_gain_focus(self, sender, event):
+        self.interface.app.on_gain_focus(self.interface)
+        self.interface.on_gain_focus(self.interface)
+
+    def window_on_lose_focus(self, sender, event):
+        self.interface.app.on_lose_focus(self.interface)
+        self.interface.on_lose_focus(self.interface)

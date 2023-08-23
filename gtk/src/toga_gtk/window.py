@@ -20,6 +20,8 @@ class Window:
         self.native._impl = self
 
         self.native.connect("delete-event", self.gtk_delete_event)
+        self.native.connect("focus-in-event", self.window_on_gain_focus)
+        self.native.connect("focus-out-event", self.window_on_lose_focus)
 
         self.native.set_default_size(size[0], size[1])
 
@@ -138,3 +140,11 @@ class Window:
             self.native.fullscreen()
         else:
             self.native.unfullscreen()
+
+    def window_on_gain_focus(self, sender, event):
+        self.interface.app.on_gain_focus(self.interface)
+        self.interface.on_gain_focus(self.interface)
+
+    def window_on_lose_focus(self, sender, event):
+        self.interface.app.on_lose_focus(self.interface)
+        self.interface.on_lose_focus(self.interface)
