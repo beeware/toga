@@ -26,8 +26,6 @@ class Slider(Widget):
     ):
         """Create a new Slider widget.
 
-        Inherits from :class:`toga.Widget`.
-
         :param id: The ID for the widget.
         :param style: A style object. If no style is provided, a default style will be
             applied to the widget.

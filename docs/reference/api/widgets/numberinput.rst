@@ -31,5 +31,3 @@ Reference
 ---------
 
 .. autoclass:: toga.NumberInput
-   :members:
-   :undoc-members:

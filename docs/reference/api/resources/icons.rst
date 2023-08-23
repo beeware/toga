@@ -37,5 +37,3 @@ Reference
 ---------
 
 .. autoclass:: toga.Icon
-   :members:
-   :undoc-members:

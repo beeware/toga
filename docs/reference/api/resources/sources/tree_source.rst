@@ -41,9 +41,5 @@ Reference
 ---------
 
 .. autoclass:: toga.sources.Node
-   :members:
-   :undoc-members:
 
 .. autoclass:: toga.sources.TreeSource
-   :members:
-   :undoc-members:

@@ -42,5 +42,3 @@ Reference
 ---------
 
 .. autoclass:: toga.MultilineTextInput
-   :members:
-   :undoc-members:

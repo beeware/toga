@@ -39,5 +39,3 @@ Reference
 ---------
 
 .. autoclass:: toga.Divider
-   :members:
-   :undoc-members:

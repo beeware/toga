@@ -47,5 +47,3 @@ Reference
 ---------
 
 .. autoclass:: toga.paths.Paths
-   :members:
-   :undoc-members:
