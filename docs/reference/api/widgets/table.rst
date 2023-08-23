@@ -64,8 +64,8 @@ to control the display order of columns independent of the storage of that data.
     )
 
     # Get the details of the first item in the data:
-    print(f"{table.data[0].name}, who is age {table.data[0].age}, "
-          f"is from {table.data[0].planet}")
+    row = table.data[0]
+    print(f"{row.name}, who is age {row.age}, is from {row.planet}")
 
 The attribute names used on each row of data (called "accessors") are created
 automatically from the headings that you provide. If you want to use different
@@ -88,8 +88,8 @@ example, the table will use "Name" as the visible header, but internally, the at
     )
 
     # Get the details of the first item in the data:
-    print(f"{table.data[0].character}, who is age {table.data[0].age}, "
-          f"is from {table.data[0].planet}")
+    row = table.data[0]
+    print(f"{row.character}, who is age {row.age}, is from {row.planet}")
 
 The value provided by an accessor is interpreted as follows:
 
