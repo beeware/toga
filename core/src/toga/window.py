@@ -224,6 +224,10 @@ class Window:
             raise AttributeError(
                 "Can't show a window that doesn't have an associated app"
             )
+        elif self.content is None:
+            raise AttributeError(
+                "Can't show a window that doesn't have an associated content"
+            )
         self._impl.show()
 
     def hide(self) -> None:
@@ -231,6 +235,10 @@ class Window:
         if self.app is None:
             raise AttributeError(
                 "Can't hide a window that doesn't have an associated app"
+            )
+        elif self.content is None:
+            raise AttributeError(
+                "Can't hide a window that doesn't have an associated content"
             )
         self._impl.hide()
 
