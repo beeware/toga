@@ -1,8 +1,9 @@
+import System.Windows.Forms as WinForms
+from System.Drawing import Point, Size
+
 from toga import GROUP_BREAK, SECTION_BREAK
 
 from .container import Container
-from .libs import Point, Size, WinForms
-from .screen import Screen as ScreenImpl
 from .widgets.base import Scalable
 
 
