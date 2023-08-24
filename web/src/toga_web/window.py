@@ -16,6 +16,8 @@ class Window:
         app_placeholder = js.document.getElementById("app-placeholder")
         app_placeholder.appendChild(self.native)
 
+        js.document.body.onfocus = self.window_on_gain_focus
+        js.document.body.onblur = self.window_on_lose_focusS
         self.set_title(title)
 
     def get_title(self):
@@ -77,3 +79,11 @@ class Window:
 
     def set_full_screen(self, is_full_screen):
         self.interface.factory.not_implemented("Window.set_full_screen()")
+
+    def window_on_gain_focus(self, sender, event):
+        self.interface.app.on_gain_focus(self.interface)
+        self.interface.on_gain_focus(self.interface)
+
+    def window_on_lose_focus(self, sender, event):
+        self.interface.app.on_lose_focus(self.interface)
+        self.interface.on_lose_focus(self.interface)
