@@ -1,11 +1,11 @@
-from java import jint
-from travertino.fonts import Font
-
 from android.graphics import Color, Typeface
 from android.os import Build
 from android.text import Layout
 from android.util import TypedValue
 from android.view import Gravity
+from java import jint
+from travertino.fonts import Font
+
 from toga.colors import TRANSPARENT, rgba
 from toga.constants import BOTTOM, CENTER, JUSTIFY, LEFT, RIGHT, TOP
 from toga.fonts import (

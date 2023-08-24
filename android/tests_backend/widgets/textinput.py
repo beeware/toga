@@ -1,9 +1,8 @@
-from java import jclass
-
 from android.os import SystemClock
 from android.text import InputType
 from android.view import KeyEvent
 from android.view.inputmethod import EditorInfo
+from java import jclass
 
 from .label import LabelProbe
 

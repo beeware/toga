@@ -37,6 +37,10 @@ exclude_lines = [
 profile = "black"
 split_on_trailing_comma = true
 combine_as_imports = true
+known_third_party = [
+    "android",
+    "java",
+]
 known_first_party = [
     "testbed",
     "toga",

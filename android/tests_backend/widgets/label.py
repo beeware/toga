@@ -1,6 +1,5 @@
-from java import jclass
-
 from android.os import Build
+from java import jclass
 
 from .base import SimpleProbe
 from .properties import toga_alignment, toga_color, toga_font

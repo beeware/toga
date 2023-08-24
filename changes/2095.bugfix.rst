@@ -1,0 +1,1 @@
+Modified WinForms backend to prevent error when window content is not set.

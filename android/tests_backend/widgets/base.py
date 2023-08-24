@@ -1,8 +1,5 @@
 import asyncio
 
-from java import dynamic_proxy
-from pytest import approx
-
 from android.graphics.drawable import (
     ColorDrawable,
     DrawableContainer,
@@ -11,6 +8,9 @@ from android.graphics.drawable import (
 )
 from android.os import Build, SystemClock
 from android.view import MotionEvent, View, ViewTreeObserver
+from java import dynamic_proxy
+from pytest import approx
+
 from toga.colors import TRANSPARENT
 from toga.style.pack import JUSTIFY, LEFT
 

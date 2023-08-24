@@ -1,5 +1,6 @@
 import asyncio
 
+from android.media import RingtoneManager
 from rubicon.java import android_events
 
 import toga
@@ -207,7 +208,11 @@ class App:
         self.interface.factory.not_implemented("App.show_about_dialog()")
 
     def beep(self):
-        self.interface.factory.not_implemented("App.beep()")
+        uri = RingtoneManager.getActualDefaultRingtoneUri(
+            self.native.getApplicationContext(), RingtoneManager.TYPE_NOTIFICATION
+        )
+        ringtone = RingtoneManager.getRingtone(self.native.getApplicationContext(), uri)
+        ringtone.play()
 
     def exit(self):
         pass
