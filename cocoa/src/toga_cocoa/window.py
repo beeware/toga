@@ -48,6 +48,14 @@ class WindowDelegate(NSObject):
                 # Set the window to the new size
                 self.interface.content.refresh()
 
+    @objc_method
+    def windowDidBecomeMain_(self, notification):
+        self.interface.on_gain_focus(self.interface)
+
+    @objc_method
+    def windowDidResignMain_(self, notification):
+        self.interface.on_lose_focus(self.interface)
+
     ######################################################################
     # Toolbar delegate methods
     ######################################################################
