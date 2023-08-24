@@ -10,6 +10,7 @@ NSEventModifierFlagCommand = 1 << 20
 
 class TableProbe(SimpleProbe):
     native_class = NSScrollView
+    supports_icons = True
     supports_keyboard_shortcuts = True
 
     def __init__(self, widget):

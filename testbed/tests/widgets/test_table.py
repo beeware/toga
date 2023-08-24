@@ -53,7 +53,7 @@ async def widget(source, on_select_handler, on_activate_handler):
 
 
 @pytest.fixture
-def headerless_widget(source, on_select_handler):
+async def headerless_widget(source, on_select_handler):
     # Although Android *has* a table implementation, it needs to be rebuilt.
     skip_on_platforms("iOS", "android")
     return toga.Table(
@@ -80,7 +80,7 @@ async def headerless_probe(main_window, headerless_widget):
 
 
 @pytest.fixture
-def multiselect_widget(source, on_select_handler):
+async def multiselect_widget(source, on_select_handler):
     # Although Android *has* a table implementation, it needs to be rebuilt.
     skip_on_platforms("iOS", "android")
     return toga.Table(
@@ -110,14 +110,17 @@ async def test_scroll(widget, probe):
     """The table can be scrolled"""
 
     # Due to the interaction of scrolling with the header row, the scroll might be <0.
-    assert probe.scroll_position <= 0
+    top_position = probe.scroll_position
+    assert -100 < top_position <= 0
 
     # Scroll to the bottom of the table
     widget.scroll_to_bottom()
     await probe.wait_for_scroll_completion()
     await probe.redraw("Table scrolled to bottom")
 
-    assert probe.scroll_position == probe.max_scroll_position
+    # max_scroll_position is not perfectly accurate on Winforms.
+    assert probe.scroll_position == pytest.approx(probe.max_scroll_position, abs=5)
+    assert probe.scroll_position > 600
 
     # Scroll to the middle of the table
     widget.scroll_to_row(50)
@@ -136,8 +139,7 @@ async def test_scroll(widget, probe):
     await probe.wait_for_scroll_completion()
     await probe.redraw("Table scrolled to bottom")
 
-    # Due to the interaction of scrolling with the header row, the scroll might be <0.
-    assert probe.scroll_position <= 0
+    assert probe.scroll_position == top_position
 
 
 async def test_select(widget, probe, source, on_select_handler):
@@ -151,14 +153,17 @@ async def test_select(widget, probe, source, on_select_handler):
     await probe.select_row(1)
     await probe.redraw("Second row is selected")
     assert widget.selection == source[1]
-    on_select_handler.assert_called_once_with(widget)
+
+    # Winforms generates two events, first removing the old selection and then adding
+    # the new one.
+    on_select_handler.assert_called_with(widget)
     on_select_handler.reset_mock()
 
-    # Trying to multi-select only does a single select
+    # Trying to multi-select removes the previous selection
     await probe.select_row(2, add=True)
     await probe.redraw("Third row is selected")
     assert widget.selection == source[2]
-    on_select_handler.assert_called_once_with(widget)
+    on_select_handler.assert_called_with(widget)
     on_select_handler.reset_mock()
 
     if probe.supports_keyboard_shortcuts:
@@ -211,21 +216,24 @@ async def test_multiselect(
     await multiselect_probe.select_row(1)
     assert multiselect_widget.selection == [source[1]]
     await multiselect_probe.redraw("One row is selected in multiselect table")
-    on_select_handler.assert_called_once_with(multiselect_widget)
+
+    # Winforms generates two events, first removing the old selection and then adding
+    # the new one.
+    on_select_handler.assert_called_with(multiselect_widget)
     on_select_handler.reset_mock()
 
     # A row can be added to the selection
     await multiselect_probe.select_row(2, add=True)
     await multiselect_probe.redraw("Two rows are selected in multiselect table")
     assert multiselect_widget.selection == [source[1], source[2]]
-    on_select_handler.assert_called_once_with(multiselect_widget)
+    on_select_handler.assert_called_with(multiselect_widget)
     on_select_handler.reset_mock()
 
     # A row can be removed from the selection
     await multiselect_probe.select_row(1, add=True)
     await multiselect_probe.redraw("First row has been removed from the selection")
     assert multiselect_widget.selection == [source[2]]
-    on_select_handler.assert_called_once_with(multiselect_widget)
+    on_select_handler.assert_called_with(multiselect_widget)
     on_select_handler.reset_mock()
 
     if multiselect_probe.supports_keyboard_shortcuts:
@@ -380,6 +388,14 @@ async def test_headerless_column_changes(headerless_widget, headerless_probe):
     await _column_change_test(headerless_widget, headerless_probe)
 
 
+async def test_remove_all_columns(widget, probe):
+    assert probe.column_count == 3
+    for i in range(probe.column_count):
+        widget.remove_column(0)
+        await probe.redraw("Removed first column")
+    assert probe.column_count == 0
+
+
 class MyIconData:
     def __init__(self, text, icon):
         self.text = text
@@ -391,8 +407,8 @@ class MyIconData:
 
 async def test_cell_icon(widget, probe):
     "An icon can be used as a cell value"
-    red = toga.Icon("resources/icons/red")
-    green = toga.Icon("resources/icons/green")
+    red = toga.Icon("resources/icons/red") if probe.supports_icons else None
+    green = toga.Icon("resources/icons/green") if probe.supports_icons else None
     widget.data = [
         {
             # Normal text,

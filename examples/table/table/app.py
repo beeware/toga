@@ -5,16 +5,17 @@ import toga
 from toga.constants import COLUMN, ROW
 from toga.style import Pack
 
+# Include some non-string objects to make sure conversion works correctly.
 headings = ["Title", "Year", "Rating", "Genre"]
 bee_movies = [
-    ("The Secret Life of Bees", "2008", "7.3", "Drama"),
-    ("Bee Movie", "2007", "6.1", "Animation, Adventure, Comedy"),
-    ("Bees", "1998", "6.3", "Horror"),
-    ("The Girl Who Swallowed Bees", "2007", "7.5"),  # Missing a genre
-    ("Birds Do It, Bees Do It", "1974", "7.3", "Documentary"),
-    ("Bees: A Life for the Queen", "1998", "8.0", "TV Movie"),
-    ("Bees in Paradise", "1944", "5.4", "Comedy, Musical"),
-    ("Keeper of the Bees", "1947", "6.3", "Drama"),
+    ("The Secret Life of Bees", 2008, 7.3, "Drama"),
+    ("Bee Movie", 2007, 6.1, "Animation, Adventure, Comedy"),
+    ("Bees", 1998, 6.3, "Horror"),
+    ("The Girl Who Swallowed Bees", 2007, 7.5),  # Missing a genre
+    ("Birds Do It, Bees Do It", 1974, 7.3, "Documentary"),
+    ("Bees: A Life for the Queen", 1998, 8.0, "TV Movie"),
+    ("Bees in Paradise", 1944, 5.4, "Comedy, Musical"),
+    ("Keeper of the Bees", 1947, 6.3, "Drama"),
 ]
 
 
@@ -135,7 +136,8 @@ class ExampleTableApp(toga.App):
         )
 
         self.table2 = toga.Table(
-            headings=headings,
+            headings=None,
+            accessors=[h.lower() for h in headings],
             data=self.table1.data,
             multiple_select=True,
             style=Pack(flex=1, padding_left=5),

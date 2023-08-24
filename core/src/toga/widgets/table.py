@@ -26,8 +26,6 @@ class Table(Widget):
     ):
         """Create a new Table widget.
 
-        Inherits from :class:`~toga.widgets.base.Widget`.
-
         :param headings: The list of headings for the table. Headings can only contain
             one line; any text after a newline will be ignored.
 
@@ -168,14 +166,13 @@ class Table(Widget):
         If multiple selection is *not* enabled, returns the selected Row object, or
         :any:`None` if no row is currently selected.
         """
-        try:
-            selection = self._impl.get_selection()
+        selection = self._impl.get_selection()
+        if isinstance(selection, list):
             return [self.data[index] for index in selection]
-        except TypeError:
-            try:
-                return self.data[selection]
-            except TypeError:
-                return None
+        elif selection is None:
+            return None
+        else:
+            return self.data[selection]
 
     def scroll_to_top(self):
         """Scroll the view so that the top of the list (first row) is visible."""
@@ -290,13 +287,15 @@ class Table(Widget):
         self._impl.remove_column(index)
 
     @property
-    def headings(self) -> list[str]:
-        """The column headings for the table"""
+    def headings(self) -> list[str] | None:
+        """The column headings for the table, or None if there are no headings
+        (read-only)
+        """
         return self._headings
 
     @property
     def accessors(self) -> list[str]:
-        """The accessors used to populate the table"""
+        """The accessors used to populate the table (read-only)"""
         return self._accessors
 
     @property

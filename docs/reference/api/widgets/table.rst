@@ -92,8 +92,7 @@ example, the table will use "Name" as the visible header, but internally, the at
 The value provided by an accessor is interpreted as follows:
 
 * If the value is a :any:`Widget`, that widget will be displayed in the cell. Note that
-  this is currently a beta API, is currently only supported on macOS, and may change in
-  future.
+  this is currently a beta API: see the Notes section.
 
 * If the value is a :any:`tuple`, it must have two elements: an icon, and a second
   element which will be interpreted as one of the options below.
@@ -105,6 +104,14 @@ The value provided by an accessor is interpreted as follows:
 
 Icon values must either be an :any:`Icon`, which will be displayed on the left of the
 cell, or ``None`` to display no icon.
+
+Notes
+-----
+
+* Widgets in tables is a beta API which may change in future, and is currently only
+  supported on macOS.
+
+* Icons in tables are not currently supported on Winforms.
 
 Reference
 ---------
