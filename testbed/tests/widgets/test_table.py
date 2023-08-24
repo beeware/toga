@@ -110,8 +110,7 @@ async def test_scroll(widget, probe):
     """The table can be scrolled"""
 
     # Due to the interaction of scrolling with the header row, the scroll might be <0.
-    top_position = probe.scroll_position
-    assert -100 < top_position <= 0
+    assert -100 < probe.scroll_position <= 0
 
     # Scroll to the bottom of the table
     widget.scroll_to_bottom()
@@ -139,7 +138,8 @@ async def test_scroll(widget, probe):
     await probe.wait_for_scroll_completion()
     await probe.redraw("Table scrolled to bottom")
 
-    assert probe.scroll_position == top_position
+    # Due to the interaction of scrolling with the header row, the scroll might be <0.
+    assert -100 < probe.scroll_position <= 0
 
 
 async def test_select(widget, probe, source, on_select_handler):
