@@ -1,6 +1,5 @@
 import pytest
-
-from toga_winforms.libs import WinIcon
+from System.Drawing import Icon as WinIcon
 
 from .probe import BaseProbe
 
