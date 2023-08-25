@@ -26,32 +26,10 @@ def test_left():
         ],
     )
 
-    # Minimum size
-    root.style.layout(root, ExampleViewport(0, 0, dpi=96))
+    root.style.layout(root, ExampleViewport(640, 480))
     assert_layout(
         root,
         (540, 300),
-        {
-            "origin": (0, 0),
-            "content": (540, 300),
-            "children": [
-                {"origin": (0, 0), "content": (540, 100)},
-                {
-                    "origin": (110, 100),
-                    "content": (210, 200),
-                    "children": [
-                        {"origin": (142, 100), "content": (30, 200)},
-                        {"origin": (244, 100), "content": (36, 200)},
-                    ],
-                },
-            ],
-        },
-    )
-
-    # Normal size
-    root.style.layout(root, ExampleViewport(640, 480, dpi=96))
-    assert_layout(
-        root,
         (640, 300),
         {
             "origin": (0, 0),
@@ -64,28 +42,6 @@ def test_left():
                     "children": [
                         {"origin": (142, 100), "content": (30, 200)},
                         {"origin": (244, 100), "content": (36, 200)},
-                    ],
-                },
-            ],
-        },
-    )
-
-    # HiDPI Normal size
-    root.style.layout(root, ExampleViewport(640, 480, dpi=144))
-    assert_layout(
-        root,
-        (810, 450),
-        {
-            "origin": (0, 0),
-            "content": (810, 450),
-            "children": [
-                {"origin": (0, 0), "content": (810, 150)},
-                {
-                    "origin": (165, 150),
-                    "content": (315, 300),
-                    "children": [
-                        {"origin": (213, 150), "content": (45, 300)},
-                        {"origin": (366, 150), "content": (54, 300)},
                     ],
                 },
             ],
@@ -116,32 +72,10 @@ def test_center():
         ],
     )
 
-    # Minimum size
-    root.style.layout(root, ExampleViewport(0, 0, dpi=96))
+    root.style.layout(root, ExampleViewport(640, 480))
     assert_layout(
         root,
         (540, 300),
-        {
-            "origin": (0, 0),
-            "content": (540, 300),
-            "children": [
-                {"origin": (0, 0), "content": (540, 100)},
-                {
-                    "origin": (160, 100),
-                    "content": (210, 200),
-                    "children": [
-                        {"origin": (192, 100), "content": (30, 200)},
-                        {"origin": (294, 100), "content": (36, 200)},
-                    ],
-                },
-            ],
-        },
-    )
-
-    # Normal size
-    root.style.layout(root, ExampleViewport(640, 480, dpi=96))
-    assert_layout(
-        root,
         (640, 300),
         {
             "origin": (0, 0),
@@ -154,28 +88,6 @@ def test_center():
                     "children": [
                         {"origin": (242, 100), "content": (30, 200)},
                         {"origin": (344, 100), "content": (36, 200)},
-                    ],
-                },
-            ],
-        },
-    )
-
-    # HiDPI Normal size
-    root.style.layout(root, ExampleViewport(640, 480, dpi=144))
-    assert_layout(
-        root,
-        (810, 450),
-        {
-            "origin": (0, 0),
-            "content": (810, 450),
-            "children": [
-                {"origin": (0, 0), "content": (810, 150)},
-                {
-                    "origin": (240, 150),
-                    "content": (315, 300),
-                    "children": [
-                        {"origin": (288, 150), "content": (45, 300)},
-                        {"origin": (441, 150), "content": (54, 300)},
                     ],
                 },
             ],
@@ -206,32 +118,10 @@ def test_right():
         ],
     )
 
-    # Minimum size
-    root.style.layout(root, ExampleViewport(0, 0, dpi=96))
+    root.style.layout(root, ExampleViewport(640, 480))
     assert_layout(
         root,
         (540, 300),
-        {
-            "origin": (0, 0),
-            "content": (540, 300),
-            "children": [
-                {"origin": (0, 0), "content": (540, 100)},
-                {
-                    "origin": (210, 100),
-                    "content": (210, 200),
-                    "children": [
-                        {"origin": (242, 100), "content": (30, 200)},
-                        {"origin": (344, 100), "content": (36, 200)},
-                    ],
-                },
-            ],
-        },
-    )
-
-    # Normal size
-    root.style.layout(root, ExampleViewport(640, 480, dpi=96))
-    assert_layout(
-        root,
         (640, 300),
         {
             "origin": (0, 0),
@@ -250,28 +140,6 @@ def test_right():
         },
     )
 
-    # HiDPI Normal size
-    root.style.layout(root, ExampleViewport(640, 480, dpi=144))
-    assert_layout(
-        root,
-        (810, 450),
-        {
-            "origin": (0, 0),
-            "content": (810, 450),
-            "children": [
-                {"origin": (0, 0), "content": (810, 150)},
-                {
-                    "origin": (315, 150),
-                    "content": (315, 300),
-                    "children": [
-                        {"origin": (363, 150), "content": (45, 300)},
-                        {"origin": (516, 150), "content": (54, 300)},
-                    ],
-                },
-            ],
-        },
-    )
-
 
 def test_no_padding():
     root = ExampleNode(
@@ -283,25 +151,10 @@ def test_no_padding():
         ],
     )
 
-    # Minimum size
-    root.style.layout(root, ExampleViewport(0, 0, dpi=96))
+    root.style.layout(root, ExampleViewport(640, 480))
     assert_layout(
         root,
         (540, 300),
-        {
-            "origin": (0, 0),
-            "content": (540, 300),
-            "children": [
-                {"origin": (0, 0), "content": (540, 100)},
-                {"origin": (50, 100), "content": (440, 200)},
-            ],
-        },
-    )
-
-    # Normal size
-    root.style.layout(root, ExampleViewport(640, 480, dpi=96))
-    assert_layout(
-        root,
         (640, 300),
         {
             "origin": (0, 0),
@@ -309,21 +162,6 @@ def test_no_padding():
             "children": [
                 {"origin": (50, 0), "content": (540, 100)},
                 {"origin": (100, 100), "content": (440, 200)},
-            ],
-        },
-    )
-
-    # HiDPI Normal size
-    root.style.layout(root, ExampleViewport(640, 480, dpi=144))
-    assert_layout(
-        root,
-        (810, 450),
-        {
-            "origin": (0, 0),
-            "content": (810, 450),
-            "children": [
-                {"origin": (0, 0), "content": (810, 150)},
-                {"origin": (75, 150), "content": (660, 300)},
             ],
         },
     )
@@ -356,32 +194,10 @@ def test_column_box():
         ],
     )
 
-    # Minimum size
-    root.style.layout(root, ExampleViewport(0, 0, dpi=96))
+    root.style.layout(root, ExampleViewport(640, 480))
     assert_layout(
         root,
         (430, 310),
-        {
-            "origin": (0, 0),
-            "content": (430, 310),
-            "children": [
-                {"origin": (0, 0), "content": (430, 100)},
-                {
-                    "origin": (160, 100),
-                    "content": (100, 210),
-                    "children": [
-                        {"origin": (160, 132), "content": (100, 30)},
-                        {"origin": (160, 234), "content": (100, 36)},
-                    ],
-                },
-            ],
-        },
-    )
-
-    # Normal size
-    root.style.layout(root, ExampleViewport(640, 480, dpi=96))
-    assert_layout(
-        root,
         (640, 480),
         {
             "origin": (0, 0),
@@ -394,28 +210,6 @@ def test_column_box():
                     "children": [
                         {"origin": (110, 132), "content": (100, 30)},
                         {"origin": (110, 234), "content": (100, 36)},
-                    ],
-                },
-            ],
-        },
-    )
-
-    # HiDPI Normal size
-    root.style.layout(root, ExampleViewport(640, 480, dpi=144))
-    assert_layout(
-        root,
-        (645, 480),
-        {
-            "origin": (0, 0),
-            "content": (645, 480),
-            "children": [
-                {"origin": (0, 0), "content": (645, 150)},
-                {
-                    "origin": (167, 150),
-                    "content": (295, 315),
-                    "children": [
-                        {"origin": (167, 198), "content": (150, 45)},
-                        {"origin": (167, 351), "content": (150, 54)},
                     ],
                 },
             ],

@@ -44,8 +44,6 @@ class Switch(TextViewWidget):
         self.native.setChecked(bool(value))
 
     def rehint(self):
-        if not self.native.getLayoutParams():
-            return
         self.native.measure(
             View__MeasureSpec.UNSPECIFIED, View__MeasureSpec.UNSPECIFIED
         )

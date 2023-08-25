@@ -1,9 +1,7 @@
-from toga.constants import CENTER, JUSTIFY, LEFT, RIGHT
+import System.Windows.Forms as WinForms
+from System.Drawing import ContentAlignment
 
-from .winforms import (
-    ContentAlignment,
-    WinForms,
-)
+from toga.constants import CENTER, JUSTIFY, LEFT, RIGHT
 
 
 def TextAlignment(value):

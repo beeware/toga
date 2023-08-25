@@ -22,8 +22,6 @@ class Selection(Widget):
     ):
         """Create a new Selection widget.
 
-        Inherits from :class:`~toga.widgets.base.Widget`.
-
         :param id: The ID for the widget.
         :param style: A style object. If no style is provided, a default style will be
             applied to the widget.

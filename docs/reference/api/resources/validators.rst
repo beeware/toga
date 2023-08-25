@@ -47,5 +47,3 @@ Reference
 ---------
 
 .. automodule:: toga.validators
-   :members:
-   :undoc-members:
