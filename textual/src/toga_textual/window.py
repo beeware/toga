@@ -20,7 +20,8 @@ class WindowCloseButton(TextualButton):
         color: white;
     }
     WindowCloseButton:hover {
-        background: white 10%;
+        background: black;
+        border: none;
     }
     WindowCloseButton:focus {
         text-style: bold;
