@@ -39,6 +39,8 @@ class TextualDialog(ModalScreen[bool]):
         for button in self.buttons:
             button.styles.margin = (0, 1, 0, 1)
 
+        self.buttons[-1].focus()
+
     def on_button_pressed(self, event: Button.Pressed) -> None:
         self.dismiss(self.impl.return_value(event.button.variant))
 
@@ -68,6 +70,9 @@ class BaseDialog(ABC):
 
     def return_value(self, variant):
         return variant == "primary"
+
+    def textual_close(self):
+        self.native.dismiss(None)
 
     def on_close(self, result: bool):
         self.on_result(self, result)
@@ -172,6 +177,14 @@ class ParentFolderButton(Button):
         border: none;
         min-width: 4;
         height: 1;
+        background: white 10%;
+    }
+    ParentFolderButton:hover {
+        background: white 10%;
+    }
+    ParentFolderButton:focus {
+        text-style: bold;
+        color: white;
     }
     ParentFolderButton.-active {
         border: none;
@@ -294,6 +307,7 @@ class OpenFileDialog(BaseDialog):
             message=None,
             on_result=on_result,
         )
+
         self.initial_directory = initial_directory if initial_directory else Path.cwd()
         self.file_types = file_types
         if self.file_types:

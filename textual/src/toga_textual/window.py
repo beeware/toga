@@ -4,22 +4,38 @@ from textual.app import RenderResult
 from textual.reactive import Reactive
 from textual.screen import Screen as TextualScreen
 from textual.widget import Widget as TextualWidget
+from textual.widgets import Button as TextualButton
 
 from .container import Container
 
 
-class CloseIcon(TextualWidget):
+class WindowCloseButton(TextualButton):
     DEFAULT_CSS = """
-    CloseIcon {
+    WindowCloseButton {
         dock: left;
-        padding: 0 1;
-        width: 4;
-        content-align: left middle;
+        border: none;
+        min-width: 3;
+        height: 1;
+        background: white 10%;
+        color: white;
+    }
+    WindowCloseButton:hover {
+        background: white 10%;
+    }
+    WindowCloseButton:focus {
+        text-style: bold;
+    }
+    WindowCloseButton.-active {
+        border: none;
     }
     """
 
-    def render(self) -> RenderResult:
-        return "⭘"
+    def __init__(self):
+        super().__init__("✕")
+
+    def on_button_pressed(self, event):
+        self.screen.impl.textual_close()
+        event.stop()
 
 
 class TitleSpacer(TextualWidget):
@@ -27,7 +43,7 @@ class TitleSpacer(TextualWidget):
     TitleSpacer {
         dock: right;
         padding: 0 1;
-        width: 4;
+        width: 3;
         content-align: right middle;
     }
     """
@@ -77,7 +93,7 @@ class TitleBar(TextualWidget):
         self.title.text = value
 
     def compose(self):
-        yield CloseIcon()
+        yield WindowCloseButton()
         yield self.title
         yield TitleSpacer()
 
@@ -143,8 +159,11 @@ class Window:
     def get_visible(self):
         return True
 
+    def textual_close(self):
+        self.interface.on_close(self)
+
     def close(self):
-        pass
+        self.native.dismiss(None)
 
     def set_full_screen(self, is_full_screen):
         pass
