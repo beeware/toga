@@ -60,15 +60,26 @@ class AppProbe(BaseProbe):
 
         menu = main_menu
         orig_path = path.copy()
-        try:
-            while True:
-                label, path = path[0], path[1:]
-                item = menu.itemWithTitle(label)
+        while True:
+            label, path = path[0], path[1:]
+            item = menu.itemWithTitle(label)
+            if item is None:
+                raise AssertionError(
+                    f"Menu {' > '.join(orig_path)} not found; "
+                    f"no item named {label!r}; options are: "
+                    + ",".join(f"{str(item.title)!r}" for item in menu.itemArray)
+                )
+
+            if path:
                 menu = item.submenu
-        except IndexError:
-            pass
-        except AttributeError:
-            raise AssertionError(f"Menu {' > '.join(orig_path)} not found")
+                if menu is None:
+                    raise AssertionError(
+                        f"Menu {' > '.join(orig_path)} not found; "
+                        f"{str(item.title)} does not have a submenu"
+                    )
+            else:
+                # No more path segments; we've found the full path.
+                break
 
         return item
 

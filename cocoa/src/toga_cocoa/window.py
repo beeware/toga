@@ -149,14 +149,39 @@ class Window:
         self.native.contentView = self.container.native
 
         # By default, no toolbar
+        self._toolbar_items = {}
         self.native_toolbar = None
 
     def __del__(self):
+        self.purge_toolbar()
         self.native.release()
 
+    def purge_toolbar(self):
+        while self._toolbar_items:
+            dead_items = []
+            _, cmd = self._toolbar_items.popitem()
+            # The command might have toolbar representations on multiple window
+            # toolbars, and may have other representations (at the very least, a menu
+            # item). Only clean up the representation pointing at *this* window. Do this
+            # in 2 passes so that we're not modifying the set of native objects while
+            # iterating over it.
+            for item_native in cmd._impl.native:
+                if (
+                    isinstance(item_native, NSToolbarItem)
+                    and item_native.target == self.native
+                ):
+                    dead_items.append(item_native)
+
+            for item_native in dead_items:
+                cmd._impl.native.remove(item_native)
+                item_native.release()
+
     def create_toolbar(self):
+        # Purge any existing toolbar items
+        self.purge_toolbar()
+
+        # Create the new toolbar items.
         if self.interface.toolbar:
-            self._toolbar_items = {}
             for cmd in self.interface.toolbar:
                 if isinstance(cmd, Command):
                     self._toolbar_items[toolbar_identifier(cmd)] = cmd

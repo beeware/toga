@@ -147,6 +147,8 @@ class App:
 
         # Create the lookup table of menu items,
         # then force the creation of the menus.
+        self._menu_groups = {}
+        self._menu_items = {}
         self.create_menus()
 
     def _create_app_commands(self):
@@ -160,7 +162,7 @@ class App:
             ),
             toga.Command(
                 None,
-                "Preferences",
+                "Settings\u2026",
                 shortcut=toga.Key.MOD_1 + ",",
                 group=toga.Group.APP,
                 section=20,
@@ -320,16 +322,21 @@ class App:
         self.interface.visit_homepage()
 
     def create_menus(self):
+        # Purge any existing menu items
+        while self._menu_groups:
+            _, submenu = self._menu_groups.popitem()
+        while self._menu_items:
+            item, cmd = self._menu_items.popitem()
+            cmd._impl.native.remove(item)
+
         # Recreate the menu
-        self._menu_items = {}
-        self._menu_groups = {}
         menubar = NSMenu.alloc().initWithTitle("MainMenu")
         submenu = None
         for cmd in self.interface.commands:
             if cmd == GROUP_BREAK:
                 submenu = None
             elif cmd == SECTION_BREAK:
-                submenu.addItem_(NSMenuItem.separatorItem())
+                submenu.addItem(NSMenuItem.separatorItem())
             else:
                 submenu = self._submenu(cmd.group, menubar)
 
@@ -352,6 +359,7 @@ class App:
                     action=action,
                     keyEquivalent=key,
                 )
+
                 if modifier is not None:
                     item.keyEquivalentModifierMask = modifier
 
@@ -489,7 +497,7 @@ class DocumentApp(App):  # pragma: no cover
         self.interface.commands.add(
             toga.Command(
                 self._menu_open_file,
-                text="Open...",
+                text="Open\u2026",
                 shortcut=toga.Key.MOD_1 + "o",
                 group=toga.Group.FILE,
                 section=0,
