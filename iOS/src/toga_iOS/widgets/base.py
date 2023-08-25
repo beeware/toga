@@ -50,10 +50,6 @@ class Widget:
 
         self.rehint()
 
-    @property
-    def viewport(self):
-        return self._container
-
     def get_enabled(self):
         return self.native.isEnabled()
 

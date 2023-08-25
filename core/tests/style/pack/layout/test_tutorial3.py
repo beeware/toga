@@ -30,32 +30,10 @@ def test_tutorial_3():
         ],
     )
 
-    # Minimum size
-    root.style.layout(root, ExampleViewport(0, 0, dpi=96))
+    root.style.layout(root, ExampleViewport(640, 480))
     assert_layout(
         root,
         (170, 125),
-        {
-            "origin": (0, 0),
-            "content": (170, 125),
-            "children": [
-                {
-                    "origin": (0, 0),
-                    "content": (170, 25),
-                    "children": [
-                        {"origin": (5, 5), "content": (100, 15)},
-                        {"origin": (115, 5), "content": (50, 10)},
-                    ],
-                },
-                {"origin": (0, 25), "content": (100, 100)},
-            ],
-        },
-    )
-
-    # Normal size
-    root.style.layout(root, ExampleViewport(640, 480, dpi=96))
-    assert_layout(
-        root,
         (640, 480),
         {
             "origin": (0, 0),
@@ -70,28 +48,6 @@ def test_tutorial_3():
                     ],
                 },
                 {"origin": (0, 25), "content": (640, 455)},
-            ],
-        },
-    )
-
-    # HiDPI Normal size
-    root.style.layout(root, ExampleViewport(640, 480, dpi=144))
-    assert_layout(
-        root,
-        (640, 480),
-        {
-            "origin": (0, 0),
-            "content": (640, 480),
-            "children": [
-                {
-                    "origin": (0, 0),
-                    "content": (640, 29),
-                    "children": [
-                        {"origin": (7, 7), "content": (537, 15)},
-                        {"origin": (558, 7), "content": (75, 10)},
-                    ],
-                },
-                {"origin": (0, 29), "content": (640, 451)},
             ],
         },
     )

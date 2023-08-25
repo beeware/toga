@@ -56,10 +56,6 @@ class Label(TextViewWidget):
         self.native.setText(value)
 
     def rehint(self):
-        # Refuse to rehint an Android TextView if it has no LayoutParams yet.
-        # Calling measure() on an Android TextView w/o LayoutParams raises NullPointerException.
-        if not self.native.getLayoutParams():
-            return
         # Ask the Android TextView first for its minimum possible height.
         # This is the height with word-wrapping disabled.
         self.native.measure(

@@ -1,3 +1,14 @@
+from System import ArgumentException
+from System.Drawing import (
+    Font as WinFont,
+    FontFamily,
+    FontStyle,
+    SystemFonts,
+)
+from System.Drawing.Text import PrivateFontCollection
+from System.IO import FileNotFoundException
+from System.Runtime.InteropServices import ExternalException
+
 from toga.fonts import (
     _REGISTERED_FONT_CACHE,
     CURSIVE,
@@ -8,16 +19,6 @@ from toga.fonts import (
     SERIF,
     SYSTEM,
     SYSTEM_DEFAULT_FONT_SIZE,
-)
-from toga_winforms.libs import WinFont
-from toga_winforms.libs.winforms import (
-    ArgumentException,
-    ExternalException,
-    FileNotFoundException,
-    FontFamily,
-    FontStyle,
-    PrivateFontCollection,
-    SystemFonts,
 )
 
 _FONT_CACHE = {}

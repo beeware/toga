@@ -11,7 +11,7 @@ A drawing area for 2D vector graphics.
 .. csv-filter:: Availability (:ref:`Key <api-status-key>`)
    :header-rows: 1
    :file: ../../data/widgets_by_platform.csv
-   :included_cols: 4,5,6,7,8,9
+   :included_cols: 4,5,6,7,8,9,10
    :exclude: {0: '(?!(Canvas|Component))'}
 
 Usage
@@ -109,37 +109,17 @@ Main Interface
 ^^^^^^^^^^^^^^
 
 .. autoclass:: toga.Canvas
-   :members:
-   :undoc-members:
-   :exclude-members:
-
 .. autoclass:: toga.widgets.canvas.Context
-   :members:
-   :undoc-members:
-   :exclude-members:
 
 Simple Drawing objects
 ^^^^^^^^^^^^^^^^^^^^^^
 
 .. automodule:: toga.widgets.canvas
-   :members:
-   :undoc-members:
    :exclude-members: Canvas, Context, ClosedPathContext, FillContext, StrokeContext
 
 Drawing Context Objects
 ^^^^^^^^^^^^^^^^^^^^^^^
 
 .. autoclass:: toga.widgets.canvas.ClosedPathContext
-   :members:
-   :undoc-members:
-   :exclude-members:
-
 .. autoclass:: toga.widgets.canvas.FillContext
-   :members:
-   :undoc-members:
-   :exclude-members:
-
 .. autoclass:: toga.widgets.canvas.StrokeContext
-   :members:
-   :undoc-members:
-   :exclude-members:

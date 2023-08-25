@@ -1,0 +1,1 @@
+``OptionContainer.add()``, ``OptionContainer.remove()`` and ``OptionContainer.insert()`` have been removed, due to being ambiguous with base widget methods of the same name. Use the ``OptionContainer.content.append()``, ``OptionContainer.content.remove()`` and ``OptionContainer.content.insert()`` APIs instead.

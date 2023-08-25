@@ -1,8 +1,7 @@
 from contextlib import contextmanager
 
+import System.Windows.Forms as WinForms
 from travertino.size import at_least
-
-from toga_winforms.libs import WinForms
 
 from .base import Widget
 

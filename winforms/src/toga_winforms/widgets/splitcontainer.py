@@ -3,17 +3,12 @@ from System.Windows.Forms import (
     Orientation,
     SplitContainer as NativeSplitContainer,
 )
+from travertino.size import at_least
 
 from toga.constants import Direction
 
 from ..container import Container
 from .base import Widget
-
-
-class SplitPanel(Container):
-    def resize_content(self, **kwargs):
-        size = self.native_parent.ClientSize
-        super().resize_content(size.Width, size.Height, **kwargs)
 
 
 class SplitContainer(Widget):
@@ -25,7 +20,7 @@ class SplitContainer(Widget):
         # (at least on Windows 10), which would make the split bar invisible.
         self.native.BorderStyle = BorderStyle.Fixed3D
 
-        self.panels = (SplitPanel(self.native.Panel1), SplitPanel(self.native.Panel2))
+        self.panels = (Container(self.native.Panel1), Container(self.native.Panel2))
         self.pending_position = None
 
     def set_bounds(self, x, y, width, height):
@@ -81,4 +76,9 @@ class SplitContainer(Widget):
 
     def resize_content(self, **kwargs):
         for panel in self.panels:
-            panel.resize_content(**kwargs)
+            size = panel.native_parent.ClientSize
+            panel.resize_content(size.Width, size.Height, **kwargs)
+
+    def rehint(self):
+        self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
+        self.interface.intrinsic.height = at_least(self.interface._MIN_HEIGHT)

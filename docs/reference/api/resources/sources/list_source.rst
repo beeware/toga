@@ -85,9 +85,5 @@ Reference
 ---------
 
 .. autoclass:: toga.sources.Row
-   :members:
-   :undoc-members:
 
 .. autoclass:: toga.sources.ListSource
-   :members:
-   :undoc-members:
