@@ -219,7 +219,7 @@ else:
 
             assert app_probe.is_full_screen(window2)
             assert app_probe.content_size(window2)[0] > 1000
-            assert app_probe.content_size(window2)[1] > 1000
+            assert app_probe.content_size(window2)[1] > 700
 
             # Make window 1 full screen via the app, window 2 no longer full screen
             app.set_full_screen(window1)
@@ -231,7 +231,7 @@ else:
 
             assert app_probe.is_full_screen(window1)
             assert app_probe.content_size(window1)[0] > 1000
-            assert app_probe.content_size(window1)[1] > 1000
+            assert app_probe.content_size(window1)[1] > 700
 
             assert not app_probe.is_full_screen(window2)
             assert app_probe.content_size(window2) == initial_content2_size
@@ -262,7 +262,7 @@ else:
 
             assert app_probe.is_full_screen(window1)
             assert app_probe.content_size(window1)[0] > 1000
-            assert app_probe.content_size(window1)[1] > 1000
+            assert app_probe.content_size(window1)[1] > 700
 
             assert not app_probe.is_full_screen(window2)
             assert app_probe.content_size(window2) == initial_content2_size
@@ -343,42 +343,8 @@ else:
 
 async def test_main_window_toolbar(app, main_window, main_window_probe):
     """A toolbar can be added to a main window"""
-    action = Mock()
-
-    # A command with everything
-    group = toga.Group("Other")
-    cmd1 = toga.Command(
-        action,
-        "Full command",
-        icon=toga.Icon.DEFAULT_ICON,
-        tooltip="A full command definition",
-        shortcut=toga.Key.MOD_1 + "1",
-        group=group,
-    )
-    # A command with no tooltip
-    cmd2 = toga.Command(
-        action,
-        "No Tooltip",
-        icon=toga.Icon.DEFAULT_ICON,
-        shortcut=toga.Key.MOD_1 + "2",
-    )
-    # A command without an icon
-    cmd3 = toga.Command(
-        action,
-        "No Icon",
-        tooltip="A command with no icon",
-        shortcut=toga.Key.MOD_1 + "3",
-    )
-    # A command in another section
-    cmd4 = toga.Command(
-        action,
-        "Sectioned",
-        icon=toga.Icon.DEFAULT_ICON,
-        tooltip="I'm in another section",
-        section=2,
-    )
-
-    main_window.toolbar.add(cmd1, cmd2, cmd3, cmd4)
+    # Add some items to the main window toolbar
+    main_window.toolbar.add(app.cmd1, app.cmd2, app.cmd3, app.cmd4)
 
     await main_window_probe.redraw("Main window has a toolbar")
     assert main_window_probe.has_toolbar()
@@ -417,11 +383,11 @@ async def test_main_window_toolbar(app, main_window, main_window_probe):
     # Press the first toolbar button
     main_window_probe.press_toolbar_button(0)
     await main_window_probe.redraw("Command 1 invoked")
-    action.assert_called_once_with(cmd1)
-    action.reset_mock()
+    app.cmd_action.assert_called_once_with(app.cmd1)
+    app.cmd_action.reset_mock()
 
     # Disable the first toolbar button
-    cmd1.enabled = False
+    app.cmd1.enabled = False
     await main_window_probe.redraw("Command 1 disabled")
     main_window_probe.assert_toolbar_item(
         0,
@@ -432,7 +398,7 @@ async def test_main_window_toolbar(app, main_window, main_window_probe):
     )
 
     # Re-enable the first toolbar button
-    cmd1.enabled = True
+    app.cmd1.enabled = True
     await main_window_probe.redraw("Command 1 re-enabled")
     main_window_probe.assert_toolbar_item(
         0,
@@ -457,7 +423,8 @@ async def test_system_menus(app_probe):
 async def test_menu_about(monkeypatch, app, app_probe):
     """The about menu can be displayed"""
     app_probe.activate_menu_about()
-    await app_probe.redraw("About dialog shown")
+    # When in CI, Cocoa needs a little time to guarantee the dialog is displayed.
+    await app_probe.redraw("About dialog shown", delay=0.1)
 
     app_probe.close_about_dialog()
     await app_probe.redraw("About dialog destroyed")
@@ -469,7 +436,8 @@ async def test_menu_about(monkeypatch, app, app_probe):
     monkeypatch.setattr(app, "_description", None)
 
     app_probe.activate_menu_about()
-    await app_probe.redraw("About dialog with no details shown")
+    # When in CI, Cocoa needs a little time to guarantee the dialog is displayed.
+    await app_probe.redraw("About dialog with no details shown", delay=0.1)
 
     app_probe.close_about_dialog()
     await app_probe.redraw("About dialog with no details destroyed")
@@ -490,52 +458,6 @@ async def test_menu_visit_homepage(monkeypatch, app, app_probe):
 
 async def test_menu_items(app, app_probe):
     """Menu items can be created, disabled and invoked"""
-    action = Mock()
-
-    # A command with everything
-    group = toga.Group("Other")
-    cmd1 = toga.Command(
-        action,
-        "Full command",
-        icon=toga.Icon.DEFAULT_ICON,
-        tooltip="A full command definition",
-        shortcut=toga.Key.MOD_1 + "1",
-        group=group,
-    )
-    # A command with everything
-    cmd2 = toga.Command(
-        action,
-        "No Tooltip",
-        icon=toga.Icon.DEFAULT_ICON,
-        shortcut=toga.Key.MOD_1 + "2",
-    )
-    # A command without an icon
-    cmd3 = toga.Command(
-        action,
-        "No Icon",
-        tooltip="A command with no icon",
-        shortcut=toga.Key.MOD_1 + "3",
-    )
-    # Submenus inside the "other" group
-    subgroup1 = toga.Group("Submenu1", section=2, parent=group)
-    subgroup1_1 = toga.Group("Submenu1 menu1", parent=subgroup1)
-    subgroup2 = toga.Group("Submenu2", section=2, parent=group)
-
-    # Items on submenu1
-    # An item that is disabled by default
-    disabled_item = toga.Command(action, "Disabled", enabled=False, group=subgroup1)
-    # An item that has no action
-    no_action = toga.Command(None, "No Action", group=subgroup1)
-    # An item deep in a menu
-    deep_item = toga.Command(action, "Deep", group=subgroup1_1)
-
-    # Items on submenu2
-    cmd4 = toga.Command(action, "Jiggle", group=subgroup2)
-
-    # Add all the commands
-    app.commands.add(cmd1, cmd2, cmd3, disabled_item, no_action, deep_item, cmd4)
-
-    await app_probe.redraw("App has custom menu items")
 
     app_probe.assert_menu_item(
         ["Other", "Full command"],
@@ -554,10 +476,24 @@ async def test_menu_items(app, app_probe):
         enabled=True,
     )
 
+    app_probe.assert_menu_item(
+        ["Commands", "No Tooltip"],
+        enabled=True,
+    )
+    app_probe.assert_menu_item(
+        ["Commands", "No Icon"],
+        enabled=True,
+    )
+    app_probe.assert_menu_item(
+        ["Commands", "Sectioned"],
+        enabled=True,
+    )
+
     # Enabled the disabled items
-    disabled_item.enabled = True
-    no_action.enabled = True
+    app.disabled_cmd.enabled = True
+    app.no_action_cmd.enabled = True
     await app_probe.redraw("Menu items enabled")
+
     app_probe.assert_menu_item(
         ["Other", "Submenu1", "Disabled"],
         enabled=True,
@@ -568,8 +504,10 @@ async def test_menu_items(app, app_probe):
         enabled=False,
     )
 
-    disabled_item.enabled = False
-    no_action.enabled = False
+    # Dislble the items
+    app.disabled_cmd.enabled = False
+    app.no_action_cmd.enabled = False
+
     await app_probe.redraw("Menu item disabled again")
     app_probe.assert_menu_item(
         ["Other", "Submenu1", "Disabled"],

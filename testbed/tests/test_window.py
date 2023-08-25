@@ -221,22 +221,9 @@ else:
         "second_window_kwargs",
         [dict(title="Secondary Window", position=(200, 300), size=(400, 200))],
     )
-    async def test_secondary_window_toolbar(second_window, second_window_probe):
+    async def test_secondary_window_toolbar(app, second_window, second_window_probe):
         """A toolbar can be added to a secondary window"""
-        action = Mock()
-
-        # A command with everything
-        group = toga.Group("Other")
-        cmd1 = toga.Command(
-            action,
-            "Full command",
-            icon=toga.Icon.DEFAULT_ICON,
-            tooltip="A full command definition",
-            shortcut=toga.Key.MOD_1 + "1",
-            group=group,
-        )
-
-        second_window.toolbar.add(cmd1)
+        second_window.toolbar.add(app.cmd1)
 
         # Window doesn't have content. This is intentional.
         second_window.show()

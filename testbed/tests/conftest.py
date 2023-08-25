@@ -52,7 +52,7 @@ def main_window(app):
     return app.main_window
 
 
-@fixture
+@fixture(scope="session")
 async def main_window_probe(app, main_window):
     old_content = main_window.content
 
@@ -60,6 +60,8 @@ async def main_window_probe(app, main_window):
     main_window.content = toga.Box(style=Pack(background_color=GOLDENROD))
 
     module = import_module("tests_backend.window")
+    if app.run_slow:
+        print("\nConstructing Window probe")
     yield getattr(module, "WindowProbe")(app, main_window)
 
     main_window.content = old_content
