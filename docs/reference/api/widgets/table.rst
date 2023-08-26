@@ -11,7 +11,7 @@ A widget for displaying columns of tabular data.
 .. csv-filter:: Availability (:ref:`Key <api-status-key>`)
    :header-rows: 1
    :file: ../../data/widgets_by_platform.csv
-   :included_cols: 4,5,6,7,8,9
+   :included_cols: 4,5,6,7,8,9,10
    :exclude: {0: '(?!^(Table|Component)$)'}
 
 Usage
@@ -48,7 +48,7 @@ In this example, we will display a table of 2 columns, with 3 initial rows of da
     # Append new data to the table
     table.data.append(("Zaphod Beeblebrox", 47))
 
-You can also specify data for a Table using a list of dictionaries. This allows to to
+You can also specify data for a Table using a list of dictionaries. This allows you to
 store data in the data source that won't be displayed in the table. It also allows you
 to control the display order of columns independent of the storage of that data.
 
@@ -66,25 +66,14 @@ to control the display order of columns independent of the storage of that data.
     )
 
     # Get the details of the first item in the data:
-    print(f"{table.data[0].name}, who is age {table.data[0].age}, is from {table.data[0].planet}")
+    print(f"{table.data[0].name}, who is age {table.data[0].age}, "
+          f"is from {table.data[0].planet}")
 
-The attribute names used on each row of data (called "accessors") are created automatically from
-the name of the headings that you provide. This is done by:
-
-1. Converting the heading to lower case;
-2. Removing any character that can't be used in a Python identifier;
-3. Replacing all whitespace with "_";
-4. Prepending ``_`` if the first character is a digit.
-
-If you want to use different accessors to the ones that are automatically generated, you
-can override them by providing an ``accessors`` argument. This can be either:
-
-* A list of the same size as the list of headings, specifying the accessors for each
-  heading. A value of :any:`None` will fall back to the default generated accessor; or
-* A dictionary mapping heading names to accessor names.
-
-In this example, the table will use "Name" as the visible header, but internally, the
-attribute "character" will be used:
+The attribute names used on each row of data (called "accessors") are created
+automatically from the headings that you provide. If you want to use different
+attributes, you can override them by providing an ``accessors`` argument. In this
+example, the table will use "Name" as the visible header, but internally, the attribute
+"character" will be used:
 
 .. code-block:: python
 
@@ -101,34 +90,25 @@ attribute "character" will be used:
     )
 
     # Get the details of the first item in the data:
-    print(f"{table.data[0].character}, who is age {table.data[0].age}, is from {table.data[0].planet}")
+    print(f"{table.data[0].character}, who is age {table.data[0].age}, "
+          f"is from {table.data[0].planet}")
 
-You can also create a table *without* a heading row. However, if you do this, you *must*
-specify accessors.
+The value provided by an accessor is interpreted as follows:
 
-If the value provided by an accessor is :any:`None`, or the accessor isn't defined for a
-given row, the value of ``missing_value`` provided when constructing the Table will
-be used to populate the cell in the Table.
+* If the value is a :any:`Widget`, that widget will be displayed in the cell. Note that
+  this is currently a beta API, is currently only supported on macOS, and may change in
+  future.
 
-If the value provided by an accessor is any type other than a tuple :any:`tuple` or
-:any:`toga.Widget`, the value will be converted into a string. If the value has an
-``icon`` attribute, the cell will use that icon in the Table cell, displayed to the left
-of the text label. If the value of the ``icon`` attribute is :any:`None`, no icon will
-be displayed.
+* If the value is a :any:`tuple`, it must have two elements: an icon, and a second
+  element which will be interpreted as one of the options below.
 
-If the value provided by an accessor is a :any:`tuple`, the first element in the tuple
-must be an :class:`toga.Icon`, and the second value in the tuple will be used to provide
-the text label (again, by converting the value to a string, or using ``missing_value``
-if the value is :any:`None`, as appropriate).
+* If the value is ``None``, then ``missing_value`` will be displayed.
 
-If the value provided by an accessor is a :class:`toga.Widget`, that widget will be displayed
-in the table. Note that this is currently a beta API, and may change in future.
+* Any other value will be converted into a string. If an icon has not already been
+  provided in a tuple, it can also be provided using the value's ``icon`` attribute.
 
-Notes
------
-
-* The use of Widgets as table values is currently a beta API. It is currently only
-  supported on macOS; the API is subject to change.
+Icon values must either be an :any:`Icon`, which will be displayed on the left of the
+cell, or ``None`` to display no icon.
 
 * On macOS, you cannot change the font used in a Table.
 

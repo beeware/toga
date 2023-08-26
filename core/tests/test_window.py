@@ -366,7 +366,6 @@ class TestWindow(TestCase):
 
         self.assertEqual(content.window, self.window)
 
-        self.assertActionPerformed(self.window, "clear content")
         self.assertActionPerformed(self.window, "set content")
 
     def test_window_set_content_twice(self):
@@ -377,5 +376,4 @@ class TestWindow(TestCase):
         self.assertEqual(content1.window, None)
         self.assertEqual(content2.window, self.window)
 
-        self.assertActionPerformed(self.window, "clear content")
         self.assertActionPerformed(self.window, "set content")

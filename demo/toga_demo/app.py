@@ -8,8 +8,6 @@ class TogaDemo(toga.App):
         # Create the main window
         self.main_window = toga.MainWindow(self.name)
 
-        left_container = toga.OptionContainer()
-
         left_table = toga.Table(
             headings=["Hello", "World"],
             data=[
@@ -35,8 +33,12 @@ class TogaDemo(toga.App):
             },
         )
 
-        left_container.add("Table", left_table)
-        left_container.add("Tree", left_tree)
+        left_container = toga.OptionContainer(
+            content=[
+                ("Table", left_table),
+                ("Tree", left_tree),
+            ]
+        )
 
         right_content = toga.Box(style=Pack(direction=COLUMN))
         for b in range(0, 10):

@@ -475,46 +475,46 @@ async def test_flex_widget_size(widget, probe):
     # Container is initially a non-flex row widget of fixed size.
     # Paint the background so we can easily see it against the background.
     widget.style.flex = 0
-    widget.style.width = 100
+    widget.style.width = 300
     widget.style.height = 200
     widget.style.background_color = CORNFLOWERBLUE
-    await probe.redraw("Widget should have fixed 100x200 size")
+    await probe.redraw("Widget should have fixed 300x200 size")
 
     # Check the initial widget size
     # Match isn't exact because of pixel scaling on some platforms
-    assert probe.width == approx(100, rel=0.01)
+    assert probe.width == approx(300, rel=0.01)
     assert probe.height == approx(200, rel=0.01)
 
     # Drop the fixed height, and make the widget flexible
     widget.style.flex = 1
     del widget.style.height
 
-    # Widget should now be 100 pixels wide, but as tall as the container.
-    await probe.redraw("Widget should be 100px wide now")
-    assert probe.width == approx(100, rel=0.01)
-    assert probe.height > 300
+    # Widget should now be 300 pixels wide, but as tall as the container.
+    await probe.redraw("Widget should be 300px wide, full height")
+    assert probe.width == approx(300, rel=0.01)
+    assert probe.height > 350
 
     # Make the parent a COLUMN box
     del widget.style.width
     widget.parent.style.direction = COLUMN
 
     # Widget should now be the size of the container
-    await probe.redraw("Widget should be the size of container now")
-    assert probe.width > 300
-    assert probe.height > 300
+    await probe.redraw("Widget should be the size of container")
+    assert probe.width > 350
+    assert probe.height > 350
 
     # Revert to fixed height
     widget.style.height = 150
 
-    await probe.redraw("Widget should be reverted to fixed height")
-    assert probe.width > 300
+    await probe.redraw("Widget should be full width, 150px high")
+    assert probe.width > 350
     assert probe.height == approx(150, rel=0.01)
 
     # Revert to fixed width
-    widget.style.width = 150
+    widget.style.width = 250
 
     await probe.redraw("Widget should be reverted to fixed width")
-    assert probe.width == approx(150, rel=0.01)
+    assert probe.width == approx(250, rel=0.01)
     assert probe.height == approx(150, rel=0.01)
 
 

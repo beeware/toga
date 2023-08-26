@@ -42,6 +42,18 @@ the operations you'd expect on a normal Python list, such as ``insert``, ``remov
     # Insert a new item at the start of the data
     source.insert(0, {"name": "Bettong", "weight": 1.2})
 
+.. _listsource-item:
+
+When initially constructing the ListSource, or when assigning a specific item in
+the ListSource, each item can be:
+
+* A dictionary, with the accessors mapping to the keys in the dictionary
+
+* Any iterable object (except for a string), with the accessors being mapped
+  onto the items in the iterable in order of definition
+
+* Any other object, which will be mapped onto the *first* accessor.
+
 The ListSource manages a list of :class:`~toga.sources.Row` objects. Each Row object in
 the ListSource is an object that has all the attributes described by the ``accessors``.
 A Row object will be constructed by the source for each item that is added or removed
@@ -80,8 +92,8 @@ used as a data source. This means they must provide:
 
 * ``__getitem__(self, index)`` returning the item at position ``index`` of the list.
 
-A custom ListSource must also generate ``insert``, ``remove`` and ``clear``
-notifications when items are added or removed from the source.
+A custom ListSource must also inherit from :any:`Source`, and generate ``insert``,
+``remove`` and ``clear`` notifications when items are added or removed from the source.
 
 Each item returned by the custom ListSource is required to expose attributes matching
 the accessors for any widget using the source. Any change to the values of these attributes

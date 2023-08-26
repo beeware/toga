@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections.abc import Iterable
 from typing import Any
 
 from .base import Source
@@ -75,12 +76,13 @@ class Row:
 
 
 class ListSource(Source):
-    def __init__(self, accessors: list[str], data: list[Any] | None = None):
+    def __init__(self, accessors: list[str], data: Iterable | None = None):
         """A data source to store an ordered list of multiple data values.
 
         :param accessors: A list of attribute names for accessing the value
             in each column of the row.
-        :param data: The initial list of items in the source.
+        :param data: The initial list of items in the source. Items are converted as
+            shown :ref:`above <listsource-item>`.
         """
         super().__init__()
         if isinstance(accessors, str) or not hasattr(accessors, "__iter__"):
@@ -116,23 +118,8 @@ class ListSource(Source):
     # Factory methods for new rows
     ######################################################################
 
+    # This behavior is documented in list_source.rst.
     def _create_row(self, data: Any) -> Row:
-        """Create a Row object from the given data.
-
-        The type of ``data`` determines how it is converted.
-
-        If ``data`` is a dictionary, each key in the dictionary will be
-        converted into an attribute on the Row.
-
-        If ``data`` is a non-string iterable, the items in the data will be
-        mapped in order to the list of accessors, and the Row will have an
-        attribute for each accessor.
-
-        Otherwise, the Row will have a single attribute corresponding to the
-        name of the first accessor.
-
-        :param data: The data to convert into a row.
-        """
         if isinstance(data, dict):
             row = Row(**data)
         elif hasattr(data, "__iter__") and not isinstance(data, str):
