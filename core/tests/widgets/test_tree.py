@@ -302,8 +302,36 @@ def test_multiple_selection(source, on_select_handler):
     on_select_handler.assert_called_once_with(tree)
 
 
+def test_expand_collapse(tree):
+    """The rows on a tree can be expanded and collapsed"""
+
+    # Expand the full tree
+    tree.expand()
+    assert_action_performed_with(tree, "expand all")
+
+    # Collapse a single node
+    tree.collapse(tree.data[1][2])
+    assert_action_performed_with(tree, "collapse node", node=tree.data[1][2])
+
+    # Expand a single node
+    tree.expand(tree.data[1][2])
+    assert_action_performed_with(tree, "expand node", node=tree.data[1][2])
+
+    # Collapse a leaf node
+    tree.collapse(tree.data[1][2][1])
+    assert_action_performed_with(tree, "collapse node", node=tree.data[1][2][1])
+
+    # Expand a leaf node
+    tree.expand(tree.data[1][2][1])
+    assert_action_performed_with(tree, "expand node", node=tree.data[1][2][1])
+
+    # Collapse the full tree
+    tree.collapse()
+    assert_action_performed_with(tree, "collapse all")
+
+
 def test_activation(tree, on_activate_handler):
-    "A row can be activated"
+    """A row can be activated"""
 
     # Activate an item
     tree._impl.simulate_activate((0, 1))

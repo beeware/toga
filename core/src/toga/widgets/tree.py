@@ -174,6 +174,39 @@ class Tree(Widget):
         """
         return self._impl.get_selection()
 
+    def expand(self, node: Node | None = None):
+        """Expand the specified node of the tree.
+
+        If no node is provided, all nodes of the tree will be expanded.
+
+        If the provided node is a leaf node, or the node is already expanded, this is a
+        no-op.
+
+        If a node is specified, the children of that node will not be automatically
+        expanded.
+
+        :param node: The node to expand
+        """
+        if node is None:
+            self._impl.expand_all()
+        else:
+            self._impl.expand_node(node)
+
+    def collapse(self, node: Node | None = None):
+        """Expand the specified node of the tree.
+
+        If no node is provided, all nodes of the tree will be expanded.
+
+        If the provided node is a leaf node, or the node is already collapsed,
+        this is a no-op.
+
+        :param node: The node to collapse
+        """
+        if node is None:
+            self._impl.collapse_all()
+        else:
+            self._impl.collapse_node(node)
+
     def append_column(self, heading: str, accessor: str | None = None):
         """Append a column to the end of the tree.
 
