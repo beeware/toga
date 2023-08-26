@@ -319,7 +319,6 @@ async def test_expand_collapse(widget, probe, source):
 
     # Attempt to collapse a leaf node
     widget.collapse(source[0][2][1])
-    print("COLLAPSE", source[0][2][1])
     await probe.redraw("Leaf node collapse is a no-op")
     assert probe.is_expanded(source[0])
     assert probe.is_expanded(source[0][2])

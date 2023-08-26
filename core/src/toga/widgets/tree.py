@@ -182,8 +182,7 @@ class Tree(Widget):
         If the provided node is a leaf node, or the node is already expanded, this is a
         no-op.
 
-        If a node is specified, the children of that node will not be automatically
-        expanded.
+        If a node is specified, the children of that node will also be expanded.
 
         :param node: The node to expand
         """

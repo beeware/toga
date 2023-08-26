@@ -25,6 +25,11 @@ class TreeProbe(SimpleProbe):
         self.native_tree.expand_all()
         await asyncio.sleep(0.1)
 
+    def is_expanded(self, node):
+        return self.native_tree.row_expanded(
+            self.native_tree.get_model().get_path(node._impl)
+        )
+
     def child_count(self, row_path=None):
         if row_path:
             row = self.native_tree.get_model()[row_path]

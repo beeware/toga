@@ -278,13 +278,13 @@ class Tree(Widget):
                 return None
 
     def expand_node(self, node):
-        self.native_tree.expandItem(node._impl, expandChildren=False)
+        self.native_tree.expandItem(node._impl, expandChildren=True)
 
     def expand_all(self):
         self.native_tree.expandItem(None, expandChildren=True)
 
     def collapse_node(self, node):
-        self.native_tree.collapseItem(node._impl, collapseChildren=False)
+        self.native_tree.collapseItem(node._impl, collapseChildren=True)
 
     def collapse_all(self):
         self.native_tree.collapseItem(None, collapseChildren=True)
