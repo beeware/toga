@@ -1,5 +1,7 @@
 import pytest
 
+from android.graphics import Bitmap
+
 from .probe import BaseProbe
 
 
@@ -11,8 +13,7 @@ class IconProbe(BaseProbe):
         super().__init__()
         self.app = app
         self.icon = icon
-        # At least for now, there's no native object.
-        # assert isinstance(self.icon._impl.native, NSImage)
+        assert isinstance(self.icon._impl.native, Bitmap)
 
     def assert_icon_content(self, path):
         if path == "resources/icons/green":
