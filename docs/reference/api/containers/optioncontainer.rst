@@ -3,9 +3,32 @@ OptionContainer
 
 A container that can display multiple labeled tabs of content.
 
-.. figure:: /reference/images/OptionContainer.png
-    :align: center
-    :width: 300px
+.. tabs::
+
+  .. group-tab:: macOS
+
+    .. figure:: /reference/images/optioncontainer-macOS.png
+       :align: center
+
+  .. group-tab:: Linux
+
+    .. figure:: /reference/images/optioncontainer-gtk.png
+       :align: center
+
+  .. group-tab:: Windows
+
+    .. figure:: /reference/images/optioncontainer-winforms.png
+       :align: center
+
+  .. group-tab:: Android
+
+    .. figure:: /reference/images/optioncontainer-android.png
+       :align: center
+
+  .. group-tab:: iOS
+
+    .. figure:: /reference/images/optioncontainer-ios.png
+       :align: center
 
 .. rst-class:: widget-support
 .. csv-filter:: Availability (:ref:`Key <api-status-key>`)

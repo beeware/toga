@@ -3,9 +3,32 @@ Canvas
 
 A drawing area for 2D vector graphics.
 
-.. figure:: /reference/images/Canvas.png
-    :align: center
-    :width: 300
+.. tabs::
+
+  .. group-tab:: macOS
+
+    .. figure:: /reference/images/canvas-macOS.png
+       :align: center
+
+  .. group-tab:: Linux
+
+    .. figure:: /reference/images/canvas-gtk.png
+       :align: center
+
+  .. group-tab:: Windows
+
+    .. figure:: /reference/images/canvas-winforms.png
+       :align: center
+
+  .. group-tab:: Android
+
+    .. figure:: /reference/images/canvas-android.png
+       :align: center
+
+  .. group-tab:: iOS
+
+    .. figure:: /reference/images/canvas-ios.png
+       :align: center
 
 .. rst-class:: widget-support
 .. csv-filter:: Availability (:ref:`Key <api-status-key>`)

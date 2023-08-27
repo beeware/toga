@@ -4,9 +4,32 @@ Table
 A widget for displaying columns of tabular data. Scroll bars will be provided if
 necessary.
 
-.. figure:: /reference/images/Table.png
-   :width: 300px
-   :align: center
+.. tabs::
+
+  .. group-tab:: macOS
+
+    .. figure:: /reference/images/table-macOS.png
+       :align: center
+
+  .. group-tab:: Linux
+
+    .. figure:: /reference/images/table-gtk.png
+       :align: center
+
+  .. group-tab:: Windows
+
+    .. figure:: /reference/images/table-winforms.png
+       :align: center
+
+  .. group-tab:: Android
+
+    .. figure:: /reference/images/table-android.png
+       :align: center
+
+  .. group-tab:: iOS
+
+    .. figure:: /reference/images/table-ios.png
+       :align: center
 
 .. rst-class:: widget-support
 .. csv-filter:: Availability (:ref:`Key <api-status-key>`)

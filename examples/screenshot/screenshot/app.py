@@ -10,42 +10,6 @@ from toga.style import Pack
 
 from .canvas import draw_tiberius
 
-MAJOR_GENERAL = "\n".join(
-    [
-        "I am the very model of a modern Major-General.",
-        "I've information animal, mineral, and vegetable.",
-        "I know the kings of England, and I quote the fights historical",
-        "From Marathon to Waterloo, in order categorical.",
-        "I'm very well acquainted, too, with matters mathematical,",
-        "I understand equations, both the simple and quadratical,",
-        "About binomial theorem I'm teeming with a lot o' news,",
-        "With many cheerful facts about the square of the hypotenuse.",
-        "",
-        "I'm very good at integral and differential calculus;",
-        "I know the scientific names of beings animalculous:",
-        "In short, in matters vegetable, animal, and mineral,",
-        "I am the very model of a modern Major-General.",
-    ]
-)
-JABBERWOCKY = "\n".join(
-    [
-        "'Twas brillig, and the slithy toves",
-        "Did gyre and gimble in the wabe:",
-        "All mimsy were the borogoves,",
-        "And the mome raths outgrabe.",
-        "",
-        "“Beware the Jabberwock, my son!",
-        "The jaws that bite, the claws that catch!",
-        "Beware the Jubjub bird, and shun",
-        "The frumious Bandersnatch!”",
-        "",
-        "He took his vorpal sword in hand;",
-        "Long time the manxome foe he sought—",
-        "So rested he by the Tumtum tree",
-        "And stood awhile in thought.",
-    ]
-)
-
 
 class ScreenshotGeneratorApp(toga.App):
     def create_activityindicator(self):
@@ -141,7 +105,23 @@ class ScreenshotGeneratorApp(toga.App):
 
     def create_multilinetextinput(self):
         return toga.MultilineTextInput(
-            value=MAJOR_GENERAL,
+            value="\n".join(
+                [
+                    "I am the very model of a modern Major-General.",
+                    "I've information animal, mineral, and vegetable.",
+                    "I know the kings of England, and I quote the fights historical",
+                    "From Marathon to Waterloo, in order categorical.",
+                    "I'm very well acquainted, too, with matters mathematical,",
+                    "I understand equations, both the simple and quadratical,",
+                    "About binomial theorem I'm teeming with a lot o' news,",
+                    "With many cheerful facts about the square of the hypotenuse.",
+                    "",
+                    "I'm very good at integral and differential calculus;",
+                    "I know the scientific names of beings animalculous:",
+                    "In short, in matters vegetable, animal, and mineral,",
+                    "I am the very model of a modern Major-General.",
+                ]
+            ),
             style=Pack(padding=10, width=450, height=200),
         )
 
@@ -280,11 +260,11 @@ class ScreenshotGeneratorApp(toga.App):
         container = toga.OptionContainer(
             content=[
                 (
-                    "Penzance",
-                    toga.MultilineTextInput(value=MAJOR_GENERAL),
+                    "Blue",
+                    toga.Box(style=Pack(background_color="cornflowerblue")),
                 ),
-                ("Pinafore", toga.Box()),
-                ("Mikado", toga.Box()),
+                ("Green", toga.Box()),
+                ("Red", toga.Box()),
             ],
             style=Pack(padding=10, width=450, height=300),
         )
@@ -295,8 +275,11 @@ class ScreenshotGeneratorApp(toga.App):
         container = toga.ScrollContainer(
             content=toga.Box(
                 children=[
-                    toga.Label(f"{i} yak{'s' if i > 1 else ''}: {'yak '* i}")
-                    for i in range(1, 50)
+                    toga.Box(
+                        style=Pack(
+                            background_color="cornflowerblue", width=900, height=600
+                        )
+                    ),
                 ],
                 style=Pack(direction=COLUMN),
             ),
@@ -308,8 +291,8 @@ class ScreenshotGeneratorApp(toga.App):
     def create_splitcontainer(self):
         container = toga.SplitContainer(
             content=[
-                toga.MultilineTextInput(value=MAJOR_GENERAL),
-                toga.MultilineTextInput(value=JABBERWOCKY),
+                toga.Box(style=Pack(background_color="goldenrod")),
+                toga.Box(style=Pack(background_color="cornflowerblue")),
             ],
             style=Pack(padding=10, width=450, height=300),
         )
@@ -320,25 +303,25 @@ class ScreenshotGeneratorApp(toga.App):
         print(f"Saving screenshots to {self.app.paths.data}")
         self.app.paths.data.mkdir(parents=True, exist_ok=True)
         for content_type in [
-            "activityindicator",
-            "button",
-            "canvas",
-            "dateinput",
-            "detailedlist",
-            "divider",
-            "label",
-            "multilinetextinput",
-            "numberinput",
-            "passwordinput",
-            "progressbar",
-            "selection",
-            "slider",
-            "switch",
-            "table",
-            "textinput",
-            "timeinput",
-            "tree",
-            "webview",
+            # "activityindicator",
+            # "button",
+            # "canvas",
+            # "dateinput",
+            # "detailedlist",
+            # "divider",
+            # "label",
+            # "multilinetextinput",
+            # "numberinput",
+            # "passwordinput",
+            # "progressbar",
+            # "selection",
+            # "slider",
+            # "switch",
+            # "table",
+            # "textinput",
+            # "timeinput",
+            # "tree",
+            # "webview",
             "optioncontainer",
             "scrollcontainer",
             "splitcontainer",

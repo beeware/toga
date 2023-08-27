@@ -3,8 +3,32 @@ Label
 
 A text label for annotating forms or interfaces.
 
-.. figure:: /reference/images/Label.jpeg
-    :align: center
+.. tabs::
+
+  .. group-tab:: macOS
+
+    .. figure:: /reference/images/label-macOS.png
+       :align: center
+
+  .. group-tab:: Linux
+
+    .. figure:: /reference/images/label-gtk.png
+       :align: center
+
+  .. group-tab:: Windows
+
+    .. figure:: /reference/images/label-winforms.png
+       :align: center
+
+  .. group-tab:: Android
+
+    .. figure:: /reference/images/label-android.png
+       :align: center
+
+  .. group-tab:: iOS
+
+    .. figure:: /reference/images/label-ios.png
+       :align: center
 
 .. rst-class:: widget-support
 .. csv-filter:: Availability (:ref:`Key <api-status-key>`)

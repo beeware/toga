@@ -4,9 +4,32 @@ Tree
 A widget for displaying a hierarchical tree of tabular data. Scroll bars will be
 provided if necessary.
 
-.. figure:: /reference/images/Tree.png
-   :width: 300px
-   :align: center
+.. tabs::
+
+  .. group-tab:: macOS
+
+    .. figure:: /reference/images/tree-macOS.png
+       :align: center
+
+  .. group-tab:: Linux
+
+    .. figure:: /reference/images/tree-gtk.png
+       :align: center
+
+  .. group-tab:: Windows
+
+    .. figure:: /reference/images/tree-winforms.png
+       :align: center
+
+  .. group-tab:: Android
+
+    .. figure:: /reference/images/tree-android.png
+       :align: center
+
+  .. group-tab:: iOS
+
+    .. figure:: /reference/images/tree-ios.png
+       :align: center
 
 .. rst-class:: widget-support
 .. csv-filter:: Availability (:ref:`Key <api-status-key>`)

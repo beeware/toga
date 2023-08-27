@@ -3,8 +3,32 @@ Divider
 
 A separator used to visually distinguish two sections of content in a layout.
 
-.. figure:: /reference/images/Divider.jpeg
-    :align: center
+.. tabs::
+
+  .. group-tab:: macOS
+
+    .. figure:: /reference/images/divider-macOS.png
+       :align: center
+
+  .. group-tab:: Linux
+
+    .. figure:: /reference/images/divider-gtk.png
+       :align: center
+
+  .. group-tab:: Windows
+
+    .. figure:: /reference/images/divider-winforms.png
+       :align: center
+
+  .. group-tab:: Android
+
+    .. figure:: /reference/images/divider-android.png
+       :align: center
+
+  .. group-tab:: iOS
+
+    .. figure:: /reference/images/divider-ios.png
+       :align: center
 
 .. rst-class:: widget-support
 .. csv-filter:: Availability (:ref:`Key <api-status-key>`)

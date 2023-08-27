@@ -4,9 +4,33 @@ ScrollContainer
 A container that can display a layout larger than the area of the container, with
 overflow controlled by scroll bars.
 
-.. figure:: /reference/images/ScrollContainer.png
-   :align: center
-   :width: 300px
+.. tabs::
+
+  .. group-tab:: macOS
+
+    .. figure:: /reference/images/scrollcontainer-macOS.png
+       :align: center
+
+  .. group-tab:: Linux
+
+    .. figure:: /reference/images/scrollcontainer-gtk.png
+       :align: center
+
+  .. group-tab:: Windows
+
+    .. figure:: /reference/images/scrollcontainer-winforms.png
+       :align: center
+
+  .. group-tab:: Android
+
+    .. figure:: /reference/images/scrollcontainer-android.png
+       :align: center
+
+  .. group-tab:: iOS
+
+    .. figure:: /reference/images/scrollcontainer-ios.png
+       :align: center
+
 
 .. rst-class:: widget-support
 .. csv-filter:: Availability (:ref:`Key <api-status-key>`)

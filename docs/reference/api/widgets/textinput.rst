@@ -3,9 +3,32 @@ TextInput
 
 A widget for the display and editing of a single line of text.
 
-.. figure:: /reference/images/TextInput.png
-   :align: center
-   :width: 300
+.. tabs::
+
+  .. group-tab:: macOS
+
+    .. figure:: /reference/images/textinput-macOS.png
+       :align: center
+
+  .. group-tab:: Linux
+
+    .. figure:: /reference/images/textinput-gtk.png
+       :align: center
+
+  .. group-tab:: Windows
+
+    .. figure:: /reference/images/textinput-winforms.png
+       :align: center
+
+  .. group-tab:: Android
+
+    .. figure:: /reference/images/textinput-android.png
+       :align: center
+
+  .. group-tab:: iOS
+
+    .. figure:: /reference/images/textinput-ios.png
+       :align: center
 
 .. rst-class:: widget-support
 .. csv-filter:: Availability (:ref:`Key <api-status-key>`)

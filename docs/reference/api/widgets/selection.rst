@@ -3,8 +3,32 @@ Selection
 
 A widget to select a single option from a list of alternatives.
 
-.. figure:: /reference/images/Selection.png
-    :align: center
+.. tabs::
+
+  .. group-tab:: macOS
+
+    .. figure:: /reference/images/selection-macOS.png
+       :align: center
+
+  .. group-tab:: Linux
+
+    .. figure:: /reference/images/selection-gtk.png
+       :align: center
+
+  .. group-tab:: Windows
+
+    .. figure:: /reference/images/selection-winforms.png
+       :align: center
+
+  .. group-tab:: Android
+
+    .. figure:: /reference/images/selection-android.png
+       :align: center
+
+  .. group-tab:: iOS
+
+    .. figure:: /reference/images/selection-ios.png
+       :align: center
 
 .. rst-class:: widget-support
 .. csv-filter:: Availability (:ref:`Key <api-status-key>`)

@@ -1,12 +1,33 @@
 DetailedList
 ============
 
-An ordered list where each item has an icon, a title, and a line of text. Scroll bars
-will be provided if necessary.
 
-.. figure:: /reference/images/DetailedList.png
-   :width: 300px
-   :align: center
+.. tabs::
+
+  .. group-tab:: macOS
+
+    .. figure:: /reference/images/detailedlist-macOS.png
+       :align: center
+
+  .. group-tab:: Linux
+
+    .. figure:: /reference/images/detailedlist-gtk.png
+       :align: center
+
+  .. group-tab:: Windows
+
+    .. figure:: /reference/images/detailedlist-winforms.png
+       :align: center
+
+  .. group-tab:: Android
+
+    .. figure:: /reference/images/detailedlist-android.png
+       :align: center
+
+  .. group-tab:: iOS
+
+    .. figure:: /reference/images/detailedlist-ios.png
+       :align: center
 
 .. rst-class:: widget-support
 .. csv-filter:: Availability (:ref:`Key <api-status-key>`)

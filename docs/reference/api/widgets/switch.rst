@@ -4,9 +4,32 @@ Switch
 A clickable button with two stable states: True (on, checked); and False (off,
 unchecked). The button has a text label.
 
-.. figure:: /reference/images/Switch.jpeg
-    :align: center
-    :width: 300
+.. tabs::
+
+  .. group-tab:: macOS
+
+    .. figure:: /reference/images/switch-macOS.png
+       :align: center
+
+  .. group-tab:: Linux
+
+    .. figure:: /reference/images/switch-gtk.png
+       :align: center
+
+  .. group-tab:: Windows
+
+    .. figure:: /reference/images/switch-winforms.png
+       :align: center
+
+  .. group-tab:: Android
+
+    .. figure:: /reference/images/switch-android.png
+       :align: center
+
+  .. group-tab:: iOS
+
+    .. figure:: /reference/images/switch-ios.png
+       :align: center
 
 .. rst-class:: widget-support
 .. csv-filter:: Availability (:ref:`Key <api-status-key>`)

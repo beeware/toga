@@ -3,9 +3,33 @@ SplitContainer
 
 A container that divides an area into two panels with a movable border.
 
-.. figure:: /reference/images/SplitContainer.png
-   :align: center
-   :width: 300px
+.. tabs::
+
+  .. group-tab:: macOS
+
+    .. figure:: /reference/images/splitcontainer-macOS.png
+       :align: center
+
+  .. group-tab:: Linux
+
+    .. figure:: /reference/images/splitcontainer-gtk.png
+       :align: center
+
+  .. group-tab:: Windows
+
+    .. figure:: /reference/images/splitcontainer-winforms.png
+       :align: center
+
+  .. group-tab:: Android
+
+    .. figure:: /reference/images/splitcontainer-android.png
+       :align: center
+
+  .. group-tab:: iOS
+
+    .. figure:: /reference/images/splitcontainer-ios.png
+       :align: center
+
 
 .. rst-class:: widget-support
 .. csv-filter:: Availability (:ref:`Key <api-status-key>`)
