@@ -79,6 +79,7 @@ class Tree(Widget):
             self.insert(None, i, row)
 
         self.native_tree.set_model(self.store)
+        self.refresh()
 
     def insert(self, parent, index, item):
         row = TogaRow(item)

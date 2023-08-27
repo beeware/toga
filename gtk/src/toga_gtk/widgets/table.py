@@ -113,6 +113,7 @@ class Table(Widget):
             self.insert(i, row)
 
         self.native_table.set_model(self.store)
+        self.refresh()
 
     def insert(self, index, item):
         row = TogaRow(item)
