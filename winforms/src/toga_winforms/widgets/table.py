@@ -113,10 +113,11 @@ class Table(Widget):
         # TODO: ListView only has built-in support for one icon per row. One possible
         # workaround is in https://stackoverflow.com/a/46128593.
         def strip_icon(item, attr):
-            val = getattr(item, attr, self.interface.missing_value)
-
+            val = getattr(item, attr, None)
             if isinstance(val, tuple):
-                return str(val[1])
+                val = val[1]
+            if val is None:
+                val = self.interface.missing_value
             return str(val)
 
         return [strip_icon(item, attr) for attr in self.interface._accessors]

@@ -35,27 +35,25 @@ class TogaTable(NSTableView):
         data_row = self.interface.data[row]
         col_identifier = str(column.identifier)
 
-        try:
-            value = getattr(data_row, col_identifier)
+        value = getattr(data_row, col_identifier, None)
 
-            # if the value is a widget itself, just draw the widget!
-            if isinstance(value, toga.Widget):
-                return value._impl.native
+        # if the value is a widget itself, just draw the widget!
+        if isinstance(value, toga.Widget):
+            return value._impl.native
 
-            # Allow for an (icon, value) tuple as the simple case
-            # for encoding an icon in a table cell. Otherwise, look
-            # for an icon attribute.
-            elif isinstance(value, tuple):
-                icon, value = value
-            else:
-                try:
-                    icon = value.icon
-                except AttributeError:
-                    icon = None
-        except AttributeError:
-            # The accessor doesn't exist in the data. Use the missing value.
+        # Allow for an (icon, value) tuple as the simple case
+        # for encoding an icon in a table cell. Otherwise, look
+        # for an icon attribute.
+        elif isinstance(value, tuple):
+            icon, value = value
+        else:
+            try:
+                icon = value.icon
+            except AttributeError:
+                icon = None
+
+        if value is None:
             value = self.interface.missing_value
-            icon = None
 
         # creates a NSTableCellView from interface-builder template (does not exist)
         # or reuses an existing view which is currently not needed for painting

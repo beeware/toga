@@ -255,11 +255,22 @@ async def _row_change_test(widget, probe):
     """Meta test for adding and removing data to the table"""
 
     # Change the data source for something smaller
-    widget.data = [{"a": f"A{i}", "b": i, "c": MyData(i)} for i in range(0, 5)]
+    widget.data = [
+        {
+            "a": f"A{i}",  # String
+            "b": i,  # Integer
+            "c": MyData(i),  # Custom type
+        }
+        for i in range(0, 5)
+    ]
     await probe.redraw("Data source has been changed")
 
     assert probe.row_count == 5
     # All cell contents are strings
+    probe.assert_cell_content(0, 0, "A0")
+    probe.assert_cell_content(1, 0, "A1")
+    probe.assert_cell_content(2, 0, "A2")
+    probe.assert_cell_content(3, 0, "A3")
     probe.assert_cell_content(4, 0, "A4")
     probe.assert_cell_content(4, 1, "4")
     probe.assert_cell_content(4, 2, "<data 4>")
@@ -271,6 +282,8 @@ async def _row_change_test(widget, probe):
     assert probe.row_count == 6
     probe.assert_cell_content(4, 0, "A4")
     probe.assert_cell_content(5, 0, "AX")
+    probe.assert_cell_content(5, 1, "BX")
+    probe.assert_cell_content(5, 2, "CX")
 
     # Insert a row into the middle of the table;
     # Row is missing a B accessor
@@ -278,33 +291,32 @@ async def _row_change_test(widget, probe):
     await probe.redraw("Partial row has been appended")
 
     assert probe.row_count == 7
+    probe.assert_cell_content(1, 0, "A1")
     probe.assert_cell_content(2, 0, "AY")
-    probe.assert_cell_content(5, 0, "A4")
-    probe.assert_cell_content(6, 0, "AX")
-
-    # Missing value has been populated
     probe.assert_cell_content(2, 1, "MISSING!")
+    probe.assert_cell_content(2, 2, "CY")
+    probe.assert_cell_content(3, 0, "A2")
 
     # Change content on the partial row
-    widget.data[2].a = "ANEW"
+    # Column B now has a value, but column A returns None
+    widget.data[2].a = None
     widget.data[2].b = "BNEW"
     await probe.redraw("Partial row has been updated")
 
     assert probe.row_count == 7
-    probe.assert_cell_content(2, 0, "ANEW")
-    probe.assert_cell_content(5, 0, "A4")
-    probe.assert_cell_content(6, 0, "AX")
-
-    # Missing value has the default empty string
+    probe.assert_cell_content(1, 0, "A1")
+    probe.assert_cell_content(2, 0, "MISSING!")
     probe.assert_cell_content(2, 1, "BNEW")
+    probe.assert_cell_content(2, 2, "CY")
+    probe.assert_cell_content(3, 0, "A2")
 
     # Delete a row
     del widget.data[3]
     await probe.redraw("Row has been removed")
     assert probe.row_count == 6
-    probe.assert_cell_content(2, 0, "ANEW")
+    probe.assert_cell_content(2, 0, "MISSING!")
+    probe.assert_cell_content(3, 0, "A3")
     probe.assert_cell_content(4, 0, "A4")
-    probe.assert_cell_content(5, 0, "AX")
 
     # Clear the table
     widget.data.clear()
@@ -415,7 +427,11 @@ async def test_cell_icon(widget, probe):
             # Normal text,
             "a": f"A{i}",
             # A tuple
-            "b": ({0: None, 1: red, 2: green}[i % 3], f"B{i}"),
+            "b": {
+                0: (None, "B0"),  # String
+                1: (red, None),  # None
+                2: (green, 2),  # Integer
+            }[i % 3],
             # An object with an icon attribute.
             "c": MyIconData(f"C{i}", {0: red, 1: green, 2: None}[i % 3]),
         }
@@ -428,11 +444,11 @@ async def test_cell_icon(widget, probe):
     probe.assert_cell_content(0, 2, "<icondata C0>", icon=red)
 
     probe.assert_cell_content(1, 0, "A1")
-    probe.assert_cell_content(1, 1, "B1", icon=red)
+    probe.assert_cell_content(1, 1, "MISSING!", icon=red)
     probe.assert_cell_content(1, 2, "<icondata C1>", icon=green)
 
     probe.assert_cell_content(2, 0, "A2")
-    probe.assert_cell_content(2, 1, "B2", icon=green)
+    probe.assert_cell_content(2, 1, "2", icon=green)
     probe.assert_cell_content(2, 2, "<icondata C2>", icon=None)
 
 
