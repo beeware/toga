@@ -111,7 +111,10 @@ Notes
 * Widgets in tables is a beta API which may change in future, and is currently only
   supported on macOS.
 
-* Icons in tables are not currently supported on Winforms.
+* Icons in tables are not currently supported on Android or Winforms.
+
+* The Android implementation is `not scalable
+  <https://github.com/beeware/toga/issues/1392>`_ beyond about 1,000 cells.
 
 Reference
 ---------

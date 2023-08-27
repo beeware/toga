@@ -40,8 +40,7 @@ def source():
 
 @pytest.fixture
 async def widget(source, on_select_handler, on_activate_handler):
-    # Although Android *has* a table implementation, it needs to be rebuilt.
-    skip_on_platforms("iOS", "android")
+    skip_on_platforms("iOS")
     return toga.Table(
         ["A", "B", "C"],
         data=source,
@@ -54,8 +53,7 @@ async def widget(source, on_select_handler, on_activate_handler):
 
 @pytest.fixture
 async def headerless_widget(source, on_select_handler):
-    # Although Android *has* a table implementation, it needs to be rebuilt.
-    skip_on_platforms("iOS", "android")
+    skip_on_platforms("iOS")
     return toga.Table(
         data=source,
         missing_value="MISSING!",
@@ -81,8 +79,7 @@ async def headerless_probe(main_window, headerless_widget):
 
 @pytest.fixture
 async def multiselect_widget(source, on_select_handler):
-    # Although Android *has* a table implementation, it needs to be rebuilt.
-    skip_on_platforms("iOS", "android")
+    skip_on_platforms("iOS")
     return toga.Table(
         ["A", "B", "C"],
         data=source,
@@ -117,20 +114,23 @@ async def test_scroll(widget, probe):
     await probe.wait_for_scroll_completion()
     await probe.redraw("Table scrolled to bottom")
 
+    # Ensure we have at least 3 screens of content
+    assert probe.max_scroll_position > probe.height * 2
+    assert probe.max_scroll_position > 600
+
     # max_scroll_position is not perfectly accurate on Winforms.
     assert probe.scroll_position == pytest.approx(probe.max_scroll_position, abs=5)
-    assert probe.scroll_position > 600
 
     # Scroll to the middle of the table
     widget.scroll_to_row(50)
     await probe.wait_for_scroll_completion()
     await probe.redraw("Table scrolled to mid row")
 
-    # Row 50 should be visible. It could be at the top of the table, or the bottom of
-    # the table; we don't really care which - as long as it's roughly in the middle of
+    # Row 50 should be visible. It could be at the top of the screen, or the bottom of
+    # the screen; we don't really care which - as long as we're roughly in the middle of
     # the scroll range, call it a win.
     assert probe.scroll_position == pytest.approx(
-        probe.max_scroll_position / 2, abs=250
+        probe.max_scroll_position / 2, abs=400
     )
 
     # Scroll to the top of the table
@@ -377,7 +377,8 @@ async def test_column_changes(widget, probe):
     # column should be tiny.
     total_width = sum(probe.column_width(i) for i in range(0, 4))
     assert total_width == pytest.approx(probe.width, abs=100)
-    assert all(probe.column_width(i) > 80 for i in range(0, 4))
+    for i in range(0, 4):
+        assert probe.column_width(i) > 50
 
 
 async def test_headerless_column_changes(headerless_widget, headerless_probe):

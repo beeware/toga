@@ -131,7 +131,7 @@ class Table(Widget):
     def change(self, item):
         self.update_data()
 
-    def remove(self, item, index):
+    def remove(self, index, item):
         self.update_data()
 
     def clear(self):
@@ -146,8 +146,8 @@ class Table(Widget):
         else:
             return selected_indices[0]
 
-    def scroll_to_row(self, row):
-        self.native.EnsureVisible(row)
+    def scroll_to_row(self, index):
+        self.native.EnsureVisible(index)
 
     def rehint(self):
         self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
