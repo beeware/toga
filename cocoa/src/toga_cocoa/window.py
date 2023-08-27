@@ -3,6 +3,7 @@ from toga_cocoa.container import Container
 from toga_cocoa.libs import (
     SEL,
     NSBackingStoreBuffered,
+    NSBitmapImageFileType,
     NSMakeRect,
     NSMutableArray,
     NSPoint,
@@ -293,3 +294,22 @@ class Window:
 
     def close(self):
         self.native.close()
+
+    def get_image_data(self):
+        bitmap = self.container.native.bitmapImageRepForCachingDisplayInRect(
+            self.container.native.bounds
+        )
+        bitmap.setSize(self.container.native.bounds.size)
+        self.container.native.cacheDisplayInRect(
+            self.container.native.bounds, toBitmapImageRep=bitmap
+        )
+
+        data = bitmap.representationUsingType(
+            NSBitmapImageFileType.PNG,
+            properties=None,
+        )
+        # data is an NSData object that has .bytes as a c_void_p, and a .length. Cast to
+        # POINTER(c_char) to get an addressable array of bytes, and slice that array to
+        # the known length. We don't use c_char_p because it has handling of NUL
+        # termination, and POINTER(c_char) allows array subscripting.
+        return cast(data.bytes, POINTER(c_char))[: data.length]

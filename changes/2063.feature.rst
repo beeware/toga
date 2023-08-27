@@ -1,0 +1,1 @@
+The ability to capture the contents of a window as an image has been added.
