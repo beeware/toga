@@ -50,11 +50,11 @@ class WindowDelegate(NSObject):
 
     @objc_method
     def windowDidBecomeMain_(self, notification):
-        self.interface.on_gain_focus(self.interface)
+        self.impl.interface.on_gain_focus(self.interface)
 
     @objc_method
     def windowDidResignMain_(self, notification):
-        self.interface.on_lose_focus(self.interface)
+        self.impl.interface.on_lose_focus(self.interface)
 
     ######################################################################
     # Toolbar delegate methods
