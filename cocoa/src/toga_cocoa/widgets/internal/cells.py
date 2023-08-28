@@ -120,7 +120,9 @@ class TogaIconView(NSTableCellView):
 
     @objc_method
     def setImage_(self, image):
-        if not self.imageView:
+        # This branch is here for future protection - but the image is *never* set
+        # before the text, so it can't ever happen.
+        if not self.imageView:  # pragma: no cover
             self.setup()
 
         if image:

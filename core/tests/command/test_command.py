@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from tests.command.constants import COMMANDS_IN_ORDER, PARENT_GROUP1
 from tests.utils import order_test
 
@@ -40,7 +42,7 @@ class TestCommand(TestCase):
         self.assertEqual(cmd.text, "test")
         self.assertEqual(cmd.shortcut, "t")
         self.assertEqual(cmd.tooltip, "test command")
-        self.assertEqual(cmd.icon.path, "icons/none.png")
+        self.assertEqual(cmd.icon.path, Path("icons/none.png"))
         self.assertEqual(cmd.group, grp)
         self.assertEqual(cmd.section, 1)
         self.assertEqual(cmd.order, 1)
