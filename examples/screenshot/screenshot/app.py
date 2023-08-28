@@ -1,6 +1,5 @@
 import asyncio
 from datetime import date, time
-from io import BytesIO
 
 from PIL import Image
 
@@ -34,10 +33,10 @@ class ScreenshotGeneratorApp(toga.App):
         )
 
     def create_canvas(self):
-        canvas = toga.Canvas(style=Pack(padding=10, width=190, height=290))
+        canvas = toga.Canvas(style=Pack(padding=10, width=280, height=290))
         draw_tiberius(canvas)
 
-        return toga.Box(children=[canvas], style=Pack(width=190, height=290))
+        return toga.Box(children=[canvas], style=Pack(width=280, height=290))
 
     def create_dateinput(self):
         return toga.Box(
@@ -299,73 +298,152 @@ class ScreenshotGeneratorApp(toga.App):
 
         return container
 
+    def create_window(self):
+        if toga.platform.current_platform in {"iOS", "android"}:
+            return None
+
+        return toga.Window(title="Toga", position=(800, 200), size=(300, 250))
+
+    def create_main_window(self):
+        # No widget to create
+        return True
+
+    async def manual_screenshot(self, content=None):
+        loop = asyncio.get_event_loop()
+        future = loop.create_future()
+
+        def proceed(button, **kwargs):
+            future.set_result(True)
+
+        proceed_button = toga.Button(
+            "Done",
+            on_press=proceed,
+            style=Pack(padding=10),
+        )
+
+        if content:
+            self.main_window.content = toga.Box(
+                children=[
+                    content,
+                    toga.Box(style=Pack(flex=1)),
+                    proceed_button,
+                ],
+                style=Pack(direction=COLUMN),
+            )
+        else:
+            self.main_window.content = toga.Box()
+        await future
+
     async def sequence(self, app, **kwargs):
         print(f"Saving screenshots to {self.app.paths.data}")
         self.app.paths.data.mkdir(parents=True, exist_ok=True)
         for content_type in [
-            # "activityindicator",
-            # "button",
-            # "canvas",
-            # "dateinput",
-            # "detailedlist",
-            # "divider",
-            # "label",
-            # "multilinetextinput",
-            # "numberinput",
-            # "passwordinput",
-            # "progressbar",
-            # "selection",
-            # "slider",
-            # "switch",
-            # "table",
-            # "textinput",
-            # "timeinput",
-            # "tree",
-            # "webview",
+            "activityindicator",
+            "button",
+            "canvas",
+            "dateinput",
+            "detailedlist",
+            "divider",
+            "label",
+            "multilinetextinput",
+            "numberinput",
+            "passwordinput",
+            "progressbar",
+            "selection",
+            "slider",
+            "switch",
+            "table",
+            "textinput",
+            "timeinput",
+            "tree",
+            "webview",
             "optioncontainer",
             "scrollcontainer",
             "splitcontainer",
+            "window",
+            "main_window",
         ]:
             try:
                 content = getattr(self.app, f"create_{content_type}")()
                 if content:
-                    self.main_window.content = toga.Box(
-                        children=[content],
-                        style=Pack(direction=COLUMN),
-                    )
-                    if content_type == "webview":
-                        await asyncio.sleep(3)
+                    if content_type == "main_window":
+                        # image = self.main_window.screen.as_image()
+                        # cropped = image.crop(... crop to window size ...)
+                        #
+                        # TODO: Crop the desktop image, rather than use a manual screenshot
+                        self.main_window.toolbar.add(self.command2, self.command1)
+
+                        await self.manual_screenshot()
+                        cropped = None
+                    elif content_type == "window":
+                        content.show()
+
+                        # image = self.main_window.screen.as_image()
+                        # cropped = image.crop(... crop to window size ...)
+                        #
+                        # TODO: Crop the desktop image, rather than use a manual screenshot
+                        await self.manual_screenshot(toga.Box())
+                        cropped = None
+
+                        content.close()
+
+                    elif content_type == "webview":
+                        # Manual screenshot required because webviews aren't
+                        # inherently screenshottable.
+                        await self.manual_screenshot(content)
+                        cropped = None
                     else:
+                        self.main_window.content = toga.Box(
+                            children=[content],
+                            style=Pack(direction=COLUMN),
+                        )
+
                         await asyncio.sleep(0.2)
+                        image = Image.open(self.main_window.as_image().data)
 
-                    image = Image.open(BytesIO(self.main_window._impl.get_image_data()))
+                        scale_x = (
+                            image.size[0]
+                            / self.main_window.content.layout.content_width
+                        )
+                        scale_y = (
+                            image.size[1]
+                            / self.main_window.content.layout.content_height
+                        )
 
-                    print(self.main_window.content.layout.content_width, image.size)
-                    cropped = image.resize(
-                        (
-                            int(self.main_window.content.layout.content_width),
-                            int(self.main_window.content.layout.content_height),
+                        cropped = image.crop(
+                            (
+                                0,
+                                0,
+                                (content.layout.content_width + 20) * scale_x,
+                                (content.layout.content_height + 20) * scale_y,
+                            )
                         )
-                    ).crop(
-                        (
-                            0,
-                            0,
-                            content.layout.content_width + 20,
-                            content.layout.content_height + 20,
+
+                    if cropped:
+                        cropped.save(
+                            self.app.paths.data
+                            / f"{content_type}-{toga.platform.current_platform}.png"
                         )
-                    )
-                    cropped.save(
-                        self.app.paths.data
-                        / f"{content_type}-{toga.platform.current_platform}.png"
-                    )
 
             except NotImplementedError:
                 pass
+
         self.app.exit()
 
     def startup(self):
         # Set up main window
-        self.main_window = toga.MainWindow(title=self.name)
+        self.main_window = toga.MainWindow(title="My Application")
+
+        self.command1 = toga.Command(
+            lambda _: None,
+            text="Twist",
+            icon=toga.Icon.DEFAULT_ICON,
+        )
+        self.command2 = toga.Command(
+            lambda _: None,
+            text="Shout",
+            icon="resources/brutus",
+        )
 
         # Add the content on the main window
         self.main_window.content = toga.Box()
