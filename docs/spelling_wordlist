@@ -42,10 +42,12 @@ Pango
 parameterization
 platformer
 pre
+prepending
 programmatically
-pytest
+px
 Pygame
 PyScript
+pytest
 Quickstart
 radiusx
 radiusy
@@ -65,14 +67,14 @@ Subclasses
 substring
 substrings
 testbed
-triaged
-Triaging
 Todo
 toolbar
 toolbars
 Toolbars
 toolkits
 Towncrier
+triaged
+Triaging
 tvOS
 Ubuntu
 validator
@@ -81,4 +83,5 @@ verbing
 viewport
 watchOS
 WebKit
+whitespace
 Winforms

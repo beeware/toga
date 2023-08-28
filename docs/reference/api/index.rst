@@ -44,7 +44,7 @@ General widgets
                                                                          horizontal line, and the selected value is shown as a draggable marker.
  :doc:`Switch </reference/api/widgets/switch>`                           A clickable button with two stable states: True (on, checked); and
                                                                          False (off, unchecked). The button has a text label.
- :doc:`Table </reference/api/widgets/table>`                             Table of data
+ :doc:`Table </reference/api/widgets/table>`                             A widget for displaying columns of tabular data.
  :doc:`TextInput </reference/api/widgets/textinput>`                     A widget for the display and editing of a single line of text.
  :doc:`TimeInput </reference/api/widgets/timeinput>`                     A widget to select a clock time
  :doc:`Tree </reference/api/widgets/tree>`                               Tree of data

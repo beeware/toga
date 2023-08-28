@@ -5,16 +5,25 @@ from .base import Widget
 
 
 class Table(Widget):
+    _background_supports_alpha = False
+
     def create(self):
         self.native = WinForms.ListView()
         self.native.View = WinForms.View.Details
         self._cache = []
         self._first_item = 0
+        self._pending_resize = True
+
+        headings = self.interface.headings
+        self.native.HeaderStyle = (
+            getattr(WinForms.ColumnHeaderStyle, "None")
+            if headings is None
+            else WinForms.ColumnHeaderStyle.Nonclickable
+        )
 
         dataColumn = []
-        for i, (heading, accessor) in enumerate(
-            zip(self.interface.headings, self.interface._accessors)
-        ):
+        for i, accessor in enumerate(self.interface.accessors):
+            heading = None if headings is None else headings[i]
             dataColumn.append(self._create_column(heading, accessor))
 
         self.native.FullRowSelect = True
@@ -28,15 +37,14 @@ class Table(Widget):
         self.native.CacheVirtualItems += self.winforms_cache_virtual_items
         self.native.MouseDoubleClick += self.winforms_double_click
         self.native.VirtualItemsSelectionRangeChanged += (
-            self.winforms_virtual_item_selection_range_changed
+            self.winforms_item_selection_changed
         )
 
-    def winforms_virtual_item_selection_range_changed(self, sender, e):
-        # `Shift` key or Range selection handler
-        if self.interface.multiple_select and self.interface.on_select:
-            # call on select with the last row of the multi selection
-            selected = self.interface.data[e.EndIndex]
-            self.interface.on_select(self.interface, row=selected)
+    def set_bounds(self, x, y, width, height):
+        super().set_bounds(x, y, width, height)
+        if self._pending_resize:
+            self._pending_resize = False
+            self._resize_columns()
 
     def winforms_retrieve_virtual_item(self, sender, e):
         # Because ListView is in VirtualMode, it's necessary implement
@@ -76,18 +84,12 @@ class Table(Widget):
             )
 
     def winforms_item_selection_changed(self, sender, e):
-        if self.interface.on_select:
-            self.interface.on_select(
-                self.interface, row=self.interface.data[e.ItemIndex]
-            )
+        self.interface.on_select(None)
 
     def winforms_double_click(self, sender, e):
-        if self.interface.on_double_click is not None:
-            hit_test = self.native.HitTest(e.X, e.Y)
-            item = hit_test.Item
-            self.interface.on_double_click(
-                self.interface, row=self.interface.data[item.Index]
-            )
+        hit_test = self.native.HitTest(e.X, e.Y)
+        item = hit_test.Item
+        self.interface.on_activate(None, row=self.interface.data[item.Index])
 
     def _create_column(self, heading, accessor):
         col = WinForms.ColumnHeader()
@@ -95,17 +97,27 @@ class Table(Widget):
         col.Name = accessor
         return col
 
+    def _resize_columns(self):
+        num_cols = len(self.native.Columns)
+        if num_cols == 0:
+            return
+
+        width = int(self.native.ClientSize.Width / num_cols)
+        for col in self.native.Columns:
+            col.Width = width
+
     def change_source(self, source):
         self.update_data()
 
     def row_data(self, item):
-        # TODO: Winforms can't support icons in tree cells; so, if the data source
-        # specifies an icon, strip it when converting to row data.
+        # TODO: ListView only has built-in support for one icon per row. One possible
+        # workaround is in https://stackoverflow.com/a/46128593.
         def strip_icon(item, attr):
-            val = getattr(item, attr, self.interface.missing_value)
-
+            val = getattr(item, attr, None)
             if isinstance(val, tuple):
-                return str(val[1])
+                val = val[1]
+            if val is None:
+                val = self.interface.missing_value
             return str(val)
 
         return [strip_icon(item, attr) for attr in self.interface._accessors]
@@ -118,47 +130,36 @@ class Table(Widget):
         self.update_data()
 
     def change(self, item):
-        self.interface.factory.not_implemented("Table.change()")
+        self.update_data()
 
-    def remove(self, item, index):
+    def remove(self, index, item):
         self.update_data()
 
     def clear(self):
-        self.native.Items.Clear()
+        self.update_data()
 
     def get_selection(self):
-        # First turning this to list since Pythonnet have problems iterating
-        # over it.
         selected_indices = list(self.native.SelectedIndices)
-
         if self.interface.multiple_select:
-            selected = [
-                row
-                for i, row in enumerate(self.interface.data)
-                if i in selected_indices
-            ]
-            return selected
+            return selected_indices
         elif len(selected_indices) == 0:
             return None
         else:
-            return self.interface.data[selected_indices[0]]
+            return selected_indices[0]
 
-    def set_on_select(self, handler):
-        pass
-
-    def set_on_double_click(self, handler):
-        pass
-
-    def scroll_to_row(self, row):
-        self.native.EnsureVisible(row)
+    def scroll_to_row(self, index):
+        self.native.EnsureVisible(index)
 
     def rehint(self):
         self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
         self.interface.intrinsic.height = at_least(self.interface._MIN_HEIGHT)
 
-    def remove_column(self, accessor):
-        self.native.Columns.RemoveByKey(accessor)
-
-    def add_column(self, heading, accessor):
-        self.native.Columns.Add(self._create_column(heading, accessor))
+    def remove_column(self, index):
+        self.native.Columns.RemoveAt(index)
         self.update_data()
+        self._resize_columns()
+
+    def insert_column(self, index, heading, accessor):
+        self.native.Columns.Insert(index, self._create_column(heading, accessor))
+        self.update_data()
+        self._resize_columns()

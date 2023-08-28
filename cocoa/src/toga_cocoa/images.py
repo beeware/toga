@@ -13,11 +13,14 @@ class Image:
         self.interface = interface
 
         try:
-            # We *should* be able to do a direct NSImage.alloc.init...(),
-            # but for some reason, this segfaults in some environments
-            # when loading invalid images. On iOS we can avoid this by
-            # using the class-level constructors; on macOS we need to
-            # ensure we have a valid allocated image, then try to init it.
+            # We *should* be able to do a direct NSImage.alloc.init...(), but if the
+            # image file is invalid, the init fails, and returns NULL - but we've
+            # created an ObjC instance, so when the object passes out of scope, Rubicon
+            # tries to free it, which segfaults. To avoid this, we retain result of the
+            # alloc() (overriding the default Rubicon behavior of alloc), then release
+            # that reference once we're done. If the image was created successfully, we
+            # temporarily have a reference count that is 1 higher than it needs to be;
+            # if it fails, we don't end up with a stray release.
             image = NSImage.alloc().retain()
             if path:
                 self.native = image.initWithContentsOfFile(str(path))
