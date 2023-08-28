@@ -115,12 +115,15 @@ class SimpleProbe(BaseProbe):
     async def press(self):
         self.native.OnClick(EventArgs.Empty)
 
-    async def type_character(self, char):
+    async def type_character(self, char, *, ctrl=False):
         try:
             key_code = KEY_CODES[char]
         except KeyError:
             assert len(char) == 1, char
             key_code = char
+
+        if ctrl:
+            key_code = "^" + key_code
 
         SendKeys.SendWait(key_code)
 

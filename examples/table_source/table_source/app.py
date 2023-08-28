@@ -117,7 +117,8 @@ class GoodMovieSource(Source):
 
 class ExampleTableSourceApp(toga.App):
     # Table callback functions
-    def on_select_handler(self, widget, row, **kwargs):
+    def on_select_handler(self, widget, **kwargs):
+        row = widget.selection
         self.label.text = (
             f"You selected row: {row.title}" if row is not None else "No row selected"
         )

@@ -1,0 +1,1 @@
+Tables can now omit the header row by specifying ``headings=None`` and providing accessors.
