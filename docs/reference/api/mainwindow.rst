@@ -3,9 +3,37 @@ MainWindow
 
 The main window of the application.
 
-.. figure:: /reference/images/MainWindow.png
-   :align: center
-   :width: 300px
+.. tabs::
+
+  .. group-tab:: macOS
+
+    .. figure:: /reference/images/mainwindow-macOS.png
+       :align: center
+       :width: 450px
+
+  .. group-tab:: Linux
+
+    .. figure:: /reference/images/mainwindow-gtk.png
+       :align: center
+       :width: 450px
+
+  .. group-tab:: Windows
+
+    .. figure:: /reference/images/mainwindow-winforms.png
+       :align: center
+       :width: 450px
+
+  .. group-tab:: Android
+
+    .. figure:: /reference/images/mainwindow-android.png
+       :align: center
+       :width: 450px
+
+  .. group-tab:: iOS
+
+    .. figure:: /reference/images/mainwindow-ios.png
+       :align: center
+       :width: 450px
 
 .. rst-class:: widget-support
 .. csv-filter:: Availability (:ref:`Key <api-status-key>`)

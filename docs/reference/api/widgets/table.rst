@@ -10,26 +10,31 @@ necessary.
 
     .. figure:: /reference/images/table-macOS.png
        :align: center
+       :width: 450px
 
   .. group-tab:: Linux
 
     .. figure:: /reference/images/table-gtk.png
        :align: center
+       :width: 450px
 
   .. group-tab:: Windows
 
     .. figure:: /reference/images/table-winforms.png
        :align: center
+       :width: 450px
 
   .. group-tab:: Android
 
     .. figure:: /reference/images/table-android.png
        :align: center
+       :width: 450px
 
   .. group-tab:: iOS
 
     .. figure:: /reference/images/table-ios.png
        :align: center
+       :width: 450px
 
 .. rst-class:: widget-support
 .. csv-filter:: Availability (:ref:`Key <api-status-key>`)

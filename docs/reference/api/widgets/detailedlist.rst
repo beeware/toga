@@ -8,26 +8,31 @@ DetailedList
 
     .. figure:: /reference/images/detailedlist-macOS.png
        :align: center
+       :width: 450px
 
   .. group-tab:: Linux
 
     .. figure:: /reference/images/detailedlist-gtk.png
        :align: center
+       :width: 450px
 
   .. group-tab:: Windows
 
     .. figure:: /reference/images/detailedlist-winforms.png
        :align: center
+       :width: 450px
 
   .. group-tab:: Android
 
     .. figure:: /reference/images/detailedlist-android.png
        :align: center
+       :width: 450px
 
   .. group-tab:: iOS
 
     .. figure:: /reference/images/detailedlist-ios.png
        :align: center
+       :width: 450px
 
 .. rst-class:: widget-support
 .. csv-filter:: Availability (:ref:`Key <api-status-key>`)

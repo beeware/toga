@@ -9,26 +9,31 @@ A widget for the display and editing of a single line of text.
 
     .. figure:: /reference/images/textinput-macOS.png
        :align: center
+       :width: 300px
 
   .. group-tab:: Linux
 
     .. figure:: /reference/images/textinput-gtk.png
        :align: center
+       :width: 300px
 
   .. group-tab:: Windows
 
     .. figure:: /reference/images/textinput-winforms.png
        :align: center
+       :width: 300px
 
   .. group-tab:: Android
 
     .. figure:: /reference/images/textinput-android.png
        :align: center
+       :width: 300px
 
   .. group-tab:: iOS
 
     .. figure:: /reference/images/textinput-ios.png
        :align: center
+       :width: 300px
 
 .. rst-class:: widget-support
 .. csv-filter:: Availability (:ref:`Key <api-status-key>`)

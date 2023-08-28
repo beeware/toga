@@ -7,28 +7,27 @@ A widget to select a clock time.
 
   .. group-tab:: macOS
 
-    .. figure:: /reference/images/timeinput-macOS.png
-       :align: center
+    Not supported
 
   .. group-tab:: Linux
 
-    .. figure:: /reference/images/timeinput-gtk.png
-       :align: center
+    Not supported
 
   .. group-tab:: Windows
 
     .. figure:: /reference/images/timeinput-winforms.png
        :align: center
+       :width: 300px
 
   .. group-tab:: Android
 
     .. figure:: /reference/images/timeinput-android.png
        :align: center
+       :width: 300px
 
   .. group-tab:: iOS
 
-    .. figure:: /reference/images/timeinput-ios.png
-       :align: center
+    Not supported
 
 
 .. rst-class:: widget-support

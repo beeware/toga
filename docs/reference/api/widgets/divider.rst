@@ -9,26 +9,27 @@ A separator used to visually distinguish two sections of content in a layout.
 
     .. figure:: /reference/images/divider-macOS.png
        :align: center
+       :width: 300px
 
   .. group-tab:: Linux
 
     .. figure:: /reference/images/divider-gtk.png
        :align: center
+       :width: 300px
 
   .. group-tab:: Windows
 
     .. figure:: /reference/images/divider-winforms.png
        :align: center
+       :width: 300px
 
   .. group-tab:: Android
 
-    .. figure:: /reference/images/divider-android.png
-       :align: center
+    Not supported
 
   .. group-tab:: iOS
 
-    .. figure:: /reference/images/divider-ios.png
-       :align: center
+    Not supported
 
 .. rst-class:: widget-support
 .. csv-filter:: Availability (:ref:`Key <api-status-key>`)

@@ -10,26 +10,31 @@ and the selected value is shown as a draggable marker.
 
     .. figure:: /reference/images/slider-macOS.png
        :align: center
+       :width: 300px
 
   .. group-tab:: Linux
 
     .. figure:: /reference/images/slider-gtk.png
        :align: center
+       :width: 300px
 
   .. group-tab:: Windows
 
     .. figure:: /reference/images/slider-winforms.png
        :align: center
+       :width: 300px
 
   .. group-tab:: Android
 
     .. figure:: /reference/images/slider-android.png
        :align: center
+       :width: 300px
 
   .. group-tab:: iOS
 
     .. figure:: /reference/images/slider-ios.png
        :align: center
+       :width: 300px
 
 .. rst-class:: widget-support
 .. csv-filter:: Availability (:ref:`Key <api-status-key>`)

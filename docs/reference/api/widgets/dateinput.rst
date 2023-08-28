@@ -8,30 +8,26 @@ A widget to select a calendar date.
   .. group-tab:: macOS
 
     Not supported
-    .. .. figure:: /reference/images/dateinput-macOS.png
-    ..    :align: center
 
   .. group-tab:: Linux
 
     Not supported
-    .. .. figure:: /reference/images/dateinput-gtk.png
-    ..    :align: center
 
   .. group-tab:: Windows
 
     .. figure:: /reference/images/dateinput-winforms.png
        :align: center
+       :width: 300px
 
   .. group-tab:: Android
 
     .. figure:: /reference/images/dateinput-android.png
        :align: center
+       :width: 300px
 
   .. group-tab:: iOS
 
     Not supported
-    .. .. figure:: /reference/images/dateinput-ios.png
-    ..    :align: center
 
 .. rst-class:: widget-support
 .. csv-filter:: Availability (:ref:`Key <api-status-key>`)

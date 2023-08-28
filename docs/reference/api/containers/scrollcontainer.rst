@@ -10,26 +10,31 @@ overflow controlled by scroll bars.
 
     .. figure:: /reference/images/scrollcontainer-macOS.png
        :align: center
+       :width: 450px
 
   .. group-tab:: Linux
 
     .. figure:: /reference/images/scrollcontainer-gtk.png
        :align: center
+       :width: 450px
 
   .. group-tab:: Windows
 
     .. figure:: /reference/images/scrollcontainer-winforms.png
        :align: center
+       :width: 450px
 
   .. group-tab:: Android
 
     .. figure:: /reference/images/scrollcontainer-android.png
        :align: center
+       :width: 450px
 
   .. group-tab:: iOS
 
     .. figure:: /reference/images/scrollcontainer-ios.png
        :align: center
+       :width: 450px
 
 
 .. rst-class:: widget-support

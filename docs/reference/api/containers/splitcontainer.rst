@@ -9,26 +9,27 @@ A container that divides an area into two panels with a movable border.
 
     .. figure:: /reference/images/splitcontainer-macOS.png
        :align: center
+       :width: 450px
 
   .. group-tab:: Linux
 
     .. figure:: /reference/images/splitcontainer-gtk.png
        :align: center
+       :width: 450px
 
   .. group-tab:: Windows
 
     .. figure:: /reference/images/splitcontainer-winforms.png
        :align: center
+       :width: 450px
 
   .. group-tab:: Android
 
-    .. figure:: /reference/images/splitcontainer-android.png
-       :align: center
+    Not supported
 
   .. group-tab:: iOS
 
-    .. figure:: /reference/images/splitcontainer-ios.png
-       :align: center
+    Not supported
 
 
 .. rst-class:: widget-support
