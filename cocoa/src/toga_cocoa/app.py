@@ -63,11 +63,11 @@ class AppDelegate(NSObject):
 
     @objc_method
     def applicationDidBecomeActive_(self, application):
-        self.interface.on_gain_focus(self.interface)
+        self.impl.interface.on_gain_focus(self.interface)
 
     @objc_method
     def applicationWillResignActive_(self, application):
-        self.interface.on_lose_focus(self.interface)
+        self.impl.interface.on_lose_focus(self.interface)
 
     @objc_method
     def addDocument_(self, document) -> None:
