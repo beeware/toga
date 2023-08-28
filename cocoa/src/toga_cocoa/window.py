@@ -1,5 +1,6 @@
 from toga.command import Command
 from toga_cocoa.container import Container
+from toga_cocoa.images import nsdata_to_bytes
 from toga_cocoa.libs import (
     SEL,
     NSBackingStoreBuffered,
@@ -303,13 +304,8 @@ class Window:
         self.container.native.cacheDisplayInRect(
             self.container.native.bounds, toBitmapImageRep=bitmap
         )
-
         data = bitmap.representationUsingType(
             NSBitmapImageFileType.PNG,
             properties=None,
         )
-        # data is an NSData object that has .bytes as a c_void_p, and a .length. Cast to
-        # POINTER(c_char) to get an addressable array of bytes, and slice that array to
-        # the known length. We don't use c_char_p because it has handling of NUL
-        # termination, and POINTER(c_char) allows array subscripting.
-        return cast(data.bytes, POINTER(c_char))[: data.length]
+        return nsdata_to_bytes(data)

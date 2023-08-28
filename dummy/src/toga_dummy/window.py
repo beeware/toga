@@ -1,5 +1,3 @@
-import uuid
-
 from .utils import LoggedObject
 
 
@@ -94,8 +92,7 @@ class Window(LoggedObject):
         self._set_value("visible", False)
 
     def get_image_data(self):
-        self._action("get image data")
-        return uuid.uuid4()
+        return b"pretend this is PNG image data"
 
     def set_full_screen(self, is_full_screen):
         self._action("set full screen", full_screen=is_full_screen)

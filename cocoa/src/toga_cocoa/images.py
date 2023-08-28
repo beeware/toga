@@ -1,3 +1,5 @@
+from ctypes import POINTER, c_char, cast
+from io import BytesIO
 from pathlib import Path
 
 from toga_cocoa.libs import (
@@ -6,6 +8,15 @@ from toga_cocoa.libs import (
     NSData,
     NSImage,
 )
+
+
+def nsdata_to_bytes(data: NSData) -> BytesIO:
+    """Convert an NSBitmapImageRep into a BytesIO representation"""
+    # data is an NSData object that has .bytes as a c_void_p, and a .length. Cast to
+    # POINTER(c_char) to get an addressable array of bytes, and slice that array to
+    # the known length. We don't use c_char_p because it has handling of NUL
+    # termination, and POINTER(c_char) allows array subscripting.
+    return cast(data.bytes, POINTER(c_char))[: data.length]
 
 
 class Image:
@@ -39,6 +50,15 @@ class Image:
 
     def get_height(self):
         return self.native.size.height
+
+    def get_data(self):
+        return nsdata_to_bytes(
+            NSBitmapImageRep.representationOfImageRepsInArray(
+                self.native.representations,
+                usingType=NSBitmapImageFileType.PNG,
+                properties=None,
+            )
+        )
 
     def save(self, path):
         path = Path(path)

@@ -349,8 +349,8 @@ def test_close_rejected_handler(window, app):
 def test_as_image(window):
     """A window can be captured as an image"""
     image = window.as_image()
-    assert image is not None
-    assert_action_performed(window, "get image data")
+
+    assert image.data.getvalue() == b"pretend this is PNG image data"
 
 
 def test_info_dialog(window, app):

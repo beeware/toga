@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from io import BytesIO
 from pathlib import Path
 
 import toga
@@ -34,14 +35,12 @@ class Image:
                 self.path = path
             else:
                 self.path = Path(path)
-            self.data = None
         else:
             self.path = None
-            self.data = data
 
         self.factory = get_platform_factory()
-        if self.data is not None:
-            self._impl = self.factory.Image(interface=self, data=self.data)
+        if data is not None:
+            self._impl = self.factory.Image(interface=self, data=data)
         else:
             self.path = toga.App.app.paths.app / self.path
             if not self.path.is_file():
@@ -57,6 +56,14 @@ class Image:
     def height(self) -> int:
         """The height of the image, in pixels."""
         return self._impl.get_height()
+
+    @property
+    def data(self) -> BytesIO:
+        """The raw data for the image, in PNG format.
+
+        :returns: a :class:`io.BytesIO` object containing the raw image data in PNG format.
+        """
+        return BytesIO(self._impl.get_data())
 
     def save(self, path: str | Path):
         """Save image to given path.
