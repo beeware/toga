@@ -6,7 +6,8 @@ from .window import Window
 
 
 class MainWindow(Window):
-    pass
+    def textual_close(self):
+        self.interface.app.on_exit(None)
 
 
 class TogaApp(TextualApp):

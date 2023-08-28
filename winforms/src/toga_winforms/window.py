@@ -101,7 +101,6 @@ class Window(Container, Scalable):
             return
         self.native.Icon = icon_impl.native
 
-    @property
     def get_title(self):
         return self.native.Text
 
@@ -122,7 +121,8 @@ class Window(Container, Scalable):
         self.native.MinimumSize = decor_size + min_client_size
 
     def show(self):
-        self.interface.content.refresh()
+        if self.interface.content is not None:
+            self.interface.content.refresh()
         if self.interface is not self.interface.app._main_window:
             self.native.Icon = self.interface.app.icon._impl.native
         self.native.Show()
