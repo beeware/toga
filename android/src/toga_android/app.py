@@ -48,6 +48,17 @@ class TogaApp(IPythonApp):
     def onRestart(self):
         print("Toga app: onRestart")
 
+    def onWindowFocusChanged(self, hasFocus):
+        print("Toga app: onWindowFocusChanged")
+        if hasFocus:
+            self._impl.interface.on_gain_focus(self._impl.interface)
+            for window in self._impl.interface.windows:
+                window.on_gain_focus(self._impl.interface)
+        else:
+            self._impl.interface.on_lose_focus(self._impl.interface)
+            for window in self._impl.interface.windows:
+                window.on_lose_focus(self._impl.interface)
+
     def onActivityResult(self, requestCode, resultCode, resultData):
         """Callback method, called from MainActivity when an Intent ends.
 
