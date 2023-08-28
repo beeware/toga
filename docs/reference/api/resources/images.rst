@@ -43,5 +43,3 @@ Reference
 ---------
 
 .. autoclass:: toga.Image
-   :members:
-   :undoc-members:

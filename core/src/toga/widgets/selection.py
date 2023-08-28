@@ -22,8 +22,6 @@ class Selection(Widget):
     ):
         """Create a new Selection widget.
 
-        Inherits from :class:`~toga.widgets.base.Widget`.
-
         :param id: The ID for the widget.
         :param style: A style object. If no style is provided, a default style will be
             applied to the widget.
@@ -71,7 +69,8 @@ class Selection(Widget):
 
         When setting this property:
 
-        * A :any:`Source` will be used as-is.
+        * A :any:`Source` will be used as-is. It must either be a :any:`ListSource`, or
+          a custom class that provides the same methods.
 
         * A value of None is turned into an empty ListSource.
 

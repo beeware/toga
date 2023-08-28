@@ -7,6 +7,7 @@ from .base import SimpleProbe
 
 class TableProbe(SimpleProbe):
     native_class = Gtk.ScrolledWindow
+    supports_icons = True
     supports_keyboard_shortcuts = False
     supports_cell_widgets = False
 

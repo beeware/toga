@@ -40,5 +40,3 @@ Reference
 ---------
 
 .. autoclass:: toga.ActivityIndicator
-   :members:
-   :undoc-members:

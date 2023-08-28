@@ -55,5 +55,3 @@ Reference
 ---------
 
 .. autoclass:: toga.TextInput
-   :members:
-   :undoc-members:

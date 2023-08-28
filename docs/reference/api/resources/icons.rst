@@ -28,7 +28,7 @@ The following formats are supported (in order of preference):
 The first matching icon of the most specific size will be used. For example, on Windows,
 specifying an icon of ``myicon`` will cause Toga to look for ``myicon.ico``, then
 ``myicon.png``, then ``myicon.bmp``. On GTK, Toga will look for ``myicon-72.png`` and
-``myicon-32.png``, then ``myicon.png``, then ``myicon-32.ico``, and so on.
+``myicon-32.png``, then ``myicon.png``, then ``myicon-72.ico`` and ``myicon-32.ico``, and so on.
 
 An icon is **guaranteed** to have an implementation. If you specify a path and no
 matching icon can be found, Toga will output a warning to the console, and load a
@@ -38,5 +38,3 @@ Reference
 ---------
 
 .. autoclass:: toga.Icon
-   :members:
-   :undoc-members:

@@ -51,5 +51,3 @@ Reference
 ---------
 
 .. autoclass:: toga.Switch
-   :members:
-   :undoc-members:

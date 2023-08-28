@@ -61,5 +61,3 @@ Reference
 ---------
 
 .. autoclass:: toga.WebView
-   :members:
-   :undoc-members:

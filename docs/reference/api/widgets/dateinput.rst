@@ -37,5 +37,3 @@ Reference
 ---------
 
 .. autoclass:: toga.DateInput
-   :members:
-   :undoc-members:

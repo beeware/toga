@@ -26,12 +26,10 @@ class Table(Widget):
     ):
         """Create a new Table widget.
 
-        Inherits from :class:`~toga.widgets.base.Widget`.
-
         :param headings: The list of headings for the table. Headings can only contain
             one line; any text after a newline will be ignored.
 
-            A value of :any:`None` can be used to specify a table without headings.
+            A value of :any:`None` will produce a table without headings.
             However, if you do this, you *must* give a list of accessors.
 
         :param id: The ID for the widget.
@@ -129,7 +127,8 @@ class Table(Widget):
 
         When setting this property:
 
-        * A :any:`Source` will be used as-is.
+        * A :any:`Source` will be used as-is. It must either be a :any:`ListSource`, or
+          a custom class that provides the same methods.
 
         * A value of None is turned into an empty ListSource.
 
@@ -167,14 +166,13 @@ class Table(Widget):
         If multiple selection is *not* enabled, returns the selected Row object, or
         :any:`None` if no row is currently selected.
         """
-        try:
-            selection = self._impl.get_selection()
+        selection = self._impl.get_selection()
+        if isinstance(selection, list):
             return [self.data[index] for index in selection]
-        except TypeError:
-            try:
-                return self.data[selection]
-            except TypeError:
-                return None
+        elif selection is None:
+            return None
+        else:
+            return self.data[selection]
 
     def scroll_to_top(self):
         """Scroll the view so that the top of the list (first row) is visible."""
@@ -289,13 +287,15 @@ class Table(Widget):
         self._impl.remove_column(index)
 
     @property
-    def headings(self) -> list[str]:
-        """The column headings for the table"""
+    def headings(self) -> list[str] | None:
+        """The column headings for the table, or None if there are no headings
+        (read-only)
+        """
         return self._headings
 
     @property
     def accessors(self) -> list[str]:
-        """The accessors used to populate the table"""
+        """The accessors used to populate the table (read-only)"""
         return self._accessors
 
     @property

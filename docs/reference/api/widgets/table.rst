@@ -17,12 +17,10 @@ A widget for displaying columns of tabular data.
 Usage
 -----
 
-A Table uses a :class:`~toga.sources.ListSource` to manage the data being displayed.
-options. If ``data`` is not specified as a ListSource, it will be converted into a
-ListSource at runtime.
+A Table will automatically provide scroll bars when necessary.
 
 The simplest instantiation of a Table is to use a list of lists (or list of tuples),
-containing the items to display in the table. When creating the table, you must also
+containing the items to display in the table. When creating the table, you can also
 specify the headings to use on the table; those headings will be converted into
 accessors on the Row data objects created for the table data. The values in the tuples
 provided will then be mapped sequentially to the accessors.
@@ -66,8 +64,8 @@ to control the display order of columns independent of the storage of that data.
     )
 
     # Get the details of the first item in the data:
-    print(f"{table.data[0].name}, who is age {table.data[0].age}, "
-          f"is from {table.data[0].planet}")
+    row = table.data[0]
+    print(f"{row.name}, who is age {row.age}, is from {row.planet}")
 
 The attribute names used on each row of data (called "accessors") are created
 automatically from the headings that you provide. If you want to use different
@@ -90,14 +88,13 @@ example, the table will use "Name" as the visible header, but internally, the at
     )
 
     # Get the details of the first item in the data:
-    print(f"{table.data[0].character}, who is age {table.data[0].age}, "
-          f"is from {table.data[0].planet}")
+    row = table.data[0]
+    print(f"{row.character}, who is age {row.age}, is from {row.planet}")
 
 The value provided by an accessor is interpreted as follows:
 
 * If the value is a :any:`Widget`, that widget will be displayed in the cell. Note that
-  this is currently a beta API, is currently only supported on macOS, and may change in
-  future.
+  this is currently a beta API: see the Notes section.
 
 * If the value is a :any:`tuple`, it must have two elements: an icon, and a second
   element which will be interpreted as one of the options below.
@@ -110,11 +107,20 @@ The value provided by an accessor is interpreted as follows:
 Icon values must either be an :any:`Icon`, which will be displayed on the left of the
 cell, or ``None`` to display no icon.
 
-* On macOS, you cannot change the font used in a Table.
+Notes
+-----
+
+* Widgets in tables is a beta API which may change in future, and is currently only
+  supported on macOS.
+
+* macOS does not support changing the font used to render table content.
+
+* Icons in tables are not currently supported on Android or Winforms.
+
+* The Android implementation is `not scalable
+  <https://github.com/beeware/toga/issues/1392>`_ beyond about 1,000 cells.
 
 Reference
 ---------
 
 .. autoclass:: toga.Table
-   :members:
-   :undoc-members:
