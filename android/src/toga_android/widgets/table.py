@@ -1,4 +1,8 @@
+from warnings import warn
+
 from travertino.size import at_least
+
+import toga
 
 from ..libs.activity import MainActivity
 from ..libs.android import R__attr
@@ -162,13 +166,14 @@ class Table(Widget):
         return table_row
 
     def get_data_value(self, row_index, col_index):
-        row_object = self.interface.data[row_index]
         value = getattr(
-            row_object,
+            self.interface.data[row_index],
             self.interface._accessors[col_index],
             None,
         )
-
+        if isinstance(value, toga.Widget):
+            warn("This backend does not support the use of widgets in cells")
+            value = None
         if isinstance(value, tuple):  # TODO: support icons
             value = value[1]
         if value is None:

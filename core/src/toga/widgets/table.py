@@ -26,7 +26,7 @@ class Table(Widget):
     ):
         """Create a new Table widget.
 
-        :param headings: The list of headings for the table. Headings can only contain
+        :param headings: The column headings for the table. Headings can only contain
             one line; any text after a newline will be ignored.
 
             A value of :any:`None` will produce a table without headings.
@@ -35,19 +35,12 @@ class Table(Widget):
         :param id: The ID for the widget.
         :param style: A style object. If no style is provided, a default style will be
             applied to the widget.
-        :param data: Initial :any:`data` to be displayed on the table.
+        :param data: Initial :any:`data` to be displayed in the table.
 
         :param accessors: Defines the attributes of the data source that will be used to
-            populate each column. If unspecified, accessors will be derived from the
-            headings by:
+            populate each column. Must be either:
 
-            1. Converting the heading to lower case;
-            2. Removing any character that can't be used in a Python identifier;
-            3. Replacing all whitespace with "_";
-            4. Prepending ``_`` if the first character is a digit.
-
-            Otherwise, ``accessors`` must be either:
-
+            * ``None`` to derive accessors from the headings, as described above; or
             * A list of the same size as ``headings``, specifying the accessors for each
               heading. A value of :any:`None` will fall back to the default generated
               accessor; or
@@ -133,8 +126,7 @@ class Table(Widget):
         * A value of None is turned into an empty ListSource.
 
         * Otherwise, the value must be an iterable, which is copied into a new
-          ListSource using the widget's accessors. Items are converted as shown
-          :ref:`here <listsource-item>`.
+          ListSource. Items are converted as shown :ref:`here <listsource-item>`.
         """
         return self._data
 
@@ -229,7 +221,7 @@ class Table(Widget):
 
     def insert_column(
         self,
-        index: int,
+        index: int | str,
         heading: str | None,
         accessor: str | None = None,
     ):

@@ -3,6 +3,7 @@ import pytest
 from android.widget import ScrollView, TableLayout, TextView
 
 from .base import SimpleProbe
+from .properties import toga_font
 
 HEADER = "HEADER"
 
@@ -11,6 +12,7 @@ class TableProbe(SimpleProbe):
     native_class = ScrollView
     supports_icons = False
     supports_keyboard_shortcuts = False
+    supports_widgets = False
 
     def __init__(self, widget):
         super().__init__(widget)
@@ -86,3 +88,8 @@ class TableProbe(SimpleProbe):
 
     async def activate_row(self, row):
         self._row_view(row).performLongClick()
+
+    @property
+    def font(self):
+        tv = self._row_view(0).getChildAt(0)
+        return toga_font(tv.getTypeface(), tv.getTextSize(), tv.getResources())

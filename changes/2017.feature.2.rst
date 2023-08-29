@@ -1,0 +1,1 @@
+Columns can now be added and removed from a Tree.

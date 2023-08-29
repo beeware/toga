@@ -14,6 +14,7 @@ class TableProbe(SimpleProbe):
     background_supports_alpha = False
     supports_icons = False
     supports_keyboard_shortcuts = False
+    supports_widgets = False
 
     @property
     def row_count(self):

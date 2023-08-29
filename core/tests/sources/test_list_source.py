@@ -2,8 +2,7 @@ from unittest.mock import Mock
 
 import pytest
 
-from toga.sources import ListSource
-from toga.sources.list_source import Row
+from toga.sources import ListSource, Row
 
 
 @pytest.fixture
@@ -16,26 +15,6 @@ def source():
         ],
         accessors=["val1", "val2"],
     )
-
-
-def test_row():
-    "A row can be created and modified"
-    source = Mock()
-    row = Row(val1="value 1", val2=42)
-    row._source = source
-
-    assert row.val1 == "value 1"
-    assert row.val2 == 42
-
-    row.val1 = "new value"
-    source.notify.assert_called_once_with("change", item=row)
-    source.notify.reset_mock()
-
-    # An attribute that wasn't in the original attribute set
-    # still causes a change notification
-    row.val3 = "other value"
-    source.notify.assert_called_once_with("change", item=row)
-    source.notify.reset_mock()
 
 
 @pytest.mark.parametrize(
@@ -363,7 +342,8 @@ def test_remove(source):
     source.add_listener(listener)
 
     # Remove the second element
-    row = source.remove(source[1])
+    row = source[1]
+    source.remove(row)
 
     assert len(source) == 2
     assert source[0].val1 == "first"
