@@ -482,12 +482,13 @@ async def test_cell_widget(widget, probe):
         )
 
     with warning_check:
+        # Winforms creates rows on demand, so the warning may not appear until we try to
+        # access the row.
         widget.data = data
+        await probe.redraw("Table has data with widgets")
 
-    await probe.redraw("Table has data with widgets")
-
-    probe.assert_cell_content(0, 0, "A0")
-    probe.assert_cell_content(0, 1, "B0")
+        probe.assert_cell_content(0, 0, "A0")
+        probe.assert_cell_content(0, 1, "B0")
 
     probe.assert_cell_content(1, 0, "A1")
     probe.assert_cell_content(1, 1, "B1")
