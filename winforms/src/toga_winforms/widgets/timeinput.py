@@ -1,8 +1,8 @@
 import datetime
 
+import System.Windows.Forms as WinForms
+from System import DateTime as WinDateTime
 from travertino.size import at_least
-
-from toga_winforms.libs import WinDateTime, WinForms
 
 from .base import Widget
 

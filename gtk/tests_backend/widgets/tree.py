@@ -10,7 +10,7 @@ from .base import SimpleProbe
 class TreeProbe(SimpleProbe):
     native_class = Gtk.ScrolledWindow
     supports_keyboard_shortcuts = False
-    supports_cell_widgets = False
+    supports_widgets = False
 
     def __init__(self, widget):
         super().__init__(widget)
@@ -24,6 +24,11 @@ class TreeProbe(SimpleProbe):
     async def expand_tree(self):
         self.native_tree.expand_all()
         await asyncio.sleep(0.1)
+
+    def is_expanded(self, node):
+        return self.native_tree.row_expanded(
+            self.native_tree.get_model().get_path(node._impl)
+        )
 
     def child_count(self, row_path=None):
         if row_path:

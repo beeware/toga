@@ -79,6 +79,7 @@ class Tree(Widget):
             self.insert(None, i, row)
 
         self.native_tree.set_model(self.store)
+        self.refresh()
 
     def insert(self, parent, index, item):
         row = TogaRow(item)
@@ -123,6 +124,20 @@ class Tree(Widget):
             if iter is None:
                 return None
             return store[iter][0].value
+
+    def expand_node(self, node):
+        self.native_tree.expand_row(
+            self.native_tree.get_model().get_path(node._impl), True
+        )
+
+    def expand_all(self):
+        self.native_tree.expand_all()
+
+    def collapse_node(self, node):
+        self.native_tree.collapse_row(self.native_tree.get_model().get_path(node._impl))
+
+    def collapse_all(self):
+        self.native_tree.collapse_all()
 
     def insert_column(self, index, heading, accessor):
         # Adding/removing a column means completely rebuilding the ListStore

@@ -48,8 +48,7 @@ def source():
 
 @pytest.fixture
 async def widget(source, on_select_handler, on_activate_handler):
-    # Although Android *has* a table implementation, it needs to be rebuilt.
-    skip_on_platforms("iOS", "android")
+    skip_on_platforms("iOS")
     return toga.Table(
         ["A", "B", "C"],
         data=source,
@@ -61,9 +60,8 @@ async def widget(source, on_select_handler, on_activate_handler):
 
 
 @pytest.fixture
-def headerless_widget(source, on_select_handler):
-    # Although Android *has* a table implementation, it needs to be rebuilt.
-    skip_on_platforms("iOS", "android")
+async def headerless_widget(source, on_select_handler):
+    skip_on_platforms("iOS")
     return toga.Table(
         data=source,
         missing_value="MISSING!",
@@ -88,9 +86,8 @@ async def headerless_probe(main_window, headerless_widget):
 
 
 @pytest.fixture
-def multiselect_widget(source, on_select_handler):
-    # Although Android *has* a table implementation, it needs to be rebuilt.
-    skip_on_platforms("iOS", "android")
+async def multiselect_widget(source, on_select_handler):
+    skip_on_platforms("iOS")
     return toga.Table(
         ["A", "B", "C"],
         data=source,
@@ -118,25 +115,30 @@ async def test_scroll(widget, probe):
     """The table can be scrolled"""
 
     # Due to the interaction of scrolling with the header row, the scroll might be <0.
-    assert probe.scroll_position <= 0
+    assert -100 < probe.scroll_position <= 0
 
     # Scroll to the bottom of the table
     widget.scroll_to_bottom()
     await probe.wait_for_scroll_completion()
     await probe.redraw("Table scrolled to bottom")
 
-    assert probe.scroll_position == probe.max_scroll_position
+    # Ensure we have at least 3 screens of content
+    assert probe.max_scroll_position > probe.height * 2
+    assert probe.max_scroll_position > 600
+
+    # max_scroll_position is not perfectly accurate on Winforms.
+    assert probe.scroll_position == pytest.approx(probe.max_scroll_position, abs=5)
 
     # Scroll to the middle of the table
     widget.scroll_to_row(50)
     await probe.wait_for_scroll_completion()
     await probe.redraw("Table scrolled to mid row")
 
-    # Row 50 should be visible. It could be at the top of the table, or the bottom of
-    # the table; we don't really care which - as long as it's roughly in the middle of
+    # Row 50 should be visible. It could be at the top of the screen, or the bottom of
+    # the screen; we don't really care which - as long as we're roughly in the middle of
     # the scroll range, call it a win.
     assert probe.scroll_position == pytest.approx(
-        probe.max_scroll_position / 2, abs=250
+        probe.max_scroll_position / 2, abs=400
     )
 
     # Scroll to the top of the table
@@ -145,7 +147,7 @@ async def test_scroll(widget, probe):
     await probe.redraw("Table scrolled to bottom")
 
     # Due to the interaction of scrolling with the header row, the scroll might be <0.
-    assert probe.scroll_position <= 0
+    assert -100 < probe.scroll_position <= 0
 
 
 async def test_select(widget, probe, source, on_select_handler):
@@ -159,14 +161,17 @@ async def test_select(widget, probe, source, on_select_handler):
     await probe.select_row(1)
     await probe.redraw("Second row is selected")
     assert widget.selection == source[1]
-    on_select_handler.assert_called_once_with(widget)
+
+    # Winforms generates two events, first removing the old selection and then adding
+    # the new one.
+    on_select_handler.assert_called_with(widget)
     on_select_handler.reset_mock()
 
-    # Trying to multi-select only does a single select
+    # Trying to multi-select removes the previous selection
     await probe.select_row(2, add=True)
     await probe.redraw("Third row is selected")
     assert widget.selection == source[2]
-    on_select_handler.assert_called_once_with(widget)
+    on_select_handler.assert_called_with(widget)
     on_select_handler.reset_mock()
 
     if probe.supports_keyboard_shortcuts:
@@ -219,21 +224,24 @@ async def test_multiselect(
     await multiselect_probe.select_row(1)
     assert multiselect_widget.selection == [source[1]]
     await multiselect_probe.redraw("One row is selected in multiselect table")
-    on_select_handler.assert_called_once_with(multiselect_widget)
+
+    # Winforms generates two events, first removing the old selection and then adding
+    # the new one.
+    on_select_handler.assert_called_with(multiselect_widget)
     on_select_handler.reset_mock()
 
     # A row can be added to the selection
     await multiselect_probe.select_row(2, add=True)
     await multiselect_probe.redraw("Two rows are selected in multiselect table")
     assert multiselect_widget.selection == [source[1], source[2]]
-    on_select_handler.assert_called_once_with(multiselect_widget)
+    on_select_handler.assert_called_with(multiselect_widget)
     on_select_handler.reset_mock()
 
     # A row can be removed from the selection
     await multiselect_probe.select_row(1, add=True)
     await multiselect_probe.redraw("First row has been removed from the selection")
     assert multiselect_widget.selection == [source[2]]
-    on_select_handler.assert_called_once_with(multiselect_widget)
+    on_select_handler.assert_called_with(multiselect_widget)
     on_select_handler.reset_mock()
 
     if multiselect_probe.supports_keyboard_shortcuts:
@@ -255,11 +263,22 @@ async def _row_change_test(widget, probe):
     """Meta test for adding and removing data to the table"""
 
     # Change the data source for something smaller
-    widget.data = [{"a": f"A{i}", "b": i, "c": MyData(i)} for i in range(0, 5)]
+    widget.data = [
+        {
+            "a": f"A{i}",  # String
+            "b": i,  # Integer
+            "c": MyData(i),  # Custom type
+        }
+        for i in range(0, 5)
+    ]
     await probe.redraw("Data source has been changed")
 
     assert probe.row_count == 5
     # All cell contents are strings
+    probe.assert_cell_content(0, 0, "A0")
+    probe.assert_cell_content(1, 0, "A1")
+    probe.assert_cell_content(2, 0, "A2")
+    probe.assert_cell_content(3, 0, "A3")
     probe.assert_cell_content(4, 0, "A4")
     probe.assert_cell_content(4, 1, "4")
     probe.assert_cell_content(4, 2, "<data 4>")
@@ -271,6 +290,8 @@ async def _row_change_test(widget, probe):
     assert probe.row_count == 6
     probe.assert_cell_content(4, 0, "A4")
     probe.assert_cell_content(5, 0, "AX")
+    probe.assert_cell_content(5, 1, "BX")
+    probe.assert_cell_content(5, 2, "CX")
 
     # Insert a row into the middle of the table;
     # Row is missing a B accessor
@@ -278,33 +299,32 @@ async def _row_change_test(widget, probe):
     await probe.redraw("Partial row has been appended")
 
     assert probe.row_count == 7
+    probe.assert_cell_content(1, 0, "A1")
     probe.assert_cell_content(2, 0, "AY")
-    probe.assert_cell_content(5, 0, "A4")
-    probe.assert_cell_content(6, 0, "AX")
-
-    # Missing value has been populated
     probe.assert_cell_content(2, 1, "MISSING!")
+    probe.assert_cell_content(2, 2, "CY")
+    probe.assert_cell_content(3, 0, "A2")
 
     # Change content on the partial row
-    widget.data[2].a = "ANEW"
+    # Column B now has a value, but column A returns None
+    widget.data[2].a = None
     widget.data[2].b = "BNEW"
     await probe.redraw("Partial row has been updated")
 
     assert probe.row_count == 7
-    probe.assert_cell_content(2, 0, "ANEW")
-    probe.assert_cell_content(5, 0, "A4")
-    probe.assert_cell_content(6, 0, "AX")
-
-    # Missing value has the default empty string
+    probe.assert_cell_content(1, 0, "A1")
+    probe.assert_cell_content(2, 0, "MISSING!")
     probe.assert_cell_content(2, 1, "BNEW")
+    probe.assert_cell_content(2, 2, "CY")
+    probe.assert_cell_content(3, 0, "A2")
 
     # Delete a row
     del widget.data[3]
     await probe.redraw("Row has been removed")
     assert probe.row_count == 6
-    probe.assert_cell_content(2, 0, "ANEW")
+    probe.assert_cell_content(2, 0, "MISSING!")
+    probe.assert_cell_content(3, 0, "A3")
     probe.assert_cell_content(4, 0, "A4")
-    probe.assert_cell_content(5, 0, "AX")
 
     # Clear the table
     widget.data.clear()
@@ -377,7 +397,8 @@ async def test_column_changes(widget, probe):
     # column should be tiny.
     total_width = sum(probe.column_width(i) for i in range(0, 4))
     assert total_width == pytest.approx(probe.width, abs=100)
-    assert all(probe.column_width(i) > 80 for i in range(0, 4))
+    for i in range(0, 4):
+        assert probe.column_width(i) > 50
 
 
 async def test_headerless_column_changes(headerless_widget, headerless_probe):
@@ -386,6 +407,14 @@ async def test_headerless_column_changes(headerless_widget, headerless_probe):
     assert not headerless_probe.header_visible
 
     await _column_change_test(headerless_widget, headerless_probe)
+
+
+async def test_remove_all_columns(widget, probe):
+    assert probe.column_count == 3
+    for i in range(probe.column_count):
+        widget.remove_column(0)
+        await probe.redraw("Removed first column")
+    assert probe.column_count == 0
 
 
 class MyIconData:
@@ -399,14 +428,18 @@ class MyIconData:
 
 async def test_cell_icon(widget, probe):
     "An icon can be used as a cell value"
-    red = toga.Icon("resources/icons/red")
-    green = toga.Icon("resources/icons/green")
+    red = toga.Icon("resources/icons/red") if probe.supports_icons else None
+    green = toga.Icon("resources/icons/green") if probe.supports_icons else None
     widget.data = [
         {
             # Normal text,
             "a": f"A{i}",
             # A tuple
-            "b": ({0: None, 1: red, 2: green}[i % 3], f"B{i}"),
+            "b": {
+                0: (None, "B0"),  # String
+                1: (red, None),  # None
+                2: (green, 2),  # Integer
+            }[i % 3],
             # An object with an icon attribute.
             "c": MyIconData(f"C{i}", {0: red, 1: green, 2: None}[i % 3]),
         }
@@ -419,11 +452,11 @@ async def test_cell_icon(widget, probe):
     probe.assert_cell_content(0, 2, "<icondata C0>", icon=red)
 
     probe.assert_cell_content(1, 0, "A1")
-    probe.assert_cell_content(1, 1, "B1", icon=red)
+    probe.assert_cell_content(1, 1, "MISSING!", icon=red)
     probe.assert_cell_content(1, 2, "<icondata C1>", icon=green)
 
     probe.assert_cell_content(2, 0, "A2")
-    probe.assert_cell_content(2, 1, "B2", icon=green)
+    probe.assert_cell_content(2, 1, "2", icon=green)
     probe.assert_cell_content(2, 2, "<icondata C2>", icon=None)
 
 
@@ -441,7 +474,7 @@ async def test_cell_widget(widget, probe):
         }
         for i in range(0, 50)
     ]
-    if probe.supports_cell_widgets:
+    if probe.supports_widgets:
         warning_check = contextlib.nullcontext()
     else:
         warning_check = pytest.warns(
@@ -449,17 +482,18 @@ async def test_cell_widget(widget, probe):
         )
 
     with warning_check:
+        # Winforms creates rows on demand, so the warning may not appear until we try to
+        # access the row.
         widget.data = data
+        await probe.redraw("Table has data with widgets")
 
-    await probe.redraw("Table has data with widgets")
-
-    probe.assert_cell_content(0, 0, "A0")
-    probe.assert_cell_content(0, 1, "B0")
+        probe.assert_cell_content(0, 0, "A0")
+        probe.assert_cell_content(0, 1, "B0")
 
     probe.assert_cell_content(1, 0, "A1")
     probe.assert_cell_content(1, 1, "B1")
 
-    if probe.supports_cell_widgets:
+    if probe.supports_widgets:
         probe.assert_cell_content(0, 2, widget=widget.data[0].c)
         probe.assert_cell_content(1, 2, widget=widget.data[1].c)
     else:

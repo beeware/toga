@@ -14,7 +14,7 @@ NSEventModifierFlagCommand = 1 << 20
 class TreeProbe(SimpleProbe):
     native_class = NSScrollView
     supports_keyboard_shortcuts = True
-    supports_cell_widgets = True
+    supports_widgets = True
 
     def __init__(self, widget):
         super().__init__(widget)
@@ -35,6 +35,14 @@ class TreeProbe(SimpleProbe):
     async def expand_tree(self):
         self.native_tree.expandItem(None, expandChildren=True)
         await asyncio.sleep(0.1)
+
+    def is_expanded(self, node):
+        try:
+            return self.native_tree.isItemExpanded(node._impl)
+        except AttributeError:
+            # If there's no _impl, the node hasn't been visualized yet,
+            # so it must be collapsed.
+            return False
 
     def item_for_row_path(self, row_path):
         item = self.native_tree.outlineView(

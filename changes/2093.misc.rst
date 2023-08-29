@@ -1,0 +1,1 @@
+Repeated autodoc options were refactored into the Sphinx configuration.

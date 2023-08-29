@@ -45,6 +45,18 @@ class Tree(Widget):
                 self.interface.data, self._get_value("selection", None)
             )
 
+    def expand_node(self, node):
+        self._action("expand node", node=node)
+
+    def expand_all(self):
+        self._action("expand all")
+
+    def collapse_node(self, node):
+        self._action("collapse node", node=node)
+
+    def collapse_all(self):
+        self._action("collapse all")
+
     def insert_column(self, index, heading, accessor):
         self._action("insert column", index=index, heading=heading, accessor=accessor)
 

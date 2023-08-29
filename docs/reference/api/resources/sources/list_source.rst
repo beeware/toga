@@ -42,58 +42,46 @@ the operations you'd expect on a normal Python list, such as ``insert``, ``remov
     # Insert a new item at the start of the data
     source.insert(0, {"name": "Bettong", "weight": 1.2})
 
-The ListSource manages a list of :class:`~toga.sources.Row` objects. Each Row object in
-the ListSource is an object that has all the attributes described by the ``accessors``.
-A Row object will be constructed by the source for each item that is added or removed
-from the ListSource.
+.. _listsource-item:
 
-When creating a single Row for a ListSource (e.g., when inserting a new
-item), the data for the Row can be specified as:
+The ListSource manages a list of :class:`~toga.sources.Row` objects. Each Row has all
+the attributes described by the source's ``accessors``. A Row object will be constructed
+for each item that is added to the ListSource, and each item can be:
 
-* A dictionary, with the accessors mapping to the keys in the dictionary
+* A dictionary, with the accessors mapping to the keys in the dictionary.
 
-* Any iterable object (except for a string), with the accessors being mapped
-  onto the items in the iterable in order of definition. This requires that the
-  iterable object have *at least* as many values as the number of accessors
-  defined on the TreeSource.
+* Any other iterable object (except for a string), with the accessors being mapped
+  onto the items in the iterable in order of definition.
 
 * Any other object, which will be mapped onto the *first* accessor.
 
-When initially constructing the ListSource, the data must be an iterable of values, each
-of which can be converted into a Row.
-
-Although Toga provides ListSource, you are not required to use it directly. A ListSource
-will be transparently constructed for you if you provide a Python ``list`` object to a
+Although Toga provides ListSource, you are not required to create one directly. A
+ListSource will be transparently constructed if you provide an iterable object to a
 GUI widget that displays list-like data (i.e., :class:`toga.Table`,
-:class:`toga.Selection`, or :class:`toga.DetailedList`). Any object that adheres to the
-same interface can be used as an alternative source of data for widgets that support
-using a ListSource. See the background guide on :ref:`custom data sources
-<custom-data-sources>` for more details.
+:class:`toga.Selection`, or :class:`toga.DetailedList`).
 
 Custom List Sources
 -------------------
 
-Any object that adheres to the :any:`collections.abc.MutableSequence` protocol can be
-used as a data source. This means they must provide:
+For more complex applications, you can replace ListSource with a :ref:`custom data
+source <custom-data-sources>` class. Such a class must:
 
-* ``__len__(self)`` returning the number of items in the list
+* Inherit from :any:`Source`
 
-* ``__getitem__(self, index)`` returning the item at position ``index`` of the list.
+* Provide the same methods as :any:`ListSource`
 
-A custom ListSource must also generate ``insert``, ``remove`` and ``clear``
-notifications when items are added or removed from the source.
+* Return items whose attributes match the accessors expected by the widget
 
-Each item returned by the custom ListSource is required to expose attributes matching
-the accessors for any widget using the source. Any change to the values of these attributes
-must generate a ``change`` notification on any listener to the custom ListSource.
+* Generate a ``change`` notification when any of those attributes change
+
+* Generate ``insert``, ``remove`` and ``clear`` notifications when items are added or
+  removed
 
 Reference
 ---------
 
 .. autoclass:: toga.sources.Row
-   :members:
-   :undoc-members:
+   :special-members: __setattr__
 
 .. autoclass:: toga.sources.ListSource
-   :members:
-   :undoc-members:
+   :special-members: __len__, __getitem__, __setitem__, __delitem__

@@ -206,6 +206,158 @@ async def test_select(widget, probe, source, on_select_handler):
         assert widget.selection == source[1][2][0]
 
 
+async def test_expand_collapse(widget, probe, source):
+    """Nodes can be expanded and collapsed"""
+
+    # Initially unexpanded
+    assert not probe.is_expanded(source[0])
+    assert not probe.is_expanded(source[0][2])
+    assert not probe.is_expanded(source[1])
+    assert not probe.is_expanded(source[1][2])
+    assert not probe.is_expanded(source[2])
+    assert not probe.is_expanded(source[2][2])
+
+    # Fully expand the tree
+    widget.expand()
+    await probe.redraw("All nodes have been expanded")
+    assert probe.is_expanded(source[0])
+    assert probe.is_expanded(source[0][2])
+    assert probe.is_expanded(source[1])
+    assert probe.is_expanded(source[1][2])
+    assert probe.is_expanded(source[2])
+    assert probe.is_expanded(source[2][2])
+
+    # Fully expand when already fully expanded
+    widget.expand()
+    await probe.redraw("All nodes are still expanded")
+    assert probe.is_expanded(source[0])
+    assert probe.is_expanded(source[0][2])
+    assert probe.is_expanded(source[1])
+    assert probe.is_expanded(source[1][2])
+    assert probe.is_expanded(source[2])
+    assert probe.is_expanded(source[2][2])
+
+    # Collapse a single root node
+    widget.collapse(source[1])
+    await probe.redraw("Root Node 1 has been collapsed")
+    assert probe.is_expanded(source[0])
+    assert probe.is_expanded(source[0][2])
+    assert not probe.is_expanded(source[1])
+    # State of source[1][2] is ambiguous
+    assert probe.is_expanded(source[2])
+    assert probe.is_expanded(source[2][2])
+
+    # Collapse the same single root node again
+    widget.collapse(source[1])
+    await probe.redraw("Root Node 1 is still collapsed")
+    assert probe.is_expanded(source[0])
+    assert probe.is_expanded(source[0][2])
+    assert not probe.is_expanded(source[1])
+    # State of source[1][2] is ambiguous
+    assert probe.is_expanded(source[2])
+    assert probe.is_expanded(source[2][2])
+
+    # Collapse a single child node
+    widget.collapse(source[0][2])
+    await probe.redraw("Child Node 0:2 has been collapsed")
+    assert probe.is_expanded(source[0])
+    assert not probe.is_expanded(source[0][2])
+    assert not probe.is_expanded(source[1])
+    # State of source[1][2] is ambiguous
+    assert probe.is_expanded(source[2])
+    assert probe.is_expanded(source[2][2])
+
+    # Collapse the same child node
+    widget.collapse(source[0][2])
+    await probe.redraw("Child Node 0:2 is still collapsed")
+    assert probe.is_expanded(source[0])
+    assert not probe.is_expanded(source[0][2])
+    assert not probe.is_expanded(source[1])
+    # State of source[1][2] is ambiguous
+    assert probe.is_expanded(source[2])
+    assert probe.is_expanded(source[2][2])
+
+    # Expand a single root node
+    widget.expand(source[1])
+    await probe.redraw("Root Node 1 has been expanded")
+    assert probe.is_expanded(source[0])
+    assert not probe.is_expanded(source[0][2])
+    assert probe.is_expanded(source[1])
+    assert probe.is_expanded(source[1][2])  # Restores previous expansion state
+    assert probe.is_expanded(source[2])
+    assert probe.is_expanded(source[2][2])
+
+    # Expand a single root node again
+    widget.expand(source[1])
+    await probe.redraw("Root Node 1 is still expanded")
+    assert probe.is_expanded(source[0])
+    assert not probe.is_expanded(source[0][2])
+    assert probe.is_expanded(source[1])
+    assert probe.is_expanded(source[1][2])
+    assert probe.is_expanded(source[2])
+    assert probe.is_expanded(source[2][2])
+
+    # Expand a single child node
+    widget.expand(source[0][2])
+    await probe.redraw("Child Node 0:2 has been expanded")
+    assert probe.is_expanded(source[0])
+    assert probe.is_expanded(source[0][2])
+    assert probe.is_expanded(source[1])
+    assert probe.is_expanded(source[1][2])
+    assert probe.is_expanded(source[2])
+    assert probe.is_expanded(source[2][2])
+
+    # Expand the same child node again
+    widget.expand(source[0][2])
+    await probe.redraw("Child Node 0:2 is still expanded")
+    assert probe.is_expanded(source[0])
+    assert probe.is_expanded(source[0][2])
+    assert probe.is_expanded(source[1])
+    assert probe.is_expanded(source[1][2])
+    assert probe.is_expanded(source[2])
+    assert probe.is_expanded(source[2][2])
+
+    # Attempt to collapse a leaf node
+    widget.collapse(source[0][2][1])
+    await probe.redraw("Leaf node collapse is a no-op")
+    assert probe.is_expanded(source[0])
+    assert probe.is_expanded(source[0][2])
+    assert probe.is_expanded(source[1])
+    assert probe.is_expanded(source[1][2])
+    assert probe.is_expanded(source[2])
+    assert probe.is_expanded(source[2][2])
+
+    # Attempt to expand a leaf node
+    widget.collapse(source[0][2][1])
+    await probe.redraw("Leaf node collapse is a no-op")
+    assert probe.is_expanded(source[0])
+    assert probe.is_expanded(source[0][2])
+    assert probe.is_expanded(source[1])
+    assert probe.is_expanded(source[1][2])
+    assert probe.is_expanded(source[2])
+    assert probe.is_expanded(source[2][2])
+
+    # Fully collapse the tree
+    widget.collapse()
+    await probe.redraw("All nodes have been collapsed")
+    assert not probe.is_expanded(source[0])
+    assert not probe.is_expanded(source[0][2])
+    assert not probe.is_expanded(source[1])
+    assert not probe.is_expanded(source[1][2])
+    assert not probe.is_expanded(source[2])
+    assert not probe.is_expanded(source[2][2])
+
+    # Fully collapse when already fully collapsed
+    widget.collapse()
+    await probe.redraw("All nodes are still collapsed")
+    assert not probe.is_expanded(source[0])
+    assert not probe.is_expanded(source[0][2])
+    assert not probe.is_expanded(source[1])
+    assert not probe.is_expanded(source[1][2])
+    assert not probe.is_expanded(source[2])
+    assert not probe.is_expanded(source[2][2])
+
+
 async def test_activate(
     widget,
     probe,
@@ -518,7 +670,7 @@ async def test_cell_widget(widget, probe):
             ],
         ),
     ]
-    if probe.supports_cell_widgets:
+    if probe.supports_widgets:
         warning_check = contextlib.nullcontext()
     else:
         warning_check = pytest.warns(
@@ -537,7 +689,7 @@ async def test_cell_widget(widget, probe):
     probe.assert_cell_content((0, 1), 0, "A1")
     probe.assert_cell_content((0, 1), 1, "B1")
 
-    if probe.supports_cell_widgets:
+    if probe.supports_widgets:
         probe.assert_cell_content((0, 0), 2, widget=widget.data[0][0].c)
         probe.assert_cell_content((0, 1), 2, widget=widget.data[0][1].c)
     else:

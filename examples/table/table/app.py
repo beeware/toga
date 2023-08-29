@@ -1,20 +1,20 @@
 import random
-from random import choice
 
 import toga
 from toga.constants import COLUMN, ROW
 from toga.style import Pack
 
+# Include some non-string objects to make sure conversion works correctly.
 headings = ["Title", "Year", "Rating", "Genre"]
 bee_movies = [
-    ("The Secret Life of Bees", "2008", "7.3", "Drama"),
-    ("Bee Movie", "2007", "6.1", "Animation, Adventure, Comedy"),
-    ("Bees", "1998", "6.3", "Horror"),
-    ("The Girl Who Swallowed Bees", "2007", "7.5"),  # Missing a genre
-    ("Birds Do It, Bees Do It", "1974", "7.3", "Documentary"),
-    ("Bees: A Life for the Queen", "1998", "8.0", "TV Movie"),
-    ("Bees in Paradise", "1944", "5.4", "Comedy, Musical"),
-    ("Keeper of the Bees", "1947", "6.3", "Drama"),
+    ("The Secret Life of Bees", 2008, 7.3, "Drama"),
+    ("Bee Movie", 2007, 6.1, "Animation, Adventure"),
+    ("Bees", 1998, 6.3, "Horror"),
+    ("The Girl Who Swallowed Bees", 2007, 7.5),  # Missing a genre
+    ("Birds Do It, Bees Do It", 1974, 7.3, "Documentary"),
+    ("Bees: A Life for the Queen", 1998, 8.0, "TV Movie"),
+    ("Bees in Paradise", 1944, 5.4, None),  # None genre
+    ("Keeper of the Bees", 1947, 6.3, "Drama"),
 ]
 
 
@@ -50,7 +50,7 @@ class ExampleTableApp(toga.App):
 
     # Button callback functions
     def insert_handler(self, widget, **kwargs):
-        self.table1.data.insert(0, choice(bee_movies))
+        self.table1.data.insert(0, random.choice(bee_movies))
 
     def delete_handler(self, widget, **kwargs):
         if self.table1.selection:
@@ -64,7 +64,7 @@ class ExampleTableApp(toga.App):
         self.table1.data.clear()
 
     def reset_handler(self, widget, **kwargs):
-        self.table1.data = bee_movies[3:]
+        self.table1.data = bee_movies
 
     def toggle_handler(self, widget, **kwargs):
         try:
@@ -78,6 +78,12 @@ class ExampleTableApp(toga.App):
             # If the data accessor can't be determined from the column title,
             # you could manually specify the accessor here, too.
             self.table1.add_column("Genre")
+
+    def top_handler(self, widget, **kwargs):
+        self.table1.scroll_to_top()
+
+    def bottom_handler(self, widget, **kwargs):
+        self.table1.scroll_to_bottom()
 
     def startup(self):
         self.main_window = toga.MainWindow(title=self.name)
@@ -103,18 +109,22 @@ class ExampleTableApp(toga.App):
         )
         font_box = toga.Box(
             children=[
-                lbl_fontlabel,
-                self.lbl_fontsize,
-                btn_reduce_size,
-                btn_increase_size,
+                toga.Box(
+                    children=[btn_reduce_size, btn_increase_size],
+                    style=Pack(direction=ROW),
+                ),
+                toga.Box(
+                    children=[lbl_fontlabel, self.lbl_fontsize],
+                    style=Pack(direction=ROW),
+                ),
             ],
-            style=Pack(direction=ROW, padding_bottom=5),
+            style=Pack(direction=COLUMN),
         )
 
         # Data to populate the table.
         if toga.platform.current_platform == "android":
             # FIXME: beeware/toga#1392 - Android Table doesn't allow lots of content
-            table_data = bee_movies
+            table_data = bee_movies * 10
         else:
             table_data = bee_movies * 1000
 
@@ -135,7 +145,8 @@ class ExampleTableApp(toga.App):
         )
 
         self.table2 = toga.Table(
-            headings=headings,
+            headings=None,
+            accessors=[h.lower() for h in headings],
             data=self.table1.data,
             multiple_select=True,
             style=Pack(flex=1, padding_left=5),
@@ -149,28 +160,33 @@ class ExampleTableApp(toga.App):
         # Buttons
         btn_style = Pack(flex=1)
         btn_insert = toga.Button(
-            "Insert Row", on_press=self.insert_handler, style=btn_style
+            "Insert", on_press=self.insert_handler, style=btn_style
         )
         btn_delete = toga.Button(
-            "Delete Row", on_press=self.delete_handler, style=btn_style
+            "Delete", on_press=self.delete_handler, style=btn_style
         )
-        btn_clear = toga.Button(
-            "Clear Table", on_press=self.clear_handler, style=btn_style
-        )
-        btn_reset = toga.Button(
-            "Reset Table", on_press=self.reset_handler, style=btn_style
-        )
+        btn_clear = toga.Button("Clear", on_press=self.clear_handler, style=btn_style)
+        btn_reset = toga.Button("Reset", on_press=self.reset_handler, style=btn_style)
         btn_toggle = toga.Button(
-            "Toggle Column", on_press=self.toggle_handler, style=btn_style
+            "Column", on_press=self.toggle_handler, style=btn_style
         )
-        btn_box = toga.Box(
-            children=[btn_insert, btn_delete, btn_clear, btn_reset, btn_toggle],
+        btn_top = toga.Button("Top", on_press=self.top_handler, style=btn_style)
+        btn_bottom = toga.Button(
+            "Bottom", on_press=self.bottom_handler, style=btn_style
+        )
+
+        controls_1 = toga.Box(
+            children=[font_box, btn_insert, btn_delete, btn_clear],
+            style=Pack(direction=ROW, padding_bottom=5),
+        )
+        controls_2 = toga.Box(
+            children=[btn_reset, btn_toggle, btn_top, btn_bottom],
             style=Pack(direction=ROW, padding_bottom=5),
         )
 
         # Most outer box
         outer_box = toga.Box(
-            children=[font_box, btn_box, tablebox, labelbox],
+            children=[controls_1, controls_2, tablebox, labelbox],
             style=Pack(
                 flex=1,
                 direction=COLUMN,

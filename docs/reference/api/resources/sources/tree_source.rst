@@ -16,7 +16,7 @@ that all items managed by the TreeSource will have. The API provided by TreeSour
 :any:`list`-like; the operations you'd expect on a normal Python list, such as
 ``insert``, ``remove``, ``index``, and indexing with ``[]``, are also possible on a
 TreeSource. These methods are available on the TreeSource itself to manipulate root
-nodes, and also on each item of the TreeSource to manipulate children.
+nodes, and also on each node within the tree.
 
 .. code-block:: python
 
@@ -26,12 +26,12 @@ nodes, and also on each item of the TreeSource to manipulate children.
         accessors=["name", "height"],
         data={
             "Animals": [
-                {"name": "Numbat", "height": 0.15},
-                {"name": "Thylacine", "height": 0.6},
+                ({"name": "Numbat", "height": 0.15}, None),
+                ({"name": "Thylacine", "height": 0.6}, None),
             ],
             "Plants": [
-                {"name": "Woollybush", "height": 2.4},
-                {"name": "Boronia", "height": 0.9},
+                ({"name": "Woollybush", "height": 2.4}, None),
+                ({"name": "Boronia", "height": 0.9}, None),
             ],
         }
     )
@@ -58,10 +58,9 @@ nodes, and also on each item of the TreeSource to manipulate children.
     # Insert a new root item in the middle of the list of root nodes
     source.insert(1, {"name": "Minerals"})
 
-The TreeSource manages a tree of :class:`~toga.sources.Node` objects. Each Node object
-in the TreeSource is an object that has all the attributes described by the
-``accessors`` for the TreeSource. A Node object will be constructed by the source for
-each item that is added or removed from the ListSource.
+The TreeSource manages a tree of :class:`~toga.sources.Node` objects. Each Node has all
+the attributes described by the source's ``accessors``. A Node object will be
+constructed for each item that is added to the TreeSource.
 
 Each Node object in the TreeSource can have children; those children can in turn have
 their own children. A child that *cannot* have children is called a *leaf Node*. Whether
@@ -71,75 +70,62 @@ files and directories on a file system: a file is a leaf Node, as it cannot have
 children; a directory *can* contain files and other directories in it, but it can also
 be empty. An empty directory would *not* be a leaf Node.
 
+.. _treesource-item:
+
 When creating a single Node for a TreeSource (e.g., when inserting a new item), the data
 for the Node can be specified as:
 
 * A dictionary, with the accessors mapping to the keys in the dictionary
 
 * Any iterable object (except for a string), with the accessors being mapped
-  onto the items in the iterable in order of definition. This requires that the
-  iterable object have *at least* as many values as the number of accessors
-  defined on the TreeSource.
+  onto the items in the iterable in order of definition.
 
 * Any other object, which will be mapped onto the *first* accessor.
 
-When constructing an entire ListSource, the data can be specified as:
+When constructing an entire TreeSource, the data can be specified as:
 
 * A dictionary. The keys of the dictionary will be converted into Nodes, and used as
   parents; the values of the dictionary will become the children of their corresponding
   parent.
 
-* Any iterable object (except a string). Each value in the iterable will be treated as
-  a 2-item tuple, with first item being data for the parent Node, and the second item
-  being the child data.
+* Any other iterable object (except a string). Each value in the iterable will be
+  treated as a 2-item tuple, with the first item being data for the parent Node, and the
+  second item being the child data.
 
-* Any other object. The object will be converted into a list containing a single node
-  with no children.
+* Any other object will be converted into a single node with no children.
 
 When specifying children, a value of :any:`None` for the children will result in the
 creation of a leaf node. Any other value will be processed recursively - so, a child
 specifier can itself be a dictionary, an iterable of 2-tuples, or data for a single
-child; each of which can specify their own children, and so on.
+child, and so on.
 
-Although Toga provides TreeSource, you are not required to use it directly. A TreeSource
-will be transparently constructed for you if you provide Python primitives (e.g.
+Although Toga provides TreeSource, you are not required to create one directly. A TreeSource
+will be transparently constructed for you if you provide one of the items listed above (e.g.
 :any:`list`, :any:`dict`, etc) to a GUI widget that displays tree-like data (i.e.,
-:class:`toga.Tree`). Any object that adheres to the same interface can be used as an
-alternative source of data for widgets that support using a TreeSource. See the
-background guide on :ref:`custom data sources <custom-data-sources>` for more details.
+:class:`toga.Tree`).
 
 Custom TreeSources
 ------------------
 
-Any object that adheres to the TreeSource interface can be used as a data source. The
-TreeSource, plus every node managed by the TreeSource, must provide the following
-methods:
+For more complex applications, you can replace TreeSource with a :ref:`custom data
+source <custom-data-sources>` class. Such a class must:
 
-* ``__len__()`` - returns the number of children of this node, or the number of root
-  nodes for the TreeSource.
+* Inherit from :any:`Source`
 
-* ``__getitem__(index)`` - returns the child at position ``index`` of a node, or the
-  root node at position ``index`` of the TreeSource.
+* Provide the same methods as :any:`TreeSource`
 
-Every node on the TreeSource must also provide:
+* Return items whose attributes match the accessors expected by the widget
 
-* ``can_have_children()`` - returns ``False`` if the node is a leaf node.
+* Generate a ``change`` notification when any of those attributes change
 
-A custom TreeSource must also generate ``insert``, ``remove`` and ``clear``
-notifications when items are added or removed from the source, or when children are
-added or removed to nodes managed by the TreeSource.
-
-Each node returned by the custom TreeSource is required to expose attributes matching
-the accessors for any widget using the source. Any change to the values of these attributes
-must generate a ``change`` notification on any listener to the custom ListSource.
+* Generate ``insert``, ``remove`` and ``clear`` notifications when nodes are added or
+  removed
 
 Reference
 ---------
 
 .. autoclass:: toga.sources.Node
-   :members:
-   :undoc-members:
+   :special-members: __len__, __getitem__, __setitem__, __delitem__
 
 .. autoclass:: toga.sources.TreeSource
-   :members:
-   :undoc-members:
+   :special-members: __len__, __getitem__, __setitem__, __delitem__

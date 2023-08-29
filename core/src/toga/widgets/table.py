@@ -24,28 +24,35 @@ class Table(Widget):
         missing_value: str = "",
         on_double_click=None,  # DEPRECATED
     ):
-        """Create a new Selection widget.
+        """Create a new Table widget.
 
-        Inherits from :class:`~toga.widgets.base.Widget`.
+        :param headings: The column headings for the table. Headings can only contain
+            one line; any text after a newline will be ignored.
 
-        :param headings: The list of headings for the table. A value of :any:`None`
-            can be used to specify a table without headings. Individual headings cannot
-            include newline characters; any text after a newline will be ignored
+            A value of :any:`None` will produce a table without headings.
+            However, if you do this, you *must* give a list of accessors.
+
         :param id: The ID for the widget.
         :param style: A style object. If no style is provided, a default style will be
             applied to the widget.
-        :param data: The data to be displayed on the table. Can be a list of values or a
-            ListSource. See the definition of the :attr:`data` property for details on
-            how data can be specified and used.
-        :param accessors: A list of names, with same length as :attr:`headings`, that
-            describes the attributes of the data source that will be used to populate
-            each column. If unspecified, accessors will be automatically derived from
-            the table headings.
+        :param data: Initial :any:`data` to be displayed in the table.
+
+        :param accessors: Defines the attributes of the data source that will be used to
+            populate each column. Must be either:
+
+            * ``None`` to derive accessors from the headings, as described above; or
+            * A list of the same size as ``headings``, specifying the accessors for each
+              heading. A value of :any:`None` will fall back to the default generated
+              accessor; or
+            * A dictionary mapping headings to accessors. Any missing headings will fall
+              back to the default generated accessor.
+
         :param multiple_select: Does the table allow multiple selection?
         :param on_select: Initial :any:`on_select` handler.
         :param on_activate: Initial :any:`on_activate` handler.
-        :param missing_value: The string that will be used to populate a cell when a
-            data source doesn't provided a value for a given attribute.
+        :param missing_value: The string that will be used to populate a cell when the
+            value provided by its accessor is :any:`None`, or the accessor isn't
+            defined.
         :param on_double_click: **DEPRECATED**; use :attr:`on_activate`.
         """
         super().__init__(id=id, style=style)
@@ -109,29 +116,17 @@ class Table(Widget):
 
     @property
     def data(self) -> ListSource:
-        """The data to display in the table, as a ListSource.
+        """The data to display in the table.
 
-        When specifying data:
+        When setting this property:
 
-        * A ListSource will be used as-is
+        * A :any:`Source` will be used as-is. It must either be a :any:`ListSource`, or
+          a custom class that provides the same methods.
 
         * A value of None is turned into an empty ListSource.
 
-        * A list or tuple of values will be converted into a ListSource. Each item in
-          the list will be converted into a Row object.
-
-          * If the item in the list is a dictionary, the keys of the dictionary will
-            become the attributes of the Row.
-
-          * All other values will be converted into a Row with attributes matching the
-            ``accessors`` provided at time of construction (or the ``accessors`` that
-            were derived from the ``headings`` that were provided at construction).
-
-            If the value is a string, or any other a non-iterable object, the Row will
-            have a single attribute matching the first accessor.
-
-            If the value is a list, tuple, or any other iterable, values in the iterable
-            will be mapped in order to the accessors.
+        * Otherwise, the value must be an iterable, which is copied into a new
+          ListSource. Items are converted as shown :ref:`here <listsource-item>`.
         """
         return self._data
 
@@ -163,14 +158,13 @@ class Table(Widget):
         If multiple selection is *not* enabled, returns the selected Row object, or
         :any:`None` if no row is currently selected.
         """
-        try:
-            selection = self._impl.get_selection()
+        selection = self._impl.get_selection()
+        if isinstance(selection, list):
             return [self.data[index] for index in selection]
-        except TypeError:
-            try:
-                return self.data[selection]
-            except TypeError:
-                return None
+        elif selection is None:
+            return None
+        else:
+            return self.data[selection]
 
     def scroll_to_top(self):
         """Scroll the view so that the top of the list (first row) is visible."""
@@ -227,7 +221,7 @@ class Table(Widget):
 
     def insert_column(
         self,
-        index: int,
+        index: int | str,
         heading: str | None,
         accessor: str | None = None,
     ):
@@ -285,13 +279,15 @@ class Table(Widget):
         self._impl.remove_column(index)
 
     @property
-    def headings(self) -> list[str]:
-        """The column headings for the table"""
+    def headings(self) -> list[str] | None:
+        """The column headings for the table, or None if there are no headings
+        (read-only)
+        """
         return self._headings
 
     @property
     def accessors(self) -> list[str]:
-        """The accessors used to populate the table"""
+        """The accessors used to populate the table (read-only)"""
         return self._accessors
 
     @property
