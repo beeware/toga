@@ -11,13 +11,13 @@ class Node(Row):
         """Create a new Node object.
 
         The keyword arguments specified in the constructor will be converted into
-        attributes on the new Row object.
+        attributes on the new object.
 
         When initially constructed, the Node will be a leaf node (i.e., no children,
         and marked unable to have children).
 
-        When any public attributes of the Row are modified (i.e., any attribute whose
-        name doesn't start with ``_``), the source to which the row belongs will be
+        When any public attributes of the node are modified (i.e., any attribute whose
+        name doesn't start with ``_``), the source to which the node belongs will be
         notified.
         """
         super().__init__(**data)
@@ -41,7 +41,7 @@ class Node(Row):
     # Methods required by the TreeSource interface
     ######################################################################
 
-    def __getitem__(self, index: int) -> None:
+    def __getitem__(self, index: int) -> Node:
         if self._children is None:
             raise ValueError(f"{self} is a leaf node")
 
@@ -76,7 +76,7 @@ class Node(Row):
         return self._children is not None
 
     ######################################################################
-    # Utility methods to make TreeSource more dict-like
+    # Utility methods to make TreeSource more list-like
     ######################################################################
 
     def __iter__(self):
@@ -149,7 +149,7 @@ class Node(Row):
         use :meth:`~toga.sources.Node.find`.
 
         :param child: The node to find in the children of this node.
-        :returns: The index of the row in the children of this node.
+        :returns: The index of the node in the children of this node.
         :raises ValueError: If the node cannot be found in children of this node.
         """
         if self._children is None:
@@ -168,7 +168,7 @@ class Node(Row):
         :meth:`~toga.sources.Node.index`.
 
         :param data: The data to search for. Only the values specified in data will be
-            used as matching criteria; if the row contains additional data attributes,
+            used as matching criteria; if the node contains additional data attributes,
             they won't be considered as part of the match.
         :param start: The instance from which to start the search. Defaults to ``None``,
             indicating that the first match should be returned.
@@ -260,7 +260,7 @@ class TreeSource(Source):
             return [self._create_node(parent=parent, data=value)]
 
     ######################################################################
-    # Utility methods to make TreeSources more dict-like
+    # Utility methods to make TreeSources more list-like
     ######################################################################
 
     def __setitem__(self, index: int, data: Any):
@@ -277,10 +277,6 @@ class TreeSource(Source):
         root = self._create_node(parent=None, data=data)
         self._roots[index] = root
         self.notify("change", item=root)
-
-    def __iter__(self):
-        """Obtain an iterator over all root Nodes in the data source."""
-        return iter(self._roots)
 
     def clear(self):
         """Clear all data from the data source."""
@@ -368,7 +364,7 @@ class TreeSource(Source):
         :meth:`~toga.sources.TreeSource.index`.
 
         :param data: The data to search for. Only the values specified in data will be
-            used as matching criteria; if the row contains additional data attributes,
+            used as matching criteria; if the node contains additional data attributes,
             they won't be considered as part of the match.
         :param start: The instance from which to start the search. Defaults to ``None``,
             indicating that the first match should be returned.

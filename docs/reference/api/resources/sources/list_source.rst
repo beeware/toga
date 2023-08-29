@@ -44,38 +44,19 @@ the operations you'd expect on a normal Python list, such as ``insert``, ``remov
 
 .. _listsource-item:
 
-When initially constructing the ListSource, or when assigning a specific item in
-the ListSource, each item can be:
+The ListSource manages a list of :class:`~toga.sources.Row` objects. Each Row has all
+the attributes described by the source's ``accessors``. A Row object will be constructed
+for each item that is added to the ListSource, and each item can be:
 
-* A dictionary, with the accessors mapping to the keys in the dictionary
+* A dictionary, with the accessors mapping to the keys in the dictionary.
 
-* Any iterable object (except for a string), with the accessors being mapped
-  onto the items in the iterable in order of definition
-
-* Any other object, which will be mapped onto the *first* accessor.
-
-The ListSource manages a list of :class:`~toga.sources.Row` objects. Each Row object in
-the ListSource is an object that has all the attributes described by the ``accessors``.
-A Row object will be constructed by the source for each item that is added or removed
-from the ListSource.
-
-When creating a single Row for a ListSource (e.g., when inserting a new
-item), the data for the Row can be specified as:
-
-* A dictionary, with the accessors mapping to the keys in the dictionary
-
-* Any iterable object (except for a string), with the accessors being mapped
-  onto the items in the iterable in order of definition. This requires that the
-  iterable object have *at least* as many values as the number of accessors
-  defined on the TreeSource.
+* Any other iterable object (except for a string), with the accessors being mapped
+  onto the items in the iterable in order of definition.
 
 * Any other object, which will be mapped onto the *first* accessor.
 
-When initially constructing the ListSource, the data must be an iterable of values, each
-of which can be converted into a Row.
-
-Although Toga provides ListSource, you are not required to use it directly. A ListSource
-will be transparently constructed for you if you provide a Python ``list`` object to a
+Although Toga provides ListSource, you are not required to create one directly. A
+ListSource will be transparently constructed if you provide an iterable object to a
 GUI widget that displays list-like data (i.e., :class:`toga.Table`,
 :class:`toga.Selection`, or :class:`toga.DetailedList`).
 
@@ -89,7 +70,7 @@ source <custom-data-sources>` class. Such a class must:
 
 * Provide the same methods as :any:`ListSource`
 
-* Return items whose attributes match the accessors for any widget using the source
+* Return items whose attributes match the accessors expected by the widget
 
 * Generate a ``change`` notification when any of those attributes change
 
