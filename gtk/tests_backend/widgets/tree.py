@@ -10,7 +10,7 @@ from .base import SimpleProbe
 class TreeProbe(SimpleProbe):
     native_class = Gtk.ScrolledWindow
     supports_keyboard_shortcuts = False
-    supports_cell_widgets = False
+    supports_widgets = False
 
     def __init__(self, widget):
         super().__init__(widget)

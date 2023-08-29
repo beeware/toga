@@ -14,7 +14,7 @@ NSEventModifierFlagCommand = 1 << 20
 class TreeProbe(SimpleProbe):
     native_class = NSScrollView
     supports_keyboard_shortcuts = True
-    supports_cell_widgets = True
+    supports_widgets = True
 
     def __init__(self, widget):
         super().__init__(widget)

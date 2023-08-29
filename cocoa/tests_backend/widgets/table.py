@@ -13,7 +13,7 @@ class TableProbe(SimpleProbe):
     native_class = NSScrollView
     supports_icons = True
     supports_keyboard_shortcuts = True
-    supports_cell_widgets = True
+    supports_widgets = True
 
     def __init__(self, widget):
         super().__init__(widget)

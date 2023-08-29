@@ -670,7 +670,7 @@ async def test_cell_widget(widget, probe):
             ],
         ),
     ]
-    if probe.supports_cell_widgets:
+    if probe.supports_widgets:
         warning_check = contextlib.nullcontext()
     else:
         warning_check = pytest.warns(
@@ -689,7 +689,7 @@ async def test_cell_widget(widget, probe):
     probe.assert_cell_content((0, 1), 0, "A1")
     probe.assert_cell_content((0, 1), 1, "B1")
 
-    if probe.supports_cell_widgets:
+    if probe.supports_widgets:
         probe.assert_cell_content((0, 0), 2, widget=widget.data[0][0].c)
         probe.assert_cell_content((0, 1), 2, widget=widget.data[0][1].c)
     else:
