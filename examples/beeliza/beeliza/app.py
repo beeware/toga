@@ -15,9 +15,11 @@ class BeelizaApp(toga.App):
         self.chat.data.append(
             # User's avatar is from http://avatars.adorable.io
             # using user@beeware.org
-            icon=toga.Icon("resources/user.png"),
-            title="You",
-            subtitle=input_text,
+            dict(
+                icon=toga.Icon("resources/user.png"),
+                title="You",
+                subtitle=input_text,
+            )
         )
         # Clear the current input, ready for more input.
         self.text_input.value = ""
@@ -31,9 +33,11 @@ class BeelizaApp(toga.App):
         response = self.partner.respond(input_text)
         # Display the response
         self.chat.data.append(
-            icon=toga.Icon("resources/brutus.png"),
-            title="Brutus",
-            subtitle=response,
+            dict(
+                icon=toga.Icon("resources/brutus.png"),
+                title="Brutus",
+                subtitle=response,
+            )
         )
 
         # Scroll so the most recent entry is visible.

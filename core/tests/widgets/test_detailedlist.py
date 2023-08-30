@@ -28,7 +28,7 @@ class TestDetailedList(TestCase):
             data=test_list, accessors=["icon", "label1", "label2"]
         )
         for i in range(len(self.dlist.data)):
-            self.assertEqual(self.dlist.data[i]._attrs, listsource_list[i]._attrs)
+            self.assertEqual(self.dlist.data[i].icon, listsource_list[i].icon)
 
         test_tuple = ("ttest1", "ttest2", " ")
         self.dlist.data = test_tuple
@@ -36,11 +36,11 @@ class TestDetailedList(TestCase):
             data=test_tuple, accessors=["icon", "label1", "label2"]
         )
         for i in range(len(self.dlist.data)):
-            self.assertEqual(self.dlist.data[i]._attrs, listsource_tuple[i]._attrs)
+            self.assertEqual(self.dlist.data[i].icon, listsource_tuple[i].icon)
 
         self.dlist.data = listsource_list
         for i in range(len(self.dlist.data)):
-            self.assertEqual(self.dlist.data[i]._attrs, listsource_list[i]._attrs)
+            self.assertEqual(self.dlist.data[i].icon, listsource_list[i].icon)
 
     def test_scroll_to_row(self):
         test_list = ["test1", "test2", "test3", " "]
