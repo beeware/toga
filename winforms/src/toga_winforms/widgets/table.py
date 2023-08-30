@@ -1,5 +1,9 @@
+from warnings import warn
+
 import System.Windows.Forms as WinForms
 from travertino.size import at_least
+
+import toga
 
 from .base import Widget
 
@@ -114,6 +118,9 @@ class Table(Widget):
         # workaround is in https://stackoverflow.com/a/46128593.
         def strip_icon(item, attr):
             val = getattr(item, attr, None)
+            if isinstance(val, toga.Widget):
+                warn("This backend does not support the use of widgets in cells")
+                val = None
             if isinstance(val, tuple):
                 val = val[1]
             if val is None:

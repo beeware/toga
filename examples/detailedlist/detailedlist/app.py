@@ -32,10 +32,10 @@ class ExampleDetailedListApp(toga.App):
         item = {"icon": None, "subtitle": "The Hive", "title": "Bzzz!"}
         if self.dl.selection:
             index = self.dl.data.index(self.dl.selection) + 1
-            self.dl.data.insert(index, **item)
+            self.dl.data.insert(index, item)
         else:
             index = len(self.dl.data)
-            self.dl.data.append(**item)
+            self.dl.data.append(item)
         self.dl.scroll_to_row(index)
 
     def remove_handler(self, widget, **kwargs):

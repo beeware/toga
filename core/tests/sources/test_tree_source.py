@@ -1,676 +1,614 @@
-from unittest import TestCase
 from unittest.mock import Mock
 
-from toga.sources import TreeSource
-from toga.sources.tree_source import Node
+import pytest
+
+from toga.sources import Node, TreeSource
 
 
-class LeafNodeTests(TestCase):
-    def setUp(self):
-        self.source = Mock()
-        self.example = Node(val1="value 1", val2=42)
-        self.example._source = self.source
-
-    def test_initial_state(self):
-        "A node holds values as expected"
-        self.assertEqual(self.example.val1, "value 1")
-        self.assertEqual(self.example.val2, 42)
-        self.assertFalse(self.example.can_have_children())
-        self.assertEqual(len(self.example), 0)
-
-    def test_change_value(self):
-        "If a node value changes, the source is notified"
-        self.example.val1 = "new value"
-
-        self.assertEqual(self.example.val1, "new value")
-        self.source.notify.assert_called_once_with("change", item=self.example)
-
-    def test_iterate_children(self):
-        "Children of a node can be iterated over -- should have no children"
-        result = 0
-
-        for child in self.example:
-            result += child.val2
-
-        self.assertEqual(result, 0)
+@pytest.fixture
+def listener():
+    return Mock()
 
 
-class NodeTests(TestCase):
-    def setUp(self):
-        self.source = Mock()
-
-        def bound_create_node(s):
-            def create_node(value):
-                return Node(source=s, **value)
-
-            return create_node
-
-        self.source._create_node = bound_create_node(self.source)
-
-        self.parent = Node(val1="value 1", val2=42)
-        self.parent._source = self.source
-        self.parent._children = []
-        for datum in [{"val1": "child 1", "val2": 11}, {"val1": "child 2", "val2": 22}]:
-            child = Node(**datum)
-            child.source = self.source
-            self.parent._children.append(child)
-
-    def test_initial_state(self):
-        "A node holds values as expected"
-
-        self.assertEqual(self.parent.val1, "value 1")
-        self.assertEqual(self.parent.val2, 42)
-        self.assertTrue(self.parent.can_have_children())
-        self.assertEqual(len(self.parent), 2)
-
-    def test_change_value(self):
-        "If a node value changes, the source is notified"
-        self.parent.val1 = "new value"
-
-        self.assertEqual(self.parent.val1, "new value")
-        self.source.notify.assert_called_once_with("change", item=self.parent)
-
-    def test_empty_children(self):
-        "A parent with 0 children isn't the same as a parent who *can't* have children"
-        parent = Node(source=self.source, val1="value 1", val2=42)
-        parent._children = []
-
-        self.assertTrue(parent.can_have_children())
-        self.assertEqual(len(parent), 0)
-
-    def test_change_child(self):
-        "Changing a child notifies the source"
-        # Check initial value
-        self.assertEqual(len(self.parent), 2)
-        self.assertEqual(self.parent[1].val1, "child 2")
-        self.assertEqual(self.parent[1].val2, 22)
-
-        # Change the value
-        self.parent[1] = {"val1": "new child", "val2": 33}
-
-        # Check the values after modification
-        self.assertEqual(len(self.parent), 2)
-        self.assertEqual(self.parent[1].val1, "new child")
-        self.assertEqual(self.parent[1].val2, 33)
-
-    def test_insert_child(self):
-        "A new child can be inserted; defers to the source"
-        self.parent.insert(1, dict(val1="inserted 1", val2=33))
-        self.source.insert.assert_called_once_with(
-            self.parent, 1, dict(val1="inserted 1", val2=33)
-        )
-
-    def test_append_child(self):
-        "A new child can be appended; defers to the source"
-        self.parent.append(dict(val1="appended 1", val2=33))
-        self.source.append.assert_called_once_with(
-            self.parent, dict(val1="appended 1", val2=33)
-        )
-
-    def test_remove_child(self):
-        "A child can be removed; defers to the source"
-        child = self.parent[1]
-        self.parent.remove(child)
-        self.source.remove.assert_called_once_with(self.parent, child)
-
-    def test_iterate_children(self):
-        "Children of a node can be iterated over"
-        result = 0
-
-        for child in self.parent:
-            result += child.val2
-
-        self.assertEqual(result, 33)
-
-
-class TreeSourceTests(TestCase):
-    def test_init_with_list_of_tuples(self):
-        "TreeSources can be instantiated from lists of tuples"
-        source = TreeSource(
-            data=[
-                ("first", 111),
-                ("second", 222),
-                ("third", 333),
+@pytest.fixture
+def source(listener):
+    source = TreeSource(
+        data={
+            ("group1", 1): [
+                (
+                    {"val1": "A first", "val2": 110},
+                    None,
+                ),
+                (
+                    {"val1": "A second", "val2": 120},
+                    [],
+                ),
+                (
+                    {"val1": "A third", "val2": 130},
+                    [
+                        ({"val1": "A third-first", "val2": 131}, None),
+                        ({"val1": "A third-second", "val2": 132}, None),
+                    ],
+                ),
             ],
-            accessors=["val1", "val2"],
-        )
-
-        self.assertEqual(len(source), 3)
-
-        self.assertEqual(source[0].val1, "first")
-        self.assertEqual(source[0].val2, 111)
-        self.assertFalse(source[0].can_have_children())
-        self.assertEqual(len(source[0]), 0)
-
-        self.assertEqual(source[1].val1, "second")
-        self.assertEqual(source[1].val2, 222)
-        self.assertFalse(source[1].can_have_children())
-        self.assertEqual(len(source[1]), 0)
-
-        listener = Mock()
-        source.add_listener(listener)
-
-        # Set element 1
-        source[1] = ("new element", 999)
-
-        self.assertEqual(len(source), 3)
-
-        self.assertEqual(source[1].val1, "new element")
-        self.assertEqual(source[1].val2, 999)
-        self.assertFalse(source[1].can_have_children())
-        self.assertEqual(len(source[1]), 0)
-
-        listener.change.assert_called_once_with(item=source[1])
-
-    def test_init_with_list_of_dicts(self):
-        "TreeSource nodes can be instantiated from lists of dicts"
-        source = TreeSource(
-            data=[
-                {"val1": "first", "val2": 111},
-                {"val1": "second", "val2": 222},
-                {"val1": "third", "val2": 333},
+            ("group2", 2): [
+                (
+                    {"val1": "B first", "val2": 210},
+                    None,
+                ),
+                (
+                    {"val1": "B second", "val2": 220},
+                    [],
+                ),
+                (
+                    {"val1": "B third", "val2": 230},
+                    [
+                        ({"val1": "B third-first", "val2": 231}, None),
+                        ({"val1": "B third-second", "val2": 232}, None),
+                    ],
+                ),
             ],
-            accessors=["val1", "val2"],
-        )
+        },
+        accessors=["val1", "val2"],
+    )
 
-        self.assertEqual(len(source), 3)
+    source.add_listener(listener)
+    return source
 
-        self.assertEqual(source[0].val1, "first")
-        self.assertEqual(source[0].val2, 111)
-        self.assertFalse(source[0].can_have_children())
-        self.assertEqual(len(source[0]), 0)
 
-        self.assertEqual(source[1].val1, "second")
-        self.assertEqual(source[1].val2, 222)
-        self.assertFalse(source[1].can_have_children())
-        self.assertEqual(len(source[1]), 0)
+@pytest.mark.parametrize(
+    "value",
+    [
+        None,
+        42,
+        "not a list",
+    ],
+)
+def test_invalid_accessors(value):
+    "Accessors for a list source must be a list of attribute names"
+    with pytest.raises(
+        ValueError,
+        match=r"accessors should be a list of attribute names",
+    ):
+        TreeSource(accessors=value)
 
-        listener = Mock()
-        source.add_listener(listener)
 
-        # Set element 1
-        source[1] = {"val1": "new element", "val2": 999}
+def test_accessors_required():
+    "A list source must specify *some* accessors"
+    with pytest.raises(
+        ValueError,
+        match=r"TreeSource must be provided a list of accessors",
+    ):
+        TreeSource(accessors=[], data=[1, 2, 3])
 
-        self.assertEqual(len(source), 3)
 
-        self.assertEqual(source[1].val1, "new element")
-        self.assertEqual(source[1].val2, 999)
-        self.assertFalse(source[1].can_have_children())
-        self.assertEqual(len(source[1]), 0)
+def test_accessors_copied():
+    "A list source must specify *some* accessors"
+    accessors = ["foo", "bar"]
+    source = TreeSource(accessors)
 
-        listener.change.assert_called_once_with(item=source[1])
+    assert source._accessors == ["foo", "bar"]
 
-    def test_init_with_dict_of_lists(self):
-        "TreeSource nodes can be instantiated from dicts of lists"
-        source = TreeSource(
-            data={
-                ("first", 111): None,
-                ("second", 222): [],
-                ("third", 333): [
-                    ("third.one", 331),
-                    {"val1": "third.two", "val2": 332},
-                ],
-            },
-            accessors=["val1", "val2"],
-        )
+    # The accessors have been copied.
+    accessors.append("whiz")
+    assert source._accessors == ["foo", "bar"]
 
-        self.assertEqual(len(source), 3)
 
-        self.assertEqual(source[0].val1, "first")
-        self.assertEqual(source[0].val2, 111)
-        self.assertFalse(source[0].can_have_children())
-        self.assertEqual(len(source[0]), 0)
+@pytest.mark.parametrize(
+    "data",
+    [
+        {},
+        [],
+    ],
+)
+def test_create_empty(data):
+    """An empty TreeSource can be created"""
+    source = TreeSource(data=data, accessors=["val1", "val2"])
 
-        self.assertEqual(source[1].val1, "second")
-        self.assertEqual(source[1].val2, 222)
-        self.assertTrue(source[1].can_have_children())
-        self.assertEqual(len(source[1]), 0)
+    assert len(source) == 0
 
-        self.assertEqual(source[2].val1, "third")
-        self.assertEqual(source[2].val2, 333)
-        self.assertTrue(source[2].can_have_children())
-        self.assertEqual(len(source[2]), 2)
 
-        self.assertEqual(source[2].val1, "third")
-        self.assertEqual(source[2].val2, 333)
-        self.assertTrue(source[2].can_have_children())
-        self.assertEqual(len(source[2]), 2)
-
-        self.assertEqual(source[2][0].val1, "third.one")
-        self.assertEqual(source[2][0].val2, 331)
-        self.assertFalse(source[2][0].can_have_children())
-        self.assertEqual(len(source[2][0]), 0)
-
-        self.assertEqual(source[2][1].val1, "third.two")
-        self.assertEqual(source[2][1].val2, 332)
-        self.assertFalse(source[2][1].can_have_children())
-        self.assertEqual(len(source[2][1]), 0)
-
-        listener = Mock()
-        source.add_listener(listener)
-
-        # Set element 2
-        source[2] = {"val1": "new element", "val2": 999}
-
-        self.assertEqual(len(source), 3)
-
-        self.assertEqual(source[2].val1, "new element")
-        self.assertEqual(source[2].val2, 999)
-
-        listener.change.assert_called_once_with(item=source[2])
-
-    def test_init_with_dict_of_dicts(self):
-        "TreeSource nodes can be instantiated from dicts of dicts"
-        source = TreeSource(
-            data={
-                ("first", 111): None,
-                ("second", 222): [],
-                ("third", 333): {
-                    ("third.one", 331): None,
-                    ("third.two", 332): [("third.two.sub", 321)],
+@pytest.mark.parametrize(
+    "data, all_accessor_levels",
+    [
+        # Dictionaries all the way down
+        (
+            {
+                "root0": {
+                    "child00": None,
+                    "child01": {},
+                    "child02": {"child020": None, "child021": None},
+                },
+                "root1": {
+                    "child10": None,
+                    "child11": {},
+                    "child12": {"child120": None, "child121": None},
                 },
             },
-            accessors=["val1", "val2"],
-        )
-
-        self.assertEqual(len(source), 3)
-
-        self.assertEqual(source[0].val1, "first")
-        self.assertEqual(source[0].val2, 111)
-        self.assertFalse(source[0].can_have_children())
-        self.assertEqual(len(source[0]), 0)
-
-        self.assertEqual(source[1].val1, "second")
-        self.assertEqual(source[1].val2, 222)
-        self.assertTrue(source[1].can_have_children())
-        self.assertEqual(len(source[1]), 0)
-
-        self.assertEqual(source[2].val1, "third")
-        self.assertEqual(source[2].val2, 333)
-        self.assertTrue(source[2].can_have_children())
-        self.assertEqual(len(source[2]), 2)
-
-        self.assertEqual(source[2].val1, "third")
-        self.assertEqual(source[2].val2, 333)
-        self.assertTrue(source[2].can_have_children())
-        self.assertEqual(len(source[2]), 2)
-
-        self.assertEqual(source[2][0].val1, "third.one")
-        self.assertEqual(source[2][0].val2, 331)
-        self.assertFalse(source[2][0].can_have_children())
-        self.assertEqual(len(source[2][0]), 0)
-
-        self.assertEqual(source[2][1].val1, "third.two")
-        self.assertEqual(source[2][1].val2, 332)
-        self.assertTrue(source[2][1].can_have_children())
-        self.assertEqual(len(source[2][1]), 1)
-
-        self.assertEqual(source[2][1][0].val1, "third.two.sub")
-        self.assertEqual(source[2][1][0].val2, 321)
-        self.assertFalse(source[2][1][0].can_have_children())
-        self.assertEqual(len(source[2][1][0]), 0)
-
-        listener = Mock()
-        source.add_listener(listener)
-
-        # Set element 2
-        source[2] = {"val1": "new element", "val2": 999}
-
-        self.assertEqual(len(source), 3)
-
-        self.assertEqual(source[2].val1, "new element")
-        self.assertEqual(source[2].val2, 999)
-
-        listener.change.assert_called_once_with(item=source[2])
-
-    def test_iter(self):
-        "TreeSource roots can be iterated over"
-        source = TreeSource(
-            data={
-                ("first", 111): None,
-                ("second", 222): [],
-                ("third", 333): [("third.one", 331), ("third.two", 332)],
+            set(),  # Only the first accessor is ever used
+        ),
+        # Dictionaries with tuples as keys
+        (
+            {
+                ("root0", 1): {
+                    ("child00", 11): None,
+                    ("child01", 12): {},
+                    ("child02", 13): {("child020", 131): None, ("child021", 132): None},
+                },
+                ("root1", 2): {
+                    ("child10", 21): None,
+                    ("child11", 22): {},
+                    ("child12", 23): {("child120", 231): None, ("child121", 232): None},
+                },
             },
-            accessors=["val1", "val2"],
-        )
-
-        result = 0
-        for root in source:
-            result += root.val2
-
-        self.assertEqual(result, 666)
-
-    def test_insert_root_args(self):
-        "A new root can be inserted using value args"
-        source = TreeSource(
-            data={
-                ("first", 111): None,
-                ("second", 222): [],
-                ("third", 333): [("third.one", 331), ("third.two", 332)],
+            {0, 1, 2},  # All accessors at all levels
+        ),
+        # List of dictionary data, list children
+        (
+            [
+                (
+                    {"val1": "root0", "val2": 1},
+                    [
+                        ({"val1": "child00", "val2": 11}, None),
+                        ({"val1": "child01", "val2": 12}, []),
+                        (
+                            {"val1": "child02", "val2": 13},
+                            [
+                                ({"val1": "child020", "val2": 131}, None),
+                                ({"val1": "child021", "val2": 132}, None),
+                            ],
+                        ),
+                    ],
+                ),
+                (
+                    {"val1": "root1", "val2": 2},
+                    [
+                        ({"val1": "child10", "val2": 21}, None),
+                        ({"val1": "child11", "val2": 22}, []),
+                        (
+                            {"val1": "child12", "val2": 23},
+                            [
+                                ({"val1": "child120", "val2": 231}, None),
+                                ({"val1": "child121", "val2": 232}, None),
+                            ],
+                        ),
+                    ],
+                ),
+            ],
+            {0, 1, 2},  # all accessors at all levels.
+        ),
+        # List of tuple data, list children
+        (
+            [
+                (
+                    ("root0", 1),
+                    [
+                        (("child00", 11), None),
+                        (("child01", 12), []),
+                        (
+                            ("child02", 13),
+                            [
+                                (("child020", 131), None),
+                                (("child021", 132), None),
+                            ],
+                        ),
+                    ],
+                ),
+                (
+                    ("root1", 2),
+                    [
+                        (("child10", 21), None),
+                        (("child11", 22), []),
+                        (
+                            ("child12", 23),
+                            [
+                                (("child120", 231), None),
+                                (("child121", 232), None),
+                            ],
+                        ),
+                    ],
+                ),
+            ],
+            {0, 1, 2},  # all accessors at all levels.
+        ),
+        # Dictionary of lists of dictionary data, list children
+        (
+            {
+                "root0": [
+                    ({"val1": "child00", "val2": 11}, None),
+                    ({"val1": "child01", "val2": 12}, []),
+                    (
+                        {"val1": "child02", "val2": 13},
+                        [
+                            ({"val1": "child020", "val2": 131}, None),
+                            ({"val1": "child021", "val2": 132}, None),
+                        ],
+                    ),
+                ],
+                "root1": [
+                    ({"val1": "child10", "val2": 21}, None),
+                    ({"val1": "child11", "val2": 22}, []),
+                    (
+                        {"val1": "child12", "val2": 23},
+                        [
+                            ({"val1": "child120", "val2": 231}, None),
+                            ({"val1": "child121", "val2": 232}, None),
+                        ],
+                    ),
+                ],
             },
-            accessors=["val1", "val2"],
-        )
-
-        self.assertEqual(len(source), 3)
-
-        listener = Mock()
-        source.add_listener(listener)
-
-        # Insert the new element
-        node = source.insert(None, 1, ("new element", 999))
-
-        self.assertEqual(len(source), 4)
-        self.assertEqual(source[1], node)
-        self.assertEqual(node.val1, "new element")
-        self.assertEqual(node.val2, 999)
-
-        listener.insert.assert_called_once_with(parent=None, index=1, item=node)
-
-    def test_insert_root_kwargs(self):
-        "A new root can be inserted using kwargs"
-        source = TreeSource(
-            data={
-                ("first", 111): None,
-                ("second", 222): [],
-                ("third", 333): [("third.one", 331), ("third.two", 332)],
-            },
-            accessors=["val1", "val2"],
-        )
-
-        self.assertEqual(len(source), 3)
-
-        listener = Mock()
-        source.add_listener(listener)
-
-        # Insert the new element
-        node = source.insert(None, 1, dict(val1="new element", val2=999))
-
-        self.assertEqual(len(source), 4)
-        self.assertEqual(source[1], node)
-        self.assertEqual(node.val1, "new element")
-        self.assertEqual(node.val2, 999)
-
-        listener.insert.assert_called_once_with(parent=None, index=1, item=node)
-
-    def test_insert_child_args(self):
-        "A new child can be inserted using value args"
-        source = TreeSource(
-            data={
-                ("first", 111): None,
-                ("second", 222): [],
-                ("third", 333): [("third.one", 331), ("third.two", 332)],
-            },
-            accessors=["val1", "val2"],
-        )
-
-        self.assertEqual(len(source), 3)
-        self.assertEqual(len(source[2]), 2)
-
-        listener = Mock()
-        source.add_listener(listener)
-
-        # Insert the new element
-        node = source.insert(source[2], 1, dict(val1="new element", val2=999))
-
-        self.assertEqual(len(source), 3)
-        self.assertEqual(len(source[2]), 3)
-        self.assertEqual(source[2][1], node)
-        self.assertEqual(node.val1, "new element")
-        self.assertEqual(node.val2, 999)
-
-        listener.insert.assert_called_once_with(parent=source[2], index=1, item=node)
-
-    def test_insert_child_kwargs(self):
-        "A new child can be inserted using kwargs"
-        source = TreeSource(
-            data={
-                ("first", 111): None,
-                ("second", 222): [],
-                ("third", 333): [("third.one", 331), ("third.two", 332)],
-            },
-            accessors=["val1", "val2"],
-        )
-
-        self.assertEqual(len(source), 3)
-        self.assertEqual(len(source[2]), 2)
-
-        listener = Mock()
-        source.add_listener(listener)
-
-        # Insert the new element
-        node = source.insert(source[2], 1, dict(val1="new element", val2=999))
-
-        self.assertEqual(len(source), 3)
-        self.assertEqual(len(source[2]), 3)
-        self.assertEqual(source[2][1], node)
-        self.assertEqual(node.val1, "new element")
-        self.assertEqual(node.val2, 999)
-
-        listener.insert.assert_called_once_with(parent=source[2], index=1, item=node)
-
-    def test_insert_first_child(self):
-        "If a node previously didn't allow children, inserting changes this"
-        source = TreeSource(
-            data={
-                ("first", 111): None,
-                ("second", 222): [],
-                ("third", 333): [("third.one", 331), ("third.two", 332)],
-            },
-            accessors=["val1", "val2"],
-        )
-
-        self.assertEqual(len(source), 3)
-        self.assertFalse(source[0].can_have_children())
-        self.assertEqual(len(source[0]), 0)
-
-        listener = Mock()
-        source.add_listener(listener)
-
-        # Insert the new element
-        node = source.insert(source[0], 0, dict(val1="new element", val2=999))
-
-        self.assertEqual(len(source), 3)
-        self.assertTrue(source[0].can_have_children())
-        self.assertEqual(len(source[0]), 1)
-        self.assertEqual(source[0][0], node)
-        self.assertEqual(node.val1, "new element")
-        self.assertEqual(node.val2, 999)
-
-        listener.insert.assert_called_once_with(parent=source[0], index=0, item=node)
-
-    def test_append_root(self):
-        "A new root can be appended"
-        source = TreeSource(
-            data={
-                ("first", 111): None,
-                ("second", 222): [],
-                ("third", 333): [("third.one", 331), ("third.two", 332)],
-            },
-            accessors=["val1", "val2"],
-        )
-
-        self.assertEqual(len(source), 3)
-
-        listener = Mock()
-        source.add_listener(listener)
-
-        # Insert the new element
-        node = source.append(None, dict(val1="new element", val2=999))
-
-        self.assertEqual(len(source), 4)
-        self.assertEqual(source[3], node)
-        self.assertEqual(node.val1, "new element")
-        self.assertEqual(node.val2, 999)
-
-        listener.insert.assert_called_once_with(parent=None, index=3, item=node)
-
-    def test_append_child(self):
-        "A new child can be appended"
-        source = TreeSource(
-            data={
-                ("first", 111): None,
-                ("second", 222): [],
-                ("third", 333): [("third.one", 331), ("third.two", 332)],
-            },
-            accessors=["val1", "val2"],
-        )
-
-        self.assertEqual(len(source), 3)
-        self.assertEqual(len(source[2]), 2)
-
-        listener = Mock()
-        source.add_listener(listener)
-
-        # Insert the new element
-        node = source.append(source[2], dict(val1="new element", val2=999))
-
-        self.assertEqual(len(source), 3)
-        self.assertEqual(len(source[2]), 3)
-        self.assertEqual(source[2][2], node)
-        self.assertEqual(node.val1, "new element")
-        self.assertEqual(node.val2, 999)
-
-        listener.insert.assert_called_once_with(parent=source[2], index=2, item=node)
-
-    def test_remove_root(self):
-        "A root can be removed"
-        source = TreeSource(
-            data={
-                ("first", 111): None,
-                ("second", 222): [],
-                ("third", 333): [("third.one", 331), ("third.two", 332)],
-            },
-            accessors=["val1", "val2"],
-        )
-
-        self.assertEqual(len(source), 3)
-        self.assertEqual(len(source[2]), 2)
-
-        listener = Mock()
-        source.add_listener(listener)
-
-        # Remove the root element
-        node = source.remove(source[1])
-
-        self.assertEqual(len(source), 2)
-        self.assertEqual(len(source[1]), 2)
-
-        listener.remove.assert_called_once_with(item=node, index=1, parent=None)
-
-    def test_remove_child(self):
-        "A child can be removed"
-        source = TreeSource(
-            data={
-                ("first", 111): None,
-                ("second", 222): [],
-                ("third", 333): [("third.one", 331), ("third.two", 332)],
-            },
-            accessors=["val1", "val2"],
-        )
-
-        self.assertEqual(len(source), 3)
-        self.assertEqual(len(source[2]), 2)
-
-        listener = Mock()
-        source.add_listener(listener)
-
-        # Remove "third.two"
-        node = source.remove(source[2][1])
-
-        self.assertEqual(len(source), 3)
-        self.assertEqual(len(source[2]), 1)
-
-        listener.remove.assert_called_once_with(item=node, index=1, parent=source[2])
-
-        # Remove "third.one"
-        node = source.remove(source[2][0])
-
-        self.assertEqual(len(source), 3)
-        self.assertEqual(len(source[2]), 0)
-
-        listener.remove.assert_any_call(item=node, index=0, parent=source[2])
-
-    def test___setitem___for_root(self):
-        "A root can be set (changed) with __setitem__"
-        source = TreeSource(
-            data={
-                ("first", 111): None,
-                ("second", 222): [],
-                ("third", 333): [("third.one", 331), ("third.two", 332)],
-            },
-            accessors=["val1", "val2"],
-        )
-
-        self.assertEqual(len(source), 3)
-        self.assertEqual(len(source[2]), 2)
-
-        listener = Mock()
-        source.add_listener(listener)
-
-        # Re-assign the first root
-        source[0] = ("first_new", -111)
-
-        self.assertEqual(len(source), 3)
-        self.assertEqual(source[0].val1, "first_new")
-        self.assertEqual(source[0].val2, -111)
-
-        listener.change.assert_called_once_with(item=source[0])
-
-    def test___setitem___for_child(self):
-        "A child can be set (changed) with __setitem__"
-        source = TreeSource(
-            data={
-                ("first", 111): None,
-                ("second", 222): [],
-                ("third", 333): [("third.one", 331), ("third.two", 332)],
-            },
-            accessors=["val1", "val2"],
-        )
-
-        self.assertEqual(len(source), 3)
-        self.assertEqual(len(source[2]), 2)
-
-        listener = Mock()
-        source.add_listener(listener)
-
-        # Re-assign the first root
-        source[2][0] = ("third.one_new", -331)
-
-        self.assertEqual(len(source), 3)
-        self.assertEqual(source[2][0].val1, "third.one_new")
-        self.assertEqual(source[2][0].val2, -331)
-
-        listener.change.assert_called_once_with(item=source[2][0])
-
-    def test_get_node_index(self):
-        "You can get the index of any node within a tree source, relative to its parent"
-
-        source = TreeSource(
-            data={
-                ("first", 111): None,
-                ("second", 222): [],
-                ("third", 333): [("third.one", 331), ("third.two", 332)],
-            },
-            accessors=["val1", "val2"],
-        )
-
-        for i, node in enumerate(source):
-            self.assertEqual(i, source.index(node))
-
-        # Test indices on deep nodes, too
-        third = source[2]
-        for i, node in enumerate(third):
-            self.assertEqual(i, source.index(node))
-
-        # look-alike nodes are not equal, so index lookup should fail
-        with self.assertRaises(ValueError):
-            lookalike_node = Node(val1="second", val2=222)
-            source.index(lookalike_node)
-
-        # Describe how edge cases are handled
-
-        with self.assertRaises(AttributeError):
-            source.index(None)
-
-        with self.assertRaises(ValueError):
-            source.index(Node())
+            {1, 2},  # Accessors everywhere except the root.
+        ),
+        # List of dictionary data, dictionary children at level 1
+        (
+            [
+                (
+                    {"val1": "root0", "val2": 1},
+                    {
+                        "child00": None,
+                        "child01": {},
+                        "child02": [
+                            ({"val1": "child020", "val2": 131}, None),
+                            ({"val1": "child021", "val2": 132}, None),
+                        ],
+                    },
+                ),
+                (
+                    {"val1": "root1", "val2": 2},
+                    {
+                        "child10": None,
+                        "child11": {},
+                        "child12": [
+                            ({"val1": "child120", "val2": 231}, None),
+                            ({"val1": "child121", "val2": 232}, None),
+                        ],
+                    },
+                ),
+            ],
+            {0, 2},  # all accessors at first and last level
+        ),
+    ],
+)
+def test_create(data, all_accessor_levels):
+    """A tree source can be created from data in different formats"""
+    source = TreeSource(data=data, accessors=["val1", "val2"])
+
+    # Source has 2 roots
+    assert len(source) == 2
+
+    # Root0 has 2 children
+    assert source[0].val1 == "root0"
+    assert len(source[0]) == 3
+    assert source[0].can_have_children()
+
+    # Root1 has 2 children
+    assert source[1].val1 == "root1"
+    assert len(source[1]) == 3
+    assert source[1].can_have_children()
+
+    # If level 0 has all accessors, check them as well.
+    if 0 in all_accessor_levels:
+        assert source[0].val2 == 1
+        assert source[1].val2 == 2
+
+    # Children of root 0
+    assert source[0][0].val1 == "child00"
+    assert len(source[0][0]) == 0
+    assert not source[0][0].can_have_children()
+
+    assert source[0][1].val1 == "child01"
+    assert len(source[0][1]) == 0
+    assert source[0][1].can_have_children()
+
+    assert source[0][2].val1 == "child02"
+    assert len(source[0][2]) == 2
+    assert source[0][2].can_have_children()
+
+    # Children of root 1
+    assert source[1][0].val1 == "child10"
+    assert len(source[1][0]) == 0
+    assert not source[1][0].can_have_children()
+
+    assert source[1][1].val1 == "child11"
+    assert len(source[1][1]) == 0
+    assert source[1][1].can_have_children()
+
+    assert source[1][2].val1 == "child12"
+    assert len(source[1][2]) == 2
+    assert source[1][2].can_have_children()
+
+    # If level 1 has all accessors, check them as well.
+    if 1 in all_accessor_levels:
+        assert source[0][0].val2 == 11
+        assert source[0][1].val2 == 12
+        assert source[0][2].val2 == 13
+
+        assert source[1][0].val2 == 21
+        assert source[1][1].val2 == 22
+        assert source[1][2].val2 == 23
+
+    # Children of root 0, child 2
+    assert source[0][2][0].val1 == "child020"
+    assert len(source[0][2][0]) == 0
+    assert not source[0][2][0].can_have_children()
+
+    assert source[0][2][1].val1 == "child021"
+    assert len(source[0][2][1]) == 0
+    assert not source[0][2][1].can_have_children()
+
+    # Children of root 1, child 2
+    assert source[1][2][0].val1 == "child120"
+    assert len(source[1][2][0]) == 0
+    assert not source[1][2][0].can_have_children()
+
+    assert source[1][2][1].val1 == "child121"
+    assert len(source[1][2][1]) == 0
+    assert not source[1][2][1].can_have_children()
+
+    # If level 2 has all accessors, check them as well.
+    if 2 in all_accessor_levels:
+        assert source[0][2][0].val2 == 131
+        assert source[0][2][1].val2 == 132
+
+        assert source[1][2][0].val2 == 231
+        assert source[1][2][1].val2 == 232
+
+
+def test_source_single_object():
+    """A single object can be passed as root data"""
+    source = TreeSource(accessors=["val1", "val2"], data="A string")
+
+    assert len(source) == 1
+    assert source[0].val1 == "A string"
+
+
+def test_single_object_child():
+    """A single object can be passed as child data"""
+    source = TreeSource(
+        accessors=["val1", "val2"],
+        data={("root1", 1): "A string"},
+    )
+
+    assert len(source) == 1
+    assert source[0].val1 == "root1"
+    assert source[0].val2 == 1
+    assert source[0].can_have_children()
+
+    assert len(source[0]) == 1
+    assert len(source[0][0]) == 0
+    assert source[0][0].val1 == "A string"
+    assert not source[0][0].can_have_children()
+
+
+def test_modify_roots(source, listener):
+    """The roots of a source can be modified."""
+    root = source[1]
+    assert root.val1 == "group2"
+
+    # delete the root
+    del source[1]
+
+    # Removal notification was sent
+    listener.remove.assert_called_once_with(parent=None, index=1, item=root)
+    listener.reset_mock()
+
+    # Root is no longer associated with the source
+    assert root._parent is None
+    assert root._source is None
+
+    # Root count has dropped
+    assert len(source) == 1
+
+    old_root_0 = source[0]
+
+    # A child can be modified by index
+    source[0] = {"val1": "new"}
+
+    # Root 0 has changed instance
+    assert old_root_0 is not source[0]
+
+    # Old child 0 is no longer associated with this node
+    assert old_root_0._source is None
+    assert old_root_0._parent is None
+
+    # Change notification was sent, the change is associated with the new item
+    listener.change.assert_called_once_with(item=source[0])
+
+    # Source's root count hasn't changed
+    assert len(source) == 1
+
+
+def test_iter_root(source):
+    """The roots of a source can be iterated over"""
+    assert "|".join(root.val1 for root in source) == "group1|group2"
+
+
+def test_clear(source, listener):
+    """A TreeSource can be cleared"""
+    source.clear()
+
+    assert len(source) == 0
+
+    # Clear notification was sent
+    listener.clear.assert_called_once_with()
+
+
+@pytest.mark.parametrize(
+    "index, actual_index",
+    [
+        (1, 1),  # Positive, in range
+        (10, 2),  # Positive, past positive limit
+        (-1, 1),  # Negative, in range
+        (-10, 0),  # Negative, past negative limit
+    ],
+)
+def test_insert(source, listener, index, actual_index):
+    """A new root node can be inserted"""
+    new_child = source.insert(index, {"val1": "new"})
+
+    # Source has one more root.
+    assert len(source) == 3
+    assert source[actual_index] == new_child
+
+    # Root data is as expected
+    assert source[actual_index].val1 == "new"
+
+    # Insert notification was sent, the change is associated with the new item
+    listener.insert.assert_called_once_with(
+        parent=None,
+        index=actual_index,
+        item=new_child,
+    )
+
+
+def test_insert_with_children(source, listener):
+    """A new root node can be inserted with children"""
+    new_child = source.insert(
+        1,
+        {"val1": "new"},
+        children=[
+            ({"val1": "new child 1"}, None),
+            ({"val1": "new child 2"}, None),
+        ],
+    )
+
+    # Source has one more root.
+    assert len(source) == 3
+    assert source[1] == new_child
+
+    # Root data is as expected
+    assert source[1].val1 == "new"
+    assert len(source[1]) == 2
+
+    # Children are also present
+    assert source[1][0].val1 == "new child 1"
+    assert not source[1][0].can_have_children()
+    assert source[1][1].val1 == "new child 2"
+    assert not source[1][1].can_have_children()
+
+    # Insert notification was sent, the change is associated with the new item
+    listener.insert.assert_called_once_with(
+        parent=None,
+        index=1,
+        item=new_child,
+    )
+
+
+def test_append(source, listener):
+    """A new root node can be appended"""
+    new_child = source.append({"val1": "new"})
+
+    # Source has one more root.
+    assert len(source) == 3
+    assert source[2] == new_child
+
+    # Root data is as expected
+    assert source[2].val1 == "new"
+
+    # Insert notification was sent, the change is associated with the new item
+    listener.insert.assert_called_once_with(
+        parent=None,
+        index=2,
+        item=new_child,
+    )
+
+
+def test_append_with_children(source, listener):
+    """A new root node can be inserted with children"""
+    new_child = source.append(
+        {"val1": "new"},
+        children=[
+            ({"val1": "new child 1"}, None),
+            ({"val1": "new child 2"}, None),
+        ],
+    )
+
+    # Source has one more root.
+    assert len(source) == 3
+    assert source[2] == new_child
+
+    # Root data is as expected
+    assert source[2].val1 == "new"
+    assert len(source[2]) == 2
+
+    # Children are also present
+    assert source[2][0].val1 == "new child 1"
+    assert not source[2][0].can_have_children()
+    assert source[2][1].val1 == "new child 2"
+    assert not source[2][1].can_have_children()
+
+    # Insert notification was sent, the change is associated with the new item
+    listener.insert.assert_called_once_with(
+        parent=None,
+        index=2,
+        item=new_child,
+    )
+
+
+def test_remove_root(source, listener):
+    """A root node can be removed"""
+    root = source[1]
+    source.remove(root)
+
+    # One less item in the source
+    assert len(source) == 1
+
+    # The root is no longer associated with the source
+    assert root._source is None
+
+    # Removal notification was sent
+    listener.remove.assert_called_once_with(parent=None, index=1, item=root)
+
+
+def test_remove_child(source, listener):
+    """A child node can be removed from a source"""
+    node = source[1][1]
+    source.remove(node)
+
+    # The source still has 2 roots
+    assert len(source) == 2
+    # ... but there's 1 less child
+    assert len(source[1]) == 2
+
+    # The child is no longer associated with the source,
+    # and the child isn't associated with it's parent.
+    assert node._source is None
+    assert node._parent is None
+
+    # Removal notification was sent
+    listener.remove.assert_called_once_with(parent=source[1], index=1, item=node)
+
+
+def test_remove_non_root(source, listener):
+    """If a node isn't associated with this source, remove raises an error"""
+    other = Node(val="other")
+
+    with pytest.raises(
+        ValueError,
+        match=r"<Leaf Node .*> is not managed by this data source",
+    ):
+        source.remove(other)
+
+
+def test_index(source):
+    """A root can be found in a TreeSource"""
+    root = source[1]
+    assert source.index(root) == 1
+
+
+def test_find(source):
+    """A node can be found by value"""
+    root1 = source[1]
+
+    # Append some additional roots
+    root2 = source.append({"val1": "group1", "val2": 333})
+    root3 = source.append({"val1": "group2", "val2": 444})
+
+    # Find the child by a partial match of values.
+    assert source.find({"val1": "group2"}) == root1
+
+    # Find the child by a partial match of values, starting at the first match
+    assert source.find({"val1": "group2"}, start=root1) == root3
+
+    # Find the child by a full match of values, starting at the first match
+    assert source.find({"val1": "group1", "val2": 333}) == root2

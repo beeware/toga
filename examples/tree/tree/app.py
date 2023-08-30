@@ -42,13 +42,19 @@ bee_movies = [
         "rating": "5.4",
         "genre": "Comedy, Musical",
     },
-    {"year": 1947, "title": "Keeper of the Bees", "rating": "6.3", "genre": "Drama"},
+    {
+        "year": 1947,
+        "title": "Keeper of the Bees",
+        "rating": "6.3",
+        "genre": "Drama",
+    },
 ]
 
 
 class ExampleTreeApp(toga.App):
     # Table callback functions
-    def on_select_handler(self, widget, node):
+    def on_select_handler(self, widget):
+        node = widget.selection
         if node is not None and node.title:
             self.label.text = f"You selected node: {node.title}"
             self.btn_remove.enabled = True
@@ -74,7 +80,7 @@ class ExampleTreeApp(toga.App):
         else:
             root = self.decade_1940s
 
-        self.tree.data.append(root, **item)
+        root.append(item)
 
     def remove_handler(self, widget, **kwargs):
         selection = self.tree.selection
@@ -96,25 +102,25 @@ class ExampleTreeApp(toga.App):
         )
 
         self.decade_1940s = self.tree.data.append(
-            None, year="1940s", title="", rating="", genre=""
+            dict(year="1940s", title="", rating="", genre="")
         )
         self.decade_1950s = self.tree.data.append(
-            None, year="1950s", title="", rating="", genre=""
+            dict(year="1950s", title="", rating="", genre="")
         )
         self.decade_1960s = self.tree.data.append(
-            None, year="1960s", title="", rating="", genre=""
+            dict(year="1960s", title="", rating="", genre="")
         )
         self.decade_1970s = self.tree.data.append(
-            None, year="1970s", title="", rating="", genre=""
+            dict(year="1970s", title="", rating="", genre="")
         )
         self.decade_1980s = self.tree.data.append(
-            None, year="1980s", title="", rating="", genre=""
+            dict(year="1980s", title="", rating="", genre="")
         )
         self.decade_1990s = self.tree.data.append(
-            None, year="1990s", title="", rating="", genre=""
+            dict(year="1990s", title="", rating="", genre="")
         )
         self.decade_2000s = self.tree.data.append(
-            None, year="2000s", title="", rating="", genre=""
+            dict(year="2000s", title="", rating="", genre="")
         )
 
         # Buttons

@@ -1,3 +1,4 @@
+import contextlib
 from unittest.mock import Mock
 
 import pytest
@@ -14,7 +15,14 @@ from .properties import (  # noqa: F401
     test_enable_noop,
     test_flex_widget_size,
     test_focus_noop,
+    test_font,
 )
+
+
+@pytest.fixture
+def verify_font_sizes():
+    # We can't verify font sizes inside the Table
+    return False, False
 
 
 @pytest.fixture
@@ -454,7 +462,7 @@ async def test_cell_icon(widget, probe):
 
 async def test_cell_widget(widget, probe):
     "A widget can be used as a cell value"
-    widget.data = [
+    data = [
         {
             # Normal text,
             "a": f"A{i}",
@@ -466,12 +474,30 @@ async def test_cell_widget(widget, probe):
         }
         for i in range(0, 50)
     ]
-    await probe.redraw("Table has data with widgets")
+    if probe.supports_widgets:
+        warning_check = contextlib.nullcontext()
+    else:
+        warning_check = pytest.warns(
+            match=".* does not support the use of widgets in cells"
+        )
 
-    probe.assert_cell_content(0, 0, "A0")
-    probe.assert_cell_content(0, 1, "B0")
-    probe.assert_cell_content(0, 2, widget=widget.data[0].c)
+    with warning_check:
+        # Winforms creates rows on demand, so the warning may not appear until we try to
+        # access the row.
+        widget.data = data
+        await probe.redraw("Table has data with widgets")
+
+        probe.assert_cell_content(0, 0, "A0")
+        probe.assert_cell_content(0, 1, "B0")
 
     probe.assert_cell_content(1, 0, "A1")
     probe.assert_cell_content(1, 1, "B1")
-    probe.assert_cell_content(1, 2, widget=widget.data[1].c)
+
+    if probe.supports_widgets:
+        probe.assert_cell_content(0, 2, widget=widget.data[0].c)
+        probe.assert_cell_content(1, 2, widget=widget.data[1].c)
+    else:
+        # If the platform doesn't support cell widgets, the test should still *run* -
+        # we just won't have widgets in the cells.
+        probe.assert_cell_content(0, 2, "MISSING!")
+        probe.assert_cell_content(1, 2, "MISSING!")

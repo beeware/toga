@@ -1,7 +1,8 @@
 Table
 =====
 
-A widget for displaying columns of tabular data.
+A widget for displaying columns of tabular data. Scroll bars will be provided if
+necessary.
 
 .. figure:: /reference/images/Table.png
    :width: 300px
@@ -17,13 +18,11 @@ A widget for displaying columns of tabular data.
 Usage
 -----
 
-A Table will automatically provide scroll bars when necessary.
+The simplest way to create a Table is to pass a list of tuples containing the items to
+display, and a list of column headings. The values in the tuples will then be mapped
+sequentially to the columns.
 
-The simplest instantiation of a Table is to use a list of lists (or list of tuples),
-containing the items to display in the table. When creating the table, you can also
-specify the headings to use on the table; those headings will be converted into
-accessors on the Row data objects created for the table data. In this example,
-we will display a table of 2 columns, with 3 initial rows of data:
+In this example, we will display a table of 2 columns, with 3 initial rows of data:
 
 .. code-block:: python
 
@@ -57,7 +56,7 @@ to control the display order of columns independent of the storage of that data.
         data=[
             {"name": "Arthur Dent", "age": 42, "planet": "Earth"},
             {"name", "Ford Prefect", "age": 37, "planet": "Betelgeuse Five"},
-            {"name": "Tricia McMillan", "age": 38, "plaent": "Earth"},
+            {"name": "Tricia McMillan", "age": 38, "planet": "Earth"},
         ]
     )
 
@@ -65,11 +64,11 @@ to control the display order of columns independent of the storage of that data.
     row = table.data[0]
     print(f"{row.name}, who is age {row.age}, is from {row.planet}")
 
-The attribute names used on each row of data (called "accessors") are created
-automatically from the headings that you provide. If you want to use different
-attributes, you can override them by providing an ``accessors`` argument. In this
-example, the table will use "Name" as the visible header, but internally, the attribute
-"character" will be used:
+.. include:: table-accessors.rst
+
+If you want to use different attributes, you can override them by providing an
+``accessors`` argument. In this example, the table will use "Name" as the visible
+header, but internally, the attribute "character" will be used:
 
 .. code-block:: python
 
@@ -81,7 +80,7 @@ example, the table will use "Name" as the visible header, but internally, the at
         data=[
             {"character": "Arthur Dent", "age": 42, "planet": "Earth"},
             {"character", "Ford Prefect", "age": 37, "planet": "Betelgeuse Five"},
-            {"name": "Tricia McMillan", "age": 38, "plaent": "Earth"},
+            {"name": "Tricia McMillan", "age": 38, "planet": "Earth"},
         ]
     )
 
@@ -89,29 +88,17 @@ example, the table will use "Name" as the visible header, but internally, the at
     row = table.data[0]
     print(f"{row.character}, who is age {row.age}, is from {row.planet}")
 
-The value provided by an accessor is interpreted as follows:
-
-* If the value is a :any:`Widget`, that widget will be displayed in the cell. Note that
-  this is currently a beta API: see the Notes section.
-
-* If the value is a :any:`tuple`, it must have two elements: an icon, and a second
-  element which will be interpreted as one of the options below.
-
-* If the value is ``None``, then ``missing_value`` will be displayed.
-
-* Any other value will be converted into a string. If an icon has not already been
-  provided in a tuple, it can also be provided using the value's ``icon`` attribute.
-
-Icon values must either be an :any:`Icon`, which will be displayed on the left of the
-cell, or ``None`` to display no icon.
+.. include:: table-values.rst
 
 Notes
 -----
 
-* Widgets in tables is a beta API which may change in future, and is currently only
+* Widgets in cells is a beta API which may change in future, and is currently only
   supported on macOS.
 
-* Icons in tables are not currently supported on Android or Winforms.
+* macOS does not support changing the font used to render table content.
+
+* Icons in cells are not currently supported on Android or Winforms.
 
 * The Android implementation is `not scalable
   <https://github.com/beeware/toga/issues/1392>`_ beyond about 1,000 cells.
