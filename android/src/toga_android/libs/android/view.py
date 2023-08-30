@@ -2,6 +2,7 @@ from rubicon.java import JavaClass, JavaInterface
 
 Gravity = JavaClass("android/view/Gravity")
 OnClickListener = JavaInterface("android/view/View$OnClickListener")
+OnLongClickListener = JavaInterface("android/view/View$OnLongClickListener")
 Menu = JavaClass("android/view/Menu")
 MenuItem = JavaClass("android/view/MenuItem")
 MotionEvent = JavaClass("android/view/MotionEvent")

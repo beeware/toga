@@ -1,0 +1,2 @@
+Headings are no longer mandatory for Tree widgets.
+If headings are not provided, the widget will not display its header bar.

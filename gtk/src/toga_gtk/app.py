@@ -33,7 +33,7 @@ class MainWindow(Window):
         super().create()
         self.native.set_role("MainWindow")
         icon_impl = toga_App.app.icon._impl
-        self.native.set_icon(icon_impl.native_72.get_pixbuf())
+        self.native.set_icon(icon_impl.native_72)
 
     def gtk_delete_event(self, *args):
         # Return value of the GTK on_close handler indicates
