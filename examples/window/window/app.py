@@ -1,8 +1,9 @@
 import asyncio
 from datetime import datetime
+from functools import partial
 
 import toga
-from toga.constants import COLUMN
+from toga.constants import COLUMN, RIGHT
 from toga.style import Pack
 
 
@@ -16,6 +17,12 @@ class WindowDemoApp(toga.App):
 
     def do_right(self, widget, **kwargs):
         self.main_window.position = (2000, 500)
+
+    def do_left_current_screen(self, widget, **kwargs):
+        self.main_window.screen_position = (0, 100)
+
+    def do_right_current_screen(self, widget, **kwargs):
+        self.main_window.screen_position = (1080, 100)
 
     def do_small(self, widget, **kwargs):
         self.main_window.size = (400, 300)
@@ -68,6 +75,20 @@ class WindowDemoApp(toga.App):
         )
         self.app.windows += no_close_handler_window
         no_close_handler_window.show()
+
+    def do_screen_change(self, screen, widget, **kwargs):
+        self.current_window.screen = screen
+
+    async def do_save_screenshot(self, screen, window, **kwargs):
+        screenshot = screen.as_image()
+        path = await self.main_window.save_file_dialog(
+            "Save screenshot",
+            suggested_filename=f"Screenshot_{screen.name}.png",
+            file_types=["png"],
+        )
+        if path is None:
+            return
+        screenshot.save(path)
 
     async def do_current_window_cycling(self, widget, **kwargs):
         for window in self.windows:
@@ -140,6 +161,16 @@ class WindowDemoApp(toga.App):
         )
         btn_do_left = toga.Button("Go left", on_press=self.do_left, style=btn_style)
         btn_do_right = toga.Button("Go right", on_press=self.do_right, style=btn_style)
+        btn_do_left_current_screen = toga.Button(
+            "Go left on current screen",
+            on_press=self.do_left_current_screen,
+            style=btn_style,
+        )
+        btn_do_right_current_screen = toga.Button(
+            "Go right on current screen",
+            on_press=self.do_right_current_screen,
+            style=btn_style,
+        )
         btn_do_small = toga.Button(
             "Become small", on_press=self.do_small, style=btn_style
         )
@@ -172,12 +203,49 @@ class WindowDemoApp(toga.App):
         btn_hide = toga.Button("Hide", on_press=self.do_hide, style=btn_style)
         btn_beep = toga.Button("Beep", on_press=self.do_beep, style=btn_style)
 
+        screen_change_btns_box = toga.Box(
+            children=[
+                toga.Label(
+                    text="Move current window to:",
+                    style=Pack(width=200, text_align=RIGHT),
+                )
+            ],
+            style=Pack(padding=5),
+        )
+        for index, screen in sorted(enumerate(self.screens), key=lambda s: s[1].origin):
+            screen_change_btns_box.add(
+                toga.Button(
+                    text=f"{index}: {screen.name}",
+                    on_press=partial(self.do_screen_change, screen),
+                    style=Pack(padding_left=5),
+                )
+            )
+        screen_as_image_btns_box = toga.Box(
+            children=[
+                toga.Label(
+                    text="Take screenshot of screen:",
+                    style=Pack(width=200, text_align=RIGHT),
+                )
+            ],
+            style=Pack(padding=5),
+        )
+        for index, screen in sorted(enumerate(self.screens), key=lambda s: s[1].origin):
+            screen_as_image_btns_box.add(
+                toga.Button(
+                    text=f"{index}: {screen.name}",
+                    on_press=partial(self.do_save_screenshot, screen),
+                    style=Pack(padding_left=5),
+                )
+            )
+
         self.inner_box = toga.Box(
             children=[
                 self.label,
                 btn_do_origin,
                 btn_do_left,
                 btn_do_right,
+                btn_do_left_current_screen,
+                btn_do_right_current_screen,
                 btn_do_small,
                 btn_do_large,
                 btn_do_full_screen,
@@ -189,6 +257,8 @@ class WindowDemoApp(toga.App):
                 btn_change_content,
                 btn_hide,
                 btn_beep,
+                screen_change_btns_box,
+                screen_as_image_btns_box,
             ],
             style=Pack(direction=COLUMN),
         )
