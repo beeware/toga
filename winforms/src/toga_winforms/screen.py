@@ -1,12 +1,13 @@
-from toga.screen import Screen as ScreenInterface
-from toga_winforms.libs import (
+from System.Drawing import (
     Bitmap,
     Graphics,
-    ImageFormat,
-    MemoryStream,
+    Imaging,
     Point,
     Size,
 )
+from System.IO import MemoryStream
+
+from toga.screen import Screen as ScreenInterface
 
 
 class Screen:
@@ -39,5 +40,5 @@ class Screen:
         copy_size = Size(*self.get_size())
         graphics.CopyFromScreen(source_point, destination_point, copy_size)
         stream = MemoryStream()
-        bitmap.Save(stream, ImageFormat.Png)
+        bitmap.Save(stream, Imaging.ImageFormat.Png)
         return stream.ToArray()
