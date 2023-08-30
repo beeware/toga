@@ -27,25 +27,21 @@ class DetailedList(Widget):
     ):
         """Create a new DetailedList widget.
 
-        Inherits from :class:`toga.Widget`.
-
         :param id: The ID for the widget.
         :param style: A style object. If no style is provided, a default style will be
             applied to the widget.
-        :param data: The data to be displayed on the table. Can be a list of values or a
-            ListSource. See the definition of the :attr:`data` property for details on
-            how data can be specified and used.
-        :param accessors: The accessors to use to retrieve the data for each item. A tuple,
-            specifying the accessors for (title, subtitle, icon).
-        :param missing_value: The data to use subtitle to use when the data source doesn't provide a
-            title for a data item.
+        :param data: Initial :any:`data` to be displayed in the list.
+        :param accessors: The accessors to use to retrieve the data for each item, in
+            the form (title, subtitle, icon).
+        :param missing_value: The text that will be shown when a row doesn't provide a
+            value for its title or subtitle.
         :param on_select: Initial :any:`on_select` handler.
         :param primary_action: The name for the primary action.
         :param on_primary_action: Initial :any:`on_primary_action` handler.
-        :param secondary_action: The name for the primary action.
+        :param secondary_action: The name for the secondary action.
         :param on_secondary_action: Initial :any:`on_secondary_action` handler.
         :param on_refresh: Initial :any:`on_refresh` handler.
-        :param on_delete: **DEPRECATED**; use :attr:`on_activate`.
+        :param on_delete: **DEPRECATED**; use ``on_primary_action``.
         """
         super().__init__(id=id, style=style)
 
@@ -84,7 +80,7 @@ class DetailedList(Widget):
     @property
     def enabled(self) -> bool:
         """Is the widget currently enabled? i.e., can the user interact with the widget?
-        DetailList widgets cannot be disabled; this property will always return True; any
+        DetailedList widgets cannot be disabled; this property will always return True; any
         attempt to modify it will be ignored.
         """
         return True
@@ -99,29 +95,17 @@ class DetailedList(Widget):
 
     @property
     def data(self) -> ListSource:
-        """The data to display in the DetailedList, as a ListSource.
+        """The data to display in the table.
 
-        When specifying data:
+        When setting this property:
 
-        * A ListSource will be used as-is
+        * A :any:`Source` will be used as-is. It must either be a :any:`ListSource`, or
+          a custom class that provides the same methods.
 
         * A value of None is turned into an empty ListSource.
 
-        * A list or tuple of values will be converted into a ListSource. Each item in
-          the list will be converted into a Row object.
-
-          * If the item in the list is a dictionary, the keys of the dictionary will
-            become the attributes of the Row.
-
-          * All other values will be converted into a Row with attributes matching the
-            ``accessors`` provided at time of construction (with the default accessors
-            of ``("title", "subtitle", "icon")``.
-
-            If the value is a string, or any other a non-iterable object, the Row will
-            have a single attribute matching the title's accessor.
-
-            If the value is a list, tuple, or any other iterable, values in the iterable
-            will be mapped in order to the accessors.
+        * Otherwise, the value must be an iterable, which is copied into a new
+          ListSource. Items are converted as shown :ref:`here <listsource-item>`.
         """
         return self._data
 
@@ -159,13 +143,13 @@ class DetailedList(Widget):
 
     @property
     def accessors(self) -> list[str]:
-        """The accessors used to populate the table"""
+        """The accessors used to populate the list (read-only)"""
         return self._accessors
 
     @property
     def missing_value(self) -> str:
-        """The value that will be used when a data row doesn't provide an value for an
-        attribute.
+        """The text that will be shown when a row doesn't provide a value for its
+        title or subtitle.
         """
         return self._missing_value
 
@@ -185,9 +169,8 @@ class DetailedList(Widget):
         """The handler to invoke when the user performs the primary action on a row of
         the DetailedList.
 
-        The primary action is "swipe left" on UIs that support swipe interactions;
-        platforms that don't use swipe interactions may manifest this action in other
-        ways (e.g, a context menu).
+        The primary action is "swipe left" on platforms that use swipe interactions;
+        other platforms may manifest this action in other ways (e.g, a context menu).
 
         If no ``on_primary_action`` handler is provided, the primary action will be
         disabled in the UI.
@@ -204,9 +187,8 @@ class DetailedList(Widget):
         """The handler to invoke when the user performs the secondary action on a row of
         the DetailedList.
 
-        The secondary action is "swipe right" on UIs that support swipe interactions;
-        platforms that don't use swipe interactions may manifest this action in other
-        ways (e.g, a context menu).
+        The secondary action is "swipe right" on platforms that use swipe interactions;
+        other platforms may manifest this action in other ways (e.g, a context menu).
 
         If no ``on_secondary_action`` handler is provided, the secondary action will be
         disabled in the UI.
@@ -221,7 +203,7 @@ class DetailedList(Widget):
     @property
     def on_refresh(self) -> callable:
         """The callback function to invoke when the user performs a refresh action
-        (usually "pull down to refresh") on the DetailedList.
+        (usually "pull down") on the DetailedList.
 
         If no ``on_refresh`` handler is provided, the refresh UI action will be
         disabled.
@@ -250,7 +232,7 @@ class DetailedList(Widget):
 
     @property
     def on_delete(self):
-        """**DEPRECATED**: Use ``on_primary_action``"""
+        """**DEPRECATED**; Use :any:`on_primary_action`"""
         warnings.warn(
             "DetailedList.on_delete has been renamed DetailedList.on_primary_action.",
             DeprecationWarning,

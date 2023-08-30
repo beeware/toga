@@ -129,15 +129,15 @@ if __name__ == "__main__":
     except ValueError:
         run_slow = False
 
-    # If `--coverage` is in the arguments, run the test suite in slow mode
+    # If `--coverage` is in the arguments, display a coverage report
     try:
         args.remove("--coverage")
         report_coverage = True
     except ValueError:
         report_coverage = False
 
-    # If there are no other specified arguments, default to running the whole suite.
-    # Only enforce coverage if we're running the full suite.
+    # If there are no other specified arguments, default to running the whole suite,
+    # and reporting coverage.
     if len(args) == 0:
         args = ["tests"]
         report_coverage = True

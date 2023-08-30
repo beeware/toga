@@ -1,8 +1,8 @@
 DetailedList
 ============
 
-An ordered list of content where each item has an icon, a main heading, and a line of
-supplementary text.
+An ordered list where each item has an icon, a title, and a line of text. Scroll bars
+will be provided if necessary.
 
 .. figure:: /reference/images/DetailedList.png
    :width: 300px
@@ -18,12 +18,7 @@ supplementary text.
 Usage
 -----
 
-A DetailedList uses a :class:`~toga.sources.ListSource` to manage the data being
-displayed. options. If ``data`` is not specified as a ListSource, it will be converted
-into a ListSource at runtime. Each item in the data source is required to provide 3
-values - an icon, a title, and a subtitle.
-
-The simplest instantiation of a DetailedList is to use a list of dictionaries, with
+The simplest way to create a DetailedList is to pass a list of dictionaries, with
 each dictionary containing three keys: ``icon``, ``title``, and ``subtitle``:
 
 .. code-block:: python
@@ -50,9 +45,9 @@ each dictionary containing three keys: ``icon``, ``title``, and ``subtitle``:
         ]
     )
 
-If you want to customize the data keys used to provide data, you can do this by
+If you want to customize the keys used in the dictionary, you can do this by
 providing an ``accessors`` argument to the DetailedList when it is constructed.
-``accessors`` is a tuple, containing the attribute that will be used to provide the
+``accessors`` is a tuple containing the attributes that will be used to provide the
 icon, title, and subtitle, respectively:
 
 .. code-block:: python
@@ -80,17 +75,17 @@ icon, title, and subtitle, respectively:
         ]
     )
 
-If the value provided by the accessor for title or subtitle is :any:`None`, or the
-accessor isn't defined, the value of ``missing_value`` provided when constructing the
-DetailedList will be used to populate the title and subtitle. Any other value will be
+If the value provided by the accessor for ``title`` or ``subtitle`` is :any:`None`, or
+the accessor isn't defined, the ``missing_value`` will be used. Any other value will be
 converted into a string.
 
-If the value provided by the accessor for icon is :any:`None`, or the accessor isn't
-defined, a no icon will be displayed, but space for the icon will remain the the layout.
+If the value provided by the accessor for ``icon`` is :any:`None`, or the accessor isn't
+defined, then no icon will be displayed, but space for the icon will remain in the
+layout.
 
 Items in a DetailedList can respond to a primary and secondary action. On platforms that
-support swipe interactions, the primary action will be associated with "swipe left"; the
-secondary action will be associated with "swipe right". However, a platform may
+use swipe interactions, the primary action will be associated with "swipe left", and the
+secondary action will be associated with "swipe right". Other platforms may
 implement the primary and secondary actions using a different UI interaction (e.g., a
 right-click context menu). The primary and secondary actions will only be enabled in
 the DetailedList UI if a handler has been provided.
@@ -103,11 +98,9 @@ deletion as part of the UI interaction. It is the responsibility of the applicat
 implement any data deletion behavior as part of the ``on_primary_action`` handler.
 
 The DetailedList as a whole can also respond to a refresh UI action. This is usually
-implemented as a "pull down to refresh" action, such as you might see on a social media
-timeline. If a DetailedList widget provides an ``on_refresh`` handler, the DetailedList
-will respond to the refresh UI action, and the ``on_refresh`` handler will be invoked.
-If no ``on_refresh`` handler is provided, the DetailedList will behave as a static list,
-and will *not* respond to the refresh UI action.
+implemented as a "pull down" action, such as you might see on a social media timeline.
+This action will only be enabled in the UI if an ``on_refresh`` handler has been
+provided.
 
 Notes
 -----
