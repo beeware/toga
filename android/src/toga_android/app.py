@@ -4,6 +4,7 @@ from rubicon.java import android_events
 
 import toga
 from android.media import RingtoneManager
+from android.os import Build
 from toga.command import Group
 
 from .libs.activity import IPythonApp, MainActivity
@@ -36,9 +37,17 @@ class TogaApp(IPythonApp):
 
     def onResume(self):
         print("Toga app: onResume")
+        if Build.VERSION.SDK_INT < Build.VERSION_CODES.Q:
+            self._impl.interface.on_gain_focus(self._impl.interface)
+            for window in self._impl.interface.windows:
+                window.on_gain_focus(self._impl.interface)
 
     def onPause(self):
         print("Toga app: onPause")
+        if Build.VERSION.SDK_INT < Build.VERSION_CODES.Q:
+            self._impl.interface.on_lose_focus(self._impl.interface)
+            for window in self._impl.interface.windows:
+                window.on_lose_focus(self._impl.interface)
 
     def onStop(self):
         print("Toga app: onStop")
@@ -49,9 +58,9 @@ class TogaApp(IPythonApp):
     def onRestart(self):
         print("Toga app: onRestart")
 
-    def onWindowFocusChanged(self, hasFocus):
-        print("Toga app: onWindowFocusChanged")
-        if hasFocus:
+    def onTopResumedActivityChanged(self, isTopResumedActivity):
+        print("Toga app: onTopResumedActivityChanged")
+        if isTopResumedActivity:
             self._impl.interface.on_gain_focus(self._impl.interface)
             for window in self._impl.interface.windows:
                 window.on_gain_focus(self._impl.interface)

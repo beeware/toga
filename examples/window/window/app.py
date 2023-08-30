@@ -124,15 +124,19 @@ class WindowDemoApp(toga.App):
 
     def on_app_gain_focus(self, widget, **kwargs):
         self.app_focus_label.text = "App is in focus"
+        print("App is in focus")
 
     def on_app_lose_focus(self, widget, **kwargs):
         self.app_focus_label.text = "App is not in focus"
+        print("App is not in focus")
 
     def on_window_gain_focus(self, widget, **kwargs):
         self.window_focus_label.text = "MainWindow is in focus"
+        print("MainWindow is in focus")
 
     def on_window_lose_focus(self, widget, **kwargs):
         self.window_focus_label.text = "MainWindow is not in focus"
+        print("MainWindow is not in focus")
 
     def startup(self):
         # Track in-app closes
