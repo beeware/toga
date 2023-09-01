@@ -7,19 +7,30 @@ from toga.style import Pack
 # Include some non-string objects to make sure conversion works correctly.
 headings = ["Title", "Year", "Rating", "Genre"]
 bee_movies = [
-    ("The Secret Life of Bees", 2008, 7.3, "Drama"),
-    ("Bee Movie", 2007, 6.1, "Animation, Adventure"),
-    ("Bees", 1998, 6.3, "Horror"),
-    ("The Girl Who Swallowed Bees", 2007, 7.5),  # Missing a genre
-    ("Birds Do It, Bees Do It", 1974, 7.3, "Documentary"),
-    ("Bees: A Life for the Queen", 1998, 8.0, "TV Movie"),
-    ("Bees in Paradise", 1944, 5.4, None),  # None genre
-    ("Keeper of the Bees", 1947, 6.3, "Drama"),
+    ["The Secret Life of Bees", 2008, 7.3, "Drama"],
+    ["Bee Movie", 2007, 6.1, "Animation, Adventure"],
+    ["Bees", 1998, 6.3, "Horror"],
+    ["The Girl Who Swallowed Bees", 2007, 7.5],  # Missing a genre
+    ["Birds Do It, Bees Do It", 1974, 7.3, "Documentary"],
+    ["Bees: A Life for the Queen", 1998, 8.0, "TV Movie"],
+    ["Bees in Paradise", 1944, 5.4, None],  # None genre
+    ["Keeper of the Bees", 1947, 6.3, "Drama"],
 ]
 
 
 class ExampleTableApp(toga.App):
     lbl_fontsize = None
+
+    def add_icons(self):
+        for i, row in enumerate(bee_movies):
+            row[0] = (
+                toga.Icon.TOGA_ICON if (i % 2 == 0) else None,
+                row[0],
+            )
+            row[2] = (
+                toga.Icon("icons/" + ("green" if (row[2] >= 7) else "red")),
+                row[2],
+            )
 
     # Table callback functions
     def on_select_handler1(self, widget, **kwargs):
@@ -86,6 +97,7 @@ class ExampleTableApp(toga.App):
         self.table1.scroll_to_bottom()
 
     def startup(self):
+        self.add_icons()
         self.main_window = toga.MainWindow(title=self.name)
 
         # Label to show which row is currently selected.

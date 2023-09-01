@@ -79,9 +79,9 @@ If the value provided by the accessor for ``title`` or ``subtitle`` is :any:`Non
 the accessor isn't defined, the ``missing_value`` will be used. Any other value will be
 converted into a string.
 
-If the value provided by the accessor for ``icon`` is :any:`None`, or the accessor isn't
-defined, then no icon will be displayed, but space for the icon will remain in the
-layout.
+The accessor for ``icon`` should return an :any:`Icon`. If it returns ``None``, or the
+accessor isn't defined, then no icon will be displayed, but space for the icon will
+remain in the layout.
 
 Items in a DetailedList can respond to a primary and secondary action. On platforms that
 use swipe interactions, the primary action will be associated with "swipe left", and the

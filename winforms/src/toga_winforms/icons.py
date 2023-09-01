@@ -13,9 +13,9 @@ class Icon:
         try:
             if path.suffix == ".ico":
                 self.native = WinIcon(str(path))
+                self.bitmap = Bitmap.FromHicon(self.native.Handle)
             else:
-                icon_bitmap = Bitmap(str(path))
-                icon_handle = icon_bitmap.GetHicon()
-                self.native = WinIcon.FromHandle(icon_handle)
+                self.bitmap = Bitmap(str(path))
+                self.native = WinIcon.FromHandle(self.bitmap.GetHicon())
         except ArgumentException:
             raise ValueError(f"Unable to load icon from {path}")

@@ -35,6 +35,7 @@ class Table(Widget):
         self.native.DoubleBuffered = True
         self.native.VirtualMode = True
         self.native.Columns.AddRange(dataColumn)
+        self.native.SmallImageList = WinForms.ImageList()
 
         self.native.ItemSelectionChanged += self.winforms_item_selection_changed
         self.native.RetrieveVirtualItem += self.winforms_retrieve_virtual_item
@@ -60,9 +61,7 @@ class Table(Widget):
         ):
             e.Item = self._cache[e.ItemIndex - self._first_item]
         else:
-            e.Item = WinForms.ListViewItem(
-                self.row_data(self.interface.data[e.ItemIndex])
-            )
+            e.Item = self._new_item(e.ItemIndex)
 
     def winforms_cache_virtual_items(self, sender, e):
         if (
@@ -81,11 +80,7 @@ class Table(Widget):
 
         # Fill the cache with the appropriate ListViewItems.
         for i in range(new_length):
-            self._cache.append(
-                WinForms.ListViewItem(
-                    self.row_data(self.interface.data[i + self._first_item])
-                )
-            )
+            self._cache.append(self._new_item(i + self._first_item))
 
     def winforms_item_selection_changed(self, sender, e):
         self.interface.on_select(None)
@@ -113,10 +108,24 @@ class Table(Widget):
     def change_source(self, source):
         self.update_data()
 
-    def row_data(self, item):
-        # TODO: ListView only has built-in support for one icon per row. One possible
-        # workaround is in https://stackoverflow.com/a/46128593.
-        def strip_icon(item, attr):
+    def _new_item(self, index):
+        item = self.interface.data[index]
+
+        def icon(attr):
+            val = getattr(item, attr, None)
+            icon = None
+            if isinstance(val, tuple):
+                if val[0] is not None:
+                    icon = val[0]
+            else:
+                try:
+                    icon = val.icon
+                except AttributeError:
+                    pass
+
+            return None if icon is None else icon._impl
+
+        def text(attr):
             val = getattr(item, attr, None)
             if isinstance(val, toga.Widget):
                 warn("This backend does not support the use of widgets in cells")
@@ -127,7 +136,26 @@ class Table(Widget):
                 val = self.interface.missing_value
             return str(val)
 
-        return [strip_icon(item, attr) for attr in self.interface._accessors]
+        lvi = WinForms.ListViewItem(
+            [text(attr) for attr in self.interface.accessors],
+        )
+
+        # TODO: ListView only has built-in support for one icon per row. One possible
+        # workaround is in https://stackoverflow.com/a/46128593.
+        icon = icon(self.interface.accessors[0])
+        if icon is not None:
+            lvi.ImageIndex = self._image_index(icon)
+
+        return lvi
+
+    def _image_index(self, icon):
+        images = self.native.SmallImageList.Images
+        key = str(icon.path)
+        index = images.IndexOfKey(key)
+        if index == -1:
+            index = images.Count
+            images.Add(key, icon.bitmap)
+        return index
 
     def update_data(self):
         self.native.VirtualListSize = len(self.interface.data)
