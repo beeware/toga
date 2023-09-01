@@ -11,6 +11,23 @@ from .base import Widget
 class Table(Widget):
     _background_supports_alpha = False
 
+    # The following methods are overridden in DetailedList.
+    @property
+    def _headings(self):
+        return self.interface.headings
+
+    @property
+    def _accessors(self):
+        return self.interface.accessors
+
+    @property
+    def _multiple_select(self):
+        return self.interface.multiple_select
+
+    @property
+    def _data(self):
+        return self.interface.data
+
     def create(self):
         self.native = WinForms.ListView()
         self.native.View = WinForms.View.Details
@@ -18,7 +35,7 @@ class Table(Widget):
         self._first_item = 0
         self._pending_resize = True
 
-        headings = self.interface.headings
+        headings = self._headings
         self.native.HeaderStyle = (
             getattr(WinForms.ColumnHeaderStyle, "None")
             if headings is None
@@ -26,12 +43,12 @@ class Table(Widget):
         )
 
         dataColumn = []
-        for i, accessor in enumerate(self.interface.accessors):
+        for i, accessor in enumerate(self._accessors):
             heading = None if headings is None else headings[i]
             dataColumn.append(self._create_column(heading, accessor))
 
         self.native.FullRowSelect = True
-        self.native.MultiSelect = self.interface.multiple_select
+        self.native.MultiSelect = self._multiple_select
         self.native.DoubleBuffered = True
         self.native.VirtualMode = True
         self.native.Columns.AddRange(dataColumn)
@@ -88,7 +105,12 @@ class Table(Widget):
     def winforms_double_click(self, sender, e):
         hit_test = self.native.HitTest(e.X, e.Y)
         item = hit_test.Item
-        self.interface.on_activate(None, row=self.interface.data[item.Index])
+        if item is not None:
+            self.interface.on_activate(None, row=self._data[item.Index])
+        else:  # pragma: no cover
+            # Double clicking outside of an item apparently doesn't raise the event, but
+            # that isn't guaranteed by the documentation.
+            pass
 
     def _create_column(self, heading, accessor):
         col = WinForms.ColumnHeader()
@@ -109,7 +131,7 @@ class Table(Widget):
         self.update_data()
 
     def _new_item(self, index):
-        item = self.interface.data[index]
+        item = self._data[index]
 
         def icon(attr):
             val = getattr(item, attr, None)
@@ -137,12 +159,12 @@ class Table(Widget):
             return str(val)
 
         lvi = WinForms.ListViewItem(
-            [text(attr) for attr in self.interface.accessors],
+            [text(attr) for attr in self._accessors],
         )
 
         # TODO: ListView only has built-in support for one icon per row. One possible
         # workaround is in https://stackoverflow.com/a/46128593.
-        icon = icon(self.interface.accessors[0])
+        icon = icon(self._accessors[0])
         if icon is not None:
             lvi.ImageIndex = self._image_index(icon)
 
@@ -158,7 +180,7 @@ class Table(Widget):
         return index
 
     def update_data(self):
-        self.native.VirtualListSize = len(self.interface.data)
+        self.native.VirtualListSize = len(self._data)
         self._cache = []
 
     def insert(self, index, item):
@@ -175,7 +197,7 @@ class Table(Widget):
 
     def get_selection(self):
         selected_indices = list(self.native.SelectedIndices)
-        if self.interface.multiple_select:
+        if self._multiple_select:
             return selected_indices
         elif len(selected_indices) == 0:
             return None

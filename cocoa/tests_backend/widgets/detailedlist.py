@@ -38,6 +38,8 @@ core_graphics.CGEventSetIntegerValueField.restype = None
 
 class DetailedListProbe(SimpleProbe):
     native_class = NSScrollView
+    supports_actions = True
+    supports_refresh = True
 
     def __init__(self, widget):
         super().__init__(widget)

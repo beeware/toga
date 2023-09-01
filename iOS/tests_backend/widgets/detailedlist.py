@@ -15,6 +15,8 @@ from .base import SimpleProbe, UIControlEventValueChanged
 
 class DetailedListProbe(SimpleProbe):
     native_class = UITableView
+    supports_actions = True
+    supports_refresh = True
 
     def __init__(self, widget):
         super().__init__(widget)

@@ -127,7 +127,7 @@ async def test_scroll(widget, probe):
     assert probe.max_scroll_position > 600
 
     # max_scroll_position is not perfectly accurate on Winforms.
-    assert probe.scroll_position == pytest.approx(probe.max_scroll_position, abs=5)
+    assert probe.scroll_position == pytest.approx(probe.max_scroll_position, abs=10)
 
     # Scroll to the middle of the table
     widget.scroll_to_row(50)

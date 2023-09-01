@@ -10,7 +10,7 @@ bee_movies = [
     ["The Secret Life of Bees", 2008, 7.3, "Drama"],
     ["Bee Movie", 2007, 6.1, "Animation, Adventure"],
     ["Bees", 1998, 6.3, "Horror"],
-    ["The Girl Who Swallowed Bees", 2007, 7.5],  # Missing a genre
+    ["The Girl Who Swallowed Bees", 2007, 7.5],  # Missing genre
     ["Birds Do It, Bees Do It", 1974, 7.3, "Documentary"],
     ["Bees: A Life for the Queen", 1998, 8.0, "TV Movie"],
     ["Bees in Paradise", 1944, 5.4, None],  # None genre
@@ -36,7 +36,9 @@ class ExampleTableApp(toga.App):
     def on_select_handler1(self, widget, **kwargs):
         row = self.table1.selection
         self.label_table1.text = (
-            f"You selected row: {row.title}" if row is not None else "No row selected"
+            f"You selected row: {row.title[1]}"
+            if row is not None
+            else "No row selected"
         )
 
     def on_select_handler2(self, widget, **kwargs):
@@ -229,9 +231,10 @@ class ExampleTableApp(toga.App):
         adjective = random.choice(
             ["magnificent", "amazing", "awesome", "life-changing"]
         )
+        genre = (getattr(row, "genre", "") or "no-genre").lower()
         return (
-            f"You selected the {adjective} {getattr(row, 'genre', '').lower()} movie "
-            f"{row.title} ({row.year}) from Table {table_index}"
+            f"You selected the {adjective} {genre} movie "
+            f"{row.title[1]} ({row.year}) from Table {table_index}"
         )
 
 

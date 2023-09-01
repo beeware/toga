@@ -109,6 +109,9 @@ Notes
   actions on a row. Toga will interpret any action with a name of "Delete" or "Remove"
   as destructive, and will render the action appropriately.
 
+* The WinForms implementation currently uses a column layout similar to :any:`Table`,
+  and does not support the primary, secondary or refresh actions.
+
 Reference
 ---------
 

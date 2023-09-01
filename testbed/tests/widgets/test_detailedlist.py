@@ -80,23 +80,26 @@ async def test_scroll(widget, probe):
     # Due to the interaction of scrolling with the header row, the scroll might be <0.
     assert probe.scroll_position <= 0
     # Refresh is available at the top of the page.
-    assert probe.refresh_available()
+    if probe.supports_refresh:
+        assert probe.refresh_available()
 
     # Scroll to the bottom of the detailedList
     widget.scroll_to_bottom()
     await probe.wait_for_scroll_completion()
     await probe.redraw("DetailedList scrolled to bottom")
     # Refresh is not available when we're not at the top of the page.
-    assert not probe.refresh_available()
+    if probe.supports_refresh:
+        assert not probe.refresh_available()
 
-    assert probe.scroll_position == probe.max_scroll_position
+    # max_scroll_position is not perfectly accurate on Winforms.
+    assert probe.scroll_position == pytest.approx(probe.max_scroll_position, abs=10)
 
     # Scroll to the middle of the detailedList
     widget.scroll_to_row(50)
     await probe.wait_for_scroll_completion()
     await probe.redraw("DetailedList scrolled to mid row")
-    # Refresh is not available when we're not at the top of the page.
-    assert not probe.refresh_available()
+    if probe.supports_refresh:
+        assert not probe.refresh_available()
 
     # Row 50 should be visible. It could be at the top of the detailedList, or the bottom of
     # the detailedList; we don't really care which - as long as it's roughly in the middle of
@@ -109,8 +112,8 @@ async def test_scroll(widget, probe):
     widget.scroll_to_top()
     await probe.wait_for_scroll_completion()
     await probe.redraw("DetailedList scrolled to bottom")
-    # Refresh is available at the top of the page.
-    assert probe.refresh_available()
+    if probe.supports_refresh:
+        assert probe.refresh_available()
 
     # Due to the interaction of scrolling with the header row, the scroll might be <0.
     assert probe.scroll_position <= 0
@@ -127,14 +130,17 @@ async def test_select(widget, probe, source, on_select_handler):
     await probe.select_row(1)
     await probe.redraw("Second row is selected")
     assert widget.selection == source[1]
-    on_select_handler.assert_called_once_with(widget)
+
+    # Winforms generates two events, first removing the old selection and then adding
+    # the new one.
+    on_select_handler.assert_called_with(widget)
     on_select_handler.reset_mock()
 
     # Trying to multi-select only does a single select
     await probe.select_row(2, add=True)
     await probe.redraw("Third row is selected")
     assert widget.selection == source[2]
-    on_select_handler.assert_called_once_with(widget)
+    on_select_handler.assert_called_with(widget)
     on_select_handler.reset_mock()
 
 
@@ -223,6 +229,8 @@ async def test_row_changes(widget, probe):
 
 async def test_refresh(widget, probe):
     "Refresh can be triggered"
+    if not probe.supports_refresh:
+        pytest.skip("This backend doesn't support the refresh action")
 
     # Set a refresh handler that simulates a reload altering data.
     async def add_row(event_widget, **kwargs):
@@ -273,6 +281,8 @@ async def test_actions(
     on_secondary_action_handler,
 ):
     "Actions can be performed on detailed list items"
+    if not probe.supports_actions:
+        pytest.skip("This backend doesn't support primary or secondary actions")
 
     await probe.perform_primary_action(3)
     await probe.redraw("A primary action was performed on row 3")
