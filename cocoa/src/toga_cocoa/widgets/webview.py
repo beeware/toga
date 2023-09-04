@@ -48,6 +48,14 @@ class WebView(Widget):
         self.native.interface = self.interface
         self.native.impl = self
 
+        # Enable the content inspector. This was added in macOS 13.3 (Ventura). It will
+        # be a no-op on newer versions of macOS; you need to package the app, then run:
+        #
+        #     defaults write com.example.appname WebKitDeveloperExtras -bool true
+        #
+        # from the command line.
+        self.native.inspectable = True
+
         self.native.navigationDelegate = self.native
         self.native.uIDelegate = self.native
 
