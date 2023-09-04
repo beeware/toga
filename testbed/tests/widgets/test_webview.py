@@ -1,4 +1,6 @@
 import asyncio
+import gc
+import weakref
 from asyncio import wait_for
 from contextlib import nullcontext
 from time import time
@@ -104,6 +106,16 @@ async def widget(on_load):
                 raise
 
     return widget
+
+
+async def test_cleanup():
+    widget = toga.WebView()
+    ref = weakref.ref(widget)
+
+    del widget
+    gc.collect()
+
+    assert ref() is None
 
 
 async def test_set_url(widget, probe, on_load):

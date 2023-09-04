@@ -1,3 +1,5 @@
+import gc
+import weakref
 from unittest.mock import Mock, call
 
 import pytest
@@ -28,6 +30,16 @@ from .properties import (  # noqa: F401
 @pytest.fixture
 async def widget():
     return toga.TextInput(value="Hello")
+
+
+async def test_cleanup():
+    widget = toga.TextInput(value="Hello")
+    ref = weakref.ref(widget)
+
+    del widget
+    gc.collect()
+
+    assert ref() is None
 
 
 @pytest.fixture
