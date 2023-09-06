@@ -15,10 +15,7 @@ from ..libs.android.widget import RelativeLayout__LayoutParams
 
 def _get_activity(_cache=[]):
     """Android Toga widgets need a reference to the current activity to pass it as
-    `context` when creating Android native widgets. This may be useful at any time, so
-    we retain a global JNI ref.
-
-    :param _cache: List that is either empty or contains 1 item, the cached global JNI ref
+    `context` when creating Android native widgets.
     """
     if _cache:
         return _cache[0]
@@ -30,7 +27,7 @@ def _get_activity(_cache=[]):
             "Unable to find MainActivity.singletonThis from Python. This is typically set by "
             "org.beeware.android.MainActivity.onCreate()."
         )
-    _cache.append(MainActivity.singletonThis.__global__())
+    _cache.append(MainActivity.singletonThis)
     return _cache[0]
 
 

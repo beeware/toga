@@ -64,7 +64,7 @@ class DetailedList(Widget):
             self.native.removeAllViews()
 
         scroll_view = ScrollView(self._native_activity)
-        self._scroll_view = scroll_view.__global__()
+        self._scroll_view = scroll_view
         scroll_view_layout_params = LinearLayout__LayoutParams(
             LinearLayout__LayoutParams.MATCH_PARENT,
             LinearLayout__LayoutParams.MATCH_PARENT,
@@ -72,11 +72,11 @@ class DetailedList(Widget):
         scroll_view_layout_params.gravity = Gravity.TOP
         swipe_refresh_wrapper = SwipeRefreshLayout(self._native_activity)
         swipe_refresh_wrapper.setOnRefreshListener(OnRefreshListener(self.interface))
-        self._swipe_refresh_layout = swipe_refresh_wrapper.__global__()
+        self._swipe_refresh_layout = swipe_refresh_wrapper
         swipe_refresh_wrapper.addView(scroll_view)
         self.native.addView(swipe_refresh_wrapper, scroll_view_layout_params)
         dismissable_container = LinearLayout(self._native_activity)
-        self._dismissable_container = dismissable_container.__global__()
+        self._dismissable_container = dismissable_container
         dismissable_container.setOrientation(LinearLayout.VERTICAL)
         dismissable_container_params = LinearLayout__LayoutParams(
             LinearLayout__LayoutParams.MATCH_PARENT,
