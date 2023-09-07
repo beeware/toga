@@ -10,7 +10,13 @@ from android.graphics.drawable import (
     LayerDrawable,
 )
 from android.os import Build, SystemClock
-from android.view import MotionEvent, View, ViewTreeObserver
+from android.view import (
+    MotionEvent,
+    View,
+    ViewGroup,
+    ViewTreeObserver,
+    WindowManagerGlobal,
+)
 from toga.colors import TRANSPARENT
 from toga.style.pack import JUSTIFY, LEFT
 
@@ -37,6 +43,8 @@ class SimpleProbe(BaseProbe):
         self.native.getViewTreeObserver().addOnGlobalLayoutListener(
             self.layout_listener
         )
+        self.window_manager = WindowManagerGlobal.getInstance()
+        self.original_window_names = self.window_manager.getViewRootNames()
 
         # Store the device DPI, as it will be needed to scale some values
         self.dpi = (
@@ -158,6 +166,19 @@ class SimpleProbe(BaseProbe):
         else:
             return TRANSPARENT
 
+    def find_dialog(self):
+        new_windows = [
+            name
+            for name in self.window_manager.getViewRootNames()
+            if name not in self.original_window_names
+        ]
+        if len(new_windows) == 0:
+            return None
+        elif len(new_windows) == 1:
+            return self.window_manager.getRootView(new_windows[0])
+        else:
+            raise RuntimeError(f"More than one new window: {new_windows}")
+
     async def press(self):
         self.native.performClick()
 
@@ -175,8 +196,14 @@ class SimpleProbe(BaseProbe):
 
     async def swipe(self, dx, dy):
         down_time = SystemClock.uptimeMillis()
-        start_x, start_y = (self.width / 2, self.height / 2)
-        end_x, end_y = (start_x + dx, start_y + dy)
+        start_x, start_y = (
+            self.native.getWidth() / 2,
+            self.native.getHeight() / 2,
+        )
+        end_x, end_y = (
+            start_x + (dx * self.scale_factor),
+            start_y + (dy * self.scale_factor),
+        )
         self.motion_event(down_time, MotionEvent.ACTION_DOWN, start_x, start_y)
         self.motion_event(down_time, MotionEvent.ACTION_MOVE, end_x, end_y)
         self.motion_event(down_time, MotionEvent.ACTION_UP, end_x, end_y)
@@ -188,3 +215,15 @@ class SimpleProbe(BaseProbe):
     @property
     def has_focus(self):
         return self.widget.app._impl.native.getCurrentFocus() == self.native
+
+
+def find_view_by_type(root, cls):
+    assert isinstance(root, View)
+    if isinstance(root, cls):
+        return root
+    if isinstance(root, ViewGroup):
+        for i in range(root.getChildCount()):
+            result = find_view_by_type(root.getChildAt(i), cls)
+            if result is not None:
+                return result
+    return None

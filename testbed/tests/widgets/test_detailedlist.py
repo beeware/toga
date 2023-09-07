@@ -101,11 +101,11 @@ async def test_scroll(widget, probe):
     if probe.supports_refresh:
         assert not probe.refresh_available()
 
-    # Row 50 should be visible. It could be at the top of the detailedList, or the bottom of
-    # the detailedList; we don't really care which - as long as it's roughly in the middle of
+    # Row 50 should be visible. It could be at the top of the screen, or the bottom of
+    # the screen; we don't really care which - as long as it's roughly in the middle of
     # the scroll range, call it a win.
     assert probe.scroll_position == pytest.approx(
-        probe.max_scroll_position / 2, abs=probe.height / 2
+        probe.max_scroll_position / 2, abs=400
     )
 
     # Scroll to the top of the detailedList
