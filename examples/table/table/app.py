@@ -4,28 +4,36 @@ import toga
 from toga.constants import COLUMN, ROW
 from toga.style import Pack
 
-# Include some non-string objects to make sure conversion works correctly.
 headings = ["Title", "Year", "Rating", "Genre"]
-bee_movies = [
-    ("The Secret Life of Bees", 2008, 7.3, "Drama"),
-    ("Bee Movie", 2007, 6.1, "Animation, Adventure"),
-    ("Bees", 1998, 6.3, "Horror"),
-    ("The Girl Who Swallowed Bees", 2007, 7.5),  # Missing a genre
-    ("Birds Do It, Bees Do It", 1974, 7.3, "Documentary"),
-    ("Bees: A Life for the Queen", 1998, 8.0, "TV Movie"),
-    ("Bees in Paradise", 1944, 5.4, None),  # None genre
-    ("Keeper of the Bees", 1947, 6.3, "Drama"),
-]
 
 
 class ExampleTableApp(toga.App):
     lbl_fontsize = None
 
+    def load_data(self):
+        yak = toga.Icon.TOGA_ICON
+        red = toga.Icon("icons/red")
+        green = toga.Icon("icons/green")
+
+        # Include some non-string objects to make sure conversion works correctly.
+        self.bee_movies = [
+            ((yak, "The Secret Life of Bees"), 2008, (green, 7.3), "Drama"),
+            ((None, "Bee Movie"), 2007, (red, 6.1), "Animation, Adventure"),
+            ((None, "Bees"), 1998, (red, 6.3), "Horror"),
+            ((None, "Despicable Bee"), 2010, (green, 7.5)),  # Missing genre
+            ((None, "Birds Do It, Bees Do It"), 1974, (green, 7.3), "Documentary"),
+            ((None, "Bees: A Life for the Queen"), 1998, (green, 8.0), "TV Movie"),
+            ((None, "Bees in Paradise"), 1944, (red, 5.4), None),  # None genre
+            ((yak, "Keeper of the Bees"), 1947, (red, 6.3), "Drama"),
+        ]
+
     # Table callback functions
     def on_select_handler1(self, widget, **kwargs):
         row = self.table1.selection
         self.label_table1.text = (
-            f"You selected row: {row.title}" if row is not None else "No row selected"
+            f"You selected row: {row.title[1]}"
+            if row is not None
+            else "No row selected"
         )
 
     def on_select_handler2(self, widget, **kwargs):
@@ -50,7 +58,7 @@ class ExampleTableApp(toga.App):
 
     # Button callback functions
     def insert_handler(self, widget, **kwargs):
-        self.table1.data.insert(0, random.choice(bee_movies))
+        self.table1.data.insert(0, random.choice(self.bee_movies))
 
     def delete_handler(self, widget, **kwargs):
         if self.table1.selection:
@@ -64,7 +72,7 @@ class ExampleTableApp(toga.App):
         self.table1.data.clear()
 
     def reset_handler(self, widget, **kwargs):
-        self.table1.data = bee_movies
+        self.table1.data = self.bee_movies
 
     def toggle_handler(self, widget, **kwargs):
         try:
@@ -122,11 +130,12 @@ class ExampleTableApp(toga.App):
         )
 
         # Data to populate the table.
+        self.load_data()
         if toga.platform.current_platform == "android":
             # FIXME: beeware/toga#1392 - Android Table doesn't allow lots of content
-            table_data = bee_movies * 10
+            table_data = self.bee_movies * 10
         else:
-            table_data = bee_movies * 1000
+            table_data = self.bee_movies * 1000
 
         self.table1 = toga.Table(
             headings=headings,
@@ -217,9 +226,10 @@ class ExampleTableApp(toga.App):
         adjective = random.choice(
             ["magnificent", "amazing", "awesome", "life-changing"]
         )
+        genre = (getattr(row, "genre", "") or "no-genre").lower()
         return (
-            f"You selected the {adjective} {getattr(row, 'genre', '').lower()} movie "
-            f"{row.title} ({row.year}) from Table {table_index}"
+            f"You selected the {adjective} {genre} movie "
+            f"{row.title[1]} ({row.year}) from Table {table_index}"
         )
 
 

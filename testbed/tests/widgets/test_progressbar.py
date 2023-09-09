@@ -1,5 +1,3 @@
-import asyncio
-
 import pytest
 
 import toga
@@ -71,10 +69,8 @@ async def test_start_stop_indeterminate(widget, probe):
 
     # Start the progress bar
     widget.start()
-    # We need to actually sleep here, rather than just wait for a redraw,
-    # because some platforms implement their own animation, and we need
-    # to give that animation time to run.
-    await asyncio.sleep(0.1)
+    await probe.wait_for_animation()
+    await probe.redraw("Indeterminate progress bar is running")
 
     # Widget should now be started
     assert widget.is_running
@@ -84,6 +80,7 @@ async def test_start_stop_indeterminate(widget, probe):
 
     # Try to change the progress bar value
     widget.value = 0.37
+    await probe.wait_for_animation()
     await probe.redraw("Progress bar should be changed to 0.37")
 
     # Probe is still running; value doesn't change
@@ -94,6 +91,7 @@ async def test_start_stop_indeterminate(widget, probe):
 
     # Start the progress bar again. This should be a no-op.
     widget.start()
+    await probe.wait_for_animation()
     await probe.redraw("Progress bar should be started again")
 
     # Probe is still running; value doesn't change
@@ -104,6 +102,7 @@ async def test_start_stop_indeterminate(widget, probe):
 
     # Stop the progress bar
     widget.stop()
+    await probe.wait_for_animation()
     await probe.redraw("Progress bar should be stopped again")
 
     # Widget should now be stopped
@@ -125,6 +124,7 @@ async def test_animation_starts_on_max_change(widget, probe):
 
     # Switch to indeterminate
     widget.max = None
+    await probe.wait_for_animation()
     await probe.redraw("Progress bar should be switched to indeterminate")
 
     # Widget is still running, animation has started
@@ -133,6 +133,7 @@ async def test_animation_starts_on_max_change(widget, probe):
 
     # Switch back to determinate
     widget.max = 50
+    await probe.wait_for_animation()
     await probe.redraw("Progress bar should be switched to determinate")
 
     # Widget is still running, animation has stopped

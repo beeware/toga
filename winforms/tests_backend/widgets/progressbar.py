@@ -20,3 +20,7 @@ class ProgressBarProbe(SimpleProbe):
     @property
     def position(self):
         return self.native.Value / self.native.Maximum
+
+    async def wait_for_animation(self):
+        # WinForms ProgressBar has internal animation handling; no special handling required.
+        pass

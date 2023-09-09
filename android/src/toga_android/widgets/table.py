@@ -4,7 +4,6 @@ from travertino.size import at_least
 
 import toga
 
-from ..libs.activity import MainActivity
 from ..libs.android import R__attr
 from ..libs.android.graphics import Rect, Typeface
 from ..libs.android.view import Gravity, OnClickListener, OnLongClickListener
@@ -75,7 +74,7 @@ class Table(Widget):
         vscroll_view_layout_params.gravity = Gravity.TOP
         vscroll_view.setLayoutParams(vscroll_view_layout_params)
 
-        self.table_layout = TableLayout(MainActivity.singletonThis)
+        self.table_layout = TableLayout(self._native_activity)
         table_layout_params = TableLayout__Layoutparams(
             TableLayout__Layoutparams.MATCH_PARENT,
             TableLayout__Layoutparams.WRAP_CONTENT,
@@ -113,13 +112,13 @@ class Table(Widget):
             self.remove_selection(index)
 
     def create_table_header(self):
-        table_row = TableRow(MainActivity.singletonThis)
+        table_row = TableRow(self._native_activity)
         table_row_params = TableRow__Layoutparams(
             TableRow__Layoutparams.MATCH_PARENT, TableRow__Layoutparams.WRAP_CONTENT
         )
         table_row.setLayoutParams(table_row_params)
         for col_index in range(len(self.interface._accessors)):
-            text_view = TextView(MainActivity.singletonThis)
+            text_view = TextView(self._native_activity)
             text_view.setText(self.interface.headings[col_index])
             self._font_impl.apply(
                 text_view, text_view.getTextSize(), text_view.getTypeface()
@@ -140,7 +139,7 @@ class Table(Widget):
         return table_row
 
     def create_table_row(self, row_index):
-        table_row = TableRow(MainActivity.singletonThis)
+        table_row = TableRow(self._native_activity)
         table_row_params = TableRow__Layoutparams(
             TableRow__Layoutparams.MATCH_PARENT, TableRow__Layoutparams.WRAP_CONTENT
         )
@@ -151,7 +150,7 @@ class Table(Widget):
         table_row.setOnLongClickListener(TogaOnLongClickListener(impl=self))
         table_row.setId(row_index)
         for col_index in range(len(self.interface._accessors)):
-            text_view = TextView(MainActivity.singletonThis)
+            text_view = TextView(self._native_activity)
             text_view.setText(self.get_data_value(row_index, col_index))
             self._font_impl.apply(
                 text_view, text_view.getTextSize(), text_view.getTypeface()
