@@ -75,11 +75,11 @@ icon, title, and subtitle, respectively:
         ]
     )
 
-If the value provided by the accessor for ``title`` or ``subtitle`` is :any:`None`, or
-the accessor isn't defined, the ``missing_value`` will be used. Any other value will be
+If the value provided by the title or subtitle accessor is ``None``, or the accessor
+isn't defined, the ``missing_value`` will be displayed. Any other value will be
 converted into a string.
 
-The accessor for ``icon`` should return an :any:`Icon`. If it returns ``None``, or the
+The icon accessor should return an :any:`Icon`. If it returns ``None``, or the
 accessor isn't defined, then no icon will be displayed, but space for the icon will
 remain in the layout.
 
