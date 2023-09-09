@@ -233,14 +233,9 @@ async def test_refresh(widget, probe):
         pytest.skip("This backend doesn't support the refresh action")
 
     # Set a refresh handler that simulates a reload altering data.
-    async def add_row(event_widget, **kwargs):
+    def add_row(event_widget, **kwargs):
         assert event_widget == widget
         assert kwargs == {}
-
-        # Simulate a reload delay
-        await probe.redraw("Wait for simulated reload")
-
-        # Add new data as part of the reload.
         widget.data.insert(0, {"a": "NEW A", "b": "NEW B"})
 
     widget.on_refresh = add_row

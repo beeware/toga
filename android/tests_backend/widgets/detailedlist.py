@@ -85,11 +85,18 @@ class DetailedListProbe(SimpleProbe):
         return self.scroll_position <= 0
 
     async def non_refresh_action(self):
-        await self.swipe(0, 100)
-        await asyncio.sleep(0.5)  # Handler isn't called until animation completes.
+        await self._swipe_down(80)
 
     async def refresh_action(self, active=True):
-        await self.swipe(0, 300)
+        await self._swipe_down(180)
+
+    # The minimum distance to trigger a refresh is 128 dp.
+    async def _swipe_down(self, distance):
+        x = self.native.getWidth() * 0.5
+        start_y = self.native.getHeight() * 0.1
+        end_y = start_y + (distance * self.scale_factor)
+
+        await self.swipe(x, start_y, x, end_y)
         await asyncio.sleep(0.5)  # Handler isn't called until animation completes.
 
     async def perform_primary_action(self, row, active=True):
@@ -127,8 +134,8 @@ class DetailedListProbe(SimpleProbe):
             timestamp = SystemClock.uptimeMillis()
             decor.dispatchKeyEvent(
                 KeyEvent(
-                    timestamp,
-                    timestamp,
+                    timestamp,  # downTime
+                    timestamp,  # eventTime
                     KeyEvent.ACTION_UP,
                     KeyEvent.KEYCODE_BACK,
                     0,  # repeat

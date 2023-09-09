@@ -182,31 +182,41 @@ class SimpleProbe(BaseProbe):
     async def press(self):
         self.native.performClick()
 
-    def motion_event(self, down_time, action, x, y):
-        event = MotionEvent.obtain(
-            down_time,
-            SystemClock.uptimeMillis(),  # eventTime
-            action,
-            x,
-            y,
-            0,  # metaState
-        )
+    def motion_event(self, down_time, event_time, action, x, y):
+        event = MotionEvent.obtain(down_time, event_time, action, x, y, 0)
         self.native.dispatchTouchEvent(event)
         event.recycle()
 
-    async def swipe(self, dx, dy):
+    async def swipe(self, start_x, start_y, end_x, end_y, *, duration=0.3, hold=0.2):
         down_time = SystemClock.uptimeMillis()
-        start_x, start_y = (
-            self.native.getWidth() / 2,
-            self.native.getHeight() / 2,
+        self.motion_event(
+            down_time, down_time, MotionEvent.ACTION_DOWN, start_x, start_y
         )
-        end_x, end_y = (
-            start_x + (dx * self.scale_factor),
-            start_y + (dy * self.scale_factor),
-        )
-        self.motion_event(down_time, MotionEvent.ACTION_DOWN, start_x, start_y)
-        self.motion_event(down_time, MotionEvent.ACTION_MOVE, end_x, end_y)
-        self.motion_event(down_time, MotionEvent.ACTION_UP, end_x, end_y)
+
+        # Convert to milliseconds
+        duration *= 1000
+        hold *= 1000
+        end_time = down_time + duration
+
+        dx, dy = end_x - start_x, end_y - start_y
+        while (time := SystemClock.uptimeMillis()) < end_time:
+            fraction = (time - down_time) / duration
+            self.motion_event(
+                down_time,
+                time,
+                MotionEvent.ACTION_MOVE,
+                start_x + (dx * fraction),
+                start_y + (dy * fraction),
+            )
+            await asyncio.sleep(0.02)
+
+        # Hold at the end of the swipe to prevent it becoming a "fling"
+        end_time += hold
+        while (time := SystemClock.uptimeMillis()) < end_time:
+            self.motion_event(down_time, time, MotionEvent.ACTION_MOVE, end_x, end_y)
+            await asyncio.sleep(0.02)
+
+        self.motion_event(down_time, time, MotionEvent.ACTION_UP, end_x, end_y)
 
     @property
     def is_hidden(self):
