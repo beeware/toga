@@ -35,6 +35,13 @@ class DetailedListOnClickListener(OnClickListener):
         self.impl.interface.on_select(None)
 
 
+@dataclass
+class Action:
+    name: str
+    handler: callable
+    enabled: bool
+
+
 class DetailedListOnLongClickListener(OnLongClickListener):
     def __init__(self, impl, row_number):
         super().__init__()
@@ -45,12 +52,6 @@ class DetailedListOnLongClickListener(OnLongClickListener):
     def onLongClick(self, _view):
         self.impl._set_selection(self.row_number)
         self.impl.interface.on_select(None)
-
-        @dataclass
-        class Action:
-            name: str
-            handler: callable
-            enabled: bool
 
         actions = [
             action
