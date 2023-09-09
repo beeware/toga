@@ -137,6 +137,7 @@ class Window(Container, Scalable):
             if not self.interface.closeable:
                 # Closeability is implemented by shortcutting the close handler.
                 event.Cancel = True
+
             elif self.interface.on_close._raw:
                 # If there is an on_close event handler, process it;
                 # but then cancel the close event. If the result of
@@ -144,6 +145,19 @@ class Window(Container, Scalable):
                 # then it will be manually triggered as part of that
                 # result handling.
                 self.interface.on_close(self)
+                # Close the app when the last window closes.
+                if len(self.interface.app.windows) == 0:
+                    if self.interface.app.on_exit:
+                        self.interface.app.on_exit(self.interface.app)
+                event.Cancel = True
+
+            # Close the window when no on_close handler is provided.
+            elif self.interface.on_close._raw is None:
+                self.interface.close()
+                # Close the app when the last window closes.
+                if len(self.interface.app.windows) == 0:
+                    if self.interface.app.on_exit:
+                        self.interface.app.on_exit(self.interface.app)
                 event.Cancel = True
 
     def set_full_screen(self, is_full_screen):

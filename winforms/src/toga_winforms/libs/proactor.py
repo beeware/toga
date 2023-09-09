@@ -9,7 +9,7 @@ from System.Threading.Tasks import Task
 
 
 class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
-    def run_forever(self, app_context):
+    def run_forever(self, app, app_context, app_dispatcher):
         """Set up the asyncio event loop, integrate it with the Winforms event loop, and
         start the application.
 
@@ -27,8 +27,10 @@ class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
         # select call to process.
         self.call_soon(self._loop_self_reading)
 
-        # Remember the application context.
+        # Remember the application, its context and dispatcher.
+        self.app = app
         self.app_context = app_context
+        self.app_dispatcher = app_dispatcher
 
         # Set up the Proactor.
         # The code between the following markers should be exactly the same as
@@ -69,19 +71,15 @@ class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
 
     def enqueue_tick(self):
         # Queue a call to tick in 5ms.
-        self.task = Action[Task](self.tick)
-        Task.Delay(5).ContinueWith(self.task)
+        if not self.app._is_exiting:
+            self.task = Action[Task](self.tick)
+            Task.Delay(5).ContinueWith(self.task)
 
     def tick(self, *args, **kwargs):
         """Cause a single iteration of the event loop to run on the main GUI thread."""
-        # FIXME: this only works if there is a "main window" registered with the
-        # app (#750).
-        #
-        # If the app context has a main form, invoke run_once_recurring()
-        # on the thread associated with that form.
-        if self.app_context.MainForm:
+        if not self.app._is_exiting:
             action = Action(self.run_once_recurring)
-            self.app_context.MainForm.Invoke(action)
+            self.app_dispatcher.Invoke(action)
 
     def run_once_recurring(self):
         """Run one iteration of the event loop, and enqueue the next iteration (if we're

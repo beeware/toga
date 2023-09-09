@@ -554,7 +554,7 @@ class App:
         # This is a wrapper around the user's startup method that performs any
         # post-setup validation.
         self.startup()
-        self._verify_startup()
+        # self._verify_startup()
 
     def _verify_startup(self):
         if not isinstance(self.main_window, MainWindow):

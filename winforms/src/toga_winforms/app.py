@@ -4,11 +4,9 @@ import sys
 import threading
 from ctypes import windll
 
+import clr
 import System.Windows.Forms as WinForms
-from System import (
-    Environment,
-    Threading,
-)
+from System import Environment, Threading
 from System.Media import SystemSounds
 from System.Net import SecurityProtocolType, ServicePointManager
 
@@ -18,6 +16,12 @@ from toga import Key
 from .keys import toga_to_winforms_key
 from .libs.proactor import WinformsProactorEventLoop
 from .window import Window
+
+# A reference to WindowsBase is needed for Dispatcher
+clr.AddReference(
+    "c:\\Program Files\\Reference Assemblies\\Microsoft\\Framework\\v3.0\\WindowsBase.dll"
+)
+from System.Windows.Threading import Dispatcher  # noqa
 
 
 class MainWindow(Window):
@@ -60,6 +64,7 @@ class App:
     def create(self):
         self.native = WinForms.Application
         self.app_context = WinForms.ApplicationContext()
+        self.app_dispatcher = Dispatcher.CurrentDispatcher
 
         # Check the version of windows and make sure we are setting the DPI mode
         # with the most up to date API
@@ -134,8 +139,9 @@ class App:
 
         # Call user code to populate the main window
         self.interface._startup()
-        self.create_menus()
-        self.interface.main_window._impl.set_app(self)
+        if self.interface.main_window is not None:
+            self.create_menus()
+            self.interface.main_window._impl.set_app(self)
 
     def create_menus(self):
         self._menu_items = {}
@@ -250,7 +256,7 @@ class App:
             # in a usable form.
             self.native.ThreadException += self.winforms_thread_exception
 
-            self.loop.run_forever(self.app_context)
+            self.loop.run_forever(self, self.app_context, self.app_dispatcher)
         except Exception as e:
             # In case of an unhandled error at the level of the app,
             # preserve the Python stacktrace
