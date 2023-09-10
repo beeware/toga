@@ -107,7 +107,7 @@ class SimpleProbe(BaseProbe, FontMixin):
     def has_focus(self):
         return self.native.window.firstResponder == self.native
 
-    async def type_character(self, char):
+    async def type_character(self, char, modifierFlags=0):
         # Convert the requested character into a Cocoa keycode.
         # This table is incomplete, but covers all the basics.
         key_code = {
@@ -147,7 +147,7 @@ class SimpleProbe(BaseProbe, FontMixin):
             NSEvent.keyEventWithType(
                 NSEventType.KeyDown,
                 location=NSPoint(0, 0),  # key presses don't have a location.
-                modifierFlags=0,
+                modifierFlags=modifierFlags,
                 timestamp=0,
                 windowNumber=self.native.window.windowNumber,
                 context=None,
@@ -161,7 +161,7 @@ class SimpleProbe(BaseProbe, FontMixin):
             NSEvent.keyEventWithType(
                 NSEventType.KeyUp,
                 location=NSPoint(0, 0),  # key presses don't have a location.
-                modifierFlags=0,
+                modifierFlags=modifierFlags,
                 timestamp=0,
                 windowNumber=self.native.window.windowNumber,
                 context=None,
@@ -172,17 +172,24 @@ class SimpleProbe(BaseProbe, FontMixin):
             ),
         )
 
-    async def mouse_event(self, event_type, location, delay=None):
+    async def mouse_event(
+        self,
+        event_type,
+        location,
+        delay=None,
+        modifierFlags=0,
+        clickCount=1,
+    ):
         await self.post_event(
             NSEvent.mouseEventWithType(
                 event_type,
                 location=location,
-                modifierFlags=0,
+                modifierFlags=modifierFlags,
                 timestamp=0,
                 windowNumber=self.native.window.windowNumber,
                 context=None,
                 eventNumber=0,
-                clickCount=1,
+                clickCount=clickCount,
                 pressure=1.0 if event_type == NSEventType.LeftMouseDown else 0.0,
             ),
             delay=delay,

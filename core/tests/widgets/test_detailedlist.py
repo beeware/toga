@@ -1,106 +1,348 @@
+from unittest.mock import Mock
+
+import pytest
+
 import toga
 from toga.sources import ListSource
-from toga_dummy.utils import TestCase
+from toga_dummy.utils import (
+    assert_action_not_performed,
+    assert_action_performed,
+    assert_action_performed_with,
+)
 
 
-class TestDetailedList(TestCase):
-    def setUp(self):
-        super().setUp()
+@pytest.fixture
+def on_select_handler():
+    return Mock()
 
-        self.on_select = None
-        self.on_delete = None
-        self.on_refresh = None
 
-        self.dlist = toga.DetailedList(
-            on_select=self.on_select,
-            on_delete=self.on_delete,
-            on_refresh=self.on_refresh,
-        )
+@pytest.fixture
+def on_refresh_handler():
+    return Mock(return_value=None)
 
-    def test_widget_created(self):
-        self.assertEqual(self.dlist._impl.interface, self.dlist)
-        self.assertActionPerformed(self.dlist, "create DetailedList")
 
-    def test_detailedlist_property(self):
-        test_list = ["test1", "test2", " "]
-        self.dlist.data = test_list
-        listsource_list = ListSource(
-            data=test_list, accessors=["icon", "label1", "label2"]
-        )
-        for i in range(len(self.dlist.data)):
-            self.assertEqual(self.dlist.data[i]._attrs, listsource_list[i]._attrs)
+@pytest.fixture
+def on_primary_action_handler():
+    return Mock()
 
-        test_tuple = ("ttest1", "ttest2", " ")
-        self.dlist.data = test_tuple
-        listsource_tuple = ListSource(
-            data=test_tuple, accessors=["icon", "label1", "label2"]
-        )
-        for i in range(len(self.dlist.data)):
-            self.assertEqual(self.dlist.data[i]._attrs, listsource_tuple[i]._attrs)
 
-        self.dlist.data = listsource_list
-        for i in range(len(self.dlist.data)):
-            self.assertEqual(self.dlist.data[i]._attrs, listsource_list[i]._attrs)
+@pytest.fixture
+def on_secondary_action_handler():
+    return Mock()
 
-    def test_scroll_to_row(self):
-        test_list = ["test1", "test2", "test3", " "]
-        self.dlist.data = test_list
-        self.dlist.scroll_to_row(2)
-        self.assertValueSet(self.dlist, "scroll to", 2)
 
-    def test_scroll_to_top(self):
-        test_list = ["test1", "test2", "test3", " "]
-        self.dlist.data = test_list
-        self.dlist.scroll_to_top()
-        self.assertValueSet(self.dlist, "scroll to", 0)
+@pytest.fixture
+def source():
+    return ListSource(
+        accessors=["key", "value", "icon"],
+        data=[
+            {"key": "first", "value": 111, "other": "aaa"},
+            {"key": "second", "value": 222, "other": "bbb"},
+            {"key": "third", "value": 333, "other": "ccc"},
+        ],
+    )
 
-    def test_scroll_to_bottom(self):
-        test_list = ["test1", "test2", "test3", " "]
-        self.dlist.data = test_list
-        self.dlist.scroll_to_bottom()
-        self.assertValueSet(self.dlist, "scroll to", len(self.dlist.data) - 1)
 
-    def test_on_delete(self):
-        self.assertIsNone(self.dlist.on_delete._raw)
+@pytest.fixture
+def detailedlist(
+    source,
+    on_select_handler,
+    on_refresh_handler,
+    on_primary_action_handler,
+    on_secondary_action_handler,
+):
+    return toga.DetailedList(
+        accessors=["key", "value", "icon"],
+        data=source,
+        on_select=on_select_handler,
+        on_refresh=on_refresh_handler,
+        on_primary_action=on_primary_action_handler,
+        on_secondary_action=on_secondary_action_handler,
+    )
 
-        # set a new callback
-        def callback(widget, **extra):
-            return f"called {type(widget)} with {extra}"
 
-        self.dlist.on_delete = callback
-        self.assertEqual(self.dlist.on_delete._raw, callback)
-        self.assertEqual(
-            self.dlist.on_delete(None, a=1),
-            "called <class 'toga.widgets.detailedlist.DetailedList'> with {'a': 1}",
-        )
-        self.assertValueSet(self.dlist, "on_delete", self.dlist.on_delete)
+def test_detailedlist_created():
+    "An minimal DetailedList can be created"
+    detailedlist = toga.DetailedList()
+    assert detailedlist._impl.interface == detailedlist
+    assert_action_performed(detailedlist, "create DetailedList")
 
-    def test_on_refresh(self):
-        self.assertIsNone(self.dlist.on_refresh._raw)
+    assert len(detailedlist.data) == 0
+    assert detailedlist.accessors == ("title", "subtitle", "icon")
+    assert detailedlist.missing_value == ""
+    assert detailedlist.on_select._raw is None
+    assert detailedlist.on_refresh._raw is None
+    assert detailedlist.on_primary_action._raw is None
+    assert detailedlist.on_secondary_action._raw is None
+    assert detailedlist._primary_action == "Delete"
+    assert detailedlist._secondary_action == "Action"
 
-        # set a new callback
-        def callback(widget, **extra):
-            return f"called {type(widget)} with {extra}"
+    assert_action_performed_with(detailedlist, "refresh enabled", enabled=False)
+    assert_action_performed_with(detailedlist, "primary action enabled", enabled=False)
+    assert_action_performed_with(
+        detailedlist, "secondary action enabled", enabled=False
+    )
 
-        self.dlist.on_refresh = callback
-        self.assertEqual(self.dlist.on_refresh._raw, callback)
-        self.assertEqual(
-            self.dlist.on_refresh(None, a=1),
-            "called <class 'toga.widgets.detailedlist.DetailedList'> with {'a': 1}",
-        )
-        self.assertValueSet(self.dlist, "on_refresh", self.dlist.on_refresh)
 
-    def test_on_select(self):
-        self.assertIsNone(self.dlist._on_select._raw)
+def test_create_with_values(
+    source,
+    on_select_handler,
+    on_refresh_handler,
+    on_primary_action_handler,
+    on_secondary_action_handler,
+):
+    "A DetailedList can be created with initial values"
+    detailedlist = toga.DetailedList(
+        data=source,
+        accessors=("key", "value", "icon"),
+        missing_value="Boo!",
+        on_select=on_select_handler,
+        on_refresh=on_refresh_handler,
+        primary_action="Primary",
+        on_primary_action=on_primary_action_handler,
+        secondary_action="Secondary",
+        on_secondary_action=on_secondary_action_handler,
+    )
+    assert detailedlist._impl.interface == detailedlist
+    assert_action_performed(detailedlist, "create DetailedList")
 
-        # set a new callback
-        def callback(widget, **extra):
-            return f"called {type(widget)} with {extra}"
+    assert len(detailedlist.data) == 3
+    assert detailedlist.accessors == ("key", "value", "icon")
+    assert detailedlist.missing_value == "Boo!"
+    assert detailedlist.on_select._raw == on_select_handler
+    assert detailedlist.on_refresh._raw == on_refresh_handler
+    assert detailedlist.on_primary_action._raw == on_primary_action_handler
+    assert detailedlist.on_secondary_action._raw == on_secondary_action_handler
+    assert detailedlist._primary_action == "Primary"
+    assert detailedlist._secondary_action == "Secondary"
 
-        self.dlist.on_select = callback
-        self.assertEqual(self.dlist.on_select._raw, callback)
-        self.assertEqual(
-            self.dlist.on_select(None, a=1),
-            "called <class 'toga.widgets.detailedlist.DetailedList'> with {'a': 1}",
-        )
-        self.assertValueSet(self.dlist, "on_select", self.dlist.on_select)
+    assert_action_performed_with(detailedlist, "refresh enabled", enabled=True)
+    assert_action_performed_with(detailedlist, "primary action enabled", enabled=True)
+    assert_action_performed_with(detailedlist, "secondary action enabled", enabled=True)
+
+
+def test_disable_no_op(detailedlist):
+    "DetailedList doesn't have a disabled state"
+    # Enabled by default
+    assert detailedlist.enabled
+
+    # Try to disable the widget
+    detailedlist.enabled = False
+
+    # Still enabled.
+    assert detailedlist.enabled
+
+
+def test_focus_noop(detailedlist):
+    "Focus is a no-op."
+
+    detailedlist.focus()
+    assert_action_not_performed(detailedlist, "focus")
+
+
+@pytest.mark.parametrize(
+    "data, all_attributes, extra_attributes",
+    [
+        # List of lists
+        (
+            [
+                ["Alice", 123, "icon1"],
+                ["Bob", 234, "icon2"],
+                ["Charlie", 345, "icon3"],
+            ],
+            True,
+            False,
+        ),
+        # List of tuples
+        (
+            [
+                ("Alice", 123, "icon1"),
+                ("Bob", 234, "icon2"),
+                ("Charlie", 345, "icon3"),
+            ],
+            True,
+            False,
+        ),
+        # List of dictionaries
+        (
+            [
+                {"key": "Alice", "value": 123, "icon": "icon1", "extra": "extra1"},
+                {"key": "Bob", "value": 234, "icon": "icon2", "extra": "extra2"},
+                {"key": "Charlie", "value": 345, "icon": "icon3", "extra": "extra3"},
+            ],
+            True,
+            True,
+        ),
+        # List of bare data
+        (
+            [
+                "Alice",
+                1234,
+                "Charlie",
+            ],
+            False,
+            False,
+        ),
+    ],
+)
+def test_set_data(
+    detailedlist,
+    on_select_handler,
+    data,
+    all_attributes,
+    extra_attributes,
+):
+    "Data can be set from a variety of sources"
+
+    # The selection hasn't changed yet.
+    on_select_handler.assert_not_called()
+
+    # Change the data
+    detailedlist.data = data
+
+    # This triggered the select handler
+    on_select_handler.assert_called_once_with(detailedlist)
+
+    # A ListSource has been constructed
+    assert isinstance(detailedlist.data, ListSource)
+    assert len(detailedlist.data) == 3
+
+    # The accessors are mapped in order.
+    assert detailedlist.data[0].key == "Alice"
+    assert detailedlist.data[2].key == "Charlie"
+
+    if all_attributes:
+        assert detailedlist.data[1].key == "Bob"
+
+        assert detailedlist.data[0].value == 123
+        assert detailedlist.data[1].value == 234
+        assert detailedlist.data[2].value == 345
+
+        assert detailedlist.data[0].icon == "icon1"
+        assert detailedlist.data[1].icon == "icon2"
+        assert detailedlist.data[2].icon == "icon3"
+    else:
+        assert detailedlist.data[1].key == 1234
+
+    if extra_attributes:
+        assert detailedlist.data[0].extra == "extra1"
+        assert detailedlist.data[1].extra == "extra2"
+        assert detailedlist.data[2].extra == "extra3"
+
+
+def test_selection(detailedlist, on_select_handler):
+    "The current selection can be retrieved"
+    # Selection is initially empty
+    assert detailedlist.selection is None
+    on_select_handler.assert_not_called()
+
+    # Select an item
+    detailedlist._impl.simulate_selection(1)
+
+    # Selection returns a single row
+    assert detailedlist.selection == detailedlist.data[1]
+
+    # Selection handler was triggered
+    on_select_handler.assert_called_once_with(detailedlist)
+
+
+def test_refresh(detailedlist, on_refresh_handler):
+    "Completion of a refresh event triggers the cleanup handler"
+    # Stimulate a refresh.
+    detailedlist._impl.stimulate_refresh()
+
+    # refresh handler was invoked
+    on_refresh_handler.assert_called_once_with(detailedlist)
+
+    # The post-refresh handler was invoked on the backend
+    assert_action_performed_with(
+        detailedlist,
+        "after on refresh",
+        widget=detailedlist,
+        result=None,
+    )
+
+
+def test_scroll_to_top(detailedlist):
+    "A DetailedList can be scrolled to the top"
+    detailedlist.scroll_to_top()
+
+    assert_action_performed_with(detailedlist, "scroll to row", row=0)
+
+
+@pytest.mark.parametrize(
+    "row, effective",
+    [
+        # Positive index
+        (0, 0),
+        (2, 2),
+        # Greater index than available rows
+        (10, 3),
+        # Negative index
+        (-1, 2),
+        (-3, 0),
+        # Greater negative index than available rows
+        (-10, 0),
+    ],
+)
+def test_scroll_to_row(detailedlist, row, effective):
+    "A DetailedList can be scrolled to a specific row"
+    detailedlist.scroll_to_row(row)
+
+    assert_action_performed_with(detailedlist, "scroll to row", row=effective)
+
+
+def test_scroll_to_row_no_data(detailedlist):
+    "If there's no data, scrolling is a no-op"
+    detailedlist.data.clear()
+
+    detailedlist.scroll_to_row(5)
+
+    assert_action_not_performed(detailedlist, "scroll to row")
+
+
+def test_scroll_to_bottom(detailedlist):
+    "A DetailedList can be scrolled to the top"
+    detailedlist.scroll_to_bottom()
+
+    assert_action_performed_with(detailedlist, "scroll to row", row=2)
+
+
+######################################################################
+# 2023-07: Backwards compatibility
+######################################################################
+def test_deprecated_names(on_primary_action_handler):
+    "Deprecated names still work"
+
+    # Can't specify both on_delete and on_primary_action
+    with pytest.raises(
+        ValueError,
+        match=r"Cannot specify both on_delete and on_primary_action",
+    ):
+        toga.DetailedList(on_delete=Mock(), on_primary_action=Mock())
+
+    # on_delete is redirected at construction
+    with pytest.warns(
+        DeprecationWarning,
+        match="DetailedList.on_delete has been renamed DetailedList.on_primary_action",
+    ):
+        select = toga.DetailedList(on_delete=on_primary_action_handler)
+
+    # on_delete accessor is redirected to on_primary_action
+    with pytest.warns(
+        DeprecationWarning,
+        match="DetailedList.on_delete has been renamed DetailedList.on_primary_action",
+    ):
+        assert select.on_delete._raw == on_primary_action_handler
+
+    assert select.on_primary_action._raw == on_primary_action_handler
+
+    # on_delete mutator is redirected to on_primary_action
+    new_handler = Mock()
+    with pytest.warns(
+        DeprecationWarning,
+        match="DetailedList.on_delete has been renamed DetailedList.on_primary_action",
+    ):
+        select.on_delete = new_handler
+
+    assert select.on_primary_action._raw == new_handler

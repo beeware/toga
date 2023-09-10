@@ -1,42 +1,72 @@
+from warnings import warn
+
 import System.Windows.Forms as WinForms
 from travertino.size import at_least
+
+import toga
 
 from .base import Widget
 
 
 class Table(Widget):
+    _background_supports_alpha = False
+
+    # The following methods are overridden in DetailedList.
+    @property
+    def _headings(self):
+        return self.interface.headings
+
+    @property
+    def _accessors(self):
+        return self.interface.accessors
+
+    @property
+    def _multiple_select(self):
+        return self.interface.multiple_select
+
+    @property
+    def _data(self):
+        return self.interface.data
+
     def create(self):
         self.native = WinForms.ListView()
         self.native.View = WinForms.View.Details
         self._cache = []
         self._first_item = 0
+        self._pending_resize = True
+
+        headings = self._headings
+        self.native.HeaderStyle = (
+            getattr(WinForms.ColumnHeaderStyle, "None")
+            if headings is None
+            else WinForms.ColumnHeaderStyle.Nonclickable
+        )
 
         dataColumn = []
-        for i, (heading, accessor) in enumerate(
-            zip(self.interface.headings, self.interface._accessors)
-        ):
+        for i, accessor in enumerate(self._accessors):
+            heading = None if headings is None else headings[i]
             dataColumn.append(self._create_column(heading, accessor))
 
         self.native.FullRowSelect = True
-        self.native.MultiSelect = self.interface.multiple_select
+        self.native.MultiSelect = self._multiple_select
         self.native.DoubleBuffered = True
         self.native.VirtualMode = True
         self.native.Columns.AddRange(dataColumn)
+        self.native.SmallImageList = WinForms.ImageList()
 
         self.native.ItemSelectionChanged += self.winforms_item_selection_changed
         self.native.RetrieveVirtualItem += self.winforms_retrieve_virtual_item
         self.native.CacheVirtualItems += self.winforms_cache_virtual_items
         self.native.MouseDoubleClick += self.winforms_double_click
         self.native.VirtualItemsSelectionRangeChanged += (
-            self.winforms_virtual_item_selection_range_changed
+            self.winforms_item_selection_changed
         )
 
-    def winforms_virtual_item_selection_range_changed(self, sender, e):
-        # `Shift` key or Range selection handler
-        if self.interface.multiple_select and self.interface.on_select:
-            # call on select with the last row of the multi selection
-            selected = self.interface.data[e.EndIndex]
-            self.interface.on_select(self.interface, row=selected)
+    def set_bounds(self, x, y, width, height):
+        super().set_bounds(x, y, width, height)
+        if self._pending_resize:
+            self._pending_resize = False
+            self._resize_columns()
 
     def winforms_retrieve_virtual_item(self, sender, e):
         # Because ListView is in VirtualMode, it's necessary implement
@@ -48,9 +78,7 @@ class Table(Widget):
         ):
             e.Item = self._cache[e.ItemIndex - self._first_item]
         else:
-            e.Item = WinForms.ListViewItem(
-                self.row_data(self.interface.data[e.ItemIndex])
-            )
+            e.Item = self._new_item(e.ItemIndex)
 
     def winforms_cache_virtual_items(self, sender, e):
         if (
@@ -69,25 +97,20 @@ class Table(Widget):
 
         # Fill the cache with the appropriate ListViewItems.
         for i in range(new_length):
-            self._cache.append(
-                WinForms.ListViewItem(
-                    self.row_data(self.interface.data[i + self._first_item])
-                )
-            )
+            self._cache.append(self._new_item(i + self._first_item))
 
     def winforms_item_selection_changed(self, sender, e):
-        if self.interface.on_select:
-            self.interface.on_select(
-                self.interface, row=self.interface.data[e.ItemIndex]
-            )
+        self.interface.on_select(None)
 
     def winforms_double_click(self, sender, e):
-        if self.interface.on_double_click is not None:
-            hit_test = self.native.HitTest(e.X, e.Y)
-            item = hit_test.Item
-            self.interface.on_double_click(
-                self.interface, row=self.interface.data[item.Index]
-            )
+        hit_test = self.native.HitTest(e.X, e.Y)
+        item = hit_test.Item
+        if item is not None:
+            self.interface.on_activate(None, row=self._data[item.Index])
+        else:  # pragma: no cover
+            # Double clicking outside of an item apparently doesn't raise the event, but
+            # that isn't guaranteed by the documentation.
+            pass
 
     def _create_column(self, heading, accessor):
         col = WinForms.ColumnHeader()
@@ -95,70 +118,105 @@ class Table(Widget):
         col.Name = accessor
         return col
 
+    def _resize_columns(self):
+        num_cols = len(self.native.Columns)
+        if num_cols == 0:
+            return
+
+        width = int(self.native.ClientSize.Width / num_cols)
+        for col in self.native.Columns:
+            col.Width = width
+
     def change_source(self, source):
         self.update_data()
 
-    def row_data(self, item):
-        # TODO: Winforms can't support icons in tree cells; so, if the data source
-        # specifies an icon, strip it when converting to row data.
-        def strip_icon(item, attr):
-            val = getattr(item, attr, self.interface.missing_value)
+    def _new_item(self, index):
+        item = self._data[index]
 
+        def icon(attr):
+            val = getattr(item, attr, None)
+            icon = None
             if isinstance(val, tuple):
-                return str(val[1])
+                if val[0] is not None:
+                    icon = val[0]
+            else:
+                try:
+                    icon = val.icon
+                except AttributeError:
+                    pass
+
+            return None if icon is None else icon._impl
+
+        def text(attr):
+            val = getattr(item, attr, None)
+            if isinstance(val, toga.Widget):
+                warn("This backend does not support the use of widgets in cells")
+                val = None
+            if isinstance(val, tuple):
+                val = val[1]
+            if val is None:
+                val = self.interface.missing_value
             return str(val)
 
-        return [strip_icon(item, attr) for attr in self.interface._accessors]
+        lvi = WinForms.ListViewItem(
+            [text(attr) for attr in self._accessors],
+        )
+
+        # TODO: ListView only has built-in support for one icon per row. One possible
+        # workaround is in https://stackoverflow.com/a/46128593.
+        icon = icon(self._accessors[0])
+        if icon is not None:
+            lvi.ImageIndex = self._image_index(icon)
+
+        return lvi
+
+    def _image_index(self, icon):
+        images = self.native.SmallImageList.Images
+        key = str(icon.path)
+        index = images.IndexOfKey(key)
+        if index == -1:
+            index = images.Count
+            images.Add(key, icon.bitmap)
+        return index
 
     def update_data(self):
-        self.native.VirtualListSize = len(self.interface.data)
+        self.native.VirtualListSize = len(self._data)
         self._cache = []
 
     def insert(self, index, item):
         self.update_data()
 
     def change(self, item):
-        self.interface.factory.not_implemented("Table.change()")
+        self.update_data()
 
-    def remove(self, item, index):
+    def remove(self, index, item):
         self.update_data()
 
     def clear(self):
-        self.native.Items.Clear()
+        self.update_data()
 
     def get_selection(self):
-        # First turning this to list since Pythonnet have problems iterating
-        # over it.
         selected_indices = list(self.native.SelectedIndices)
-
-        if self.interface.multiple_select:
-            selected = [
-                row
-                for i, row in enumerate(self.interface.data)
-                if i in selected_indices
-            ]
-            return selected
+        if self._multiple_select:
+            return selected_indices
         elif len(selected_indices) == 0:
             return None
         else:
-            return self.interface.data[selected_indices[0]]
+            return selected_indices[0]
 
-    def set_on_select(self, handler):
-        pass
-
-    def set_on_double_click(self, handler):
-        pass
-
-    def scroll_to_row(self, row):
-        self.native.EnsureVisible(row)
+    def scroll_to_row(self, index):
+        self.native.EnsureVisible(index)
 
     def rehint(self):
         self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
         self.interface.intrinsic.height = at_least(self.interface._MIN_HEIGHT)
 
-    def remove_column(self, accessor):
-        self.native.Columns.RemoveByKey(accessor)
-
-    def add_column(self, heading, accessor):
-        self.native.Columns.Add(self._create_column(heading, accessor))
+    def remove_column(self, index):
+        self.native.Columns.RemoveAt(index)
         self.update_data()
+        self._resize_columns()
+
+    def insert_column(self, index, heading, accessor):
+        self.native.Columns.Insert(index, self._create_column(heading, accessor))
+        self.update_data()
+        self._resize_columns()

@@ -1,3 +1,5 @@
+import asyncio
+
 from toga_iOS.libs import UIProgressView
 
 from .base import SimpleProbe
@@ -17,3 +19,9 @@ class ProgressBarProbe(SimpleProbe):
     @property
     def position(self):
         return self.native.progress
+
+    async def wait_for_animation(self):
+        # We need to enforce a short sleep here because iOS implements it's own
+        # animation as a background task, and we need to give that animation time to
+        # run.
+        await asyncio.sleep(0.1)

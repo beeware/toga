@@ -6,7 +6,7 @@ ActivityIndicator,General Widget,:class:`~toga.ActivityIndicator`,A spinning act
 Button,General Widget,:class:`~toga.Button`,Basic clickable Button,|y|,|y|,|y|,|y|,|y|,|b|,|b|
 Canvas,General Widget,:class:`~toga.Canvas`,Area you can draw on,|b|,|b|,|b|,|b|,,,
 DateInput,General Widget,:class:`~toga.DateInput`,A widget to select a calendar date,,,|y|,,|y|,,
-DetailedList,General Widget,:class:`~toga.DetailedList`,A list of complex content,|b|,|b|,,|b|,|b|,,
+DetailedList,General Widget,:class:`~toga.DetailedList`,"An ordered list of content where each item has an icon, a main heading, and a line of supplementary text.",|y|,|y|,|b|,|y|,|y|,,
 Divider,General Widget,:class:`~toga.Divider`,A horizontal or vertical line,|y|,|y|,|y|,,,|b|,
 ImageView,General Widget,:class:`~toga.ImageView`,A widget that displays an image,|y|,|y|,|y|,|y|,|y|,,
 Label,General Widget,:class:`~toga.Label`,Text label,|y|,|y|,|y|,|y|,|y|,|b|,|b|
@@ -17,10 +17,10 @@ ProgressBar,General Widget,:class:`~toga.ProgressBar`,Progress Bar,|y|,|y|,|y|,|
 Selection,General Widget,:class:`~toga.Selection`,A widget to select a single option from a list of alternatives.,|y|,|y|,|y|,|y|,|y|,,
 Slider,General Widget,:class:`~toga.Slider`,Slider,|y|,|y|,|y|,|y|,|y|,,
 Switch,General Widget,:class:`~toga.Switch`,Switch,|y|,|y|,|y|,|y|,|y|,|b|,
-Table,General Widget,:class:`~toga.Table`,Table of data,|b|,|b|,|b|,,|b|,,
+Table,General Widget,:class:`~toga.Table`,A widget for displaying columns of tabular data.,|y|,|y|,|y|,,|b|,,
 TextInput,General Widget,:class:`~toga.TextInput`,A widget for the display and editing of a single line of text.,|y|,|y|,|y|,|y|,|y|,|b|,|b|
 TimeInput,General Widget,:class:`~toga.TimeInput`,A widget to select a clock time,,,|y|,,|y|,,
-Tree,General Widget,:class:`~toga.Tree`,Tree of data,|b|,|b|,|b|,,,,
+Tree,General Widget,:class:`~toga.Tree`,A widget for displaying a hierarchical tree of tabular data.,|y|,|y|,,,,,
 WebView,General Widget,:class:`~toga.WebView`,A panel for displaying HTML,|y|,|y|,|y|,|y|,|y|,,
 Widget,General Widget,:class:`~toga.Widget`,The base widget,|y|,|y|,|y|,|y|,|y|,|b|,|b|
 Box,Layout Widget,:class:`~toga.Box`,Container for components,|y|,|y|,|y|,|y|,|y|,|b|,|b|
@@ -31,5 +31,5 @@ App Paths,Resource,:class:`~toga.paths.Paths`,A mechanism for obtaining platform
 Font,Resource,:class:`~toga.Font`,A text font,|b|,|y|,|y|,|b|,|b|,,
 Command,Resource,:class:`~toga.Command`,Command,|b|,|b|,|b|,,|b|,,
 Group,Resource,:class:`~toga.Group`,Command group,|b|,|b|,|b|,|b|,|b|,,
-Icon,Resource,:class:`~toga.Icon`,"An icon for buttons, menus, etc",|b|,|b|,|b|,|b|,|b|,,|b|
+Icon,Resource,:class:`~toga.Icon`,"A small, square image, used to provide easily identifiable visual context to a widget.",|y|,|y|,|y|,|y|,|y|,,|b|
 Image,Resource,:class:`~toga.Image`,An image,|y|,|y|,|y|,|y|,|y|,,
