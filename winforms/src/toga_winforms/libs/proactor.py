@@ -9,7 +9,7 @@ from System.Threading.Tasks import Task
 
 
 class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
-    def run_forever(self, app, app_context, app_dispatcher):
+    def run_forever(self, app):
         """Set up the asyncio event loop, integrate it with the Winforms event loop, and
         start the application.
 
@@ -27,10 +27,8 @@ class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
         # select call to process.
         self.call_soon(self._loop_self_reading)
 
-        # Remember the application, its context and dispatcher.
+        # Remember the application.
         self.app = app
-        self.app_context = app_context
-        self.app_dispatcher = app_dispatcher
 
         # Set up the Proactor.
         # The code between the following markers should be exactly the same as
@@ -67,7 +65,7 @@ class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
         self.enqueue_tick()
 
         # Start the Winforms event loop.
-        WinForms.Application.Run(self.app_context)
+        WinForms.Application.Run(self.app.app_context)
 
     def enqueue_tick(self):
         # Queue a call to tick in 5ms.
@@ -79,7 +77,7 @@ class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
         """Cause a single iteration of the event loop to run on the main GUI thread."""
         if not self.app._is_exiting:
             action = Action(self.run_once_recurring)
-            self.app_dispatcher.Invoke(action)
+            self.app.app_dispatcher.Invoke(action)
 
     def run_once_recurring(self):
         """Run one iteration of the event loop, and enqueue the next iteration (if we're
