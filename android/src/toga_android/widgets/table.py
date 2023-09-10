@@ -1,12 +1,13 @@
+from warnings import warn
+
 from travertino.size import at_least
 
-from ..libs.activity import MainActivity
+import toga
+
 from ..libs.android import R__attr
-from ..libs.android.graphics import Typeface
-from ..libs.android.view import Gravity, OnClickListener, View__MeasureSpec
+from ..libs.android.graphics import Rect, Typeface
+from ..libs.android.view import Gravity, OnClickListener, OnLongClickListener
 from ..libs.android.widget import (
-    HorizontalScrollView,
-    LinearLayout,
     LinearLayout__LayoutParams,
     ScrollView,
     TableLayout,
@@ -25,108 +26,103 @@ class TogaOnClickListener(OnClickListener):
 
     def onClick(self, view):
         tr_id = view.getId()
-        row = self.impl.interface.data[tr_id]
         if self.impl.interface.multiple_select:
             if tr_id in self.impl.selection:
-                self.impl.selection.pop(tr_id)
-                view.setBackgroundColor(self.impl.color_unselected)
+                self.impl.remove_selection(tr_id)
             else:
-                self.impl.selection[tr_id] = row
-                view.setBackgroundColor(self.impl.color_selected)
+                self.impl.add_selection(tr_id, view)
         else:
             self.impl.clear_selection()
-            self.impl.selection[tr_id] = row
-            view.setBackgroundColor(self.impl.color_selected)
-        if self.impl.interface.on_select:
-            self.impl.interface.on_select(self.impl.interface, row=row)
+            self.impl.add_selection(tr_id, view)
+        self.impl.interface.on_select(None)
+
+
+class TogaOnLongClickListener(OnLongClickListener):
+    def __init__(self, impl):
+        super().__init__()
+        self.impl = impl
+
+    def onLongClick(self, view):
+        self.impl.clear_selection()
+        index = view.getId()
+        self.impl.add_selection(index, view)
+        self.impl.interface.on_select(None)
+        self.impl.interface.on_activate(None, row=self.impl.interface.data[index])
+        return True
 
 
 class Table(Widget):
     table_layout = None
     color_selected = None
     color_unselected = None
-    selection = {}
-    _deleted_column = None
     _font_impl = None
 
     def create(self):
         # get the selection color from the current theme
-        current_theme = MainActivity.singletonThis.getApplication().getTheme()
         attrs = [R__attr.colorBackground, R__attr.colorControlHighlight]
-        typed_array = current_theme.obtainStyledAttributes(attrs)
+        typed_array = self._native_activity.obtainStyledAttributes(attrs)
         self.color_unselected = typed_array.getColor(0, 0)
         self.color_selected = typed_array.getColor(1, 0)
         typed_array.recycle()
 
-        parent = LinearLayout(self._native_activity)
-        parent.setOrientation(LinearLayout.VERTICAL)
-        parent_layout_params = LinearLayout__LayoutParams(
-            LinearLayout__LayoutParams.MATCH_PARENT,
-            LinearLayout__LayoutParams.MATCH_PARENT,
-        )
-        parent_layout_params.gravity = Gravity.TOP
-        parent.setLayoutParams(parent_layout_params)
-        vscroll_view = ScrollView(self._native_activity)
         # add vertical scroll view
+        self.native = vscroll_view = ScrollView(self._native_activity)
         vscroll_view_layout_params = LinearLayout__LayoutParams(
             LinearLayout__LayoutParams.MATCH_PARENT,
             LinearLayout__LayoutParams.MATCH_PARENT,
         )
         vscroll_view_layout_params.gravity = Gravity.TOP
-        self.table_layout = TableLayout(MainActivity.singletonThis)
+        vscroll_view.setLayoutParams(vscroll_view_layout_params)
+
+        self.table_layout = TableLayout(self._native_activity)
         table_layout_params = TableLayout__Layoutparams(
             TableLayout__Layoutparams.MATCH_PARENT,
             TableLayout__Layoutparams.WRAP_CONTENT,
         )
-        # add horizontal scroll view
-        hscroll_view = HorizontalScrollView(self._native_activity)
-        hscroll_view_layout_params = LinearLayout__LayoutParams(
-            LinearLayout__LayoutParams.MATCH_PARENT,
-            LinearLayout__LayoutParams.MATCH_PARENT,
-        )
-        hscroll_view_layout_params.gravity = Gravity.LEFT
-        vscroll_view.addView(hscroll_view, hscroll_view_layout_params)
 
         # add table layout to scrollbox
         self.table_layout.setLayoutParams(table_layout_params)
-        hscroll_view.addView(self.table_layout)
-        # add scroll box to parent layout
-        parent.addView(vscroll_view, vscroll_view_layout_params)
-        self.native = parent
-        if self.interface.data is not None:
-            self.change_source(self.interface.data)
+        vscroll_view.addView(self.table_layout)
 
     def change_source(self, source):
         self.selection = {}
         self.table_layout.removeAllViews()
+
+        # StretchAllColumns mode causes a divide by zero error if there are no columns.
+        self.table_layout.setStretchAllColumns(bool(self.interface.accessors))
+
         if source is not None:
-            self.table_layout.addView(self.create_table_header())
+            if self.interface.headings is not None:
+                self.table_layout.addView(self.create_table_header())
             for row_index in range(len(source)):
                 table_row = self.create_table_row(row_index)
                 self.table_layout.addView(table_row)
         self.table_layout.invalidate()
 
+    def add_selection(self, index, table_row):
+        self.selection[index] = table_row
+        table_row.setBackgroundColor(self.color_selected)
+
+    def remove_selection(self, index):
+        table_row = self.selection.pop(index)
+        table_row.setBackgroundColor(self.color_unselected)
+
     def clear_selection(self):
-        for i in range(self.table_layout.getChildCount()):
-            row = self.table_layout.getChildAt(i)
-            row.setBackgroundColor(self.color_unselected)
-        self.selection = {}
+        for index in list(self.selection):
+            self.remove_selection(index)
 
     def create_table_header(self):
-        table_row = TableRow(MainActivity.singletonThis)
+        table_row = TableRow(self._native_activity)
         table_row_params = TableRow__Layoutparams(
             TableRow__Layoutparams.MATCH_PARENT, TableRow__Layoutparams.WRAP_CONTENT
         )
         table_row.setLayoutParams(table_row_params)
         for col_index in range(len(self.interface._accessors)):
-            if self.interface._accessors[col_index] == self._deleted_column:
-                continue
-            text_view = TextView(MainActivity.singletonThis)
+            text_view = TextView(self._native_activity)
             text_view.setText(self.interface.headings[col_index])
-            if self._font_impl:
-                self._font_impl.apply(
-                    text_view, text_view.getTextSize(), text_view.getTypeface()
-                )
+            self._font_impl.apply(
+                text_view, text_view.getTextSize(), text_view.getTypeface()
+            )
             text_view.setTypeface(
                 Typeface.create(
                     text_view.getTypeface(),
@@ -143,23 +139,22 @@ class Table(Widget):
         return table_row
 
     def create_table_row(self, row_index):
-        table_row = TableRow(MainActivity.singletonThis)
+        table_row = TableRow(self._native_activity)
         table_row_params = TableRow__Layoutparams(
             TableRow__Layoutparams.MATCH_PARENT, TableRow__Layoutparams.WRAP_CONTENT
         )
         table_row.setLayoutParams(table_row_params)
         table_row.setClickable(True)
         table_row.setOnClickListener(TogaOnClickListener(impl=self))
+        table_row.setLongClickable(True)
+        table_row.setOnLongClickListener(TogaOnLongClickListener(impl=self))
         table_row.setId(row_index)
         for col_index in range(len(self.interface._accessors)):
-            if self.interface._accessors[col_index] == self._deleted_column:
-                continue
-            text_view = TextView(MainActivity.singletonThis)
+            text_view = TextView(self._native_activity)
             text_view.setText(self.get_data_value(row_index, col_index))
-            if self._font_impl:
-                self._font_impl.apply(
-                    text_view, text_view.getTextSize(), text_view.getTypeface()
-                )
+            self._font_impl.apply(
+                text_view, text_view.getTextSize(), text_view.getTypeface()
+            )
             text_view_params = TableRow__Layoutparams(
                 TableRow__Layoutparams.MATCH_PARENT, TableRow__Layoutparams.WRAP_CONTENT
             )
@@ -170,68 +165,63 @@ class Table(Widget):
         return table_row
 
     def get_data_value(self, row_index, col_index):
-        if self.interface.data is None or self.interface._accessors is None:
-            return None
-        row_object = self.interface.data[row_index]
         value = getattr(
-            row_object,
+            self.interface.data[row_index],
             self.interface._accessors[col_index],
-            self.interface.missing_value,
+            None,
         )
-        return value
+        if isinstance(value, toga.Widget):
+            warn("This backend does not support the use of widgets in cells")
+            value = None
+        if isinstance(value, tuple):  # TODO: support icons
+            value = value[1]
+        if value is None:
+            value = self.interface.missing_value
+        return str(value)
 
     def get_selection(self):
-        selection = []
-        for row_index in range(len(self.interface.data)):
-            if row_index in self.selection:
-                selection.append(self.selection[row_index])
-        if len(selection) == 0:
-            selection = None
-        elif not self.interface.multiple_select:
-            selection = selection[0]
-        return selection
+        selection = sorted(self.selection)
+        if self.interface.multiple_select:
+            return selection
+        elif len(selection) == 0:
+            return None
+        else:
+            return selection[0]
 
-    # data listener method
     def insert(self, index, item):
         self.change_source(self.interface.data)
 
-    # data listener method
     def clear(self):
         self.change_source(self.interface.data)
 
     def change(self, item):
-        self.interface.factory.not_implemented("Table.change()")
-
-    # data listener method
-    def remove(self, item, index):
         self.change_source(self.interface.data)
 
-    def scroll_to_row(self, row):
-        pass
-
-    def set_on_select(self, handler):
-        pass
-
-    def set_on_double_click(self, handler):
-        self.interface.factory.not_implemented("Table.set_on_double_click()")
-
-    def add_column(self, heading, accessor):
+    def remove(self, index, item):
         self.change_source(self.interface.data)
 
-    def remove_column(self, accessor):
-        self._deleted_column = accessor
+    def scroll_to_row(self, index):
+        if (index != 0) and (self.interface.headings is not None):
+            index += 1
+        table_row = self.table_layout.getChildAt(index)
+        table_row.requestRectangleOnScreen(
+            Rect(0, 0, 0, table_row.getHeight()),
+            True,  # Immediate, not animated
+        )
+
+    def insert_column(self, index, heading, accessor):
         self.change_source(self.interface.data)
-        self._deleted_column = None
+
+    def remove_column(self, index):
+        self.change_source(self.interface.data)
+
+    def set_background_color(self, value):
+        self.set_background_simple(value)
 
     def set_font(self, font):
         self._font_impl = font._impl
-        if self.interface.data is not None:
-            self.change_source(self.interface.data)
+        self.change_source(self.interface.data)
 
     def rehint(self):
-        self.native.measure(
-            View__MeasureSpec.UNSPECIFIED,
-            View__MeasureSpec.UNSPECIFIED,
-        )
-        self.interface.intrinsic.width = at_least(self.native.getMeasuredWidth())
-        self.interface.intrinsic.height = at_least(self.native.getMeasuredHeight())
+        self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
+        self.interface.intrinsic.height = at_least(self.interface._MIN_HEIGHT)

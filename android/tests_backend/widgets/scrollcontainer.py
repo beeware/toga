@@ -1,5 +1,3 @@
-import asyncio
-
 from android.widget import HorizontalScrollView, RelativeLayout, ScrollView
 
 from .base import SimpleProbe
@@ -33,14 +31,9 @@ class ScrollContainerProbe(SimpleProbe):
         return round(self.native_content.getWidth() / self.scale_factor)
 
     async def scroll(self):
-        await self.swipe(0, -30)  # Swipe up
+        x = self.native.getWidth() * 0.5
+        height = self.native.getHeight()
+        await self.swipe(x, height * 0.9, x, height * 0.1)
 
     async def wait_for_scroll_completion(self):
-        position = self.widget.position
-        current = None
-        # Iterate until 2 successive reads of the scroll position,
-        # 0.05s apart, return the same value
-        while position != current:
-            position = current
-            await asyncio.sleep(0.05)
-            current = self.widget.position
+        pass

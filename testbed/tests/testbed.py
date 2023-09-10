@@ -133,13 +133,18 @@ if __name__ == "__main__":
     except ValueError:
         run_slow = False
 
-    # If there are no other specified arguments, default to running the whole suite.
-    # Only show coverage if we're running the full suite.
+    # If `--coverage` is in the arguments, display a coverage report
+    try:
+        args.remove("--coverage")
+        report_coverage = True
+    except ValueError:
+        report_coverage = False
+
+    # If there are no other specified arguments, default to running the whole suite,
+    # and reporting coverage.
     if len(args) == 0:
         args = ["tests"]
         report_coverage = True
-    else:
-        report_coverage = False
 
     thread = Thread(
         target=partial(

@@ -1,3 +1,4 @@
+import asyncio
 from threading import Event
 
 from toga_gtk.libs import Gdk, Gtk
@@ -160,3 +161,8 @@ class SimpleProbe(BaseProbe):
 
         # Remove the temporary handler
         self._keypress_target.disconnect(handler_id)
+
+        # GTK has an intermittent failure because on_change handler
+        # caused by typing a character doesn't fully propegate. A
+        # short delay fixes this.
+        await asyncio.sleep(0.04)
