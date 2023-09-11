@@ -4,11 +4,11 @@ import sys
 import threading
 from ctypes import windll
 
+import clr
 import System.Windows.Forms as WinForms
 from System import Environment, Threading
 from System.Media import SystemSounds
 from System.Net import SecurityProtocolType, ServicePointManager
-from System.Reflection import Assembly
 
 import toga
 from toga import Key
@@ -16,6 +16,13 @@ from toga import Key
 from .keys import toga_to_winforms_key
 from .libs.proactor import WinformsProactorEventLoop
 from .window import Window
+
+# A Reference to WindowsBase Assembly is needed for Dispatcher
+# For Assembly String, see discussion: https://github.com/beeware/toga/pull/2112#issuecomment-1713315502
+clr.AddReference(
+    "WindowsBase, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35"
+)
+from System.Windows.Threading import Dispatcher  # noqa
 
 
 class MainWindow(Window):
@@ -58,17 +65,7 @@ class App:
     def create(self):
         self.native = WinForms.Application
         self.app_context = WinForms.ApplicationContext()
-
-        # Get the app dispatcher
-        # https://github.com/proneon267/dotnet-core-redist-lists/blob/098fd735aeb41313e4e1b20829a911d7162b20b5/AssemblyList_4_client.xml#L91
-        windowsbase_assembly = Assembly.Load(
-            "WindowsBase, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35"
-        )
-        dispatcher_type = windowsbase_assembly.GetType(
-            "System.Windows.Threading.Dispatcher"
-        )
-        current_dispatcher_property = dispatcher_type.GetProperty("CurrentDispatcher")
-        self.app_dispatcher = current_dispatcher_property.GetValue(None)
+        self.app_dispatcher = Dispatcher.CurrentDispatcher
 
         # Check the version of windows and make sure we are setting the DPI mode
         # with the most up to date API

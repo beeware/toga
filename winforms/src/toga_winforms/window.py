@@ -134,31 +134,32 @@ class Window(Container, Scalable):
         # If the app is exiting, or a manual close has been requested,
         # don't get confirmation; just close.
         if not self.interface.app._impl._is_exiting and not self._is_closing:
-            if not self.interface.closeable:
-                # Closeability is implemented by shortcutting the close handler.
-                event.Cancel = True
-
-            elif self.interface.on_close._raw:
+            # For handling window closing depending on its closeability
+            # settings or when there is an on_close event handler.
+            if not self.interface.closeable or self.interface.on_close._raw:
                 # If there is an on_close event handler, process it;
                 # but then cancel the close event. If the result of
                 # on_close handling indicates the window should close,
                 # then it will be manually triggered as part of that
                 # result handling.
                 self.interface.on_close(self)
-                # Close the app when the last window closes.
-                if len(self.interface.app.windows) == 0:
-                    if self.interface.app.on_exit:
-                        self.interface.app.on_exit(self.interface.app)
-                event.Cancel = True
+                # Close the app when the main_window or last window closes.
+                if (self.interface == self.interface.app.main_window) or (
+                    len(self.interface.app.windows) == 0 and self.interface.app.on_exit
+                ):
+                    self.interface.app.on_exit(self.interface.app)
 
-            # Close the window when no on_close handler is provided.
+            # For handling window closing when no on_close handler is provided.
             elif self.interface.on_close._raw is None:
                 self.interface.close()
-                # Close the app when the last window closes.
-                if len(self.interface.app.windows) == 0:
-                    if self.interface.app.on_exit:
-                        self.interface.app.on_exit(self.interface.app)
-                event.Cancel = True
+                # Close the app when the main_window or last window closes.
+                if (self.interface == self.interface.app.main_window) or (
+                    len(self.interface.app.windows) == 0 and self.interface.app.on_exit
+                ):
+                    self.interface.app.on_exit(self.interface.app)
+
+            # Closeability is implemented by shortcutting the close handler.
+            event.Cancel = True
 
     def set_full_screen(self, is_full_screen):
         if is_full_screen:
