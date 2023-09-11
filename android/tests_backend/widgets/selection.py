@@ -3,7 +3,6 @@ from pytest import xfail
 from android.widget import Spinner
 
 from .base import SimpleProbe
-from .properties import toga_alignment
 
 
 class SelectionProbe(SimpleProbe):
@@ -15,7 +14,7 @@ class SelectionProbe(SimpleProbe):
 
     @property
     def alignment(self):
-        return toga_alignment(self.native.getGravity())
+        xfail("Can't change the alignment of Selection on this backend")
 
     @property
     def color(self):
