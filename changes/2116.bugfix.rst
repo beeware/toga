@@ -1,0 +1,1 @@
+The pixbuf bug present in gtk icons was fixed.
