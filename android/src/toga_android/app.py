@@ -28,6 +28,7 @@ class TogaApp(IPythonApp):
         super().__init__()
         self._impl = app
         MainActivity.setPythonApp(self)
+        self.native = MainActivity.singletonThis
         print("Python app launched & stored in Android Activity class")
 
     def onCreate(self):
@@ -163,14 +164,6 @@ class TogaApp(IPythonApp):
                 ] = cmd  # store itemid for use in onOptionsItemSelected
 
         return True
-
-    @property
-    def native(self):
-        # We access `MainActivity.singletonThis` freshly each time, rather than
-        # storing a reference in `__init__()`, because it's not safe to use the
-        # same reference over time because `rubicon-java` creates a JNI local
-        # reference.
-        return MainActivity.singletonThis
 
 
 class App:

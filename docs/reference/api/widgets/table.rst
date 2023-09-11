@@ -98,7 +98,8 @@ Notes
 
 * macOS does not support changing the font used to render table content.
 
-* Icons in cells are not currently supported on Android or Winforms.
+* On Winforms, icons are only supported in the first column. On Android, icons are not
+  supported at all.
 
 * The Android implementation is `not scalable
   <https://github.com/beeware/toga/issues/1392>`_ beyond about 1,000 cells.

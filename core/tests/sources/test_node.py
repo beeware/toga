@@ -103,14 +103,69 @@ def test_leaf_node_properties(leaf_node):
 def test_modify_attributes(source, node):
     """If node attributes are modified, a change notification is sent"""
     node.val1 = "new value"
+    assert node.val1 == "new value"
     source.notify.assert_called_once_with("change", item=node)
     source.notify.reset_mock()
+
+    # Deleting an attribute causes a change notification
+    del node.val1
+    assert not hasattr(node, "val1")
+    source.notify.assert_called_once_with("change", item=node)
+    source.notify.reset_mock()
+
+    # Setting an attribute starting with with an underscore isn't a notifiable event
+    node._secret = "secret value"
+    assert node._secret == "secret value"
+    source.notify.assert_not_called()
+
+    # Deleting an attribute starting with with an underscore isn't a notifiable event
+    del node._secret
+    assert not hasattr(node, "_secret")
+    source.notify.assert_not_called()
 
     # An attribute that wasn't in the original attribute set
     # still causes a change notification
     node.val3 = "other value"
+    assert node.val3 == "other value"
     source.notify.assert_called_once_with("change", item=node)
     source.notify.reset_mock()
+
+    # Deleting an attribute that wasn't in the original attribute set
+    # still causes a change notification
+    del node.val3
+    assert not hasattr(node, "val3")
+    source.notify.assert_called_once_with("change", item=node)
+    source.notify.reset_mock()
+
+
+def test_modify_attributes_no_source(node):
+    """Node attributes can be modified on a node with no source"""
+    node.source = None
+
+    node.val1 = "new value"
+    assert node.val1 == "new value"
+
+    # Deleting an attribute causes a change notification
+    del node.val1
+    assert not hasattr(node, "val1")
+
+    # Setting an attribute starting with with an underscore isn't a notifiable event
+    node._secret = "secret value"
+    assert node._secret == "secret value"
+
+    # Deleting an attribute starting with with an underscore isn't a notifiable event
+    del node._secret
+    assert not hasattr(node, "_secret")
+
+    # An attribute that wasn't in the original attribute set
+    # still causes a change notification
+    node.val3 = "other value"
+    assert node.val3 == "other value"
+
+    # Deleting an attribute that wasn't in the original attribute set
+    # still causes a change notification
+    del node.val3
+    assert not hasattr(node, "val3")
 
 
 def test_modify_children(source, node):

@@ -13,27 +13,6 @@ from ..libs.android.view import Gravity, View
 from ..libs.android.widget import RelativeLayout__LayoutParams
 
 
-def _get_activity(_cache=[]):
-    """Android Toga widgets need a reference to the current activity to pass it as
-    `context` when creating Android native widgets. This may be useful at any time, so
-    we retain a global JNI ref.
-
-    :param _cache: List that is either empty or contains 1 item, the cached global JNI ref
-    """
-    if _cache:
-        return _cache[0]
-    # See MainActivity.onCreate() for initialization of .singletonThis:
-    # https://github.com/beeware/briefcase-android-gradle-template/blob/3.7/%7B%7B%20cookiecutter.formal_name%20%7D%7D/app/src/main/java/org/beeware/android/MainActivity.java
-    # This can't be tested because if it isn't set, nothing else will work.
-    if not MainActivity.singletonThis:  # pragma: no cover
-        raise ValueError(
-            "Unable to find MainActivity.singletonThis from Python. This is typically set by "
-            "org.beeware.android.MainActivity.onCreate()."
-        )
-    _cache.append(MainActivity.singletonThis.__global__())
-    return _cache[0]
-
-
 class Scalable:
     SCALE_DEFAULT_ROUNDING = ROUND_HALF_EVEN
 
@@ -69,7 +48,7 @@ class Widget(ABC, Scalable):
         self.interface._impl = self
         self._container = None
         self.native = None
-        self._native_activity = _get_activity()
+        self._native_activity = MainActivity.singletonThis
         self.init_scale(self._native_activity)
         self.create()
 
