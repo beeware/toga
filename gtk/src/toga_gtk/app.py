@@ -202,7 +202,7 @@ class App:
         about = Gtk.AboutDialog()
 
         icon_impl = toga_App.app.icon._impl
-        about.set_logo(icon_impl.native_72.get_pixbuf())
+        about.set_logo(icon_impl.native_72)
 
         if self.interface.name is not None:
             about.set_program_name(self.interface.name)
