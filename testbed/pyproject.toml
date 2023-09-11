@@ -43,9 +43,6 @@ test_sources = [
 ]
 requires = [
     "../gtk",
-    # PyGObject #119 breaks the test suite; the fix has been merged, but we need to use
-    # a mainline version of PyGObject until we can pin an official release.
-    "git+https://gitlab.gnome.org/GNOME/pygobject.git@5acfb6cc7c34c8ce9e20aef7eaaa79f27248b1a6",
 ]
 
 [tool.briefcase.app.testbed.linux.appimage]
