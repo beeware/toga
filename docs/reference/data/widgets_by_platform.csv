@@ -6,7 +6,7 @@ ActivityIndicator,General Widget,:class:`~toga.ActivityIndicator`,A spinning act
 Button,General Widget,:class:`~toga.Button`,Basic clickable Button,|y|,|y|,|y|,|y|,|y|,|b|,|b|
 Canvas,General Widget,:class:`~toga.Canvas`,Area you can draw on,|b|,|b|,|b|,|b|,,,
 DateInput,General Widget,:class:`~toga.DateInput`,A widget to select a calendar date,,,|y|,,|y|,,
-DetailedList,General Widget,:class:`~toga.DetailedList`,A list of complex content,|b|,|b|,,|b|,|b|,,
+DetailedList,General Widget,:class:`~toga.DetailedList`,"An ordered list of content where each item has an icon, a main heading, and a line of supplementary text.",|y|,|y|,|b|,|y|,|y|,,
 Divider,General Widget,:class:`~toga.Divider`,A horizontal or vertical line,|y|,|y|,|y|,,,|b|,
 ImageView,General Widget,:class:`~toga.ImageView`,A widget that displays an image,|y|,|y|,|y|,|y|,|y|,,
 Label,General Widget,:class:`~toga.Label`,Text label,|y|,|y|,|y|,|y|,|y|,|b|,|b|

@@ -1,4 +1,5 @@
 import pytest
+from System.Drawing import Bitmap
 from System.Windows.Forms import (
     ColumnHeaderStyle,
     ListView,
@@ -12,7 +13,7 @@ from .base import SimpleProbe
 class TableProbe(SimpleProbe):
     native_class = ListView
     background_supports_alpha = False
-    supports_icons = False
+    supports_icons = 1  # First column only
     supports_keyboard_shortcuts = False
     supports_widgets = False
 
@@ -28,8 +29,26 @@ class TableProbe(SimpleProbe):
         if widget:
             pytest.skip("This backend doesn't support widgets in Tables")
         else:
-            assert self.native.Items[row].SubItems[col].Text == value
-            assert icon is None
+            lvi = self.native.Items[row]
+            assert lvi.SubItems[col].Text == value
+            if col == 0:
+                if icon is None:
+                    assert lvi.ImageIndex == -1
+                    assert lvi.ImageKey == ""
+                else:
+                    imagelist = self.native.SmallImageList
+                    size = imagelist.ImageSize
+                    assert size.Width == size.Height == 16
+
+                    # The image is resized and copied, so we need to compare the actual
+                    # pixels.
+                    actual = imagelist.Images[lvi.ImageIndex]
+                    expected = Bitmap(icon._impl.bitmap, size)
+                    for x in range(size.Width):
+                        for y in range(size.Height):
+                            assert actual.GetPixel(x, y) == expected.GetPixel(x, y)
+            else:
+                assert icon is None
 
     @property
     def max_scroll_position(self):

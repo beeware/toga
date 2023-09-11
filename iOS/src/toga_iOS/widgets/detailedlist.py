@@ -1,18 +1,23 @@
-from rubicon.objc import SEL, objc_method, objc_property
+from rubicon.objc import (
+    SEL,
+    ObjCBlock,
+    ObjCInstance,
+    objc_method,
+    objc_property,
+)
 from travertino.size import at_least
 
 from toga_iOS.libs import (
     NSIndexPath,
+    UIContextualAction,
+    UIContextualActionStyle,
     UIControlEventValueChanged,
     UIRefreshControl,
+    UISwipeActionsConfiguration,
     UITableViewCell,
-    UITableViewCellEditingStyleDelete,
-    UITableViewCellEditingStyleInsert,
-    UITableViewCellEditingStyleNone,
     UITableViewCellSeparatorStyleNone,
     UITableViewCellStyleSubtitle,
     UITableViewController,
-    UITableViewRowAnimationLeft,
     UITableViewScrollPositionNone,
 )
 from toga_iOS.widgets.base import Widget
@@ -32,93 +37,156 @@ class TogaTableViewController(UITableViewController):
 
     @objc_method
     def tableView_cellForRowAtIndexPath_(self, tableView, indexPath):
-        cell = tableView.dequeueReusableCellWithIdentifier_("row")
+        cell = tableView.dequeueReusableCellWithIdentifier("row")
         if cell is None:
-            cell = UITableViewCell.alloc().initWithStyle_reuseIdentifier_(
-                UITableViewCellStyleSubtitle, "row"
+            cell = (
+                UITableViewCell.alloc()
+                .initWithStyle(UITableViewCellStyleSubtitle, reuseIdentifier="row")
+                .autorelease()
             )
+
         value = self.interface.data[indexPath.item]
 
-        cell.textLabel.text = str(getattr(value, "title", ""))
-        cell.detailTextLabel.text = str(getattr(value, "subtitle", ""))
-
-        # If the value has an icon attribute, get the _impl.
         try:
-            cell.imageView.image = value.icon._impl.native
+            label = getattr(value, self.interface.accessors[0])
+            if label is None:
+                cell.textLabel.text = self.interface.missing_value
+            else:
+                cell.textLabel.text = str(label)
         except AttributeError:
-            pass
+            cell.textLabel.text = self.interface.missing_value
+
+        try:
+            label = getattr(value, self.interface.accessors[1])
+            if label is None:
+                cell.detailTextLabel.text = self.interface.missing_value
+            else:
+                cell.detailTextLabel.text = str(label)
+        except AttributeError:
+            cell.detailTextLabel.text = self.interface.missing_value
+
+        try:
+            cell.imageView.image = getattr(
+                value, self.interface.accessors[2]
+            )._impl.native
+        except AttributeError:
+            cell.imageView.image = None
 
         return cell
 
     @objc_method
-    def tableView_commitEditingStyle_forRowAtIndexPath_(
-        self, tableView, editingStyle: int, indexPath
-    ):
-        if editingStyle == UITableViewCellEditingStyleDelete:
-            item = self.interface.data[indexPath.row]
-            if editingStyle == UITableViewCellEditingStyleDelete:
-                if self.interface.on_delete:
-                    self.interface.on_delete(self.interface, row=item)
+    def tableView_didSelectRowAtIndexPath_(self, tableView, indexPath):
+        self.interface.on_select(None)
 
-                tableView.beginUpdates()
-                self.interface.data.remove(item)
-                tableView.deleteRowsAtIndexPaths_withRowAnimation_(
-                    [indexPath], UITableViewRowAnimationLeft
+    # UITableViewDelegate methods
+    @objc_method
+    def tableView_trailingSwipeActionsConfigurationForRowAtIndexPath_(
+        self, tableView, indexPath
+    ):
+        if self.impl.primary_action_enabled:
+            actions = [
+                UIContextualAction.contextualActionWithStyle(
+                    UIContextualActionStyle.Destructive
+                    if self.interface._primary_action in self.impl.DESTRUCTIVE_NAMES
+                    else UIContextualActionStyle.Normal,
+                    title=self.interface._primary_action,
+                    handler=self.impl.primary_action_handler(indexPath.row),
                 )
-                tableView.endUpdates()
-            elif editingStyle == UITableViewCellEditingStyleInsert:
-                pass
-            elif editingStyle == UITableViewCellEditingStyleNone:
-                pass
+            ]
+        else:
+            actions = []
+
+        return UISwipeActionsConfiguration.configurationWithActions(actions)
+
+    @objc_method
+    def tableView_leadingSwipeActionsConfigurationForRowAtIndexPath_(
+        self, tableView, indexPath
+    ):
+        if self.impl.secondary_action_enabled:
+            actions = [
+                UIContextualAction.contextualActionWithStyle(
+                    UIContextualActionStyle.Destructive
+                    if self.interface._secondary_action in self.impl.DESTRUCTIVE_NAMES
+                    else UIContextualActionStyle.Normal,
+                    title=self.interface._secondary_action,
+                    handler=self.impl.secondary_action_handler(indexPath.row),
+                )
+            ]
+        else:
+            actions = []
+
+        return UISwipeActionsConfiguration.configurationWithActions(actions)
 
     @objc_method
     def refresh(self):
-        self.interface.on_refresh(self.interface)
-
-    @objc_method
-    def tableView_willSelectRowAtIndexPath_(self, tableView, indexPath):
-        index = indexPath.row
-        if index == -1:
-            selection = None
-        else:
-            selection = self.interface.data[index]
-
-        if self.interface.on_select:
-            self.interface.on_select(self.interface, row=selection)
-
-    # @objc_method
-    # def tableView_heightForRowAtIndexPath_(self, tableView, indexPath) -> float:
-    #     return 48.0
+        self.interface.on_refresh(None)
 
 
 class DetailedList(Widget):
-    def create(self):
-        self.controller = TogaTableViewController.alloc().init()
-        self.controller.interface = self.interface
-        self.controller.impl = self
-        self.native = self.controller.tableView
+    DESTRUCTIVE_NAMES = {"Delete", "Remove"}
 
+    def create(self):
+        self.native_controller = TogaTableViewController.alloc().init()
+        self.native_controller.interface = self.interface
+        self.native_controller.impl = self
+
+        self.native = self.native_controller.tableView
         self.native.separatorStyle = UITableViewCellSeparatorStyleNone
+        self.native.delegate = self.native_controller
+
+        self.primary_action_enabled = False
+        self.secondary_action_enabled = False
 
         # Add the layout constraints
         self.add_constraints()
 
-    def set_on_refresh(self, handler: callable or None) -> None:
-        if callable(handler):
-            self.controller.refreshControl = UIRefreshControl.alloc().init()
-            self.controller.refreshControl.addTarget(
-                self.controller,
-                action=SEL("refresh"),
-                forControlEvents=UIControlEventValueChanged,
-            )
+    def set_refresh_enabled(self, enabled):
+        if enabled:
+            if self.native_controller.refreshControl is None:
+                self.native_controller.refreshControl = UIRefreshControl.alloc().init()
+                self.native_controller.refreshControl.addTarget(
+                    self.native_controller,
+                    action=SEL("refresh"),
+                    forControlEvents=UIControlEventValueChanged,
+                )
         else:
-            if self.controller.refreshControl:
-                self.controller.refreshControl.removeFromSuperview()
-            self.controller.refreshControl = None
+            if self.native_controller.refreshControl:
+                self.native_controller.refreshControl.removeFromSuperview()
+            self.native_controller.refreshControl = None
+
+    def set_primary_action_enabled(self, enabled):
+        self.primary_action_enabled = enabled
+
+    def primary_action_handler(self, row):
+        def handle_primary_action(
+            action: ObjCInstance,
+            sourceView: ObjCInstance,
+            actionPerformed: ObjCInstance,
+        ) -> None:
+            item = self.interface.data[row]
+            self.interface.on_primary_action(self, row=item)
+            ObjCBlock(actionPerformed, None, bool)(True)
+
+        return handle_primary_action
+
+    def set_secondary_action_enabled(self, enabled):
+        self.secondary_action_enabled = enabled
+
+    def secondary_action_handler(self, row):
+        def handle_secondary_action(
+            action: ObjCInstance,
+            sourceView: ObjCInstance,
+            actionPerformed: ObjCInstance,
+        ) -> None:
+            item = self.interface.data[row]
+            self.interface.on_secondary_action(self, row=item)
+            ObjCBlock(actionPerformed, None, bool)(True)
+
+        return handle_secondary_action
 
     def after_on_refresh(self, widget, result):
-        self.controller.refreshControl.endRefreshing()
-        self.controller.tableView.reloadData()
+        self.native_controller.refreshControl.endRefreshing()
+        self.native_controller.tableView.reloadData()
 
     def change_source(self, source):
         self.native.reloadData()
@@ -136,15 +204,11 @@ class DetailedList(Widget):
         self.native.reloadData()
 
     def get_selection(self):
-        return None
-
-    def set_on_select(self, handler):
-        # No special handling required
-        pass
-
-    def set_on_delete(self, handler):
-        # No special handling required
-        pass
+        path = self.native.indexPathForSelectedRow
+        if path:
+            return path.item
+        else:
+            return None
 
     def scroll_to_row(self, row):
         self.native.scrollToRowAtIndexPath(

@@ -127,7 +127,7 @@ async def test_scroll(widget, probe):
     assert probe.max_scroll_position > 600
 
     # max_scroll_position is not perfectly accurate on Winforms.
-    assert probe.scroll_position == pytest.approx(probe.max_scroll_position, abs=5)
+    assert probe.scroll_position == pytest.approx(probe.max_scroll_position, abs=10)
 
     # Scroll to the middle of the table
     widget.scroll_to_row(50)
@@ -428,18 +428,23 @@ class MyIconData:
 
 async def test_cell_icon(widget, probe):
     "An icon can be used as a cell value"
-    red = toga.Icon("resources/icons/red") if probe.supports_icons else None
-    green = toga.Icon("resources/icons/green") if probe.supports_icons else None
+    # 0 = no support
+    # 1 = first column only
+    # 2 = all columns
+    support = probe.supports_icons
+
+    red = toga.Icon("resources/icons/red")
+    green = toga.Icon("resources/icons/green")
     widget.data = [
         {
-            # Normal text,
-            "a": f"A{i}",
             # A tuple
-            "b": {
-                0: (None, "B0"),  # String
+            "a": {
+                0: (None, "A0"),  # String
                 1: (red, None),  # None
                 2: (green, 2),  # Integer
             }[i % 3],
+            # Normal text,
+            "b": f"B{i}",
             # An object with an icon attribute.
             "c": MyIconData(f"C{i}", {0: red, 1: green, 2: None}[i % 3]),
         }
@@ -447,16 +452,20 @@ async def test_cell_icon(widget, probe):
     ]
     await probe.redraw("Table has data with icons")
 
-    probe.assert_cell_content(0, 0, "A0")
-    probe.assert_cell_content(0, 1, "B0", icon=None)
-    probe.assert_cell_content(0, 2, "<icondata C0>", icon=red)
+    probe.assert_cell_content(0, 0, "A0", icon=None)
+    probe.assert_cell_content(0, 1, "B0")
+    probe.assert_cell_content(
+        0, 2, "<icondata C0>", icon=red if (support == 2) else None
+    )
 
-    probe.assert_cell_content(1, 0, "A1")
-    probe.assert_cell_content(1, 1, "MISSING!", icon=red)
-    probe.assert_cell_content(1, 2, "<icondata C1>", icon=green)
+    probe.assert_cell_content(1, 0, "MISSING!", icon=red if support else None)
+    probe.assert_cell_content(1, 1, "B1")
+    probe.assert_cell_content(
+        1, 2, "<icondata C1>", icon=green if (support == 2) else None
+    )
 
-    probe.assert_cell_content(2, 0, "A2")
-    probe.assert_cell_content(2, 1, "2", icon=green)
+    probe.assert_cell_content(2, 0, "2", icon=green if support else None)
+    probe.assert_cell_content(2, 1, "B2")
     probe.assert_cell_content(2, 2, "<icondata C2>", icon=None)
 
 
