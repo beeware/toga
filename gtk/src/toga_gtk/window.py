@@ -142,9 +142,11 @@ class Window:
             self.native.unfullscreen()
 
     def window_on_gain_focus(self, sender, event):
-        self.interface.app.on_gain_focus(self.interface)
+        if self.interface.app is not None:
+            self.interface.app.on_gain_focus(self.interface)
         self.interface.on_gain_focus(self.interface)
 
     def window_on_lose_focus(self, sender, event):
-        self.interface.app.on_lose_focus(self.interface)
+        if self.interface.app is not None:
+            self.interface.app.on_lose_focus(self.interface)
         self.interface.on_lose_focus(self.interface)
