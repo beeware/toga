@@ -18,8 +18,8 @@ from .libs.proactor import WinformsProactorEventLoop
 from .window import Window
 
 # A Reference to WindowsBase Assembly is needed for Dispatcher
-# For Assembly String, see discussion: https://github.com/beeware/toga/pull/2112#issuecomment-1713315502
 clr.AddReference(
+    # This Assembly String is very specific and helps clr to resolve Assemblies present in the GAC.
     "WindowsBase, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35"
 )
 from System.Windows.Threading import Dispatcher  # noqa
