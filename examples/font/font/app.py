@@ -22,11 +22,18 @@ class ExampleFontExampleApp(toga.App):
         else:
             widget.style.font_style = NORMAL
 
-    def do_monospace_button(self, widget):
+    def do_monospace_button(self, widget, **kwargs):
         self.textpanel.value += widget.text + "\n"
 
-    def do_icon_button(self, widget):
+    def do_icon_button(self, widget, **kwargs):
         self.textpanel.value += widget.id + "\n"
+
+    def do_add_content(self, widget, **kwargs):
+        new_lbl = toga.Label(
+            "More Endor bold",
+            style=Pack(font_family="Endor", font_size=14, font_weight=BOLD),
+        )
+        self.labels.add(new_lbl)
 
     def startup(self):
         # Set up main window
@@ -54,6 +61,7 @@ class ExampleFontExampleApp(toga.App):
                 toga.Button("Clear", on_press=self.do_clear),
                 toga.Button("Weight", on_press=self.do_weight),
                 toga.Button("Style", on_press=self.do_style),
+                toga.Button("Add", on_press=self.do_add_content),
             ],
         )
 
@@ -143,11 +151,8 @@ class ExampleFontExampleApp(toga.App):
             readonly=False, style=Pack(flex=1), placeholder="Ready."
         )
 
-        # Outermost box
-        outer_box = toga.Box(
+        self.labels = toga.Box(
             children=[
-                btn_box1,
-                btn_box2,
                 lbl1,
                 lbl2,
                 lbl3,
@@ -160,6 +165,15 @@ class ExampleFontExampleApp(toga.App):
                 lbl_ub,
                 lbl_ui,
                 lbl_ubi,
+            ],
+            style=Pack(direction=COLUMN),
+        )
+        # Outermost box
+        outer_box = toga.Box(
+            children=[
+                btn_box1,
+                btn_box2,
+                self.labels,
                 self.textpanel,
             ],
             style=Pack(flex=1, direction=COLUMN, padding=10),
