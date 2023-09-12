@@ -8,7 +8,7 @@ Font
    :included_cols: 4,5,6,7,8,9,10
    :exclude: {0: '(?!(Font|Component))'}
 
-The font class is used for abstracting the platforms implementation of fonts.
+A font for displaying text.
 
 Notes
 -----

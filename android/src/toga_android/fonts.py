@@ -46,7 +46,7 @@ class Font:
             typeface = _FONT_CACHE[cache_key]
         except KeyError:
             typeface = None
-            font_key = self.interface.registered_font_key(
+            font_key = self.interface._registered_font_key(
                 self.interface.family,
                 weight=self.interface.weight,
                 style=self.interface.style,
