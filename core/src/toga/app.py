@@ -134,6 +134,8 @@ class MainWindow(Window):
         on_close: None = None,
         on_gain_focus: callable | None = None,
         on_lose_focus: callable | None = None,
+        on_show: callable | None = None,
+        on_hide: callable | None = None,
     ) -> None:
         ######################################################################
         # 2022-09: Backwards compatibility
@@ -156,6 +158,8 @@ class MainWindow(Window):
             on_close=on_close,
             on_gain_focus=on_gain_focus,
             on_lose_focus=on_lose_focus,
+            on_show=on_show,
+            on_hide=on_hide,
         )
 
     @Window.on_close.setter
@@ -191,6 +195,8 @@ class App:
         on_exit: OnExitHandler | None = None,
         on_gain_focus: callable | None = None,
         on_lose_focus: callable | None = None,
+        on_show: callable | None = None,
+        on_hide: callable | None = None,
         factory: None = None,  # DEPRECATED !
     ):
         """An App is the top level of any GUI program.
@@ -392,6 +398,8 @@ class App:
 
         self.on_gain_focus = on_gain_focus
         self.on_lose_focus = on_lose_focus
+        self.on_show = on_show
+        self.on_hide = on_hide
 
     def _create_impl(self):
         return self.factory.App(interface=self)
@@ -652,6 +660,22 @@ class App:
     @on_lose_focus.setter
     def on_lose_focus(self, handler):
         self._on_lose_focus = wrapped_handler(self, handler)
+
+    @property
+    def on_show(self) -> callable:
+        return self._on_show
+
+    @on_show.setter
+    def on_show(self, handler):
+        self._on_show = wrapped_handler(self, handler)
+
+    @property
+    def on_hide(self) -> callable:
+        return self._on_hide
+
+    @on_hide.setter
+    def on_hide(self, handler):
+        self._on_hide = wrapped_handler(self, handler)
 
 
 class DocumentApp(App):

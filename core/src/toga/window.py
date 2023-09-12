@@ -90,6 +90,8 @@ class Window:
         on_close: OnCloseHandler | None = None,
         on_gain_focus: callable | None = None,
         on_lose_focus: callable | None = None,
+        on_show: callable | None = None,
+        on_hide: callable | None = None,
     ) -> None:
         ######################################################################
         # 2022-09: Backwards compatibility
@@ -127,6 +129,8 @@ class Window:
 
         self.on_gain_focus = on_gain_focus
         self.on_lose_focus = on_lose_focus
+        self.on_show = on_show
+        self.on_hide = on_hide
 
     @property
     def id(self) -> str:
@@ -291,6 +295,22 @@ class Window:
     @on_lose_focus.setter
     def on_lose_focus(self, handler):
         self._on_lose_focus = wrapped_handler(self, handler)
+
+    @property
+    def on_show(self) -> callable:
+        return self._on_show
+
+    @on_show.setter
+    def on_show(self, handler):
+        self._on_show = wrapped_handler(self, handler)
+
+    @property
+    def on_hide(self) -> callable:
+        return self._on_hide
+
+    @on_hide.setter
+    def on_hide(self, handler):
+        self._on_hide = wrapped_handler(self, handler)
 
     ############################################################
     # Dialogs

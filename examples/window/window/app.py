@@ -130,6 +130,14 @@ class WindowDemoApp(toga.App):
         self.app_focus_label.text = "App is not in focus"
         print("App is not in focus")
 
+    def on_app_show(self, widget, **kwargs):
+        self.app_visible_label.text = "App is visible"
+        print("App is visible")
+
+    def on_app_hide(self, widget, **kwargs):
+        self.app_visible_label.text = "App is not visible"
+        print("App is not visible")
+
     def on_window_gain_focus(self, widget, **kwargs):
         self.window_focus_label.text = "MainWindow is in focus"
         print("MainWindow is in focus")
@@ -138,18 +146,30 @@ class WindowDemoApp(toga.App):
         self.window_focus_label.text = "MainWindow is not in focus"
         print("MainWindow is not in focus")
 
+    def on_window_show(self, widget, **kwargs):
+        self.window_visible_label.text = "MainWindow is visible"
+        print("MainWindow is visible")
+
+    def on_window_hide(self, widget, **kwargs):
+        self.window_visible_label.text = "MainWindow is not visible"
+        print("MainWindow is not visible")
+
     def startup(self):
         # Track in-app closes
         self.close_count = 0
 
         self.on_gain_focus = self.on_app_gain_focus
         self.on_lose_focus = self.on_app_lose_focus
+        self.on_show = self.on_app_show
+        self.on_hide = self.on_app_hide
 
         # Set up main window
         self.main_window = toga.MainWindow(
             title=self.name,
             on_gain_focus=self.on_window_gain_focus,
             on_lose_focus=self.on_window_lose_focus,
+            on_show=self.on_window_show,
+            on_hide=self.on_window_hide,
         )
         self.on_exit = self.exit_handler
 
@@ -157,7 +177,10 @@ class WindowDemoApp(toga.App):
         self.label = toga.Label("Ready.")
 
         self.app_focus_label = toga.Label("App focus status")
+        self.app_visible_label = toga.Label("App visible status")
         self.window_focus_label = toga.Label("Window focus status")
+        self.window_visible_label = toga.Label("Window visible status")
+
         # Buttons
         btn_style = Pack(flex=1, padding=5)
         btn_do_origin = toga.Button(
@@ -201,7 +224,9 @@ class WindowDemoApp(toga.App):
             children=[
                 self.label,
                 self.app_focus_label,
+                self.app_visible_label,
                 self.window_focus_label,
+                self.window_visible_label,
                 btn_do_origin,
                 btn_do_left,
                 btn_do_right,
