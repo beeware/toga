@@ -34,13 +34,13 @@ class FontMixin:
     supports_custom_fonts = True
 
     def assert_font_options(self, weight=NORMAL, style=NORMAL, variant=NORMAL):
-        assert (BOLD if self.font.getTypeface().isBold() else NORMAL) == weight
+        assert (BOLD if self.typeface.isBold() else NORMAL) == weight
 
         if style == OBLIQUE:
             print("Interpreting OBLIQUE font as ITALIC")
-            assert self.font.getTypeface().isItalic()
+            assert self.typeface.isItalic()
         else:
-            assert (ITALIC if self.font.getTypeface().isItalic() else NORMAL) == style
+            assert (ITALIC if self.typeface.isItalic() else NORMAL) == style
 
         if variant == SMALL_CAPS:
             print("Ignoring SMALL CAPS font test")
@@ -49,21 +49,21 @@ class FontMixin:
 
     def assert_font_size(self, expected):
         if expected == SYSTEM_DEFAULT_FONT_SIZE:
-            assert self.font.getTextSize() == self.impl._default_text_size
-        else:
-            expected_px = TypedValue.applyDimension(
+            expected = self.default_font_size
+        assert round(self.text_size) == round(
+            TypedValue.applyDimension(
                 TypedValue.COMPLEX_UNIT_SP,
                 expected,
-                self.font.getResources().getDisplayMetrics(),
+                self.native.getResources().getDisplayMetrics(),
             )
-            assert self.font.getTextSize() == expected_px
+        )
 
     def assert_font_family(self, expected):
         # Ensure we have a map of typeface to font names
         if not DECLARED_FONTS:
             load_fontmap()
 
-        assert DECLARED_FONTS[self.font.getTypeface()] == {
-            SYSTEM: self.system_font_family,
+        assert DECLARED_FONTS[self.typeface] == {
+            SYSTEM: self.default_font_family,
             MESSAGE: "sans-serif",
         }.get(expected, expected)

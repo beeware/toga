@@ -35,6 +35,9 @@ class LayoutListener(dynamic_proxy(ViewTreeObserver.OnGlobalLayoutListener)):
 
 
 class SimpleProbe(BaseProbe, FontMixin):
+    default_font_family = "sans-serif"
+    default_font_size = 14
+
     def __init__(self, widget):
         super().__init__()
         self.app = widget.app

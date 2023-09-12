@@ -21,7 +21,11 @@ class SelectionProbe(SimpleProbe):
         xfail("Can't change the color of Selection on this backend")
 
     @property
-    def font(self):
+    def typeface(self):
+        xfail("Can't change the font of Selection on this backend")
+
+    @property
+    def text_size(self):
         xfail("Can't change the font of Selection on this backend")
 
     @property

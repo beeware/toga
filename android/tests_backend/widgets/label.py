@@ -8,7 +8,6 @@ from .properties import toga_alignment, toga_color
 
 class LabelProbe(SimpleProbe):
     native_class = jclass("android.widget.TextView")
-    system_font_family = "sans-serif"
     supports_justify = True
 
     @property
@@ -20,10 +19,12 @@ class LabelProbe(SimpleProbe):
         return str(self.native.getText())
 
     @property
-    def font(self):
-        # Android doesn't have a standalone object to represent a font;
-        # it stores the typeface and size separately on the native widget.
-        return self.native
+    def typeface(self):
+        return self.native.getTypeface()
+
+    @property
+    def text_size(self):
+        return self.native.getTextSize()
 
     @property
     def alignment(self):
