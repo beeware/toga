@@ -1,0 +1,1 @@
+An error raised when displaying a GTK About dialog was resolved.
