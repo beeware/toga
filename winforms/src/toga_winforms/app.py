@@ -140,9 +140,8 @@ class App:
 
         # Call user code to populate the main window
         self.interface._startup()
-        if self.interface.main_window is not None:
-            self.create_menus()
-            self.interface.main_window._impl.set_app(self)
+        self.create_menus()
+        self.interface.main_window._impl.set_app(self)
 
     def create_menus(self):
         self._menu_items = {}
