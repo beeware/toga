@@ -50,7 +50,7 @@ class Font(BaseFont):
         :param style: The :ref:`font style <pack-font-style>`.
         :param variant: The :ref:`font variant <pack-font-variant>`.
         """
-        super().__init__(family, size, style, variant, weight)
+        super().__init__(family, size, weight=weight, style=style, variant=variant)
         self.factory = get_platform_factory()
         self._impl = self.factory.Font(self)
 
@@ -98,9 +98,7 @@ class Font(BaseFont):
         :param path: The path to the font file. This can be an absolute path, or a path
             relative to the module that defines your :any:`App` class.
         """
-        font_key = Font._registered_font_key(
-            family, weight=weight, style=style, variant=variant
-        )
+        font_key = Font._registered_font_key(family, weight, style, variant)
         _REGISTERED_FONT_CACHE[font_key] = str(toga.App.app.paths.app / path)
 
     @staticmethod
