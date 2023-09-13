@@ -87,6 +87,8 @@ test_sources = [
 ]
 requires = [
     "../android",
+]
+test_requires = [
     "fonttools==4.42.1",
 ]
 build_gradle_extra_content = """\
