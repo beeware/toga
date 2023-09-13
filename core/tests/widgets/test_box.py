@@ -25,9 +25,8 @@ def test_create_box_with_children():
     assert box._impl.interface == box
 
     assert_action_performed(box, "create Box")
-    # No add_child action occurs, because the children are added to the box
-    # before the impl is created.
-    assert_action_not_performed(box, "add child")
+    # The box has children, so add child also occurs.
+    assert_action_performed(box, "add child")
 
     # But the box will have children.
     assert box.children == [child1, child2]
