@@ -227,6 +227,9 @@ Any other value will be checked against the family names previously registered w
 
 The style of the font to be used.
 
+**Note:** Windows and Android do not support the oblique font style. A request for an
+``oblique`` font will be interpreted as ``italic``.
+
 .. _pack-font-variant:
 
 ``font_variant``
@@ -237,6 +240,9 @@ The style of the font to be used.
 **Initial value:** ``normal``
 
 The variant of the font to be used.
+
+**Note:** Windows and Android do not support the small caps variant. A request for a
+``small_caps`` font will be interpreted as ``normal``.
 
 .. _pack-font-weight:
 

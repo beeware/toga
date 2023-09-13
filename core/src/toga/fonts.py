@@ -40,9 +40,11 @@ class Font(BaseFont):
         style: str = NORMAL,
         variant: str = NORMAL,
     ):
-        """This class is used to represent a font when drawing on a :any:`Canvas`. For
-        all other widgets, fonts can be controlled using the style properties which are
-        linked below.
+        """Constructs a reference to a font.
+
+        This class should be used when an API requires an explicit font reference (e.g.
+        :any:`Context.write_text`). In all other cases, fonts in Toga are controlled
+        using the style properties linked below.
 
         :param family: The :ref:`font family <pack-font-family>`.
         :param size: The :ref:`font size <pack-font-size>`.
@@ -81,22 +83,23 @@ class Font(BaseFont):
 
             # Register a simple regular font
             Font.register(
-                "Font Awesome 5 Free Solid", "Font Awesome 5 Free-Solid-900.otf"
+                "Font Awesome 5 Free Solid", "resources/Font Awesome 5 Free-Solid-900.otf"
             )
 
             # Register a regular and bold font, contained in separate font files
-            Font.register("Roboto", "Roboto-Regular.ttf")
-            Font.register("Roboto", "Roboto-Bold.ttf", weight=BOLD)
+            Font.register("Roboto", "resources/Roboto-Regular.ttf")
+            Font.register("Roboto", "resources/Roboto-Bold.ttf", weight=BOLD)
 
             # Register a single font file that contains both a regular and bold weight
-            Font.register("Bahnschrift", "Bahnschrift.ttf")
-            Font.register("Bahnschrift", "Bahnschrift.ttf", weight=BOLD)
+            Font.register("Bahnschrift", "resources/Bahnschrift.ttf")
+            Font.register("Bahnschrift", "resources/Bahnschrift.ttf", weight=BOLD)
 
-        Parameters are the same as in the ``Font`` constructor above, with the addition
-        of:
-
+        :param family: The :ref:`font family <pack-font-family>`.
         :param path: The path to the font file. This can be an absolute path, or a path
             relative to the module that defines your :any:`App` class.
+        :param weight: The :ref:`font weight <pack-font-weight>`.
+        :param style: The :ref:`font style <pack-font-style>`.
+        :param variant: The :ref:`font variant <pack-font-variant>`.
         """
         font_key = Font._registered_font_key(family, weight, style, variant)
         _REGISTERED_FONT_CACHE[font_key] = str(toga.App.app.paths.app / path)

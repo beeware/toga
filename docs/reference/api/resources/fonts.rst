@@ -10,15 +10,6 @@ Font
 
 A font for displaying text.
 
-Notes
------
-
-* Windows does not support the use of the Oblique font style. A request for an
-  oblique font will be interpreted as Italic.
-
-* Windows does not support the use of a Small Caps variant on fonts. A request
-  for a Small Caps variant will be ignored.
-
 Reference
 ---------
 

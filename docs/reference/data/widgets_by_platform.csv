@@ -28,7 +28,7 @@ ScrollContainer,Layout Widget,:class:`~toga.ScrollContainer`,A container that ca
 SplitContainer,Layout Widget,:class:`~toga.SplitContainer`,A container that divides an area into two panels with a movable border,|y|,|y|,|y|,,,,
 OptionContainer,Layout Widget,:class:`~toga.OptionContainer`,A container that can display multiple labeled tabs of content,|y|,|y|,|y|,,,,
 App Paths,Resource,:class:`~toga.paths.Paths`,A mechanism for obtaining platform-appropriate filesystem locations for an application.,|y|,|y|,|y|,|y|,|y|,,|b|
-Font,Resource,:class:`~toga.Font`,A text font,|b|,|y|,|y|,|b|,|b|,,
+Font,Resource,:class:`~toga.Font`,A text font,|b|,|y|,|y|,|b|,|y|,,
 Command,Resource,:class:`~toga.Command`,Command,|b|,|b|,|b|,,|b|,,
 Group,Resource,:class:`~toga.Group`,Command group,|b|,|b|,|b|,|b|,|b|,,
 Icon,Resource,:class:`~toga.Icon`,"A small, square image, used to provide easily identifiable visual context to a widget.",|y|,|y|,|y|,|y|,|y|,,|b|

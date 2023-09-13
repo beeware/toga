@@ -157,7 +157,7 @@ class Widget(Node):
             child.window = self.window
 
             # The impl must exist, because we're invoking
-            # remove() on a fully instantiated widget.
+            # insert() on a fully instantiated widget.
             self._impl.insert_child(index, child._impl)
 
         # Whatever layout we're a part of needs to be refreshed
