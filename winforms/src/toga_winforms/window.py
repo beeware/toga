@@ -47,8 +47,8 @@ class Window(Container, Scalable):
         self.native.Activated += self.window_on_gain_focus
         self.native.Deactivate += self.window_on_lose_focus
 
-        self.native.VisibleChanged += self.window_visible_changed
-        self.native.SizeChanged += self.window_size_changed
+        self.native.VisibleChanged += self.window_on_visible_changed
+        self.native.SizeChanged += self.window_on_size_changed
 
     def create_toolbar(self):
         if self.interface.toolbar:
@@ -191,7 +191,7 @@ class Window(Container, Scalable):
             self.interface.app.on_lose_focus(self.interface)
         self.interface.on_lose_focus(self.interface)
 
-    def window_visible_changed(self, sender, event):
+    def window_on_visible_changed(self, sender, event):
         if self.native.Visible and not self._is_previously_visible:
             self._is_previously_visible = True
             if self.interface.app is not None:
@@ -203,7 +203,7 @@ class Window(Container, Scalable):
                 self.interface.app.on_hide(self.interface)
             self.interface.on_hide(self.interface)
 
-    def window_size_changed(self, sender, event):
+    def window_on_size_changed(self, sender, event):
         if (
             self.native.WindowState == WinForms.FormWindowState.Minimized
             and self._is_previously_visible

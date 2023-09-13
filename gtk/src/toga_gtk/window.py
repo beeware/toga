@@ -2,7 +2,7 @@ from toga.command import GROUP_BREAK, SECTION_BREAK
 from toga.handlers import wrapped_handler
 
 from .container import TogaContainer
-from .libs import Gtk
+from .libs import Gdk, Gtk
 
 
 class Window:
@@ -13,6 +13,7 @@ class Window:
         self.interface._impl = self
 
         self._is_closing = False
+        self._is_previously_visible = False
 
         self.layout = None
 
@@ -22,6 +23,7 @@ class Window:
         self.native.connect("delete-event", self.gtk_delete_event)
         self.native.connect("focus-in-event", self.window_on_gain_focus)
         self.native.connect("focus-out-event", self.window_on_lose_focus)
+        self.native.connect("window-state-event", self.window_on_state_changed)
 
         self.native.set_default_size(size[0], size[1])
 
@@ -150,3 +152,49 @@ class Window:
         if self.interface.app is not None:
             self.interface.app.on_lose_focus(self.interface)
         self.interface.on_lose_focus(self.interface)
+
+    def window_on_state_changed(self, sender, event):
+        if (
+            event.new_window_state & Gdk.WindowState.WITHDRAWN
+            and self._is_previously_visible
+        ):
+            self._is_previously_visible = False
+            if self.interface.app is not None:
+                self.interface.app.on_hide(self.interface)
+            self.interface.on_hide(self.interface)
+
+        elif (
+            event.new_window_state & Gdk.WindowState.ICONIFIED
+            and self._is_previously_visible
+        ):
+            self._is_previously_visible = False
+            if self.interface.app is not None:
+                self.interface.app.on_hide(self.interface)
+            self.interface.on_hide(self.interface)
+
+        elif (
+            event.new_window_state & Gdk.WindowState.MAXIMIZED
+            and not self._is_previously_visible
+        ):
+            self._is_previously_visible = True
+            if self.interface.app is not None:
+                self.interface.app.on_show(self.interface)
+            self.interface.on_show(self.interface)
+
+        elif (
+            event.new_window_state & Gdk.WindowState.FULLSCREEN
+            and not self._is_previously_visible
+        ):
+            self._is_previously_visible = True
+            if self.interface.app is not None:
+                self.interface.app.on_show(self.interface)
+            self.interface.on_show(self.interface)
+
+        elif (
+            event.new_window_state & Gdk.WindowState.FOCUSED
+            and not self._is_previously_visible
+        ):
+            self._is_previously_visible = True
+            if self.interface.app is not None:
+                self.interface.app.on_show(self.interface)
+            self.interface.on_show(self.interface)
