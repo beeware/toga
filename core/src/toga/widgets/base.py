@@ -122,11 +122,9 @@ class Widget(Node):
                 child.app = self.app
                 child.window = self.window
 
-                # add() can be invoked inside a constructor of a widget with children;
-                # in this case, the impl may not yet exist. In this case, the addition
-                # of children will be handled when this widget is assigned to a container.
-                if self._impl:
-                    self._impl.add_child(child._impl)
+                # The impl must exist, because we add children after the impl is
+                # constructed.
+                self._impl.add_child(child._impl)
 
         # Whatever layout we're a part of needs to be refreshed
         if self._impl:
