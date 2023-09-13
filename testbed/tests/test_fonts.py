@@ -76,11 +76,11 @@ async def test_font_options(widget: toga.Label, font_probe):
 @pytest.mark.parametrize(
     "font_family,font_path,font_kwargs",
     [
-        # OpenType font, no options
+        # OpenType font with weight property
         (
             "Font Awesome 5 Free Solid",
             "resources/fonts/Font Awesome 5 Free-Solid-900.otf",
-            {},
+            {"weight": BOLD},
         ),
         # TrueType font, no options
         ("Endor", "resources/fonts/ENDOR___.ttf", {}),
@@ -127,20 +127,19 @@ async def test_font_file_loaded(
     font_probe.assert_font_family(font_family)
     font_probe.assert_font_options(**font_kwargs)
 
-    # Ensure the font was actually loaded.
-    stdout = capsys.readouterr().out
-
     # Setting the font to "Roboto something" involves setting the font to
     # "Roboto" as an intermediate step. However, we haven't registered "Roboto
     # regular", so this will raise an warning about the missing "regular" font.
     # Ignore this message.
-    stdout = stdout.replace(
-        "Unknown font 'Roboto default size'; using system font as a fallback\n",
-        "",
-    )
+    stdout = capsys.readouterr().out
+    if font_kwargs:
+        stdout = stdout.replace(
+            f"Unknown font '{font_family} default size'; "
+            f"using system font as a fallback\n",
+            "",
+        )
 
     assert "; using system font as a fallback" not in stdout
-    assert "could not be found" not in stdout
 
 
 async def test_non_existent_font_file(widget: toga.Label, app: toga.App):

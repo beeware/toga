@@ -64,10 +64,8 @@ class Font:
             else:
                 if Path(font_path).is_file():
                     typeface = Typeface.createFromFile(font_path)
-                    # If the typeface cannot be created, following Exception is thrown:
-                    # E/Minikin: addFont failed to create font, invalid request
-                    # It does not kill the app, but there is currently no way to
-                    # catch this Exception on Android
+                    if typeface is Typeface.DEFAULT:
+                        raise ValueError(f"Unable to load font file {font_path}")
                 else:
                     raise ValueError(f"Font file {font_path} could not be found")
 

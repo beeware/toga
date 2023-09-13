@@ -1,4 +1,11 @@
+from concurrent.futures import ThreadPoolExecutor
+
+from fontTools.ttLib import TTFont
+from java import jint
+from java.lang import Integer, Long
+
 from android.graphics import Typeface
+from android.graphics.fonts import FontFamily
 from android.util import TypedValue
 from toga.fonts import (
     BOLD,
@@ -11,7 +18,8 @@ from toga.fonts import (
     SYSTEM_DEFAULT_FONT_SIZE,
 )
 
-DECLARED_FONTS = {}
+SYSTEM_FONTS = {}
+nativeGetFamily = new_FontFamily = None
 
 
 def load_fontmap():
@@ -21,13 +29,32 @@ def load_fontmap():
 
     for name in fontmap.keySet().toArray():
         typeface = fontmap.get(name)
-        DECLARED_FONTS[typeface] = name
+        SYSTEM_FONTS[typeface] = name
         for native_style in [
             Typeface.BOLD,
             Typeface.ITALIC,
             Typeface.BOLD | Typeface.ITALIC,
         ]:
-            DECLARED_FONTS[Typeface.create(typeface, native_style)] = name
+            SYSTEM_FONTS[Typeface.create(typeface, native_style)] = name
+
+
+def reflect_font_methods():
+    global nativeGetFamily, new_FontFamily
+
+    # Bypass non-SDK interface restrictions by looking them up on a background thread
+    # with no Java stack frames (https://stackoverflow.com/a/61600526).
+    with ThreadPoolExecutor() as executor:
+        nativeGetFamily = executor.submit(
+            Typeface.getClass().getDeclaredMethod,
+            "nativeGetFamily",
+            Long.TYPE,
+            Integer.TYPE,
+        ).result()
+        nativeGetFamily.setAccessible(True)
+
+        new_FontFamily = executor.submit(
+            FontFamily.getClass().getConstructor, Long.TYPE
+        ).result()
 
 
 class FontMixin:
@@ -59,11 +86,22 @@ class FontMixin:
         )
 
     def assert_font_family(self, expected):
-        # Ensure we have a map of typeface to font names
-        if not DECLARED_FONTS:
+        if not SYSTEM_FONTS:
             load_fontmap()
 
-        assert DECLARED_FONTS[self.typeface] == {
-            SYSTEM: self.default_font_family,
-            MESSAGE: "sans-serif",
-        }.get(expected, expected)
+        if actual := SYSTEM_FONTS.get(self.typeface):
+            assert actual == {
+                SYSTEM: self.default_font_family,
+                MESSAGE: "sans-serif",
+            }.get(expected, expected)
+        else:
+            if not nativeGetFamily:
+                reflect_font_methods()
+            family_ptr = nativeGetFamily.invoke(
+                None, self.typeface.native_instance, jint(0)
+            )
+            family = new_FontFamily.newInstance(family_ptr)
+            assert family.getSize() == 1
+
+            font = TTFont(family.getFont(0).getFile().getPath())
+            assert font["name"].getDebugName(1) == expected
