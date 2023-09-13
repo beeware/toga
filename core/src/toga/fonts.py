@@ -73,27 +73,6 @@ class Font(BaseFont):
 
         **Note:** This is not currently supported on macOS or iOS.
 
-        When invalid values for style, variant or weight are passed, ``NORMAL`` will be
-        used.
-
-        When a font includes multiple weights, styles or variants, each one must be
-        registered separately, even if they're stored in the same file::
-
-            from toga.style.pack import BOLD
-
-            # Register a simple regular font
-            Font.register(
-                "Font Awesome 5 Free Solid", "resources/Font Awesome 5 Free-Solid-900.otf"
-            )
-
-            # Register a regular and bold font, contained in separate font files
-            Font.register("Roboto", "resources/Roboto-Regular.ttf")
-            Font.register("Roboto", "resources/Roboto-Bold.ttf", weight=BOLD)
-
-            # Register a single font file that contains both a regular and bold weight
-            Font.register("Bahnschrift", "resources/Bahnschrift.ttf")
-            Font.register("Bahnschrift", "resources/Bahnschrift.ttf", weight=BOLD)
-
         :param family: The :ref:`font family <pack-font-family>`.
         :param path: The path to the font file. This can be an absolute path, or a path
             relative to the module that defines your :any:`App` class.
