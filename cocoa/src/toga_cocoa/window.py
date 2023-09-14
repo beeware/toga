@@ -56,6 +56,50 @@ class WindowDelegate(NSObject):
     def windowDidResignMain_(self, notification):
         self.impl.interface.on_lose_focus(self.interface)
 
+    @objc_method
+    def windowDidBecomeKey_(self, notification):
+        if bool(self.impl.native.isVisible) and not self.impl._is_previously_shown:
+            self.impl._is_previously_shown = True
+            self.impl.interface.on_show(self.interface)
+
+    @objc_method
+    def windowDidMiniaturize_(self, notification):
+        if not bool(self.impl.native.isVisible) and self.impl._is_previously_shown:
+            self.impl._is_previously_shown = False
+            self.impl.interface.on_hide(self.interface)
+
+    @objc_method
+    def windowDidDeminiaturize_(self, notification):
+        if bool(self.impl.native.isVisible) and not self.impl._is_previously_shown:
+            self.impl._is_previously_shown = True
+            self.impl.interface.on_show(self.interface)
+
+    @objc_method
+    def windowDidEnterFullScreen_(self, notification):
+        if bool(self.impl.native.isVisible) and not self.impl._is_previously_shown:
+            self.impl._is_previously_shown = True
+            self.impl.interface.on_show(self.interface)
+
+    @objc_method
+    def windowDidExitFullScreen_(self, notification):
+        if bool(self.impl.native.isVisible) and not self.impl._is_previously_shown:
+            self.impl._is_previously_shown = True
+            self.impl.interface.on_show(self.interface)
+
+    # when the user clicks the zoom button to unzoom a window
+    @objc_method
+    def windowWillUseStandardFrame_defaultFrame_(self, window, defaultFrame):
+        if bool(self.impl.native.isVisible) and not self.impl._is_previously_shown:
+            self.impl._is_previously_shown = True
+            self.impl.interface.on_show(self.interface)
+
+    # when the user clicks the zoom button to zoom a window
+    @objc_method
+    def windowShouldZoom_toFrame_(self, window, toFrame):
+        if bool(self.impl.native.isVisible) and not self.impl._is_previously_shown:
+            self.impl._is_previously_shown = True
+            self.impl.interface.on_show(self.interface)
+
     ######################################################################
     # Toolbar delegate methods
     ######################################################################
@@ -132,6 +176,8 @@ class Window:
     def __init__(self, interface, title, position, size):
         self.interface = interface
         self.interface._impl = self
+
+        self._is_previously_shown = False
 
         mask = NSTitledWindowMask
         if self.interface.closeable:

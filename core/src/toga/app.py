@@ -193,10 +193,6 @@ class App:
         startup: AppStartupMethod | None = None,
         windows: Iterable[Window] = (),
         on_exit: OnExitHandler | None = None,
-        on_gain_focus: callable | None = None,
-        on_lose_focus: callable | None = None,
-        on_show: callable | None = None,
-        on_hide: callable | None = None,
         factory: None = None,  # DEPRECATED !
     ):
         """An App is the top level of any GUI program.
@@ -395,11 +391,6 @@ class App:
 
         self._impl = self._create_impl()
         self.on_exit = on_exit
-
-        self.on_gain_focus = on_gain_focus
-        self.on_lose_focus = on_lose_focus
-        self.on_show = on_show
-        self.on_hide = on_hide
 
     def _create_impl(self):
         return self.factory.App(interface=self)
@@ -644,38 +635,6 @@ class App:
         :param handler: A coroutine, generator or callable.
         """
         self._impl.loop.call_soon_threadsafe(wrapped_handler(self, handler), None)
-
-    @property
-    def on_gain_focus(self) -> callable:
-        return self._on_gain_focus
-
-    @on_gain_focus.setter
-    def on_gain_focus(self, handler):
-        self._on_gain_focus = wrapped_handler(self, handler)
-
-    @property
-    def on_lose_focus(self) -> callable:
-        return self._on_lose_focus
-
-    @on_lose_focus.setter
-    def on_lose_focus(self, handler):
-        self._on_lose_focus = wrapped_handler(self, handler)
-
-    @property
-    def on_show(self) -> callable:
-        return self._on_show
-
-    @on_show.setter
-    def on_show(self, handler):
-        self._on_show = wrapped_handler(self, handler)
-
-    @property
-    def on_hide(self) -> callable:
-        return self._on_hide
-
-    @on_hide.setter
-    def on_hide(self, handler):
-        self._on_hide = wrapped_handler(self, handler)
 
 
 class DocumentApp(App):

@@ -13,7 +13,7 @@ class Window:
         self.interface._impl = self
 
         self._is_closing = False
-        self._is_previously_visible = False
+        self._is_previously_shown = False
 
         self.layout = None
 
@@ -144,57 +144,43 @@ class Window:
             self.native.unfullscreen()
 
     def window_on_gain_focus(self, sender, event):
-        if self.interface.app is not None:
-            self.interface.app.on_gain_focus(self.interface)
         self.interface.on_gain_focus(self.interface)
 
     def window_on_lose_focus(self, sender, event):
-        if self.interface.app is not None:
-            self.interface.app.on_lose_focus(self.interface)
         self.interface.on_lose_focus(self.interface)
 
     def window_on_state_changed(self, sender, event):
         if (
             event.new_window_state & Gdk.WindowState.WITHDRAWN
-            and self._is_previously_visible
+            and self._is_previously_shown
         ):
-            self._is_previously_visible = False
-            if self.interface.app is not None:
-                self.interface.app.on_hide(self.interface)
+            self._is_previously_shown = False
             self.interface.on_hide(self.interface)
 
         elif (
             event.new_window_state & Gdk.WindowState.ICONIFIED
-            and self._is_previously_visible
+            and self._is_previously_shown
         ):
-            self._is_previously_visible = False
-            if self.interface.app is not None:
-                self.interface.app.on_hide(self.interface)
+            self._is_previously_shown = False
             self.interface.on_hide(self.interface)
 
         elif (
             event.new_window_state & Gdk.WindowState.MAXIMIZED
-            and not self._is_previously_visible
+            and not self._is_previously_shown
         ):
-            self._is_previously_visible = True
-            if self.interface.app is not None:
-                self.interface.app.on_show(self.interface)
+            self._is_previously_shown = True
             self.interface.on_show(self.interface)
 
         elif (
             event.new_window_state & Gdk.WindowState.FULLSCREEN
-            and not self._is_previously_visible
+            and not self._is_previously_shown
         ):
-            self._is_previously_visible = True
-            if self.interface.app is not None:
-                self.interface.app.on_show(self.interface)
+            self._is_previously_shown = True
             self.interface.on_show(self.interface)
 
         elif (
             event.new_window_state & Gdk.WindowState.FOCUSED
-            and not self._is_previously_visible
+            and not self._is_previously_shown
         ):
-            self._is_previously_visible = True
-            if self.interface.app is not None:
-                self.interface.app.on_show(self.interface)
+            self._is_previously_shown = True
             self.interface.on_show(self.interface)

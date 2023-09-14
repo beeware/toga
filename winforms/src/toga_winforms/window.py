@@ -19,7 +19,7 @@ class Window(Container, Scalable):
         # to ignore. The `_is_closing` flag lets us easily identify if the
         # window is in the process of closing.
         self._is_closing = False
-        self._is_previously_visible = False
+        self._is_previously_shown = False
 
         self.native = WinForms.Form()
         self.native.interface = self.interface
@@ -182,51 +182,37 @@ class Window(Container, Scalable):
         )
 
     def window_on_gain_focus(self, sender, event):
-        if self.interface.app is not None:
-            self.interface.app.on_gain_focus(self.interface)
         self.interface.on_gain_focus(self.interface)
 
     def window_on_lose_focus(self, sender, event):
-        if self.interface.app is not None:
-            self.interface.app.on_lose_focus(self.interface)
         self.interface.on_lose_focus(self.interface)
 
     def window_on_visible_changed(self, sender, event):
-        if self.native.Visible and not self._is_previously_visible:
-            self._is_previously_visible = True
-            if self.interface.app is not None:
-                self.interface.app.on_show(self.interface)
+        if self.native.Visible and not self._is_previously_shown:
+            self._is_previously_shown = True
             self.interface.on_show(self.interface)
         else:
-            self._is_previously_visible = False
-            if self.interface.app is not None:
-                self.interface.app.on_hide(self.interface)
+            self._is_previously_shown = False
             self.interface.on_hide(self.interface)
 
     def window_on_size_changed(self, sender, event):
         if (
             self.native.WindowState == WinForms.FormWindowState.Minimized
-            and self._is_previously_visible
+            and self._is_previously_shown
         ):
-            self._is_previously_visible = False
-            if self.interface.app is not None:
-                self.interface.app.on_hide(self.interface)
+            self._is_previously_shown = False
             self.interface.on_hide(self.interface)
 
         elif (
             self.native.WindowState == WinForms.FormWindowState.Maximized
-            and not self._is_previously_visible
+            and not self._is_previously_shown
         ):
-            self._is_previously_visible = True
-            if self.interface.app is not None:
-                self.interface.app.on_show(self.interface)
+            self._is_previously_shown = True
             self.interface.on_show(self.interface)
 
         elif (
             self.native.WindowState == WinForms.FormWindowState.Normal
-            and not self._is_previously_visible
+            and not self._is_previously_shown
         ):
-            self._is_previously_visible = True
-            if self.interface.app is not None:
-                self.interface.app.on_show(self.interface)
+            self._is_previously_shown = True
             self.interface.on_show(self.interface)

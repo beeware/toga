@@ -122,22 +122,6 @@ class WindowDemoApp(toga.App):
             return False
         return True
 
-    def on_app_gain_focus(self, widget, **kwargs):
-        self.app_focus_label.text = "App is in focus"
-        print("App is in focus")
-
-    def on_app_lose_focus(self, widget, **kwargs):
-        self.app_focus_label.text = "App is not in focus"
-        print("App is not in focus")
-
-    def on_app_show(self, widget, **kwargs):
-        self.app_visible_label.text = "App is visible"
-        print("App is visible")
-
-    def on_app_hide(self, widget, **kwargs):
-        self.app_visible_label.text = "App is not visible"
-        print("App is not visible")
-
     def on_window_gain_focus(self, widget, **kwargs):
         self.window_focus_label.text = "MainWindow is in focus"
         print("MainWindow is in focus")
@@ -158,11 +142,6 @@ class WindowDemoApp(toga.App):
         # Track in-app closes
         self.close_count = 0
 
-        self.on_gain_focus = self.on_app_gain_focus
-        self.on_lose_focus = self.on_app_lose_focus
-        self.on_show = self.on_app_show
-        self.on_hide = self.on_app_hide
-
         # Set up main window
         self.main_window = toga.MainWindow(
             title=self.name,
@@ -176,8 +155,6 @@ class WindowDemoApp(toga.App):
         # Label to show responses.
         self.label = toga.Label("Ready.")
 
-        self.app_focus_label = toga.Label("App focus status")
-        self.app_visible_label = toga.Label("App visible status")
         self.window_focus_label = toga.Label("Window focus status")
         self.window_visible_label = toga.Label("Window visible status")
 
@@ -223,8 +200,6 @@ class WindowDemoApp(toga.App):
         self.inner_box = toga.Box(
             children=[
                 self.label,
-                self.app_focus_label,
-                self.app_visible_label,
                 self.window_focus_label,
                 self.window_visible_label,
                 btn_do_origin,
