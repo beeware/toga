@@ -10,10 +10,6 @@ class Widget(LoggedObject):
         self.container = None
         self.create()
 
-    @property
-    def viewport(self):
-        return self.container
-
     def get_size(self):
         return (37, 42)
 

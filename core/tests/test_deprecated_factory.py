@@ -55,13 +55,6 @@ class DeprecatedFactoryTests(TestCase):
         self.assertEqual(widget._impl.interface, widget)
         self.assertNotEqual(widget.factory, self.factory)
 
-    def test_icon(self):
-        widget = toga.Icon("resources/toga", system=True)
-        with self.assertWarns(DeprecationWarning):
-            widget.bind(factory=self.factory)
-        self.assertEqual(widget._impl.interface, widget)
-        self.assertNotEqual(widget.factory, self.factory)
-
     def test_window(self):
         with self.assertWarns(DeprecationWarning):
             widget = toga.Window(factory=self.factory)
@@ -71,32 +64,6 @@ class DeprecatedFactoryTests(TestCase):
     def test_canvas_created(self):
         with self.assertWarns(DeprecationWarning):
             widget = toga.Canvas(factory=self.factory)
-        self.assertEqual(widget._impl.interface, widget)
-        self.assertNotEqual(widget.factory, self.factory)
-
-    def test_detailed_list_created(self):
-        with self.assertWarns(DeprecationWarning):
-            widget = toga.DetailedList(factory=self.factory)
-        self.assertEqual(widget._impl.interface, widget)
-        self.assertNotEqual(widget.factory, self.factory)
-
-    def test_option_container_created(self):
-        with self.assertWarns(DeprecationWarning):
-            widget = toga.OptionContainer(factory=self.factory)
-        self.assertEqual(widget._impl.interface, widget)
-        self.assertNotEqual(widget.factory, self.factory)
-
-    def test_table_created(self):
-        with self.assertWarns(DeprecationWarning):
-            widget = toga.Table(
-                headings=["Test"], missing_value="", factory=self.factory
-            )
-        self.assertEqual(widget._impl.interface, widget)
-        self.assertNotEqual(widget.factory, self.factory)
-
-    def test_tree_created(self):
-        with self.assertWarns(DeprecationWarning):
-            widget = toga.Tree(headings=["Test"], factory=self.factory)
         self.assertEqual(widget._impl.interface, widget)
         self.assertNotEqual(widget.factory, self.factory)
 

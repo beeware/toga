@@ -1,5 +1,7 @@
 import math
 
+from travertino.size import at_least
+
 from ..libs import activity
 from ..libs.android.graphics import (
     DashPathEffect,
@@ -214,3 +216,7 @@ class Canvas(Widget):
 
     def set_on_resize(self, handler):
         self.interface.factory.not_implemented("Canvas.on_resize")
+
+    def rehint(self):
+        self.interface.intrinsic.width = at_least(0)
+        self.interface.intrinsic.height = at_least(0)

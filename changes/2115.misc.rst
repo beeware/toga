@@ -1,0 +1,1 @@
+The ``pre-commit`` hook for ``black`` was updated to its latest version.

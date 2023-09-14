@@ -26,7 +26,7 @@ jobs:
           name: ${{ needs.ci.outputs.artifact-name }}
 
       - name: Create release
-        uses: ncipollo/release-action@v1.12.0
+        uses: ncipollo/release-action@v1.13.0
         with:
           name: ${{ env.VERSION }}
           draft: true
@@ -51,6 +51,7 @@ jobs:
         - "toga_dummy"
         - "toga_gtk"
         - "toga_iOS"
+        - "toga_textual"
         - "toga_web"
         - "toga_winforms"
     steps:

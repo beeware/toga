@@ -81,10 +81,14 @@ class ScrollContainer(Widget):
             SEL("refreshContent"), withObject=None, afterDelay=0
         )
 
-    def content_refreshed(self):
+    def content_refreshed(self, container):
         width = self.native.frame.size.width
         height = self.native.frame.size.height
 
+        # If scrolling is enabled in a given axis, the document container
+        # has a minimum size equal to the layout width in that axis.
+        # Otherwise, the document container has the same size as the
+        # widget that holds the document being scrolled.
         if self.interface.horizontal:
             width = max(self.interface.content.layout.width, width)
 

@@ -1,41 +1,40 @@
 Icon
 ====
 
+A small, square image, used to provide easily identifiable visual context to a widget.
+
 .. rst-class:: widget-support
 .. csv-filter:: Availability (:ref:`Key <api-status-key>`)
    :header-rows: 1
    :file: ../../data/widgets_by_platform.csv
-   :included_cols: 4,5,6,7,8,9
+   :included_cols: 4,5,6,7,8,9,10
    :exclude: {0: '(?!(Icon|Component))'}
-
 
 Usage
 -----
 
-An icon is a small, square image, used to decorate buttons and menu items.
+The filename specified for an icon should be specified *without* an extension; the
+platform will determine an appropriate extension, and may also modify the name of the
+icon to include a size qualifier.
 
-A Toga icon is a **late bound** resource - that is, it can be constructed
-without an implementation. When it is assigned to an app, command, or other
-role where an icon is required, it is bound to a factory, at which time
-the implementation is created.
+The following formats are supported (in order of preference):
 
-The filename specified for an icon is interpreted as a path relative to the
-module that defines your Toga application. The only exception to this is a
-system icon, which is relative to the toga core module itself.
+* **Android** - PNG
+* **iOS** - ICNS, PNG, BMP, ICO
+* **macOS** - ICNS, PNG, PDF
+* **GTK** - PNG, ICO, ICNS. 32px and 72px variants of each icon can be provided;
+* **Windows** - ICO, PNG, BMP
 
-An icon is **guaranteed** to have an implementation. If you specify a filename
-that cannot be found, Toga will output a warning to the console, and load a
-default icon.
+The first matching icon of the most specific size will be used. For example, on Windows,
+specifying an icon of ``myicon`` will cause Toga to look for ``myicon.ico``, then
+``myicon.png``, then ``myicon.bmp``. On GTK, Toga will look for ``myicon-72.png`` and
+``myicon-32.png``, then ``myicon.png``, then ``myicon-72.ico`` and ``myicon-32.ico``, and so on.
 
-When an icon file is specified, you can optionally omit the extension. If an
-extension is provided, that literal file will be loaded. If the platform
-backend cannot support icons of the format specified, the default icon will
-be used. If an extension is *not* provided, Toga will look for a file with the
-one of the platform's allowed extensions.
+An icon is **guaranteed** to have an implementation. If you specify a path and no
+matching icon can be found, Toga will output a warning to the console, and load a
+default "Tiberius the yak" icon.
 
 Reference
 ---------
 
 .. autoclass:: toga.Icon
-   :members:
-   :undoc-members:

@@ -1,108 +1,59 @@
-import warnings
+from __future__ import annotations
 
 from toga.handlers import wrapped_handler
 
 from .base import Widget
 
-# BACKWARDS COMPATIBILITY: a token object that can be used to differentiate
-# between an explicitly provided ``None``, and an unspecified value falling
-# back to a default.
-NOT_PROVIDED = object()
 
+class OptionItem:
+    """A tab of content in an OptionContainer."""
 
-class BaseOptionItem:
-    def __init__(self, interface):
+    def __init__(self, interface: OptionContainer, widget, index):
         self._interface = interface
+        self._content = widget
+        self._index = index
+
+        widget.app = interface.app
+        widget.window = interface.window
 
     @property
-    def enabled(self):
+    def enabled(self) -> bool:
+        "Is the panel of content available for selection?"
         return self._interface._impl.is_option_enabled(self.index)
 
     @enabled.setter
-    def enabled(self, enabled):
-        self._interface._impl.set_option_enabled(self.index, enabled)
+    def enabled(self, value):
+        enable = bool(value)
+        if not enable and self.index == self._interface._impl.get_current_tab_index():
+            raise ValueError("The currently selected tab cannot be disabled.")
+
+        self._interface._impl.set_option_enabled(self.index, enable)
 
     @property
-    def text(self):
+    def text(self) -> str:
+        "The label for the tab of content."
         return self._interface._impl.get_option_text(self.index)
 
     @text.setter
     def text(self, value):
-        self._interface._impl.set_option_text(self.index, value)
+        if value is None:
+            raise ValueError("Item text cannot be None")
 
-    ######################################################################
-    # 2022-07: Backwards compatibility
-    ######################################################################
-    # label replaced with text
-    @property
-    def label(self):
-        """OptionItem text.
+        text = str(value)
+        if not text:
+            raise ValueError("Item text cannot be blank")
 
-        **DEPRECATED: renamed as text**
-
-        Returns:
-            The OptionItem text as a ``str``
-        """
-        warnings.warn(
-            "OptionItem.label has been renamed OptionItem.text", DeprecationWarning
-        )
-        return self.text
-
-    @label.setter
-    def label(self, label):
-        warnings.warn(
-            "OptionItem.label has been renamed OptionItem.text", DeprecationWarning
-        )
-        self.text = label
-
-    ######################################################################
-    # End backwards compatibility.
-    ######################################################################
-
-
-class OptionItem(BaseOptionItem):
-    """OptionItem is an interface wrapper for a tab on the OptionContainer."""
-
-    def __init__(self, interface, widget, index):
-        super().__init__(interface)
-        self._content = widget
-        self._index = index
+        self._interface._impl.set_option_text(self.index, text)
 
     @property
-    def index(self):
+    def index(self) -> int:
+        """The index of the tab in the OptionContainer."""
         return self._index
 
     @property
-    def content(self):
+    def content(self) -> Widget:
+        """The content widget displayed in this tab of the OptionContainer."""
         return self._content
-
-    def refresh(self):
-        self._content.refresh()
-
-
-class CurrentOptionItem(BaseOptionItem):
-    """CurrentOptionItem is a proxy for whichever tab is currently selected."""
-
-    @property
-    def index(self):
-        return self._interface._impl.get_current_tab_index()
-
-    @property
-    def content(self):
-        return self._interface.content[self.index].content
-
-    def __add__(self, other):
-        if not isinstance(other, int):
-            raise ValueError("Cannot add non-integer value to OptionItem")
-        return self._interface.content[self.index + other]
-
-    def __sub__(self, other):
-        if not isinstance(other, int):
-            raise ValueError("Cannot add non-integer value to OptionItem")
-        return self._interface.content[self.index - other]
-
-    def refresh(self):
-        self._interface.content[self.index]._content.refresh()
 
 
 class OptionList:
@@ -111,21 +62,26 @@ class OptionList:
         self._options = []
 
     def __repr__(self):
-        repr_optionlist = "{}([{}])"
-        repr_items = ", ".join(
-            [f"{option.__class__.__name__}(title={option.text})" for option in self]
-        )
-        return repr_optionlist.format(self.__class__.__name__, repr_items)
+        items = ", ".join(repr(option.text) for option in self)
+        return f"<OptionList {items}>"
 
-    # def __setitem__(self, index, option):
-    #     TODO: replace tab content at the given index.
-    #     self._options[index] = option
-    #     option._index = index
+    def __getitem__(self, index: int | str | OptionItem) -> OptionItem:
+        """Obtain a specific tab of content."""
+        return self._options[self.index(index)]
 
-    def __getitem__(self, index):
-        return self._options[index]
+    def __delitem__(self, index: int | str | OptionItem):
+        """Same as :any:`remove`."""
+        self.remove(index)
 
-    def __delitem__(self, index):
+    def remove(self, index: int | str | OptionItem):
+        """Remove the specified tab of content.
+
+        The currently selected item cannot be deleted.
+        """
+        index = self.index(index)
+        if index == self.interface._impl.get_current_tab_index():
+            raise ValueError("The currently selected tab cannot be deleted.")
+
         self.interface._impl.remove_content(index)
         del self._options[index]
         # Update the index for each of the options
@@ -133,122 +89,65 @@ class OptionList:
         for option in self._options[index:]:
             option._index -= 1
 
-    def __iter__(self):
-        return iter(self._options)
+        # Refresh the widget
+        self.interface.refresh()
 
-    def __len__(self):
+    def __len__(self) -> int:
+        """The number of tabs of content in the OptionContainer."""
         return len(self._options)
 
-    def append(
-        self,
-        text=NOT_PROVIDED,  # BACKWARDS COMPATIBILITY: The default value
-        # can be removed when the handling for
-        # `label`` is removed
-        widget=NOT_PROVIDED,  # BACKWARDS COMPATIBILITY: The default value
-        # can be removed when the handling for
-        # `label`` is removed
-        label=None,  # DEPRECATED!
-        enabled=True,
-    ):
-        ##################################################################
-        # 2022-07: Backwards compatibility
-        ##################################################################
-        # When deleting this block, also delete the NOT_PROVIDED
-        # placeholder, and replace its usage in default values.
-        missing_arguments = []
+    def index(self, value: str | int | OptionItem):
+        """Find the index of the tab that matches the given value.
 
-        # label replaced with text
-        if label is not None:
-            if text is not NOT_PROVIDED:
-                raise ValueError(
-                    "Cannot specify both `label` and `text`; "
-                    "`label` has been deprecated, use `text`"
-                )
-            else:
-                warnings.warn("label has been renamed text", DeprecationWarning)
-                text = label
-        elif text is NOT_PROVIDED:
-            missing_arguments.append("text")
+        :param value: The value to look for. An integer is returned as-is;
+            if an :any:`OptionItem` is provided, that item's index is returned;
+            any other value will be converted into a string, and the first
+            tab with a label matching that string will be returned.
+        :raises ValueError: If no tab matching the value can be found.
+        """
+        if isinstance(value, int):
+            return value
+        elif isinstance(value, OptionItem):
+            return value.index
+        else:
+            try:
+                return next(filter(lambda item: item.text == str(value), self)).index
+            except StopIteration:
+                raise ValueError(f"No tab named {value!r}")
 
-        if widget is NOT_PROVIDED:
-            missing_arguments.append("widget")
+    def append(self, text: str, widget: Widget, enabled: bool = True):
+        """Add a new tab of content to the OptionContainer.
 
-        # This would be raised by Python itself; however, we need to use a placeholder
-        # value as part of the migration from text->value.
-        if len(missing_arguments) == 1:
-            raise TypeError(
-                f"OptionList.append missing 1 required positional argument: '{missing_arguments[0]}'"
-            )
-        elif len(missing_arguments) > 1:
-            raise TypeError(
-                "OptionList.append missing {} required positional arguments: {}".format(
-                    len(missing_arguments),
-                    " and ".join([f"'{name}'" for name in missing_arguments]),
-                )
-            )
-
-        ##################################################################
-        # End backwards compatibility.
-        ##################################################################
-
-        self._insert(len(self), text, widget, enabled)
+        :param text: The text label for the new tab
+        :param widget: The content widget to use for the new tab.
+        """
+        self.insert(len(self), text, widget, enabled=enabled)
 
     def insert(
         self,
-        index,
-        text=NOT_PROVIDED,  # BACKWARDS COMPATIBILITY: The default value
-        # can be removed when the handling for
-        # `label`` is removed
-        widget=NOT_PROVIDED,  # BACKWARDS COMPATIBILITY: The default value
-        # can be removed when the handling for
-        # `label`` is removed
-        label=None,  # DEPRECATED!
-        enabled=True,
+        index: int | str | OptionItem,
+        text: str,
+        widget: Widget,
+        enabled: bool = True,
     ):
-        ##################################################################
-        # 2022-07: Backwards compatibility
-        ##################################################################
-        # When deleting this block, also delete the NOT_PROVIDED
-        # placeholder, and replace its usage in default values.
-        missing_arguments = []
+        """Insert a new tab of content to the OptionContainer at the specified index.
 
-        # label replaced with text
-        if label is not None:
-            if text is not NOT_PROVIDED:
-                raise ValueError(
-                    "Cannot specify both `label` and `text`; "
-                    "`label` has been deprecated, use `text`"
-                )
-            else:
-                warnings.warn("label has been renamed text", DeprecationWarning)
-                text = label
-        elif text is NOT_PROVIDED:
-            missing_arguments.append("text")
+        :param index: The index where the new tab should be inserted.
+        :param text: The text label for the new tab.
+        :param widget: The content widget to use for the new tab.
+        :param enabled: Should the new tab be enabled?
+        """
+        # Convert the index into an integer
+        index = self.index(index)
 
-        if widget is NOT_PROVIDED:
-            missing_arguments.append("widget")
+        # Validate item text
+        if text is None:
+            raise ValueError("Item text cannot be None")
 
-        # This would be raised by Python itself; however, we need to use a placeholder
-        # value as part of the migration from text->value.
-        if len(missing_arguments) == 1:
-            raise TypeError(
-                f"OptionList.insert missing 1 required positional argument: '{missing_arguments[0]}'"
-            )
-        elif len(missing_arguments) > 1:
-            raise TypeError(
-                "OptionList.insert missing {} required positional arguments: {}".format(
-                    len(missing_arguments),
-                    " and ".join([f"'{name}'" for name in missing_arguments]),
-                )
-            )
+        text = str(text)
+        if not text:
+            raise ValueError("Item text cannot be blank")
 
-        ##################################################################
-        # End backwards compatibility.
-        ##################################################################
-
-        self._insert(index, text, widget, enabled)
-
-    def _insert(self, index, text, widget, enabled=True):
         # Create an interface wrapper for the option.
         item = OptionItem(self.interface, widget, index)
 
@@ -265,86 +164,80 @@ class OptionList:
         # The option now exists on the implementation;
         # finalize the display properties that can't be resolved until the
         # implementation exists.
-        widget.refresh()
+        self.interface.refresh()
         item.enabled = enabled
 
 
 class OptionContainer(Widget):
-    """The option container widget.
-
-    Args:
-        id (str):   An identifier for this widget.
-        style (:obj:`Style`): an optional style object.
-            If no style is provided then a new one will be created for the widget.
-        content (``list`` of ``tuple`` (``str``, :class:`~toga.Widget`)):
-            Each tuple in the list is composed of a title for the option and
-            the widget tree that is displayed in the option.
-    """
-
-    class OptionException(ValueError):
-        pass
-
     def __init__(
         self,
         id=None,
         style=None,
-        content=None,
-        on_select=None,
-        factory=None,  # DEPRECATED!
+        content: list[tuple[str, Widget]] | None = None,
+        on_select: callable | None = None,
     ):
-        super().__init__(id=id, style=style)
-        ######################################################################
-        # 2022-09: Backwards compatibility
-        ######################################################################
-        # factory no longer used
-        if factory:
-            warnings.warn("The factory argument is no longer used.", DeprecationWarning)
-        ######################################################################
-        # End backwards compatibility.
-        ######################################################################
+        """Create a new OptionContainer.
 
+        :param id: The ID for the widget.
+        :param style: A style object. If no style is provided, a default style will be
+            applied to the widget.
+        :param content: The initial content to display in the OptionContainer. A list of
+            2-tuples, each of which is the title for the option, and the content widget
+            to display for that title.
+        :param on_select: Initial :any:`on_select` handler.
+        """
+        super().__init__(id=id, style=style)
         self._content = OptionList(self)
-        self._on_select = None
+        self.on_select = None
+
         self._impl = self.factory.OptionContainer(interface=self)
 
-        self.on_select = on_select
         if content:
             for text, widget in content:
-                self.add(text, widget)
+                self.content.append(text, widget)
 
         self.on_select = on_select
-        # Create a proxy object to represent the currently selected item.
-        self._current_tab = CurrentOptionItem(self)
 
     @property
-    def content(self):
-        """The sub layouts of the :class:`OptionContainer`.
+    def enabled(self) -> bool:
+        """Is the widget currently enabled? i.e., can the user interact with the widget?
 
-        Returns:
-            A OptionList ``list`` of :class:`~toga.OptionItem`. Each element of the list
-            is a sub layout of the `OptionContainer`
-
-        Raises:
-            :exp:`ValueError`: If the list is less than two elements long.
+        OptionContainer widgets cannot be disabled; this property will always return
+        True; any attempt to modify it will be ignored.
         """
+        return True
+
+    @enabled.setter
+    def enabled(self, value):
+        pass
+
+    def focus(self):
+        "No-op; OptionContainer cannot accept input focus"
+        pass
+
+    @property
+    def content(self) -> OptionList:
+        """The tabs of content currently managed by the OptionContainer."""
         return self._content
 
     @property
-    def current_tab(self):
-        return self._current_tab
+    def current_tab(self) -> OptionItem | None:
+        """The currently selected tab of content, or ``None`` if there are no tabs.
+
+        This property can also be set with an ``int`` index, or a ``str`` label.
+        """
+        index = self._impl.get_current_tab_index()
+        if index is None:
+            return None
+        return self._content[index]
 
     @current_tab.setter
-    def current_tab(self, current_tab):
-        if isinstance(current_tab, str):
-            try:
-                current_tab = next(
-                    filter(lambda item: item.text == current_tab, self.content)
-                )
-            except StopIteration:
-                raise ValueError(f"No tab named {current_tab}")
-        if isinstance(current_tab, OptionItem):
-            current_tab = current_tab.index
-        self._impl.set_current_tab_index(current_tab)
+    def current_tab(self, value):
+        index = self._content.index(value)
+        if not self._impl.is_option_enabled(index):
+            raise ValueError("A disabled tab cannot be made the current tab.")
+
+        self._impl.set_current_tab_index(index)
 
     @Widget.app.setter
     def app(self, app):
@@ -364,104 +257,11 @@ class OptionContainer(Widget):
         for item in self._content:
             item._content.window = window
 
-    def add(
-        self,
-        text=NOT_PROVIDED,  # BACKWARDS COMPATIBILITY: The default value
-        # can be removed when the handling for
-        # `label`` is removed
-        widget=NOT_PROVIDED,  # BACKWARDS COMPATIBILITY: The default value
-        # can be removed when the handling for
-        # `label`` is removed
-        label=None,  # DEPRECATED!
-    ):
-        """Add a new option to the option container.
-
-        Args:
-            text (str): The text for the option.
-            widget (:class:`toga.Widget`): The widget to add to the option.
-        """
-        ##################################################################
-        # 2022-07: Backwards compatibility
-        ##################################################################
-        # When deleting this block, also delete the NOT_PROVIDED
-        # placeholder, and replace its usage in default values.
-        missing_arguments = []
-
-        # label replaced with text
-        if label is not None:
-            if text is not NOT_PROVIDED:
-                raise ValueError(
-                    "Cannot specify both `label` and `text`; "
-                    "`label` has been deprecated, use `text`"
-                )
-            else:
-                warnings.warn("label has been renamed text", DeprecationWarning)
-                text = label
-        elif text is NOT_PROVIDED:
-            missing_arguments.append("text")
-
-        if widget is NOT_PROVIDED:
-            missing_arguments.append("widget")
-
-        # This would be raised by Python itself; however, we need to use a placeholder
-        # value as part of the migration from text->value.
-        if len(missing_arguments) == 1:
-            raise TypeError(
-                f"OptionContainer.add missing 1 required positional argument: '{missing_arguments[0]}'"
-            )
-        elif len(missing_arguments) > 1:
-            raise TypeError(
-                "OptionContainer.add missing {} required positional arguments: {}".format(
-                    len(missing_arguments),
-                    " and ".join([f"'{name}'" for name in missing_arguments]),
-                )
-            )
-
-        ##################################################################
-        # End backwards compatibility.
-        ##################################################################
-
-        widget.app = self.app
-        widget.window = self.window
-
-        self._content.append(text, widget)
-
-    def insert(self, index, text, widget):
-        """Insert a new option at the specified index.
-
-        Args:
-            index (int): Index for the option.
-            text (str): The text for the option.
-            widget (:class:`toga.Widget`): The widget to add to the option.
-        """
-        widget.app = self.app
-        widget.window = self.window
-
-        self._content.insert(index, text, widget)
-
-    def remove(self, index):
-        del self._content[index]
-
-    def refresh_sublayouts(self):
-        """Refresh the layout and appearance of this widget."""
-        for widget in self._content:
-            widget.refresh()
-
     @property
-    def on_select(self):
-        """The callback function that is invoked when one of the options is selected.
-
-        Returns:
-            (``Callable``) The callback function.
-        """
+    def on_select(self) -> callable:
+        """The callback to invoke when a new tab of content is selected."""
         return self._on_select
 
     @on_select.setter
     def on_select(self, handler):
-        """Set the function to be executed on option selection.
-
-        :param handler:     callback function
-        :type handler:      ``Callable``
-        """
         self._on_select = wrapped_handler(self, handler)
-        self._impl.set_on_select(self._on_select)

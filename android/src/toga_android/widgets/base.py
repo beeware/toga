@@ -1,4 +1,7 @@
-from abc import abstractmethod
+from abc import ABC, abstractmethod
+from decimal import ROUND_HALF_EVEN, ROUND_UP, Decimal
+
+from travertino.size import at_least
 
 from toga.constants import CENTER, JUSTIFY, LEFT, RIGHT, TRANSPARENT
 
@@ -7,30 +10,33 @@ from ..libs.activity import MainActivity
 from ..libs.android.graphics import PorterDuff__Mode, PorterDuffColorFilter, Rect
 from ..libs.android.graphics.drawable import ColorDrawable, InsetDrawable
 from ..libs.android.view import Gravity, View
+from ..libs.android.widget import RelativeLayout__LayoutParams
 
 
-def _get_activity(_cache=[]):
-    """Android Toga widgets need a reference to the current activity to pass it as
-    `context` when creating Android native widgets. This may be useful at any time, so
-    we retain a global JNI ref.
+class Scalable:
+    SCALE_DEFAULT_ROUNDING = ROUND_HALF_EVEN
 
-    :param _cache: List that is either empty or contains 1 item, the cached global JNI ref
-    """
-    if _cache:
-        return _cache[0]
-    # See MainActivity.onCreate() for initialization of .singletonThis:
-    # https://github.com/beeware/briefcase-android-gradle-template/blob/3.7/%7B%7B%20cookiecutter.formal_name%20%7D%7D/app/src/main/java/org/beeware/android/MainActivity.java
-    # This can't be tested because if it isn't set, nothing else will work.
-    if not MainActivity.singletonThis:  # pragma: no cover
-        raise ValueError(
-            "Unable to find MainActivity.singletonThis from Python. This is typically set by "
-            "org.beeware.android.MainActivity.onCreate()."
-        )
-    _cache.append(MainActivity.singletonThis.__global__())
-    return _cache[0]
+    def init_scale(self, context):
+        # The baseline DPI is 160:
+        # https://developer.android.com/training/multiscreen/screendensities
+        self.scale = context.getResources().getDisplayMetrics().densityDpi / 160
+
+    # Convert CSS pixels to native pixels
+    def scale_in(self, value, rounding=SCALE_DEFAULT_ROUNDING):
+        return self.scale_round(value * self.scale, rounding)
+
+    # Convert native pixels to CSS pixels
+    def scale_out(self, value, rounding=SCALE_DEFAULT_ROUNDING):
+        if isinstance(value, at_least):
+            return at_least(self.scale_out(value.value, rounding))
+        else:
+            return self.scale_round(value / self.scale, rounding)
+
+    def scale_round(self, value, rounding):
+        return int(Decimal(value).to_integral(rounding))
 
 
-class Widget:
+class Widget(ABC, Scalable):
     # Some widgets are not generally focusable, but become focusable if there has been a
     # keyboard event since the last touch event. To avoid this complicating the tests,
     # these widgets disable programmatic focus entirely by setting focusable = False.
@@ -42,8 +48,19 @@ class Widget:
         self.interface._impl = self
         self._container = None
         self.native = None
-        self._native_activity = _get_activity()
+        self._native_activity = MainActivity.singletonThis
+        self.init_scale(self._native_activity)
         self.create()
+
+        # Some widgets, e.g. TextView, may throw an exception if we call measure()
+        # before setting LayoutParams.
+        self.native.setLayoutParams(
+            RelativeLayout__LayoutParams(
+                RelativeLayout__LayoutParams.WRAP_CONTENT,
+                RelativeLayout__LayoutParams.WRAP_CONTENT,
+            )
+        )
+
         # Immediately re-apply styles. Some widgets may defer style application until
         # they have been added to a container.
         self.interface.style.reapply()
@@ -74,19 +91,7 @@ class Widget:
         for child in self.interface.children:
             child._impl.container = container
 
-        self.rehint()
-
-    @property
-    def viewport(self):
-        return self._container
-
-    # Convert CSS pixels to native pixels
-    def scale_in(self, value):
-        return int(round(value * self.container.scale))
-
-    # Convert native pixels to CSS pixels
-    def scale_out(self, value):
-        return int(round(value / self.container.scale))
+        self.refresh()
 
     def get_enabled(self):
         return self.native.isEnabled()
@@ -107,7 +112,9 @@ class Widget:
     # APPLICATOR
 
     def set_bounds(self, x, y, width, height):
-        self.container.set_content_bounds(self, x, y, width, height)
+        self.container.set_content_bounds(
+            self, *map(self.scale_in, (x, y, width, height))
+        )
 
     def set_hidden(self, hidden):
         if hidden:
@@ -170,12 +177,21 @@ class Widget:
     def remove_child(self, child):
         child.container = None
 
+    # TODO: consider calling requestLayout or forceLayout here
+    # (https://github.com/beeware/toga/issues/1289#issuecomment-1453096034)
     def refresh(self):
+        intrinsic = self.interface.intrinsic
+        intrinsic.width = intrinsic.height = None
         self.rehint()
+        assert intrinsic.width is not None, self
+        assert intrinsic.height is not None, self
+
+        intrinsic.width = self.scale_out(intrinsic.width, ROUND_UP)
+        intrinsic.height = self.scale_out(intrinsic.height, ROUND_UP)
 
     @abstractmethod
     def rehint(self):
-        pass
+        ...
 
 
 def align(value):

@@ -18,3 +18,7 @@ class ProgressBarProbe(SimpleProbe):
     @property
     def position(self):
         return self.native.getProgress() / self.native.getMax()
+
+    async def wait_for_animation(self):
+        # Android ProgressBar has internal animation handling; no special handling required.
+        pass

@@ -37,5 +37,3 @@ Reference
 ---------
 
 .. autoclass:: toga.sources.ValueSource
-   :members:
-   :undoc-members:

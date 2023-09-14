@@ -354,7 +354,7 @@ async def test_color(widget, probe):
     "The foreground color of a widget can be changed"
     for color in COLORS:
         widget.style.color = color
-        await probe.redraw("Widget text color should be %s" % color)
+        await probe.redraw("Widget foreground color should be %s" % color)
         assert_color(probe.color, color)
 
 
@@ -365,12 +365,12 @@ async def test_color_reset(widget, probe):
 
     # Set the color to something different
     widget.style.color = RED
-    await probe.redraw("Widget text color should be RED")
+    await probe.redraw("Widget foreground color should be RED")
     assert_color(probe.color, named_color(RED))
 
     # Reset the color, and check that it has been restored to the original
     del widget.style.color
-    await probe.redraw("Widget text color should be restored to the original")
+    await probe.redraw("Widget foreground color should be restored to the original")
     assert_color(probe.color, original)
 
 
@@ -378,7 +378,7 @@ async def test_background_color(widget, probe):
     "The background color of a widget can be set"
     for color in COLORS:
         widget.style.background_color = color
-        await probe.redraw("Widget text background color should be %s" % color)
+        await probe.redraw("Widget background color should be %s" % color)
         if not getattr(probe, "background_supports_alpha", True):
             color.a = 1
         assert_color(probe.background_color, color)
@@ -391,13 +391,13 @@ async def test_background_color_reset(widget, probe):
 
     # Set the background color to something different
     widget.style.background_color = RED
-    await probe.redraw("Widget text background color should be RED")
+    await probe.redraw("Widget background background color should be RED")
     assert_color(probe.background_color, named_color(RED))
 
     # Reset the background color, and check that it has been restored to the original
     del widget.style.background_color
     await probe.redraw(
-        message="Widget text background color should be restored to original"
+        message="Widget background background color should be restored to original"
     )
     assert_color(probe.background_color, original)
 
@@ -408,7 +408,7 @@ async def test_background_color_transparent(widget, probe):
     supports_alpha = getattr(probe, "background_supports_alpha", True)
 
     widget.style.background_color = TRANSPARENT
-    await probe.redraw("Widget text background color should be TRANSPARENT")
+    await probe.redraw("Widget background background color should be TRANSPARENT")
     assert_color(probe.background_color, TRANSPARENT if supports_alpha else original)
 
 
@@ -475,46 +475,46 @@ async def test_flex_widget_size(widget, probe):
     # Container is initially a non-flex row widget of fixed size.
     # Paint the background so we can easily see it against the background.
     widget.style.flex = 0
-    widget.style.width = 100
+    widget.style.width = 300
     widget.style.height = 200
     widget.style.background_color = CORNFLOWERBLUE
-    await probe.redraw("Widget should have fixed 100x200 size")
+    await probe.redraw("Widget should have fixed 300x200 size")
 
     # Check the initial widget size
     # Match isn't exact because of pixel scaling on some platforms
-    assert probe.width == approx(100, rel=0.01)
+    assert probe.width == approx(300, rel=0.01)
     assert probe.height == approx(200, rel=0.01)
 
     # Drop the fixed height, and make the widget flexible
     widget.style.flex = 1
     del widget.style.height
 
-    # Widget should now be 100 pixels wide, but as tall as the container.
-    await probe.redraw("Widget should be 100px wide now")
-    assert probe.width == approx(100, rel=0.01)
-    assert probe.height > 300
+    # Widget should now be 300 pixels wide, but as tall as the container.
+    await probe.redraw("Widget should be 300px wide, full height")
+    assert probe.width == approx(300, rel=0.01)
+    assert probe.height > 350
 
     # Make the parent a COLUMN box
     del widget.style.width
     widget.parent.style.direction = COLUMN
 
     # Widget should now be the size of the container
-    await probe.redraw("Widget should be the size of container now")
-    assert probe.width > 300
-    assert probe.height > 300
+    await probe.redraw("Widget should be the size of container")
+    assert probe.width > 350
+    assert probe.height > 350
 
     # Revert to fixed height
     widget.style.height = 150
 
-    await probe.redraw("Widget should be reverted to fixed height")
-    assert probe.width > 300
+    await probe.redraw("Widget should be full width, 150px high")
+    assert probe.width > 350
     assert probe.height == approx(150, rel=0.01)
 
     # Revert to fixed width
-    widget.style.width = 150
+    widget.style.width = 250
 
     await probe.redraw("Widget should be reverted to fixed width")
-    assert probe.width == approx(150, rel=0.01)
+    assert probe.width == approx(250, rel=0.01)
     assert probe.height == approx(150, rel=0.01)
 
 
