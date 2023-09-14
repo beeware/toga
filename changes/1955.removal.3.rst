@@ -1,0 +1,2 @@
+The ``prepend()`` method was removed from the ``ListSource`` and ``TreeSource`` APIs.
+Calls to ``prepend(...)`` can be replaced with ``insert(0, ...)``.

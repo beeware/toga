@@ -1,0 +1,1 @@
+The ``clear()`` method for resetting the value of a MultilineTextInput, TextInput and PasswordInput has been removed. This method was an ambiguous override of the ``clear()`` method on Widget that removed all child nodes. To remove all content from a text input widget, use ``widget.value = ""``.

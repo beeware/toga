@@ -21,9 +21,13 @@ from .base import Widget
 
 async def pulse(progressbar):
     """A background task to animate running indeterminate progress bars."""
-    while True:
-        progressbar.native.pulse()
-        await asyncio.sleep(0.1)
+    try:
+        while True:
+            progressbar.native.pulse()
+            await asyncio.sleep(0.1)
+    except asyncio.CancelledError:
+        # Being cancelled is expected behavior.
+        pass
 
 
 class ProgressBar(Widget):

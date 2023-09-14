@@ -1,0 +1,1 @@
+Programmatically scrolling to top and bottom in MultilineTextInput is now possible on iOS

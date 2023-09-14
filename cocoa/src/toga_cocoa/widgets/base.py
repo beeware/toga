@@ -11,7 +11,6 @@ class Widget:
         self.interface = interface
         self.interface._impl = self
         self._container = None
-        self._viewport = None
         self.constraints = None
         self.native = None
         self.create()
@@ -34,7 +33,7 @@ class Widget:
     @container.setter
     def container(self, container):
         if self.container:
-            assert container is None, "Widget already has a container"
+            assert container is None, f"{self} already has a container"
 
             # Existing container should be removed
             self.constraints.container = None
@@ -51,14 +50,6 @@ class Widget:
 
         self.rehint()
 
-    @property
-    def viewport(self):
-        return self._viewport
-
-    @viewport.setter
-    def viewport(self, viewport):
-        self._viewport = viewport
-
     def get_enabled(self):
         return self.native.isEnabled
 
@@ -68,7 +59,7 @@ class Widget:
     # APPLICATOR
 
     def set_bounds(self, x, y, width, height):
-        # print("SET BOUNDS ON", self.interface, x, y, width, height)
+        # print(f"SET BOUNDS ON {self.interface} {width}x{height} @ ({x},{y})")
         self.constraints.update(x, y, width, height)
 
     def set_alignment(self, alignment):
@@ -90,8 +81,16 @@ class Widget:
             self.native.backgroundColor = native_color(color)
             self.native.drawsBackground = True
 
+    @property
+    def has_focus(self):
+        return (
+            self.native.window is not None
+            and self.native.window.firstResponder == self.native
+        )
+
     def focus(self):
-        self.interface.window._impl.native.makeFirstResponder(self.native)
+        if not self.has_focus and self.interface.window:
+            self.interface.window._impl.native.makeFirstResponder(self.native)
 
     def get_tab_index(self):
         self.interface.factory.not_implemented("Widget.get_tab_index()")
@@ -102,11 +101,7 @@ class Widget:
     # INTERFACE
 
     def add_child(self, child):
-        if self.viewport:
-            # we are the top level NSView
-            child.container = self
-        else:
-            child.container = self.container
+        child.container = self.container
 
     def insert_child(self, index, child):
         self.add_child(child)
@@ -115,7 +110,6 @@ class Widget:
         child.container = None
 
     def add_constraints(self):
-        self.native.translatesAutoresizingMaskIntoConstraints = False
         self.constraints = Constraints(self)
 
     def refresh(self):

@@ -1,9 +1,9 @@
-import asyncio
+from rubicon.objc import ObjCClass
 
-from toga.colors import TRANSPARENT
-from toga.fonts import CURSIVE, FANTASY, MONOSPACE, SANS_SERIF, SERIF, SYSTEM
-from toga_iOS.libs import NSRunLoop, UIApplication, UIColor
+from toga_iOS.libs import UIApplication
 
+from ..fonts import FontMixin
+from ..probe import BaseProbe
 from .properties import toga_color
 
 # From UIControl.h
@@ -34,14 +34,22 @@ UIControlEventSystemReserved = 0xF0000000  # range reserved for internal framewo
 UIControlEventAllEvents = 0xFFFFFFFF
 
 
-class SimpleProbe:
+CATransaction = ObjCClass("CATransaction")
+
+
+class SimpleProbe(BaseProbe, FontMixin):
     def __init__(self, widget):
+        super().__init__()
+        self.app = widget.app
         self.widget = widget
+        self.impl = widget._impl
         self.native = widget._impl.native
         assert isinstance(self.native, self.native_class)
 
     def assert_container(self, container):
-        container_native = container._impl.native
+        assert container._impl.container == self.impl.container
+
+        container_native = container._impl.container.native
         for control in container_native.subviews():
             if control == self.native:
                 break
@@ -55,29 +63,16 @@ class SimpleProbe:
     def assert_alignment(self, expected):
         assert self.alignment == expected
 
-    def assert_font_family(self, expected):
-        assert self.font.family == {
-            CURSIVE: "Apple Chancery",
-            FANTASY: "Papyrus",
-            MONOSPACE: "Courier New",
-            SANS_SERIF: "Helvetica",
-            SERIF: "Times New Roman",
-            SYSTEM: ".AppleSystemUIFont",
-        }.get(expected, expected)
-
-    async def redraw(self, message=None):
+    async def redraw(self, message=None, delay=None):
         """Request a redraw of the app, waiting until that redraw has completed."""
-        # Force a repaint
+        # Force a widget repaint
         self.widget.window.content._impl.native.layer.displayIfNeeded()
 
-        # If we're running slow, wait for a second
-        if self.widget.app.run_slow:
-            print("Waiting for redraw" if message is None else message)
-            await asyncio.sleep(1)
-        else:
-            # Running at "normal" speed, we need to release to the event loop
-            # for at least one iteration. `runUntilDate:None` does this.
-            NSRunLoop.currentRunLoop.runUntilDate(None)
+        # Flush CoreAnimation; this ensures all animations are complete
+        # and all constraints have been evaluated.
+        CATransaction.flush()
+
+        await super().redraw(message=message, delay=delay)
 
     @property
     def enabled(self):
@@ -93,7 +88,16 @@ class SimpleProbe:
 
     @property
     def height(self):
-        return self.native.frame.size.height
+        height = self.native.frame.size.height
+        # If the widget is the top level container, the frame height will
+        # include the allocation for the app titlebar.
+        if self.impl.container is None:
+            height = height - self.impl.viewport.top_offset
+        return height
+
+    @property
+    def shrink_on_resize(self):
+        return True
 
     def assert_layout(self, size, position):
         # Widget is contained and in a window.
@@ -105,8 +109,8 @@ class SimpleProbe:
 
         # Allow for the status bar and navigation bar in vertical position
         statusbar_frame = UIApplication.sharedApplication.statusBarFrame
-        navbar = self.widget.window._impl.controller.navigationController
-        navbar_frame = navbar.navigationBar.frame
+        nav_controller = self.widget.window._impl.native.rootViewController
+        navbar_frame = nav_controller.navigationBar.frame
         offset = statusbar_frame.size.height + navbar_frame.size.height
         assert (
             self.native.frame.origin.x,
@@ -125,10 +129,11 @@ class SimpleProbe:
 
     @property
     def background_color(self):
-        if self.native.backgroundColor == UIColor.clearColor:
-            return TRANSPARENT
-        else:
-            return toga_color(self.native.backgroundColor)
+        return toga_color(self.native.backgroundColor)
+
+    @property
+    def font(self):
+        return self.native.font
 
     async def press(self):
         self.native.sendActionsForControlEvents(UIControlEventTouchDown)
@@ -140,3 +145,24 @@ class SimpleProbe:
     @property
     def has_focus(self):
         return self.native.isFirstResponder
+
+    def type_return(self):
+        self.native.insertText("\n")
+
+    def _prevalidate_input(self, char):
+        return True
+
+    async def type_character(self, char):
+        if char == "<esc>":
+            # There's no analog of esc on iOS
+            pass
+        elif char == "\n":
+            self.type_return()
+        else:
+            # Perform any prevalidation that is required. If the input isn't
+            # valid, do a dummy "empty" insertion.
+            valid = self._prevalidate_input(char)
+            if valid:
+                self.native.insertText(char)
+            else:
+                self.native.insertText("")

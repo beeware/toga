@@ -18,6 +18,7 @@ from .libs import (
     NSAboutPanelOptionApplicationVersion,
     NSApplication,
     NSApplicationActivationPolicyRegular,
+    NSBeep,
     NSBundle,
     NSCursor,
     NSDocumentController,
@@ -254,7 +255,7 @@ class App:
         self._create_app_commands()
 
         # Call user code to populate the main window
-        self.interface.startup()
+        self.interface._startup()
 
         # Create the lookup table of menu items,
         # then force the creation of the menus.
@@ -362,6 +363,9 @@ class App:
             )
 
         self.native.orderFrontStandardAboutPanelWithOptions(options)
+
+    def beep(self):
+        NSBeep()
 
     def exit(self):
         self.loop.stop()

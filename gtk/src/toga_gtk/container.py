@@ -1,5 +1,13 @@
 from .libs import Gdk, Gtk
 
+#######################################################################################
+# Implementation notes:
+#
+# GDK/GTK renders everything at 96dpi. When HiDPI mode is enabled, it is managed at the
+# compositor level. See https://wiki.archlinux.org/index.php/HiDPI#GDK_3_(GTK_3) for
+# details.
+#######################################################################################
+
 
 class TogaContainer(Gtk.Fixed):
     """A GTK container widget implementing Toga's layout.
@@ -13,9 +21,6 @@ class TogaContainer(Gtk.Fixed):
         self.min_width = 100
         self.min_height = 100
 
-        # GDK/GTK always renders at 96dpi. When HiDPI mode is enabled, it is
-        # managed at the compositor level. See
-        # https://wiki.archlinux.org/index.php/HiDPI#GDK_3_(GTK_3) for details
         self.dpi = 96
         self.baseline_dpi = self.dpi
 
@@ -25,6 +30,9 @@ class TogaContainer(Gtk.Fixed):
 
         # A flag that can be used to explicitly flag that a redraw is required.
         self.needs_redraw = True
+
+    def refreshed(self):
+        pass
 
     def make_dirty(self, widget=None):
         """Mark the container (or a specific widget in the container) as dirty.
@@ -76,6 +84,9 @@ class TogaContainer(Gtk.Fixed):
         self._content = widget
         if widget:
             widget.container = self
+            self.make_dirty(widget)
+        else:
+            self.make_dirty()
 
     def recompute(self):
         """Rehint and re-layout the container's content, if necessary.
@@ -83,22 +94,19 @@ class TogaContainer(Gtk.Fixed):
         Any widgets known to be dirty will be rehinted. The minimum possible layout size
         for the container will also be recomputed.
         """
-        if self._content and self.needs_redraw:
+        if self._content and self._dirty_widgets:
             # If any of the widgets have been marked as dirty,
             # recompute their bounds, and re-evaluate the minimum
-            # allowed size fo the layout.
+            # allowed size for the layout.
             while self._dirty_widgets:
                 widget = self._dirty_widgets.pop()
                 widget.rehint()
 
-            # Compute the layout using a 0-size container
-            self._content.interface.style.layout(
-                self._content.interface, TogaContainer()
-            )
+            # Recompute the layout
+            self._content.interface.style.layout(self._content.interface, self)
 
-            # print(" computed min layout", self._content.interface.layout)
-            self.min_width = self._content.interface.layout.width
-            self.min_height = self._content.interface.layout.height
+            self.min_width = self._content.interface.layout.min_width
+            self.min_height = self._content.interface.layout.min_height
 
     def do_get_preferred_width(self):
         """Return (recomputing if necessary) the preferred width for the container.
@@ -160,7 +168,11 @@ class TogaContainer(Gtk.Fixed):
             if resized or self.needs_redraw:
                 # Re-evaluate the layout using the allocation size as the basis for geometry
                 # print("REFRESH LAYOUT", allocation.width, allocation.height)
-                self._content.interface.refresh()
+                self._content.interface.style.layout(self._content.interface, self)
+
+                # Ensure the minimum content size from the layout is retained
+                self.min_width = self._content.interface.layout.min_width
+                self.min_height = self._content.interface.layout.min_height
 
             # WARNING! This is the list of children of the *container*, not
             # the Toga widget. Toga maintains a tree of children; all nodes

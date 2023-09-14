@@ -1,113 +1,151 @@
-import toga
+from travertino.size import at_least
 
-from ..libs import Gtk
+from ..libs import GdkPixbuf, Gtk
 from .base import Widget
-from .internal.sourcetreemodel import SourceTreeModel
+from .table import TogaRow
 
 
 class Tree(Widget):
     def create(self):
-        # Tree is reused for table, where it's a ListSource, not a tree
-        # so check here if the actual widget is a Tree or a Table.
-        # It can't be based on the source, since it determines flags
-        # and GtkTreeModel.flags is not allowed to change after creation
-        is_tree = isinstance(self.interface, toga.Tree)
-        self.store = SourceTreeModel(
-            [{"type": str, "attr": a} for a in self.interface._accessors],
-            is_tree=is_tree,
-            missing_value=self.interface.missing_value,
-        )
+        self.store = None
 
         # Create a tree view, and put it in a scroll view.
         # The scroll view is the _impl, because it's the outer container.
-        self.treeview = Gtk.TreeView(model=self.store)
-        self.selection = self.treeview.get_selection()
+        self.native_tree = Gtk.TreeView(model=self.store)
+        self.native_tree.connect("row-activated", self.gtk_on_row_activated)
+
+        self.selection = self.native_tree.get_selection()
         if self.interface.multiple_select:
             self.selection.set_mode(Gtk.SelectionMode.MULTIPLE)
         else:
             self.selection.set_mode(Gtk.SelectionMode.SINGLE)
         self.selection.connect("changed", self.gtk_on_select)
 
-        for i, heading in enumerate(self.interface.headings):
-            renderer = Gtk.CellRendererText()
-            column = Gtk.TreeViewColumn(heading, renderer, text=i + 1)
-            self.treeview.append_column(column)
+        self._create_columns()
 
         self.native = Gtk.ScrolledWindow()
         self.native.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
-        self.native.add(self.treeview)
+        self.native.add(self.native_tree)
         self.native.set_min_content_width(200)
         self.native.set_min_content_height(200)
 
-    def gtk_on_select(self, selection):
-        if self.interface.on_select:
-            if self.interface.multiple_select:
-                tree_model, tree_path = selection.get_selected_rows()
-                if tree_path:
-                    tree_iter = tree_model.get_iter(tree_path[-1])
-                else:
-                    tree_iter = None
-            else:
-                tree_model, tree_iter = selection.get_selected()
+    def _create_columns(self):
+        if self.interface.headings:
+            headings = self.interface.headings
+            self.native_tree.set_headers_visible(True)
+        else:
+            headings = self.interface.accessors
+            self.native_tree.set_headers_visible(False)
 
-            # Covert the tree iter into the actual node.
-            if tree_iter:
-                node = tree_model.get(tree_iter, 0)[0]
-            else:
-                node = None
-            self.interface.on_select(None, node=node)
+        for i, heading in enumerate(headings):
+            column = Gtk.TreeViewColumn(heading)
+            column.set_sizing(Gtk.TreeViewColumnSizing.AUTOSIZE)
+            column.set_expand(True)
+            column.set_resizable(True)
+            column.set_min_width(16)
+
+            icon = Gtk.CellRendererPixbuf()
+            column.pack_start(icon, False)
+            column.add_attribute(icon, "pixbuf", i * 2 + 1)
+
+            value = Gtk.CellRendererText()
+            column.pack_start(value, True)
+            column.add_attribute(value, "text", i * 2 + 2)
+
+            self.native_tree.append_column(column)
+
+    def gtk_on_select(self, selection):
+        self.interface.on_select(None)
+
+    def gtk_on_row_activated(self, widget, path, column):
+        node = self.store[path][0].value
+        self.interface.on_activate(None, node=node)
 
     def change_source(self, source):
         # Temporarily disconnecting the TreeStore improves performance for large
         # updates by deferring row rendering until the update is complete.
-        self.treeview.set_model(None)
+        self.native_tree.set_model(None)
 
-        self.store.change_source(source)
+        for column in self.native_tree.get_columns():
+            self.native_tree.remove_column(column)
+        self._create_columns()
 
-        def append_children(data, parent=None):
-            if data.can_have_children():
-                for i, node in enumerate(data):
-                    self.insert(parent, i, node)
-                    append_children(node, parent=node)
+        types = [TogaRow]
+        for accessor in self.interface._accessors:
+            types.extend([GdkPixbuf.Pixbuf, str])
+        self.store = Gtk.TreeStore(*types)
 
-        append_children(source, parent=None)
+        for i, row in enumerate(self.interface.data):
+            self.insert(None, i, row)
 
-        self.treeview.set_model(self.store)
+        self.native_tree.set_model(self.store)
+        self.refresh()
 
-    def insert(self, parent, index, item, **kwargs):
-        self.store.insert(item)
+    def insert(self, parent, index, item):
+        row = TogaRow(item)
+        values = [row]
+        for accessor in self.interface.accessors:
+            values.extend(
+                [
+                    row.icon(accessor),
+                    row.text(accessor, self.interface.missing_value),
+                ]
+            )
+
+        if parent is None:
+            iter = None
+        else:
+            iter = parent._impl
+
+        item._impl = self.store.insert(iter, index, values)
+
+        for i, child in enumerate(item):
+            self.insert(item, i, child)
 
     def change(self, item):
-        self.store.change(item)
+        row = self.store[item._impl]
+        for i, accessor in enumerate(self.interface.accessors):
+            row[i * 2 + 1] = row[0].icon(accessor)
+            row[i * 2 + 2] = row[0].text(accessor, self.interface.missing_value)
 
     def remove(self, item, index, parent):
-        self.store.remove(item, index=index, parent=parent)
+        del self.store[item._impl]
+        item._impl = None
 
     def clear(self):
         self.store.clear()
 
     def get_selection(self):
         if self.interface.multiple_select:
-            tree_model, tree_paths = self.selection.get_selected_rows()
-            return [
-                tree_model.get(tree_model.get_iter(path), 0)[0] for path in tree_paths
-            ]
+            store, itrs = self.selection.get_selected_rows()
+            return [store[itr][0].value for itr in itrs]
         else:
-            tree_model, tree_iter = self.selection.get_selected()
-            if tree_iter:
-                row = tree_model.get(tree_iter, 0)[0]
-            else:
-                row = None
+            store, iter = self.selection.get_selected()
+            if iter is None:
+                return None
+            return store[iter][0].value
 
-        return row
+    def expand_node(self, node):
+        self.native_tree.expand_row(
+            self.native_tree.get_model().get_path(node._impl), True
+        )
 
-    def set_on_select(self, handler):
-        # No special handling required
-        pass
+    def expand_all(self):
+        self.native_tree.expand_all()
 
-    def set_on_double_click(self, handler):
-        self.interface.factory.not_implemented("Tree.set_on_double_click()")
+    def collapse_node(self, node):
+        self.native_tree.collapse_row(self.native_tree.get_model().get_path(node._impl))
 
-    def scroll_to_node(self, node):
-        path = self.store.path_to_node(node)
-        self.treeview.scroll_to_cell(path)
+    def collapse_all(self):
+        self.native_tree.collapse_all()
+
+    def insert_column(self, index, heading, accessor):
+        # Adding/removing a column means completely rebuilding the ListStore
+        self.change_source(self.interface.data)
+
+    def remove_column(self, accessor):
+        self.change_source(self.interface.data)
+
+    def rehint(self):
+        self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
+        self.interface.intrinsic.height = at_least(self.interface._MIN_HEIGHT)

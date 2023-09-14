@@ -18,6 +18,8 @@ class OnCheckedChangeListener(CompoundButton__OnCheckedChangeListener):
 
 
 class Switch(TextViewWidget):
+    focusable = False
+
     def create(self):
         self.native = A_Switch(self._native_activity)
         self.native.setOnCheckedChangeListener(OnCheckedChangeListener(self))
@@ -42,8 +44,6 @@ class Switch(TextViewWidget):
         self.native.setChecked(bool(value))
 
     def rehint(self):
-        if not self.native.getLayoutParams():
-            return
         self.native.measure(
             View__MeasureSpec.UNSPECIFIED, View__MeasureSpec.UNSPECIFIED
         )

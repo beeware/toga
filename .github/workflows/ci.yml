@@ -11,7 +11,7 @@ on:
         value: ${{ jobs.package.outputs.artifact-name }}
 
 env:
-  min_python_version: "3.7"
+  min_python_version: "3.8"
   max_python_version: "3.11"
 
 defaults:
@@ -54,6 +54,7 @@ jobs:
         - "gtk"
         - "iOS"
         - "toga"
+        - "textual"
         - "web"
         - "winforms"
 
@@ -64,16 +65,16 @@ jobs:
     strategy:
       matrix:
         platform: [ "macos", "ubuntu", "windows" ]
-        python-version: [ "3.7", "3.8", "3.9", "3.10", "3.11", "3.12-dev" ]
+        python-version: [ "3.8", "3.9", "3.10", "3.11", "3.12-dev" ]
         include:
           - experimental: false
 
           - python-version: "3.12-dev"
             experimental: true
     steps:
-    - uses: actions/checkout@v3.5.2
+    - uses: actions/checkout@v4.0.0
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v4.6.0
+      uses: actions/setup-python@v4.7.0
       with:
         python-version: ${{ matrix.python-version }}
     - name: Install dev dependencies
@@ -94,7 +95,7 @@ jobs:
         cd core
         mv .coverage .coverage.${{ matrix.platform }}.${{ matrix.python-version }}
     - name: Store coverage data
-      uses: actions/upload-artifact@v3.1.2
+      uses: actions/upload-artifact@v3.1.3
       with:
         name: core-coverage-data
         path: "core/.coverage.*"
@@ -105,10 +106,10 @@ jobs:
     runs-on: ubuntu-latest
     needs: core
     steps:
-    - uses: actions/checkout@v3.5.2
+    - uses: actions/checkout@v4.0.0
       with:
         fetch-depth: 0
-    - uses: actions/setup-python@v4.6.0
+    - uses: actions/setup-python@v4.7.0
       with:
         # Use latest, so it understands all syntax.
         python-version: ${{ env.max_python_version }}
@@ -129,7 +130,7 @@ jobs:
         python -m coverage html --skip-covered --skip-empty
         python -m coverage report --rcfile ../pyproject.toml # --fail-under=100
     - name: Upload HTML report if check failed.
-      uses: actions/upload-artifact@v3.1.2
+      uses: actions/upload-artifact@v3.1.3
       with:
         name: html-coverage-report
         path: core/htmlcov
@@ -143,14 +144,16 @@ jobs:
         backend: [ "android", "cocoa", "gtk", "iOS", "web", "winforms" ]
         include:
           - runs-on: ubuntu-latest
-          - python-version: "3.7"  # Should be env.min_python_version (https://github.com/actions/runner/issues/480)
+          - python-version: "3.8"  # Should be env.min_python_version (https://github.com/actions/runner/issues/480)
           - pre-command:
 
           - backend: cocoa
             runs-on: macos-latest
 
           - backend: gtk
-            pre-command: "sudo apt-get update -y && sudo apt-get install -y python3-gi python3-gi-cairo gir1.2-gtk-3.0 python3-dev libgirepository1.0-dev libcairo2-dev gir1.2-webkit2-4.0 pkg-config libfuse2"
+            pre-command: |
+              sudo apt update -y
+              sudo apt install -y pkg-config python3-dev libgirepository1.0-dev libcairo2-dev gir1.2-gtk-3.0
 
           - backend: iOS
             runs-on: macos-latest
@@ -161,9 +164,9 @@ jobs:
             # a wheel of pythonnet isn't available on PyPI.
             python-version: "3.9"
     steps:
-    - uses: actions/checkout@v3.5.2
+    - uses: actions/checkout@v4.0.0
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v4.6.0
+      uses: actions/setup-python@v4.7.0
       with:
         python-version: ${{ matrix.python-version }}
     - name: Get packages
@@ -205,9 +208,22 @@ jobs:
           - backend: linux
             runs-on: ubuntu-22.04
             # The package list should be the same as in tutorial-0.rst, and the BeeWare
-            # tutorial.
-            pre-command: "sudo apt-get update -y && sudo apt-get install -y python3-dev python3-cairo-dev python3-gi-cairo libgirepository1.0-dev libcairo2-dev libpango1.0-dev gir1.2-webkit2-4.0 pkg-config"
-            briefcase-run-prefix: 'xvfb-run -a -s "-screen 0 2048x1536x24"'
+            # tutorial, plus flwm to provide a window manager
+            pre-command: |
+              sudo apt update -y
+              sudo apt install -y flwm pkg-config python3-dev libgirepository1.0-dev libcairo2-dev gir1.2-webkit2-4.0
+
+              # Start Virtual X server
+              echo "Start X server..."
+              Xvfb :99 -screen 0 2048x1536x24 &
+              sleep 1
+
+              # Start Window manager
+              echo "Start window manager..."
+              DISPLAY=:99 flwm &
+              sleep 1
+
+            briefcase-run-prefix: 'DISPLAY=:99'
             setup-python: false  # Use the system Python packages.
 
           - backend: windows
@@ -221,14 +237,18 @@ jobs:
             runs-on: macos-12
             briefcase-run-args: " -d '{\"avd\":\"beePhone\"}' --Xemulator=-no-window --Xemulator=-no-snapshot --Xemulator=-no-audio --Xemulator=-no-boot-anim --shutdown-on-exit"
     steps:
-    - uses: actions/checkout@v3.5.2
+    - uses: actions/checkout@v4.0.0
       with:
         fetch-depth: 0
     - name: Set up Python
-      uses: actions/setup-python@v4.6.0
+      uses: actions/setup-python@v4.7.0
       if: ${{ matrix.setup-python }}
       with:
-        python-version: "3.X"
+        # We're not using Python 3.11 yet, because:
+        # * The testbed's ProxyEventLoop has some problems with it
+        #   (https://github.com/beeware/toga/issues/1982).
+        # * It doesn't have an Android build of Pillow yet.
+        python-version: "3.10"
     - name: Install dependencies
       run: |
         ${{ matrix.pre-command }}
@@ -239,7 +259,7 @@ jobs:
         cd testbed
         ${{ matrix.briefcase-run-prefix }} briefcase run ${{ matrix.backend }} --test ${{ matrix.briefcase-run-args }}
     - name: Upload logs
-      uses: actions/upload-artifact@v3.1.2
+      uses: actions/upload-artifact@v3.1.3
       if: failure()
       with:
         name: testbed-failure-logs-${{ matrix.backend }}

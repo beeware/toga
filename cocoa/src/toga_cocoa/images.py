@@ -1,7 +1,6 @@
 from pathlib import Path
 
 from toga_cocoa.libs import (
-    NSURL,
     NSBitmapImageFileType,
     NSBitmapImageRep,
     NSData,
@@ -10,45 +9,51 @@ from toga_cocoa.libs import (
 
 
 class Image:
-    def __init__(self, interface, path=None, url=None, data=None):
+    def __init__(self, interface, path=None, data=None):
         self.interface = interface
-        self.path = path
-        self.url = url
 
-        if path:
-            self.native = NSImage.alloc().initWithContentsOfFile(str(path))
-        elif url:
-            self.native = NSImage.alloc().initByReferencingURL(
-                NSURL.URLWithString_(url)
-            )
-        elif data:
-            if isinstance(data, NSData):
-                nsdata = data
+        try:
+            # We *should* be able to do a direct NSImage.alloc.init...(), but if the
+            # image file is invalid, the init fails, and returns NULL - but we've
+            # created an ObjC instance, so when the object passes out of scope, Rubicon
+            # tries to free it, which segfaults. To avoid this, we retain result of the
+            # alloc() (overriding the default Rubicon behavior of alloc), then release
+            # that reference once we're done. If the image was created successfully, we
+            # temporarily have a reference count that is 1 higher than it needs to be;
+            # if it fails, we don't end up with a stray release.
+            image = NSImage.alloc().retain()
+            if path:
+                self.native = image.initWithContentsOfFile(str(path))
+                if self.native is None:
+                    raise ValueError(f"Unable to load image from {path}")
             else:
                 nsdata = NSData.dataWithBytes(data, length=len(data))
+                self.native = image.initWithData(nsdata)
+                if self.native is None:
+                    raise ValueError("Unable to load image from data")
+        finally:
+            image.release()
 
-            self.native = NSImage.alloc().initWithData(nsdata)
+    def get_width(self):
+        return self.native.size.width
+
+    def get_height(self):
+        return self.native.size.height
 
     def save(self, path):
         path = Path(path)
         try:
-            if path.suffix == "":
-                # If no suffix is provided in the filename, default to PNG,
-                # and append that suffix to the filename.
-                str_path = str(path) + ".png"
-                filetype = NSBitmapImageFileType.PNG
-            else:
-                filetype = {
-                    ".jpg": NSBitmapImageFileType.JPEG,
-                    ".jpeg": NSBitmapImageFileType.JPEG,
-                    ".png": NSBitmapImageFileType.PNG,
-                    ".gif": NSBitmapImageFileType.GIF,
-                    ".bmp": NSBitmapImageFileType.BMP,
-                    ".tiff": NSBitmapImageFileType.TIFF,
-                }[path.suffix.lower()]
-                str_path = str(path)
+            filetype = {
+                ".jpg": NSBitmapImageFileType.JPEG,
+                ".jpeg": NSBitmapImageFileType.JPEG,
+                ".png": NSBitmapImageFileType.PNG,
+                ".gif": NSBitmapImageFileType.GIF,
+                ".bmp": NSBitmapImageFileType.BMP,
+                ".tiff": NSBitmapImageFileType.TIFF,
+            }[path.suffix.lower()]
+            str_path = str(path)
         except KeyError:
-            raise ValueError(f"Don't know how to save image of type {path.suffix}")
+            raise ValueError(f"Don't know how to save image of type {path.suffix!r}")
 
         bitmapData = NSBitmapImageRep.representationOfImageRepsInArray(
             self.native.representations,

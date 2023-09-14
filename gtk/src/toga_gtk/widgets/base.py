@@ -27,11 +27,6 @@ class Widget:
         # Ensure initial styles are applied.
         self.interface.style.reapply()
 
-    @property
-    def viewport(self):
-        # TODO: Remove the use of viewport
-        return self._container
-
     @abstractmethod
     def create(self):
         ...
@@ -49,7 +44,7 @@ class Widget:
     @container.setter
     def container(self, container):
         if self.container:
-            assert container is None, "Widget Already have a container"
+            assert container is None, "Widget already has a container"
 
             # container is set to None, removing self from the container.native
             # Note from pygtk documentation: Note that the container will own a
@@ -68,7 +63,7 @@ class Widget:
         for child in self.interface.children:
             child._impl.container = container
 
-        self.rehint()
+        self.refresh()
 
     def get_enabled(self):
         return self.native.get_sensitive()
@@ -76,8 +71,13 @@ class Widget:
     def set_enabled(self, value):
         self.native.set_sensitive(value)
 
+    @property
+    def has_focus(self):
+        return self.native.has_focus()
+
     def focus(self):
-        self.native.grab_focus()
+        if not self.has_focus:
+            self.native.grab_focus()
 
     def get_tab_index(self):
         self.interface.factory.not_implemented("Widget.get_tab_index()")
@@ -89,27 +89,27 @@ class Widget:
     # CSS tools
     ######################################################################
 
-    def apply_css(self, property, css, native=None):
+    def apply_css(self, property, css, native=None, selector=".toga"):
         """Apply a CSS style controlling a specific property type.
 
-        GTK controls appearance with CSS; each GTK widget can have
-        an independent style sheet, composed out of multiple providers.
+        GTK controls appearance with CSS; each GTK widget can have an
+        independent style sheet, composed out of multiple providers.
 
-        Toga uses a separate provider for each property that
-        needs to be controlled (e.g., color, font, ...). When that
-        property is modified, the old provider for that property is
-        removed; if new CSS has been provided, a new provider is
-        constructed and added to the widget.
+        Toga uses a separate provider for each property that needs to be
+        controlled (e.g., color, font, ...). When that property is modified, the
+        old provider for that property is removed; if new CSS has been provided,
+        a new provider is constructed and added to the widget.
 
-        It is assumed that every Toga widget will have the class
-        ``toga``.
+        It is assumed that every Toga widget will have the class ``toga``.
 
         :param property: The style property to modify
-        :param css: A dictionary of string key-value pairs, describing
-            the new CSS for the given property. If ``None``, the Toga
-            style for that property will be reset
-        :param native: The native widget to which the style should be
-            applied. Defaults to `self.native`.
+        :param css: A dictionary of string key-value pairs, describing the new
+            CSS for the given property. If ``None``, the Toga style for that
+            property will be reset
+        :param native: The native widget to which the style should be applied.
+            Defaults to ``self.native``.
+        :param selector: The CSS selector used to target the style. Defaults to
+            ``.toga``.
         """
         if native is None:
             native = self.native
@@ -127,8 +127,8 @@ class Widget:
             # Create a new CSS StyleProvider
             style_provider = Gtk.CssProvider()
             styles = " ".join(f"{key}: {value};" for key, value in css.items())
-            # print(f"SET {self} {property}={styles}")
-            style_provider.load_from_data((".toga {" + styles + "}").encode())
+            declaration = selector + " {" + styles + "}"
+            style_provider.load_from_data(declaration.encode())
 
             # Add the provider to the widget
             style_context.add_provider(

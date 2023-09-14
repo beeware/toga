@@ -1,9 +1,9 @@
 from pytest import approx, fixture
 
 import toga
-from toga.style.pack import CENTER, COLUMN, JUSTIFY, LEFT, LTR, RIGHT, RTL
 
 from .properties import (  # noqa: F401
+    test_alignment,
     test_background_color,
     test_background_color_reset,
     test_background_color_transparent,
@@ -34,7 +34,7 @@ async def test_multiline(widget, probe):
     await probe.redraw("Label should be resized vertically")
     line_height = probe.height
 
-    # Label should have a signficant width.
+    # Label should have a significant width.
     assert probe.width > 50
 
     # Empty text should not cause the widget to collapse.
@@ -57,33 +57,5 @@ async def test_multiline(widget, probe):
             (line_height * n) + (line_spacing * (n - 1)),
             rel=0.1,
         )
-        # Label should have a signficant width.
+        # Label should have a significant width.
         assert probe.width > 50
-
-
-async def test_alignment(widget, probe):
-    """Labels honor alignment settings."""
-    # Initial alignment is LEFT, initial direction is LTR
-    widget.parent.style.direction = COLUMN
-    await probe.redraw("Label text direction should be LTR")
-    probe.assert_alignment(LEFT)
-
-    for alignment in [RIGHT, CENTER, JUSTIFY]:
-        widget.style.text_align = alignment
-        await probe.redraw("Label text direction should be %s" % alignment)
-        probe.assert_alignment(alignment)
-
-    # Clearing the alignment reverts to default alignment of LEFT
-    del widget.style.text_align
-    await probe.redraw("Label text direction should be reverted to LEFT")
-    probe.assert_alignment(LEFT)
-
-    # If text direction is RTL, default alignment is RIGHT
-    widget.style.text_direction = RTL
-    await probe.redraw("Label text direction should be RTL")
-    probe.assert_alignment(RIGHT)
-
-    # If text direction is expliclty LTR, default alignment is LEFT
-    widget.style.text_direction = LTR
-    await probe.redraw("Label text direction should be LTR")
-    probe.assert_alignment(LEFT)

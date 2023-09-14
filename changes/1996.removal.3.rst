@@ -1,0 +1,1 @@
+The ``on_select`` handler for OptionContainer no longer receives the ``option`` argument providing the selected tab. Use ``current_tab`` to obtain the currently selected tab.

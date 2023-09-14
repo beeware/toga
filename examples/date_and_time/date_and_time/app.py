@@ -18,7 +18,7 @@ class DateAndTimeApp(toga.App):
         any_date_box = toga.Box(
             children=[
                 toga.Label("Any date:", style=Pack(width=150, text_align=RIGHT)),
-                toga.DatePicker(
+                toga.DateInput(
                     id="Any",
                     value=None,
                     on_change=self.changed_date,
@@ -29,11 +29,11 @@ class DateAndTimeApp(toga.App):
         min_date_box = toga.Box(
             children=[
                 toga.Label("With min:", style=Pack(width=150, text_align=RIGHT)),
-                toga.DatePicker(
+                toga.DateInput(
                     id="Min",
                     value=None,
                     on_change=self.changed_date,
-                    min_date="2021-01-01",
+                    min="2021-01-01",
                 ),
             ],
             style=Pack(direction=ROW),
@@ -41,11 +41,11 @@ class DateAndTimeApp(toga.App):
         max_date_box = toga.Box(
             children=[
                 toga.Label("With max:", style=Pack(width=150, text_align=RIGHT)),
-                toga.DatePicker(
+                toga.DateInput(
                     id="Max",
                     value=date(2021, 4, 2),
                     on_change=self.changed_date,
-                    max_date=date(2022, 2, 1),
+                    max=date(2022, 2, 1),
                 ),
             ],
             style=Pack(direction=ROW),
@@ -55,12 +55,12 @@ class DateAndTimeApp(toga.App):
                 toga.Label(
                     "With min and max:", style=Pack(width=150, text_align=RIGHT)
                 ),
-                toga.DatePicker(
+                toga.DateInput(
                     id="Min-max",
                     value=date(2021, 4, 2),
                     on_change=self.changed_date,
-                    min_date=date(2021, 1, 1),
-                    max_date=date(2022, 2, 1),
+                    min=date(2021, 1, 1),
+                    max=date(2022, 2, 1),
                 ),
             ],
             style=Pack(direction=ROW),
@@ -69,7 +69,7 @@ class DateAndTimeApp(toga.App):
         any_time_box = toga.Box(
             children=[
                 toga.Label("Any time:", style=Pack(width=150, text_align=RIGHT)),
-                toga.TimePicker(
+                toga.TimeInput(
                     id="Any time",
                     value=None,
                     on_change=self.changed_time,
@@ -80,11 +80,11 @@ class DateAndTimeApp(toga.App):
         min_time_box = toga.Box(
             children=[
                 toga.Label("With min:", style=Pack(width=150, text_align=RIGHT)),
-                toga.TimePicker(
+                toga.TimeInput(
                     id="Min time",
                     value=None,
                     on_change=self.changed_time,
-                    min_time="06:35:00",
+                    min="06:35:00",
                 ),
             ],
             style=Pack(direction=ROW),
@@ -92,11 +92,11 @@ class DateAndTimeApp(toga.App):
         max_time_box = toga.Box(
             children=[
                 toga.Label("With max:", style=Pack(width=150, text_align=RIGHT)),
-                toga.TimePicker(
+                toga.TimeInput(
                     id="Max time",
                     value=time(10, 42),
                     on_change=self.changed_time,
-                    max_time=time(21, 30),
+                    max=time(21, 30),
                 ),
             ],
             style=Pack(direction=ROW),
@@ -106,12 +106,12 @@ class DateAndTimeApp(toga.App):
                 toga.Label(
                     "With min and max:", style=Pack(width=150, text_align=RIGHT)
                 ),
-                toga.TimePicker(
+                toga.TimeInput(
                     id="Min-max time",
                     value=time(10, 42),
                     on_change=self.changed_time,
-                    min_time=time(8, 15),
-                    max_time=time(21, 30),
+                    min=time(8, 15),
+                    max=time(21, 30),
                 ),
             ],
             style=Pack(direction=ROW),

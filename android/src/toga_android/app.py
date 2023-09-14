@@ -3,6 +3,7 @@ import asyncio
 from rubicon.java import android_events
 
 import toga
+from android.media import RingtoneManager
 from toga.command import Group
 
 from .libs.activity import IPythonApp, MainActivity
@@ -25,6 +26,7 @@ class TogaApp(IPythonApp):
         super().__init__()
         self._impl = app
         MainActivity.setPythonApp(self)
+        self.native = MainActivity.singletonThis
         print("Python app launched & stored in Android Activity class")
 
     def onCreate(self):
@@ -161,14 +163,6 @@ class TogaApp(IPythonApp):
 
         return True
 
-    @property
-    def native(self):
-        # We access `MainActivity.singletonThis` freshly each time, rather than
-        # storing a reference in `__init__()`, because it's not safe to use the
-        # same reference over time because `rubicon-java` creates a JNI local
-        # reference.
-        return MainActivity.singletonThis
-
 
 class App:
     def __init__(self, interface):
@@ -187,7 +181,7 @@ class App:
         # the app's `.native` is the listener's native Java class.
         self._listener = TogaApp(self)
         # Call user code to populate the main window
-        self.interface.startup()
+        self.interface._startup()
 
     def open_document(self, fileURL):
         print("Can't open document %s (yet)" % fileURL)
@@ -205,6 +199,13 @@ class App:
 
     def show_about_dialog(self):
         self.interface.factory.not_implemented("App.show_about_dialog()")
+
+    def beep(self):
+        uri = RingtoneManager.getActualDefaultRingtoneUri(
+            self.native.getApplicationContext(), RingtoneManager.TYPE_NOTIFICATION
+        )
+        ringtone = RingtoneManager.getRingtone(self.native.getApplicationContext(), uri)
+        ringtone.play()
 
     def exit(self):
         pass
@@ -230,3 +231,9 @@ class App:
             return result_future.result()
         except AttributeError:
             raise RuntimeError("No appropriate Activity found to handle this intent.")
+
+    def hide_cursor(self):
+        pass
+
+    def show_cursor(self):
+        pass

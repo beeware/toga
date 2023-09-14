@@ -15,7 +15,7 @@ from .widgets.base import Widget
 from .widgets.box import Box
 from .widgets.button import Button
 from .widgets.canvas import Canvas
-from .widgets.datepicker import DatePicker
+from .widgets.dateinput import DateInput, DatePicker
 from .widgets.detailedlist import DetailedList
 from .widgets.divider import Divider
 from .widgets.imageview import ImageView
@@ -32,7 +32,7 @@ from .widgets.splitcontainer import SplitContainer
 from .widgets.switch import Switch
 from .widgets.table import Table
 from .widgets.textinput import TextInput
-from .widgets.timepicker import TimePicker
+from .widgets.timeinput import TimeInput, TimePicker
 from .widgets.tree import Tree
 from .widgets.webview import WebView
 from .window import Window
@@ -65,14 +65,11 @@ __all__ = [
     "Box",
     "Button",
     "Canvas",
+    "DateInput",
     "DetailedList",
     "Divider",
-    "Window",
-    "Widget",
     "ImageView",
     "Label",
-    "DatePicker",
-    "TimePicker",
     "MultilineTextInput",
     "NumberInput",
     "OptionContainer",
@@ -85,8 +82,14 @@ __all__ = [
     "Switch",
     "Table",
     "TextInput",
+    "TimeInput",
     "Tree",
     "WebView",
+    "Widget",
+    "Window",
+    # Deprecated widget names
+    "DatePicker",
+    "TimePicker",
 ]
 
 
@@ -104,11 +107,7 @@ def _package_version(file, name):
         # If it *is* in the environment, but the code isn't a git checkout (e.g.,
         # it's been pip installed non-editable) the call to get_version() will fail.
         # If either of these occurs, read version from the installer metadata.
-        try:
-            from importlib import metadata as importlib_metadata
-        except ImportError:
-            # Backwards compatibility - importlib.metadata was added in Python 3.8
-            import importlib_metadata
+        from importlib import metadata as importlib_metadata
 
         # The Toga package names as defined in setup.cfg all use dashes.
         package = "toga-core" if name == "toga" else name.replace("_", "-")

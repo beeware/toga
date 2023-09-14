@@ -1,0 +1,1 @@
+The on_webview_load signal when setting the URL to None was deferred to the event loop, rather than being invoked immediately.

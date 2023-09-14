@@ -10,19 +10,22 @@ if Gdk.Screen.get_default() is None:  # pragma: no cover
         "Cannot identify an active display. Is the `DISPLAY` environment variable set correctly?"
     )
 
+# The following imports will fail if the underlying libraries or their API
+# wrappers aren't installed; handle failure gracefully (see
+# https://github.com/beeware/toga/issues/26)
 try:
     gi.require_version("WebKit2", "4.0")
     from gi.repository import WebKit2  # noqa: F401
-except (ValueError, ImportError):  # pragma: no cover
+except (ImportError, ValueError):  # pragma: no cover
     WebKit2 = None
 
 try:
     gi.require_version("Pango", "1.0")
-    from gi.repository import Pango
-except (ValueError, ImportError):  # pragma: no cover
+    from gi.repository import Pango  # noqa: F401
+except (ImportError, ValueError):  # pragma: no cover
     Pango = None
 
 try:
-    import cairo
-except (ValueError, ImportError):  # pragma: no cover
+    import cairo  # noqa: F401
+except ImportError:  # pragma: no cover
     cairo = None

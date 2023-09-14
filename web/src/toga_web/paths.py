@@ -1,35 +1,18 @@
 from pathlib import Path
 
-import toga
-from toga import App
-
 
 class Paths:
-    # Allow instantiating Path object via the factory
-    Path = Path
+    def __init__(self, interface):
+        self.interface = interface
 
-    @property
-    def app(self):
-        # FIXME: None of the paths are right in a web context.
-        # return Path(__main__.__file__).parent
-        return Path("/")
+    def get_config_path(self):
+        return Path.home() / "config"
 
-    @property
-    def data(self):
-        return Path.home() / ".local" / "share" / App.app.name
+    def get_data_path(self):
+        return Path.home() / "data"
 
-    @property
-    def cache(self):
-        return Path.home() / ".cache" / App.app.name
+    def get_cache_path(self):
+        return Path.home() / "cache"
 
-    @property
-    def logs(self):
-        return Path.home() / ".cache" / App.app.name / "log"
-
-    @property
-    def toga(self):
-        """Return a path to a Toga resources."""
-        return Path(toga.__file__).parent
-
-
-paths = Paths()
+    def get_logs_path(self):
+        return Path.home() / "log"

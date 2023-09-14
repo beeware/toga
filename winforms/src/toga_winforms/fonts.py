@@ -1,10 +1,24 @@
-from toga.fonts import _REGISTERED_FONT_CACHE
-from toga_winforms.libs import WinFont, win_font_family
-from toga_winforms.libs.fonts import win_font_size, win_font_style
-from toga_winforms.libs.winforms import (
-    ExternalException,
-    FileNotFoundException,
-    PrivateFontCollection,
+from System import ArgumentException
+from System.Drawing import (
+    Font as WinFont,
+    FontFamily,
+    FontStyle,
+    SystemFonts,
+)
+from System.Drawing.Text import PrivateFontCollection
+from System.IO import FileNotFoundException
+from System.Runtime.InteropServices import ExternalException
+
+from toga.fonts import (
+    _REGISTERED_FONT_CACHE,
+    CURSIVE,
+    FANTASY,
+    MESSAGE,
+    MONOSPACE,
+    SANS_SERIF,
+    SERIF,
+    SYSTEM,
+    SYSTEM_DEFAULT_FONT_SIZE,
 )
 
 _FONT_CACHE = {}
@@ -18,16 +32,36 @@ class Font:
             font = _FONT_CACHE[self.interface]
         except KeyError:
             font = None
-            font_key = self.interface.registered_font_key(
+            font_key = self.interface._registered_font_key(
                 self.interface.family,
                 weight=self.interface.weight,
                 style=self.interface.style,
                 variant=self.interface.variant,
             )
             try:
-                font_path = str(
-                    self.interface.factory.paths.app / _REGISTERED_FONT_CACHE[font_key]
-                )
+                font_path = _REGISTERED_FONT_CACHE[font_key]
+            except KeyError:
+                try:
+                    font_family = {
+                        SYSTEM: SystemFonts.DefaultFont.FontFamily,
+                        MESSAGE: SystemFonts.MenuFont.FontFamily,
+                        SERIF: FontFamily.GenericSerif,
+                        SANS_SERIF: FontFamily.GenericSansSerif,
+                        CURSIVE: FontFamily("Comic Sans MS"),
+                        FANTASY: FontFamily("Impact"),
+                        MONOSPACE: FontFamily.GenericMonospace,
+                    }[self.interface.family]
+                except KeyError:
+                    try:
+                        font_family = FontFamily(self.interface.family)
+                    except ArgumentException:
+                        print(
+                            f"Unknown font '{self.interface}'; "
+                            "using system font as a fallback"
+                        )
+                        font_family = SystemFonts.DefaultFont.FontFamily
+
+            else:
                 try:
                     self._pfc = PrivateFontCollection()
                     self._pfc.AddFontFile(font_path)
@@ -36,15 +70,26 @@ class Font:
                     raise ValueError(f"Font file {font_path} could not be found")
                 except (IndexError, ExternalException):
                     raise ValueError(f"Unable to load font file {font_path}")
-            except KeyError:
-                font_family = win_font_family(self.interface.family)
 
-            font_style = win_font_style(
-                self.interface.weight,
-                self.interface.style,
-                font_family,
-            )
-            font_size = win_font_size(self.interface.size)
+            # Convert font style to Winforms format
+            font_style = FontStyle.Regular
+            if self.interface.weight.lower() == "bold" and font_family.IsStyleAvailable(
+                FontStyle.Bold
+            ):
+                font_style |= FontStyle.Bold
+            if (
+                # Winforms doesn't recognize Oblique; so we interpret as Italic
+                self.interface.style.lower() in {"italic", "oblique"}
+                and font_family.IsStyleAvailable(FontStyle.Italic)
+            ):
+                font_style |= FontStyle.Italic
+
+            # Convert font size to Winforms format
+            if self.interface.size == SYSTEM_DEFAULT_FONT_SIZE:
+                font_size = SystemFonts.DefaultFont.Size
+            else:
+                font_size = self.interface.size
+
             font = WinFont(font_family, font_size, font_style)
             _FONT_CACHE[self.interface] = font
 

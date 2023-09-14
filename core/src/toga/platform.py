@@ -1,7 +1,6 @@
 import importlib
 import os
 import sys
-import warnings
 from functools import lru_cache
 
 try:
@@ -30,44 +29,31 @@ _TOGA_PLATFORMS = {
 }
 
 
-try:
-    current_platform = os.environ["TOGA_PLATFORM"]
-except KeyError:
+def get_current_platform():
     # Rely on `sys.getandroidapilevel`, which only exists on Android; see
     # https://github.com/beeware/Python-Android-support/issues/8
     if hasattr(sys, "getandroidapilevel"):
-        current_platform = "android"
+        return "android"
     elif sys.platform.startswith("freebsd"):
-        current_platform = "freeBSD"
+        return "freeBSD"
     else:
-        current_platform = _TOGA_PLATFORMS.get(sys.platform)
+        return _TOGA_PLATFORMS.get(sys.platform)
+
+
+current_platform = get_current_platform()
 
 
 @lru_cache(maxsize=1)
-def get_platform_factory(factory=None):
-    """This function figures out what the current host platform is and imports the
-    adequate factory. The factory is the interface to all platform specific
-    implementations.
+def get_platform_factory():
+    """Determine the current host platform and import the platform factory.
 
-    If the TOGA_BACKEND environment variable is set, the factory will be loaded
+    If the ``TOGA_BACKEND`` environment variable is set, the factory will be loaded
     from that module.
 
-    Returns: The suitable factory for the current host platform.
+    Raises :any:`RuntimeError` if an appropriate host platform cannot be identified.
 
-    Raises:
-        RuntimeError: If no supported host platform can be identified.
+    :returns: The factory for the host platform.
     """
-
-    ######################################################################
-    # 2022-09: Backwards compatibility
-    ######################################################################
-    # factory no longer used
-    if factory:
-        warnings.warn("The factory argument is no longer used.", DeprecationWarning)
-    ######################################################################
-    # End backwards compatibility.
-    ######################################################################
-
     toga_backends = entry_points(group="toga.backends")
     if not toga_backends:
         raise RuntimeError("No Toga backend could be loaded.")
@@ -76,13 +62,17 @@ def get_platform_factory(factory=None):
     if backend_value:
         try:
             factory = importlib.import_module(f"{backend_value}.factory")
-        except ModuleNotFoundError:
+        except ModuleNotFoundError as e:
             toga_backends_values = ", ".join(
                 [f"{backend.value!r}" for backend in toga_backends]
             )
+            # Android doesn't report Python exception chains in crashes
+            # (https://github.com/chaquo/chaquopy/issues/890), so include the original
+            # exception message in case the backend does exist but throws a
+            # ModuleNotFoundError from one of its internal imports.
             raise RuntimeError(
-                f"The backend specified by TOGA_BACKEND ({backend_value!r}) "
-                f"could not be loaded. It should be one of: {toga_backends_values}."
+                f"The backend specified by TOGA_BACKEND ({backend_value!r}) could "
+                f"not be loaded ({e}). It should be one of: {toga_backends_values}."
             )
     else:
         # As of Setuptools 65.5, entry points are returned duplicated if the
@@ -104,7 +94,9 @@ def get_platform_factory(factory=None):
                 )
                 raise RuntimeError(
                     f"Multiple Toga backends are installed ({toga_backends_string}), "
-                    f"but none of them match your current platform ({current_platform!r})."
+                    f"but none of them match your current platform ({current_platform!r}). "
+                    "Install a backend for your current platform, or use "
+                    "TOGA_BACKEND to specify a backend."
                 )
             if len(matching_backends) > 1:
                 toga_backends_string = ", ".join(

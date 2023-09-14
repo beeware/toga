@@ -1,20 +1,35 @@
+from __future__ import annotations
+
+from typing import Any, Protocol
+
 from toga.handlers import wrapped_handler
 
 from .base import Widget
 
 
+class OnPressHandler(Protocol):
+    def __call__(self, widget: Button, **kwargs: Any) -> None:
+        """A handler that will be invoked when a button is pressed.
+
+        .. note::
+            ``**kwargs`` ensures compatibility with additional arguments
+            introduced in future versions.
+
+        :param widget: The button that was pressed.
+        """
+        ...
+
+
 class Button(Widget):
     def __init__(
         self,
-        text,
-        id=None,
+        text: str | None,
+        id: str | None = None,
         style=None,
-        on_press=None,
-        enabled=True,
+        on_press: OnPressHandler | None = None,
+        enabled: bool = True,
     ):
         """Create a new button widget.
-
-        Inherits from :class:`~toga.widgets.base.Widget`.
 
         :param text: The text to display on the button.
         :param id: The ID for the widget.
@@ -39,7 +54,7 @@ class Button(Widget):
         self.enabled = enabled
 
     @property
-    def text(self):
+    def text(self) -> str:
         """The text displayed on the button.
 
         ``None``, and the Unicode codepoint U+200B (ZERO WIDTH SPACE), will be
@@ -52,7 +67,7 @@ class Button(Widget):
         return self._impl.get_text()
 
     @text.setter
-    def text(self, value):
+    def text(self, value: str | None) -> None:
         if value is None or value == "\u200B":
             value = ""
         else:
@@ -64,7 +79,7 @@ class Button(Widget):
         self.refresh()
 
     @property
-    def on_press(self):
+    def on_press(self) -> OnPressHandler:
         """The handler to invoke when the button is pressed."""
         return self._on_press
 

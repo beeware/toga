@@ -7,9 +7,11 @@ from .command import Command
 from .icons import Icon
 
 # from .images import Image
-from .paths import paths
+from .paths import Paths
+from .widgets.activityindicator import ActivityIndicator
 from .widgets.box import Box
 from .widgets.button import Button
+from .widgets.divider import Divider
 
 # from .widgets.canvas import Canvas
 # from .widgets.detailedlist import DetailedList
@@ -19,7 +21,7 @@ from .widgets.label import Label
 # from .widgets.multilinetextinput import MultilineTextInput
 # from .widgets.numberinput import NumberInput
 # from .widgets.optioncontainer import OptionContainer
-# from .widgets.passwordinput import PasswordInput
+from .widgets.passwordinput import PasswordInput
 from .widgets.progressbar import ProgressBar
 
 # from .widgets.scrollcontainer import ScrollContainer
@@ -43,27 +45,30 @@ def not_implemented(feature):
 __all__ = [
     "not_implemented",
     "App",
-    "MainWindow",  # 'DocumentApp',
+    "MainWindow",
+    # 'DocumentApp',
     "Command",
     # 'Document',
     # # Resources
     # 'Font',
     "Icon",
     # 'Image',
-    "paths",
+    "Paths",
     "dialogs",
     # # Widgets
     "Box",
     "Button",
     # 'Canvas',
+    "Divider",
     # 'DetailedList',
     # 'ImageView',
     "Label",
     # 'MultilineTextInput',
     # 'NumberInput',
     # 'OptionContainer',
-    # 'PasswordInput',
+    "PasswordInput",
     "ProgressBar",
+    "ActivityIndicator",
     # 'ScrollContainer',
     # 'Selection',
     # 'Slider',
@@ -75,3 +80,7 @@ __all__ = [
     # 'WebView',
     # 'Window',
 ]
+
+
+def __getattr__(name):  # pragma: no cover
+    raise NotImplementedError(f"Toga's Web backend doesn't implement {name}")

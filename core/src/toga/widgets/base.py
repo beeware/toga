@@ -1,9 +1,16 @@
+from __future__ import annotations
+
 from builtins import id as identifier
+from typing import TYPE_CHECKING, Iterator, NoReturn
 
 from travertino.node import Node
 
 from toga.platform import get_platform_factory
 from toga.style import Pack, TogaApplicator
+
+if TYPE_CHECKING:
+    from toga.app import App
+    from toga.window import Window
 
 
 class WidgetRegistry(dict):
@@ -14,26 +21,26 @@ class WidgetRegistry(dict):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-    def __setitem__(self, key, value):
+    def __setitem__(self, key: str, value: Widget) -> NoReturn:
         # We do not want to allow setting items directly but to use the "add"
         # method instead.
         raise RuntimeError("Widgets cannot be directly added to a registry")
 
-    def update(self, widgets):
+    def update(self, widgets: list[Widget]) -> None:
         for widget in widgets:
             self.add(widget)
 
-    def add(self, widget):
+    def add(self, widget: Widget) -> None:
         if widget.id in self:
             # Prevent from adding the same widget twice
             # or adding 2 widgets with the same id
             raise KeyError(f"There is already a widget with the id {widget.id!r}")
         super().__setitem__(widget.id, widget)
 
-    def remove(self, id):
+    def remove(self, id: str) -> None:
         del self[id]
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[Widget]:
         return iter(self.values())
 
 
@@ -43,7 +50,7 @@ class Widget(Node):
 
     def __init__(
         self,
-        id=None,
+        id: str | None = None,
         style=None,
     ):
         """Create a base Toga widget.
@@ -59,23 +66,26 @@ class Widget(Node):
             applicator=TogaApplicator(self),
         )
 
-        self._id = str(id) if id else str(identifier(self))
+        self._id = str(id if id else identifier(self))
         self._window = None
         self._app = None
         self._impl = None
 
         self.factory = get_platform_factory()
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"<{self.__class__.__name__}:0x{identifier(self):x}>"
 
     @property
-    def id(self):
-        """The unique identifier for the widget."""
+    def id(self) -> str:
+        """The DOM identifier for the widget.
+
+        This id can be used to target CSS directives.
+        """
         return self._id
 
     @property
-    def tab_index(self):
+    def tab_index(self) -> int | None:
         """The position of the widget in the focus chain for the window.
 
         .. note::
@@ -86,19 +96,18 @@ class Widget(Node):
         return self._impl.get_tab_index()
 
     @tab_index.setter
-    def tab_index(self, tab_index):
+    def tab_index(self, tab_index: int) -> None:
         self._impl.set_tab_index(tab_index)
 
-    def add(self, *children):
+    def add(self, *children: Widget) -> None:
         """Add the provided widgets as children of this widget.
 
         If a child widget already has a parent, it will be re-parented as a
         child of this widget. If the child widget is already a child of this
         widget, there is no change.
 
-        Raises ``ValueError`` if this widget cannot have children.
-
         :param children: The widgets to add as children of this widget.
+        :raises ValueError: If this widget cannot have children.
         """
         for child in children:
             if child.parent is not self:
@@ -115,21 +124,20 @@ class Widget(Node):
 
                 self._impl.add_child(child._impl)
 
-        if self.window:
-            self.window.content.refresh()
+        # Whatever layout we're a part of needs to be refreshed
+        self.refresh()
 
-    def insert(self, index, child):
+    def insert(self, index: int, child: Widget) -> None:
         """Insert a widget as a child of this widget.
 
         If a child widget already has a parent, it will be re-parented as a
         child of this widget. If the child widget is already a child of this
         widget, there is no change.
 
-        Raises ``ValueError`` if this node cannot have children.
-
         :param index: The position in the list of children where the new widget
             should be added.
         :param child: The child to insert as a child of this node.
+        :raises ValueError: If this widget cannot have children.
         """
         if child.parent is not self:
             # remove from old parent
@@ -145,10 +153,10 @@ class Widget(Node):
 
             self._impl.insert_child(index, child._impl)
 
-        if self.window:
-            self.window.content.refresh()
+        # Whatever layout we're a part of needs to be refreshed
+        self.refresh()
 
-    def remove(self, *children):
+    def remove(self, *children: Widget) -> None:
         """Remove the provided widgets as children of this node.
 
         Any nominated child widget that is not a child of this widget will
@@ -156,9 +164,8 @@ class Widget(Node):
 
         Refreshes the widget after removal if any children were removed.
 
-        Raises ``ValueError`` if this widget cannot have children.
-
         :param children: The child nodes to remove.
+        :raises ValueError: If this widget cannot have children.
         """
         removed = False
 
@@ -172,32 +179,32 @@ class Widget(Node):
 
                 self._impl.remove_child(child._impl)
 
-        if self.window and removed:
-            self.window.content.refresh()
+        # If we removed something, whatever layout we're a part of needs to be refreshed
+        if removed:
+            self.refresh()
 
-    def clear(self):
+    def clear(self) -> None:
         """Remove all child widgets of this node.
 
         Refreshes the widget after removal if any children were removed.
 
-        Raises ``ValueError`` if this widget cannot have children.
+        :raises ValueError: If this widget cannot have children.
         """
         self.remove(*self.children)
 
     @property
-    def app(self):
+    def app(self) -> App | None:
         """The App to which this widget belongs.
 
         When setting the app for a widget, all children of this widget will be
         recursively assigned to the same app.
 
-        Raises ``ValueError`` if the widget is already associated with another
-        app.
+        :raises ValueError: If this widget is already associated with another app.
         """
         return self._app
 
     @app.setter
-    def app(self, app):
+    def app(self, app: App | None) -> None:
         # If the widget is already assigned to an app
         if self._app:
             if self._app == app:
@@ -217,7 +224,7 @@ class Widget(Node):
             app.widgets.add(self)
 
     @property
-    def window(self):
+    def window(self) -> Window | None:
         """The window to which this widget belongs.
 
         When setting the window for a widget, all children of this widget will be
@@ -226,7 +233,7 @@ class Widget(Node):
         return self._window
 
     @window.setter
-    def window(self, window):
+    def window(self, window: Window | None) -> None:
         # Remove the widget from the widget registry it is currently a part of
         if self.window is not None:
             self.window.widgets.remove(self.id)
@@ -242,33 +249,29 @@ class Widget(Node):
             window.widgets.add(self)
 
     @property
-    def enabled(self):
+    def enabled(self) -> bool:
         """Is the widget currently enabled? i.e., can the user interact with the widget?"""
         return self._impl.get_enabled()
 
     @enabled.setter
-    def enabled(self, value):
+    def enabled(self, value: bool) -> None:
         self._impl.set_enabled(bool(value))
 
-    def refresh(self):
+    def refresh(self) -> None:
         self._impl.refresh()
 
         # Refresh the layout
         if self._root:
-            # We're not the root of the node heirarchy;
+            # We're not the root of the node hierarchy;
             # defer the refresh call to the root node.
             self._root.refresh()
         else:
-            self.refresh_sublayouts()
-            # We can't compute a layout until we have a viewport
-            if self._impl.viewport:
-                super().refresh(self._impl.viewport)
+            # We can't compute a layout until we have a container
+            if self._impl.container:
+                super().refresh(self._impl.container)
+                self._impl.container.refreshed()
 
-    def refresh_sublayouts(self):
-        for child in self.children:
-            child.refresh_sublayouts()
-
-    def focus(self):
+    def focus(self) -> None:
         """Give this widget the input focus.
 
         This method is a no-op if the widget can't accept focus. The ability of a widget

@@ -43,5 +43,4 @@ class _FontConfig:
 
 
 # Instantiate and configure a singleton FontConfig instance
-# If fontconfig couldn't be loaded, set the instance to None.
 FontConfig = _FontConfig()

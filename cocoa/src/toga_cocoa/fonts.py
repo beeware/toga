@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from toga.fonts import (
     _REGISTERED_FONT_CACHE,
     BOLD,
@@ -7,20 +9,19 @@ from toga.fonts import (
     MESSAGE,
     MONOSPACE,
     NORMAL,
+    OBLIQUE,
     SANS_SERIF,
     SERIF,
     SMALL_CAPS,
     SYSTEM,
     SYSTEM_DEFAULT_FONT_SIZE,
+    SYSTEM_DEFAULT_FONTS,
 )
 from toga_cocoa.libs import (
     NSURL,
-    NSAttributedString,
     NSFont,
-    NSFontAttributeName,
     NSFontManager,
     NSFontMask,
-    NSMutableDictionary,
 )
 from toga_cocoa.libs.core_text import core_text, kCTFontManagerScopeProcess
 
@@ -32,15 +33,6 @@ _POSTSCRIPT_NAMES = {
     FANTASY: "Papyrus",
     MONOSPACE: "Courier New",
 }
-SYSTEM_DEFAULT_FONTS = {
-    CURSIVE,
-    FANTASY,
-    MESSAGE,
-    MONOSPACE,
-    SANS_SERIF,
-    SERIF,
-    SYSTEM,
-}
 
 
 class Font:
@@ -51,7 +43,7 @@ class Font:
         except KeyError:
             font = None
             family = self.interface.family
-            font_key = self.interface.registered_font_key(
+            font_key = self.interface._registered_font_key(
                 family,
                 weight=self.interface.weight,
                 style=self.interface.style,
@@ -67,11 +59,9 @@ class Font:
                 and font_key in _REGISTERED_FONT_CACHE
                 and self.interface.family not in _POSTSCRIPT_NAMES
             ):
-                font_path = (
-                    self.interface.factory.paths.app / _REGISTERED_FONT_CACHE[font_key]
-                )
-                if font_path.is_file():
-                    font_url = NSURL.fileURLWithPath(str(font_path))
+                font_path = _REGISTERED_FONT_CACHE[font_key]
+                if Path(font_path).is_file():
+                    font_url = NSURL.fileURLWithPath(font_path)
                     success = core_text.CTFontManagerRegisterFontsForURL(
                         font_url, kCTFontManagerScopeProcess, None
                     )
@@ -85,7 +75,7 @@ class Font:
                     else:
                         print(f"Font '{self.interface}' could not be loaded")
                 else:
-                    print(f"Font file {font_path} could not be found")
+                    raise ValueError(f"Font file {font_path} could not be found")
 
             # Default system font size on Cocoa is 12pt
             if self.interface.size == SYSTEM_DEFAULT_FONT_SIZE:
@@ -114,10 +104,10 @@ class Font:
             attributes_mask = 0
             if self.interface.weight == BOLD:
                 attributes_mask |= NSFontMask.Bold.value
-
-            if self.interface.style == ITALIC:
+            if self.interface.style in {ITALIC, OBLIQUE}:
+                # Oblique is the fallback for Italic.
                 attributes_mask |= NSFontMask.Italic.value
-            elif self.interface.style == SMALL_CAPS:
+            if self.interface.variant == SMALL_CAPS:
                 attributes_mask |= NSFontMask.SmallCaps.value
 
             if attributes_mask:
@@ -147,19 +137,6 @@ class Font:
             else:
                 font = attributed_font
 
-            _FONT_CACHE[self.interface] = font
+            _FONT_CACHE[self.interface] = font.retain()
 
         self.native = font
-
-    def measure(self, text, tight=False):
-        textAttributes = NSMutableDictionary.alloc().init()
-        textAttributes[NSFontAttributeName] = self.native
-        text_string = NSAttributedString.alloc().initWithString(
-            text, attributes=textAttributes
-        )
-        size = text_string.size()
-
-        # TODO: This is a magic fudge factor...
-        # Replace the magic with SCIENCE.
-        size.width += 3
-        return size.width, size.height

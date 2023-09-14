@@ -1,43 +1,44 @@
-import asyncio
-
+from pytest import approx
 from System import EventArgs, Object
-from System.Drawing import FontFamily, SystemColors, SystemFonts
+from System.Drawing import SystemColors
+from System.Windows.Forms import SendKeys
 
 from toga.colors import TRANSPARENT
-from toga.fonts import (
-    BOLD,
-    CURSIVE,
-    FANTASY,
-    ITALIC,
-    MONOSPACE,
-    NORMAL,
-    SANS_SERIF,
-    SERIF,
-    SYSTEM,
-)
 from toga.style.pack import JUSTIFY, LEFT
 
-from .properties import toga_color, toga_font
+from ..fonts import FontMixin
+from ..probe import BaseProbe
+from .properties import toga_color
+
+KEY_CODES = {
+    f"<{name}>": f"{{{name.upper()}}}"
+    for name in ["esc", "up", "down", "left", "right"]
+}
+KEY_CODES.update(
+    {
+        "\n": "{ENTER}",
+    }
+)
 
 
-class SimpleProbe:
-    FONT_WEIGHTS = [NORMAL, BOLD]
-    FONT_STYLES = [NORMAL, ITALIC]
-    FONT_VARIANTS = [NORMAL]
+class SimpleProbe(BaseProbe, FontMixin):
+    fixed_height = None
 
     def __init__(self, widget):
+        super().__init__()
+        self.app = widget.app
         self.widget = widget
         self.native = widget._impl.native
         assert isinstance(self.native, self.native_class)
         self.scale_factor = self.native.CreateGraphics().DpiX / 96
 
     def assert_container(self, container):
-        container_native = container._impl.native
-        for control in container_native.Controls:
-            if Object.ReferenceEquals(control, self.native):
-                break
-        else:
-            raise ValueError(f"cannot find {self.native} in {container_native}")
+        assert self.widget._impl.container is container._impl.container
+        assert self.native.Parent is not None
+        assert Object.ReferenceEquals(
+            self.native.Parent,
+            container._impl.container.native_content,
+        )
 
     def assert_not_contained(self):
         assert self.widget._impl.container is None
@@ -50,25 +51,6 @@ class SimpleProbe:
             assert actual == LEFT
         else:
             assert actual == expected
-
-    def assert_font_family(self, expected):
-        assert self.font.family == {
-            CURSIVE: "Comic Sans MS",
-            FANTASY: "Impact",
-            MONOSPACE: FontFamily.GenericMonospace.Name,
-            SANS_SERIF: FontFamily.GenericSansSerif.Name,
-            SERIF: FontFamily.GenericSerif.Name,
-            SYSTEM: SystemFonts.DefaultFont.FontFamily.Name,
-        }.get(expected, expected)
-
-    async def redraw(self, message=None):
-        """Request a redraw of the app, waiting until that redraw has completed."""
-        # Winforms style changes always take effect immediately.
-
-        # If we're running slow, wait for a second
-        if self.widget.app.run_slow:
-            print("Waiting for redraw" if message is None else message)
-            await asyncio.sleep(1)
 
     @property
     def enabled(self):
@@ -90,7 +72,7 @@ class SimpleProbe:
 
     @property
     def font(self):
-        return toga_font(self.native.Font)
+        return self.native.Font
 
     @property
     def hidden(self):
@@ -98,11 +80,11 @@ class SimpleProbe:
 
     @property
     def width(self):
-        return self.native.Width / self.scale_factor
+        return round(self.native.Width / self.scale_factor)
 
     @property
     def height(self):
-        return self.native.Height / self.scale_factor
+        return round(self.native.Height / self.scale_factor)
 
     def assert_width(self, min_width, max_width):
         assert (
@@ -110,9 +92,14 @@ class SimpleProbe:
         ), f"Width ({self.width}) not in range ({min_width}, {max_width})"
 
     def assert_height(self, min_height, max_height):
-        assert (
-            min_height <= self.height <= max_height
-        ), f"Height ({self.height}) not in range ({min_height}, {max_height})"
+        if self.fixed_height is not None:
+            assert self.height == approx(self.fixed_height, rel=0.2)
+        else:
+            assert min_height <= self.height <= max_height
+
+    @property
+    def shrink_on_resize(self):
+        return True
 
     def assert_layout(self, size, position):
         # Widget is contained and in a window.
@@ -120,14 +107,26 @@ class SimpleProbe:
         assert self.native.Parent is not None
 
         # size and position is as expected.
-        assert (self.native.Width, self.native.Height) == size
+        assert (self.width, self.height) == approx(size, abs=1)
         assert (
-            self.native.Left,
-            self.native.Top - self.widget._impl.container.vertical_shift,
-        ) == position
+            self.native.Left / self.scale_factor,
+            self.native.Top / self.scale_factor,
+        ) == approx(position, abs=1)
 
     async def press(self):
         self.native.OnClick(EventArgs.Empty)
+
+    async def type_character(self, char, *, ctrl=False):
+        try:
+            key_code = KEY_CODES[char]
+        except KeyError:
+            assert len(char) == 1, char
+            key_code = char
+
+        if ctrl:
+            key_code = "^" + key_code
+
+        SendKeys.SendWait(key_code)
 
     @property
     def is_hidden(self):

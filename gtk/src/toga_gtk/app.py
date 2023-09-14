@@ -32,7 +32,7 @@ class MainWindow(Window):
         super().create()
         self.native.set_role("MainWindow")
         icon_impl = toga_App.app.icon._impl
-        self.native.set_icon(icon_impl.native_72.get_pixbuf())
+        self.native.set_icon(icon_impl.native_72)
 
     def gtk_delete_event(self, *args):
         # Return value of the GTK on_close handler indicates
@@ -95,7 +95,7 @@ class App:
         )
         self._create_app_commands()
 
-        self.interface.startup()
+        self.interface._startup()
 
         # Create the lookup table of menu items,
         # then force the creation of the menus.
@@ -202,7 +202,7 @@ class App:
         about = Gtk.AboutDialog()
 
         icon_impl = toga_App.app.icon._impl
-        about.set_logo(icon_impl.native_72.get_pixbuf())
+        about.set_logo(icon_impl.native_72)
 
         if self.interface.name is not None:
             about.set_program_name(self.interface.name)
@@ -217,6 +217,9 @@ class App:
 
         about.run()
         about.destroy()
+
+    def beep(self):
+        Gdk.gdk_beep()
 
     def exit(self):
         self.native.quit()

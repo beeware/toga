@@ -1,154 +1,137 @@
-from rubicon.objc import CGSizeMake
+from rubicon.objc import SEL, NSMakePoint, NSMakeSize, objc_method, objc_property
 from travertino.size import at_least
 
-from toga_iOS.libs import (
-    NSLayoutAttributeBottom,
-    NSLayoutAttributeLeading,
-    NSLayoutAttributeTop,
-    NSLayoutAttributeTrailing,
-    NSLayoutConstraint,
-    NSLayoutRelationEqual,
-    UIColor,
-    UIScrollView,
-)
+from toga_iOS.container import Container
+from toga_iOS.libs import UIScrollView
 from toga_iOS.widgets.base import Widget
-from toga_iOS.window import iOSViewport
+
+
+class TogaScrollView(UIScrollView):
+    interface = objc_property(object, weak=True)
+    impl = objc_property(object, weak=True)
+
+    @objc_method
+    def scrollViewDidScroll_(self, scrollView) -> None:
+        self.interface.on_scroll(None)
+
+    @objc_method
+    def refreshContent(self):
+        # Now that we have an updated size for the ScrollContainer, re-evaluate
+        # the size of the document content (assuming there is a document)
+        if self.interface._content:
+            self.interface._content.refresh()
 
 
 class ScrollContainer(Widget):
-    def update_content_size(self):
-        # We need a layout pass to figure out how big the scrollable area should be
-        scrollable_content = self.interface.content._impl
-        scrollable_content.interface.refresh()
-
-        content_width = 0
-        padding_horizontal = 0
-        content_height = 0
-        padding_vertical = 0
-
-        if self.interface.horizontal:
-            content_width = scrollable_content.interface.layout.width
-            padding_horizontal = (
-                scrollable_content.interface.style.padding_left
-                + scrollable_content.interface.style.padding_right
-            )
-        else:
-            content_width = self.native.frame.size.width
-
-        if self.interface.vertical:
-            content_height = scrollable_content.interface.layout.height
-            padding_vertical = (
-                scrollable_content.interface.style.padding_top
-                + scrollable_content.interface.style.padding_bottom
-            )
-        else:
-            content_height = self.native.frame.size.height
-
-        self.native.setContentSize_(
-            CGSizeMake(
-                content_width + padding_horizontal,
-                content_height + padding_vertical,
-            )
-        )
-
-    def constrain_to_scrollview(self, widget):
-        # The scrollview should know the content size as long as the
-        # view contained has an intrinsic size and the constraints are
-        # not ambiguous in any axis.
-        view = widget.native
-        leading_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(  # noqa: E501
-            view,
-            NSLayoutAttributeLeading,
-            NSLayoutRelationEqual,
-            self.native,
-            NSLayoutAttributeLeading,
-            1.0,
-            0,
-        )
-        trailing_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(  # noqa: E501
-            self.native,
-            NSLayoutAttributeTrailing,
-            NSLayoutRelationEqual,
-            view,
-            NSLayoutAttributeTrailing,
-            1.0,
-            0,
-        )
-        top_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(  # noqa: E501
-            view,
-            NSLayoutAttributeTop,
-            NSLayoutRelationEqual,
-            self.native,
-            NSLayoutAttributeTop,
-            1.0,
-            0,
-        )
-        bottom_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(  # noqa: E501
-            self.native,
-            NSLayoutAttributeBottom,
-            NSLayoutRelationEqual,
-            view,
-            NSLayoutAttributeBottom,
-            1.0,
-            0,
-        )
-        self.native.addConstraints_(
-            [leading_constraint, trailing_constraint, top_constraint, bottom_constraint]
-        )
-
     def create(self):
-        self.native = UIScrollView.alloc().init()
-        self.native.translatesAutoresizingMaskIntoConstraints = False
-        self.native.backgroundColor = UIColor.whiteColor
+        self.native = TogaScrollView.alloc().init()
+        self.native.interface = self.interface
+        self.native.impl = self
+        self.native.delegate = self.native
+
+        # UIScrollView doesn't have a native ability to disable a scrolling direction;
+        # it's handled by controlling the scrollable area.
+        self._allow_horizontal = True
+        self._allow_vertical = True
+
+        self.document_container = Container(
+            layout_native=self.native,
+            on_refresh=self.content_refreshed,
+        )
+        self.native.addSubview(self.document_container.native)
         self.add_constraints()
 
     def set_content(self, widget):
-        if self.interface.content is not None:
-            self.interface.content._impl.native.removeFromSuperview()
-        self.native.addSubview(widget.native)
-        widget.viewport = iOSViewport(widget)
+        self.document_container.content = widget
 
-        for child in widget.interface.children:
-            child._impl.container = widget
+    def set_bounds(self, x, y, width, height):
+        super().set_bounds(x, y, width, height)
 
-        self.constrain_to_scrollview(widget)
+        # Setting the bounds changes the constraints, but that doesn't mean
+        # the constraints have been fully applied. Schedule a refresh to be done
+        # as soon as possible in the future
+        self.native.performSelector(
+            SEL("refreshContent"), withObject=None, afterDelay=0
+        )
 
-    def set_vertical(self, value):
-        if self.interface.content:
-            self.update_content_size()
+    def content_refreshed(self, container):
+        width = self.native.frame.size.width
+        height = self.native.frame.size.height
 
-    def set_horizontal(self, value):
-        if self.interface.content:
-            self.update_content_size()
+        if self.interface.horizontal:
+            width = max(self.interface.content.layout.width, width)
+
+        if self.interface.vertical:
+            height = max(self.interface.content.layout.height, height)
+
+        self.native.contentSize = NSMakeSize(width, height)
+
+    def set_background_color(self, value):
+        self.set_background_color_simple(value)
 
     def rehint(self):
-        if self.interface.content:
-            self.update_content_size()
-
         self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
         self.interface.intrinsic.height = at_least(self.interface._MIN_HEIGHT)
 
-    def set_on_scroll(self, on_scroll):
-        self.interface.factory.not_implemented("ScrollContainer.set_on_scroll()")
+    def get_vertical(self):
+        return self._allow_vertical
 
-    def get_vertical_position(self):
-        self.interface.factory.not_implemented(
-            "ScrollContainer.get_vertical_position()"
-        )
-        return 0
+    def set_vertical(self, value):
+        self._allow_vertical = value
+        # If the scroll container has content, we need to force a refresh
+        # to let the scroll container know how large its content is.
+        if self.interface.content:
+            self.interface.refresh()
 
-    def set_vertical_position(self, vertical_position):
-        self.interface.factory.not_implemented(
-            "ScrollContainer.set_vertical_position()"
-        )
+        # Disabling scrolling implies a position reset; that's a scroll event.
+        if not value:
+            self.interface.on_scroll(None)
+
+    def get_horizontal(self):
+        return self._allow_horizontal
+
+    def set_horizontal(self, value):
+        self._allow_horizontal = value
+        # If the scroll container has content, we need to force a refresh
+        # to let the scroll container know how large its content is.
+        if self.interface.content:
+            self.interface.refresh()
+
+        # Disabling scrolling implies a position reset; that's a scroll event.
+        if not value:
+            self.interface.on_scroll(None)
 
     def get_horizontal_position(self):
-        self.interface.factory.not_implemented(
-            "ScrollContainer.get_horizontal_position()"
-        )
-        return 0
+        if not self.get_horizontal():
+            return 0
+        return int(self.native.contentOffset.x)
 
-    def set_horizontal_position(self, horizontal_position):
-        self.interface.factory.not_implemented(
-            "ScrollContainer.set_horizontal_position()"
+    def get_max_vertical_position(self):
+        return max(
+            0,
+            int(self.native.contentSize.height - self.native.frame.size.height),
         )
+
+    def get_max_horizontal_position(self):
+        return max(
+            0,
+            int(self.native.contentSize.width - self.native.frame.size.width),
+        )
+
+    def get_vertical_position(self):
+        if not self.get_vertical():
+            return 0
+        return int(self.native.contentOffset.y)
+
+    def set_position(self, horizontal_position, vertical_position):
+        if (
+            horizontal_position == self.get_horizontal_position()
+            and vertical_position == self.get_vertical_position()
+        ):
+            # iOS doesn't generate a scroll event unless the position actually changes.
+            # Treat all scroll position assignments as a change.
+            self.interface.on_scroll(None)
+        else:
+            self.native.setContentOffset(
+                NSMakePoint(horizontal_position, vertical_position), animated=True
+            )

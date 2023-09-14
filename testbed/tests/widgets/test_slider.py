@@ -43,7 +43,8 @@ def on_change(widget):
 
 async def test_init(widget, probe):
     assert widget.value == 0.5
-    assert widget.range == (0, 1)
+    assert widget.min == 0
+    assert widget.max == 1
     assert widget.tick_count is None
     assert probe.position == approx(0.5, abs=ACCURACY)
 
@@ -60,19 +61,20 @@ async def test_init_handlers():
 # Bounds checks are covered by core tests.
 async def test_value(widget, probe, on_change):
     for scale in SCALES:
-        widget.range = (0, scale)
+        widget.min = 0
+        widget.max = scale
         for position in POSITIONS:
             on_change.reset_mock()
             assert_set_value(widget, position * scale)
+            await probe.redraw(f"Slider scale should be {scale}")
             assert probe.position == approx(position, abs=ACCURACY)
             on_change.assert_called_once_with(widget)
-            await probe.redraw("Slider scale should be %s" % scale)
 
     on_change.reset_mock()
     widget.on_change = None
     widget.value = 42
-    on_change.assert_not_called()
     await probe.redraw("Slider scale should be reset")
+    on_change.assert_not_called()
 
 
 def assert_set_value(widget, value_in, value_out=None):
@@ -84,26 +86,29 @@ def assert_set_value(widget, value_in, value_out=None):
 
 async def test_change(widget, probe, on_change):
     for scale in SCALES:
-        widget.range = (0, scale)
+        widget.min = 0
+        widget.max = scale
         for position in POSITIONS:
             on_change.reset_mock()
-            probe.change(position)
+            await probe.change(position)
+            await probe.redraw("Slider scale should be %s" % scale)
             assert widget.value == approx(position * scale, abs=(ACCURACY * scale))
             on_change.assert_called_once_with(widget)
-            await probe.redraw("Slider scale should be %s" % scale)
 
     on_change.reset_mock()
     widget.on_change = None
-    probe.change(0.42)
-    on_change.assert_not_called()
+    await probe.change(0.42)
     await probe.redraw("Slider scale should be reset")
+    on_change.assert_not_called()
 
 
-# Bounds checks and the `min` property are covered by the core tests.
+# All other aspects of this property are covered by the core tests.
 async def test_min(widget, probe, on_change):
     for min in POSITIONS[:-1]:
         on_change.reset_mock()
-        assert_set_range(widget, min, 1)
+        min_out = assert_set_get(widget, "min", min)
+        assert isinstance(min_out, float)
+        await probe.redraw(f"Slider min property should be {min}")
 
         if min <= 0.5:
             # The existing value is in the range, so it should not change.
@@ -115,15 +120,16 @@ async def test_min(widget, probe, on_change):
             assert widget.value == min
             assert probe.position == 0
             on_change.assert_called_once_with(widget)
-        await probe.redraw("Slider min property should be %s" % min)
 
 
-# Bounds checks and the `max` property are covered by the core tests.
+# All other aspects of this property are covered by the core tests.
 async def test_max(widget, probe, on_change):
     # If the existing value is in the range, it should not change.
     for max in POSITIONS[-1:0:-1]:
         on_change.reset_mock()
-        assert_set_range(widget, 0, max)
+        max_out = assert_set_get(widget, "max", max)
+        await probe.redraw(f"Slider max property should be {max}")
+        assert isinstance(max_out, float)
 
         if max >= 0.5:
             # The existing value is in the range, so it should not change.
@@ -135,13 +141,6 @@ async def test_max(widget, probe, on_change):
             assert widget.value == max
             assert probe.position == 1
             on_change.assert_called_once_with(widget)
-        await probe.redraw("Slider max property should be %s" % max)
-
-
-def assert_set_range(widget, min_in, max_in):
-    min_out, max_out = assert_set_get(widget, "range", (min_in, max_in))
-    assert isinstance(min_out, float)
-    assert isinstance(max_out, float)
 
 
 # Bounds checks and all other tick functionality are covered by the core tests.
@@ -157,6 +156,7 @@ async def test_ticks(widget, probe, on_change):
     ]:
         on_change.reset_mock()
         assert_set_get(widget, "tick_count", tick_count)
+        await probe.redraw(f"Slider tick should be {tick_count}, {value}")
         try:
             assert probe.tick_count == tick_count
         except NotImplementedError:
@@ -170,12 +170,12 @@ async def test_ticks(widget, probe, on_change):
         else:
             on_change.assert_called_once_with(widget)
         prev_value = value
-        await probe.redraw(f"Slider tick should be {tick_count}, {value}")
 
 
 async def test_value_with_ticks(widget, probe, on_change):
     widget.tick_count = 5
-    widget.range = (0, 10)
+    widget.min = 0
+    widget.max = 10
     widget.value = prev_value = 5
 
     for value_in, value_out in [
@@ -189,6 +189,11 @@ async def test_value_with_ticks(widget, probe, on_change):
     ]:
         on_change.reset_mock()
         assert_set_value(widget, value_in, value_out)
+        await probe.redraw(
+            message="Slider value with tick should be {}, {}".format(
+                value_in, value_out
+            )
+        )
         assert probe.position == approx(value_out / 10, abs=ACCURACY)
 
         if value_out == prev_value:
@@ -196,27 +201,31 @@ async def test_value_with_ticks(widget, probe, on_change):
         else:
             on_change.assert_called_once_with(widget)
         prev_value = value_out
-        await probe.redraw(
-            message="Slider value with tick should be {}, {}".format(
-                value_in, value_out
-            )
-        )
 
 
 async def test_range_with_ticks(widget, probe, on_change):
     widget.tick_count = 5
-    widget.range = (0, 10)
+    widget.min = 0
+    widget.max = 10
     widget.value = prev_value = 5
 
     for min, max, value in [
         (0, 9, 4.5),
         (0, 10, 5),
+        (1, 10, 5.5),
         (1, 9, 5),
         (1, 10, 5.5),
     ]:
         on_change.reset_mock()
-        widget.range = (min, max)
+        widget.min = min
+        widget.max = max
         assert widget.value == value
+        await probe.redraw(
+            message="Slider range with tick should be {}, {}, {}".format(
+                min, max, value
+            )
+        )
+
         assert probe.position == approx((value - min) / (max - min), abs=ACCURACY)
 
         if value == prev_value:
@@ -224,11 +233,6 @@ async def test_range_with_ticks(widget, probe, on_change):
         else:
             on_change.assert_called_once_with(widget)
         prev_value = value
-        await probe.redraw(
-            message="Slider range with tick should be {}, {}, {}".format(
-                min, max, value
-            )
-        )
 
 
 @pytest.mark.parametrize("event", ["press", "release"])

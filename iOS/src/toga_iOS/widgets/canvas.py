@@ -203,7 +203,17 @@ class Canvas(Widget):
     # Text
 
     def measure_text(self, text, font, tight=False):
-        return font._impl.measure(text, tight=tight)
+        textAttributes = NSMutableDictionary.alloc().init()
+        textAttributes[NSFontAttributeName] = font._impl.native
+        text_string = NSAttributedString.alloc().initWithString_attributes_(
+            text, textAttributes
+        )
+        size = text_string.size()
+
+        # TODO: This is a magic fudge factor...
+        # Replace the magic with SCIENCE.
+        size.width += 3
+        return size.width, size.height
 
     def write_text(self, text, x, y, font, *args, **kwargs):
         width, height = self.measure_text(text, font)

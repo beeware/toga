@@ -21,10 +21,10 @@ Core Components
    :file: data/widgets_by_platform.csv
    :header-rows: 1
    :exclude: {1: '(?!(Type|Core Component))'}
-   :included_cols: 2,4,5,6,7,8,9
+   :included_cols: 2,4,5,6,7,8,9,10
    :class: longtable
    :stub-columns: 1
-   :widths: 3 1 1 1 1 1 1
+   :widths: 3 1 1 1 1 1 1 1
 
 
 General Widgets
@@ -35,10 +35,10 @@ General Widgets
    :file: data/widgets_by_platform.csv
    :header-rows: 1
    :exclude: {1: '(?!(Type|General Widget))'}
-   :included_cols: 2,4,5,6,7,8,9
+   :included_cols: 2,4,5,6,7,8,9,10
    :class: longtable
    :stub-columns: 1
-   :widths: 3 1 1 1 1 1 1
+   :widths: 3 1 1 1 1 1 1 1
 
 Layout Widgets
 ==============
@@ -48,10 +48,10 @@ Layout Widgets
    :file: data/widgets_by_platform.csv
    :header-rows: 1
    :exclude: {1: '(?!(Type|Layout Widget))'}
-   :included_cols: 2,4,5,6,7,8,9
+   :included_cols: 2,4,5,6,7,8,9,10
    :class: longtable
    :stub-columns: 1
-   :widths: 3 1 1 1 1 1 1
+   :widths: 3 1 1 1 1 1 1 1
 
 Resources
 =========
@@ -61,7 +61,7 @@ Resources
    :file: data/widgets_by_platform.csv
    :header-rows: 1
    :exclude: {1: '(?!(Type|Resource))'}
-   :included_cols: 2,4,5,6,7,8,9
+   :included_cols: 2,4,5,6,7,8,9,10
    :class: longtable
    :stub-columns: 1
-   :widths: 3 1 1 1 1 1 1
+   :widths: 3 1 1 1 1 1 1 1

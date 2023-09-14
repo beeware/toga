@@ -5,7 +5,7 @@ Canvas
 .. csv-filter:: Availability (:ref:`Key <api-status-key>`)
    :header-rows: 1
    :file: ../../data/widgets_by_platform.csv
-   :included_cols: 4,5,6,7,8,9
+   :included_cols: 4,5,6,7,8,9,10
    :exclude: {0: '(?!(Canvas|Component))'}
 
 The canvas is used for creating a blank widget that you can draw on.
@@ -67,15 +67,11 @@ Reference
 Main Interface
 ^^^^^^^^^^^^^^
 
-.. autoclass:: toga.widgets.canvas.Canvas
-   :members:
-   :undoc-members:
+.. autoclass:: toga.Canvas
    :exclude-members: canvas, add_draw_obj
 
 Lower-Level Classes
 ^^^^^^^^^^^^^^^^^^^
 
 .. automodule:: toga.widgets.canvas
-   :members:
-   :undoc-members:
    :exclude-members: Canvas, add_draw_obj

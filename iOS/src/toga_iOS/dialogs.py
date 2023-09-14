@@ -1,4 +1,4 @@
-import asyncio
+from abc import ABC
 
 from rubicon.objc import Block
 from rubicon.objc.runtime import objc_id
@@ -11,53 +11,35 @@ from toga_iOS.libs import (
 )
 
 
-class BaseDialog:
-    def __init__(self):
-        loop = asyncio.get_event_loop()
-        self.future = loop.create_future()
-
-    def __eq__(self, other):
-        raise RuntimeError(
-            "Can't check dialog result directly; use await or an on_result handler"
-        )
-
-    def __bool__(self):
-        raise RuntimeError(
-            "Can't check dialog result directly; use await or an on_result handler"
-        )
-
-    def __await__(self):
-        return self.future.__await__()
+class BaseDialog(ABC):
+    def __init__(self, interface):
+        self.interface = interface
+        self.interface.impl = self
 
 
 class AlertDialog(BaseDialog):
-    def __init__(self, window, title, message, on_result=None):
-        super().__init__()
+    def __init__(self, interface, title, message, on_result=None):
+        super().__init__(interface=interface)
         self.on_result = on_result
 
-        self.dialog = UIAlertController.alertControllerWithTitle(
+        self.native = UIAlertController.alertControllerWithTitle(
             title, message=message, preferredStyle=UIAlertControllerStyle.Alert
         )
 
         self.populate_dialog()
 
-        window._impl.controller.presentViewController(
-            self.dialog,
+        interface.window._impl.native.rootViewController.presentViewController(
+            self.native,
             animated=False,
             completion=None,
         )
 
-    def populate_dialog(
-        self,
-        dialog,
-    ):
+    def populate_dialog(self, native):
         pass
 
     def response(self, value):
-        if self.on_result:
-            self.on_result(self, value)
-
-        self.future.set_result(value)
+        self.on_result(self, value)
+        self.interface.future.set_result(value)
 
     def null_response(self, action: objc_id) -> None:
         self.response(None)
@@ -69,7 +51,7 @@ class AlertDialog(BaseDialog):
         self.response(False)
 
     def add_null_response_button(self, label):
-        self.dialog.addAction(
+        self.native.addAction(
             UIAlertAction.actionWithTitle(
                 label,
                 style=UIAlertActionStyle.Default,
@@ -78,7 +60,7 @@ class AlertDialog(BaseDialog):
         )
 
     def add_true_response_button(self, label):
-        self.dialog.addAction(
+        self.native.addAction(
             UIAlertAction.actionWithTitle(
                 label,
                 style=UIAlertActionStyle.Default,
@@ -87,7 +69,7 @@ class AlertDialog(BaseDialog):
         )
 
     def add_false_response_button(self, label):
-        self.dialog.addAction(
+        self.native.addAction(
             UIAlertAction.actionWithTitle(
                 label,
                 style=UIAlertActionStyle.Cancel,
@@ -97,16 +79,16 @@ class AlertDialog(BaseDialog):
 
 
 class InfoDialog(AlertDialog):
-    def __init__(self, window, title, message, on_result=None):
-        super().__init__(window, title, message, on_result=on_result)
+    def __init__(self, interface, title, message, on_result=None):
+        super().__init__(interface, title, message, on_result=on_result)
 
     def populate_dialog(self):
         self.add_null_response_button("OK")
 
 
 class QuestionDialog(AlertDialog):
-    def __init__(self, window, title, message, on_result=None):
-        super().__init__(window, title, message, on_result=on_result)
+    def __init__(self, interface, title, message, on_result=None):
+        super().__init__(interface, title, message, on_result=on_result)
 
     def populate_dialog(self):
         self.add_true_response_button("Yes")
@@ -114,8 +96,8 @@ class QuestionDialog(AlertDialog):
 
 
 class ConfirmDialog(AlertDialog):
-    def __init__(self, window, title, message, on_result=None):
-        super().__init__(window, title, message, on_result=on_result)
+    def __init__(self, interface, title, message, on_result=None):
+        super().__init__(interface, title, message, on_result=on_result)
 
     def populate_dialog(self):
         self.add_true_response_button("OK")
@@ -123,42 +105,55 @@ class ConfirmDialog(AlertDialog):
 
 
 class ErrorDialog(AlertDialog):
-    def __init__(self, window, title, message, on_result=None):
-        super().__init__(window, title, message, on_result=on_result)
+    def __init__(self, interface, title, message, on_result=None):
+        super().__init__(interface, title, message, on_result=on_result)
 
     def populate_dialog(self):
         self.add_null_response_button("OK")
 
 
 class StackTraceDialog(BaseDialog):
-    def __init__(self, window, title, message, on_result=None, **kwargs):
-        super().__init__()
-        window.factory.not_implemented("Window.stack_trace_dialog()")
+    def __init__(self, interface, title, message, on_result=None, **kwargs):
+        super().__init__(interface=interface)
+        interface.window.factory.not_implemented("Window.stack_trace_dialog()")
 
 
 class SaveFileDialog(BaseDialog):
     def __init__(
         self,
-        window,
+        interface,
         title,
         filename,
         initial_directory,
         file_types=None,
         on_result=None,
     ):
-        super().__init__()
-        window.factory.not_implemented("Window.save_file_dialog()")
+        super().__init__(interface=interface)
+        interface.window.factory.not_implemented("Window.save_file_dialog()")
 
 
 class OpenFileDialog(BaseDialog):
     def __init__(
-        self, window, title, initial_directory, file_types, multiselect, on_result=None
+        self,
+        interface,
+        title,
+        initial_directory,
+        file_types,
+        multiselect,
+        on_result=None,
     ):
-        super().__init__()
-        window.factory.not_implemented("Window.open_file_dialog()")
+        super().__init__(interface=interface)
+        interface.window.factory.not_implemented("Window.open_file_dialog()")
 
 
 class SelectFolderDialog(BaseDialog):
-    def __init__(self, window, title, initial_directory, multiselect, on_result=None):
-        super().__init__()
-        window.factory.not_implemented("Window.select_folder_dialog()")
+    def __init__(
+        self,
+        interface,
+        title,
+        initial_directory,
+        multiselect,
+        on_result=None,
+    ):
+        super().__init__(interface=interface)
+        interface.window.factory.not_implemented("Window.select_folder_dialog()")

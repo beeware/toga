@@ -1,8 +1,8 @@
-Progress Bar
-============
+ProgressBar
+===========
 
-Displays task progress on a horizontal graphical bar. The task being monitored
-can be of known or indeterminate length.
+A horizontal bar to visualize task progress. The task being monitored can be of
+known or indeterminate length.
 
 .. figure:: /reference/images/ProgressBar.jpeg
     :align: center
@@ -11,7 +11,7 @@ can be of known or indeterminate length.
 .. csv-filter:: Availability (:ref:`Key <api-status-key>`)
    :header-rows: 1
    :file: ../../data/widgets_by_platform.csv
-   :included_cols: 4,5,6,7,8,9
+   :included_cols: 4,5,6,7,8,9,10
    :exclude: {0: '(?!^(ProgressBar|Component)$)'}
 
 Usage
@@ -65,6 +65,4 @@ Notes
 Reference
 ---------
 
-.. autoclass:: toga.widgets.progressbar.ProgressBar
-   :members:
-   :undoc-members:
+.. autoclass:: toga.ProgressBar

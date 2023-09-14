@@ -1,9 +1,10 @@
 from pytest import xfail
 
+from toga.style.pack import NONE
 from toga_cocoa.libs import NSBezelStyle, NSButton, NSFont
 
 from .base import SimpleProbe
-from .properties import toga_color, toga_font
+from .properties import toga_color
 
 
 class ButtonProbe(SimpleProbe):
@@ -18,10 +19,6 @@ class ButtonProbe(SimpleProbe):
         xfail("Can't get/set the text color of a button on macOS")
 
     @property
-    def font(self):
-        return toga_font(self.native.font)
-
-    @property
     def background_color(self):
         if self.native.bezelColor:
             return toga_color(self.native.bezelColor)
@@ -33,7 +30,7 @@ class ButtonProbe(SimpleProbe):
         # If the button has a manual height set, or has a non-default font size
         # it should have a different bezel style.
         if (
-            self.widget.style.height
+            self.widget.style.height != NONE
             or self.native.font.pointSize != NSFont.systemFontSize
         ):
             assert self.native.bezelStyle == NSBezelStyle.RegularSquare

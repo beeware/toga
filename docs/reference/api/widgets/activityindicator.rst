@@ -1,5 +1,5 @@
-Activity Indicator
-==================
+ActivityIndicator
+=================
 
 A small animated indicator showing activity on a task of indeterminate length,
 usually rendered as a "spinner" animation.
@@ -11,7 +11,7 @@ usually rendered as a "spinner" animation.
 .. csv-filter:: Availability (:ref:`Key <api-status-key>`)
    :header-rows: 1
    :file: ../../data/widgets_by_platform.csv
-   :included_cols: 4,5,6,7,8,9
+   :included_cols: 4,5,6,7,8,9,10
    :exclude: {0: '(?!^(ActivityIndicator|Component)$)'}
 
 Usage
@@ -39,6 +39,4 @@ Notes
 Reference
 ---------
 
-.. autoclass:: toga.widgets.activityindicator.ActivityIndicator
-   :members:
-   :undoc-members:
+.. autoclass:: toga.ActivityIndicator

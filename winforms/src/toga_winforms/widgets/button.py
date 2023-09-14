@@ -1,6 +1,5 @@
+import System.Windows.Forms as WinForms
 from travertino.size import at_least
-
-from toga_winforms.libs import WinForms
 
 from .base import Widget
 
@@ -27,9 +26,6 @@ class Button(Widget):
             # Unicode ZERO WIDTH SPACE instead.
             text = "\u200B"
         self.native.Text = text
-
-    def set_font(self, font):
-        self.native.Font = font._impl.native
 
     def rehint(self):
         # self.native.Size = Size(0, 0)

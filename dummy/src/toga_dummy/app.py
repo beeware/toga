@@ -25,19 +25,25 @@ class App(LoggedObject):
 
     def create(self):
         self._action("create")
+        self.interface._startup()
 
     @not_required_on("mobile")
     def create_menus(self):
         self._action("create menus")
 
     def main_loop(self):
+        print("Starting app using Dummy backend.")
         self._action("main loop")
+        self.create()
 
     def set_main_window(self, window):
         self._set_value("main_window", window)
 
     def show_about_dialog(self):
         self._action("show_about_dialog")
+
+    def beep(self):
+        self._action("beep")
 
     def exit(self):
         self._action("exit")

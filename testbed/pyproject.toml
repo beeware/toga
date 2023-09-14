@@ -25,6 +25,7 @@ test_requires = [
     "coverage==7.2.0",
     "pytest==7.2.0",
     "pytest-asyncio==0.20.3",
+    "pillow==9.2.0",
 ]
 
 [tool.briefcase.app.testbed.macOS]
@@ -42,13 +43,10 @@ test_sources = [
 ]
 requires = [
     "../gtk",
-    # PyGObject #119 breaks the test suite; we need to use a PR version.
-    "git+https://gitlab.gnome.org/monnerat/pygobject.git@issue119",
 ]
 
 [tool.briefcase.app.testbed.linux.appimage]
 system_requires = [
-    "gir1.2-webkit2-4.0",
     "libcairo2-dev",
     "libgirepository1.0-dev",
     "libgtk-3-dev",
@@ -90,11 +88,20 @@ test_sources = [
 requires = [
     "../android",
 ]
-# Coverage requires access to individual .py files.
-build_gradle_extra_content = "android.defaultConfig.python.extractPackages 'toga_android'"
+test_requires = [
+    "fonttools==4.42.1",
+]
+build_gradle_extra_content = """\
+android.defaultConfig.python {
+    // Coverage requires access to individual .py files.
+    extractPackages("toga_android")
+
+    // Pytest's assertion rewriting produces its own .pyc files.
+    pyc.src = false
+}
+"""
 
 [tool.briefcase.app.testbed.web]
 requires = [
     "../web"
 ]
-style_framework = "Shoelace v2.3"

@@ -51,6 +51,8 @@ class Slider(Widget):
 
         # Dummy values used during initialization.
         self.value = 0
+        self.min_value = 0
+        self.max_value = 1
         self.tick_count = None
 
         self.native.addTarget(
@@ -81,13 +83,23 @@ class Slider(Widget):
         self.value = value
         self.native.setValue(value, animated=True)
 
-    def get_range(self):
-        return self.range
+    def get_min(self):
+        # Use the shadow copy, not the native value, to ensure round tripping.
+        # See implementation notes for details.
+        return self.min_value
 
-    def set_range(self, range):
-        self.native.minimumValue = range[0]
-        self.native.maximumValue = range[1]
-        self.range = range
+    def set_min(self, value):
+        self.min_value = value
+        self.native.minimumValue = value
+
+    def get_max(self):
+        # Use the shadow copy, not the native value, to ensure round tripping.
+        # See implementation notes for details.
+        return self.max_value
+
+    def set_max(self, value):
+        self.max_value = value
+        self.native.maximumValue = value
 
     def get_tick_count(self):
         return self.tick_count

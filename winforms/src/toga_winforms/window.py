@@ -1,38 +1,13 @@
+import System.Windows.Forms as WinForms
+from System.Drawing import Point, Size
+
 from toga import GROUP_BREAK, SECTION_BREAK
 
-from .libs import Point, Size, WinForms
+from .container import Container
+from .widgets.base import Scalable
 
 
-class WinFormsViewport:
-    def __init__(self, native, frame):
-        self.native = native
-        self.frame = frame
-        self.baseline_dpi = 96
-
-    @property
-    def width(self):
-        # Treat `native=None` as a 0x0 viewport
-        if self.native is None:
-            return 0
-        return self.native.ClientSize.Width
-
-    @property
-    def height(self):
-        # Treat `native=None` as a 0x0 viewport
-        if self.native is None:
-            return 0
-        # Subtract any vertical shift of the frame. This is to allow
-        # for toolbars, or any other viewport-level decoration.
-        return self.native.ClientSize.Height - self.frame.vertical_shift
-
-    @property
-    def dpi(self):
-        if self.native is None:
-            return self.baseline_dpi
-        return self.native.CreateGraphics().DpiX
-
-
-class Window:
+class Window(Container, Scalable):
     def __init__(self, interface, title, position, size):
         self.interface = interface
         self.interface._impl = self
@@ -49,6 +24,8 @@ class Window:
         self.native.interface = self.interface
         self.native._impl = self
         self.native.FormClosing += self.winforms_FormClosing
+        super().__init__(self.native)
+        self.init_scale(self.native)
 
         self.native.MinimizeBox = self.native.interface.minimizable
 
@@ -58,40 +35,60 @@ class Window:
 
         self.toolbar_native = None
         self.toolbar_items = None
-        if self.native.interface.resizeable:
-            self.native.Resize += self.winforms_resize
-        else:
+
+        self.native.Resize += lambda sender, args: self.resize_content()
+        self.resize_content()  # Store initial size
+
+        if not self.native.interface.resizeable:
             self.native.FormBorderStyle = self.native.FormBorderStyle.FixedSingle
             self.native.MaximizeBox = False
 
     def create_toolbar(self):
-        self.toolbar_native = WinForms.ToolStrip()
-        for cmd in self.interface.toolbar:
-            if cmd == GROUP_BREAK:
-                item = WinForms.ToolStripSeparator()
-            elif cmd == SECTION_BREAK:
-                item = WinForms.ToolStripSeparator()
+        if self.interface.toolbar:
+            if self.toolbar_native:
+                self.toolbar_native.Items.Clear()
             else:
-                if cmd.icon is not None:
-                    native_icon = cmd.icon._impl.native
-                    item = WinForms.ToolStripMenuItem(cmd.text, native_icon.ToBitmap())
+                # The toolbar doesn't need to be positioned, because its `Dock` property
+                # defaults to `Top`.
+                self.toolbar_native = WinForms.ToolStrip()
+                self.native.Controls.Add(self.toolbar_native)
+
+            for cmd in self.interface.toolbar:
+                if cmd == GROUP_BREAK:
+                    item = WinForms.ToolStripSeparator()
+                elif cmd == SECTION_BREAK:
+                    item = WinForms.ToolStripSeparator()
                 else:
-                    item = WinForms.ToolStripMenuItem(cmd.text)
-                item.Click += cmd._impl.as_handler()
-                cmd._impl.native.append(item)
-            self.toolbar_native.Items.Add(item)
+                    if cmd.icon is not None:
+                        native_icon = cmd.icon._impl.native
+                        item = WinForms.ToolStripMenuItem(
+                            cmd.text, native_icon.ToBitmap()
+                        )
+                    else:
+                        item = WinForms.ToolStripMenuItem(cmd.text)
+                    item.Click += cmd._impl.as_handler()
+                    cmd._impl.native.append(item)
+                self.toolbar_native.Items.Add(item)
+
+        elif self.toolbar_native:
+            self.native.Controls.Remove(self.toolbar_native)
+            self.toolbar_native = None
+
+        self.resize_content()
 
     def get_position(self):
-        return self.native.Location.X, self.native.Location.Y
+        location = self.native.Location
+        return tuple(map(self.scale_out, (location.X, location.Y)))
 
     def set_position(self, position):
-        self.native.Location = Point(*position)
+        self.native.Location = Point(*map(self.scale_in, position))
 
     def get_size(self):
-        return self.native.ClientSize.Width, self.native.ClientSize.Height
+        size = self.native.ClientSize
+        return tuple(map(self.scale_out, (size.Width, size.Height)))
 
     def set_size(self, size):
-        self.native.ClientSize = Size(*size)
+        self.native.ClientSize = Size(*map(self.scale_in, size))
 
     def set_app(self, app):
         if app is None:
@@ -101,77 +98,28 @@ class Window:
             return
         self.native.Icon = icon_impl.native
 
-    @property
-    def vertical_shift(self):
-        # vertical shift is the toolbar height or 0
-        result = 0
-        try:
-            result += self.native.interface._impl.toolbar_native.Height
-        except AttributeError:
-            pass
-        try:
-            result += self.native.interface._impl.native.MainMenuStrip.Height
-        except AttributeError:
-            pass
-        return result
-
-    def clear_content(self):
-        if self.interface.content:
-            for child in self.interface.content.children:
-                child._impl.container = None
-
-    def set_content(self, widget):
-        has_content = False
-        for control in self.native.Controls:
-            # The main menu and toolbar are normal in-window controls;
-            # however, they shouldn't be removed if window content is
-            # removed.
-            if control != self.native.MainMenuStrip and control != self.toolbar_native:
-                has_content = True
-                self.native.Controls.Remove(control)
-
-        # The first time content is set for the window, we also need
-        # to add the toolbar as part of the main window content.
-        # We use "did we haev to remove any content" as a marker for
-        # whether this is the first time we're setting content.
-        if not has_content:
-            self.native.Controls.Add(self.toolbar_native)
-
-        # Add the actual window content.
-        self.native.Controls.Add(widget.native)
-
-        # Set the widget's viewport to be based on the window's content.
-        widget.viewport = WinFormsViewport(native=self.native, frame=self)
-        widget.frame = self
-
-        # Add all children to the content widget.
-        for child in widget.interface.children:
-            child._impl.container = widget
-
     def get_title(self):
         return self.native.Text
 
     def set_title(self, title):
         self.native.Text = title
 
-    def show(self):
-        # The first render of the content will establish the
-        # minimum possible content size; use that to enforce
-        # a minimum window size.
-        TITLEBAR_HEIGHT = WinForms.SystemInformation.CaptionHeight
-        # Now that the content is visible, we can do our initial hinting,
-        # and use that as the basis for setting the minimum window size.
-        self.interface.content._impl.rehint()
-        self.interface.content.style.layout(
-            self.interface.content,
-            WinFormsViewport(native=None, frame=None),
-        )
-        self.native.MinimumSize = Size(
-            int(self.interface.content.layout.width),
-            int(self.interface.content.layout.height) + TITLEBAR_HEIGHT,
-        )
-        self.interface.content.refresh()
+    def refreshed(self):
+        super().refreshed()
 
+        # Enforce a minimum window size. This takes into account the title bar and
+        # borders, which are included in Size but not in ClientSize.
+        decor_size = self.native.Size - self.native.ClientSize
+        layout = self.interface.content.layout
+        min_client_size = Size(
+            self.scale_in(layout.min_width),
+            self.scale_in(layout.min_height) + self.top_bars_height(),
+        )
+        self.native.MinimumSize = decor_size + min_client_size
+
+    def show(self):
+        if self.interface.content is not None:
+            self.interface.content.refresh()
         if self.interface is not self.interface.app._main_window:
             self.native.Icon = self.interface.app.icon._impl.native
         self.native.Show()
@@ -189,7 +137,7 @@ class Window:
             if not self.interface.closeable:
                 # Closeability is implemented by shortcutting the close handler.
                 event.Cancel = True
-            elif self.interface.on_close:
+            elif self.interface.on_close._raw:
                 # If there is an on_close event handler, process it;
                 # but then cancel the close event. If the result of
                 # on_close handling indicates the window should close,
@@ -210,7 +158,18 @@ class Window:
         self._is_closing = True
         self.native.Close()
 
-    def winforms_resize(self, sender, args):
-        if self.interface.content:
-            # Re-layout the content
-            self.interface.content.refresh()
+    def top_bars_height(self):
+        vertical_shift = 0
+        if self.toolbar_native:
+            vertical_shift += self.toolbar_native.Height
+        if self.native.MainMenuStrip:
+            vertical_shift += self.native.MainMenuStrip.Height
+        return vertical_shift
+
+    def resize_content(self):
+        vertical_shift = self.top_bars_height()
+        self.native_content.Location = Point(0, vertical_shift)
+        super().resize_content(
+            self.native.ClientSize.Width,
+            self.native.ClientSize.Height - vertical_shift,
+        )

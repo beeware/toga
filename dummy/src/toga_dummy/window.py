@@ -2,25 +2,46 @@ from .utils import LoggedObject, not_required, not_required_on
 
 
 @not_required
-class Viewport:
-    def __init__(self, window):
+class Container:
+    def __init__(self, content=None):
         self.baseline_dpi = 96
         self.dpi = 96
-        self.window = window
+
+        # Prime the underlying storage before using setter
+        self._content = None
+        self.content = content
+
+    @property
+    def content(self):
+        return self._content
+
+    @content.setter
+    def content(self, value):
+        if self._content:
+            self._content.container = None
+
+        self._content = value
+        if value:
+            value.container = self
 
     @property
     def width(self):
-        return self.window.get_size()[0]
+        return self.content.get_size()[0]
 
     @property
     def height(self):
-        return self.window.get_size()[1]
+        return self.content.get_size()[1]
+
+    def refreshed(self):
+        if self.content:
+            self.content.refresh()
 
 
 class Window(LoggedObject):
     def __init__(self, interface, title, position, size):
         super().__init__()
         self.interface = interface
+        self.container = Container()
 
         self.set_title(title)
         self.set_position(position)
@@ -29,13 +50,12 @@ class Window(LoggedObject):
     def create_toolbar(self):
         self._action("create toolbar")
 
-    def clear_content(self):
-        self._action("clear content")
-
+    # Some platforms inherit this method from a base class.
+    @not_required_on("android", "winforms")
     def set_content(self, widget):
+        self.container.content = widget
         self._action("set content", widget=widget)
         self._set_value("content", widget)
-        widget.viewport = Viewport(self)
 
     def get_title(self):
         return self._get_value("title")
@@ -50,7 +70,7 @@ class Window(LoggedObject):
         self._set_value("position", position)
 
     def get_size(self):
-        return self._get_value("size")
+        return self._get_value("size", (640, 480))
 
     def set_size(self, size):
         self._set_value("size", size)

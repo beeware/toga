@@ -1,10 +1,8 @@
 import pytest
-from travertino.fonts import Font
 
 from toga.colors import TRANSPARENT, rgba
-from toga.fonts import BOLD, ITALIC, NORMAL, OBLIQUE, SMALL_CAPS
-from toga.style.pack import CENTER, JUSTIFY, LEFT, RIGHT
-from toga_gtk.libs import Gtk, Pango
+from toga.style.pack import BOTTOM, CENTER, JUSTIFY, LEFT, RIGHT, TOP
+from toga_gtk.libs import Gtk
 
 
 def toga_color(color):
@@ -25,33 +23,32 @@ def toga_color(color):
         return None
 
 
-def toga_font(font):
-    return Font(
-        family=font.get_family(),
-        size=int(font.get_size() / Pango.SCALE),
-        style={
-            Pango.Style.ITALIC: ITALIC,
-            Pango.Style.OBLIQUE: OBLIQUE,
-        }.get(font.get_style(), NORMAL),
-        weight={
-            Pango.Weight.BOLD: BOLD,
-        }.get(font.get_weight(), NORMAL),
-        variant={
-            Pango.Variant.SMALL_CAPS: SMALL_CAPS,
-        }.get(font.get_variant(), NORMAL),
-    )
-
-
-def toga_alignment(xalign, yalign, justify):
-    if yalign != 0.5:
-        pytest.fail("Y-alignment should be 0.5")
-
+def toga_xalignment(xalign, justify=None):
     try:
         return {
-            (0.0, Gtk.Justification.LEFT): LEFT,
-            (1.0, Gtk.Justification.RIGHT): RIGHT,
-            (0.5, Gtk.Justification.CENTER): CENTER,
-            (0.0, Gtk.Justification.FILL): JUSTIFY,
-        }[(xalign, justify)]
+            0.0: JUSTIFY if justify == Gtk.Justification.FILL else LEFT,
+            1.0: RIGHT,
+            0.5: CENTER,
+        }[xalign]
     except KeyError:
         pytest.fail(f"Can't interpret GTK x alignment {xalign} with justify {justify}")
+
+
+def toga_yalignment(yalign):
+    try:
+        return {
+            0.0: TOP,
+            0.5: CENTER,
+            1.0: BOTTOM,
+        }[yalign]
+    except KeyError:
+        pytest.fail(f"Can't interpret GTK y alignment {yalign}")
+
+
+def toga_alignment_from_justification(justify):
+    return {
+        Gtk.Justification.LEFT: LEFT,
+        Gtk.Justification.RIGHT: RIGHT,
+        Gtk.Justification.CENTER: CENTER,
+        Gtk.Justification.FILL: JUSTIFY,
+    }[justify]

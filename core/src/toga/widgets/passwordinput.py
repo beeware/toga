@@ -1,9 +1,10 @@
+from __future__ import annotations
+
 from .textinput import TextInput
 
 
 class PasswordInput(TextInput):
-    """This widget behaves like a TextInput, but obscures the text that is entered by
-    the user."""
+    """Create a new password input widget."""
 
     def _create(self):
         self._impl = self.factory.PasswordInput(interface=self)

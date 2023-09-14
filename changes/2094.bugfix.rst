@@ -1,0 +1,1 @@
+Fixes `TypeError` when `toga.Window.title` is invoked on WinForms.

@@ -1,0 +1,1 @@
+The ability to increment and decrement the current OptionContainer tab was removed. Instead of `container.current_tab += 1`, use `container.current_tab = container.current_tab.index + 1`

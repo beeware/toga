@@ -1,160 +1,132 @@
+import os
 import subprocess
 import sys
 from pathlib import Path
 
 import toga
-from toga_dummy.utils import TestCase
 
 
-class TestPaths(TestCase):
-    def setUp(self):
-        super().setUp()
-        # We use the existence of a __main__ module as a proxy for being in test
-        # conditions. This isn't *great*, but the __main__ module isn't meaningful
-        # during tests, and removing it allows us to avoid having explicit "if
-        # under test conditions" checks in paths.py.
-        if "__main__" in sys.modules:
-            del sys.modules["__main__"]
+def run_app(args, cwd):
+    "Run a Toga app as a subprocess with coverage enabled and the Toga Dummy backend"
+    # We need to do a full copy of the environment, then add our extra bits;
+    # if we don't the Windows interpreter won't inherit SYSTEMROOT
+    env = os.environ.copy()
+    env.update(
+        {
+            "COVERAGE_PROCESS_START": str(
+                Path(__file__).parent.parent / "pyproject.toml"
+            ),
+            "PYTHONPATH": str(Path(__file__).parent / "testbed" / "customize"),
+            "TOGA_BACKEND": "toga_dummy",
+        }
+    )
+    output = subprocess.check_output(
+        [sys.executable] + args,
+        cwd=cwd,
+        env=env,
+        text=True,
+    )
+    # When called as a subprocess, coverage drops it's coverage report in CWD.
+    # Move it to the project root for combination with the main test report.
+    for file in cwd.glob(".coverage*"):
+        os.rename(file, Path(__file__).parent.parent / file.name)
+    return output
 
-    def assert_paths(self, output, app_path, app_name):
-        "Assert the paths for the standalone app are consistent"
-        results = output.splitlines()
-        self.assertIn(
-            f"app.paths.app={app_path.resolve()}",
-            results,
-        )
-        self.assertIn(
-            f"app.paths.data={(Path.home() / 'user_data' / f'org.testbed.{app_name}').resolve()}",
-            results,
-        )
-        self.assertIn(
-            f"app.paths.cache={(Path.home() / 'cache' / f'org.testbed.{app_name}').resolve()}",
-            results,
-        )
-        self.assertIn(
-            f"app.paths.logs={(Path.home() / 'logs' / f'org.testbed.{app_name}').resolve()}",
-            results,
-        )
-        self.assertIn(
-            f"app.paths.toga={Path(toga.__file__).parent.resolve()}",
-            results,
-        )
 
-    def test_as_test(self):
-        "During test conditions, the app path is the current working directory"
-        app = toga.App(
-            formal_name="Test App",
-            app_id="org.beeware.test-app",
-        )
+def assert_paths(output, app_path, app_name):
+    "Assert the paths for the standalone app are consistent"
+    results = output.splitlines()
+    assert f"app.paths.app={app_path.resolve()}" in results
+    assert (
+        f"app.paths.config={(Path.home() / 'config' / f'org.testbed.{app_name}').resolve()}"
+        in results
+    )
+    assert (
+        f"app.paths.data={(Path.home() / 'user_data' / f'org.testbed.{app_name}').resolve()}"
+        in results
+    )
+    assert (
+        f"app.paths.cache={(Path.home() / 'cache' / f'org.testbed.{app_name}').resolve()}"
+        in results
+    )
+    assert (
+        f"app.paths.logs={(Path.home() / 'logs' / f'org.testbed.{app_name}').resolve()}"
+        in results
+    )
+    assert f"app.paths.toga={Path(toga.__file__).parent.resolve()}" in results
 
-        self.assertEqual(
-            app.paths.app,
-            Path.cwd(),
-        )
-        self.assertEqual(
-            app.paths.data,
-            Path.home() / "user_data" / "org.beeware.test-app",
-        )
-        self.assertEqual(
-            app.paths.cache,
-            Path.home() / "cache" / "org.beeware.test-app",
-        )
-        self.assertEqual(
-            app.paths.logs,
-            Path.home() / "logs" / "org.beeware.test-app",
-        )
-        self.assertEqual(
-            app.paths.toga,
-            Path(toga.__file__).parent,
-        )
 
-    def test_as_interactive(self):
-        "At an interactive prompt, the app path is the current working directory"
-        # Spawn the standalone app using the interactive-mode mocking entry point
-        cwd = Path(__file__).parent / "testbed"
-        output = subprocess.check_output(
-            [sys.executable, "standalone.py", "--backend:dummy", "--interactive"],
-            cwd=cwd,
-            text=True,
-        )
-        self.assert_paths(output, app_path=cwd, app_name="standalone-app")
+def test_as_interactive():
+    "At an interactive prompt, the app path is the current working directory"
+    # Spawn the interactive-mode mocking entry point
+    cwd = Path(__file__).parent / "testbed"
+    output = run_app(["interactive.py"], cwd=cwd)
+    assert_paths(output, app_path=cwd, app_name="interactive-app")
 
-    def test_as_file(self):
-        "When started as `python app.py`, the app path is the folder holding app.py"
-        # Spawn the standalone app using `standalone.py`
-        cwd = Path(__file__).parent / "testbed"
-        output = subprocess.check_output(
-            [sys.executable, "standalone.py", "--backend:dummy"],
-            cwd=cwd,
-            text=True,
-        )
-        self.assert_paths(output, app_path=cwd, app_name="standalone-app")
 
-    def test_as_module(self):
-        "When started as `python -m app`, the app path is the folder holding app.py"
-        # Spawn the standalone app app using `-m standalone`
-        cwd = Path(__file__).parent / "testbed"
-        output = subprocess.check_output(
-            [sys.executable, "-m", "standalone", "--backend:dummy"],
-            cwd=cwd,
-            text=True,
-        )
-        self.assert_paths(output, app_path=cwd, app_name="standalone-app")
+def test_simple_as_file_in_module():
+    """When a simple app is started as `python app.py` inside a runnable module, the
+    app path is the folder holding app.py."""
+    # Spawn the simple testbed app using `app.py`
+    cwd = Path(__file__).parent / "testbed" / "simple"
+    output = run_app(["app.py"], cwd=cwd)
+    assert_paths(output, app_path=Path(toga.__file__).parent, app_name="simple-app")
 
-    def test_simple_as_file_in_module(self):
-        """When a simple app is started as `python app.py` inside a runnable module, the
-        app path is the folder holding app.py."""
-        # Spawn the simple testbed app using `app.py`
-        cwd = Path(__file__).parent / "testbed" / "simple"
-        output = subprocess.check_output(
-            [sys.executable, "app.py", "--backend:dummy"],
-            cwd=cwd,
-            text=True,
-        )
-        self.assert_paths(output, app_path=cwd, app_name="simple-app")
 
-    def test_simple_as_module(self):
-        """When a simple apps is started as `python -m app` inside a runnable module,
-        the app path is the folder holding app.py."""
-        # Spawn the simple testbed app using `-m app`
-        cwd = Path(__file__).parent / "testbed" / "simple"
-        output = subprocess.check_output(
-            [sys.executable, "-m", "app", "--backend:dummy"],
-            cwd=cwd,
-            text=True,
-        )
-        self.assert_paths(output, app_path=cwd, app_name="simple-app")
+def test_simple_as_module():
+    """When a simple apps is started as `python -m app` inside a runnable module,
+    the app path is the folder holding app.py."""
+    # Spawn the simple testbed app using `-m app`
+    cwd = Path(__file__).parent / "testbed" / "simple"
+    output = run_app(["-m", "app"], cwd=cwd)
+    assert_paths(output, app_path=Path(toga.__file__).parent, app_name="simple-app")
 
-    def test_simple_as_deep_file(self):
-        "When a simple app is started as `python simple/app.py`, the app path is the folder holding app.py"
-        # Spawn the simple testbed app using `-m simple`
-        cwd = Path(__file__).parent / "testbed"
-        output = subprocess.check_output(
-            [sys.executable, "simple/app.py", "--backend:dummy"],
-            cwd=cwd,
-            text=True,
-        )
-        self.assert_paths(output, app_path=cwd / "simple", app_name="simple-app")
 
-    def test_simple_as_deep_module(self):
-        "When a simple app is started as `python -m simple`, the app path is the folder holding app.py"
-        # Spawn the simple testbed app using `-m simple`
-        cwd = Path(__file__).parent / "testbed"
-        output = subprocess.check_output(
-            [sys.executable, "-m", "simple", "--backend:dummy"],
-            cwd=cwd,
-            text=True,
-        )
-        self.assert_paths(output, app_path=cwd / "simple", app_name="simple-app")
+def test_simple_as_deep_file():
+    "When a simple app is started as `python simple/app.py`, the app path is the folder holding app.py"
+    # Spawn the simple testbed app using `simple/app.py`
+    cwd = Path(__file__).parent / "testbed"
+    output = run_app(["simple/app.py"], cwd=cwd)
+    assert_paths(output, app_path=Path(toga.__file__).parent, app_name="simple-app")
 
-    def test_installed_as_module(self):
-        "When the installed app is started, the app path is the folder holding app.py"
-        # Spawn the installed testbed app using `-m app`
-        cwd = Path(__file__).parent / "testbed"
-        output = subprocess.check_output(
-            [sys.executable, "-m", "installed", "--backend:dummy"],
-            cwd=cwd,
-            text=True,
-        )
 
-        self.assert_paths(output, app_path=cwd / "installed", app_name="installed")
+def test_simple_as_deep_module():
+    "When a simple app is started as `python -m simple`, the app path is the folder holding app.py"
+    # Spawn the simple testbed app using `-m simple`
+    cwd = Path(__file__).parent / "testbed"
+    output = run_app(["-m", "simple"], cwd=cwd)
+    assert_paths(output, app_path=Path(toga.__file__).parent, app_name="simple-app")
+
+
+def test_subclassed_as_file_in_module():
+    """When a subclassed app is started as `python app.py` inside a runnable module, the
+    app path is the folder holding app.py."""
+    # Spawn the simple testbed app using `app.py`
+    cwd = Path(__file__).parent / "testbed" / "subclassed"
+    output = run_app(["app.py"], cwd=cwd)
+    assert_paths(output, app_path=cwd, app_name="subclassed-app")
+
+
+def test_subclassed_as_module():
+    """When a subclassed app is started as `python -m app` inside a runnable module,
+    the app path is the folder holding app.py."""
+    # Spawn the subclassed testbed app using `-m app`
+    cwd = Path(__file__).parent / "testbed" / "subclassed"
+    output = run_app(["-m", "app"], cwd=cwd)
+    assert_paths(output, app_path=cwd, app_name="subclassed-app")
+
+
+def test_subclassed_as_deep_file():
+    "When a subclassed app is started as `python simple/app.py`, the app path is the folder holding app.py"
+    # Spawn the subclassed testbed app using `subclassed/app.py`
+    cwd = Path(__file__).parent / "testbed"
+    output = run_app(["subclassed/app.py"], cwd=cwd)
+    assert_paths(output, app_path=cwd / "subclassed", app_name="subclassed-app")
+
+
+def test_subclassed_as_deep_module():
+    "When a subclassed app is started as `python -m simple`, the app path is the folder holding app.py"
+    # Spawn the subclassed testbed app using `-m subclassed`
+    cwd = Path(__file__).parent / "testbed"
+    output = run_app(["-m", "subclassed"], cwd=cwd)
+    assert_paths(output, app_path=cwd / "subclassed", app_name="subclassed-app")

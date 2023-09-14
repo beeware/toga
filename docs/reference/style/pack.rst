@@ -194,10 +194,13 @@ Defines the alignment of text in the object being rendered.
 
 Defines the natural direction of horizontal content.
 
+.. _pack-font-family:
+
 ``font_family``
 ---------------
 
-**Values:** ``system`` | ``serif`` | ``sans-serif`` | ``cursive`` | ``fantasy`` | ``monospace`` | ``<string>``
+**Values:** ``system`` | ``serif`` | ``sans-serif`` | ``cursive`` | ``fantasy`` |
+``monospace`` | ``<string>``
 
 **Initial value:** ``system``
 
@@ -206,9 +209,14 @@ The font family to be used.
 A value of ``system`` indicates that whatever is a system-appropriate font
 should be used.
 
-A value of ``serif``, ``sans-serif``, ``cursive``, ``fantasy``, or ``monospace`` will use a system defined font that matches the description (e.g.,"Times New Roman" for ``serif``, "Courier New" for ``monospace``).
+A value of ``serif``, ``sans-serif``, ``cursive``, ``fantasy``, or ``monospace`` will
+use a system-defined font that matches the description (e.g. "Times New Roman" for
+``serif``, "Courier New" for ``monospace``).
 
-Otherwise, any font name can be specified. If the font name cannot be resolved, the system font will be used.
+Any other value will be checked against the family names previously registered with
+:any:`Font.register`. If the name cannot be resolved, the system font will be used.
+
+.. _pack-font-style:
 
 ``font_style``
 ----------------
@@ -219,6 +227,11 @@ Otherwise, any font name can be specified. If the font name cannot be resolved, 
 
 The style of the font to be used.
 
+**Note:** Windows and Android do not support the oblique font style. A request for an
+``oblique`` font will be interpreted as ``italic``.
+
+.. _pack-font-variant:
+
 ``font_variant``
 ----------------
 
@@ -227,6 +240,11 @@ The style of the font to be used.
 **Initial value:** ``normal``
 
 The variant of the font to be used.
+
+**Note:** Windows and Android do not support the small caps variant. A request for a
+``small_caps`` font will be interpreted as ``normal``.
+
+.. _pack-font-weight:
 
 ``font_weight``
 ---------------
@@ -237,6 +255,8 @@ The variant of the font to be used.
 
 The weight of the font to be used.
 
+.. _pack-font-size:
+
 ``font_size``
 -------------
 
@@ -244,6 +264,7 @@ The weight of the font to be used.
 
 **Initial value:** System default
 
+The size of the font to be used, in points.
 
 The relationship between Pack and CSS
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -291,6 +312,9 @@ The mapping that can be used to establish the reference implementation is:
   the HTML reference document. The rendering area of the browser window becomes
   the view area that Pack will fill.
 
+* Images map to ``<img>`` elements. The ``<img>`` element has an additional style of
+  ``object-fit: contain`` unless *both* ``height`` and ``width`` are defined.
+
 * All other elements in the DOM tree are mapped to ``<div>`` elements.
 
 * The following Pack declarations can be mapped to equivalent CSS declarations:
@@ -311,15 +335,17 @@ The mapping that can be used to establish the reference implementation is:
    ``display: pack``             ``display: flex``
    ``flex: <int>``               If ``direction = row`` and ``width`` is set,
                                  or ``direction = column`` and ``height`` is set,
-                                 ignore. Otherwise, ``flex: <int> 0 0``.
+                                 ignore. Otherwise, ``flex: <int> 0 auto``.
    ``font_size: <int>``          ``font-size: <int>pt``
-   ``height: <int>``             ``height: <int>px``
+   ``height: <value>``           ``height: <value>px`` if value is an integer;
+                                 ``height: auto`` if value is ``none``.
    ``padding_top: <int>``        ``margin-top: <int>px``
    ``padding_bottom: <int>``     ``margin-bottom: <int>px``
    ``padding_left: <int>``       ``margin-left: <int>px``
    ``padding_right: <int>``      ``margin-right: <int>px``
    ``text_direction: <str>``     ``direction: <str>``
-   ``width: <int>``              ``width: <int>px``
+   ``width: <value>``            ``width: <value>px`` if value is an integer;
+                                 ``width: auto`` if value is ``none``.
    ============================= ===================================================
 
 * All other Pack declarations should be used as-is as CSS declarations, with

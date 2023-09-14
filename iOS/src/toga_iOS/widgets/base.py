@@ -1,6 +1,5 @@
 from abc import abstractmethod
 
-from toga.colors import TRANSPARENT
 from toga_iOS.colors import native_color
 from toga_iOS.constraints import Constraints
 from toga_iOS.libs import UIColor
@@ -12,7 +11,6 @@ class Widget:
         self.interface = interface
         self.interface._impl = self
         self._container = None
-        self._viewport = None
         self.constraints = None
         self.native = None
         self.create()
@@ -35,7 +33,7 @@ class Widget:
     @container.setter
     def container(self, container):
         if self.container:
-            assert container is None, "Widget already has a container"
+            assert container is None, f"{self} already has a container"
 
             # Existing container should be removed
             self.constraints.container = None
@@ -52,22 +50,19 @@ class Widget:
 
         self.rehint()
 
-    @property
-    def viewport(self):
-        return self._viewport
-
-    @viewport.setter
-    def viewport(self, viewport):
-        self._viewport = viewport
-
     def get_enabled(self):
         return self.native.isEnabled()
 
     def set_enabled(self, value):
-        self.native.enabled = value
+        self.native.setEnabled(value)
+
+    @property
+    def has_focus(self):
+        return self.native.isFirstResponder
 
     def focus(self):
-        self.native.becomeFirstResponder()
+        if not self.has_focus:
+            self.native.becomeFirstResponder()
 
     def get_tab_index(self):
         self.interface.factory.not_implemented("Widget.get_tab_index()")
@@ -78,13 +73,8 @@ class Widget:
     # APPLICATOR
 
     def set_bounds(self, x, y, width, height):
-        # print("SET BOUNDS", self, x, y, width, height, self.constraints)
-        offset_y = 0
-        if self.container:
-            offset_y = self.container.viewport.top_offset
-        elif self.viewport:
-            offset_y = self.viewport.top_offset
-        self.constraints.update(x, y + offset_y, width, height)
+        # print("SET BOUNDS", self, x, y, width, height, self.container.top_offset)
+        self.constraints.update(x, y + self.container.top_offset, width, height)
 
     def set_alignment(self, alignment):
         pass
@@ -106,7 +96,7 @@ class Widget:
 
     # TODO: check if it's safe to make this the default implementation.
     def set_background_color_simple(self, value):
-        if value and (value != TRANSPARENT):
+        if value:
             self.native.backgroundColor = native_color(value)
         else:
             try:
@@ -117,13 +107,8 @@ class Widget:
                 self.native.backgroundColor = UIColor.whiteColor
 
     # INTERFACE
-
     def add_child(self, child):
-        if self.viewport:
-            # we are the top level UIView
-            child.container = self
-        else:
-            child.container = self.container
+        child.container = self.container
 
     def insert_child(self, index, child):
         self.add_child(child)
@@ -133,7 +118,6 @@ class Widget:
 
     def add_constraints(self):
         self.constraints = Constraints(self)
-        self.native.translatesAutoresizingMaskIntoConstraints = False
 
     def refresh(self):
         self.rehint()

@@ -87,9 +87,6 @@ class Window:
             self.toolbar_items[cmd] = item_impl
             self.toolbar_native.insert(item_impl, -1)
 
-    def clear_content(self):
-        pass
-
     def set_content(self, widget):
         # Set the new widget to be the container's content
         self.container.content = widget
@@ -106,7 +103,7 @@ class Window:
     def gtk_delete_event(self, widget, data):
         if self._is_closing:
             should_close = True
-        elif self.interface.on_close:
+        elif self.interface.on_close._raw:
             should_close = self.interface.on_close(self.interface.app)
         else:
             should_close = True

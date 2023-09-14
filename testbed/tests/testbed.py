@@ -1,3 +1,4 @@
+import errno
 import os
 import sys
 import tempfile
@@ -95,6 +96,15 @@ if __name__ == "__main__":
                 "win32": "toga_winforms",
             }.get(sys.platform)
 
+    if toga_backend == "toga_android":
+        # Prevent the log being cluttered with "avc: denied" messages
+        # (https://github.com/beeware/toga/issues/1962).
+        def get_terminal_size(*args, **kwargs):
+            error = errno.ENOTTY
+            raise OSError(error, os.strerror(error))
+
+        os.get_terminal_size = get_terminal_size
+
     # Start coverage tracking.
     # This needs to happen in the main thread, before the app has been created
     cov = coverage.Coverage(
@@ -119,13 +129,18 @@ if __name__ == "__main__":
     except ValueError:
         run_slow = False
 
-    # If there are no other specified arguments, default to running the whole suite.
-    # Only show coverage if we're running the full suite.
+    # If `--coverage` is in the arguments, display a coverage report
+    try:
+        args.remove("--coverage")
+        report_coverage = True
+    except ValueError:
+        report_coverage = False
+
+    # If there are no other specified arguments, default to running the whole suite,
+    # and reporting coverage.
     if len(args) == 0:
         args = ["tests"]
         report_coverage = True
-    else:
-        report_coverage = False
 
     thread = Thread(
         target=partial(

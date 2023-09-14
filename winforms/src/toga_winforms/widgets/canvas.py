@@ -1,28 +1,28 @@
 import math
 
-from travertino.colors import WHITE
-
-from toga.widgets.canvas import Context, FillRule
-from toga_winforms.colors import native_color
-from toga_winforms.libs import (
+import System.Windows.Forms as WinForms
+from System.Drawing import (
     Bitmap,
     Drawing2D,
-    FillMode,
-    GraphicsPath,
-    ImageFormat,
-    Matrix,
-    MemoryStream,
     Pen,
     PointF,
     Rectangle,
     RectangleF,
     SolidBrush,
     StringFormat,
-    WinForms,
-    win_font_family,
 )
+from System.Drawing.Drawing2D import (
+    FillMode,
+    GraphicsPath,
+    Matrix,
+)
+from System.Drawing.Imaging import ImageFormat
+from System.IO import MemoryStream
+from travertino.colors import WHITE
 
-from ..libs.fonts import win_font_style
+from toga.widgets.canvas import Context, FillRule
+from toga_winforms.colors import native_color
+
 from .box import Box
 
 
@@ -302,8 +302,8 @@ class Canvas(Box):
     # Text
     def write_text(self, text, x, y, font, draw_context, *args, **kwargs):
         full_height = 0
-        font_family = win_font_family(font.family)
-        font_style = win_font_style(font.weight, font.style, font_family)
+        font_family = font._impl.native.FontFamily
+        font_style = font._impl.native.Style
         for line in text.splitlines():
             _, height = self.measure_text(line, font)
             origin = PointF(x, y + full_height - height)
@@ -337,4 +337,4 @@ class Canvas(Box):
         return stream.ToArray()
 
     def _points_to_pixels(self, points):
-        return points * 72 / self.container.viewport.dpi
+        return points * 72 / self.container.dpi

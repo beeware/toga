@@ -112,6 +112,7 @@ GDK_KEYS = {
     Gdk.KEY_semicolon: Key.SEMICOLON,
     Gdk.KEY_apostrophe: Key.QUOTE,
     Gdk.KEY_Return: Key.ENTER,
+    Gdk.KEY_space: Key.SPACE,
     Gdk.KEY_colon: Key.COLON,
     Gdk.KEY_quotedbl: Key.DOUBLE_QUOTE,
     Gdk.KEY_comma: Key.COMMA,

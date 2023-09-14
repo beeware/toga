@@ -7,8 +7,11 @@ class Widget(LoggedObject):
         super().__init__()
         self.interface = interface
         self.interface._impl = self
-        self.viewport = None
+        self.container = None
         self.create()
+
+    def get_size(self):
+        return (37, 42)
 
     def create(self):
         self._action("create Widget")
@@ -61,12 +64,15 @@ class Widget(LoggedObject):
     ######################################################################
 
     def add_child(self, child):
+        child.container = self.container
         self._action("add child", child=child)
 
     def insert_child(self, index, child):
+        child.container = self.container
         self._action("insert child", index=index, child=child)
 
     def remove_child(self, child):
+        child.container = None
         self._action("remove child", child=child)
 
     def refresh(self):

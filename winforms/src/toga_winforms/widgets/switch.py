@@ -1,6 +1,5 @@
+import System.Windows.Forms as WinForms
 from travertino.size import at_least
-
-from toga_winforms.libs import WinForms
 
 from .base import Widget
 
@@ -32,9 +31,6 @@ class Switch(Widget):
 
     def set_value(self, value):
         self.native.Checked = value
-
-    def set_font(self, font):
-        self.native.Font = font._impl.native
 
     def rehint(self):
         self.interface.intrinsic.width = at_least(self.native.PreferredSize.Width)

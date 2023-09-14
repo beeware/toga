@@ -6,7 +6,7 @@ from toga.constants import COLUMN
 from toga.style import Pack
 
 
-class ExampledialogsApp(toga.App):
+class ExampleDialogsApp(toga.App):
     # Button callback functions
     def do_clear(self, widget, **kwargs):
         self.label.text = "Ready."
@@ -26,7 +26,7 @@ class ExampledialogsApp(toga.App):
             )
 
     async def action_confirm_dialog(self, widget):
-        if await self.main_window.question_dialog("Toga", "Are you sure you want to?"):
+        if await self.main_window.confirm_dialog("Toga", "Are you sure you want to?"):
             self.label.text = "Lets do it!"
         else:
             self.label.text = "Left it as it was."
@@ -35,7 +35,7 @@ class ExampledialogsApp(toga.App):
         await self.main_window.error_dialog(
             "Toga", "Well that didn't work... or did it?"
         )
-        self.label.text = "Oh noes..."
+        self.label.text = "Oh no..."
 
     async def action_stack_trace(self, widget):
         await self.main_window.stack_trace_dialog(
@@ -333,7 +333,7 @@ class ExampledialogsApp(toga.App):
 
 
 def main():
-    return ExampledialogsApp("Dialogs", "org.beeware.widgets.dialogs")
+    return ExampleDialogsApp("Dialogs", "org.beeware.widgets.dialogs")
 
 
 if __name__ == "__main__":

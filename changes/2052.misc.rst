@@ -1,0 +1,1 @@
+The version pin for the prerelease pygobject has been updated, following the resolution of pygobject#119.

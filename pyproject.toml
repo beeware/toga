@@ -1,3 +1,9 @@
+[tool.codespell]
+skip = ".git,*.pdf,*.svg"
+# the way to make case sensitive skips of words etc
+ignore-regex = "\bNd\b"
+ignore-words-list = "te,crate"
+
 # The coverage settings in this file only control `coverage report`. `coverage run` and
 # `coverage combine` are controlled by the pyproject.toml files in each package's
 # subdirectory.
@@ -21,7 +27,9 @@ precision = 1
 exclude_lines = [
     "pragma: no cover",
     "@(abc\\.)?abstractmethod",
-    "NotImplementedError\\(\\)"
+    "NotImplementedError\\(\\)",
+    "if TYPE_CHECKING:",
+    "class .+?\\(Protocol\\):",
 ]
 
 [tool.isort]
@@ -48,3 +56,10 @@ filename = "docs/background/releases.rst"
 title_format = "{version} ({project_date})"
 issue_format = "`#{issue} <https://github.com/beeware/toga/issues/{issue}>`__"
 template = "changes/template.rst"
+type = [
+    { directory = "feature", name = "Features", showcontent = true },
+    { directory = "bugfix", name = "Bugfixes", showcontent = true },
+    { directory = "removal", name = "Backward Incompatible Changes", showcontent = true },
+    { directory = "doc", name = "Documentation", showcontent = true },
+    { directory = "misc", name = "Misc", showcontent = false },
+ ]
