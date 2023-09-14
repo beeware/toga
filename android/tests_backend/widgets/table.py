@@ -3,7 +3,6 @@ import pytest
 from android.widget import ScrollView, TableLayout, TextView
 
 from .base import SimpleProbe
-from .properties import toga_font
 
 HEADER = "HEADER"
 
@@ -90,6 +89,9 @@ class TableProbe(SimpleProbe):
         self._row_view(row).performLongClick()
 
     @property
-    def font(self):
-        tv = self._row_view(0).getChildAt(0)
-        return toga_font(tv.getTypeface(), tv.getTextSize(), tv.getResources())
+    def typeface(self):
+        return self._row_view(0).getChildAt(0).getTypeface()
+
+    @property
+    def text_size(self):
+        return self._row_view(0).getChildAt(0).getTextSize()

@@ -4,7 +4,6 @@ from ctypes import c_void_p
 from rubicon.objc import SEL, NSArray, NSObject, ObjCClass, objc_method
 from rubicon.objc.api import NSString
 
-from toga.fonts import CURSIVE, FANTASY, MONOSPACE, SANS_SERIF, SERIF, SYSTEM
 from toga_cocoa.libs.appkit import appkit
 
 NSRunLoop = ObjCClass("NSRunLoop")
@@ -46,16 +45,6 @@ class BaseProbe:
                 modes=NSArray.arrayWithObject(NSDefaultRunLoopMode),
             )
             await self.event_listener.event.wait()
-
-    def assert_font_family(self, expected):
-        assert self.font.family == {
-            CURSIVE: "Apple Chancery",
-            FANTASY: "Papyrus",
-            MONOSPACE: "Courier New",
-            SANS_SERIF: "Helvetica",
-            SERIF: "Times",
-            SYSTEM: ".AppleSystemUIFont",
-        }.get(expected, expected)
 
     async def redraw(self, message=None, delay=None):
         """Request a redraw of the app, waiting until that redraw has completed."""
