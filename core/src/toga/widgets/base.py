@@ -122,13 +122,10 @@ class Widget(Node):
                 child.app = self.app
                 child.window = self.window
 
-                # The impl must exist, because we add children after the impl is
-                # constructed.
                 self._impl.add_child(child._impl)
 
         # Whatever layout we're a part of needs to be refreshed
-        if self._impl:
-            self.refresh()
+        self.refresh()
 
     def insert(self, index: int, child: Widget) -> None:
         """Insert a widget as a child of this widget.
@@ -154,8 +151,6 @@ class Widget(Node):
             child.app = self.app
             child.window = self.window
 
-            # The impl must exist, because we're invoking
-            # insert() on a fully instantiated widget.
             self._impl.insert_child(index, child._impl)
 
         # Whatever layout we're a part of needs to be refreshed
@@ -182,8 +177,6 @@ class Widget(Node):
                 child.app = None
                 child.window = None
 
-                # The impl must exist, because we're invoking
-                # remove() on a fully instantiated widget.
                 self._impl.remove_child(child._impl)
 
         # If we removed something, whatever layout we're a part of needs to be refreshed

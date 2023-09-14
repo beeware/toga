@@ -22,8 +22,7 @@ class Box(Widget):
         # Create a platform specific implementation of a Box
         self._impl = self.factory.Box(interface=self)
 
-        # Children need to be added *after* the impl has been created; this avoids the
-        # need to check whether the parent impl exists when adding a child.
+        # Children need to be added *after* the impl has been created.
         self._children = []
         if children:
             self.add(*children)

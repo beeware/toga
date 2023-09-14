@@ -2,6 +2,7 @@ import toga
 from toga_dummy.utils import (
     assert_action_not_performed,
     assert_action_performed,
+    assert_action_performed_with,
 )
 
 
@@ -25,8 +26,8 @@ def test_create_box_with_children():
     assert box._impl.interface == box
 
     assert_action_performed(box, "create Box")
-    # The box has children, so add child also occurs.
-    assert_action_performed(box, "add child")
+    assert_action_performed_with(box, "add child", child=child1._impl)
+    assert_action_performed_with(box, "add child", child=child2._impl)
 
     # But the box will have children.
     assert box.children == [child1, child2]
