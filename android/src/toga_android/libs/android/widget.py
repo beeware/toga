@@ -34,6 +34,7 @@ SeekBar__OnSeekBarChangeListener = JavaInterface(
 )
 Switch = JavaClass("android/widget/Switch")
 Spinner = JavaClass("android/widget/Spinner")
+SpinnerAdapter = JavaInterface("android/widget/SpinnerAdapter")
 TableLayout = JavaClass("android/widget/TableLayout")
 TableLayout__Layoutparams = JavaClass("android/widget/TableLayout$LayoutParams")
 TableRow = JavaClass("android/widget/TableRow")

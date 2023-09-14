@@ -1,8 +1,9 @@
 from travertino.size import at_least
 
 from ..libs.android import R__layout
+from ..libs.android.graphics import Typeface
 from ..libs.android.view import Gravity, View__MeasureSpec
-from ..libs.android.widget import ArrayAdapter, OnItemSelectedListener, Spinner
+from ..libs.android.widget import ArrayAdapter, OnItemSelectedListener, Spinner, SpinnerAdapter
 from .base import Widget, align
 
 
@@ -18,16 +19,44 @@ class TogaOnItemSelectedListener(OnItemSelectedListener):
         self.impl.on_change(None)
 
 
+class TogaSpinnerAdapter(SpinnerAdapter):
+    def __init__(self, impl):
+        super().__init__()
+        self.impl = impl
+        self.adapter = ArrayAdapter(
+            self.impl._native_activity, R__layout.simple_spinner_item
+        )
+        self.adapter.setDropDownViewResource(R__layout.simple_spinner_dropdown_item)
+        self.default_textsize = 14
+        self.default_typeface = Typeface.SANS_SERIF
+
+    def getDropDownView (position, convertView, parent):
+        tv = self.adapter.getDropDownView(position, convertView, parent)
+        if self.impl._font_impl:
+            print("applying font to dropdown view")
+            self.impl._font_impl.apply(
+                tv, self.default_textsize, self.default_typeface
+            )
+        return tv
+    
+    def getView(position, convertView, parent):
+        tv = self.adapter.getView(position, convertView, parent)
+        if self.impl._font_impl:
+            print("applying font to view")
+            self.impl._font_impl.apply(
+                tv, self.default_textsize, self.default_typeface
+            )
+        return tv
+
+    
 class Selection(Widget):
     focusable = False
+    self._font_impl = None
 
     def create(self):
         self.native = Spinner(self._native_activity, Spinner.MODE_DROPDOWN)
         self.native.setOnItemSelectedListener(TogaOnItemSelectedListener(impl=self))
-        self.adapter = ArrayAdapter(
-            self._native_activity, R__layout.simple_spinner_item
-        )
-        self.adapter.setDropDownViewResource(R__layout.simple_spinner_dropdown_item)
+        self.adapter = TogaSpinnerAdapter(impl=self)
         self.native.setAdapter(self.adapter)
         self.last_selection = None
 
@@ -92,3 +121,8 @@ class Selection(Widget):
 
     def set_alignment(self, value):
         self.native.setGravity(Gravity.CENTER_VERTICAL | align(value))
+
+  def set_font(self, font):
+        print(f"setting font {str(font)}")
+        self._font_impl = font._impl
+  
