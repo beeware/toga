@@ -17,7 +17,10 @@ class Window:
         app_placeholder.appendChild(self.native)
 
         js.document.body.onfocus = self.window_on_gain_focus
-        js.document.body.onblur = self.window_on_lose_focusS
+        js.document.body.onblur = self.window_on_lose_focus
+        js.document.addEventListener(
+            "visibilitychange", self.window_on_visibility_change
+        )
         self.set_title(title)
 
     def get_title(self):
@@ -81,9 +84,14 @@ class Window:
         self.interface.factory.not_implemented("Window.set_full_screen()")
 
     def window_on_gain_focus(self, sender, event):
-        self.interface.app.on_gain_focus(self.interface)
         self.interface.on_gain_focus(self.interface)
 
     def window_on_lose_focus(self, sender, event):
-        self.interface.app.on_lose_focus(self.interface)
         self.interface.on_lose_focus(self.interface)
+
+    def window_on_visibility_change(self, sender, event):
+        if hasattr(js.document, "hidden"):
+            if js.document.visibilityState == "visible":
+                self.interface.on_show(self.interface)
+            else:
+                self.interface.on_hide(self.interface)
