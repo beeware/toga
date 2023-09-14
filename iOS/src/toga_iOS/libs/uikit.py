@@ -147,6 +147,12 @@ class UIInterfaceOrientation(Enum):
     LandscapeRight = 4
 
 
+class UIApplicationState(Enum):
+    UIApplicationStateActive = 0
+    UIApplicationStateInactive = 1
+    UIApplicationStateBackground = 2
+
+
 ######################################################################
 # UIBarButtonItem.h
 UIBarButtonItem = ObjCClass("UIBarButtonItem")

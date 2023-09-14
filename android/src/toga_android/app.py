@@ -35,23 +35,25 @@ class TogaApp(IPythonApp):
 
     def onStart(self):
         print("Toga app: onStart")
+        for window in self._impl.interface.windows:
+            window.on_show(self._impl.interface)
 
     def onResume(self):
         print("Toga app: onResume")
         if Build.VERSION.SDK_INT < Build.VERSION_CODES.Q:
-            self._impl.interface.on_gain_focus(self._impl.interface)
             for window in self._impl.interface.windows:
                 window.on_gain_focus(self._impl.interface)
 
     def onPause(self):
         print("Toga app: onPause")
         if Build.VERSION.SDK_INT < Build.VERSION_CODES.Q:
-            self._impl.interface.on_lose_focus(self._impl.interface)
             for window in self._impl.interface.windows:
                 window.on_lose_focus(self._impl.interface)
 
     def onStop(self):
         print("Toga app: onStop")
+        for window in self._impl.interface.windows:
+            window.on_hide(self._impl.interface)
 
     def onDestroy(self):
         print("Toga app: onDestroy")
@@ -62,11 +64,9 @@ class TogaApp(IPythonApp):
     def onTopResumedActivityChanged(self, isTopResumedActivity):
         print("Toga app: onTopResumedActivityChanged")
         if isTopResumedActivity:
-            self._impl.interface.on_gain_focus(self._impl.interface)
             for window in self._impl.interface.windows:
                 window.on_gain_focus(self._impl.interface)
         else:
-            self._impl.interface.on_lose_focus(self._impl.interface)
             for window in self._impl.interface.windows:
                 window.on_lose_focus(self._impl.interface)
 

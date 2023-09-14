@@ -3,7 +3,7 @@ import asyncio
 from rubicon.objc import objc_method
 from rubicon.objc.eventloop import EventLoopPolicy, iOSLifecycle
 
-from toga_iOS.libs import UIResponder
+from toga_iOS.libs import UIApplication, UIApplicationState, UIResponder
 from toga_iOS.window import Window
 
 
@@ -15,8 +15,13 @@ class PythonAppDelegate(UIResponder):
     @objc_method
     def applicationDidBecomeActive_(self, application) -> None:
         print("App became active.")
-        for window in App.app.interface.windows:
-            window.on_gain_focus(App.app.interface)
+        app_state = UIApplication.sharedApplication().applicationState
+        if app_state == UIApplicationState.UIApplicationStateActive:
+            for window in App.app.interface.windows:
+                window.on_gain_focus(App.app.interface)
+        else:
+            for window in App.app.interface.windows:
+                window.on_lose_focus(App.app.interface)
 
     @objc_method
     def applicationWillResignActive_(self, application) -> None:
