@@ -1,7 +1,7 @@
 from toga_iOS.libs import UIButton, UIControlStateNormal
 
 from .base import SimpleProbe
-from .properties import toga_color, toga_font
+from .properties import toga_color
 
 
 class ButtonProbe(SimpleProbe):
@@ -17,4 +17,4 @@ class ButtonProbe(SimpleProbe):
 
     @property
     def font(self):
-        return toga_font(self.native.titleLabel.font)
+        return self.native.titleLabel.font

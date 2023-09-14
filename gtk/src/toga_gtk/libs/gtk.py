@@ -7,7 +7,7 @@ from gi.repository import Gdk, GdkPixbuf, Gio, GLib, GObject, Gtk  # noqa: E402,
 
 if Gdk.Screen.get_default() is None:  # pragma: no cover
     raise RuntimeError(
-        "Cannot identify an active display. Is the ``DISPLAY`` environment variable set correctly?"
+        "Cannot identify an active display. Is the `DISPLAY` environment variable set correctly?"
     )
 
 # The following imports will fail if the underlying libraries or their API

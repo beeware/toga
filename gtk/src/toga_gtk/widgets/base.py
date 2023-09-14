@@ -44,7 +44,7 @@ class Widget:
     @container.setter
     def container(self, container):
         if self.container:
-            assert container is None, "Widget Already have a container"
+            assert container is None, "Widget already has a container"
 
             # container is set to None, removing self from the container.native
             # Note from pygtk documentation: Note that the container will own a

@@ -4,7 +4,7 @@ from toga.style.pack import NONE
 from toga_cocoa.libs import NSBezelStyle, NSButton, NSFont
 
 from .base import SimpleProbe
-from .properties import toga_color, toga_font
+from .properties import toga_color
 
 
 class ButtonProbe(SimpleProbe):
@@ -17,10 +17,6 @@ class ButtonProbe(SimpleProbe):
     @property
     def color(self):
         xfail("Can't get/set the text color of a button on macOS")
-
-    @property
-    def font(self):
-        return toga_font(self.native.font)
 
     @property
     def background_color(self):

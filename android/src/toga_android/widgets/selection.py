@@ -1,9 +1,9 @@
 from travertino.size import at_least
 
 from ..libs.android import R__layout
-from ..libs.android.view import Gravity, View__MeasureSpec
+from ..libs.android.view import View__MeasureSpec
 from ..libs.android.widget import ArrayAdapter, OnItemSelectedListener, Spinner
-from .base import Widget, align
+from .base import Widget
 
 
 class TogaOnItemSelectedListener(OnItemSelectedListener):
@@ -89,6 +89,3 @@ class Selection(Widget):
         )
         self.interface.intrinsic.width = at_least(self.native.getMeasuredWidth())
         self.interface.intrinsic.height = self.native.getMeasuredHeight()
-
-    def set_alignment(self, value):
-        self.native.setGravity(Gravity.CENTER_VERTICAL | align(value))

@@ -6,8 +6,9 @@ from System.Windows.Forms import SendKeys
 from toga.colors import TRANSPARENT
 from toga.style.pack import JUSTIFY, LEFT
 
+from ..fonts import FontMixin
 from ..probe import BaseProbe
-from .properties import toga_color, toga_font
+from .properties import toga_color
 
 KEY_CODES = {
     f"<{name}>": f"{{{name.upper()}}}"
@@ -20,7 +21,7 @@ KEY_CODES.update(
 )
 
 
-class SimpleProbe(BaseProbe):
+class SimpleProbe(BaseProbe, FontMixin):
     fixed_height = None
 
     def __init__(self, widget):
@@ -71,7 +72,7 @@ class SimpleProbe(BaseProbe):
 
     @property
     def font(self):
-        return toga_font(self.native.Font)
+        return self.native.Font
 
     @property
     def hidden(self):
