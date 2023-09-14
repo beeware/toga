@@ -15,14 +15,12 @@ class PythonAppDelegate(UIResponder):
     @objc_method
     def applicationDidBecomeActive_(self, application) -> None:
         print("App became active.")
-        App.app.interface.on_gain_focus(App.app.interface)
         for window in App.app.interface.windows:
             window.on_gain_focus(App.app.interface)
 
     @objc_method
     def applicationWillResignActive_(self, application) -> None:
         print("App about to leave foreground.", flush=True)
-        App.app.interface.on_lose_focus(App.app.interface)
         for window in App.app.interface.windows:
             window.on_lose_focus(App.app.interface)
 
