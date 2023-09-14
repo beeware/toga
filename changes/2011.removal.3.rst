@@ -1,0 +1,1 @@
+``Table.add_column()`` has been deprecated in favor of ``Table.append_column()`` and ``Table.insert_column()``

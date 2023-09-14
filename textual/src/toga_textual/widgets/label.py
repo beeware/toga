@@ -13,7 +13,7 @@ class Label(Widget):
         return str(self.native.renderable)
 
     def set_text(self, value):
-        self.native.renderable = value
+        self.native.update(value)
 
     def rehint(self):
         self.interface.intrinsic.width = at_least(len(self.native.renderable))

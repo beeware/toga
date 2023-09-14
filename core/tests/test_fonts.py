@@ -135,7 +135,7 @@ def test_builtin_font(family, size, weight, style, variant, as_str):
 def test_registered_font_key(app, family, style, weight, variant, key):
     "Registered font keys can be generarted"
     assert (
-        toga.Font.registered_font_key(
+        toga.Font._registered_font_key(
             family, style=style, weight=weight, variant=variant
         )
         == key

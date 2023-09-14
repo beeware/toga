@@ -70,7 +70,7 @@ class Node:
 
     def can_have_children(self):
         # this will trigger loading of children, if not yet done
-        return len(self.children) > 0
+        return not self.path.is_file()
 
     # Property that returns the first column value as (icon, label)
     @property
@@ -112,11 +112,7 @@ class FileSystemSource(Node, Source):
 
 
 class ExampleTreeSourceApp(toga.App):
-    def selection_handler(self, widget, node):
-        # A node is a dictionary of the last item that was clicked in the tree.
-        # node['node'].path would get you the file path to only that one item.
-        # self.label.text = f'Selected {node["node"].path}'
-
+    def selection_handler(self, widget):
         # If you iterate over widget.selection, you can get the names and the
         # paths of everything selected (if multiple_select is enabled.)
         # filepaths = [node.path for node in widget.selection]
@@ -131,7 +127,7 @@ class ExampleTreeSourceApp(toga.App):
         else:
             self.label.text = f"You selected {files} items"
 
-    def double_click_handler(self, widget, node):
+    def activate_handler(self, widget, node):
         # open the file or folder in the platform's default app
         self.label.text = f"You started {node.path}"
         if platform.system() == "Darwin":
@@ -153,7 +149,7 @@ class ExampleTreeSourceApp(toga.App):
             style=Pack(flex=1),
             multiple_select=True,
             on_select=self.selection_handler,
-            on_double_click=self.double_click_handler,
+            on_activate=self.activate_handler,
         )
         self.label = toga.Label(
             "A view of the current directory!", style=Pack(padding=10)

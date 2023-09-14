@@ -29,7 +29,7 @@ class Font:
         try:
             font = _FONT_CACHE[self.interface]
         except KeyError:
-            font_key = self.interface.registered_font_key(
+            font_key = self.interface._registered_font_key(
                 self.interface.family,
                 weight=self.interface.weight,
                 style=self.interface.style,

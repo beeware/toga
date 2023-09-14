@@ -1,13 +1,12 @@
 from travertino.size import at_least
 
-from ..libs.activity import MainActivity
 from ..libs.android.widget import RelativeLayout
 from .base import Widget
 
 
 class Box(Widget):
     def create(self):
-        self.native = RelativeLayout(MainActivity.singletonThis)
+        self.native = RelativeLayout(self._native_activity)
 
     def set_background_color(self, value):
         self.set_background_simple(value)
