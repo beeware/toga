@@ -44,11 +44,11 @@ class Window(Container, Scalable):
             self.native.FormBorderStyle = self.native.FormBorderStyle.FixedSingle
             self.native.MaximizeBox = False
 
-        self.native.Activated += self.window_on_gain_focus
-        self.native.Deactivate += self.window_on_lose_focus
+        self.native.Activated += self.winforms_on_gain_focus
+        self.native.Deactivate += self.winforms_on_lose_focus
 
-        self.native.VisibleChanged += self.window_on_visible_changed
-        self.native.SizeChanged += self.window_on_size_changed
+        self.native.VisibleChanged += self.winforms_on_visible_changed
+        self.native.SizeChanged += self.winforms_on_size_changed
 
     def create_toolbar(self):
         if self.interface.toolbar:
@@ -181,13 +181,13 @@ class Window(Container, Scalable):
             self.native.ClientSize.Height - vertical_shift,
         )
 
-    def window_on_gain_focus(self, sender, event):
+    def winforms_on_gain_focus(self, sender, event):
         self.interface.on_gain_focus(self.interface)
 
-    def window_on_lose_focus(self, sender, event):
+    def winforms_on_lose_focus(self, sender, event):
         self.interface.on_lose_focus(self.interface)
 
-    def window_on_visible_changed(self, sender, event):
+    def winforms_on_visible_changed(self, sender, event):
         if self.native.Visible and not self._is_previously_shown:
             self._is_previously_shown = True
             self.interface.on_show(self.interface)
@@ -195,7 +195,7 @@ class Window(Container, Scalable):
             self._is_previously_shown = False
             self.interface.on_hide(self.interface)
 
-    def window_on_size_changed(self, sender, event):
+    def winforms_on_size_changed(self, sender, event):
         if (
             self.native.WindowState == WinForms.FormWindowState.Minimized
             and self._is_previously_shown

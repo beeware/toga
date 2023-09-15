@@ -62,14 +62,6 @@ class AppDelegate(NSObject):
         return True
 
     @objc_method
-    def applicationDidBecomeActive_(self, application):
-        self.impl.interface.on_gain_focus(self.interface)
-
-    @objc_method
-    def applicationWillResignActive_(self, application):
-        self.impl.interface.on_lose_focus(self.interface)
-
-    @objc_method
     def addDocument_(self, document) -> None:
         # print("Add Document", document)
         super().addDocument_(document)
