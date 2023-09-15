@@ -1,1 +1,0 @@
-The WinForms event loop was decoupled from AppContext.
