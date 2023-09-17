@@ -2,7 +2,13 @@ import pytest
 
 from toga.colors import REBECCAPURPLE, rgb
 from toga.constants import FillRule
-from toga.widgets.canvas import ClosedPathContext, Context, FillContext, StrokeContext
+from toga.widgets.canvas import (
+    ClosedPathContext,
+    Context,
+    FillContext,
+    LineTo,
+    StrokeContext,
+)
 from toga_dummy.utils import assert_action_performed
 
 REBECCA_PURPLE_COLOR = rgb(102, 51, 153)
@@ -456,8 +462,13 @@ def test_order_change(widget):
     # Remove the second draw instruction
     context.remove(second)
 
-    # Counts are as expected
+    # Drawing objects are as expected
     assert len(widget.context) == 3
+    for i, cls in enumerate([LineTo, Context, LineTo]):
+        assert isinstance(widget.context[i], cls)
+    with pytest.raises(IndexError):
+        widget.context[3]
+
     assert len(context) == 4
     assert len(fill) == 1
 

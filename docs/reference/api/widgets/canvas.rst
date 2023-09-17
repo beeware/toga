@@ -28,15 +28,16 @@ For example, the following code will draw an orange horizontal line:
 
     import toga
     canvas = toga.Canvas()
+    context = canvas.context
 
-    canvas.context.begin_path()
-    canvas.context.move_to(20, 20)
-    canvas.context.line_to(160, 20)
-    canvas.context.stroke(color="orange")
+    context.begin_path()
+    context.move_to(20, 20)
+    context.line_to(160, 20)
+    context.stroke(color="orange")
 
 Toga adds an additional layer of convenience to the base HTML5 API by providing context
 managers for operations that have a natural open/close life cycle. For example, the
-previous drawing example could be replace with:
+previous example could be replaced with:
 
 .. code-block:: python
 
@@ -46,17 +47,18 @@ previous drawing example could be replace with:
     with canvas.context.Stroke(20, 20, color="orange") as stroke:
         stroke.line_to(160, 20)
 
-Any argument provided to a primitive drawing objects or context object becomes a
-property of that object. Those properties can be modified after creation; primitive
-drawing operations can also be added or removed from the contexts where they have been
-created using the ``list`` operations ``append``, ``insert`` and ``remove``.
+Any argument provided to a drawing operation or context object becomes a property of
+that object. Those properties can be modified after creation, after which you should
+invoke :any:`Canvas.redraw` to request a redraw of the canvas.
+
+Drawing operations can also be added to or removed from a context using the ``list``
+operations ``append``, ``insert``,  ``remove`` and ``clear``. In this case,
+:any:`Canvas.redraw` will be called automatically.
 
 For example, if you were drawing a bar chart where the height of the bars changed over
 time, you don't need to completely reset the canvas and redraw all the objects; you can
 use the same objects, only modifying the height of existing bars, or adding and removing
-bars as required. After making changes to the properties of a drawing object, you can
-invoke :meth:`~toga.Canvas.redraw()` to request a redraw of the canvas. A redraw will
-be automatically invoked when the canvas resizes.
+bars as required.
 
 In this example, we create 2 filled drawing objects, then manipulate those objects,
 requesting a redraw after each set of changes.
@@ -66,31 +68,29 @@ requesting a redraw after each set of changes.
     import toga
 
     canvas = toga.Canvas()
-    with canvas.fill(color="red") as fill:
-        arc1 = fill.arc(x=50, y=50, radius=15)
-        rect1 = fill.rect(x=50, y=50, width=15, height=15)
+    with canvas.context.Fill(color="red") as fill:
+        circle = fill.arc(x=50, y=50, radius=15)
+        rect = fill.rect(x=50, y=50, width=15, height=15)
 
     # We can then change the properties of the drawing objects.
-    # Make the arc smaller, and move it closer to the origin.
-    arc1.x = 25
-    arc1.y = 25
-    arc1.radius = 5
+    # Make the circle smaller, and move it closer to the origin.
+    circle.x = 25
+    circle.y = 25
+    circle.radius = 5
     canvas.redraw()
 
-    # Change the fill color to Blue
+    # Change the fill color to blue
     fill.color = "blue"
     canvas.redraw()
 
     # Remove the rectangle from the canvas
-    fill.remove(rect1)
-    canvas.redraw()
+    fill.remove(rect)
 
 For detailed tutorials on the use of Canvas drawing instructions, see the MDN
 documentation for the `HTML5 Canvas API
 <https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API>`__. Other than the change
-in naming conventions for methods - the HTML5 APIs uses ``lowerCamelCase``, whereas the
-Toga API uses ``snake_case`` - the usage of any APIs provided by Toga's canvas should be
-the same.
+in naming conventions for methods - the HTML5 API uses ``lowerCamelCase``, whereas the
+Toga API uses ``snake_case`` - both APIs are very similar.
 
 Notes
 -----
@@ -105,21 +105,52 @@ Notes
 Reference
 ---------
 
-Main Interface
+Main interface
 ^^^^^^^^^^^^^^
 
 .. autoclass:: toga.Canvas
+    :exclude-members: new_path, move_to, line_to, bezier_curve_to, quadratic_curve_to,
+        arc, ellipse, rect, write_text, rotate, scale, translate, reset_transform,
+        closed_path, fill, stroke
+
 .. autoclass:: toga.widgets.canvas.Context
+    :special-members: __getitem__, __len__
 
-Simple Drawing objects
-^^^^^^^^^^^^^^^^^^^^^^
+Drawing objects
+^^^^^^^^^^^^^^^
 
-.. automodule:: toga.widgets.canvas
-   :exclude-members: Canvas, Context, ClosedPathContext, FillContext, StrokeContext
+.. autoclass:: toga.widgets.canvas.DrawingObject
 
-Drawing Context Objects
+.. autoclass:: toga.widgets.canvas.Arc
+.. autoclass:: toga.widgets.canvas.BeginPath
+.. autoclass:: toga.widgets.canvas.BezierCurveTo
+.. autoclass:: toga.widgets.canvas.ClosePath
+.. autoclass:: toga.widgets.canvas.Ellipse
+.. autoclass:: toga.widgets.canvas.Fill
+.. autoclass:: toga.widgets.canvas.LineTo
+.. autoclass:: toga.widgets.canvas.MoveTo
+.. autoclass:: toga.widgets.canvas.QuadraticCurveTo
+.. autoclass:: toga.widgets.canvas.Rect
+.. autoclass:: toga.widgets.canvas.Stroke
+.. autoclass:: toga.widgets.canvas.WriteText
+
+Transformations
+^^^^^^^^^^^^^^^
+
+.. autoclass:: toga.widgets.canvas.ResetTransform
+.. autoclass:: toga.widgets.canvas.Rotate
+.. autoclass:: toga.widgets.canvas.Scale
+.. autoclass:: toga.widgets.canvas.Translate
+
+Drawing context objects
 ^^^^^^^^^^^^^^^^^^^^^^^
 
 .. autoclass:: toga.widgets.canvas.ClosedPathContext
 .. autoclass:: toga.widgets.canvas.FillContext
 .. autoclass:: toga.widgets.canvas.StrokeContext
+
+Event handlers
+^^^^^^^^^^^^^^
+
+.. autoprotocol:: toga.widgets.canvas.OnTouchHandler
+.. autoprotocol:: toga.widgets.canvas.OnResizeHandler

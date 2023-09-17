@@ -4,6 +4,7 @@ import warnings
 from abc import ABC, abstractmethod
 from contextlib import contextmanager
 from math import pi
+from typing import Protocol
 
 from travertino.colors import Color
 
@@ -526,9 +527,9 @@ class ResetTransform(DrawingObject):
 class Context(DrawingObject):
     """A drawing context for a canvas.
 
-    You should not create a :class:`~toga.widgets.canvas.Context` directly; instead, you should use a
-    the :meth:`~toga.widgets.canvas.Context.context` method on an existing context,
-    or use :attr:`toga.Canvas.context` to access the root context of the canvas.
+    You should not create a :class:`~toga.widgets.canvas.Context` directly; instead,
+    you should use the :meth:`~Context.Context` method on an existing context,
+    or use :any:`Canvas.context` to access the root context of the canvas.
     """
 
     def __init__(self, canvas: toga.Canvas, **kwargs):
@@ -553,12 +554,7 @@ class Context(DrawingObject):
         return self._canvas
 
     def redraw(self):
-        """Force a redraw of the Canvas.
-
-        The Canvas will be automatically redrawn after adding or remove a drawing
-        object. If you modify the properties of a drawing object, this method is used to
-        force a redraw.
-        """
+        """Calls :any:`Canvas.redraw` on the parent Canvas."""
         self.canvas.redraw()
 
     ###########################################################################
@@ -566,10 +562,14 @@ class Context(DrawingObject):
     ###########################################################################
 
     def __len__(self) -> int:
-        """The number of drawing objects are on this canvas?"""
+        """Returns the number of drawing objects that are in this context."""
         return len(self.drawing_objects)
 
-    def append(self, obj: DrawingObject) -> DrawingObject:
+    def __getitem__(self, index: int) -> DrawingObject:
+        """Returns the drawing object at the given index."""
+        return self.drawing_objects[index]
+
+    def append(self, obj: DrawingObject):
         """Append a drawing object to the context.
 
         :param obj: The drawing object to add to the context.
@@ -577,7 +577,7 @@ class Context(DrawingObject):
         self.drawing_objects.append(obj)
         self.redraw()
 
-    def insert(self, index: int, obj: DrawingObject) -> DrawingObject:
+    def insert(self, index: int, obj: DrawingObject):
         """Insert a drawing object into the context at a specific index.
 
         :param index: The index at which the drawing object should be inserted.
@@ -803,7 +803,7 @@ class Context(DrawingObject):
         :param fill_rule: `nonzero` is the non-zero winding rule; `evenodd` is the
             even-odd winding rule.
         :param color: The fill color.
-        :param preserve: **DEPRECATED**.
+        :param preserve: **DEPRECATED**: this argument has no effect.
         :returns: The :class:`~toga.widgets.canvas.Fill` drawing object for the
             operation.
         """
@@ -966,7 +966,7 @@ class Context(DrawingObject):
         :class:`~toga.widgets.canvas.Context.begin_path`,
         :class:`~toga.widgets.canvas.Context.move_to`,
         :class:`~toga.widgets.canvas.Context.close_path` and.
-        :class:`~toga.widgets.canvas.Context.fill` primitives.
+        :class:`~toga.widgets.canvas.Context.fill` operations.
 
         If both an x and y coordinate is provided, the drawing context will begin with
         a ``move_to`` operation in that context.
@@ -1006,7 +1006,7 @@ class Context(DrawingObject):
         :class:`~toga.widgets.canvas.Context.begin_path`,
         :class:`~toga.widgets.canvas.Context.move_to`,
         :class:`~toga.widgets.canvas.Context.close_path` and.
-        :class:`~toga.widgets.canvas.Context.stroke` primitives.
+        :class:`~toga.widgets.canvas.Context.stroke` operations.
 
         If both an x and y coordinate is provided, the drawing context will begin with
         a ``move_to`` operation in that context.
@@ -1066,13 +1066,13 @@ class ClosedPathContext(Context):
     when the context exits, the path is closed. For fine-grained control of a path, you
     can use :class:`~toga.widgets.canvas.Context.begin_path`,
     :class:`~toga.widgets.canvas.Context.move_to` and
-    :class:`~toga.widgets.canvas.Context.close_path` primitives.
+    :class:`~toga.widgets.canvas.Context.close_path` operations.
 
     If both an x and y coordinate is provided, the drawing context will begin with
     a ``move_to`` operation in that context.
 
     You should not create a :class:`~toga.widgets.canvas.ClosedPathContext` context
-    directly; instead, you should use a the
+    directly; instead, you should use the
     :meth:`~toga.widgets.canvas.Context.ClosedPath` method on an existing context.
     """
 
@@ -1117,13 +1117,13 @@ class FillContext(ClosedPathContext):
     a path, you can use :class:`~toga.widgets.canvas.Context.begin_path`,
     :class:`~toga.widgets.canvas.Context.move_to`,
     :class:`~toga.widgets.canvas.Context.close_path` and.
-    :class:`~toga.widgets.canvas.Context.fill` primitives.
+    :class:`~toga.widgets.canvas.Context.fill` operations.
 
     If both an x and y coordinate is provided, the drawing context will begin with
     a ``move_to`` operation in that context.
 
     You should not create a :class:`~toga.widgets.canvas.FillContext` context directly;
-    instead, you should use a the :meth:`~toga.widgets.canvas.Context.Fill` method on an
+    instead, you should use the :meth:`~toga.widgets.canvas.Context.Fill` method on an
     existing context.
     """
 
@@ -1181,13 +1181,13 @@ class StrokeContext(ClosedPathContext):
     a path, you can use :class:`~toga.widgets.canvas.Context.begin_path`,
     :class:`~toga.widgets.canvas.Context.move_to`,
     :class:`~toga.widgets.canvas.Context.close_path` and.
-    :class:`~toga.widgets.canvas.Context.stroke` primitives.
+    :class:`~toga.widgets.canvas.Context.stroke` operations.
 
     If both an x and y coordinate is provided, the drawing context will begin with
     a ``move_to`` operation in that context.
 
     You should not create a :class:`~toga.widgets.canvas.StrokeContext` context directly;
-    instead, you should use a the :meth:`~toga.widgets.canvas.Context.Stroke` method on
+    instead, you should use the :meth:`~toga.widgets.canvas.Context.Stroke` method on
     an existing context.
     """
 
@@ -1250,6 +1250,36 @@ class StrokeContext(ClosedPathContext):
 
 
 #######################################################################################
+# Events
+#######################################################################################
+
+
+class OnTouchHandler(Protocol):
+    def __call__(self, widget: Canvas, x: int, y: int, **kwargs):
+        """A handler that will be invoked when a :any:`Canvas` is touched with a finger
+        or mouse.
+
+        :param widget: The canvas that was touched.
+        :param x: X coordinate, relative to the left edge of the canvas.
+        :param y: Y coordinate, relative to the top edge of the canvas.
+        :param kwargs: Ensures compatibility with arguments added in future versions.
+        """
+        ...
+
+
+class OnResizeHandler(Protocol):
+    def __call__(self, widget: Canvas, width: int, height: int, **kwargs):
+        """A handler that will be invoked when a :any:`Canvas` is resized.
+
+        :param widget: The canvas that was resized.
+        :param width: The new width.
+        :param height: The new height.
+        :param kwargs: Ensures compatibility with arguments added in future versions.
+        """
+        ...
+
+
+#######################################################################################
 # The Canvas Widget
 #######################################################################################
 
@@ -1259,14 +1289,14 @@ class Canvas(Widget):
         self,
         id=None,
         style=None,
-        on_resize: callable = None,
-        on_press: callable = None,
-        on_activate: callable = None,
-        on_release: callable = None,
-        on_drag: callable = None,
-        on_alt_press: callable = None,
-        on_alt_release: callable = None,
-        on_alt_drag: callable = None,
+        on_resize: OnResizeHandler = None,
+        on_press: OnTouchHandler = None,
+        on_activate: OnTouchHandler = None,
+        on_release: OnTouchHandler = None,
+        on_drag: OnTouchHandler = None,
+        on_alt_press: OnTouchHandler = None,
+        on_alt_release: OnTouchHandler = None,
+        on_alt_drag: OnTouchHandler = None,
     ):
         """Create a new Canvas widget.
 
@@ -1324,7 +1354,12 @@ class Canvas(Widget):
         return self._context
 
     def redraw(self):
-        """Force a redraw of the Canvas."""
+        """Redraw the Canvas.
+
+        The Canvas will be automatically redrawn after adding or removing a drawing
+        object, or when the Canvas resizes. However, when you modify the properties of a
+        drawing object, you must call ``redraw`` manually.
+        """
         self._impl.redraw()
 
     def Context(self):
@@ -1395,55 +1430,55 @@ class Canvas(Widget):
         return self.context.Stroke(x, y, color, line_width, line_dash)
 
     @property
-    def on_resize(self) -> callable:
+    def on_resize(self) -> OnResizeHandler:
         """The handler to invoke when the canvas is resized."""
         return self._on_resize
 
     @on_resize.setter
-    def on_resize(self, handler: callable):
+    def on_resize(self, handler: OnResizeHandler):
         self._on_resize = wrapped_handler(self, handler)
 
     @property
-    def on_press(self) -> callable:
+    def on_press(self) -> OnTouchHandler:
         """The handler invoked when the canvas is pressed. When a mouse is being used,
         this press will be with the primary (usually the left) mouse button."""
         return self._on_press
 
     @on_press.setter
-    def on_press(self, handler: callable):
+    def on_press(self, handler: OnTouchHandler):
         self._on_press = wrapped_handler(self, handler)
 
     @property
-    def on_activate(self) -> callable:
+    def on_activate(self) -> OnTouchHandler:
         """The handler invoked when the canvas is pressed in a way indicating the
         pressed object should be activated. When a mouse is in use, this will usually be
         a double click with the primary (usually the left) mouse button."""
         return self._on_activate
 
     @on_activate.setter
-    def on_activate(self, handler: callable):
+    def on_activate(self, handler: OnTouchHandler):
         self._on_activate = wrapped_handler(self, handler)
 
     @property
-    def on_release(self) -> callable:
+    def on_release(self) -> OnTouchHandler:
         """The handler invoked when the a press on the canvas ends."""
         return self._on_release
 
     @on_release.setter
-    def on_release(self, handler):
+    def on_release(self, handler: OnTouchHandler):
         self._on_release = wrapped_handler(self, handler)
 
     @property
-    def on_drag(self) -> callable:
+    def on_drag(self) -> OnTouchHandler:
         """The handler invoked when the location of the press changes."""
         return self._on_drag
 
     @on_drag.setter
-    def on_drag(self, handler: callable):
+    def on_drag(self, handler: OnTouchHandler):
         self._on_drag = wrapped_handler(self, handler)
 
     @property
-    def on_alt_press(self) -> callable:
+    def on_alt_press(self) -> OnTouchHandler:
         """The handler to invoke when the canvas is pressed in an alternate
         manner. This will usually correspond to a secondary (usually the right) mouse
         button press.
@@ -1455,11 +1490,11 @@ class Canvas(Widget):
         return self._on_alt_press
 
     @on_alt_press.setter
-    def on_alt_press(self, handler: callable):
+    def on_alt_press(self, handler: OnTouchHandler):
         self._on_alt_press = wrapped_handler(self, handler)
 
     @property
-    def on_alt_release(self) -> callable:
+    def on_alt_release(self) -> OnTouchHandler:
         """The handler to invoke when an alternate press is released.
 
         .. note::
@@ -1469,11 +1504,11 @@ class Canvas(Widget):
         return self._on_alt_release
 
     @on_alt_release.setter
-    def on_alt_release(self, handler: callable):
+    def on_alt_release(self, handler: OnTouchHandler):
         self._on_alt_release = wrapped_handler(self, handler)
 
     @property
-    def on_alt_drag(self) -> callable:
+    def on_alt_drag(self) -> OnTouchHandler:
         """The handler to invoke when the position of an alternate press changes.
 
         .. note::
@@ -1483,7 +1518,7 @@ class Canvas(Widget):
         return self._on_alt_drag
 
     @on_alt_drag.setter
-    def on_alt_drag(self, handler: callable):
+    def on_alt_drag(self, handler: OnTouchHandler):
         self._on_alt_drag = wrapped_handler(self, handler)
 
     ###########################################################################
@@ -1500,7 +1535,7 @@ class Canvas(Widget):
 
         :param text: The text to measure
         :param font: The :class:`~toga.Font` to use when rendering the text.
-        :param tight: **DEPRECATED**
+        :param tight: **DEPRECATED**: this argument has no effect.
         """
         if tight is not None:
             warnings.warn(
