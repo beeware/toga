@@ -124,6 +124,7 @@ class StartApp(toga.App):
             left_pad = (width - self.text_width) // 2
             self.text.x = left_pad
             self.text_border.x = left_pad - 5
+            widget.redraw()
 
     def on_press(self, widget, x, y, **kwargs):
         self.main_window.info_dialog("Hey!", f"You poked the yak at ({x}, {y})")

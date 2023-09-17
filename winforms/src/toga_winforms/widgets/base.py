@@ -16,18 +16,18 @@ class Scalable:
     SCALE_DEFAULT_ROUNDING = ROUND_HALF_EVEN
 
     def init_scale(self, native):
-        self.scale = native.CreateGraphics().DpiX / 96
+        self.dpi_scale = native.CreateGraphics().DpiX / 96
 
     # Convert CSS pixels to native pixels
     def scale_in(self, value, rounding=SCALE_DEFAULT_ROUNDING):
-        return self.scale_round(value * self.scale, rounding)
+        return self.scale_round(value * self.dpi_scale, rounding)
 
     # Convert native pixels to CSS pixels
     def scale_out(self, value, rounding=SCALE_DEFAULT_ROUNDING):
         if isinstance(value, at_least):
             return at_least(self.scale_out(value.value, rounding))
         else:
-            return self.scale_round(value / self.scale, rounding)
+            return self.scale_round(value / self.dpi_scale, rounding)
 
     def scale_round(self, value, rounding):
         return int(Decimal(value).to_integral(rounding))
