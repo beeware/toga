@@ -939,7 +939,7 @@ class Context(DrawingObject):
         This is a context manager; it creates a new path and moves to the start
         coordinate; when the context exits, the path is closed. For fine-grained control
         of a path, you can use :meth:`~toga.widgets.canvas.Context.begin_path` and
-        :meth:`~toga.widgets.canvas.Context.close_path` simple operations.
+        :meth:`~toga.widgets.canvas.Context.close_path`.
 
         :param x: The x coordinate of the path's starting point.
         :param y: The y coordinate of the path's starting point.
@@ -965,8 +965,8 @@ class Context(DrawingObject):
         fine-grained control of a path, you can use
         :class:`~toga.widgets.canvas.Context.begin_path`,
         :class:`~toga.widgets.canvas.Context.move_to`,
-        :class:`~toga.widgets.canvas.Context.close_path` and.
-        :class:`~toga.widgets.canvas.Context.fill` operations.
+        :class:`~toga.widgets.canvas.Context.close_path` and
+        :class:`~toga.widgets.canvas.Context.fill`.
 
         If both an x and y coordinate is provided, the drawing context will begin with
         a ``move_to`` operation in that context.
@@ -1005,8 +1005,8 @@ class Context(DrawingObject):
         fine-grained control of a path, you can use
         :class:`~toga.widgets.canvas.Context.begin_path`,
         :class:`~toga.widgets.canvas.Context.move_to`,
-        :class:`~toga.widgets.canvas.Context.close_path` and.
-        :class:`~toga.widgets.canvas.Context.stroke` operations.
+        :class:`~toga.widgets.canvas.Context.close_path` and
+        :class:`~toga.widgets.canvas.Context.stroke`.
 
         If both an x and y coordinate is provided, the drawing context will begin with
         a ``move_to`` operation in that context.
@@ -1066,7 +1066,7 @@ class ClosedPathContext(Context):
     when the context exits, the path is closed. For fine-grained control of a path, you
     can use :class:`~toga.widgets.canvas.Context.begin_path`,
     :class:`~toga.widgets.canvas.Context.move_to` and
-    :class:`~toga.widgets.canvas.Context.close_path` operations.
+    :class:`~toga.widgets.canvas.Context.close_path`.
 
     If both an x and y coordinate is provided, the drawing context will begin with
     a ``move_to`` operation in that context.
@@ -1116,8 +1116,8 @@ class FillContext(ClosedPathContext):
     when the context exits, the path is closed with a fill. For fine-grained control of
     a path, you can use :class:`~toga.widgets.canvas.Context.begin_path`,
     :class:`~toga.widgets.canvas.Context.move_to`,
-    :class:`~toga.widgets.canvas.Context.close_path` and.
-    :class:`~toga.widgets.canvas.Context.fill` operations.
+    :class:`~toga.widgets.canvas.Context.close_path` and
+    :class:`~toga.widgets.canvas.Context.fill`.
 
     If both an x and y coordinate is provided, the drawing context will begin with
     a ``move_to`` operation in that context.
@@ -1180,8 +1180,8 @@ class StrokeContext(ClosedPathContext):
     when the context exits, the path is drawn with the stroke. For fine-grained control of
     a path, you can use :class:`~toga.widgets.canvas.Context.begin_path`,
     :class:`~toga.widgets.canvas.Context.move_to`,
-    :class:`~toga.widgets.canvas.Context.close_path` and.
-    :class:`~toga.widgets.canvas.Context.stroke` operations.
+    :class:`~toga.widgets.canvas.Context.close_path` and
+    :class:`~toga.widgets.canvas.Context.stroke`.
 
     If both an x and y coordinate is provided, the drawing context will begin with
     a ``move_to`` operation in that context.
