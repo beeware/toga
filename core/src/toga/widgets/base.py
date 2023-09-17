@@ -99,6 +99,14 @@ class Widget(Node):
     def tab_index(self, tab_index: int) -> None:
         self._impl.set_tab_index(tab_index)
 
+    @property
+    def can_have_children(self):
+        return False
+
+    def _assert_can_have_children(self):
+        if not self.can_have_children:
+            raise ValueError(f"{type(self).__name__} cannot have children")
+
     def add(self, *children: Widget) -> None:
         """Add the provided widgets as children of this widget.
 
@@ -109,6 +117,7 @@ class Widget(Node):
         :param children: The widgets to add as children of this widget.
         :raises ValueError: If this widget cannot have children.
         """
+        self._assert_can_have_children()
         for child in children:
             if child.parent is not self:
                 # remove from old parent
@@ -139,6 +148,7 @@ class Widget(Node):
         :param child: The child to insert as a child of this node.
         :raises ValueError: If this widget cannot have children.
         """
+        self._assert_can_have_children()
         if child.parent is not self:
             # remove from old parent
             if child.parent:
@@ -167,8 +177,9 @@ class Widget(Node):
         :param children: The child nodes to remove.
         :raises ValueError: If this widget cannot have children.
         """
-        removed = False
+        self._assert_can_have_children()
 
+        removed = False
         for child in children:
             if child.parent is self:
                 removed = True
@@ -190,6 +201,7 @@ class Widget(Node):
 
         :raises ValueError: If this widget cannot have children.
         """
+        self._assert_can_have_children()
         self.remove(*self.children)
 
     @property

@@ -20,6 +20,10 @@ class ExampleWidget(toga.Widget):
         self._impl = self.factory.Widget(self)
         self._children = []
 
+    @property
+    def can_have_children(self):
+        return True
+
 
 # Create the simplest possible widget with a concrete implementation that cannot
 # have children.
@@ -76,7 +80,7 @@ def test_add_child_to_leaf():
     child = ExampleLeafWidget()
 
     # Add the child.
-    with pytest.raises(ValueError, match=r"Cannot add children"):
+    with pytest.raises(ValueError, match=r"ExampleLeafWidget cannot have children"):
         leaf.add(child)
 
 
@@ -299,7 +303,7 @@ def test_insert_child_into_leaf():
     child = ExampleLeafWidget()
 
     # insert the child.
-    with pytest.raises(ValueError, match=r"Cannot insert child"):
+    with pytest.raises(ValueError, match=r"ExampleLeafWidget cannot have children"):
         leaf.insert(0, child)
 
 
@@ -559,6 +563,25 @@ def test_insert_reparent_child_to_self(widget):
     assert_action_performed_with(widget, "refresh")
 
 
+def test_remove_child_from_leaf():
+    "A child cannot be removed from a leaf node"
+    leaf = ExampleLeafWidget()
+
+    # Widget doesn't have an app or window
+    assert leaf.app is None
+    assert leaf.window is None
+
+    # Leaf nodes report an empty child list
+    assert leaf.children == []
+
+    # Create a child widget
+    child = ExampleLeafWidget()
+
+    # Remove the child.
+    with pytest.raises(ValueError, match=r"ExampleLeafWidget cannot have children"):
+        leaf.remove(child)
+
+
 def test_remove_child_without_app(widget):
     "A child without an app or window can be removed from a widget"
     # Add a child to the widget
@@ -750,12 +773,12 @@ def test_clear_no_children(widget):
     # The widget's layout has *not* been refreshed
     assert_action_not_performed(widget, "refresh")
 
-    # The window's content gets a refresh notification
+    # The window's content doesn't get a refresh notification
     assert_action_not_performed(window.content, "refresh")
 
 
-def test_clear_leaf_node():
-    "No changes are made to leaf node that cannot have children"
+def test_clear_leaf():
+    "`clear` cannot be called on a leaf node"
     leaf = ExampleLeafWidget()
     app = toga.App("Test", "com.example.test")
     window = toga.Window()
@@ -767,7 +790,8 @@ def test_clear_leaf_node():
     assert leaf.children == []
 
     # Clear children
-    leaf.clear()
+    with pytest.raises(ValueError, match=r"ExampleLeafWidget cannot have children"):
+        leaf.clear()
 
     # Parent doesn't have any children still
     assert leaf.children == []
@@ -775,7 +799,7 @@ def test_clear_leaf_node():
     # The widget's layout has *not* been refreshed
     assert_action_not_performed(leaf, "refresh")
 
-    # The window's content gets a refresh notification
+    # The window's content doesn't get a refresh notification
     assert_action_not_performed(window.content, "refresh")
 
 
