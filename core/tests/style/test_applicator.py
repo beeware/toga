@@ -15,10 +15,6 @@ class ExampleWidget(toga.Widget):
         self._impl = self.factory.Widget(self)
         self._children = []
 
-    @property
-    def can_have_children(self):
-        return True
-
 
 # Create the simplest possible widget with a concrete implementation that cannot
 # have children.

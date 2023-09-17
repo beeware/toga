@@ -99,10 +99,6 @@ class Widget(Node):
     def tab_index(self, tab_index: int) -> None:
         self._impl.set_tab_index(tab_index)
 
-    @property
-    def can_have_children(self):
-        return False
-
     def _assert_can_have_children(self):
         if not self.can_have_children:
             raise ValueError(f"{type(self).__name__} cannot have children")

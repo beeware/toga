@@ -28,15 +28,6 @@ class Box(Widget):
             self.add(*children)
 
     @property
-    def can_have_children(self):
-        """Boxes can always have children, so this property will always return True.
-
-        This does not resolve whether there actually *are* any children; it only
-        confirms whether children are theoretically allowed.
-        """
-        return True
-
-    @property
     def enabled(self) -> bool:
         """Is the widget currently enabled? i.e., can the user interact with the widget?
 
