@@ -46,9 +46,7 @@ class WebView(Widget):
         # Enable the content inspector. This was added in iOS 16.4.
         # It is a no-op on earlier versions.
         self.native.inspectable = True
-
         self.native.navigationDelegate = self.native
-        self.native.UIDelegate = self.native
 
         self.loaded_future = None
 
