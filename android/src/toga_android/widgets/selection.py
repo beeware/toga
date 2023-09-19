@@ -50,6 +50,36 @@ class TogaSpinnerAdapter(SpinnerAdapter):
             self.impl._font_impl.apply(tv, self.default_textsize, self.default_typeface)
         return tv
 
+    def getAutofillOptions(self):
+        return self.adapter.getAutofillOptions()
+        
+    def getCount(self):
+        return self.adapter.getCount()
+        
+    def getItem(self, position):
+        return self.adapter.getItem(position)
+        
+    def getItemId(self, position):
+        return self.adapter.getItemId(position)
+        
+    def getItemViewType(self, position):
+        return self.adapter.getItemViewType(position)
+        
+    def getViewTypeCount(self):
+        return self.adapter.getViewTypeCount()
+        
+    def hasStableIds(self):
+        return self.adapter.hasStableIds()
+        
+    def isEmpty(self):
+        return self.adapter.isEmpty()
+        
+    def registerDataSetObserver(self, observer):
+        self.adapter.registerDataSetObserver(observer)
+        
+    def unregisterDataSetObserver(self, observer):
+        self.adapter.unregisterDataSetObserver(observer)
+ 
 
 class Selection(Widget):
     focusable = False
