@@ -28,7 +28,8 @@ class SimpleProbe(BaseProbe, FontMixin):
         super().__init__()
         self.app = widget.app
         self.widget = widget
-        self.native = widget._impl.native
+        self.impl = widget._impl
+        self.native = self.impl.native
         assert isinstance(self.native, self.native_class)
         self.scale_factor = self.native.CreateGraphics().DpiX / 96
 

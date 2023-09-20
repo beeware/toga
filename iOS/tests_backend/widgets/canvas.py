@@ -30,17 +30,14 @@ class CanvasProbe(SimpleProbe):
         else:
             return reference
 
-    def scale(self):
-        # Retina displays render images at a higher resolution than their reported size;
-        # This is why @2x and @3x images are needed. This returns the scale factor.
-        return int(UIScreen.mainScreen.scale)
-
     def get_image(self):
         return Image.open(BytesIO(self.impl.get_image_data()))
 
     def assert_image_size(self, image, width, height):
-        assert image.width == width * self.scale()
-        assert image.height == height * self.scale()
+        # Retina displays render images at a higher resolution than their reported size.
+        scale = int(UIScreen.mainScreen.scale)
+        assert image.width == width * scale
+        assert image.height == height * scale
 
     async def mouse_press(self, x, y):
         touch = MockTouch.alloc().init()

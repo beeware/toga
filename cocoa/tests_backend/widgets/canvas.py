@@ -3,7 +3,7 @@ from io import BytesIO
 from PIL import Image, ImageCms
 from rubicon.objc import NSPoint
 
-from toga_cocoa.libs import NSEventType, NSScreen, NSView
+from toga_cocoa.libs import NSEventType, NSView
 
 from .base import SimpleProbe
 
@@ -16,10 +16,6 @@ class CanvasProbe(SimpleProbe):
             # System font and default size is platform dependent.
             return f"{reference}-macOS"
         return reference
-
-    def scale(self):
-        # Cocoa's backing store might not be at display coordinates.
-        return int(NSScreen.mainScreen.backingScaleFactor)
 
     def get_image(self):
         image = Image.open(BytesIO(self.impl.get_image_data()))

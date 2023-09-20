@@ -1,9 +1,8 @@
-import math
+from math import degrees, pi
 
 import System.Windows.Forms as WinForms
 from System.Drawing import (
     Bitmap,
-    Drawing2D,
     Pen,
     PointF,
     Rectangle,
@@ -15,6 +14,8 @@ from System.Drawing.Drawing2D import (
     FillMode,
     GraphicsPath,
     Matrix,
+    PixelOffsetMode,
+    SmoothingMode,
 )
 from System.Drawing.Imaging import ImageFormat
 from System.IO import MemoryStream
@@ -30,10 +31,13 @@ class WinformContext:
     def __init__(self):
         super().__init__()
         self.graphics = None
+        self.matrix = Matrix()
+        self.clear_paths()
+
+    def clear_paths(self):
         self.paths = []
         self.start_point = None
-        self.last_point = None
-        self.matrix = None
+        self.at_start_point = False
 
     @property
     def current_path(self):
@@ -44,15 +48,23 @@ class WinformContext:
     def add_path(self):
         self.paths.append(GraphicsPath())
 
-    @property
-    def matrix(self):
-        if self._matrix is None:
-            self._matrix = Matrix()
-        return self._matrix
-
-    @matrix.setter
-    def matrix(self, matrix):
-        self._matrix = matrix
+    # Because the GraphicsPath API works in terms of segments rather than points, it has
+    # nowhere to save the starting point of each figure before we use it. In all other
+    # situations, we can get the last point from the GraphicsPath itself.
+    #
+    # default_x and default_y should be set as described in the HTML spec under "ensure
+    # there is a subpath".
+    def get_last_point(self, default_x, default_y):
+        if self.at_start_point:
+            self.at_start_point = False
+            return self.start_point
+        elif glp := self.current_path.GetLastPoint():
+            return glp
+        else:
+            # Since we're returning start_point for immediate use, we don't set
+            # at_start_point here.
+            self.start_point = PointF(default_x, default_y)
+            return self.start_point
 
 
 class Canvas(Box):
@@ -71,7 +83,8 @@ class Canvas(Box):
         context = WinformContext()
         context.graphics = event.Graphics
         context.graphics.Clear(native_color(WHITE))
-        context.graphics.SmoothingMode = Drawing2D.SmoothingMode.AntiAlias
+        context.graphics.PixelOffsetMode = PixelOffsetMode.HighQuality
+        context.graphics.SmoothingMode = SmoothingMode.AntiAlias
         self.interface.context._draw(self, draw_context=context)
 
     def winforms_resize(self, *args):
@@ -110,12 +123,11 @@ class Canvas(Box):
     def redraw(self):
         self.native.Invalidate()
 
-    def create_pen(self, color=None, line_width=None, line_dash=None):
+    def create_pen(self, color, line_width, line_dash):
         pen = Pen(native_color(color))
-        if line_width is not None:
-            pen.Width = line_width
+        pen.Width = line_width
         if line_dash is not None:
-            pen.DashPattern = tuple(map(float, line_dash))
+            pen.DashPattern = [ld / line_width for ld in line_dash]
         return pen
 
     def create_brush(self, color):
@@ -124,66 +136,79 @@ class Canvas(Box):
     # Context management
 
     def push_context(self, draw_context, **kwargs):
-        self.states.append(draw_context.graphics.Save())
+        self.states.append(draw_context.matrix)
+        draw_context.matrix = Matrix()
 
     def pop_context(self, draw_context, **kwargs):
-        draw_context.graphics.Restore(self.states.pop())
+        draw_context.matrix = self.states.pop()
 
     # Basic paths
 
     def begin_path(self, draw_context, **kwargs):
-        draw_context.add_path()
+        draw_context.clear_paths()
 
+    # We don't use current_path.CloseFigure, because that causes the dash pattern to
+    # start on the last segment of the path rather than the first one.
     def close_path(self, draw_context, **kwargs):
-        draw_context.current_path.CloseFigure()
-        draw_context.last_point = draw_context.start_point
+        start = draw_context.start_point
+        if start:
+            draw_context.current_path.AddLine(
+                draw_context.get_last_point(start.X, start.Y), start
+            )
+            self.move_to(start.X, start.Y, draw_context)
 
     def move_to(self, x, y, draw_context, **kwargs):
-        draw_context.add_path()
-        draw_context.start_point = draw_context.last_point = (x, y)
+        draw_context.current_path.StartFigure()
+        draw_context.start_point = PointF(x, y)
+        draw_context.at_start_point = True
 
     def line_to(self, x, y, draw_context, **kwargs):
         draw_context.current_path.AddLine(
-            draw_context.last_point[0], draw_context.last_point[1], x, y
+            draw_context.get_last_point(x, y), PointF(x, y)
         )
-        draw_context.last_point = (x, y)
 
     # Basic shapes
 
     def bezier_curve_to(self, cp1x, cp1y, cp2x, cp2y, x, y, draw_context, **kwargs):
         draw_context.current_path.AddBezier(
-            PointF(draw_context.last_point[0], draw_context.last_point[1]),
+            draw_context.get_last_point(cp1x, cp1y),
             PointF(cp1x, cp1y),
             PointF(cp2x, cp2y),
             PointF(x, y),
         )
-        draw_context.last_point = (x, y)
 
+    # A Quadratic curve is a dimensionally reduced Bézier Cubic curve;
+    # we can convert the single Quadratic control point into the
+    # 2 control points required for the cubic Bézier.
     def quadratic_curve_to(self, cpx, cpy, x, y, draw_context, **kwargs):
-        draw_context.current_path.AddCurve(
-            [
-                PointF(draw_context.last_point[0], draw_context.last_point[1]),
-                PointF(cpx, cpy),
-                PointF(x, y),
-            ]
+        last_point = draw_context.get_last_point(cpx, cpy)
+        x0, y0 = (last_point.X, last_point.Y)
+        draw_context.current_path.AddBezier(
+            last_point,
+            PointF(
+                x0 + 2 / 3 * (cpx - x0),
+                y0 + 2 / 3 * (cpy - y0),
+            ),
+            PointF(
+                x + 2 / 3 * (cpx - x),
+                y + 2 / 3 * (cpy - y),
+            ),
+            PointF(x, y),
         )
-        draw_context.last_point = (x, y)
 
     def arc(
         self, x, y, radius, startangle, endangle, anticlockwise, draw_context, **kwargs
     ):
-        self.ellipse(
-            x,
-            y,
-            radius,
-            radius,
-            0,
-            startangle,
-            endangle,
-            anticlockwise,
-            draw_context,
-            **kwargs
-        )
+        sweepangle = endangle - startangle
+        if anticlockwise:
+            if sweepangle > 0:
+                sweepangle -= 2 * pi
+        else:
+            if sweepangle < 0:
+                sweepangle += 2 * pi
+
+        rect = RectangleF(x - radius, y - radius, 2 * radius, 2 * radius)
+        draw_context.current_path.AddArc(rect, degrees(startangle), degrees(sweepangle))
 
     def ellipse(
         self,
@@ -196,16 +221,28 @@ class Canvas(Box):
         endangle,
         anticlockwise,
         draw_context,
-        **kwargs
+        **kwargs,
     ):
-        rect = RectangleF(x - radiusx, y - radiusy, 2 * radiusx, 2 * radiusy)
-        draw_context.current_path.AddArc(
-            rect, math.degrees(startangle), math.degrees(endangle - startangle)
-        )
-        draw_context.last_point = (
-            x + radiusx * math.cos(endangle),
-            y + radiusy * math.sin(endangle),
-        )
+        # Transformations apply not to individual points, but to entire GraphicsPath
+        # objects, so we must create a separate one for this shape.
+        draw_context.add_path()
+        self.push_context(draw_context)
+        self.reset_transform(draw_context)
+        self.translate(x, y, draw_context)
+        self.rotate(rotation, draw_context)
+
+        if radiusx >= radiusy:
+            self.scale(1, radiusy / radiusx, draw_context)
+            self.arc(0, 0, radiusx, startangle, endangle, anticlockwise, draw_context)
+        else:
+            self.scale(radiusx / radiusy, 1, draw_context)
+            self.arc(0, 0, radiusy, startangle, endangle, anticlockwise, draw_context)
+
+        draw_context.current_path.Transform(draw_context.matrix)
+
+        # Set up a fresh GraphicsPath for the next operation.
+        self.pop_context(draw_context)
+        draw_context.add_path()
 
     def rect(self, x, y, width, height, draw_context, **kwargs):
         rect = RectangleF(x, y, width, height)
@@ -232,7 +269,7 @@ class Canvas(Box):
         return None
 
     def stroke(self, color, line_width, line_dash, draw_context, **kwargs):
-        pen = self.create_pen(color=color, line_width=line_width, line_dash=line_dash)
+        pen = self.create_pen(color, line_width, line_dash)
         for path in draw_context.paths:
             if draw_context.matrix is not None:
                 path.Transform(draw_context.matrix)
@@ -242,7 +279,7 @@ class Canvas(Box):
     # Transformations
 
     def rotate(self, radians, draw_context, **kwargs):
-        draw_context.matrix.Rotate(math.degrees(radians))
+        draw_context.matrix.Rotate(degrees(radians))
 
     def scale(self, sx, sy, draw_context, **kwargs):
         draw_context.matrix.Scale(sx, sy)
@@ -251,7 +288,7 @@ class Canvas(Box):
         draw_context.matrix.Translate(tx, ty)
 
     def reset_transform(self, draw_context, **kwargs):
-        draw_context.matrix = None
+        draw_context.matrix.Reset()
 
     # Text
     def write_text(self, text, x, y, font, draw_context, **kwargs):

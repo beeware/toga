@@ -13,12 +13,12 @@ class CanvasProbe(SimpleProbe):
 
     def reference_variant(self, reference):
         if reference in {"write_text", "multiline_text"}:
-            pytest.skip("GTK canvas font and stroke handling isn't quite right")
+            pytest.skip(
+                "GTK canvas font handling isn't quite right: "
+                "https://github.com/beeware/toga/pull/2029#issuecomment-1722619278"
+            )
         else:
             return reference
-
-    def scale(self):
-        return 1
 
     def get_image(self):
         return Image.open(BytesIO(self.impl.get_image_data()))

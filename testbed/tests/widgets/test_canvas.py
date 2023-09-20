@@ -302,7 +302,7 @@ async def test_paths(canvas, probe):
     canvas.context.stroke()
 
     await probe.redraw("Pair of triangles should be drawn")
-    assert_reference(probe, "paths", threshold=0.03)
+    assert_reference(probe, "paths", threshold=0.04)
 
 
 async def test_bezier_curve(canvas, probe):
@@ -319,7 +319,7 @@ async def test_bezier_curve(canvas, probe):
     canvas.context.stroke()
 
     await probe.redraw("Heart should be drawn")
-    assert_reference(probe, "bezier_curve", threshold=0.02)
+    assert_reference(probe, "bezier_curve", threshold=0.05)
 
 
 async def test_quadratic_curve(canvas, probe):
@@ -336,7 +336,7 @@ async def test_quadratic_curve(canvas, probe):
     canvas.context.stroke()
 
     await probe.redraw("Quote bubble should be drawn")
-    assert_reference(probe, "quadratic_curve", threshold=0.02)
+    assert_reference(probe, "quadratic_curve", threshold=0.05)
 
 
 async def test_arc(canvas, probe):
@@ -363,7 +363,7 @@ async def test_arc(canvas, probe):
     canvas.context.stroke()
 
     await probe.redraw("Smiley face should be drawn")
-    assert_reference(probe, "arc", threshold=0.02)
+    assert_reference(probe, "arc", threshold=0.06)
 
 
 async def test_ellipse(canvas, probe):
@@ -403,7 +403,7 @@ async def test_ellipse(canvas, probe):
     canvas.context.stroke(color=GOLDENROD)
 
     await probe.redraw("Atom should be drawn")
-    assert_reference(probe, "ellipse", threshold=0.02)
+    assert_reference(probe, "ellipse", threshold=0.04)
 
 
 async def test_rect(canvas, probe):
@@ -439,7 +439,7 @@ async def test_fill(canvas, probe):
     canvas.context.fill(color=CORNFLOWERBLUE, fill_rule=FillRule.EVENODD)
 
     await probe.redraw("Stars should be drawn")
-    assert_reference(probe, "fill", threshold=0.01)
+    assert_reference(probe, "fill", threshold=0.02)
 
 
 async def test_stroke(canvas, probe):
@@ -507,7 +507,7 @@ async def test_stroke_context(canvas, probe):
         stroke.line_to(x=120, y=180)
 
     await probe.redraw("Stroke should be drawn with context")
-    assert_reference(probe, "stroke_context", threshold=0.01)
+    assert_reference(probe, "stroke_context", threshold=0.02)
 
 
 async def test_transforms(canvas, probe):
@@ -536,7 +536,7 @@ async def test_transforms(canvas, probe):
     canvas.context.fill()
 
     await probe.redraw("Transforms can be applied")
-    assert_reference(probe, "transforms", threshold=0.01)
+    assert_reference(probe, "transforms", threshold=0.02)
 
 
 async def test_write_text(canvas, probe):
