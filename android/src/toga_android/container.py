@@ -1,4 +1,6 @@
-from .libs.android.widget import RelativeLayout, RelativeLayout__LayoutParams
+from android.widget import RelativeLayout
+
+from .libs.android.widget import RelativeLayout__LayoutParams  # to remove
 from .widgets.base import Scalable
 
 
