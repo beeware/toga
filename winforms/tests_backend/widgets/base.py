@@ -1,7 +1,7 @@
 from pytest import approx
 from System import EventArgs, Object
 from System.Drawing import SystemColors
-from System.Windows.Forms import SendKeys
+from System.Windows.Forms import MouseButtons, MouseEventArgs, SendKeys
 
 from toga.colors import TRANSPARENT
 from toga.style.pack import JUSTIFY, LEFT
@@ -116,6 +116,10 @@ class SimpleProbe(BaseProbe, FontMixin):
 
     async def press(self):
         self.native.OnClick(EventArgs.Empty)
+
+    def mouse_event(self, x=0, y=0, **kwargs):
+        kwargs = {**dict(button=MouseButtons.Left, clicks=1, delta=0), **kwargs}
+        return MouseEventArgs(x=x, y=y, **kwargs)
 
     async def type_character(self, char, *, ctrl=False):
         try:
