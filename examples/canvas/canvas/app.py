@@ -76,7 +76,7 @@ class ExampleCanvasApp(toga.App):
             items=[BLACK, BLUE, GREEN, RED, YELLOW], on_change=self.refresh_canvas
         )
         self.fill_rule_selection = toga.Selection(
-            items=[value.name.lower() for value in FillRule],
+            items=[value.name for value in FillRule],
             on_change=self.refresh_canvas,
         )
         self.line_width_slider = toga.Slider(
@@ -531,7 +531,8 @@ class ExampleCanvasApp(toga.App):
                 line_dash=self.dash_patterns[self.dash_pattern_selection.value],
             )
         return canvas.Fill(
-            color=self.color_selection.value, fill_rule=self.fill_rule_selection.value
+            color=self.color_selection.value,
+            fill_rule=FillRule[self.fill_rule_selection.value],
         )
 
 

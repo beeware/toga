@@ -714,16 +714,16 @@ class Context(DrawingObject):
         """Draw a circular arc in the canvas context.
 
         A full circle will be drawn by default; an arc can be drawn by specifying a
-        start and end angle. By default, the arc will be drawn from the start angle to
-        the end angle, sweeping clockwise.
+        start and end angle.
 
-        :param x: The x axis of the coordinate for the ellipse's center.
-        :param y: The y axis of the coordinate for the ellipse's center.
-        :param startangle: The starting angle in radians, measured from the positive x
-            axis.
-        :param endangle: The end angle in radians, measured from the positive x axis.
-        :param anticlockwise: The direction in which to sweep the arc from start angle
-            to end angle.
+        :param x: The X coordinate of the circle's center.
+        :param y: The Y coordinate of the circle's center.
+        :param startangle: The start angle in radians, measured clockwise from the
+            positive X axis.
+        :param endangle: The end angle in radians, measured clockwise from the positive
+            X axis.
+        :param anticlockwise: If true, the arc is swept anticlockwise. The default is
+            clockwise.
         :returns: The :class:`~toga.widgets.canvas.Arc` drawing object for the
             operation.
         """
@@ -742,22 +742,23 @@ class Context(DrawingObject):
         endangle: float = 2 * pi,
         anticlockwise: bool = False,
     ):
-        """Draw an ellipse in the canvas context.
+        """Draw an elliptical arc in the canvas context.
 
-        A full ellipse will be drawn by default; an elliptical arc can be drawn by
-        specifying a start and end angle. By default, the elliptical arc will be drawn
-        from the start angle to the end angle, sweeping clockwise.
+        A full ellipse will be drawn by default; an arc can be drawn by specifying a
+        start and end angle.
 
-        :param x: The x axis of the coordinate for the ellipse's center.
-        :param y: The y axis of the coordinate for the ellipse's center.
-        :param radiusx: The ellipse's major axis radius.
-        :param radiusy: The ellipse's minor axis radius.
-        :param rotation: The rotation for this ellipse, expressed in radians.
-        :param startangle: The starting angle in radians, measured from the positive x
-            axis.
-        :param endangle: The end angle in radians, measured from the positive x axis.
-        :param anticlockwise: The direction in which to sweep the elliptical arc from
-            start angle to end angle.
+        :param x: The X coordinate of the ellipse's center.
+        :param y: The Y coordinate of the ellipse's center.
+        :param radiusx: The ellipse's horizontal axis radius.
+        :param radiusy: The ellipse's vertical axis radius.
+        :param rotation: The ellipse's rotation in radians, measured clockwise around
+            its center.
+        :param startangle: The start angle in radians, measured clockwise from the
+            positive X axis.
+        :param endangle: The end angle in radians, measured clockwise from the positive
+            X axis.
+        :param anticlockwise: If true, the arc is swept anticlockwise. The default is
+            clockwise.
         :returns: The :class:`~toga.widgets.canvas.Ellipse` drawing object for the
             operation.
         """
@@ -827,8 +828,8 @@ class Context(DrawingObject):
 
         :param color: The color for the stroke.
         :param line_width: The width of the stroke.
-        :param line_dash: The dash pattern to follow when drawing the line. Default is a
-            solid line.
+        :param line_dash: The dash pattern to follow when drawing the line, expressed as
+            alternating lengths of dashes and spaces. The default is a solid line.
         :returns: The :class:`~toga.widgets.canvas.Stroke` drawing object for the
             operation.
         """
@@ -884,8 +885,10 @@ class Context(DrawingObject):
     def scale(self, sx: float, sy: float):
         """Add a scaling transformation to the canvas context.
 
-        :param sx: scale factor for the X dimension.
-        :param sy: scale factor for the Y dimension.
+        :param sx: Scale factor for the X dimension. A negative value flips the
+            image horizontally.
+        :param sy: Scale factor for the Y dimension. A negative value flips the
+            image vertically.
         :returns: The :class:`~toga.widgets.canvas.Scale` drawing object for the
             transformation.
         """
