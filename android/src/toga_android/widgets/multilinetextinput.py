@@ -1,7 +1,8 @@
 from travertino.size import at_least
 
-from ..libs.android.text import InputType
-from ..libs.android.view import Gravity
+from android.text import InputType
+from android.view import Gravity
+
 from .textinput import TextInput
 
 
