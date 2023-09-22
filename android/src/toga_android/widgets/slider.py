@@ -12,9 +12,6 @@ from android.widget import SeekBar
 
 from .base import Widget
 
-# from ..libs.android.widget import SeekBar, SeekBar__OnSeekBarChangeListener
-
-
 # Implementation notes
 # ====================
 #
