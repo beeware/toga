@@ -1,5 +1,7 @@
 import asyncio
 
+from java import dynamic_proxy
+from org.beeware.android import IPythonApp, MainActivity
 from rubicon.java import android_events
 
 import toga
@@ -8,14 +10,13 @@ from android.media import RingtoneManager
 from android.view import Menu, MenuItem
 from toga.command import Group
 
-from .libs.activity import IPythonApp, MainActivity  # todo: change to chaquopy
 from .window import Window
 
 # `MainWindow` is defined here in `app.py`, not `window.py`, to mollify the test suite.
 MainWindow = Window
 
 
-class TogaApp(IPythonApp):
+class TogaApp(dynamic_proxy(IPythonApp)):
     last_intent_requestcode = (
         -1
     )  # always increment before using it for invoking new Intents
