@@ -1,25 +1,18 @@
 from warnings import warn
 
+from java import dynamic_proxy
 from travertino.size import at_least
 
 import toga
+from android import R
+from android.graphics import Rect, Typeface
+from android.view import Gravity, View
+from android.widget import LinearLayout, ScrollView, TableLayout, TableRow, TextView
 
-from ..libs.android import R__attr
-from ..libs.android.graphics import Rect, Typeface
-from ..libs.android.view import Gravity, OnClickListener, OnLongClickListener
-from ..libs.android.widget import (
-    LinearLayout__LayoutParams,
-    ScrollView,
-    TableLayout,
-    TableLayout__Layoutparams,
-    TableRow,
-    TableRow__Layoutparams,
-    TextView,
-)
 from .base import Widget
 
 
-class TogaOnClickListener(OnClickListener):
+class TogaOnClickListener(dynamic_proxy(View.OnClickListener)):
     def __init__(self, impl):
         super().__init__()
         self.impl = impl
@@ -37,7 +30,7 @@ class TogaOnClickListener(OnClickListener):
         self.impl.interface.on_select(None)
 
 
-class TogaOnLongClickListener(OnLongClickListener):
+class TogaOnLongClickListener(dynamic_proxy(View.OnLongClickListener)):
     def __init__(self, impl):
         super().__init__()
         self.impl = impl
@@ -59,7 +52,7 @@ class Table(Widget):
 
     def create(self):
         # get the selection color from the current theme
-        attrs = [R__attr.colorBackground, R__attr.colorControlHighlight]
+        attrs = [R.attr.colorBackground, R.attr.colorControlHighlight]
         typed_array = self._native_activity.obtainStyledAttributes(attrs)
         self.color_unselected = typed_array.getColor(0, 0)
         self.color_selected = typed_array.getColor(1, 0)
@@ -67,17 +60,17 @@ class Table(Widget):
 
         # add vertical scroll view
         self.native = vscroll_view = ScrollView(self._native_activity)
-        vscroll_view_layout_params = LinearLayout__LayoutParams(
-            LinearLayout__LayoutParams.MATCH_PARENT,
-            LinearLayout__LayoutParams.MATCH_PARENT,
+        vscroll_view_layout_params = LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            LinearLayout.LayoutParams.MATCH_PARENT,
         )
         vscroll_view_layout_params.gravity = Gravity.TOP
         vscroll_view.setLayoutParams(vscroll_view_layout_params)
 
         self.table_layout = TableLayout(self._native_activity)
-        table_layout_params = TableLayout__Layoutparams(
-            TableLayout__Layoutparams.MATCH_PARENT,
-            TableLayout__Layoutparams.WRAP_CONTENT,
+        table_layout_params = TableLayout.LayoutParams(
+            TableLayout.LayoutParams.MATCH_PARENT,
+            TableLayout.LayoutParams.WRAP_CONTENT,
         )
 
         # add table layout to scrollbox
@@ -113,8 +106,8 @@ class Table(Widget):
 
     def create_table_header(self):
         table_row = TableRow(self._native_activity)
-        table_row_params = TableRow__Layoutparams(
-            TableRow__Layoutparams.MATCH_PARENT, TableRow__Layoutparams.WRAP_CONTENT
+        table_row_params = TableRow.LayoutParams(
+            TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT
         )
         table_row.setLayoutParams(table_row_params)
         for col_index in range(len(self.interface._accessors)):
@@ -129,8 +122,8 @@ class Table(Widget):
                     text_view.getTypeface().getStyle() | Typeface.BOLD,
                 )
             )
-            text_view_params = TableRow__Layoutparams(
-                TableRow__Layoutparams.MATCH_PARENT, TableRow__Layoutparams.WRAP_CONTENT
+            text_view_params = TableRow.LayoutParams(
+                TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT
             )
             text_view_params.setMargins(10, 5, 10, 5)  # left, top, right, bottom
             text_view_params.gravity = Gravity.START
@@ -140,8 +133,8 @@ class Table(Widget):
 
     def create_table_row(self, row_index):
         table_row = TableRow(self._native_activity)
-        table_row_params = TableRow__Layoutparams(
-            TableRow__Layoutparams.MATCH_PARENT, TableRow__Layoutparams.WRAP_CONTENT
+        table_row_params = TableRow.LayoutParams(
+            TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT
         )
         table_row.setLayoutParams(table_row_params)
         table_row.setClickable(True)
@@ -155,8 +148,8 @@ class Table(Widget):
             self._font_impl.apply(
                 text_view, text_view.getTextSize(), text_view.getTypeface()
             )
-            text_view_params = TableRow__Layoutparams(
-                TableRow__Layoutparams.MATCH_PARENT, TableRow__Layoutparams.WRAP_CONTENT
+            text_view_params = TableRow.LayoutParams(
+                TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT
             )
             text_view_params.setMargins(10, 5, 10, 5)  # left, top, right, bottom
             text_view_params.gravity = Gravity.START
