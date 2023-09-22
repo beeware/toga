@@ -1,0 +1,1 @@
+Use Chaquopy instead of the toga_android.libs (which uses jubicon) for the android implementation.
