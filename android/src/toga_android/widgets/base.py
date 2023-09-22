@@ -1,16 +1,17 @@
 from abc import ABC, abstractmethod
 from decimal import ROUND_HALF_EVEN, ROUND_UP, Decimal
 
+from java import dynamic_proxy
 from org.beeware.android import MainActivity
 from travertino.size import at_least
 
+from android.graphics import PorterDuff, PorterDuffColorFilter, Rect
 from android.graphics.drawable import ColorDrawable, InsetDrawable
 from android.view import Gravity, View
 from toga.constants import CENTER, JUSTIFY, LEFT, RIGHT, TRANSPARENT
 
 from ..colors import native_color
-from ..libs.android.graphics import PorterDuff__Mode, PorterDuffColorFilter, Rect
-from ..libs.android.widget import RelativeLayout__LayoutParams
+from ..libs.android.widget import RelativeLayout__LayoutParams  # todo: use chaquopy
 
 
 class Scalable:
@@ -157,7 +158,9 @@ class Widget(ABC, Scalable):
         self.native.getBackground().setColorFilter(
             None
             if value in (None, TRANSPARENT)
-            else PorterDuffColorFilter(native_color(value), PorterDuff__Mode.SRC_IN)
+            else PorterDuffColorFilter(
+                native_color(value), dynamic_proxy(PorterDuff.Mode).SRC_IN
+            )
         )
 
     def set_alignment(self, alignment):
