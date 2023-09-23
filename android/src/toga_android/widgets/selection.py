@@ -24,7 +24,7 @@ class TogaOnItemSelectedListener(OnItemSelectedListener):
         self.impl.on_change(None)
 
 
-class TogaSpinnerAdapter(SpinnerAdapter):
+class TogaArrayAdapter(SpinnerAdapter):
     def __init__(self, impl):
         super().__init__()
         self.impl = impl
@@ -33,7 +33,7 @@ class TogaSpinnerAdapter(SpinnerAdapter):
             self.impl._native_activity, R__layout.simple_spinner_item
         )
         self.adapter.setDropDownViewResource(R__layout.simple_spinner_dropdown_item)
-        self.default_textsize = 14
+        self.default_textsize = 30
         self.default_typeface = Typeface.SANS_SERIF
 
     def getDropDownView(self, position, convertView, parent):
@@ -50,36 +50,45 @@ class TogaSpinnerAdapter(SpinnerAdapter):
             self.impl._font_impl.apply(tv, self.default_textsize, self.default_typeface)
         return tv
 
+    def clear(self):
+        return self.adapter.clear()
+
     def getAutofillOptions(self):
         return self.adapter.getAutofillOptions()
-        
+
     def getCount(self):
         return self.adapter.getCount()
-        
+
     def getItem(self, position):
         return self.adapter.getItem(position)
-        
+
     def getItemId(self, position):
         return self.adapter.getItemId(position)
-        
+
     def getItemViewType(self, position):
         return self.adapter.getItemViewType(position)
-        
+
     def getViewTypeCount(self):
         return self.adapter.getViewTypeCount()
-        
+
     def hasStableIds(self):
         return self.adapter.hasStableIds()
-        
+
+    def insert(self, object, index):
+        return self.adapter.insert(object, index)
+
     def isEmpty(self):
         return self.adapter.isEmpty()
-        
+
     def registerDataSetObserver(self, observer):
         self.adapter.registerDataSetObserver(observer)
-        
+
+    def remove(self, object):
+        self.adapter.remove(object)
+
     def unregisterDataSetObserver(self, observer):
         self.adapter.unregisterDataSetObserver(observer)
- 
+
 
 class Selection(Widget):
     focusable = False
@@ -89,7 +98,7 @@ class Selection(Widget):
         self.native = Spinner(self._native_activity, Spinner.MODE_DROPDOWN)
         self.native.setOnItemSelectedListener(TogaOnItemSelectedListener(impl=self))
         print("CREATING TOGASPINNERADAPTER...")
-        self.adapter = TogaSpinnerAdapter(impl=self)
+        self.adapter = TogaArrayAdapter(impl=self)
         self.native.setAdapter(self.adapter)
         self.last_selection = None
 
