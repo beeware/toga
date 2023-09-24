@@ -1,7 +1,6 @@
 from travertino.size import at_least
 
 from ..libs.android import R__layout
-from ..libs.android.graphics import Typeface
 from ..libs.android.view import Gravity, View__MeasureSpec
 from ..libs.android.widget import (
     ArrayAdapter,
@@ -28,26 +27,43 @@ class TogaArrayAdapter(SpinnerAdapter):
     def __init__(self, impl):
         super().__init__()
         self.impl = impl
-        print("CREATING ARRAYADAPTER...")
+        self.view_default_textsize = -1
+        self.view_default_typeface = None
+        self.dropdownview_default_textsize = -1
+        self.dropdownview_default_typeface = None
         self.adapter = ArrayAdapter(
             self.impl._native_activity, R__layout.simple_spinner_item
         )
         self.adapter.setDropDownViewResource(R__layout.simple_spinner_dropdown_item)
-        self.default_textsize = 30
-        self.default_typeface = Typeface.SANS_SERIF
+
+    def cache_dropdowntextview_defaults(self, tv):
+        self.dropdownview_default_textsize = tv.getTextSize()
+        self.dropdownview_default_typeface = tv.getTypeface()
+
+    def cache_textview_defaults(self, tv):
+        self.view_default_textsize = tv.getTextSize()
+        self.view_default_typeface = tv.getTypeface()
 
     def getDropDownView(self, position, convertView, parent):
         tv = self.adapter.getDropDownView(position, convertView, parent)
+        if self.dropdownview_default_textsize == -1:
+            self.cache_dropdowntextview_defaults(tv)
         if self.impl._font_impl:
-            print("applying font to dropdown view")
-            self.impl._font_impl.apply(tv, self.default_textsize, self.default_typeface)
+            self.impl._font_impl.apply(
+                tv,
+                self.dropdownview_default_textsize,
+                self.dropdownview_default_typeface,
+            )
         return tv
 
     def getView(self, position, convertView, parent):
         tv = self.adapter.getView(position, convertView, parent)
+        if self.view_default_textsize == -1:
+            self.cache_textview_defaults(tv)
         if self.impl._font_impl:
-            print("applying font to view")
-            self.impl._font_impl.apply(tv, self.default_textsize, self.default_typeface)
+            self.impl._font_impl.apply(
+                tv, self.view_default_textsize, self.view_default_typeface
+            )
         return tv
 
     def clear(self):
@@ -97,7 +113,6 @@ class Selection(Widget):
     def create(self):
         self.native = Spinner(self._native_activity, Spinner.MODE_DROPDOWN)
         self.native.setOnItemSelectedListener(TogaOnItemSelectedListener(impl=self))
-        print("CREATING TOGASPINNERADAPTER...")
         self.adapter = TogaArrayAdapter(impl=self)
         self.native.setAdapter(self.adapter)
         self.last_selection = None
@@ -165,5 +180,4 @@ class Selection(Widget):
         self.native.setGravity(Gravity.CENTER_VERTICAL | align(value))
 
     def set_font(self, font):
-        print(f"setting font {str(font)}")
         self._font_impl = font._impl

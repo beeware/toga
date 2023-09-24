@@ -87,7 +87,9 @@ class SelectionApp(toga.App):
                     children=[
                         toga.Label("Use some style!", style=label_style),
                         toga.Selection(
-                            style=Pack(width=200, padding=24),
+                            style=Pack(
+                                width=200, padding=24, font_family="serif", font_size=20
+                            ),
                             items=["Curium", "Titanium", "Copernicium"],
                         ),
                     ],
