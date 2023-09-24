@@ -23,7 +23,34 @@ from .base import Widget
 
 
 class DrawingObject(ABC):
-    """A base class for drawing objects."""
+    """A drawing operation in a :any:`Context`.
+
+    Every context drawing method creates a ``DrawingObject``, adds it to the context,
+    and returns it. Each argument passed to the method becomes a property of the
+    ``DrawingObject``, which can be modified as shown in the `Usage`_ section.
+
+    ``DrawingObjects`` can also be created manually, then added to a context using the
+    :meth:`~Context.append` or :meth:`~Context.insert` methods. Their constructors take
+    the same arguments as the corresponding :any:`Context` method, and their classes
+    have the same names, but capitalized:
+
+    * ``toga.widgets.canvas.Arc``
+    * ``toga.widgets.canvas.BeginPath``
+    * ``toga.widgets.canvas.BezierCurveTo``
+    * ``toga.widgets.canvas.ClosePath``
+    * ``toga.widgets.canvas.Ellipse``
+    * ``toga.widgets.canvas.Fill``
+    * ``toga.widgets.canvas.LineTo``
+    * ``toga.widgets.canvas.MoveTo``
+    * ``toga.widgets.canvas.QuadraticCurveTo``
+    * ``toga.widgets.canvas.Rect``
+    * ``toga.widgets.canvas.ResetTransform``
+    * ``toga.widgets.canvas.Rotate``
+    * ``toga.widgets.canvas.Scale``
+    * ``toga.widgets.canvas.Stroke``
+    * ``toga.widgets.canvas.Translate``
+    * ``toga.widgets.canvas.WriteText``
+    """
 
     def __repr__(self):
         return f"{self.__class__.__name__}()"
@@ -34,15 +61,11 @@ class DrawingObject(ABC):
 
 
 class BeginPath(DrawingObject):
-    """A drawing object that starts a new path."""
-
     def _draw(self, impl, **kwargs):
         impl.begin_path(**kwargs)
 
 
 class ClosePath(DrawingObject):
-    """A drawing object that closes the current path."""
-
     def _draw(self, impl, **kwargs):
         impl.close_path(**kwargs)
 
@@ -53,16 +76,6 @@ class Fill(DrawingObject):
         color: str = BLACK,
         fill_rule: FillRule = FillRule.NONZERO,
     ):
-        """A drawing object that will apply a fill to the current path.
-
-        The fill can use either the `Non-Zero
-        <https://en.wikipedia.org/wiki/Nonzero-rule>`__ or `Even-Odd
-        <https://en.wikipedia.org/wiki/Even-odd_rule>`__ winding rule for filling paths.
-
-        :param fill_rule: `nonzero` is the non-zero winding rule; `evenodd` is the
-            even-odd winding rule.
-        :param color: The fill color.
-        """
         super().__init__()
         self.color = color
         self.fill_rule = fill_rule
@@ -78,7 +91,6 @@ class Fill(DrawingObject):
 
     @property
     def fill_rule(self) -> FillRule:
-        """The fill rule to use."""
         return self._fill_rule
 
     @fill_rule.setter
@@ -87,7 +99,6 @@ class Fill(DrawingObject):
 
     @property
     def color(self) -> Color:
-        """The fill color."""
         return self._color
 
     @color.setter
@@ -119,13 +130,6 @@ class Stroke(DrawingObject):
         line_width: float = 2.0,
         line_dash: list[float] | None = None,
     ):
-        """A drawing object that will draw a stroke using the current path.
-
-        :param color: The color for the stroke.
-        :param line_width: The width of the stroke.
-        :param line_dash: The dash pattern to follow when drawing the line. Default is a
-            solid line.
-        """
         super().__init__()
         self.color = color
         self.line_width = line_width
@@ -142,7 +146,6 @@ class Stroke(DrawingObject):
 
     @property
     def color(self) -> Color:
-        """The color of the stroke."""
         return self._color
 
     @color.setter
@@ -154,7 +157,6 @@ class Stroke(DrawingObject):
 
     @property
     def line_width(self) -> float:
-        """The line_width of the stroke."""
         return self._line_width
 
     @line_width.setter
@@ -163,7 +165,6 @@ class Stroke(DrawingObject):
 
     @property
     def line_dash(self) -> list[float] | None:
-        """The line_dash of the stroke."""
         return self._line_dash
 
     @line_dash.setter
@@ -187,12 +188,6 @@ class Stroke(DrawingObject):
 
 class MoveTo(DrawingObject):
     def __init__(self, x: float, y: float):
-        """A drawing object that moves the current point of the canvas context without
-        drawing.
-
-        :param x: The x coordinate of the new current point.
-        :param y: The y coordinate of the new current point.
-        """
         self.x = x
         self.y = y
 
@@ -200,18 +195,11 @@ class MoveTo(DrawingObject):
         return f"{self.__class__.__name__}(x={self.x}, y={self.y})"
 
     def _draw(self, impl, **kwargs):
-        """Draw the drawing object using the implementation."""
         impl.move_to(self.x, self.y, **kwargs)
 
 
 class LineTo(DrawingObject):
     def __init__(self, x: float, y: float):
-        """A drawing object that draws a line segment ending at a point in the canvas
-        context.
-
-        :param x: The x coordinate for the end point of the line segment.
-        :param y: The y coordinate for the end point of the line segment.
-        """
         self.x = x
         self.y = y
 
@@ -226,20 +214,6 @@ class BezierCurveTo(DrawingObject):
     def __init__(
         self, cp1x: float, cp1y: float, cp2x: float, cp2y: float, x: float, y: float
     ):
-        """A drawing object that draws a Bézier curve in the canvas context.
-
-        A Bézier curve requires three points. The first two are control points; the
-        third is the end point for the curve. The starting point is the last point in
-        the current path, which can be changed using move_to() before creating the
-        Bézier curve.
-
-        :param cp1y: The y coordinate for the first control point of the Bézier curve.
-        :param cp1x: The x coordinate for the first control point of the Bézier curve.
-        :param cp2x: The x coordinate for the second control point of the Bézier curve.
-        :param cp2y: The y coordinate for the second control point of the Bézier curve.
-        :param x: The x coordinate for the end point.
-        :param y: The y coordinate for the end point.
-        """
         self.cp1x = cp1x
         self.cp1y = cp1y
         self.cp2x = cp2x
@@ -262,20 +236,6 @@ class BezierCurveTo(DrawingObject):
 
 class QuadraticCurveTo(DrawingObject):
     def __init__(self, cpx: float, cpy: float, x: float, y: float):
-        """A drawing object that draws a quadratic curve in the canvas context.
-
-        A quadratic curve requires two points. The first point is a control point; the
-        second is the end point. The starting point of the curve is the last point in
-        the current path, which can be changed using ``moveTo()`` before creating the
-        quadratic curve.
-
-        :param cpx: The x axis of the coordinate for the control point of the quadratic
-            curve.
-        :param cpy: The y axis of the coordinate for the control point of the quadratic
-            curve.
-        :param x: The x axis of the coordinate for the end point.
-        :param y: The y axis of the coordinate for the end point.
-        """
         self.cpx = cpx
         self.cpy = cpy
         self.x = x
@@ -298,20 +258,6 @@ class Arc(DrawingObject):
         endangle: float = 2 * pi,
         anticlockwise: bool = False,
     ):
-        """A drawing object that draws a circular arc in the canvas context.
-
-        A full circle will be drawn by default; an arc can be drawn by
-        specifying a start and end angle. By default, the arc will be drawn from the
-        start angle to the end angle, sweeping clockwise.
-
-        :param x: The x axis of the coordinate for the ellipse's center.
-        :param y: The y axis of the coordinate for the ellipse's center.
-        :param startangle: The starting angle in radians, measured from the positive x
-            axis.
-        :param endangle: The end angle in radians, measured from the positive x axis.
-        :param anticlockwise: The direction in which to sweep the arc from start angle
-            to end angle.
-        """
         self.x = x
         self.y = y
         self.radius = radius
@@ -350,23 +296,6 @@ class Ellipse(DrawingObject):
         endangle: float = 2 * pi,
         anticlockwise: bool = False,
     ):
-        """A drawing object that draws an ellipse in the canvas context.
-
-        A full ellipse will be drawn by default; an elliptical arc can be drawn by
-        specifying a start and end angle. By default, the elliptical arc will be drawn
-        from the start angle to the end angle, sweeping clockwise.
-
-        :param x: The x axis of the coordinate for the ellipse's center.
-        :param y: The y axis of the coordinate for the ellipse's center.
-        :param radiusx: The ellipse's major axis radius.
-        :param radiusy: The ellipse's minor axis radius.
-        :param rotation: The rotation for this ellipse, expressed in radians.
-        :param startangle: The starting angle in radians, measured from the positive x
-            axis.
-        :param endangle: The end angle in radians, measured from the positive x axis.
-        :param anticlockwise: The direction in which to sweep the elliptical arc from
-            start angle to end angle.
-        """
         self.x = x
         self.y = y
         self.radiusx = radiusx
@@ -400,13 +329,6 @@ class Ellipse(DrawingObject):
 
 class Rect(DrawingObject):
     def __init__(self, x: float, y: float, width: float, height: float):
-        """A drawing object that draws a rectangle in the canvas context.
-
-        :param x: The horizontal coordinate of the left of the rectangle.
-        :param y: The vertical coordinate of the top of the rectangle.
-        :param width: The width of the rectangle.
-        :param hegiht: The height of the rectangle.
-        """
         self.x = x
         self.y = y
         self.width = width
@@ -424,20 +346,6 @@ class Rect(DrawingObject):
 
 class WriteText(DrawingObject):
     def __init__(self, text: str, x: float, y: float, font: Font | None):
-        """A drawing object that write texts at a given position in the canvas context.
-
-        If no font is specified, it will be drawn in the system font.
-
-        Drawing text is effectively a series of stroke operations, so the text will have
-        the color and fill properties of the canvas context.
-
-        :param text: The text to write.
-        :param x: The x coordinate of the bottom left corner of the text's bounding
-            rectangle.
-        :param y: The y coordinate of the bottom left corner of the text's bounding
-            rectangle.
-        :param font: The font in which to draw the text.
-        """
         self.text = text
         self.x = x
         self.y = y
@@ -451,7 +359,6 @@ class WriteText(DrawingObject):
 
     @property
     def font(self) -> Font:
-        """The font in which to render the text"""
         return self._font
 
     @font.setter
@@ -464,11 +371,6 @@ class WriteText(DrawingObject):
 
 class Rotate(DrawingObject):
     def __init__(self, radians: float):
-        """A drawing operation that adds a rotation to the canvas context.
-
-        :param radians: The angle to rotate clockwise in radians.
-        :returns: The :class:`Rotate` drawing object for the transformation.
-        """
         self.radians = radians
 
     def __repr__(self):
@@ -480,11 +382,6 @@ class Rotate(DrawingObject):
 
 class Scale(DrawingObject):
     def __init__(self, sx: float, sy: float):
-        """A drawing operation that adds a scaling transformation to the canvas context.
-
-        :param sx: scale factor for the X dimension.
-        :param sy: scale factor for the Y dimension.
-        """
         self.sx = sx
         self.sy = sy
 
@@ -497,11 +394,6 @@ class Scale(DrawingObject):
 
 class Translate(DrawingObject):
     def __init__(self, tx: float, ty: float):
-        """A drawing operation that adds a translation to the canvas context.
-
-        :param tx: Size of the X value of coordinate.
-        :param ty: Y value of coordinate.
-        """
         self.tx = tx
         self.ty = ty
 
@@ -513,8 +405,6 @@ class Translate(DrawingObject):
 
 
 class ResetTransform(DrawingObject):
-    """Reset all transformations in the canvas context."""
-
     def _draw(self, impl, **kwargs):
         impl.reset_transform(**kwargs)
 
@@ -606,8 +496,7 @@ class Context(DrawingObject):
     def begin_path(self):
         """Start a new path in the canvas context.
 
-        :returns: The :class:`~toga.widgets.canvas.BeginPath` drawing object for the
-            operation.
+        :returns: The ``BeginPath`` :any:`DrawingObject` for the operation.
         """
         begin_path = BeginPath()
         self.append(begin_path)
@@ -621,8 +510,7 @@ class Context(DrawingObject):
         complete a complete closed path, use the
         :meth:`~toga.widgets.canvas.Context.ClosedPath()` context manager.
 
-        :returns: The :class:`~toga.widgets.canvas.ClosePath` drawing object for the
-            operation.
+        :returns: The ``ClosePath`` :any:`DrawingObject` for the operation.
         """
         close_path = ClosePath()
         self.append(close_path)
@@ -633,8 +521,7 @@ class Context(DrawingObject):
 
         :param x: The x coordinate of the new current point.
         :param y: The y coordinate of the new current point.
-        :returns: The :class:`~toga.widgets.canvas.MoveTo` drawing object for the
-            operation.
+        :returns: The ``MoveTo`` :any:`DrawingObject` for the operation.
         """
         move_to = MoveTo(x, y)
         self.append(move_to)
@@ -645,8 +532,7 @@ class Context(DrawingObject):
 
         :param x: The x coordinate for the end point of the line segment.
         :param y: The y coordinate for the end point of the line segment.
-        :returns: The :class:`~toga.widgets.canvas.LineTo` drawing object for the
-            operation.
+        :returns: The ``LineTo`` :any:`DrawingObject` for the operation.
         """
         line_to = LineTo(x, y)
         self.append(line_to)
@@ -674,8 +560,7 @@ class Context(DrawingObject):
         :param cp2y: The y coordinate for the second control point of the Bézier curve.
         :param x: The x coordinate for the end point.
         :param y: The y coordinate for the end point.
-        :returns: The :class:`~toga.widgets.canvas.BezierCurveTo` drawing object for the
-            operation.
+        :returns: The ``BezierCurveTo`` :any:`DrawingObject` for the operation.
         """
         bezier_curve_to = BezierCurveTo(cp1x, cp1y, cp2x, cp2y, x, y)
         self.append(bezier_curve_to)
@@ -695,8 +580,7 @@ class Context(DrawingObject):
             curve.
         :param x: The x axis of the coordinate for the end point.
         :param y: The y axis of the coordinate for the end point.
-        :returns: The :class:`~toga.widgets.canvas.QuadraticCurveTo` drawing object for
-            the operation.
+        :returns: The ``QuadraticCurveTo`` :any:`DrawingObject` for the operation.
         """
         quadratic_curve_to = QuadraticCurveTo(cpx, cpy, x, y)
         self.append(quadratic_curve_to)
@@ -724,8 +608,7 @@ class Context(DrawingObject):
             X axis.
         :param anticlockwise: If true, the arc is swept anticlockwise. The default is
             clockwise.
-        :returns: The :class:`~toga.widgets.canvas.Arc` drawing object for the
-            operation.
+        :returns: The ``Arc`` :any:`DrawingObject` for the operation.
         """
         arc = Arc(x, y, radius, startangle, endangle, anticlockwise)
         self.append(arc)
@@ -759,8 +642,7 @@ class Context(DrawingObject):
             X axis.
         :param anticlockwise: If true, the arc is swept anticlockwise. The default is
             clockwise.
-        :returns: The :class:`~toga.widgets.canvas.Ellipse` drawing object for the
-            operation.
+        :returns: The ``Ellipse`` :any:`DrawingObject` for the operation.
         """
         ellipse = Ellipse(
             x,
@@ -782,8 +664,7 @@ class Context(DrawingObject):
         :param y: The vertical coordinate of the top of the rectangle.
         :param width: The width of the rectangle.
         :param height: The height of the rectangle.
-        :returns: The :class:`~toga.widgets.canvas.Rect` drawing object for the
-            operation.
+        :returns: The ``Rect`` :any:`DrawingObject` for the operation.
         """
         rect = Rect(x, y, width, height)
         self.append(rect)
@@ -805,8 +686,7 @@ class Context(DrawingObject):
             even-odd winding rule.
         :param color: The fill color.
         :param preserve: **DEPRECATED**: this argument has no effect.
-        :returns: The :class:`~toga.widgets.canvas.Fill` drawing object for the
-            operation.
+        :returns: The ``Fill`` :any:`DrawingObject` for the operation.
         """
         if preserve is not None:
             warnings.warn(
@@ -830,8 +710,7 @@ class Context(DrawingObject):
         :param line_width: The width of the stroke.
         :param line_dash: The dash pattern to follow when drawing the line, expressed as
             alternating lengths of dashes and spaces. The default is a solid line.
-        :returns: The :class:`~toga.widgets.canvas.Stroke` drawing object for the
-            operation.
+        :returns: The ``Stroke`` :any:`DrawingObject` for the operation.
         """
         stroke = Stroke(color, line_width, line_dash)
         self.append(stroke)
@@ -861,8 +740,7 @@ class Context(DrawingObject):
         :param y: The y coordinate of the bottom left corner of the text's bounding
             rectangle.
         :param font: The font in which to draw the text.
-        :returns: The :class:`~toga.widgets.canvas.WriteText` drawing object for the
-            operation.
+        :returns: The ``WriteText`` :any:`DrawingObject` for the operation.
         """
         write_text = WriteText(text, x, y, font)
         self.append(write_text)
@@ -875,8 +753,7 @@ class Context(DrawingObject):
         """Add a rotation to the canvas context.
 
         :param radians: The angle to rotate clockwise in radians.
-        :returns: The :class:`~toga.widgets.canvas.Rotate` drawing object for the
-            transformation.
+        :returns: The ``Rotate`` :any:`DrawingObject` for the transformation.
         """
         rotate = Rotate(radians)
         self.append(rotate)
@@ -889,8 +766,7 @@ class Context(DrawingObject):
             image horizontally.
         :param sy: Scale factor for the Y dimension. A negative value flips the
             image vertically.
-        :returns: The :class:`~toga.widgets.canvas.Scale` drawing object for the
-            transformation.
+        :returns: The ``Scale`` :any:`DrawingObject` for the transformation.
         """
         scale = Scale(sx, sy)
         self.append(scale)
@@ -901,8 +777,7 @@ class Context(DrawingObject):
 
         :param tx: Size of the X value of coordinate.
         :param ty: Y value of coordinate.
-        :returns: The :class:`~toga.widgets.canvas.Translate` drawing object for the
-            transformation.
+        :returns: The ``Translate`` :any:`DrawingObject` for the transformation.
         """
         translate = Translate(tx, ty)
         self.append(translate)
@@ -911,8 +786,7 @@ class Context(DrawingObject):
     def reset_transform(self):
         """Reset all transformations in the canvas context.
 
-        :returns: The :class:`~toga.widgets.canvas.ResetTransform` drawing object for
-            the reset.
+        :returns: A ``ResetTransform`` :any:`DrawingObject`.
         """
         reset_transform = ResetTransform()
         self.append(reset_transform)

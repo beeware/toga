@@ -105,9 +105,6 @@ Notes
 Reference
 ---------
 
-Main interface
-^^^^^^^^^^^^^^
-
 .. autoclass:: toga.Canvas
     :exclude-members: new_path, move_to, line_to, bezier_curve_to, quadratic_curve_to,
         arc, ellipse, rect, write_text, rotate, scale, translate, reset_transform,
@@ -116,41 +113,11 @@ Main interface
 .. autoclass:: toga.widgets.canvas.Context
     :special-members: __getitem__, __len__
 
-Drawing objects
-^^^^^^^^^^^^^^^
-
 .. autoclass:: toga.widgets.canvas.DrawingObject
-
-.. autoclass:: toga.widgets.canvas.Arc
-.. autoclass:: toga.widgets.canvas.BeginPath
-.. autoclass:: toga.widgets.canvas.BezierCurveTo
-.. autoclass:: toga.widgets.canvas.ClosePath
-.. autoclass:: toga.widgets.canvas.Ellipse
-.. autoclass:: toga.widgets.canvas.Fill
-.. autoclass:: toga.widgets.canvas.LineTo
-.. autoclass:: toga.widgets.canvas.MoveTo
-.. autoclass:: toga.widgets.canvas.QuadraticCurveTo
-.. autoclass:: toga.widgets.canvas.Rect
-.. autoclass:: toga.widgets.canvas.Stroke
-.. autoclass:: toga.widgets.canvas.WriteText
-
-Transformations
-^^^^^^^^^^^^^^^
-
-.. autoclass:: toga.widgets.canvas.ResetTransform
-.. autoclass:: toga.widgets.canvas.Rotate
-.. autoclass:: toga.widgets.canvas.Scale
-.. autoclass:: toga.widgets.canvas.Translate
-
-Drawing context objects
-^^^^^^^^^^^^^^^^^^^^^^^
 
 .. autoclass:: toga.widgets.canvas.ClosedPathContext
 .. autoclass:: toga.widgets.canvas.FillContext
 .. autoclass:: toga.widgets.canvas.StrokeContext
-
-Event handlers
-^^^^^^^^^^^^^^
 
 .. autoprotocol:: toga.widgets.canvas.OnTouchHandler
 .. autoprotocol:: toga.widgets.canvas.OnResizeHandler
