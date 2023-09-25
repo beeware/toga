@@ -34,22 +34,22 @@ class DrawingObject(ABC):
     the same arguments as the corresponding :any:`Context` method, and their classes
     have the same names, but capitalized:
 
-    * ``toga.widgets.canvas.Arc``
-    * ``toga.widgets.canvas.BeginPath``
-    * ``toga.widgets.canvas.BezierCurveTo``
-    * ``toga.widgets.canvas.ClosePath``
-    * ``toga.widgets.canvas.Ellipse``
-    * ``toga.widgets.canvas.Fill``
-    * ``toga.widgets.canvas.LineTo``
-    * ``toga.widgets.canvas.MoveTo``
-    * ``toga.widgets.canvas.QuadraticCurveTo``
-    * ``toga.widgets.canvas.Rect``
-    * ``toga.widgets.canvas.ResetTransform``
-    * ``toga.widgets.canvas.Rotate``
-    * ``toga.widgets.canvas.Scale``
-    * ``toga.widgets.canvas.Stroke``
-    * ``toga.widgets.canvas.Translate``
-    * ``toga.widgets.canvas.WriteText``
+    * :meth:`toga.widgets.canvas.Arc <Context.arc>`
+    * :meth:`toga.widgets.canvas.BeginPath <Context.begin_path>`
+    * :meth:`toga.widgets.canvas.BezierCurveTo <Context.bezier_curve_to>`
+    * :meth:`toga.widgets.canvas.ClosePath <Context.close_path>`
+    * :meth:`toga.widgets.canvas.Ellipse <Context.ellipse>`
+    * :meth:`toga.widgets.canvas.Fill <Context.fill>`
+    * :meth:`toga.widgets.canvas.LineTo <Context.line_to>`
+    * :meth:`toga.widgets.canvas.MoveTo <Context.move_to>`
+    * :meth:`toga.widgets.canvas.QuadraticCurveTo <Context.quadratic_curve_to>`
+    * :meth:`toga.widgets.canvas.Rect <Context.rect>`
+    * :meth:`toga.widgets.canvas.ResetTransform <Context.reset_transform>`
+    * :meth:`toga.widgets.canvas.Rotate <Context.rotate>`
+    * :meth:`toga.widgets.canvas.Scale <Context.scale>`
+    * :meth:`toga.widgets.canvas.Stroke <Context.stroke>`
+    * :meth:`toga.widgets.canvas.Translate <Context.translate>`
+    * :meth:`toga.widgets.canvas.WriteText <Context.write_text>`
     """
 
     def __repr__(self):
