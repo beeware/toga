@@ -2,11 +2,7 @@ from java import dynamic_proxy
 from travertino.size import at_least
 
 import toga
-
-# from ..libs.android import R.attr, R.style
 from android import R
-
-# from ..libs.android.view import View.MeasureSpec
 from android.view import View
 from android.widget import SeekBar
 

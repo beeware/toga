@@ -3,18 +3,7 @@ from decimal import ROUND_DOWN
 from java import dynamic_proxy
 from travertino.size import at_least
 
-# from ..libs.android.view import (
-#     Gravity,
-#     View__OnScrollChangeListener,
-#     View__OnTouchListener,
-# )
 from android.view import Gravity, View
-
-# from ..libs.android.widget import (
-#     HorizontalScrollView,
-#     LinearLayout__LayoutParams,
-#     ScrollView,
-# )
 from android.widget import HorizontalScrollView, LinearLayout, ScrollView
 
 from ..container import Container
