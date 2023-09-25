@@ -1,7 +1,6 @@
 from abc import ABC, abstractmethod
 from decimal import ROUND_HALF_EVEN, ROUND_UP, Decimal
 
-from java import dynamic_proxy
 from org.beeware.android import MainActivity
 from travertino.size import at_least
 
@@ -158,9 +157,7 @@ class Widget(ABC, Scalable):
         self.native.getBackground().setColorFilter(
             None
             if value in (None, TRANSPARENT)
-            else PorterDuffColorFilter(
-                native_color(value), dynamic_proxy(PorterDuff.Mode).SRC_IN
-            )
+            else PorterDuffColorFilter(native_color(value), PorterDuff.Mode.SRC_IN)
         )
 
     def set_alignment(self, alignment):
