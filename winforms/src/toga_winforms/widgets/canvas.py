@@ -3,6 +3,7 @@ from math import degrees, pi
 import System.Windows.Forms as WinForms
 from System.Drawing import (
     Bitmap,
+    Graphics,
     Pen,
     PointF,
     Rectangle,
@@ -19,7 +20,6 @@ from System.Drawing.Drawing2D import (
 )
 from System.Drawing.Imaging import ImageFormat
 from System.IO import MemoryStream
-from travertino.colors import WHITE
 
 from toga.widgets.canvas import FillRule
 from toga_winforms.colors import native_color
@@ -79,10 +79,12 @@ class Canvas(Box):
         self.dragging = False
         self.states = []
 
+    # The control automatically paints the background color, so painting it again here
+    # would give incorrect results if it was semi-transparent. But we do paint it in
+    # get_image_data.
     def winforms_paint(self, panel, event, *args):
         context = WinformContext()
         context.graphics = event.Graphics
-        context.graphics.Clear(native_color(WHITE))
         context.graphics.PixelOffsetMode = PixelOffsetMode.HighQuality
         context.graphics.SmoothingMode = SmoothingMode.AntiAlias
         self.interface.context._draw(self, draw_context=context)
@@ -321,7 +323,10 @@ class Canvas(Box):
         )
         bitmap = Bitmap(width, height)
         rect = Rectangle(0, 0, width, height)
-        self.native.DrawToBitmap(bitmap, rect)
+        graphics = Graphics.FromImage(bitmap)
+        graphics.Clear(self.native.BackColor)
+        self.native.OnPaint(WinForms.PaintEventArgs(graphics, rect))
+
         stream = MemoryStream()
         bitmap.Save(stream, ImageFormat.Png)
         return stream.ToArray()

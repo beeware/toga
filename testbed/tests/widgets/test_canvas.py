@@ -5,7 +5,15 @@ import pytest
 from PIL import Image
 
 import toga
-from toga.colors import CORNFLOWERBLUE, GOLDENROD, REBECCAPURPLE, RED, WHITE, rgba
+from toga.colors import (
+    CORNFLOWERBLUE,
+    GOLDENROD,
+    REBECCAPURPLE,
+    RED,
+    TRANSPARENT,
+    WHITE,
+    rgba,
+)
 from toga.constants import FillRule
 from toga.fonts import SANS_SERIF, SERIF, Font
 from toga.style.pack import Pack
@@ -262,8 +270,7 @@ def assert_reference(probe, reference, threshold=0.0):
 
 async def test_transparency(canvas, probe):
     "Transparency is preserved in captured images"
-    # Make the canvas background transparent
-    del canvas.style.background_color
+    canvas.style.background_color = TRANSPARENT
 
     # Draw a rectangle. move_to is implied
     canvas.context.begin_path()

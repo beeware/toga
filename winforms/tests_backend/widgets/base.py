@@ -1,6 +1,6 @@
 from pytest import approx
 from System import EventArgs, Object
-from System.Drawing import SystemColors
+from System.Drawing import Color, SystemColors
 from System.Windows.Forms import MouseButtons, MouseEventArgs, SendKeys
 
 from toga.colors import TRANSPARENT
@@ -66,7 +66,7 @@ class SimpleProbe(BaseProbe, FontMixin):
 
     @property
     def background_color(self):
-        if self.native.BackColor == SystemColors.Control:
+        if self.native.BackColor == Color.Transparent:
             return TRANSPARENT
         else:
             return toga_color(self.native.BackColor)
