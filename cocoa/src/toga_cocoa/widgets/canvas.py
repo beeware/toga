@@ -3,7 +3,7 @@ from ctypes import POINTER, c_char, cast
 from rubicon.objc import objc_method, objc_property
 from travertino.size import at_least
 
-from toga.colors import BLACK, color
+from toga.colors import BLACK, TRANSPARENT, color
 from toga.widgets.canvas import FillRule
 from toga_cocoa.colors import native_color
 from toga_cocoa.libs import (
@@ -93,6 +93,12 @@ class Canvas(Widget):
     def set_bounds(self, x, y, width, height):
         super().set_bounds(x, y, width, height)
         self.interface.on_resize(None, width=width, height=height)
+
+    def set_background_color(self, color):
+        if color is TRANSPARENT or color is None:
+            self.native.backgroundColor = None
+        else:
+            self.native.backgroundColor = native_color(color)
 
     # Context management
     def push_context(self, draw_context, **kwargs):

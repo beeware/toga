@@ -3,13 +3,22 @@ from io import BytesIO
 from PIL import Image, ImageCms
 from rubicon.objc import NSPoint
 
+from toga.colors import TRANSPARENT
 from toga_cocoa.libs import NSEventType, NSView
 
 from .base import SimpleProbe
+from .properties import toga_color
 
 
 class CanvasProbe(SimpleProbe):
     native_class = NSView
+
+    @property
+    def background_color(self):
+        if self.native.backgroundColor:
+            return toga_color(self.native.backgroundColor)
+        else:
+            return TRANSPARENT
 
     def reference_variant(self, reference):
         if reference in {"multiline_text", "write_text"}:
