@@ -7,10 +7,10 @@ from travertino.size import at_least
 from android.graphics import PorterDuff, PorterDuffColorFilter, Rect
 from android.graphics.drawable import ColorDrawable, InsetDrawable
 from android.view import Gravity, View
+from android.widget import RelativeLayout
 from toga.constants import CENTER, JUSTIFY, LEFT, RIGHT, TRANSPARENT
 
 from ..colors import native_color
-from ..libs.android.widget import RelativeLayout__LayoutParams  # todo: use chaquopy
 
 
 class Scalable:
@@ -55,9 +55,9 @@ class Widget(ABC, Scalable):
         # Some widgets, e.g. TextView, may throw an exception if we call measure()
         # before setting LayoutParams.
         self.native.setLayoutParams(
-            RelativeLayout__LayoutParams(
-                RelativeLayout__LayoutParams.WRAP_CONTENT,
-                RelativeLayout__LayoutParams.WRAP_CONTENT,
+            RelativeLayout.LayoutParams(
+                RelativeLayout.LayoutParams.WRAP_CONTENT,
+                RelativeLayout.LayoutParams.WRAP_CONTENT,
             )
         )
 
