@@ -1,20 +1,20 @@
 import math
 
+from java import dynamic_proxy
+from org.beeware.android import DrawHandlerView, IDrawHandler
 from travertino.size import at_least
 
-from ..libs import activity
-from ..libs.android.graphics import (
+from android.graphics import (
     DashPathEffect,
     Matrix,
     Paint,
-    Paint__Style,
     Path,
-    Path__Direction,
 )
+
 from .base import Widget
 
 
-class DrawHandler(activity.IDrawHandler):
+class DrawHandler(dynamic_proxy(IDrawHandler)):
     def __init__(self, interface):
         self.interface = interface
         super().__init__()
@@ -28,9 +28,7 @@ class Canvas(Widget):
     def create(self):
         # Our native widget is a DrawHandlerView, which delegates drawing to DrawHandler,
         # so we can pass the `android.graphics.Canvas` around as `canvas`.
-        self.native = activity.DrawHandlerView(
-            self._native_activity.getApplicationContext()
-        )
+        self.native = DrawHandlerView(self._native_activity.getApplicationContext())
         self.native.setDrawHandler(DrawHandler(self.interface))
 
     def set_hidden(self, hidden):
@@ -148,7 +146,7 @@ class Canvas(Widget):
             self.container.scale * y,
             self.container.scale * (x + width),
             self.container.scale * (y + height),
-            Path__Direction.CW,
+            Path.Direction.CW,
         )
 
     # Drawing Paths
@@ -156,7 +154,7 @@ class Canvas(Widget):
     def fill(self, color, fill_rule, preserve, path, canvas, *args, **kwargs):
         draw_paint = Paint()
         draw_paint.setAntiAlias(True)
-        draw_paint.setStyle(Paint__Style.FILL)
+        draw_paint.setStyle(Paint.Style.FILL)
         if color is None:
             a, r, g, b = 255, 0, 0, 0
         else:
@@ -170,7 +168,7 @@ class Canvas(Widget):
         draw_paint = Paint()
         draw_paint.setAntiAlias(True)
         draw_paint.setStrokeWidth(self.container.scale * line_width)
-        draw_paint.setStyle(Paint__Style.STROKE)
+        draw_paint.setStyle(Paint.Style.STROKE)
         if color is None:
             a, r, g, b = 255, 0, 0, 0
         else:
