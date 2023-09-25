@@ -84,6 +84,7 @@ class Canvas(Box):
     # get_image_data.
     def winforms_paint(self, panel, event, *args):
         context = WinformContext()
+        self.reset_transform(context)
         context.graphics = event.Graphics
         context.graphics.PixelOffsetMode = PixelOffsetMode.HighQuality
         context.graphics.SmoothingMode = SmoothingMode.AntiAlias
@@ -97,49 +98,42 @@ class Canvas(Box):
         )
 
     def winforms_mouse_down(self, obj, mouse_event):
+        x, y = map(self.scale_out, (mouse_event.X, mouse_event.Y))
         if mouse_event.Button == WinForms.MouseButtons.Left:
             if mouse_event.Clicks == 2:
-                self.interface.on_activate(None, mouse_event.X, mouse_event.Y)
+                self.interface.on_activate(None, x, y)
             else:
-                self.interface.on_press(None, mouse_event.X, mouse_event.Y)
+                self.interface.on_press(None, x, y)
                 self.dragging = True
         elif mouse_event.Button == WinForms.MouseButtons.Right:
-            self.interface.on_alt_press(None, mouse_event.X, mouse_event.Y)
+            self.interface.on_alt_press(None, x, y)
             self.dragging = True
 
     def winforms_mouse_move(self, obj, mouse_event):
+        x, y = map(self.scale_out, (mouse_event.X, mouse_event.Y))
         if not self.dragging:
             return
         if mouse_event.Button == WinForms.MouseButtons.Left:
-            self.interface.on_drag(None, mouse_event.X, mouse_event.Y)
+            self.interface.on_drag(None, x, y)
         elif mouse_event.Button == WinForms.MouseButtons.Right:
-            self.interface.on_alt_drag(None, mouse_event.X, mouse_event.Y)
+            self.interface.on_alt_drag(None, x, y)
 
     def winforms_mouse_up(self, obj, mouse_event):
+        x, y = map(self.scale_out, (mouse_event.X, mouse_event.Y))
         if mouse_event.Button == WinForms.MouseButtons.Left:
-            self.interface.on_release(None, mouse_event.X, mouse_event.Y)
+            self.interface.on_release(None, x, y)
         elif mouse_event.Button == WinForms.MouseButtons.Right:
-            self.interface.on_alt_release(None, mouse_event.X, mouse_event.Y)
+            self.interface.on_alt_release(None, x, y)
         self.dragging = False
 
     def redraw(self):
         self.native.Invalidate()
 
-    def create_pen(self, color, line_width, line_dash):
-        pen = Pen(native_color(color))
-        pen.Width = line_width
-        if line_dash is not None:
-            pen.DashPattern = [ld / line_width for ld in line_dash]
-        return pen
-
-    def create_brush(self, color):
-        return SolidBrush(native_color(color))
-
     # Context management
 
     def push_context(self, draw_context, **kwargs):
         self.states.append(draw_context.matrix)
-        draw_context.matrix = Matrix()
+        draw_context.matrix = draw_context.matrix.Clone()
 
     def pop_context(self, draw_context, **kwargs):
         draw_context.matrix = self.states.pop()
@@ -228,11 +222,14 @@ class Canvas(Box):
         # Transformations apply not to individual points, but to entire GraphicsPath
         # objects, so we must create a separate one for this shape.
         draw_context.add_path()
+
+        # The current transform will be applied when the path is filled or stroked, so
+        # make sure we don't apply it now.
         self.push_context(draw_context)
-        self.reset_transform(draw_context)
+        draw_context.matrix.Reset()
+
         self.translate(x, y, draw_context)
         self.rotate(rotation, draw_context)
-
         if radiusx >= radiusy:
             self.scale(1, radiusy / radiusx, draw_context)
             self.arc(0, 0, radiusx, startangle, endangle, anticlockwise, draw_context)
@@ -253,13 +250,12 @@ class Canvas(Box):
     # Drawing Paths
 
     def fill(self, color, fill_rule, draw_context, **kwargs):
-        brush = self.create_brush(color)
+        brush = SolidBrush(native_color(color))
         fill_mode = self.native_fill_rule(fill_rule)
         for path in draw_context.paths:
             if fill_mode is not None:
                 path.FillMode = fill_mode
-            if draw_context.matrix is not None:
-                path.Transform(draw_context.matrix)
+            path.Transform(draw_context.matrix)
             draw_context.graphics.FillPath(brush, path)
         draw_context.paths.clear()
 
@@ -271,10 +267,12 @@ class Canvas(Box):
         return None
 
     def stroke(self, color, line_width, line_dash, draw_context, **kwargs):
-        pen = self.create_pen(color, line_width, line_dash)
+        pen = Pen(native_color(color), self.scale_in(line_width, rounding=None))
+        if line_dash is not None:
+            pen.DashPattern = [ld / line_width for ld in line_dash]
+
         for path in draw_context.paths:
-            if draw_context.matrix is not None:
-                path.Transform(draw_context.matrix)
+            path.Transform(draw_context.matrix)
             draw_context.graphics.DrawPath(pen, path)
         draw_context.paths.clear()
 
@@ -291,6 +289,7 @@ class Canvas(Box):
 
     def reset_transform(self, draw_context, **kwargs):
         draw_context.matrix.Reset()
+        self.scale(self.dpi_scale, self.dpi_scale, draw_context)
 
     # Text
     def write_text(self, text, x, y, font, draw_context, **kwargs):
@@ -317,10 +316,7 @@ class Canvas(Box):
         return (width, height)
 
     def get_image_data(self):
-        width, height = (
-            self.interface.layout.content_width,
-            self.interface.layout.content_height,
-        )
+        width, height = (self.native.Width, self.native.Height)
         bitmap = Bitmap(width, height)
         rect = Rectangle(0, 0, width, height)
         graphics = Graphics.FromImage(bitmap)

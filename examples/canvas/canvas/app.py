@@ -89,17 +89,17 @@ class ExampleCanvasApp(toga.App):
         self.translation = None
         self.rotation = 0
         self.scale_x_slider = toga.Slider(
-            min=0, max=2, value=1, tick_count=10, on_change=self.refresh_canvas
+            min=0, max=2, value=1, tick_count=11, on_change=self.refresh_canvas
         )
         self.scale_y_slider = toga.Slider(
-            min=0, max=2, value=1, tick_count=10, on_change=self.refresh_canvas
+            min=0, max=2, value=1, tick_count=11, on_change=self.refresh_canvas
         )
         self.font_selection = toga.Selection(
             items=[SYSTEM, MESSAGE, SERIF, SANS_SERIF, CURSIVE, FANTASY, MONOSPACE],
             on_change=self.refresh_canvas,
         )
         self.font_size = toga.NumberInput(
-            min=10, max=72, value=20, on_change=self.refresh_canvas
+            min=6, max=72, value=20, on_change=self.refresh_canvas
         )
         self.italic_switch = toga.Switch(text="italic", on_change=self.refresh_canvas)
         self.bold_switch = toga.Switch(text="bold", on_change=self.refresh_canvas)

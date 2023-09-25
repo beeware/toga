@@ -19,8 +19,8 @@ class CanvasProbe(SimpleProbe):
         return Image.open(BytesIO(self.impl.get_image_data()))
 
     def assert_image_size(self, image, width, height):
-        assert image.width == width
-        assert image.height == height
+        assert image.width == width * self.scale_factor
+        assert image.height == height * self.scale_factor
 
     async def mouse_press(self, x, y, **kwargs):
         self.native.OnMouseDown(self.mouse_event(x, y, **kwargs))
