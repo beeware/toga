@@ -1,1 +1,1 @@
-Use Chaquopy instead of the toga_android.libs (which uses jubicon) for the android implementation.
+References to Android system libraries have been modified to use Chaquopy native syntax, rather than Rubicon Java.
