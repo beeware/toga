@@ -13,6 +13,8 @@ from android.graphics import (
     Paint,
     Path,
 )
+from android.view import MotionEvent, View
+from toga.widgets.canvas import FillRule
 
 from ..colors import native_color
 from .base import Widget
@@ -22,16 +24,41 @@ class DrawHandler(dynamic_proxy(IDrawHandler)):
     def __init__(self, impl):
         super().__init__()
         self.impl = impl
+        self.interface = impl.interface
 
     def handleDraw(self, canvas):
         self.impl.reset_transform(canvas)
-        self.impl.interface.context._draw(self.impl, path=Path(), canvas=canvas)
+        self.interface.context._draw(self.impl, path=Path(), canvas=canvas)
+
+
+class TouchListener(dynamic_proxy(View.OnTouchListener)):
+    def __init__(self, impl):
+        super().__init__()
+        self.impl = impl
+        self.interface = impl.interface
+
+    def onTouch(self, canvas, event):
+        x, y = map(self.impl.scale_out, (event.getX(), event.getY()))
+        if (action := event.getAction()) == MotionEvent.ACTION_DOWN:
+            self.interface.on_press(None, x, y)
+        elif action == MotionEvent.ACTION_MOVE:
+            self.interface.on_drag(None, x, y)
+        elif action == MotionEvent.ACTION_UP:
+            self.interface.on_release(None, x, y)
+        else:
+            return False
+        return True
 
 
 class Canvas(Widget):
     def create(self):
         self.native = DrawHandlerView(self._native_activity)
         self.native.setDrawHandler(DrawHandler(self))
+        self.native.setOnTouchListener(TouchListener(self))
+
+    def set_bounds(self, x, y, width, height):
+        super().set_bounds(x, y, width, height)
+        self.interface.on_resize(None, width=width, height=height)
 
     def redraw(self):
         self.native.invalidate()
@@ -127,6 +154,12 @@ class Canvas(Widget):
         draw_paint.setStyle(Paint.Style.FILL)
         draw_paint.setColor(jint(native_color(color)))
 
+        path.setFillType(
+            {
+                FillRule.EVENODD: Path.FillType.EVEN_ODD,
+                FillRule.NONZERO: Path.FillType.WINDING,
+            }.get(fill_rule, Path.FillType.WINDING)
+        )
         canvas.drawPath(path, draw_paint)
         path.reset()
 
@@ -173,7 +206,9 @@ class Canvas(Widget):
             self.native.getWidth(), self.native.getHeight(), Bitmap.Config.ARGB_8888
         )
         canvas = A_Canvas(bitmap)
-        self.native.getBackground().draw(canvas)
+        background = self.native.getBackground()
+        if background:
+            background.draw(canvas)
         self.native.draw(canvas)
 
         stream = ByteArrayOutputStream()

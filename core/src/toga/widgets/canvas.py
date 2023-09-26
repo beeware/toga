@@ -1329,7 +1329,9 @@ class Canvas(Widget):
     def on_activate(self) -> OnTouchHandler:
         """The handler invoked when the canvas is pressed in a way indicating the
         pressed object should be activated. When a mouse is in use, this will usually be
-        a double click with the primary (usually the left) mouse button."""
+        a double click with the primary (usually the left) mouse button.
+
+        This event is not supported on Android or iOS."""
         return self._on_activate
 
     @on_activate.setter
@@ -1338,7 +1340,7 @@ class Canvas(Widget):
 
     @property
     def on_release(self) -> OnTouchHandler:
-        """The handler invoked when the a press on the canvas ends."""
+        """The handler invoked when a press on the canvas ends."""
         return self._on_release
 
     @on_release.setter
@@ -1347,7 +1349,7 @@ class Canvas(Widget):
 
     @property
     def on_drag(self) -> OnTouchHandler:
-        """The handler invoked when the location of the press changes."""
+        """The handler invoked when the location of a press changes."""
         return self._on_drag
 
     @on_drag.setter
@@ -1360,9 +1362,7 @@ class Canvas(Widget):
         manner. This will usually correspond to a secondary (usually the right) mouse
         button press.
 
-        .. note::
-            Some platforms may not honor this handler, so it should not be used for critical
-            canvas operations.
+        This event is not supported on Android or iOS.
         """
         return self._on_alt_press
 
@@ -1374,9 +1374,7 @@ class Canvas(Widget):
     def on_alt_release(self) -> OnTouchHandler:
         """The handler to invoke when an alternate press is released.
 
-        .. note::
-            Some platforms may not honor this handler, so it should not be used for critical
-            canvas operations.
+        This event is not supported on Android or iOS.
         """
         return self._on_alt_release
 
@@ -1386,11 +1384,9 @@ class Canvas(Widget):
 
     @property
     def on_alt_drag(self) -> OnTouchHandler:
-        """The handler to invoke when the position of an alternate press changes.
+        """The handler to invoke when the location of an alternate press changes.
 
-        .. note::
-            Some platforms may not honor this handler, so it should not be used for critical
-            canvas operations.
+        This event is not supported on Android or iOS.
         """
         return self._on_alt_drag
 
