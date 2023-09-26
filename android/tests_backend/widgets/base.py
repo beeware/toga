@@ -20,6 +20,7 @@ from android.view import (
 from toga.colors import TRANSPARENT
 from toga.style.pack import JUSTIFY, LEFT
 
+from ..fonts import FontMixin
 from ..probe import BaseProbe
 from .properties import toga_color, toga_vertical_alignment
 
@@ -33,11 +34,15 @@ class LayoutListener(dynamic_proxy(ViewTreeObserver.OnGlobalLayoutListener)):
         self.event.set()
 
 
-class SimpleProbe(BaseProbe):
+class SimpleProbe(BaseProbe, FontMixin):
+    default_font_family = "sans-serif"
+    default_font_size = 14
+
     def __init__(self, widget):
         super().__init__()
         self.app = widget.app
         self.widget = widget
+        self.impl = widget._impl
         self.native = widget._impl.native
         self.layout_listener = LayoutListener()
         self.native.getViewTreeObserver().addOnGlobalLayoutListener(

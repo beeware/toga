@@ -10,6 +10,7 @@ from .label import LabelProbe
 
 class TextInputProbe(LabelProbe):
     native_class = jclass("android.widget.EditText")
+    default_font_size = 18
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
