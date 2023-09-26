@@ -27,43 +27,47 @@ class TogaArrayAdapter(SpinnerAdapter):
     def __init__(self, impl):
         super().__init__()
         self.impl = impl
-        self.view_default_textsize = -1
-        self.view_default_typeface = None
-        self.dropdownview_default_textsize = -1
-        self.dropdownview_default_typeface = None
+        self._default_textsize = -1
+        self._default_typeface = None
+        self._textsize = -1
+        self._typeface = None
         self.adapter = ArrayAdapter(
             self.impl._native_activity, R__layout.simple_spinner_item
         )
         self.adapter.setDropDownViewResource(R__layout.simple_spinner_dropdown_item)
 
-    def cache_dropdowntextview_defaults(self, tv):
-        self.dropdownview_default_textsize = tv.getTextSize()
-        self.dropdownview_default_typeface = tv.getTypeface()
-
     def cache_textview_defaults(self, tv):
-        self.view_default_textsize = tv.getTextSize()
-        self.view_default_typeface = tv.getTypeface()
+        self._default_textsize = tv.getTextSize()
+        self._default_typeface = tv.getTypeface()
 
     def getDropDownView(self, position, convertView, parent):
         tv = self.adapter.getDropDownView(position, convertView, parent)
-        if self.dropdownview_default_textsize == -1:
-            self.cache_dropdowntextview_defaults(tv)
+        if self._default_textsize == -1:
+            self.cache_textview_defaults(tv)
         if self.impl._font_impl:
             self.impl._font_impl.apply(
                 tv,
-                self.dropdownview_default_textsize,
-                self.dropdownview_default_typeface,
+                self._default_textsize,
+                self._default_typeface,
             )
+        if self._textsize == -1:
+            self._textsize = tv.getTextSize()
+            self._typeface = tv.getTypeface()
         return tv
 
     def getView(self, position, convertView, parent):
         tv = self.adapter.getView(position, convertView, parent)
-        if self.view_default_textsize == -1:
+        if self._default_textsize == -1:
             self.cache_textview_defaults(tv)
         if self.impl._font_impl:
             self.impl._font_impl.apply(
-                tv, self.view_default_textsize, self.view_default_typeface
+                tv,
+                self._default_textsize,
+                self._default_typeface,
             )
+        if self._textsize == -1:
+            self._textsize = tv.getTextSize()
+            self._typeface = tv.getTypeface()
         return tv
 
     def clear(self):
