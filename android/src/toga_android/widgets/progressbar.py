@@ -1,15 +1,8 @@
 from travertino.size import at_least
 
-# from ..libs.android import R__attr
 from android import R
-
-# from ..libs.android.util import AttributeSet
 from android.util import AttributeSet
-
-# from ..libs.android.view import View__MeasureSpec
 from android.view import View
-
-# from ..libs.android.widget import ProgressBar as A_ProgressBar
 from android.widget import ProgressBar as A_ProgressBar
 
 from .base import Widget
