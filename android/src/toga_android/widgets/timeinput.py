@@ -1,14 +1,14 @@
 from datetime import time
 
-from ..libs.android import R__drawable
-from ..libs.android.widget import (
-    TimePickerDialog,
-    TimePickerDialog__OnTimeSetListener as OnTimeSetListener,
-)
+from java import dynamic_proxy
+
+from android import R
+from android.app import TimePickerDialog
+
 from .internal.pickers import PickerBase
 
 
-class TimePickerListener(OnTimeSetListener):
+class TimePickerListener(dynamic_proxy(TimePickerDialog.OnTimeSetListener)):
     def __init__(self, impl):
         super().__init__()
         self.impl = impl
@@ -23,7 +23,7 @@ class TimePickerListener(OnTimeSetListener):
 class TimeInput(PickerBase):
     @classmethod
     def _get_icon(cls):
-        return R__drawable.ic_menu_recent_history
+        return R.drawable.ic_menu_recent_history
 
     def create(self):
         super().create()
