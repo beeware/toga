@@ -206,11 +206,20 @@ class Canvas(Widget):
 
     # Text
 
-    def write_text(self, text, x, y, font, draw_instructions, **kwargs):
+    def write_text(self, text, x, y, font, baseline, draw_instructions, **kwargs):
         draw_instructions.append(
             (
                 "write text",
-                dict(**{"text": text, "x": x, "y": y, "font": font}, **kwargs),
+                dict(
+                    **{
+                        "text": text,
+                        "x": x,
+                        "y": y,
+                        "font": font,
+                        "baseline": baseline,
+                    },
+                    **kwargs,
+                ),
             )
         )
 

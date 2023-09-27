@@ -200,7 +200,15 @@ def test_fill(widget, kwargs, args_repr, has_move, properties):
         ("push context", {}),
         ("begin path", {}),
     ] + ([("move to", {"x": x, "y": y})] if has_move else []) + [
-        ("line to", {"x": 30, "y": 40, "fill_color": properties["color"]}),
+        (
+            "line to",
+            {
+                "x": 30,
+                "y": 40,
+                "fill_color": properties["color"],
+                "fill_rule": properties["fill_rule"],
+            },
+        ),
         ("fill", properties),
         ("pop context", {}),
     ]
@@ -448,7 +456,15 @@ def test_order_change(widget):
         # Begin fill
         ("push context", {}),
         ("begin path", {}),
-        ("line to", {"x": 25, "y": 25, "fill_color": rgb(0, 0, 0)}),
+        (
+            "line to",
+            {
+                "x": 25,
+                "y": 25,
+                "fill_color": rgb(0, 0, 0),
+                "fill_rule": FillRule.NONZERO,
+            },
+        ),
         ("fill", {"color": rgb(0, 0, 0), "fill_rule": FillRule.NONZERO}),
         ("pop context", {}),
         # End fill
@@ -481,7 +497,15 @@ def test_order_change(widget):
         # Begin fill
         ("push context", {}),
         ("begin path", {}),
-        ("line to", {"x": 25, "y": 25, "fill_color": rgb(0, 0, 0)}),
+        (
+            "line to",
+            {
+                "x": 25,
+                "y": 25,
+                "fill_color": rgb(0, 0, 0),
+                "fill_rule": FillRule.NONZERO,
+            },
+        ),
         ("fill", {"color": rgb(0, 0, 0), "fill_rule": FillRule.NONZERO}),
         ("pop context", {}),
         # End fill
@@ -509,7 +533,15 @@ def test_order_change(widget):
         # Begin fill
         ("push context", {}),
         ("begin path", {}),
-        ("line to", {"x": 25, "y": 25, "fill_color": rgb(0, 0, 0)}),
+        (
+            "line to",
+            {
+                "x": 25,
+                "y": 25,
+                "fill_color": rgb(0, 0, 0),
+                "fill_rule": FillRule.NONZERO,
+            },
+        ),
         ("fill", {"color": rgb(0, 0, 0), "fill_rule": FillRule.NONZERO}),
         ("pop context", {}),
         # End fill
@@ -556,7 +588,15 @@ def test_order_change(widget):
         # Begin fill
         ("push context", {}),
         ("begin path", {}),
-        ("line to", {"x": 25, "y": 25, "fill_color": rgb(0, 0, 0)}),
+        (
+            "line to",
+            {
+                "x": 25,
+                "y": 25,
+                "fill_color": rgb(0, 0, 0),
+                "fill_rule": FillRule.NONZERO,
+            },
+        ),
         ("fill", {"color": rgb(0, 0, 0), "fill_rule": FillRule.NONZERO}),
         ("pop context", {}),
         # End fill
@@ -612,17 +652,19 @@ def test_stacked_kwargs(widget):
                 "x": 10,
                 "y": 20,
                 "fill_color": rgb(255, 0, 0),
+                "fill_rule": FillRule.NONZERO,
             },
         ),
         # begin stroke 1
-        ("push context", {"fill_color": rgb(255, 0, 0)}),
-        ("begin path", {"fill_color": rgb(255, 0, 0)}),
+        ("push context", {"fill_color": rgb(255, 0, 0), "fill_rule": FillRule.NONZERO}),
+        ("begin path", {"fill_color": rgb(255, 0, 0), "fill_rule": FillRule.NONZERO}),
         (
             "line to",
             {
                 "x": 20,
                 "y": 30,
                 "fill_color": rgb(255, 0, 0),
+                "fill_rule": FillRule.NONZERO,
                 "stroke_color": rgb(0, 255, 0),
                 "line_width": 2.0,
                 "line_dash": None,
@@ -633,6 +675,7 @@ def test_stacked_kwargs(widget):
             "push context",
             {
                 "fill_color": rgb(255, 0, 0),
+                "fill_rule": FillRule.NONZERO,
                 "stroke_color": rgb(0, 255, 0),
                 "line_width": 2.0,
                 "line_dash": None,
@@ -642,6 +685,7 @@ def test_stacked_kwargs(widget):
             "begin path",
             {
                 "fill_color": rgb(255, 0, 0),
+                "fill_rule": FillRule.NONZERO,
                 "stroke_color": rgb(0, 255, 0),
                 "line_width": 2.0,
                 "line_dash": None,
@@ -653,6 +697,7 @@ def test_stacked_kwargs(widget):
                 "x": 100,
                 "y": 200,
                 "fill_color": rgb(0, 0, 255),
+                "fill_rule": FillRule.NONZERO,
                 "stroke_color": rgb(0, 255, 0),
                 "line_width": 2.0,
                 "line_dash": None,
@@ -663,6 +708,7 @@ def test_stacked_kwargs(widget):
             "push context",
             {
                 "fill_color": rgb(0, 0, 255),
+                "fill_rule": FillRule.NONZERO,
                 "stroke_color": rgb(0, 255, 0),
                 "line_width": 2.0,
                 "line_dash": None,
@@ -672,6 +718,7 @@ def test_stacked_kwargs(widget):
             "begin path",
             {
                 "fill_color": rgb(0, 0, 255),
+                "fill_rule": FillRule.NONZERO,
                 "stroke_color": rgb(0, 255, 0),
                 "line_width": 2.0,
                 "line_dash": None,
@@ -683,6 +730,7 @@ def test_stacked_kwargs(widget):
                 "x": 200,
                 "y": 300,
                 "fill_color": rgb(0, 0, 255),
+                "fill_rule": FillRule.NONZERO,
                 "stroke_color": rgb(255, 255, 0),
                 "line_width": 2.0,
                 "line_dash": None,
@@ -693,6 +741,7 @@ def test_stacked_kwargs(widget):
             {
                 "color": rgb(255, 255, 0),
                 "fill_color": rgb(0, 0, 255),
+                "fill_rule": FillRule.NONZERO,
                 "stroke_color": rgb(0, 255, 0),
                 "line_width": 2.0,
                 "line_dash": None,
@@ -702,6 +751,7 @@ def test_stacked_kwargs(widget):
             "pop context",
             {
                 "fill_color": rgb(0, 0, 255),
+                "fill_rule": FillRule.NONZERO,
                 "stroke_color": rgb(0, 255, 0),
                 "line_width": 2.0,
                 "line_dash": None,
@@ -714,6 +764,7 @@ def test_stacked_kwargs(widget):
                 "x": 300,
                 "y": 400,
                 "fill_color": rgb(0, 0, 255),
+                "fill_rule": FillRule.NONZERO,
                 "stroke_color": rgb(0, 255, 0),
                 "line_width": 2.0,
                 "line_dash": None,
@@ -734,6 +785,7 @@ def test_stacked_kwargs(widget):
             "pop context",
             {
                 "fill_color": rgb(255, 0, 0),
+                "fill_rule": FillRule.NONZERO,
                 "stroke_color": rgb(0, 255, 0),
                 "line_width": 2.0,
                 "line_dash": None,
@@ -746,6 +798,7 @@ def test_stacked_kwargs(widget):
                 "x": 70,
                 "y": 80,
                 "fill_color": rgb(255, 0, 0),
+                "fill_rule": FillRule.NONZERO,
                 "stroke_color": rgb(0, 255, 0),
                 "line_width": 2.0,
                 "line_dash": None,
@@ -758,11 +811,20 @@ def test_stacked_kwargs(widget):
                 "line_width": 2.0,
                 "line_dash": None,
                 "fill_color": rgb(255, 0, 0),
+                "fill_rule": FillRule.NONZERO,
             },
         ),
-        ("pop context", {"fill_color": rgb(255, 0, 0)}),
+        ("pop context", {"fill_color": rgb(255, 0, 0), "fill_rule": FillRule.NONZERO}),
         # end stroke 1
-        ("line to", {"x": 80, "y": 90, "fill_color": rgb(255, 0, 0)}),
+        (
+            "line to",
+            {
+                "x": 80,
+                "y": 90,
+                "fill_color": rgb(255, 0, 0),
+                "fill_rule": FillRule.NONZERO,
+            },
+        ),
         ("fill", {"color": rgb(255, 0, 0), "fill_rule": FillRule.NONZERO}),
         ("pop context", {}),
         # end fill 1

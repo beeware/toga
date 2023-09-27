@@ -2,7 +2,7 @@ import pytest
 
 import toga
 from toga.colors import rgb
-from toga.constants import FillRule
+from toga.constants import Baseline, FillRule
 from toga.fonts import SYSTEM, SYSTEM_DEFAULT_FONT_SIZE, Font
 from toga.widgets.canvas import ClosedPathContext, Context, FillContext, StrokeContext
 from toga_dummy.utils import assert_action_not_performed, assert_action_performed
@@ -311,6 +311,7 @@ def test_deprecated_drawing_operations(widget):
                 "x": 10,
                 "y": 20,
                 "font": Font("Cutive", 37)._impl,
+                "baseline": Baseline.ALPHABETIC,
             },
         ),
         ("rotate", {"radians": 0.4}),
@@ -328,8 +329,24 @@ def test_deprecated_drawing_operations(widget):
         # Fill
         ("push context", {}),
         ("begin path", {}),
-        ("line to", {"x": 20, "y": 30, "fill_color": REBECCA_PURPLE_COLOR}),
-        ("line to", {"x": 30, "y": 20, "fill_color": REBECCA_PURPLE_COLOR}),
+        (
+            "line to",
+            {
+                "x": 20,
+                "y": 30,
+                "fill_color": REBECCA_PURPLE_COLOR,
+                "fill_rule": FillRule.EVENODD,
+            },
+        ),
+        (
+            "line to",
+            {
+                "x": 30,
+                "y": 20,
+                "fill_color": REBECCA_PURPLE_COLOR,
+                "fill_rule": FillRule.EVENODD,
+            },
+        ),
         ("fill", {"color": REBECCA_PURPLE_COLOR, "fill_rule": FillRule.EVENODD}),
         ("pop context", {}),
         # Stroke

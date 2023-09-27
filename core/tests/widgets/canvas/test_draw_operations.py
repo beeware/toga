@@ -1,7 +1,7 @@
 import pytest
 
 from toga.colors import REBECCAPURPLE, rgb
-from toga.constants import FillRule
+from toga.constants import Baseline, FillRule
 from toga.fonts import SYSTEM, SYSTEM_DEFAULT_FONT_SIZE, Font
 from toga_dummy.utils import assert_action_performed
 
@@ -560,34 +560,40 @@ def test_rect(widget):
         # Defaults
         (
             {"text": "Hello world", "x": 10, "y": 20},
-            "text='Hello world', x=10, y=20, font=<Font: system default size system>",
+            "text='Hello world', x=10, y=20, font=<Font: system default size system>, "
+            "baseline=Baseline.ALPHABETIC",
             {
                 "text": "Hello world",
                 "x": 10,
                 "y": 20,
                 "font": Font(SYSTEM, SYSTEM_DEFAULT_FONT_SIZE)._impl,
+                "baseline": Baseline.ALPHABETIC,
             },
         ),
-        # Default Font
+        # Baseline
         (
-            {"text": "Hello world", "x": 10, "y": 20, "font": None},
-            "text='Hello world', x=10, y=20, font=<Font: system default size system>",
+            {"text": "Hello world", "x": 10, "y": 20, "baseline": Baseline.TOP},
+            "text='Hello world', x=10, y=20, font=<Font: system default size system>, "
+            "baseline=Baseline.TOP",
             {
                 "text": "Hello world",
                 "x": 10,
                 "y": 20,
                 "font": Font(SYSTEM, SYSTEM_DEFAULT_FONT_SIZE)._impl,
+                "baseline": Baseline.TOP,
             },
         ),
         # Font
         (
             {"text": "Hello world", "x": 10, "y": 20, "font": Font("Cutive", 42)},
-            "text='Hello world', x=10, y=20, font=<Font: 42pt Cutive>",
+            "text='Hello world', x=10, y=20, font=<Font: 42pt Cutive>, "
+            "baseline=Baseline.ALPHABETIC",
             {
                 "text": "Hello world",
                 "x": 10,
                 "y": 20,
                 "font": Font("Cutive", 42)._impl,
+                "baseline": Baseline.ALPHABETIC,
             },
         ),
     ],
@@ -609,6 +615,7 @@ def test_write_text(widget, kwargs, args_repr, draw_kwargs):
     assert draw_op.x == draw_kwargs["x"]
     assert draw_op.y == draw_kwargs["y"]
     assert draw_op.font == draw_kwargs["font"].interface
+    assert draw_op.baseline == draw_kwargs["baseline"]
 
 
 def test_rotate(widget):

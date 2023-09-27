@@ -362,7 +362,7 @@ class WriteText(DrawingObject):
     def __repr__(self):
         return (
             f"{self.__class__.__name__}(text={self.text!r}, x={self.x}, y={self.y}, "
-            f"font={self.font!r}), baseline={self.baseline})"
+            f"font={self.font!r}, baseline={self.baseline})"
         )
 
     def _draw(self, impl, **kwargs):
@@ -1046,7 +1046,14 @@ class FillContext(ClosedPathContext):
         for obj in self.drawing_objects:
             obj._draw(impl, **sub_kwargs)
 
-        impl.fill(self.color, self.fill_rule, **kwargs)
+        # Fill passes fill_rule to its children; but that is also a valid argument for
+        # fill(), so if a fill context is a child of a fill context, there's an argument
+        # collision. Duplicate the kwargs and explicitly overwrite to avoid the
+        # collision.
+        draw_kwargs = kwargs.copy()
+        draw_kwargs.update(fill_rule=self.fill_rule)
+        impl.fill(self.color, **draw_kwargs)
+
         impl.pop_context(**kwargs)
 
     @property
