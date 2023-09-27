@@ -1,4 +1,4 @@
-from enum import Enum
+from enum import Enum, auto
 
 from travertino.constants import *  # noqa: F401, F403  pragma: no cover
 
@@ -9,7 +9,15 @@ class Direction(Enum):
     VERTICAL = 1
 
 
+class Baseline(Enum):
+    "The meaning of a Y coordinate when drawing text."
+    ALPHABETIC = auto()  #: Alphabetic baseline
+    TOP = auto()  #: Top of line
+    MIDDLE = auto()  #: Middle of line
+    BOTTOM = auto()  #: Bottom of line
+
+
 class FillRule(Enum):
-    "The fill rule to use when filling curves."
+    "The rule to use when filling paths."
     EVENODD = 0
     NONZERO = 1

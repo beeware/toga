@@ -21,7 +21,7 @@ from System.Drawing.Drawing2D import (
 from System.Drawing.Imaging import ImageFormat
 from System.IO import MemoryStream
 
-from toga.widgets.canvas import FillRule
+from toga.widgets.canvas import Baseline, FillRule
 from toga_winforms.colors import native_color
 
 from .box import Box
@@ -76,6 +76,7 @@ class Canvas(Box):
         self.native.MouseDown += self.winforms_mouse_down
         self.native.MouseMove += self.winforms_mouse_move
         self.native.MouseUp += self.winforms_mouse_up
+        self.string_format = StringFormat.GenericTypographic
         self.dragging = False
         self.states = []
 
@@ -292,28 +293,44 @@ class Canvas(Box):
         self.scale(self.dpi_scale, self.dpi_scale, draw_context)
 
     # Text
-    def write_text(self, text, x, y, font, draw_context, **kwargs):
-        full_height = 0
-        em_height = font.native.Size * self.native.CreateGraphics().DpiY / 72
-        font_family = font.native.FontFamily
-        font_style = font.native.Style.value__
-        for line in text.splitlines():
-            # height includes some padding, so it will be slightly more than em_height.
-            _, height = self.measure_text(line, font)
-            origin = PointF(x, y + full_height - height)
+    def write_text(self, text, x, y, font, baseline, draw_context, **kwargs):
+        for op in ["stroke", "fill"]:
+            if color := kwargs.pop(f"{op}_color", None):
+                self._text_path(text, x, y, font, baseline, draw_context)
+                getattr(self, op)(color, draw_context=draw_context, **kwargs)
+
+    def _text_path(self, text, x, y, font, baseline, draw_context):
+        line_height = font.metric("LineSpacing")
+        if baseline == Baseline.TOP:
+            top = y
+        elif baseline == Baseline.MIDDLE:
+            top = y - (line_height / 2)
+        elif baseline == Baseline.BOTTOM:
+            top = y - line_height
+        else:
+            # Default to Baseline.ALPHABETIC
+            top = y - font.metric("CellAscent")
+
+        for line_num, line in enumerate(text.splitlines()):
             draw_context.current_path.AddString(
-                line, font_family, font_style, em_height, origin, StringFormat()
+                line,
+                font.native.FontFamily,
+                font.native.Style.value__,
+                font.metric("EmHeight"),
+                PointF(x, top + (line_height * line_num)),
+                self.string_format,
             )
-            full_height += height
 
     def measure_text(self, text, font):
+        graphics = self.native.CreateGraphics()
         sizes = [
-            WinForms.TextRenderer.MeasureText(line, font.native)
+            graphics.MeasureString(line, font.native, 2**31 - 1, self.string_format)
             for line in text.splitlines()
         ]
-        width = max([size.Width for size in sizes])
-        height = sum([size.Height for size in sizes])
-        return (width, height)
+        return (
+            max(size.Width for size in sizes),
+            font.metric("LineSpacing") * len(sizes),
+        )
 
     def get_image_data(self):
         width, height = (self.native.Width, self.native.Height)

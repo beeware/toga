@@ -10,7 +10,7 @@ from travertino.colors import Color
 
 import toga
 from toga.colors import BLACK, color as parse_color
-from toga.constants import FillRule
+from toga.constants import Baseline, FillRule
 from toga.fonts import SYSTEM, SYSTEM_DEFAULT_FONT_SIZE, Font
 from toga.handlers import wrapped_handler
 
@@ -345,17 +345,30 @@ class Rect(DrawingObject):
 
 
 class WriteText(DrawingObject):
-    def __init__(self, text: str, x: float, y: float, font: Font | None):
+    def __init__(
+        self,
+        text: str,
+        x: float = 0.0,
+        y: float = 0.0,
+        font: Font | None = None,
+        baseline: Baseline = Baseline.ALPHABETIC,
+    ):
         self.text = text
         self.x = x
         self.y = y
         self.font = font
+        self.baseline = baseline
 
     def __repr__(self):
-        return f"{self.__class__.__name__}(text={self.text!r}, x={self.x}, y={self.y}, font={self.font!r})"
+        return (
+            f"{self.__class__.__name__}(text={self.text!r}, x={self.x}, y={self.y}, "
+            f"font={self.font!r}), baseline={self.baseline})"
+        )
 
     def _draw(self, impl, **kwargs):
-        impl.write_text(str(self.text), self.x, self.y, self.font._impl, **kwargs)
+        impl.write_text(
+            str(self.text), self.x, self.y, self.font._impl, self.baseline, **kwargs
+        )
 
     @property
     def font(self) -> Font:
@@ -726,23 +739,23 @@ class Context(DrawingObject):
         x: float = 0.0,
         y: float = 0.0,
         font: Font | None = None,
+        baseline: Baseline = Baseline.ALPHABETIC,
     ):
         """Write text at a given position in the canvas context.
 
-        If no font is specified, it will be drawn in the system font.
-
-        Drawing text is effectively a series of stroke operations, so the text will have
+        Drawing text is effectively a series of path operations, so the text will have
         the color and fill properties of the canvas context.
 
-        :param text: The text to write.
-        :param x: The x coordinate of the bottom left corner of the text's bounding
-            rectangle.
-        :param y: The y coordinate of the bottom left corner of the text's bounding
-            rectangle.
-        :param font: The font in which to draw the text.
+        :param text: The text to write. If it contains newlines, it will be drawn as
+            multiple lines.
+        :param x: The X coordinate of the text's left edge.
+        :param y: The Y coordinate of the text's first line (exact meaning depends on
+            ``baseline``).
+        :param font: The font in which to draw the text. The default is the system font.
+        :param baseline: Alignment of text relative to the Y coordinate.
         :returns: The ``WriteText`` :any:`DrawingObject` for the operation.
         """
-        write_text = WriteText(text, x, y, font)
+        write_text = WriteText(text, x, y, font, baseline)
         self.append(write_text)
         return write_text
 
@@ -1029,7 +1042,7 @@ class FillContext(ClosedPathContext):
             impl.move_to(x=self.x, y=self.y, **kwargs)
 
         sub_kwargs = kwargs.copy()
-        sub_kwargs["fill_color"] = self.color
+        sub_kwargs.update(fill_color=self.color, fill_rule=self.fill_rule)
         for obj in self.drawing_objects:
             obj._draw(impl, **sub_kwargs)
 

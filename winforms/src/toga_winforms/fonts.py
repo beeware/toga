@@ -94,3 +94,11 @@ class Font:
             _FONT_CACHE[self.interface] = font
 
         self.native = font
+
+    def metric(self, name):
+        """Return the given metric, measured in CSS pixels."""
+        family = self.native.FontFamily
+        style = self.native.Style
+        em_height = self.native.SizeInPoints * 96 / 72
+        design_unit = em_height / family.GetEmHeight(style)
+        return design_unit * getattr(family, f"Get{name}")(style)

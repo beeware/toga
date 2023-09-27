@@ -5,6 +5,7 @@ import pytest
 from PIL import Image
 
 import toga
+from toga import Font
 from toga.colors import (
     CORNFLOWERBLUE,
     GOLDENROD,
@@ -14,8 +15,8 @@ from toga.colors import (
     WHITE,
     rgba,
 )
-from toga.constants import FillRule
-from toga.fonts import SANS_SERIF, SERIF, Font
+from toga.constants import Baseline, FillRule
+from toga.fonts import BOLD
 from toga.style.pack import Pack
 
 from .properties import (  # noqa: F401
@@ -548,63 +549,69 @@ async def test_transforms(canvas, probe):
 
 async def test_write_text(canvas, probe):
     "Text can be measured and written"
+
+    # Use fonts which look different from the system fonts on all platforms.
+    Font.register("Droid Serif", "resources/fonts/DroidSerif-Regular.ttf")
+    Font.register("Droid Serif", "resources/fonts/DroidSerif-Bold.ttf", weight=BOLD)
+    Font.register("Endor", "resources/fonts/ENDOR___.ttf")
+
     hello_text = "Hello"
-    hello_size = canvas.measure_text(hello_text)
+    hello_font = Font("Droid Serif", 12)
+    hello_size = canvas.measure_text(hello_text, hello_font)
 
     with canvas.Fill(color=REBECCAPURPLE) as text_filler:
         text_filler.write_text(
             hello_text,
             100 - (hello_size[0] // 2),
-            10 + hello_size[1],
+            10,
+            font=hello_font,
+            baseline=Baseline.TOP,
         )
-    # Draw a border around the text to verify text sizing
     with canvas.Stroke(color=CORNFLOWERBLUE) as stroke:
         stroke.rect(
             100 - (hello_size[0] // 2) - 4,
-            10 + 4,
+            10 - 4,
             hello_size[0] + 8,
             hello_size[1] + 8,
         )
 
     world_text = "World!"
-    world_font = Font(SANS_SERIF, size=24)
+    world_font = Font("Endor", 22)
     world_size = canvas.measure_text(world_text, font=world_font)
 
-    with canvas.Stroke() as text_filler:
+    with canvas.Stroke(line_width=1) as text_filler:
         text_filler.write_text(
             world_text,
             100 - (world_size[0] // 2),
-            80,
+            100,
             font=world_font,
+            baseline=Baseline.BOTTOM,
         )
-
-    # Draw a border around the text to verify text sizing
     with canvas.Stroke(color=CORNFLOWERBLUE) as stroke:
         stroke.rect(
             100 - (world_size[0] // 2) - 4,
-            80 - world_size[1] + 4,
+            100 - world_size[1] - 4,
             world_size[0] + 8,
             world_size[1] + 8,
         )
 
     toga_text = "Toga"
-    toga_font = Font(SERIF, 72)
+    toga_font = Font("Droid Serif", 45, weight=BOLD)
     toga_size = canvas.measure_text(toga_text, font=toga_font)
 
-    with canvas.Stroke(color=REBECCAPURPLE) as stroke:
+    with canvas.Stroke(color=REBECCAPURPLE, line_width=4) as stroke:
         with stroke.Fill(color=CORNFLOWERBLUE) as text_filler:
             text_filler.write_text(
                 toga_text,
                 100 - (toga_size[0] // 2),
-                130 + (toga_size[1] // 2),
+                150,
                 font=toga_font,
+                baseline=Baseline.MIDDLE,
             )
-
-    # Draw a border around the text to verify text sizing
     with canvas.Stroke(color=CORNFLOWERBLUE) as stroke:
         stroke.rect(
             100 - (toga_size[0] // 2) - 4,
-            130 - (toga_size[1] // 2) + 4,
+            150 - (toga_size[1] // 2) - 4,
             toga_size[0] + 8,
             toga_size[1] + 8,
         )
@@ -619,17 +626,28 @@ async def test_write_text(canvas, probe):
 
 async def test_multiline_text(canvas, probe):
     "Multiline text can be measured and written"
+
+    with canvas.context.Stroke(color=RED, line_width=1) as guideline:
+        guideline.move_to(20, 0)
+        guideline.line_to(20, 200)
+
     # Write a single line
     with canvas.context.Fill() as text_filler:
         text_filler.write_text("Single line", 20, 40)
+    guideline.move_to(0, 40)
+    guideline.line_to(200, 40)
 
     # Write multiple lines
     with canvas.context.Fill() as text_filler:
-        text_filler.write_text("Line 1\nLine 2\nLine 3", 20, 160)
+        text_filler.write_text("Line 1\nLine 2\nLine 3", 20, 80)
+    guideline.move_to(0, 80)
+    guideline.line_to(200, 80)
 
     # Write empty text
     with canvas.context.Fill() as text_filler:
-        text_filler.write_text("", 100, 20)
+        text_filler.write_text("", 20, 180)
+    guideline.move_to(0, 180)
+    guideline.line_to(200, 180)
 
     await probe.redraw("Multiple text blocks should be drawn")
     # 0.09 is quite a high error threshold; it's equivalent to 324 pixels being
