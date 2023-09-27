@@ -1,7 +1,6 @@
 from travertino.size import at_least
 
 from android import R
-from android.util import AttributeSet
 from android.view import View
 from android.widget import ProgressBar as A_ProgressBar
 
@@ -36,9 +35,7 @@ class ProgressBar(Widget):
 
     def create(self):
         progressbar = A_ProgressBar(
-            self._native_activity,
-            AttributeSet.__null__,
-            R.attr.progressBarStyleHorizontal,
+            self._native_activity, None, R.attr.progressBarStyleHorizontal
         )
         self.native = progressbar
 

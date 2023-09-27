@@ -7,15 +7,11 @@ import selectors
 import sys
 import threading
 
-from . import JavaClass, JavaInterface
+from java import dynamic_proxy
+from java.io import FileDescriptor
+from java.lang import Runnable
 
-Looper = JavaClass("android/os/Looper")
-Handler = JavaClass("android/os/Handler")
-OnFileDescriptorEventListener = JavaInterface(
-    "android/os/MessageQueue$OnFileDescriptorEventListener"
-)
-FileDescriptor = JavaClass("java/io/FileDescriptor")
-Runnable = JavaInterface("java/lang/Runnable")
+from android.os import Handler, Looper, MessageQueue
 
 # Some methods in this file are based on CPython's implementation.
 # Per https://github.com/python/cpython/blob/master/LICENSE , re-use is permitted
@@ -97,7 +93,9 @@ class AndroidEventLoop(asyncio.SelectorEventLoop):
     def enqueue_android_wakeup_for_delayed_tasks(self):
         """Ask Android to wake us up when delayed tasks are ready to be handled.
 
-        Since this is effectively the actual event loop, it also handles stopping the loop."""
+        Since this is effectively the actual event loop, it also handles stopping the
+        loop.
+        """
         # If we are supposed to stop, actually stop.
         if self._stopping:
             self._stopping = False
@@ -121,9 +119,7 @@ class AndroidEventLoop(asyncio.SelectorEventLoop):
         # Ask Android to wake us up to run delayed tasks. Running delayed tasks also
         # checks for other tasks that require wakeup by calling this method. The fact that
         # running delayed tasks can trigger the next wakeup is what makes this event loop a "loop."
-        self.android_interop.call_later(
-            self.run_delayed_tasks, timeout * 1000,
-        )
+        self.android_interop.call_later(self.run_delayed_tasks, timeout * 1000)
 
     def _set_coroutine_origin_tracking(self, debug):
         # If running on Python 3.7 or 3.8, integrate with upstream event loop's debug feature, allowing
@@ -177,8 +173,10 @@ class AndroidEventLoop(asyncio.SelectorEventLoop):
         return timeout
 
     def run_delayed_tasks(self):
-        """Android-specific: Run any delayed tasks that have become ready. Additionally, check if
-        there are more delayed tasks to execute in the future; if so, schedule the next wakeup."""
+        """Android-specific: Run any delayed tasks that have become ready. Additionally,
+        check if there are more delayed tasks to execute in the future; if so, schedule
+        the next wakeup.
+        """
         # Based heavily on `BaseEventLoop._run_once()` from CPython -- specifically, the part
         # after blocking on `select()`.
         # Handle 'later' callbacks that are ready.
@@ -249,7 +247,7 @@ class AndroidInterop:
         self.handler.postDelayed(runnable, int(timeout_millis))
 
 
-class PythonRunnable(Runnable):
+class PythonRunnable(dynamic_proxy(Runnable)):
     """Bind a specific Python callable in a Java `Runnable`."""
 
     def __init__(self, fn):
@@ -278,8 +276,10 @@ class AndroidSelector(selectors.SelectSelector):
     def file_descriptor_event_listener(self):
         if self._file_descriptor_event_listener is not None:
             return self._file_descriptor_event_listener
-        self._file_descriptor_event_listener = AndroidSelectorFileDescriptorEventsListener(
-            android_selector=self,
+        self._file_descriptor_event_listener = (
+            AndroidSelectorFileDescriptorEventsListener(
+                android_selector=self,
+            )
         )
         return self._file_descriptor_event_listener
 
@@ -387,7 +387,9 @@ class AndroidSelector(selectors.SelectSelector):
         raise NotImplementedError("AndroidSelector refuses to select(); see comments.")
 
 
-class AndroidSelectorFileDescriptorEventsListener(OnFileDescriptorEventListener):
+class AndroidSelectorFileDescriptorEventsListener(
+    dynamic_proxy(MessageQueue.OnFileDescriptorEventListener)
+):
     """Notify an `AndroidSelector` instance when file descriptors become readable/writable."""
 
     def __init__(self, android_selector):

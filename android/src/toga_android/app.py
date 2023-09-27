@@ -2,7 +2,6 @@ import asyncio
 
 from java import dynamic_proxy
 from org.beeware.android import IPythonApp, MainActivity
-from rubicon.java import android_events
 
 import toga
 from android.graphics.drawable import Drawable
@@ -10,6 +9,7 @@ from android.media import RingtoneManager
 from android.view import Menu, MenuItem
 from toga.command import Group
 
+from .libs import events
 from .window import Window
 
 # `MainWindow` is defined here in `app.py`, not `window.py`, to mollify the test suite.
@@ -171,7 +171,7 @@ class App:
         self.interface._impl = self
         self._listener = None
 
-        self.loop = android_events.AndroidEventLoop()
+        self.loop = events.AndroidEventLoop()
 
     @property
     def native(self):
