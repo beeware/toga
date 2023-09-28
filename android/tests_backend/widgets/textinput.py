@@ -38,6 +38,13 @@ class TextInputProbe(LabelProbe):
         focusable_in_touch_mode = self.native.isFocusableInTouchMode()
         if focusable != focusable_in_touch_mode:
             raise ValueError(f"invalid state: {focusable=}, {focusable_in_touch_mode=}")
+
+        # Check if TYPE_TEXT_FLAG_NO_SUGGESTIONS is set in the input type
+        input_type = self.native.getInputType()
+        is_no_suggestions_set = (input_type & InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS) != 0
+        if not is_no_suggestions_set:
+            raise ValueError("readonly is True, but TYPE_TEXT_FLAG_NO_SUGGESTIONS is not set.")
+
         return not focusable
 
     async def type_character(self, char):
