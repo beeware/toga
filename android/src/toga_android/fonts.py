@@ -1,5 +1,7 @@
 from pathlib import Path
 
+from android.graphics import Typeface
+from android.util import TypedValue
 from toga.fonts import (
     _REGISTERED_FONT_CACHE,
     BOLD,
@@ -15,8 +17,6 @@ from toga.fonts import (
     SYSTEM_DEFAULT_FONT_SIZE,
     SYSTEM_DEFAULT_FONTS,
 )
-from toga_android.libs.android.graphics import Typeface
-from toga_android.libs.android.util import TypedValue
 
 _FONT_CACHE = {}
 

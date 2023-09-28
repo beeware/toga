@@ -1,10 +1,11 @@
+from java import dynamic_proxy
 from travertino.size import at_least
 
 import toga
+from android import R
+from android.view import View
+from android.widget import SeekBar
 
-from ..libs.android import R__attr, R__style
-from ..libs.android.view import View__MeasureSpec
-from ..libs.android.widget import SeekBar, SeekBar__OnSeekBarChangeListener
 from .base import Widget
 
 # Implementation notes
@@ -14,7 +15,7 @@ from .base import Widget
 # used to convert between integers and floats.
 
 
-class TogaOnSeekBarChangeListener(SeekBar__OnSeekBarChangeListener):
+class TogaOnSeekBarChangeListener(dynamic_proxy(SeekBar.OnSeekBarChangeListener)):
     def __init__(self, impl):
         super().__init__()
         self.impl = impl
@@ -59,14 +60,12 @@ class Slider(Widget, toga.widgets.slider.IntSliderImpl):
 
     def _load_tick_drawable(self):
         attrs = self._native_activity.obtainStyledAttributes(
-            R__style.Widget_Material_SeekBar_Discrete, [R__attr.tickMark]
+            R.style.Widget_Material_SeekBar_Discrete, [R.attr.tickMark]
         )
         Slider.TICK_DRAWABLE = attrs.getDrawable(0)
         attrs.recycle()
 
     def rehint(self):
-        self.native.measure(
-            View__MeasureSpec.UNSPECIFIED, View__MeasureSpec.UNSPECIFIED
-        )
+        self.native.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
         self.interface.intrinsic.width = at_least(self.native.getMeasuredWidth())
         self.interface.intrinsic.height = self.native.getMeasuredHeight()
