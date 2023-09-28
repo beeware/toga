@@ -1,8 +1,8 @@
 from decimal import InvalidOperation
 
+from android.text import InputType
 from toga.widgets.numberinput import _clean_decimal
 
-from ..libs.android.text import InputType
 from .textinput import TextInput
 
 

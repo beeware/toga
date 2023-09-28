@@ -1,9 +1,9 @@
 from travertino.size import at_least
 
-from ..libs.android import R__attr
-from ..libs.android.util import AttributeSet
-from ..libs.android.view import View__MeasureSpec
-from ..libs.android.widget import ProgressBar as A_ProgressBar
+from android import R
+from android.view import View
+from android.widget import ProgressBar as A_ProgressBar
+
 from .base import Widget
 
 # Implementation notes
@@ -35,9 +35,7 @@ class ProgressBar(Widget):
 
     def create(self):
         progressbar = A_ProgressBar(
-            self._native_activity,
-            AttributeSet.__null__,
-            R__attr.progressBarStyleHorizontal,
+            self._native_activity, None, R.attr.progressBarStyleHorizontal
         )
         self.native = progressbar
 
@@ -92,8 +90,8 @@ class ProgressBar(Widget):
 
     def rehint(self):
         self.native.measure(
-            View__MeasureSpec.UNSPECIFIED,
-            View__MeasureSpec.UNSPECIFIED,
+            View.MeasureSpec.UNSPECIFIED,
+            View.MeasureSpec.UNSPECIFIED,
         )
         self.interface.intrinsic.width = at_least(self.native.getMeasuredWidth())
         self.interface.intrinsic.height = self.native.getMeasuredHeight()

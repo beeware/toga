@@ -1,19 +1,15 @@
+from java import dynamic_proxy
 from travertino.size import at_least
 
+from android.text import InputType, TextWatcher
+from android.view import Gravity, View
+from android.widget import EditText
 from toga_android.keys import toga_key
 
-from ..libs.android.text import InputType, TextWatcher
-from ..libs.android.view import (
-    Gravity,
-    OnKeyListener,
-    View__MeasureSpec,
-    View__OnFocusChangeListener,
-)
-from ..libs.android.widget import EditText
 from .label import TextViewWidget
 
 
-class TogaTextWatcher(TextWatcher):
+class TogaTextWatcher(dynamic_proxy(TextWatcher)):
     def __init__(self, impl):
         super().__init__()
         self.impl = impl
@@ -28,7 +24,7 @@ class TogaTextWatcher(TextWatcher):
         pass
 
 
-class TogaKeyListener(OnKeyListener):
+class TogaKeyListener(dynamic_proxy(View.OnKeyListener)):
     def __init__(self, impl):
         super().__init__()
         self.impl = impl
@@ -46,7 +42,7 @@ class TogaKeyListener(OnKeyListener):
         return False
 
 
-class TogaFocusListener(View__OnFocusChangeListener):
+class TogaFocusListener(dynamic_proxy(View.OnFocusChangeListener)):
     def __init__(self, impl):
         super().__init__()
         self.impl = impl
@@ -118,7 +114,5 @@ class TextInput(TextViewWidget):
 
     def rehint(self):
         self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
-        self.native.measure(
-            View__MeasureSpec.UNSPECIFIED, View__MeasureSpec.UNSPECIFIED
-        )
+        self.native.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
         self.interface.intrinsic.height = self.native.getMeasuredHeight()
