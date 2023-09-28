@@ -4,7 +4,7 @@ from rubicon.objc import objc_method, objc_property
 from travertino.size import at_least
 
 from toga.colors import BLACK, TRANSPARENT, color
-from toga.widgets.canvas import FillRule
+from toga.widgets.canvas import Baseline, FillRule
 from toga_cocoa.colors import native_color
 from toga_cocoa.libs import (
     CGFloat,
@@ -238,27 +238,21 @@ class Canvas(Widget):
         textAttributes = NSMutableDictionary.alloc().init()
         textAttributes[NSFontAttributeName] = font.native
 
-        if "stroke_color" in kwargs and "fill_color" in kwargs:
+        if "stroke_color" in kwargs:
             textAttributes[NSStrokeColorAttributeName] = native_color(
                 kwargs["stroke_color"]
             )
-            # Apply negative NSStrokeWidthAttributeName to get stroke and fill
-            textAttributes[NSStrokeWidthAttributeName] = -1 * kwargs["line_width"]
+
+            # Stroke width is expressed as a percentage of the font size, or a negative
+            # percentage to get both stroke and fill.
+            stroke_width = kwargs["line_width"] / font.native.pointSize * 100
+            if "fill_color" in kwargs:
+                stroke_width *= -1
+            textAttributes[NSStrokeWidthAttributeName] = stroke_width
+        if "fill_color" in kwargs:
             textAttributes[NSForegroundColorAttributeName] = native_color(
                 kwargs["fill_color"]
             )
-        elif "stroke_color" in kwargs:
-            textAttributes[NSStrokeColorAttributeName] = native_color(
-                kwargs["stroke_color"]
-            )
-            textAttributes[NSStrokeWidthAttributeName] = kwargs["line_width"]
-        elif "fill_color" in kwargs:
-            textAttributes[NSForegroundColorAttributeName] = native_color(
-                kwargs["fill_color"]
-            )
-        else:  # pragma: no cover
-            # Shouldn't be able to happen, but just in case...
-            raise ValueError("No stroke or fill of write text")
 
         text_string = NSAttributedString.alloc().initWithString(
             text, attributes=textAttributes
@@ -271,10 +265,21 @@ class Canvas(Widget):
         size = rendered_string.size()
         return size.width, size.height
 
-    def write_text(self, text, x, y, font, **kwargs):
+    def write_text(self, text, x, y, font, baseline, **kwargs):
+        ascender = font.native.ascender
+        line_height = ascender - font.native.descender + font.native.leading
+        if baseline == Baseline.TOP:
+            top = y
+        elif baseline == Baseline.MIDDLE:
+            top = y - (line_height / 2)
+        elif baseline == Baseline.BOTTOM:
+            top = y - line_height
+        else:
+            # Default to Baseline.ALPHABETIC
+            top = y - ascender
+
         rendered_string = self._render_string(text, font, **kwargs)
-        size = rendered_string.size()
-        rendered_string.drawAtPoint(NSPoint(x, y - size.height))
+        rendered_string.drawAtPoint(NSPoint(x, top))
 
     def get_image_data(self):
         bitmap = self.native.bitmapImageRepForCachingDisplayInRect(self.native.bounds)
