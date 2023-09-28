@@ -294,7 +294,7 @@ class Canvas(Box):
 
     # Text
     def write_text(self, text, x, y, font, baseline, draw_context, **kwargs):
-        for op in ["stroke", "fill"]:
+        for op in ["fill", "stroke"]:
             if color := kwargs.pop(f"{op}_color", None):
                 self._text_path(text, x, y, font, baseline, draw_context)
                 getattr(self, op)(color, draw_context=draw_context, **kwargs)
@@ -328,7 +328,7 @@ class Canvas(Box):
             for line in text.splitlines()
         ]
         return (
-            max(size.Width for size in sizes),
+            self.scale_out(max(size.Width for size in sizes)),
             font.metric("LineSpacing") * len(sizes),
         )
 

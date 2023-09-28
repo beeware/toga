@@ -599,7 +599,7 @@ async def test_write_text(canvas, probe):
     toga_font = Font("Droid Serif", 45, weight=BOLD)
     toga_size = canvas.measure_text(toga_text, font=toga_font)
 
-    with canvas.Stroke(color=REBECCAPURPLE, line_width=4) as stroke:
+    with canvas.Stroke(color=REBECCAPURPLE) as stroke:
         with stroke.Fill(color=CORNFLOWERBLUE) as text_filler:
             text_filler.write_text(
                 toga_text,
