@@ -41,9 +41,13 @@ class TextInputProbe(LabelProbe):
 
         # Check if TYPE_TEXT_FLAG_NO_SUGGESTIONS is set in the input type
         input_type = self.native.getInputType()
-        is_no_suggestions_set = (input_type & InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS) != 0
+        is_no_suggestions_set = (
+            input_type & InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS
+        ) != 0
         if not is_no_suggestions_set:
-            raise ValueError("readonly is True, but TYPE_TEXT_FLAG_NO_SUGGESTIONS is not set.")
+            raise ValueError(
+                "readonly is True, but TYPE_TEXT_FLAG_NO_SUGGESTIONS is not set."
+            )
 
         return not focusable
 

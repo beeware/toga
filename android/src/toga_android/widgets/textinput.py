@@ -78,13 +78,17 @@ class TextInput(TextViewWidget):
             # Implicitly calls setFocusableInTouchMode(False)
             self.native.setFocusable(False)
             # Add TYPE_TEXT_FLAG_NO_SUGGESTIONS to the input type to disable suggestions
-            input_type = self.native.getInputType() | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS
+            input_type = (
+                self.native.getInputType() | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS
+            )
             self.native.setInputType(input_type)
         else:
             # Implicitly calls setFocusable(True)
             self.native.setFocusableInTouchMode(True)
             # Remove TYPE_TEXT_FLAG_NO_SUGGESTIONS to enable suggestions
-            input_type = self.native.getInputType() & ~InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS
+            input_type = (
+                self.native.getInputType() & ~InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS
+            )
             self.native.setInputType(input_type)
 
     def get_placeholder(self):
