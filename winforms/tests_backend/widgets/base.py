@@ -94,7 +94,7 @@ class SimpleProbe(BaseProbe, FontMixin):
 
     def assert_height(self, min_height, max_height):
         if self.fixed_height is not None:
-            assert self.height == approx(self.fixed_height, rel=0.2)
+            assert self.height == approx(self.fixed_height, rel=0.1)
         else:
             assert min_height <= self.height <= max_height
 

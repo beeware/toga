@@ -23,6 +23,10 @@ from toga.fonts import (
 
 _FONT_CACHE = {}
 
+# Unlike SystemFonts.DefaultFont, MessageBoxFont respects the system theme
+# (https://github.com/dotnet/winforms/issues/524).
+DEFAULT_FONT = SystemFonts.MessageBoxFont
+
 
 class Font:
     def __init__(self, interface):
@@ -43,8 +47,8 @@ class Font:
             except KeyError:
                 try:
                     font_family = {
-                        SYSTEM: SystemFonts.DefaultFont.FontFamily,
-                        MESSAGE: SystemFonts.MenuFont.FontFamily,
+                        SYSTEM: DEFAULT_FONT.FontFamily,
+                        MESSAGE: DEFAULT_FONT.FontFamily,
                         SERIF: FontFamily.GenericSerif,
                         SANS_SERIF: FontFamily.GenericSansSerif,
                         CURSIVE: FontFamily("Comic Sans MS"),
@@ -59,7 +63,7 @@ class Font:
                             f"Unknown font '{self.interface}'; "
                             "using system font as a fallback"
                         )
-                        font_family = SystemFonts.DefaultFont.FontFamily
+                        font_family = DEFAULT_FONT.FontFamily
 
             else:
                 try:
@@ -86,7 +90,7 @@ class Font:
 
             # Convert font size to Winforms format
             if self.interface.size == SYSTEM_DEFAULT_FONT_SIZE:
-                font_size = SystemFonts.DefaultFont.Size
+                font_size = DEFAULT_FONT.Size
             else:
                 font_size = self.interface.size
 
