@@ -746,11 +746,10 @@ class Context(DrawingObject):
         Drawing text is effectively a series of path operations, so the text will have
         the color and fill properties of the canvas context.
 
-        :param text: The text to write. If it contains newlines, it will be drawn as
-            multiple lines.
+        :param text: The text to draw. Newlines will cause line breaks, but long lines
+            will not be wrapped.
         :param x: The X coordinate of the text's left edge.
-        :param y: The Y coordinate of the text's first line (exact meaning depends on
-            ``baseline``).
+        :param y: The Y coordinate: its meaning depends on ``baseline``.
         :param font: The font in which to draw the text. The default is the system font.
         :param baseline: Alignment of text relative to the Y coordinate.
         :returns: The ``WriteText`` :any:`DrawingObject` for the operation.
@@ -1423,12 +1422,14 @@ class Canvas(Widget):
         text: str,
         font: Font | None = None,
         tight=None,  # DEPRECATED
-    ):
-        """Measure the rendered size of some text on the current canvas.
+    ) -> tuple[float, float]:
+        """Measure the size at which :meth:`~.Context.write_text` would render some text.
 
-        :param text: The text to measure
-        :param font: The :class:`~toga.Font` to use when rendering the text.
+        :param text: The text to measure. Newlines will cause line breaks, but long
+            lines will not be wrapped.
+        :param font: The font in which to draw the text. The default is the system font.
         :param tight: **DEPRECATED**: this argument has no effect.
+        :returns: A tuple of ``(width, height)``.
         """
         if tight is not None:
             warnings.warn(

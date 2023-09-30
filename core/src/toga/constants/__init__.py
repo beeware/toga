@@ -11,10 +11,10 @@ class Direction(Enum):
 
 class Baseline(Enum):
     "The meaning of a Y coordinate when drawing text."
-    ALPHABETIC = auto()  #: Alphabetic baseline
-    TOP = auto()  #: Top of line
-    MIDDLE = auto()  #: Middle of line
-    BOTTOM = auto()  #: Bottom of line
+    ALPHABETIC = auto()  #: Alphabetic baseline of the first line
+    TOP = auto()  #: Top of text
+    MIDDLE = auto()  #: Middle of text
+    BOTTOM = auto()  #: Bottom of text
 
 
 class FillRule(Enum):

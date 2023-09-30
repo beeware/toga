@@ -1,4 +1,5 @@
 from ctypes import POINTER, c_char, cast
+from math import ceil
 
 from rubicon.objc import objc_method, objc_property
 from travertino.size import at_least
@@ -18,6 +19,7 @@ from toga_cocoa.libs import (
     NSMutableDictionary,
     NSPoint,
     NSRect,
+    NSScreen,
     NSStrokeColorAttributeName,
     NSStrokeWidthAttributeName,
     NSView,
@@ -86,6 +88,11 @@ class Canvas(Widget):
 
         # Add the layout constraints
         self.add_constraints()
+
+        print(
+            "FIXME scale factors",
+            [screen.backingScaleFactor for screen in NSScreen.screens],
+        )
 
     def redraw(self):
         self.native.needsDisplay = True
@@ -263,23 +270,26 @@ class Canvas(Widget):
         # We need at least a fill color to render, but that won't change the size.
         rendered_string = self._render_string(text, font, fill_color=color(BLACK))
         size = rendered_string.size()
-        return size.width, size.height
+        return (ceil(size.width), ceil(size.height))
 
     def write_text(self, text, x, y, font, baseline, **kwargs):
-        ascender = font.native.ascender
-        line_height = ascender - font.native.descender + font.native.leading
+        rendered_string = self._render_string(text, font, **kwargs)
         if baseline == Baseline.TOP:
             top = y
         elif baseline == Baseline.MIDDLE:
-            top = y - (line_height / 2)
+            top = y - (rendered_string.size().height / 2)
         elif baseline == Baseline.BOTTOM:
-            top = y - line_height
+            top = y - rendered_string.size().height
         else:
             # Default to Baseline.ALPHABETIC
-            top = y - ascender
+            top = y - font.native.ascender
 
-        rendered_string = self._render_string(text, font, **kwargs)
-        rendered_string.drawAtPoint(NSPoint(x, top))
+        print(
+            f"FIXME {text=}, {y=}, pointSize={font.native.pointSize}, {baseline=}, "
+            f"height={rendered_string.size().height}, {font.native.ascender=}, {top=}"
+        )
+        # Rounding gives more consistent results across different scale factors.
+        rendered_string.drawAtPoint(NSPoint(round(x), round(top)))
 
     def get_image_data(self):
         bitmap = self.native.bitmapImageRepForCachingDisplayInRect(self.native.bounds)
