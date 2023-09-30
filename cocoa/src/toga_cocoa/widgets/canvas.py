@@ -291,10 +291,16 @@ class Canvas(Widget):
             # Default to Baseline.ALPHABETIC
             top = y - font.native.ascender
 
-        # Rounding gives more consistent results across different scale factors.
+        # Although drawAtPoint interprets its Y coordinate as TOP, from experimentation
+        # I think what it's doing internally is converting it to ALPHABETIC, rounding
+        # that to the nearest physical pixel, and continuing from there. So for
+        # consistent results across different scale factors, let's align the ALPHABETIC
+        # baseline with a *logical* pixel.
+        top += round(font.native.ascender) - font.native.ascender
+
         for line_num, line in enumerate(lines):
             self._render_string(line, font, **kwargs).drawAtPoint(
-                NSPoint(round(x), round(top + (line_height * line_num)))
+                NSPoint(round(x), top + (line_height * line_num))
             )
 
     def get_image_data(self):
