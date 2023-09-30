@@ -19,7 +19,6 @@ from toga_cocoa.libs import (
     NSMutableDictionary,
     NSPoint,
     NSRect,
-    NSScreen,
     NSStrokeColorAttributeName,
     NSStrokeWidthAttributeName,
     NSView,
@@ -88,11 +87,6 @@ class Canvas(Widget):
 
         # Add the layout constraints
         self.add_constraints()
-
-        print(
-            "FIXME scale factors",
-            [screen.backingScaleFactor for screen in NSScreen.screens],
-        )
 
     def redraw(self):
         self.native.needsDisplay = True
@@ -266,30 +260,42 @@ class Canvas(Widget):
         )
         return text_string
 
+    # Although the native API can measure and draw multi-line strings, this makes the
+    # line spacing depend on the scale factor, which messes up the tests.
+    def _line_height(self, font):
+        return ceil(font.native.pointSize * 1.2)  # Common default used by browsers
+
     def measure_text(self, text, font):
         # We need at least a fill color to render, but that won't change the size.
-        rendered_string = self._render_string(text, font, fill_color=color(BLACK))
-        size = rendered_string.size()
-        return (ceil(size.width), ceil(size.height))
+        sizes = [
+            self._render_string(line, font, fill_color=color(BLACK)).size()
+            for line in text.splitlines()
+        ]
+        return (
+            ceil(max(size.width for size in sizes)),
+            self._line_height(font) * len(sizes),
+        )
 
     def write_text(self, text, x, y, font, baseline, **kwargs):
-        rendered_string = self._render_string(text, font, **kwargs)
+        lines = text.splitlines()
+        line_height = self._line_height(font)
+        total_height = line_height * len(lines)
+
         if baseline == Baseline.TOP:
             top = y
         elif baseline == Baseline.MIDDLE:
-            top = y - (rendered_string.size().height / 2)
+            top = y - (total_height / 2)
         elif baseline == Baseline.BOTTOM:
-            top = y - rendered_string.size().height
+            top = y - total_height
         else:
             # Default to Baseline.ALPHABETIC
             top = y - font.native.ascender
 
-        print(
-            f"FIXME {text=}, {y=}, pointSize={font.native.pointSize}, {baseline=}, "
-            f"height={rendered_string.size().height}, {font.native.ascender=}, {top=}"
-        )
         # Rounding gives more consistent results across different scale factors.
-        rendered_string.drawAtPoint(NSPoint(round(x), round(top)))
+        for line_num, line in enumerate(lines):
+            self._render_string(line, font, **kwargs).drawAtPoint(
+                NSPoint(round(x), round(top + (line_height * line_num)))
+            )
 
     def get_image_data(self):
         bitmap = self.native.bitmapImageRepForCachingDisplayInRect(self.native.bounds)

@@ -559,6 +559,13 @@ async def test_write_text(canvas, probe):
     hello_font = Font("Droid Serif", 12)
     hello_size = canvas.measure_text(hello_text, hello_font)
 
+    with canvas.Stroke(color=CORNFLOWERBLUE) as stroke:
+        stroke.rect(
+            100 - (hello_size[0] // 2),
+            10,
+            hello_size[0],
+            hello_size[1],
+        )
     with canvas.Fill(color=REBECCAPURPLE) as text_filler:
         text_filler.write_text(
             hello_text,
@@ -567,18 +574,18 @@ async def test_write_text(canvas, probe):
             font=hello_font,
             baseline=Baseline.TOP,
         )
-    with canvas.Stroke(color=CORNFLOWERBLUE) as stroke:
-        stroke.rect(
-            100 - (hello_size[0] // 2) - 4,
-            10 - 4,
-            hello_size[0] + 8,
-            hello_size[1] + 8,
-        )
 
     world_text = "World!"
     world_font = Font("Endor", 22)
     world_size = canvas.measure_text(world_text, font=world_font)
 
+    with canvas.Stroke(color=CORNFLOWERBLUE) as stroke:
+        stroke.rect(
+            100 - (world_size[0] // 2),
+            100 - world_size[1],
+            world_size[0],
+            world_size[1],
+        )
     with canvas.Stroke(line_width=1) as text_filler:
         text_filler.write_text(
             world_text,
@@ -587,18 +594,18 @@ async def test_write_text(canvas, probe):
             font=world_font,
             baseline=Baseline.BOTTOM,
         )
-    with canvas.Stroke(color=CORNFLOWERBLUE) as stroke:
-        stroke.rect(
-            100 - (world_size[0] // 2) - 4,
-            100 - world_size[1] - 4,
-            world_size[0] + 8,
-            world_size[1] + 8,
-        )
 
     toga_text = "Toga"
     toga_font = Font("Droid Serif", 45, weight=BOLD)
     toga_size = canvas.measure_text(toga_text, font=toga_font)
 
+    with canvas.Stroke(color=CORNFLOWERBLUE) as stroke:
+        stroke.rect(
+            100 - (toga_size[0] // 2),
+            150 - (toga_size[1] // 2),
+            toga_size[0],
+            toga_size[1],
+        )
     with canvas.Stroke(color=REBECCAPURPLE) as stroke:
         with stroke.Fill(color=CORNFLOWERBLUE) as text_filler:
             text_filler.write_text(
@@ -608,13 +615,6 @@ async def test_write_text(canvas, probe):
                 font=toga_font,
                 baseline=Baseline.MIDDLE,
             )
-    with canvas.Stroke(color=CORNFLOWERBLUE) as stroke:
-        stroke.rect(
-            100 - (toga_size[0] // 2) - 4,
-            150 - (toga_size[1] // 2) - 4,
-            toga_size[0] + 8,
-            toga_size[1] + 8,
-        )
 
     await probe.redraw("Text should be drawn")
     # 0.07 is quite a high error threshold; it's equivalent to 196 pixels being
@@ -629,7 +629,7 @@ async def test_multiline_text(canvas, probe):
 
     # Vertical guidelines
     X = [10, 75, 140]
-    with canvas.context.Stroke(color=RED, line_width=1) as guideline:
+    with canvas.context.Stroke(color=RED) as guideline:
         for x in X:
             guideline.move_to(x, 0)
             guideline.line_to(x, canvas.style.height)
@@ -651,7 +651,7 @@ async def test_multiline_text(canvas, probe):
         # Empty text
         text_filler.write_text("", X[2], y)
 
-    # Other baselines, with default font but fixed size
+    # Other baselines, with default font but specified size
     y = 130
     guideline.move_to(0, y)
     guideline.line_to(canvas.style.width, y)
@@ -664,13 +664,13 @@ async def test_multiline_text(canvas, probe):
         if baseline == Baseline.TOP:
             top = y
         elif baseline == Baseline.MIDDLE:
-            top = y - (height / 2)
+            top = round(y - (height / 2))
         elif baseline == Baseline.BOTTOM:
             top = y - height
         else:
             pytest.fail("Unknown baseline")
 
-        with canvas.context.Stroke(color=RED, line_width=1) as box:
+        with canvas.context.Stroke(color=CORNFLOWERBLUE) as box:
             box.rect(left, top, width, height)
 
         with canvas.context.Fill() as text_filler:
