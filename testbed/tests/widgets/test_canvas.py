@@ -17,7 +17,7 @@ from toga.colors import (
 )
 from toga.constants import Baseline, FillRule
 from toga.fonts import BOLD
-from toga.style.pack import Pack
+from toga.style.pack import SYSTEM, Pack
 
 from .properties import (  # noqa: F401
     test_background_color,
@@ -627,27 +627,54 @@ async def test_write_text(canvas, probe):
 async def test_multiline_text(canvas, probe):
     "Multiline text can be measured and written"
 
+    # Vertical guidelines
+    X = [10, 75, 140]
     with canvas.context.Stroke(color=RED, line_width=1) as guideline:
-        guideline.move_to(20, 0)
-        guideline.line_to(20, 200)
+        for x in X:
+            guideline.move_to(x, 0)
+            guideline.line_to(x, canvas.style.height)
 
-    # Write a single line
-    with canvas.context.Fill() as text_filler:
-        text_filler.write_text("Single line", 20, 40)
-    guideline.move_to(0, 40)
-    guideline.line_to(200, 40)
+    def caption(baseline):
+        return f"{baseline.name.capitalize()}\nTwo\nThree"
 
-    # Write multiple lines
+    # Default font and size
+    y = 30
+    guideline.move_to(0, y)
+    guideline.line_to(canvas.style.width, y)
     with canvas.context.Fill() as text_filler:
-        text_filler.write_text("Line 1\nLine 2\nLine 3", 20, 80)
-    guideline.move_to(0, 80)
-    guideline.line_to(200, 80)
+        # Default baseline (ALPHABETIC)
+        text_filler.write_text("Single line", X[0], y)
 
-    # Write empty text
-    with canvas.context.Fill() as text_filler:
-        text_filler.write_text("", 20, 180)
-    guideline.move_to(0, 180)
-    guideline.line_to(200, 180)
+        # Explicit ALPHABETIC baseline
+        text_filler.write_text(caption(Baseline.ALPHABETIC), X[1], y)
+
+        # Empty text
+        text_filler.write_text("", X[2], y)
+
+    # Other baselines, with default font but fixed size
+    y = 130
+    guideline.move_to(0, y)
+    guideline.line_to(canvas.style.width, y)
+    font = Font(SYSTEM, 12)
+
+    for i, baseline in enumerate(b for b in Baseline if b != Baseline.ALPHABETIC):
+        text = caption(baseline)
+        width, height = canvas.measure_text(text, font)
+        left = X[i]
+        if baseline == Baseline.TOP:
+            top = y
+        elif baseline == Baseline.MIDDLE:
+            top = y - (height / 2)
+        elif baseline == Baseline.BOTTOM:
+            top = y - height
+        else:
+            pytest.fail("Unknown baseline")
+
+        with canvas.context.Stroke(color=RED, line_width=1) as box:
+            box.rect(left, top, width, height)
+
+        with canvas.context.Fill() as text_filler:
+            text_filler.write_text(text, left, y, font, baseline)
 
     await probe.redraw("Multiple text blocks should be drawn")
     # 0.09 is quite a high error threshold; it's equivalent to 324 pixels being

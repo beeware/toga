@@ -300,18 +300,21 @@ class Canvas(Box):
                 getattr(self, op)(color, draw_context=draw_context, **kwargs)
 
     def _text_path(self, text, x, y, font, baseline, draw_context):
+        lines = text.splitlines()
         line_height = font.metric("LineSpacing")
+        total_height = line_height * len(lines)
+
         if baseline == Baseline.TOP:
             top = y
         elif baseline == Baseline.MIDDLE:
-            top = y - (line_height / 2)
+            top = y - (total_height / 2)
         elif baseline == Baseline.BOTTOM:
-            top = y - line_height
+            top = y - total_height
         else:
             # Default to Baseline.ALPHABETIC
             top = y - font.metric("CellAscent")
 
-        for line_num, line in enumerate(text.splitlines()):
+        for line_num, line in enumerate(lines):
             draw_context.current_path.AddString(
                 line,
                 font.native.FontFamily,
