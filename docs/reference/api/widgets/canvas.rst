@@ -20,7 +20,8 @@ Usage
 Canvas is a 2D vector graphics drawing area, whose API broadly follows the `HTML5 Canvas
 API <https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API>`__. The Canvas
 provides a drawing Context; drawing instructions are then added to that context by
-calling methods on the context.
+calling methods on the context. All positions and sizes are measured in :ref:`CSS pixels
+<css-units>`.
 
 For example, the following code will draw an orange horizontal line:
 

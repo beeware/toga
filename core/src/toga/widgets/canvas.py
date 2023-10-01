@@ -787,8 +787,8 @@ class Context(DrawingObject):
     def translate(self, tx: float, ty: float):
         """Add a translation to the canvas context.
 
-        :param tx: Size of the X value of coordinate.
-        :param ty: Y value of coordinate.
+        :param tx: Translation for the X dimension.
+        :param ty: Translation for the Y dimension.
         :returns: The ``Translate`` :any:`DrawingObject` for the transformation.
         """
         translate = Translate(tx, ty)
