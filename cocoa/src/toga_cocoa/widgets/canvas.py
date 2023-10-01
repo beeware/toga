@@ -19,6 +19,7 @@ from toga_cocoa.libs import (
     NSMutableDictionary,
     NSPoint,
     NSRect,
+    NSSize,
     NSStrokeColorAttributeName,
     NSStrokeWidthAttributeName,
     NSView,
@@ -282,25 +283,33 @@ class Canvas(Widget):
         total_height = line_height * len(lines)
 
         if baseline == Baseline.TOP:
-            top = y
+            top = y + font.native.ascender
         elif baseline == Baseline.MIDDLE:
-            top = y - (total_height / 2)
+            top = y + font.native.ascender - (total_height / 2)
         elif baseline == Baseline.BOTTOM:
-            top = y - total_height
+            top = y + font.native.ascender - total_height
         else:
             # Default to Baseline.ALPHABETIC
-            top = y - font.native.ascender
-
-        # Although drawAtPoint interprets its Y coordinate as TOP, from experimentation
-        # I think what it's doing internally is converting it to ALPHABETIC, rounding
-        # that to the nearest physical pixel, and continuing from there. So for
-        # consistent results across different scale factors, let's align the ALPHABETIC
-        # baseline with a *logical* pixel.
-        top += round(font.native.ascender) - font.native.ascender
+            top = y
 
         for line_num, line in enumerate(lines):
-            self._render_string(line, font, **kwargs).drawAtPoint(
-                NSPoint(round(x), top + (line_height * line_num))
+            # Rounding minimizes differences between scale factors.
+            origin = NSPoint(round(x), round(top) + (line_height * line_num))
+            rs = self._render_string(line, font, **kwargs)
+
+            # "This method uses the baseline origin by default. If
+            # NSStringDrawingUsesLineFragmentOrigin is not specified, the
+            # rectangle’s height will be ignored"
+            #
+            # Previously we used drawAtPoint, which takes a TOP-relative origin. But
+            # this often gave off-by-one errors in ALPHABETIC mode, even when we
+            # attempted to put the baseline on a logical pixel edge. This may be
+            # because drawAtPoint calculates the line height in its own way and then
+            # sets the baseline relative to its bottom
+            # (https://www.sketch.com/blog/typesetting-in-sketch/), but it would be
+            # unwise to rely on that.
+            rs.drawWithRect(
+                NSRect(origin, NSSize(2**31 - 1, 0)), options=0, context=None
             )
 
     def get_image_data(self):

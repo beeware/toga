@@ -238,7 +238,13 @@ def assert_reference(probe, reference, threshold=0.0):
     # Look for a platform-specific reference variant.
     reference_variant = probe.reference_variant(reference)
     path = toga.App.app.paths.app / "resources" / "canvas" / f"{reference_variant}.png"
-    save_path = toga.App.app.paths.data / "canvas" / f"{reference_variant}.png"
+    save_dir = toga.App.app.paths.data / "canvas"
+
+    def save():
+        print(f"Saving to {save_dir}")
+        save_dir.mkdir(parents=True, exist_ok=True)
+        scaled_image.save(save_dir / f"{reference_variant}.png")
+        image.save(save_dir / f"{reference_variant}-full.png")
 
     # If a reference image exists, scale the image to the same size as the reference,
     # and do an MSE comparison on every pixel in 0-1 RGBA colorspace.
@@ -258,14 +264,10 @@ def assert_reference(probe, reference, threshold=0.0):
         rmse = math.sqrt(total / (reference_image.size[0] * reference_image.size[1]))
         # If the delta exceeds threshold, save the test image and fail the test.
         if rmse > threshold:
-            print(f"Saving {save_path}")
-            save_path.parent.mkdir(parents=True, exist_ok=True)
-            scaled_image.save(save_path)
+            save()
             assert pytest.fail(f"Rendered image doesn't match reference (RMSE=={rmse})")
     else:
-        print(f"Saving {save_path}")
-        save_path.parent.mkdir(parents=True, exist_ok=True)
-        scaled_image.save(save_path)
+        save()
         assert pytest.fail(f"Couldn't find {reference_variant!r} reference image")
 
 
