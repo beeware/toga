@@ -1,8 +1,8 @@
 .. _layout:
 
-===========================
+=============
 Widget layout
-===========================
+=============
 
 One of the major tasks of a GUI framework is to determine where each widget will be displayed within the application window. This determination must be made when a window is initially displayed, and every time the window changes size (or, on mobile devices, changes orientation).
 
@@ -26,20 +26,26 @@ When a refresh is requested on a container, any sub-containers will also be refr
 Length units
 ============
 
-Toga uses CSS units in its public API. For a full explanation, see `this article
-<https://hacks.mozilla.org/2013/09/css-length-explained/>`__, but in summary:
+Toga uses CSS units in its public API. All size calculations assume that the user has a
+96 DPI display; if the user has a higher density display, the sizes that are applied
+will be scaled accordingly. In practice, this means that:
 
 * A CSS pixel is about 1/96 of an inch (0.26 mm) on a desktop screen, and about 1/160 of
   an inch (0.16 mm) on a phone screen.
 
-* A CSS point is 1.33 CSS pixels. Toga only uses points to measure font sizes; all other
-  lengths are expressed as pixels.
+* A CSS point is 1.33 CSS pixels.
 
-Implementation notes:
+Toga only uses points to measure font sizes. All other lengths are expressed as pixels.
+
+For a full explanation of size interpretations, see `this article
+<https://hacks.mozilla.org/2013/09/css-length-explained/>`__.
+
+Implementation notes
+~~~~~~~~~~~~~~~~~~~~
 
 * On macOS and iOS, one CSS pixel equals one `"point"
   <https://developer.apple.com/library/archive/documentation/GraphicsAnimation/Conceptual/HighResolutionOSX/Explained/Explained.html>`__,
-  which is 1, 2 or 3 linear physical pixels depending on the device.
+  which is 1, 2 or 3 linear physical pixels, depending on the device.
 
 * On Windows, one CSS pixel equals one physical pixel at `100% scale
   <https://support.microsoft.com/en-us/windows/view-display-settings-in-windows-37f0e05e-98a9-474c-317a-e85422daa8bb>`__,
