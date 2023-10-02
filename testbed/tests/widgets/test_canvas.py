@@ -639,19 +639,26 @@ async def test_multiline_text(canvas, probe):
     def caption(baseline):
         return f"{baseline.name.capitalize()}\nTwo\nThree"
 
-    # Default font and size
+    # ALPHABETIC baseline
     y = 30
     guideline.move_to(0, y)
     guideline.line_to(canvas.style.width, y)
     with canvas.context.Fill() as text_filler:
-        # Default baseline (ALPHABETIC)
-        text_filler.write_text("Single line", X[0], y)
+        # Default baseline (ALPHABETIC), with default font and various sizes.
+        x = X[0]
+        for size in [8, 12, 16, 20]:
+            text = f"{size:02d}"
+            font = Font(SYSTEM, size)
+            text_filler.write_text(text, x, y, font)
+            x += canvas.measure_text(text, font)[0] + 5
 
-        # Explicit ALPHABETIC baseline
-        text_filler.write_text(caption(Baseline.ALPHABETIC), X[1], y)
+        # Empty text: this should have no effect on the image, but make sure it's
+        # accepted.
+        text_filler.write_text("", X[1], y)
 
-        # Empty text
-        text_filler.write_text("", X[2], y)
+        # Explicit ALPHABETIC baseline, with default font and size. On most systems,
+        # this will go off the right edge of the canvas.
+        text_filler.write_text(caption(Baseline.ALPHABETIC), X[2], y)
 
     # Other baselines, with default font but specified size
     y = 130
@@ -659,7 +666,7 @@ async def test_multiline_text(canvas, probe):
     guideline.line_to(canvas.style.width, y)
     font = Font(SYSTEM, 12)
 
-    for i, baseline in enumerate(b for b in Baseline if b != Baseline.ALPHABETIC):
+    for i, baseline in enumerate([Baseline.BOTTOM, Baseline.MIDDLE, Baseline.TOP]):
         text = caption(baseline)
         width, height = canvas.measure_text(text, font)
         left = X[i]
@@ -669,8 +676,6 @@ async def test_multiline_text(canvas, probe):
             top = round(y - (height / 2))
         elif baseline == Baseline.BOTTOM:
             top = y - height
-        else:
-            pytest.fail("Unknown baseline")
 
         with canvas.context.Stroke(color=CORNFLOWERBLUE) as box:
             box.rect(left, top, width, height)

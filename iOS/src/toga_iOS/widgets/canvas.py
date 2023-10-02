@@ -1,4 +1,5 @@
 from ctypes import POINTER, c_char, cast
+from math import ceil
 
 from rubicon.objc import (
     Block,
@@ -7,6 +8,8 @@ from rubicon.objc import (
     CGSize,
     NSMutableDictionary,
     NSPoint,
+    NSRect,
+    NSSize,
     objc_method,
     objc_property,
 )
@@ -241,27 +244,56 @@ class Canvas(Widget):
         )
         return text_string
 
+    # Although the native API can measure and draw multi-line strings, this makes the
+    # line spacing depend on the scale factor, which messes up the tests.
+    def _line_height(self, font):
+        return ceil(font.native.pointSize * 1.2)  # Common default used by browsers
+
     def measure_text(self, text, font):
         # We need at least a fill color to render, but that won't change the size.
-        rendered_string = self._render_string(text, font, fill_color=color(BLACK))
-        size = rendered_string.size()
-        return size.width, size.height
+        sizes = [
+            self._render_string(line, font, fill_color=color(BLACK)).size()
+            for line in text.splitlines()
+        ]
+        return (
+            ceil(max(size.width for size in sizes)),
+            self._line_height(font) * len(sizes),
+        )
 
     def write_text(self, text, x, y, font, baseline, **kwargs):
-        ascender = font.native.ascender
-        line_height = ascender - font.native.descender + font.native.leading
+        lines = text.splitlines()
+        line_height = self._line_height(font)
+        total_height = line_height * len(lines)
+
         if baseline == Baseline.TOP:
-            top = y
+            top = y + font.native.ascender
         elif baseline == Baseline.MIDDLE:
-            top = y - (line_height / 2)
+            top = y + font.native.ascender - (total_height / 2)
         elif baseline == Baseline.BOTTOM:
-            top = y - line_height
+            top = y + font.native.ascender - total_height
         else:
             # Default to Baseline.ALPHABETIC
-            top = y - ascender
+            top = y
 
-        rendered_string = self._render_string(text, font, **kwargs)
-        rendered_string.drawAtPoint(NSPoint(x, top))
+        for line_num, line in enumerate(lines):
+            # Rounding minimizes differences between scale factors.
+            origin = NSPoint(round(x), round(top) + (line_height * line_num))
+            rs = self._render_string(line, font, **kwargs)
+
+            # "This method uses the baseline origin by default. If
+            # NSStringDrawingUsesLineFragmentOrigin is not specified, the
+            # rectangle’s height will be ignored"
+            #
+            # Previously we used drawAtPoint, which takes a TOP-relative origin. But
+            # this often gave off-by-one errors in ALPHABETIC mode, even when we
+            # attempted to put the baseline on a logical pixel edge. This may be
+            # because drawAtPoint calculates the line height in its own way and then
+            # sets the baseline relative to its bottom
+            # (https://www.sketch.com/blog/typesetting-in-sketch/), but it would be
+            # unwise to rely on that.
+            rs.drawWithRect(
+                NSRect(origin, NSSize(2**31 - 1, 0)), options=0, context=None
+            )
 
     def get_image_data(self):
         renderer = UIGraphicsImageRenderer.alloc().initWithSize(self.native.bounds.size)
