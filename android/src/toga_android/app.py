@@ -1,21 +1,22 @@
 import asyncio
 
-from rubicon.java import android_events
+from java import dynamic_proxy
+from org.beeware.android import IPythonApp, MainActivity
 
 import toga
+from android.graphics.drawable import Drawable
 from android.media import RingtoneManager
+from android.view import Menu, MenuItem
 from toga.command import Group
 
-from .libs.activity import IPythonApp, MainActivity
-from .libs.android.graphics import Drawable
-from .libs.android.view import Menu, MenuItem
+from .libs import events
 from .window import Window
 
 # `MainWindow` is defined here in `app.py`, not `window.py`, to mollify the test suite.
 MainWindow = Window
 
 
-class TogaApp(IPythonApp):
+class TogaApp(dynamic_proxy(IPythonApp)):
     last_intent_requestcode = (
         -1
     )  # always increment before using it for invoking new Intents
@@ -170,7 +171,7 @@ class App:
         self.interface._impl = self
         self._listener = None
 
-        self.loop = android_events.AndroidEventLoop()
+        self.loop = events.AndroidEventLoop()
 
     @property
     def native(self):

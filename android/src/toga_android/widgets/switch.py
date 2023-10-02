@@ -1,14 +1,13 @@
+from java import dynamic_proxy
 from travertino.size import at_least
 
-from ..libs.android.view import View__MeasureSpec
-from ..libs.android.widget import (
-    CompoundButton__OnCheckedChangeListener,
-    Switch as A_Switch,
-)
+from android.view import View
+from android.widget import CompoundButton, Switch as A_Switch
+
 from .label import TextViewWidget
 
 
-class OnCheckedChangeListener(CompoundButton__OnCheckedChangeListener):
+class OnCheckedChangeListener(dynamic_proxy(CompoundButton.OnCheckedChangeListener)):
     def __init__(self, impl):
         super().__init__()
         self._impl = impl
@@ -44,8 +43,6 @@ class Switch(TextViewWidget):
         self.native.setChecked(bool(value))
 
     def rehint(self):
-        self.native.measure(
-            View__MeasureSpec.UNSPECIFIED, View__MeasureSpec.UNSPECIFIED
-        )
+        self.native.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
         self.interface.intrinsic.width = at_least(self.native.getMeasuredWidth())
         self.interface.intrinsic.height = self.native.getMeasuredHeight()
