@@ -14,7 +14,7 @@ from android.graphics import (
     Path,
 )
 from android.view import MotionEvent, View
-from toga.widgets.canvas import FillRule
+from toga.widgets.canvas import Baseline, FillRule
 
 from ..colors import native_color
 from .base import Widget
@@ -195,11 +195,52 @@ class Canvas(Widget):
     # Text
 
     def measure_text(self, text, font):
-        self.interface.factory.not_implemented("Canvas.measure_text")
-        return (10, 10)
+        paint = self._text_paint(font)
+        sizes = [paint.measureText(line) for line in text.splitlines()]
+        return (
+            max(size for size in sizes),
+            paint.getFontSpacing() * len(sizes),
+        )
 
-    def write_text(self, text, x, y, font, **kwargs):
-        self.interface.factory.not_implemented("Canvas.write_text")
+    def write_text(self, text, x, y, font, baseline, canvas, **kwargs):
+        lines = text.splitlines()
+        paint = self._text_paint(font)
+        line_height = paint.getFontSpacing()
+        total_height = line_height * len(lines)
+
+        # paint.ascent returns a negative number.
+        if baseline == Baseline.TOP:
+            top = y - paint.ascent()
+        elif baseline == Baseline.MIDDLE:
+            top = y - paint.ascent() - (total_height / 2)
+        elif baseline == Baseline.BOTTOM:
+            top = y - paint.ascent() - total_height
+        else:
+            # Default to Baseline.ALPHABETIC
+            top = y
+
+        for line_num, line in enumerate(text.splitlines()):
+            # FILL_AND_STROKE doesn't allow separate colors, so we have to draw twice.
+            def draw():
+                canvas.drawText(line, x, top + (line_height * line_num), paint)
+
+            if (color := kwargs.get("fill_color")) is not None:
+                paint.setStyle(Paint.Style.FILL)
+                paint.setColor(jint(native_color(color)))
+                draw()
+            if (color := kwargs.get("stroke_color")) is not None:
+                paint.setStyle(Paint.Style.STROKE)
+                paint.setStrokeWidth(kwargs["line_width"])
+                paint.setColor(jint(native_color(color)))
+                draw()
+
+    def _text_paint(self, font):
+        # font.size applies the scale factor, and the canvas transformation matrix
+        # will apply it again, so we need to cancel one of those with a scale_out.
+        paint = Paint()
+        paint.setTypeface(font.typeface())
+        paint.setTextSize(self.scale_out(font.size()))
+        return paint
 
     def get_image_data(self):
         bitmap = Bitmap.createBitmap(

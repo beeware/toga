@@ -2,12 +2,18 @@ from travertino.size import at_least
 
 from android.os import Build
 from android.text import Layout
+from android.util import TypedValue
 from android.view import Gravity, View
 from android.widget import TextView
 from toga.constants import JUSTIFY
 from toga_android.colors import native_color
 
 from .base import Widget, align
+
+
+def set_textview_font(tv, font, default_typeface, default_size):
+    tv.setTypeface(font.typeface(default=default_typeface))
+    tv.setTextSize(TypedValue.COMPLEX_UNIT_PX, font.size(default=default_size))
 
 
 class TextViewWidget(Widget):
@@ -17,7 +23,9 @@ class TextViewWidget(Widget):
         self._default_typeface = self.native.getTypeface()
 
     def set_font(self, font):
-        font._impl.apply(self.native, self._default_text_size, self._default_typeface)
+        set_textview_font(
+            self.native, font._impl, self._default_typeface, self._default_text_size
+        )
 
     def set_background_color(self, value):
         # In the case of EditText, this causes any custom color to hide the bottom border

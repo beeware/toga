@@ -15,7 +15,6 @@ class CanvasProbe(SimpleProbe):
 
     def reference_variant(self, reference):
         if reference in {"multiline_text", "write_text"}:
-            # System font and default size is platform dependent.
             return f"{reference}-android"
         return reference
 
