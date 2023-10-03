@@ -124,7 +124,7 @@ class SelectionApp(toga.App):
                     children=[
                         toga.Button("Change font", on_press=self.change_font),
                         toga.Button(
-                            "Print font size", on_press=self.print_font_attributes
+                            "Print font attrs", on_press=self.print_font_attributes
                         ),
                     ],
                 ),
@@ -165,8 +165,8 @@ class SelectionApp(toga.App):
             self.styled_selection.style.font_style = NORMAL
 
     def print_font_attributes(self, widget):
-        print(f"default size: {self.styled_selection._impl.adapter._default_textsize}")
-        print(f"current size: {self.styled_selection._impl.get_textsize()}")
+        print(f"font style: {self.styled_selection.style.font_style}")
+        print(f"font size: {self.styled_selection.style.font_size}")
 
 
 def main():
