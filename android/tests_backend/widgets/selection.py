@@ -22,11 +22,11 @@ class SelectionProbe(SimpleProbe):
 
     @property
     def typeface(self):
-        xfail("Can't change the font of Selection on this backend")
+        return self.adapter.get_typeface()
 
     @property
     def text_size(self):
-        xfail("Can't change the font of Selection on this backend")
+        return self.adapter.get_textsize()
 
     @property
     def background_color(self):

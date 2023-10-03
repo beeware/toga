@@ -20,7 +20,7 @@ class TogaOnItemSelectedListener(dynamic_proxy(AdapterView.OnItemSelectedListene
         self.impl.on_change(None)
 
 
-class TogaArrayAdapter(SpinnerAdapter):
+class TogaArrayAdapter(dynamic_proxy(SpinnerAdapter)):
     def __init__(self, impl):
         super().__init__()
         self.impl = impl
@@ -36,6 +36,14 @@ class TogaArrayAdapter(SpinnerAdapter):
     def cache_textview_defaults(self, tv):
         self._default_textsize = tv.getTextSize()
         self._default_typeface = tv.getTypeface()
+
+    def get_textsize(self):
+        """used by testbed application"""
+        return self._textsize
+
+    def get_typeface(self):
+        """used by testbed application"""
+        return self._typeface
 
     def getDropDownView(self, position, convertView, parent):
         tv = self.adapter.getDropDownView(position, convertView, parent)
