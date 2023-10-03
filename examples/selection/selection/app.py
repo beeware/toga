@@ -1,5 +1,6 @@
 import toga
-from toga.constants import COLUMN, ROW
+from toga.constants import COLUMN, ITALIC, NORMAL, ROW
+from toga.fonts import SYSTEM_DEFAULT_FONT_SIZE
 from toga.style import Pack
 
 
@@ -18,6 +19,9 @@ class SelectionApp(toga.App):
         # Main window of the application with title and size
         self.main_window = toga.MainWindow(title=self.name, size=(640, 400))
 
+        # set font toggle
+        self.big_font = False
+
         # set up common styles
         label_style = Pack(flex=1, padding_right=24)
         box_style = Pack(direction=ROW, padding=10)
@@ -28,6 +32,14 @@ class SelectionApp(toga.App):
         self.source_selection = toga.Selection(
             accessor="name",
             items=self.DATA_OPTIONS,
+        )
+        self.styled_selection = toga.Selection(
+            style=Pack(
+                width=200,
+                padding=24,
+                font_family="serif",
+            ),
+            items=["Curium", "Titanium", "Copernicium"],
         )
 
         self.main_window.content = toga.Box(
@@ -86,12 +98,7 @@ class SelectionApp(toga.App):
                     style=box_style,
                     children=[
                         toga.Label("Use some style!", style=label_style),
-                        toga.Selection(
-                            style=Pack(
-                                width=200, padding=24, font_family="serif", font_size=20
-                            ),
-                            items=["Curium", "Titanium", "Copernicium"],
-                        ),
+                        self.styled_selection,
                     ],
                 ),
                 toga.Box(
@@ -109,6 +116,15 @@ class SelectionApp(toga.App):
                                 "Oganesson",
                             ],
                             enabled=False,
+                        ),
+                    ],
+                ),
+                toga.Box(
+                    style=box_style,
+                    children=[
+                        toga.Button("Change font", on_press=self.change_font),
+                        toga.Button(
+                            "Print font size", on_press=self.print_font_attributes
                         ),
                     ],
                 ),
@@ -138,6 +154,19 @@ class SelectionApp(toga.App):
             f"Empty: {self.empty_selection.value!r}; "
             f"Source: {self.source_selection.value.name} has weight {self.source_selection.value.weight}"
         )
+
+    def change_font(self, widget):
+        self.big_font = not self.big_font
+        if self.big_font:
+            self.styled_selection.style.font_size = 20
+            self.styled_selection.style.font_style = ITALIC
+        else:
+            self.styled_selection.style.font_size = SYSTEM_DEFAULT_FONT_SIZE
+            self.styled_selection.style.font_style = NORMAL
+
+    def print_font_attributes(self, widget):
+        print(f"default size: {self.styled_selection._impl.adapter._default_textsize}")
+        print(f"current size: {self.styled_selection._impl.get_textsize()}")
 
 
 def main():

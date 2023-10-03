@@ -37,27 +37,14 @@ class TogaArrayAdapter(dynamic_proxy(SpinnerAdapter)):
         self._default_textsize = tv.getTextSize()
         self._default_typeface = tv.getTypeface()
 
-    def get_textsize(self):
-        """used by testbed application"""
-        return self._textsize
-
-    def get_typeface(self):
-        """used by testbed application"""
-        return self._typeface
-
     def getDropDownView(self, position, convertView, parent):
         tv = self.adapter.getDropDownView(position, convertView, parent)
-        if self._default_textsize == -1:
-            self.cache_textview_defaults(tv)
         if self.impl._font_impl:
             self.impl._font_impl.apply(
                 tv,
                 self._default_textsize,
                 self._default_typeface,
             )
-        if self._textsize == -1:
-            self._textsize = tv.getTextSize()
-            self._typeface = tv.getTypeface()
         return tv
 
     def getView(self, position, convertView, parent):
@@ -70,7 +57,6 @@ class TogaArrayAdapter(dynamic_proxy(SpinnerAdapter)):
                 self._default_textsize,
                 self._default_typeface,
             )
-        if self._textsize == -1:
             self._textsize = tv.getTextSize()
             self._typeface = tv.getTypeface()
         return tv
@@ -184,4 +170,21 @@ class Selection(Widget):
         self.interface.intrinsic.height = self.native.getMeasuredHeight()
 
     def set_font(self, font):
+        if self.adapter:
+            tv = self.native.getSelectedView()
+            if tv and font:
+                font._impl.apply(
+                    tv,
+                    self.adapter._default_textsize,
+                    self.adapter._default_typeface,
+                )
         self._font_impl = font._impl
+        self.interface.refresh()
+
+    def get_textsize(self):
+        """used by testbed application"""
+        return self.adapter._textsize
+
+    def get_typeface(self):
+        """used by testbed application"""
+        return self.adapter._typeface
