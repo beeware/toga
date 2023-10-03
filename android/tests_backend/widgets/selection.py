@@ -22,11 +22,11 @@ class SelectionProbe(SimpleProbe):
 
     @property
     def typeface(self):
-        return self.adapter.get_typeface()
+        return self.impl.adapter.get_typeface()
 
     @property
     def text_size(self):
-        return self.adapter.get_textsize()
+        return self.impl.adapter.get_textsize()
 
     @property
     def background_color(self):
