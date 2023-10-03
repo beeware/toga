@@ -1,0 +1,1 @@
+References to Android system libraries have been modified to use Chaquopy native syntax, rather than Rubicon Java.

@@ -1,12 +1,12 @@
 from travertino.size import at_least
 
+from android.os import Build
+from android.text import Layout
+from android.view import Gravity, View
+from android.widget import TextView
 from toga.constants import JUSTIFY
 from toga_android.colors import native_color
 
-from ..libs.android.os import Build
-from ..libs.android.text import Layout
-from ..libs.android.view import Gravity, View__MeasureSpec
-from ..libs.android.widget import TextView
 from .base import Widget, align
 
 
@@ -58,15 +58,13 @@ class Label(TextViewWidget):
     def rehint(self):
         # Ask the Android TextView first for its minimum possible height.
         # This is the height with word-wrapping disabled.
-        self.native.measure(
-            View__MeasureSpec.UNSPECIFIED, View__MeasureSpec.UNSPECIFIED
-        )
+        self.native.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
         min_height = self.native.getMeasuredHeight()
         self.interface.intrinsic.height = min_height
         # Ask it how wide it would be if it had to be the minimum height.
         self.native.measure(
-            View__MeasureSpec.UNSPECIFIED,
-            View__MeasureSpec.makeMeasureSpec(min_height, View__MeasureSpec.AT_MOST),
+            View.MeasureSpec.UNSPECIFIED,
+            View.MeasureSpec.makeMeasureSpec(min_height, View.MeasureSpec.AT_MOST),
         )
         self.interface.intrinsic.width = at_least(self.native.getMeasuredWidth())
 

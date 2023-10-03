@@ -1,17 +1,14 @@
+from java import dynamic_proxy
 from travertino.size import at_least
 
-from ..libs.android import R__layout
-from ..libs.android.view import Gravity, View__MeasureSpec
-from ..libs.android.widget import (
-    ArrayAdapter,
-    OnItemSelectedListener,
-    Spinner,
-    SpinnerAdapter,
-)
-from .base import Widget, align
+from android import R
+from android.view import View
+from android.widget import AdapterView, ArrayAdapter, Spinner, SpinnerAdapter
+
+from .base import Widget
 
 
-class TogaOnItemSelectedListener(OnItemSelectedListener):
+class TogaOnItemSelectedListener(dynamic_proxy(AdapterView.OnItemSelectedListener)):
     def __init__(self, impl):
         super().__init__()
         self.impl = impl
@@ -32,9 +29,9 @@ class TogaArrayAdapter(SpinnerAdapter):
         self._textsize = -1
         self._typeface = None
         self.adapter = ArrayAdapter(
-            self.impl._native_activity, R__layout.simple_spinner_item
+            self.impl._native_activity, R.layout.simple_spinner_item
         )
-        self.adapter.setDropDownViewResource(R__layout.simple_spinner_dropdown_item)
+        self.adapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item)
 
     def cache_textview_defaults(self, tv):
         self._default_textsize = tv.getTextSize()
@@ -174,14 +171,9 @@ class Selection(Widget):
         self.on_change(None)
 
     def rehint(self):
-        self.native.measure(
-            View__MeasureSpec.UNSPECIFIED, View__MeasureSpec.UNSPECIFIED
-        )
+        self.native.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
         self.interface.intrinsic.width = at_least(self.native.getMeasuredWidth())
         self.interface.intrinsic.height = self.native.getMeasuredHeight()
-
-    def set_alignment(self, value):
-        self.native.setGravity(Gravity.CENTER_VERTICAL | align(value))
 
     def set_font(self, font):
         self._font_impl = font._impl
