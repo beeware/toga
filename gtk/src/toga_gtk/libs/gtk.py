@@ -27,5 +27,13 @@ except (ImportError, ValueError):  # pragma: no cover
 
 try:
     import cairo  # noqa: F401
+
+    gi.require_foreign("cairo")
 except ImportError:  # pragma: no cover
     cairo = None
+
+try:
+    gi.require_version("PangoCairo", "1.0")
+    from gi.repository import PangoCairo  # noqa: F401
+except (ImportError, ValueError):  # pragma: no cover
+    PangoCairo = None

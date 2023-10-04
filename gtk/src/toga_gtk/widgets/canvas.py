@@ -1,11 +1,14 @@
+from dataclasses import dataclass
 from io import BytesIO
+from math import ceil
 
 from travertino.size import at_least
 
-from toga.constants import FillRule
-from toga.fonts import SYSTEM, SYSTEM_DEFAULT_FONT_SIZE
+from toga import Font
+from toga.constants import Baseline, FillRule
+from toga.fonts import SYSTEM_DEFAULT_FONT_SIZE
 from toga_gtk.colors import native_color
-from toga_gtk.libs import Gdk, Gtk, Pango, cairo
+from toga_gtk.libs import Gdk, Gtk, Pango, PangoCairo, cairo
 
 from .base import Widget
 
@@ -209,63 +212,77 @@ class Canvas(Widget):
         cairo_context.set_matrix(self.original_transform_matrix)
 
     # Text
-    def write_text(self, text, x, y, font, cairo_context, **kwargs):
-        # Set font family and size
-        if font.interface.family != SYSTEM:
-            cairo_context.select_font_face(font.native.get_family())
-        if font.interface.size != SYSTEM_DEFAULT_FONT_SIZE:
-            cairo_context.set_font_size(font.native.get_size() / Pango.SCALE)
 
-        # Support writing multiline text
-        offsets = []
+    def write_text(self, text, x, y, font, baseline, cairo_context, **kwargs):
+        for op in ["fill", "stroke"]:
+            if color := kwargs.pop(f"{op}_color", None):
+                self._text_path(text, x, y, font, baseline, cairo_context)
+                getattr(self, op)(color, cairo_context=cairo_context, **kwargs)
+
+    # No need to check whether Pango or PangoCairo are None, because if they were, the
+    # user would already have received an exception when trying to create a Font.
+    def _text_path(self, text, x, y, font, baseline, cairo_context):
+        pango_context = self._pango_context(font)
+        metrics = self._font_metrics(pango_context)
         lines = text.splitlines()
-        if len(lines) > 1:
-            for line in lines:
-                _, height = self._measure_text_line(line, font, tight=False)
-                y -= height
-                offsets.append(height)
+        total_height = metrics.line_height * len(lines)
 
-            # Draw the lines in reverse order, so we can pop the offsets
-            for line in lines:
-                y += offsets.pop()
-                cairo_context.move_to(x, y)
-                cairo_context.text_path(line)
+        if baseline == Baseline.TOP:
+            top = y + metrics.ascent
+        elif baseline == Baseline.MIDDLE:
+            top = y + metrics.ascent - (total_height / 2)
+        elif baseline == Baseline.BOTTOM:
+            top = y + metrics.ascent - total_height
         else:
-            _, height = self._measure_text_line(text, font, tight=True)
-            cairo_context.move_to(x, y)
-            cairo_context.text_path(text)
+            # Default to Baseline.ALPHABETIC
+            top = y
 
-    def _measure_text_line(self, text, font, tight=True):
-        # A tight measure only includes the drawn text; non-tight includes line leading.
-        # We only need leading if the test is multi line.
-        layout = self.native.create_pango_layout(text)
+        layout = Pango.Layout(pango_context)
+        for line_num, line in enumerate(lines):
+            layout.set_text(line)
+            cairo_context.move_to(x, top + (metrics.line_height * line_num))
+            PangoCairo.layout_line_path(cairo_context, layout.get_line(0))
 
-        layout.set_font_description(font.native)
-        ink, logical = layout.get_extents()
+    def _pango_context(self, font):
+        # TODO: detect the actual default family and size (see tests_backend/fonts.py).
+        if font.interface.size == SYSTEM_DEFAULT_FONT_SIZE:
+            font = Font(
+                font.interface.family,
+                size=10,
+                weight=font.interface.weight,
+                style=font.interface.style,
+                variant=font.interface.variant,
+            )._impl
 
-        if tight:
-            width = (ink.width / Pango.SCALE) - (ink.width * 0.2) / Pango.SCALE
-            height = ink.height / Pango.SCALE
-        else:
-            width = (logical.width / Pango.SCALE) - (logical.width * 0.2) / Pango.SCALE
-            height = logical.height / Pango.SCALE
+        pango_context = self.native.create_pango_context()
+        pango_context.set_font_description(font.native)
+        return pango_context
 
-        return width, height
+    def _font_metrics(self, pango_context):
+        pango_metrics = pango_context.load_font(
+            pango_context.get_font_description()
+        ).get_metrics()
+        ascent = pango_metrics.get_ascent() / Pango.SCALE
+        descent = pango_metrics.get_descent() / Pango.SCALE
+
+        # get_height was added in Pango 1.44, but Debian Buster comes with 1.42.
+        line_height = ascent + descent
+        return FontMetrics(ascent, descent, line_height)
 
     def measure_text(self, text, font):
-        lines = text.split()
-        if len(lines) > 1:
-            width = 0
-            height = 0
-            for line in lines:
-                line_width, line_height = self._measure_text_line(
-                    line, font, tight=False
-                )
-                width = max(width, line_width)
-                height = height + line_height
-        else:
-            width, height = self._measure_text_line(text, font, tight=True)
-        return width, height
+        pango_context = self._pango_context(font)
+        layout = Pango.Layout(pango_context)
+
+        widths = []
+        for line in text.splitlines():
+            layout.set_text(line)
+            ink, logical = layout.get_extents()
+            widths.append(logical.width / Pango.SCALE)
+
+        return (
+            ceil(max(width for width in widths)),
+            self._font_metrics(pango_context).line_height * len(widths),
+        )
 
     def get_image_data(self):
         width = self.native.get_allocation().width
@@ -289,3 +306,10 @@ class Canvas(Widget):
         height = self.interface._MIN_HEIGHT
         self.interface.intrinsic.height = at_least(width)
         self.interface.intrinsic.width = at_least(height)
+
+
+@dataclass
+class FontMetrics:
+    ascent: float
+    descent: float
+    line_height: int

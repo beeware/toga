@@ -11,7 +11,7 @@ from toga.fonts import (
     SYSTEM_DEFAULT_FONTS,
 )
 
-from .libs import FontConfig, Pango
+from .libs import FontConfig, Pango, PangoCairo
 
 _FONT_CACHE = {}
 
@@ -21,10 +21,14 @@ class Font:
         self.interface = interface
 
         # Can't meaningfully get test coverage for pango not being installed
+        error = (
+            "Unable to import {}. Have you installed the Pango and "
+            "gobject-introspection system libraries?"
+        )
         if Pango is None:  # pragma: no cover
-            raise RuntimeError(
-                "Unable to import Pango. Have you installed the Pango and gobject-introspection system libraries?"
-            )
+            raise RuntimeError(error.format("Pango"))
+        if PangoCairo is None:  # pragma: no cover
+            raise RuntimeError(error.format("PangoCairo"))
 
         try:
             font = _FONT_CACHE[self.interface]

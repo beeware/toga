@@ -1,6 +1,5 @@
 from io import BytesIO
 
-import pytest
 from PIL import Image
 
 from toga_gtk.libs import Gdk, Gtk
@@ -13,10 +12,7 @@ class CanvasProbe(SimpleProbe):
 
     def reference_variant(self, reference):
         if reference in {"write_text", "multiline_text"}:
-            pytest.skip(
-                "GTK canvas font handling isn't quite right: "
-                "https://github.com/beeware/toga/pull/2029#issuecomment-1722619278"
-            )
+            return f"{reference}-gtk"
         else:
             return reference
 

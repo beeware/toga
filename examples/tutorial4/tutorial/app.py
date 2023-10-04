@@ -2,6 +2,7 @@ import math
 
 import toga
 from toga.colors import WHITE, rgb
+from toga.constants import Baseline
 from toga.fonts import SANS_SERIF
 from toga.style import Pack
 
@@ -95,17 +96,17 @@ class StartApp(toga.App):
         self.text_width, text_height = self.canvas.measure_text("Tiberius", font)
 
         x = (150 - self.text_width) // 2
-        y = 200
+        y = 175
 
         with self.canvas.Stroke(color="REBECCAPURPLE", line_width=4.0) as rect_stroker:
             self.text_border = rect_stroker.rect(
                 x - 5,
-                y - text_height - 5,
+                y - 5,
                 self.text_width + 10,
                 text_height + 10,
             )
         with self.canvas.Fill(color=rgb(149, 119, 73)) as text_filler:
-            self.text = text_filler.write_text("Tiberius", x, y, font)
+            self.text = text_filler.write_text("Tiberius", x, y, font, Baseline.TOP)
 
     def draw_tiberius(self):
         self.fill_head()

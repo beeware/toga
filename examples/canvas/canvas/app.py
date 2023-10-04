@@ -7,7 +7,7 @@ import toga
 from toga.fonts import CURSIVE, FANTASY, MESSAGE, MONOSPACE, SANS_SERIF, SERIF, SYSTEM
 from toga.style import Pack
 from toga.style.pack import COLUMN, ROW
-from toga.widgets.canvas import FillRule
+from toga.widgets.canvas import Baseline, FillRule
 
 MOVE_STEP = 5
 
@@ -48,7 +48,7 @@ class ExampleCanvasApp(toga.App):
             on_alt_release=self.on_alt_release,
         )
         self.context_selection = toga.Selection(
-            items=[STROKE, FILL], on_change=self.refresh_canvas
+            items=[FILL, STROKE], on_change=self.refresh_canvas
         )
         self.drawing_shape_instructions = {
             INSTRUCTIONS: self.draw_instructions,
@@ -99,11 +99,11 @@ class ExampleCanvasApp(toga.App):
             on_change=self.refresh_canvas,
         )
         self.font_size = toga.NumberInput(
-            min=6, max=72, value=20, on_change=self.refresh_canvas
+            min=6, max=72, value=14, on_change=self.refresh_canvas
         )
         self.italic_switch = toga.Switch(text="italic", on_change=self.refresh_canvas)
         self.bold_switch = toga.Switch(text="bold", on_change=self.refresh_canvas)
-        label_style = Pack(font_size=10, padding_left=5)
+        label_style = Pack(padding=5)
 
         # Add the content on the main window
         box = toga.Box(
@@ -511,7 +511,9 @@ class ExampleCanvasApp(toga.App):
             style=self.get_style(),
         )
         width, height = self.canvas.measure_text(text, font)
-        context.write_text(text, self.x_middle - width / 2, self.y_middle, font)
+        context.write_text(
+            text, self.x_middle - width / 2, self.y_middle, font, Baseline.MIDDLE
+        )
 
     def get_weight(self):
         if self.bold_switch.value:

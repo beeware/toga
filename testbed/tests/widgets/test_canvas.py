@@ -265,10 +265,10 @@ def assert_reference(probe, reference, threshold=0.0):
         # If the delta exceeds threshold, save the test image and fail the test.
         if rmse > threshold:
             save()
-            assert pytest.fail(f"Rendered image doesn't match reference (RMSE=={rmse})")
+            pytest.fail(f"Rendered image doesn't match reference (RMSE=={rmse})")
     else:
         save()
-        assert pytest.fail(f"Couldn't find {reference_variant!r} reference image")
+        pytest.fail(f"Couldn't find {reference_variant!r} reference image")
 
 
 async def test_transparency(canvas, probe):
