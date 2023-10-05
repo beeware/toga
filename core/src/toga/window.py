@@ -66,7 +66,7 @@ class Window:
         id: The ID of the window.
         title: Title for the window.
         position: Position of the window, as x,y coordinates.
-        size:  Size of the window, as (width, height) sizes, in pixels.
+        size:  Size of the window, as (width, height) in :ref:`CSS pixels <css-units>`.
         toolbar: (Deprecated, will have no effect)
         resizeable: Toggle if the window is resizable by the user.
         closeable: Toggle if the window is closable by the user.
@@ -200,7 +200,7 @@ class Window:
 
     @property
     def size(self) -> tuple[int, int]:
-        """Size of the window, as a ``(width, height)`` tuple."""
+        """Size of the window, as (width, height) in :ref:`CSS pixels <css-units>`."""
         return self._impl.get_size()
 
     @size.setter

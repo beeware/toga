@@ -13,7 +13,7 @@ from toga.fonts import (
     SYSTEM,
     SYSTEM_DEFAULT_FONT_SIZE,
 )
-from toga_cocoa.libs.appkit import NSFont, NSFontMask
+from toga_cocoa.libs.appkit import NSFontMask
 
 
 class FontMixin:
@@ -46,9 +46,9 @@ class FontMixin:
 
     def assert_font_size(self, expected):
         if expected == SYSTEM_DEFAULT_FONT_SIZE:
-            assert self.font.pointSize == NSFont.systemFontSize
+            assert self.font.pointSize == 13
         else:
-            assert self.font.pointSize == expected
+            assert self.font.pointSize == expected * 96 / 72
 
     def assert_font_family(self, expected):
         assert str(self.font.familyName) == {

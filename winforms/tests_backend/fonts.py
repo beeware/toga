@@ -36,7 +36,7 @@ class FontMixin:
 
     def assert_font_size(self, expected):
         if expected == SYSTEM_DEFAULT_FONT_SIZE:
-            assert int(self.font.SizeInPoints) == int(SystemFonts.DefaultFont.Size)
+            assert int(self.font.SizeInPoints) == 9
         else:
             assert int(self.font.SizeInPoints) == expected
 
@@ -44,9 +44,9 @@ class FontMixin:
         assert str(self.font.Name) == {
             CURSIVE: "Comic Sans MS",
             FANTASY: "Impact",
-            MESSAGE: SystemFonts.MenuFont.FontFamily.Name,
+            MESSAGE: SystemFonts.MessageBoxFont.FontFamily.Name,
             MONOSPACE: FontFamily.GenericMonospace.Name,
             SANS_SERIF: FontFamily.GenericSansSerif.Name,
             SERIF: FontFamily.GenericSerif.Name,
-            SYSTEM: SystemFonts.DefaultFont.FontFamily.Name,
+            SYSTEM: SystemFonts.MessageBoxFont.FontFamily.Name,
         }.get(expected, expected)

@@ -278,6 +278,10 @@ UIFontDescriptorTraitBold = 1 << 1
 uikit.UIGraphicsGetCurrentContext.restype = CGContextRef
 
 ######################################################################
+# UIGraphicsImageRenderer.h
+UIGraphicsImageRenderer = ObjCClass("UIGraphicsImageRenderer")
+
+######################################################################
 # UIImage.h
 UIImage = ObjCClass("UIImage")
 

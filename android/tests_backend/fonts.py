@@ -76,11 +76,11 @@ class FontMixin:
 
     def assert_font_size(self, expected):
         if expected == SYSTEM_DEFAULT_FONT_SIZE:
-            expected = self.default_font_size
+            expected = self.default_font_size * (72 / 96)
         assert round(self.text_size) == round(
             TypedValue.applyDimension(
                 TypedValue.COMPLEX_UNIT_SP,
-                expected,
+                expected * (96 / 72),
                 self.native.getResources().getDisplayMetrics(),
             )
         )

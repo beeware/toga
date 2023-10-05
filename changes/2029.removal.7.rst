@@ -1,0 +1,1 @@
+The ``clicks`` argument to ``Canvas.on_press`` has been removed. Instead, to detect "double clicks", you should use ``Canvas.on_activate``. The ``clicks`` argument has also been removed from ``Canvas.on_release``, ``Canvas.on_drag``, ``Canvas.on_alt_press``, ``Canvas.on_alt_release``, and ``Canvas.on_alt_drag``.

@@ -1,0 +1,1 @@
+Drawing operations (e.g., ``arc``, ``line_to``, etc) can no longer be invoked directly on a Canvas. Instead, they should be invoked on the root context of the canvas, retrieved with via the `canvas` property. Context creating operations (``Fill``, ``Stroke`` and ``ClosedPath``) are not affected.
