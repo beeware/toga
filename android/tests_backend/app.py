@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from toga_android.libs.activity import MainActivity
+from org.beeware.android import MainActivity
 
 from .probe import BaseProbe
 

@@ -1,7 +1,7 @@
 from toga_gtk.libs import Gtk
 
 from .base import SimpleProbe
-from .properties import toga_alignment_from_justification, toga_color, toga_font
+from .properties import toga_alignment_from_justification, toga_color
 
 
 class MultilineTextInputProbe(SimpleProbe):
@@ -83,7 +83,7 @@ class MultilineTextInputProbe(SimpleProbe):
     @property
     def font(self):
         sc = self.native_textview.get_style_context()
-        return toga_font(sc.get_property("font", sc.get_state()))
+        return sc.get_property("font", sc.get_state())
 
     @property
     def alignment(self):

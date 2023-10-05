@@ -1,10 +1,8 @@
 import pytest
-from travertino.fonts import Font
 
 from toga.colors import TRANSPARENT, rgba
-from toga.fonts import BOLD, ITALIC, NORMAL
 from toga.style.pack import BOTTOM, CENTER, JUSTIFY, LEFT, RIGHT, TOP
-from toga_gtk.libs import Gtk, Pango
+from toga_gtk.libs import Gtk
 
 
 def toga_color(color):
@@ -23,15 +21,6 @@ def toga_color(color):
             return c
     else:
         return None
-
-
-def toga_font(font):
-    return Font(
-        family=font.get_family(),
-        size=int(font.get_size() / Pango.SCALE),
-        style=ITALIC if font.get_style() == Pango.Style.ITALIC else NORMAL,
-        weight=BOLD if font.get_weight() == Pango.Weight.BOLD else NORMAL,
-    )
 
 
 def toga_xalignment(xalign, justify=None):

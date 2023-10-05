@@ -4,7 +4,7 @@ Window,Core Component,:class:`~toga.Window`,An operating system-managed containe
 MainWindow,Core Component,:class:`~toga.MainWindow`,The main window of the application.,|b|,|b|,|b|,|b|,|b|,|b|,|b|
 ActivityIndicator,General Widget,:class:`~toga.ActivityIndicator`,A spinning activity animation,|y|,|y|,,,,|b|,
 Button,General Widget,:class:`~toga.Button`,Basic clickable Button,|y|,|y|,|y|,|y|,|y|,|b|,|b|
-Canvas,General Widget,:class:`~toga.Canvas`,Area you can draw on,|b|,|b|,|b|,|b|,,,
+Canvas,General Widget,:class:`~toga.Canvas`,A drawing area for 2D vector graphics.,|y|,|y|,|y|,|y|,|y|,,
 DateInput,General Widget,:class:`~toga.DateInput`,A widget to select a calendar date,,,|y|,,|y|,,
 DetailedList,General Widget,:class:`~toga.DetailedList`,"An ordered list of content where each item has an icon, a main heading, and a line of supplementary text.",|y|,|y|,|b|,|y|,|y|,,
 Divider,General Widget,:class:`~toga.Divider`,A horizontal or vertical line,|y|,|y|,|y|,,,|b|,
@@ -28,7 +28,7 @@ ScrollContainer,Layout Widget,:class:`~toga.ScrollContainer`,A container that ca
 SplitContainer,Layout Widget,:class:`~toga.SplitContainer`,A container that divides an area into two panels with a movable border,|y|,|y|,|y|,,,,
 OptionContainer,Layout Widget,:class:`~toga.OptionContainer`,A container that can display multiple labeled tabs of content,|y|,|y|,|y|,,,,
 App Paths,Resource,:class:`~toga.paths.Paths`,A mechanism for obtaining platform-appropriate filesystem locations for an application.,|y|,|y|,|y|,|y|,|y|,,|b|
-Font,Resource,:class:`~toga.Font`,Fonts,|b|,|b|,|b|,|b|,|b|,,
+Font,Resource,:class:`~toga.Font`,A text font,|b|,|y|,|y|,|b|,|y|,,
 Command,Resource,:class:`~toga.Command`,Command,|b|,|b|,|b|,,|b|,,
 Group,Resource,:class:`~toga.Group`,Command group,|b|,|b|,|b|,|b|,|b|,,
 Icon,Resource,:class:`~toga.Icon`,"A small, square image, used to provide easily identifiable visual context to a widget.",|y|,|y|,|y|,|y|,|y|,,|b|

@@ -3,11 +3,12 @@ from rubicon.objc import NSPoint
 from toga.colors import TRANSPARENT
 from toga_cocoa.libs import NSEvent, NSEventType
 
+from ..fonts import FontMixin
 from ..probe import BaseProbe
 from .properties import toga_color
 
 
-class SimpleProbe(BaseProbe):
+class SimpleProbe(BaseProbe, FontMixin):
     def __init__(self, widget):
         super().__init__()
         self.app = widget.app
@@ -90,6 +91,10 @@ class SimpleProbe(BaseProbe):
                 return None
         else:
             return TRANSPARENT
+
+    @property
+    def font(self):
+        return self.native.font
 
     async def press(self):
         self.native.performClick(None)

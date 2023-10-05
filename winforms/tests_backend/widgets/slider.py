@@ -1,4 +1,4 @@
-from System.Windows.Forms import MouseButtons, MouseEventArgs, TickStyle, TrackBar
+from System.Windows.Forms import TickStyle, TrackBar
 
 from .base import SimpleProbe
 
@@ -36,6 +36,3 @@ class SliderProbe(SimpleProbe):
 
     async def release(self):
         self.native.OnMouseUp(self.mouse_event())
-
-    def mouse_event(self):
-        return MouseEventArgs(MouseButtons.Left, clicks=1, x=0, y=0, delta=0)

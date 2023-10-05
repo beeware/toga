@@ -9,6 +9,6 @@ setup(
         "toga-core==%s" % version,
         "gbulb>=0.5.3",
         "pycairo>=1.17.0",
-        "pygobject>=3.14.0",
+        "pygobject>=3.46.0",
     ],
 )

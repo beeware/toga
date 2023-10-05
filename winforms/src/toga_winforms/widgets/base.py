@@ -9,6 +9,7 @@ from System.Drawing import (
 )
 from travertino.size import at_least
 
+from toga.colors import TRANSPARENT
 from toga_winforms.colors import native_color
 
 
@@ -16,20 +17,22 @@ class Scalable:
     SCALE_DEFAULT_ROUNDING = ROUND_HALF_EVEN
 
     def init_scale(self, native):
-        self.scale = native.CreateGraphics().DpiX / 96
+        self.dpi_scale = native.CreateGraphics().DpiX / 96
 
     # Convert CSS pixels to native pixels
     def scale_in(self, value, rounding=SCALE_DEFAULT_ROUNDING):
-        return self.scale_round(value * self.scale, rounding)
+        return self.scale_round(value * self.dpi_scale, rounding)
 
     # Convert native pixels to CSS pixels
     def scale_out(self, value, rounding=SCALE_DEFAULT_ROUNDING):
         if isinstance(value, at_least):
             return at_least(self.scale_out(value.value, rounding))
         else:
-            return self.scale_round(value / self.scale, rounding)
+            return self.scale_round(value / self.dpi_scale, rounding)
 
     def scale_round(self, value, rounding):
+        if rounding is None:
+            return value
         return int(Decimal(value).to_integral(rounding))
 
 
@@ -119,11 +122,13 @@ class Widget(ABC, Scalable):
     def set_background_color(self, color):
         if not hasattr(self, "_default_background"):
             self._default_background = self.native.BackColor
-        if color is None:
+        if color is None or (
+            color == TRANSPARENT and not self._background_supports_alpha
+        ):
             self.native.BackColor = self._default_background
         else:
             win_color = native_color(color)
-            if (win_color != Color.Empty) and (not self._background_supports_alpha):
+            if not self._background_supports_alpha:
                 win_color = Color.FromArgb(255, win_color.R, win_color.G, win_color.B)
             self.native.BackColor = win_color
 

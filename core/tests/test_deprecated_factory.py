@@ -1,5 +1,4 @@
 import toga
-from toga.fonts import SANS_SERIF
 from toga_dummy.utils import TestCase
 
 
@@ -41,19 +40,6 @@ class DeprecatedFactoryTests(TestCase):
     def test_command_set(self):
         with self.assertWarns(DeprecationWarning):
             toga.CommandSet(factory=self.factory)
-
-    def test_font(self):
-        widget = toga.Font(SANS_SERIF, 14)
-        with self.assertWarns(DeprecationWarning):
-            widget.bind(factory=self.factory)
-        self.assertEqual(widget._impl.interface, widget)
-        self.assertNotEqual(widget.factory, self.factory)
-
-    def test_canvas_created(self):
-        with self.assertWarns(DeprecationWarning):
-            widget = toga.Canvas(factory=self.factory)
-        self.assertEqual(widget._impl.interface, widget)
-        self.assertNotEqual(widget.factory, self.factory)
 
     ######################################################################
     # End backwards compatibility.

@@ -1,0 +1,1 @@
+``fill()`` and ``stroke()`` now return simple drawing operations, rather than context managers. If you attempt to use ``fill()`` or ``stroke()`` on a context as a context manager, an exception will be raised; using these methods on Canvas will raise a warning, but return the appropriate context manager.

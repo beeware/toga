@@ -1,0 +1,1 @@
+Font APIs now have 100% test coverage.

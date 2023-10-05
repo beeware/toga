@@ -1,4 +1,11 @@
-from toga.widgets.canvas import FillRule
+from ctypes import POINTER, c_char, cast
+from math import ceil
+
+from rubicon.objc import objc_method, objc_property
+from travertino.size import at_least
+
+from toga.colors import BLACK, TRANSPARENT, color
+from toga.widgets.canvas import Baseline, FillRule
 from toga_cocoa.colors import native_color
 from toga_cocoa.libs import (
     CGFloat,
@@ -12,6 +19,7 @@ from toga_cocoa.libs import (
     NSMutableDictionary,
     NSPoint,
     NSRect,
+    NSSize,
     NSStrokeColorAttributeName,
     NSStrokeWidthAttributeName,
     NSView,
@@ -19,8 +27,6 @@ from toga_cocoa.libs import (
     kCGPathEOFill,
     kCGPathFill,
     kCGPathStroke,
-    objc_method,
-    objc_property,
 )
 
 from .base import Widget
@@ -33,10 +39,7 @@ class TogaCanvas(NSView):
     @objc_method
     def drawRect_(self, rect: NSRect) -> None:
         context = NSGraphicsContext.currentContext.CGContext
-        # Save the "clean" state of the graphics context.
-        core_graphics.CGContextSaveGState(context)
-        if self.interface.redraw:
-            self.interface._draw(self.impl, draw_context=context)
+        self.interface.context._draw(self.impl, draw_context=context)
 
     @objc_method
     def isFlipped(self) -> bool:
@@ -45,57 +48,36 @@ class TogaCanvas(NSView):
 
     @objc_method
     def mouseDown_(self, event) -> None:
-        """Invoke the on_press handler if configured."""
-        if self.interface.on_press:
-            position = self.convertPoint(event.locationInWindow, fromView=None)
-            self.interface.on_press(
-                self.interface, position.x, position.y, event.clickCount
-            )
+        position = self.convertPoint(event.locationInWindow, fromView=None)
+        if event.clickCount == 1:
+            self.interface.on_press(None, position.x, position.y)
+        else:
+            self.interface.on_activate(None, position.x, position.y)
 
     @objc_method
     def rightMouseDown_(self, event) -> None:
-        """Invoke the on_alt_press handler if configured."""
-        if self.interface.on_alt_press:
-            position = self.convertPoint(event.locationInWindow, fromView=None)
-            self.interface.on_alt_press(
-                self.interface, position.x, position.y, event.clickCount
-            )
+        position = self.convertPoint(event.locationInWindow, fromView=None)
+        self.interface.on_alt_press(None, position.x, position.y)
 
     @objc_method
     def mouseUp_(self, event) -> None:
-        """Invoke the on_release handler if configured."""
-        if self.interface.on_release:
-            position = self.convertPoint(event.locationInWindow, fromView=None)
-            self.interface.on_release(
-                self.interface, position.x, position.y, event.clickCount
-            )
+        position = self.convertPoint(event.locationInWindow, fromView=None)
+        self.interface.on_release(None, position.x, position.y)
 
     @objc_method
     def rightMouseUp_(self, event) -> None:
-        """Invoke the on_alt_release handler if configured."""
-        if self.interface.on_alt_release:
-            position = self.convertPoint(event.locationInWindow, fromView=None)
-            self.interface.on_alt_release(
-                self.interface, position.x, position.y, event.clickCount
-            )
+        position = self.convertPoint(event.locationInWindow, fromView=None)
+        self.interface.on_alt_release(None, position.x, position.y)
 
     @objc_method
     def mouseDragged_(self, event) -> None:
-        """Invoke the on_drag handler if configured."""
-        if self.interface.on_drag:
-            position = self.convertPoint(event.locationInWindow, fromView=None)
-            self.interface.on_drag(
-                self.interface, position.x, position.y, event.clickCount
-            )
+        position = self.convertPoint(event.locationInWindow, fromView=None)
+        self.interface.on_drag(None, position.x, position.y)
 
     @objc_method
     def rightMouseDragged_(self, event) -> None:
-        """Invoke the on_alt_drag handler if configured."""
-        if self.interface.on_alt_drag:
-            position = self.convertPoint(event.locationInWindow, fromView=None)
-            self.interface.on_alt_drag(
-                self.interface, position.x, position.y, event.clickCount
-            )
+        position = self.convertPoint(event.locationInWindow, fromView=None)
+        self.interface.on_alt_drag(None, position.x, position.y)
 
 
 class Canvas(Widget):
@@ -112,33 +94,59 @@ class Canvas(Widget):
 
     def set_bounds(self, x, y, width, height):
         super().set_bounds(x, y, width, height)
-        if self.interface.window and self.interface.on_resize:
-            self.interface.on_resize(self.interface)
+        self.interface.on_resize(None, width=width, height=height)
+
+    def set_background_color(self, color):
+        if color is TRANSPARENT or color is None:
+            self.native.backgroundColor = None
+        else:
+            self.native.backgroundColor = native_color(color)
+
+    # Context management
+    def push_context(self, draw_context, **kwargs):
+        core_graphics.CGContextSaveGState(draw_context)
+
+    def pop_context(self, draw_context, **kwargs):
+        core_graphics.CGContextRestoreGState(draw_context)
 
     # Basic paths
-
-    def new_path(self, draw_context, *args, **kwargs):
+    def begin_path(self, draw_context, **kwargs):
         core_graphics.CGContextBeginPath(draw_context)
 
-    def closed_path(self, x, y, draw_context, *args, **kwargs):
+    def close_path(self, draw_context, **kwargs):
         core_graphics.CGContextClosePath(draw_context)
 
-    def move_to(self, x, y, draw_context, *args, **kwargs):
+    def move_to(self, x, y, draw_context, **kwargs):
         core_graphics.CGContextMoveToPoint(draw_context, x, y)
 
-    def line_to(self, x, y, draw_context, *args, **kwargs):
+    def line_to(self, x, y, draw_context, **kwargs):
+        self._ensure_subpath(x, y, draw_context)
         core_graphics.CGContextAddLineToPoint(draw_context, x, y)
+
+    def _ensure_subpath(self, x, y, draw_context):
+        if core_graphics.CGContextIsPathEmpty(draw_context):
+            self.move_to(x, y, draw_context)
 
     # Basic shapes
 
     def bezier_curve_to(
-        self, cp1x, cp1y, cp2x, cp2y, x, y, draw_context, *args, **kwargs
+        self,
+        cp1x,
+        cp1y,
+        cp2x,
+        cp2y,
+        x,
+        y,
+        draw_context,
+        **kwargs,
     ):
+        self._ensure_subpath(cp1x, cp1y, draw_context)
         core_graphics.CGContextAddCurveToPoint(
             draw_context, cp1x, cp1y, cp2x, cp2y, x, y
         )
 
-    def quadratic_curve_to(self, cpx, cpy, x, y, draw_context, *args, **kwargs):
+    def quadratic_curve_to(self, cpx, cpy, x, y, draw_context, **kwargs):
+        self._ensure_subpath(cpx, cpy, draw_context)
         core_graphics.CGContextAddQuadCurveToPoint(draw_context, cpx, cpy, x, y)
 
     def arc(
@@ -150,8 +158,7 @@ class Canvas(Widget):
         endangle,
         anticlockwise,
         draw_context,
-        *args,
-        **kwargs
+        **kwargs,
     ):
         # Cocoa Box Widget is using a flipped coordinate system, so clockwise
         # is actually anticlockwise
@@ -174,51 +181,41 @@ class Canvas(Widget):
         endangle,
         anticlockwise,
         draw_context,
-        *args,
-        **kwargs
+        **kwargs,
     ):
         core_graphics.CGContextSaveGState(draw_context)
         self.translate(x, y, draw_context)
+        self.rotate(rotation, draw_context)
         if radiusx >= radiusy:
             self.scale(1, radiusy / radiusx, draw_context)
             self.arc(0, 0, radiusx, startangle, endangle, anticlockwise, draw_context)
-        elif radiusy > radiusx:
+        else:
             self.scale(radiusx / radiusy, 1, draw_context)
             self.arc(0, 0, radiusy, startangle, endangle, anticlockwise, draw_context)
-        self.rotate(rotation, draw_context)
-        self.reset_transform(draw_context)
         core_graphics.CGContextRestoreGState(draw_context)
 
-    def rect(self, x, y, width, height, draw_context, *args, **kwargs):
+    def rect(self, x, y, width, height, draw_context, **kwargs):
         rectangle = CGRectMake(x, y, width, height)
         core_graphics.CGContextAddRect(draw_context, rectangle)
 
     # Drawing Paths
 
-    def fill(self, color, fill_rule, preserve, draw_context, *args, **kwargs):
+    def fill(self, color, fill_rule, draw_context, **kwargs):
         if fill_rule == FillRule.EVENODD:
             mode = CGPathDrawingMode(kCGPathEOFill)
         else:
             mode = CGPathDrawingMode(kCGPathFill)
-        if color is not None:
-            core_graphics.CGContextSetRGBFillColor(
-                draw_context, color.r / 255, color.g / 255, color.b / 255, color.a
-            )
-        else:
-            # Set color to black
-            core_graphics.CGContextSetRGBFillColor(draw_context, 0, 0, 0, 1)
+        core_graphics.CGContextSetRGBFillColor(
+            draw_context, color.r / 255, color.g / 255, color.b / 255, color.a
+        )
         core_graphics.CGContextDrawPath(draw_context, mode)
 
-    def stroke(self, color, line_width, line_dash, draw_context, *args, **kwargs):
+    def stroke(self, color, line_width, line_dash, draw_context, **kwargs):
         core_graphics.CGContextSetLineWidth(draw_context, line_width)
         mode = CGPathDrawingMode(kCGPathStroke)
-        if color is not None:
-            core_graphics.CGContextSetRGBStrokeColor(
-                draw_context, color.r / 255, color.g / 255, color.b / 255, color.a
-            )
-        else:
-            # Set color to black
-            core_graphics.CGContextSetRGBStrokeColor(draw_context, 0, 0, 0, 1)
+        core_graphics.CGContextSetRGBStrokeColor(
+            draw_context, color.r / 255, color.g / 255, color.b / 255, color.a
+        )
         if line_dash is not None:
             core_graphics.CGContextSetLineDash(
                 draw_context, 0, (CGFloat * len(line_dash))(*line_dash), len(line_dash)
@@ -228,17 +225,16 @@ class Canvas(Widget):
         core_graphics.CGContextDrawPath(draw_context, mode)
 
     # Transformations
-
-    def rotate(self, radians, draw_context, *args, **kwargs):
+    def rotate(self, radians, draw_context, **kwargs):
         core_graphics.CGContextRotateCTM(draw_context, radians)
 
-    def scale(self, sx, sy, draw_context, *args, **kwargs):
+    def scale(self, sx, sy, draw_context, **kwargs):
         core_graphics.CGContextScaleCTM(draw_context, sx, sy)
 
-    def translate(self, tx, ty, draw_context, *args, **kwargs):
+    def translate(self, tx, ty, draw_context, **kwargs):
         core_graphics.CGContextTranslateCTM(draw_context, tx, ty)
 
-    def reset_transform(self, draw_context, *args, **kwargs):
+    def reset_transform(self, draw_context, **kwargs):
         # Restore the "clean" state of the graphics context.
         core_graphics.CGContextRestoreGState(draw_context)
         # CoreGraphics has a stack-based state representation,
@@ -247,40 +243,82 @@ class Canvas(Widget):
         core_graphics.CGContextSaveGState(draw_context)
 
     # Text
-
-    def measure_text(self, text, font, tight=False):
-        return font._impl.measure(text, tight=tight)
-
-    def write_text(self, text, x, y, font, *args, **kwargs):
-        width, height = self.measure_text(text, font)
+    def _render_string(self, text, font, **kwargs):
         textAttributes = NSMutableDictionary.alloc().init()
-        textAttributes[NSFontAttributeName] = font._impl.native
+        textAttributes[NSFontAttributeName] = font.native
 
-        if "stroke_color" in kwargs and "fill_color" in kwargs:
+        if "stroke_color" in kwargs:
             textAttributes[NSStrokeColorAttributeName] = native_color(
                 kwargs["stroke_color"]
             )
-            # Apply negative NSStrokeWidthAttributeName to get stroke and fill
-            textAttributes[NSStrokeWidthAttributeName] = -1 * kwargs["text_line_width"]
+
+            # Stroke width is expressed as a percentage of the font size, or a negative
+            # percentage to get both stroke and fill.
+            stroke_width = kwargs["line_width"] / font.native.pointSize * 100
+            if "fill_color" in kwargs:
+                stroke_width *= -1
+            textAttributes[NSStrokeWidthAttributeName] = stroke_width
+        if "fill_color" in kwargs:
             textAttributes[NSForegroundColorAttributeName] = native_color(
                 kwargs["fill_color"]
             )
-        elif "stroke_color" in kwargs:
-            textAttributes[NSStrokeColorAttributeName] = native_color(
-                kwargs["stroke_color"]
-            )
-            textAttributes[NSStrokeWidthAttributeName] = kwargs["text_line_width"]
-        elif "fill_color" in kwargs:
-            textAttributes[NSForegroundColorAttributeName] = native_color(
-                kwargs["fill_color"]
-            )
-        else:
-            raise ValueError("No stroke or fill of write text")
 
         text_string = NSAttributedString.alloc().initWithString(
             text, attributes=textAttributes
         )
-        text_string.drawAtPoint(NSPoint(x, y - height))
+        return text_string
+
+    # Although the native API can measure and draw multi-line strings, this makes the
+    # line spacing depend on the scale factor, which messes up the tests.
+    def _line_height(self, font):
+        # descender is a negative number.
+        return ceil(font.native.ascender - font.native.descender)
+
+    def measure_text(self, text, font):
+        # We need at least a fill color to render, but that won't change the size.
+        sizes = [
+            self._render_string(line, font, fill_color=color(BLACK)).size()
+            for line in text.splitlines()
+        ]
+        return (
+            ceil(max(size.width for size in sizes)),
+            self._line_height(font) * len(sizes),
+        )
+
+    def write_text(self, text, x, y, font, baseline, **kwargs):
+        lines = text.splitlines()
+        line_height = self._line_height(font)
+        total_height = line_height * len(lines)
+
+        if baseline == Baseline.TOP:
+            top = y + font.native.ascender
+        elif baseline == Baseline.MIDDLE:
+            top = y + font.native.ascender - (total_height / 2)
+        elif baseline == Baseline.BOTTOM:
+            top = y + font.native.ascender - total_height
+        else:
+            # Default to Baseline.ALPHABETIC
+            top = y
+
+        for line_num, line in enumerate(lines):
+            # Rounding minimizes differences between scale factors.
+            origin = NSPoint(round(x), round(top) + (line_height * line_num))
+            rs = self._render_string(line, font, **kwargs)
+
+            # "This method uses the baseline origin by default. If
+            # NSStringDrawingUsesLineFragmentOrigin is not specified, the
+            # rectangle’s height will be ignored"
+            #
+            # Previously we used drawAtPoint, which takes a TOP-relative origin. But
+            # this often gave off-by-one errors in ALPHABETIC mode, even when we
+            # attempted to put the baseline on a logical pixel edge. This may be
+            # because drawAtPoint calculates the line height in its own way and then
+            # sets the baseline relative to its bottom
+            # (https://www.sketch.com/blog/typesetting-in-sketch/), but it would be
+            # unwise to rely on that.
+            rs.drawWithRect(
+                NSRect(origin, NSSize(2**31 - 1, 0)), options=0, context=None
+            )
 
     def get_image_data(self):
         bitmap = self.native.bitmapImageRepForCachingDisplayInRect(self.native.bounds)
@@ -291,39 +329,14 @@ class Canvas(Widget):
             NSBitmapImageFileType.PNG,
             properties=None,
         )
-        return data
+        # data is an NSData object that has .bytes as a c_void_p, and a .length. Cast to
+        # POINTER(c_char) to get an addressable array of bytes, and slice that array to
+        # the known length. We don't use c_char_p because it has handling of NUL
+        # termination, and POINTER(c_char) allows array subscripting.
+        return cast(data.bytes, POINTER(c_char))[: data.length]
 
     # Rehint
-
     def rehint(self):
         fitting_size = self.native.fittingSize()
-        self.interface.intrinsic.height = fitting_size.height
-        self.interface.intrinsic.width = fitting_size.width
-
-    def set_on_resize(self, handler):
-        """No special handling required."""
-        pass
-
-    def set_on_press(self, handler):
-        """No special handling required."""
-        pass
-
-    def set_on_release(self, handler):
-        """No special handling required."""
-        pass
-
-    def set_on_drag(self, handler):
-        """No special handling required."""
-        pass
-
-    def set_on_alt_press(self, handler):
-        """No special handling required."""
-        pass
-
-    def set_on_alt_release(self, handler):
-        """No special handling required."""
-        pass
-
-    def set_on_alt_drag(self, handler):
-        """No special handling required."""
-        pass
+        self.interface.intrinsic.height = at_least(fitting_size.height)
+        self.interface.intrinsic.width = at_least(fitting_size.width)
