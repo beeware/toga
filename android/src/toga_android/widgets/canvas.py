@@ -83,14 +83,21 @@ class Canvas(Widget):
         path.moveTo(x, y)
 
     def line_to(self, x, y, path, **kwargs):
+        self._ensure_subpath(x, y, path)
         path.lineTo(x, y)
+
+    def _ensure_subpath(self, x, y, path):
+        if path.isEmpty():
+            self.move_to(x, y, path)
 
     # Basic shapes
 
     def bezier_curve_to(self, cp1x, cp1y, cp2x, cp2y, x, y, path, **kwargs):
+        self._ensure_subpath(cp1x, cp1y, path)
         path.cubicTo(cp1x, cp1y, cp2x, cp2y, x, y)
 
     def quadratic_curve_to(self, cpx, cpy, x, y, path, **kwargs):
+        self._ensure_subpath(cpx, cpy, path)
         path.quadTo(cpx, cpy, x, y)
 
     def arc(self, x, y, radius, startangle, endangle, anticlockwise, path, **kwargs):

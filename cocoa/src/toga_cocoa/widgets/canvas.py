@@ -120,7 +120,12 @@ class Canvas(Widget):
         core_graphics.CGContextMoveToPoint(draw_context, x, y)
 
     def line_to(self, x, y, draw_context, **kwargs):
+        self._ensure_subpath(x, y, draw_context)
         core_graphics.CGContextAddLineToPoint(draw_context, x, y)
+
+    def _ensure_subpath(self, x, y, draw_context):
+        if core_graphics.CGContextIsPathEmpty(draw_context):
+            self.move_to(x, y, draw_context)
 
     # Basic shapes
 
@@ -135,11 +140,13 @@ class Canvas(Widget):
         draw_context,
         **kwargs,
     ):
+        self._ensure_subpath(cp1x, cp1y, draw_context)
         core_graphics.CGContextAddCurveToPoint(
             draw_context, cp1x, cp1y, cp2x, cp2y, x, y
         )
 
     def quadratic_curve_to(self, cpx, cpy, x, y, draw_context, **kwargs):
+        self._ensure_subpath(cpx, cpy, draw_context)
         core_graphics.CGContextAddQuadCurveToPoint(draw_context, cpx, cpy, x, y)
 
     def arc(
