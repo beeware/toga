@@ -58,8 +58,8 @@ class WinformContext:
         if self.at_start_point:
             self.at_start_point = False
             return self.start_point
-        elif glp := self.current_path.GetLastPoint():
-            return glp
+        elif self.current_path.PointCount:
+            return self.current_path.GetLastPoint()
         else:
             # Since we're returning start_point for immediate use, we don't set
             # at_start_point here.
@@ -109,23 +109,29 @@ class Canvas(Box):
         elif mouse_event.Button == WinForms.MouseButtons.Right:
             self.interface.on_alt_press(None, x, y)
             self.dragging = True
+        else:  # pragma: no cover
+            pass
 
     def winforms_mouse_move(self, obj, mouse_event):
-        x, y = map(self.scale_out, (mouse_event.X, mouse_event.Y))
         if not self.dragging:
             return
+        x, y = map(self.scale_out, (mouse_event.X, mouse_event.Y))
         if mouse_event.Button == WinForms.MouseButtons.Left:
             self.interface.on_drag(None, x, y)
         elif mouse_event.Button == WinForms.MouseButtons.Right:
             self.interface.on_alt_drag(None, x, y)
+        else:  # pragma: no cover
+            pass
 
     def winforms_mouse_up(self, obj, mouse_event):
+        self.dragging = False
         x, y = map(self.scale_out, (mouse_event.X, mouse_event.Y))
         if mouse_event.Button == WinForms.MouseButtons.Left:
             self.interface.on_release(None, x, y)
         elif mouse_event.Button == WinForms.MouseButtons.Right:
             self.interface.on_alt_release(None, x, y)
-        self.dragging = False
+        else:  # pragma: no cover
+            pass
 
     def redraw(self):
         self.native.Invalidate()
@@ -252,20 +258,14 @@ class Canvas(Box):
 
     def fill(self, color, fill_rule, draw_context, **kwargs):
         brush = SolidBrush(native_color(color))
-        fill_mode = self.native_fill_rule(fill_rule)
         for path in draw_context.paths:
-            if fill_mode is not None:
-                path.FillMode = fill_mode
+            if fill_rule == FillRule.EVENODD:
+                path.FillMode = FillMode.Alternate
+            else:  # Default to NONZERO
+                path.FillMode = FillMode.Winding
             path.Transform(draw_context.matrix)
             draw_context.graphics.FillPath(brush, path)
         draw_context.paths.clear()
-
-    def native_fill_rule(self, fill_rule):
-        if fill_rule == FillRule.EVENODD:
-            return FillMode.Alternate
-        if fill_rule == FillRule.NONZERO:
-            return FillMode.Winding
-        return None
 
     def stroke(self, color, line_width, line_dash, draw_context, **kwargs):
         pen = Pen(native_color(color), self.scale_in(line_width, rounding=None))

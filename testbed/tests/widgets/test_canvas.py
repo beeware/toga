@@ -298,19 +298,25 @@ async def test_transparency(canvas, probe):
 async def test_paths(canvas, probe):
     "A path can be drawn"
 
+    # A filled path closes automatically.
     canvas.context.begin_path()
     canvas.context.move_to(20, 20)
     canvas.context.line_to(140, 20)
     canvas.context.line_to(20, 140)
     canvas.context.fill()
 
-    # Stroked triangle requires explicit close
+    # A stroked path requires an explicit close. For an open stroke, see test_stroke.
     canvas.context.begin_path()
     canvas.context.move_to(180, 180)
     canvas.context.line_to(180, 60)
     canvas.context.line_to(60, 180)
     canvas.context.close_path()
     canvas.context.stroke()
+
+    # An empty path should not appear.
+    canvas.context.begin_path()
+    canvas.context.close_path()
+    canvas.context.stroke(RED)
 
     await probe.redraw("Pair of triangles should be drawn")
     assert_reference(probe, "paths", threshold=0.04)
@@ -478,7 +484,8 @@ async def test_stroke(canvas, probe):
 
     # Draw an open path inside it
     canvas.context.begin_path()
-    canvas.context.move_to(x=50, y=40)
+    # At the start of a path, line_to is equivalent to move_to.
+    canvas.context.line_to(x=50, y=40)
     canvas.context.line_to(x=90, y=40)
     canvas.context.line_to(x=150, y=160)
     canvas.context.line_to(x=110, y=160)
