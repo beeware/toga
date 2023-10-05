@@ -37,3 +37,9 @@ try:
     from gi.repository import PangoCairo  # noqa: F401
 except (ImportError, ValueError):  # pragma: no cover
     PangoCairo = None
+
+try:
+    gi.require_version("PangoFc", "1.0")
+    from gi.repository import PangoFc  # noqa: F401
+except (ImportError, ValueError):  # pragma: no cover
+    PangoFc = None
