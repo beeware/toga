@@ -8,6 +8,7 @@ from .base import SimpleProbe
 class SelectionProbe(SimpleProbe):
     native_class = Spinner
     supports_justify = False
+    default_font_size = 16
 
     def assert_resizes_on_content_change(self):
         xfail("Selection doesn't resize on content changes on this backend")
@@ -22,11 +23,11 @@ class SelectionProbe(SimpleProbe):
 
     @property
     def typeface(self):
-        return self.impl.get_typeface()
+        return self.impl.adapter._typeface
 
     @property
     def text_size(self):
-        return self.impl.get_textsize()
+        return self.impl.adapter._textsize
 
     @property
     def background_color(self):

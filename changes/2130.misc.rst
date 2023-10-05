@@ -1,1 +1,1 @@
-The set_font() method has been implemented for Android
+The set_font() method has been implemented for Selection on Android

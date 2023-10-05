@@ -173,11 +173,3 @@ class Selection(Widget):
         if tv:
             self.adapter.apply_font(tv)
         self.interface.refresh()
-
-    def get_textsize(self):
-        """Returns the text size in pixel; used by testbed application"""
-        return self.adapter._textsize
-
-    def get_typeface(self):
-        """Returns the Typeface; used by testbed application"""
-        return self.adapter._typeface
