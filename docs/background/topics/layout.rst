@@ -26,9 +26,7 @@ When a refresh is requested on a container, any sub-containers will also be refr
 Length units
 ============
 
-Toga uses CSS units in its public API. All size calculations assume that the user has a
-96 DPI display; if the user has a higher density display, the sizes that are applied
-will be scaled accordingly. In practice, this means that:
+Toga uses CSS units in its public API. Their physical size depends on the device type:
 
 * A CSS pixel is about 1/96 of an inch (0.26 mm) on a desktop screen, and about 1/160 of
   an inch (0.16 mm) on a phone screen.
@@ -37,7 +35,7 @@ will be scaled accordingly. In practice, this means that:
 
 Toga only uses points to measure font sizes. All other lengths are expressed as pixels.
 
-For a full explanation of size interpretations, see `this article
+For a full explanation of CSS units, see `this article
 <https://hacks.mozilla.org/2013/09/css-length-explained/>`__.
 
 Implementation notes
