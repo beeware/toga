@@ -45,7 +45,7 @@ class TouchListener(dynamic_proxy(View.OnTouchListener)):
             self.interface.on_drag(None, x, y)
         elif action == MotionEvent.ACTION_UP:
             self.interface.on_release(None, x, y)
-        else:
+        else:  # pragma: no cover
             return False
         return True
 

@@ -1,4 +1,5 @@
 import math
+from math import pi
 from unittest.mock import Mock, call
 
 import pytest
@@ -352,24 +353,36 @@ async def test_quadratic_curve(canvas, probe):
 async def test_arc(canvas, probe):
     "An arc can be drawn"
     canvas.context.begin_path()
+
     # Face
-    canvas.context.arc(100, 100, 80, 0)
+    canvas.context.arc(100, 100, 80)
 
-    # Smile
+    # Smile (exactly half a turn)
     canvas.context.move_to(150, 100)
-    canvas.context.arc(100, 100, 50, 0, math.pi, False)
+    canvas.context.arc(100, 100, 50, 0, pi, anticlockwise=False)
 
-    # Hair
+    # Hair (exactly half a turn, but in the opposite direction)
     canvas.context.move_to(190, 100)
-    canvas.context.arc(100, 100, 90, 0, math.pi, True)
+    canvas.context.arc(100, 100, 90, 0, pi, anticlockwise=True)
 
     # Left eye
     canvas.context.move_to(70, 70)
-    canvas.context.arc(64, 70, 6, 0)
+    canvas.context.arc(64, 70, 6)
 
     # Right eye
     canvas.context.move_to(130, 70)
-    canvas.context.arc(124, 70, 6, 0)
+    canvas.context.arc(124, 70, 6)
+
+    canvas.context.stroke()
+
+    # Left eyebrow (less than half a turn)
+    canvas.context.begin_path()
+    canvas.context.arc(64, 70, 12, pi * 3 / 4, pi * 6 / 4)
+    canvas.context.stroke()
+
+    # Right eyebrow (less than half a turn, crossing the zero angle)
+    canvas.context.begin_path()
+    canvas.context.arc(124, 70, 12, pi * 6 / 4, pi * 1 / 4)
     canvas.context.stroke()
 
     await probe.redraw("Smiley face should be drawn")
@@ -385,30 +398,30 @@ async def test_ellipse(canvas, probe):
     canvas.context.fill(color=RED)
 
     # Purple orbit
-    canvas.context.ellipse(100, 100, 90, 20, rotation=math.pi * 3 / 4)
+    canvas.context.ellipse(100, 100, 90, 20, rotation=pi * 3 / 4)
     canvas.context.stroke(color=REBECCAPURPLE)
 
-    # Blue orbit
+    # Blue orbit (more than half a turn)
     canvas.context.ellipse(
         100,
         100,
         radiusx=20,
         radiusy=90,
-        rotation=-math.pi / 4,
-        startangle=math.pi * 7 / 4,
-        endangle=math.pi / 4,
+        rotation=-pi / 4,
+        startangle=pi * 7 / 4,
+        endangle=pi / 4,
         anticlockwise=True,
     )
     canvas.context.stroke(color=CORNFLOWERBLUE)
 
-    # Yellow orbit
+    # Yellow orbit (more than half a turn)
     canvas.context.ellipse(
         100,
         100,
         radiusx=20,
         radiusy=90,
-        startangle=math.pi / 4,
-        endangle=math.pi * 7 / 4,
+        startangle=pi / 4,
+        endangle=pi * 7 / 4,
     )
     canvas.context.stroke(color=GOLDENROD)
 
@@ -529,7 +542,7 @@ async def test_transforms(canvas, probe):
     canvas.context.fill(color=CORNFLOWERBLUE)
 
     canvas.context.reset_transform()
-    canvas.context.rotate(math.pi / 4)
+    canvas.context.rotate(pi / 4)
     canvas.context.rect(200, 0, 20, 60)
     canvas.context.fill(color=REBECCAPURPLE)
 
@@ -540,7 +553,7 @@ async def test_transforms(canvas, probe):
 
     canvas.context.reset_transform()
     canvas.context.translate(100, 60)
-    canvas.context.rotate(math.pi / 7 * 4)
+    canvas.context.rotate(pi / 7 * 4)
     canvas.context.scale(5, 2)
     canvas.context.rect(2, 2, 10, 10)
     canvas.context.fill()
