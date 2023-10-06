@@ -19,8 +19,6 @@ LOAD_TIMEOUT = 30
 JS_TIMEOUT = 5
 WINDOWS_INIT_TIMEOUT = 60
 
-pytest.skip("Disable webtests for now", allow_module_level=True)
-
 
 async def get_content(widget):
     try:
