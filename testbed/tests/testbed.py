@@ -16,6 +16,11 @@ from testbed.app import main
 
 def run_tests(app, cov, args, report_coverage, run_slow):
     try:
+        # Wait for the app's main window to be visible.
+        print("Waiting for app to be ready for testing... ", end="", flush=True)
+        while app.main_window is None or not app.main_window.visible:
+            time.sleep(0.05)
+        print("ready.")
         # Control the run speed of the test app.
         app.run_slow = run_slow
 
