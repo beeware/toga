@@ -1,11 +1,14 @@
 from decimal import ROUND_UP
 
+from java import dynamic_proxy
+
+from android import R
+from android.view import ViewTreeObserver
+
 from .container import Container
-from .libs.android import R__id
-from .libs.android.view import ViewTreeObserver__OnGlobalLayoutListener
 
 
-class LayoutListener(ViewTreeObserver__OnGlobalLayoutListener):
+class LayoutListener(dynamic_proxy(ViewTreeObserver.OnGlobalLayoutListener)):
     def __init__(self, window):
         super().__init__()
         self.window = window
@@ -28,7 +31,7 @@ class Window(Container):
 
     def set_app(self, app):
         self.app = app
-        native_parent = app.native.findViewById(R__id.content)
+        native_parent = app.native.findViewById(R.id.content)
         self.init_container(native_parent)
         native_parent.getViewTreeObserver().addOnGlobalLayoutListener(
             LayoutListener(self)

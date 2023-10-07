@@ -1,22 +1,16 @@
 from decimal import ROUND_DOWN
 
+from java import dynamic_proxy
 from travertino.size import at_least
 
+from android.view import Gravity, View
+from android.widget import HorizontalScrollView, LinearLayout, ScrollView
+
 from ..container import Container
-from ..libs.android.view import (
-    Gravity,
-    View__OnScrollChangeListener,
-    View__OnTouchListener,
-)
-from ..libs.android.widget import (
-    HorizontalScrollView,
-    LinearLayout__LayoutParams,
-    ScrollView,
-)
 from .base import Widget
 
 
-class TogaOnTouchListener(View__OnTouchListener):
+class TogaOnTouchListener(dynamic_proxy(View.OnTouchListener)):
     def __init__(self):
         super().__init__()
         self.is_scrolling_enabled = True
@@ -28,7 +22,7 @@ class TogaOnTouchListener(View__OnTouchListener):
             return True
 
 
-class TogaOnScrollListener(View__OnScrollChangeListener):
+class TogaOnScrollListener(dynamic_proxy(View.OnScrollChangeListener)):
     def __init__(self, impl):
         super().__init__()
         self.impl = impl
@@ -42,9 +36,9 @@ class ScrollContainer(Widget, Container):
         scroll_listener = TogaOnScrollListener(self)
 
         self.native = self.vScrollView = ScrollView(self._native_activity)
-        vScrollView_layout_params = LinearLayout__LayoutParams(
-            LinearLayout__LayoutParams.MATCH_PARENT,
-            LinearLayout__LayoutParams.MATCH_PARENT,
+        vScrollView_layout_params = LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            LinearLayout.LayoutParams.MATCH_PARENT,
         )
         vScrollView_layout_params.gravity = Gravity.TOP
         self.vScrollView.setLayoutParams(vScrollView_layout_params)
@@ -53,9 +47,9 @@ class ScrollContainer(Widget, Container):
         self.vScrollView.setOnScrollChangeListener(scroll_listener)
 
         self.hScrollView = HorizontalScrollView(self._native_activity)
-        hScrollView_layout_params = LinearLayout__LayoutParams(
-            LinearLayout__LayoutParams.MATCH_PARENT,
-            LinearLayout__LayoutParams.MATCH_PARENT,
+        hScrollView_layout_params = LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            LinearLayout.LayoutParams.MATCH_PARENT,
         )
         hScrollView_layout_params.gravity = Gravity.LEFT
         self.hScrollListener = TogaOnTouchListener()

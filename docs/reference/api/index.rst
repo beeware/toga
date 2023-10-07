@@ -24,7 +24,7 @@ General widgets
  :doc:`ActivityIndicator </reference/api/widgets/activityindicator>`     A small animated indicator showing activity on a task of indeterminate
                                                                          length, usually rendered as a "spinner" animation.
  :doc:`Button </reference/api/widgets/button>`                           A button that can be pressed or clicked.
- :doc:`Canvas </reference/api/widgets/canvas>`                           Area you can draw on
+ :doc:`Canvas </reference/api/widgets/canvas>`                           A drawing area for 2D vector graphics.
  :doc:`DateInput </reference/api/widgets/dateinput>`                     A widget to select a calendar date
  :doc:`DetailedList </reference/api/widgets/detailedlist>`               An ordered list of content where each item has an icon, a main heading,
                                                                          and a line of supplementary text.

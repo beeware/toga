@@ -1,6 +1,5 @@
+from android.view import KeyEvent
 from toga.keys import Key
-
-from .libs.android.view import KeyEvent
 
 KEYEVENT_KEYS = {
     KeyEvent.KEYCODE_ESCAPE: Key.ESCAPE,

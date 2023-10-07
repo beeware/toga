@@ -77,11 +77,13 @@ class Font:
                 else:
                     raise ValueError(f"Font file {font_path} could not be found")
 
-            # Default system font size on Cocoa is 12pt
             if self.interface.size == SYSTEM_DEFAULT_FONT_SIZE:
                 font_size = NSFont.systemFontSize
             else:
-                font_size = self.interface.size
+                # A "point" in Apple APIs is equivalent to a CSS pixel, but the Toga
+                # public API works in CSS points, which are slightly larger
+                # (https://developer.apple.com/library/archive/documentation/GraphicsAnimation/Conceptual/HighResolutionOSX/Explained/Explained.html).
+                font_size = self.interface.size * 96 / 72
 
             # Construct the NSFont
             if self.interface.family == SYSTEM:

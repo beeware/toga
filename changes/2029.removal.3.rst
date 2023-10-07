@@ -1,0 +1,1 @@
+The ``preserve`` option on ``Fill()`` operations has been deprecated. It was required for an internal optimization and can be safely removed without impact.

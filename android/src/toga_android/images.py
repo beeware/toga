@@ -2,7 +2,7 @@ from pathlib import Path
 
 from java.io import FileOutputStream
 
-from .libs.android.graphics import Bitmap, BitmapFactory
+from android.graphics import Bitmap, BitmapFactory
 
 
 class Image:

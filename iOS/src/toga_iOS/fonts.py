@@ -55,11 +55,12 @@ class Font:
                     raise ValueError(f"Font file {font_path} could not be found")
 
             if self.interface.size == SYSTEM_DEFAULT_FONT_SIZE:
-                # iOS default label size is 17pt
-                # FIXME: make this dynamic.
-                size = 17
+                size = UIFont.labelFontSize
             else:
-                size = self.interface.size
+                # A "point" in Apple APIs is equivalent to a CSS pixel, but the Toga
+                # public API works in CSS points, which are slightly larger
+                # (https://developer.apple.com/library/archive/documentation/GraphicsAnimation/Conceptual/HighResolutionOSX/Explained/Explained.html).
+                size = self.interface.size * 96 / 72
 
             if self.interface.family == SYSTEM:
                 base_font = UIFont.systemFontOfSize(size)

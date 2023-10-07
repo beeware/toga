@@ -23,8 +23,8 @@ Fonts are applied to widgets using style properties::
    my_label = toga.Label("Hello World", style=Pack(font_family=SERIF, font_weight=BOLD))
 
 Toga provides a number of :ref:`built-in system fonts <pack-font-family>`. Font sizes
-are specified in points; if unspecified, the size will fall back to the default font size
-for the widget being styled.
+are specified in :ref:`CSS points <css-units>`; the default size depends on the platform
+and the widget.
 
 If you want to use a custom font, the font file must be provided as part of your app's
 resources, and registered before first use::

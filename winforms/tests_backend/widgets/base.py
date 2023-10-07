@@ -1,7 +1,7 @@
 from pytest import approx
 from System import EventArgs, Object
-from System.Drawing import SystemColors
-from System.Windows.Forms import SendKeys
+from System.Drawing import Color, SystemColors
+from System.Windows.Forms import MouseButtons, MouseEventArgs, SendKeys
 
 from toga.colors import TRANSPARENT
 from toga.style.pack import JUSTIFY, LEFT
@@ -28,7 +28,8 @@ class SimpleProbe(BaseProbe, FontMixin):
         super().__init__()
         self.app = widget.app
         self.widget = widget
-        self.native = widget._impl.native
+        self.impl = widget._impl
+        self.native = self.impl.native
         assert isinstance(self.native, self.native_class)
         self.scale_factor = self.native.CreateGraphics().DpiX / 96
 
@@ -65,7 +66,7 @@ class SimpleProbe(BaseProbe, FontMixin):
 
     @property
     def background_color(self):
-        if self.native.BackColor == SystemColors.Control:
+        if self.native.BackColor == Color.Transparent:
             return TRANSPARENT
         else:
             return toga_color(self.native.BackColor)
@@ -93,7 +94,7 @@ class SimpleProbe(BaseProbe, FontMixin):
 
     def assert_height(self, min_height, max_height):
         if self.fixed_height is not None:
-            assert self.height == approx(self.fixed_height, rel=0.2)
+            assert self.height == approx(self.fixed_height, rel=0.1)
         else:
             assert min_height <= self.height <= max_height
 
@@ -115,6 +116,12 @@ class SimpleProbe(BaseProbe, FontMixin):
 
     async def press(self):
         self.native.OnClick(EventArgs.Empty)
+
+    def mouse_event(self, x=0, y=0, **kwargs):
+        kwargs = {**dict(button=MouseButtons.Left, clicks=1, delta=0), **kwargs}
+        return MouseEventArgs(
+            x=round(x * self.scale_factor), y=round(y * self.scale_factor), **kwargs
+        )
 
     async def type_character(self, char, *, ctrl=False):
         try:

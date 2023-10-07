@@ -10,7 +10,7 @@ class NumberInputProbe(SimpleProbe):
     allows_empty_value = True
     allows_extra_digits = True
     background_supports_alpha = False
-    fixed_height = 18
+    fixed_height = 23
 
     @property
     def value(self):

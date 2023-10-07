@@ -90,7 +90,7 @@ reverts to the default for the direction.
 
 **Initial value:** ``none``
 
-Specify a fixed width for the box.
+Specify a fixed width for the box, in :ref:`CSS pixels <css-units>`.
 
 The final width for the box may be larger, if the children of the box cannot
 fit inside the specified space.
@@ -102,7 +102,7 @@ fit inside the specified space.
 
 **Initial value:** ``none``
 
-Specify a fixed height for the box.
+Specify a fixed height for the box, in :ref:`CSS pixels <css-units>`.
 
 The final height for the box may be larger, if the children of the box cannot
 fit inside the specified space.
@@ -137,7 +137,8 @@ direction of the parent's layout.
 
 **Initial value:** ``0``
 
-The amount of space to allocate between the edge of the box, and the edge of content in the box, on the top, right, bottom and left sides, respectively.
+The amount of space to allocate between the edge of the box, and the edge of the content
+in the box, in :ref:`CSS pixels <css-units>`.
 
 ``padding``
 -----------
@@ -264,7 +265,7 @@ The weight of the font to be used.
 
 **Initial value:** System default
 
-The size of the font to be used, in points.
+The size of the font to be used, in :ref:`CSS points <css-units>`.
 
 The relationship between Pack and CSS
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

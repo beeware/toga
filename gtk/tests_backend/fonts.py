@@ -22,6 +22,8 @@ class FontMixin:
         # font size that hasn't been realized yet. Once a font has been realized,
         # we can't reliably determine what the system font size is, other than
         # knowing that it must be non-zero. Pick some reasonable bounds instead.
+        #
+        # See also SYSTEM_DEFAULT_FONT_SIZE in toga_gtk/widgets/canvas.py.
         if self.font.get_size() == 0:
             assert expected == SYSTEM_DEFAULT_FONT_SIZE
         elif expected == SYSTEM_DEFAULT_FONT_SIZE:

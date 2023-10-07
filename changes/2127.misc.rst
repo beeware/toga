@@ -1,0 +1,1 @@
+A misspelled delegate assignment was removed from the iOS and Cocoa Webkit implementations.

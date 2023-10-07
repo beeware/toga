@@ -11,7 +11,7 @@ from .properties import toga_xalignment
 class TextInputProbe(SimpleProbe):
     native_class = TextBox
     background_supports_alpha = False
-    fixed_height = 18
+    fixed_height = 23
 
     @property
     def value(self):

@@ -31,7 +31,7 @@ class ImageView(Widget):
 
     def rehint(self):
         width, height, aspect_ratio = rehint_imageview(
-            self.interface.image, self.interface.style, self.scale
+            self.interface.image, self.interface.style, self.dpi_scale
         )
         self.interface.intrinsic.width = width
         self.interface.intrinsic.height = height
