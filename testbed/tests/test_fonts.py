@@ -82,8 +82,10 @@ async def test_font_options(widget: toga.Label, font_probe):
             "resources/fonts/Font Awesome 5 Free-Solid-900.otf",
             {"weight": BOLD},
         ),
-        # TrueType font, no options
+        # TrueType font supporting multiple styles, no options
         ("Endor", "resources/fonts/ENDOR___.ttf", {}),
+        # TrueType font supporting multiple styles, with options
+        ("Endor", "resources/fonts/ENDOR___.ttf", {"weight": BOLD}),
         # Font with weight property
         ("Roboto", "resources/fonts/Roboto-Bold.ttf", {"weight": BOLD}),
         # Font with style property
