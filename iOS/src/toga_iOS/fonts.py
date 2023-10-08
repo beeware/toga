@@ -113,8 +113,7 @@ class Font:
                 traits |= UIFontDescriptorTraitItalic
 
             if traits:
-                # If there is no font with the requested traits, this returns the original
-                # font unchanged.
+                # If there is no font with the requested traits, this returns None.
                 attributed_font = UIFont.fontWithDescriptor(
                     font.fontDescriptor.fontDescriptorWithSymbolicTraits(traits),
                     size=size,

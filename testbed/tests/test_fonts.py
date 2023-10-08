@@ -119,8 +119,6 @@ async def test_font_file_loaded(
 
     if not font_probe.supports_custom_fonts:
         pytest.skip("Platform doesn't support loading custom fonts")
-    if variable_font_test and not font_probe.supports_custom_variable_fonts:
-        pytest.skip("Platform doesn't support loading custom variable fonts")
 
     # Update widget font family and other options if needed
     widget.style.font_family = font_family
@@ -132,7 +130,10 @@ async def test_font_file_loaded(
 
     # Check that font properties are updated
     font_probe.assert_font_family(font_family)
-    font_probe.assert_font_options(**font_kwargs)
+    # Only check the font options if this is a non-variable font test, or the backend
+    # supports variable fonts
+    if not variable_font_test or font_probe.supports_custom_variable_fonts:
+        font_probe.assert_font_options(**font_kwargs)
 
     # Setting the font to "Roboto something" involves setting the font to
     # "Roboto" as an intermediate step. However, we haven't registered "Roboto
