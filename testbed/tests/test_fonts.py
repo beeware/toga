@@ -74,27 +74,29 @@ async def test_font_options(widget: toga.Label, font_probe):
 
 
 @pytest.mark.parametrize(
-    "font_family,font_path,font_kwargs",
+    "font_family,font_path,font_kwargs,variable_font_test",
     [
         # OpenType font with weight property
         (
             "Font Awesome 5 Free Solid",
             "resources/fonts/Font Awesome 5 Free-Solid-900.otf",
             {"weight": BOLD},
+            False,
         ),
         # TrueType font supporting multiple styles, no options
-        ("Endor", "resources/fonts/ENDOR___.ttf", {}),
+        ("Endor", "resources/fonts/ENDOR___.ttf", {}, False),
         # TrueType font supporting multiple styles, with options
-        ("Endor", "resources/fonts/ENDOR___.ttf", {"weight": BOLD}),
+        ("Endor", "resources/fonts/ENDOR___.ttf", {"weight": BOLD}, True),
         # Font with weight property
-        ("Roboto", "resources/fonts/Roboto-Bold.ttf", {"weight": BOLD}),
+        ("Roboto", "resources/fonts/Roboto-Bold.ttf", {"weight": BOLD}, False),
         # Font with style property
-        ("Roboto", "resources/fonts/Roboto-Italic.ttf", {"style": ITALIC}),
+        ("Roboto", "resources/fonts/Roboto-Italic.ttf", {"style": ITALIC}, False),
         # Font with multiple properties
         (
             "Roboto",
             "resources/fonts/Roboto-BoldItalic.ttf",
             {"weight": BOLD, "style": ITALIC},
+            False,
         ),
     ],
 )
@@ -105,6 +107,7 @@ async def test_font_file_loaded(
     font_family: str,
     font_path: str,
     font_kwargs,
+    variable_font_test: bool,
     capsys: pytest.CaptureFixture[str],
 ):
     """Custom fonts can be loaded and used."""
@@ -116,6 +119,8 @@ async def test_font_file_loaded(
 
     if not font_probe.supports_custom_fonts:
         pytest.skip("Platform doesn't support loading custom fonts")
+    if variable_font_test and not font_probe.supports_custom_variable_fonts:
+        pytest.skip("Platform doesn't support loading custom variable fonts")
 
     # Update widget font family and other options if needed
     widget.style.font_family = font_family

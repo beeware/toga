@@ -21,6 +21,7 @@ from toga_iOS.libs import (
 
 class FontMixin:
     supports_custom_fonts = True
+    supports_custom_variable_fonts = False
 
     def assert_font_options(self, weight=NORMAL, style=NORMAL, variant=NORMAL):
         # Cocoa's FANTASY (Papyrus) and CURSIVE (Snell Roundhand) system
