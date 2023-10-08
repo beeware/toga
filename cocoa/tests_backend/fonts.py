@@ -52,11 +52,18 @@ class FontMixin:
 
     def assert_font_family(self, expected):
         assert str(self.font.familyName) == {
+            # System and Message fonts use internal names
+            SYSTEM: ".AppleSystemUIFont",
+            MESSAGE: ".AppleSystemUIFont",
+            # Known fonts use pre-registered names
             CURSIVE: "Apple Chancery",
             FANTASY: "Papyrus",
             MONOSPACE: "Courier New",
             SANS_SERIF: "Helvetica",
             SERIF: "Times",
-            SYSTEM: ".AppleSystemUIFont",
-            MESSAGE: ".AppleSystemUIFont",
+            # Most other fonts we can just use the family name;
+            # however, the Font Awesome font has a different
+            # internal Postscript name, which *doesn't* include
+            # the "solid" weight component.
+            "Font Awesome 5 Free Solid": "Font Awesome 5 Free",
         }.get(expected, expected)
