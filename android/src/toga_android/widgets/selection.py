@@ -26,8 +26,6 @@ class TogaArrayAdapter(dynamic_proxy(SpinnerAdapter)):
         self.impl = impl
         self._default_textsize = -1
         self._default_typeface = None
-        self._textsize = -1
-        self._typeface = None
         self.adapter = ArrayAdapter(
             self.impl._native_activity, R.layout.simple_spinner_item
         )
@@ -40,8 +38,6 @@ class TogaArrayAdapter(dynamic_proxy(SpinnerAdapter)):
                 self._default_textsize,
                 self._default_typeface,
             )
-            self._textsize = tv.getTextSize()
-            self._typeface = tv.getTypeface()
 
     def cache_textview_defaults(self, tv):
         self._default_textsize = tv.getTextSize()
@@ -172,4 +168,3 @@ class Selection(Widget):
         tv = self.native.getSelectedView()
         if tv:
             self.adapter.apply_font(tv)
-        self.interface.refresh()

@@ -1,6 +1,6 @@
 import toga
-from toga.constants import COLUMN, ITALIC, NORMAL, ROW
-from toga.fonts import SYSTEM_DEFAULT_FONT_SIZE
+from toga.constants import COLUMN, ITALIC, ROW
+from toga.fonts import FANTASY
 from toga.style import Pack
 
 
@@ -123,6 +123,9 @@ class SelectionApp(toga.App):
                     style=box_style,
                     children=[
                         toga.Button("Change font", on_press=self.change_font),
+                        toga.Button(
+                            "infos", on_press=self.show_infos
+                        ),  # Todo: remove this button
                     ],
                 ),
             ],
@@ -155,11 +158,20 @@ class SelectionApp(toga.App):
     def change_font(self, widget):
         self.big_font = not self.big_font
         if self.big_font:
-            self.styled_selection.style.font_size = 20
+            self.styled_selection.style.font_size = 30
             self.styled_selection.style.font_style = ITALIC
+            self.styled_selection.style.font_family = FANTASY
         else:
-            self.styled_selection.style.font_size = SYSTEM_DEFAULT_FONT_SIZE
-            self.styled_selection.style.font_style = NORMAL
+            del self.styled_selection.style.font_size
+            del self.styled_selection.style.font_style
+            self.styled_selection.style.font_family = "serif"
+
+    def show_infos(self, widget):  # Todo: remove this method
+        native = self.styled_selection._impl.native
+        tv = native.getSelectedView()
+        print(f"textsize: {tv.getTextSize()}")
+        print(f"typeface: {str(tv.getTypeface().getStyle())}")
+        print(f"widget size: {native.getHeight()} / {native.getWidth()}")
 
 
 def main():

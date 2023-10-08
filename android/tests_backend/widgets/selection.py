@@ -23,11 +23,11 @@ class SelectionProbe(SimpleProbe):
 
     @property
     def typeface(self):
-        return self.impl.adapter._typeface
+        return self.impl.native.getSelectedView().getTypeface()
 
     @property
     def text_size(self):
-        return self.impl.adapter._textsize
+        return self.impl.native.getSelectedView().getTextSize()
 
     @property
     def background_color(self):
