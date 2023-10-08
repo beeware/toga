@@ -71,7 +71,8 @@ properties to the ones used for widget styling::
 Notes
 -----
 
-* macOS and iOS do not currently support registering user fonts.
+* macOS and iOS do not currently support variable font files (a single font file that
+  contains all the details for multiple font variants and weights).
 
 * Android and Windows do not support the oblique font style. If an oblique font is
   specified, Toga will attempt to use an italic style of the same font.

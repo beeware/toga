@@ -121,6 +121,8 @@ class Font:
                 attributed_font = NSFontManager.sharedFontManager.convertFont(
                     font, toHaveTrait=attributes_mask
                 )
+                if attributed_font is None:
+                    attributed_font = font
             else:
                 attributed_font = font
 
