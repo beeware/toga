@@ -35,7 +35,6 @@ class Font:
         try:
             attributed_font = _FONT_CACHE[self.interface]
         except KeyError:
-            font = None
             font_family = self.interface.family
             font_key = self.interface._registered_font_key(
                 family=font_family,
