@@ -80,7 +80,8 @@ class Window:
         :param id: The ID of the window.
         :param title: Title for the window. Defaults to "Toga".
         :param position: Position of the window, as a tuple of ``(x, y)`` coordinates.
-        :param size: Size of the window, as a tuple of ``(width, height)``, in pixels.
+        :param size: Size of the window, as a tuple of ``(width, height)``, in :ref:`CSS
+            pixels <css-units>`.
         :param resizable: Can the window be manually resized by the user?
         :param closable: Should the window provide the option to be manually closed?
         :param minimizable: Can the window be minimized by the user?
