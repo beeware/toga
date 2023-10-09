@@ -278,7 +278,7 @@ jobs:
         fi
         cp -r "$APP_DATA_PATH" testbed/app_data/testbed-app_data-${{ matrix.backend }}
     - name: Upload app data
-      uses: actions/upload-artifact@v3.1.2
+      uses: actions/upload-artifact@v3.1.3
       if: failure()
       with:
         name: testbed-failure-app-data-${{ matrix.backend }}
