@@ -26,8 +26,6 @@ class Slider(Widget):
     ):
         """Create a new Slider widget.
 
-        Inherits from :class:`toga.Widget`.
-
         :param id: The ID for the widget.
         :param style: A style object. If no style is provided, a default style will be
             applied to the widget.
@@ -372,7 +370,9 @@ class IntSliderImpl(SliderImpl):
 
     def set_value(self, value):
         span = self.max - self.min
-        self.set_int_value(round((value - self.min) / span * self.get_int_max()))
+        self.set_int_value(
+            0 if span == 0 else round((value - self.min) / span * self.get_int_max())
+        )
         self.value = value  # Cache the original value so we can round-trip it.
 
     def get_min(self):

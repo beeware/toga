@@ -23,6 +23,7 @@ class App(LoggedObject):
         self._action("create menus")
 
     def main_loop(self):
+        print("Starting app using Dummy backend.")
         self._action("main loop")
         self.create()
 

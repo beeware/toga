@@ -1,12 +1,45 @@
-from travertino.size import at_least
+import System.Windows.Forms as WinForms
 
-from toga_winforms.libs import WinForms
+from toga.sources import Row
 
 from ..internal.wrappers import WeakrefCallable
-from .base import Widget
+from .table import Table
 
 
-class DetailedList(Widget):
+# Wrap a DetailedList source to make it compatible with a Table.
+class TableSource:
+    def __init__(self, interface):
+        self.interface = interface
+
+    def __len__(self):
+        return len(self.interface.data)
+
+    def __getitem__(self, index):
+        row = self.interface.data[index]
+        title, subtitle, icon = (
+            getattr(row, attr, None) for attr in self.interface.accessors
+        )
+        return Row(title=(icon, title), subtitle=subtitle)
+
+
+class DetailedList(Table):
+    # The following methods are overridden from Table.
+    @property
+    def _headings(self):
+        return None
+
+    @property
+    def _accessors(self):
+        return ("title", "subtitle")
+
+    @property
+    def _multiple_select(self):
+        return False
+
+    @property
+    def _data(self):
+        return self._table_source
+
     def create(self):
         self.native = WinForms.ListView()
         self.native.View = WinForms.View.Details
@@ -120,24 +153,7 @@ class DetailedList(Widget):
     def set_on_double_click(self, handler):
         self.interface.factory.not_implemented("Table.set_on_double_click()")
 
-    def set_on_refresh(self, handler):
-        pass
+    def set_refresh_enabled(self, enabled):
+        self.refresh_enabled = enabled
 
-    def after_on_refresh(self, widget, result):
-        pass
-
-    def scroll_to_row(self, row):
-        self.native.EnsureVisible(row)
-
-    def rehint(self):
-        self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
-        self.interface.intrinsic.height = at_least(self.interface._MIN_HEIGHT)
-
-    def build_item(self, row, index):
-        item = WinForms.ListViewItem(row.title)
-        image_index = self._list_index_to_image_index.get(index)
-        if image_index is not None:
-            item.ImageIndex = image_index
-        if row.subtitle is not None:
-            item.SubItems.Add(row.subtitle)
-        return item
+    after_on_refresh = None

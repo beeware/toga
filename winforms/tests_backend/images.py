@@ -1,4 +1,4 @@
-from toga_winforms.libs import WinImage
+from System.Drawing import Image as WinImage
 
 from .probe import BaseProbe
 

@@ -227,7 +227,7 @@ class Window:
 
     @property
     def size(self) -> tuple[int, int]:
-        """Size of the window, as a ``(width, height)`` tuple."""
+        """Size of the window, as (width, height) in :ref:`CSS pixels <css-units>`."""
         return self._impl.get_size()
 
     @size.setter

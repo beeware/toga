@@ -1,781 +1,192 @@
 from __future__ import annotations
 
 import warnings
+from abc import ABC, abstractmethod
 from contextlib import contextmanager
-from enum import Enum
 from math import pi
+from typing import Protocol
 
+from travertino.colors import Color
+
+import toga
 from toga.colors import BLACK, color as parse_color
-from toga.fonts import SYSTEM, Font
+from toga.constants import Baseline, FillRule
+from toga.fonts import SYSTEM, SYSTEM_DEFAULT_FONT_SIZE, Font
 from toga.handlers import wrapped_handler
 
 from .. import Image
 from .base import Widget
 
+#######################################################################################
+# Simple drawing objects
+#######################################################################################
 
-class FillRule(Enum):
-    EVENODD = 0
-    NONZERO = 1
 
+class DrawingObject(ABC):
+    """A drawing operation in a :any:`Context`.
 
-class Context:
-    """The user-created :class:`Context` drawing object to populate a drawing with
-    visual context.
+    Every context drawing method creates a ``DrawingObject``, adds it to the context,
+    and returns it. Each argument passed to the method becomes a property of the
+    ``DrawingObject``, which can be modified as shown in the `Usage`_ section.
 
-    The top left corner of the canvas must be painted at the origin of the context and
-    is sized using the rehint() method.
+    ``DrawingObjects`` can also be created manually, then added to a context using the
+    :meth:`~Context.append` or :meth:`~Context.insert` methods. Their constructors take
+    the same arguments as the corresponding :any:`Context` method, and their classes
+    have the same names, but capitalized:
+
+    * :meth:`toga.widgets.canvas.Arc <Context.arc>`
+    * :meth:`toga.widgets.canvas.BeginPath <Context.begin_path>`
+    * :meth:`toga.widgets.canvas.BezierCurveTo <Context.bezier_curve_to>`
+    * :meth:`toga.widgets.canvas.ClosePath <Context.close_path>`
+    * :meth:`toga.widgets.canvas.Ellipse <Context.ellipse>`
+    * :meth:`toga.widgets.canvas.Fill <Context.fill>`
+    * :meth:`toga.widgets.canvas.LineTo <Context.line_to>`
+    * :meth:`toga.widgets.canvas.MoveTo <Context.move_to>`
+    * :meth:`toga.widgets.canvas.QuadraticCurveTo <Context.quadratic_curve_to>`
+    * :meth:`toga.widgets.canvas.Rect <Context.rect>`
+    * :meth:`toga.widgets.canvas.ResetTransform <Context.reset_transform>`
+    * :meth:`toga.widgets.canvas.Rotate <Context.rotate>`
+    * :meth:`toga.widgets.canvas.Scale <Context.scale>`
+    * :meth:`toga.widgets.canvas.Stroke <Context.stroke>`
+    * :meth:`toga.widgets.canvas.Translate <Context.translate>`
+    * :meth:`toga.widgets.canvas.WriteText <Context.write_text>`
     """
-
-    def __init__(self, *args, **kwargs):  # kwargs used to support multiple inheritance
-        super().__init__(*args, **kwargs)
-        self._canvas = None
-        self.drawing_objects = []
 
     def __repr__(self):
         return f"{self.__class__.__name__}()"
 
-    def _draw(self, impl, *args, **kwargs):
-        """Draw all drawing objects that are on the context or canvas.
+    @abstractmethod
+    def _draw(self, impl, **kwargs):
+        ...
 
-        This method is used by the implementation to tell the interface canvas to draw
-        all objects on it, and used by a context to draw all the objects that are on the
-        context.
-        """
-        for obj in self.drawing_objects:
-            obj._draw(impl, *args, **kwargs)
 
-    ###########################################################################
-    # Methods to keep track of the canvas, automatically redraw it
-    ###########################################################################
+class BeginPath(DrawingObject):
+    def _draw(self, impl, **kwargs):
+        impl.begin_path(**kwargs)
 
-    @property
-    def canvas(self):
-        """The canvas property of the current context.
 
-        Returns:
-            The canvas node. Returns self if this node *is* the canvas node.
-        """
-        return self._canvas if self._canvas else self
+class ClosePath(DrawingObject):
+    def _draw(self, impl, **kwargs):
+        impl.close_path(**kwargs)
 
-    @canvas.setter
-    def canvas(self, value):
-        """Set the canvas of the context.
 
-        Args:
-            value: The canvas to set.
-        """
-        self._canvas = value
-
-    def add_draw_obj(self, draw_obj):
-        """A drawing object to add to the drawing object stack on a context.
-
-        Args:
-            draw_obj: (:obj:`Drawing Object`): The drawing object to add
-        """
-        self.drawing_objects.append(draw_obj)
-
-        # Only redraw if drawing to canvas directly
-        if self.canvas is self:
-            self.redraw()
-
-        return draw_obj
-
-    def redraw(self):
-        """Force a redraw of the Canvas.
-
-        The Canvas will be automatically redrawn after adding or remove a drawing
-        object. If you modify a drawing object, this method is used to force a redraw.
-        """
-        self.canvas._impl.redraw()
-
-    ###########################################################################
-    # Operations on drawing objects
-    ###########################################################################
-
-    def remove(self, drawing_object):
-        """Remove a drawing object.
-
-        Args:
-            drawing_object (:obj:'Drawing Object'): The drawing object to remove
-        """
-        # AUDIT NOTE: Should this be removed? It overrides Widget.remove()
-        self.drawing_objects.remove(drawing_object)
-        self.redraw()
-
-    def clear(self):
-        """Remove all drawing objects."""
-        # AUDIT NOTE: Should this be removed? It overrides Widget.clear()
-        self.drawing_objects.clear()
-        self.redraw()
-
-    ###########################################################################
-    # Contexts to draw with
-    ###########################################################################
-
-    @contextmanager
-    def context(self):
-        """Constructs and returns a :class:`Context`.
-
-        Makes use of an existing context. The top left corner of the canvas must
-        be painted at the origin of the context and is sized using the rehint()
-        method.
-
-        Yields:
-            :class:`Context` object.
-        """
-        context = Context()
-        self.add_draw_obj(context)
-        context.canvas = self.canvas
-        yield context
-        self.redraw()
-
-    @contextmanager
-    def fill(self, color=BLACK, fill_rule=FillRule.NONZERO, preserve=False):
-        """Constructs and yields a :class:`Fill`.
-
-        A drawing operator that fills the current path according to the current
-        fill rule, (each sub-path is implicitly closed before being filled).
-
-        :param fill_rule: `nonzero` is the non-zero winding rule; `evenodd` is
-            the even-odd winding rule.
-        :param preserve: Preserve the path within the Context.
-        :param color: color value in any valid color format, default to black.
-        :yields: :class:`Fill` object.
-        """
-        fill = Fill(color, fill_rule, preserve)
-        fill.canvas = self.canvas
-        yield self.add_draw_obj(fill)
-        self.redraw()
-
-    @contextmanager
-    def stroke(self, color=BLACK, line_width=2.0, line_dash=None):
-        """Constructs and yields a :class:`Stroke`.
-
-        Args:
-            color (str, Optional): color value in any valid color format,
-                default to black.
-            line_width (float, Optional): stroke line width, default is 2.0.
-            line_dash (array of floats, Optional): stroke line dash pattern, default is None.
-
-        Yields:
-            :class:`Stroke` object.
-        """
-        stroke = Stroke(color, line_width, line_dash)
-        stroke.canvas = self.canvas
-        yield self.add_draw_obj(stroke)
-        self.redraw()
-
-    @contextmanager
-    def closed_path(self, x, y):
-        """Calls move_to(x,y) and then constructs and yields a
-        :class:`ClosedPath`.
-
-        Args:
-            x (float): The x axis of the beginning point.
-            y (float): The y axis of the beginning point.
-
-        Yields:
-            :class:`ClosedPath` object.
-
-        """
-        closed_path = ClosedPath(x, y)
-        closed_path.canvas = self.canvas
-        yield self.add_draw_obj(closed_path)
-        self.redraw()
-
-    ###########################################################################
-    # Paths to draw with
-    ###########################################################################
-
-    def new_path(self):
-        """Constructs and returns a :class:`NewPath`.
-
-        Returns:
-            :class: `NewPath` object.
-        """
-        new_path = NewPath()
-        return self.add_draw_obj(new_path)
-
-    def move_to(self, x, y):
-        """Constructs and returns a :class:`MoveTo`.
-
-        Args:
-            x (float): The x axis of the point.
-            y (float): The y axis of the point.
-
-        Returns:
-            :class:`MoveTo` object.
-        """
-        move_to = MoveTo(x, y)
-        return self.add_draw_obj(move_to)
-
-    def line_to(self, x, y):
-        """Constructs and returns a :class:`LineTo`.
-
-        Args:
-            x (float): The x axis of the coordinate for the end of the line.
-            y (float): The y axis of the coordinate for the end of the line.
-
-        Returns:
-            :class:`LineTo` object.
-        """
-        line_to = LineTo(x, y)
-        return self.add_draw_obj(line_to)
-
-    def bezier_curve_to(self, cp1x, cp1y, cp2x, cp2y, x, y):
-        """Constructs and returns a :class:`BezierCurveTo`.
-
-        Args:
-            cp1x (float): x coordinate for the first control point.
-            cp1y (float): y coordinate for first control point.
-            cp2x (float): x coordinate for the second control point.
-            cp2y (float): y coordinate for the second control point.
-            x (float): x coordinate for the end point.
-            y (float): y coordinate for the end point.
-
-        Returns:
-            :class:`BezierCurveTo` object.
-        """
-        bezier_curve_to = BezierCurveTo(cp1x, cp1y, cp2x, cp2y, x, y)
-        return self.add_draw_obj(bezier_curve_to)
-
-    def quadratic_curve_to(self, cpx, cpy, x, y):
-        """Constructs and returns a :class:`QuadraticCurveTo`.
-
-        Args:
-            cpx (float): The x axis of the coordinate for the control point.
-            cpy (float): The y axis of the coordinate for the control point.
-            x (float): The x axis of the coordinate for the end point.
-            y (float): The y axis of the coordinate for the end point.
-
-        Returns:
-            :class:`QuadraticCurveTo` object.
-        """
-        quadratic_curve_to = QuadraticCurveTo(cpx, cpy, x, y)
-        return self.add_draw_obj(quadratic_curve_to)
-
-    def arc(self, x, y, radius, startangle=0.0, endangle=2 * pi, anticlockwise=False):
-        """Constructs and returns a :class:`Arc`.
-
-        :param x: The x coordinate of the arc's center.
-        :param y: The y coordinate of the arc's center.
-        :param radius: The arc's radius.
-        :param startangle: The angle (in radians) at which the
-                arc starts, measured clockwise from the positive x axis,
-                default 0.0.
-        :param endangle: The angle (in radians) at which the arc ends,
-                measured clockwise from the positive x axis, default 2*pi.
-        :param anticlockwise: If true, causes the arc to be drawn
-                counter-clockwise between the two angles instead of clockwise,
-                default false.
-
-        :returns: :class:`Arc` object.
-        """
-        arc = Arc(x, y, radius, startangle, endangle, anticlockwise)
-        return self.add_draw_obj(arc)
-
-    def ellipse(
-        self,
-        x,
-        y,
-        radiusx,
-        radiusy,
-        rotation=0.0,
-        startangle=0.0,
-        endangle=2 * pi,
-        anticlockwise=False,
-    ):
-        """Constructs and returns a :class:`Ellipse`.
-
-        :param x: The x axis of the coordinate for the ellipse's center.
-        :param y: The y axis of the coordinate for the ellipse's center.
-        :param radiusx: The ellipse's major-axis radius.
-        :param radiusy: The ellipse's minor-axis radius.
-        :param rotation: The rotation for this ellipse, expressed in radians,
-            default 0.0.
-        :param startangle: The starting point in radians, measured from the
-            x axis, from which it will be drawn, default 0.0.
-        :param endangle: The end ellipse's angle in radians to which it will e
-            drawn, default 2*pi.
-        :param anticlockwise: If true, draws the ellipse anticlockwise
-            (counter-clockwise) instead of clockwise, default false.
-
-        Returns:
-            :class:`Ellipse` object.
-        """
-        ellipse = Ellipse(
-            x, y, radiusx, radiusy, rotation, startangle, endangle, anticlockwise
-        )
-        self.add_draw_obj(ellipse)
-        return ellipse
-
-    def rect(self, x, y, width, height):
-        """Constructs and returns a :class:`Rect`.
-
-        Args:
-            x (float): x coordinate for the rectangle starting point.
-            y (float): y coordinate for the rectangle starting point.
-            width (float): The rectangle's width.
-            height (float): The rectangle's width.
-
-        Returns:
-            :class:`Rect` object.
-        """
-        rect = Rect(x, y, width, height)
-        return self.add_draw_obj(rect)
-
-    ###########################################################################
-    # Text drawing
-    ###########################################################################
-
-    def write_text(self, text, x=0, y=0, font=None):
-        """Constructs and returns a :class:`WriteText`.
-
-        Writes a given text at the given (x,y) position. If no font is provided,
-        then it will use the font assigned to the Canvas Widget, if it exists,
-        or use the default font if there is no font assigned.
-
-        Args:
-            text (str): The text to fill.
-            x (float, Optional): The x coordinate of the text. Default to 0.
-            y (float, Optional): The y coordinate of the text. Default to 0.
-            font (:class:`toga.Font`, Optional): The font to write with.
-
-        Returns:
-            :class:`WriteText` object.
-        """
-        if font is None:
-            font = Font(family=SYSTEM, size=self._canvas.style.font_size)
-        write_text = WriteText(text, x, y, font)
-        return self.add_draw_obj(write_text)
-
-
-class Fill(Context):
-    """A user-created :class:`Fill` drawing object for a fill context.
-
-    A drawing object that fills the current path according to the current
-    fill rule, (each sub-path is implicitly closed before being filled).
-
-    Args:
-        color: Color value in any valid color format,
-            default to black.
-        fill_rule: `nonzero` if the non-zero winding rule and
-                                   `evenodd` if the even-odd winding rule.
-        preserve: Preserves the path within the Context.
-    """
-
+class Fill(DrawingObject):
     def __init__(
         self,
-        color=BLACK,
+        color: str = BLACK,
         fill_rule: FillRule = FillRule.NONZERO,
-        preserve: bool = False,
     ):
         super().__init__()
         self.color = color
         self.fill_rule = fill_rule
-        self.preserve = preserve
 
     def __repr__(self):
-        return "{}(color={}, fill_rule={}, preserve={})".format(
-            self.__class__.__name__, self.color, self.fill_rule, self.preserve
+        return (
+            f"{self.__class__.__name__}(color={self.color!r}, "
+            f"fill_rule={self.fill_rule})"
         )
 
-    def _draw(self, impl, *args, **kwargs):
-        """Used by parent to draw all objects that are part of the context."""
-        impl.new_path(*args, **kwargs)
-        for obj in self.drawing_objects:
-            kwargs["fill_color"] = self.color
-            obj._draw(impl, *args, **kwargs)
-        impl.fill(self.color, self.fill_rule, self.preserve, *args, **kwargs)
+    def _draw(self, impl, **kwargs):
+        impl.fill(self.color, self.fill_rule, **kwargs)
 
     @property
-    def fill_rule(self):
+    def fill_rule(self) -> FillRule:
         return self._fill_rule
 
     @fill_rule.setter
-    def fill_rule(self, fill_rule):
-        if isinstance(fill_rule, str):
-            try:
-                fill_rule = FillRule[fill_rule.upper()]
-            except KeyError:
-                raise ValueError(
-                    "fill rule should be one of the following: {}".format(
-                        ", ".join([value.name.lower() for value in FillRule])
-                    )
-                )
+    def fill_rule(self, fill_rule: FillRule):
         self._fill_rule = fill_rule
 
     @property
-    def color(self):
+    def color(self) -> Color:
         return self._color
 
     @color.setter
-    def color(self, value):
+    def color(self, value: Color | str | None):
         if value is None:
-            self._color = None
+            self._color = parse_color(BLACK)
         else:
             self._color = parse_color(value)
 
+    ###########################################################################
+    # 2023-07 Backwards incompatibility
+    ###########################################################################
 
-class Stroke(Context):
-    """A user-created :class:`Stroke` drawing object for a stroke context.
+    # `context.fill()` used to be a context manager, but is now a primitive.
+    # If you try to use the Fill drawing object as a context, raise an exception.
+    def __enter__(self):
+        raise RuntimeError("Context.fill() has been renamed Context.Fill().")
 
-    A drawing operator that strokes the current path according to the
-    current line style settings.
+    def __exit__(self):  # pragma: no cover
+        # This method is required to make the object a context manager, but as the
+        # __enter__ method raises an exception, the __exit__ can't be called.
+        pass
 
-    Args:
-        color: Color value in any valid color format,
-            default to black.
-        line_width: Stroke line width, default is 2.0.
-        line_dash: Stroke line dash pattern, default is None.
-    """
 
+class Stroke(DrawingObject):
     def __init__(
-        self, color=BLACK, line_width: float = 2.0, line_dash: list[float] | None = None
+        self,
+        color: Color | str | None = BLACK,
+        line_width: float = 2.0,
+        line_dash: list[float] | None = None,
     ):
         super().__init__()
-        self._color = None
         self.color = color
         self.line_width = line_width
         self.line_dash = line_dash
 
     def __repr__(self):
-        return "{}(color={}, line_width={}, line_dash={})".format(
-            self.__class__.__name__, self.color, self.line_width, self.line_dash
+        return (
+            f"{self.__class__.__name__}(color={self.color!r}, "
+            f"line_width={self.line_width}, line_dash={self.line_dash!r})"
         )
 
-    def _draw(self, impl, *args, **kwargs):
-        """Used by parent to draw all objects that are part of the context."""
-        for obj in self.drawing_objects:
-            kwargs["stroke_color"] = self.color
-            kwargs["text_line_width"] = self.line_width
-            kwargs["text_line_dash"] = self.line_dash
-            obj._draw(impl, *args, **kwargs)
-        impl.stroke(self.color, self.line_width, self.line_dash, *args, **kwargs)
+    def _draw(self, impl, **kwargs):
+        impl.stroke(self.color, self.line_width, self.line_dash, **kwargs)
 
     @property
-    def color(self):
+    def color(self) -> Color:
         return self._color
 
     @color.setter
-    def color(self, value):
+    def color(self, value: Color | str | None):
         if value is None:
-            self._color = None
+            self._color = parse_color(BLACK)
         else:
             self._color = parse_color(value)
 
+    @property
+    def line_width(self) -> float:
+        return self._line_width
 
-class ClosedPath(Context):
-    """A user-created :class:`ClosedPath` drawing object for a closed path context.
-
-    Creates a new path and then closes it.
-
-    Args:
-        x: The x axis of the beginning point.
-        y: The y axis of the beginning point.
-    """
-
-    def __init__(self, x: float, y: float):
-        super().__init__()
-        self.x = x
-        self.y = y
-
-    def __repr__(self):
-        return f"{self.__class__.__name__}(x={self.x}, y={self.y})"
-
-    def _draw(self, impl, *args, **kwargs):
-        """Used by parent to draw all objects that are part of the context."""
-        impl.move_to(self.x, self.y, *args, **kwargs)
-        for obj in self.drawing_objects:
-            obj._draw(impl, *args, **kwargs)
-        impl.closed_path(self.x, self.y, *args, **kwargs)
-
-
-class Canvas(Context, Widget):
-    """Create new canvas.
-
-    Args:
-        id:  An identifier for this widget.
-        style: An optional style object. If no
-            style is provided then a new one will be created for the widget.
-        on_resize (:obj:`Callable`): Handler to invoke when the canvas is resized.
-        on_press (:obj:`Callable`): Handler to invoke when the primary
-            (usually the left) button is pressed.
-        on_release (:obj:`Callable`): Handler to invoke when the primary
-            (usually the left) button is released.
-        on_drag (:obj:`Callable`): Handler to invoke when cursor is dragged with
-            the primary (usually the left) button pressed.
-        on_alt_press (:obj:`Callable`): Handler to invoke when the alternate
-            (usually the right) button pressed.
-        on_alt_release (:obj:`Callable`): Handler to invoke when the alternate
-            (usually the right) button released
-        on_alt_drag (:obj:`Callable`): Handler to invoke when the cursor is
-            dragged with the alternate (usually the right) button pressed.
-    """
-
-    def __init__(
-        self,
-        id: str | None = None,
-        style=None,
-        on_resize=None,
-        on_press=None,
-        on_release=None,
-        on_drag=None,
-        on_alt_press=None,
-        on_alt_release=None,
-        on_alt_drag=None,
-        factory: None = None,  # DEPRECATED!
-    ):
-        super().__init__(id=id, style=style)
-        ######################################################################
-        # 2022-09: Backwards compatibility
-        ######################################################################
-        # factory no longer used
-        if factory:
-            warnings.warn("The factory argument is no longer used.", DeprecationWarning)
-        ######################################################################
-        # End backwards compatibility.
-        ######################################################################
-
-        self._canvas = self
-
-        # Create a platform specific implementation of Canvas
-        self._impl = self.factory.Canvas(interface=self)
-
-        # Set all the properties
-        self.on_resize = on_resize
-        self.on_press = on_press
-        self.on_release = on_release
-        self.on_drag = on_drag
-        self.on_alt_press = on_alt_press
-        self.on_alt_release = on_alt_release
-        self.on_alt_drag = on_alt_drag
+    @line_width.setter
+    def line_width(self, value: float):
+        self._line_width = float(value)
 
     @property
-    def on_resize(self):
-        """The handler to invoke when the canvas is resized.
+    def line_dash(self) -> list[float] | None:
+        return self._line_dash
 
-        Returns:
-            The handler that is invoked on canvas resize.
-        """
-        return self._on_resize
-
-    @on_resize.setter
-    def on_resize(self, handler):
-        """Set the handler to invoke when the canvas is resized.
-
-        Args:
-            handler (:obj:`Callable`): The handler to invoke when the canvas is resized.
-        """
-        self._on_resize = wrapped_handler(self, handler)
-        self._impl.set_on_resize(self._on_resize)
-
-    @property
-    def on_press(self):
-        """Return the handler invoked when the primary (usually the left) mouse button
-        is pressed.
-
-        Returns:
-            The handler that is invoked when the primary mouse button is pressed.
-        """
-        return self._on_press
-
-    @on_press.setter
-    def on_press(self, handler):
-        """Set the handler to invoke when the primary (usually the left) mouse button is
-        pressed.
-
-        Args:
-            handler (:obj:`Callable`): The handler to invoke when the
-            primary mouse button is pressed.
-        """
-        self._on_press = wrapped_handler(self, handler)
-        self._impl.set_on_press(self._on_press)
-
-    @property
-    def on_release(self):
-        """Return the handler invoked when the primary (usually the left) mouse button
-        is released.
-
-        Returns:
-            The handler that is invoked when the primary mouse button is released.
-        """
-        return self._on_release
-
-    @on_release.setter
-    def on_release(self, handler):
-        """Set the handler to invoke when the primary (usually the left) mouse button is
-        released.
-
-        Args:
-            handler (:obj:`Callable`): The handler to invoke when the
-            primary mouse button is released.
-        """
-        self._on_release = wrapped_handler(self, handler)
-        self._impl.set_on_release(self._on_release)
-
-    @property
-    def on_drag(self):
-        """Return the handler invoked when the mouse is dragged with the primary
-        (usually the left) mouse button is pressed.
-
-        Returns:
-            The handler that is invoked when the mouse is dragged with
-            the primary button pressed.
-        """
-        return self._on_drag
-
-    @on_drag.setter
-    def on_drag(self, handler):
-        """Set the handler to invoke when the mouse button is dragged with the primary
-        (usually the left) button pressed.
-
-        Args:
-            handler (:obj:`Callable`): The handler to invoke when the
-            mouse is dragged with the primary button pressed.
-        """
-        self._on_drag = wrapped_handler(self, handler)
-        self._impl.set_on_drag(self._on_drag)
-
-    @property
-    def on_alt_press(self):
-        """Return the handler to invoke when the alternate (usually the right) mouse
-        button is pressed.
-
-        Returns:
-            The handler that is invoked when the alternate mouse button is pressed.
-        """
-        return self._on_alt_press
-
-    @on_alt_press.setter
-    def on_alt_press(self, handler):
-        """Set the handler to invoke when the alternate (usually the right) mouse button
-        is pressed.
-
-        Args:
-            handler (:obj:`Callable`): The handler to invoke when the
-            alternate mouse button is pressed.
-        """
-        self._on_alt_press = wrapped_handler(self, handler)
-        self._impl.set_on_alt_press(self._on_alt_press)
-
-    @property
-    def on_alt_release(self):
-        """Return the handler to invoke when the alternate (usually the right) mouse
-        button is released.
-
-        Returns:
-            The handler that is invoked when the alternate mouse button is released.
-        """
-        return self._on_alt_release
-
-    @on_alt_release.setter
-    def on_alt_release(self, handler):
-        """Set the handler to invoke when the alternate (usually the right) mouse button
-        is released.
-
-        Args:
-            handler (:obj:`Callable`): The handler to invoke when the
-            alternate mouse button is released.
-        """
-        self._on_alt_release = wrapped_handler(self, handler)
-        self._impl.set_on_alt_release(self._on_alt_release)
-
-    @property
-    def on_alt_drag(self):
-        """Return the handler to invoke when the mouse is dragged while the alternate
-        (usually the right) mouse button is pressed.
-
-        Returns:
-            The handler that is invoked when the mouse is dragged with
-            the alternate mouse button pressed.
-        """
-        return self._on_alt_drag
-
-    @on_alt_drag.setter
-    def on_alt_drag(self, handler):
-        """Set the handler to invoke when the mouse is dragged with the alternate
-        (usually the right) button pressed.
-
-        Args:
-            handler (:obj:`Callable`): The handler to invoke when the
-            mouse is dragged with the alternate button pressed.
-        """
-        self._on_alt_drag = wrapped_handler(self, handler)
-        self._impl.set_on_alt_drag(self._on_alt_drag)
+    @line_dash.setter
+    def line_dash(self, value: list[float] | None):
+        self._line_dash = value
 
     ###########################################################################
-    # Transformations of a canvas
+    # 2023-07 Backwards incompatibility
     ###########################################################################
 
-    def rotate(self, radians):
-        """Constructs and returns a :class:`Rotate`.
+    # `context.stroke()` used to be a context managger, but is now a primitive.
+    # If you try to use the Stroke drawing object as a context, raise an exception.
+    def __enter__(self):
+        raise RuntimeError("Context.stroke() has been renamed Context.Stroke().")
 
-        Args:
-            radians (float): The angle to rotate clockwise in radians.
-
-        Returns:
-            :class:`Rotate` object.
-        """
-        rotate = Rotate(radians)
-        return self.add_draw_obj(rotate)
-
-    def scale(self, sx, sy):
-        """Constructs and returns a :class:`Scale`.
-
-        :param sx: scale factor for the X dimension.
-        :param sy: scale factor for the Y dimension.
-        :returns: :class:`Scale` object.
-        """
-        scale = Scale(sx, sy)
-        return self.add_draw_obj(scale)
-
-    def translate(self, tx, ty):
-        """Constructs and returns a :class:`Translate`.
-
-        :param tx: X value of coordinate.
-        :param ty: Y value of coordinate.
-        :returns: :class:`Translate` object.
-        """
-        translate = Translate(tx, ty)
-        return self.add_draw_obj(translate)
-
-    def reset_transform(self):
-        """Constructs and returns a :class:`ResetTransform`.
-
-        Returns:
-            :class:`ResetTransform` object.
-        """
-        reset_transform = ResetTransform()
-        return self.add_draw_obj(reset_transform)
-
-    ###########################################################################
-    # Text measurement
-    ###########################################################################
-
-    def measure_text(self, text, font, tight=False):
-        return self._impl.measure_text(text, font, tight=tight)
-
-    ###########################################################################
-    # As image
-    ###########################################################################
-
-    def as_image(self):
-        return Image(data=self._impl.get_image_data())
+    def __exit__(self):  # pragma: no cover
+        # This method is required to make the object a context manager, but as the
+        # __enter__ method raises an exception, the __exit__ can't be called.
+        pass
 
 
-class MoveTo:
-    """A user-created :class:`MoveTo` drawing object which moves the start of the next
-    operation to a point.
-
-    Moves the starting point of a new sub-path to the (x, y) coordinates.
-
-
-    Args:
-        x: The x axis of the point.
-        y: The y axis of the point.
-    """
-
+class MoveTo(DrawingObject):
     def __init__(self, x: float, y: float):
         self.x = x
         self.y = y
@@ -783,22 +194,11 @@ class MoveTo:
     def __repr__(self):
         return f"{self.__class__.__name__}(x={self.x}, y={self.y})"
 
-    def _draw(self, impl, *args, **kwargs):
-        """Draw the drawing object using the implementation."""
-        impl.move_to(self.x, self.y, *args, **kwargs)
+    def _draw(self, impl, **kwargs):
+        impl.move_to(self.x, self.y, **kwargs)
 
 
-class LineTo:
-    """A user-created :class:`LineTo` drawing object which draws a line to a point.
-
-    Connects the last point in the sub-path to the (x, y) coordinates
-    with a straight line (but does not actually draw it).
-
-    Args:
-        x: The x axis of the coordinate for the end of the line.
-        y: The y axis of the coordinate for the end of the line.
-    """
-
+class LineTo(DrawingObject):
     def __init__(self, x: float, y: float):
         self.x = x
         self.y = y
@@ -806,28 +206,11 @@ class LineTo:
     def __repr__(self):
         return f"{self.__class__.__name__}(x={self.x}, y={self.y})"
 
-    def _draw(self, impl, *args, **kwargs):
-        """Draw the drawing object using the implementation."""
-        impl.line_to(self.x, self.y, *args, **kwargs)
+    def _draw(self, impl, **kwargs):
+        impl.line_to(self.x, self.y, **kwargs)
 
 
-class BezierCurveTo:
-    """A user-created :class:`BezierCurveTo` drawing object which adds a Bézier curve.
-
-    It requires three points. The first two points are control points
-    and the third one is the end point. The starting point is the last
-    point in the current path, which can be changed using move_to() before
-    creating the Bézier curve.
-
-    Args:
-        cp1x: x coordinate for the first control point.
-        cp1y: y coordinate for first control point.
-        cp2x: x coordinate for the second control point.
-        cp2y: y coordinate for the second control point.
-        x: x coordinate for the end point.
-        y: y coordinate for the end point.
-    """
-
+class BezierCurveTo(DrawingObject):
     def __init__(
         self, cp1x: float, cp1y: float, cp2x: float, cp2y: float, x: float, y: float
     ):
@@ -839,38 +222,19 @@ class BezierCurveTo:
         self.y = y
 
     def __repr__(self):
-        return "{}(cp1x={}, cp1y={}, cp2x={}, cp2y={}, x={}, y={})".format(
-            self.__class__.__name__,
-            self.cp1x,
-            self.cp1y,
-            self.cp2x,
-            self.cp2y,
-            self.x,
-            self.y,
+        return (
+            f"{self.__class__.__name__}(cp1x={self.cp1x}, cp1y={self.cp1y}, "
+            f"cp2x={self.cp2x}, cp2y={self.cp2y}, "
+            f"x={self.x}, y={self.y})"
         )
 
-    def _draw(self, impl, *args, **kwargs):
-        """Draw the drawing object using the implementation."""
+    def _draw(self, impl, **kwargs):
         impl.bezier_curve_to(
-            self.cp1x, self.cp1y, self.cp2x, self.cp2y, self.x, self.y, *args, **kwargs
+            self.cp1x, self.cp1y, self.cp2x, self.cp2y, self.x, self.y, **kwargs
         )
 
 
-class QuadraticCurveTo:
-    """A user-created :class:`QuadraticCurveTo` drawing object which adds a quadratic
-    curve.
-
-    It requires two points. The first point is a control point and the
-    second one is the end point. The starting point is the last point in the
-    current path, which can be changed using ``moveTo()`` before creating the
-    quadratic Bézier curve.
-
-    :param cpx: The x axis of the coordinate for the control point.
-    :param cpy: The y axis of the coordinate for the control point.
-    :param x: The x axis of the coordinate for the end point.
-    :param y: The y axis of the coordinate for the end point.
-    """
-
+class QuadraticCurveTo(DrawingObject):
     def __init__(self, cpx: float, cpy: float, x: float, y: float):
         self.cpx = cpx
         self.cpy = cpy
@@ -878,36 +242,49 @@ class QuadraticCurveTo:
         self.y = y
 
     def __repr__(self):
-        return "{}(cpx={}, cpy={}, x={}, y={})".format(
-            self.__class__.__name__, self.cpx, self.cpy, self.x, self.y
+        return f"{self.__class__.__name__}(cpx={self.cpx}, cpy={self.cpy}, x={self.x}, y={self.y})"
+
+    def _draw(self, impl, **kwargs):
+        impl.quadratic_curve_to(self.cpx, self.cpy, self.x, self.y, **kwargs)
+
+
+class Arc(DrawingObject):
+    def __init__(
+        self,
+        x: float,
+        y: float,
+        radius: float,
+        startangle: float = 0.0,
+        endangle: float = 2 * pi,
+        anticlockwise: bool = False,
+    ):
+        self.x = x
+        self.y = y
+        self.radius = radius
+        self.startangle = startangle
+        self.endangle = endangle
+        self.anticlockwise = anticlockwise
+
+    def __repr__(self):
+        return (
+            f"{self.__class__.__name__}(x={self.x}, y={self.y}, "
+            f"radius={self.radius}, startangle={self.startangle:.3f}, "
+            f"endangle={self.endangle:.3f}, anticlockwise={self.anticlockwise})"
         )
 
-    def _draw(self, impl, *args, **kwargs):
-        """Draw the drawing object using the implementation."""
-        impl.quadratic_curve_to(self.cpx, self.cpy, self.x, self.y, *args, **kwargs)
+    def _draw(self, impl, **kwargs):
+        impl.arc(
+            self.x,
+            self.y,
+            self.radius,
+            self.startangle,
+            self.endangle,
+            self.anticlockwise,
+            **kwargs,
+        )
 
 
-class Ellipse:
-    """A user-created :class:`Ellipse` drawing object which adds an ellipse.
-
-    The ellipse is centered at ``(x, y)`` position with the radii ``radiusx``
-    and ``radiusy`` starting at ``startangle`` and ending at ``endangle`` going
-    in the given direction by anticlockwise (defaulting to clockwise).
-
-    :param x: The x axis of the coordinate for the ellipse's center.
-    :param y: The y axis of the coordinate for the ellipse's center.
-    :param radiusx: The ellipse's major-axis radius.
-    :param radiusy: The ellipse's minor-axis radius.
-    :param rotation: The rotation for this ellipse, expressed in radians, default
-        0.0.
-    :param startangle: The starting point in radians, measured from the x axis,
-        from which it will be drawn, default 0.0.
-    :param endangle: The end ellipse's angle in radians to which it will be
-        drawn, default 2*pi.
-    :param anticlockwise: If true, draws the ellipse anticlockwise
-        (counter-clockwise) instead of clockwise, default false.
-    """
-
+class Ellipse(DrawingObject):
     def __init__(
         self,
         x: float,
@@ -930,22 +307,13 @@ class Ellipse:
 
     def __repr__(self):
         return (
-            "{}(x={}, y={}, radiusx={}, radiusy={}, "
-            "rotation={}, startangle={}, endangle={}, anticlockwise={})".format(
-                self.__class__.__name__,
-                self.x,
-                self.y,
-                self.radiusx,
-                self.radiusy,
-                self.rotation,
-                self.startangle,
-                self.endangle,
-                self.anticlockwise,
-            )
+            f"{self.__class__.__name__}(x={self.x}, y={self.y}, "
+            f"radiusx={self.radiusx}, radiusy={self.radiusy}, "
+            f"rotation={self.rotation:.3f}, startangle={self.startangle:.3f}, "
+            f"endangle={self.endangle:.3f}, anticlockwise={self.anticlockwise})"
         )
 
-    def _draw(self, impl, *args, **kwargs):
-        """Draw the drawing object using the implementation."""
+    def _draw(self, impl, **kwargs):
         impl.ellipse(
             self.x,
             self.y,
@@ -955,30 +323,283 @@ class Ellipse:
             self.startangle,
             self.endangle,
             self.anticlockwise,
-            *args,
             **kwargs,
         )
 
 
-class Arc:
-    """A user-created :class:`Arc` drawing object which adds an arc.
+class Rect(DrawingObject):
+    def __init__(self, x: float, y: float, width: float, height: float):
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
 
-    The arc is centered at ``(x, y)`` position with radius ``r`` starting at
-    ``startangle`` and ending at ``endangle`` going in the given direction by
-    anticlockwise (defaulting to clockwise).
+    def __repr__(self):
+        return (
+            f"{self.__class__.__name__}(x={self.x}, y={self.y}, "
+            f"width={self.width}, height={self.height})"
+        )
 
-    :param x: The x coordinate of the arc's center.
-    :param y: The y coordinate of the arc's center.
-    :param radius: The arc's radius.
-    :param startangle: The angle (in radians) at which the arc starts, measured
-        clockwise from the positive x axis, default 0.0.
-    :param endangle: The angle (in radians) at which the arc ends, measured
-        clockwise from the positive x axis, default 2*pi.
-    :param anticlockwise: If true, causes the arc to be drawn counter-clockwise
-        between the two angles instead of clockwise, default false.
+    def _draw(self, impl, **kwargs):
+        impl.rect(self.x, self.y, self.width, self.height, **kwargs)
+
+
+class WriteText(DrawingObject):
+    def __init__(
+        self,
+        text: str,
+        x: float = 0.0,
+        y: float = 0.0,
+        font: Font | None = None,
+        baseline: Baseline = Baseline.ALPHABETIC,
+    ):
+        self.text = text
+        self.x = x
+        self.y = y
+        self.font = font
+        self.baseline = baseline
+
+    def __repr__(self):
+        return (
+            f"{self.__class__.__name__}(text={self.text!r}, x={self.x}, y={self.y}, "
+            f"font={self.font!r}, baseline={self.baseline})"
+        )
+
+    def _draw(self, impl, **kwargs):
+        impl.write_text(
+            str(self.text), self.x, self.y, self.font._impl, self.baseline, **kwargs
+        )
+
+    @property
+    def font(self) -> Font:
+        return self._font
+
+    @font.setter
+    def font(self, value: Font | None):
+        if value is None:
+            self._font = Font(family=SYSTEM, size=SYSTEM_DEFAULT_FONT_SIZE)
+        else:
+            self._font = value
+
+
+class Rotate(DrawingObject):
+    def __init__(self, radians: float):
+        self.radians = radians
+
+    def __repr__(self):
+        return f"{self.__class__.__name__}(radians={self.radians:.3f})"
+
+    def _draw(self, impl, **kwargs):
+        impl.rotate(self.radians, **kwargs)
+
+
+class Scale(DrawingObject):
+    def __init__(self, sx: float, sy: float):
+        self.sx = sx
+        self.sy = sy
+
+    def __repr__(self):
+        return f"{self.__class__.__name__}(sx={self.sx:.3f}, sy={self.sy:.3f})"
+
+    def _draw(self, impl, **kwargs):
+        impl.scale(self.sx, self.sy, **kwargs)
+
+
+class Translate(DrawingObject):
+    def __init__(self, tx: float, ty: float):
+        self.tx = tx
+        self.ty = ty
+
+    def __repr__(self):
+        return f"{self.__class__.__name__}(tx={self.tx}, ty={self.ty})"
+
+    def _draw(self, impl, **kwargs):
+        impl.translate(self.tx, self.ty, **kwargs)
+
+
+class ResetTransform(DrawingObject):
+    def _draw(self, impl, **kwargs):
+        impl.reset_transform(**kwargs)
+
+
+#######################################################################################
+# Drawing Contexts
+#######################################################################################
+
+
+class Context(DrawingObject):
+    """A drawing context for a canvas.
+
+    You should not create a :class:`~toga.widgets.canvas.Context` directly; instead,
+    you should use the :meth:`~Context.Context` method on an existing context,
+    or use :any:`Canvas.context` to access the root context of the canvas.
     """
 
-    def __init__(
+    def __init__(self, canvas: toga.Canvas, **kwargs):
+        # kwargs used to support multiple inheritance
+        super().__init__(**kwargs)
+        self._canvas = canvas
+        self.drawing_objects = []
+
+    def _draw(self, impl, **kwargs):
+        impl.push_context(**kwargs)
+        for obj in self.drawing_objects:
+            obj._draw(impl, **kwargs)
+        impl.pop_context(**kwargs)
+
+    ###########################################################################
+    # Methods to keep track of the canvas, automatically redraw it
+    ###########################################################################
+
+    @property
+    def canvas(self) -> Canvas:
+        """The canvas that is associated with this drawing context."""
+        return self._canvas
+
+    def redraw(self):
+        """Calls :any:`Canvas.redraw` on the parent Canvas."""
+        self.canvas.redraw()
+
+    ###########################################################################
+    # Operations on drawing objects
+    ###########################################################################
+
+    def __len__(self) -> int:
+        """Returns the number of drawing objects that are in this context."""
+        return len(self.drawing_objects)
+
+    def __getitem__(self, index: int) -> DrawingObject:
+        """Returns the drawing object at the given index."""
+        return self.drawing_objects[index]
+
+    def append(self, obj: DrawingObject):
+        """Append a drawing object to the context.
+
+        :param obj: The drawing object to add to the context.
+        """
+        self.drawing_objects.append(obj)
+        self.redraw()
+
+    def insert(self, index: int, obj: DrawingObject):
+        """Insert a drawing object into the context at a specific index.
+
+        :param index: The index at which the drawing object should be inserted.
+        :param obj: The drawing object to add to the context.
+        """
+        self.drawing_objects.insert(index, obj)
+        self.redraw()
+
+    def remove(self, obj: DrawingObject):
+        """Remove a drawing object from the context.
+
+        :param obj: The drawing object to remove.
+        """
+        self.drawing_objects.remove(obj)
+        self.redraw()
+
+    def clear(self):
+        """Remove all drawing objects from the context."""
+        self.drawing_objects.clear()
+        self.redraw()
+
+    ###########################################################################
+    # Path manipulation
+    ###########################################################################
+
+    def begin_path(self):
+        """Start a new path in the canvas context.
+
+        :returns: The ``BeginPath`` :any:`DrawingObject` for the operation.
+        """
+        begin_path = BeginPath()
+        self.append(begin_path)
+        return begin_path
+
+    def close_path(self):
+        """Close the current path in the canvas context.
+
+        This closes the current path as a simple drawing operation. It should be paired
+        with a :meth:`~toga.widgets.canvas.Context.begin_path()` operation; or, to
+        complete a complete closed path, use the
+        :meth:`~toga.widgets.canvas.Context.ClosedPath()` context manager.
+
+        :returns: The ``ClosePath`` :any:`DrawingObject` for the operation.
+        """
+        close_path = ClosePath()
+        self.append(close_path)
+        return close_path
+
+    def move_to(self, x: float, y: float):
+        """Moves the current point of the canvas context without drawing.
+
+        :param x: The x coordinate of the new current point.
+        :param y: The y coordinate of the new current point.
+        :returns: The ``MoveTo`` :any:`DrawingObject` for the operation.
+        """
+        move_to = MoveTo(x, y)
+        self.append(move_to)
+        return move_to
+
+    def line_to(self, x: float, y: float):
+        """Draw a line segment ending at a point in the canvas context.
+
+        :param x: The x coordinate for the end point of the line segment.
+        :param y: The y coordinate for the end point of the line segment.
+        :returns: The ``LineTo`` :any:`DrawingObject` for the operation.
+        """
+        line_to = LineTo(x, y)
+        self.append(line_to)
+        return line_to
+
+    def bezier_curve_to(
+        self,
+        cp1x: float,
+        cp1y: float,
+        cp2x: float,
+        cp2y: float,
+        x: float,
+        y: float,
+    ):
+        """Draw a Bézier curve in the canvas context.
+
+        A Bézier curve requires three points. The first two are control points; the
+        third is the end point for the curve. The starting point is the last point in
+        the current path, which can be changed using move_to() before creating the
+        Bézier curve.
+
+        :param cp1y: The y coordinate for the first control point of the Bézier curve.
+        :param cp1x: The x coordinate for the first control point of the Bézier curve.
+        :param cp2x: The x coordinate for the second control point of the Bézier curve.
+        :param cp2y: The y coordinate for the second control point of the Bézier curve.
+        :param x: The x coordinate for the end point.
+        :param y: The y coordinate for the end point.
+        :returns: The ``BezierCurveTo`` :any:`DrawingObject` for the operation.
+        """
+        bezier_curve_to = BezierCurveTo(cp1x, cp1y, cp2x, cp2y, x, y)
+        self.append(bezier_curve_to)
+        return bezier_curve_to
+
+    def quadratic_curve_to(self, cpx: float, cpy: float, x: float, y: float):
+        """Draw a quadratic curve in the canvas context.
+
+        A quadratic curve requires two points. The first point is a control point; the
+        second is the end point. The starting point of the curve is the last point in
+        the current path, which can be changed using ``moveTo()`` before creating the
+        quadratic curve.
+
+        :param cpx: The x axis of the coordinate for the control point of the quadratic
+            curve.
+        :param cpy: The y axis of the coordinate for the control point of the quadratic
+            curve.
+        :param x: The x axis of the coordinate for the end point.
+        :param y: The y axis of the coordinate for the end point.
+        :returns: The ``QuadraticCurveTo`` :any:`DrawingObject` for the operation.
+        """
+        quadratic_curve_to = QuadraticCurveTo(cpx, cpy, x, y)
+        self.append(quadratic_curve_to)
+        return quadratic_curve_to
+
+    def arc(
         self,
         x: float,
         y: float,
@@ -987,185 +608,1023 @@ class Arc:
         endangle: float = 2 * pi,
         anticlockwise: bool = False,
     ):
+        """Draw a circular arc in the canvas context.
+
+        A full circle will be drawn by default; an arc can be drawn by specifying a
+        start and end angle.
+
+        :param x: The X coordinate of the circle's center.
+        :param y: The Y coordinate of the circle's center.
+        :param startangle: The start angle in radians, measured clockwise from the
+            positive X axis.
+        :param endangle: The end angle in radians, measured clockwise from the positive
+            X axis.
+        :param anticlockwise: If true, the arc is swept anticlockwise. The default is
+            clockwise.
+        :returns: The ``Arc`` :any:`DrawingObject` for the operation.
+        """
+        arc = Arc(x, y, radius, startangle, endangle, anticlockwise)
+        self.append(arc)
+        return arc
+
+    def ellipse(
+        self,
+        x: float,
+        y: float,
+        radiusx: float,
+        radiusy: float,
+        rotation: float = 0.0,
+        startangle: float = 0.0,
+        endangle: float = 2 * pi,
+        anticlockwise: bool = False,
+    ):
+        """Draw an elliptical arc in the canvas context.
+
+        A full ellipse will be drawn by default; an arc can be drawn by specifying a
+        start and end angle.
+
+        :param x: The X coordinate of the ellipse's center.
+        :param y: The Y coordinate of the ellipse's center.
+        :param radiusx: The ellipse's horizontal axis radius.
+        :param radiusy: The ellipse's vertical axis radius.
+        :param rotation: The ellipse's rotation in radians, measured clockwise around
+            its center.
+        :param startangle: The start angle in radians, measured clockwise from the
+            positive X axis.
+        :param endangle: The end angle in radians, measured clockwise from the positive
+            X axis.
+        :param anticlockwise: If true, the arc is swept anticlockwise. The default is
+            clockwise.
+        :returns: The ``Ellipse`` :any:`DrawingObject` for the operation.
+        """
+        ellipse = Ellipse(
+            x,
+            y,
+            radiusx,
+            radiusy,
+            rotation,
+            startangle,
+            endangle,
+            anticlockwise,
+        )
+        self.append(ellipse)
+        return ellipse
+
+    def rect(self, x: float, y: float, width: float, height: float):
+        """Draw a rectangle in the canvas context.
+
+        :param x: The horizontal coordinate of the left of the rectangle.
+        :param y: The vertical coordinate of the top of the rectangle.
+        :param width: The width of the rectangle.
+        :param height: The height of the rectangle.
+        :returns: The ``Rect`` :any:`DrawingObject` for the operation.
+        """
+        rect = Rect(x, y, width, height)
+        self.append(rect)
+        return rect
+
+    def fill(
+        self,
+        color: str = BLACK,
+        fill_rule: FillRule = FillRule.NONZERO,
+        preserve=None,  # DEPRECATED
+    ):
+        """Fill the current path.
+
+        The fill can use either the `Non-Zero
+        <https://en.wikipedia.org/wiki/Nonzero-rule>`__ or `Even-Odd
+        <https://en.wikipedia.org/wiki/Even-odd_rule>`__ winding rule for filling paths.
+
+        :param fill_rule: `nonzero` is the non-zero winding rule; `evenodd` is the
+            even-odd winding rule.
+        :param color: The fill color.
+        :param preserve: **DEPRECATED**: this argument has no effect.
+        :returns: The ``Fill`` :any:`DrawingObject` for the operation.
+        """
+        if preserve is not None:
+            warnings.warn(
+                "The `preserve` argument on fill() has been deprecated.",
+                DeprecationWarning,
+            )
+
+        fill = Fill(color, fill_rule)
+        self.append(fill)
+        return fill
+
+    def stroke(
+        self,
+        color: str = BLACK,
+        line_width: float = 2.0,
+        line_dash: list[float] | None = None,
+    ):
+        """Draw the current path as a stroke.
+
+        :param color: The color for the stroke.
+        :param line_width: The width of the stroke.
+        :param line_dash: The dash pattern to follow when drawing the line, expressed as
+            alternating lengths of dashes and spaces. The default is a solid line.
+        :returns: The ``Stroke`` :any:`DrawingObject` for the operation.
+        """
+        stroke = Stroke(color, line_width, line_dash)
+        self.append(stroke)
+        return stroke
+
+    ###########################################################################
+    # Text drawing
+    ###########################################################################
+
+    def write_text(
+        self,
+        text: str,
+        x: float = 0.0,
+        y: float = 0.0,
+        font: Font | None = None,
+        baseline: Baseline = Baseline.ALPHABETIC,
+    ):
+        """Write text at a given position in the canvas context.
+
+        Drawing text is effectively a series of path operations, so the text will have
+        the color and fill properties of the canvas context.
+
+        :param text: The text to draw. Newlines will cause line breaks, but long lines
+            will not be wrapped.
+        :param x: The X coordinate of the text's left edge.
+        :param y: The Y coordinate: its meaning depends on ``baseline``.
+        :param font: The font in which to draw the text. The default is the system font.
+        :param baseline: Alignment of text relative to the Y coordinate.
+        :returns: The ``WriteText`` :any:`DrawingObject` for the operation.
+        """
+        write_text = WriteText(text, x, y, font, baseline)
+        self.append(write_text)
+        return write_text
+
+    ###########################################################################
+    # Transformations
+    ###########################################################################
+    def rotate(self, radians: float):
+        """Add a rotation to the canvas context.
+
+        :param radians: The angle to rotate clockwise in radians.
+        :returns: The ``Rotate`` :any:`DrawingObject` for the transformation.
+        """
+        rotate = Rotate(radians)
+        self.append(rotate)
+        return rotate
+
+    def scale(self, sx: float, sy: float):
+        """Add a scaling transformation to the canvas context.
+
+        :param sx: Scale factor for the X dimension. A negative value flips the
+            image horizontally.
+        :param sy: Scale factor for the Y dimension. A negative value flips the
+            image vertically.
+        :returns: The ``Scale`` :any:`DrawingObject` for the transformation.
+        """
+        scale = Scale(sx, sy)
+        self.append(scale)
+        return scale
+
+    def translate(self, tx: float, ty: float):
+        """Add a translation to the canvas context.
+
+        :param tx: Translation for the X dimension.
+        :param ty: Translation for the Y dimension.
+        :returns: The ``Translate`` :any:`DrawingObject` for the transformation.
+        """
+        translate = Translate(tx, ty)
+        self.append(translate)
+        return translate
+
+    def reset_transform(self):
+        """Reset all transformations in the canvas context.
+
+        :returns: A ``ResetTransform`` :any:`DrawingObject`.
+        """
+        reset_transform = ResetTransform()
+        self.append(reset_transform)
+        return reset_transform
+
+    ###########################################################################
+    # Subcontexts of this context
+    ###########################################################################
+
+    @contextmanager
+    def Context(self):
+        """Construct and yield a new sub-:class:`~toga.widgets.canvas.Context` within
+        this context.
+
+        :yields: The new :class:`~toga.widgets.canvas.Context` object.
+        """
+        context = Context(canvas=self._canvas)
+        self.append(context)
+        yield context
+        self.redraw()
+
+    @contextmanager
+    def ClosedPath(self, x: float | None = None, y: float | None = None):
+        """Construct and yield a new :class:`~toga.widgets.canvas.ClosedPath`
+        sub-context that will draw a closed path, starting from an origin.
+
+        This is a context manager; it creates a new path and moves to the start
+        coordinate; when the context exits, the path is closed. For fine-grained control
+        of a path, you can use :meth:`~toga.widgets.canvas.Context.begin_path` and
+        :meth:`~toga.widgets.canvas.Context.close_path`.
+
+        :param x: The x coordinate of the path's starting point.
+        :param y: The y coordinate of the path's starting point.
+        :yields: The :class:`~toga.widgets.canvas.ClosedPathContext` context object.
+        """
+        closed_path = ClosedPathContext(canvas=self.canvas, x=x, y=y)
+        self.append(closed_path)
+        yield closed_path
+
+    @contextmanager
+    def Fill(
+        self,
+        x: float | None = None,
+        y: float | None = None,
+        color: str = BLACK,
+        fill_rule: FillRule = FillRule.NONZERO,
+    ):
+        """Construct and yield a new :class:`~toga.widgets.canvas.Fill` sub-context
+        within this context.
+
+        This is a context manager; it creates a new path, and moves to the start
+        coordinate; when the context exits, the path is closed with a fill. For
+        fine-grained control of a path, you can use
+        :class:`~toga.widgets.canvas.Context.begin_path`,
+        :class:`~toga.widgets.canvas.Context.move_to`,
+        :class:`~toga.widgets.canvas.Context.close_path` and
+        :class:`~toga.widgets.canvas.Context.fill`.
+
+        If both an x and y coordinate is provided, the drawing context will begin with
+        a ``move_to`` operation in that context.
+
+        :param x: The x coordinate of the path's starting point.
+        :param y: The y coordinate of the path's starting point.
+        :param fill_rule: `nonzero` is the non-zero winding rule; `evenodd` is the
+            even-odd winding rule.
+        :param color: The fill color.
+        :yields: The new :class:`~toga.widgets.canvas.FillContext` context object.
+        """
+        fill = FillContext(
+            canvas=self.canvas,
+            x=x,
+            y=y,
+            color=color,
+            fill_rule=fill_rule,
+        )
+        self.append(fill)
+        yield fill
+
+    @contextmanager
+    def Stroke(
+        self,
+        x: float | None = None,
+        y: float | None = None,
+        color: str = BLACK,
+        line_width: float = 2.0,
+        line_dash: list[float] | None = None,
+    ):
+        """Construct and yield a new :class:`~toga.widgets.canvas.Stroke` sub-context
+        within this context.
+
+        This is a context manager; it creates a new path, and moves to the start
+        coordinate; when the context exits, the path is closed with a stroke. For
+        fine-grained control of a path, you can use
+        :class:`~toga.widgets.canvas.Context.begin_path`,
+        :class:`~toga.widgets.canvas.Context.move_to`,
+        :class:`~toga.widgets.canvas.Context.close_path` and
+        :class:`~toga.widgets.canvas.Context.stroke`.
+
+        If both an x and y coordinate is provided, the drawing context will begin with
+        a ``move_to`` operation in that context.
+
+        :param x: The x coordinate of the path's starting point.
+        :param y: The y coordinate of the path's starting point.
+        :param color: The color for the stroke.
+        :param line_width: The width of the stroke.
+        :param line_dash: The dash pattern to follow when drawing the line. Default is a
+            solid line.
+        :yields: The new :class:`~toga.widgets.canvas.StrokeContext` context object.
+        """
+        stroke = StrokeContext(
+            canvas=self.canvas,
+            x=x,
+            y=y,
+            color=color,
+            line_width=line_width,
+            line_dash=line_dash,
+        )
+        self.append(stroke)
+        yield stroke
+
+    ###########################################################################
+    # 2023-07 Backwards incompatibility
+    ###########################################################################
+
+    def new_path(self):
+        """**DEPRECATED** - Use :meth:`~toga.widgets.canvas.Context.begin_path`."""
+        warnings.warn(
+            "Context.new_path() has been renamed Context.begin_path()",
+            DeprecationWarning,
+        )
+        return self.begin_path()
+
+    def context(self):
+        """**DEPRECATED** - use :meth:`~toga.widgets.canvas.Context.Context`"""
+        warnings.warn(
+            "Context.context() has been renamed Context.Context()", DeprecationWarning
+        )
+        return self.Context()
+
+    def closed_path(self, x: float, y: float):
+        """**DEPRECATED** - use :meth:`~toga.widgets.canvas.Context.ClosedPath`"""
+        warnings.warn(
+            "Context.closed_path() has been renamed Context.ClosedPath()",
+            DeprecationWarning,
+        )
+        return self.ClosedPath(x, y)
+
+
+class ClosedPathContext(Context):
+    """A drawing context that will build a closed path, starting from an
+    origin.
+
+    This is a context manager; it creates a new path and moves to the start coordinate;
+    when the context exits, the path is closed. For fine-grained control of a path, you
+    can use :class:`~toga.widgets.canvas.Context.begin_path`,
+    :class:`~toga.widgets.canvas.Context.move_to` and
+    :class:`~toga.widgets.canvas.Context.close_path`.
+
+    If both an x and y coordinate is provided, the drawing context will begin with
+    a ``move_to`` operation in that context.
+
+    You should not create a :class:`~toga.widgets.canvas.ClosedPathContext` context
+    directly; instead, you should use the
+    :meth:`~toga.widgets.canvas.Context.ClosedPath` method on an existing context.
+    """
+
+    def __init__(
+        self,
+        canvas: toga.Canvas,
+        x: float | None = None,
+        y: float | None = None,
+    ):
+        super().__init__(canvas=canvas)
         self.x = x
         self.y = y
-        self.radius = radius
-        self.startangle = startangle
-        self.endangle = endangle
-        self.anticlockwise = anticlockwise
 
     def __repr__(self):
-        return "{}(x={}, y={}, radius={}, startangle={}, endangle={}, anticlockwise={})".format(
-            self.__class__.__name__,
-            self.x,
-            self.y,
-            self.radius,
-            self.startangle,
-            self.endangle,
-            self.anticlockwise,
+        return f"{self.__class__.__name__}(x={self.x}, y={self.y})"
+
+    def _draw(self, impl, **kwargs):
+        """Used by parent to draw all objects that are part of the context."""
+        impl.push_context(**kwargs)
+        impl.begin_path(**kwargs)
+        if self.x is not None and self.y is not None:
+            impl.move_to(x=self.x, y=self.y, **kwargs)
+
+        sub_kwargs = kwargs.copy()
+        for obj in self.drawing_objects:
+            obj._draw(impl, **sub_kwargs)
+
+        impl.close_path(**kwargs)
+        impl.pop_context(**kwargs)
+
+
+class FillContext(ClosedPathContext):
+    """A drawing context that will apply a fill to any paths all objects in the
+    context.
+
+    The fill can use either the `Non-Zero
+    <https://en.wikipedia.org/wiki/Nonzero-rule>`__ or `Even-Odd
+    <https://en.wikipedia.org/wiki/Even-odd_rule>`__ winding rule for filling paths.
+
+    This is a context manager; it creates a new path, and moves to the start coordinate;
+    when the context exits, the path is closed with a fill. For fine-grained control of
+    a path, you can use :class:`~toga.widgets.canvas.Context.begin_path`,
+    :class:`~toga.widgets.canvas.Context.move_to`,
+    :class:`~toga.widgets.canvas.Context.close_path` and
+    :class:`~toga.widgets.canvas.Context.fill`.
+
+    If both an x and y coordinate is provided, the drawing context will begin with
+    a ``move_to`` operation in that context.
+
+    You should not create a :class:`~toga.widgets.canvas.FillContext` context directly;
+    instead, you should use the :meth:`~toga.widgets.canvas.Context.Fill` method on an
+    existing context.
+    """
+
+    def __init__(
+        self,
+        canvas: toga.Canvas,
+        x: float | None = None,
+        y: float | None = None,
+        color: str = BLACK,
+        fill_rule: FillRule = FillRule.NONZERO,
+    ):
+        super().__init__(canvas=canvas, x=x, y=y)
+        self.color = color
+        self.fill_rule = fill_rule
+
+    def __repr__(self):
+        return (
+            f"{self.__class__.__name__}(x={self.x}, y={self.y}, "
+            f"color={self.color!r}, fill_rule={self.fill_rule})"
         )
 
-    def _draw(self, impl, *args, **kwargs):
-        """Draw the drawing object using the implementation."""
-        impl.arc(
-            self.x,
-            self.y,
-            self.radius,
-            self.startangle,
-            self.endangle,
-            self.anticlockwise,
-            *args,
-            **kwargs,
+    def _draw(self, impl, **kwargs):
+        impl.push_context(**kwargs)
+        impl.begin_path(**kwargs)
+        if self.x is not None and self.y is not None:
+            impl.move_to(x=self.x, y=self.y, **kwargs)
+
+        sub_kwargs = kwargs.copy()
+        sub_kwargs.update(fill_color=self.color, fill_rule=self.fill_rule)
+        for obj in self.drawing_objects:
+            obj._draw(impl, **sub_kwargs)
+
+        # Fill passes fill_rule to its children; but that is also a valid argument for
+        # fill(), so if a fill context is a child of a fill context, there's an argument
+        # collision. Duplicate the kwargs and explicitly overwrite to avoid the
+        # collision.
+        draw_kwargs = kwargs.copy()
+        draw_kwargs.update(fill_rule=self.fill_rule)
+        impl.fill(self.color, **draw_kwargs)
+
+        impl.pop_context(**kwargs)
+
+    @property
+    def color(self) -> Color:
+        """The fill color."""
+        return self._color
+
+    @color.setter
+    def color(self, value: Color | str | None):
+        if value is None:
+            self._color = parse_color(BLACK)
+        else:
+            self._color = parse_color(value)
+
+
+class StrokeContext(ClosedPathContext):
+    """Construct a drawing context that will draw a stroke on all paths defined
+    within the context.
+
+    This is a context manager; it creates a new path, and moves to the start coordinate;
+    when the context exits, the path is drawn with the stroke. For fine-grained control of
+    a path, you can use :class:`~toga.widgets.canvas.Context.begin_path`,
+    :class:`~toga.widgets.canvas.Context.move_to`,
+    :class:`~toga.widgets.canvas.Context.close_path` and
+    :class:`~toga.widgets.canvas.Context.stroke`.
+
+    If both an x and y coordinate is provided, the drawing context will begin with
+    a ``move_to`` operation in that context.
+
+    You should not create a :class:`~toga.widgets.canvas.StrokeContext` context directly;
+    instead, you should use the :meth:`~toga.widgets.canvas.Context.Stroke` method on
+    an existing context.
+    """
+
+    def __init__(
+        self,
+        canvas: toga.Canvas,
+        x: float | None = None,
+        y: float | None = None,
+        color: str | None = BLACK,
+        line_width: float = 2.0,
+        line_dash: list[float] | None = None,
+    ):
+        super().__init__(canvas=canvas, x=x, y=y)
+        self.color = color
+        self.line_width = line_width
+        self.line_dash = line_dash
+
+    def __repr__(self):
+        return (
+            f"{self.__class__.__name__}(x={self.x}, y={self.y}, color={self.color!r}, "
+            f"line_width={self.line_width}, line_dash={self.line_dash!r})"
         )
 
+    def _draw(self, impl, **kwargs):
+        impl.push_context(**kwargs)
+        impl.begin_path(**kwargs)
 
-class Rect:
-    """A user-created :class:`Rect` drawing object which adds a rectangle.
+        if self.x is not None and self.y is not None:
+            impl.move_to(x=self.x, y=self.y, **kwargs)
 
-    The rectangle is at position (x, y) with a size that is determined by
-    width and height. Those four points are connected by straight lines and
-    the sub-path is marked as closed, so that you can fill or stroke this
-    rectangle.
+        sub_kwargs = kwargs.copy()
+        sub_kwargs["stroke_color"] = self.color
+        sub_kwargs["line_width"] = self.line_width
+        sub_kwargs["line_dash"] = self.line_dash
+        for obj in self.drawing_objects:
+            obj._draw(impl, **sub_kwargs)
 
-    Args:
-        x: x coordinate for the rectangle starting point.
-        y: y coordinate for the rectangle starting point.
-        width: The rectangle's width.
-        height: The rectangle's width.
-    """
+        # Stroke passes line_width and line_dash to its children; but those two are also
+        # valid arguments for stroke, so if a stroke context is a child of stroke
+        # context, there's an argument collision. Duplicate the kwargs and explicitly
+        # overwrite to avoid the collision
+        draw_kwargs = kwargs.copy()
+        draw_kwargs["line_width"] = self.line_width
+        draw_kwargs["line_dash"] = self.line_dash
+        impl.stroke(self.color, **draw_kwargs)
 
-    def __init__(self, x: float, y: float, width: float, height: float):
-        self.x = x
-        self.y = y
-        self.width = width
-        self.height = height
+        impl.pop_context(**kwargs)
 
-    def __repr__(self):
-        return "{}(x={}, y={}, width={}, height={})".format(
-            self.__class__.__name__, self.x, self.y, self.width, self.height
+    @property
+    def color(self) -> Color:
+        """The color of the stroke."""
+        return self._color
+
+    @color.setter
+    def color(self, value):
+        if value is None:
+            self._color = parse_color(BLACK)
+        else:
+            self._color = parse_color(value)
+
+
+#######################################################################################
+# Events
+#######################################################################################
+
+
+class OnTouchHandler(Protocol):
+    def __call__(self, widget: Canvas, x: int, y: int, **kwargs):
+        """A handler that will be invoked when a :any:`Canvas` is touched with a finger
+        or mouse.
+
+        :param widget: The canvas that was touched.
+        :param x: X coordinate, relative to the left edge of the canvas.
+        :param y: Y coordinate, relative to the top edge of the canvas.
+        :param kwargs: Ensures compatibility with arguments added in future versions.
+        """
+        ...
+
+
+class OnResizeHandler(Protocol):
+    def __call__(self, widget: Canvas, width: int, height: int, **kwargs):
+        """A handler that will be invoked when a :any:`Canvas` is resized.
+
+        :param widget: The canvas that was resized.
+        :param width: The new width.
+        :param height: The new height.
+        :param kwargs: Ensures compatibility with arguments added in future versions.
+        """
+        ...
+
+
+#######################################################################################
+# The Canvas Widget
+#######################################################################################
+
+
+class Canvas(Widget):
+    def __init__(
+        self,
+        id=None,
+        style=None,
+        on_resize: OnResizeHandler = None,
+        on_press: OnTouchHandler = None,
+        on_activate: OnTouchHandler = None,
+        on_release: OnTouchHandler = None,
+        on_drag: OnTouchHandler = None,
+        on_alt_press: OnTouchHandler = None,
+        on_alt_release: OnTouchHandler = None,
+        on_alt_drag: OnTouchHandler = None,
+    ):
+        """Create a new Canvas widget.
+
+        Inherits from :class:`toga.Widget`.
+
+        :param id: The ID for the widget.
+        :param style: A style object. If no style is provided, a default style will be
+            applied to the widget.
+        :param on_resize: Initial :any:`on_resize` handler.
+        :param on_press: Initial :any:`on_press` handler.
+        :param on_activate: Initial :any:`on_activate` handler.
+        :param on_release: Initial :any:`on_release` handler.
+        :param on_drag: Initial :any:`on_drag` handler.
+        :param on_alt_press: Initial :any:`on_alt_press` handler.
+        :param on_alt_release: Initial :any:`on_alt_release` handler.
+        :param on_alt_drag: Initial :any:`on_alt_drag` handler.
+        """
+
+        super().__init__(id=id, style=style)
+
+        self._context = Context(canvas=self)
+
+        # Create a platform specific implementation of Canvas
+        self._impl = self.factory.Canvas(interface=self)
+
+        # Set all the properties
+        self.on_resize = on_resize
+        self.on_press = on_press
+        self.on_activate = on_activate
+        self.on_release = on_release
+        self.on_drag = on_drag
+        self.on_alt_press = on_alt_press
+        self.on_alt_release = on_alt_release
+        self.on_alt_drag = on_alt_drag
+
+    @property
+    def enabled(self) -> bool:
+        """Is the widget currently enabled? i.e., can the user interact with the widget?
+        ScrollContainer widgets cannot be disabled; this property will always return
+        True; any attempt to modify it will be ignored.
+        """
+        return True
+
+    @enabled.setter
+    def enabled(self, value):
+        pass
+
+    def focus(self):
+        "No-op; ScrollContainer cannot accept input focus"
+        pass
+
+    @property
+    def context(self) -> Context:
+        """The root context for the canvas."""
+        return self._context
+
+    def redraw(self):
+        """Redraw the Canvas.
+
+        The Canvas will be automatically redrawn after adding or removing a drawing
+        object, or when the Canvas resizes. However, when you modify the properties of a
+        drawing object, you must call ``redraw`` manually.
+        """
+        self._impl.redraw()
+
+    def Context(self):
+        """Construct and yield a new sub-:class:`~toga.widgets.canvas.Context` within
+        the root context of this Canvas.
+
+        :yields: The new :class:`~toga.widgets.canvas.Context` object.
+        """
+        return self.context.Context()
+
+    def ClosedPath(self, x: float | None = None, y: float | None = None):
+        """Construct and yield a new :class:`~toga.widgets.canvas.ClosedPathContext` context in
+        the root context of this canvas.
+
+        :param x: The x coordinate of the path's starting point.
+        :param y: The y coordinate of the path's starting point.
+        :yields: The new :class:`~toga.widgets.canvas.ClosedPathContext` context object.
+        """
+        return self.context.ClosedPath(x, y)
+
+    def Fill(
+        self,
+        x: float | None = None,
+        y: float | None = None,
+        color: Color | str | None = BLACK,
+        fill_rule: FillRule = FillRule.NONZERO,
+    ):
+        """Construct and yield a new :class:`~toga.widgets.canvas.FillContext` in the
+        root context of this canvas.
+
+        A drawing operator that fills the path constructed in the context according to
+        the current fill rule.
+
+        If both an x and y coordinate is provided, the drawing context will begin with
+        a ``move_to`` operation in that context.
+
+        :param x: The x coordinate of the path's starting point.
+        :param y: The y coordinate of the path's starting point.
+        :param fill_rule: `nonzero` is the non-zero winding rule; `evenodd` is the
+            even-odd winding rule.
+        :param color: The fill color.
+        :yields: The new :class:`~toga.widgets.canvas.FillContext` context object.
+        """
+        return self.context.Fill(x, y, color, fill_rule)
+
+    def Stroke(
+        self,
+        x: float | None = None,
+        y: float | None = None,
+        color: Color | str | None = BLACK,
+        line_width: float = 2.0,
+        line_dash: list[float] | None = None,
+    ):
+        """Construct and yield a new :class:`~toga.widgets.canvas.StrokeContext` in the
+        root context of this canvas.
+
+        If both an x and y coordinate is provided, the drawing context will begin with
+        a ``move_to`` operation in that context.
+
+        :param x: The x coordinate of the path's starting point.
+        :param y: The y coordinate of the path's starting point.
+        :param color: The color for the stroke.
+        :param line_width: The width of the stroke.
+        :param line_dash: The dash pattern to follow when drawing the line. Default is a
+            solid line.
+        :yields: The new :class:`~toga.widgets.canvas.StrokeContext` context object.
+        """
+        return self.context.Stroke(x, y, color, line_width, line_dash)
+
+    @property
+    def on_resize(self) -> OnResizeHandler:
+        """The handler to invoke when the canvas is resized."""
+        return self._on_resize
+
+    @on_resize.setter
+    def on_resize(self, handler: OnResizeHandler):
+        self._on_resize = wrapped_handler(self, handler)
+
+    @property
+    def on_press(self) -> OnTouchHandler:
+        """The handler invoked when the canvas is pressed. When a mouse is being used,
+        this press will be with the primary (usually the left) mouse button."""
+        return self._on_press
+
+    @on_press.setter
+    def on_press(self, handler: OnTouchHandler):
+        self._on_press = wrapped_handler(self, handler)
+
+    @property
+    def on_activate(self) -> OnTouchHandler:
+        """The handler invoked when the canvas is pressed in a way indicating the
+        pressed object should be activated. When a mouse is in use, this will usually be
+        a double click with the primary (usually the left) mouse button.
+
+        This event is not supported on Android or iOS."""
+        return self._on_activate
+
+    @on_activate.setter
+    def on_activate(self, handler: OnTouchHandler):
+        self._on_activate = wrapped_handler(self, handler)
+
+    @property
+    def on_release(self) -> OnTouchHandler:
+        """The handler invoked when a press on the canvas ends."""
+        return self._on_release
+
+    @on_release.setter
+    def on_release(self, handler: OnTouchHandler):
+        self._on_release = wrapped_handler(self, handler)
+
+    @property
+    def on_drag(self) -> OnTouchHandler:
+        """The handler invoked when the location of a press changes."""
+        return self._on_drag
+
+    @on_drag.setter
+    def on_drag(self, handler: OnTouchHandler):
+        self._on_drag = wrapped_handler(self, handler)
+
+    @property
+    def on_alt_press(self) -> OnTouchHandler:
+        """The handler to invoke when the canvas is pressed in an alternate
+        manner. This will usually correspond to a secondary (usually the right) mouse
+        button press.
+
+        This event is not supported on Android or iOS.
+        """
+        return self._on_alt_press
+
+    @on_alt_press.setter
+    def on_alt_press(self, handler: OnTouchHandler):
+        self._on_alt_press = wrapped_handler(self, handler)
+
+    @property
+    def on_alt_release(self) -> OnTouchHandler:
+        """The handler to invoke when an alternate press is released.
+
+        This event is not supported on Android or iOS.
+        """
+        return self._on_alt_release
+
+    @on_alt_release.setter
+    def on_alt_release(self, handler: OnTouchHandler):
+        self._on_alt_release = wrapped_handler(self, handler)
+
+    @property
+    def on_alt_drag(self) -> OnTouchHandler:
+        """The handler to invoke when the location of an alternate press changes.
+
+        This event is not supported on Android or iOS.
+        """
+        return self._on_alt_drag
+
+    @on_alt_drag.setter
+    def on_alt_drag(self, handler: OnTouchHandler):
+        self._on_alt_drag = wrapped_handler(self, handler)
+
+    ###########################################################################
+    # Text measurement
+    ###########################################################################
+
+    def measure_text(
+        self,
+        text: str,
+        font: Font | None = None,
+        tight=None,  # DEPRECATED
+    ) -> tuple[float, float]:
+        """Measure the size at which :meth:`~.Context.write_text` would render some text.
+
+        :param text: The text to measure. Newlines will cause line breaks, but long
+            lines will not be wrapped.
+        :param font: The font in which to draw the text. The default is the system font.
+        :param tight: **DEPRECATED**: this argument has no effect.
+        :returns: A tuple of ``(width, height)``.
+        """
+        if tight is not None:
+            warnings.warn(
+                "The `tight` argument on Canvas.measure_text() has been deprecated.",
+                DeprecationWarning,
+            )
+        if font is None:
+            font = Font(family=SYSTEM, size=SYSTEM_DEFAULT_FONT_SIZE)
+
+        return self._impl.measure_text(str(text), font._impl)
+
+    ###########################################################################
+    # As image
+    ###########################################################################
+
+    def as_image(self) -> toga.Image:
+        """Render the canvas as an Image.
+
+        :returns: A :class:`toga.Image` containing the canvas content."""
+        return Image(data=self._impl.get_image_data())
+
+    ###########################################################################
+    # 2023-07 Backwards compatibility
+    ###########################################################################
+
+    def new_path(self):
+        """**DEPRECATED** - Use :meth:`~toga.widgets.canvas.Context.begin_path` on
+        :attr:`context`"""
+        warnings.warn(
+            "Direct canvas operations have been deprecated; use context.begin_path()",
+            DeprecationWarning,
+        )
+        return self.context.begin_path()
+
+    def move_to(self, x, y):
+        """**DEPRECATED** - Use :meth:`~toga.widgets.canvas.Context.move_to` on
+        :attr:`context`"""
+        warnings.warn(
+            "Direct canvas operations have been deprecated; use context.move_to()",
+            DeprecationWarning,
+        )
+        return self.context.move_to(x, y)
+
+    def line_to(self, x, y):
+        """**DEPRECATED** - Use :meth:`~toga.widgets.canvas.Context.line_to` on
+        :attr:`context`"""
+        warnings.warn(
+            "Direct canvas operations have been deprecated; use context.line_to()",
+            DeprecationWarning,
+        )
+        return self.context.line_to(x, y)
+
+    def bezier_curve_to(self, cp1x, cp1y, cp2x, cp2y, x, y):
+        """**DEPRECATED** - Use :meth:`~toga.widgets.canvas.Context.bezier_curve_to` on
+        :attr:`context`"""
+        warnings.warn(
+            "Direct canvas operations have been deprecated; use context.bezier_curve_to()",
+            DeprecationWarning,
+        )
+        return self.context.bezier_curve_to(cp1x, cp1y, cp2x, cp2y, x, y)
+
+    def quadratic_curve_to(self, cpx: float, cpy: float, x: float, y: float):
+        """**DEPRECATED** - Use :meth:`~toga.widgets.canvas.Context.quadratic_curve_to`
+        on :attr:`context`"""
+        warnings.warn(
+            "Direct canvas operations have been deprecated; use context.quadratic_curve_to()",
+            DeprecationWarning,
+        )
+        return self.context.quadratic_curve_to(cpx, cpy, x, y)
+
+    def arc(self, x, y, radius, startangle=0.0, endangle=2 * pi, anticlockwise=False):
+        """**DEPRECATED** - Use :meth:`~toga.widgets.canvas.Context.arc` on
+        :attr:`context`"""
+        warnings.warn(
+            "Direct canvas operations have been deprecated; use context.arc()",
+            DeprecationWarning,
+        )
+        return self.context.arc(x, y, radius, startangle, endangle, anticlockwise)
+
+    def ellipse(
+        self,
+        x: float,
+        y: float,
+        radiusx: float,
+        radiusy: float,
+        rotation: float = 0.0,
+        startangle: float = 0.0,
+        endangle: float = 2 * pi,
+        anticlockwise: bool = False,
+    ):
+        """**DEPRECATED** - Use :meth:`~toga.widgets.canvas.Context.ellipse` on
+        :attr:`context`"""
+        warnings.warn(
+            "Direct canvas operations have been deprecated; use context.ellipse()",
+            DeprecationWarning,
+        )
+        return self.context.ellipse(
+            x,
+            y,
+            radiusx,
+            radiusy,
+            rotation,
+            startangle,
+            endangle,
+            anticlockwise,
         )
 
-    def _draw(self, impl, *args, **kwargs):
-        """Draw the drawing object using the implementation."""
-        impl.rect(self.x, self.y, self.width, self.height, *args, **kwargs)
-
-
-class Rotate:
-    """A user-created :class:`Rotate` to add canvas rotation.
-
-    Modifies the canvas by rotating the canvas by angle radians. The rotation
-    center point is always the canvas origin which is in the upper left of the
-    canvas. To change the center point, move the canvas by using the
-    translate() method.
-
-    Args:
-        radians: The angle to rotate clockwise in radians.
-    """
-
-    def __init__(self, radians: float):
-        self.radians = radians
-
-    def __repr__(self):
-        return f"{self.__class__.__name__}(radians={self.radians})"
-
-    def _draw(self, impl, *args, **kwargs):
-        """Draw the drawing object using the implementation."""
-        impl.rotate(self.radians, *args, **kwargs)
-
-
-class Scale:
-    """A user-created :class:`Scale` to add canvas scaling.
-
-    Modifies the canvas by scaling the X and Y canvas axes by ``sx`` and ``sy``
-    respectively.
-
-    :param sx: scale factor for the X dimension.
-    :param sy: scale factor for the Y dimension.
-    """
-
-    def __init__(self, sx: float, sy: float):
-        self.sx = sx
-        self.sy = sy
-
-    def __repr__(self):
-        return f"{self.__class__.__name__}(sx={self.sx}, sy={self.sy})"
-
-    def _draw(self, impl, *args, **kwargs):
-        """Draw the drawing object using the implementation."""
-        impl.scale(self.sx, self.sy, *args, **kwargs)
-
-
-class Translate:
-    """A user-created :class:`Translate` to translate the canvas.
-
-    Modifies the canvas by translating the canvas origin by ``(tx, ty)``.
-
-    :param tx: X value of coordinate.
-    :param ty: Y value of coordinate.
-    """
-
-    def __init__(self, tx: float, ty: float):
-        self.tx = tx
-        self.ty = ty
-
-    def __repr__(self):
-        return f"{self.__class__.__name__}(tx={self.tx}, ty={self.ty})"
-
-    def _draw(self, impl, *args, **kwargs):
-        """Draw the drawing object using the implementation."""
-        impl.translate(self.tx, self.ty, *args, **kwargs)
-
-
-class ResetTransform:
-    """A user-created :class:`ResetTransform` to reset the canvas.
-
-    Resets the canvas by setting it equal to the canvas with no transformations.
-    """
-
-    def __repr__(self):
-        return f"{self.__class__.__name__}()"
-
-    def _draw(self, impl, *args, **kwargs):
-        """Draw the drawing object using the implementation."""
-        impl.reset_transform(*args, **kwargs)
-
-
-class WriteText:
-    """A user-created :class:`WriteText` to add text.
-
-    Writes a given text at the given (x,y) position. If no font is provided,
-    then it will use the font assigned to the Canvas Widget, if it exists,
-    or use the default font if there is no font assigned.
-
-    Args:
-        text (str): The text to fill.
-        x (float, Optional): The x coordinate of the text. Default to 0.
-        y (float, Optional): The y coordinate of the text. Default to 0.
-        font (:class:`toga.Font`, Optional): The font to write with.
-    """
-
-    def __init__(self, text: str, x: float = 0, y: float = 0, font: Font | None = None):
-        self.text = text
-        self.x = x
-        self.y = y
-        self.font = font
-
-    def __repr__(self):
-        return "{}(text={}, x={}, y={}, font={})".format(
-            self.__class__.__name__, self.text, self.x, self.y, self.font
+    def rect(self, x: float, y: float, width: float, height: float):
+        """**DEPRECATED** - Use :meth:`~toga.widgets.canvas.Context.rect` on
+        :attr:`context`"""
+        warnings.warn(
+            "Direct canvas operations have been deprecated; use context.rect()",
+            DeprecationWarning,
         )
+        return self.context.rect(x, y, width, height)
 
-    def _draw(self, impl, *args, **kwargs):
-        """Draw the drawing object using the implementation."""
-        impl.write_text(self.text, self.x, self.y, self.font, *args, **kwargs)
+    def write_text(self, text: str, x=0, y=0, font=None):
+        """**DEPRECATED** - Use :meth:`~toga.widgets.canvas.Context.write_text` on
+        :attr:`context`"""
+        warnings.warn(
+            "Direct canvas operations have been deprecated; use context.write_text()",
+            DeprecationWarning,
+        )
+        return self.context.write_text(text, x, y, font)
 
+    def rotate(self, radians: float):
+        """**DEPRECATED** - Use :meth:`~toga.widgets.canvas.Context.rotate` on
+        :attr:`context`"""
+        warnings.warn(
+            "Direct canvas operations have been deprecated; use context.rotate()",
+            DeprecationWarning,
+        )
+        return self.context.rotate(radians)
 
-class NewPath:
-    """A user-created :class:`NewPath` to add a new path."""
+    def scale(self, sx: float, sy: float):
+        """**DEPRECATED** - Use :meth:`~toga.widgets.canvas.Context.scale` on :attr:`context`"""
+        warnings.warn(
+            "Direct canvas operations have been deprecated; use context.scale()",
+            DeprecationWarning,
+        )
+        return self.context.scale(sx, sy)
 
-    def __repr__(self):
-        return f"{self.__class__.__name__}()"
+    def translate(self, tx: float, ty: float):
+        """**DEPRECATED** - Use :meth:`~toga.widgets.canvas.Context.translate` on
+        :attr:`context`"""
+        warnings.warn(
+            "Direct canvas operations have been deprecated; use context.translate()",
+            DeprecationWarning,
+        )
+        return self.context.translate(tx, ty)
 
-    def _draw(self, impl, *args, **kwargs):
-        """Draw the drawing object using the implementation."""
-        impl.new_path(*args, **kwargs)
+    def reset_transform(self):
+        """**DEPRECATED** - Use :meth:`~toga.widgets.canvas.Context.reset_transform` on
+        :attr:`context`"""
+        warnings.warn(
+            "Direct canvas operations have been deprecated; use context.reset_transform()",
+            DeprecationWarning,
+        )
+        return self.context.reset_transform()
+
+    def closed_path(self, x, y):
+        """**DEPRECATED** - use :meth:`~toga.Canvas.ClosedPath`"""
+        warnings.warn(
+            "Canvas.closed_path() has been renamed Canvas.ClosedPath()",
+            DeprecationWarning,
+        )
+        return self.ClosedPath(x, y)
+
+    def fill(
+        self,
+        color: Color | str | None = BLACK,
+        fill_rule: FillRule = FillRule.NONZERO,
+        preserve=None,  # DEPRECATED
+    ):
+        """**DEPRECATED** - use :meth:`~toga.Canvas.Fill`"""
+        warnings.warn(
+            "Canvas.fill() has been renamed Canvas.Fill()",
+            DeprecationWarning,
+        )
+        if preserve is not None:
+            warnings.warn(
+                "The `preserve` argument on fill() has been deprecated.",
+                DeprecationWarning,
+            )
+        return self.Fill(color=color, fill_rule=fill_rule)
+
+    def stroke(
+        self,
+        color: Color | str | None = BLACK,
+        line_width: float = 2.0,
+        line_dash: list[float] | None = None,
+    ):
+        """**DEPRECATED** - use :meth:`~toga.Canvas.Stroke`"""
+        warnings.warn(
+            "Canvas.stroke() has been renamed Canvas.Stroke().",
+            DeprecationWarning,
+        )
+        return self.Stroke(color=color, line_width=line_width, line_dash=line_dash)

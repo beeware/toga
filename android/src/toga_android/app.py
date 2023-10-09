@@ -1,20 +1,22 @@
 import asyncio
 
-from rubicon.java import android_events
+from java import dynamic_proxy
+from org.beeware.android import IPythonApp, MainActivity
 
 import toga
+from android.graphics.drawable import Drawable
+from android.media import RingtoneManager
+from android.view import Menu, MenuItem
 from toga.command import Group
 
-from .libs.activity import IPythonApp, MainActivity
-from .libs.android.graphics import Drawable
-from .libs.android.view import Menu, MenuItem
+from .libs import events
 from .window import Window
 
 # `MainWindow` is defined here in `app.py`, not `window.py`, to mollify the test suite.
 MainWindow = Window
 
 
-class TogaApp(IPythonApp):
+class TogaApp(dynamic_proxy(IPythonApp)):
     last_intent_requestcode = (
         -1
     )  # always increment before using it for invoking new Intents
@@ -25,6 +27,7 @@ class TogaApp(IPythonApp):
         super().__init__()
         self._impl = app
         MainActivity.setPythonApp(self)
+        self.native = MainActivity.singletonThis
         print("Python app launched & stored in Android Activity class")
 
     def onCreate(self):
@@ -161,14 +164,6 @@ class TogaApp(IPythonApp):
 
         return True
 
-    @property
-    def native(self):
-        # We access `MainActivity.singletonThis` freshly each time, rather than
-        # storing a reference in `__init__()`, because it's not safe to use the
-        # same reference over time because `rubicon-java` creates a JNI local
-        # reference.
-        return MainActivity.singletonThis
-
 
 class App:
     def __init__(self, interface):
@@ -176,7 +171,7 @@ class App:
         self.interface._impl = self
         self._listener = None
 
-        self.loop = android_events.AndroidEventLoop()
+        self.loop = events.AndroidEventLoop()
 
     @property
     def native(self):
@@ -207,7 +202,11 @@ class App:
         self.interface.factory.not_implemented("App.show_about_dialog()")
 
     def beep(self):
-        self.interface.factory.not_implemented("App.beep()")
+        uri = RingtoneManager.getActualDefaultRingtoneUri(
+            self.native.getApplicationContext(), RingtoneManager.TYPE_NOTIFICATION
+        )
+        ringtone = RingtoneManager.getRingtone(self.native.getApplicationContext(), uri)
+        ringtone.play()
 
     def exit(self):
         pass

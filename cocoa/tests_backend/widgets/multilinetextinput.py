@@ -2,7 +2,7 @@ from toga.colors import TRANSPARENT
 from toga_cocoa.libs import NSScrollView, NSTextView
 
 from .base import SimpleProbe
-from .properties import toga_alignment, toga_color, toga_font
+from .properties import toga_alignment, toga_color
 
 
 class MultilineTextInputProbe(SimpleProbe):
@@ -55,7 +55,7 @@ class MultilineTextInputProbe(SimpleProbe):
 
     @property
     def font(self):
-        return toga_font(self.native_text.font)
+        return self.native_text.font
 
     @property
     def alignment(self):

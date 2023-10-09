@@ -1,12 +1,13 @@
+import System.Windows.Forms as WinForms
 from travertino.size import at_least
-
-from toga_winforms.libs import WinForms
 
 from ..internal.wrappers import WeakrefCallable
 from .base import Widget
 
 
 class Button(Widget):
+    _background_supports_alpha = False
+
     def create(self):
         self.native = WinForms.Button()
         self.native.AutoSizeMode = WinForms.AutoSizeMode.GrowAndShrink

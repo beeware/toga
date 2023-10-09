@@ -1,8 +1,16 @@
+from ctypes import c_void_p
+
+from rubicon.objc import (
+    ObjCInstance,
+    objc_method,
+    objc_property,
+    send_super,
+)
+
 from toga_cocoa.libs import (
-    SEL,
+    NSBezelBorder,
     NSClipView,
-    NSEvent,
-    NSEventPhaseEnded,
+    NSEventPhaseBegan,
     NSLayoutAttributeCenterX,
     NSLayoutAttributeCenterY,
     NSLayoutAttributeHeight,
@@ -13,7 +21,6 @@ from toga_cocoa.libs import (
     NSLayoutRelationEqual,
     NSMakePoint,
     NSMakeRect,
-    NSNotificationCenter,
     NSPoint,
     NSProgressIndicator,
     NSProgressIndicatorSpinningStyle,
@@ -21,16 +28,59 @@ from toga_cocoa.libs import (
     NSScrollElasticityAllowed,
     NSScrollView,
     NSView,
-    NSViewBoundsDidChangeNotification,
-    ObjCInstance,
-    c_void_p,
-    core_graphics,
-    kCGScrollEventUnitLine,
-    objc_method,
-    objc_property,
-    send_super,
 )
 
+#########################################################################################
+# This is broadly derived from Alex Zielenski's ScrollToRefresh implementation:
+# https://github.com/alexzielenski/ScrollToRefresh/blob/master/ScrollToRefresh/src/EQSTRScrollView.m
+# =======================================================================================
+# ScrollToRefresh
+#
+# Copyright (C) 2011 by Alex Zielenski.
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy of this
+# software and associated documentation files (the "Software"), to deal in the Software
+# without restriction, including without limitation the rights to use, copy, modify,
+# merge, publish, distribute, sublicense, and/or sell copies of the Software, and to
+# permit persons to whom the Software is furnished to do so, subject to the following
+# conditions:
+#
+# The above copyright notice and this permission notice shall be included in all copies
+# or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+# INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+# PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+# HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+# CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
+# OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+# =======================================================================================
+#
+# HOW THIS WORKS
+#
+# RefreshableScrollView is a subclass of NSScrollView. When it is created, it is
+# provided a document (usually a List View); the RefreshableScrollView has a custom
+# clipView that accommodates an extra widget which can display the "currently loading"
+# spinner. When the scroll view is reloading, the clipView alters its bounds to include
+# the extra space for the refresh_view header; when the reload finishes, an artificial
+# scroll event is generated that forces the clipView to re-evaluate its bounds, removing
+# the refresh_view.
+#
+# During a scroll action, a ``scrollWheel:`` event is generated. During normal in-bounds
+# scrolling, the y origin of the content area will always be non-negative. If you're
+# near the end of the scroll area and bounce against the end, you won't generate an
+# event scroll event with a negative y origin. However, if you're already at the end of
+# the scroll area, and you pull past the limit, you'll generate a scroll event with a
+# negative origin. The scrollingDeltaY associated with that event indicates how hard you
+# pulled past the limit; as long the size of the pull exceeds a threshold (this allows
+# us to ignoring small/accidental scrolls), a reload event is generated. The bounds of
+# the content area are forcibly extended to include the refresh view.
+#
+# All of this is also gated by the refreshEnabled flag; when refresh is disabled, it
+# also makes the refresh widget invisible so that it can't be seen in a bounce scroll.
+#########################################################################################
+
+# The height of the refresh header; also the minimum pull height to trigger a refresh.
 HEADER_HEIGHT = 45.0
 
 
@@ -49,10 +99,12 @@ class RefreshableClipView(NSClipView):
             argtypes=[NSPoint],
         )
 
-        if self.superview and self.superview.refreshTriggered:
+        if self.superview and self.superview.is_refreshing:
             return NSMakePoint(
                 constrained.x,
-                max(proposedNewOrigin.y, -self.superview.refreshView.frame.size.height),
+                max(
+                    proposedNewOrigin.y, -self.superview.refresh_view.frame.size.height
+                ),
             )
 
         return constrained
@@ -61,12 +113,12 @@ class RefreshableClipView(NSClipView):
     def documentRect(self) -> NSRect:
         rect = send_super(__class__, self, "documentRect", restype=NSRect, argtypes=[])
 
-        if self.superview and self.superview.refreshTriggered:
+        if self.superview and self.superview.is_refreshing:
             return NSMakeRect(
                 rect.origin.x,
-                rect.origin.y - self.superview.refreshView.frame.size.height,
+                rect.origin.y - self.superview.refresh_view.frame.size.height,
                 rect.size.width,
-                rect.size.height + self.superview.refreshView.frame.size.height,
+                rect.size.height + self.superview.refresh_view.frame.size.height,
             )
         return rect
 
@@ -75,112 +127,91 @@ class RefreshableScrollView(NSScrollView):
     interface = objc_property(object, weak=True)
     impl = objc_property(object, weak=True)
 
-    # Create Header View
     @objc_method
-    def viewDidMoveToWindow(self) -> None:
-        self.refreshTriggered = False
-        self.isRefreshing = False
-        self.refreshView = None
-        self.refreshIndicator = None
-        self.createRefreshView()
-
-    @objc_method
-    def createContentView(self):
-        superClipView = ObjCInstance(send_super(__class__, self, "contentView"))
-        if not isinstance(superClipView, RefreshableClipView):
-            # create new clipview
-            documentView = superClipView.documentView
-            clipView = RefreshableClipView.alloc().initWithFrame(superClipView.frame)
-
-            clipView.documentView = documentView
-            clipView.copiesOnScroll = False
-            clipView.drawsBackground = False
-
-            self.setContentView(clipView)
-            superClipView = ObjCInstance(send_super(__class__, self, "contentView"))
-
-        return superClipView
-
-    @objc_method
-    def createRefreshView(self) -> None:
-        # delete old stuff if any
-        if self.refreshView:
-            self.refreshView.removeFromSuperview()
-            self.refreshView.release()
-            self.refreshView = None
-
+    def initWithDocument_(self, documentView):
+        self = ObjCInstance(send_super(__class__, self, "init"))
+        self.hasVerticalScroller = True
         self.verticalScrollElasticity = NSScrollElasticityAllowed
+        self.hasHorizontalScroller = False
+        self.autohidesScrollers = False
+        self.borderType = NSBezelBorder
 
-        # create new content view
-        self.createContentView()
+        # Set local refresh-controlling properties
+        self.event_ended = False
+        self.is_refreshing = False
+
+        # Create the clipview that contains the document and refresh view.
+        superClipView = ObjCInstance(send_super(__class__, self, "contentView"))
+        clipView = RefreshableClipView.alloc().initWithFrame(superClipView.frame)
+
+        clipView.documentView = documentView
+        clipView.copiesOnScroll = False
+        clipView.drawsBackground = False
+
+        self.setContentView(clipView)
 
         self.contentView.postsFrameChangedNotifications = True
         self.contentView.postsBoundsChangedNotifications = True
 
-        NSNotificationCenter.defaultCenter.addObserver(
-            self,
-            selector=SEL("viewBoundsChanged:"),
-            name=NSViewBoundsDidChangeNotification,
-            object=self.contentView,
-        )
-
-        # Create view to hold the refresh widgets refreshview
-        contentRect = self.contentView.documentView.frame
-        self.refreshView = NSView.alloc().init()
-        self.refreshView.translatesAutoresizingMaskIntoConstraints = False
+        # Create view to hold the refresh widgets
+        self.refresh_view = NSView.alloc().init()
+        self.refresh_view.translatesAutoresizingMaskIntoConstraints = False
 
         # Create spinner
-        self.refreshIndicator = NSProgressIndicator.alloc().init()
-        self.refreshIndicator.style = NSProgressIndicatorSpinningStyle
-        self.refreshIndicator.translatesAutoresizingMaskIntoConstraints = False
-        self.refreshIndicator.displayedWhenStopped = True
-        self.refreshIndicator.usesThreadedAnimation = True
-        self.refreshIndicator.indeterminate = True
-        self.refreshIndicator.bezeled = False
-        self.refreshIndicator.sizeToFit()
+        self.refresh_indicator = NSProgressIndicator.alloc().init()
+        self.refresh_indicator.style = NSProgressIndicatorSpinningStyle
+        self.refresh_indicator.translatesAutoresizingMaskIntoConstraints = False
+        self.refresh_indicator.displayedWhenStopped = True
+        self.refresh_indicator.usesThreadedAnimation = True
+        self.refresh_indicator.indeterminate = True
+        self.refresh_indicator.bezeled = False
+        self.refresh_indicator.sizeToFit()
+
+        # Hide the refresh indicator by default; this will be made visible when refresh
+        # is explicitly enabled.
+        self.refresh_indicator.setHidden(True)
 
         # Center the spinner in the header
-        self.refreshIndicator.setFrame(
+        self.refresh_indicator.setFrame(
             NSMakeRect(
-                self.refreshView.bounds.size.width / 2
-                - self.refreshIndicator.frame.size.width / 2,
-                self.refreshView.bounds.size.height / 2
-                - self.refreshIndicator.frame.size.height / 2,
-                self.refreshIndicator.frame.size.width,
-                self.refreshIndicator.frame.size.height,
+                self.refresh_view.bounds.size.width / 2
+                - self.refresh_indicator.frame.size.width / 2,
+                self.refresh_view.bounds.size.height / 2
+                - self.refresh_indicator.frame.size.height / 2,
+                self.refresh_indicator.frame.size.width,
+                self.refresh_indicator.frame.size.height,
             )
         )
 
         # Put everything in place
-        self.refreshView.addSubview(self.refreshIndicator)
-        # self.refreshView.addSubview(self.refreshArrow)
-        self.contentView.addSubview(self.refreshView)
+        self.refresh_view.addSubview(self.refresh_indicator)
+        self.contentView.addSubview(self.refresh_view)
 
         # set layout constraints
         indicatorHCenter = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(  # noqa: E501
-            self.refreshIndicator,
+            self.refresh_indicator,
             NSLayoutAttributeCenterX,
             NSLayoutRelationEqual,
-            self.refreshView,
+            self.refresh_view,
             NSLayoutAttributeCenterX,
             1.0,
             0,
         )
-        self.refreshView.addConstraint(indicatorHCenter)
+        self.refresh_view.addConstraint(indicatorHCenter)
 
         indicatorVCenter = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(  # noqa: E501
-            self.refreshIndicator,
+            self.refresh_indicator,
             NSLayoutAttributeCenterY,
             NSLayoutRelationEqual,
-            self.refreshView,
+            self.refresh_view,
             NSLayoutAttributeCenterY,
             1.0,
             0,
         )
-        self.refreshView.addConstraint(indicatorVCenter)
+        self.refresh_view.addConstraint(indicatorVCenter)
 
         refreshWidth = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(  # noqa: E501
-            self.refreshView,
+            self.refresh_view,
             NSLayoutAttributeWidth,
             NSLayoutRelationEqual,
             self.contentView,
@@ -191,7 +222,7 @@ class RefreshableScrollView(NSScrollView):
         self.contentView.addConstraint(refreshWidth)
 
         refreshHeight = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(  # noqa: E501
-            self.refreshView,
+            self.refresh_view,
             NSLayoutAttributeHeight,
             NSLayoutRelationEqual,
             None,
@@ -202,7 +233,7 @@ class RefreshableScrollView(NSScrollView):
         self.contentView.addConstraint(refreshHeight)
 
         refreshHeight = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(  # noqa: E501
-            self.refreshView,
+            self.refresh_view,
             NSLayoutAttributeTop,
             NSLayoutRelationEqual,
             self.contentView,
@@ -213,46 +244,48 @@ class RefreshableScrollView(NSScrollView):
         self.contentView.addConstraint(refreshHeight)
 
         # Scroll to top
+        contentRect = self.contentView.documentView.frame
         self.contentView.scrollToPoint(NSMakePoint(contentRect.origin.x, 0))
         self.reflectScrolledClipView(self.contentView)
 
+        return self
+
+    @objc_method
+    def setRefreshEnabled(self, enabled: bool):
+        self.refresh_enabled = enabled
+        self.refresh_indicator.setHidden(not enabled)
+
+    ######################################################################
     # Detecting scroll
+    ######################################################################
     @objc_method
     def scrollWheel_(self, event) -> None:
-        if event.phase == NSEventPhaseEnded:
-            if self.refreshTriggered and not self.isRefreshing:
-                self.reload()
+        if (
+            self.refresh_enabled
+            and event.momentumPhase == NSEventPhaseBegan
+            and event.scrollingDeltaY > HEADER_HEIGHT
+            and self.contentView.bounds.origin.y < 0
+        ):
+            self.is_refreshing = True
+            # Extend the content view area to ensure the refresh view is visible,
+            # start the loading animation, and trigger the user's refresh handler.
+            self.contentView.scrollToPoint(
+                NSMakePoint(self.contentView.bounds.origin.x, -HEADER_HEIGHT)
+            )
+            self.refresh_indicator.startAnimation(self)
+            self.interface.on_refresh(self.interface)
 
         send_super(__class__, self, "scrollWheel:", event, argtypes=[c_void_p])
-
-    @objc_method
-    def viewBoundsChanged_(self, note) -> None:
-        if self.isRefreshing:
-            return
-
-        if self.contentView.bounds.origin.y <= -self.refreshView.frame.size.height:
-            self.refreshTriggered = True
-
-    # Reload
-    @objc_method
-    def reload(self) -> None:
-        """Start a reload, starting the reload spinner."""
-        self.isRefreshing = True
-        self.refreshIndicator.startAnimation(self)
-        self.interface.on_refresh(self.interface)
 
     @objc_method
     def finishedLoading(self):
         """Invoke to mark the end of a reload, stopping and hiding the reload
         spinner."""
-        self.isRefreshing = False
-        self.refreshTriggered = False
-        self.refreshIndicator.stopAnimation(self)
-        self.detailedlist.reloadData()
+        self.is_refreshing = False
+        self.refresh_indicator.stopAnimation(self)
+        self.documentView.reloadData()
 
-        # Force a scroll event to make the scroll hide the reload
-        cgEvent = core_graphics.CGEventCreateScrollWheelEvent(
-            None, kCGScrollEventUnitLine, 2, 1, 0
-        )
-        scrollEvent = NSEvent.eventWithCGEvent(cgEvent)
-        self.scrollWheel(scrollEvent)
+        # Scroll back to top, hiding the refresh window from view.
+        contentRect = self.contentView.documentView.frame
+        self.contentView.scrollToPoint(NSMakePoint(contentRect.origin.x, 0))
+        self.reflectScrolledClipView(self.contentView)

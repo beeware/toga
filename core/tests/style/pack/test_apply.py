@@ -63,7 +63,7 @@ def test_set_font():
     )
     root.style.reapply()
     root._impl.set_font.assert_called_with(
-        Font("Roboto", 12, "normal", "small-caps", "bold")
+        Font("Roboto", 12, style="normal", variant="small-caps", weight="bold")
     )
     root.refresh.assert_called_with()
 

@@ -2,9 +2,16 @@ import asyncio
 from abc import ABC
 from pathlib import Path
 
+import System.Windows.Forms as WinForms
+from System.Drawing import (
+    ContentAlignment,
+    Font as WinFont,
+    FontFamily,
+    FontStyle,
+    SystemFonts,
+)
+
 from .internal.wrappers import WeakrefCallable
-from .libs import WinFont, WinForms
-from .libs.winforms import ContentAlignment, FontFamily, FontStyle, SystemFonts
 
 
 class BaseDialog(ABC):

@@ -211,6 +211,16 @@ UIColor.declare_class_property("whiteColor")
 UIColor.declare_class_property("yellowColor")
 
 ######################################################################
+# UIContextualAction.h
+UIContextualAction = ObjCClass("UIContextualAction")
+
+
+class UIContextualActionStyle(Enum):
+    Normal = 0
+    Destructive = 1
+
+
+######################################################################
 # UIControl.h
 
 # UIControlEvents
@@ -266,6 +276,10 @@ UIFontDescriptorTraitBold = 1 << 1
 ######################################################################
 # UIGraphics.h
 uikit.UIGraphicsGetCurrentContext.restype = CGContextRef
+
+######################################################################
+# UIGraphicsImageRenderer.h
+UIGraphicsImageRenderer = ObjCClass("UIGraphicsImageRenderer")
 
 ######################################################################
 # UIImage.h
@@ -333,6 +347,10 @@ class UIStackViewAlignment(Enum):
     Bottom = 4
     LastBaseline = 5
 
+
+######################################################################
+# UISwipeActionsConfiguration.h
+UISwipeActionsConfiguration = ObjCClass("UISwipeActionsConfiguration")
 
 ######################################################################
 # UISwitch.h

@@ -1,5 +1,7 @@
+import System.Windows.Forms as WinForms
+from System.Drawing import Bitmap
+
 from toga.widgets.imageview import rehint_imageview
-from toga_winforms.libs import Bitmap, WinForms
 
 from .base import Widget
 
@@ -28,7 +30,7 @@ class ImageView(Widget):
 
     def rehint(self):
         width, height, aspect_ratio = rehint_imageview(
-            self.interface.image, self.interface.style, self.scale
+            self.interface.image, self.interface.style, self.dpi_scale
         )
         self.interface.intrinsic.width = width
         self.interface.intrinsic.height = height

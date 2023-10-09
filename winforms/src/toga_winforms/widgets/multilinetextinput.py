@@ -1,7 +1,9 @@
+import System.Windows.Forms as WinForms
+from System.Drawing import SystemColors
 from travertino.size import at_least
 
 from toga_winforms.colors import native_color
-from toga_winforms.libs import HorizontalTextAlignment, SystemColors, WinForms
+from toga_winforms.libs.fonts import HorizontalTextAlignment
 
 from ..internal.wrappers import WeakrefCallable
 from .textinput import TextInput

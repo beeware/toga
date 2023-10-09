@@ -1,29 +1,17 @@
+from rubicon.objc import SEL, objc_method, objc_property
 from travertino.size import at_least
 
 from toga_cocoa.libs import (
-    SEL,
-    NSBezelBorder,
+    NSIndexSet,
     NSMenu,
     NSTableColumn,
     NSTableView,
     NSTableViewColumnAutoresizingStyle,
-    objc_method,
-    objc_property,
 )
 from toga_cocoa.widgets.base import Widget
 from toga_cocoa.widgets.internal.cells import TogaDetailedCell
 from toga_cocoa.widgets.internal.data import TogaData
 from toga_cocoa.widgets.internal.refresh import RefreshableScrollView
-
-
-def attr_impl(value, attr):
-    # If the data value has an _impl attribute, invoke it.
-    # This will manifest any impl-specific attributes.
-    impl = getattr(value, attr, None)
-    try:
-        return impl._impl
-    except AttributeError:
-        return impl
 
 
 class TogaList(NSTableView):
@@ -32,24 +20,48 @@ class TogaList(NSTableView):
 
     @objc_method
     def menuForEvent_(self, event):
-        if self.interface.on_delete:
+        if self.impl.primary_action_enabled or self.impl.secondary_action_enabled:
+            # Find the row under the mouse click
             mousePoint = self.convertPoint(event.locationInWindow, fromView=None)
             row = self.rowAtPoint(mousePoint)
 
-            popup = NSMenu.alloc().initWithTitle("popup")
-            delete_item = popup.addItemWithTitle(
-                "Delete", action=SEL("actionDeleteRow:"), keyEquivalent=""
+            # Ensure the row is selected.
+            self.selectRowIndexes(
+                NSIndexSet.indexSetWithIndex(row),
+                byExtendingSelection=False,
             )
-            delete_item.tag = row
-            # action_item = popup.addItemWithTitle("???", action=SEL('actionRow:'), keyEquivalent="")
-            # action_item.tag = row
+
+            # Create a popup menu to display the possible actions.
+            popup = NSMenu.alloc().initWithTitle("popup").autorelease()
+            if self.impl.primary_action_enabled:
+                primary_action_item = popup.addItemWithTitle(
+                    self.interface._primary_action,
+                    action=SEL("primaryActionOnRow:"),
+                    keyEquivalent="",
+                )
+                primary_action_item.tag = row
+
+            if self.impl.secondary_action_enabled:
+                secondary_action_item = popup.addItemWithTitle(
+                    self.interface._secondary_action,
+                    action=SEL("secondaryActionOnRow:"),
+                    keyEquivalent="",
+                )
+                secondary_action_item.tag = row
 
             return popup
+        else:
+            return None
 
     @objc_method
-    def actionDeleteRow_(self, menuitem):
+    def primaryActionOnRow_(self, menuitem):
         row = self.interface.data[menuitem.tag]
-        self.interface.on_delete(self.interface, row=row)
+        self.interface.on_primary_action(self.interface, row=row)
+
+    @objc_method
+    def secondaryActionOnRow_(self, menuitem):
+        row = self.interface.data[menuitem.tag]
+        self.interface.on_secondary_action(self.interface, row=row)
 
     # TableDataSource methods
     @objc_method
@@ -66,7 +78,34 @@ class TogaList(NSTableView):
             data.retain()
             value._impl = data
 
-        data.attrs = {attr: attr_impl(value, attr) for attr in value._attrs}
+        try:
+            title = getattr(value, self.interface.accessors[0])
+            if title is not None:
+                title = str(title)
+            else:
+                title = self.interface.missing_value
+        except AttributeError:
+            title = self.interface.missing_value
+
+        try:
+            subtitle = getattr(value, self.interface.accessors[1])
+            if subtitle is not None:
+                subtitle = str(subtitle)
+            else:
+                subtitle = self.interface.missing_value
+        except AttributeError:
+            subtitle = self.interface.missing_value
+
+        try:
+            icon = getattr(value, self.interface.accessors[2])._impl.native
+        except AttributeError:
+            icon = None
+
+        data.attrs = {
+            "title": title,
+            "subtitle": subtitle,
+            "icon": icon,
+        }
 
         return data
 
@@ -83,103 +122,90 @@ class TogaList(NSTableView):
 
     @objc_method
     def tableViewSelectionDidChange_(self, notification) -> None:
-        index = notification.object.selectedRow
-        if index == -1:
-            selection = None
-        else:
-            selection = self.interface.data[index]
-
-        if self.interface.on_select:
-            self.interface.on_select(self.interface, row=selection)
+        self.interface.on_select(self.interface)
 
 
 class DetailedList(Widget):
     def create(self):
         # Create a List, and put it in a scroll view.
         # The scroll view is the _impl, because it's the outer container.
-        self.native = RefreshableScrollView.alloc().init()
-        self.native.interface = self.interface
-        self.native.impl = self
-        self.native.hasVerticalScroller = True
-        self.native.hasHorizontalScroller = False
-        self.native.autohidesScrollers = False
-        self.native.borderType = NSBezelBorder
 
         # Create the List widget
-        self.detailedlist = TogaList.alloc().init()
-        self.detailedlist.interface = self.interface
-        self.detailedlist.impl = self
-        self.detailedlist.columnAutoresizingStyle = (
+        self.native_detailedlist = TogaList.alloc().init()
+        self.native_detailedlist.interface = self.interface
+        self.native_detailedlist.impl = self
+        self.native_detailedlist.columnAutoresizingStyle = (
             NSTableViewColumnAutoresizingStyle.Uniform
         )
+        self.native_detailedlist.allowsMultipleSelection = False
 
-        # TODO: Optionally enable multiple selection
-        self.detailedlist.allowsMultipleSelection = False
+        # Disable all actions by default.
+        self.primary_action_enabled = False
+        self.secondary_action_enabled = False
 
-        self.native.detailedlist = self.detailedlist
+        self.native = RefreshableScrollView.alloc().initWithDocument(
+            self.native_detailedlist
+        )
+        self.native.interface = self.interface
+        self.native.impl = self
 
         # Create the column for the detailed list
         column = NSTableColumn.alloc().initWithIdentifier("data")
-        self.detailedlist.addTableColumn(column)
+        self.native_detailedlist.addTableColumn(column)
         self.columns = [column]
 
         cell = TogaDetailedCell.alloc().init()
         column.dataCell = cell
 
         # Hide the column header.
-        self.detailedlist.headerView = None
+        self.native_detailedlist.headerView = None
 
-        self.detailedlist.delegate = self.detailedlist
-        self.detailedlist.dataSource = self.detailedlist
-
-        # Embed the tree view in the scroll view
-        self.native.documentView = self.detailedlist
+        self.native_detailedlist.delegate = self.native_detailedlist
+        self.native_detailedlist.dataSource = self.native_detailedlist
 
         # Add the layout constraints
         self.add_constraints()
 
     def change_source(self, source):
-        self.detailedlist.reloadData()
+        self.native_detailedlist.reloadData()
 
     def insert(self, index, item):
-        self.detailedlist.reloadData()
+        self.native_detailedlist.reloadData()
 
     def change(self, item):
-        self.detailedlist.reloadData()
+        self.native_detailedlist.reloadData()
 
     def remove(self, index, item):
-        self.detailedlist.reloadData()
+        self.native_detailedlist.reloadData()
 
         # After deletion, the selection changes, but Cocoa doesn't send
         # a tableViewSelectionDidChange: message.
-        selection = self.get_selection()
-        if selection and self.interface.on_select:
-            self.interface.on_select(self.interface, row=selection)
+        self.interface.on_select(self.interface)
 
     def clear(self):
-        self.detailedlist.reloadData()
+        self.native_detailedlist.reloadData()
 
-    def set_on_refresh(self, handler):
-        pass
+    def set_refresh_enabled(self, enabled):
+        self.native.setRefreshEnabled(enabled)
+
+    def set_primary_action_enabled(self, enabled):
+        self.primary_action_enabled = enabled
+
+    def set_secondary_action_enabled(self, enabled):
+        self.secondary_action_enabled = enabled
 
     def after_on_refresh(self, widget, result):
         self.native.finishedLoading()
 
     def get_selection(self):
-        index = self.detailedlist.selectedRow
-        if index != -1:
-            return self.interface.data[index]
-        else:
+        index = self.native_detailedlist.selectedRow
+        if index == -1:
             return None
-
-    def set_on_select(self, handler):
-        pass
-
-    def set_on_delete(self, handler):
-        pass
+        else:
+            return index
 
     def scroll_to_row(self, row):
-        self.detailedlist.scrollRowToVisible(row)
+        self.native_detailedlist.scrollRowToVisible(row)
 
     def rehint(self):
         self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)

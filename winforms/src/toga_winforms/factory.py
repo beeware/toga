@@ -26,7 +26,6 @@ from .widgets.switch import Switch
 from .widgets.table import Table
 from .widgets.textinput import TextInput
 from .widgets.timeinput import TimeInput
-from .widgets.tree import Tree
 from .widgets.webview import WebView
 from .window import Window
 
@@ -68,7 +67,6 @@ __all__ = [
     "Table",
     "TextInput",
     "TimeInput",
-    "Tree",
     "WebView",
     "Window",
 ]

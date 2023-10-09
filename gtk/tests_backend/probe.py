@@ -4,9 +4,6 @@ from toga_gtk.libs import Gtk
 
 
 class BaseProbe:
-    def assert_font_family(self, expected):
-        assert self.font.family == expected
-
     def repaint_needed(self):
         return Gtk.events_pending()
 

@@ -2,6 +2,7 @@ from rubicon.objc import ObjCClass
 
 from toga_iOS.libs import UIApplication
 
+from ..fonts import FontMixin
 from ..probe import BaseProbe
 from .properties import toga_color
 
@@ -36,7 +37,7 @@ UIControlEventAllEvents = 0xFFFFFFFF
 CATransaction = ObjCClass("CATransaction")
 
 
-class SimpleProbe(BaseProbe):
+class SimpleProbe(BaseProbe, FontMixin):
     def __init__(self, widget):
         super().__init__()
         self.app = widget.app
@@ -129,6 +130,10 @@ class SimpleProbe(BaseProbe):
     @property
     def background_color(self):
         return toga_color(self.native.backgroundColor)
+
+    @property
+    def font(self):
+        return self.native.font
 
     async def press(self):
         self.native.sendActionsForControlEvents(UIControlEventTouchDown)

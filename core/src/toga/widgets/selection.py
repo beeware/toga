@@ -3,7 +3,7 @@ from __future__ import annotations
 import warnings
 
 from toga.handlers import wrapped_handler
-from toga.sources import ListSource
+from toga.sources import ListSource, Source
 
 from .base import Widget
 
@@ -22,16 +22,12 @@ class Selection(Widget):
     ):
         """Create a new Selection widget.
 
-        Inherits from :class:`~toga.widgets.base.Widget`.
-
         :param id: The ID for the widget.
         :param style: A style object. If no style is provided, a default style will be
             applied to the widget.
-        :param items: The items to display for selection. Can be a list of values or a
-            ListSource. See the definition of the ``items`` property for details on how
-            items can be specified and used.
+        :param items: Initial :any:`items` to display for selection.
         :param accessor: The accessor to use to extract display values from the list of
-            items. See the definition of the ``items`` property for details on how
+            items. See :any:`items` and :any:`value` for details on how
             ``accessor`` alters the interpretation of data in the Selection.
         :param value: Initial value for the selection. If unspecified, the first item in
             ``items`` will be selected.
@@ -69,30 +65,18 @@ class Selection(Widget):
 
     @property
     def items(self) -> ListSource:
-        """The list of items to display in the selection, as a ListSource.
+        """The items to display in the selection.
 
-        When specifying items:
+        When setting this property:
 
-        * A ListSource will be used as-is
+        * A :any:`Source` will be used as-is. It must either be a :any:`ListSource`, or
+          a custom class that provides the same methods.
 
         * A value of None is turned into an empty ListSource.
 
-        * A list or tuple of values will be converted into a ListSource. Each item in
-          the list will be converted into a Row object.
-
-          * If the item in the list is a dictionary, the keys of the dictionary will
-            become the attributes of the Row.
-
-          * All other items will be converted into a Row with a single attribute
-            attribute whose name matches the ``accessor`` provided when the Selection
-            was constructed (with an attribute of ``value`` being used if no accessor
-            was specified).
-
-            If the item is a string, or any other a non-iterable object, the value of
-            the attribute will be the item value.
-
-            If the item is list, tuple, or other iterable, the value of the attribute
-            will be the first item in the iterable.
+        * Otherwise, the value must be an iterable, which is copied into a new
+          ListSource using the widget's accessor, or "value" if no accessor was
+          specified. Items are converted as shown :ref:`here <listsource-item>`.
         """
         return self._items
 
@@ -105,12 +89,12 @@ class Selection(Widget):
 
         if items is None:
             self._items = ListSource(accessors=accessors, data=[])
-        elif isinstance(items, (list, tuple)):
-            self._items = ListSource(accessors=accessors, data=items)
-        else:
+        elif isinstance(items, Source):
             if self._accessor is None:
                 raise ValueError("Must specify an accessor to use a data source")
             self._items = items
+        else:
+            self._items = ListSource(accessors=accessors, data=items)
 
         self._items.add_listener(self._impl)
 

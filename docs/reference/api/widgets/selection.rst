@@ -10,7 +10,7 @@ A widget to select a single option from a list of alternatives.
 .. csv-filter:: Availability (:ref:`Key <api-status-key>`)
    :header-rows: 1
    :file: ../../data/widgets_by_platform.csv
-   :included_cols: 4,5,6,7,8,9
+   :included_cols: 4,5,6,7,8,9,10
    :exclude: {0: '(?!^(Selection|Component)$)'}
 
 
@@ -72,9 +72,9 @@ selected item.
 Notes
 -----
 
-* On macOS, you cannot change the font of a Selection.
+* On macOS and Android, you cannot change the font of a Selection.
 
-* On macOS and GTK, you cannot change the text color, background color, or
+* On macOS, GTK and Android, you cannot change the text color, background color, or
   alignment of labels in a Selection.
 
 * On GTK, a Selection widget with flexible sizing will expand its width (to the
@@ -90,5 +90,3 @@ Reference
 ---------
 
 .. autoclass:: toga.Selection
-   :members:
-   :undoc-members:

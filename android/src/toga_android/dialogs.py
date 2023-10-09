@@ -1,11 +1,13 @@
 from abc import ABC
 
-from .libs.android import R__drawable
-from .libs.android.app import AlertDialog__Builder
-from .libs.android.content import DialogInterface__OnClickListener
+from java import dynamic_proxy
+
+from android import R
+from android.app import AlertDialog
+from android.content import DialogInterface
 
 
-class OnClickListener(DialogInterface__OnClickListener):
+class OnClickListener(dynamic_proxy(DialogInterface.OnClickListener)):
     def __init__(self, fn=None, value=None):
         super().__init__()
         self._fn = fn
@@ -44,7 +46,7 @@ class TextDialog(BaseDialog):
         super().__init__(interface=interface)
         self.on_result = on_result
 
-        self.native = AlertDialog__Builder(interface.window._impl.app.native)
+        self.native = AlertDialog.Builder(interface.window._impl.app.native)
         self.native.setCancelable(False)
         self.native.setTitle(title)
         self.native.setMessage(message)
@@ -108,7 +110,7 @@ class ErrorDialog(TextDialog):
             title=title,
             message=message,
             positive_text="OK",
-            icon=R__drawable.ic_dialog_alert,
+            icon=R.drawable.ic_dialog_alert,
             on_result=on_result,
         )
 

@@ -51,7 +51,7 @@ master_doc = "index"
 
 # General information about the project.
 project = "Toga"
-copyright = "2013, Russell Keith-Magee"
+copyright = "Russell Keith-Magee"
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -68,6 +68,7 @@ os.environ["TOGA_BACKEND"] = "toga_dummy"
 autoclass_content = "both"
 autodoc_preserve_defaults = True
 autodoc_default_options = {
+    # For show-inheritance, see autodoc-process-signature below.
     "members": True,
     "undoc-members": True,
 }
@@ -115,6 +116,34 @@ rst_prolog = """
 """
 
 intersphinx_mapping = {"python": ("https://docs.python.org/3", None)}
+
+# -- Local extensions ----------------------------------------------------------
+
+
+def setup(app):
+    app.connect("autodoc-process-signature", autodoc_process_signature)
+    return {
+        "parallel_read_safe": True,
+        "parallel_write_safe": True,
+    }
+
+
+# Adding show-inheritance to autodoc_default_options adds a Bases line to ALL classes,
+# even those that only inherit from `object`, or whose bases have all been filtered out
+# by autodoc-process-bases. Instead, we enable the option here.
+def autodoc_process_signature(
+    app, what, name, obj, options, signature, return_annotation
+):
+    if what == "class":
+        # Travertino classes are not part of the public API.
+        bases = [
+            base
+            for base in obj.__bases__
+            if (base != object) and not base.__module__.startswith("travertino.")
+        ]
+        if bases:
+            options.show_inheritance = True
+
 
 # -- Options for link checking -------------------------------------------------
 

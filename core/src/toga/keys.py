@@ -164,4 +164,4 @@ class Key(Enum):
 
     def __radd__(self, other):
         """Same as add."""
-        return self + other
+        return other + self.value

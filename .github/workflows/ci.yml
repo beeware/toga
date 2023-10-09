@@ -54,6 +54,7 @@ jobs:
         - "gtk"
         - "iOS"
         - "toga"
+        - "textual"
         - "web"
         - "winforms"
 
@@ -71,9 +72,9 @@ jobs:
           - python-version: "3.12-dev"
             experimental: true
     steps:
-    - uses: actions/checkout@v3.5.3
+    - uses: actions/checkout@v4.1.0
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v4.7.0
+      uses: actions/setup-python@v4.7.1
       with:
         python-version: ${{ matrix.python-version }}
     - name: Install dev dependencies
@@ -94,7 +95,7 @@ jobs:
         cd core
         mv .coverage .coverage.${{ matrix.platform }}.${{ matrix.python-version }}
     - name: Store coverage data
-      uses: actions/upload-artifact@v3.1.2
+      uses: actions/upload-artifact@v3.1.3
       with:
         name: core-coverage-data
         path: "core/.coverage.*"
@@ -105,10 +106,10 @@ jobs:
     runs-on: ubuntu-latest
     needs: core
     steps:
-    - uses: actions/checkout@v3.5.3
+    - uses: actions/checkout@v4.1.0
       with:
         fetch-depth: 0
-    - uses: actions/setup-python@v4.7.0
+    - uses: actions/setup-python@v4.7.1
       with:
         # Use latest, so it understands all syntax.
         python-version: ${{ env.max_python_version }}
@@ -129,7 +130,7 @@ jobs:
         python -m coverage html --skip-covered --skip-empty
         python -m coverage report --rcfile ../pyproject.toml # --fail-under=100
     - name: Upload HTML report if check failed.
-      uses: actions/upload-artifact@v3.1.2
+      uses: actions/upload-artifact@v3.1.3
       with:
         name: html-coverage-report
         path: core/htmlcov
@@ -163,9 +164,9 @@ jobs:
             # a wheel of pythonnet isn't available on PyPI.
             python-version: "3.9"
     steps:
-    - uses: actions/checkout@v3.5.3
+    - uses: actions/checkout@v4.1.0
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v4.7.0
+      uses: actions/setup-python@v4.7.1
       with:
         python-version: ${{ matrix.python-version }}
     - name: Get packages
@@ -200,6 +201,7 @@ jobs:
 
           - backend: macOS
             runs-on: macos-12
+            app-user-data-path: /Users/runner/Library/Application Support/org.beeware.toga.testbed
 
           # We use a fixed Ubuntu version rather than `-latest` because at some point,
           # `-latest` will be updated, but it will be a soft changeover, which would cause
@@ -229,6 +231,7 @@ jobs:
 
             briefcase-run-prefix: 'DISPLAY=:99'
             setup-python: false  # Use the system Python packages.
+            app-user-data-path: /home/runner/.local/share/testbed
 
           - backend: windows
             runs-on: windows-latest
@@ -236,16 +239,17 @@ jobs:
           - backend: iOS
             runs-on: macos-12
             briefcase-run-args: ' -d "iPhone SE (3rd generation)"'
+            # app data path is determined at runtime, as the path contains the Simulator and app ID.
 
           - backend: android
             runs-on: macos-12
             briefcase-run-args: " -d '{\"avd\":\"beePhone\"}' --Xemulator=-no-window --Xemulator=-no-snapshot --Xemulator=-no-audio --Xemulator=-no-boot-anim --shutdown-on-exit"
     steps:
-    - uses: actions/checkout@v3.5.3
+    - uses: actions/checkout@v4.1.0
       with:
         fetch-depth: 0
     - name: Set up Python
-      uses: actions/setup-python@v4.7.0
+      uses: actions/setup-python@v4.7.1
       if: ${{ matrix.setup-python }}
       with:
         # We're not using Python 3.11 yet, because:
@@ -263,8 +267,24 @@ jobs:
         cd testbed
         ${{ matrix.briefcase-run-prefix }} briefcase run ${{ matrix.backend }} --test ${{ matrix.briefcase-run-args }}
     - name: Upload logs
-      uses: actions/upload-artifact@v3.1.2
+      uses: actions/upload-artifact@v3.1.3
       if: failure()
       with:
         name: testbed-failure-logs-${{ matrix.backend }}
         path: testbed/logs/*
+    - name: Copy app generated user data
+      if: failure()
+      run: |
+        mkdir testbed/app_data
+        if [ "${{ matrix.backend }}" = "iOS" ]; then
+          APP_DATA_PATH="$(xcrun simctl get_app_container booted org.beeware.toga.testbed data)/Documents"
+        else
+          APP_DATA_PATH="${{ matrix.app-user-data-path }}"
+        fi
+        cp -r "$APP_DATA_PATH" testbed/app_data/testbed-app_data-${{ matrix.backend }}
+    - name: Upload app data
+      uses: actions/upload-artifact@v3.1.3
+      if: failure()
+      with:
+        name: testbed-failure-app-data-${{ matrix.backend }}
+        path: testbed/app_data/*

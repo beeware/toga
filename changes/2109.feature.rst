@@ -1,0 +1,1 @@
+The WebKit inspector is automatically enabled on all webviews, provided you're using macOS 13.3 (Ventura) or iOS 16.4, or later.

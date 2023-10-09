@@ -1,8 +1,10 @@
+import System.Windows.Forms as WinForms
+from System.Drawing import Point, Size
+
 from toga import GROUP_BREAK, SECTION_BREAK
 
 from .container import Container
 from .internal.wrappers import WeakrefCallable
-from .libs import Point, Size, WinForms
 from .widgets.base import Scalable
 
 
@@ -93,7 +95,6 @@ class Window(Container, Scalable):
             return
         self.native.Icon = icon_impl.native
 
-    @property
     def get_title(self):
         return self.native.Text
 
@@ -114,7 +115,8 @@ class Window(Container, Scalable):
         self.native.MinimumSize = decor_size + min_client_size
 
     def show(self):
-        self.interface.content.refresh()
+        if self.interface.content is not None:
+            self.interface.content.refresh()
         if self.interface is not self.interface.app._main_window:
             self.native.Icon = self.interface.app.icon._impl.native
         self.native.Show()
@@ -129,18 +131,17 @@ class Window(Container, Scalable):
         self.resize_content()
 
     def winforms_FormClosing(self, sender, event):
-        # If the app is exiting, or a manual close has been requested,
-        # don't get confirmation; just close.
+        # If the app is exiting, or a manual close has been requested, don't get
+        # confirmation; just close.
         if not self.interface.app._impl._is_exiting and not self._is_closing:
             if not self.interface.closable:
-                # Closeability is implemented by shortcutting the close handler.
+                # Window isn't closable, so any request to close should be cancelled.
                 event.Cancel = True
             elif self.interface.on_close._raw:
-                # If there is an on_close event handler, process it;
-                # but then cancel the close event. If the result of
-                # on_close handling indicates the window should close,
-                # then it will be manually triggered as part of that
-                # result handling.
+                # If there is an on_close event handler, process it; but then cancel
+                # the close event. If the result of on_close handling indicates the
+                # window should close, then it will be manually triggered as part of
+                # that result handling.
                 self.interface.on_close(self)
                 event.Cancel = True
 
