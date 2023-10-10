@@ -3,6 +3,7 @@ from rubicon.objc import NSPoint
 from toga.colors import TRANSPARENT
 from toga_cocoa.libs import (
     NSEventType,
+    NSRange,
     NSStepper,
     NSTextField,
     NSTextView,
@@ -107,3 +108,6 @@ class NumberInputProbe(SimpleProbe):
         return isinstance(self.native.window.firstResponder, NSTextView) and (
             self.native_input.window.firstResponder.delegate == self.native_input
         )
+
+    def set_cursor_at_end(self):
+        self.native_input.currentEditor().selectedRange = NSRange(len(self.value), 0)

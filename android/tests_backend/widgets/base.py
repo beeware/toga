@@ -173,3 +173,9 @@ class SimpleProbe(BaseProbe):
     @property
     def has_focus(self):
         return self.widget.app._impl.native.getCurrentFocus() == self.native
+
+    async def undo(self):
+        raise NotImplementedError()
+
+    async def redo(self):
+        raise NotImplementedError()

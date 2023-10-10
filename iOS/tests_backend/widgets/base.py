@@ -150,3 +150,9 @@ class SimpleProbe(BaseProbe):
                 self.native.insertText(char)
             else:
                 self.native.insertText("")
+
+    async def undo(self):
+        raise NotImplementedError()
+
+    async def redo(self):
+        raise NotImplementedError()

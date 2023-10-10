@@ -160,3 +160,9 @@ class SimpleProbe(BaseProbe):
 
         # Remove the temporary handler
         self._keypress_target.disconnect(handler_id)
+
+    async def undo(self):
+        raise NotImplementedError()
+
+    async def redo(self):
+        raise NotImplementedError()

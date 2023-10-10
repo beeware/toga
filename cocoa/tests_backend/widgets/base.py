@@ -1,6 +1,8 @@
 from rubicon.objc import NSPoint
 
+from toga import Key
 from toga.colors import TRANSPARENT
+from toga_cocoa.keys import COCOA_MODIFIERS
 from toga_cocoa.libs import NSEvent, NSEventType
 
 from ..probe import BaseProbe
@@ -101,10 +103,11 @@ class SimpleProbe(BaseProbe):
     def has_focus(self):
         return self.native.window.firstResponder == self.native
 
-    async def type_character(self, char):
+    async def type_character(self, char, modifiers=None):
         # Convert the requested character into a Cocoa keycode.
         # This table is incomplete, but covers all the basics.
         key_code = {
+            "<backspace>": 51,
             "<esc>": 53,
             " ": 49,
             "\n": 36,
@@ -136,12 +139,18 @@ class SimpleProbe(BaseProbe):
             "z": 6,
         }.get(char.lower(), 0)
 
+        modifier_flags = 0
+        if modifiers:
+            char = None  # If `char` is a single character, the modifiers will be ignored. Only set keyCode.
+            for modifier in modifiers:
+                modifier_flags |= COCOA_MODIFIERS[modifier]
+
         # This posts a single keyDown followed by a keyUp, matching "normal" keyboard operation.
         await self.post_event(
             NSEvent.keyEventWithType(
                 NSEventType.KeyDown,
                 location=NSPoint(0, 0),  # key presses don't have a location.
-                modifierFlags=0,
+                modifierFlags=modifier_flags,
                 timestamp=0,
                 windowNumber=self.native.window.windowNumber,
                 context=None,
@@ -155,7 +164,7 @@ class SimpleProbe(BaseProbe):
             NSEvent.keyEventWithType(
                 NSEventType.KeyUp,
                 location=NSPoint(0, 0),  # key presses don't have a location.
-                modifierFlags=0,
+                modifierFlags=modifier_flags,
                 timestamp=0,
                 windowNumber=self.native.window.windowNumber,
                 context=None,
@@ -181,3 +190,9 @@ class SimpleProbe(BaseProbe):
             ),
             delay=delay,
         )
+
+    async def undo(self):
+        await self.type_character("z", modifiers=[Key.MOD_1])
+
+    async def redo(self):
+        await self.type_character("z", modifiers=[Key.MOD_1, Key.SHIFT])

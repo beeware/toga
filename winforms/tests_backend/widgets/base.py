@@ -134,3 +134,9 @@ class SimpleProbe(BaseProbe):
     @property
     def has_focus(self):
         return self.native.ContainsFocus
+
+    async def undo(self):
+        raise NotImplementedError()
+
+    async def redo(self):
+        raise NotImplementedError()

@@ -1,5 +1,5 @@
 from toga.colors import TRANSPARENT
-from toga_cocoa.libs import NSScrollView, NSTextView
+from toga_cocoa.libs import NSRange, NSScrollView, NSTextView
 
 from .base import SimpleProbe
 from .properties import toga_alignment, toga_color, toga_font
@@ -96,3 +96,6 @@ class MultilineTextInputProbe(SimpleProbe):
     async def wait_for_scroll_completion(self):
         # No animation associated with scroll, so this is a no-op
         pass
+
+    def set_cursor_at_end(self):
+        self.native.selectedRange = NSRange(len(self.value), 0)
