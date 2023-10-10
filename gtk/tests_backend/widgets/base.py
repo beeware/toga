@@ -167,3 +167,9 @@ class SimpleProbe(BaseProbe, FontMixin):
         # caused by typing a character doesn't fully propegate. A
         # short delay fixes this.
         await asyncio.sleep(0.04)
+
+    async def undo(self):
+        raise NotImplementedError()
+
+    async def redo(self):
+        raise NotImplementedError()

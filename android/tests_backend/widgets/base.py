@@ -231,6 +231,12 @@ class SimpleProbe(BaseProbe, FontMixin):
     def has_focus(self):
         return self.widget.app._impl.native.getCurrentFocus() == self.native
 
+    async def undo(self):
+        raise NotImplementedError()
+
+    async def redo(self):
+        raise NotImplementedError()
+
 
 def find_view_by_type(root, cls):
     assert isinstance(root, View)

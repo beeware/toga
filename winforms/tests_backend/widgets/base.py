@@ -142,3 +142,9 @@ class SimpleProbe(BaseProbe, FontMixin):
     @property
     def has_focus(self):
         return self.native.ContainsFocus
+
+    async def undo(self):
+        raise NotImplementedError()
+
+    async def redo(self):
+        raise NotImplementedError()
