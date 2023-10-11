@@ -76,23 +76,6 @@ class App:
         self.actions = None
 
     def gtk_startup(self, data=None):
-        # Set up the default commands for the interface.
-        self.interface.commands.add(
-            Command(
-                lambda _: self.interface.about(),
-                "About " + self.interface.name,
-                group=toga.Group.HELP,
-            ),
-            Command(None, "Preferences", group=toga.Group.APP),
-            # Quit should always be the last item, in a section on its own
-            Command(
-                lambda _: self.interface.exit(),
-                "Quit " + self.interface.name,
-                shortcut=toga.Key.MOD_1 + "q",
-                group=toga.Group.APP,
-                section=sys.maxsize,
-            ),
-        )
         self._create_app_commands()
 
         self.interface._startup()
@@ -119,8 +102,37 @@ class App:
         )
 
     def _create_app_commands(self):
-        # No extra menus
-        pass
+        # Set up the default commands for the interface.
+        self.interface.commands.add(
+            Command(
+                None,
+                "Preferences",
+                group=toga.Group.APP,
+                section=sys.maxsize,
+                order=0, 
+            ),
+            Command(
+                None,
+                "Keyboard Shortcuts",
+                group=toga.Group.APP,
+                section=sys.maxsize,
+                order=1,
+            ),
+            Command(
+                None,
+                "Help",
+                group=toga.Group.APP,
+                section=sys.maxsize,
+                order=2,
+            ),
+            Command(
+                lambda _: self.interface.about(),
+                "About " + self.interface.name,
+                group=toga.Group.APP,
+                section=sys.maxsize,
+                order=3, 
+            ),
+        )
 
     def gtk_activate(self, data=None):
         pass
@@ -130,8 +142,19 @@ class App:
         self._menu_items = {}
         self._menu_groups = {}
 
-        # Create the menu for the top level menubar.
-        menubar = Gio.Menu()
+        # Create the menus
+        popover = Gtk.PopoverMenu()
+        primary_menu_content = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, margin=10, spacing=10)
+        popover.add(primary_menu_content)
+        popover.set_position(Gtk.PositionType.BOTTOM)
+
+        menu_icon = Gtk.Image(icon_name="open-menu-symbolic", icon_size=Gtk.IconSize.MENU)
+        menu_button = Gtk.MenuButton(image=menu_icon, popover=popover)
+        menu_button.show_all()
+
+        app_header_bar = self.interface.main_window._impl.header_bar
+        app_header_bar.pack_end(menu_button)
+
         section = None
         for cmd in self.interface.commands:
             if cmd == GROUP_BREAK:
@@ -139,11 +162,11 @@ class App:
             elif cmd == SECTION_BREAK:
                 section = None
             else:
-                submenu = self._submenu(cmd.group, menubar)
+                # submenu = self._submenu(cmd.group, primary_menu_box)
 
-                if section is None:
-                    section = Gio.Menu()
-                    submenu.append_section(None, section)
+                # if section is None:
+                #     section = Gio.Menu()
+                #     submenu.append_section(None, section)
 
                 cmd_id = "command-%s" % id(cmd)
                 action = Gio.SimpleAction.new(cmd_id, None)
@@ -155,16 +178,51 @@ class App:
                 self._menu_items[action] = cmd
                 self.native.add_action(action)
 
-                item = Gio.MenuItem.new(cmd.text, "app." + cmd_id)
+                item = Gtk.ModelButton(action_name="app." + cmd_id, label=cmd.text)
+
                 if cmd.shortcut:
-                    item.set_attribute_value(
-                        "accel", GLib.Variant("s", gtk_accel(cmd.shortcut))
+                    self.native.set_accels_for_action(
+                        "app." + cmd_id, [gtk_accel(cmd.shortcut)]
                     )
 
-                section.append_item(item)
+                primary_menu_content.add(item)
+        primary_menu_content.show_all()
 
-        # Set the menu for the app.
-        self.native.set_menubar(menubar)
+        # # Create the menu for the top level menubar.
+        # menubar = Gio.Menu()
+        # section = None
+        # for cmd in self.interface.commands:
+        #     if cmd == GROUP_BREAK:
+        #         section = None
+        #     elif cmd == SECTION_BREAK:
+        #         section = None
+        #     else:
+        #         submenu = self._submenu(cmd.group, menubar)
+
+        #         if section is None:
+        #             section = Gio.Menu()
+        #             submenu.append_section(None, section)
+
+        #         cmd_id = "command-%s" % id(cmd)
+        #         action = Gio.SimpleAction.new(cmd_id, None)
+        #         if cmd.action:
+        #             action.connect("activate", gtk_menu_item_activate(cmd))
+
+        #         cmd._impl.native.append(action)
+        #         cmd._impl.set_enabled(cmd.enabled)
+        #         self._menu_items[action] = cmd
+        #         self.native.add_action(action)
+
+        #         item = Gio.MenuItem.new(cmd.text, "app." + cmd_id)
+        #         if cmd.shortcut:
+        #             item.set_attribute_value(
+        #                 "accel", GLib.Variant("s", gtk_accel(cmd.shortcut))
+        #             )
+
+        #         section.append_item(item)
+
+        # # Set the menu for the app.
+        # self.native.set_menubar(menubar)
 
     def _submenu(self, group, menubar):
         try:
