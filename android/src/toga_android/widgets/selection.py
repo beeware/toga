@@ -5,6 +5,7 @@ from android import R
 from android.view import View
 from android.widget import AdapterView, ArrayAdapter, Spinner, SpinnerAdapter
 
+from . import label
 from .base import Widget
 
 
@@ -33,10 +34,11 @@ class TogaArrayAdapter(dynamic_proxy(SpinnerAdapter)):
 
     def apply_font(self, tv):
         if self.impl._font_impl and tv:
-            self.impl._font_impl.apply(
+            label.set_textview_font(
                 tv,
-                self._default_textsize,
+                self.impl._font_impl,
                 self._default_typeface,
+                self._default_textsize,
             )
 
     def cache_textview_defaults(self, tv):
