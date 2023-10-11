@@ -324,15 +324,14 @@ async def test_font(widget, probe, verify_font_sizes):
     del widget.style.font_size
     await probe.redraw(message="Widget text should be reset to original size")
     probe.assert_font_size(SYSTEM_DEFAULT_FONT_SIZE)
-    if verify_font_sizes[0] and probe.shrink_on_resize:
-        assert probe.width == orig_width
-    if verify_font_sizes[1]:
-        assert probe.height == orig_height
 
     # Reset to original family
     del widget.style.font_family
-    await probe.redraw(message="Widget text should be reset to original family")
+    await probe.redraw(
+        message="Widget text should be reset to original family and size"
+    )
     probe.assert_font_family(SYSTEM)
+    probe.assert_font_size(SYSTEM_DEFAULT_FONT_SIZE)
     probe.assert_font_options(weight=NORMAL, variant=NORMAL, style=NORMAL)
     if verify_font_sizes[0] and probe.shrink_on_resize:
         assert probe.width == orig_width
