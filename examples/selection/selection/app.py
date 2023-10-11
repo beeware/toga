@@ -123,9 +123,6 @@ class SelectionApp(toga.App):
                     style=box_style,
                     children=[
                         toga.Button("Change font", on_press=self.change_font),
-                        toga.Button(
-                            "infos", on_press=self.show_infos
-                        ),  # Todo: remove this button
                     ],
                 ),
             ],
@@ -165,13 +162,6 @@ class SelectionApp(toga.App):
             del self.styled_selection.style.font_size
             del self.styled_selection.style.font_style
             self.styled_selection.style.font_family = "serif"
-
-    def show_infos(self, widget):  # Todo: remove this method
-        native = self.styled_selection._impl.native
-        tv = native.getSelectedView()
-        print(f"textsize: {tv.getTextSize()}")
-        print(f"typeface: {str(tv.getTypeface().getStyle())}")
-        print(f"widget size: {native.getHeight()} / {native.getWidth()}")
 
 
 def main():
