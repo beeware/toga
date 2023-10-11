@@ -1,6 +1,8 @@
 import asyncio
 from threading import Event
 
+import pytest
+
 from toga_gtk.libs import Gdk, Gtk
 
 from ..fonts import FontMixin
@@ -169,7 +171,7 @@ class SimpleProbe(BaseProbe, FontMixin):
         await asyncio.sleep(0.04)
 
     async def undo(self):
-        raise NotImplementedError()
+        pytest.skip("Undo not supported on this platform")
 
     async def redo(self):
-        raise NotImplementedError()
+        pytest.skip("Redo not supported on this platform")

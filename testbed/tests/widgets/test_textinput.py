@@ -5,7 +5,6 @@ import pytest
 import toga
 from toga.constants import CENTER
 
-from ..conftest import skip_on_platforms
 from ..data import TEXTS
 from .properties import (  # noqa: F401
     test_alignment,
@@ -218,7 +217,6 @@ async def test_text_value(widget, probe):
 
 async def test_undo_redo(widget, probe):
     "The widget supports undo and redo."
-    skip_on_platforms("android", "iOS", "linux", "windows")
 
     text_0 = str(widget.value)
     text_extra = " World!"

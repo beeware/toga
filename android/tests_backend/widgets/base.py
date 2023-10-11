@@ -1,5 +1,6 @@
 import asyncio
 
+import pytest
 from java import dynamic_proxy
 from pytest import approx
 
@@ -232,10 +233,10 @@ class SimpleProbe(BaseProbe, FontMixin):
         return self.widget.app._impl.native.getCurrentFocus() == self.native
 
     async def undo(self):
-        raise NotImplementedError()
+        pytest.skip("Undo not supported on this platform")
 
     async def redo(self):
-        raise NotImplementedError()
+        pytest.skip("Redo not supported on this platform")
 
 
 def find_view_by_type(root, cls):
