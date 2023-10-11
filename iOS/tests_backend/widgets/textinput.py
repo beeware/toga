@@ -1,3 +1,4 @@
+import pytest
 from rubicon.objc import SEL, send_message
 
 from toga_iOS.libs import UITextField
@@ -56,3 +57,6 @@ class TextInputProbe(SimpleProbe):
     def type_return(self):
         # Invoke the return handler explicitly.
         self.native.textFieldShouldReturn(self.native)
+
+    def set_cursor_at_end(self):
+        pytest.skip("Cursor positioning not supported on this platform")

@@ -1,3 +1,4 @@
+import pytest
 from java import jclass
 
 from android.os import SystemClock
@@ -80,3 +81,6 @@ class TextInputProbe(LabelProbe):
                         0,  # metaState
                     )
                 )
+
+    def set_cursor_at_end(self):
+        pytest.skip("Cursor positioning not supported on this platform")
