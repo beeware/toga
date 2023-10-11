@@ -1,0 +1,1 @@
+Canvas now provides more ``list``-like methods for manipulating drawing objects in a context.

@@ -1,4 +1,5 @@
 from pathlib import Path
+from warnings import warn
 
 from toga.fonts import (
     _REGISTERED_FONT_CACHE,
@@ -11,7 +12,7 @@ from toga.fonts import (
     SYSTEM_DEFAULT_FONTS,
 )
 
-from .libs import FontConfig, Pango
+from .libs import FontConfig, Pango, PangoCairo, PangoFc
 
 _FONT_CACHE = {}
 
@@ -21,10 +22,14 @@ class Font:
         self.interface = interface
 
         # Can't meaningfully get test coverage for pango not being installed
+        import_error = (
+            "Unable to import {}. Have you installed the corresponding "
+            "system packages and GIRepository introspection typelib files?"
+        )
         if Pango is None:  # pragma: no cover
-            raise RuntimeError(
-                "Unable to import Pango. Have you installed the Pango and gobject-introspection system libraries?"
-            )
+            raise RuntimeError(import_error.format("Pango"))
+        if PangoCairo is None:  # pragma: no cover
+            raise RuntimeError(import_error.format("PangoCairo"))
 
         try:
             font = _FONT_CACHE[self.interface]
@@ -47,6 +52,20 @@ class Font:
             else:
                 if Path(font_path).is_file():
                     FontConfig.add_font_file(font_path)
+
+                    # PangoFc provides the base class of the default font map, so if its
+                    # typelib file is missing, the cache_clear method will not be
+                    # visible.
+                    if PangoFc is None:  # pragma: no cover
+                        # Debian Buster doesn't include the typelib file in any package,
+                        # but it works even without a cache_clear, so continue with a
+                        # warning.
+                        warn(import_error.format("PangoFc"))
+                    else:
+                        # Ubuntu 22.04 includes the typelib file in gir1.2-pango-1.0,
+                        # and it does require a cache_clear to make new fonts visible
+                        # to the Canvas.
+                        PangoCairo.FontMap.get_default().cache_clear()
                 else:
                     raise ValueError(f"Font file {font_path} could not be found")
 

@@ -19,20 +19,22 @@ class Scalable:
     def init_scale(self, context):
         # The baseline DPI is 160:
         # https://developer.android.com/training/multiscreen/screendensities
-        self.scale = context.getResources().getDisplayMetrics().densityDpi / 160
+        self.dpi_scale = context.getResources().getDisplayMetrics().densityDpi / 160
 
     # Convert CSS pixels to native pixels
     def scale_in(self, value, rounding=SCALE_DEFAULT_ROUNDING):
-        return self.scale_round(value * self.scale, rounding)
+        return self.scale_round(value * self.dpi_scale, rounding)
 
     # Convert native pixels to CSS pixels
     def scale_out(self, value, rounding=SCALE_DEFAULT_ROUNDING):
         if isinstance(value, at_least):
             return at_least(self.scale_out(value.value, rounding))
         else:
-            return self.scale_round(value / self.scale, rounding)
+            return self.scale_round(value / self.dpi_scale, rounding)
 
     def scale_round(self, value, rounding):
+        if rounding is None:
+            return value
         return int(Decimal(value).to_integral(rounding))
 
 

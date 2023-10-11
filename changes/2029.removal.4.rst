@@ -1,0 +1,1 @@
+Methods that generate new contexts have been renamed: ``context()``, ``closed_path()``, ``fill()`` and ``stroke()`` have become ``Context()``, ``ClosedPath()``, ``Fill()`` and ``Stroke()`` respectively. This has been done to make it easier to differentiate between primitive drawing operations and context-generating operations.

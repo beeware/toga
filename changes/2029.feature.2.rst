@@ -1,0 +1,1 @@
+Transformations can now be applied to *any* canvas context, not just the root context.

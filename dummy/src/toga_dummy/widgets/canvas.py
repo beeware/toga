@@ -1,50 +1,114 @@
-import random
 import uuid
 
+from toga.fonts import SYSTEM, SYSTEM_DEFAULT_FONT_SIZE
+
+from ..utils import not_required
 from .base import Widget
 
 
+@not_required  # Testbed coverage is complete for this widget.
 class Canvas(Widget):
     def create(self):
         self._action("create Canvas")
 
     def redraw(self):
         self._action("redraw")
-        self.interface._draw(self)
+        self.draw_instructions = []
+        self.interface.context._draw(self, draw_instructions=self.draw_instructions)
+
+    # Context management
+    def push_context(self, draw_instructions, **kwargs):
+        draw_instructions.append(("push context", kwargs))
+
+    def pop_context(self, draw_instructions, **kwargs):
+        draw_instructions.append(("pop context", kwargs))
 
     # Basic paths
+    def begin_path(self, draw_instructions, **kwargs):
+        draw_instructions.append(("begin path", kwargs))
 
-    def new_path(self, *args, **kwargs):
-        self._action("new path")
+    def close_path(self, draw_instructions, **kwargs):
+        draw_instructions.append(("close path", kwargs))
 
-    def closed_path(self, x, y, *args, **kwargs):
-        self._action("closed path", x=x, y=y)
+    def move_to(self, x, y, draw_instructions, **kwargs):
+        draw_instructions.append(("move to", dict(**{"x": x, "y": y}, **kwargs)))
 
-    def move_to(self, x, y, *args, **kwargs):
-        self._action("move to", x=x, y=y)
-
-    def line_to(self, x, y, *args, **kwargs):
-        self._action("line to", x=x, y=y)
+    def line_to(self, x, y, draw_instructions, **kwargs):
+        draw_instructions.append(("line to", dict(**{"x": x, "y": y}, **kwargs)))
 
     # Basic shapes
-
-    def bezier_curve_to(self, cp1x, cp1y, cp2x, cp2y, x, y, *args, **kwargs):
-        self._action(
-            "bezier curve to", cp1x=cp1x, cp1y=cp1y, cp2x=cp2x, cp2y=cp2y, x=x, y=y
+    def bezier_curve_to(
+        self,
+        cp1x,
+        cp1y,
+        cp2x,
+        cp2y,
+        x,
+        y,
+        draw_instructions,
+        *args,
+        **kwargs,
+    ):
+        draw_instructions.append(
+            (
+                "bezier curve to",
+                dict(
+                    **{
+                        "cp1x": cp1x,
+                        "cp1y": cp1y,
+                        "cp2x": cp2x,
+                        "cp2y": cp2y,
+                        "x": x,
+                        "y": y,
+                    },
+                    **kwargs,
+                ),
+            )
         )
 
-    def quadratic_curve_to(self, cpx, cpy, x, y, *args, **kwargs):
-        self._action("quadratic curve to", cpx=cpx, cpy=cpy, x=x, y=y)
+    def quadratic_curve_to(self, cpx, cpy, x, y, draw_instructions, **kwargs):
+        draw_instructions.append(
+            (
+                "quadratic curve to",
+                dict(
+                    **{
+                        "cpx": cpx,
+                        "cpy": cpy,
+                        "x": x,
+                        "y": y,
+                    },
+                    **kwargs,
+                ),
+            )
+        )
 
-    def arc(self, x, y, radius, startangle, endangle, anticlockwise, *args, **kwargs):
-        self._action(
-            "arc",
-            x=x,
-            y=y,
-            radius=radius,
-            startangle=startangle,
-            endangle=endangle,
-            anticlockwise=anticlockwise,
+    def arc(
+        self,
+        x,
+        y,
+        radius,
+        startangle,
+        endangle,
+        anticlockwise,
+        draw_instructions,
+        *args,
+        **kwargs,
+    ):
+        draw_instructions.append(
+            (
+                "arc",
+                dict(
+                    **{
+                        "x": x,
+                        "y": y,
+                        "radius": radius,
+                        "startangle": startangle,
+                        "endangle": endangle,
+                        "anticlockwise": anticlockwise,
+                    },
+                    **kwargs,
+                ),
+            )
         )
 
     def ellipse(
@@ -57,92 +121,160 @@ class Canvas(Widget):
         startangle,
         endangle,
         anticlockwise,
+        draw_instructions,
         *args,
-        **kwargs
+        **kwargs,
     ):
-        self._action(
-            "ellipse",
-            x=x,
-            y=y,
-            radiusx=radiusx,
-            radiusy=radiusy,
-            rotation=rotation,
-            startangle=startangle,
-            endangle=endangle,
-            anticlockwise=anticlockwise,
+        draw_instructions.append(
+            (
+                "ellipse",
+                dict(
+                    **{
+                        "x": x,
+                        "y": y,
+                        "radiusx": radiusx,
+                        "radiusy": radiusy,
+                        "rotation": rotation,
+                        "startangle": startangle,
+                        "endangle": endangle,
+                        "anticlockwise": anticlockwise,
+                    },
+                    **kwargs,
+                ),
+            )
         )
 
-    def rect(self, x, y, width, height, *args, **kwargs):
-        self._action("rect", x=x, y=y, width=width, height=height)
+    def rect(self, x, y, width, height, draw_instructions, **kwargs):
+        draw_instructions.append(
+            (
+                "rect",
+                dict(
+                    **{
+                        "x": x,
+                        "y": y,
+                        "width": width,
+                        "height": height,
+                    },
+                    **kwargs,
+                ),
+            )
+        )
 
     # Drawing Paths
+    def fill(self, color, fill_rule, draw_instructions, **kwargs):
+        draw_instructions.append(
+            (
+                "fill",
+                dict(
+                    **{
+                        "color": color,
+                        "fill_rule": fill_rule,
+                    },
+                    **kwargs,
+                ),
+            )
+        )
 
-    def fill(self, color, fill_rule, preserve, *args, **kwargs):
-        self._action("fill", color=color, fill_rule=fill_rule, preserve=preserve)
-
-    def stroke(self, color, line_width, line_dash, *args, **kwargs):
-        self._action("stroke", color=color, line_width=line_width, line_dash=line_dash)
+    def stroke(self, color, line_width, line_dash, draw_instructions, **kwargs):
+        draw_instructions.append(
+            (
+                "stroke",
+                dict(
+                    **{
+                        "color": color,
+                        "line_width": line_width,
+                        "line_dash": line_dash,
+                    },
+                    **kwargs,
+                ),
+            )
+        )
 
     # Transformations
 
-    def rotate(self, radians, *args, **kwargs):
-        self._action("rotate", radians=radians)
+    def rotate(self, radians, draw_instructions, **kwargs):
+        draw_instructions.append(("rotate", dict(**{"radians": radians}, **kwargs)))
 
-    def scale(self, sx, sy, *args, **kwargs):
-        self._action("scale", sx=sx, sy=sy)
+    def scale(self, sx, sy, draw_instructions, **kwargs):
+        draw_instructions.append(("scale", dict(**{"sx": sx, "sy": sy}, **kwargs)))
 
-    def translate(self, tx, ty, *args, **kwargs):
-        self._action("translate", tx=tx, ty=ty)
+    def translate(self, tx, ty, draw_instructions, **kwargs):
+        draw_instructions.append(("translate", dict(**{"tx": tx, "ty": ty}, **kwargs)))
 
-    def reset_transform(self, *args, **kwargs):
-        self._action("reset transform")
+    def reset_transform(self, draw_instructions, **kwargs):
+        draw_instructions.append(("reset transform", kwargs))
 
     # Text
 
-    def write_text(self, text, x, y, font, *args, **kwargs):
-        self._action("write text", text=text, x=x, y=y, font=font)
+    def write_text(self, text, x, y, font, baseline, draw_instructions, **kwargs):
+        draw_instructions.append(
+            (
+                "write text",
+                dict(
+                    **{
+                        "text": text,
+                        "x": x,
+                        "y": y,
+                        "font": font,
+                        "baseline": baseline,
+                    },
+                    **kwargs,
+                ),
+            )
+        )
 
-    def measure_text(self, text, font, tight=False):
-        self._action("measure text", text=text, font=font, tight=tight)
-        return random.randint(100, 300), random.randint(100, 200)
+    def measure_text(self, text, font):
+        # Assume system font produces characters that have the same width and height as
+        # the point size, with a default point size of 12. Any other font is 1.5 times
+        # bigger.
+        if font.interface.family == SYSTEM:
+            if font.interface.size == SYSTEM_DEFAULT_FONT_SIZE:
+                width = len(text) * 12
+                height = 12
+            else:
+                width = len(text) * font.interface.size
+                height = font.interface.size
+        else:
+            if font.interface.size == SYSTEM_DEFAULT_FONT_SIZE:
+                width = len(text) * 18
+                height = 18
+            else:
+                width = int(len(text) * font.interface.size * 1.5)
+                height = int(font.interface.size * 1.5)
+
+        return width, height
 
     # Image
 
     def get_image_data(self):
-        """Return a dummy uuid string as the "native" image.
-
-        This has no effect
-        """
+        """Return a dummy uuid string as the "native" image."""
         self._action("get image data")
         return uuid.uuid4()
 
-    # Rehint
+    # Resize handlers
 
-    def set_on_resize(self, handler):
-        self._set_value("on_resize", handler)
+    def simulate_resize(self):
+        self.interface.on_resize(None)
 
     # 'Mouse' button handlers
 
-    def set_on_press(self, handler):
-        """Ensure the correct handler is invoked."""
-        self._set_value("on_press", handler)
+    def simulate_press(self, x, y):
+        self.interface.on_press(None, x=x, y=y)
 
-    def set_on_alt_press(self, handler):
-        """Ensure the correct handler is invoked."""
-        self._set_value("on_alt_press", handler)
+    def simulate_activate(self, x, y):
+        self.interface.on_activate(None, x=x, y=y)
 
-    def set_on_release(self, handler):
-        """Ensure the correct handler is invoked."""
-        self._set_value("on_release", handler)
+    def simulate_alt_press(self, x, y):
+        self.interface.on_alt_press(None, x=x, y=y)
 
-    def set_on_alt_release(self, handler):
-        """Ensure the correct handler is invoked."""
-        self._set_value("on_alt_release", handler)
+    def simulate_release(self, x, y):
+        self.interface.on_release(None, x=x, y=y)
 
-    def set_on_drag(self, handler):
-        """Ensure the correct handler is invoked."""
-        self._set_value("on_drag", handler)
+    def simulate_alt_release(self, x, y):
+        self.interface.on_alt_release(None, x=x, y=y)
 
-    def set_on_alt_drag(self, handler):
-        """Ensure the correct handler is invoked."""
-        self._set_value("on_alt_drag", handler)
+    def simulate_drag(self, x, y):
+        self.interface.on_drag(None, x=x, y=y)
+
+    def simulate_alt_drag(self, x, y):
+        self.interface.on_alt_drag(None, x=x, y=y)

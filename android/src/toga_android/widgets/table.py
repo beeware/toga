@@ -10,6 +10,7 @@ from android.view import Gravity, View
 from android.widget import LinearLayout, ScrollView, TableLayout, TableRow, TextView
 
 from .base import Widget
+from .label import set_textview_font
 
 
 class TogaOnClickListener(dynamic_proxy(View.OnClickListener)):
@@ -113,8 +114,11 @@ class Table(Widget):
         for col_index in range(len(self.interface._accessors)):
             text_view = TextView(self._native_activity)
             text_view.setText(self.interface.headings[col_index])
-            self._font_impl.apply(
-                text_view, text_view.getTextSize(), text_view.getTypeface()
+            set_textview_font(
+                text_view,
+                self._font_impl,
+                text_view.getTypeface(),
+                text_view.getTextSize(),
             )
             text_view.setTypeface(
                 Typeface.create(
@@ -145,8 +149,11 @@ class Table(Widget):
         for col_index in range(len(self.interface._accessors)):
             text_view = TextView(self._native_activity)
             text_view.setText(self.get_data_value(row_index, col_index))
-            self._font_impl.apply(
-                text_view, text_view.getTextSize(), text_view.getTypeface()
+            set_textview_font(
+                text_view,
+                self._font_impl,
+                text_view.getTypeface(),
+                text_view.getTextSize(),
             )
             text_view_params = TableRow.LayoutParams(
                 TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT
