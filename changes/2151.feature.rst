@@ -1,1 +1,1 @@
-The cocoa MultilineTextInput widget has been updated to enable undo
+Text input widgets on macOS now support undo and redo.
