@@ -1,4 +1,4 @@
-from pytest import xfail
+import pytest
 from rubicon.objc import NSRange
 
 from toga_iOS.libs import UITextField
@@ -19,10 +19,10 @@ class NumberInputProbe(SimpleProbe):
         return str(self.native.text)
 
     async def increment(self):
-        xfail("iOS doesn't support stepped increments")
+        pytest.xfail("iOS doesn't support stepped increments")
 
     async def decrement(self):
-        xfail("iOS doesn't support stepped increments")
+        pytest.xfail("iOS doesn't support stepped increments")
 
     @property
     def color(self):
@@ -48,3 +48,6 @@ class NumberInputProbe(SimpleProbe):
             shouldChangeCharactersInRange=NSRange(len(self.native.text), 0),
             replacementString=char,
         )
+
+    def set_cursor_at_end(self):
+        pytest.skip("Cursor positioning not supported on this platform")

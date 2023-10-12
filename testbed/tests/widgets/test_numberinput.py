@@ -5,6 +5,7 @@ import pytest
 
 import toga
 
+from ..conftest import skip_on_platforms
 from .properties import (  # noqa: F401
     test_alignment,
     test_background_color,
@@ -226,3 +227,40 @@ async def test_increment_decrement(widget, probe):
         assert widget.value == expected
         handler.assert_called_once_with(widget)
         handler.reset_mock()
+
+
+async def test_undo_redo(widget, probe):
+    "The widget supports undo and redo."
+    skip_on_platforms("android", "iOS", "linux", "windows")
+
+    widget.step = "0.00001"
+    text_0 = "3.14000"
+    text_1 = "3.14159"
+    text_extra = "159"
+    widget.value = text_0
+
+    widget.focus()
+    probe.set_cursor_at_end()
+
+    # type more text
+    for _ in text_extra:
+        await probe.type_character("<backspace>")
+    await probe.redraw(f"Widget value should be {text_0[:-3]!r}")
+    for char in text_extra:
+        await probe.type_character(char)
+    await probe.redraw(f"Widget value should be {text_1!r}")
+
+    assert widget.value == Decimal(text_1)
+    assert Decimal(probe.value) == Decimal(text_1)
+
+    # undo
+    await probe.undo()
+    await probe.redraw(f"Widget value should be {text_0!r}")
+    assert widget.value == Decimal(text_0)
+    assert Decimal(probe.value) == Decimal(text_0)
+
+    # redo
+    await probe.redo()
+    await probe.redraw(f"Widget value should be {text_1!r}")
+    assert widget.value == Decimal(text_1)
+    assert Decimal(probe.value) == Decimal(text_1)
