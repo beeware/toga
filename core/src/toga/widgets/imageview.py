@@ -135,7 +135,7 @@ class ImageView(Widget):
         self._impl.set_image(self._image)
         self.refresh()
     
-    def as_image(self, format: PIL.Image=None):
+    def as_image(self, format: PIL.Image | None=None):
         if format == None:
             return self.image
         elif format.__name__ == "PIL.Image":
