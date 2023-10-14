@@ -5,11 +5,13 @@ from org.beeware.android import IPythonApp, MainActivity
 
 import toga
 from android.graphics.drawable import Drawable
+from android.hardware import DisplayManager
 from android.media import RingtoneManager
 from android.view import Menu, MenuItem
 from toga.command import Group
 
 from .libs import events
+from .screen import Screen as ScreenImpl
 from .window import Window
 
 # `MainWindow` is defined here in `app.py`, not `window.py`, to mollify the test suite.
