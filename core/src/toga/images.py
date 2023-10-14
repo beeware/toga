@@ -31,7 +31,6 @@ class Image:
         :raises ValueError: If the path or data cannot be loaded as an image.
         :raises TypeError: If pil_image is provided but the type of the object is not PIL.Image
         """
-        #--patch-start:@github/dr-gavitron
         # At first we will create a list with these three variable, then count how many None is in that list.
         # If the number of None is 1 -> raises ValueError. One and only One of the three variables must be set but here two of them are set
         # If the number of None is 3 -> raises ValueError. One and only One of the three variables must be set but here none of them are set 
@@ -100,6 +99,7 @@ class Image:
 
 
 
+<<<<<<< HEAD
         #--patch-end
 
         #--original
@@ -125,6 +125,8 @@ class Image:
                 raise FileNotFoundError(f"Image file {self.path} does not exist")
             self._impl = self.factory.Image(interface=self, path=self.path)
         '''
+=======
+>>>>>>> 7209f5fae (removed unnecessary codes)
 
     @property
     def size(self) -> (int, int):
