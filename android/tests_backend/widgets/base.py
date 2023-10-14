@@ -1,5 +1,6 @@
 import asyncio
 
+import pytest
 from java import dynamic_proxy
 from pytest import approx
 
@@ -20,6 +21,7 @@ from android.view import (
 from toga.colors import TRANSPARENT
 from toga.style.pack import JUSTIFY, LEFT
 
+from ..fonts import FontMixin
 from ..probe import BaseProbe
 from .properties import toga_color, toga_vertical_alignment
 
@@ -33,11 +35,15 @@ class LayoutListener(dynamic_proxy(ViewTreeObserver.OnGlobalLayoutListener)):
         self.event.set()
 
 
-class SimpleProbe(BaseProbe):
+class SimpleProbe(BaseProbe, FontMixin):
+    default_font_family = "sans-serif"
+    default_font_size = 14
+
     def __init__(self, widget):
         super().__init__()
         self.app = widget.app
         self.widget = widget
+        self.impl = widget._impl
         self.native = widget._impl.native
         self.layout_listener = LayoutListener()
         self.native.getViewTreeObserver().addOnGlobalLayoutListener(
@@ -225,6 +231,12 @@ class SimpleProbe(BaseProbe):
     @property
     def has_focus(self):
         return self.widget.app._impl.native.getCurrentFocus() == self.native
+
+    async def undo(self):
+        pytest.skip("Undo not supported on this platform")
+
+    async def redo(self):
+        pytest.skip("Redo not supported on this platform")
 
 
 def find_view_by_type(root, cls):

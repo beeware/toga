@@ -1,3 +1,4 @@
+import pytest
 from java import jclass
 
 from android.os import SystemClock
@@ -10,6 +11,7 @@ from .label import LabelProbe
 
 class TextInputProbe(LabelProbe):
     native_class = jclass("android.widget.EditText")
+    default_font_size = 18
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -37,6 +39,22 @@ class TextInputProbe(LabelProbe):
         focusable_in_touch_mode = self.native.isFocusableInTouchMode()
         if focusable != focusable_in_touch_mode:
             raise ValueError(f"invalid state: {focusable=}, {focusable_in_touch_mode=}")
+
+        # Check if TYPE_TEXT_FLAG_NO_SUGGESTIONS is set in the input type
+        input_type = self.native.getInputType()
+        if input_type & InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS:
+            # TYPE_TEXT_FLAG_NO_SUGGESTIONS is set
+            if focusable:
+                raise ValueError(
+                    "TYPE_TEXT_FLAG_NO_SUGGESTIONS is not set on the input."
+                )
+        else:
+            # TYPE_TEXT_FLAG_NO_SUGGESTIONS is not set
+            if not focusable:
+                raise ValueError(
+                    "TYPE_TEXT_FLAG_NO_SUGGESTIONS has been set when the input is readonly."
+                )
+
         return not focusable
 
     async def type_character(self, char):
@@ -63,3 +81,6 @@ class TextInputProbe(LabelProbe):
                         0,  # metaState
                     )
                 )
+
+    def set_cursor_at_end(self):
+        pytest.skip("Cursor positioning not supported on this platform")

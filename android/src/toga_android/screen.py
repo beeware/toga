@@ -1,6 +1,5 @@
+from android.view import WindowInsets, WindowManager
 from toga.screen import Screen as ScreenInterface
-
-from .android.view import WindowInsets, WindowManager
 
 
 class Screen:
