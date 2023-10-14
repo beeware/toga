@@ -99,6 +99,8 @@ class Image:
 
 
         #--patch-end
+        
+        #--original
         '''
         if path is None and data is None:
             raise ValueError("Either path or data must be set.")
