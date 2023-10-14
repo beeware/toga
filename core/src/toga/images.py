@@ -5,6 +5,8 @@ from pathlib import Path
 import toga
 from toga.platform import get_platform_factory
 
+import time
+import os
 
 class Image:
     def __init__(
@@ -74,14 +76,12 @@ class Image:
             #from that file, then use the bytes to create self._impl, finally delete the temp file
 
             # creating an unique name for the temporary file
-            from time import time as _time_time
-            import os as _os
-            unique_time = str(_time_time())
+            unique_time = str(time.time())
             temp_file = f"_PIL_temp_img_file_{unique_time}_"
             temp_file_path = toga.App.app.paths.app
-            while temp_file in _os.listdir(temp_file_path):
+            while temp_file in os.listdir(temp_file_path):
                 temp_file+="1_"
-            complete_temp_path = _os.path.join(temp_file_path, temp_file)
+            complete_temp_path = os.path.join(temp_file_path, temp_file)
 
             # saving the pil_image in the temporary file
             self.pil_image.save(complete_temp_path)
@@ -94,7 +94,7 @@ class Image:
             self._impl = self.factory.Image(interface=self, data=raw_image_data)
 
             #finally delete the temporary file from the storage
-            _os.remove(temp_file_path)
+            os.remove(temp_file_path)
 
 
 
@@ -143,3 +143,30 @@ class Image:
         :param path: Path where to save the image.
         """
         self._impl.save(path)
+    
+    def as_format(self, format: PIL.Image):
+        if format == None:
+            return self
+        elif format.__name__ == "PIL.Image":
+            # save the image in storage in a temporary file
+            # then load it as PIL.Image then delete the temporary file
+
+            # creating an unique name for the temporary file
+            unique_time = str(time.time())
+            temp_file = f"_TOGA_temp_img_file_{unique_time}_"
+            temp_file_path = toga.App.app.paths.app
+            while temp_file in os.listdir(temp_file_path):
+                temp_file+="1_"
+            complete_temp_path = os.path.join(temp_file_path, temp_file)
+
+            # loading PIL Image
+            from PIL import Image as _PIL_Image_
+            pil_image = _PIL_Image_.open(complete_temp_path)
+
+            # deleting the temporary file
+            os.remove(complete_temp_path)
+
+            return pil_image
+        else:
+            raise TypeError("Unknown Conversion Format")
+
