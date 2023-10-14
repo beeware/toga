@@ -7,7 +7,7 @@ from gi.repository import Gdk, GdkPixbuf, Gio, GLib, GObject, Gtk  # noqa: E402,
 
 if Gdk.Screen.get_default() is None:  # pragma: no cover
     raise RuntimeError(
-        "Cannot identify an active display. Is the ``DISPLAY`` environment variable set correctly?"
+        "Cannot identify an active display. Is the `DISPLAY` environment variable set correctly?"
     )
 
 # The following imports will fail if the underlying libraries or their API
@@ -27,5 +27,19 @@ except (ImportError, ValueError):  # pragma: no cover
 
 try:
     import cairo  # noqa: F401
+
+    gi.require_foreign("cairo")
 except ImportError:  # pragma: no cover
     cairo = None
+
+try:
+    gi.require_version("PangoCairo", "1.0")
+    from gi.repository import PangoCairo  # noqa: F401
+except (ImportError, ValueError):  # pragma: no cover
+    PangoCairo = None
+
+try:
+    gi.require_version("PangoFc", "1.0")
+    from gi.repository import PangoFc  # noqa: F401
+except (ImportError, ValueError):  # pragma: no cover
+    PangoFc = None

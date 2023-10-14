@@ -3,7 +3,15 @@ from unittest.mock import Mock
 from pytest import approx
 
 from toga.colors import CORNFLOWERBLUE, RED, TRANSPARENT, color as named_color
-from toga.fonts import BOLD, FANTASY, ITALIC, NORMAL, SERIF, SYSTEM
+from toga.fonts import (
+    BOLD,
+    FANTASY,
+    ITALIC,
+    NORMAL,
+    SERIF,
+    SYSTEM,
+    SYSTEM_DEFAULT_FONT_SIZE,
+)
 from toga.style.pack import CENTER, COLUMN, JUSTIFY, LEFT, LTR, RIGHT, RTL
 
 from ..assertions import assert_color
@@ -281,20 +289,14 @@ async def test_font(widget, probe, verify_font_sizes):
         orig_width = probe.width
     if verify_font_sizes[1]:
         orig_height = probe.height
-    orig_font = probe.font
     probe.assert_font_family(SYSTEM)
+    probe.assert_font_size(SYSTEM_DEFAULT_FONT_SIZE)
+    probe.assert_font_options(weight=NORMAL, variant=NORMAL, style=NORMAL)
 
-    # Set the font to larger than its original size
-    widget.style.font_size = orig_font.size * 3
+    # Set the font to be large
+    widget.style.font_size = 30
     await probe.redraw("Widget font should be larger than its original size")
-
-    # Widget has a new font size
-    new_size_font = probe.font
-    # Font size in points is an integer; however, some platforms
-    # perform rendering in pixels (or device independent pixels,
-    # so round-tripping points->pixels->points through the probe
-    # can result in rounding errors.
-    assert (orig_font.size * 2.5) < new_size_font.size < (orig_font.size * 3.5)
+    probe.assert_font_size(30)
 
     # Widget should be taller and wider
     if verify_font_sizes[0]:
@@ -307,11 +309,11 @@ async def test_font(widget, probe, verify_font_sizes):
     await probe.redraw("Widget font should be changed to FANTASY")
 
     # Font family has been changed
-    new_family_font = probe.font
     probe.assert_font_family(FANTASY)
 
     # Font size hasn't changed
-    assert new_family_font.size == new_size_font.size
+    probe.assert_font_size(30)
+
     # Widget should still be taller and wider than the original
     if verify_font_sizes[0]:
         assert probe.width > orig_width
@@ -324,7 +326,9 @@ async def test_font(widget, probe, verify_font_sizes):
     await probe.redraw(
         message="Widget text should be reset to original family and size"
     )
-    assert probe.font == orig_font
+    probe.assert_font_family(SYSTEM)
+    probe.assert_font_size(SYSTEM_DEFAULT_FONT_SIZE)
+    probe.assert_font_options(weight=NORMAL, variant=NORMAL, style=NORMAL)
     if verify_font_sizes[0] and probe.shrink_on_resize:
         assert probe.width == orig_width
     if verify_font_sizes[1]:
@@ -333,8 +337,7 @@ async def test_font(widget, probe, verify_font_sizes):
 
 async def test_font_attrs(widget, probe):
     "The font weight and style of a widget can be changed."
-    assert probe.font.weight == NORMAL
-    assert probe.font.style == NORMAL
+    probe.assert_font_options(weight=NORMAL, style=NORMAL)
 
     for family in [SYSTEM, SERIF]:
         widget.style.font_family = family
@@ -343,11 +346,10 @@ async def test_font_attrs(widget, probe):
             for style in [NORMAL, ITALIC]:
                 widget.style.font_style = style
                 await probe.redraw(
-                    message="Widget text font style should be %s" % style
+                    message=f"Widget text font should be {family} {weight} {style}"
                 )
                 probe.assert_font_family(family)
-                assert probe.font.weight == weight
-                assert probe.font.style == style
+                probe.assert_font_options(weight=weight, style=style)
 
 
 async def test_color(widget, probe):

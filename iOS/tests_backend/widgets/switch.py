@@ -1,7 +1,7 @@
 from toga_iOS.libs import UIStackView
 
 from .base import SimpleProbe, UIControlEventValueChanged
-from .properties import toga_color, toga_font
+from .properties import toga_color
 
 
 class SwitchProbe(SimpleProbe):
@@ -26,7 +26,7 @@ class SwitchProbe(SimpleProbe):
 
     @property
     def font(self):
-        return toga_font(self.native_label.font)
+        return self.native_label.font
 
     def assert_width(self, min_width, max_width):
         super().assert_width(min_width, max_width)

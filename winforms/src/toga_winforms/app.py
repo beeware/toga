@@ -5,12 +5,10 @@ import threading
 from ctypes import windll
 
 import System.Windows.Forms as WinForms
-from System import (
-    Environment,
-    Threading,
-)
+from System import Environment, Threading
 from System.Media import SystemSounds
 from System.Net import SecurityProtocolType, ServicePointManager
+from System.Windows.Threading import Dispatcher
 
 import toga
 from toga import Key
@@ -61,6 +59,7 @@ class App:
     def create(self):
         self.native = WinForms.Application
         self.app_context = WinForms.ApplicationContext()
+        self.app_dispatcher = Dispatcher.CurrentDispatcher
 
         # Check the version of windows and make sure we are setting the DPI mode
         # with the most up to date API
@@ -251,7 +250,7 @@ class App:
             # in a usable form.
             self.native.ThreadException += self.winforms_thread_exception
 
-            self.loop.run_forever(self.app_context)
+            self.loop.run_forever(self)
         except Exception as e:
             # In case of an unhandled error at the level of the app,
             # preserve the Python stacktrace

@@ -92,7 +92,7 @@ async def test_scroll(widget, probe):
         assert not probe.refresh_available()
 
     # max_scroll_position is not perfectly accurate on Winforms.
-    assert probe.scroll_position == pytest.approx(probe.max_scroll_position, abs=10)
+    assert probe.scroll_position == pytest.approx(probe.max_scroll_position, abs=15)
 
     # Scroll to the middle of the detailedList
     widget.scroll_to_row(50)

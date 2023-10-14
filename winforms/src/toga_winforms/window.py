@@ -132,18 +132,17 @@ class Window(Container, Scalable):
         return self.native.Visible
 
     def winforms_FormClosing(self, sender, event):
-        # If the app is exiting, or a manual close has been requested,
-        # don't get confirmation; just close.
+        # If the app is exiting, or a manual close has been requested, don't get
+        # confirmation; just close.
         if not self.interface.app._impl._is_exiting and not self._is_closing:
             if not self.interface.closeable:
-                # Closeability is implemented by shortcutting the close handler.
+                # Window isn't closable, so any request to close should be cancelled.
                 event.Cancel = True
             elif self.interface.on_close._raw:
-                # If there is an on_close event handler, process it;
-                # but then cancel the close event. If the result of
-                # on_close handling indicates the window should close,
-                # then it will be manually triggered as part of that
-                # result handling.
+                # If there is an on_close event handler, process it; but then cancel
+                # the close event. If the result of on_close handling indicates the
+                # window should close, then it will be manually triggered as part of
+                # that result handling.
                 self.interface.on_close(self)
                 event.Cancel = True
 
