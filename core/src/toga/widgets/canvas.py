@@ -1445,11 +1445,18 @@ class Canvas(Widget):
     # As image
     ###########################################################################
 
-    def as_image(self) -> toga.Image:
+    def as_image(self, format: PIL.Image | None = None) -> toga.Image:
         """Render the canvas as an Image.
 
-        :returns: A :class:`toga.Image` containing the canvas content."""
-        return Image(data=self._impl.get_image_data())
+        :returns: A :class:`toga.Image` containing the canvas content if format is None else `PIL.Image` containing the canvas content if format is specified as PIL.Image."""
+        if format == None:
+            return Image(data=self._impl.get_image_data())
+        elif format.__name__ == "PIL.Image":
+            from io import BytesIO as _BytesIO_
+            from PIL import Image as _PIL_Image_
+            return _PIL_Image_.open(_BytesIO_(self._impl.get_image_data()))
+        else:
+            raise TypeError(f"Unsupported Format")
 
     ###########################################################################
     # 2023-07 Backwards compatibility

@@ -144,7 +144,7 @@ class Image:
         """
         self._impl.save(path)
     
-    def as_format(self, format: PIL.Image):
+    def as_format(self, format: PIL.Image|None=None):
         if format == None:
             return self
         elif format.__name__ == "PIL.Image":
