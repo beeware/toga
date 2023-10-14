@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Any
+
 from pathlib import Path
 
 import toga
@@ -14,7 +16,7 @@ class Image:
         path: str | None | Path = None,
         *,
         data: bytes | None = None,
-        pil_image: PIL.Image | None = None,
+        pil_image: Any | None = None,
     ):
         """Create a new image.
 
@@ -99,7 +101,7 @@ class Image:
 
 
         #--patch-end
-        
+
         #--original
         '''
         if path is None and data is None:
@@ -146,7 +148,7 @@ class Image:
         """
         self._impl.save(path)
     
-    def as_format(self, format: PIL.Image|None=None):
+    def as_format(self, format: Any|None=None):
         if format == None:
             return self
         elif format.__name__ == "PIL.Image":

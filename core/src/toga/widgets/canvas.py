@@ -4,7 +4,7 @@ import warnings
 from abc import ABC, abstractmethod
 from contextlib import contextmanager
 from math import pi
-from typing import Protocol
+from typing import Protocol, Any
 
 from travertino.colors import Color
 
@@ -1445,7 +1445,8 @@ class Canvas(Widget):
     # As image
     ###########################################################################
 
-    def as_image(self, format: PIL.Image | None = None) -> toga.Image:
+    def as_image(self, format: Any | None = None) -> toga.Image:
+        
         """Render the canvas as an Image.
 
         :returns: A :class:`toga.Image` containing the canvas content if format is None else `PIL.Image` containing the canvas content if format is specified as PIL.Image."""

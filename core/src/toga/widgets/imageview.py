@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from typing import Any
+
 from travertino.size import at_least
 
 from toga.images import Image
@@ -63,7 +65,7 @@ def rehint_imageview(image, style, scale=1):
 class ImageView(Widget):
     def __init__(
         self,
-        image: Image | Path | str | PIL.Image | None = None,
+        image: Image | Path | str | Any | None = None,
         id=None,
         style=None,
     ):
@@ -135,7 +137,7 @@ class ImageView(Widget):
         self._impl.set_image(self._image)
         self.refresh()
     
-    def as_image(self, format: PIL.Image | None=None):
+    def as_image(self, format: Any | None=None):
         if format == None:
             return self.image
         elif format.__name__ == "PIL.Image":
