@@ -63,7 +63,7 @@ def rehint_imageview(image, style, scale=1):
 class ImageView(Widget):
     def __init__(
         self,
-        image: Image | Path | str | None = None,
+        image: Image | Path | str | PIL.Image | None = None,
         id=None,
         style=None,
     ):
@@ -79,6 +79,16 @@ class ImageView(Widget):
         # Prime the image attribute
         self._image = None
         self._impl = self.factory.ImageView(interface=self)
+        # checking if the image if PIL.Image
+        try:
+            from PIL import Image as _PIL_Image_Module_
+            if _PIL_Image_Module_.isImageType(image):
+                image = Image(pil_image=image) #TODO: A change may be necessary if behaviour of Image is changed
+        except ImportError as e:
+            # cant import... assume that PIL.Image will not be passed
+            pass
+
+        
         self.image = image
 
     @property
@@ -124,3 +134,12 @@ class ImageView(Widget):
 
         self._impl.set_image(self._image)
         self.refresh()
+    
+    def as_image(self, format: PIL.Image=None):
+        if format == None:
+            return self.image
+        elif format.__name__ == "PIL.Image":
+            import PIL as _PIL_
+            return self.image.as_format(_PIL_.Image)
+        else:
+            return TypeError("Unknown Conversion Format")
