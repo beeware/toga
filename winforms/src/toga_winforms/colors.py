@@ -1,7 +1,7 @@
 from System.Drawing import Color
 from travertino.colors import NAMED_COLOR, TRANSPARENT
 
-CACHE = {TRANSPARENT: Color.Empty}
+CACHE = {TRANSPARENT: Color.Transparent}
 
 
 def native_color(c):

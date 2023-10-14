@@ -3,6 +3,7 @@ from rubicon.objc import NSPoint
 from toga.colors import TRANSPARENT
 from toga_cocoa.libs import (
     NSEventType,
+    NSRange,
     NSStepper,
     NSTextField,
     NSTextView,
@@ -10,7 +11,7 @@ from toga_cocoa.libs import (
 )
 
 from .base import SimpleProbe
-from .properties import toga_alignment, toga_color, toga_font
+from .properties import toga_alignment, toga_color
 
 
 class NumberInputProbe(SimpleProbe):
@@ -82,7 +83,7 @@ class NumberInputProbe(SimpleProbe):
 
     @property
     def font(self):
-        return toga_font(self.native_input.font)
+        return self.native_input.font
 
     @property
     def alignment(self):
@@ -107,3 +108,6 @@ class NumberInputProbe(SimpleProbe):
         return isinstance(self.native.window.firstResponder, NSTextView) and (
             self.native_input.window.firstResponder.delegate == self.native_input
         )
+
+    def set_cursor_at_end(self):
+        self.native_input.currentEditor().selectedRange = NSRange(len(self.value), 0)

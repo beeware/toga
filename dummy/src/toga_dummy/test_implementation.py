@@ -206,7 +206,7 @@ class DefinitionExtractor:
         """Get all methods names of a class.
 
         Args:
-            class_name(str): Name of the class to extract the methodes
+            class_name(str): Name of the class to extract the methods
 
         Returns:
             Returns a `List` of (str) with all methods names of the class.

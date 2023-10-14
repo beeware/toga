@@ -51,7 +51,7 @@ master_doc = "index"
 
 # General information about the project.
 project = "Toga"
-copyright = "2013, Russell Keith-Magee"
+copyright = "Russell Keith-Magee"
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -134,8 +134,15 @@ def setup(app):
 def autodoc_process_signature(
     app, what, name, obj, options, signature, return_annotation
 ):
-    if (what == "class") and (obj.__bases__ != (object,)):
-        options.show_inheritance = True
+    if what == "class":
+        # Travertino classes are not part of the public API.
+        bases = [
+            base
+            for base in obj.__bases__
+            if (base != object) and not base.__module__.startswith("travertino.")
+        ]
+        if bases:
+            options.show_inheritance = True
 
 
 # -- Options for link checking -------------------------------------------------
