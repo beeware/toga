@@ -22,11 +22,9 @@ class OnCloseHandler(Protocol):
         The return value of this callback controls whether the window is allowed to close.
         This can be used to prevent a window closing with unsaved changes, etc.
 
-        .. note::
-            ``**kwargs`` ensures compatibility with additional arguments
-            introduced in future versions.
-
         :param window: The window instance that is closing.
+        :param kwargs: Ensures compatibility with additional arguments introduced in
+            future versions.
         :returns: ``True`` if the window is allowed to close; ``False`` if the window is not
             allowed to close.
         """
@@ -40,12 +38,10 @@ class DialogResultHandler(Protocol[T]):
     def __call__(self, window: Window, result: T, **kwargs: Any) -> None:
         """A handler to invoke when a dialog is closed.
 
-        .. note::
-            ``**kwargs`` ensures compatibility with additional arguments
-            introduced in future versions.
-
         :param window: The window that opened the dialog.
         :param result: The result returned by the dialog.
+        :param kwargs: Ensures compatibility with additional arguments introduced in
+            future versions.
         """
         ...
 
@@ -77,15 +73,17 @@ class Window:
     ) -> None:
         """Create a new Window.
 
-        :param id: The ID of the window.
+        :param id: A unique identifier for the window. If not provided, one will be
+            automatically generated.
         :param title: Title for the window. Defaults to "Toga".
-        :param position: Position of the window, as a tuple of ``(x, y)`` coordinates.
+        :param position: Position of the window, as a tuple of ``(x, y)`` coordinates,
+            in :ref:`CSS pixels <css-units>`.
         :param size: Size of the window, as a tuple of ``(width, height)``, in :ref:`CSS
             pixels <css-units>`.
-        :param resizable: Can the window be manually resized by the user?
-        :param closable: Should the window provide the option to be manually closed?
+        :param resizable: Can the window be resized by the user?
+        :param closable: Can the window be closed by the user?
         :param minimizable: Can the window be minimized by the user?
-        :param on_close: The initial ``on_close`` handler.
+        :param on_close: The initial :any:`on_close` handler.
         :param resizeable: **DEPRECATED** - Use ``resizable``.
         :param closeable: **DEPRECATED** - Use ``closable``.
         """
@@ -135,7 +133,7 @@ class Window:
 
     @property
     def id(self) -> str:
-        """The DOM identifier for the window."""
+        """A unique identifier for the window."""
         return self._id
 
     @property
@@ -175,17 +173,17 @@ class Window:
 
     @property
     def resizable(self) -> bool:
-        """Is the window resizable?"""
+        """Can the window be resized by the user?"""
         return self._resizable
 
     @property
     def closable(self) -> bool:
-        """Can the window be closed by a user action?"""
+        """Can the window be closed by the user?"""
         return self._closable
 
     @property
     def minimizable(self) -> bool:
-        """Can the window be minimized?"""
+        """Can the window be minimized by the user?"""
         return self._minimizable
 
     @property
@@ -196,7 +194,7 @@ class Window:
     @property
     def content(self) -> Widget | None:
         """Content of the window. On setting, the content is added to the same app as
-        the window and to the same app."""
+        the window."""
         return self._content
 
     @content.setter
@@ -222,7 +220,8 @@ class Window:
 
     @property
     def size(self) -> tuple[int, int]:
-        """Size of the window, as (width, height) in :ref:`CSS pixels <css-units>`."""
+        """Size of the window, as a tuple of ``(width, height)``, in
+        :ref:`CSS pixels <css-units>`."""
         return self._impl.get_size()
 
     @size.setter
@@ -233,7 +232,8 @@ class Window:
 
     @property
     def position(self) -> tuple[int, int]:
-        """Position of the window, as an ``(x, y)`` tuple."""
+        """Position of the window, as a tuple of ``(x, y)`` coordinates, in
+        :ref:`CSS pixels <css-units>`."""
         return self._impl.get_position()
 
     @position.setter
@@ -241,7 +241,8 @@ class Window:
         self._impl.set_position(position)
 
     def show(self) -> None:
-        """Show the window, if hidden."""
+        """Show the window. If the window is already visible, this method has no
+        effect."""
 
         if self.app is None:
             # Needs to be a late import to avoid circular dependencies.
@@ -252,7 +253,8 @@ class Window:
         self._impl.show()
 
     def hide(self) -> None:
-        """Hide window, if shown."""
+        """Hide the window. If the window is already hidden, this method has no
+        effect."""
         if self.app is None:
             # Needs to be a late import to avoid circular dependencies.
             from toga import App
@@ -265,12 +267,11 @@ class Window:
     def full_screen(self) -> bool:
         """Is the window in full screen mode?
 
-        .. note::
-            Full screen mode is *not* the same as "maximized". A full screen window
-            has no title bar, tool bar or window control widgets; some or all of these
-            controls may be visible on a maximized app. A good example of "full screen"
-            mode is a slideshow app in presentation mode - the only visible content is
-            the slide.
+        Full screen mode is *not* the same as "maximized". A full screen window
+        has no title bar, toolbar or window controls; some or all of these
+        items may be visible on a maximized window. A good example of "full screen"
+        mode is a slideshow app in presentation mode - the only visible content is
+        the slide.
         """
         return self._is_full_screen
 
@@ -293,12 +294,7 @@ class Window:
 
     @property
     def on_close(self) -> OnCloseHandler:
-        """The handler to invoke before the window is closed in response to a user
-        action.
-
-        If the handler returns ``False``, the request to close the window will be
-        cancelled.
-        """
+        """The handler to invoke if the user attempts to close the window."""
         return self._on_close
 
     @on_close.setter
@@ -337,7 +333,7 @@ class Window:
         :param on_result: A callback that will be invoked when the user
             selects an option on the dialog.
         :returns: An awaitable Dialog object. The Dialog object returns
-            ``None`` after the user pressed the 'OK' button.
+            ``None`` when the user presses the 'OK' button.
         """
         dialog = Dialog(self)
         self.factory.dialogs.InfoDialog(
@@ -360,8 +356,8 @@ class Window:
         :param on_result: A callback that will be invoked when the user
             selects an option on the dialog.
         :returns: An awaitable Dialog object. The Dialog object returns
-            ``True`` when the "Yes" button was pressed, ``False`` when
-            the "No" button was pressed.
+            ``True`` when the "Yes" button is pressed, ``False`` when
+            the "No" button is pressed.
         """
         dialog = Dialog(self)
         self.factory.dialogs.QuestionDialog(
@@ -385,8 +381,8 @@ class Window:
         :param on_result: A callback that will be invoked when the user
             selects an option on the dialog.
         :returns: An awaitable Dialog object. The Dialog object returns
-            ``True`` when the "OK" button was pressed, ``False`` when
-            the "CANCEL" button was pressed.
+            ``True`` when the "OK" button is pressed, ``False`` when
+            the "Cancel" button is pressed.
         """
         dialog = Dialog(self)
         self.factory.dialogs.ConfirmDialog(
@@ -409,7 +405,7 @@ class Window:
         :param on_result: A callback that will be invoked when the user
             selects an option on the dialog.
         :returns: An awaitable Dialog object. The Dialog object returns
-            ``None`` after the user pressed the "OK" button.
+            ``None`` when the user presses the "OK" button.
         """
         dialog = Dialog(self)
         self.factory.dialogs.ErrorDialog(
@@ -458,8 +454,7 @@ class Window:
         retry: bool = False,
         on_result: DialogResultHandler[bool | None] | None = None,
     ) -> Dialog:
-        """Open a dialog that allows to display a large text body, such as a stack
-        trace.
+        """Open a dialog to display a large block of text, such as a stack trace.
 
         :param title: The title of the dialog window.
         :param message: Contextual information about the source of the stack trace.
@@ -493,15 +488,10 @@ class Window:
     ) -> Dialog:
         """Prompt the user for a location to save a file.
 
-        Presents the user a system-native "Save file" dialog.
-
-        This opens a native dialog where the user can select a place to save a file. It
-        is possible to suggest a filename, and constrain the list of allowed file
-        extensions.
-
         :param title: The title of the dialog window
         :param suggested_filename: A default filename
-        :param file_types: A list of strings with the allowed file extensions.
+        :param file_types: The allowed filename extensions, including leading dots. If
+            not provided, any extension will be allowed.
         :param on_result: A callback that will be invoked when the user selects an
             option on the dialog.
         :returns: An awaitable Dialog object. The Dialog object returns a path object
@@ -572,15 +562,14 @@ class Window:
         on_result: DialogResultHandler[list[Path] | Path | None] | None = None,
         multiselect=None,  # DEPRECATED
     ) -> Dialog:
-        """Ask the user to select a file (or files) to open.
-
-        Presents the user a system-native "Open file" dialog.
+        """Prompt the user to select a file (or files) to open.
 
         :param title: The title of the dialog window
         :param initial_directory: The initial folder in which to open the dialog.
             If ``None``, use the default location provided by the operating system
             (which will often be the last used location)
-        :param file_types: A list of strings with the allowed file extensions.
+        :param file_types: The allowed filename extensions, including leading dots. If
+            not provided, all files will be shown.
         :param multiple_select: If True, the user will be able to select multiple
             files; if False, the selection will be restricted to a single file.
         :param on_result: A callback that will be invoked when the user
@@ -656,9 +645,7 @@ class Window:
         on_result: DialogResultHandler[list[Path] | Path | None] | None = None,
         multiselect=None,  # DEPRECATED
     ) -> Dialog:
-        """Ask the user to select a directory/folder (or folders) to open.
-
-        Presents the user a system-native "Open folder" dialog.
+        """Prompt the user to select a directory (or directories) to open.
 
         :param title: The title of the dialog window
         :param initial_directory: The initial folder in which to open the dialog.
