@@ -1,4 +1,5 @@
 import io
+import re
 import traceback
 from importlib import import_module
 from pathlib import Path
@@ -120,21 +121,18 @@ if toga.platform.current_platform in {"iOS", "android"}:
             assert main_window.size == initial_size
             assert main_window_probe.content_size == content_size
 
-            assert (
-                "**WARNING** Window content exceeds available space"
-                in capsys.readouterr().out
+            space_warning = (
+                r"Warning: Window content \([\d.]+, [\d.]+\) "
+                r"exceeds available space \([\d.]+, [\d.]+\)"
             )
+            assert re.search(space_warning, capsys.readouterr().out)
 
             # Resize content to fit
             box1.style.width = 100
             await main_window_probe.wait_for_window("Content fits in window")
             assert main_window.size == initial_size
             assert main_window_probe.content_size == content_size
-
-            assert (
-                "**WARNING** Window content exceeds available space"
-                not in capsys.readouterr().out
-            )
+            assert not re.search(space_warning, capsys.readouterr().out)
 
             # Alter the content width to exceed window height
             box1.style.height = 2000
@@ -143,11 +141,8 @@ if toga.platform.current_platform in {"iOS", "android"}:
             )
             assert main_window.size == initial_size
             assert main_window_probe.content_size == content_size
+            assert re.search(space_warning, capsys.readouterr().out)
 
-            assert (
-                "**WARNING** Window content exceeds available space"
-                in capsys.readouterr().out
-            )
         finally:
             main_window.content = orig_content
 

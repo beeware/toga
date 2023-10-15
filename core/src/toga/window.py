@@ -479,6 +479,8 @@ class Window:
     ) -> Dialog:
         """Prompt the user for a location to save a file.
 
+        This dialog is not currently supported on Android or iOS.
+
         :param title: The title of the dialog window
         :param suggested_filename: A default filename
         :param file_types: The allowed filename extensions, including leading dots. If
@@ -554,6 +556,8 @@ class Window:
         multiselect=None,  # DEPRECATED
     ) -> Dialog:
         """Prompt the user to select a file (or files) to open.
+
+        This dialog is not currently supported on Android or iOS.
 
         :param title: The title of the dialog window
         :param initial_directory: The initial folder in which to open the dialog.
@@ -636,14 +640,17 @@ class Window:
         on_result: DialogResultHandler[list[Path] | Path | None] | None = None,
         multiselect=None,  # DEPRECATED
     ) -> Dialog:
-        """Prompt the user to select a directory (or directories) to open.
+        """Prompt the user to select a directory (or directories).
+
+        This dialog is not currently supported on Android or iOS.
 
         :param title: The title of the dialog window
         :param initial_directory: The initial folder in which to open the dialog.
             If ``None``, use the default location provided by the operating system
             (which will often be "last used location")
         :param multiple_select: If True, the user will be able to select multiple
-            files; if False, the selection will be restricted to a single file/
+            directories; if False, the selection will be restricted to a single
+            directory.
         :param on_result: A callback that will be invoked when the user
             selects an option on the dialog.
         :param multiselect: **DEPRECATED** Use ``multiple_select``.

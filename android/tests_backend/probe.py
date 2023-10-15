@@ -3,7 +3,8 @@ import asyncio
 from java import dynamic_proxy
 
 from android import R
-from android.view import ViewTreeObserver, WindowManagerGlobal
+from android.view import View, ViewTreeObserver, WindowManagerGlobal
+from android.widget import Button
 
 
 class LayoutListener(dynamic_proxy(ViewTreeObserver.OnGlobalLayoutListener)):
@@ -37,7 +38,7 @@ class BaseProbe:
             self.layout_listener
         )
 
-    def find_dialog(self):
+    def get_dialog_view(self):
         new_windows = [
             name
             for name in self.window_manager.getViewRootNames()
@@ -49,6 +50,32 @@ class BaseProbe:
             return self.window_manager.getRootView(new_windows[0])
         else:
             raise RuntimeError(f"More than one new window: {new_windows}")
+
+    def get_dialog_buttons(self, dialog_view):
+        button_panel = dialog_view.findViewById(R.id.button1).getParent()
+        return [
+            child
+            for i in range(button_panel.getChildCount())
+            if (
+                isinstance(child := button_panel.getChildAt(i), Button)
+                and child.getVisibility() == View.VISIBLE
+            )
+        ]
+
+    def assert_dialog_buttons(self, dialog_view, captions):
+        assert [
+            str(b.getText()) for b in self.get_dialog_buttons(dialog_view)
+        ] == captions
+
+    async def press_dialog_button(self, dialog_view, caption):
+        for b in self.get_dialog_buttons(dialog_view):
+            if str(b.getText()) == caption:
+                b.performClick()
+                await self.redraw(f"Click dialog button '{caption}'")
+                assert self.get_dialog_view() is None
+                break
+        else:
+            raise ValueError(f"Couldn't find dialog button '{caption}'")
 
     async def redraw(self, message=None, delay=0):
         """Request a redraw of the app, waiting until that redraw has completed."""
