@@ -2,6 +2,7 @@ from toga.colors import TRANSPARENT
 from toga.constants import RIGHT
 from toga_cocoa.libs import (
     NSLeftTextAlignment,
+    NSRange,
     NSRightTextAlignment,
     NSTextField,
     NSTextView,
@@ -82,3 +83,6 @@ class TextInputProbe(SimpleProbe):
         return isinstance(self.native.window.firstResponder, NSTextView) and (
             self.native.window.firstResponder.delegate == self.native
         )
+
+    def set_cursor_at_end(self):
+        self.native.currentEditor().selectedRange = NSRange(len(self.value), 0)

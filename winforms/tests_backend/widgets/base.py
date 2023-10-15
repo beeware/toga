@@ -1,3 +1,4 @@
+import pytest
 from pytest import approx
 from System import EventArgs, Object
 from System.Drawing import Color, SystemColors
@@ -142,3 +143,9 @@ class SimpleProbe(BaseProbe, FontMixin):
     @property
     def has_focus(self):
         return self.native.ContainsFocus
+
+    async def undo(self):
+        pytest.skip("Undo not supported on this platform")
+
+    async def redo(self):
+        pytest.skip("Redo not supported on this platform")

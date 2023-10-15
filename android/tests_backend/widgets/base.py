@@ -1,5 +1,6 @@
 import asyncio
 
+import pytest
 from pytest import approx
 
 from android.graphics.drawable import (
@@ -170,6 +171,12 @@ class SimpleProbe(BaseProbe, FontMixin):
     @property
     def has_focus(self):
         return self.widget.app._impl.native.getCurrentFocus() == self.native
+
+    async def undo(self):
+        pytest.skip("Undo not supported on this platform")
+
+    async def redo(self):
+        pytest.skip("Redo not supported on this platform")
 
 
 def find_view_by_type(root, cls):

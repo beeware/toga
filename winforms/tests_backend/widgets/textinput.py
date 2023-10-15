@@ -2,6 +2,7 @@ import ctypes
 from ctypes import c_uint
 from ctypes.wintypes import HWND, LPARAM
 
+import pytest
 from System.Windows.Forms import TextBox
 
 from .base import SimpleProbe
@@ -53,3 +54,6 @@ class TextInputProbe(SimpleProbe):
     def assert_vertical_alignment(self, expected):
         # Vertical alignment isn't configurable in this native widget.
         pass
+
+    def set_cursor_at_end(self):
+        pytest.skip("Cursor positioning not supported on this platform")
