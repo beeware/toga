@@ -1,6 +1,7 @@
 import asyncio
 
 from java import dynamic_proxy
+from org.beeware.android import MainActivity
 
 from android import R
 from android.view import View, ViewTreeObserver, WindowManagerGlobal
@@ -19,8 +20,8 @@ class LayoutListener(dynamic_proxy(ViewTreeObserver.OnGlobalLayoutListener)):
 class BaseProbe:
     def __init__(self, app):
         self.app = app
-        self.activity = app._impl.native
-        self.root_view = self.activity.findViewById(R.id.content)
+        activity = MainActivity.singletonThis
+        self.root_view = activity.findViewById(R.id.content)
 
         self.layout_listener = LayoutListener()
         self.root_view.getViewTreeObserver().addOnGlobalLayoutListener(
@@ -30,7 +31,7 @@ class BaseProbe:
         self.window_manager = WindowManagerGlobal.getInstance()
         self.original_window_names = self.window_manager.getViewRootNames()
 
-        self.dpi = self.activity.getResources().getDisplayMetrics().densityDpi
+        self.dpi = activity.getResources().getDisplayMetrics().densityDpi
         self.scale_factor = self.dpi / 160
 
     def __del__(self):

@@ -5,8 +5,7 @@ from .probe import BaseProbe
 
 class ImageProbe(BaseProbe):
     def __init__(self, app, image):
-        super().__init__()
-        self.app = app
+        super().__init__(app)
         self.image = image
         assert isinstance(self.image._impl.native, Bitmap)
 
