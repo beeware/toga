@@ -107,11 +107,13 @@ class Window:
         # End backwards compatibility
         ######################################################################
 
+        # Needs to be a late import to avoid circular dependencies.
+        from toga import App
+
         self.widgets = WidgetRegistry()
 
         self._id = str(id if id else identifier(self))
         self._impl = None
-        self._app = None
         self._content = None
         self._is_full_screen = False
 
@@ -127,8 +129,10 @@ class Window:
             size=size,
         )
 
-        self._toolbar = CommandSet(widget=self, on_change=self._impl.create_toolbar)
+        self._app = None
+        App.app.windows += self
 
+        self._toolbar = CommandSet(widget=self, on_change=self._impl.create_toolbar)
         self.on_close = on_close
 
     @property
@@ -137,11 +141,10 @@ class Window:
         return self._id
 
     @property
-    def app(self) -> App | None:
-        """Instance of the :class:`toga.App` that this window belongs to.
+    def app(self) -> App:
+        """The :any:`App` that this window belongs to (read-only).
 
-        :raises ValueError: If a window is already assigned to an app, and an attempt is made
-            to assign the window to a new app."""
+        New windows are automatically associated with the currently active app."""
         return self._app
 
     @app.setter
@@ -161,7 +164,8 @@ class Window:
 
     @property
     def title(self) -> str:
-        """Title of the window. If no title is provided, the title will default to ``"Toga"``."""
+        """Title of the window. If no title is provided, the title will default to
+        "Toga"."""
         return self._impl.get_title()
 
     @title.setter
@@ -243,24 +247,11 @@ class Window:
     def show(self) -> None:
         """Show the window. If the window is already visible, this method has no
         effect."""
-
-        if self.app is None:
-            # Needs to be a late import to avoid circular dependencies.
-            from toga import App
-
-            App.app.windows += self
-
         self._impl.show()
 
     def hide(self) -> None:
         """Hide the window. If the window is already hidden, this method has no
         effect."""
-        if self.app is None:
-            # Needs to be a late import to avoid circular dependencies.
-            from toga import App
-
-            App.app.windows += self
-
         self._impl.hide()
 
     @property
