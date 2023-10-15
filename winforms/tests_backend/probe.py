@@ -13,3 +13,7 @@ class BaseProbe:
         if delay:
             print("Waiting for redraw" if message is None else message)
             await asyncio.sleep(delay)
+
+    @property
+    def scale_factor(self):
+        return self.native.CreateGraphics().DpiX / 96

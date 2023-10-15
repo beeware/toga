@@ -32,7 +32,6 @@ class SimpleProbe(BaseProbe, FontMixin):
         self.impl = widget._impl
         self.native = self.impl.native
         assert isinstance(self.native, self.native_class)
-        self.scale_factor = self.native.CreateGraphics().DpiX / 96
 
     def assert_container(self, container):
         assert self.widget._impl.container is container._impl.container

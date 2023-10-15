@@ -18,7 +18,8 @@ from .probe import BaseProbe
 
 
 class WindowProbe(BaseProbe):
-    supports_minimize_control = True
+    supports_closable = True
+    supports_minimizable = True
     supports_move_while_hidden = True
     supports_unminimize = True
 

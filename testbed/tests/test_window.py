@@ -169,8 +169,9 @@ else:
         assert second_window.size == (640, 480)
         assert second_window.position == (100, 100)
         assert second_window_probe.is_resizable
-        assert second_window_probe.is_closable
-        if second_window_probe.supports_minimize_control:
+        if second_window_probe.supports_closable:
+            assert second_window_probe.is_closable
+        if second_window_probe.supports_minimizable:
             assert second_window_probe.is_minimizable
 
         second_window.close()
@@ -231,19 +232,26 @@ else:
         [dict(title="Not Closeable", closable=False, position=(200, 150))],
     )
     async def test_non_closable(second_window, second_window_probe):
-        """A non-closable window can be created"""
+        """A non-closable window can be created. Backends that don't support this
+        natively should implement it by making the close button do nothing."""
         assert second_window.visible
-        assert not second_window_probe.is_closable
+
+        on_close_handler = Mock(return_value=False)
+        second_window.on_close = on_close_handler
+
+        if second_window_probe.supports_closable:
+            assert not second_window_probe.is_closable
 
         # Do a UI close on the window
         second_window_probe.close()
         await second_window_probe.wait_for_window("Close request was ignored")
+        on_close_handler.assert_not_called()
         assert second_window.visible
 
         # Do an explicit close on the window
         second_window.close()
         await second_window_probe.wait_for_window("Explicit close was honored")
-
+        on_close_handler.assert_not_called()
         assert not second_window.visible
 
     @pytest.mark.parametrize(
@@ -252,6 +260,9 @@ else:
     )
     async def test_non_minimizable(second_window, second_window_probe):
         """A non-minimizable window can be created"""
+        if not second_window_probe.supports_minimizable:
+            pytest.xfail("This backend doesn't support disabling minimization")
+
         assert second_window.visible
         assert not second_window_probe.is_minimizable
 
@@ -366,8 +377,8 @@ else:
         await second_window_probe.wait_for_window(
             "Secondary window has had height adjusted due to content"
         )
-        assert second_window.size == (200 + extra_width, 210 + extra_height)
-        assert second_window_probe.content_size == (200, 210)
+        assert second_window.size == (200, 210 + extra_height)
+        assert second_window_probe.content_size == (200 - extra_width, 210)
 
         # Alter the content width to exceed window size
         box1.style.width = 250
@@ -392,6 +403,7 @@ else:
     async def test_full_screen(second_window, second_window_probe):
         """Window can be made full screen"""
         assert not second_window_probe.is_full_screen
+        assert second_window_probe.is_resizable
         initial_content_size = second_window_probe.content_size
 
         second_window.full_screen = True
@@ -419,6 +431,7 @@ else:
             full_screen=True,
         )
         assert not second_window_probe.is_full_screen
+        assert second_window_probe.is_resizable
         assert second_window_probe.content_size == initial_content_size
 
         second_window.full_screen = False
