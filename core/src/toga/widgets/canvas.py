@@ -17,6 +17,12 @@ from toga.handlers import wrapped_handler
 from .. import Image
 from .base import Widget
 
+from io import BytesIO
+try:
+    from PIL import Image as PIL_Image
+except:
+    PIL_Image = None
+
 #######################################################################################
 # Simple drawing objects
 #######################################################################################
@@ -1451,16 +1457,15 @@ class Canvas(Widget):
     def as_image(self, format: Any | None = None) -> toga.Image:
         
         """Render the canvas as an Image.
-
-        :returns: A :class:`toga.Image` containing the canvas content if format is None else `PIL.Image` containing the canvas content if format is specified as PIL.Image."""
+        :param format: None or type of the image that will be returned
+        Supported Types: PIL.Image.Image, toga.Image
+        :returns: Object of the specified Image type. If unspecified returns toga.Image"""
         if format == None:
             return Image(data=self._impl.get_image_data())
-        elif format.__name__ == "PIL.Image":
-            from io import BytesIO as _BytesIO_
-            from PIL import Image as _PIL_Image_
-            return _PIL_Image_.open(_BytesIO_(self._impl.get_image_data()))
+        elif PIL_Image != None and format==PIL_Image.Image:
+            return PIL_Image.open(BytesIO(self._impl.get_image_data()))
         else:
-            raise TypeError(f"Unsupported Format")
+            raise TypeError(f"Unsupported image format: {format}")
 
     ###########################################################################
     # 2023-07 Backwards compatibility

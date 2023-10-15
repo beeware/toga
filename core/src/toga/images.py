@@ -7,9 +7,15 @@ from pathlib import Path
 import toga
 from toga.platform import get_platform_factory
 
-import time
-import os
+from io import BytesIO
+import time, os
 
+try:
+    from PIL import Image as PIL_Image
+    PIL_ImportError_Message = None
+except ImportError as e:
+    PIL_Image = None
+    PIL_ImportError_Message = e
 class Image:
     def __init__(
         self,
@@ -51,13 +57,9 @@ class Image:
             self.path = None
             self.pil_image = None
         if pil_image is not None:
-            try:
-                from PIL import Image as _PIL_Image_Module_
-            except ImportError as e:
-                print("Pillow is required as pil_image is set to a PIL.Image type")
-                raise ImportError(e)
-            #type checking
-            if not _PIL_Image_Module_.isImageType(pil_image):
+            if PIL_Image == None:
+                raise ImportError(PIL_ImportError_Message)
+            if not PIL_Image.isImageType(pil_image):
                 raise TypeError("pil_image is not a PIL.Image type.")
             self.pil_image = pil_image
             self.data = None
@@ -73,29 +75,10 @@ class Image:
                 raise FileNotFoundError(f"Image file {self.path} does not exist")
             self._impl = self.factory.Image(interface=self, path=self.path)
         if self.pil_image is not None:
-            #What we will do: save the pil_image into a temporary file then load raw byte data
-            #from that file, then use the bytes to create self._impl, finally delete the temp file
-
-            # creating an unique name for the temporary file
-            unique_time = str(time.time())
-            temp_file = f"_PIL_temp_img_file_{unique_time}_"
-            temp_file_path = toga.App.app.paths.app
-            while temp_file in os.listdir(temp_file_path):
-                temp_file+="1_"
-            complete_temp_path = os.path.join(temp_file_path, temp_file)
-
-            # saving the pil_image in the temporary file
-            self.pil_image.save(complete_temp_path)
-
-            #loading the raw bytes of the image into the memory from the temporary file
-            with open(complete_temp_path, "rb") as _file:
-                raw_image_data = _file.read()
-
-            #passing the bytes of the image to create _impl
-            self._impl = self.factory.Image(interface=self, data=raw_image_data)
-
-            #finally delete the temporary file from the storage
-            os.remove(temp_file_path)
+            img_buffer = BytesIO()
+            self.pil_image.save(img_buffer, format=self.pil_image.format)
+            img_buffer.seek(0)
+            self._impl = self.factory.Image(interface=self, data=img_buffer.read())
 
 
 
@@ -162,28 +145,30 @@ class Image:
         self._impl.save(path)
     
     def as_format(self, format: Any|None=None):
+        """
+        get the image as specified format if supported
+        :param format: None or A supported type of Image
+        Supported types are `PIL.Image.Image`,
+        :returns: toga.Image if format is None, or the specified format if the format is supported
+        ```
+        from PIL import Image
+        pil_image = toga_image.as_format(Image.Image)
+        ```
+        """
         if format == None:
             return self
-        elif format.__name__ == "PIL.Image":
-            # save the image in storage in a temporary file
-            # then load it as PIL.Image then delete the temporary file
-
-            # creating an unique name for the temporary file
+        elif PIL_Image != None and format == PIL_Image.Image:
+            # saving into temporary file
             unique_time = str(time.time())
-            temp_file = f"_TOGA_temp_img_file_{unique_time}_"
-            temp_file_path = toga.App.app.paths.app
-            while temp_file in os.listdir(temp_file_path):
-                temp_file+="1_"
-            complete_temp_path = os.path.join(temp_file_path, temp_file)
-
-            # loading PIL Image
-            from PIL import Image as _PIL_Image_
-            pil_image = _PIL_Image_.open(complete_temp_path)
-
+            temp_file = f"._toga_Image_as_format_PIL_Image_{unique_time}_"
+            temp_file_path = os.path.join(toga.App.app.paths.app, temp_file)
+            self.save(temp_file_path)
+            # creating PIL.Image.Image from temporary file
+            pil_image = PIL_Image.open(temp_file_path)
             # deleting the temporary file
-            os.remove(complete_temp_path)
+            os.remove(temp_file_path)
 
             return pil_image
         else:
-            raise TypeError("Unknown Conversion Format")
+            raise TypeError(f"Unknown conversion format: {format}")
 
