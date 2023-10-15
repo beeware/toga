@@ -10,6 +10,11 @@ from toga.images import Image
 from toga.style.pack import NONE
 from toga.widgets.base import Widget
 
+try:
+    from PIL import Image as PIL_Image
+except ImportError as e:
+    PIL_Image = None
+
 
 def rehint_imageview(image, style, scale=1):
     """Compute the size hints for an ImageView based on the image.
@@ -81,14 +86,10 @@ class ImageView(Widget):
         # Prime the image attribute
         self._image = None
         self._impl = self.factory.ImageView(interface=self)
-        # checking if the image if PIL.Image
-        try:
-            from PIL import Image as _PIL_Image_Module_
-            if _PIL_Image_Module_.isImageType(image):
-                image = Image(pil_image=image) #TODO: A change may be necessary if behaviour of Image is changed
-        except ImportError as e:
-            # cant import... assume that PIL.Image will not be passed
-            pass
+        # checking if the image is PIL.Image.Image, if it is, then convert it to toga.Image
+        if PIL_Image!=None and PIL_Image.isImageType(image):
+            image = Image(pil_image = image)
+        
 
         
         self.image = image
@@ -138,10 +139,19 @@ class ImageView(Widget):
         self.refresh()
     
     def as_image(self, format: Any | None=None):
+        '''
+        get the image from ImageView as specified format if supported
+        :param format: None or A supported type of Image
+        Supported types are `PIL.Image.Image`,
+        :returns: toga.Image if format is None, or the specified format if the format is supported
+        ```
+        from PIL import Image
+        pil_image = imageview.as_image(Image.Image)
+        ```
+        '''
         if format == None:
             return self.image
-        elif format.__name__ == "PIL.Image":
-            import PIL as _PIL_
-            return self.image.as_format(_PIL_.Image)
+        elif PIL_Image!=None and format==PIL_Image.Image:
+            return self.image.as_format(PIL_Image.Image)
         else:
-            return TypeError("Unknown Conversion Format")
+            return TypeError(f"Unknown conversion format: {format}")
