@@ -2,12 +2,12 @@ Added Pillow support in toga
 ============================
 toga.Image
 ----------
-`toga.Image` can now take Pillow Image Object. simply set pil_image parameter to the Pillow Object
+`toga.Image` can now take Pillow Image Object.
 code-block::python
     from PIL import Image as PIL_Image
     import toga
     myimg = PIL_Image.open("path/to/image.png")
-    image = toga.Image(pil_image=myimg)
+    image = toga.Image(myimg)
 
 Also to convert a `toga.Image` object as Pillow Object
 code-block::python
