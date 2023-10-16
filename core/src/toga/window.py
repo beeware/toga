@@ -450,14 +450,14 @@ class Window:
         :param title: The title of the dialog window.
         :param message: Contextual information about the source of the stack trace.
         :param content: The stack trace, pre-formatted as a multi-line string.
-        :param retry: A Boolean; if True, the user will be given a "Retry" and
-            "Quit" option; if False, a single option to acknowledge the error will
+        :param retry: If true, the user will be given options to "Retry" or
+            "Quit"; if false, a single option to acknowledge the error will
             be displayed.
         :param on_result: A callback that will be invoked when the user
             selects an option on the dialog.
-        :returns: An awaitable Dialog object. If retry is enabled, the Dialog object
-            returns ``True`` if the user selected retry, and ``False`` otherwise;
-            if retry is not enabled, the dialog object returns ``None``.
+        :returns: An awaitable Dialog object. If ``retry`` is true, the Dialog object
+            returns ``True`` when the user selects "Retry", and ``False`` when they
+            select "Quit". If ``retry`` is false, the Dialog object returns ``None``.
         """
         dialog = Dialog(self)
         self.factory.dialogs.StackTraceDialog(

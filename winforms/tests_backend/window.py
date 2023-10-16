@@ -61,9 +61,9 @@ class WindowProbe(BaseProbe):
     def unminimize(self):
         self.native.WindowState = FormWindowState.Normal
 
-    async def _close_dialog(self, key):
+    async def _close_dialog(self, *args, **kwargs):
         await asyncio.sleep(0)  # Give the inner event loop a chance to start
-        await self.type_character(key)
+        await self.type_character(*args, **kwargs)
 
     async def close_info_dialog(self, dialog):
         await self._close_dialog("\n")
@@ -76,3 +76,9 @@ class WindowProbe(BaseProbe):
 
     async def close_error_dialog(self, dialog):
         await self._close_dialog("\n")
+
+    async def close_stack_trace_dialog(self, dialog, result):
+        await self._close_dialog(
+            {None: "o", True: "r", False: "q"}[result],
+            alt=True,
+        )

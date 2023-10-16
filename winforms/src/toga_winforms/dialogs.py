@@ -19,6 +19,10 @@ class BaseDialog(ABC):
         self.interface._impl = self
         self.on_result = on_result
 
+    # See libs/proactor.py
+    def start_inner_loop(self, callback, *args):
+        asyncio.get_event_loop().start_inner_loop(callback, *args)
+
     def set_result(self, result):
         self.on_result(None, result)
         self.interface.future.set_result(result)
@@ -29,16 +33,15 @@ class MessageDialog(BaseDialog):
         self, interface, title, message, buttons, icon, on_result, success_result=None
     ):
         super().__init__(interface, on_result)
-        asyncio.get_event_loop().start_inner_loop(  # See libs/proactor.py
-            self.show, title, message, buttons, icon, success_result
-        )
 
-    def show(self, title, message, buttons, icon, success_result):
-        return_value = WinForms.MessageBox.Show(message, title, buttons, icon)
-        if success_result:
-            self.set_result(return_value == success_result)
-        else:
-            self.set_result(None)
+        def show():
+            return_value = WinForms.MessageBox.Show(message, title, buttons, icon)
+            if success_result:
+                self.set_result(return_value == success_result)
+            else:
+                self.set_result(None)
+
+        self.start_inner_loop(show)
 
 
 class InfoDialog(MessageDialog):
@@ -92,18 +95,8 @@ class ErrorDialog(MessageDialog):
 
 
 class StackTraceDialog(BaseDialog):
-    def __init__(
-        self,
-        interface,
-        title,
-        message,
-        content,
-        retry,
-        on_result=None,
-        **kwargs,
-    ):
-        super().__init__(interface=interface)
-        self.on_result = on_result
+    def __init__(self, interface, title, message, content, retry, on_result):
+        super().__init__(interface, on_result)
 
         self.native = WinForms.Form()
         self.native.MinimizeBox = False
@@ -147,7 +140,7 @@ class StackTraceDialog(BaseDialog):
             retry.Left = 290
             retry.Top = 250
             retry.Width = 100
-            retry.Text = "Retry"
+            retry.Text = "&Retry"
             retry.Click += self.winforms_Click_retry
 
             self.native.Controls.Add(retry)
@@ -156,7 +149,7 @@ class StackTraceDialog(BaseDialog):
             quit.Left = 400
             quit.Top = 250
             quit.Width = 100
-            quit.Text = "Quit"
+            quit.Text = "&Quit"
             quit.Click += self.winforms_Click_quit
 
             self.native.Controls.Add(quit)
@@ -165,12 +158,12 @@ class StackTraceDialog(BaseDialog):
             accept.Left = 400
             accept.Top = 250
             accept.Width = 100
-            accept.Text = "Ok"
+            accept.Text = "&OK"
             accept.Click += self.winforms_Click_accept
 
             self.native.Controls.Add(accept)
 
-        self.native.ShowDialog()
+        self.start_inner_loop(self.native.ShowDialog)
 
     def winforms_FormClosing(self, sender, event):
         # If the close button is pressed, there won't be a future yet.
@@ -182,21 +175,18 @@ class StackTraceDialog(BaseDialog):
         except asyncio.InvalidStateError:
             event.Cancel = True
 
-    def handle_result(self, result):
-        self.on_result(self, result)
-
-        self.interface.future.set_result(result)
-
+    def set_result(self, result):
+        super().set_result(result)
         self.native.Close()
 
     def winforms_Click_quit(self, sender, event):
-        self.handle_result(False)
+        self.set_result(False)
 
     def winforms_Click_retry(self, sender, event):
-        self.handle_result(True)
+        self.set_result(True)
 
     def winforms_Click_accept(self, sender, event):
-        self.handle_result(None)
+        self.set_result(None)
 
 
 class FileDialog(BaseDialog):

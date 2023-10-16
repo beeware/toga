@@ -30,14 +30,21 @@ class BaseProbe:
     def scale_factor(self):
         return self.native.CreateGraphics().DpiX / 96
 
-    async def type_character(self, char, *, ctrl=False):
+    async def type_character(self, char, *, shift=False, ctrl=False, alt=False):
         try:
             key_code = KEY_CODES[char]
         except KeyError:
             assert len(char) == 1, char
             key_code = char
 
+        if shift:
+            key_code = "+" + key_code
         if ctrl:
             key_code = "^" + key_code
+        if alt:
+            key_code = "%" + key_code
 
+        # This sends keys to the focused window, which isn't necessarily even in the
+        # same app. Unfortunately that makes it difficult to run tests in the
+        # background.
         SendKeys.SendWait(key_code)

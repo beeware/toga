@@ -520,9 +520,7 @@ async def test_stack_trace_dialog(main_window, main_window_probe, result):
         f"Stack trace dialog (with{'out' if result is None else ''} retry) displayed"
     )
     await main_window_probe.close_stack_trace_dialog(dialog_result._impl, result)
-
-    on_result_handler.assert_called_once_with(main_window, result)
-    assert await dialog_result is result
+    await assert_dialog_result(main_window, dialog_result, on_result_handler, result)
 
 
 @pytest.mark.parametrize(
