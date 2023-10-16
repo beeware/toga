@@ -7,7 +7,7 @@ from pathlib import Path
 import toga
 from toga.platform import get_platform_factory
 
-from io import BytesIO
+from io import BytesIO, BufferedReader
 import time, os
 
 try:
@@ -19,50 +19,53 @@ except ImportError as e:
 class Image:
     def __init__(
         self,
-        path: str | None | Path = None,
+        src:str|Path|BytesIO|BufferedReader|bytes|PIL_Image.Image|None=None,
         *,
+        path: str | None | Path = None,
         data: bytes | None = None,
-        pil_image: Any | None = None,
     ):
         """Create a new image.
 
-        An image must be one of ``path``, ``data`` or ``pil_image``
-
+        :param src: string path, pathlib.Path, BufferedReader, BytesIO, bytes, Pillow Object of the image to load
         :param path: Path to the image to load. This can be specified as a string, or as
             a :any:`pathlib.Path` object. The path can be an absolute file system path,
             or a path relative to the module that defines your Toga application class.
         :param data: A bytes object with the contents of an image in a supported format.
-        :param pil_image: PIL.Image object created from an image of a supported format.
         :raises FileNotFoundError: If a path is provided, but that path does not exist.
         :raises ValueError: If the path or data cannot be loaded as an image.
-        :raises TypeError: If pil_image is provided but the type of the object is not PIL.Image
         """
-        # At first we will create a list with these three variable, then count how many None is in that list.
-        # If the number of None is 1 -> raises ValueError. One and only One of the three variables must be set but here two of them are set
-        # If the number of None is 3 -> raises ValueError. One and only One of the three variables must be set but here none of them are set 
-        # If the number of None is 2 -> Ok. Check the validity of the value of that non-None variable
-        none_count = [path, data, pil_image].count(None)
+        none_count = [src, path, data].count(None)
         if none_count != 2:
-            raise ValueError("One and Only one of the three args (path, data, pil_image) must be set.")
-        # checking validity of the arg(one of the three)
+            raise ValueError("One and Only one of the three parameters (src, path, data) have to be set.")
+        
+        if src is not None:
+            if isinstance(src, str) or isinstance(src, Path):
+                path = src
+                src = None
+            elif isinstance(src, BytesIO) or isinstance(src, BufferedReader):
+                src.seek(0)
+                data = src.read()
+                src = None
+            elif isinstance(src, bytes):
+                data = src
+                src = None
+            elif PIL_Image is not None and isinstance(src, PIL_Image.Image):
+                img_buffer = BytesIO()
+                src.save(img_buffer, format=src.format)
+                img_buffer.seek(0)
+                data = img_buffer.read()
+                src = None
+            else:
+                raise TypeError("Unsupported source type for image.")
+                
         if path is not None:
             if isinstance(path, Path):
                 self.path = path
             else:
                 self.path = Path(path)
             self.data = None
-            self.pil_image = None
         if data is not None:
             self.data = data
-            self.path = None
-            self.pil_image = None
-        if pil_image is not None:
-            if PIL_Image == None:
-                raise ImportError(PIL_ImportError_Message)
-            if not PIL_Image.isImageType(pil_image):
-                raise TypeError("pil_image is not a PIL.Image type.")
-            self.pil_image = pil_image
-            self.data = None
             self.path = None
 
 
@@ -74,11 +77,6 @@ class Image:
             if not self.path.is_file():
                 raise FileNotFoundError(f"Image file {self.path} does not exist")
             self._impl = self.factory.Image(interface=self, path=self.path)
-        if self.pil_image is not None:
-            img_buffer = BytesIO()
-            self.pil_image.save(img_buffer, format=self.pil_image.format)
-            img_buffer.seek(0)
-            self._impl = self.factory.Image(interface=self, data=img_buffer.read())
 
 
 

@@ -1,4 +1,6 @@
 from pathlib import Path
+from io import BytesIO
+from PIL import Image as PIL_Image
 
 import pytest
 
@@ -122,21 +124,33 @@ def test_image_save():
     assert_action_performed_with(image, "save", path=save_path)
 
 def test_pil_support():
-    from PIL import Image as PIL_Image
-
     pil_img = PIL_Image.open("resources/toga.png")
     toga_img = toga.Image("resources/toga.png")
-    toga_img_from_pil_img = toga.Image(pil_image = pil_img)
+    toga_img_from_pil_img = toga.Image(pil_img)
 
     assert toga_img.width == toga_img_from_pil_img.width, "PIL support is faulty"
     assert toga_img.height == toga_img_from_pil_img.height, "PIL support is faulty"
 
-    pil_img2 = toga_img_from_pil_img.as_format(PIL_Image.Image)
-
-    assert type(pil_img2) == type(pil_img), "Image.as_format(PIL_Image.Image) is faulty"
-    assert pil_img2.size == pil_img.size, "Image.as_format(PIL_Image.Image) is faulty"
-
-def test_as_format_none():
+def test_as_format():
     img = toga.Image("resources/toga.png")
     img2 = img.as_format()
     assert img == img2, "Image.as_format should return self when nothing is provided as arg, but failed"
+
+    pil_img = img.as_format(PIL_Image.Image)
+    assert isinstance(pil_img, PIL_Image.Image)
+    assert pil_img.size == (img.width, img.height)
+
+test_image_path = "resources/toga.png"
+@pytest.mark.parametrize("unified_image_source",[
+    test_image_path, #normal string paths
+    Path(test_image_path), #pathlib.Path
+    open(test_image_path, "rb"), #BufferedReader
+    open(test_image_path, "rb").read(),#bytes
+    BytesIO(open(test_image_path, "rb").read()), #BytesIO
+    PIL_Image.open(test_image_path), #PIL_Image.Image
+])
+
+def test_unified_source(unified_image_source):
+    image = toga.Image(unified_image_source)
+    assert image is not None and image.width is not None and image.height is not None
+

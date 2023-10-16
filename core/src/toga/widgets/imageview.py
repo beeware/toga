@@ -86,12 +86,8 @@ class ImageView(Widget):
         # Prime the image attribute
         self._image = None
         self._impl = self.factory.ImageView(interface=self)
-        # checking if the image is PIL.Image.Image, if it is, then convert it to toga.Image
         if PIL_Image!=None and PIL_Image.isImageType(image):
-            image = Image(pil_image = image)
-        
-
-        
+            image = Image(image) #PIL.Image.Image -> toga.Image
         self.image = image
 
     @property
