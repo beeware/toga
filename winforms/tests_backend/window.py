@@ -12,6 +12,7 @@ class WindowProbe(BaseProbe):
     supports_closable = False
     supports_minimizable = True
     supports_move_while_hidden = True
+    supports_multiple_select_folder = False
     supports_unminimize = True
 
     def __init__(self, app, window):
@@ -62,7 +63,10 @@ class WindowProbe(BaseProbe):
         self.native.WindowState = FormWindowState.Normal
 
     async def _close_dialog(self, *args, **kwargs):
-        await asyncio.sleep(0)  # Give the inner event loop a chance to start
+        # Give the inner event loop a chance to start. The MessageBox dialogs work with
+        # sleep(0), but the file dialogs require it to be positive for some reason.
+        await asyncio.sleep(0.001)
+
         await self.type_character(*args, **kwargs)
 
     async def close_info_dialog(self, dialog):
@@ -82,3 +86,13 @@ class WindowProbe(BaseProbe):
             {None: "o", True: "r", False: "q"}[result],
             alt=True,
         )
+
+    async def close_save_file_dialog(self, dialog, result):
+        await self._close_dialog("\n" if result else "<esc>")
+
+    async def close_select_folder_dialog(self, dialog, result, multiple_select):
+        if result is None:
+            await self._close_dialog("<esc>")
+        else:
+            dialog.native.SelectedPath = str(result)
+            await self._close_dialog("\n")

@@ -21,6 +21,7 @@ class WindowProbe(BaseProbe):
     supports_closable = True
     supports_minimizable = True
     supports_move_while_hidden = True
+    supports_multiple_select_folder = True
     supports_unminimize = True
 
     def __init__(self, app, window):

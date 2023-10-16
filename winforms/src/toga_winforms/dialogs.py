@@ -78,7 +78,7 @@ class ConfirmDialog(MessageDialog):
             MessageBoxButtons.OKCancel,
             MessageBoxIcon.Warning,
             on_result,
-            success_result=WinForms.DialogResult.OK,
+            success_result=DialogResult.OK,
         )
 
 
@@ -195,17 +195,17 @@ class FileDialog(BaseDialog):
         native,
         interface,
         title,
-        filename,
         initial_directory,
-        file_types,
-        multiselect,
-        on_result=None,
+        on_result,
+        *,
+        filename=None,
+        file_types=None,
+        multiple_select=False,
     ):
-        super().__init__(interface=interface)
-        self.on_result = on_result
+        super().__init__(interface, on_result)
+        self.native = native
 
         native.Title = title
-
         if filename is not None:
             native.FileName = filename
 
@@ -223,62 +223,42 @@ class FileDialog(BaseDialog):
 
             native.Filter = "|".join(filters)
 
-        if multiselect:
+        if multiple_select:
             native.Multiselect = True
 
-        response = native.ShowDialog()
+        def show():
+            response = native.ShowDialog()
+            if response == DialogResult.OK:
+                self.set_result(self._get_filenames(native, multiple_select))
+            else:
+                self.set_result(None)
 
-        if response == WinForms.DialogResult.OK:
-            result = self._get_filenames(native, multiselect)
-        else:
-            result = None
-
-        self.on_result(self, result)
-
-        self.interface.future.set_result(result)
+        self.start_inner_loop(show)
 
     @classmethod
-    def _get_filenames(cls, native, multiselect):
-        if multiselect:
+    def _get_filenames(cls, native, multiple_select):
+        if multiple_select:
             return [Path(filename) for filename in native.FileNames]
         else:
             return Path(native.FileName)
 
     @classmethod
     def _set_initial_directory(cls, native, initial_directory):
-        """Set the initial directory of the given dialog.
-
-        On Windows, not all file/folder dialogs work the same way,
-        so this method is overridden when a subclass needs to
-        set the initial directory in some other fashion.
-
-        Args:
-            native (WinForms.CommonDialog): the dialog to set the
-                initial directory on.
-            initial_directory (str): the path of the initial directory.
-        """
         native.InitialDirectory = initial_directory
 
 
 class SaveFileDialog(FileDialog):
     def __init__(
-        self,
-        interface,
-        title,
-        filename,
-        initial_directory,
-        file_types=None,
-        on_result=None,
+        self, interface, title, filename, initial_directory, file_types, on_result
     ):
         super().__init__(
-            native=WinForms.SaveFileDialog(),
-            interface=interface,
-            title=title,
+            WinForms.SaveFileDialog(),
+            interface,
+            title,
+            initial_directory,
+            on_result,
             filename=filename,
-            initial_directory=initial_directory,
             file_types=file_types,
-            multiselect=False,
-            on_result=on_result,
         )
 
 
@@ -289,45 +269,35 @@ class OpenFileDialog(FileDialog):
         title,
         initial_directory,
         file_types,
-        multiselect,
-        on_result=None,
+        multiple_select,
+        on_result,
     ):
         super().__init__(
-            native=WinForms.OpenFileDialog(),
-            interface=interface,
-            title=title,
-            filename=None,
-            initial_directory=initial_directory,
+            WinForms.OpenFileDialog(),
+            interface,
+            title,
+            initial_directory,
+            on_result,
             file_types=file_types,
-            multiselect=multiselect,
-            on_result=on_result,
+            multiple_select=multiple_select,
         )
 
 
 class SelectFolderDialog(FileDialog):
-    def __init__(
-        self,
-        interface,
-        title,
-        initial_directory,
-        multiselect,
-        on_result=None,
-    ):
+    def __init__(self, interface, title, initial_directory, multiple_select, on_result):
         super().__init__(
-            native=WinForms.FolderBrowserDialog(),
-            interface=interface,
-            title=title,
-            filename=None,
-            initial_directory=initial_directory,
-            file_types=None,
-            multiselect=multiselect,
-            on_result=on_result,
+            WinForms.FolderBrowserDialog(),
+            interface,
+            title,
+            initial_directory,
+            on_result,
+            multiple_select=False,  # Not supported by this dialog
         )
 
     @classmethod
-    def _get_filenames(cls, native, multiselect):
+    def _get_filenames(cls, native, multiple_select):
         filename = Path(native.SelectedPath)
-        return [filename] if multiselect else filename
+        return [filename] if multiple_select else filename
 
     @classmethod
     def _set_initial_directory(cls, native, initial_directory):

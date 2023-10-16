@@ -448,9 +448,17 @@ else:
 ########################################################################################
 
 
+TESTS_DIR = Path(__file__).parent
+
+
 async def assert_dialog_result(window, dialog, on_result, expected):
-    assert (await wait_for(dialog, timeout=1)) == expected
-    on_result.assert_called_once_with(window, expected)
+    actual = await wait_for(dialog, timeout=1)
+    if callable(expected):
+        assert expected(actual)
+    else:
+        assert actual == expected
+
+    on_result.assert_called_once_with(window, actual)
 
 
 async def test_info_dialog(main_window, main_window_probe):
@@ -550,45 +558,43 @@ async def test_save_file_dialog(
     await main_window_probe.redraw("Save File dialog displayed")
     await main_window_probe.close_save_file_dialog(dialog_result._impl, result)
 
-    if result:
-        # The directory where the file dialog is opened can't be 100% predicted
-        # so we need to modify the check to only inspect the filename.
-        on_result_handler.call_count == 1
-        assert on_result_handler.mock_calls[0].args[0] == main_window
-        assert on_result_handler.mock_calls[0].args[1].name == Path(filename).name
-        assert (await dialog_result).name == Path(filename).name
-    else:
-        on_result_handler.assert_called_once_with(main_window, None)
-        assert await dialog_result is None
+    # The directory where the file dialog is opened can't be 100% predicted
+    # so we need to modify the check to only inspect the filename.
+    await assert_dialog_result(
+        main_window,
+        dialog_result,
+        on_result_handler,
+        None if result is None else (lambda actual: actual.name == result.name),
+    )
 
 
 @pytest.mark.parametrize(
     "initial_directory, file_types, multiple_select, result",
     [
         # Successful single select
-        (Path(__file__).parent, None, False, Path("/path/to/file1.txt")),
+        (TESTS_DIR, None, False, Path("/path/to/file1.txt")),
         # Cancelled single select
-        (Path(__file__).parent, None, False, None),
+        (TESTS_DIR, None, False, None),
         # Successful single select with no initial directory
         (None, None, False, Path("/path/to/file1.txt")),
         # Successful single select with file types
-        (Path(__file__).parent, [".txt", ".doc"], False, Path("/path/to/file1.txt")),
+        (TESTS_DIR, [".txt", ".doc"], False, Path("/path/to/file1.txt")),
         # Successful multiple selection
         (
-            Path(__file__).parent,
+            TESTS_DIR,
             None,
             True,
             [Path("/path/to/file1.txt"), Path("/path/to/file2.txt")],
         ),
         # Successful multiple selection of no items
-        (Path(__file__).parent, None, True, []),
+        (TESTS_DIR, None, True, []),
         # Cancelled multiple selection
-        (Path(__file__).parent, None, True, None),
+        (TESTS_DIR, None, True, None),
         # Successful multiple selection with no initial directory
         (None, None, True, [Path("/path/to/file1.txt"), Path("/path/to/file2.txt")]),
         # Successful multiple selection with file types
         (
-            Path(__file__).parent,
+            TESTS_DIR,
             [".txt", ".doc"],
             True,
             [Path("/path/to/file1.txt"), Path("/path/to/file2.txt")],
@@ -614,34 +620,26 @@ async def test_open_file_dialog(
     )
     await main_window_probe.redraw("Open File dialog displayed")
     await main_window_probe.close_open_file_dialog(
-        dialog_result._impl,
-        result,
-        multiple_select=multiple_select,
+        dialog_result._impl, result, multiple_select
     )
-
-    if result:
-        on_result_handler.assert_called_once_with(main_window, result)
-        assert await dialog_result == result
-    else:
-        on_result_handler.assert_called_once_with(main_window, None)
-        assert await dialog_result is None
+    await assert_dialog_result(main_window, dialog_result, on_result_handler, result)
 
 
 @pytest.mark.parametrize(
     "initial_directory, multiple_select, result",
     [
         # Successful single select
-        (Path(__file__).parent, False, Path("/path/to/dir1")),
+        (TESTS_DIR, False, TESTS_DIR / "widgets"),
         # Cancelled single select
-        (Path(__file__).parent, False, None),
+        (TESTS_DIR, False, None),
         # Successful single select with no initial directory
-        (None, False, Path("/path/to/dir1")),
+        (None, False, TESTS_DIR / "widgets"),
         # Successful multiple selection
-        (Path(__file__).parent, True, [Path("/path/to/dir1"), Path("/path/to/dir2")]),
+        (TESTS_DIR, True, [TESTS_DIR, TESTS_DIR / "widgets"]),
         # Successful multiple selection with no items
-        (Path(__file__).parent, True, []),
+        (TESTS_DIR, True, []),
         # Cancelled multiple selection
-        (Path(__file__).parent, True, None),
+        (TESTS_DIR, True, None),
     ],
 )
 async def test_select_folder_dialog(
@@ -652,6 +650,9 @@ async def test_select_folder_dialog(
     result,
 ):
     """A folder selection dialog can be displayed and acknowledged."""
+    if multiple_select and not main_window_probe.supports_multiple_select_folder:
+        pytest.xfail("This backend doesn't support selecting multiple folders")
+
     on_result_handler = Mock()
     dialog_result = main_window.select_folder_dialog(
         "Select folder",
@@ -661,14 +662,6 @@ async def test_select_folder_dialog(
     )
     await main_window_probe.redraw("Select Folder dialog displayed")
     await main_window_probe.close_select_folder_dialog(
-        dialog_result._impl,
-        result,
-        multiple_select=multiple_select,
+        dialog_result._impl, result, multiple_select
     )
-
-    if result:
-        on_result_handler.assert_called_once_with(main_window, result)
-        assert await dialog_result == result
-    else:
-        on_result_handler.assert_called_once_with(main_window, None)
-        assert await dialog_result is None
+    await assert_dialog_result(main_window, dialog_result, on_result_handler, result)

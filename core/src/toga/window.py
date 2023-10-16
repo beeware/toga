@@ -650,7 +650,7 @@ class Window:
             (which will often be "last used location")
         :param multiple_select: If True, the user will be able to select multiple
             directories; if False, the selection will be restricted to a single
-            directory.
+            directory. This option is not supported on WinForms.
         :param on_result: A callback that will be invoked when the user
             selects an option on the dialog.
         :param multiselect: **DEPRECATED** Use ``multiple_select``.

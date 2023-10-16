@@ -12,6 +12,7 @@ class WindowProbe(BaseProbe):
     # either don't exist, or we can't guarantee they behave the way Toga would like.
     supports_closable = True
     supports_minimizable = False
+    supports_multiple_select_folder = True
     supports_move_while_hidden = False
     supports_unminimize = False
 
