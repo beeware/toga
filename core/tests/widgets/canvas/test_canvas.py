@@ -159,6 +159,11 @@ def test_as_image(widget):
     assert image is not None
     assert_action_performed(widget, "get image data")
 
+    from PIL import Image as PIL_Image
+    image = widget.as_image(format=PIL_Image.Image)
+    assert type(image) == PIL_Image.Image
+    assert_action_performed(widget, "get image data as Pillow Image Object")
+
 
 def test_deprecated_drawing_operations(widget):
     """Deprecated simple drawing operations raise a warning"""

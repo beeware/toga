@@ -171,3 +171,21 @@ def test_rehint_empty_image(params):
     assert width == 0
     assert height == 0
     assert aspect_ratio is None
+
+def test_pil_support():
+    from PIL import Image as PIL_Image
+    pil_img = PIL_Image.open("resources/toga.png")
+    toga_img = PIL_Image.open("resources/toga.png")
+
+    imageview = toga.ImageView(pil_img)
+    assert type(imageview.image) == toga.Image, "Internal conversion from PIL_Image.Image to toga.Image is faulty"
+    assert (imageview.image.width, imageview.image.height) == (toga_img.width,toga_img.height) == pil_img.size, "PIL support for imageview is faulty"
+
+    pil_img2 = imageview.as_image(PIL_Image.Image)
+    assert pil_img2.size == pil_img2.size, "ImageView.as_image(PIL_Image.Image) is faulty"
+
+def test_as_image_format_is_none():
+    img = toga.Image("resources/toga.png")
+    imageview = toga.ImageView(image=img)
+    img2 = imageview.as_image()
+    assert (img2.width, img2.height) == (img.width, img.height), "ImageView.as_image should return toga.Image when nothing is provided as parameter, but failed"

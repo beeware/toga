@@ -123,3 +123,23 @@ def test_image_save():
 
     image.save(save_path)
     assert_action_performed_with(image, "save", path=save_path)
+
+def test_pil_support():
+    from PIL import Image as PIL_Image
+
+    pil_img = PIL_Image.open("resources/toga.png")
+    toga_img = toga.Image("resources/toga.png")
+    toga_img_from_pil_img = toga.Image(pil_image = pil_img)
+
+    assert toga_img.width == toga_img_from_pil_img.width, "PIL support is faulty"
+    assert toga_img.height == toga_img_from_pil_img.height, "PIL support is faulty"
+
+    pil_img2 = toga_img_from_pil_img.as_format(PIL_Image.Image)
+
+    assert type(pil_img2) == type(pil_img), "Image.as_format(PIL_Image.Image) is faulty"
+    assert pil_img2.size == pil_img.size, "Image.as_format(PIL_Image.Image) is faulty"
+
+def test_as_format_none():
+    img = toga.Image("resources/toga.png")
+    img2 = img.as_format()
+    assert img == img2, "Image.as_format should return self when nothing is provided as arg, but failed"
