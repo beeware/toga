@@ -17,7 +17,9 @@ class Scalable:
     SCALE_DEFAULT_ROUNDING = ROUND_HALF_EVEN
 
     def init_scale(self, native):
-        self.dpi_scale = native.CreateGraphics().DpiX / 96
+        graphics = native.CreateGraphics()
+        self.dpi_scale = graphics.DpiX / 96
+        graphics.Dispose()
 
     # Convert CSS pixels to native pixels
     def scale_in(self, value, rounding=SCALE_DEFAULT_ROUNDING):

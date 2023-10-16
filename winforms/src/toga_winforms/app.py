@@ -34,6 +34,40 @@ class MainWindow(Window):
 class App:
     _MAIN_WINDOW_CLASS = MainWindow
 
+    # ------------------- Set the DPI Awareness mode for the process -------------------
+    # This needs to be done at the earliest and doing this in __init__() or
+    # in create() doesn't work
+    #
+    # Check the version of windows and make sure we are setting the DPI mode
+    # with the most up to date API
+    # Windows Versioning Check Sources : https://www.lifewire.com/windows-version-numbers-2625171
+    # and https://docs.microsoft.com/en-us/windows/release-information/
+    win_version = Environment.OSVersion.Version
+    if win_version.Major >= 6:  # Checks for Windows Vista or later
+        # Represents Windows 8.1 up to Windows 10 before Build 1703 which should use
+        # SetProcessDpiAwareness(True)
+        if (win_version.Major == 6 and win_version.Minor == 3) or (
+            win_version.Major == 10 and win_version.Build < 15063
+        ):
+            windll.shcore.SetProcessDpiAwareness(True)
+            print(
+                "WARNING: Your Windows version doesn't support DPI-independent rendering.  "
+                "We recommend you upgrade to at least Windows 10 Build 1703."
+            )
+        # Represents Windows 10 Build 1703 and beyond which should use
+        # SetProcessDpiAwarenessContext(-4) for DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2
+        # Valid values: https://learn.microsoft.com/en-us/windows/win32/hidpi/dpi-awareness-context
+        elif win_version.Major == 10 and win_version.Build >= 15063:
+            windll.user32.SetProcessDpiAwarenessContext.restype = c_bool
+            windll.user32.SetProcessDpiAwarenessContext.argtypes = [c_void_p]
+            # SetProcessDpiAwarenessContext returns False on Failure
+            if not windll.user32.SetProcessDpiAwarenessContext(-4):
+                print("WARNING: Failed to set the DPI Awareness mode for the app.")
+        # Any other version of windows should use SetProcessDPIAware()
+        else:
+            windll.user32.SetProcessDPIAware()
+    # ----------------------------------------------------------------------------------
+
     def __init__(self, interface):
         self.interface = interface
         self.interface._impl = self
@@ -60,34 +94,7 @@ class App:
         self.app_context = WinForms.ApplicationContext()
         self.app_dispatcher = Dispatcher.CurrentDispatcher
 
-        # Check the version of windows and make sure we are setting the DPI mode
-        # with the most up to date API
-        # Windows Versioning Check Sources : https://www.lifewire.com/windows-version-numbers-2625171
-        # and https://docs.microsoft.com/en-us/windows/release-information/
-        win_version = Environment.OSVersion.Version
-        if win_version.Major >= 6:  # Checks for Windows Vista or later
-            # Represents Windows 8.1 up to Windows 10 before Build 1703 which should use
-            # SetProcessDpiAwareness(True)
-            if (win_version.Major == 6 and win_version.Minor == 3) or (
-                win_version.Major == 10 and win_version.Build < 15063
-            ):
-                windll.shcore.SetProcessDpiAwareness(True)
-                print(
-                    "WARNING: Your Windows version doesn't support DPI-independent rendering.  "
-                    "We recommend you upgrade to at least Windows 10 Build 1703."
-                )
-            # Represents Windows 10 Build 1703 and beyond which should use
-            # SetProcessDpiAwarenessContext(-2)
-            elif win_version.Major == 10 and win_version.Build >= 15063:
-                windll.user32.SetProcessDpiAwarenessContext.restype = c_bool
-                windll.user32.SetProcessDpiAwarenessContext.argtypes = [c_void_p]
-                # SetProcessDpiAwarenessContext returns False on Failure
-                if not windll.user32.SetProcessDpiAwarenessContext(-2):
-                    print("WARNING: Failed to set the DPI Awareness mode for the app.")
-            # Any other version of windows should use SetProcessDPIAware()
-            else:
-                windll.user32.SetProcessDPIAware()
-
+        # These are required for properly setting up DPI mode
         self.native.EnableVisualStyles()
         self.native.SetCompatibleTextRenderingDefault(False)
 
