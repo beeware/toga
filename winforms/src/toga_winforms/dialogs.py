@@ -10,89 +10,84 @@ from System.Drawing import (
     FontStyle,
     SystemFonts,
 )
+from System.Windows.Forms import DialogResult, MessageBoxButtons, MessageBoxIcon
 
 
 class BaseDialog(ABC):
-    def __init__(self, interface):
+    def __init__(self, interface, on_result):
         self.interface = interface
-        self.interface.impl = self
+        self.interface._impl = self
+        self.on_result = on_result
+
+    def set_result(self, result):
+        self.on_result(None, result)
+        self.interface.future.set_result(result)
 
 
 class MessageDialog(BaseDialog):
     def __init__(
-        self,
-        interface,
-        title,
-        message,
-        buttons,
-        icon,
-        success_result=None,
-        on_result=None,
+        self, interface, title, message, buttons, icon, on_result, success_result=None
     ):
-        super().__init__(interface=interface)
-        self.on_result = on_result
+        super().__init__(interface, on_result)
+        asyncio.get_event_loop().start_inner_loop(  # See libs/proactor.py
+            self.show, title, message, buttons, icon, success_result
+        )
 
+    def show(self, title, message, buttons, icon, success_result):
         return_value = WinForms.MessageBox.Show(message, title, buttons, icon)
-
         if success_result:
-            result = return_value == success_result
+            self.set_result(return_value == success_result)
         else:
-            result = None
-
-        # def completion_handler(self, return_value: bool) -> None:
-        if self.on_result:
-            self.on_result(self, result)
-
-        self.interface.future.set_result(result)
+            self.set_result(None)
 
 
 class InfoDialog(MessageDialog):
-    def __init__(self, interface, title, message, on_result=None):
+    def __init__(self, interface, title, message, on_result):
         super().__init__(
-            interface=interface,
-            title=title,
-            message=message,
-            buttons=WinForms.MessageBoxButtons.OK,
-            icon=WinForms.MessageBoxIcon.Information,
-            on_result=on_result,
+            interface,
+            title,
+            message,
+            MessageBoxButtons.OK,
+            MessageBoxIcon.Information,
+            on_result,
         )
 
 
 class QuestionDialog(MessageDialog):
-    def __init__(self, interface, title, message, on_result=None):
+    def __init__(self, interface, title, message, on_result):
         super().__init__(
-            interface=interface,
-            title=title,
-            message=message,
-            buttons=WinForms.MessageBoxButtons.YesNo,
-            icon=WinForms.MessageBoxIcon.Information,
-            success_result=WinForms.DialogResult.Yes,
-            on_result=on_result,
+            interface,
+            title,
+            message,
+            MessageBoxButtons.YesNo,
+            MessageBoxIcon.Information,
+            on_result,
+            success_result=DialogResult.Yes,
         )
 
 
 class ConfirmDialog(MessageDialog):
-    def __init__(self, interface, title, message, on_result=None):
+    def __init__(self, interface, title, message, on_result):
         super().__init__(
-            interface=interface,
-            title=title,
-            message=message,
-            buttons=WinForms.MessageBoxButtons.OKCancel,
-            icon=WinForms.MessageBoxIcon.Warning,
+            interface,
+            title,
+            message,
+            MessageBoxButtons.OKCancel,
+            MessageBoxIcon.Warning,
+            on_result,
             success_result=WinForms.DialogResult.OK,
-            on_result=on_result,
         )
 
 
 class ErrorDialog(MessageDialog):
     def __init__(self, interface, title, message, on_result=None):
         super().__init__(
-            interface=interface,
-            title=title,
-            message=message,
-            buttons=WinForms.MessageBoxButtons.OK,
-            icon=WinForms.MessageBoxIcon.Error,
-            on_result=on_result,
+            interface,
+            title,
+            message,
+            WinForms.MessageBoxButtons.OK,
+            WinForms.MessageBoxIcon.Error,
+            on_result,
         )
 
 

@@ -1,6 +1,7 @@
 import io
 import re
 import traceback
+from asyncio import wait_for
 from importlib import import_module
 from pathlib import Path
 from unittest.mock import Mock
@@ -447,6 +448,11 @@ else:
 ########################################################################################
 
 
+async def assert_dialog_result(window, dialog, on_result, expected):
+    assert (await wait_for(dialog, timeout=1)) == expected
+    on_result.assert_called_once_with(window, expected)
+
+
 async def test_info_dialog(main_window, main_window_probe):
     """An info dialog can be displayed and acknowledged."""
     on_result_handler = Mock()
@@ -455,9 +461,7 @@ async def test_info_dialog(main_window, main_window_probe):
     )
     await main_window_probe.redraw("Info dialog displayed")
     await main_window_probe.close_info_dialog(dialog_result._impl)
-
-    on_result_handler.assert_called_once_with(main_window, None)
-    assert await dialog_result is None
+    await assert_dialog_result(main_window, dialog_result, on_result_handler, None)
 
 
 @pytest.mark.parametrize("result", [False, True])
@@ -471,9 +475,7 @@ async def test_question_dialog(main_window, main_window_probe, result):
     )
     await main_window_probe.redraw("Question dialog displayed")
     await main_window_probe.close_question_dialog(dialog_result._impl, result)
-
-    on_result_handler.assert_called_once_with(main_window, result)
-    assert await dialog_result is result
+    await assert_dialog_result(main_window, dialog_result, on_result_handler, result)
 
 
 @pytest.mark.parametrize("result", [False, True])
@@ -487,9 +489,7 @@ async def test_confirm_dialog(main_window, main_window_probe, result):
     )
     await main_window_probe.redraw("Confirmation dialog displayed")
     await main_window_probe.close_confirm_dialog(dialog_result._impl, result)
-
-    on_result_handler.assert_called_once_with(main_window, result)
-    assert await dialog_result is result
+    await assert_dialog_result(main_window, dialog_result, on_result_handler, result)
 
 
 async def test_error_dialog(main_window, main_window_probe):
@@ -500,9 +500,7 @@ async def test_error_dialog(main_window, main_window_probe):
     )
     await main_window_probe.redraw("Error dialog displayed")
     await main_window_probe.close_error_dialog(dialog_result._impl)
-
-    on_result_handler.assert_called_once_with(main_window, None)
-    assert await dialog_result is None
+    await assert_dialog_result(main_window, dialog_result, on_result_handler, None)
 
 
 @pytest.mark.parametrize("result", [None, False, True])

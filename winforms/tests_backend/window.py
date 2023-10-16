@@ -1,3 +1,5 @@
+import asyncio
+
 from System.Windows.Forms import Form, FormBorderStyle, FormWindowState
 
 from .probe import BaseProbe
@@ -58,3 +60,19 @@ class WindowProbe(BaseProbe):
 
     def unminimize(self):
         self.native.WindowState = FormWindowState.Normal
+
+    async def _close_dialog(self, key):
+        await asyncio.sleep(0)  # Give the inner event loop a chance to start
+        await self.type_character(key)
+
+    async def close_info_dialog(self, dialog):
+        await self._close_dialog("\n")
+
+    async def close_question_dialog(self, dialog, result):
+        await self._close_dialog("y" if result else "n")
+
+    async def close_confirm_dialog(self, dialog, result):
+        await self._close_dialog("\n" if result else "<esc>")
+
+    async def close_error_dialog(self, dialog):
+        await self._close_dialog("\n")
