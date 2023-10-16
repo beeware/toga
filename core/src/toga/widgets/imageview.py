@@ -145,7 +145,9 @@ class ImageView(Widget):
         pil_image = imageview.as_image(Image.Image)
         ```
         '''
-        if format == None:
+        if format==None:
+            return self.image
+        elif isinstance(format, Image):
             return self.image
         elif PIL_Image!=None and format==PIL_Image.Image:
             return self.image.as_format(PIL_Image.Image)

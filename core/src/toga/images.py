@@ -104,15 +104,18 @@ class Image:
     def as_format(self, format: Any|None=None):
         """
         get the image as specified format if supported
-        :param format: None or A supported type of Image
-        Supported types are `PIL.Image.Image`,
-        :returns: toga.Image if format is None, or the specified format if the format is supported
+        :param format: A supported type of Image
+        Supported types are `PIL.Image.Image`, `toga.Image`
+        :returns: Object of the specified type
         ```
-        from PIL import Image
-        pil_image = toga_image.as_format(Image.Image)
+        from PIL import Image as PIL_Image
+        pil_image = toga_image.as_format(PIL_Image.Image)
+        toga_img = toga_image.as_format(toga.Image)
         ```
         """
-        if format == None:
+        if format==None:
+            return self
+        elif isinstance(format, type(self)):
             return self
         elif PIL_Image != None and format == PIL_Image.Image:
             # saving into temporary file

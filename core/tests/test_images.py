@@ -125,20 +125,19 @@ def test_image_save():
 
 def test_pil_support():
     pil_img = PIL_Image.open("resources/toga.png")
-    toga_img = toga.Image("resources/toga.png")
     toga_img_from_pil_img = toga.Image(pil_img)
 
-    assert toga_img.width == toga_img_from_pil_img.width, "PIL support is faulty"
-    assert toga_img.height == toga_img_from_pil_img.height, "PIL support is faulty"
+    assert toga_img_from_pil_img.width == 60, "PIL support is faulty"
+    assert toga_img_from_pil_img.height == 40, "PIL support is faulty"
 
 def test_as_format():
     img = toga.Image("resources/toga.png")
     img2 = img.as_format()
-    assert img == img2, "Image.as_format should return self when nothing is provided as arg, but failed"
+    assert img == img2, "Image.as_format should return toga.Image when nothing is provided as arg, but failed"
 
     pil_img = img.as_format(PIL_Image.Image)
     assert isinstance(pil_img, PIL_Image.Image)
-    assert pil_img.size == (img.width, img.height)
+    assert pil_img.size == (60, 40)
 
 test_image_path = "resources/toga.png"
 @pytest.mark.parametrize("unified_image_source",[
