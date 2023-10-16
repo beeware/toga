@@ -13,6 +13,8 @@ from toga_dummy.utils import (
     assert_action_performed_with,
 )
 
+from PIL import Image as PIL_Image
+
 
 @pytest.fixture
 def widget(app):
@@ -173,19 +175,17 @@ def test_rehint_empty_image(params):
     assert aspect_ratio is None
 
 def test_pil_support():
-    from PIL import Image as PIL_Image
     pil_img = PIL_Image.open("resources/toga.png")
-    toga_img = PIL_Image.open("resources/toga.png")
 
     imageview = toga.ImageView(pil_img)
     assert type(imageview.image) == toga.Image, "Internal conversion from PIL_Image.Image to toga.Image is faulty"
-    assert (imageview.image.width, imageview.image.height) == (toga_img.width,toga_img.height) == pil_img.size, "PIL support for imageview is faulty"
+    assert (imageview.image.width, imageview.image.height) == (60, 40), "PIL support for imageview is faulty"
 
-    pil_img2 = imageview.as_image(PIL_Image.Image)
-    assert pil_img2.size == pil_img2.size, "ImageView.as_image(PIL_Image.Image) is faulty"
-
-def test_as_image_format_is_none():
+def test_as_image_format():
     img = toga.Image("resources/toga.png")
     imageview = toga.ImageView(image=img)
     img2 = imageview.as_image()
-    assert (img2.width, img2.height) == (img.width, img.height), "ImageView.as_image should return toga.Image when nothing is provided as parameter, but failed"
+    assert (img2.width, img2.height) == (60, 40), "ImageView.as_image should return toga.Image when nothing is provided as parameter, but failed"
+
+    pil_img = imageview.as_image(PIL_Image.Image)
+    assert pil_img.size == (60, 40), "Faulty conversion to pil image"
