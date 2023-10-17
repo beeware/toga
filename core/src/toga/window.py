@@ -483,7 +483,7 @@ class Window:
 
         :param title: The title of the dialog window
         :param suggested_filename: A default filename
-        :param file_types: The allowed filename extensions, including leading dots. If
+        :param file_types: The allowed filename extensions, without leading dots. If
             not provided, any extension will be allowed.
         :param on_result: A callback that will be invoked when the user selects an
             option on the dialog.
@@ -563,7 +563,7 @@ class Window:
         :param initial_directory: The initial folder in which to open the dialog.
             If ``None``, use the default location provided by the operating system
             (which will often be the last used location)
-        :param file_types: The allowed filename extensions, including leading dots. If
+        :param file_types: The allowed filename extensions, without leading dots. If
             not provided, all files will be shown.
         :param multiple_select: If True, the user will be able to select multiple
             files; if False, the selection will be restricted to a single file.
