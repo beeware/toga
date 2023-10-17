@@ -155,9 +155,6 @@ class Window:
         self._app = app
         self._impl.set_app(app._impl)
 
-        if self.content:
-            self.content.app = app
-
     @property
     def _default_title(self) -> str:
         return "Toga"
