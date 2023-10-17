@@ -204,12 +204,12 @@ class FileDialog(BaseDialog):
         super().__init__(interface, on_result)
         self.native = native
 
-        native.Title = title
+        self._set_title(title)
         if filename is not None:
             native.FileName = filename
 
         if initial_directory is not None:
-            self._set_initial_directory(native, str(initial_directory))
+            self._set_initial_directory(str(initial_directory))
 
         if file_types is not None:
             filters = [f"{ext} files (*.{ext})|*.{ext}" for ext in file_types] + [
@@ -231,9 +231,11 @@ class FileDialog(BaseDialog):
 
         self.start_inner_loop(show)
 
-    @classmethod
-    def _set_initial_directory(cls, native, initial_directory):
-        native.InitialDirectory = initial_directory
+    def _set_title(self, title):
+        self.native.Title = title
+
+    def _set_initial_directory(self, initial_directory):
+        self.native.InitialDirectory = initial_directory
 
 
 class SaveFileDialog(FileDialog):
@@ -300,6 +302,8 @@ class SelectFolderDialog(FileDialog):
         filename = Path(self.native.SelectedPath)
         return [filename] if self.multiple_select else filename
 
-    @classmethod
-    def _set_initial_directory(cls, native, initial_directory):
-        native.SelectedPath = initial_directory
+    def _set_title(self, title):
+        self.native.Description = title
+
+    def _set_initial_directory(self, initial_directory):
+        self.native.SelectedPath = initial_directory

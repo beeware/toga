@@ -128,7 +128,7 @@ class ExampleDialogsApp(toga.App):
                     f"Folders selected: {','.join([str(p) for p in path_names])}"
                 )
             else:
-                self.label.text = "No fodlers selected!"
+                self.label.text = "No folders selected!"
         except ValueError:
             self.label.text = "Folders select dialog was canceled"
 
