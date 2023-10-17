@@ -11,10 +11,8 @@ class WindowProbe(BaseProbe):
     # (https://stackoverflow.com/a/7301828), which Python.NET doesn't support
     # (https://github.com/pythonnet/pythonnet/issues/2192).
     supports_closable = False
-    supports_file_dialogs = True
     supports_minimizable = True
     supports_move_while_hidden = True
-    supports_multiple_select_empty = False
     supports_multiple_select_folder = False
     supports_unminimize = True
 

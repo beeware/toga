@@ -6,8 +6,6 @@ from .probe import BaseProbe
 
 
 class WindowProbe(BaseProbe):
-    supports_file_dialogs = False
-
     def __init__(self, app, window):
         super().__init__()
         self.app = app
@@ -62,3 +60,12 @@ class WindowProbe(BaseProbe):
 
     async def close_stack_trace_dialog(self, dialog, result):
         pytest.skip("Stack Trace dialog not implemented on iOS")
+
+    async def close_save_file_dialog(self, dialog, result):
+        pytest.skip("Save File dialog not implemented on iOS")
+
+    async def close_open_file_dialog(self, dialog, result, multiple_select):
+        pytest.skip("Open File dialog not implemented on iOS")
+
+    async def close_select_folder_dialog(self, dialog, result, multiple_select):
+        pytest.skip("Select Folder dialog not implemented on iOS")
