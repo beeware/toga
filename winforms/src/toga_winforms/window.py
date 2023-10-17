@@ -87,11 +87,7 @@ class Window(Container, Scalable):
         self.native.Size = Size(*map(self.scale_in, size))
 
     def set_app(self, app):
-        if app is None:
-            return
         icon_impl = app.interface.icon._impl
-        if icon_impl is None:
-            return
         self.native.Icon = icon_impl.native
 
     def get_title(self):

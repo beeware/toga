@@ -172,7 +172,7 @@ class StackTraceDialog(BaseDialog):
         # event will be triggered.
         try:
             self.interface.future.result()
-        except asyncio.InvalidStateError:
+        except asyncio.InvalidStateError:  # pragma: no cover
             event.Cancel = True
 
     def set_result(self, result):
