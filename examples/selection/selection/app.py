@@ -1,6 +1,6 @@
 import toga
-from toga.constants import COLUMN, ITALIC, ROW
-from toga.fonts import FANTASY
+from toga.constants import COLUMN, ROW
+from toga.fonts import MONOSPACE
 from toga.style import Pack
 
 
@@ -155,13 +155,13 @@ class SelectionApp(toga.App):
     def change_font(self, widget):
         self.big_font = not self.big_font
         if self.big_font:
+            self.styled_selection.style.font_family = MONOSPACE
             self.styled_selection.style.font_size = 30
-            self.styled_selection.style.font_style = ITALIC
-            self.styled_selection.style.font_family = FANTASY
+            # self.styled_selection.style.font_style = ITALIC
         else:
-            del self.styled_selection.style.font_size
-            del self.styled_selection.style.font_style
             self.styled_selection.style.font_family = "serif"
+            del self.styled_selection.style.font_size
+            # del self.styled_selection.style.font_style
 
 
 def main():
