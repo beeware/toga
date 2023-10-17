@@ -10,105 +10,93 @@ from System.Drawing import (
     FontStyle,
     SystemFonts,
 )
+from System.Windows.Forms import DialogResult, MessageBoxButtons, MessageBoxIcon
 
 
 class BaseDialog(ABC):
-    def __init__(self, interface):
+    def __init__(self, interface, on_result):
         self.interface = interface
-        self.interface.impl = self
+        self.interface._impl = self
+        self.on_result = on_result
+
+    # See libs/proactor.py
+    def start_inner_loop(self, callback, *args):
+        asyncio.get_event_loop().start_inner_loop(callback, *args)
+
+    def set_result(self, result):
+        self.on_result(None, result)
+        self.interface.future.set_result(result)
 
 
 class MessageDialog(BaseDialog):
     def __init__(
-        self,
-        interface,
-        title,
-        message,
-        buttons,
-        icon,
-        success_result=None,
-        on_result=None,
+        self, interface, title, message, buttons, icon, on_result, success_result=None
     ):
-        super().__init__(interface=interface)
-        self.on_result = on_result
+        super().__init__(interface, on_result)
 
-        return_value = WinForms.MessageBox.Show(message, title, buttons, icon)
+        def show():
+            return_value = WinForms.MessageBox.Show(message, title, buttons, icon)
+            if success_result:
+                self.set_result(return_value == success_result)
+            else:
+                self.set_result(None)
 
-        if success_result:
-            result = return_value == success_result
-        else:
-            result = None
-
-        # def completion_handler(self, return_value: bool) -> None:
-        if self.on_result:
-            self.on_result(self, result)
-
-        self.interface.future.set_result(result)
+        self.start_inner_loop(show)
 
 
 class InfoDialog(MessageDialog):
-    def __init__(self, interface, title, message, on_result=None):
+    def __init__(self, interface, title, message, on_result):
         super().__init__(
-            interface=interface,
-            title=title,
-            message=message,
-            buttons=WinForms.MessageBoxButtons.OK,
-            icon=WinForms.MessageBoxIcon.Information,
-            on_result=on_result,
+            interface,
+            title,
+            message,
+            MessageBoxButtons.OK,
+            MessageBoxIcon.Information,
+            on_result,
         )
 
 
 class QuestionDialog(MessageDialog):
-    def __init__(self, interface, title, message, on_result=None):
+    def __init__(self, interface, title, message, on_result):
         super().__init__(
-            interface=interface,
-            title=title,
-            message=message,
-            buttons=WinForms.MessageBoxButtons.YesNo,
-            icon=WinForms.MessageBoxIcon.Information,
-            success_result=WinForms.DialogResult.Yes,
-            on_result=on_result,
+            interface,
+            title,
+            message,
+            MessageBoxButtons.YesNo,
+            MessageBoxIcon.Information,
+            on_result,
+            success_result=DialogResult.Yes,
         )
 
 
 class ConfirmDialog(MessageDialog):
-    def __init__(self, interface, title, message, on_result=None):
+    def __init__(self, interface, title, message, on_result):
         super().__init__(
-            interface=interface,
-            title=title,
-            message=message,
-            buttons=WinForms.MessageBoxButtons.OKCancel,
-            icon=WinForms.MessageBoxIcon.Warning,
-            success_result=WinForms.DialogResult.OK,
-            on_result=on_result,
+            interface,
+            title,
+            message,
+            MessageBoxButtons.OKCancel,
+            MessageBoxIcon.Warning,
+            on_result,
+            success_result=DialogResult.OK,
         )
 
 
 class ErrorDialog(MessageDialog):
     def __init__(self, interface, title, message, on_result=None):
         super().__init__(
-            interface=interface,
-            title=title,
-            message=message,
-            buttons=WinForms.MessageBoxButtons.OK,
-            icon=WinForms.MessageBoxIcon.Error,
-            on_result=on_result,
+            interface,
+            title,
+            message,
+            WinForms.MessageBoxButtons.OK,
+            WinForms.MessageBoxIcon.Error,
+            on_result,
         )
 
 
 class StackTraceDialog(BaseDialog):
-    def __init__(
-        self,
-        interface,
-        title,
-        message,
-        content,
-        retry,
-        on_result=None,
-        **kwargs,
-    ):
-        super().__init__(interface=interface)
-        self.on_result = on_result
+    def __init__(self, interface, title, message, content, retry, on_result):
+        super().__init__(interface, on_result)
 
         self.native = WinForms.Form()
         self.native.MinimizeBox = False
@@ -152,7 +140,7 @@ class StackTraceDialog(BaseDialog):
             retry.Left = 290
             retry.Top = 250
             retry.Width = 100
-            retry.Text = "Retry"
+            retry.Text = "&Retry"
             retry.Click += self.winforms_Click_retry
 
             self.native.Controls.Add(retry)
@@ -161,7 +149,7 @@ class StackTraceDialog(BaseDialog):
             quit.Left = 400
             quit.Top = 250
             quit.Width = 100
-            quit.Text = "Quit"
+            quit.Text = "&Quit"
             quit.Click += self.winforms_Click_quit
 
             self.native.Controls.Add(quit)
@@ -170,12 +158,12 @@ class StackTraceDialog(BaseDialog):
             accept.Left = 400
             accept.Top = 250
             accept.Width = 100
-            accept.Text = "Ok"
+            accept.Text = "&OK"
             accept.Click += self.winforms_Click_accept
 
             self.native.Controls.Add(accept)
 
-        self.native.ShowDialog()
+        self.start_inner_loop(self.native.ShowDialog)
 
     def winforms_FormClosing(self, sender, event):
         # If the close button is pressed, there won't be a future yet.
@@ -184,24 +172,21 @@ class StackTraceDialog(BaseDialog):
         # event will be triggered.
         try:
             self.interface.future.result()
-        except asyncio.InvalidStateError:
+        except asyncio.InvalidStateError:  # pragma: no cover
             event.Cancel = True
 
-    def handle_result(self, result):
-        self.on_result(self, result)
-
-        self.interface.future.set_result(result)
-
+    def set_result(self, result):
+        super().set_result(result)
         self.native.Close()
 
     def winforms_Click_quit(self, sender, event):
-        self.handle_result(False)
+        self.set_result(False)
 
     def winforms_Click_retry(self, sender, event):
-        self.handle_result(True)
+        self.set_result(True)
 
     def winforms_Click_accept(self, sender, event):
-        self.handle_result(None)
+        self.set_result(None)
 
 
 class FileDialog(BaseDialog):
@@ -210,22 +195,21 @@ class FileDialog(BaseDialog):
         native,
         interface,
         title,
-        filename,
         initial_directory,
-        file_types,
-        multiselect,
-        on_result=None,
+        on_result,
+        *,
+        filename=None,
+        file_types=None,
     ):
-        super().__init__(interface=interface)
-        self.on_result = on_result
+        super().__init__(interface, on_result)
+        self.native = native
 
-        native.Title = title
-
+        self._set_title(title)
         if filename is not None:
             native.FileName = filename
 
         if initial_directory is not None:
-            self._set_initial_directory(native, str(initial_directory))
+            self._set_initial_directory(str(initial_directory))
 
         if file_types is not None:
             filters = [f"{ext} files (*.{ext})|*.{ext}" for ext in file_types] + [
@@ -238,63 +222,38 @@ class FileDialog(BaseDialog):
 
             native.Filter = "|".join(filters)
 
-        if multiselect:
-            native.Multiselect = True
+        def show():
+            response = native.ShowDialog()
+            if response == DialogResult.OK:
+                self.set_result(self._get_filenames())
+            else:
+                self.set_result(None)
 
-        response = native.ShowDialog()
+        self.start_inner_loop(show)
 
-        if response == WinForms.DialogResult.OK:
-            result = self._get_filenames(native, multiselect)
-        else:
-            result = None
+    def _set_title(self, title):
+        self.native.Title = title
 
-        self.on_result(self, result)
-
-        self.interface.future.set_result(result)
-
-    @classmethod
-    def _get_filenames(cls, native, multiselect):
-        if multiselect:
-            return [Path(filename) for filename in native.FileNames]
-        else:
-            return Path(native.FileName)
-
-    @classmethod
-    def _set_initial_directory(cls, native, initial_directory):
-        """Set the initial directory of the given dialog.
-
-        On Windows, not all file/folder dialogs work the same way,
-        so this method is overridden when a subclass needs to
-        set the initial directory in some other fashion.
-
-        Args:
-            native (WinForms.CommonDialog): the dialog to set the
-                initial directory on.
-            initial_directory (str): the path of the initial directory.
-        """
-        native.InitialDirectory = initial_directory
+    def _set_initial_directory(self, initial_directory):
+        self.native.InitialDirectory = initial_directory
 
 
 class SaveFileDialog(FileDialog):
     def __init__(
-        self,
-        interface,
-        title,
-        filename,
-        initial_directory,
-        file_types=None,
-        on_result=None,
+        self, interface, title, filename, initial_directory, file_types, on_result
     ):
         super().__init__(
-            native=WinForms.SaveFileDialog(),
-            interface=interface,
-            title=title,
+            WinForms.SaveFileDialog(),
+            interface,
+            title,
+            initial_directory,
+            on_result,
             filename=filename,
-            initial_directory=initial_directory,
             file_types=file_types,
-            multiselect=False,
-            on_result=on_result,
         )
+
+    def _get_filenames(self):
+        return Path(self.native.FileName)
 
 
 class OpenFileDialog(FileDialog):
@@ -304,46 +263,47 @@ class OpenFileDialog(FileDialog):
         title,
         initial_directory,
         file_types,
-        multiselect,
-        on_result=None,
+        multiple_select,
+        on_result,
     ):
         super().__init__(
-            native=WinForms.OpenFileDialog(),
-            interface=interface,
-            title=title,
-            filename=None,
-            initial_directory=initial_directory,
+            WinForms.OpenFileDialog(),
+            interface,
+            title,
+            initial_directory,
+            on_result,
             file_types=file_types,
-            multiselect=multiselect,
-            on_result=on_result,
         )
+        if multiple_select:
+            self.native.Multiselect = True
+
+    def _get_filenames(self):
+        if self.native.Multiselect:
+            return [Path(filename) for filename in self.native.FileNames]
+        else:
+            return Path(self.native.FileName)
 
 
 class SelectFolderDialog(FileDialog):
-    def __init__(
-        self,
-        interface,
-        title,
-        initial_directory,
-        multiselect,
-        on_result=None,
-    ):
+    def __init__(self, interface, title, initial_directory, multiple_select, on_result):
         super().__init__(
-            native=WinForms.FolderBrowserDialog(),
-            interface=interface,
-            title=title,
-            filename=None,
-            initial_directory=initial_directory,
-            file_types=None,
-            multiselect=multiselect,
-            on_result=on_result,
+            WinForms.FolderBrowserDialog(),
+            interface,
+            title,
+            initial_directory,
+            on_result,
         )
 
-    @classmethod
-    def _get_filenames(cls, native, multiselect):
-        filename = Path(native.SelectedPath)
-        return [filename] if multiselect else filename
+        # The native dialog doesn't support multiple selection, so the only effect
+        # this has is to change whether we return a list.
+        self.multiple_select = multiple_select
 
-    @classmethod
-    def _set_initial_directory(cls, native, initial_directory):
-        native.SelectedPath = initial_directory
+    def _get_filenames(self):
+        filename = Path(self.native.SelectedPath)
+        return [filename] if self.multiple_select else filename
+
+    def _set_title(self, title):
+        self.native.Description = title
+
+    def _set_initial_directory(self, initial_directory):
+        self.native.SelectedPath = initial_directory

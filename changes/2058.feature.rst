@@ -1,0 +1,1 @@
+Window and MainWindow now have 100% test coverage, and complete API documentation.

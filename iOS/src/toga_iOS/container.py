@@ -39,7 +39,7 @@ class BaseContainer:
 
     @content.setter
     def content(self, widget):
-        if self._content:
+        if self.content:
             self._content.container = None
 
         self._content = widget
@@ -47,8 +47,7 @@ class BaseContainer:
             widget.container = self
 
     def refreshed(self):
-        if self.on_refresh:
-            self.on_refresh(self)
+        self.on_refresh(self)
 
 
 class Container(BaseContainer):

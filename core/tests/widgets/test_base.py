@@ -115,7 +115,6 @@ def test_add_child(widget):
     # Set the app and window for the widget.
     app = toga.App("Test", "com.example.test")
     window = toga.Window()
-    window.app = app
     window.content = widget
     # Clear the event log
     EventLog.reset()
@@ -165,7 +164,6 @@ def test_add_multiple_children(widget):
     # Set the app and window for the widget.
     app = toga.App("Test", "com.example.test")
     window = toga.Window()
-    window.app = app
     window.content = widget
     # Clear the event log
     EventLog.reset()
@@ -338,7 +336,6 @@ def test_insert_child(widget):
     # Set the app and window for the widget.
     app = toga.App("Test", "com.example.test")
     window = toga.Window()
-    window.app = app
     window.content = widget
     # Clear the event log
     EventLog.reset()
@@ -388,7 +385,6 @@ def test_insert_position(widget):
     # Set the app and window for the widget.
     app = toga.App("Test", "com.example.test")
     window = toga.Window()
-    window.app = app
     window.content = widget
     # Clear the event log
     EventLog.reset()
@@ -456,7 +452,6 @@ def test_insert_bad_position(widget):
     # Set the app and window for the widget.
     app = toga.App("Test", "com.example.test")
     window = toga.Window()
-    window.app = app
     window.content = widget
     # Clear the event log
     EventLog.reset()
@@ -615,7 +610,6 @@ def test_remove_child(widget):
 
     app = toga.App("Test", "com.example.test")
     window = toga.Window()
-    window.app = app
     window.content = widget
     # Clear the event log
     EventLog.reset()
@@ -656,7 +650,6 @@ def test_remove_multiple_children(widget):
 
     app = toga.App("Test", "com.example.test")
     window = toga.Window()
-    window.app = app
     window.content = widget
     # Clear the event log
     EventLog.reset()
@@ -707,7 +700,6 @@ def test_clear_all_children(widget):
 
     app = toga.App("Test", "com.example.test")
     window = toga.Window()
-    window.app = app
     window.content = widget
     # Clear the event log
     EventLog.reset()
@@ -751,9 +743,8 @@ def test_clear_all_children(widget):
 
 def test_clear_no_children(widget):
     "No changes are made (no-op) if widget has no children"
-    app = toga.App("Test", "com.example.test")
+    toga.App("Test", "com.example.test")
     window = toga.Window()
-    window.app = app
     window.content = widget
     # Clear the event log
     EventLog.reset()
@@ -776,9 +767,8 @@ def test_clear_no_children(widget):
 def test_clear_leaf():
     "`clear` cannot be called on a leaf node"
     leaf = ExampleLeafWidget()
-    app = toga.App("Test", "com.example.test")
+    toga.App("Test", "com.example.test")
     window = toga.Window()
-    window.app = app
     window.content = leaf
     # Clear the event log
     EventLog.reset()

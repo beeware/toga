@@ -12,7 +12,6 @@ Bugfixes
 Cairo
 cancelled
 clickable
-closable
 codepoint
 coroutine
 CSS
@@ -33,7 +32,6 @@ KDE
 linters
 macOS
 Manjaro
-minimizable
 Monetization
 namespace
 OpenStreetMap

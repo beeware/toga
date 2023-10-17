@@ -7,7 +7,9 @@ version: 2
 build:
   os: ubuntu-22.04
   tools:
-    python: "3"
+    # On Python 3.12, pip fails with AttributeError: module 'pkgutil' has no attribute
+    # 'ImpImporter', probably because readthedocs provides an old version of pip.
+    python: "3.11"
   jobs:
     post_checkout:
       # RTD defaults to a depth of 50 but Toga versioning may require

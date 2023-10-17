@@ -127,43 +127,52 @@ class MainWindow(Window):
         title: str | None = None,
         position: tuple[int, int] = (100, 100),
         size: tuple[int, int] = (640, 480),
-        toolbar: list[Widget] | None = None,
-        resizeable: bool = True,
+        resizable: bool = True,
         minimizable: bool = True,
-        factory: None = None,  # DEPRECATED !
-        on_close: None = None,
-    ) -> None:
-        ######################################################################
-        # 2022-09: Backwards compatibility
-        ######################################################################
-        # factory no longer used
-        if factory:
-            warnings.warn("The factory argument is no longer used.", DeprecationWarning)
-        ######################################################################
-        # End backwards compatibility.
-        ######################################################################
+    ):
+        """Create a new main window.
+
+        :param id: A unique identifier for the window. If not provided, one will be
+            automatically generated.
+        :param title: Title for the window. Defaults to the formal name of the app.
+        :param position: Position of the window, as a tuple of ``(x, y)`` coordinates,
+            in :ref:`CSS pixels <css-units>`.
+        :param size: Size of the window, as a tuple of ``(width, height)``, in :ref:`CSS
+            pixels <css-units>`.
+        :param resizable: Can the window be resized by the user?
+        :param minimizable: Can the window be minimized by the user?
+        """
         super().__init__(
             id=id,
             title=title,
             position=position,
             size=size,
-            toolbar=toolbar,
-            resizeable=resizeable,
-            closeable=True,
+            resizable=resizable,
+            closable=True,
             minimizable=minimizable,
-            on_close=on_close,
         )
 
-    @Window.on_close.setter
-    def on_close(self, handler):
-        """Raise an exception. ``on_exit`` for the app should be used instead of ``on_close`` on
-        main window.
+    @property
+    def _default_title(self) -> str:
+        return App.app.formal_name
 
-        Args:
-            handler (:obj:`callable`): The handler passed.
+    @property
+    def on_close(self) -> None:
+        """The handler to invoke before the window is closed in response to a user
+        action.
+
+        Always returns ``None``. Main windows should use :meth:`toga.App.on_exit`,
+        rather than ``on_close``.
+
+        :raises ValueError: if an attempt is made to set the ``on_close`` handler for a
+            MainWindow.
         """
+        return None
+
+    @on_close.setter
+    def on_close(self, handler: Any):
         if handler:
-            raise AttributeError(
+            raise ValueError(
                 "Cannot set on_close handler for the main window. Use the app on_exit handler instead"
             )
 
@@ -492,13 +501,15 @@ class App:
     @main_window.setter
     def main_window(self, window: MainWindow) -> None:
         self._main_window = window
-        self.windows += window
         self._impl.set_main_window(window)
 
     @property
     def current_window(self):
         """Return the currently active content window."""
-        return self._impl.get_current_window().interface
+        window = self._impl.get_current_window()
+        if window is None:
+            return window
+        return window.interface
 
     @current_window.setter
     def current_window(self, window):

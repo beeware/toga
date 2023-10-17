@@ -1,5 +1,6 @@
+import asyncio
 from pathlib import Path
-from unittest.mock import MagicMock
+from unittest.mock import Mock
 
 import toga
 from toga.widgets.base import WidgetRegistry
@@ -14,7 +15,7 @@ class AppTests(TestCase):
         self.app_id = "org.beeware.test-app"
         self.id = "dom-id"
 
-        self.content = MagicMock()
+        self.content = Mock()
         self.content_id = "content-id"
         self.content.id = self.content_id
 
@@ -104,10 +105,8 @@ class AppTests(TestCase):
         self.assertFalse(self.app.is_full_screen)
 
     def test_add_window(self):
-        test_window = toga.Window()
-
         self.assertEqual(len(self.app.windows), 0)
-        self.app.windows += test_window
+        test_window = toga.Window()
         self.assertEqual(len(self.app.windows), 1)
         self.app.windows += test_window
         self.assertEqual(len(self.app.windows), 1)
@@ -119,24 +118,21 @@ class AppTests(TestCase):
 
     def test_remove_window(self):
         test_window = toga.Window()
-        self.app.windows += test_window
         self.assertEqual(len(self.app.windows), 1)
         self.app.windows -= test_window
         self.assertEqual(len(self.app.windows), 0)
 
-        not_a_window = "not_a_window"
         with self.assertRaises(TypeError):
-            self.app.windows -= not_a_window
+            self.app.windows -= "not_a_window"
 
-        test_window_not_in_app = toga.Window()
         with self.assertRaises(AttributeError):
-            self.app.windows -= test_window_not_in_app
+            self.app.windows -= test_window
 
     def test_app_contains_window(self):
         test_window = toga.Window()
-        self.assertFalse(test_window in self.app.windows)
-        self.app.windows += test_window
         self.assertTrue(test_window in self.app.windows)
+        self.app.windows -= test_window
+        self.assertFalse(test_window in self.app.windows)
 
     def test_window_iteration(self):
         test_windows = [
@@ -156,16 +152,19 @@ class AppTests(TestCase):
         self.assertActionPerformed(self.app, "beep")
 
     def test_add_background_task(self):
+        thing = Mock()
+
         async def test_handler(sender):
-            pass
+            thing()
 
         self.app.add_background_task(test_handler)
-        self.assertActionPerformedWith(
-            self.app,
-            "loop:call_soon_threadsafe",
-            handler=test_handler,
-            args=(None,),
-        )
+
+        async def run_test():
+            # Give the background task time to run.
+            await asyncio.sleep(0.1)
+            thing.assert_called_once()
+
+        self.app._impl.loop.run_until_complete(run_test())
 
     def test_override_startup(self):
         class BadApp(toga.App):
@@ -191,19 +190,19 @@ class DocumentAppTests(TestCase):
         self.app_id = "beeware.org"
         self.id = "id"
 
-        self.content = MagicMock()
+        self.content = Mock()
 
         self.app = toga.DocumentApp(self.name, self.app_id, id=self.id)
 
     def test_app_documents(self):
         self.assertEqual(self.app.documents, [])
 
-        doc = MagicMock()
+        doc = Mock()
         self.app._documents.append(doc)
         self.assertEqual(self.app.documents, [doc])
 
     def test_override_startup(self):
-        mock = MagicMock()
+        mock = Mock()
 
         class DocApp(toga.DocumentApp):
             def startup(self):
