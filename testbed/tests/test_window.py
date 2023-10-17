@@ -548,6 +548,9 @@ async def test_save_file_dialog(
     result,
 ):
     """A file open dialog can be displayed and acknowledged."""
+    if not main_window_probe.supports_file_dialogs:
+        pytest.xfail("This backend doesn't support file dialogs")
+
     on_result_handler = Mock()
     dialog_result = main_window.save_file_dialog(
         "Save file",
@@ -572,32 +575,32 @@ async def test_save_file_dialog(
     "initial_directory, file_types, multiple_select, result",
     [
         # Successful single select
-        (TESTS_DIR, None, False, Path("/path/to/file1.txt")),
+        (TESTS_DIR, None, False, TESTS_DIR / "data.py"),
         # Cancelled single select
         (TESTS_DIR, None, False, None),
         # Successful single select with no initial directory
-        (None, None, False, Path("/path/to/file1.txt")),
+        (None, None, False, TESTS_DIR / "data.py"),
         # Successful single select with file types
-        (TESTS_DIR, [".txt", ".doc"], False, Path("/path/to/file1.txt")),
+        (TESTS_DIR, [".txt", ".doc"], False, TESTS_DIR / "data.py"),
         # Successful multiple selection
         (
             TESTS_DIR,
             None,
             True,
-            [Path("/path/to/file1.txt"), Path("/path/to/file2.txt")],
+            [TESTS_DIR / "conftest.py", TESTS_DIR / "data.py"],
         ),
         # Successful multiple selection of no items
         (TESTS_DIR, None, True, []),
         # Cancelled multiple selection
         (TESTS_DIR, None, True, None),
         # Successful multiple selection with no initial directory
-        (None, None, True, [Path("/path/to/file1.txt"), Path("/path/to/file2.txt")]),
+        (None, None, True, [TESTS_DIR / "conftest.py", TESTS_DIR / "data.py"]),
         # Successful multiple selection with file types
         (
             TESTS_DIR,
             [".txt", ".doc"],
             True,
-            [Path("/path/to/file1.txt"), Path("/path/to/file2.txt")],
+            [TESTS_DIR / "conftest.py", TESTS_DIR / "data.py"],
         ),
     ],
 )
@@ -610,6 +613,11 @@ async def test_open_file_dialog(
     result,
 ):
     """A file open dialog can be displayed and acknowledged."""
+    if not main_window_probe.supports_file_dialogs:
+        pytest.xfail("This backend doesn't support file dialogs")
+    if result == [] and not main_window_probe.supports_multiple_select_empty:
+        pytest.xfail("This backend doesn't support empty multiple selections")
+
     on_result_handler = Mock()
     dialog_result = main_window.open_file_dialog(
         "Open file",
@@ -650,8 +658,10 @@ async def test_select_folder_dialog(
     result,
 ):
     """A folder selection dialog can be displayed and acknowledged."""
-    if multiple_select and not main_window_probe.supports_multiple_select_folder:
-        pytest.xfail("This backend doesn't support selecting multiple folders")
+    if not main_window_probe.supports_file_dialogs:
+        pytest.xfail("This backend doesn't support file dialogs")
+    if result == [] and not main_window_probe.supports_multiple_select_empty:
+        pytest.xfail("This backend doesn't support empty multiple selections")
 
     on_result_handler = Mock()
     dialog_result = main_window.select_folder_dialog(
@@ -664,4 +674,10 @@ async def test_select_folder_dialog(
     await main_window_probe.close_select_folder_dialog(
         dialog_result._impl, result, multiple_select
     )
+
+    if (
+        isinstance(result, list)
+        and not main_window_probe.supports_multiple_select_folder
+    ):
+        result = result[-1:]
     await assert_dialog_result(main_window, dialog_result, on_result_handler, result)

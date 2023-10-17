@@ -19,8 +19,10 @@ from .probe import BaseProbe
 
 class WindowProbe(BaseProbe):
     supports_closable = True
+    supports_file_dialogs = True
     supports_minimizable = True
     supports_move_while_hidden = True
+    supports_multiple_select_empty = True
     supports_multiple_select_folder = True
     supports_unminimize = True
 

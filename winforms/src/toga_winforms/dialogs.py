@@ -200,7 +200,6 @@ class FileDialog(BaseDialog):
         *,
         filename=None,
         file_types=None,
-        multiple_select=False,
     ):
         super().__init__(interface, on_result)
         self.native = native
@@ -223,24 +222,14 @@ class FileDialog(BaseDialog):
 
             native.Filter = "|".join(filters)
 
-        if multiple_select:
-            native.Multiselect = True
-
         def show():
             response = native.ShowDialog()
             if response == DialogResult.OK:
-                self.set_result(self._get_filenames(native, multiple_select))
+                self.set_result(self._get_filenames())
             else:
                 self.set_result(None)
 
         self.start_inner_loop(show)
-
-    @classmethod
-    def _get_filenames(cls, native, multiple_select):
-        if multiple_select:
-            return [Path(filename) for filename in native.FileNames]
-        else:
-            return Path(native.FileName)
 
     @classmethod
     def _set_initial_directory(cls, native, initial_directory):
@@ -261,6 +250,9 @@ class SaveFileDialog(FileDialog):
             file_types=file_types,
         )
 
+    def _get_filenames(self):
+        return Path(self.native.FileName)
+
 
 class OpenFileDialog(FileDialog):
     def __init__(
@@ -279,8 +271,15 @@ class OpenFileDialog(FileDialog):
             initial_directory,
             on_result,
             file_types=file_types,
-            multiple_select=multiple_select,
         )
+        if multiple_select:
+            self.native.Multiselect = True
+
+    def _get_filenames(self):
+        if self.native.Multiselect:
+            return [Path(filename) for filename in self.native.FileNames]
+        else:
+            return Path(self.native.FileName)
 
 
 class SelectFolderDialog(FileDialog):
@@ -291,13 +290,15 @@ class SelectFolderDialog(FileDialog):
             title,
             initial_directory,
             on_result,
-            multiple_select=False,  # Not supported by this dialog
         )
 
-    @classmethod
-    def _get_filenames(cls, native, multiple_select):
-        filename = Path(native.SelectedPath)
-        return [filename] if multiple_select else filename
+        # The native dialog doesn't support multiple selection, so the only effect
+        # this has is to change whether we return a list.
+        self.multiple_select = multiple_select
+
+    def _get_filenames(self):
+        filename = Path(self.native.SelectedPath)
+        return [filename] if self.multiple_select else filename
 
     @classmethod
     def _set_initial_directory(cls, native, initial_directory):

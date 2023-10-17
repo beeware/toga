@@ -1,4 +1,5 @@
 import asyncio
+from unittest.mock import Mock
 
 from System.Windows.Forms import Form, FormBorderStyle, FormWindowState
 
@@ -10,8 +11,10 @@ class WindowProbe(BaseProbe):
     # (https://stackoverflow.com/a/7301828), which Python.NET doesn't support
     # (https://github.com/pythonnet/pythonnet/issues/2192).
     supports_closable = False
+    supports_file_dialogs = True
     supports_minimizable = True
     supports_move_while_hidden = True
+    supports_multiple_select_empty = False
     supports_multiple_select_folder = False
     supports_unminimize = True
 
@@ -90,9 +93,23 @@ class WindowProbe(BaseProbe):
     async def close_save_file_dialog(self, dialog, result):
         await self._close_dialog("\n" if result else "<esc>")
 
+    async def close_open_file_dialog(self, dialog, result, multiple_select):
+        if result is None:
+            await self._close_dialog("<esc>")
+        else:
+            if multiple_select:
+                # native.FileNames is read-only, and a .NET property can't be replaced
+                # with a mock, so we have to mock the entire native dialog.
+                dialog.native.FileName = str(result[0])  # Enable the OK button
+                dialog.native = Mock()
+                dialog.native.FileNames = [str(path) for path in result]
+            else:
+                dialog.native.FileName = str(result)
+            await self._close_dialog("\n")
+
     async def close_select_folder_dialog(self, dialog, result, multiple_select):
         if result is None:
             await self._close_dialog("<esc>")
         else:
-            dialog.native.SelectedPath = str(result)
+            dialog.native.SelectedPath = str(result[-1] if multiple_select else result)
             await self._close_dialog("\n")
