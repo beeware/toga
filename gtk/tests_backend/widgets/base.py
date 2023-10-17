@@ -1,6 +1,8 @@
 import asyncio
 from threading import Event
 
+import pytest
+
 from toga_gtk.libs import Gdk, Gtk
 
 from ..fonts import FontMixin
@@ -167,3 +169,9 @@ class SimpleProbe(BaseProbe, FontMixin):
         # caused by typing a character doesn't fully propegate. A
         # short delay fixes this.
         await asyncio.sleep(0.04)
+
+    async def undo(self):
+        pytest.skip("Undo not supported on this platform")
+
+    async def redo(self):
+        pytest.skip("Redo not supported on this platform")

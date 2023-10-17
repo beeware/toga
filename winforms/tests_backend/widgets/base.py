@@ -1,7 +1,8 @@
+import pytest
 from pytest import approx
 from System import EventArgs, Object
 from System.Drawing import Color, SystemColors
-from System.Windows.Forms import MouseButtons, MouseEventArgs, SendKeys
+from System.Windows.Forms import MouseButtons, MouseEventArgs
 
 from toga.colors import TRANSPARENT
 from toga.style.pack import JUSTIFY, LEFT
@@ -9,16 +10,6 @@ from toga.style.pack import JUSTIFY, LEFT
 from ..fonts import FontMixin
 from ..probe import BaseProbe
 from .properties import toga_color
-
-KEY_CODES = {
-    f"<{name}>": f"{{{name.upper()}}}"
-    for name in ["esc", "up", "down", "left", "right"]
-}
-KEY_CODES.update(
-    {
-        "\n": "{ENTER}",
-    }
-)
 
 
 class SimpleProbe(BaseProbe, FontMixin):
@@ -31,7 +22,6 @@ class SimpleProbe(BaseProbe, FontMixin):
         self.impl = widget._impl
         self.native = self.impl.native
         assert isinstance(self.native, self.native_class)
-        self.scale_factor = self.native.CreateGraphics().DpiX / 96
 
     def assert_container(self, container):
         assert self.widget._impl.container is container._impl.container
@@ -123,18 +113,6 @@ class SimpleProbe(BaseProbe, FontMixin):
             x=round(x * self.scale_factor), y=round(y * self.scale_factor), **kwargs
         )
 
-    async def type_character(self, char, *, ctrl=False):
-        try:
-            key_code = KEY_CODES[char]
-        except KeyError:
-            assert len(char) == 1, char
-            key_code = char
-
-        if ctrl:
-            key_code = "^" + key_code
-
-        SendKeys.SendWait(key_code)
-
     @property
     def is_hidden(self):
         return not self.native.Visible
@@ -142,3 +120,9 @@ class SimpleProbe(BaseProbe, FontMixin):
     @property
     def has_focus(self):
         return self.native.ContainsFocus
+
+    async def undo(self):
+        pytest.skip("Undo not supported on this platform")
+
+    async def redo(self):
+        pytest.skip("Redo not supported on this platform")

@@ -26,6 +26,7 @@ from .test_textinput import (  # noqa: F401
     test_on_change_user,
     test_on_confirm,
     test_text_value,
+    test_undo_redo,
     test_validation,
     verify_focus_handlers,
     verify_vertical_alignment,

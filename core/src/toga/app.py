@@ -130,13 +130,16 @@ class MainWindow(Window):
         resizable: bool = True,
         minimizable: bool = True,
     ):
-        """Create a new application Main Window.
+        """Create a new main window.
 
-        :param id: The ID of the window.
+        :param id: A unique identifier for the window. If not provided, one will be
+            automatically generated.
         :param title: Title for the window. Defaults to the formal name of the app.
-        :param position: Position of the window, as a tuple of ``(x, y)`` coordinates.
-        :param size: Size of the window, as a tuple of ``(width, height)``, in pixels.
-        :param resizeable: Can the window be manually resized by the user?
+        :param position: Position of the window, as a tuple of ``(x, y)`` coordinates,
+            in :ref:`CSS pixels <css-units>`.
+        :param size: Size of the window, as a tuple of ``(width, height)``, in :ref:`CSS
+            pixels <css-units>`.
+        :param resizable: Can the window be resized by the user?
         :param minimizable: Can the window be minimized by the user?
         """
         super().__init__(
@@ -161,8 +164,8 @@ class MainWindow(Window):
         Always returns ``None``. Main windows should use :meth:`toga.App.on_exit`,
         rather than ``on_close``.
 
-        :raises ValueError: if an attempt is made to set the ``on_close`` handler for an
-            App.
+        :raises ValueError: if an attempt is made to set the ``on_close`` handler for a
+            MainWindow.
         """
         return None
 

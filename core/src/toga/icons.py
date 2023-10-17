@@ -36,7 +36,6 @@ class Icon:
     def DEFAULT_ICON(cls) -> Icon:
         return Icon("resources/toga", system=True)
 
-    # System is
     def __init__(
         self,
         path: str | Path,

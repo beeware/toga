@@ -105,10 +105,8 @@ class AppTests(TestCase):
         self.assertFalse(self.app.is_full_screen)
 
     def test_add_window(self):
-        test_window = toga.Window()
-
         self.assertEqual(len(self.app.windows), 0)
-        self.app.windows += test_window
+        test_window = toga.Window()
         self.assertEqual(len(self.app.windows), 1)
         self.app.windows += test_window
         self.assertEqual(len(self.app.windows), 1)
@@ -120,24 +118,21 @@ class AppTests(TestCase):
 
     def test_remove_window(self):
         test_window = toga.Window()
-        self.app.windows += test_window
         self.assertEqual(len(self.app.windows), 1)
         self.app.windows -= test_window
         self.assertEqual(len(self.app.windows), 0)
 
-        not_a_window = "not_a_window"
         with self.assertRaises(TypeError):
-            self.app.windows -= not_a_window
+            self.app.windows -= "not_a_window"
 
-        test_window_not_in_app = toga.Window()
         with self.assertRaises(AttributeError):
-            self.app.windows -= test_window_not_in_app
+            self.app.windows -= test_window
 
     def test_app_contains_window(self):
         test_window = toga.Window()
-        self.assertFalse(test_window in self.app.windows)
-        self.app.windows += test_window
         self.assertTrue(test_window in self.app.windows)
+        self.app.windows -= test_window
+        self.assertFalse(test_window in self.app.windows)
 
     def test_window_iteration(self):
         test_windows = [

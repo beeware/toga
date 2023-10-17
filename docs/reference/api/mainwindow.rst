@@ -17,8 +17,8 @@ The main window of the application.
 Usage
 -----
 
-The Main Window of an application is a normal :class:`toga.Window`, with one exception -
-when the Main Window is closed, the application exits.
+The main window of an application is a normal :class:`toga.Window`, with one exception -
+when the main window is closed, the application exits.
 
 .. code-block:: python
 

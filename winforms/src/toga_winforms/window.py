@@ -13,11 +13,10 @@ class Window(Container, Scalable):
         self.interface = interface
 
         # Winforms close handling is caught on the FormClosing handler. To allow
-        # for async close handling, we need to be able to abort this close
-        # event, and then manually cause the close as part of the async result
-        # handling. However, this then causes an is_closing event, which we need
-        # to ignore. The `_is_closing` flag lets us easily identify if the
-        # window is in the process of closing.
+        # for async close handling, we need to be able to abort this close event,
+        # call the Toga event handler, and let that decide whether to call close().
+        # If it does, there will be another FormClosing event, which we need
+        # to ignore. The `_is_closing` flag lets us do this.
         self._is_closing = False
 
         self.native = WinForms.Form()
@@ -26,6 +25,7 @@ class Window(Container, Scalable):
         self.init_scale(self.native)
 
         self.native.MinimizeBox = self.interface.minimizable
+        self.native.MaximizeBox = self.interface.resizable
 
         self.set_title(title)
         self.set_size(size)
@@ -36,9 +36,7 @@ class Window(Container, Scalable):
         self.native.Resize += WeakrefCallable(self.winforms_Resize)
         self.resize_content()  # Store initial size
 
-        if not self.interface.resizable:
-            self.native.FormBorderStyle = self.native.FormBorderStyle.FixedSingle
-            self.native.MaximizeBox = False
+        self.set_full_screen(self.interface.full_screen)
 
     def create_toolbar(self):
         if self.interface.toolbar:
@@ -81,18 +79,14 @@ class Window(Container, Scalable):
         self.native.Location = Point(*map(self.scale_in, position))
 
     def get_size(self):
-        size = self.native.ClientSize
+        size = self.native.Size
         return tuple(map(self.scale_out, (size.Width, size.Height)))
 
     def set_size(self, size):
-        self.native.ClientSize = Size(*map(self.scale_in, size))
+        self.native.Size = Size(*map(self.scale_in, size))
 
     def set_app(self, app):
-        if app is None:
-            return
         icon_impl = app.interface.icon._impl
-        if icon_impl is None:
-            return
         self.native.Icon = icon_impl.native
 
     def get_title(self):
@@ -137,20 +131,20 @@ class Window(Container, Scalable):
             if not self.interface.closable:
                 # Window isn't closable, so any request to close should be cancelled.
                 event.Cancel = True
-            elif self.interface.on_close._raw:
-                # If there is an on_close event handler, process it; but then cancel
-                # the close event. If the result of on_close handling indicates the
-                # window should close, then it will be manually triggered as part of
-                # that result handling.
-                self.interface.on_close(self)
+            else:
+                # See _is_closing comment in __init__.
+                self.interface.on_close(None)
                 event.Cancel = True
 
     def set_full_screen(self, is_full_screen):
         if is_full_screen:
-            self.native.FormBorderStyle = WinForms.FormBorderStyle(0)
+            self.native.FormBorderStyle = getattr(WinForms.FormBorderStyle, "None")
             self.native.WindowState = WinForms.FormWindowState.Maximized
         else:
-            self.native.FormBorderStyle = WinForms.FormBorderStyle(1)
+            self.native.FormBorderStyle = getattr(
+                WinForms.FormBorderStyle,
+                "Sizable" if self.interface.resizable else "FixedSingle",
+            )
             self.native.WindowState = WinForms.FormWindowState.Normal
 
     def close(self):

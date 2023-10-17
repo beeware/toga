@@ -1,3 +1,5 @@
+import pytest
+
 from toga_gtk.libs import Gtk
 
 from .base import SimpleProbe
@@ -113,3 +115,6 @@ class MultilineTextInputProbe(SimpleProbe):
 
     async def wait_for_scroll_completion(self):
         pass
+
+    def set_cursor_at_end(self):
+        pytest.skip("Cursor positioning not supported on this platform")

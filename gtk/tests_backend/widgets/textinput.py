@@ -1,3 +1,5 @@
+import pytest
+
 from toga.constants import JUSTIFY, LEFT
 from toga_gtk.libs import Gtk
 
@@ -47,3 +49,6 @@ class TextInputProbe(SimpleProbe):
     @property
     def readonly(self):
         return not self.native.get_property("editable")
+
+    def set_cursor_at_end(self):
+        pytest.skip("Cursor positioning not supported on this platform")

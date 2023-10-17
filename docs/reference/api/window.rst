@@ -17,13 +17,15 @@ An operating system-managed container of widgets.
 Usage
 -----
 
-A window is the top-level container that the operating system uses to contain widgets.
-The window has content, which will usually be a container widget of some kind. A window
-may also have other decorations, such as a title bar or toolbar.
+A window is the top-level container that the operating system uses to display widgets. A
+window may also have other decorations, such as a title bar or toolbar.
 
-By default, a window is not visible. When the window is shown, it will be associated
-with the currently active application. The content of the window can be changed by
-re-assigning the content of the window to a new widget.
+When first created, a window is not visible. To display it, call the
+:meth:`~toga.Window.show` method.
+
+The window has content, which will usually be a container widget of some kind. The
+content of the window can be changed by re-assigning its `content` attribute to a
+different widget.
 
 .. code-block:: python
 
@@ -37,13 +39,12 @@ re-assigning the content of the window to a new widget.
     window.content = toga.Box(children=[...])
 
 The operating system may provide controls that allow the user to resize, reposition,
-minimize or maximize the the window. However, the availability of these controls is
+minimize, maximize or close the window. However, the availability of these controls is
 entirely operating system dependent.
 
-If the operating system provides a way to close the window, Toga will call the
-``on_close`` handler. This handler must return a Boolean confirming whether the close is
-permitted. This can be used to implement protections against closing a window with
-unsaved changes.
+If the user attempts to close the window, Toga will call the ``on_close`` handler. This
+handler must return a ``bool`` confirming whether the close is permitted. This can be
+used to implement protections against closing a window with unsaved changes.
 
 Once a window has been closed (either by user action, or programmatically with
 :meth:`~toga.Window.close()`), it *cannot* be reused. The behavior of any method on a

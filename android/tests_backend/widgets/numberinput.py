@@ -1,4 +1,4 @@
-from pytest import xfail
+import pytest
 
 from .textinput import TextInputProbe
 
@@ -16,7 +16,10 @@ class NumberInputProbe(TextInputProbe):
         self.native.setText("")
 
     async def increment(self):
-        xfail("This backend doesn't support stepped increments")
+        pytest.xfail("This backend doesn't support stepped increments")
 
     async def decrement(self):
-        xfail("This backend doesn't support stepped increments")
+        pytest.xfail("This backend doesn't support stepped increments")
+
+    def set_cursor_at_end(self):
+        pytest.skip("Cursor positioning not supported on this platform")

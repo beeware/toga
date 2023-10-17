@@ -12,8 +12,9 @@ from toga.command import Group
 from .libs import events
 from .window import Window
 
-# `MainWindow` is defined here in `app.py`, not `window.py`, to mollify the test suite.
-MainWindow = Window
+
+class MainWindow(Window):
+    _is_main_window = True
 
 
 class TogaApp(dynamic_proxy(IPythonApp)):
