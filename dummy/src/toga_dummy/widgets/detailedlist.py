@@ -1,40 +1,49 @@
+from ..utils import not_required
 from .base import Widget
 
 
+@not_required  # Testbed coverage is complete for this widget.
 class DetailedList(Widget):
     def create(self):
         self._action("create DetailedList")
 
     def change_source(self, source):
         self._action("change source", source=source)
+        self.interface.on_select(None)
 
     def insert(self, index, item):
-        self._action("insert", index=index, item=item)
+        self._action("insert item", index=index, item=item)
 
     def change(self, item):
-        self._action("change", item=item)
+        self._action("change item", item=item)
 
     def remove(self, index, item):
-        self._action("remove", index=index, item=item)
+        self._action("remove item", index=index, item=item)
 
     def clear(self):
         self._action("clear")
 
     def get_selection(self):
-        self._action("get selection")
-        return None
+        return self._get_value("selection", None)
 
-    def set_on_refresh(self, handler):
-        self._set_value("on_refresh", handler)
+    def set_refresh_enabled(self, enabled):
+        self._action("refresh enabled", enabled=enabled)
+
+    def set_primary_action_enabled(self, enabled):
+        self._action("primary action enabled", enabled=enabled)
+
+    def set_secondary_action_enabled(self, enabled):
+        self._action("secondary action enabled", enabled=enabled)
 
     def after_on_refresh(self, widget, result):
         self._action("after on refresh", widget=widget, result=result)
 
-    def set_on_delete(self, handler):
-        self._set_value("on_delete", handler)
-
-    def set_on_select(self, handler):
-        self._set_value("on_select", handler)
-
     def scroll_to_row(self, row):
-        self._set_value("scroll to", row)
+        self._action("scroll to row", row=row)
+
+    def simulate_selection(self, row):
+        self._set_value("selection", row)
+        self.interface.on_select(None)
+
+    def stimulate_refresh(self):
+        self.interface.on_refresh(None)

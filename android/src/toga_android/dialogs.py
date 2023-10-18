@@ -1,11 +1,13 @@
 from abc import ABC
 
-from .libs.android import R__drawable
-from .libs.android.app import AlertDialog__Builder
-from .libs.android.content import DialogInterface__OnClickListener
+from java import dynamic_proxy
+
+from android import R
+from android.app import AlertDialog
+from android.content import DialogInterface
 
 
-class OnClickListener(DialogInterface__OnClickListener):
+class OnClickListener(dynamic_proxy(DialogInterface.OnClickListener)):
     def __init__(self, fn=None, value=None):
         super().__init__()
         self._fn = fn
@@ -18,7 +20,7 @@ class OnClickListener(DialogInterface__OnClickListener):
 class BaseDialog(ABC):
     def __init__(self, interface):
         self.interface = interface
-        self.interface.impl = self
+        self.interface._impl = self
 
 
 class TextDialog(BaseDialog):
@@ -32,29 +34,23 @@ class TextDialog(BaseDialog):
         icon=None,
         on_result=None,
     ):
-        """Create Android textual dialog.
-
-        - interface: Toga Window
-        - title: Title of dialog
-        - message: Message of dialog
-        - positive_text: Button text where clicking it returns True (or None to skip)
-        - negative_text: Button text where clicking it returns False (or None to skip)
-        - icon: Integer used as an Android resource ID number for dialog icon (or None to skip)
-        """
         super().__init__(interface=interface)
         self.on_result = on_result
 
-        self.native = AlertDialog__Builder(interface.window._impl.app.native)
+        self.native = AlertDialog.Builder(interface.window._impl.app.native)
         self.native.setCancelable(False)
         self.native.setTitle(title)
         self.native.setMessage(message)
         if icon is not None:
             self.native.setIcon(icon)
 
-        if positive_text is not None:
-            self.native.setPositiveButton(
-                positive_text, OnClickListener(self.completion_handler, True)
-            )
+        self.native.setPositiveButton(
+            positive_text,
+            OnClickListener(
+                self.completion_handler,
+                True if (negative_text is not None) else None,
+            ),
+        )
         if negative_text is not None:
             self.native.setNegativeButton(
                 negative_text, OnClickListener(self.completion_handler, False)
@@ -108,7 +104,7 @@ class ErrorDialog(TextDialog):
             title=title,
             message=message,
             positive_text="OK",
-            icon=R__drawable.ic_dialog_alert,
+            icon=R.drawable.ic_dialog_alert,
             on_result=on_result,
         )
 
@@ -147,7 +143,7 @@ class OpenFileDialog(BaseDialog):
         title,
         initial_directory,
         file_types,
-        multiselect,
+        multiple_select,
         on_result=None,
     ):
         super().__init__(interface=interface)
@@ -160,7 +156,7 @@ class SelectFolderDialog(BaseDialog):
         interface,
         title,
         initial_directory,
-        multiselect,
+        multiple_select,
         on_result=None,
     ):
         super().__init__(interface=interface)

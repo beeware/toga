@@ -2,7 +2,7 @@ from android.os import Build
 from java import jclass
 
 from .base import SimpleProbe
-from .properties import toga_alignment, toga_color, toga_font
+from .properties import toga_alignment, toga_color
 
 
 class LabelProbe(SimpleProbe):
@@ -18,12 +18,12 @@ class LabelProbe(SimpleProbe):
         return str(self.native.getText())
 
     @property
-    def font(self):
-        return toga_font(
-            self.native.getTypeface(),
-            self.native.getTextSize(),
-            self.native.getResources(),
-        )
+    def typeface(self):
+        return self.native.getTypeface()
+
+    @property
+    def text_size(self):
+        return self.native.getTextSize()
 
     @property
     def alignment(self):

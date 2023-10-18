@@ -1,13 +1,15 @@
 from rubicon.objc import NSPoint
 
 from toga.colors import TRANSPARENT
+from toga_cocoa.keys import NSEventModifierFlagCommand, NSEventModifierFlagShift
 from toga_cocoa.libs import NSEvent, NSEventType
 
+from ..fonts import FontMixin
 from ..probe import BaseProbe
 from .properties import toga_color
 
 
-class SimpleProbe(BaseProbe):
+class SimpleProbe(BaseProbe, FontMixin):
     def __init__(self, widget):
         super().__init__()
         self.app = widget.app
@@ -91,6 +93,10 @@ class SimpleProbe(BaseProbe):
         else:
             return TRANSPARENT
 
+    @property
+    def font(self):
+        return self.native.font
+
     async def press(self):
         self.native.performClick(None)
 
@@ -102,10 +108,11 @@ class SimpleProbe(BaseProbe):
     def has_focus(self):
         return self.native.window.firstResponder == self.native
 
-    async def type_character(self, char):
+    async def type_character(self, char, modifierFlags=0):
         # Convert the requested character into a Cocoa keycode.
         # This table is incomplete, but covers all the basics.
         key_code = {
+            "<backspace>": 51,
             "<esc>": 53,
             " ": 49,
             "\n": 36,
@@ -137,12 +144,15 @@ class SimpleProbe(BaseProbe):
             "z": 6,
         }.get(char.lower(), 0)
 
+        if modifierFlags:
+            char = None
+
         # This posts a single keyDown followed by a keyUp, matching "normal" keyboard operation.
         await self.post_event(
             NSEvent.keyEventWithType(
                 NSEventType.KeyDown,
                 location=NSPoint(0, 0),  # key presses don't have a location.
-                modifierFlags=0,
+                modifierFlags=modifierFlags,
                 timestamp=0,
                 windowNumber=self.native.window.windowNumber,
                 context=None,
@@ -156,7 +166,7 @@ class SimpleProbe(BaseProbe):
             NSEvent.keyEventWithType(
                 NSEventType.KeyUp,
                 location=NSPoint(0, 0),  # key presses don't have a location.
-                modifierFlags=0,
+                modifierFlags=modifierFlags,
                 timestamp=0,
                 windowNumber=self.native.window.windowNumber,
                 context=None,
@@ -167,18 +177,33 @@ class SimpleProbe(BaseProbe):
             ),
         )
 
-    async def mouse_event(self, event_type, location, delay=None):
+    async def mouse_event(
+        self,
+        event_type,
+        location,
+        delay=None,
+        modifierFlags=0,
+        clickCount=1,
+    ):
         await self.post_event(
             NSEvent.mouseEventWithType(
                 event_type,
                 location=location,
-                modifierFlags=0,
+                modifierFlags=modifierFlags,
                 timestamp=0,
                 windowNumber=self.native.window.windowNumber,
                 context=None,
                 eventNumber=0,
-                clickCount=1,
+                clickCount=clickCount,
                 pressure=1.0 if event_type == NSEventType.LeftMouseDown else 0.0,
             ),
             delay=delay,
+        )
+
+    async def undo(self):
+        await self.type_character("z", modifierFlags=NSEventModifierFlagCommand)
+
+    async def redo(self):
+        await self.type_character(
+            "z", modifierFlags=NSEventModifierFlagCommand | NSEventModifierFlagShift
         )

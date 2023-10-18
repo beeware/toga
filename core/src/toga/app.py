@@ -138,13 +138,16 @@ class MainWindow(Window):
         resizable: bool = True,
         minimizable: bool = True,
     ):
-        """Create a new application Main Window.
+        """Create a new main window.
 
-        :param id: The ID of the window.
+        :param id: A unique identifier for the window. If not provided, one will be
+            automatically generated.
         :param title: Title for the window. Defaults to the formal name of the app.
-        :param position: Position of the window, as a tuple of ``(x, y)`` coordinates.
-        :param size: Size of the window, as a tuple of ``(width, height)``, in pixels.
-        :param resizable: Can the window be manually resized by the user?
+        :param position: Position of the window, as a tuple of ``(x, y)`` coordinates,
+            in :ref:`CSS pixels <css-units>`.
+        :param size: Size of the window, as a tuple of ``(width, height)``, in :ref:`CSS
+            pixels <css-units>`.
+        :param resizable: Can the window be resized by the user?
         :param minimizable: Can the window be minimized by the user?
         """
         super().__init__(
@@ -240,8 +243,8 @@ class App:
         home_page: str | None = None,
         description: str | None = None,
         startup: AppStartupMethod | None = None,
-        windows: Iterable[Window] = (),
         on_exit: OnExitHandler | None = None,
+        windows: Iterable[Window] = (),  # DEPRECATED
     ):
         """Create a new App instance.
 
@@ -269,8 +272,7 @@ class App:
             from packaging metadata if not provided.
         :param startup: The callback method before starting the app, typically to add
             the components.
-        :param windows: An iterable with objects of :class:`~toga.Window` that will be
-            the app's secondary windows.
+        :param windows: **DEPRECATED**; Windows are automatically added to the app.
         """
         # Initialize empty widgets registry
         self._widgets = WidgetRegistry()
@@ -415,9 +417,6 @@ class App:
 
         # Now that we have an impl, set the on_change handler for commands
         self.commands.on_change = self._impl.create_menus
-
-        for window in windows:
-            self.windows.add(window)
 
     def _create_impl(self):
         self.factory.App(interface=self)

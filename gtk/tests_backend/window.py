@@ -2,8 +2,6 @@ import asyncio
 from pathlib import Path
 from unittest.mock import Mock
 
-import pytest
-
 from toga_gtk.libs import Gdk, Gtk
 
 from .probe import BaseProbe
@@ -12,11 +10,10 @@ from .probe import BaseProbe
 class WindowProbe(BaseProbe):
     # GTK defers a lot of window behavior to the window manager, which means some features
     # either don't exist, or we can't guarantee they behave the way Toga would like.
-    # 1. No way to create a window without a minimize button
-    supports_minimize_control = False
-    # 2. Window manager may not honor changes in position while the window isn't visible
+    supports_closable = True
+    supports_minimizable = False
+    supports_multiple_select_folder = True
     supports_move_while_hidden = False
-    # 3. Deiconify (i.e., unminimize) isn't guaranteed to actually unminimize the window
     supports_unminimize = False
 
     def __init__(self, app, window):
@@ -50,10 +47,6 @@ class WindowProbe(BaseProbe):
     @property
     def is_closable(self):
         return self.native.get_deletable()
-
-    @property
-    def is_minimizable(self):
-        pytest.xfail("GTK doesn't support disabling minimization")
 
     @property
     def is_minimized(self):

@@ -26,10 +26,14 @@ async def indeterminate_animator(progressbar):
     period.
     """
     value = 0.95
-    while True:
-        progressbar.native.setProgress(value, animated=True)
-        value = 1 - value
-        await asyncio.sleep(1.0)
+    try:
+        while True:
+            progressbar.native.setProgress(value, animated=True)
+            value = 1 - value
+            await asyncio.sleep(1.0)
+    except asyncio.CancelledError:
+        # Being cancelled is expected behavior.
+        pass
 
 
 class ProgressBar(Widget):

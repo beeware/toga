@@ -1,23 +1,25 @@
+from pathlib import Path
+
 from toga.fonts import (
+    _REGISTERED_FONT_CACHE,
     BOLD,
     CURSIVE,
     FANTASY,
     ITALIC,
     MESSAGE,
     MONOSPACE,
+    OBLIQUE,
     SANS_SERIF,
     SERIF,
     SMALL_CAPS,
     SYSTEM,
     SYSTEM_DEFAULT_FONT_SIZE,
+    SYSTEM_DEFAULT_FONTS,
 )
 from toga_cocoa.libs import (
-    NSAttributedString,
     NSFont,
-    NSFontAttributeName,
     NSFontManager,
     NSFontMask,
-    NSMutableDictionary,
 )
 
 _FONT_CACHE = {}
@@ -29,31 +31,52 @@ class Font:
         try:
             font = _FONT_CACHE[self.interface]
         except KeyError:
-            # Default system font size on Cocoa is 12pt
+            font_key = self.interface._registered_font_key(
+                self.interface.family,
+                weight=self.interface.weight,
+                style=self.interface.style,
+                variant=self.interface.variant,
+            )
+            try:
+                font_path = _REGISTERED_FONT_CACHE[font_key]
+            except KeyError:
+                # Not a pre-registered font
+                if self.interface.family not in SYSTEM_DEFAULT_FONTS:
+                    print(
+                        f"Unknown font '{self.interface}'; "
+                        "using system font as a fallback"
+                    )
+            else:
+                if Path(font_path).is_file():
+                    # TODO: Load font file
+                    self.interface.factory.not_implemented("Custom font loading")
+                    # if corrupted font file:
+                    #     raise ValueError(f"Unable to load font file {font_path}")
+                else:
+                    raise ValueError(f"Font file {font_path} could not be found")
+
             if self.interface.size == SYSTEM_DEFAULT_FONT_SIZE:
                 font_size = NSFont.systemFontSize
             else:
-                font_size = self.interface.size
+                # A "point" in Apple APIs is equivalent to a CSS pixel, but the Toga
+                # public API works in CSS points, which are slightly larger
+                # (https://developer.apple.com/library/archive/documentation/GraphicsAnimation/Conceptual/HighResolutionOSX/Explained/Explained.html).
+                font_size = self.interface.size * 96 / 72
 
             if self.interface.family == SYSTEM:
                 font = NSFont.systemFontOfSize(font_size)
             elif self.interface.family == MESSAGE:
                 font = NSFont.messageFontOfSize(font_size)
             else:
-                if self.interface.family is SERIF:
-                    family = "Times-Roman"
-                elif self.interface.family is SANS_SERIF:
-                    family = "Helvetica"
-                elif self.interface.family is CURSIVE:
-                    family = "Apple Chancery"
-                elif self.interface.family is FANTASY:
-                    family = "Papyrus"
-                elif self.interface.family is MONOSPACE:
-                    family = "Courier New"
-                else:
-                    family = self.interface.family
+                family = {
+                    SERIF: "Times-Roman",
+                    SANS_SERIF: "Helvetica",
+                    CURSIVE: "Apple Chancery",
+                    FANTASY: "Papyrus",
+                    MONOSPACE: "Courier New",
+                }.get(self.interface.family, self.interface.family)
 
-                font = NSFont.fontWithName(family, size=self.interface.size)
+                font = NSFont.fontWithName(family, size=font_size)
 
                 if font is None:
                     print(
@@ -67,10 +90,12 @@ class Font:
             attributes_mask = 0
             if self.interface.weight == BOLD:
                 attributes_mask |= NSFontMask.Bold.value
-            if self.interface.style == ITALIC:
+            if self.interface.style in {ITALIC, OBLIQUE}:
+                # Oblique is the fallback for Italic.
                 attributes_mask |= NSFontMask.Italic.value
             if self.interface.variant == SMALL_CAPS:
                 attributes_mask |= NSFontMask.SmallCaps.value
+
             if attributes_mask:
                 # If there is no font with the requested traits, this returns the original
                 # font unchanged.
@@ -81,16 +106,3 @@ class Font:
             _FONT_CACHE[self.interface] = font.retain()
 
         self.native = font
-
-    def measure(self, text, tight=False):
-        textAttributes = NSMutableDictionary.alloc().init()
-        textAttributes[NSFontAttributeName] = self.native
-        text_string = NSAttributedString.alloc().initWithString(
-            text, attributes=textAttributes
-        )
-        size = text_string.size()
-
-        # TODO: This is a magic fudge factor...
-        # Replace the magic with SCIENCE.
-        size.width += 3
-        return size.width, size.height

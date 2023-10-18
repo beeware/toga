@@ -1,6 +1,6 @@
+from android.widget import ImageView as A_ImageView
 from toga.widgets.imageview import rehint_imageview
 
-from ..libs.android.widget import ImageView as A_ImageView
 from .base import Widget
 
 

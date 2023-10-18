@@ -4,6 +4,7 @@ import System.Windows.Forms as WinForms
 from System import DateTime as WinDateTime
 from travertino.size import at_least
 
+from ..libs.wrapper import WeakrefCallable
 from .base import Widget
 
 
@@ -22,7 +23,7 @@ class TimeInput(Widget):
 
     def create(self):
         self.native = WinForms.DateTimePicker()
-        self.native.ValueChanged += self.winforms_value_changed
+        self.native.ValueChanged += WeakrefCallable(self.winforms_value_changed)
         self.native.Format = WinForms.DateTimePickerFormat.Time
         self.native.ShowUpDown = True
 

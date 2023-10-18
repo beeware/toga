@@ -29,7 +29,7 @@ class MainWindow(Window):
         self.native = Gtk.ApplicationWindow()
         self.native.set_role("MainWindow")
         icon_impl = toga_App.app.icon._impl
-        self.native.set_icon(icon_impl.native_72.get_pixbuf())
+        self.native.set_icon(icon_impl.native_72)
 
     def gtk_delete_event(self, *args):
         # Return value of the GTK on_close handler indicates
@@ -207,7 +207,7 @@ class App:
         self.native_about_dialog.set_modal(True)
 
         icon_impl = toga_App.app.icon._impl
-        self.native_about_dialog.set_logo(icon_impl.native_72.get_pixbuf())
+        self.native_about_dialog.set_logo(icon_impl.native_72)
 
         self.native_about_dialog.set_program_name(self.interface.name)
         if self.interface.version is not None:

@@ -21,7 +21,7 @@ To separate two labels stacked vertically with a horizontal line:
 .. code-block:: python
 
     import toga
-    from toga.style import Pack, COLUMN
+    from toga.style.pack import Pack, COLUMN
 
     box = toga.Box(
         children=[

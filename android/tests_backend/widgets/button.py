@@ -1,7 +1,6 @@
 from java import jclass
 
 from toga.colors import TRANSPARENT
-from toga.fonts import SYSTEM
 
 from .label import LabelProbe
 
@@ -10,12 +9,8 @@ from .label import LabelProbe
 class ButtonProbe(LabelProbe):
     native_class = jclass("android.widget.Button")
 
-    def assert_font_family(self, expected):
-        actual = self.font.family
-        if expected == SYSTEM:
-            assert actual == "sans-serif-medium"
-        else:
-            assert actual == expected
+    # Heavier than sans-serif, but lighter than sans-serif bold
+    default_font_family = "sans-serif-medium"
 
     @property
     def background_color(self):

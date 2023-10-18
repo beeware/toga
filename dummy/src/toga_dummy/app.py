@@ -29,6 +29,7 @@ class App(LoggedObject):
         self._action("create App menus")
 
     def main_loop(self):
+        print("Starting app using Dummy backend.")
         self._action("main loop")
 
     def set_main_window(self, window):

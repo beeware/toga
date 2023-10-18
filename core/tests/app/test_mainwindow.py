@@ -10,7 +10,7 @@ def test_create(app):
     "A MainWindow can be created with minimal arguments"
     window = toga.MainWindow()
 
-    assert window.app is None
+    assert window.app == app
     assert window.content is None
 
     assert window._impl.interface == window

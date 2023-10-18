@@ -2,7 +2,7 @@
 skip = ".git,*.pdf,*.svg"
 # the way to make case sensitive skips of words etc
 ignore-regex = "\bNd\b"
-ignore-words-list = "te,crate"
+ignore-words-list = "te,crate,re-use"
 
 # The coverage settings in this file only control `coverage report`. `coverage run` and
 # `coverage combine` are controlled by the pyproject.toml files in each package's

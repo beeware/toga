@@ -1,37 +1,16 @@
 from abc import ABC, abstractmethod
 from decimal import ROUND_HALF_EVEN, ROUND_UP, Decimal
 
+from org.beeware.android import MainActivity
 from travertino.size import at_least
 
+from android.graphics import PorterDuff, PorterDuffColorFilter, Rect
+from android.graphics.drawable import ColorDrawable, InsetDrawable
+from android.view import Gravity, View
+from android.widget import RelativeLayout
 from toga.constants import CENTER, JUSTIFY, LEFT, RIGHT, TRANSPARENT
 
 from ..colors import native_color
-from ..libs.activity import MainActivity
-from ..libs.android.graphics import PorterDuff__Mode, PorterDuffColorFilter, Rect
-from ..libs.android.graphics.drawable import ColorDrawable, InsetDrawable
-from ..libs.android.view import Gravity, View
-from ..libs.android.widget import RelativeLayout__LayoutParams
-
-
-def _get_activity(_cache=[]):
-    """Android Toga widgets need a reference to the current activity to pass it as
-    `context` when creating Android native widgets. This may be useful at any time, so
-    we retain a global JNI ref.
-
-    :param _cache: List that is either empty or contains 1 item, the cached global JNI ref
-    """
-    if _cache:
-        return _cache[0]
-    # See MainActivity.onCreate() for initialization of .singletonThis:
-    # https://github.com/beeware/briefcase-android-gradle-template/blob/3.7/%7B%7B%20cookiecutter.formal_name%20%7D%7D/app/src/main/java/org/beeware/android/MainActivity.java
-    # This can't be tested because if it isn't set, nothing else will work.
-    if not MainActivity.singletonThis:  # pragma: no cover
-        raise ValueError(
-            "Unable to find MainActivity.singletonThis from Python. This is typically set by "
-            "org.beeware.android.MainActivity.onCreate()."
-        )
-    _cache.append(MainActivity.singletonThis.__global__())
-    return _cache[0]
 
 
 class Scalable:
@@ -40,20 +19,22 @@ class Scalable:
     def init_scale(self, context):
         # The baseline DPI is 160:
         # https://developer.android.com/training/multiscreen/screendensities
-        self.scale = context.getResources().getDisplayMetrics().densityDpi / 160
+        self.dpi_scale = context.getResources().getDisplayMetrics().densityDpi / 160
 
     # Convert CSS pixels to native pixels
     def scale_in(self, value, rounding=SCALE_DEFAULT_ROUNDING):
-        return self.scale_round(value * self.scale, rounding)
+        return self.scale_round(value * self.dpi_scale, rounding)
 
     # Convert native pixels to CSS pixels
     def scale_out(self, value, rounding=SCALE_DEFAULT_ROUNDING):
         if isinstance(value, at_least):
             return at_least(self.scale_out(value.value, rounding))
         else:
-            return self.scale_round(value / self.scale, rounding)
+            return self.scale_round(value / self.dpi_scale, rounding)
 
     def scale_round(self, value, rounding):
+        if rounding is None:
+            return value
         return int(Decimal(value).to_integral(rounding))
 
 
@@ -69,16 +50,16 @@ class Widget(ABC, Scalable):
         self.interface._impl = self
         self._container = None
         self.native = None
-        self._native_activity = _get_activity()
+        self._native_activity = MainActivity.singletonThis
         self.init_scale(self._native_activity)
         self.create()
 
         # Some widgets, e.g. TextView, may throw an exception if we call measure()
         # before setting LayoutParams.
         self.native.setLayoutParams(
-            RelativeLayout__LayoutParams(
-                RelativeLayout__LayoutParams.WRAP_CONTENT,
-                RelativeLayout__LayoutParams.WRAP_CONTENT,
+            RelativeLayout.LayoutParams(
+                RelativeLayout.LayoutParams.WRAP_CONTENT,
+                RelativeLayout.LayoutParams.WRAP_CONTENT,
             )
         )
 
@@ -178,7 +159,7 @@ class Widget(ABC, Scalable):
         self.native.getBackground().setColorFilter(
             None
             if value in (None, TRANSPARENT)
-            else PorterDuffColorFilter(native_color(value), PorterDuff__Mode.SRC_IN)
+            else PorterDuffColorFilter(native_color(value), PorterDuff.Mode.SRC_IN)
         )
 
     def set_alignment(self, alignment):

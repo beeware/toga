@@ -81,8 +81,8 @@ async def test_select_tab(
     # Initially selected tab has content that is the full size of the widget
     await probe.redraw("Tab 1 should be selected")
     assert widget.current_tab.index == 0
-    assert content1_probe.width > 500
-    assert content1_probe.height > 400
+    assert content1_probe.width > 600
+    assert content1_probe.height > 380
 
     # on_select hasn't been invoked.
     on_select_handler.assert_not_called()
@@ -92,8 +92,8 @@ async def test_select_tab(
     await probe.redraw("Tab 2 should be selected")
 
     assert widget.current_tab.index == 1
-    assert content2_probe.width > 500
-    assert content2_probe.height > 400
+    assert content2_probe.width > 600
+    assert content2_probe.height > 380
     # on_select has been invoked
     on_select_handler.assert_called_once_with(widget)
     on_select_handler.reset_mock()
@@ -103,8 +103,8 @@ async def test_select_tab(
     await probe.redraw("Tab 3 should be selected")
 
     assert widget.current_tab.index == 2
-    assert content3_probe.width > 500
-    assert content3_probe.height > 400
+    assert content3_probe.width > 600
+    assert content3_probe.height > 380
     # on_select has been invoked
     on_select_handler.assert_called_once_with(widget)
     on_select_handler.reset_mock()
@@ -224,8 +224,8 @@ async def test_change_content(
 
     assert widget.current_tab.index == 1
     assert widget.current_tab.text == "New tab"
-    assert new_probe.width > 500
-    assert new_probe.height > 400
+    assert new_probe.width > 600
+    assert new_probe.height > 380
 
     # on_select has been invoked
     on_select_handler.assert_called_once_with(widget)
@@ -251,8 +251,8 @@ async def test_change_content(
 
     assert widget.current_tab.index == 3
     assert widget.current_tab.text == "New Tab 2"
-    assert content2_probe.width > 500
-    assert content2_probe.height > 400
+    assert content2_probe.width > 600
+    assert content2_probe.height > 380
 
     # on_select has been invoked
     on_select_handler.assert_called_once_with(widget)

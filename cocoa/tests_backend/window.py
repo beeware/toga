@@ -20,8 +20,10 @@ from .probe import BaseProbe
 
 
 class WindowProbe(BaseProbe):
-    supports_minimize_control = True
+    supports_closable = True
+    supports_minimizable = True
     supports_move_while_hidden = True
+    supports_multiple_select_folder = True
     supports_unminimize = True
 
     def __init__(self, app, window):
@@ -161,18 +163,17 @@ class WindowProbe(BaseProbe):
 
         if result is not None:
             if multiple_select:
-                if result:
-                    # Since we are mocking selected_path(), it's never actually invoked
-                    # under test conditions. Call it just to confirm that it returns the
-                    # type we think it does.
-                    assert isinstance(dialog.selected_paths(), ObjCListInstance)
+                # Since we are mocking selected_path(), it's never actually invoked
+                # under test conditions. Call it just to confirm that it returns the
+                # type we think it does.
+                assert isinstance(dialog.selected_paths(), ObjCListInstance)
 
-                    dialog.selected_paths = Mock(
-                        return_value=[
-                            NSURL.fileURLWithPath(str(path), isDirectory=False)
-                            for path in result
-                        ]
-                    )
+                dialog.selected_paths = Mock(
+                    return_value=[
+                        NSURL.fileURLWithPath(str(path), isDirectory=False)
+                        for path in result
+                    ]
+                )
             else:
                 dialog.selected_path = Mock(
                     return_value=NSURL.fileURLWithPath(
@@ -181,17 +182,10 @@ class WindowProbe(BaseProbe):
                     )
                 )
 
-            # If there's nothing selected, you can't press OK.
-            if result:
-                self.native.endSheet(
-                    self.native.attachedSheet,
-                    returnCode=NSModalResponseOK,
-                )
-            else:
-                self.native.endSheet(
-                    self.native.attachedSheet,
-                    returnCode=NSModalResponseCancel,
-                )
+            self.native.endSheet(
+                self.native.attachedSheet,
+                returnCode=NSModalResponseOK,
+            )
         else:
             self.native.endSheet(
                 self.native.attachedSheet,
@@ -208,18 +202,17 @@ class WindowProbe(BaseProbe):
 
         if result is not None:
             if multiple_select:
-                if result:
-                    # Since we are mocking selected_path(), it's never actually invoked
-                    # under test conditions. Call it just to confirm that it returns the
-                    # type we think it does.
-                    assert isinstance(dialog.selected_paths(), ObjCListInstance)
+                # Since we are mocking selected_path(), it's never actually invoked
+                # under test conditions. Call it just to confirm that it returns the
+                # type we think it does.
+                assert isinstance(dialog.selected_paths(), ObjCListInstance)
 
-                    dialog.selected_paths = Mock(
-                        return_value=[
-                            NSURL.fileURLWithPath(str(path), isDirectory=True)
-                            for path in result
-                        ]
-                    )
+                dialog.selected_paths = Mock(
+                    return_value=[
+                        NSURL.fileURLWithPath(str(path), isDirectory=True)
+                        for path in result
+                    ]
+                )
             else:
                 dialog.selected_path = Mock(
                     return_value=NSURL.fileURLWithPath(
@@ -228,17 +221,10 @@ class WindowProbe(BaseProbe):
                     )
                 )
 
-            # If there's nothing selected, you can't press OK.
-            if result:
-                self.native.endSheet(
-                    self.native.attachedSheet,
-                    returnCode=NSModalResponseOK,
-                )
-            else:
-                self.native.endSheet(
-                    self.native.attachedSheet,
-                    returnCode=NSModalResponseCancel,
-                )
+            self.native.endSheet(
+                self.native.attachedSheet,
+                returnCode=NSModalResponseOK,
+            )
         else:
             self.native.endSheet(
                 self.native.attachedSheet,

@@ -1,13 +1,12 @@
 from ctypes import c_void_p
 
+from rubicon.objc import SEL, at, objc_method, objc_property, send_super
 from travertino.size import at_least
 
 import toga
 from toga.keys import Key
 from toga_cocoa.keys import toga_key
-from toga_cocoa.libs import CGRectMake  # NSSortDescriptor,
 from toga_cocoa.libs import (
-    SEL,
     NSBezelBorder,
     NSIndexSet,
     NSOutlineView,
@@ -15,10 +14,6 @@ from toga_cocoa.libs import (
     NSTableColumn,
     NSTableViewAnimation,
     NSTableViewColumnAutoresizingStyle,
-    at,
-    objc_method,
-    objc_property,
-    send_super,
 )
 from toga_cocoa.widgets.base import Widget
 from toga_cocoa.widgets.internal.cells import TogaIconView
@@ -52,10 +47,7 @@ class TogaTree(NSOutlineView):
 
     @objc_method
     def outlineView_isItemExpandable_(self, tree, item) -> bool:
-        try:
-            return item.attrs["node"].can_have_children()
-        except AttributeError:
-            return False
+        return item.attrs["node"].can_have_children()
 
     @objc_method
     def outlineView_numberOfChildrenOfItem_(self, tree, item) -> int:
@@ -85,23 +77,16 @@ class TogaTree(NSOutlineView):
             # for encoding an icon in a table cell. Otherwise, look
             # for an icon attribute.
             elif isinstance(value, tuple):
-                icon_iface, value = value
+                icon, value = value
             else:
                 try:
-                    icon_iface = value.icon
+                    icon = value.icon
                 except AttributeError:
-                    icon_iface = None
+                    icon = None
         except AttributeError:
             # If the node doesn't have a property with the
             # accessor name, assume an empty string value.
             value = self.interface.missing_value
-            icon_iface = None
-
-        # If the value has an icon, get the _impl.
-        # Icons are deferred resources, so we provide the factory.
-        if icon_iface:
-            icon = icon_iface._impl
-        else:
             icon = None
 
         # creates a NSTableCellView from interface-builder template (does not exist)
@@ -111,9 +96,8 @@ class TogaTree(NSOutlineView):
         tcv = self.makeViewWithIdentifier(identifier, owner=self)
 
         if not tcv:  # there is no existing view to reuse so create a new one
-            tcv = TogaIconView.alloc().initWithFrame_(
-                CGRectMake(0, 0, column.width, 16)
-            )
+            # tcv = TogaIconView.alloc().initWithFrame(CGRectMake(0, 0, column.width, 16))
+            tcv = TogaIconView.alloc().init()
             tcv.identifier = identifier
 
             # Prevent tcv from being deallocated prematurely when no Python references
@@ -123,34 +107,41 @@ class TogaTree(NSOutlineView):
 
         tcv.setText(str(value))
         if icon:
-            tcv.setImage(icon.native)
+            tcv.setImage(icon._impl.native)
         else:
             tcv.setImage(None)
 
         return tcv
 
+    # 2023-06-29: Commented out this method because it appears to be a
+    # source of significant slowdown when the table has a lot of data
+    # (10k rows). AFAICT, it's only needed if we want custom row heights
+    # for each row. Since we don't currently support custom row heights,
+    # we're paying the cost for no benefit.
+    # @objc_method
+    # def outlineView_heightOfRowByItem_(self, tree, item) -> float:
+    #     default_row_height = self.rowHeight
+
+    #     if item is self:
+    #         return default_row_height
+
+    #     heights = [default_row_height]
+
+    #     for column in self.tableColumns:
+    #         value = getattr(
+    #             item.attrs["node"], str(column.identifier), self.interface.missing_value
+    #         )
+
+    #         if isinstance(value, toga.Widget):
+    #             # if the cell value is a widget, use its height
+    #             heights.append(value._impl.native.intrinsicContentSize().height)
+
+    #     return max(heights)
+
     @objc_method
-    def outlineView_heightOfRowByItem_(self, tree, item) -> float:
-        default_row_height = self.rowHeight
-
-        if item is self:
-            return default_row_height
-
-        heights = [default_row_height]
-
-        for column in self.tableColumns:
-            value = getattr(
-                item.attrs["node"], str(column.identifier), self.interface.missing_value
-            )
-
-            if isinstance(value, toga.Widget):
-                # if the cell value is a widget, use its height
-                heights.append(value._impl.native.intrinsicContentSize().height)
-
-        return max(heights)
-
-    @objc_method
-    def outlineView_pasteboardWriterForItem_(self, tree, item) -> None:
+    def outlineView_pasteboardWriterForItem_(
+        self, tree, item
+    ) -> None:  # pragma: no cover
         # this seems to be required to prevent issue 21562075 in AppKit
         return None
 
@@ -181,24 +172,13 @@ class TogaTree(NSOutlineView):
     # OutlineViewDelegate methods
     @objc_method
     def outlineViewSelectionDidChange_(self, notification) -> None:
-        if notification.object.selectedRow == -1:
-            selected = None
-        else:
-            selected = self.itemAtRow(notification.object.selectedRow).attrs["node"]
-
-        if self.interface.on_select:
-            self.interface.on_select(self.interface, node=selected)
+        self.interface.on_select(self.interface)
 
     # target methods
     @objc_method
     def onDoubleClick_(self, sender) -> None:
-        if self.clickedRow == -1:
-            node = None
-        else:
-            node = self.itemAtRow(self.clickedRow).attrs["node"]
-
-        if self.interface.on_select:
-            self.interface.on_double_click(self.interface, node=node)
+        node = self.itemAtRow(self.clickedRow).attrs["node"]
+        self.interface.on_activate(self.interface, node=node)
 
 
 class Tree(Widget):
@@ -212,113 +192,126 @@ class Tree(Widget):
         self.native.borderType = NSBezelBorder
 
         # Create the Tree widget
-        self.tree = TogaTree.alloc().init()
-        self.tree.interface = self.interface
-        self.tree.impl = self
-        self.tree.columnAutoresizingStyle = NSTableViewColumnAutoresizingStyle.Uniform
-        self.tree.usesAlternatingRowBackgroundColors = True
-        self.tree.allowsMultipleSelection = self.interface.multiple_select
+        self.native_tree = TogaTree.alloc().init()
+        self.native_tree.interface = self.interface
+        self.native_tree.impl = self
+        self.native_tree.columnAutoresizingStyle = (
+            NSTableViewColumnAutoresizingStyle.Uniform
+        )
+        self.native_tree.usesAlternatingRowBackgroundColors = True
+        self.native_tree.allowsMultipleSelection = self.interface.multiple_select
 
-        # Create columns for the tree
+        # Create columns for the table
         self.columns = []
-        # Cocoa identifies columns by an accessor; to avoid repeated
-        # conversion from ObjC string to Python String, create the
-        # ObjC string once and cache it.
-        self.column_identifiers = {}
-        for i, (heading, accessor) in enumerate(
-            zip(self.interface.headings, self.interface._accessors)
-        ):
-            column_identifier = at(accessor)
-            self.column_identifiers[id(column_identifier)] = accessor
-            column = NSTableColumn.alloc().initWithIdentifier(column_identifier)
-            # column.editable = False
-            column.minWidth = 16
-            # if self.interface.sorting:
-            #     sort_descriptor = NSSortDescriptor.sortDescriptorWithKey(column_identifier, ascending=True)
-            #     column.sortDescriptorPrototype = sort_descriptor
-            self.tree.addTableColumn(column)
-            self.columns.append(column)
-
-            column.headerCell.stringValue = heading
+        if self.interface.headings:
+            for index, (heading, accessor) in enumerate(
+                zip(self.interface.headings, self.interface.accessors)
+            ):
+                self._insert_column(index, heading, accessor)
+        else:
+            self.native_tree.setHeaderView(None)
+            for index, accessor in enumerate(self.interface.accessors):
+                self._insert_column(index, None, accessor)
 
         # Put the tree arrows in the first column.
-        self.tree.outlineTableColumn = self.columns[0]
+        self.native_tree.outlineTableColumn = self.columns[0]
 
-        self.tree.delegate = self.tree
-        self.tree.dataSource = self.tree
-        self.tree.target = self.tree
-        self.tree.doubleAction = SEL("onDoubleClick:")
+        self.native_tree.delegate = self.native_tree
+        self.native_tree.dataSource = self.native_tree
+        self.native_tree.target = self.native_tree
+        self.native_tree.doubleAction = SEL("onDoubleClick:")
 
         # Embed the tree view in the scroll view
-        self.native.documentView = self.tree
+        self.native.documentView = self.native_tree
 
         # Add the layout constraints
         self.add_constraints()
 
     def change_source(self, source):
-        self.tree.reloadData()
+        self.native_tree.reloadData()
 
     def insert(self, parent, index, item):
-        # set parent = None if inserting to the root item
         index_set = NSIndexSet.indexSetWithIndex(index)
-        if parent is self.interface.data:
-            parent = None
-        else:
-            parent = getattr(parent, "_impl", None)
-
-        self.tree.insertItemsAtIndexes(
+        self.native_tree.insertItemsAtIndexes(
             index_set,
-            inParent=parent,
+            inParent=parent._impl if parent else None,
             withAnimation=NSTableViewAnimation.SlideDown.value,
         )
 
     def change(self, item):
-        try:
-            self.tree.reloadItem(item._impl)
-        except AttributeError:
-            pass
+        self.native_tree.reloadItem(item._impl)
 
     def remove(self, parent, index, item):
-        try:
-            index = self.tree.childIndexForItem(item._impl)
-        except AttributeError:
-            pass
-        else:
-            index_set = NSIndexSet.indexSetWithIndex(index)
-            parent = self.tree.parentForItem(item._impl)
-            self.tree.removeItemsAtIndexes(
-                index_set,
-                inParent=parent,
-                withAnimation=NSTableViewAnimation.SlideUp.value,
-            )
+        index = self.native_tree.childIndexForItem(item._impl)
+        index_set = NSIndexSet.indexSetWithIndex(index)
+        parent = self.native_tree.parentForItem(item._impl)
+        self.native_tree.removeItemsAtIndexes(
+            index_set,
+            inParent=parent,
+            withAnimation=NSTableViewAnimation.SlideUp.value,
+        )
 
     def clear(self):
-        self.tree.reloadData()
+        self.native_tree.reloadData()
 
     def get_selection(self):
         if self.interface.multiple_select:
             selection = []
 
-            current_index = self.tree.selectedRowIndexes.firstIndex
-            for i in range(self.tree.selectedRowIndexes.count):
-                selection.append(self.tree.itemAtRow(current_index).attrs["node"])
-                current_index = self.tree.selectedRowIndexes.indexGreaterThanIndex(
-                    current_index
+            current_index = self.native_tree.selectedRowIndexes.firstIndex
+            for i in range(self.native_tree.selectedRowIndexes.count):
+                selection.append(
+                    self.native_tree.itemAtRow(current_index).attrs["node"]
+                )
+                current_index = (
+                    self.native_tree.selectedRowIndexes.indexGreaterThanIndex(
+                        current_index
+                    )
                 )
 
             return selection
         else:
-            index = self.tree.selectedRow
+            index = self.native_tree.selectedRow
             if index != -1:
-                return self.tree.itemAtRow(index).attrs["node"]
+                return self.native_tree.itemAtRow(index).attrs["node"]
             else:
                 return None
 
-    def set_on_select(self, handler):
-        pass
+    def expand_node(self, node):
+        self.native_tree.expandItem(node._impl, expandChildren=True)
 
-    def set_on_double_click(self, handler):
-        pass
+    def expand_all(self):
+        self.native_tree.expandItem(None, expandChildren=True)
+
+    def collapse_node(self, node):
+        self.native_tree.collapseItem(node._impl, collapseChildren=True)
+
+    def collapse_all(self):
+        self.native_tree.collapseItem(None, collapseChildren=True)
+
+    def _insert_column(self, index, heading, accessor):
+        column = NSTableColumn.alloc().initWithIdentifier(accessor)
+        column.minWidth = 16
+
+        self.columns.insert(index, column)
+        self.native_tree.addTableColumn(column)
+        if index != len(self.columns) - 1:
+            self.native_tree.moveColumn(len(self.columns) - 1, toColumn=index)
+
+        if heading is not None:
+            column.headerCell.stringValue = heading
+
+    def insert_column(self, index, heading, accessor):
+        self._insert_column(index, heading, accessor)
+        self.native_tree.sizeToFit()
+
+    def remove_column(self, index):
+        column = self.columns[index]
+        self.native_tree.removeTableColumn(column)
+
+        # delete column and identifier
+        self.columns.remove(column)
+        self.native_tree.sizeToFit()
 
     def rehint(self):
         self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)

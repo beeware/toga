@@ -2,6 +2,7 @@ import asyncio
 import sys
 import webbrowser
 from importlib import metadata as importlib_metadata
+from pathlib import Path
 from unittest.mock import Mock
 
 import pytest
@@ -381,7 +382,7 @@ def test_icon_construction(construct):
 
     # Default icon matches app name
     assert isinstance(app.icon, toga.Icon)
-    assert app.icon.path == "path/to/icon"
+    assert app.icon.path == Path("path/to/icon")
 
 
 @pytest.mark.parametrize("construct", [True, False])
@@ -394,23 +395,20 @@ def test_icon(app, construct):
 
     # Default icon matches app name
     assert isinstance(app.icon, toga.Icon)
-    assert app.icon.path == "resources/test_app"
+    assert app.icon.path == Path("resources/test_app")
 
     # Change icon
     app.icon = icon
 
     # Default icon matches app name
     assert isinstance(app.icon, toga.Icon)
-    assert app.icon.path == "path/to/icon"
+    assert app.icon.path == Path("path/to/icon")
 
 
-def test_current_window():
+def test_current_window(app):
     """The current window can be set and changed."""
-    window1 = toga.Window()
-    window2 = toga.Window()
-    app = toga.App(
-        formal_name="Test App", app_id="org.example.test", windows=[window1, window2]
-    )
+    other_window = toga.Window()
+
     # There are three windows - the 2 provided, plus the main window
     assert len(app.windows) == 3
     assert_action_performed_with(app, "set_main_window", window=app.main_window)
@@ -419,9 +417,9 @@ def test_current_window():
     assert app.current_window == app.main_window
 
     # Change the current window
-    app.current_window = window1
-    assert app.current_window == window1
-    assert_action_performed_with(app, "set_current_window", window=window1)
+    app.current_window = other_window
+    assert app.current_window == other_window
+    assert_action_performed_with(app, "set_current_window", window=other_window)
 
 
 def test_no_current_window(app):
@@ -438,9 +436,7 @@ def test_full_screen():
     """The app can be put into full screen mode."""
     window1 = toga.Window()
     window2 = toga.Window()
-    app = toga.App(
-        formal_name="Test App", app_id="org.example.test", windows=[window1, window2]
-    )
+    app = toga.App(formal_name="Test App", app_id="org.example.test")
 
     assert not app.is_full_screen
 

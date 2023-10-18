@@ -5,12 +5,10 @@ import threading
 from ctypes import windll
 
 import System.Windows.Forms as WinForms
-from System import (
-    Environment,
-    Threading,
-)
+from System import Environment, Threading
 from System.Media import SystemSounds
 from System.Net import SecurityProtocolType, ServicePointManager
+from System.Windows.Threading import Dispatcher
 
 import toga
 from toga import Key
@@ -18,6 +16,7 @@ from toga.command import GROUP_BREAK, SECTION_BREAK
 
 from .keys import toga_to_winforms_key
 from .libs.proactor import WinformsProactorEventLoop
+from .libs.wrapper import WeakrefCallable
 from .window import Window
 
 
@@ -60,6 +59,7 @@ class App:
     def create(self):
         self.native = WinForms.Application
         self.app_context = WinForms.ApplicationContext()
+        self.app_dispatcher = Dispatcher.CurrentDispatcher
 
         # Check the version of windows and make sure we are setting the DPI mode
         # with the most up to date API
@@ -155,7 +155,7 @@ class App:
                 item = WinForms.ToolStripMenuItem(cmd.text)
 
                 if cmd.action:
-                    item.Click += cmd._impl.as_handler()
+                    item.Click += WeakrefCallable(cmd._impl.as_handler())
                 item.Enabled = cmd.enabled
 
                 if cmd.shortcut is not None:
@@ -248,9 +248,11 @@ class App:
 
             # This catches errors in handlers, and prints them
             # in a usable form.
-            self.native.ThreadException += self.winforms_thread_exception
+            self.native.ThreadException += WeakrefCallable(
+                self.winforms_thread_exception
+            )
 
-            self.loop.run_forever(self.app_context)
+            self.loop.run_forever(self)
         except Exception as e:
             # In case of an unhandled error at the level of the app,
             # preserve the Python stacktrace

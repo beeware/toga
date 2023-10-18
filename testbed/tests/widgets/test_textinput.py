@@ -94,10 +94,7 @@ async def test_on_change_user(widget, probe, on_change):
 
     for count, char in enumerate("Hello world", start=1):
         await probe.type_character(char)
-        # GTK has an intermittent failure because on_change handler
-        # caused by typing a character doesn't fully propegate. A
-        # short delay fixes this.
-        await probe.redraw(f"Typed {char!r}", delay=0.02)
+        await probe.redraw(f"Typed {char!r}")
 
         # The number of events equals the number of characters typed.
         assert on_change.mock_calls == [call(widget)] * count
@@ -216,3 +213,33 @@ async def test_text_value(widget, probe):
 
         assert widget.value == str(text).replace("\n", " ")
         assert probe.value == str(text).replace("\n", " ")
+
+
+async def test_undo_redo(widget, probe):
+    "The widget supports undo and redo."
+
+    text_0 = str(widget.value)
+    text_extra = " World!"
+    text_1 = text_0 + text_extra
+
+    widget.focus()
+    probe.set_cursor_at_end()
+
+    # type more text
+    for char in text_extra:
+        await probe.type_character(char)
+    await probe.redraw(f"Widget value should be {text_1!r}")
+    assert widget.value == text_1
+    assert probe.value == text_1
+
+    # undo
+    await probe.undo()
+    await probe.redraw(f"Widget value should be {text_0!r}")
+    assert widget.value == text_0
+    assert probe.value == text_0
+
+    # redo
+    await probe.redo()
+    await probe.redraw(f"Widget value should be {text_1!r}")
+    assert widget.value == text_1
+    assert probe.value == text_1

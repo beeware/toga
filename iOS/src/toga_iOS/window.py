@@ -49,7 +49,10 @@ class Window:
 
         # If the minimum layout is bigger than the current window, log a warning
         if self.container.width < min_width or self.container.height < min_height:
-            print("**WARNING** Window content exceeds available space")
+            print(
+                f"Warning: Window content {(min_width, min_height)} "
+                f"exceeds available space {(self.container.width, self.container.height)}"
+            )
 
     def get_title(self):
         return str(self.container.title)

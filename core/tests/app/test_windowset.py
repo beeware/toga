@@ -5,18 +5,13 @@ from toga.app import WindowSet
 
 
 @pytest.fixture
-def window1():
+def window1(app):
     return toga.Window(title="Window 1")
 
 
 @pytest.fixture
-def window2():
+def window2(app):
     return toga.Window(title="Window 2")
-
-
-@pytest.fixture
-def window3():
-    return toga.Window(title="Window 3")
 
 
 def test_create(app):
@@ -27,87 +22,74 @@ def test_create(app):
     assert len(windowset) == 0
 
 
-def test_add_discard(app, window1, window2, window3):
+def test_add_discard(app, window1, window2):
     """An item can be added to a windowset"""
-    windowset = WindowSet(app)
-    windowset.add(window1)
-    windowset.add(window2)
-    assert len(windowset) == 2
+    # The windowset has 3 windows - the main window, plus 2 extras
+    assert len(app.windows) == 3
+
     # Check the iterator works
-    assert set(iter(windowset)) == {window1, window2}
+    assert set(iter(app.windows)) == {app.main_window, window1, window2}
 
     with pytest.raises(
         TypeError,
         match=r"Can only add objects of type toga.Window",
     ):
-        windowset.add(object())
+        app.windows.add(object())
 
-    windowset.add(window3)
-    assert len(windowset) == 3
-    assert window3 in windowset
-    assert window3.app == app
+    # Explicitly re-add a window that is already in the windowset
+    app.windows.add(window2)
+    assert len(app.windows) == 3
+    assert window2 in app.windows
+    assert window2.app == app
 
-    # Re-add the same window
-    windowset.add(window3)
-    assert len(windowset) == 3
-    assert window3 in windowset
-    assert window3.app == app
-
-    # Discard the window
-    windowset.discard(window3)
-    assert window3 not in windowset
+    # Explicitly discard a window that is in the windowset
+    app.windows.discard(window2)
+    assert window2 not in app.windows
 
     # Duplicate discard - it's no longer a member
     with pytest.raises(
         ValueError,
         match=r"<toga.window.Window object at .*> is not part of this app",
     ):
-        windowset.discard(window3)
+        app.windows.discard(window2)
 
     with pytest.raises(
         TypeError,
         match=r"Can only discard objects of type toga.Window",
     ):
-        windowset.discard(object())
+        app.windows.discard(object())
 
 
-def test_add_discard_by_operator(app, window1, window2, window3):
+def test_add_discard_by_operator(app, window1, window2):
     """An item can be added to a windowset by inline operators"""
-    windowset = WindowSet(app)
-    windowset.add(window1)
-    windowset.add(window2)
-    assert len(windowset) == 2
+    # The windowset has 3 windows - the main window, plus 2 extras
+    assert len(app.windows) == 3
 
     with pytest.raises(
         TypeError,
         match=r"Can only add objects of type toga.Window",
     ):
-        windowset += object()
+        app.windows += object()
 
-    windowset += window3
-    assert len(windowset) == 3
-    assert window3 in windowset
-    assert window3.app == app
+    # Explicitly re-add a window that is already in the windowset
+    app.windows += window2
+    assert len(app.windows) == 3
+    assert window2 in app.windows
+    assert window2.app == app
 
-    # Re-add the same window
-    windowset += window3
-    assert len(windowset) == 3
-    assert window3 in windowset
-    assert window3.app == app
-
-    # Discard the window
-    windowset -= window3
-    assert window3 not in windowset
+    # Explicitly discard a window that is in the windowset
+    app.windows -= window2
+    assert window2 not in app.windows
 
     # Duplicate discard - it's no longer a member
     with pytest.raises(
         ValueError,
         match=r"<toga.window.Window object at .*> is not part of this app",
     ):
-        windowset -= window3
+        app.windows -= window2
 
     with pytest.raises(
         TypeError,
         match=r"Can only discard objects of type toga.Window",
     ):
-        windowset -= object()
+        app.windows -= object()

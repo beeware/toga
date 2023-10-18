@@ -1,3 +1,4 @@
+from pathlib import Path
 from unittest.mock import Mock
 
 import pytest
@@ -87,7 +88,7 @@ def test_icon_construction(app, construct):
 
     # Default icon matches app name
     assert isinstance(cmd.icon, toga.Icon)
-    assert cmd.icon.path == "path/to/icon"
+    assert cmd.icon.path == Path("path/to/icon")
 
 
 @pytest.mark.parametrize("construct", [True, False])
@@ -108,7 +109,7 @@ def test_icon(app, construct):
 
     # Icon path matches
     assert isinstance(cmd.icon, toga.Icon)
-    assert cmd.icon.path == "path/to/icon"
+    assert cmd.icon.path == Path("path/to/icon")
 
 
 @pytest.mark.parametrize(

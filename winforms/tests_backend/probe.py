@@ -1,21 +1,19 @@
 import asyncio
 
-from System.Drawing import FontFamily, SystemFonts
+from System.Windows.Forms import SendKeys
 
-from toga.fonts import CURSIVE, FANTASY, MONOSPACE, SANS_SERIF, SERIF, SYSTEM
+KEY_CODES = {
+    f"<{name}>": f"{{{name.upper()}}}"
+    for name in ["esc", "up", "down", "left", "right"]
+}
+KEY_CODES.update(
+    {
+        "\n": "{ENTER}",
+    }
+)
 
 
 class BaseProbe:
-    def assert_font_family(self, expected):
-        assert self.font.family == {
-            CURSIVE: "Comic Sans MS",
-            FANTASY: "Impact",
-            MONOSPACE: FontFamily.GenericMonospace.Name,
-            SANS_SERIF: FontFamily.GenericSansSerif.Name,
-            SERIF: FontFamily.GenericSerif.Name,
-            SYSTEM: SystemFonts.DefaultFont.FontFamily.Name,
-        }.get(expected, expected)
-
     async def redraw(self, message=None, delay=None):
         """Request a redraw of the app, waiting until that redraw has completed."""
         # Winforms style changes always take effect immediately.
@@ -27,3 +25,26 @@ class BaseProbe:
         if delay:
             print("Waiting for redraw" if message is None else message)
             await asyncio.sleep(delay)
+
+    @property
+    def scale_factor(self):
+        return self.native.CreateGraphics().DpiX / 96
+
+    async def type_character(self, char, *, shift=False, ctrl=False, alt=False):
+        try:
+            key_code = KEY_CODES[char]
+        except KeyError:
+            assert len(char) == 1, char
+            key_code = char
+
+        if shift:
+            key_code = "+" + key_code
+        if ctrl:
+            key_code = "^" + key_code
+        if alt:
+            key_code = "%" + key_code
+
+        # This sends keys to the focused window, which isn't necessarily even in the
+        # same app. Unfortunately that makes it difficult to run tests in the
+        # background.
+        SendKeys.SendWait(key_code)

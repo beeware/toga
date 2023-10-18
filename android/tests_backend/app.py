@@ -1,14 +1,13 @@
 from pathlib import Path
 
-from toga_android.libs.activity import MainActivity
+from org.beeware.android import MainActivity
 
 from .probe import BaseProbe
 
 
 class AppProbe(BaseProbe):
     def __init__(self, app):
-        super().__init__()
-        self.app = app
+        super().__init__(app)
         assert isinstance(self.app._impl.native, MainActivity)
 
     def get_app_context(self):

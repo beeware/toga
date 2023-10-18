@@ -1,5 +1,9 @@
+import gc
 import io
+import re
 import traceback
+import weakref
+from asyncio import wait_for
 from importlib import import_module
 from pathlib import Path
 from unittest.mock import Mock
@@ -115,21 +119,18 @@ if toga.platform.current_platform in {"iOS", "android"}:
             assert main_window.size == initial_size
             assert main_window_probe.content_size == content_size
 
-            assert (
-                "**WARNING** Window content exceeds available space"
-                in capsys.readouterr().out
+            space_warning = (
+                r"Warning: Window content \([\d.]+, [\d.]+\) "
+                r"exceeds available space \([\d.]+, [\d.]+\)"
             )
+            assert re.search(space_warning, capsys.readouterr().out)
 
             # Resize content to fit
             box1.style.width = 100
             await main_window_probe.wait_for_window("Content fits in window")
             assert main_window.size == initial_size
             assert main_window_probe.content_size == content_size
-
-            assert (
-                "**WARNING** Window content exceeds available space"
-                not in capsys.readouterr().out
-            )
+            assert not re.search(space_warning, capsys.readouterr().out)
 
             # Alter the content width to exceed window height
             box1.style.height = 2000
@@ -138,11 +139,8 @@ if toga.platform.current_platform in {"iOS", "android"}:
             )
             assert main_window.size == initial_size
             assert main_window_probe.content_size == content_size
+            assert re.search(space_warning, capsys.readouterr().out)
 
-            assert (
-                "**WARNING** Window content exceeds available space"
-                in capsys.readouterr().out
-            )
         finally:
             main_window.content = orig_content
 
@@ -169,8 +167,9 @@ else:
         assert second_window.size == (640, 480)
         assert second_window.position == (100, 100)
         assert second_window_probe.is_resizable
-        assert second_window_probe.is_closable
-        if second_window_probe.supports_minimize_control:
+        if second_window_probe.supports_closable:
+            assert second_window_probe.is_closable
+        if second_window_probe.supports_minimizable:
             assert second_window_probe.is_minimizable
 
         second_window.close()
@@ -217,6 +216,32 @@ else:
 
         assert second_window not in app.windows
 
+    async def test_secondary_window_cleanup(app_probe):
+        """Memory for windows is cleaned up when windows are deleted."""
+        # Create and show a window with content. We can't use the second_window fixture
+        # because the fixture will retain a reference, preventing garbage collection.
+        second_window = toga.Window()
+        second_window.content = toga.Box()
+        second_window.show()
+        await app_probe.redraw("Secondary Window has been created")
+
+        # Retain a weak reference to the window to check garbage collection
+        window_ref = weakref.ref(second_window)
+        impl_ref = weakref.ref(second_window._impl)
+
+        second_window.close()
+        await app_probe.redraw("Secondary window has been closed")
+
+        # Clear the local reference to the window (which should be the last reference),
+        # and force a garbage collection pass. This should cause deletion of both the
+        # interface and impl of the window.
+        del second_window
+        gc.collect()
+
+        # Assert that the weak references are now dead.
+        assert window_ref() is None
+        assert impl_ref() is None
+
     @pytest.mark.parametrize(
         "second_window_kwargs",
         [dict(title="Secondary Window", position=(200, 300), size=(400, 200))],
@@ -245,19 +270,26 @@ else:
         [dict(title="Not Closeable", closable=False, position=(200, 150))],
     )
     async def test_non_closable(second_window, second_window_probe):
-        """A non-closable window can be created"""
+        """A non-closable window can be created. Backends that don't support this
+        natively should implement it by making the close button do nothing."""
         assert second_window.visible
-        assert not second_window_probe.is_closable
+
+        on_close_handler = Mock(return_value=False)
+        second_window.on_close = on_close_handler
+
+        if second_window_probe.supports_closable:
+            assert not second_window_probe.is_closable
 
         # Do a UI close on the window
         second_window_probe.close()
         await second_window_probe.wait_for_window("Close request was ignored")
+        on_close_handler.assert_not_called()
         assert second_window.visible
 
         # Do an explicit close on the window
         second_window.close()
         await second_window_probe.wait_for_window("Explicit close was honored")
-
+        on_close_handler.assert_not_called()
         assert not second_window.visible
 
     @pytest.mark.parametrize(
@@ -266,6 +298,9 @@ else:
     )
     async def test_non_minimizable(second_window, second_window_probe):
         """A non-minimizable window can be created"""
+        if not second_window_probe.supports_minimizable:
+            pytest.xfail("This backend doesn't support disabling minimization")
+
         assert second_window.visible
         assert not second_window_probe.is_minimizable
 
@@ -380,8 +415,8 @@ else:
         await second_window_probe.wait_for_window(
             "Secondary window has had height adjusted due to content"
         )
-        assert second_window.size == (200 + extra_width, 210 + extra_height)
-        assert second_window_probe.content_size == (200, 210)
+        assert second_window.size == (200, 210 + extra_height)
+        assert second_window_probe.content_size == (200 - extra_width, 210)
 
         # Alter the content width to exceed window size
         box1.style.width = 250
@@ -406,6 +441,7 @@ else:
     async def test_full_screen(second_window, second_window_probe):
         """Window can be made full screen"""
         assert not second_window_probe.is_full_screen
+        assert second_window_probe.is_resizable
         initial_content_size = second_window_probe.content_size
 
         second_window.full_screen = True
@@ -433,6 +469,7 @@ else:
             full_screen=True,
         )
         assert not second_window_probe.is_full_screen
+        assert second_window_probe.is_resizable
         assert second_window_probe.content_size == initial_content_size
 
         second_window.full_screen = False
@@ -448,6 +485,19 @@ else:
 ########################################################################################
 
 
+TESTS_DIR = Path(__file__).parent
+
+
+async def assert_dialog_result(window, dialog, on_result, expected):
+    actual = await wait_for(dialog, timeout=1)
+    if callable(expected):
+        assert expected(actual)
+    else:
+        assert actual == expected
+
+    on_result.assert_called_once_with(window, actual)
+
+
 async def test_info_dialog(main_window, main_window_probe):
     """An info dialog can be displayed and acknowledged."""
     on_result_handler = Mock()
@@ -456,9 +506,7 @@ async def test_info_dialog(main_window, main_window_probe):
     )
     await main_window_probe.redraw("Info dialog displayed")
     await main_window_probe.close_info_dialog(dialog_result._impl)
-
-    on_result_handler.assert_called_once_with(main_window, None)
-    assert await dialog_result is None
+    await assert_dialog_result(main_window, dialog_result, on_result_handler, None)
 
 
 @pytest.mark.parametrize("result", [False, True])
@@ -472,9 +520,7 @@ async def test_question_dialog(main_window, main_window_probe, result):
     )
     await main_window_probe.redraw("Question dialog displayed")
     await main_window_probe.close_question_dialog(dialog_result._impl, result)
-
-    on_result_handler.assert_called_once_with(main_window, result)
-    assert await dialog_result is result
+    await assert_dialog_result(main_window, dialog_result, on_result_handler, result)
 
 
 @pytest.mark.parametrize("result", [False, True])
@@ -488,9 +534,7 @@ async def test_confirm_dialog(main_window, main_window_probe, result):
     )
     await main_window_probe.redraw("Confirmation dialog displayed")
     await main_window_probe.close_confirm_dialog(dialog_result._impl, result)
-
-    on_result_handler.assert_called_once_with(main_window, result)
-    assert await dialog_result is result
+    await assert_dialog_result(main_window, dialog_result, on_result_handler, result)
 
 
 async def test_error_dialog(main_window, main_window_probe):
@@ -501,9 +545,7 @@ async def test_error_dialog(main_window, main_window_probe):
     )
     await main_window_probe.redraw("Error dialog displayed")
     await main_window_probe.close_error_dialog(dialog_result._impl)
-
-    on_result_handler.assert_called_once_with(main_window, None)
-    assert await dialog_result is None
+    await assert_dialog_result(main_window, dialog_result, on_result_handler, None)
 
 
 @pytest.mark.parametrize("result", [None, False, True])
@@ -523,9 +565,7 @@ async def test_stack_trace_dialog(main_window, main_window_probe, result):
         f"Stack trace dialog (with{'out' if result is None else ''} retry) displayed"
     )
     await main_window_probe.close_stack_trace_dialog(dialog_result._impl, result)
-
-    on_result_handler.assert_called_once_with(main_window, result)
-    assert await dialog_result is result
+    await assert_dialog_result(main_window, dialog_result, on_result_handler, result)
 
 
 @pytest.mark.parametrize(
@@ -533,8 +573,8 @@ async def test_stack_trace_dialog(main_window, main_window_probe, result):
     [
         ("/path/to/file.txt", None, Path("/path/to/file.txt")),
         ("/path/to/file.txt", None, None),
-        ("/path/to/file.txt", [".txt", ".doc"], Path("/path/to/file.txt")),
-        ("/path/to/file.txt", [".txt", ".doc"], None),
+        ("/path/to/file.txt", ["txt", "doc"], Path("/path/to/file.txt")),
+        ("/path/to/file.txt", ["txt", "doc"], None),
     ],
 )
 async def test_save_file_dialog(
@@ -555,48 +595,46 @@ async def test_save_file_dialog(
     await main_window_probe.redraw("Save File dialog displayed")
     await main_window_probe.close_save_file_dialog(dialog_result._impl, result)
 
-    if result:
-        # The directory where the file dialog is opened can't be 100% predicted
-        # so we need to modify the check to only inspect the filename.
-        on_result_handler.call_count == 1
-        assert on_result_handler.mock_calls[0].args[0] == main_window
-        assert on_result_handler.mock_calls[0].args[1].name == Path(filename).name
-        assert (await dialog_result).name == Path(filename).name
-    else:
-        on_result_handler.assert_called_once_with(main_window, None)
-        assert await dialog_result is None
+    # The directory where the file dialog is opened can't be 100% predicted
+    # so we need to modify the check to only inspect the filename.
+    await assert_dialog_result(
+        main_window,
+        dialog_result,
+        on_result_handler,
+        None if result is None else (lambda actual: actual.name == result.name),
+    )
 
 
 @pytest.mark.parametrize(
     "initial_directory, file_types, multiple_select, result",
     [
         # Successful single select
-        (Path(__file__).parent, None, False, Path("/path/to/file1.txt")),
+        (TESTS_DIR, None, False, TESTS_DIR / "data.py"),
         # Cancelled single select
-        (Path(__file__).parent, None, False, None),
+        (TESTS_DIR, None, False, None),
         # Successful single select with no initial directory
-        (None, None, False, Path("/path/to/file1.txt")),
+        (None, None, False, TESTS_DIR / "data.py"),
         # Successful single select with file types
-        (Path(__file__).parent, [".txt", ".doc"], False, Path("/path/to/file1.txt")),
+        (TESTS_DIR, ["txt"], False, TESTS_DIR / "data.py"),
         # Successful multiple selection
         (
-            Path(__file__).parent,
+            TESTS_DIR,
             None,
             True,
-            [Path("/path/to/file1.txt"), Path("/path/to/file2.txt")],
+            [TESTS_DIR / "conftest.py", TESTS_DIR / "data.py"],
         ),
-        # Successful multiple selection of no items
-        (Path(__file__).parent, None, True, []),
+        # Successful multiple selection of one item
+        (TESTS_DIR, None, True, [TESTS_DIR / "data.py"]),
         # Cancelled multiple selection
-        (Path(__file__).parent, None, True, None),
+        (TESTS_DIR, None, True, None),
         # Successful multiple selection with no initial directory
-        (None, None, True, [Path("/path/to/file1.txt"), Path("/path/to/file2.txt")]),
+        (None, None, True, [TESTS_DIR / "conftest.py", TESTS_DIR / "data.py"]),
         # Successful multiple selection with file types
         (
-            Path(__file__).parent,
-            [".txt", ".doc"],
+            TESTS_DIR,
+            ["txt", "doc"],
             True,
-            [Path("/path/to/file1.txt"), Path("/path/to/file2.txt")],
+            [TESTS_DIR / "conftest.py", TESTS_DIR / "data.py"],
         ),
     ],
 )
@@ -619,34 +657,26 @@ async def test_open_file_dialog(
     )
     await main_window_probe.redraw("Open File dialog displayed")
     await main_window_probe.close_open_file_dialog(
-        dialog_result._impl,
-        result,
-        multiple_select=multiple_select,
+        dialog_result._impl, result, multiple_select
     )
-
-    if result:
-        on_result_handler.assert_called_once_with(main_window, result)
-        assert await dialog_result == result
-    else:
-        on_result_handler.assert_called_once_with(main_window, None)
-        assert await dialog_result is None
+    await assert_dialog_result(main_window, dialog_result, on_result_handler, result)
 
 
 @pytest.mark.parametrize(
     "initial_directory, multiple_select, result",
     [
         # Successful single select
-        (Path(__file__).parent, False, Path("/path/to/dir1")),
+        (TESTS_DIR, False, TESTS_DIR / "widgets"),
         # Cancelled single select
-        (Path(__file__).parent, False, None),
+        (TESTS_DIR, False, None),
         # Successful single select with no initial directory
-        (None, False, Path("/path/to/dir1")),
+        (None, False, TESTS_DIR / "widgets"),
         # Successful multiple selection
-        (Path(__file__).parent, True, [Path("/path/to/dir1"), Path("/path/to/dir2")]),
-        # Successful multiple selection with no items
-        (Path(__file__).parent, True, []),
+        (TESTS_DIR, True, [TESTS_DIR, TESTS_DIR / "widgets"]),
+        # Successful multiple selection with one item
+        (TESTS_DIR, True, [TESTS_DIR / "widgets"]),
         # Cancelled multiple selection
-        (Path(__file__).parent, True, None),
+        (TESTS_DIR, True, None),
     ],
 )
 async def test_select_folder_dialog(
@@ -666,14 +696,12 @@ async def test_select_folder_dialog(
     )
     await main_window_probe.redraw("Select Folder dialog displayed")
     await main_window_probe.close_select_folder_dialog(
-        dialog_result._impl,
-        result,
-        multiple_select=multiple_select,
+        dialog_result._impl, result, multiple_select
     )
 
-    if result:
-        on_result_handler.assert_called_once_with(main_window, result)
-        assert await dialog_result == result
-    else:
-        on_result_handler.assert_called_once_with(main_window, None)
-        assert await dialog_result is None
+    if (
+        isinstance(result, list)
+        and not main_window_probe.supports_multiple_select_folder
+    ):
+        result = result[-1:]
+    await assert_dialog_result(main_window, dialog_result, on_result_handler, result)

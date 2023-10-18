@@ -16,6 +16,11 @@ from testbed.app import main
 
 def run_tests(app, cov, args, report_coverage, run_slow):
     try:
+        # Wait for the app's main window to be visible.
+        print("Waiting for app to be ready for testing... ", end="", flush=True)
+        while app.main_window is None or not app.main_window.visible:
+            time.sleep(0.05)
+        print("ready.")
         # Control the run speed of the test app.
         app.run_slow = run_slow
 
@@ -133,13 +138,18 @@ if __name__ == "__main__":
     except ValueError:
         run_slow = False
 
-    # If there are no other specified arguments, default to running the whole suite.
-    # Only show coverage if we're running the full suite.
+    # If `--coverage` is in the arguments, display a coverage report
+    try:
+        args.remove("--coverage")
+        report_coverage = True
+    except ValueError:
+        report_coverage = False
+
+    # If there are no other specified arguments, default to running the whole suite,
+    # and reporting coverage.
     if len(args) == 0:
         args = ["tests"]
         report_coverage = True
-    else:
-        report_coverage = False
 
     thread = Thread(
         target=partial(
