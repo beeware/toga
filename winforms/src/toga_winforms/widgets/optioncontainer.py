@@ -26,10 +26,7 @@ class OptionContainer(Widget):
         # Selected event fires.
         self.resize_content(panel)
 
-        def winforms_client_size_changed(sender, event):
-            self.resize_content(panel)
-
-        page.ClientSizeChanged += WeakrefCallable(winforms_client_size_changed)
+        page.ClientSizeChanged += WeakrefCallable(self.winforms_client_size_changed)
 
     def remove_content(self, index):
         panel = self.panels.pop(index)
@@ -62,6 +59,10 @@ class OptionContainer(Widget):
 
     def winforms_selected(self, sender, event):
         self.interface.on_select(None)
+
+    def winforms_client_size_changed(self, sender, event):
+        for panel in self.panels:
+            self.resize_content(panel)
 
     def resize_content(self, panel):
         size = panel.native_parent.ClientSize
