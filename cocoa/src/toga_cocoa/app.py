@@ -322,13 +322,6 @@ class App:
         self.interface.visit_homepage()
 
     def create_menus(self):
-        # Purge any existing menu items
-        while self._menu_groups:
-            _, submenu = self._menu_groups.popitem()
-        while self._menu_items:
-            item, cmd = self._menu_items.popitem()
-            cmd._impl.native.remove(item)
-
         # Recreate the menu
         menubar = NSMenu.alloc().initWithTitle("MainMenu")
         submenu = None

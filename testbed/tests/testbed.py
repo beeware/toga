@@ -75,8 +75,8 @@ def run_tests(app, cov, args, report_coverage, run_slow):
                 )
                 if total < 100.0:
                     print("Test coverage is incomplete")
-                    # Uncomment the next line to enforce test coverage
-                    # TODO: app.returncode = 1
+                    app.returncode = 1
+
     except BaseException:
         traceback.print_exc()
         app.returncode = 1
