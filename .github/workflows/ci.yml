@@ -12,7 +12,7 @@ on:
 
 env:
   min_python_version: "3.8"
-  max_python_version: "3.11"
+  max_python_version: "3.12"
 
 defaults:
   run:
@@ -65,12 +65,12 @@ jobs:
     strategy:
       matrix:
         platform: [ "macos", "ubuntu", "windows" ]
-        python-version: [ "3.8", "3.9", "3.10", "3.11", "3.12-dev" ]
+        python-version: [ "3.8", "3.9", "3.10", "3.11", "3.12" ]
         include:
           - experimental: false
 
-          - python-version: "3.12-dev"
-            experimental: true
+          # - python-version: "3.13-dev"
+          #   experimental: true
     steps:
     - uses: actions/checkout@v4.1.0
     - name: Set up Python ${{ matrix.python-version }}
