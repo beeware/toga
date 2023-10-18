@@ -1,9 +1,9 @@
-from java import dynamic_proxy
-from travertino.size import at_least
-
 from android.text import InputType, TextWatcher
 from android.view import Gravity, View
 from android.widget import EditText
+from java import dynamic_proxy
+from travertino.size import at_least
+
 from toga_android.keys import toga_key
 
 from .label import TextViewWidget

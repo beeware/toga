@@ -66,7 +66,7 @@ def test_hashable():
 
 
 def test_group_eq():
-    """Groups can be comared for equality."""
+    """Groups can be compared for equality."""
     group_a = toga.Group("A")
     group_b = toga.Group("B")
     group_a1 = toga.Group("A", 1)

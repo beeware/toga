@@ -7,11 +7,10 @@ import selectors
 import sys
 import threading
 
+from android.os import Handler, Looper, MessageQueue
 from java import dynamic_proxy
 from java.io import FileDescriptor
 from java.lang import Runnable
-
-from android.os import Handler, Looper, MessageQueue
 
 # Some methods in this file are based on CPython's implementation.
 # Per https://github.com/python/cpython/blob/master/LICENSE , re-use is permitted

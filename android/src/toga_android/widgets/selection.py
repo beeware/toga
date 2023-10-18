@@ -1,9 +1,8 @@
-from java import dynamic_proxy
-from travertino.size import at_least
-
 from android import R
 from android.view import View
 from android.widget import AdapterView, ArrayAdapter, Spinner
+from java import dynamic_proxy
+from travertino.size import at_least
 
 from .base import Widget
 

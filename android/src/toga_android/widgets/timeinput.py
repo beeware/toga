@@ -1,9 +1,8 @@
 from datetime import time
 
-from java import dynamic_proxy
-
 from android import R
 from android.app import TimePickerDialog
+from java import dynamic_proxy
 
 from .internal.pickers import PickerBase
 

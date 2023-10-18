@@ -1,6 +1,5 @@
-from travertino.colors import NAMED_COLOR, TRANSPARENT
-
 from android.graphics import Color
+from travertino.colors import NAMED_COLOR, TRANSPARENT
 
 CACHE = {TRANSPARENT: Color.TRANSPARENT}
 

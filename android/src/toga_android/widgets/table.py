@@ -1,13 +1,13 @@
 from warnings import warn
 
-from java import dynamic_proxy
-from travertino.size import at_least
-
-import toga
 from android import R
 from android.graphics import Rect, Typeface
 from android.view import Gravity, View
 from android.widget import LinearLayout, ScrollView, TableLayout, TableRow, TextView
+from java import dynamic_proxy
+from travertino.size import at_least
+
+import toga
 
 from .base import Widget
 from .label import set_textview_font

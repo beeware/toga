@@ -1,8 +1,7 @@
-from java import dynamic_proxy
-from travertino.size import at_least
-
 from android.view import View
 from android.widget import Button as A_Button
+from java import dynamic_proxy
+from travertino.size import at_least
 
 from .label import TextViewWidget
 

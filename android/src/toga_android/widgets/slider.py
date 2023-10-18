@@ -1,10 +1,10 @@
+from android import R
+from android.view import View
+from android.widget import SeekBar
 from java import dynamic_proxy
 from travertino.size import at_least
 
 import toga
-from android import R
-from android.view import View
-from android.widget import SeekBar
 
 from .base import Widget
 

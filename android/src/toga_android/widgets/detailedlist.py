@@ -1,15 +1,14 @@
 from dataclasses import dataclass
 
-from androidx.swiperefreshlayout.widget import SwipeRefreshLayout
-from java import dynamic_proxy
-from travertino.size import at_least
-
 from android import R
 from android.app import AlertDialog
 from android.content import DialogInterface
 from android.graphics import Rect
 from android.view import Gravity, View
 from android.widget import ImageView, LinearLayout, RelativeLayout, ScrollView, TextView
+from androidx.swiperefreshlayout.widget import SwipeRefreshLayout
+from java import dynamic_proxy
+from travertino.size import at_least
 
 from .base import Widget
 
