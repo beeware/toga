@@ -1,1 +1,1 @@
-A bug in the setting of the DPI Awareness mode of the app was fixed.
+Bugs related to the DPI scaling on Windows were fixed.
