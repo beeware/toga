@@ -87,7 +87,7 @@ class Window:
                 item_impl = Gtk.ToolButton()
                 if cmd.icon:
                     item_impl.set_icon_widget(
-                        Gtk.Image.new_from_pixbuf(cmd.icon._impl.native_32.get_pixbuf())
+                        Gtk.Image.new_from_pixbuf(cmd.icon._impl.native_32)
                     )
                 item_impl.set_label(cmd.text)
                 if cmd.tooltip:

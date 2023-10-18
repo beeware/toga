@@ -317,21 +317,22 @@ else:
             window3 = toga.Window("Test Window 3", position=(300, 400), size=(200, 200))
             window3.content = toga.Box(style=Pack(background_color=FIREBRICK))
 
-            window2_probe = window_probe(app, window2)
-            window3_probe = window_probe(app, window2)
+            # We don't need to probe anything window specific; we just need
+            # a window probe to enforce appropriate delays.
+            window1_probe = window_probe(app, window1)
 
             window1.show()
             window2.show()
             window3.show()
 
-            await app_probe.redraw("Extra windows added")
+            await window1_probe.wait_for_window("Extra windows added")
 
             app.current_window = window2
-            await window2_probe.wait_for_window("Window 2 is current")
+            await window1_probe.wait_for_window("Window 2 is current")
             assert app.current_window == window2
 
             app.current_window = window3
-            await window3_probe.wait_for_window("Window 3 is current")
+            await window1_probe.wait_for_window("Window 3 is current")
             assert app.current_window == window3
 
             # app_probe.platform tests?
