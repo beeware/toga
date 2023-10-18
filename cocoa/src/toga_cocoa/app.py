@@ -136,12 +136,21 @@ class App:
         self.appDelegate.native = self.native
         self.native.setDelegate_(self.appDelegate)
 
-        formal_name = self.interface.formal_name
+        self._create_app_commands()
 
+        # Call user code to populate the main window
+        self.interface._startup()
+
+        # Create the lookup table of menu items,
+        # then force the creation of the menus.
+        self.create_menus()
+
+    def _create_app_commands(self):
+        formal_name = self.interface.formal_name
         self.interface.commands.add(
             # ---- App menu -----------------------------------
             toga.Command(
-                lambda _: self.interface.about(),
+                self._menu_about,
                 "About " + formal_name,
                 group=toga.Group.APP,
             ),
@@ -177,11 +186,34 @@ class App:
             ),
             # Quit should always be the last item, in a section on its own
             toga.Command(
-                lambda _: self.interface.exit(),
+                self._menu_exit,
                 "Quit " + formal_name,
                 shortcut=toga.Key.MOD_1 + "q",
                 group=toga.Group.APP,
                 section=sys.maxsize,
+            ),
+            # ---- File menu ----------------------------------
+            # This is a bit of an oddity. Safari has 2 distinct "Close Window" and
+            # "Close All Windows" menu items (partially to differentiate from "Close
+            # Tab"). Most other Apple HIG apps have a "Close" item that becomes
+            # "Close All" when you press Option (MOD_2). That behavior isn't something
+            # we're currently set up to implement, so we live with a separate menu item
+            # for now.
+            toga.Command(
+                self._menu_close_window,
+                "Close Window",
+                shortcut=toga.Key.MOD_1 + "W",
+                group=toga.Group.FILE,
+                order=1,
+                section=50,
+            ),
+            toga.Command(
+                self._menu_close_all_windows,
+                "Close All Windows",
+                shortcut=toga.Key.MOD_2 + toga.Key.MOD_1 + "W",
+                group=toga.Group.FILE,
+                order=2,
+                section=50,
             ),
             # ---- Edit menu ----------------------------------
             toga.Command(
@@ -245,26 +277,39 @@ class App:
                 section=10,
                 order=60,
             ),
+            # ---- Window menu ----------------------------------
+            toga.Command(
+                self._menu_minimize,
+                "Minimize",
+                shortcut=toga.Key.MOD_1 + "m",
+                group=toga.Group.WINDOW,
+            ),
             # ---- Help menu ----------------------------------
             toga.Command(
-                lambda _: self.interface.visit_homepage(),
+                lambda _, **kwargs: self.interface.visit_homepage(),
                 "Visit homepage",
                 enabled=self.interface.home_page is not None,
                 group=toga.Group.HELP,
             ),
         )
-        self._create_app_commands()
 
-        # Call user code to populate the main window
-        self.interface._startup()
+    def _menu_about(self, app, **kwargs):
+        self.interface.about()
 
-        # Create the lookup table of menu items,
-        # then force the creation of the menus.
-        self.create_menus()
+    def _menu_exit(self, app, **kwargs):
+        self.interface.exit()
 
-    def _create_app_commands(self):
-        # No extra commands
-        pass
+    def _menu_close_window(self, app, **kwargs):
+        if self.interface.current_window:
+            self.interface.current_window._impl.native.performClose(None)
+
+    def _menu_close_all_windows(self, app, **kwargs):
+        for window in self.interface.windows:
+            window._impl.native.performClose(None)
+
+    def _menu_minimize(self, app, **kwargs):
+        if self.interface.current_window:
+            self.interface.current_window._impl.native.miniaturize(None)
 
     def create_menus(self):
         # Recreate the menu
@@ -431,6 +476,7 @@ class App:
 
 class DocumentApp(App):
     def _create_app_commands(self):
+        super()._create_app_commands()
         self.interface.commands.add(
             toga.Command(
                 lambda _: self.select_file(),

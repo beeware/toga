@@ -27,12 +27,12 @@ class Window:
         self.set_title(title)
         self.set_position(position)
 
-        # Set the window deletable/closeable.
-        self.native.set_deletable(self.interface.closeable)
+        # Set the window deletable/closable.
+        self.native.set_deletable(self.interface.closable)
 
         # Added to set Window Resizable - removes Window Maximize button from
         # Window Decorator when resizable == False
-        self.native.set_resizable(self.interface.resizeable)
+        self.native.set_resizable(self.interface.resizable)
 
         self.toolbar_native = None
         self.toolbar_items = None
@@ -104,10 +104,8 @@ class Window:
     def gtk_delete_event(self, widget, data):
         if self._is_closing:
             should_close = True
-        elif self.interface.on_close._raw:
-            should_close = self.interface.on_close(self.interface.app)
         else:
-            should_close = True
+            should_close = self.interface.on_close(self.interface.app)
 
         # Return value of the GTK on_close handler indicates
         # whether the event has been fully handled. Returning

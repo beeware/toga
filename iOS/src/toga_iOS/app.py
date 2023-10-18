@@ -10,7 +10,7 @@ from .screen import Screen as ScreenImpl
 
 
 class MainWindow(Window):
-    pass
+    _is_main_window = True
 
 
 class PythonAppDelegate(UIResponder):

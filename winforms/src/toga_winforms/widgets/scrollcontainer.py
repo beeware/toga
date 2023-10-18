@@ -7,6 +7,7 @@ from travertino.size import at_least
 
 from toga_winforms.container import Container
 
+from ..libs.wrapper import WeakrefCallable
 from .base import Widget
 
 # On Windows, scroll bars usually appear only when the content is larger than the
@@ -36,8 +37,8 @@ class ScrollContainer(Widget, Container):
         # The Scroll event only fires on direct interaction with the scroll bar. It
         # doesn't fire when using the mouse wheel, and it doesn't fire when setting
         # AutoScrollPosition either, despite the documentation saying otherwise.
-        self.native.Scroll += self.winforms_scroll
-        self.native.MouseWheel += self.winforms_scroll
+        self.native.Scroll += WeakrefCallable(self.winforms_scroll)
+        self.native.MouseWheel += WeakrefCallable(self.winforms_scroll)
 
     def winforms_scroll(self, sender, event):
         self.interface.on_scroll(None)

@@ -1,28 +1,19 @@
+import asyncio
+
 from .screen import Screen as ScreenImpl
 from .utils import LoggedObject, not_required, not_required_on
 from .window import Window
 
 
 class MainWindow(Window):
-    @not_required
-    def toga_on_close(self):
-        self.action("handle MainWindow on_close")
-
-
-@not_required
-class EventLoop:
-    def __init__(self, app):
-        self.app = app
-
-    def call_soon_threadsafe(self, handler, *args):
-        self.app._action("loop:call_soon_threadsafe", handler=handler, args=args)
+    pass
 
 
 class App(LoggedObject):
     def __init__(self, interface):
         super().__init__()
         self.interface = interface
-        self.loop = EventLoop(self)
+        self.loop = asyncio.new_event_loop()
 
     def create(self):
         self._action("create")

@@ -2,13 +2,14 @@ from System.Windows.Forms import TabControl, TabPage
 from travertino.size import at_least
 
 from ..container import Container
+from ..libs.wrapper import WeakrefCallable
 from .base import Widget
 
 
 class OptionContainer(Widget):
     def create(self):
         self.native = TabControl()
-        self.native.Selected += self.winforms_selected
+        self.native.Selected += WeakrefCallable(self.winforms_selected)
         self.panels = []
 
     def add_content(self, index, text, widget):
@@ -24,7 +25,8 @@ class OptionContainer(Widget):
         # newly-selected tab's ClientSize is not updated until some time after the
         # Selected event fires.
         self.resize_content(panel)
-        page.ClientSizeChanged += lambda sender, event: self.resize_content(panel)
+
+        page.ClientSizeChanged += WeakrefCallable(self.winforms_client_size_changed)
 
     def remove_content(self, index):
         panel = self.panels.pop(index)
@@ -57,6 +59,10 @@ class OptionContainer(Widget):
 
     def winforms_selected(self, sender, event):
         self.interface.on_select(None)
+
+    def winforms_client_size_changed(self, sender, event):
+        for panel in self.panels:
+            self.resize_content(panel)
 
     def resize_content(self, panel):
         size = panel.native_parent.ClientSize

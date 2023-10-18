@@ -152,6 +152,8 @@ class Widget:
 
     def set_hidden(self, hidden):
         self.native.set_visible(not hidden)
+        if self.container:
+            self.container.make_dirty()
 
     def set_color(self, color):
         self.apply_css("color", get_color_css(color))

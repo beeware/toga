@@ -24,11 +24,18 @@ class LayoutListener(dynamic_proxy(ViewTreeObserver.OnGlobalLayoutListener)):
 
 
 class Window(Container):
+    _is_main_window = False
+
     def __init__(self, interface, title, position, size):
         super().__init__()
         self.interface = interface
         self.interface._impl = self
-        # self.set_title(title)
+        self._initial_title = title
+
+        if not self._is_main_window:
+            raise RuntimeError(
+                "Secondary windows cannot be created on mobile platforms"
+            )
 
     def set_app(self, app):
         self.app = app
@@ -37,6 +44,7 @@ class Window(Container):
         native_parent.getViewTreeObserver().addOnGlobalLayoutListener(
             LayoutListener(self)
         )
+        self.set_title(self._initial_title)
 
     def get_title(self):
         return str(self.app.native.getTitle())

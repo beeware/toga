@@ -1,7 +1,7 @@
-from .utils import LoggedObject, not_required, not_required_on
+from .utils import LoggedObject, not_required
 
 
-@not_required
+@not_required  # not part of the formal API spec
 class Container:
     def __init__(self, content=None):
         self.baseline_dpi = 96
@@ -37,9 +37,11 @@ class Container:
             self.content.refresh()
 
 
+@not_required  # Testbed coverage is complete
 class Window(LoggedObject):
     def __init__(self, interface, title, position, size):
         super().__init__()
+        self._action("create Window")
         self.interface = interface
         self.container = Container()
 
@@ -50,8 +52,6 @@ class Window(LoggedObject):
     def create_toolbar(self):
         self._action("create toolbar")
 
-    # Some platforms inherit this method from a base class.
-    @not_required_on("android", "winforms")
     def set_content(self, widget):
         self.container.content = widget
         self._action("set content", widget=widget)
@@ -91,11 +91,14 @@ class Window(LoggedObject):
 
     def close(self):
         self._action("close")
+        self._set_value("visible", False)
 
-    @not_required_on("mobile")
     def set_full_screen(self, is_full_screen):
-        self._set_value("is_full_screen", is_full_screen)
+        self._action("set full screen", full_screen=is_full_screen)
 
+    def simulate_close(self):
+        self.interface.on_close(None)
+        
     @not_required
     def toga_on_close(self):
         self._action("handle Window on_close")

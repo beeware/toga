@@ -1,53 +1,76 @@
+from .utils import not_required
+
+
+@not_required  # Testbed coverage is complete.
 class BaseDialog:
-    def __init__(self, interface):
+    def __init__(self, interface, on_result):
         self.interface = interface
         self.interface._impl = self
+        self.on_result = on_result
+
+    def simulate_result(self, result):
+        self.on_result(None, result)
+        self.interface.future.set_result(result)
 
 
+@not_required  # Testbed coverage is complete.
 class InfoDialog(BaseDialog):
     def __init__(self, interface, title, message, on_result=None):
-        super().__init__(interface)
+        super().__init__(interface, on_result=on_result)
         interface.window._impl._action(
-            "info_dialog", title=title, message=message, on_result=on_result
-        )
-
-
-class QuestionDialog(BaseDialog):
-    def __init__(self, interface, title, message, on_result=None):
-        super().__init__(interface)
-        interface.window._impl._action(
-            "question_dialog", title=title, message=message, on_result=on_result
-        )
-
-
-class ConfirmDialog(BaseDialog):
-    def __init__(self, interface, title, message, on_result=None):
-        super().__init__(interface)
-        interface.window._impl._action(
-            "confirm_dialog", title=title, message=message, on_result=on_result
-        )
-
-
-class ErrorDialog(BaseDialog):
-    def __init__(self, interface, title, message, on_result=None):
-        super().__init__(interface)
-        interface.window._impl._action(
-            "error_dialog", title=title, message=message, on_result=on_result
-        )
-
-
-class StackTraceDialog(BaseDialog):
-    def __init__(self, interface, title, message, on_result=None, **kwargs):
-        super().__init__(interface)
-        interface.window._impl._action(
-            "stack_trace_dialog",
+            "show info dialog",
             title=title,
             message=message,
-            on_result=on_result,
-            **kwargs
         )
 
 
+@not_required  # Testbed coverage is complete.
+class QuestionDialog(BaseDialog):
+    def __init__(self, interface, title, message, on_result=None):
+        super().__init__(interface, on_result=on_result)
+        interface.window._impl._action(
+            "show question dialog",
+            title=title,
+            message=message,
+        )
+
+
+@not_required  # Testbed coverage is complete.
+class ConfirmDialog(BaseDialog):
+    def __init__(self, interface, title, message, on_result=None):
+        super().__init__(interface, on_result=on_result)
+        interface.window._impl._action(
+            "show confirm dialog",
+            title=title,
+            message=message,
+        )
+
+
+@not_required  # Testbed coverage is complete.
+class ErrorDialog(BaseDialog):
+    def __init__(self, interface, title, message, on_result=None):
+        super().__init__(interface, on_result=on_result)
+        interface.window._impl._action(
+            "show error dialog",
+            title=title,
+            message=message,
+        )
+
+
+@not_required  # Testbed coverage is complete.
+class StackTraceDialog(BaseDialog):
+    def __init__(self, interface, title, message, content, retry, on_result=None):
+        super().__init__(interface, on_result=on_result)
+        interface.window._impl._action(
+            "show stack trace dialog",
+            title=title,
+            message=message,
+            content=content,
+            retry=retry,
+        )
+
+
+@not_required  # Testbed coverage is complete.
 class SaveFileDialog(BaseDialog):
     def __init__(
         self,
@@ -58,17 +81,17 @@ class SaveFileDialog(BaseDialog):
         file_types=None,
         on_result=None,
     ):
-        super().__init__(interface)
+        super().__init__(interface, on_result=on_result)
         interface.window._impl._action(
-            "save_file_dialog",
+            "show save file dialog",
             title=title,
             filename=filename,
             initial_directory=initial_directory,
             file_types=file_types,
-            on_result=on_result,
         )
 
 
+@not_required  # Testbed coverage is complete.
 class OpenFileDialog(BaseDialog):
     def __init__(
         self,
@@ -76,34 +99,33 @@ class OpenFileDialog(BaseDialog):
         title,
         initial_directory,
         file_types,
-        multiselect,
+        multiple_select,
         on_result=None,
     ):
-        super().__init__(interface)
+        super().__init__(interface, on_result=on_result)
         interface.window._impl._action(
-            "open_file_dialog",
+            "show open file dialog",
             title=title,
             initial_directory=initial_directory,
             file_types=file_types,
-            multiselect=multiselect,
-            on_result=on_result,
+            multiple_select=multiple_select,
         )
 
 
+@not_required  # Testbed coverage is complete.
 class SelectFolderDialog(BaseDialog):
     def __init__(
         self,
         interface,
         title,
         initial_directory,
-        multiselect,
+        multiple_select,
         on_result=None,
     ):
-        super().__init__(interface)
+        super().__init__(interface, on_result=on_result)
         interface.window._impl._action(
-            "select_folder_dialog",
+            "show select folder dialog",
             title=title,
             initial_directory=initial_directory,
-            multiselect=multiselect,
-            on_result=on_result,
+            multiple_select=multiple_select,
         )

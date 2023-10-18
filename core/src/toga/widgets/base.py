@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from builtins import id as identifier
 from typing import TYPE_CHECKING, Iterator, NoReturn
+from weakref import WeakValueDictionary
 
 from travertino.node import Node
 
@@ -13,10 +14,12 @@ if TYPE_CHECKING:
     from toga.window import Window
 
 
-class WidgetRegistry(dict):
-    # WidgetRegistry is implemented as a subclass of dict, because it provides
-    # a mapping from ID to widget. However, it exposes a set-like API; add()
-    # and update() take instances to be added, and iteration is over values.
+class WidgetRegistry(WeakValueDictionary):
+    # WidgetRegistry is implemented as a subclass of WeakValueDictionary, because it
+    # provides a mapping from ID to widget. However, it exposes a set-like API; add()
+    # and update() take instances to be added, and iteration is over values. The
+    # mapping is weak so the registry doesn't retain a strong reference to the widget,
+    # preventing memory cleanup.
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -42,6 +45,9 @@ class WidgetRegistry(dict):
 
     def __iter__(self) -> Iterator[Widget]:
         return iter(self.values())
+
+    def __repr__(self) -> str:
+        return "{" + ", ".join(f"{k!r}: {v!r}" for k, v in self.items()) + "}"
 
 
 class Widget(Node):

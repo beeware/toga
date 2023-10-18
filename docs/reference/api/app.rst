@@ -48,6 +48,9 @@ Alternatively, you can subclass App and implement the startup method
         app = MyApp('First App', 'org.beeware.helloworld')
         app.main_loop()
 
+All App instances must have assigned their :attr:`~toga.App.main_window` before the
+conclusion of their :meth:`~toga.App.startup` method.
+
 Reference
 ---------
 

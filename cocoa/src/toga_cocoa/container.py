@@ -103,8 +103,7 @@ class Container:
             widget.container = self
 
     def refreshed(self):
-        if self.on_refresh:
-            self.on_refresh(self)
+        self.on_refresh(self)
 
     @property
     def width(self):

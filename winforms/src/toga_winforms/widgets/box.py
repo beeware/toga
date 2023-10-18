@@ -7,7 +7,6 @@ from .base import Widget
 class Box(Widget):
     def create(self):
         self.native = WinForms.Panel()
-        self.native.interface = self.interface
 
     def rehint(self):
         self.interface.intrinsic.width = at_least(0)

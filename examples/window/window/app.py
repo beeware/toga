@@ -30,11 +30,14 @@ class WindowDemoApp(toga.App):
     def do_large(self, widget, **kwargs):
         self.main_window.size = (1500, 1000)
 
-    def do_full_screen(self, widget, **kwargs):
+    def do_app_full_screen(self, widget, **kwargs):
         if self.is_full_screen:
             self.exit_full_screen()
         else:
             self.set_full_screen(self.main_window)
+
+    def do_window_full_screen(self, widget, **kwargs):
+        self.main_window.full_screen = not self.main_window.full_screen
 
     def do_title(self, widget, **kwargs):
         self.main_window.title = f"Time is {datetime.now()}"
@@ -44,25 +47,23 @@ class WindowDemoApp(toga.App):
             "Non-resizable Window",
             position=(200, 200),
             size=(300, 300),
-            resizeable=False,
+            resizable=False,
             on_close=self.close_handler,
         )
         non_resize_window.content = toga.Box(
             children=[toga.Label("This window is not resizable")]
         )
-        self.app.windows += non_resize_window
         non_resize_window.show()
 
         non_close_window = toga.Window(
             "Non-closeable Window",
             position=(300, 300),
             size=(300, 300),
-            closeable=False,
+            closable=False,
         )
         non_close_window.content = toga.Box(
-            children=[toga.Label("This window is not closeable")]
+            children=[toga.Label("This window is not closable")]
         )
-        self.app.windows += non_close_window
         non_close_window.show()
 
         no_close_handler_window = toga.Window(
@@ -73,7 +74,6 @@ class WindowDemoApp(toga.App):
         no_close_handler_window.content = toga.Box(
             children=[toga.Label("This window has no close handler")]
         )
-        self.app.windows += no_close_handler_window
         no_close_handler_window.show()
 
     def do_screen_change(self, screen, widget, **kwargs):
@@ -177,8 +177,13 @@ class WindowDemoApp(toga.App):
         btn_do_large = toga.Button(
             "Become large", on_press=self.do_large, style=btn_style
         )
-        btn_do_full_screen = toga.Button(
-            "Become full screen", on_press=self.do_full_screen, style=btn_style
+        btn_do_app_full_screen = toga.Button(
+            "Make app full screen", on_press=self.do_app_full_screen, style=btn_style
+        )
+        btn_do_window_full_screen = toga.Button(
+            "Make window full screen",
+            on_press=self.do_window_full_screen,
+            style=btn_style,
         )
         btn_do_title = toga.Button(
             "Change title", on_press=self.do_title, style=btn_style
@@ -248,7 +253,8 @@ class WindowDemoApp(toga.App):
                 btn_do_right_current_screen,
                 btn_do_small,
                 btn_do_large,
-                btn_do_full_screen,
+                btn_do_app_full_screen,
+                btn_do_window_full_screen,
                 btn_do_title,
                 btn_do_new_windows,
                 btn_do_current_window_cycling,
