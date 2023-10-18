@@ -64,10 +64,13 @@ class Table(Widget):
         self.native.CacheVirtualItems += WeakrefCallable(
             self.winforms_cache_virtual_items
         )
-        self.native.MouseDoubleClick += WeakrefCallable(self.winforms_double_click)
         self.native.VirtualItemsSelectionRangeChanged += WeakrefCallable(
             self.winforms_item_selection_changed
         )
+        self.add_action_events()
+
+    def add_action_events(self):
+        self.native.MouseDoubleClick += WeakrefCallable(self.winforms_double_click)
 
     def set_bounds(self, x, y, width, height):
         super().set_bounds(x, y, width, height)
