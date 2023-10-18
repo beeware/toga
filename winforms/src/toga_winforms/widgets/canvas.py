@@ -24,6 +24,7 @@ from System.IO import MemoryStream
 from toga.widgets.canvas import Baseline, FillRule
 from toga_winforms.colors import native_color
 
+from ..libs.wrapper import WeakrefCallable
 from .box import Box
 
 
@@ -71,11 +72,11 @@ class Canvas(Box):
     def create(self):
         super().create()
         self.native.DoubleBuffered = True
-        self.native.Paint += self.winforms_paint
-        self.native.Resize += self.winforms_resize
-        self.native.MouseDown += self.winforms_mouse_down
-        self.native.MouseMove += self.winforms_mouse_move
-        self.native.MouseUp += self.winforms_mouse_up
+        self.native.Paint += WeakrefCallable(self.winforms_paint)
+        self.native.Resize += WeakrefCallable(self.winforms_resize)
+        self.native.MouseDown += WeakrefCallable(self.winforms_mouse_down)
+        self.native.MouseMove += WeakrefCallable(self.winforms_mouse_move)
+        self.native.MouseUp += WeakrefCallable(self.winforms_mouse_up)
         self.string_format = StringFormat.GenericTypographic
         self.dragging = False
         self.states = []

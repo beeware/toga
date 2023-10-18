@@ -46,6 +46,10 @@ If the user attempts to close the window, Toga will call the ``on_close`` handle
 handler must return a ``bool`` confirming whether the close is permitted. This can be
 used to implement protections against closing a window with unsaved changes.
 
+Once a window has been closed (either by user action, or programmatically with
+:meth:`~toga.Window.close()`), it *cannot* be reused. The behavior of any method on a
+:class:`~toga.Window` instance after it has been closed is undefined.
+
 Notes
 -----
 

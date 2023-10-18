@@ -41,8 +41,9 @@ class DetailedList(Table):
         super().create()
         self._table_source = TableSource(self.interface)
 
-        # DetailedList doesn't have an on_activate handler.
-        self.native.MouseDoubleClick -= self.winforms_double_click
+    def add_action_events(self):
+        # DetailedList doesn't have an on_activate_handler.
+        pass
 
     def set_primary_action_enabled(self, enabled):
         self.primary_action_enabled = enabled

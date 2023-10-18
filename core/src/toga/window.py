@@ -116,6 +116,7 @@ class Window:
         self._impl = None
         self._content = None
         self._is_full_screen = False
+        self._closed = False
 
         self._resizable = resizable
         self._closable = closable
@@ -154,6 +155,11 @@ class Window:
 
         self._app = app
         self._impl.set_app(app._impl)
+
+    @property
+    def closed(self) -> bool:
+        """Whether the window was closed."""
+        return self._closed
 
     @property
     def _default_title(self) -> str:
@@ -298,9 +304,15 @@ class Window:
 
         This *does not* invoke the ``on_close`` handler; the window will be immediately
         and unconditionally closed.
+
+        Once a window has been closed, it *cannot* be reused. The behavior of any method
+        or property on a :class:`~toga.Window` instance after it has been closed is
+        undefined, except for :attr:`closed` which can be used to check if the window
+        was closed.
         """
         self.app.windows -= self
         self._impl.close()
+        self._closed = True
 
     ############################################################
     # Dialogs

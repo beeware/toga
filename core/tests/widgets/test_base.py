@@ -123,6 +123,10 @@ def test_add_child(widget):
     assert widget.app == app
     assert widget.window == window
 
+    # Widget is registered with app and window
+    assert widget.id in app.widgets
+    assert widget.id in window.widgets
+
     # Child list is empty
     assert widget.children == []
 
@@ -181,10 +185,7 @@ def test_add_multiple_children(widget):
     child3 = ExampleLeafWidget(id="child3_id")
 
     # App's widget index only contains the parent
-    assert app.widgets["widget_id"] == widget
-    assert "child1_id" not in app.widgets
-    assert "child2_id" not in app.widgets
-    assert "child3_id" not in app.widgets
+    assert app.widgets == {"widget_id": widget}
 
     # Add the children.
     widget.add(child1, child2, child3)
@@ -218,11 +219,20 @@ def test_add_multiple_children(widget):
     assert_action_performed_with(window.content, "refresh")
 
     # App's widget index has been updated
-    assert len(app.widgets) == 4
-    assert app.widgets["widget_id"] == widget
-    assert app.widgets["child1_id"] == child1
-    assert app.widgets["child2_id"] == child2
-    assert app.widgets["child3_id"] == child3
+    assert app.widgets == {
+        "widget_id": widget,
+        "child1_id": child1,
+        "child2_id": child2,
+        "child3_id": child3,
+    }
+
+    # Window's widget index has been updated
+    assert window.widgets == {
+        "widget_id": widget,
+        "child1_id": child1,
+        "child2_id": child2,
+        "child3_id": child3,
+    }
 
 
 def test_reparent_child(widget):
@@ -375,9 +385,16 @@ def test_insert_child(widget):
     assert_action_performed_with(window.content, "refresh")
 
     # App's widget index has been updated
-    assert len(app.widgets) == 2
-    assert app.widgets["widget_id"] == widget
-    assert app.widgets["child_id"] == child
+    assert app.widgets == {
+        "widget_id": widget,
+        "child_id": child,
+    }
+
+    # Window's widget index has been updated
+    assert window.widgets == {
+        "widget_id": widget,
+        "child_id": child,
+    }
 
 
 def test_insert_position(widget):
@@ -402,10 +419,10 @@ def test_insert_position(widget):
     child3 = ExampleLeafWidget(id="child3_id")
 
     # App's widget index only contains the parent
-    assert app.widgets["widget_id"] == widget
-    assert "child1_id" not in app.widgets
-    assert "child2_id" not in app.widgets
-    assert "child3_id" not in app.widgets
+    assert app.widgets == {"widget_id": widget}
+
+    # Windows's widget index only contains the parent
+    assert window.widgets == {"widget_id": widget}
 
     # insert the children.
     widget.insert(0, child1)
@@ -440,11 +457,20 @@ def test_insert_position(widget):
     assert_action_performed_with(window.content, "refresh")
 
     # App's widget index has been updated
-    assert len(app.widgets) == 4
-    assert app.widgets["widget_id"] == widget
-    assert app.widgets["child1_id"] == child1
-    assert app.widgets["child2_id"] == child2
-    assert app.widgets["child3_id"] == child3
+    assert app.widgets == {
+        "widget_id": widget,
+        "child1_id": child1,
+        "child2_id": child2,
+        "child3_id": child3,
+    }
+
+    # Window's widget index has been updated
+    assert window.widgets == {
+        "widget_id": widget,
+        "child1_id": child1,
+        "child2_id": child2,
+        "child3_id": child3,
+    }
 
 
 def test_insert_bad_position(widget):
@@ -467,10 +493,12 @@ def test_insert_bad_position(widget):
     child = ExampleLeafWidget(id="child_id")
 
     # App's widget index only contains the parent
-    assert app.widgets["widget_id"] == widget
-    assert "child_id" not in app.widgets
+    assert app.widgets == {"widget_id": widget}
 
-    # Insert the child at an position greater than the length of the list.
+    # Window's widget index only contains the parent
+    assert window.widgets == {"widget_id": widget}
+
+    # Insert the child at a position greater than the length of the list.
     # Widget will be added to the end of the list.
     widget.insert(37, child)
 
@@ -492,9 +520,16 @@ def test_insert_bad_position(widget):
     assert_action_performed_with(window.content, "refresh")
 
     # App's widget index has been updated
-    assert len(app.widgets) == 2
-    assert app.widgets["widget_id"] == widget
-    assert app.widgets["child_id"] == child
+    assert app.widgets == {
+        "widget_id": widget,
+        "child_id": child,
+    }
+
+    # Window's widget index has been updated
+    assert window.widgets == {
+        "widget_id": widget,
+        "child_id": child,
+    }
 
 
 def test_insert_reparent_child(widget):
@@ -618,6 +653,8 @@ def test_remove_child(widget):
     assert child.parent == widget
     assert child.app == app
     assert child.window == window
+    assert app.widgets == {"widget_id": widget, "child_id": child}
+    assert window.widgets == {"widget_id": widget, "child_id": child}
 
     # Remove the child
     widget.remove(child)
@@ -630,6 +667,10 @@ def test_remove_child(widget):
     assert child.app is None
     assert child.window is None
 
+    # child widget no longer exists in the app or widgets registries.
+    assert app.widgets == {"widget_id": widget}
+    assert window.widgets == {"widget_id": widget}
+
     # The impl's remove_child has been invoked
     assert_action_performed_with(widget, "remove child", child=child._impl)
 
@@ -638,6 +679,9 @@ def test_remove_child(widget):
 
     # The window's content gets a refresh notification
     assert_action_performed_with(window.content, "refresh")
+
+    # App's widget index does not contain the widget
+    assert "child_id" not in app.widgets
 
 
 def test_remove_multiple_children(widget):
@@ -659,6 +703,8 @@ def test_remove_multiple_children(widget):
         assert child.parent == widget
         assert child.app == app
         assert child.window == window
+        assert app.widgets[child.id] == child
+        assert window.widgets[child.id] == child
 
     # Remove 2 children
     widget.remove(child1, child3)
@@ -689,6 +735,14 @@ def test_remove_multiple_children(widget):
     # The window's content gets a refresh notification
     assert_action_performed_with(window.content, "refresh")
 
+    # App's widget index does not contain the widget
+    assert "child1_id" not in app.widgets
+    assert "child3_id" not in app.widgets
+
+    # Windows's widget index does not contain the widget
+    assert "child1_id" not in window.widgets
+    assert "child3_id" not in window.widgets
+
 
 def test_clear_all_children(widget):
     "All children can be simultaneously removed from a widget"
@@ -709,6 +763,8 @@ def test_clear_all_children(widget):
         assert child.parent == widget
         assert child.app == app
         assert child.window == window
+        assert app.widgets[child.id] == child
+        assert window.widgets[child.id] == child
 
     # Clear children
     widget.clear()
@@ -739,6 +795,16 @@ def test_clear_all_children(widget):
 
     # The window's content gets a refresh notification
     assert_action_performed_with(window.content, "refresh")
+
+    # App's widget index does not contain the widget
+    assert "child1_id" not in app.widgets
+    assert "child2_id" not in app.widgets
+    assert "child3_id" not in app.widgets
+
+    # Window's widget index does not contain the widget
+    assert "child1_id" not in window.widgets
+    assert "child2_id" not in window.widgets
+    assert "child3_id" not in window.widgets
 
 
 def test_clear_no_children(widget):
@@ -830,7 +896,7 @@ def test_set_app(widget):
     assert len(app.widgets) == 1
     assert app.widgets["widget_id"] == widget
 
-    # The impl has had it's app property set.
+    # The impl has had its app property set.
     assert attribute_value(widget, "app") == app
 
 
