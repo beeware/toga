@@ -3,7 +3,7 @@ from contextlib import contextmanager
 import System.Windows.Forms as WinForms
 from travertino.size import at_least
 
-from ..internal.wrappers import WeakrefCallable
+from ..libs.wrapper import WeakrefCallable
 from .base import Widget
 
 

@@ -12,7 +12,7 @@ from System.Drawing import (
 )
 from System.Windows.Forms import DialogResult, MessageBoxButtons, MessageBoxIcon
 
-from .internal.wrappers import WeakrefCallable
+from .libs.wrapper import WeakrefCallable
 
 
 class BaseDialog(ABC):

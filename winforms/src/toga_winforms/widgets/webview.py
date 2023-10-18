@@ -19,7 +19,7 @@ from toga_winforms.libs.extensions import (
     WebView2RuntimeNotFoundException,
 )
 
-from ..internal.wrappers import WeakrefCallable
+from ..libs.wrapper import WeakrefCallable
 from .base import Widget
 
 

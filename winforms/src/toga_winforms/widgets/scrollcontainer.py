@@ -7,7 +7,7 @@ from travertino.size import at_least
 
 from toga_winforms.container import Container
 
-from ..internal.wrappers import WeakrefCallable
+from ..libs.wrapper import WeakrefCallable
 from .base import Widget
 
 # On Windows, scroll bars usually appear only when the content is larger than the

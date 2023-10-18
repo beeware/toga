@@ -3,7 +3,7 @@ from travertino.size import at_least
 
 from toga.widgets.slider import IntSliderImpl
 
-from ..internal.wrappers import WeakrefCallable
+from ..libs.wrapper import WeakrefCallable
 from .base import Widget
 
 # Implementation notes

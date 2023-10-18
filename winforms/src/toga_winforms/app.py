@@ -13,9 +13,9 @@ from System.Windows.Threading import Dispatcher
 import toga
 from toga import Key
 
-from .internal.wrappers import WeakrefCallable
 from .keys import toga_to_winforms_key
 from .libs.proactor import WinformsProactorEventLoop
+from .libs.wrapper import WeakrefCallable
 from .window import Window
 
 

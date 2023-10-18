@@ -8,7 +8,7 @@ from travertino.size import at_least
 from toga.constants import Direction
 
 from ..container import Container
-from ..internal.wrappers import WeakrefCallable
+from ..libs.wrapper import WeakrefCallable
 from .base import Widget
 
 

@@ -8,7 +8,7 @@ from travertino.size import at_least
 from toga.widgets.numberinput import _clean_decimal
 from toga_winforms.libs.fonts import HorizontalTextAlignment
 
-from ..internal.wrappers import WeakrefCallable
+from ..libs.wrapper import WeakrefCallable
 from .base import Widget
 
 

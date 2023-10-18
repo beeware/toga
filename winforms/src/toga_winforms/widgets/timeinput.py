@@ -4,7 +4,7 @@ import System.Windows.Forms as WinForms
 from System import DateTime as WinDateTime
 from travertino.size import at_least
 
-from ..internal.wrappers import WeakrefCallable
+from ..libs.wrapper import WeakrefCallable
 from .base import Widget
 
 

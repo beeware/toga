@@ -5,7 +5,7 @@ from travertino.size import at_least
 
 import toga
 
-from ..internal.wrappers import WeakrefCallable
+from ..libs.wrapper import WeakrefCallable
 from .base import Widget
 
 

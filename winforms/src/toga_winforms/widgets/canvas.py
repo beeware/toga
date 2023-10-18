@@ -24,7 +24,7 @@ from System.IO import MemoryStream
 from toga.widgets.canvas import Baseline, FillRule
 from toga_winforms.colors import native_color
 
-from ..internal.wrappers import WeakrefCallable
+from ..libs.wrapper import WeakrefCallable
 from .box import Box
 
 

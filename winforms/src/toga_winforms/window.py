@@ -4,7 +4,7 @@ from System.Drawing import Point, Size
 from toga import GROUP_BREAK, SECTION_BREAK
 
 from .container import Container
-from .internal.wrappers import WeakrefCallable
+from .libs.wrapper import WeakrefCallable
 from .widgets.base import Scalable
 
 

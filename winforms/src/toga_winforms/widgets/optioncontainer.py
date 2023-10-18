@@ -2,7 +2,7 @@ from System.Windows.Forms import TabControl, TabPage
 from travertino.size import at_least
 
 from ..container import Container
-from ..internal.wrappers import WeakrefCallable
+from ..libs.wrapper import WeakrefCallable
 from .base import Widget
 
 

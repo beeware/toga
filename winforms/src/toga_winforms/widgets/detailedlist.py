@@ -2,7 +2,7 @@ import System.Windows.Forms as WinForms
 
 from toga.sources import Row
 
-from ..internal.wrappers import WeakrefCallable
+from ..libs.wrapper import WeakrefCallable
 from .table import Table
 
 
