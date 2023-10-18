@@ -409,8 +409,8 @@ def test_current_window(app):
     """The current window can be set and changed."""
     other_window = toga.Window()
 
-    # There are three windows - the 2 provided, plus the main window
-    assert len(app.windows) == 3
+    # There are two windows - the main window, plus "other"
+    assert len(app.windows) == 2
     assert_action_performed_with(app, "set_main_window", window=app.main_window)
 
     # The initial current window is the main window
