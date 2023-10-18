@@ -174,3 +174,10 @@ However, you don't need to be constrained by these tickets. If you can identify
 a gap in Toga's documentation, or an improvement that can be made, start
 writing! Anything that improves the experience of the end user is a welcome
 change.
+
+Submitting a pull request
+=========================
+
+Before you submit a pull request, there's a few bits of housekeeping to do. See the
+section on submitting a pull request in the :ref:`code contribution guide
+<pr-housekeeping>` for details on our submission process.
