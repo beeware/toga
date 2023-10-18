@@ -1,0 +1,1 @@
+Windows no longer need to be explicitly added to the app's window list. When a window is created, it will be automatically added to the windows for the currently running app.

@@ -19,6 +19,7 @@ from toga_winforms.libs.extensions import (
     WebView2RuntimeNotFoundException,
 )
 
+from ..libs.wrapper import WeakrefCallable
 from .base import Widget
 
 
@@ -35,10 +36,12 @@ def requires_initialization(method):
 class WebView(Widget):
     def create(self):
         self.native = WebView2()
-        self.native.CoreWebView2InitializationCompleted += (
+        self.native.CoreWebView2InitializationCompleted += WeakrefCallable(
             self.winforms_initialization_completed
         )
-        self.native.NavigationCompleted += self.winforms_navigation_completed
+        self.native.NavigationCompleted += WeakrefCallable(
+            self.winforms_navigation_completed
+        )
         self.loaded_future = None
 
         props = CoreWebView2CreationProperties()

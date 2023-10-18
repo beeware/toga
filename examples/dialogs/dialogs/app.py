@@ -59,9 +59,7 @@ class ExampleDialogsApp(toga.App):
 
     async def action_open_file_dialog(self, widget):
         try:
-            fname = await self.main_window.open_file_dialog(
-                title="Open file with Toga", multiselect=False
-            )
+            fname = await self.main_window.open_file_dialog("Open file with Toga")
             if fname is not None:
                 self.label.text = f"File to open: {fname}"
             else:
@@ -72,9 +70,7 @@ class ExampleDialogsApp(toga.App):
     async def action_open_file_filtered_dialog(self, widget):
         try:
             fname = await self.main_window.open_file_dialog(
-                title="Open file with Toga",
-                multiselect=False,
-                file_types=["doc", "txt"],
+                "Open file with Toga", file_types=["doc", "txt"]
             )
             if fname is not None:
                 self.label.text = f"File to open: {fname}"
@@ -86,7 +82,7 @@ class ExampleDialogsApp(toga.App):
     async def action_open_file_dialog_multi(self, widget):
         try:
             filenames = await self.main_window.open_file_dialog(
-                title="Open file with Toga", multiselect=True
+                "Open multiple files with Toga", multiple_select=True
             )
             if filenames is not None:
                 msg = f"Files to open: {', '.join(str(f) for f in filenames)}"
@@ -102,7 +98,6 @@ class ExampleDialogsApp(toga.App):
             fname = await self.main_window.open_file_dialog(
                 title="Open file with Toga in home folder",
                 initial_directory=Path.home(),
-                multiselect=False,
             )
             if fname is not None:
                 self.label.text = f"File to open: {fname}"
@@ -126,14 +121,14 @@ class ExampleDialogsApp(toga.App):
     async def action_select_folder_dialog_multi(self, widget):
         try:
             path_names = await self.main_window.select_folder_dialog(
-                title="Select multiple folders with Toga", multiselect=True
+                "Select multiple folders with Toga", multiple_select=True
             )
             if path_names is not None:
                 self.label.text = (
                     f"Folders selected: {','.join([str(p) for p in path_names])}"
                 )
             else:
-                self.label.text = "No fodlers selected!"
+                self.label.text = "No folders selected!"
         except ValueError:
             self.label.text = "Folders select dialog was canceled"
 

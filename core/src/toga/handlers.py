@@ -99,7 +99,12 @@ def wrapped_handler(interface, handler, cleanup=None):
     else:
         # A dummy no-op handler
         def _handler(widget, *args, **kwargs):
-            pass
+            try:
+                if cleanup:
+                    cleanup(interface, None)
+            except Exception as e:
+                print("Error in handler cleanup:", e, file=sys.stderr)
+                traceback.print_exc()
 
         _handler._raw = None
 

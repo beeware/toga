@@ -1,0 +1,1 @@
+``Window.resizeable`` and ``Window.closeable`` have been renamed ``Window.resizable`` and ``Window.closable``, to adhere to US spelling conventions.

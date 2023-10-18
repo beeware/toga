@@ -1,0 +1,1 @@
+The ``multiselect`` argument to Open File and Select Folder dialogs has been renamed ``multiple_select``, for consistency with other widgets that have multiple selection capability.

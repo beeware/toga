@@ -7,9 +7,16 @@ from toga_iOS.libs import (
 
 
 class Window:
+    _is_main_window = False
+
     def __init__(self, interface, title, position, size):
         self.interface = interface
         self.interface._impl = self
+
+        if not self._is_main_window:
+            raise RuntimeError(
+                "Secondary windows cannot be created on mobile platforms"
+            )
 
         self.native = UIWindow.alloc().initWithFrame(UIScreen.mainScreen.bounds)
 
@@ -42,7 +49,10 @@ class Window:
 
         # If the minimum layout is bigger than the current window, log a warning
         if self.container.width < min_width or self.container.height < min_height:
-            print("**WARNING** Window content exceeds available space")
+            print(
+                f"Warning: Window content {(min_width, min_height)} "
+                f"exceeds available space {(self.container.width, self.container.height)}"
+            )
 
     def get_title(self):
         return str(self.container.title)
@@ -83,6 +93,10 @@ class Window:
     def get_visible(self):
         # The window is always visible
         return True
+
+    def set_full_screen(self, is_full_screen):
+        # Windows are always full screen
+        pass
 
     def close(self):
         pass

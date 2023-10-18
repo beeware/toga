@@ -7,9 +7,9 @@ from .libs import (
     NSAlertFirstButtonReturn,
     NSAlertStyle,
     NSBezelBorder,
-    NSFileHandlingPanelOKButton,
     NSFont,
     NSMakeRect,
+    NSModalResponseOK,
     NSOpenPanel,
     NSSavePanel,
     NSScrollView,
@@ -20,7 +20,7 @@ from .libs import (
 class BaseDialog(ABC):
     def __init__(self, interface):
         self.interface = interface
-        self.interface.impl = self
+        self.interface._impl = self
 
 
 class NSAlertDialog(BaseDialog):
@@ -46,21 +46,22 @@ class NSAlertDialog(BaseDialog):
         self.build_dialog(**kwargs)
 
         self.native.beginSheetModalForWindow(
-            interface.window._impl.native, completionHandler=completion_handler
+            interface.window._impl.native,
+            completionHandler=completion_handler,
         )
 
     def build_dialog(self):
         pass
 
     def completion_handler(self, return_value: int) -> None:
-        self.on_result(self, None)
+        self.on_result(None, None)
 
         self.interface.future.set_result(None)
 
     def bool_completion_handler(self, return_value: int) -> None:
         result = return_value == NSAlertFirstButtonReturn
 
-        self.on_result(self, result)
+        self.on_result(None, result)
 
         self.interface.future.set_result(result)
 
@@ -169,55 +170,62 @@ class FileDialog(BaseDialog):
         filename,
         initial_directory,
         file_types,
-        multiselect,
+        multiple_select,
         on_result=None,
     ):
         super().__init__(interface=interface)
         self.on_result = on_result
 
         # Create the panel
-        self.create_panel(multiselect)
+        self.create_panel(multiple_select)
 
-        # Set all the
-        self.panel.title = title
+        # Set the title of the panel
+        self.native.title = title
 
         if filename:
-            self.panel.nameFieldStringValue = filename
+            self.native.nameFieldStringValue = filename
 
         if initial_directory:
-            self.panel.directoryURL = NSURL.URLWithString(
+            self.native.directoryURL = NSURL.URLWithString(
                 str(initial_directory.as_uri())
             )
 
-        self.panel.allowedFileTypes = file_types
+        self.native.allowedFileTypes = file_types
 
-        if multiselect:
+        if multiple_select:
             handler = self.multi_path_completion_handler
         else:
             handler = self.single_path_completion_handler
 
-        self.panel.beginSheetModalForWindow(
+        self.native.beginSheetModalForWindow(
             interface.window._impl.native,
             completionHandler=handler,
         )
 
+    # Provided as a stub that can be mocked in test conditions
+    def selected_path(self):
+        return self.native.URL
+
+    # Provided as a stub that can be mocked in test conditions
+    def selected_paths(self):
+        return self.native.URLs
+
     def single_path_completion_handler(self, return_value: int) -> None:
-        if return_value == NSFileHandlingPanelOKButton:
-            result = Path(self.panel.URL.path)
+        if return_value == NSModalResponseOK:
+            result = Path(str(self.selected_path().path))
         else:
             result = None
 
-        self.on_result(self, result)
-
+        self.on_result(None, result)
         self.interface.future.set_result(result)
 
     def multi_path_completion_handler(self, return_value: int) -> None:
-        if return_value == NSFileHandlingPanelOKButton:
-            result = [Path(url.path) for url in self.panel.URLs]
+        if return_value == NSModalResponseOK:
+            result = [Path(url.path) for url in self.selected_paths()]
         else:
             result = None
 
-        self.on_result(self, result)
+        self.on_result(None, result)
 
         self.interface.future.set_result(result)
 
@@ -238,12 +246,12 @@ class SaveFileDialog(FileDialog):
             filename=filename,
             initial_directory=initial_directory,
             file_types=None,  # File types aren't offered by Cocoa save panels.
-            multiselect=False,
+            multiple_select=False,
             on_result=on_result,
         )
 
-    def create_panel(self, multiselect):
-        self.panel = NSSavePanel.alloc().init()
+    def create_panel(self, multiple_select):
+        self.native = NSSavePanel.alloc().init()
 
 
 class OpenFileDialog(FileDialog):
@@ -253,7 +261,7 @@ class OpenFileDialog(FileDialog):
         title,
         initial_directory,
         file_types,
-        multiselect,
+        multiple_select,
         on_result=None,
     ):
         super().__init__(
@@ -262,16 +270,16 @@ class OpenFileDialog(FileDialog):
             filename=None,
             initial_directory=initial_directory,
             file_types=file_types,
-            multiselect=multiselect,
+            multiple_select=multiple_select,
             on_result=on_result,
         )
 
-    def create_panel(self, multiselect):
-        self.panel = NSOpenPanel.alloc().init()
-        self.panel.allowsMultipleSelection = multiselect
-        self.panel.canChooseDirectories = False
-        self.panel.canCreateDirectories = False
-        self.panel.canChooseFiles = True
+    def create_panel(self, multiple_select):
+        self.native = NSOpenPanel.alloc().init()
+        self.native.allowsMultipleSelection = multiple_select
+        self.native.canChooseDirectories = False
+        self.native.canCreateDirectories = False
+        self.native.canChooseFiles = True
 
 
 class SelectFolderDialog(FileDialog):
@@ -280,7 +288,7 @@ class SelectFolderDialog(FileDialog):
         interface,
         title,
         initial_directory,
-        multiselect,
+        multiple_select,
         on_result=None,
     ):
         super().__init__(
@@ -289,14 +297,14 @@ class SelectFolderDialog(FileDialog):
             filename=None,
             initial_directory=initial_directory,
             file_types=None,
-            multiselect=multiselect,
+            multiple_select=multiple_select,
             on_result=on_result,
         )
 
-    def create_panel(self, multiselect):
-        self.panel = NSOpenPanel.alloc().init()
-        self.panel.allowsMultipleSelection = multiselect
-        self.panel.canChooseDirectories = True
-        self.panel.canCreateDirectories = True
-        self.panel.canChooseFiles = False
-        self.panel.resolvesAliases = True
+    def create_panel(self, multiple_select):
+        self.native = NSOpenPanel.alloc().init()
+        self.native.allowsMultipleSelection = multiple_select
+        self.native.canChooseDirectories = True
+        self.native.canCreateDirectories = True
+        self.native.canChooseFiles = False
+        self.native.resolvesAliases = True

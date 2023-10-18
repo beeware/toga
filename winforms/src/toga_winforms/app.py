@@ -16,6 +16,7 @@ from toga import Key
 
 from .keys import toga_to_winforms_key
 from .libs.proactor import WinformsProactorEventLoop
+from .libs.wrapper import WeakrefCallable
 from .widgets.base import Scalable
 from .window import Window
 
@@ -170,7 +171,7 @@ class App(Scalable):
                 item = WinForms.ToolStripMenuItem(cmd.text)
 
                 if cmd.action:
-                    item.Click += cmd._impl.as_handler()
+                    item.Click += WeakrefCallable(cmd._impl.as_handler())
                 item.Enabled = cmd.enabled
 
                 if cmd.shortcut is not None:
@@ -263,7 +264,9 @@ class App(Scalable):
 
             # This catches errors in handlers, and prints them
             # in a usable form.
-            self.native.ThreadException += self.winforms_thread_exception
+            self.native.ThreadException += WeakrefCallable(
+                self.winforms_thread_exception
+            )
 
             self.loop.run_forever(self)
         except Exception as e:
