@@ -5,6 +5,7 @@ import threading
 from ctypes import c_bool, c_void_p, windll
 
 import System.Windows.Forms as WinForms
+from Microsoft.Win32 import SystemEvents
 from System import Environment, Threading
 from System.Media import SystemSounds
 from System.Net import SecurityProtocolType, ServicePointManager
@@ -15,6 +16,7 @@ from toga import Key
 
 from .keys import toga_to_winforms_key
 from .libs.proactor import WinformsProactorEventLoop
+from .widgets.base import Scalable
 from .window import Window
 
 
@@ -31,7 +33,7 @@ class MainWindow(Window):
                 event.Cancel = True
 
 
-class App:
+class App(Scalable):
     _MAIN_WINDOW_CLASS = MainWindow
 
     # ------------------- Set the DPI Awareness mode for the process -------------------
@@ -97,6 +99,9 @@ class App:
         # These are required for properly setting up DPI mode
         self.native.EnableVisualStyles()
         self.native.SetCompatibleTextRenderingDefault(False)
+
+        # Register the DisplaySettingsChanged event handler
+        SystemEvents.DisplaySettingsChanged += self.winforms_DisplaySettingsChanged
 
         # Ensure that TLS1.2 and TLS1.3 are enabled for HTTPS connections.
         # For some reason, some Windows installs have these protocols
@@ -339,6 +344,11 @@ class App:
         if self._cursor_visible:
             WinForms.Cursor.Hide()
         self._cursor_visible = False
+
+    def winforms_DisplaySettingsChanged(self, sender, event):
+        self.update_scale()
+        for window in self.interface.windows:
+            window.content.refresh()
 
 
 class DocumentApp(App):

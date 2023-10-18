@@ -6,7 +6,6 @@ from .widgets.base import Scalable
 
 class Container(Scalable):
     def __init__(self, native_parent):
-        self.init_scale(native_parent)
         self.native_parent = native_parent
         self.native_width = self.native_height = 0
         self.content = None

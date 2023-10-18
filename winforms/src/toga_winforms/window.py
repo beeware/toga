@@ -25,7 +25,6 @@ class Window(Container, Scalable):
         self.native._impl = self
         self.native.FormClosing += self.winforms_FormClosing
         super().__init__(self.native)
-        self.init_scale(self.native)
 
         self.native.MinimizeBox = self.native.interface.minimizable
 

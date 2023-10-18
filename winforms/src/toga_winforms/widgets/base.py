@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from ctypes import byref, c_void_p, windll, wintypes
 from decimal import ROUND_HALF_EVEN, ROUND_UP, Decimal
 
 from System.Drawing import (
@@ -7,6 +8,7 @@ from System.Drawing import (
     Size,
     SystemColors,
 )
+from System.Windows.Forms import Screen
 from travertino.size import at_least
 
 from toga.colors import TRANSPARENT
@@ -16,21 +18,36 @@ from toga_winforms.colors import native_color
 class Scalable:
     SCALE_DEFAULT_ROUNDING = ROUND_HALF_EVEN
 
-    def init_scale(self, native):
-        graphics = native.CreateGraphics()
-        self.dpi_scale = graphics.DpiX / 96
-        graphics.Dispose()
+    def update_scale(self):
+        screen = Screen.PrimaryScreen
+        screen_rect = wintypes.RECT(
+            screen.Bounds.Left,
+            screen.Bounds.Top,
+            screen.Bounds.Right,
+            screen.Bounds.Bottom,
+        )
+        windll.user32.MonitorFromRect.restype = c_void_p
+        windll.user32.MonitorFromRect.argtypes = [wintypes.RECT, wintypes.DWORD]
+        # MONITOR_DEFAULTTONEAREST = 2
+        hMonitor = windll.user32.MonitorFromRect(screen_rect, 2)
+        pScale = wintypes.UINT()
+        windll.shcore.GetScaleFactorForMonitor(c_void_p(hMonitor), byref(pScale))
+        Scalable.dpi_scale = pScale.value / 100
 
     # Convert CSS pixels to native pixels
     def scale_in(self, value, rounding=SCALE_DEFAULT_ROUNDING):
-        return self.scale_round(value * self.dpi_scale, rounding)
+        if not hasattr(Scalable, "dpi_scale"):
+            self.update_scale()
+        return self.scale_round(value * Scalable.dpi_scale, rounding)
 
     # Convert native pixels to CSS pixels
     def scale_out(self, value, rounding=SCALE_DEFAULT_ROUNDING):
+        if not hasattr(Scalable, "dpi_scale"):
+            self.update_scale()
         if isinstance(value, at_least):
             return at_least(self.scale_out(value.value, rounding))
         else:
-            return self.scale_round(value / self.dpi_scale, rounding)
+            return self.scale_round(value / Scalable.dpi_scale, rounding)
 
     def scale_round(self, value, rounding):
         if rounding is None:
@@ -51,7 +68,6 @@ class Widget(ABC, Scalable):
         self._container = None
         self.native = None
         self.create()
-        self.init_scale(self.native)
         self.interface.style.reapply()
 
     @abstractmethod
