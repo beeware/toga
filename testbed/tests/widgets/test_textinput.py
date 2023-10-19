@@ -131,6 +131,24 @@ async def test_on_change_focus(widget, probe, on_change, focused, placeholder, o
     on_change.assert_not_called()
 
 
+async def test_on_lose_focus(widget, probe, on_change, focused, placeholder, other):
+    "Tests on_gain_focus handler when the widget gains focus"
+    other.focus()
+    on_gain_focus_handler = Mock()
+    widget.on_gain_focus = on_gain_focus_handler
+    widget.focus()
+    on_gain_focus_handler.assert_called_once()
+
+
+async def test_on_gain_focus(widget, probe, on_change, focused, placeholder, other):
+    "Tests on_lose_focus handler when the widget loses focus"
+    widget.focus()
+    on_lose_focus_handler = Mock()
+    widget.on_lose_focus = on_lose_focus_handler
+    other.focus()
+    on_lose_focus_handler.assert_called_once()
+
+
 async def test_on_confirm(widget, probe):
     "The on_confirm handler is triggered when the user types Enter."
     # Install a handler, and give the widget focus.
