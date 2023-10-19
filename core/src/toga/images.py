@@ -7,7 +7,8 @@ from pathlib import Path
 import toga
 from toga.platform import get_platform_factory
 
-from io import BytesIO, BufferedReader
+from io import BytesIO
+
 import time, os
 
 try:
@@ -19,14 +20,14 @@ except ImportError as e:
 class Image:
     def __init__(
         self,
-        src:str|Path|BytesIO|BufferedReader|bytes|PIL_Image.Image|None=None,
+        src:str|Path|bytes|PIL_Image.Image|None=None,
         *,
         path: str | None | Path = None,
         data: bytes | None = None,
     ):
         """Create a new image.
 
-        :param src: string path, pathlib.Path, BufferedReader, BytesIO, bytes, Pillow Object of the image to load
+        :param src: path, data or pillow object of the image to load
         :param path: Path to the image to load. This can be specified as a string, or as
             a :any:`pathlib.Path` object. The path can be an absolute file system path,
             or a path relative to the module that defines your Toga application class.
@@ -41,10 +42,6 @@ class Image:
         if src is not None:
             if isinstance(src, str) or isinstance(src, Path):
                 path = src
-                src = None
-            elif isinstance(src, BytesIO) or isinstance(src, BufferedReader):
-                src.seek(0)
-                data = src.read()
                 src = None
             elif isinstance(src, bytes):
                 data = src
@@ -101,23 +98,19 @@ class Image:
         """
         self._impl.save(path)
     
-    def as_format(self, format: Any|None=None):
+    def as_format(self, format: Any):
         """
-        get the image as specified format if supported
-        :param format: A supported type of Image
-        Supported types are `PIL.Image.Image`, `toga.Image`
-        :returns: Object of the specified type
+        Convert the image to format specified.
+        Supported formats are: Pillow Object,
+        
+        To convert the image to Pillow object
         ```
         from PIL import Image as PIL_Image
         pil_image = toga_image.as_format(PIL_Image.Image)
         toga_img = toga_image.as_format(toga.Image)
         ```
         """
-        if format==None:
-            return self
-        elif isinstance(format, type(self)):
-            return self
-        elif PIL_Image != None and format == PIL_Image.Image:
+        if PIL_Image != None and format == PIL_Image.Image:
             # saving into temporary file
             unique_time = str(time.time())
             temp_file = f"._toga_Image_as_format_PIL_Image_{unique_time}_"
