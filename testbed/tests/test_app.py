@@ -131,11 +131,12 @@ else:
             await app_probe.redraw("Extra windows added")
 
             app_probe.activate_menu_close_window()
-            assert window2 not in app.windows
-
             await app_probe.redraw("Window 2 closed")
 
+            assert window2 not in app.windows
+
             app_probe.activate_menu_close_all_windows()
+            await app_probe.redraw("All windows closed")
 
             # Close all windows will attempt to close the main window as well.
             # This would be an app exit, but we can't allow that; so, the only

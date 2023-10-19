@@ -95,7 +95,10 @@ class TogaWindow(NSWindow):
     @objc_method
     def validateToolbarItem_(self, item) -> bool:
         """Confirm if the toolbar item should be enabled."""
-        return self.impl._toolbar_items[str(item.itemIdentifier)].enabled
+        try:
+            return self.impl._toolbar_items[str(item.itemIdentifier)].enabled
+        except KeyError:
+            return False
 
     ######################################################################
     # Toolbar button press delegate methods
@@ -136,7 +139,8 @@ class Window:
 
         # Cocoa releases windows when they are closed; this causes havoc with
         # Toga's widget cleanup because the ObjC runtime thinks there's no
-        # references to the object left. Add an explicit reference to the window.
+        # references to the object left. Add a reference that can be released
+        # in response to the close.
         self.native.retain()
 
         self.set_title(title)
