@@ -86,8 +86,6 @@ class ImageView(Widget):
         # Prime the image attribute
         self._image = None
         self._impl = self.factory.ImageView(interface=self)
-        if PIL_Image!=None and PIL_Image.isImageType(image):
-            image = Image(image) #PIL.Image.Image -> toga.Image
         self.image = image
 
     @property
@@ -134,20 +132,22 @@ class ImageView(Widget):
         self._impl.set_image(self._image)
         self.refresh()
     
-    def as_image(self, format: Any | None=None):
+    def as_image(self, format: Any=Image):
         '''
-        get the image from ImageView as specified format if supported
-        :param format: None or A supported type of Image
-        Supported types are `PIL.Image.Image`,
-        :returns: toga.Image if format is None, or the specified format if the format is supported
+        Get image content of the imageview.
+
+        To get the image as toga.Image Object
         ```
-        from PIL import Image
-        pil_image = imageview.as_image(Image.Image)
+        toga_img = imageview.as_image()
+        ```
+
+        To get the image as Pillow Object
+        ```
+        from PIL import Image as PIL_Image
+        pil_img = imageview.as_image(PIL_Image.Image)
         ```
         '''
-        if format==None:
-            return self.image
-        elif isinstance(format, Image):
+        if isinstance(format, Image):
             return self.image
         elif PIL_Image!=None and format==PIL_Image.Image:
             return self.image.as_format(PIL_Image.Image)

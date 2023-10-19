@@ -1454,15 +1454,22 @@ class Canvas(Widget):
     # As image
     ###########################################################################
 
-    def as_image(self, format: Any|None=None) -> toga.Image:
+    def as_image(self, format: Any=toga.Image):
         
         """Render the canvas as an Image.
-        :param format: None or type of the image that will be returned
-        Supported Types: PIL.Image.Image, toga.Image
-        :returns: Object of the specified Image type. If unspecified returns toga.Image"""
-        if format == None:
-            return Image(data=self._impl.get_image_data())
-        elif isinstance(format, toga.Image):
+        
+        To get toga.Image Object
+        ```
+        toga_img = canvas.as_image()
+        ```
+        
+        To get Pillow Object
+        ```
+        from PIL import Image as PIL_Image
+        pil_img = canvas.as_image(PIL_Image.Image)
+        ```
+        """
+        if isinstance(format, toga.Image):
             return Image(data=self._impl.get_image_data())
         elif PIL_Image != None and format==PIL_Image.Image:
             return PIL_Image.open(BytesIO(self._impl.get_image_data()))

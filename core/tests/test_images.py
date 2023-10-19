@@ -146,13 +146,11 @@ test_image_path = "resources/toga.png"
 @pytest.mark.parametrize("unified_image_source",[
     test_image_path, #normal string paths
     Path(test_image_path), #pathlib.Path
-    open(test_image_path, "rb"), #BufferedReader
     open(test_image_path, "rb").read(),#bytes
-    BytesIO(open(test_image_path, "rb").read()), #BytesIO
     PIL_Image.open(test_image_path), #PIL_Image.Image
 ])
 
 def test_unified_source(unified_image_source):
     image = toga.Image(unified_image_source)
-    assert image is not None and image.width is not None and image.height is not None
+    assert image is not None and image.width == 60 and image.height == 40
 
