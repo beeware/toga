@@ -1,10 +1,8 @@
 from toga.widgets.numberinput import _clean_decimal
 
-from ..utils import not_required
 from .base import Widget
 
 
-@not_required  # Testbed coverage is complete for this widget.
 class NumberInput(Widget):
     def create(self):
         self._action("create NumberInput")

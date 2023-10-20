@@ -1,11 +1,9 @@
 from toga.constants import Direction
 
-from ..utils import not_required
 from ..window import Container
 from .base import Widget
 
 
-@not_required  # Testbed coverage is complete for this widget.
 class SplitContainer(Widget):
     def create(self):
         self._action("create SplitContainer")
