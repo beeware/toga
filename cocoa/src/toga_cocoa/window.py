@@ -97,7 +97,11 @@ class TogaWindow(NSWindow):
         """Confirm if the toolbar item should be enabled."""
         try:
             return self.impl._toolbar_items[str(item.itemIdentifier)].enabled
-        except KeyError:
+        except KeyError:  # pragma: nocover
+            # This branch *shouldn't* ever happen; but there's an edge
+            # case where a toolbar redraw happens in the middle of deleting
+            # a toolbar item that can't be reliably reproduced, so it sometimes
+            # happens in testing.
             return False
 
     ######################################################################
