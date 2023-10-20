@@ -71,7 +71,7 @@ def test_function_handler():
     assert wrapped._raw == handler
 
     # Invoke wrapper
-    wrapped("dummy", "arg1", "arg2", kwarg1=3, kwarg2=4)
+    wrapped("arg1", "arg2", kwarg1=3, kwarg2=4)
 
     # Handler arguments are as expected.
     assert handler_call == {
@@ -95,7 +95,7 @@ def test_function_handler_error(capsys):
     assert wrapped._raw == handler
 
     # Invoke handler. The exception is swallowed
-    wrapped("dummy", "arg1", "arg2", kwarg1=3, kwarg2=4)
+    wrapped("arg1", "arg2", kwarg1=3, kwarg2=4)
 
     # Handler arguments are as expected.
     assert handler_call == {
@@ -127,7 +127,7 @@ def test_function_handler_with_cleanup():
     assert wrapped._raw == handler
 
     # Invoke handler
-    wrapped("dummy", "arg1", "arg2", kwarg1=3, kwarg2=4)
+    wrapped("arg1", "arg2", kwarg1=3, kwarg2=4)
 
     # Handler arguments are as expected.
     assert handler_call == {
@@ -156,7 +156,7 @@ def test_function_handler_with_cleanup_error(capsys):
     assert wrapped._raw == handler
 
     # Invoke handler. The exception in cleanup is swallowed
-    wrapped("dummy", "arg1", "arg2", kwarg1=3, kwarg2=4)
+    wrapped("arg1", "arg2", kwarg1=3, kwarg2=4)
 
     # Handler arguments are as expected.
     assert handler_call == {
@@ -194,7 +194,7 @@ def test_generator_handler(event_loop):
 
     # Invoke wrapper inside an active run loop.
     async def waiter():
-        wrapped("dummy", "arg1", "arg2", kwarg1=3, kwarg2=4)
+        wrapped("arg1", "arg2", kwarg1=3, kwarg2=4)
         count = 0
         while not handler_call.get("done", False) and count < 5:
             await asyncio.sleep(0.01)
@@ -229,7 +229,7 @@ def test_generator_handler_error(event_loop, capsys):
 
     # Invoke wrapper inside an active run loop.
     async def waiter():
-        wrapped("dummy", "arg1", "arg2", kwarg1=3, kwarg2=4)
+        wrapped("arg1", "arg2", kwarg1=3, kwarg2=4)
         count = 0
         while not handler_call.get("done", False) and count < 5:
             await asyncio.sleep(0.01)
@@ -272,7 +272,7 @@ def test_generator_handler_with_cleanup(event_loop):
 
     # Invoke wrapper inside an active run loop.
     async def waiter():
-        wrapped("dummy", "arg1", "arg2", kwarg1=3, kwarg2=4)
+        wrapped("arg1", "arg2", kwarg1=3, kwarg2=4)
         count = 0
         while not handler_call.get("done", False) and count < 5:
             await asyncio.sleep(0.01)
@@ -314,7 +314,7 @@ def test_generator_handler_with_cleanup_error(event_loop, capsys):
 
     # Invoke wrapper inside an active run loop.
     async def waiter():
-        wrapped("dummy", "arg1", "arg2", kwarg1=3, kwarg2=4)
+        wrapped("arg1", "arg2", kwarg1=3, kwarg2=4)
         count = 0
         while not handler_call.get("done", False) and count < 5:
             await asyncio.sleep(0.01)
@@ -358,7 +358,7 @@ def test_coroutine_handler(event_loop):
 
     # Invoke wrapper inside an active run loop.
     async def waiter():
-        wrapped("dummy", "arg1", "arg2", kwarg1=3, kwarg2=4)
+        wrapped("arg1", "arg2", kwarg1=3, kwarg2=4)
         count = 0
         while not handler_call.get("done", False) and count < 5:
             await asyncio.sleep(0.01)
@@ -392,7 +392,7 @@ def test_coroutine_handler_error(event_loop, capsys):
 
     # Invoke wrapper inside an active run loop.
     async def waiter():
-        wrapped("dummy", "arg1", "arg2", kwarg1=3, kwarg2=4)
+        wrapped("arg1", "arg2", kwarg1=3, kwarg2=4)
         count = 0
         while not handler_call.get("done", False) and count < 5:
             await asyncio.sleep(0.01)
@@ -433,7 +433,7 @@ def test_coroutine_handler_with_cleanup(event_loop):
 
     # Invoke wrapper inside an active run loop.
     async def waiter():
-        wrapped("dummy", "arg1", "arg2", kwarg1=3, kwarg2=4)
+        wrapped("arg1", "arg2", kwarg1=3, kwarg2=4)
         count = 0
         while not handler_call.get("done", False) and count < 5:
             await asyncio.sleep(0.01)
@@ -472,7 +472,7 @@ def test_coroutine_handler_with_cleanup_error(event_loop, capsys):
 
     # Invoke wrapper inside an active run loop.
     async def waiter():
-        wrapped("dummy", "arg1", "arg2", kwarg1=3, kwarg2=4)
+        wrapped("arg1", "arg2", kwarg1=3, kwarg2=4)
         count = 0
         while not handler_call.get("done", False) and count < 5:
             await asyncio.sleep(0.01)

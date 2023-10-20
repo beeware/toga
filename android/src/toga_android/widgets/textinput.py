@@ -110,17 +110,17 @@ class TextInput(TextViewWidget):
         return self.native.getError() is None
 
     def _on_change(self):
-        self.interface.on_change(None)
+        self.interface.on_change()
         self.interface._validate()
 
     def _on_confirm(self):
-        self.interface.on_confirm(None)
+        self.interface.on_confirm()
 
     def _on_gain_focus(self):
-        self.interface.on_gain_focus(None)
+        self.interface.on_gain_focus()
 
     def _on_lose_focus(self):
-        self.interface.on_lose_focus(None)
+        self.interface.on_lose_focus()
 
     def rehint(self):
         self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)

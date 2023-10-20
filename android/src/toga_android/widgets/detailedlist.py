@@ -21,7 +21,7 @@ class DetailedListOnClickListener(dynamic_proxy(View.OnClickListener)):
 
     def onClick(self, _view):
         self.impl._set_selection(self.row_number)
-        self.impl.interface.on_select(None)
+        self.impl.interface.on_select()
 
 
 @dataclass
@@ -40,7 +40,7 @@ class DetailedListOnLongClickListener(dynamic_proxy(View.OnLongClickListener)):
 
     def onLongClick(self, _view):
         self.impl._set_selection(self.row_number)
-        self.impl.interface.on_select(None)
+        self.impl.interface.on_select()
 
         actions = [
             action
@@ -85,7 +85,8 @@ class OnRefreshListener(dynamic_proxy(SwipeRefreshLayout.OnRefreshListener)):
         self._interface = interface
 
     def onRefresh(self):
-        self._interface.on_refresh(None)
+        if self._interface.on_refresh:
+            self._interface.on_refresh()
 
 
 class DetailedList(Widget):

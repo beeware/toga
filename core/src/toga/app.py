@@ -694,7 +694,7 @@ class App:
 
         :param handler: A coroutine, generator or callable.
         """
-        self.loop.call_soon_threadsafe(wrapped_handler(self, handler), None)
+        self.loop.call_soon_threadsafe(wrapped_handler(self, handler))
 
 
 class DocumentApp(App):

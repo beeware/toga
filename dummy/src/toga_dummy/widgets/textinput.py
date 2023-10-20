@@ -38,14 +38,14 @@ class TextInput(Widget):
         return self._get_value("valid")
 
     def simulate_change(self):
-        self.interface.on_change(None)
+        self.interface.on_change()
         self.interface._validate()
 
     def simulate_confirm(self):
-        self.interface.on_confirm(None)
+        self.interface.on_confirm()
 
     def simulate_gain_focus(self):
-        self.interface.on_gain_focus(None)
+        self.interface.on_gain_focus()
 
     def simulate_lose_focus(self):
-        self.interface.on_lose_focus(None)
+        self.interface.on_lose_focus()

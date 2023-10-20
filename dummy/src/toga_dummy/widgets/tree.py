@@ -20,7 +20,7 @@ class Tree(Widget):
 
     def change_source(self, source):
         self._action("change source", source=source)
-        self.interface.on_select(None)
+        self.interface.on_select()
 
     def insert(self, parent, index, item):
         self._action("insert node", parent=parent, index=index, item=item)
@@ -65,7 +65,7 @@ class Tree(Widget):
 
     def simulate_selection(self, path):
         self._set_value("selection", path)
-        self.interface.on_select(None)
+        self.interface.on_select()
 
     def simulate_activate(self, path):
-        self.interface.on_activate(None, node=node_for_path(self.interface.data, path))
+        self.interface.on_activate(node=node_for_path(self.interface.data, path))

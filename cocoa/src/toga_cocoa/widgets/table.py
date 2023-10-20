@@ -88,7 +88,7 @@ class TogaTable(NSTableView):
 
     @objc_method
     def tableViewSelectionDidChange_(self, notification) -> None:
-        self.interface.on_select(None)
+        self.interface.on_select()
 
     # 2021-09-04: Commented out this method because it appears to be a
     # source of significant slowdown when the table has a lot of data
@@ -119,7 +119,7 @@ class TogaTable(NSTableView):
     def onDoubleClick_(self, sender) -> None:
         clicked = self.interface.data[self.clickedRow]
 
-        self.interface.on_activate(None, row=clicked)
+        self.interface.on_activate(row=clicked)
 
 
 class Table(Widget):

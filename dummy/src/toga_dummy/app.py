@@ -67,7 +67,7 @@ class App(LoggedObject):
         self._action("hide_cursor")
 
     def simulate_exit(self):
-        self.interface.on_exit(None)
+        self.interface.on_exit()
 
 
 @not_required

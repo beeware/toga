@@ -31,7 +31,7 @@ class ScrollContainer(Widget):
         # Disabling scrolling implies a position reset; that's a scroll event.
         if value is False:
             self._set_value("vertical_position", 0)
-            self.interface.on_scroll(None)
+            self.interface.on_scroll()
 
     def get_horizontal(self):
         return self._get_value("horizontal", True)
@@ -42,7 +42,7 @@ class ScrollContainer(Widget):
         # Disabling scrolling implies a position reset; that's a scroll event.
         if value is False:
             self._set_value("horizontal_position", 0)
-            self.interface.on_scroll(None)
+            self.interface.on_scroll()
 
     def set_on_scroll(self, on_scroll):
         self._set_value("on_scroll", on_scroll)
@@ -50,7 +50,7 @@ class ScrollContainer(Widget):
     def set_position(self, horizontal_position, vertical_position):
         self._set_value("horizontal_position", horizontal_position)
         self._set_value("vertical_position", vertical_position)
-        self.interface.on_scroll(None)
+        self.interface.on_scroll()
 
     def get_horizontal_position(self):
         return self._get_value("horizontal_position", 0)

@@ -14,7 +14,7 @@ class DateInput(Widget):
 
     def set_value(self, value):
         self._set_value("value", value)
-        self.interface.on_change(None)
+        self.interface.on_change()
 
     def get_min_date(self):
         return self._get_value("min date", date(1901, 1, 1))

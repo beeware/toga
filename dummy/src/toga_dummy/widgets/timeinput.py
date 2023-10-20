@@ -14,7 +14,7 @@ class TimeInput(Widget):
 
     def set_value(self, value):
         self._set_value("value", value)
-        self.interface.on_change(None)
+        self.interface.on_change()
 
     def get_min_time(self):
         return self._get_value("min time", time(0, 0, 0))

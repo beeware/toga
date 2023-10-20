@@ -30,7 +30,7 @@ class NumberInput(Widget):
         self.native.TextChanged += WeakrefCallable(self.winforms_text_changed)
 
     def winforms_text_changed(self, sender, event):
-        self.interface.on_change(None)
+        self.interface.on_change()
 
     def get_readonly(self):
         return self.native.ReadOnly

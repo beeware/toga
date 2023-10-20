@@ -44,7 +44,7 @@ class OptionContainer(Widget):
 
     def set_current_tab_index(self, current_tab_index):
         self._set_value("current_tab_index", current_tab_index)
-        self.interface.on_select(None)
+        self.interface.on_select()
 
     def get_current_tab_index(self):
         return self._get_value("current_tab_index", None)

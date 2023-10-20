@@ -27,7 +27,7 @@ class TogaOnScrollListener(dynamic_proxy(View.OnScrollChangeListener)):
         self.impl = impl
 
     def onScrollChange(self, view, new_x, new_y, old_x, old_y):
-        self.impl.interface.on_scroll(None)
+        self.impl.interface.on_scroll()
 
 
 class ScrollContainer(Widget, Container):

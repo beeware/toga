@@ -34,7 +34,7 @@ class WebView(Widget):
 
     def gtk_on_load_changed(self, widget, load_event, *args):
         if load_event == WebKit2.LoadEvent.FINISHED:
-            self.interface.on_webview_load(None)
+            self.interface.on_webview_load()
 
             if self.load_future:
                 self.load_future.set_result(None)

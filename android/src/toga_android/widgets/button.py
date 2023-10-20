@@ -12,7 +12,7 @@ class TogaOnClickListener(dynamic_proxy(View.OnClickListener)):
         self.button_impl = button_impl
 
     def onClick(self, _view):
-        self.button_impl.interface.on_press(None)
+        self.button_impl.interface.on_press()
 
 
 class Button(TextViewWidget):

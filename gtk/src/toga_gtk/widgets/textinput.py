@@ -16,7 +16,7 @@ class TextInput(Widget):
         self.native.connect("key-press-event", self.gtk_key_press_event)
 
     def gtk_on_change(self, entry):
-        self.interface.on_change(self.interface)
+        self.interface.on_change()
         self.interface._validate()
 
     def gtk_focus_in_event(self, entry, user_data):
@@ -28,7 +28,7 @@ class TextInput(Widget):
     def gtk_key_press_event(self, entry, user_data):
         key_pressed = toga_key(user_data)
         if key_pressed and key_pressed["key"] in {Key.ENTER, Key.NUMPAD_ENTER}:
-            self.interface.on_confirm(None)
+            self.interface.on_confirm()
 
     def get_readonly(self):
         return not self.native.get_property("editable")

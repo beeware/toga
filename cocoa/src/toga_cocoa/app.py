@@ -47,7 +47,7 @@ class MainWindow(Window):
         # As a result of calling that method, the app will either
         # exit, or the user will cancel the exit; in which case
         # the main window shouldn't close, either.
-        self.interface.app.on_exit(None)
+        self.interface.app.on_exit()
         return False
 
 
@@ -101,7 +101,7 @@ class AppDelegate(NSObject):
     @objc_method
     def selectMenuItem_(self, sender) -> None:
         cmd = self.impl._menu_items[sender]
-        cmd.action(None)
+        cmd.action()
 
     @objc_method
     def validateMenuItem_(self, sender) -> bool:
@@ -303,7 +303,7 @@ class App:
         self.interface.about()
 
     def _menu_quit(self, app, **kwargs):
-        self.interface.on_exit(None)
+        self.interface.on_exit()
 
     def _menu_close_window(self, app, **kwargs):
         if self.interface.current_window:

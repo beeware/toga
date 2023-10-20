@@ -47,4 +47,4 @@ class Selection(Widget):
 
     def simulate_selection(self, item):
         self._set_value("selected_item", item)
-        self.interface.on_change(None)
+        self.interface.on_change()

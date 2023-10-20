@@ -16,7 +16,7 @@ class TogaOnItemSelectedListener(dynamic_proxy(AdapterView.OnItemSelectedListene
         self.impl.on_change(position)
 
     def onNothingSelected(self, parent):
-        self.impl.on_change(None)
+        self.impl.on_change()
 
 
 class Selection(Widget):
@@ -35,7 +35,7 @@ class Selection(Widget):
     # the change, and use self.last_selection to prevent duplication.
     def on_change(self, index):
         if index != self.last_selection:
-            self.interface.on_change(None)
+            self.interface.on_change()
             self.last_selection = index
 
     def insert(self, index, item):
@@ -68,7 +68,7 @@ class Selection(Widget):
                 self.select_item(self.last_selection)
 
         if removed_selection:
-            self.interface.on_change(None)
+            self.interface.on_change()
 
     def select_item(self, index, item=None):
         self.native.setSelection(index)
@@ -80,7 +80,7 @@ class Selection(Widget):
 
     def clear(self):
         self.adapter.clear()
-        self.on_change(None)
+        self.on_change()
 
     def rehint(self):
         self.native.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)

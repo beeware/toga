@@ -47,7 +47,7 @@ class TogaStepper(NSStepper):
             # would make it invalid.
             self.impl.native_input.stringValue = _clean_decimal_str(value)
 
-        self.interface.on_change(self.interface)
+        self.interface.on_change()
 
 
 class TogaNumberInput(NSTextField):
@@ -234,7 +234,7 @@ class NumberInput(Widget):
         else:
             self.native_stepper.floatValue = float(value)
             self.native_input.stringValue = str(value)
-        self.interface.on_change(None)
+        self.interface.on_change()
 
     def get_enabled(self):
         return self.native_input.isEnabled

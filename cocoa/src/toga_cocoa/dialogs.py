@@ -54,14 +54,14 @@ class NSAlertDialog(BaseDialog):
         pass
 
     def completion_handler(self, return_value: int) -> None:
-        self.on_result(None, None)
+        self.on_result(None)
 
         self.interface.future.set_result(None)
 
     def bool_completion_handler(self, return_value: int) -> None:
         result = return_value == NSAlertFirstButtonReturn
 
-        self.on_result(None, result)
+        self.on_result(result)
 
         self.interface.future.set_result(result)
 
@@ -216,7 +216,7 @@ class FileDialog(BaseDialog):
         else:
             result = None
 
-        self.on_result(None, result)
+        self.on_result(result)
         self.interface.future.set_result(result)
 
     def multi_path_completion_handler(self, return_value: int) -> None:
@@ -225,7 +225,7 @@ class FileDialog(BaseDialog):
         else:
             result = None
 
-        self.on_result(None, result)
+        self.on_result(result)
 
         self.interface.future.set_result(result)
 

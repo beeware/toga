@@ -112,7 +112,7 @@ class TogaWindow(NSWindow):
     def onToolbarButtonPress_(self, obj) -> None:
         """Invoke the action tied to the toolbar button."""
         item = self.impl._toolbar_items[str(obj.itemIdentifier)]
-        item.action(obj)
+        item.action()
 
 
 class Window:
@@ -288,7 +288,7 @@ class Window:
         # The on_close handler has a cleanup method that will enforce
         # the close if the on_close handler requests it; this initial
         # "should close" request can always return False.
-        self.interface.on_close(None)
+        self.interface.on_close()
         return False
 
     def close(self):

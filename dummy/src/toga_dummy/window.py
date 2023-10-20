@@ -97,4 +97,4 @@ class Window(LoggedObject):
         self._action("set full screen", full_screen=is_full_screen)
 
     def simulate_close(self):
-        self.interface.on_close(None)
+        self.interface.on_close()

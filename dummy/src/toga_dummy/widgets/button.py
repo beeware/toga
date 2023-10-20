@@ -14,4 +14,4 @@ class Button(Widget):
         self._set_value("text", text)
 
     def simulate_press(self):
-        self.interface.on_press(None)
+        self.interface.on_press()

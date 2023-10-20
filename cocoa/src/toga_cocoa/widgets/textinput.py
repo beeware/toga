@@ -38,7 +38,7 @@ class TogaTextFieldProxy:
 
     @staticmethod
     def textDidChange_(cls, self, notification) -> None:
-        self.interface.on_change(None)
+        self.interface.on_change()
         self.interface._validate()
 
     @staticmethod
@@ -60,7 +60,7 @@ class TogaTextFieldProxy:
         selector: SEL,
     ) -> bool:
         if selector.name == b"insertNewline:":
-            self.interface.on_confirm(None)
+            self.interface.on_confirm()
         return False
 
 
@@ -213,7 +213,7 @@ class TextInput(Widget):
 
     def set_value(self, value):
         self.native.stringValue = value
-        self.interface.on_change(None)
+        self.interface.on_change()
         self.interface._validate()
 
     def rehint(self):

@@ -26,7 +26,7 @@ class NumberInput(Widget):
 
     def set_value(self, value):
         self._set_value("value", value)
-        self.interface.on_change(None)
+        self.interface.on_change()
 
     def get_value(self):
         value = self._get_value("value", None)
@@ -39,4 +39,4 @@ class NumberInput(Widget):
         self._set_value("on_change", handler)
 
     def simulate_change(self):
-        self.interface.on_change(None)
+        self.interface.on_change()

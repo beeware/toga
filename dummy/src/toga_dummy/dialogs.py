@@ -9,7 +9,7 @@ class BaseDialog:
         self.on_result = on_result
 
     def simulate_result(self, result):
-        self.on_result(None, result)
+        self.on_result(result)
         self.interface.future.set_result(result)
 
 

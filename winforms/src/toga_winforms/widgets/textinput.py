@@ -78,7 +78,7 @@ class TextInput(Widget):
         self.interface.intrinsic.height = self.native.PreferredSize.Height
 
     def winforms_text_changed(self, sender, event):
-        self.interface.on_change(self.interface)
+        self.interface.on_change()
         self.interface._validate()
 
     def winforms_key_press(self, sender, event):

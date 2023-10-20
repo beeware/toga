@@ -24,7 +24,7 @@ class Switch(Widget):
         self.native.pack_start(self.native_switch, False, False, 0)
 
     def gtk_notify_active(self, widget, state):
-        self.interface.on_change(None)
+        self.interface.on_change()
 
     def get_enabled(self):
         return self.native_switch.get_sensitive()

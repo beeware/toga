@@ -51,7 +51,7 @@ class TogaMultilineTextView(UITextView, protocols=[UIKeyInput]):
 
     @objc_method
     def textViewDidChange_(self, text_view):
-        self.interface.on_change(None)
+        self.interface.on_change()
 
 
 class MultilineTextInput(Widget):
@@ -134,7 +134,7 @@ class MultilineTextInput(Widget):
     def set_value(self, value):
         self.native.text = value
         self.placeholder_label.setHidden(self.has_focus or len(self.native.text) > 0)
-        self.interface.on_change(None)
+        self.interface.on_change()
 
     def set_color(self, value):
         color = native_color(value)

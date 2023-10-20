@@ -12,7 +12,7 @@ class OnCheckedChangeListener(dynamic_proxy(CompoundButton.OnCheckedChangeListen
         self._impl = impl
 
     def onCheckedChanged(self, _button, _checked):
-        self._impl.interface.on_change(None)
+        self._impl.interface.on_change()
 
 
 class Switch(TextViewWidget):
