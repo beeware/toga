@@ -111,8 +111,11 @@ pygments_style = "sphinx"
 rst_prolog = """
 .. role:: stable
 .. role:: beta
+.. role:: no
 .. |y| replace:: :stable:`●`
 .. |b| replace:: :beta:`○`
+.. |beta| replace:: :beta:`β`
+.. |no| replace:: :no:`✖︎`
 """
 
 intersphinx_mapping = {"python": ("https://docs.python.org/3", None)}

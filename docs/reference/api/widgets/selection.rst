@@ -35,6 +35,14 @@ A widget to select a single option from a list of alternatives.
        :align: center:
        :width: 300px
 
+  .. group-tab:: Web
+
+    Not supported
+
+  .. group-tab:: Textual
+
+    Not supported
+
 .. rst-class:: widget-support
 .. csv-filter:: Availability (:ref:`Key <api-status-key>`)
    :header-rows: 1

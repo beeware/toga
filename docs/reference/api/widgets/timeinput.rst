@@ -5,11 +5,11 @@ A widget to select a clock time.
 
 .. tabs::
 
-  .. group-tab:: macOS
+  .. group-tab:: macOS |no|
 
     Not supported
 
-  .. group-tab:: Linux
+  .. group-tab:: Linux |no|
 
     Not supported
 
@@ -25,17 +25,17 @@ A widget to select a clock time.
        :align: center
        :width: 300px
 
-  .. group-tab:: iOS
+  .. group-tab:: iOS |no|
 
     Not supported
 
+  .. group-tab:: Web |no|
 
-.. rst-class:: widget-support
-.. csv-filter:: Availability (:ref:`Key <api-status-key>`)
-   :header-rows: 1
-   :file: ../../data/widgets_by_platform.csv
-   :included_cols: 4,5,6,7,8,9,10
-   :exclude: {0: '(?!(TimeInput|Component))'}
+    Not supported
+
+  .. group-tab:: Textual |no|
+
+    Not supported
 
 Usage
 -----

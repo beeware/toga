@@ -35,12 +35,17 @@ A widget for the display and editing of a single line of text.
        :align: center
        :width: 300px
 
-.. rst-class:: widget-support
-.. csv-filter:: Availability (:ref:`Key <api-status-key>`)
-   :header-rows: 1
-   :file: ../../data/widgets_by_platform.csv
-   :included_cols: 4,5,6,7,8,9,10
-   :exclude: {0: '(?!^(TextInput|Component)$)'}
+  .. group-tab:: Web |beta|
+
+    .. figure:: /reference/images/textinput-web.png
+       :align: center
+       :width: 300px
+
+  .. group-tab:: Textual |beta|
+
+    .. figure:: /reference/images/textinput-textual.png
+       :align: center
+       :width: 300px
 
 Usage
 -----

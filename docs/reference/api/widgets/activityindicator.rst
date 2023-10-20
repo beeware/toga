@@ -18,30 +18,27 @@ usually rendered as a "spinner" animation.
        :align: center
        :width: 100px
 
-  .. group-tab:: Windows
+  .. group-tab:: Windows |no|
 
-    .. figure:: /reference/images/activityindicator-winforms.png
+    Not supported
+
+  .. group-tab:: Android |no|
+
+    Not supported
+
+  .. group-tab:: iOS |no|
+
+    Not supported
+
+  .. group-tab:: Web |beta|
+
+    .. figure:: /reference/images/activityindicator-web.png
        :align: center
        :width: 100px
 
-  .. group-tab:: Android
+  .. group-tab:: Textual |no|
 
-    .. figure:: /reference/images/activityindicator-android.png
-       :align: center
-       :width: 100px
-
-  .. group-tab:: iOS
-
-    .. figure:: /reference/images/activityindicator-ios.png
-       :align: center
-       :width: 100px
-
-.. rst-class:: widget-support
-.. csv-filter:: Availability (:ref:`Key <api-status-key>`)
-   :header-rows: 1
-   :file: ../../data/widgets_by_platform.csv
-   :included_cols: 4,5,6,7,8,9,10
-   :exclude: {0: '(?!^(ActivityIndicator|Component)$)'}
+    Not supported
 
 Usage
 -----
