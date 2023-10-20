@@ -19,6 +19,7 @@ from toga.fonts import (
 
 class FontMixin:
     supports_custom_fonts = True
+    supports_custom_variable_fonts = True
 
     def assert_font_options(self, weight=NORMAL, style=NORMAL, variant=NORMAL):
         assert BOLD if self.font.Bold else NORMAL == weight
