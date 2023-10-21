@@ -451,6 +451,15 @@ class UIViewContentMode(Enum):
     BottomLeft = 11
     BottomRight = 12
 
+#UIViewAutoresizing
+UIViewAutoresizingNone = 0
+UIViewAutoresizingFlexibleLeftMargin = 1 << 0
+UIViewAutoresizingFlexibleWidth = 1 << 1
+UIViewAutoresizingFlexibleRightMargin = 1 << 2
+UIViewAutoresizingFlexibleTopMargin = 1 << 3
+UIViewAutoresizingFlexibleHeight = 1 << 4
+UIViewAutoresizingFlexibleBottomMargin = 1 << 5
+
 
 ######################################################################
 # UIViewController.h

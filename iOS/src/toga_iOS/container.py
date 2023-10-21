@@ -3,6 +3,12 @@ from .libs import (
     UINavigationController,
     UIView,
     UIViewController,
+    UIViewAutoresizingFlexibleLeftMargin,
+    UIViewAutoresizingFlexibleWidth,
+    UIViewAutoresizingFlexibleRightMargin,
+    UIViewAutoresizingFlexibleTopMargin,
+    UIViewAutoresizingFlexibleHeight,
+    UIViewAutoresizingFlexibleBottomMargin,
 )
 
 #######################################################################################
@@ -65,7 +71,14 @@ class Container(BaseContainer):
         super().__init__(content=content, on_refresh=on_refresh)
         self.native = UIView.alloc().init()
         self.native.translatesAutoresizingMaskIntoConstraints = True
-        self.native.autoresizingMask = 63
+        self.native.autoresizingMask = (
+            UIViewAutoresizingFlexibleLeftMargin
+            | UIViewAutoresizingFlexibleWidth
+            | UIViewAutoresizingFlexibleRightMargin
+            | UIViewAutoresizingFlexibleTopMargin
+            | UIViewAutoresizingFlexibleHeight
+            | UIViewAutoresizingFlexibleBottomMargin
+        )
 
         self.layout_native = self.native if layout_native is None else layout_native
 
