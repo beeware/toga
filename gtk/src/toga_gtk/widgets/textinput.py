@@ -59,10 +59,12 @@ class TextInput(Widget):
         #     self._impl.get_preferred_width(), self._impl.get_preferred_height(),
         #     getattr(self, '_fixed_height', False), getattr(self, '_fixed_width', False)
         # )
-        # width = self.native.get_preferred_width()
+        width = self.native.get_preferred_width()
         height = self.native.get_preferred_height()
 
-        self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
+        self.interface.intrinsic.width = at_least(
+            max(self.interface._MIN_WIDTH, width[1])
+        )
         self.interface.intrinsic.height = height[1]
 
     def set_error(self, error_message):
