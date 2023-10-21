@@ -2,13 +2,13 @@ from .libs import (
     UIApplication,
     UINavigationController,
     UIView,
-    UIViewController,
+    UIViewAutoresizingFlexibleBottomMargin,
+    UIViewAutoresizingFlexibleHeight,
     UIViewAutoresizingFlexibleLeftMargin,
-    UIViewAutoresizingFlexibleWidth,
     UIViewAutoresizingFlexibleRightMargin,
     UIViewAutoresizingFlexibleTopMargin,
-    UIViewAutoresizingFlexibleHeight,
-    UIViewAutoresizingFlexibleBottomMargin,
+    UIViewAutoresizingFlexibleWidth,
+    UIViewController,
 )
 
 #######################################################################################
