@@ -31,7 +31,7 @@ An operating system-managed container of widgets.
 
   .. group-tab:: iOS
 
-    .. figure:: /reference/images/window-ios.png
+    .. figure:: /reference/images/window-iOS.png
        :align: center
        :width: 300px
 

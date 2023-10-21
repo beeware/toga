@@ -31,7 +31,7 @@ A drawing area for 2D vector graphics.
 
   .. group-tab:: iOS
 
-    .. figure:: /reference/images/canvas-ios.png
+    .. figure:: /reference/images/canvas-iOS.png
        :align: center
        :width: 300px
 

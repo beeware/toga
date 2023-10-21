@@ -31,21 +31,25 @@ A widget for the display and editing of a single line of text.
 
   .. group-tab:: iOS
 
-    .. figure:: /reference/images/textinput-ios.png
+    .. figure:: /reference/images/textinput-iOS.png
        :align: center
        :width: 300px
 
   .. group-tab:: Web |beta|
 
-    .. figure:: /reference/images/textinput-web.png
-       :align: center
-       :width: 300px
+    .. .. figure:: /reference/images/textinput-web.png
+    ..    :align: center
+    ..    :width: 300px
+
+    Screenshot not available
 
   .. group-tab:: Textual |beta|
 
-    .. figure:: /reference/images/textinput-textual.png
-       :align: center
-       :width: 300px
+    .. .. figure:: /reference/images/textinput-textual.png
+    ..    :align: center
+    ..    :width: 300px
+
+    Screenshot not available
 
 Usage
 -----

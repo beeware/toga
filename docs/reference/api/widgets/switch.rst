@@ -32,15 +32,17 @@ unchecked). The button has a text label.
 
   .. group-tab:: iOS
 
-    .. figure:: /reference/images/switch-ios.png
+    .. figure:: /reference/images/switch-iOS.png
        :align: center
        :width: 300px
 
   .. group-tab:: Web |beta|
 
-    .. figure:: /reference/images/switch-web.png
-       :align: center
-       :width: 300px
+    .. .. figure:: /reference/images/switch-web.png
+    ..    :align: center
+    ..    :width: 300px
+
+    Screenshot not available
 
   .. group-tab:: Textual |no|
 

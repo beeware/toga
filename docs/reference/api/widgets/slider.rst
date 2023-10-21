@@ -32,7 +32,7 @@ and the selected value is shown as a draggable marker.
 
   .. group-tab:: iOS
 
-    .. figure:: /reference/images/slider-ios.png
+    .. figure:: /reference/images/slider-iOS.png
        :align: center
        :width: 300px
 

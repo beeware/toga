@@ -31,21 +31,25 @@ A button that can be pressed or clicked.
 
   .. group-tab:: iOS
 
-    .. figure:: /reference/images/button-ios.png
+    .. figure:: /reference/images/button-iOS.png
        :align: center
        :width: 300px
 
   .. group-tab:: Web |beta|
 
-    .. figure:: /reference/images/button-web.png
-       :align: center
-       :width: 300px
+    .. .. figure:: /reference/images/button-web.png
+    ..    :align: center
+    ..    :width: 300px
+
+    Screenshot not available
 
   .. group-tab:: Textual |beta|
 
-    .. figure:: /reference/images/button-textual.png
-       :align: center
-       :width: 300px
+    .. .. figure:: /reference/images/button-textual.png
+    ..    :align: center
+    ..    :width: 300px
+
+    Screenshot not available
 
 Usage
 -----

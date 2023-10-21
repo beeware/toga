@@ -31,7 +31,7 @@ An embedded web browser.
 
   .. group-tab:: iOS
 
-    .. figure:: /reference/images/webview-ios.png
+    .. figure:: /reference/images/webview-iOS.png
        :align: center
        :width: 450px
 

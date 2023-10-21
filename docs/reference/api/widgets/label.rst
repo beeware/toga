@@ -31,21 +31,25 @@ A text label for annotating forms or interfaces.
 
   .. group-tab:: iOS
 
-    .. figure:: /reference/images/label-ios.png
+    .. figure:: /reference/images/label-iOS.png
        :align: center
        :width: 300px
 
   .. group-tab:: Web |beta|
 
-    .. figure:: /reference/images/label-macOS.png
-       :align: center
-       :width: 300px
+    .. .. figure:: /reference/images/label-macOS.png
+    ..    :align: center
+    ..    :width: 300px
+
+    Screenshot not available
 
   .. group-tab:: Textual |beta|
 
-    .. figure:: /reference/images/label-textual.png
-       :align: center
-       :width: 300px
+    .. .. figure:: /reference/images/label-textual.png
+    ..    :align: center
+    ..    :width: 300px
+
+    Screenshot not available
 
 Usage
 -----

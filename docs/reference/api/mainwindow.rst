@@ -31,7 +31,7 @@ The main window of the application.
 
   .. group-tab:: iOS
 
-    .. figure:: /reference/images/mainwindow-ios.png
+    .. figure:: /reference/images/mainwindow-iOS.png
        :align: center
        :width: 450px
 

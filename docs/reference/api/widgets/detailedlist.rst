@@ -30,7 +30,7 @@ DetailedList
 
   .. group-tab:: iOS
 
-    .. figure:: /reference/images/detailedlist-ios.png
+    .. figure:: /reference/images/detailedlist-iOS.png
        :align: center
        :width: 450px
 

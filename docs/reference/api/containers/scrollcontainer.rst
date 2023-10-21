@@ -32,7 +32,7 @@ overflow controlled by scroll bars.
 
   .. group-tab:: iOS
 
-    .. figure:: /reference/images/scrollcontainer-ios.png
+    .. figure:: /reference/images/scrollcontainer-iOS.png
        :align: center
        :width: 450px
 

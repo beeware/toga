@@ -31,7 +31,7 @@ A scrollable panel that allows for the display and editing of multiple lines of 
 
   .. group-tab:: iOS
 
-    .. figure:: /reference/images/multilinetextinput-ios.png
+    .. figure:: /reference/images/multilinetextinput-iOS.png
        :align: center
        :width: 300px
 

@@ -33,7 +33,7 @@ not the actual characters.
 
   .. group-tab:: iOS
 
-    .. figure:: /reference/images/passwordinput-ios.png
+    .. figure:: /reference/images/passwordinput-iOS.png
        :align: center
        :width: 300px
 

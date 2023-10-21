@@ -33,9 +33,11 @@ A separator used to visually distinguish two sections of content in a layout.
 
   .. group-tab:: Web |beta|
 
-    .. figure:: /reference/images/divider-web.png
-       :align: center
-       :width: 300px
+    .. .. figure:: /reference/images/divider-web.png
+    ..    :align: center
+    ..    :width: 300px
+
+    Screenshot not available
 
   .. group-tab:: Textual |no|
 

@@ -31,7 +31,7 @@ A text input that is limited to numeric input.
 
   .. group-tab:: iOS
 
-    .. figure:: /reference/images/numberinput-ios.png
+    .. figure:: /reference/images/numberinput-iOS.png
        :align: center
        :width: 300px
 

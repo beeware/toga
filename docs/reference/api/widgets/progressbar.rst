@@ -32,15 +32,17 @@ known or indeterminate length.
 
   .. group-tab:: iOS
 
-    .. figure:: /reference/images/progressbar-ios.png
+    .. figure:: /reference/images/progressbar-iOS.png
        :align: center
        :width: 300px
 
   .. group-tab:: Web |beta|
 
-    .. figure:: /reference/images/progressbar-web.png
-       :align: center
-       :width: 300px
+    .. .. figure:: /reference/images/progressbar-web.png
+    ..    :align: center
+    ..    :width: 300px
+
+    Screenshot not available
 
   .. group-tab:: Textual |no|
 
