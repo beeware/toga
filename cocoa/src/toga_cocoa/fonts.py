@@ -1,5 +1,7 @@
 from pathlib import Path
 
+from fontTools.ttLib import TTFont
+
 from toga.fonts import (
     _REGISTERED_FONT_CACHE,
     BOLD,
@@ -14,46 +16,80 @@ from toga.fonts import (
     SMALL_CAPS,
     SYSTEM,
     SYSTEM_DEFAULT_FONT_SIZE,
-    SYSTEM_DEFAULT_FONTS,
 )
 from toga_cocoa.libs import (
+    NSURL,
     NSFont,
     NSFontManager,
     NSFontMask,
 )
+from toga_cocoa.libs.core_text import core_text, kCTFontManagerScopeProcess
 
 _FONT_CACHE = {}
+_CUSTOM_FONT_NAMES = {}
 
 
 class Font:
     def __init__(self, interface):
         self.interface = interface
         try:
-            font = _FONT_CACHE[self.interface]
+            attributed_font = _FONT_CACHE[self.interface]
         except KeyError:
+            font_family = self.interface.family
             font_key = self.interface._registered_font_key(
-                self.interface.family,
+                family=font_family,
                 weight=self.interface.weight,
                 style=self.interface.style,
                 variant=self.interface.variant,
             )
+
             try:
-                font_path = _REGISTERED_FONT_CACHE[font_key]
+                # Built in fonts have known names; no need to interrogate a file.
+                custom_font_name = {
+                    SYSTEM: None,  # No font name required
+                    MESSAGE: None,  # No font name required
+                    SERIF: "Times-Roman",
+                    SANS_SERIF: "Helvetica",
+                    CURSIVE: "Apple Chancery",
+                    FANTASY: "Papyrus",
+                    MONOSPACE: "Courier New",
+                }[font_family]
             except KeyError:
-                # Not a pre-registered font
-                if self.interface.family not in SYSTEM_DEFAULT_FONTS:
+                try:
+                    font_path = _REGISTERED_FONT_CACHE[font_key]
+                except KeyError:
+                    # The requested font has not been registered
                     print(
                         f"Unknown font '{self.interface}'; "
                         "using system font as a fallback"
                     )
-            else:
-                if Path(font_path).is_file():
-                    # TODO: Load font file
-                    self.interface.factory.not_implemented("Custom font loading")
-                    # if corrupted font file:
-                    #     raise ValueError(f"Unable to load font file {font_path}")
+                    font_family = SYSTEM
+                    custom_font_name = None
                 else:
-                    raise ValueError(f"Font file {font_path} could not be found")
+                    # We have a path for a font file.
+                    try:
+                        # A font *file* an only be registered once under Cocoa.
+                        custom_font_name = _CUSTOM_FONT_NAMES[font_path]
+                    except KeyError:
+                        if Path(font_path).is_file():
+                            font_url = NSURL.fileURLWithPath(font_path)
+                            success = core_text.CTFontManagerRegisterFontsForURL(
+                                font_url, kCTFontManagerScopeProcess, None
+                            )
+                            if success:
+                                ttfont = TTFont(font_path)
+                                custom_font_name = ttfont["name"].getBestFullName()
+                                # Preserve the Postscript font name contained in the
+                                # font file.
+                                _CUSTOM_FONT_NAMES[font_path] = custom_font_name
+                            else:
+                                raise ValueError(
+                                    f"Unable to load font file {font_path}"
+                                )
+                        else:
+                            raise ValueError(
+                                f"Font file {font_path} could not be found"
+                            )
 
             if self.interface.size == SYSTEM_DEFAULT_FONT_SIZE:
                 font_size = NSFont.systemFontSize
@@ -63,28 +99,13 @@ class Font:
                 # (https://developer.apple.com/library/archive/documentation/GraphicsAnimation/Conceptual/HighResolutionOSX/Explained/Explained.html).
                 font_size = self.interface.size * 96 / 72
 
-            if self.interface.family == SYSTEM:
+            # Construct the NSFont
+            if font_family == SYSTEM:
                 font = NSFont.systemFontOfSize(font_size)
-            elif self.interface.family == MESSAGE:
+            elif font_family == MESSAGE:
                 font = NSFont.messageFontOfSize(font_size)
             else:
-                family = {
-                    SERIF: "Times-Roman",
-                    SANS_SERIF: "Helvetica",
-                    CURSIVE: "Apple Chancery",
-                    FANTASY: "Papyrus",
-                    MONOSPACE: "Courier New",
-                }.get(self.interface.family, self.interface.family)
-
-                font = NSFont.fontWithName(family, size=font_size)
-
-                if font is None:
-                    print(
-                        "Unable to load font: {}pt {}".format(
-                            self.interface.size, family
-                        )
-                    )
-                    font = NSFont.systemFontOfSize(font_size)
+                font = NSFont.fontWithName(custom_font_name, size=font_size)
 
             # Convert the base font definition into a font with all the desired traits.
             attributes_mask = 0
@@ -97,12 +118,12 @@ class Font:
                 attributes_mask |= NSFontMask.SmallCaps.value
 
             if attributes_mask:
-                # If there is no font with the requested traits, this returns the original
-                # font unchanged.
-                font = NSFontManager.sharedFontManager.convertFont(
+                attributed_font = NSFontManager.sharedFontManager.convertFont(
                     font, toHaveTrait=attributes_mask
                 )
+            else:
+                attributed_font = font
 
-            _FONT_CACHE[self.interface] = font.retain()
+            _FONT_CACHE[self.interface] = attributed_font.retain()
 
-        self.native = font
+        self.native = attributed_font
