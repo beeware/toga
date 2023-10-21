@@ -4,12 +4,12 @@ import sys
 import threading
 from ctypes import c_bool, c_void_p, windll
 
+import System.Windows.Forms as WinForms
 from Microsoft.Win32 import SystemEvents
 from System import Environment, Threading
 from System.Drawing import Font as WinFont
 from System.Media import SystemSounds
 from System.Net import SecurityProtocolType, ServicePointManager
-import System.Windows.Forms as WinForms
 from System.Windows.Threading import Dispatcher
 
 import toga

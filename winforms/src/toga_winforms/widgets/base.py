@@ -4,10 +4,10 @@ from decimal import ROUND_HALF_EVEN, ROUND_UP, Decimal
 
 from System.Drawing import (
     Color,
+    Font as WinFont,
     Point,
     Size,
     SystemColors,
-    Font as WinFont,
 )
 from System.Windows.Forms import Screen
 from travertino.size import at_least
