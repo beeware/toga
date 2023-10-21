@@ -1,7 +1,7 @@
 from toga.command import GROUP_BREAK, SECTION_BREAK
 
 from .container import TogaContainer
-from .libs import Gtk
+from .libs import Gdk, Gtk
 
 
 def gtk_toolbar_item_clicked(cmd):
@@ -158,3 +158,18 @@ class Window:
             self.native.fullscreen()
         else:
             self.native.unfullscreen()
+
+    def get_image_data(self):
+        allocation = self.container.get_allocation()
+        screenshot = Gdk.pixbuf_get_from_window(
+            self.native.get_window(),
+            allocation.x,
+            allocation.y,
+            allocation.width,
+            allocation.height,
+        )
+        success, buffer = screenshot.save_to_bufferv("png", [], [])
+        if success:
+            return buffer
+        else:
+            raise ValueError(f"Unable to generate screenshot of {self}")

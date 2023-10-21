@@ -25,6 +25,13 @@ class Image:
     def get_height(self):
         return self.native.get_height()
 
+    def get_data(self):
+        success, buffer = self.native.save_to_bufferv("png")[1]
+        if success:
+            return buffer
+        else:
+            raise ValueError("Unable to get PNG data for image")
+
     def save(self, path):
         path = Path(path)
         try:

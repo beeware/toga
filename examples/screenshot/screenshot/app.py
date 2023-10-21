@@ -338,29 +338,29 @@ class ScreenshotGeneratorApp(toga.App):
         print(f"Saving screenshots to {self.app.paths.data}")
         self.app.paths.data.mkdir(parents=True, exist_ok=True)
         for content_type in [
-            "activityindicator",
-            "button",
-            "canvas",
-            "dateinput",
-            "detailedlist",
-            "divider",
-            "label",
-            "multilinetextinput",
-            "numberinput",
-            "passwordinput",
-            "progressbar",
-            "selection",
-            "slider",
-            "switch",
-            "table",
-            "textinput",
-            "timeinput",
-            "tree",
-            "webview",
-            "optioncontainer",
-            "scrollcontainer",
-            "splitcontainer",
-            "window",
+            # "activityindicator",
+            # "button",
+            # "canvas",
+            # "dateinput",
+            # "detailedlist",
+            # "divider",
+            # "label",
+            # "multilinetextinput",
+            # "numberinput",
+            # "passwordinput",
+            # "progressbar",
+            # "selection",
+            # "slider",
+            # "switch",
+            # "table",
+            # "textinput",
+            # "timeinput",
+            # "tree",
+            # "webview",
+            # "optioncontainer",
+            # "scrollcontainer",
+            # "splitcontainer",
+            # "window",
             "main_window",
         ]:
             try:
@@ -371,9 +371,13 @@ class ScreenshotGeneratorApp(toga.App):
                         # cropped = image.crop(... crop to window size ...)
                         #
                         # TODO: Crop the desktop image, rather than use a manual screenshot
+                        await self.main_window.info_dialog(
+                            "Manual intervention",
+                            "Screenshot the main window, and then quit the app.",
+                        )
                         self.main_window.toolbar.add(self.command2, self.command1)
+                        self.main_window.content = toga.Box()
 
-                        await self.manual_screenshot()
                         cropped = None
                     elif content_type == "window":
                         content.show()
@@ -382,6 +386,10 @@ class ScreenshotGeneratorApp(toga.App):
                         # cropped = image.crop(... crop to window size ...)
                         #
                         # TODO: Crop the desktop image, rather than use a manual screenshot
+                        await self.main_window.info_dialog(
+                            "Manual intervention",
+                            "Screenshot the secondary window, then press Done.",
+                        )
                         await self.manual_screenshot(toga.Box())
                         cropped = None
 
@@ -390,6 +398,10 @@ class ScreenshotGeneratorApp(toga.App):
                     elif content_type == "webview":
                         # Manual screenshot required because webviews aren't
                         # inherently screenshottable.
+                        await self.main_window.info_dialog(
+                            "Manual intervention",
+                            "Screenshot the web widget content, then press Done.",
+                        )
                         await self.manual_screenshot(content)
                         cropped = None
                     else:
@@ -398,7 +410,7 @@ class ScreenshotGeneratorApp(toga.App):
                             style=Pack(direction=COLUMN),
                         )
 
-                        await asyncio.sleep(0.2)
+                        await asyncio.sleep(0.25)
                         image = Image.open(self.main_window.as_image().data)
 
                         scale_x = (
@@ -428,8 +440,6 @@ class ScreenshotGeneratorApp(toga.App):
             except NotImplementedError:
                 pass
 
-        self.app.exit()
-
     def startup(self):
         # Set up main window
         self.main_window = toga.MainWindow(title="My Application")
@@ -455,9 +465,7 @@ class ScreenshotGeneratorApp(toga.App):
 
 
 def main():
-    return ScreenshotGeneratorApp(
-        "Screenshot Generator", "org.beeware.widgets.screenshot"
-    )
+    return ScreenshotGeneratorApp("My Application", "org.beeware.widgets.screenshot")
 
 
 if __name__ == "__main__":
