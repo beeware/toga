@@ -23,6 +23,8 @@ class Window(Container, Scalable):
         self.native.FormClosing += WeakrefCallable(self.winforms_FormClosing)
         super().__init__(self.native)
 
+        self.update_scale()
+
         self.native.MinimizeBox = self.interface.minimizable
         self.native.MaximizeBox = self.interface.resizable
 
@@ -36,6 +38,11 @@ class Window(Container, Scalable):
         self.resize_content()  # Store initial size
 
         self.set_full_screen(self.interface.full_screen)
+
+    def update_scale(self):
+        Scalable.update_scale(
+            self=self, screen=WinForms.Screen.FromControl(self.native)
+        )
 
     def create_toolbar(self):
         if self.interface.toolbar:

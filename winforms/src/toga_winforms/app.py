@@ -4,11 +4,12 @@ import sys
 import threading
 from ctypes import c_bool, c_void_p, windll
 
-import System.Windows.Forms as WinForms
 from Microsoft.Win32 import SystemEvents
 from System import Environment, Threading
+from System.Drawing import Font as WinFont
 from System.Media import SystemSounds
 from System.Net import SecurityProtocolType, ServicePointManager
+import System.Windows.Forms as WinForms
 from System.Windows.Threading import Dispatcher
 
 import toga
@@ -22,6 +23,13 @@ from .window import Window
 
 
 class MainWindow(Window):
+    def update_menubar_font_scale(self):
+        self.native.MainMenuStrip.Font = WinFont(
+            self.original_menubar_font.FontFamily,
+            self.scale_font(self.original_menubar_font.Size),
+            self.original_menubar_font.Style,
+        )
+
     def winforms_FormClosing(self, sender, event):
         # Differentiate between the handling that occurs when the user
         # requests the app to exit, and the actual application exiting.
@@ -46,29 +54,21 @@ class App(Scalable):
     # Windows Versioning Check Sources : https://www.lifewire.com/windows-version-numbers-2625171
     # and https://docs.microsoft.com/en-us/windows/release-information/
     win_version = Environment.OSVersion.Version
-    if win_version.Major >= 6:  # Checks for Windows Vista or later
-        # Represents Windows 8.1 up to Windows 10 before Build 1703 which should use
-        # SetProcessDpiAwareness(True)
-        if (win_version.Major == 6 and win_version.Minor == 3) or (
-            win_version.Major == 10 and win_version.Build < 15063
-        ):
-            windll.shcore.SetProcessDpiAwareness(True)
-            print(
-                "WARNING: Your Windows version doesn't support DPI-independent rendering.  "
-                "We recommend you upgrade to at least Windows 10 Build 1703."
-            )
-        # Represents Windows 10 Build 1703 and beyond which should use
-        # SetProcessDpiAwarenessContext(-4) for DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2
-        # Valid values: https://learn.microsoft.com/en-us/windows/win32/hidpi/dpi-awareness-context
-        elif win_version.Major == 10 and win_version.Build >= 15063:
-            windll.user32.SetProcessDpiAwarenessContext.restype = c_bool
-            windll.user32.SetProcessDpiAwarenessContext.argtypes = [c_void_p]
-            # SetProcessDpiAwarenessContext returns False on Failure
-            if not windll.user32.SetProcessDpiAwarenessContext(-4):
-                print("WARNING: Failed to set the DPI Awareness mode for the app.")
-        # Any other version of windows should use SetProcessDPIAware()
-        else:
-            windll.user32.SetProcessDPIAware()
+    # Represents Windows 10 Build 1703 and beyond which should use
+    # SetProcessDpiAwarenessContext(-4) for DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2
+    # Valid values: https://learn.microsoft.com/en-us/windows/win32/hidpi/dpi-awareness-context
+    if win_version.Major == 10 and win_version.Build >= 15063:
+        windll.user32.SetProcessDpiAwarenessContext.restype = c_bool
+        windll.user32.SetProcessDpiAwarenessContext.argtypes = [c_void_p]
+        # SetProcessDpiAwarenessContext returns False on Failure
+        if not windll.user32.SetProcessDpiAwarenessContext(-4):
+            print("WARNING: Failed to set the DPI Awareness mode for the app.")
+    # Any other version of windows should use SetProcessDPIAware()
+    else:
+        print(
+            "WARNING: Your Windows version doesn't support DPI Awareness setting.  "
+            "We recommend you upgrade to at least Windows 10 Build 1703."
+        )
     # ----------------------------------------------------------------------------------
 
     def __init__(self, interface):
@@ -188,6 +188,8 @@ class App(Scalable):
         # defaults to `Top`.
         self.interface.main_window._impl.native.Controls.Add(menubar)
         self.interface.main_window._impl.native.MainMenuStrip = menubar
+        # Required for font scaling on DPI changes
+        self.interface.main_window._impl.original_menubar_font = menubar.Font
         self.interface.main_window._impl.resize_content()
 
     def _submenu(self, group, menubar):
@@ -349,9 +351,12 @@ class App(Scalable):
         self._cursor_visible = False
 
     def winforms_DisplaySettingsChanged(self, sender, event):
-        self.update_scale()
         for window in self.interface.windows:
-            window.content.refresh()
+            window._impl.update_scale()
+            if isinstance(window._impl, MainWindow):
+                window._impl.update_menubar_font_scale()
+            for widget in window.widgets:
+                widget.refresh()
 
 
 class DocumentApp(App):

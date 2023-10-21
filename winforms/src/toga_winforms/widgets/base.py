@@ -7,6 +7,7 @@ from System.Drawing import (
     Point,
     Size,
     SystemColors,
+    Font as WinFont,
 )
 from System.Windows.Forms import Screen
 from travertino.size import at_least
@@ -18,8 +19,12 @@ from toga_winforms.colors import native_color
 class Scalable:
     SCALE_DEFAULT_ROUNDING = ROUND_HALF_EVEN
 
-    def update_scale(self):
-        screen = Screen.PrimaryScreen
+    def update_scale(self, screen=None):
+        # Doing screen=Screen.PrimaryScreen in method signature will make
+        # the app to become unresponsive when DPI settings are changed.
+        if screen is None:
+            screen = Screen.PrimaryScreen
+
         screen_rect = wintypes.RECT(
             screen.Bounds.Left,
             screen.Bounds.Top,
@@ -33,6 +38,8 @@ class Scalable:
         pScale = wintypes.UINT()
         windll.shcore.GetScaleFactorForMonitor(c_void_p(hMonitor), byref(pScale))
         Scalable.dpi_scale = pScale.value / 100
+        if not hasattr(Scalable, "original_dpi_scale"):
+            Scalable.original_dpi_scale = Scalable.dpi_scale
 
     # Convert CSS pixels to native pixels
     def scale_in(self, value, rounding=SCALE_DEFAULT_ROUNDING):
@@ -53,6 +60,11 @@ class Scalable:
         if rounding is None:
             return value
         return int(Decimal(value).to_integral(rounding))
+
+    def scale_font(self, value):
+        if not hasattr(Scalable, "dpi_scale"):
+            self.update_scale()
+        return value * Scalable.dpi_scale / Scalable.original_dpi_scale
 
 
 class Widget(ABC, Scalable):
@@ -130,6 +142,8 @@ class Widget(ABC, Scalable):
 
     def set_font(self, font):
         self.native.Font = font._impl.native
+        # Required for font scaling on DPI changes
+        self.original_font = font._impl.native
 
     def set_color(self, color):
         if color is None:
@@ -162,6 +176,13 @@ class Widget(ABC, Scalable):
         child.container = None
 
     def refresh(self):
+        # Update the scaling of the font
+        if hasattr(self, "original_font"):
+            self.native.Font = WinFont(
+                self.original_font.FontFamily,
+                self.scale_font(self.original_font.Size),
+                self.original_font.Style,
+            )
         intrinsic = self.interface.intrinsic
         intrinsic.width = intrinsic.height = None
         self.rehint()
