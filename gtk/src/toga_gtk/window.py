@@ -160,15 +160,28 @@ class Window:
             self.native.unfullscreen()
 
     def get_image_data(self):
+        display = self.native.get_display()
+        display.flush()
+
+        # For some reason, converting the *window* to a pixbuf fails. But if you extract
+        # a *part* of the overall screen, that works. So - work out the origin of the
+        # window, then the allocation for the container relative to that window, and
+        # capture that rectangle.
+        window = self.native.get_window()
+        origin = window.get_origin()
         allocation = self.container.get_allocation()
+
+        screen = display.get_default_screen()
+        root_window = screen.get_root_window()
         screenshot = Gdk.pixbuf_get_from_window(
-            self.native.get_window(),
-            allocation.x,
-            allocation.y,
+            root_window,
+            origin.x + allocation.x,
+            origin.y + allocation.y,
             allocation.width,
             allocation.height,
         )
-        success, buffer = screenshot.save_to_bufferv("png", [], [])
+
+        success, buffer = screenshot.save_to_bufferv("png")
         if success:
             return buffer
         else:

@@ -338,29 +338,29 @@ class ScreenshotGeneratorApp(toga.App):
         print(f"Saving screenshots to {self.app.paths.data}")
         self.app.paths.data.mkdir(parents=True, exist_ok=True)
         for content_type in [
-            # "activityindicator",
-            # "button",
-            # "canvas",
-            # "dateinput",
-            # "detailedlist",
-            # "divider",
-            # "label",
-            # "multilinetextinput",
-            # "numberinput",
-            # "passwordinput",
-            # "progressbar",
-            # "selection",
-            # "slider",
-            # "switch",
-            # "table",
-            # "textinput",
-            # "timeinput",
-            # "tree",
-            # "webview",
-            # "optioncontainer",
-            # "scrollcontainer",
-            # "splitcontainer",
-            # "window",
+            "activityindicator",
+            "button",
+            "canvas",
+            "dateinput",
+            "detailedlist",
+            "divider",
+            "label",
+            "multilinetextinput",
+            "numberinput",
+            "passwordinput",
+            "progressbar",
+            "selection",
+            "slider",
+            "switch",
+            "table",
+            "textinput",
+            "timeinput",
+            "tree",
+            "webview",
+            "optioncontainer",
+            "scrollcontainer",
+            "splitcontainer",
+            "window",
             "main_window",
         ]:
             try:
@@ -395,9 +395,12 @@ class ScreenshotGeneratorApp(toga.App):
 
                         content.close()
 
-                    elif content_type == "webview":
-                        # Manual screenshot required because webviews aren't
-                        # inherently screenshottable.
+                    elif (
+                        content_type == "webview"
+                        and toga.platform.current_platform == "macOS"
+                    ):
+                        # Manual screenshot required on macOS because webviews aren't
+                        # rendered directly on the Window.
                         await self.main_window.info_dialog(
                             "Manual intervention",
                             "Screenshot the web widget content, then press Done.",
@@ -410,7 +413,7 @@ class ScreenshotGeneratorApp(toga.App):
                             style=Pack(direction=COLUMN),
                         )
 
-                        await asyncio.sleep(0.25)
+                        await asyncio.sleep(2)
                         image = Image.open(self.main_window.as_image().data)
 
                         scale_x = (

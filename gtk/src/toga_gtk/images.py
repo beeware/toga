@@ -26,7 +26,7 @@ class Image:
         return self.native.get_height()
 
     def get_data(self):
-        success, buffer = self.native.save_to_bufferv("png")[1]
+        success, buffer = self.native.save_to_bufferv("png")
         if success:
             return buffer
         else:
