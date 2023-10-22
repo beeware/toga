@@ -8,8 +8,5 @@ class Command:
             for widget in self.native:
                 widget.Enabled = self.interface.enabled
 
-    def as_handler(self):
-        def handler(sender, event):
-            return self.interface.action(None)
-
-        return handler
+    def winforms_handler(self, sender, event):
+        return self.interface.action(None)
