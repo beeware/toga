@@ -8,7 +8,7 @@ from builtins import id as identifier
 from collections.abc import Iterator, MutableSet
 from email.message import Message
 from importlib import metadata as importlib_metadata
-from typing import Any, Iterable, Protocol
+from typing import Any, Protocol
 
 from toga.command import CommandSet
 from toga.documents import Document
@@ -244,7 +244,6 @@ class App:
         description: str | None = None,
         startup: AppStartupMethod | None = None,
         on_exit: OnExitHandler | None = None,
-        windows: Iterable[Window] = (),  # DEPRECATED
     ):
         """Create a new App instance.
 
@@ -252,27 +251,36 @@ class App:
         :meth:`~toga.App.main_loop()` method, which will start the event loop of your
         App.
 
-        :param formal_name: The formal name of the application. Will be derived from
-            packaging metadata if not provided.
+        :param formal_name: The human-readable name of the app. If not provided,
+            the metadata key ``Formal-Name`` must be present.
         :param app_id: The unique application identifier. This will usually be a
-            reversed domain name, e.g. ``org.beeware.myapp``. Will be derived from
-            packaging metadata if not provided.
-        :param app_name: The name of the Python module containing the app. Will be
-            derived from the module defining the instance of the App class if not
-            provided.
-        :param id: The DOM identifier for the app (optional)
-        :param icon: Identifier for the application's icon.
+            reversed domain name, e.g. ``org.beeware.myapp``. If not provided, the
+            metadata key ``App-ID`` must be present.
+        :param app_name: The name of the distribution used to load metadata with
+            :any:`importlib.metadata`. If not provided, the following will be tried in
+            order:
+
+            #. If there is a ``__main__`` module with a non-empty ``__package__``
+               attribute, that will be used.
+            #. If the ``app_id`` argument was provided, its last segment will be used,
+               with each hyphen replaced with a underscore. For example, an ``app_id``
+               of ``com.example.my-app`` would yield a distribution name of ``my_app``.
+            #. As a last resort, the name ``toga``.
+        :param id: The DOM identifier for the app. If not provided, one will be
+            automatically generated.
+        :param icon: The :any:`Icon` for the app. If not provided, Toga will attempt to
+            load an icon from ``resources/app_name``, where ``app_name`` is defined
+            above. If no resource matching this name can be found, a warning will be
+            printed, and the app will fall back to a default icon.
         :param author: The person or organization to be credited as the author of the
-            application. Will be derived from application metadata if not provided.
-        :param version: The version number of the app. Will be derived from packaging
-            metadata if not provided.
-        :param home_page: A URL for a home page for the app. Used in auto-generated help
-            menu items. Will be derived from packaging metadata if not provided.
-        :param description: A brief (one line) description of the app. Will be derived
-            from packaging metadata if not provided.
-        :param startup: The callback method before starting the app, typically to add
-            the components.
-        :param windows: **DEPRECATED**; Windows are automatically added to the app.
+            app. If not provided, the metadata key ``Author`` will be used.
+        :param version: The version number of the app.  If not provided, the metadata
+            key ``Version`` will be used.
+        :param home_page: The URL of a web page for the app. Used in auto-generated help
+            menu items. If not provided, the metadata key ``Home-page`` will be used.
+        :param description: A brief (one line) description of the app. If not provided,
+            the metadata key ``Summary`` will be used.
+        :param startup: A callable to run before starting the app.
         """
         # Initialize empty widgets registry
         self._widgets = WidgetRegistry()
@@ -331,9 +339,8 @@ class App:
         # metadata provides a "Name" key, use that as the app name; otherwise, fall back
         # to the metadata module name (which might be "toga")
         if app_name is None:
-            if "Name" in self.metadata:
-                self._app_name = self.metadata["Name"]
-            else:
+            self._app_name = self.metadata.get("Name")
+            if self._app_name is None:
                 self._app_name = metadata_module_name
 
         # If a name has been provided, use it; otherwise, look to
@@ -341,7 +348,7 @@ class App:
         if formal_name:
             self._formal_name = formal_name
         else:
-            self._formal_name = self.metadata["Formal-Name"]
+            self._formal_name = self.metadata.get("Formal-Name")
 
         if self._formal_name is None:
             raise RuntimeError("Toga application must have a formal name")
@@ -354,7 +361,7 @@ class App:
             self._app_id = self.metadata.get("App-ID", None)
 
         if self._app_id is None:
-            raise RuntimeError("Toga application must have an App ID")
+            raise RuntimeError("Toga application must have an app ID")
 
         # If an author has been provided, use it; otherwise, look to
         # the module metadata.
@@ -437,55 +444,57 @@ class App:
 
     @property
     def name(self) -> str:
-        """The formal name of the app."""
+        """Same as :any:`formal_name`."""
         return self._formal_name
 
     @property
     def formal_name(self) -> str:
-        """The formal name of the app."""
+        """The human-readable name of the app (read-only)."""
         return self._formal_name
 
     @property
     def app_name(self) -> str:
-        """The machine-readable, PEP508-compliant name of the app."""
+        """The name of the distribution used to load metadata with
+        :any:`importlib.metadata` (read-only)."""
         return self._app_name
 
     @property
     def module_name(self) -> str | None:
-        """The module name for the app."""
+        """The module name for the app (read-only)."""
         return self._app_name.replace("-", "_")
 
     @property
     def app_id(self) -> str:
-        """The identifier for the app.
-
-        This is a reversed domain name, often used for targeting resources, etc.
+        """The unique application identifier (read-only). This will usually be a
+        reversed domain name, e.g. ``org.beeware.myapp``.
         """
         return self._app_id
 
     @property
-    def author(self) -> str:
-        """The author of the app. This may be an organization name."""
+    def author(self) -> str | None:
+        """The person or organization to be credited as the author of the app
+        (read-only)."""
         return self._author
 
     @property
-    def version(self) -> str:
-        """The version number of the app."""
+    def version(self) -> str | None:
+        """The version number of the app (read-only)."""
         return self._version
 
     @property
-    def home_page(self) -> str:
-        """The URL of a web page for the app."""
+    def home_page(self) -> str | None:
+        """The URL of a web page for the app (read-only). Used in auto-generated help
+        menu items."""
         return self._home_page
 
     @property
-    def description(self) -> str:
-        """A brief description of the app."""
+    def description(self) -> str | None:
+        """A brief (one line) description of the app (read-only)."""
         return self._description
 
     @property
     def id(self) -> str:
-        """The DOM identifier for the app.
+        """The DOM identifier for the app (read-only).
 
         This id can be used to target CSS directives.
         """
@@ -495,8 +504,8 @@ class App:
     def icon(self) -> Icon:
         """The Icon for the app.
 
-        When setting the icon, you can provide either an icon instance, or a string that
-        will be resolved as an Icon resource name.
+        When setting the icon, you can provide either an :any:`Icon` instance, or a
+        path that will be passed to the ``Icon`` constructor.
         """
         return self._icon
 

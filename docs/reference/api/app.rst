@@ -15,7 +15,7 @@ Usage
 -----
 
 The App class is the top level representation of all application activity. It is a
-singleton object - any given process can only have a single Application. That
+singleton object - any given process can only have a single App. That
 application may manage multiple windows, but it is guaranteed to have at least one
 window (called the :attr:`~toga.App.main_window`); when the App's
 :attr:`~toga.App.main_window` is closed, the application will exit.
@@ -53,7 +53,6 @@ apps, you should subclass :class:`toga.App`, and provide an implementation of
 
     import toga
 
-
     class MyApp(toga.App):
         def startup(self):
             self.main_window = toga.MainWindow()
@@ -64,36 +63,23 @@ apps, you should subclass :class:`toga.App`, and provide an implementation of
         app = MyApp("Realistic App", "org.beeware.realistic")
         app.main_loop()
 
-When creating an app, you must provide a formal name (a human readable name for the
-app), and an App ID (a machine-readable identifier - usually a reversed domain name).
-You can provide these details as explicit arguments; however, you can also provide these
-details as PEP621 packaging metadata using the ``Formal-Name`` and ``App-ID`` keys. If
-you deploy your app with `Briefcase <https://briefcase.readthedocs.io/en/stable>`__,
-this metadata will be populated as part of the deployment process.
+Every app must have a formal name (a human readable name), and an app ID (a
+machine-readable identifier - usually a reversed domain name). In the examples above,
+these are provided as constructor arguments. However, you can also provide these
+details, along with many of the other constructor arguments, as packaging metadata in a
+format compatible with :any:`importlib.metadata`. If you deploy your app with `Briefcase
+<https://briefcase.readthedocs.io/en/stable>`__, this will be done automatically.
 
-A Toga app also has an app name; this is a `PEP508
-<https://peps.python.org/pep-0508/#names>`__ module identifier for the app. The app name
-can be provided explicitly; however, if it isn't provided explicitly, Toga uses the
-following strategy to determine an app name:
+The distribution name used to look up the metadata is determined by the ``app_name``
+constructor argument, which is described below.
 
-1. If an app name has been explicitly provided, it will be used as-is.
-2. If no app name has been explicitly provided, Toga will look for the name of the
-   parent of the ``__main__`` module for the app.
-3. If there is no ``__main__`` module, but an App ID has been explicitly provided, the
-   last name part of the App ID will be used. For example, an explicit App ID of
-   ``com.example.my-app`` would yield an app name of ``my-app``.
-4. As a last resort, Toga will use the name ``toga`` as an app name.
-
-Toga will attempt to load an :class:`~toga.Icon` for the app. If an icon is not
-specified when the App instance is created, Toga will attempt to use ``resources/<app
-name>`` as the name of the icon (for whatever app name has been provided or derived). If
-no resource matching this name can be found, a warning will be printed, and the app will
-fall back to a default icon.
 
 Reference
 ---------
 
 .. autoclass:: toga.App
+    :exclude-members: app
+
 .. autoclass:: toga.app.WindowSet
 
 .. autoprotocol:: toga.app.AppStartupMethod

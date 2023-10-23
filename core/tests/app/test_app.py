@@ -285,7 +285,7 @@ def test_create(
     "kwargs, message",
     [
         (dict(), "Toga application must have a formal name"),
-        (dict(formal_name="Something"), "Toga application must have an App ID"),
+        (dict(formal_name="Something"), "Toga application must have an app ID"),
     ],
 )
 def test_bad_app_creation(kwargs, message):
@@ -468,11 +468,9 @@ def test_full_screen():
 
 def test_set_empty_full_screen_window_list():
     """Setting the full screen window list to [] is an explicit exit"""
+    app = toga.App(formal_name="Test App", app_id="org.example.test")
     window1 = toga.Window()
     window2 = toga.Window()
-    app = toga.App(
-        formal_name="Test App", app_id="org.example.test", windows=[window1, window2]
-    )
 
     assert not app.is_full_screen
 
