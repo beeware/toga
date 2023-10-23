@@ -2,7 +2,7 @@
 # System/Library/Frameworks/UIKit.framework
 ##########################################################################
 from ctypes import POINTER, c_char_p, c_int, c_void_p, cdll, util
-from enum import Enum
+from enum import Enum, IntEnum
 
 from rubicon.objc import ObjCClass, ObjCProtocol, objc_const
 
@@ -452,14 +452,14 @@ class UIViewContentMode(Enum):
     BottomRight = 12
 
 
-# UIViewAutoresizing
-UIViewAutoresizingNone = 0
-UIViewAutoresizingFlexibleLeftMargin = 1 << 0
-UIViewAutoresizingFlexibleWidth = 1 << 1
-UIViewAutoresizingFlexibleRightMargin = 1 << 2
-UIViewAutoresizingFlexibleTopMargin = 1 << 3
-UIViewAutoresizingFlexibleHeight = 1 << 4
-UIViewAutoresizingFlexibleBottomMargin = 1 << 5
+class UIViewAutoresizing(IntEnum):
+    NoResizing = 0
+    FlexibleLeftMargin = 1 << 0
+    FlexibleWidth = 1 << 1
+    FlexibleRightMargin = 1 << 2
+    FlexibleTopMargin = 1 << 3
+    FlexibleHeight = 1 << 4
+    FlexibleBottomMargin = 1 << 5
 
 
 ######################################################################
