@@ -350,7 +350,7 @@ def test_as_image(window):
     """A window can be captured as an image"""
     image = window.as_image()
 
-    assert image.data.getvalue() == b"pretend this is PNG image data"
+    assert image.data == b"pretend this is PNG image data"
 
 
 def test_info_dialog(window, app):

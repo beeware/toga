@@ -104,6 +104,7 @@ def test_dimensions():
 
     image = toga.Image(path="resources/toga.png")
 
+    assert image.size == (60, 40)
     assert image.width == 60
     assert image.height == 40
 
@@ -112,7 +113,7 @@ def test_data():
     "The raw data of the image can be retrieved."
     image = toga.Image(path="resources/toga.png")
 
-    assert image.data.getvalue() == b"pretend this is PNG image data"
+    assert image.data == b"pretend this is PNG image data"
 
 
 def test_image_save():

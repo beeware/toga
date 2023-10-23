@@ -480,6 +480,13 @@ else:
         assert second_window_probe.content_size == initial_content_size
 
 
+async def test_as_image(main_window, main_window_probe):
+    """The window can be captured as a screenshot"""
+
+    screenshot = main_window.as_image()
+    assert screenshot.size == main_window_probe.content_size
+
+
 ########################################################################################
 # Dialog tests
 ########################################################################################

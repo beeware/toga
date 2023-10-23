@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from io import BytesIO
 from pathlib import Path
 
 import toga
@@ -48,6 +47,11 @@ class Image:
             self._impl = self.factory.Image(interface=self, path=self.path)
 
     @property
+    def size(self) -> (int, int):
+        """The size of the image, as a tuple"""
+        return (self._impl.get_width(), self._impl.get_height())
+
+    @property
     def width(self) -> int:
         """The width of the image, in pixels."""
         return self._impl.get_width()
@@ -58,12 +62,12 @@ class Image:
         return self._impl.get_height()
 
     @property
-    def data(self) -> BytesIO:
+    def data(self) -> bytes:
         """The raw data for the image, in PNG format.
 
-        :returns: a :class:`io.BytesIO` object containing the raw image data in PNG format.
+        :returns: The raw image data in PNG format.
         """
-        return BytesIO(self._impl.get_data())
+        return self._impl.get_data()
 
     def save(self, path: str | Path):
         """Save image to given path.
