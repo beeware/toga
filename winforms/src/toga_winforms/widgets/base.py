@@ -80,6 +80,8 @@ class Widget(ABC, Scalable):
         self._container = None
         self.native = None
         self.create()
+        # Required to prevent Hwnd Related Bugs
+        self.native.CreateGraphics().Dispose()
         self.interface.style.reapply()
 
     @abstractmethod
