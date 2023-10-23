@@ -72,7 +72,7 @@ jobs:
           # - python-version: "3.13-dev"
           #   experimental: true
     steps:
-    - uses: actions/checkout@v4.1.0
+    - uses: actions/checkout@v4.1.1
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v4.7.1
       with:
@@ -106,7 +106,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: core
     steps:
-    - uses: actions/checkout@v4.1.0
+    - uses: actions/checkout@v4.1.1
       with:
         fetch-depth: 0
     - uses: actions/setup-python@v4.7.1
@@ -164,7 +164,7 @@ jobs:
             # a wheel of pythonnet isn't available on PyPI.
             python-version: "3.9"
     steps:
-    - uses: actions/checkout@v4.1.0
+    - uses: actions/checkout@v4.1.1
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v4.7.1
       with:
@@ -245,7 +245,7 @@ jobs:
             runs-on: macos-12
             briefcase-run-args: " -d '{\"avd\":\"beePhone\"}' --Xemulator=-no-window --Xemulator=-no-snapshot --Xemulator=-no-audio --Xemulator=-no-boot-anim --shutdown-on-exit"
     steps:
-    - uses: actions/checkout@v4.1.0
+    - uses: actions/checkout@v4.1.1
       with:
         fetch-depth: 0
     - name: Set up Python
