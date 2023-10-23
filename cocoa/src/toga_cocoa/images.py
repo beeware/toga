@@ -10,7 +10,7 @@ from toga_cocoa.libs import (
 
 
 def nsdata_to_bytes(data: NSData) -> bytes:
-    """Convert an NSBitmapImageRep into a BytesIO representation"""
+    """Convert an NSData into a raw bytes representation"""
     # data is an NSData object that has .bytes as a c_void_p, and a .length. Cast to
     # POINTER(c_char) to get an addressable array of bytes, and slice that array to
     # the known length. We don't use c_char_p because it has handling of NUL
