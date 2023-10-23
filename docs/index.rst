@@ -9,9 +9,25 @@ development.
 Toga is available on macOS, Windows, Linux (GTK), Android, iOS, and for
 single-page web apps.
 
-.. figure:: tutorial/screenshots/tutorial-2.png
-    :align: center
-    :width: 500
+.. tabs::
+
+  .. group-tab:: macOS
+
+    .. figure:: /images/toga-demo-macOS.png
+       :align: center
+       :width: 450px
+
+  .. group-tab:: Linux
+
+    .. figure:: /images/toga-demo-gtk.png
+       :align: center
+       :width: 450px
+
+  .. group-tab:: Windows
+
+    .. figure:: /images/toga-demo-winforms.png
+       :align: center
+       :width: 450px
 
 
 .. rst-class::  row
