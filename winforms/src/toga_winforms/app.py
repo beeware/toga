@@ -357,6 +357,7 @@ class App(Scalable):
                 window._impl.update_menubar_font_scale()
             for widget in window.widgets:
                 widget.refresh()
+            window._impl.resize_content()
 
 
 class DocumentApp(App):
