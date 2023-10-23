@@ -1,8 +1,7 @@
 from unittest.mock import Mock
 
-from rubicon.objc import send_message
+from rubicon.objc import objc_id, send_message
 from rubicon.objc.collections import ObjCListInstance
-from rubicon.objc.runtime import objc_id
 
 from toga_cocoa.libs import (
     NSURL,
