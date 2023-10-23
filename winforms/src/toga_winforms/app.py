@@ -63,7 +63,6 @@ class App(Scalable):
         # SetProcessDpiAwarenessContext returns False on Failure
         if not windll.user32.SetProcessDpiAwarenessContext(-4):
             print("WARNING: Failed to set the DPI Awareness mode for the app.")
-    # Any other version of windows should use SetProcessDPIAware()
     else:
         print(
             "WARNING: Your Windows version doesn't support DPI Awareness setting.  "
