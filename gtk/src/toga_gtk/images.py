@@ -29,7 +29,8 @@ class Image:
         success, buffer = self.native.save_to_bufferv("png")
         if success:
             return buffer
-        else:
+        else:  # pragma: nocover
+            # This shouldn't ever happen, and it's difficult to manufacture in test conditions
             raise ValueError("Unable to get PNG data for image")
 
     def save(self, path):

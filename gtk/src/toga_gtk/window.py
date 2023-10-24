@@ -184,5 +184,6 @@ class Window:
         success, buffer = screenshot.save_to_bufferv("png")
         if success:
             return buffer
-        else:
+        else:  # pragma: nocover
+            # This shouldn't ever happen, and it's difficult to manufacture in test conditions
             raise ValueError(f"Unable to generate screenshot of {self}")
