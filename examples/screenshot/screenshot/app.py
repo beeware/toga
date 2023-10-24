@@ -440,10 +440,6 @@ class ScreenshotGeneratorApp(toga.App):
                             self.app.paths.data
                             / f"{content_type}-{toga.platform.current_platform}.png"
                         )
-                    image.save(
-                        self.app.paths.data
-                        / f"{content_type}-{toga.platform.current_platform}.orig.png"
-                    )
 
             except NotImplementedError:
                 pass
