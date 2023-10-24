@@ -92,3 +92,9 @@ class BaseProbe:
         if delay:
             print("Waiting for redraw" if message is None else message)
             await asyncio.sleep(delay)
+
+    def assert_image_size(self, image_size, size):
+        assert image_size.width == (
+            size[0] * self.scale_factor,
+            size[1] * self.scale_factor,
+        )
