@@ -1,5 +1,6 @@
 import asyncio
 from datetime import date, time
+from io import BytesIO
 
 from PIL import Image
 
@@ -74,7 +75,7 @@ class ScreenshotGeneratorApp(toga.App):
                     "subtitle": "I can quote the fights historical!",
                 },
             ],
-            style=Pack(padding=10, width=450, height=300),
+            style=Pack(padding=10, width=self.MAX_WIDTH, height=300),
         )
 
     def create_divider(self):
@@ -121,7 +122,7 @@ class ScreenshotGeneratorApp(toga.App):
                     "I am the very model of a modern Major-General.",
                 ]
             ),
-            style=Pack(padding=10, width=450, height=200),
+            style=Pack(padding=10, width=self.MAX_WIDTH, height=200),
         )
 
     def create_numberinput(self):
@@ -205,7 +206,7 @@ class ScreenshotGeneratorApp(toga.App):
                 ("Tricia McMillan", 38, "Earth"),
                 ("Slartibartfast", 1005, "Magrathea"),
             ],
-            style=Pack(padding=10, width=450, height=200),
+            style=Pack(padding=10, width=self.MAX_WIDTH, height=200),
         )
 
     def create_textinput(self):
@@ -244,7 +245,7 @@ class ScreenshotGeneratorApp(toga.App):
                     ("Slartibartfast", 1005, "Annoyed"): None,
                 },
             },
-            style=Pack(padding=10, width=450, height=200),
+            style=Pack(padding=10, width=self.MAX_WIDTH, height=200),
         )
         tree.expand()
         return tree
@@ -252,7 +253,7 @@ class ScreenshotGeneratorApp(toga.App):
     def create_webview(self):
         return toga.WebView(
             url="https://beeware.org",
-            style=Pack(padding=10, width=450, height=300),
+            style=Pack(padding=10, width=self.MAX_WIDTH, height=300),
         )
 
     def create_optioncontainer(self):
@@ -265,7 +266,7 @@ class ScreenshotGeneratorApp(toga.App):
                 ("Green", toga.Box()),
                 ("Red", toga.Box()),
             ],
-            style=Pack(padding=10, width=450, height=300),
+            style=Pack(padding=10, width=self.MAX_WIDTH, height=300),
         )
 
         return container
@@ -282,7 +283,7 @@ class ScreenshotGeneratorApp(toga.App):
                 ],
                 style=Pack(direction=COLUMN),
             ),
-            style=Pack(padding=10, width=450, height=300),
+            style=Pack(padding=10, width=self.MAX_WIDTH, height=300),
         )
 
         return container
@@ -293,7 +294,7 @@ class ScreenshotGeneratorApp(toga.App):
                 toga.Box(style=Pack(background_color="goldenrod")),
                 toga.Box(style=Pack(background_color="cornflowerblue")),
             ],
-            style=Pack(padding=10, width=450, height=300),
+            style=Pack(padding=10, width=self.MAX_WIDTH, height=300),
         )
 
         return container
@@ -414,7 +415,7 @@ class ScreenshotGeneratorApp(toga.App):
                         )
 
                         await asyncio.sleep(2)
-                        image = Image.open(self.main_window.as_image().data)
+                        image = Image.open(BytesIO(self.main_window.as_image().data))
 
                         scale_x = (
                             image.size[0]
@@ -439,11 +440,20 @@ class ScreenshotGeneratorApp(toga.App):
                             self.app.paths.data
                             / f"{content_type}-{toga.platform.current_platform}.png"
                         )
+                    image.save(
+                        self.app.paths.data
+                        / f"{content_type}-{toga.platform.current_platform}.orig.png"
+                    )
 
             except NotImplementedError:
                 pass
 
     def startup(self):
+        if toga.platform.current_platform in {"iOS", "android"}:
+            self.MAX_WIDTH = 370
+        else:
+            self.MAX_WIDTH = 450
+
         # Set up main window
         self.main_window = toga.MainWindow(title="My Application")
 

@@ -44,7 +44,7 @@ class Image:
         return self.native.size.height
 
     def get_data(self):
-        return nsdata_to_bytes(uikit.UIImagePNGRepresentation(self.native))
+        return nsdata_to_bytes(NSData(uikit.UIImagePNGRepresentation(self.native)))
 
     def save(self, path):
         path = Path(path)
