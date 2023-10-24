@@ -155,7 +155,7 @@ class App:
                 item = WinForms.ToolStripMenuItem(cmd.text)
 
                 if cmd.action:
-                    item.Click += WeakrefCallable(cmd._impl.as_handler())
+                    item.Click += WeakrefCallable(cmd._impl.winforms_handler)
                 item.Enabled = cmd.enabled
 
                 if cmd.shortcut is not None:
