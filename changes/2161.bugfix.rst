@@ -1,0 +1,1 @@
+iOS container views are now set to automatically resize with their parent view

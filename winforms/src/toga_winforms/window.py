@@ -61,7 +61,7 @@ class Window(Container, Scalable):
                         )
                     else:
                         item = WinForms.ToolStripMenuItem(cmd.text)
-                    item.Click += cmd._impl.as_handler()
+                    item.Click += WeakrefCallable(cmd._impl.winforms_handler)
                     cmd._impl.native.append(item)
                 self.toolbar_native.Items.Add(item)
 
