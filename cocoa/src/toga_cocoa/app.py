@@ -405,7 +405,7 @@ class App:
         options = NSMutableDictionary.alloc().init()
 
         options[NSAboutPanelOptionApplicationIcon] = self.interface.icon._impl.native
-        options[NSAboutPanelOptionApplicationName] = self.interface.name
+        options[NSAboutPanelOptionApplicationName] = self.interface.formal_name
 
         if self.interface.version is None:
             options[NSAboutPanelOptionApplicationVersion] = "0.0"

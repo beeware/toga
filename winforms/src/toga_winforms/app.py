@@ -111,14 +111,14 @@ class App:
         self.interface.commands.add(
             toga.Command(
                 lambda _: self.interface.about(),
-                f"About {self.interface.name}",
+                f"About {self.interface.formal_name}",
                 group=toga.Group.HELP,
             ),
             toga.Command(None, "Preferences", group=toga.Group.FILE),
             # Quit should always be the last item, in a section on its own
             toga.Command(
                 lambda _: self.interface.on_exit(None),
-                "Exit " + self.interface.name,
+                "Exit",  # A Windows exit command doesn't usually contain the app name.
                 shortcut=Key.MOD_1 + "q",
                 group=toga.Group.FILE,
                 section=sys.maxsize,
@@ -275,16 +275,13 @@ class App:
 
     def show_about_dialog(self):
         message_parts = []
-        if self.interface.name is not None:
+        if self.interface.formal_name is not None:
             if self.interface.version is not None:
                 message_parts.append(
-                    "{name} v{version}".format(
-                        name=self.interface.name,
-                        version=self.interface.version,
-                    )
+                    f"{self.interface.formal_name} v{self.interface.version}"
                 )
             else:
-                message_parts.append(f"{self.interface.name}")
+                message_parts.append(self.interface.formal_name)
         elif self.interface.version is not None:
             message_parts.append(f"v{self.interface.version}")
 
@@ -293,7 +290,7 @@ class App:
         if self.interface.description is not None:
             message_parts.append(f"\n{self.interface.description}")
         self.interface.main_window.info_dialog(
-            f"About {self.interface.name}", "\n".join(message_parts)
+            f"About {self.interface.formal_name}", "\n".join(message_parts)
         )
 
     def beep(self):

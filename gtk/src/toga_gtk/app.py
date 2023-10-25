@@ -79,14 +79,14 @@ class App:
         self.interface.commands.add(
             Command(
                 self._menu_about,
-                "About " + self.interface.name,
+                "About " + self.interface.formal_name,
                 group=toga.Group.HELP,
             ),
             Command(None, "Preferences", group=toga.Group.APP),
             # Quit should always be the last item, in a section on its own
             Command(
                 self._menu_quit,
-                "Quit " + self.interface.name,
+                "Quit " + self.interface.formal_name,
                 shortcut=toga.Key.MOD_1 + "q",
                 group=toga.Group.APP,
                 section=sys.maxsize,
@@ -184,7 +184,7 @@ class App:
 
                 text = group.text
                 if text == "*":
-                    text = self.interface.name
+                    text = self.interface.formal_name
 
                 parent_menu.append_submenu(text, submenu)
 
@@ -209,7 +209,7 @@ class App:
         icon_impl = toga_App.app.icon._impl
         self.native_about_dialog.set_logo(icon_impl.native_72)
 
-        self.native_about_dialog.set_program_name(self.interface.name)
+        self.native_about_dialog.set_program_name(self.interface.formal_name)
         if self.interface.version is not None:
             self.native_about_dialog.set_version(self.interface.version)
         if self.interface.author is not None:
@@ -281,7 +281,7 @@ class DocumentApp(App):  # pragma: no cover
             # Is there a way to open a file dialog without having a window?
             m = toga.Window()
             path = m.open_file_dialog(
-                self.interface.name,
+                self.interface.formal_name,
                 file_types=self.interface.document_types.keys(),
             )
 
@@ -292,7 +292,7 @@ class DocumentApp(App):  # pragma: no cover
         # Is there a way to open a file dialog without having a window?
         m = toga.Window()
         path = m.open_file_dialog(
-            self.interface.name,
+            self.interface.formal_name,
             file_types=self.interface.document_types.keys(),
         )
 
