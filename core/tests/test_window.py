@@ -70,6 +70,15 @@ def test_window_created_explicit(app):
     assert window.on_close._raw == on_close_handler
 
 
+def test_window_created_without_app():
+    "A window cannot be created without an active app"
+    toga.App.app = None
+    with pytest.raises(
+        RuntimeError, match="Cannot create a Window before creating an App"
+    ):
+        toga.Window()
+
+
 def test_set_app(window, app):
     """A window's app cannot be reassigned"""
     assert window.app == app

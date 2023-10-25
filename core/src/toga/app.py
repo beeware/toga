@@ -8,7 +8,7 @@ from builtins import id as identifier
 from collections.abc import Iterator, MutableSet
 from email.message import Message
 from importlib import metadata as importlib_metadata
-from typing import Any, Protocol
+from typing import Any, Iterable, Protocol
 
 from toga.command import CommandSet
 from toga.documents import Document
@@ -74,22 +74,14 @@ class WindowSet(MutableSet):
     def __init__(self, app: App):
         """A collection of windows managed by an app.
 
-        A window is automatically added to the app when it is shown. Alternatively, the
-        window can be explicitly added to the app (without being shown) using
-        ``app.windows.add(toga.Window(...))`` or ``app.windows += toga.Window(...)``.
-        Adding a window to an App's window set automatically sets the
+        A window is automatically added to the app when it is created, and removed when
+        it is closed. Adding a window to an App's window set automatically sets the
         :attr:`~toga.Window.app` property of the Window.
-
-        :param app: The app maintaining the window set.
         """
         self.app = app
         self.elements = set()
 
     def add(self, window: Window) -> None:
-        """Add a window to the window set.
-
-        :param window: The :class:`toga.Window` to add
-        """
         if not isinstance(window, Window):
             raise TypeError("Can only add objects of type toga.Window")
         # Silently not add if duplicate
@@ -98,23 +90,11 @@ class WindowSet(MutableSet):
             window.app = self.app
 
     def discard(self, window: Window) -> None:
-        """Remove a window from the Window set.
-
-        :param window: The :class:`toga.Window` to remove.
-        """
         if not isinstance(window, Window):
             raise TypeError("Can only discard objects of type toga.Window")
         if window not in self.elements:
             raise ValueError(f"{window!r} is not part of this app")
         self.elements.remove(window)
-
-    def __iadd__(self, window: Window) -> None:
-        self.add(window)
-        return self
-
-    def __isub__(self, other: Window) -> None:
-        self.discard(other)
-        return self
 
     def __iter__(self) -> Iterator:
         return iter(self.elements)
@@ -244,6 +224,7 @@ class App:
         description: str | None = None,
         startup: AppStartupMethod | None = None,
         on_exit: OnExitHandler | None = None,
+        windows=None,  # DEPRECATED
     ):
         """Create a new App instance.
 
@@ -281,7 +262,22 @@ class App:
         :param description: A brief (one line) description of the app. If not provided,
             the metadata key ``Summary`` will be used.
         :param startup: A callable to run before starting the app.
+        :param on_exit: The handler to invoke before the application exits.
+        :param windows: **DEPRECATED** – Windows are now automatically added to the
+            current app. Passing this argument will cause an exception.
         """
+        ######################################################################
+        # 2023-10: Backwards compatibility
+        ######################################################################
+        if windows is not None:
+            raise ValueError(
+                "The `windows` constructor argument of toga.App has been removed. "
+                "Windows are now automatically added to the current app."
+            )
+        ######################################################################
+        # End backwards compatibility
+        ######################################################################
+
         # Initialize empty widgets registry
         self._widgets = WidgetRegistry()
 
@@ -416,7 +412,7 @@ class App:
         self._startup_method = startup
 
         self._main_window = None
-        self.windows = WindowSet(self)
+        self._windows = WindowSet(self)
 
         self._full_screen_windows = None
 
@@ -524,6 +520,12 @@ class App:
         ``app.widgets["my_id"]``).
         """
         return self._widgets
+
+    @property
+    def windows(self) -> Iterable[Window]:
+        """The windows managed by the app. Windows are added to the app when they are
+        created, and removed when they are closed."""
+        return self._windows
 
     @property
     def main_window(self) -> MainWindow:

@@ -80,8 +80,6 @@ Reference
 .. autoclass:: toga.App
     :exclude-members: app
 
-.. autoclass:: toga.app.WindowSet
-
 .. autoprotocol:: toga.app.AppStartupMethod
 .. autoprotocol:: toga.app.BackgroundTask
 .. autoprotocol:: toga.app.OnExitHandler

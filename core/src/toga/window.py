@@ -131,7 +131,9 @@ class Window:
         )
 
         self._app = None
-        App.app.windows += self
+        if App.app is None:
+            raise RuntimeError("Cannot create a Window before creating an App")
+        App.app.windows.add(self)
 
         self._toolbar = CommandSet(on_change=self._impl.create_toolbar)
         self.on_close = on_close
@@ -310,7 +312,7 @@ class Window:
         undefined, except for :attr:`closed` which can be used to check if the window
         was closed.
         """
-        self.app.windows -= self
+        self.app.windows.discard(self)
         self._impl.close()
         self._closed = True
 

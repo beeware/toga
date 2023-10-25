@@ -282,15 +282,24 @@ def test_create(
 
 
 @pytest.mark.parametrize(
-    "kwargs, message",
+    "kwargs, exc_type, message",
     [
-        (dict(), "Toga application must have a formal name"),
-        (dict(formal_name="Something"), "Toga application must have an app ID"),
+        (dict(), RuntimeError, "Toga application must have a formal name"),
+        (
+            dict(formal_name="Something"),
+            RuntimeError,
+            "Toga application must have an app ID",
+        ),
+        (
+            dict(windows=()),
+            ValueError,
+            "The `windows` constructor argument of toga.App has been removed",
+        ),
     ],
 )
-def test_bad_app_creation(kwargs, message):
+def test_bad_app_creation(kwargs, exc_type, message):
     """Errors are raised"""
-    with pytest.raises(RuntimeError, match=message):
+    with pytest.raises(exc_type, match=message):
         toga.App(**kwargs)
 
 
