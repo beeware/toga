@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 import importlib.metadata
 import signal
 import sys
@@ -621,9 +622,10 @@ class App:
         self._impl.beep()
 
     def main_loop(self) -> None:
-        """Invoke the application to handle user input.
+        """Start the application.
 
-        This method typically only returns once the application is exiting.
+        On desktop platforms, this method will block until the application has exited.
+        On mobile and web platforms, it returns immediately.
         """
         # Modify signal handlers to make sure Ctrl-C is caught and handled.
         signal.signal(signal.SIGINT, signal.SIG_DFL)
@@ -651,6 +653,11 @@ class App:
 
         self._on_exit = wrapped_handler(self, handler, cleanup=cleanup)
 
+    @property
+    def loop(self) -> asyncio.AbstractEventLoop:
+        """The event loop of the app's main thread (read-only)."""
+        return self._impl.loop
+
     def add_background_task(self, handler: BackgroundTask) -> None:
         """Schedule a task to run in the background.
 
@@ -662,7 +669,7 @@ class App:
 
         :param handler: A coroutine, generator or callable.
         """
-        self._impl.loop.call_soon_threadsafe(wrapped_handler(self, handler), None)
+        self.loop.call_soon_threadsafe(wrapped_handler(self, handler), None)
 
 
 class DocumentApp(App):

@@ -18,7 +18,7 @@ class App(LoggedObject):
         self.interface = interface
         self.interface._impl = self
 
-        self.loop = asyncio.new_event_loop()
+        self.loop = asyncio.get_event_loop()
         self.create()
 
     def create(self):

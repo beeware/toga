@@ -577,6 +577,12 @@ def test_exit_rejected_handler(app):
     on_exit_handler.assert_called_once_with(app)
 
 
+def test_loop(app, event_loop):
+    """The main thread's event loop can be accessed"""
+    assert isinstance(app.loop, asyncio.AbstractEventLoop)
+    assert app.loop is event_loop
+
+
 def test_background_task(app):
     """A background task can be queued"""
     canary = Mock()
@@ -590,7 +596,7 @@ def test_background_task(app):
     async def waiter():
         await asyncio.sleep(0.1)
 
-    app._impl.loop.run_until_complete(waiter())
+    app.loop.run_until_complete(waiter())
 
     # Once the loop has executed, the background task should have executed as well.
     canary.assert_called_once()
@@ -600,6 +606,16 @@ def test_deprecated_app_name():
     """The deprecated `app_name` constructor argument and property is redirected to
     `distribution_name`
     """
+    with pytest.raises(
+        ValueError, match="Cannot specify both app_name and distribution_name"
+    ):
+        toga.App(
+            "Test App",
+            "org.example.test",
+            app_name="test_app_name",
+            distribution_name="test_distribution_name",
+        )
+
     app_name_warning = r"App.app_name has been renamed to distribution_name"
     with pytest.warns(DeprecationWarning, match=app_name_warning):
         app = toga.App("Test App", "org.example.test", app_name="test_app_name")
