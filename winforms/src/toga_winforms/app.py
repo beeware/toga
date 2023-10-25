@@ -108,33 +108,10 @@ class App:
                 "You may experience difficulties accessing some web server content."
             )
 
-        self.interface.commands.add(
-            toga.Command(
-                lambda _: self.interface.about(),
-                f"About {self.interface.formal_name}",
-                group=toga.Group.HELP,
-            ),
-            toga.Command(None, "Preferences", group=toga.Group.FILE),
-            # Quit should always be the last item, in a section on its own
-            toga.Command(
-                lambda _: self.interface.on_exit(None),
-                "Exit",  # A Windows exit command doesn't usually contain the app name.
-                shortcut=Key.MOD_1 + "q",
-                group=toga.Group.FILE,
-                section=sys.maxsize,
-            ),
-            toga.Command(
-                lambda _: self.interface.visit_homepage(),
-                "Visit homepage",
-                enabled=self.interface.home_page is not None,
-                group=toga.Group.HELP,
-            ),
-        )
-        self._create_app_commands()
-
         # Call user code to populate the main window
         self.interface._startup()
         self.create_menus()
+        self._create_app_commands()
         self.interface.main_window._impl.set_app(self)
 
     def create_menus(self):
@@ -195,8 +172,28 @@ class App:
         return submenu
 
     def _create_app_commands(self):
-        # No extra menus
-        pass
+        self.interface.commands.add(
+            toga.Command(
+                lambda _: self.interface.about(),
+                f"About {self.interface.formal_name}",
+                group=toga.Group.HELP,
+            ),
+            toga.Command(None, "Preferences", group=toga.Group.FILE),
+            # Quit should always be the last item, in a section on its own
+            toga.Command(
+                lambda _: self.interface.on_exit(None),
+                "Exit",  # A Windows exit command doesn't usually contain the app name.
+                shortcut=Key.MOD_1 + "q",
+                group=toga.Group.FILE,
+                section=sys.maxsize,
+            ),
+            toga.Command(
+                lambda _: self.interface.visit_homepage(),
+                "Visit homepage",
+                enabled=self.interface.home_page is not None,
+                group=toga.Group.HELP,
+            ),
+        )
 
     def open_document(self, fileURL):
         """Add a new document to this app."""
@@ -332,6 +329,7 @@ class App:
 
 class DocumentApp(App):
     def _create_app_commands(self):
+        super()._create_app_commands()
         self.interface.commands.add(
             toga.Command(
                 lambda w: self.open_file,

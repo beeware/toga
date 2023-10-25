@@ -1,7 +1,7 @@
 import System.Windows.Forms as WinForms
 from System.Drawing import Point, Size
 
-from toga import GROUP_BREAK, SECTION_BREAK
+from toga.command import GROUP_BREAK, SECTION_BREAK
 
 from .container import Container
 from .libs.wrapper import WeakrefCallable
