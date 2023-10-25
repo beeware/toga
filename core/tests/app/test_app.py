@@ -1,7 +1,7 @@
 import asyncio
+import importlib.metadata
 import sys
 import webbrowser
-from importlib import metadata as importlib_metadata
 from pathlib import Path
 from unittest.mock import Mock
 
@@ -17,7 +17,7 @@ from toga_dummy.utils import (
 EXPLICIT_FULL_APP_KWARGS = dict(
     formal_name="Explicit App",
     app_id="org.beeware.explicit-app",
-    app_name="override-app",
+    distribution_name="override-app",
 )
 EXPLICIT_MIN_APP_KWARGS = dict(
     formal_name="Explicit App",
@@ -32,8 +32,8 @@ APP_METADATA = {
 
 @pytest.mark.parametrize(
     (
-        "kwargs, metadata, main_module, expected_formal_name, expected_app_id, expected_app_name, "
-        "expected_initial_module_name, expected_module_name"
+        "kwargs, metadata, main_module, expected_formal_name, expected_app_id, "
+        "expected_distribution_name"
     ),
     [
         ###########################################################################
@@ -48,19 +48,16 @@ APP_METADATA = {
             "Explicit App",
             "org.beeware.explicit-app",
             "override-app",
-            "override_app",
-            "override_app",
         ),
-        # Explicit app properties, but implied app name from app_id, no metadata
+        # Explicit app properties, but implied distribution name from app_id, no
+        # metadata
         (
             EXPLICIT_MIN_APP_KWARGS,
             None,
             Mock(__package__=None),
             "Explicit App",
             "org.beeware.explicit-app",
-            "explicit_app",
-            "explicit_app",
-            "explicit_app",
+            "explicit-app",
         ),
         # No app properties, with metadata
         (
@@ -69,14 +66,9 @@ APP_METADATA = {
             Mock(__package__=None),
             "Test App",
             "org.beeware.test-app",
-            "test-app",
             "toga",
-            "test_app",
         ),
-        # Explicit app properties, with metadata.
-        # Initial data will be derived by reading the metadata from the original app
-        # name, but this value will be overridden by the metadata. This is an unlikely,
-        # but theoretically possible scenario.
+        # Explicit app properties, with metadata. Explicit values take precedence.
         (
             EXPLICIT_FULL_APP_KWARGS,
             APP_METADATA,
@@ -84,8 +76,6 @@ APP_METADATA = {
             "Explicit App",
             "org.beeware.explicit-app",
             "override-app",
-            "override_app",
-            "override_app",
         ),
         ###########################################################################
         # Invoking as python -m my_app, where code is in my_app.py
@@ -99,19 +89,15 @@ APP_METADATA = {
             "Explicit App",
             "org.beeware.explicit-app",
             "override-app",
-            "override_app",
-            "override_app",
         ),
-        # Explicit app properties, but implied app name from app_id, no metadata
+        # Explicit app properties, but implied distribution name from app_id, no metadata
         (
             EXPLICIT_MIN_APP_KWARGS,
             None,
             Mock(__package__=""),
             "Explicit App",
             "org.beeware.explicit-app",
-            "explicit_app",
-            "explicit_app",
-            "explicit_app",
+            "explicit-app",
         ),
         # No app properties, with metadata
         (
@@ -120,14 +106,9 @@ APP_METADATA = {
             Mock(__package__=""),
             "Test App",
             "org.beeware.test-app",
-            "test-app",
             "toga",
-            "test_app",
         ),
-        # Explicit app properties, with metadata.
-        # Initial data will be derived by reading the metadata from the original app
-        # name, but this value will be overridden by the metadata. This is an unlikely,
-        # but theoretically possible scenario.
+        # Explicit app properties, with metadata. Explicit values take precedence.
         (
             EXPLICIT_FULL_APP_KWARGS,
             APP_METADATA,
@@ -135,8 +116,6 @@ APP_METADATA = {
             "Explicit App",
             "org.beeware.explicit-app",
             "override-app",
-            "override_app",
-            "override_app",
         ),
         ###########################################################################
         # Invoking as python -m my_app, where my_app is a folder with a __main__
@@ -150,18 +129,15 @@ APP_METADATA = {
             "Explicit App",
             "org.beeware.explicit-app",
             "override-app",
-            "override_app",
-            "override_app",
         ),
-        # Explicit app properties, but implied app name from app_id, no metadata
+        # Explicit app properties, but implied distribution name from __package__, no
+        # metadata
         (
             EXPLICIT_MIN_APP_KWARGS,
             None,
             Mock(__package__="my_app"),
             "Explicit App",
             "org.beeware.explicit-app",
-            "my_app",
-            "my_app",
             "my_app",
         ),
         # No app properties, with metadata
@@ -171,13 +147,9 @@ APP_METADATA = {
             Mock(__package__="my_app"),
             "Test App",
             "org.beeware.test-app",
-            "test-app",
             "my_app",
-            "test_app",
         ),
-        # Explicit app properties, with metadata.
-        # Initial data will be derived by reading the metadata from the original app
-        # name. This can happen if the app metadata doesn't match the package name.
+        # Explicit app properties, with metadata. Explicit values take precedence.
         (
             EXPLICIT_FULL_APP_KWARGS,
             APP_METADATA,
@@ -185,8 +157,6 @@ APP_METADATA = {
             "Explicit App",
             "org.beeware.explicit-app",
             "override-app",
-            "override_app",
-            "override_app",
         ),
         ###########################################################################
         # Invoking in a test harness, where there's no __main__
@@ -199,19 +169,15 @@ APP_METADATA = {
             "Explicit App",
             "org.beeware.explicit-app",
             "override-app",
-            "override_app",
-            "override_app",
         ),
-        # Explicit app properties, but implied app name from app_id, no metadata
+        # Explicit app properties, but implied distribution name from app_id, no metadata
         (
             EXPLICIT_MIN_APP_KWARGS,
             None,
             None,
             "Explicit App",
             "org.beeware.explicit-app",
-            "explicit_app",
-            "explicit_app",
-            "explicit_app",
+            "explicit-app",
         ),
         # No app properties, with metadata
         (
@@ -220,9 +186,7 @@ APP_METADATA = {
             None,
             "Test App",
             "org.beeware.test-app",
-            "test-app",
             "toga",
-            "test_app",
         ),
         # Explicit app properties, with metadata. Explicit values take precedence.
         (
@@ -232,8 +196,6 @@ APP_METADATA = {
             "Explicit App",
             "org.beeware.explicit-app",
             "override-app",
-            "override_app",
-            "override_app",
         ),
     ],
 )
@@ -244,9 +206,7 @@ def test_create(
     main_module,
     expected_formal_name,
     expected_app_id,
-    expected_app_name,
-    expected_initial_module_name,
-    expected_module_name,
+    expected_distribution_name,
 ):
     """A simple app can be created"""
     # Monkeypatch the metadata retrieval function
@@ -254,11 +214,11 @@ def test_create(
         metadata_mock = Mock(return_value=metadata)
     else:
         metadata_mock = Mock(
-            side_effect=importlib_metadata.PackageNotFoundError(
-                expected_initial_module_name
+            side_effect=importlib.metadata.PackageNotFoundError(
+                expected_distribution_name
             )
         )
-    monkeypatch.setattr(importlib_metadata, "metadata", metadata_mock)
+    monkeypatch.setattr(importlib.metadata, "metadata", metadata_mock)
 
     # Monkeypatch the main module
     if main_module is None:
@@ -272,13 +232,11 @@ def test_create(
     app = toga.App(**kwargs)
 
     assert app.formal_name == expected_formal_name
-    assert app.name == expected_formal_name
     assert app.app_id == expected_app_id
-    assert app.app_name == expected_app_name
-    assert app.module_name == expected_module_name
+    assert app.distribution_name == expected_distribution_name
     assert app.on_exit._raw is None
 
-    metadata_mock.assert_called_once_with(expected_initial_module_name)
+    metadata_mock.assert_called_once_with(expected_distribution_name)
 
 
 @pytest.mark.parametrize(
@@ -306,7 +264,7 @@ def test_bad_app_creation(kwargs, exc_type, message):
 def test_app_metadata(monkeypatch):
     """An app can load metadata from the .dist-info file"""
     monkeypatch.setattr(
-        importlib_metadata,
+        importlib.metadata,
         "metadata",
         Mock(
             return_value={
@@ -328,7 +286,6 @@ def test_app_metadata(monkeypatch):
         app_id="org.example.test-app",
     )
 
-    assert app.id == str(id(app))
     assert app.author == "Jane Developer"
     assert app.version == "1.2.3"
     assert app.home_page == "https://example.com/test-app"
@@ -338,7 +295,7 @@ def test_app_metadata(monkeypatch):
 def test_explicit_app_metadata(monkeypatch):
     """App metadata can be provided explicitly, overriding module-level metadata"""
     monkeypatch.setattr(
-        importlib_metadata,
+        importlib.metadata,
         "metadata",
         Mock(
             return_value={
@@ -356,7 +313,6 @@ def test_explicit_app_metadata(monkeypatch):
     on_exit_handler = Mock()
 
     app = toga.App(
-        id="testapp-id",
         formal_name="Test App",
         app_id="org.example.test-app",
         author="Jane Developer",
@@ -366,7 +322,6 @@ def test_explicit_app_metadata(monkeypatch):
         on_exit=on_exit_handler,
     )
 
-    assert app.id == "testapp-id"
     assert app.author == "Jane Developer"
     assert app.version == "1.2.3"
     assert app.home_page == "https://example.com/test-app"
@@ -388,8 +343,6 @@ def test_icon_construction(construct):
         app_id="org.example.test",
         icon=icon,
     )
-
-    # Default icon matches app name
     assert isinstance(app.icon, toga.Icon)
     assert app.icon.path == Path("path/to/icon")
 
@@ -402,14 +355,12 @@ def test_icon(app, construct):
     else:
         icon = "path/to/icon"
 
-    # Default icon matches app name
+    # Default icon matches distribution name
     assert isinstance(app.icon, toga.Icon)
-    assert app.icon.path == Path("resources/test_app")
+    assert app.icon.path == Path("resources/test-app")
 
     # Change icon
     app.icon = icon
-
-    # Default icon matches app name
     assert isinstance(app.icon, toga.Icon)
     assert app.icon.path == Path("path/to/icon")
 
@@ -627,7 +578,7 @@ def test_exit_rejected_handler(app):
 
 
 def test_background_task(app):
-    """A mbackground task can be queued"""
+    """A background task can be queued"""
     canary = Mock()
 
     async def background(app, **kwargs):
@@ -643,3 +594,39 @@ def test_background_task(app):
 
     # Once the loop has executed, the background task should have executed as well.
     canary.assert_called_once()
+
+
+def test_deprecated_app_name():
+    """The deprecated `app_name` constructor argument and property is redirected to
+    `distribution_name`
+    """
+    app_name_warning = r"App.app_name has been renamed to distribution_name"
+    with pytest.warns(DeprecationWarning, match=app_name_warning):
+        app = toga.App("Test App", "org.example.test", app_name="test_app_name")
+
+    assert app.distribution_name == "test_app_name"
+    with pytest.warns(DeprecationWarning, match=app_name_warning):
+        assert app.app_name == "test_app_name"
+
+
+def test_deprecated_id():
+    """The deprecated `id` constructor argument is ignored, and the property of the same
+    name is redirected to `app_id`
+    """
+    id_warning = r"App.id is deprecated.* Use app_id instead"
+    with pytest.warns(DeprecationWarning, match=id_warning):
+        app = toga.App("Test App", "org.example.test", id="test_app_id")
+
+    assert app.app_id == "org.example.test"
+    with pytest.warns(DeprecationWarning, match=id_warning):
+        assert app.id == "org.example.test"
+
+
+def test_deprecated_name():
+    """The deprecated `name` property is redirected to `formal_name`"""
+    name_warning = r"App.name is deprecated. Use formal_name instead"
+    app = toga.App("Test App", "org.example.test")
+
+    assert app.formal_name == "Test App"
+    with pytest.warns(DeprecationWarning, match=name_warning):
+        assert app.name == "Test App"

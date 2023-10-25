@@ -85,8 +85,6 @@ def test_icon_construction(app, construct):
         icon = "path/to/icon"
 
     cmd = toga.Command(None, "Test command", icon=icon)
-
-    # Default icon matches app name
     assert isinstance(cmd.icon, toga.Icon)
     assert cmd.icon.path == Path("path/to/icon")
 

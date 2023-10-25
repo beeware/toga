@@ -1,14 +1,14 @@
 from __future__ import annotations
 
+import importlib.metadata
 import signal
 import sys
 import warnings
 import webbrowser
-from builtins import id as identifier
 from collections.abc import Iterator, MutableSet
 from email.message import Message
-from importlib import metadata as importlib_metadata
 from typing import Any, Iterable, Protocol
+from warnings import warn
 
 from toga.command import CommandSet
 from toga.documents import Document
@@ -215,8 +215,8 @@ class App:
         self,
         formal_name: str | None = None,
         app_id: str | None = None,
-        app_name: str | None = None,
-        id: str | None = None,
+        distribution_name: str | None = None,
+        *,
         icon: Icon | str | None = None,
         author: str | None = None,
         version: str | None = None,
@@ -224,6 +224,8 @@ class App:
         description: str | None = None,
         startup: AppStartupMethod | None = None,
         on_exit: OnExitHandler | None = None,
+        app_name: str | None = None,  # DEPRECATED
+        id=None,  # DEPRECATED
         windows=None,  # DEPRECATED
     ):
         """Create a new App instance.
@@ -237,22 +239,21 @@ class App:
         :param app_id: The unique application identifier. This will usually be a
             reversed domain name, e.g. ``org.beeware.myapp``. If not provided, the
             metadata key ``App-ID`` must be present.
-        :param app_name: The name of the distribution used to load metadata with
+        :param distribution_name: The name of the distribution used to load metadata with
             :any:`importlib.metadata`. If not provided, the following will be tried in
             order:
 
-            #. If there is a ``__main__`` module with a non-empty ``__package__``
-               attribute, that will be used.
-            #. If the ``app_id`` argument was provided, its last segment will be used,
-               with each hyphen replaced with a underscore. For example, an ``app_id``
-               of ``com.example.my-app`` would yield a distribution name of ``my_app``.
+            #. If the ``__main__`` module is contained in a package, that package's name
+               will be used.
+            #. If the ``app_id`` argument was provided, its last segment will be used.
+               For example, an ``app_id`` of ``com.example.my-app`` would yield a
+               distribution name of ``my-app``.
             #. As a last resort, the name ``toga``.
-        :param id: The DOM identifier for the app. If not provided, one will be
-            automatically generated.
         :param icon: The :any:`Icon` for the app. If not provided, Toga will attempt to
-            load an icon from ``resources/app_name``, where ``app_name`` is defined
-            above. If no resource matching this name can be found, a warning will be
-            printed, and the app will fall back to a default icon.
+            load an icon from ``resources/distribution_name``, where
+            ``distribution_name`` is defined above. If no resource matching this name
+            can be found, a warning will be printed, and the app will fall back to a
+            default icon.
         :param author: The person or organization to be credited as the author of the
             app. If not provided, the metadata key ``Author`` will be used.
         :param version: The version number of the app.  If not provided, the metadata
@@ -263,12 +264,31 @@ class App:
             the metadata key ``Summary`` will be used.
         :param startup: A callable to run before starting the app.
         :param on_exit: The handler to invoke before the application exits.
+        :param app_name: **DEPRECATED** –  Renamed to ``distribution_name``.
+        :param id: **DEPRECATED** - This argument will be ignored. If you need a
+            machine-friendly identifier, use ``app_id``.
         :param windows: **DEPRECATED** – Windows are now automatically added to the
             current app. Passing this argument will cause an exception.
         """
         ######################################################################
         # 2023-10: Backwards compatibility
         ######################################################################
+        if app_name is not None:
+            if distribution_name is not None:
+                raise ValueError("Cannot specify both app_name and distribution_name")
+            else:
+                warn(
+                    "App.app_name has been renamed to distribution_name",
+                    DeprecationWarning,
+                )
+                distribution_name = app_name
+
+        if id is not None:
+            warn(
+                "App.id is deprecated and will be ignored. Use app_id instead",
+                DeprecationWarning,
+            )
+
         if windows is not None:
             raise ValueError(
                 "The `windows` constructor argument of toga.App has been removed. "
@@ -284,111 +304,78 @@ class App:
         # Keep an accessible copy of the app singleton instance
         App.app = self
 
-        # We need a module name to load app metadata. If an app_name has been
-        # provided, we can set the app name now, and derive the module name
-        # from there.
-        self._app_name = app_name
-        if app_name:
-            metadata_module_name = self.module_name
-        else:
+        # We need a distribution name to load app metadata.
+        if distribution_name is None:
             # If the code is contained in appname.py, and you start the app using
-            # `python -m appname`, the main module package will report as ''. Set the
-            # metadata module name as None.
+            # `python -m appname`, then __main__.__package__ will be an empty string.
             #
             # If the code is contained in appname.py, and you start the app using
-            # `python appname.py`, the metadata module name will report as None.
+            # `python appname.py`, then __main__.__package__ will be None.
             #
-            # If the code is contained in a folder, and you start the app using `python
-            # -m appname`, the metadata module name will report as the name of the
-            # folder.
+            # If the code is contained in appname/__main__.py, and you start the app
+            # using `python -m appname`, then __main__.__package__ will be "appname".
             try:
                 main_module_pkg = sys.modules["__main__"].__package__
-                if main_module_pkg == "":
-                    metadata_module_name = None
-                else:
-                    metadata_module_name = main_module_pkg
+                if main_module_pkg:
+                    distribution_name = main_module_pkg
             except KeyError:
-                # We use the existence of a __main__ module as a proxy for
-                # being in test conditions. This isn't *great*, but the __main__
-                # module isn't meaningful during tests, and removing it allows
-                # us to avoid having explicit "if under test conditions" checks.
-                # If there's no __main__ module, we're in a test, and we can't
-                # imply an app name from that module name.
-                metadata_module_name = None
+                # If there's no __main__ module, we're probably in a test.
+                pass
 
-            # Try deconstructing the metadata module name from the app ID
-            if metadata_module_name is None and app_id:
-                metadata_module_name = app_id.split(".")[-1].replace("-", "_")
+        # Try deconstructing the distribution name from the app ID
+        if (distribution_name is None) and app_id:
+            distribution_name = app_id.split(".")[-1]
 
-            # If we still don't have a metadata module name, fall back to ``toga`` as a
-            # last resort.
-            if metadata_module_name is None:
-                metadata_module_name = "toga"
+        # If we still don't have a distribution name, fall back to ``toga`` as a
+        # last resort.
+        if distribution_name is None:
+            distribution_name = "toga"
 
-        # Try to load the app metadata with our best guess of the module name.
+        # Try to load the app metadata with our best guess of the distribution name.
+        self._distribution_name = distribution_name
         try:
-            self.metadata = importlib_metadata.metadata(metadata_module_name)
-        except importlib_metadata.PackageNotFoundError:
+            self.metadata = importlib.metadata.metadata(distribution_name)
+        except importlib.metadata.PackageNotFoundError:
             self.metadata = Message()
 
-        # If the app name wasn't explicitly provided, look to the app metadata. If the
-        # metadata provides a "Name" key, use that as the app name; otherwise, fall back
-        # to the metadata module name (which might be "toga")
-        if app_name is None:
-            self._app_name = self.metadata.get("Name")
-            if self._app_name is None:
-                self._app_name = metadata_module_name
-
-        # If a name has been provided, use it; otherwise, look to
-        # the module metadata. However, a name *must* be provided.
+        # If a formal name has been provided, use it; otherwise, look to
+        # the metadata. However, a formal name *must* be provided.
         if formal_name:
             self._formal_name = formal_name
         else:
             self._formal_name = self.metadata.get("Formal-Name")
-
         if self._formal_name is None:
             raise RuntimeError("Toga application must have a formal name")
 
         # If an app_id has been provided, use it; otherwise, look to
-        # the module metadata. However, an app_id *must* be provided
+        # the metadata. However, an app_id *must* be provided
         if app_id:
             self._app_id = app_id
         else:
             self._app_id = self.metadata.get("App-ID", None)
-
         if self._app_id is None:
             raise RuntimeError("Toga application must have an app ID")
 
-        # If an author has been provided, use it; otherwise, look to
-        # the module metadata.
+        # Other metadata may be passed to the constructor, or loaded with importlib.
         if author:
             self._author = author
         else:
             self._author = self.metadata.get("Author", None)
 
-        # If a version has been provided, use it; otherwise, look to
-        # the module metadata.
         if version:
             self._version = version
         else:
             self._version = self.metadata.get("Version", None)
 
-        # If a home_page has been provided, use it; otherwise, look to
-        # the module metadata.
         if home_page:
             self._home_page = home_page
         else:
             self._home_page = self.metadata.get("Home-page", None)
 
-        # If a description has been provided, use it; otherwise, look to
-        # the module metadata.
         if description:
             self._description = description
         else:
             self._description = self.metadata.get("Summary", None)
-
-        # Set the application DOM ID; create an ID if one hasn't been provided.
-        self._id = str(id if id else identifier(self))
 
         # Get a platform factory.
         self.factory = get_platform_factory()
@@ -397,11 +384,11 @@ class App:
         self._paths = Paths()
 
         # If an icon (or icon name) has been explicitly provided, use it;
-        # otherwise, the icon will be based on the app name.
+        # otherwise, the icon will be based on the distribution name.
         if icon:
             self.icon = icon
         else:
-            self.icon = f"resources/{self.app_name}"
+            self.icon = f"resources/{distribution_name}"
 
         self.on_exit = on_exit
 
@@ -440,7 +427,8 @@ class App:
 
     @property
     def name(self) -> str:
-        """Same as :any:`formal_name`."""
+        """**DEPRECATED** – Use :any:`formal_name`."""
+        warn("App.name is deprecated. Use formal_name instead", DeprecationWarning)
         return self._formal_name
 
     @property
@@ -449,15 +437,16 @@ class App:
         return self._formal_name
 
     @property
-    def app_name(self) -> str:
+    def distribution_name(self) -> str:
         """The name of the distribution used to load metadata with
         :any:`importlib.metadata` (read-only)."""
-        return self._app_name
+        return self._distribution_name
 
     @property
-    def module_name(self) -> str | None:
-        """The module name for the app (read-only)."""
-        return self._app_name.replace("-", "_")
+    def app_name(self) -> str:
+        """**DEPRECATED** – Renamed to ``distribution_name``."""
+        warn("App.app_name has been renamed to distribution_name", DeprecationWarning)
+        return self._distribution_name
 
     @property
     def app_id(self) -> str:
@@ -490,11 +479,9 @@ class App:
 
     @property
     def id(self) -> str:
-        """The DOM identifier for the app (read-only).
-
-        This id can be used to target CSS directives.
-        """
-        return self._id
+        """**DEPRECATED** – Use :any:`app_id`."""
+        warn("App.id is deprecated. Use app_id instead", DeprecationWarning)
+        return self._app_id
 
     @property
     def icon(self) -> Icon:
@@ -683,8 +670,8 @@ class DocumentApp(App):
         self,
         formal_name: str | None = None,
         app_id: str | None = None,
-        app_name: str | None = None,
-        id: str | None = None,
+        distribution_name: str | None = None,
+        *,
         icon: str | None = None,
         author: str | None = None,
         version: str | None = None,
@@ -693,6 +680,8 @@ class DocumentApp(App):
         startup: AppStartupMethod | None = None,
         document_types: dict[str, type[Document]] = None,
         on_exit: OnExitHandler | None = None,
+        app_name: str | None = None,  # DEPRECATED
+        id=None,  # DEPRECATED
     ):
         """Create a document-based application.
 
@@ -716,8 +705,7 @@ class DocumentApp(App):
         super().__init__(
             formal_name=formal_name,
             app_id=app_id,
-            app_name=app_name,
-            id=id,
+            distribution_name=distribution_name,
             icon=icon,
             author=author,
             version=version,
@@ -725,6 +713,8 @@ class DocumentApp(App):
             description=description,
             startup=startup,
             on_exit=on_exit,
+            app_name=app_name,
+            id=id,
         )
 
     def _create_impl(self):

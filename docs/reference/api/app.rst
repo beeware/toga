@@ -70,10 +70,6 @@ details, along with many of the other constructor arguments, as packaging metada
 format compatible with :any:`importlib.metadata`. If you deploy your app with `Briefcase
 <https://briefcase.readthedocs.io/en/stable>`__, this will be done automatically.
 
-The distribution name used to look up the metadata is determined by the ``app_name``
-constructor argument, which is described below.
-
-
 Reference
 ---------
 
