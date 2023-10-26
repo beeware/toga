@@ -693,12 +693,7 @@ class DocumentApp(App):
         exception that there is no main window. Instead, each document managed by the
         app will create and manage it's own window (or windows).
 
-        :param document_types: A dictionary of file extensions of document types that
-            the application can managed, mapping to the :class:`toga.Document` subclass
-            that will be created when a document of with that extension is opened. The
-            :class:`toga.Document` subclass must take exactly 2 arguments in it's
-            constructor: ``path`` and ``app``
-
+        :param document_types: Initial :any:`document_types` mapping.
         """
         if document_types is None:
             raise ValueError("A document must manage at least one document type.")
@@ -732,9 +727,10 @@ class DocumentApp(App):
     def document_types(self) -> dict[str, type[Document]]:
         """The document types this app can manage.
 
-        This is a dictionary of file extensions mapping to the Document class that will
-        be created when a document of with that extension is opened. This class will
-        usually be a subclass of :class:`toga.Document`.toga.Document`.
+        A dictionary of file extensions, without leading dots, mapping to the
+        :class:`toga.Document` subclass that will be created when a document with that
+        extension is opened. The subclass must take exactly 2 arguments in its
+        constructor: ``path`` and ``app``.
         """
         return self._document_types
 

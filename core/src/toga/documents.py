@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from toga.app import App
+    from toga.window import Window
 
 
 class Document(ABC):
@@ -25,8 +26,8 @@ class Document(ABC):
         """
         self._path = Path(path)
         self._document_type = document_type
-
         self._app = app
+        self._main_window = None
 
         # Create the visual representation of the document
         self.create()
@@ -38,8 +39,7 @@ class Document(ABC):
         """Is the main document window allowed to close?
 
         The default implementation always returns ``True``; subclasses can override this
-        implementation to provide protection against losing unsaved document changes, or
-        other close-preventing behavior.
+        to prevent a window closing with unsaved changes, etc.
 
         This default implementation is a function; however, subclasses can define it
         as an asynchronous co-routine if necessary to allow for dialog confirmations.
@@ -69,7 +69,7 @@ class Document(ABC):
 
     @property
     def path(self) -> Path:
-        """The path where the document is stored."""
+        """The path where the document is stored (read-only)."""
         return self._path
 
     @property
@@ -83,24 +83,33 @@ class Document(ABC):
 
     @property
     def document_type(self) -> Path:
-        """A human-readable description of the document type."""
+        """A human-readable description of the document type (read-only)."""
         return self._document_type
 
     @property
     def app(self) -> App:
-        """The app that this document is associated with."""
+        """The app that this document is associated with (read-only)."""
         return self._app
 
+    @property
+    def main_window(self) -> Window:
+        """The main window for the document."""
+        return self._main_window
+
+    @main_window.setter
+    def main_window(self, window):
+        self._main_window = window
+
     def show(self) -> None:
-        """Show the main_window for this document."""
+        """Show the :any:`main_window` for this document."""
         self.main_window.show()
 
     @abstractmethod
     def create(self) -> None:
-        """Create the window (or window) containers for the document.
+        """Create the window (or windows) for the document.
 
-        This must, at a minimum, assign a ``main_window`` property to the document. It
-        may create additional windows or visual representations, if desired.
+        This method must, at a minimum, assign the :any:`main_window` property. It
+        may also create additional windows or UI elements if desired.
         """
 
     @abstractmethod
