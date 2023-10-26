@@ -11,7 +11,7 @@ from email.message import Message
 from typing import Any, Protocol
 from warnings import warn
 
-from toga.command import CommandSet
+from toga.command import Command, CommandSet
 from toga.documents import Document
 from toga.handlers import wrapped_handler
 from toga.icons import Icon
@@ -389,7 +389,7 @@ class App:
 
         # We need the command set to exist so that startup et al can add commands;
         # but we don't have an impl yet, so we can't set the on_change handler
-        self.commands = CommandSet()
+        self._commands = CommandSet()
 
         self._startup_method = startup
 
@@ -504,6 +504,11 @@ class App:
         """The windows managed by the app. Windows are automatically added to the app
         when they are created, and removed when they are closed."""
         return self._windows
+
+    @property
+    def commands(self) -> MutableSet[Command]:
+        """The commands available in the app."""
+        return self._commands
 
     @property
     def main_window(self) -> MainWindow:

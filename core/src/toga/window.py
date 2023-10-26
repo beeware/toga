@@ -2,11 +2,11 @@ from __future__ import annotations
 
 import warnings
 from builtins import id as identifier
-from collections.abc import Mapping
+from collections.abc import Mapping, MutableSet
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Literal, Protocol, TypeVar, overload
 
-from toga.command import CommandSet
+from toga.command import Command, CommandSet
 from toga.handlers import AsyncResult, wrapped_handler
 from toga.platform import get_platform_factory
 from toga.widgets.base import WidgetRegistry
@@ -197,7 +197,7 @@ class Window:
         return self._minimizable
 
     @property
-    def toolbar(self) -> CommandSet:
+    def toolbar(self) -> MutableSet[Command]:
         """Toolbar for the window."""
         return self._toolbar
 

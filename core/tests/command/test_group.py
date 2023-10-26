@@ -69,7 +69,7 @@ def test_group_eq():
     """Groups can be compared for equality."""
     group_a = toga.Group("A")
     group_b = toga.Group("B")
-    group_a1 = toga.Group("A", 1)
+    group_a1 = toga.Group("A", order=1)
     # Assign None to variable to trick flake8 into not giving an E711
     other = None
 
@@ -79,7 +79,7 @@ def test_group_eq():
 
     # Same values are equal
     assert group_a == toga.Group("A")
-    assert group_a1 == toga.Group("A", 1)
+    assert group_a1 == toga.Group("A", order=1)
 
     # Different values are not equal
     assert group_a != group_b
@@ -87,8 +87,8 @@ def test_group_eq():
 
     # Partially same values are not equal
     assert group_a1 != group_a
-    assert group_a1 != toga.Group("B", 1)
-    assert group_a1 != toga.Group("A", 2)
+    assert group_a1 != toga.Group("B", order=1)
+    assert group_a1 != toga.Group("A", order=2)
 
 
 def test_parent_creation():
@@ -250,7 +250,7 @@ def test_order_by_text():
 
 def test_order_by_number():
     """Groups are ordered by number"""
-    assert_order(toga.Group("B", 1), toga.Group("A", 2))
+    assert_order(toga.Group("B", order=1), toga.Group("A", order=2))
 
 
 def test_order_by_groups(parent_group_1, parent_group_2):

@@ -14,33 +14,27 @@ class Group:
     def __init__(
         self,
         text: str,
-        order: int | None = None,
-        section: int | None = None,
+        *,
         parent: Group | None = None,
+        section: int = 0,
+        order: int = 0,
     ):
         """
-        An collection of similar commands.
+        An collection of commands to display together.
 
-        Commands and sub-groups are sorted within sections inside a group.
-
-        Groups can also be hierarchical; a group with no parent is a root group.
-
-        :param text: The name of the group
-        :param order: An integer that can be used to provide sorting order for commands.
-            Commands will be sorted according to order inside their section; if a
-            Command doesn't have an order, it will be sorted alphabetically by text
-            within its section.
-        :param section: An integer describing the section within the parent group where
-            the command should appear. If no section is specified, the command will be
-            allocated to section 0 within the group. A section cannot be specified
-            unless a parent is also specified.
-        :param parent: The parent of this group; use ``None`` to describe a root group.
+        :param text: A label for the group.
+        :param parent: The parent of this group; use ``None`` to make a root group.
+        :param section: The section where the group should appear within its parent. A
+            section cannot be specified unless a parent is also specified.
+        :param order: The position where the group should appear within its section.
+            If multiple items have the same group, section and order, they will be
+            sorted alphabetically by their text.
         """
         self.text = text
-        self.order = order if order else 0
-        if parent is None and section is not None:
+        self.order = order
+        if parent is None and section != 0:
             raise ValueError("Section cannot be set without parent group")
-        self.section = section if section else 0
+        self.section = section
 
         # Prime the underlying value of _parent so that the setter has a current value
         # to work with
@@ -49,7 +43,7 @@ class Group:
 
     @property
     def parent(self) -> Group | None:
-        """The parent of this group; returns ``None`` if the group is a root group"""
+        """The parent of this group; returns ``None`` if the group is a root group."""
         return self._parent
 
     @parent.setter
@@ -75,7 +69,7 @@ class Group:
         return self.parent.root
 
     def is_parent_of(self, child: Group | None) -> bool:
-        """Is this group a parent of the provided group?
+        """Is this group a parent of the provided group, directly or indirectly?
 
         :param child: The potential child to check
         :returns: True if this group is a parent of the provided child.
@@ -89,7 +83,7 @@ class Group:
         return self.is_parent_of(child.parent)
 
     def is_child_of(self, parent: Group | None) -> bool:
-        """Is this group a child of the provided group?
+        """Is this group a child of the provided group, directly or indirectly?
 
         :param parent: The potential parent to check
         :returns: True if this group is a child of the provided parent.
@@ -132,6 +126,16 @@ class Group:
             return tuple([self_tuple])
         return tuple([*self.parent.key, self_tuple])
 
+    # Standard groups - docstrings can only be provided within the `class` statement,
+    # but the objects can't be instantiated here.
+    APP = None  #: Application-level commands
+    FILE = None  #: File commands
+    EDIT = None  #: Editing commands
+    VIEW = None  #: Content appearance commands
+    COMMANDS = None  #: Default group for user-provided commands
+    WINDOW = None  #: Window management commands
+    HELP = None  #: Help commands
+
 
 Group.APP = Group("*", order=0)
 Group.FILE = Group("File", order=1)
@@ -146,11 +150,9 @@ class ActionHandler(Protocol):
     def __call__(self, command: Command, **kwargs) -> bool:
         """A handler that will be invoked when a Command is invoked.
 
-        .. note::
-            ``**kwargs`` ensures compatibility with additional arguments
-            introduced in future versions.
-
         :param command: The command that triggered the action.
+        :param kwargs: Ensures compatibility with additional arguments introduced in
+            future versions.
         """
         ...
 
@@ -160,31 +162,32 @@ class Command:
         self,
         action: ActionHandler | None,
         text: str,
+        *,
         shortcut: str | None = None,
         tooltip: str | None = None,
         icon: str | Icon | None = None,
-        group: Group | None = None,
-        section: int | None = None,
-        order: int | None = None,
+        group: Group = Group.COMMANDS,
+        section: int = 0,
+        order: int = 0,
         enabled: bool = True,
     ):
         """
         Create a new Command.
 
+        Commands may not use all the arguments - for example, on some platforms, menus
+        will contain icons; on other platforms they won't.
+
         :param action: A handler that will be invoked when the command is activated.
-        :param text: A text label for the command.
+        :param text: A label for the command.
         :param shortcut: A key combination that can be used to invoke the command.
-        :param tooltip: A short description for what the command will do.
+        :param tooltip: A short description of what the command will do.
         :param icon: The icon, or icon resource, that can be used to decorate the
             command if the platform requires.
-        :param group: The group of commands to which this command belongs. If no group
-            is specified, a default "Command" group will be used.
-        :param section: An integer describing the section within the group where the
-            command should appear. If no section is specified, the command will be
-            allocated to section 0 within the group.
-        :param order: An integer that can be used to provide sorting order for commands.
-            Commands will be sorted according to order inside their section; if a
-            Command doesn't have an order, it will be sorted alphabetically by text within its section.
+        :param group: The group to which this command belongs.
+        :param section: The section where the command should appear within its group.
+        :param order: The position where the command should appear within its section.
+            If multiple items have the same group, section and order, they will be
+            sorted alphabetically by their text.
         :param enabled: Is the Command currently enabled?
         """
         self.text = text
@@ -193,9 +196,9 @@ class Command:
         self.tooltip = tooltip
         self.icon = icon
 
-        self.group = group if group else Group.COMMANDS
-        self.section = section if section else 0
-        self.order = order if order else 0
+        self.group = group
+        self.section = section
+        self.order = order
 
         self.action = wrapped_handler(self, action)
 
@@ -227,8 +230,8 @@ class Command:
     def icon(self) -> Icon | None:
         """The Icon for the command.
 
-        When specifying the icon, you can provide an icon instance, or a string resource
-        that can be resolved to an icon.
+        When setting the icon, you can provide either an :any:`Icon` instance, or a
+        path that will be passed to the ``Icon`` constructor.
         """
         return self._icon
 
