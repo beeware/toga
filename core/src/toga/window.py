@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import warnings
 from builtins import id as identifier
+from collections.abc import Mapping
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Literal, Protocol, TypeVar, overload
 
@@ -110,7 +111,7 @@ class Window:
         # Needs to be a late import to avoid circular dependencies.
         from toga import App
 
-        self.widgets = WidgetRegistry()
+        self._widgets = WidgetRegistry()
 
         self._id = str(id if id else identifier(self))
         self._impl = None
@@ -226,6 +227,14 @@ class Window:
 
         # Update the geometry of the widget
         widget.refresh()
+
+    @property
+    def widgets(self) -> Mapping[str, Widget]:
+        """The widgets contained in the window.
+
+        Can be used to look up widgets by ID (e.g., ``window.widgets["my_id"]``).
+        """
+        return self._widgets
 
     @property
     def size(self) -> tuple[int, int]:

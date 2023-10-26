@@ -6,9 +6,9 @@ import signal
 import sys
 import warnings
 import webbrowser
-from collections.abc import Iterator, MutableSet
+from collections.abc import Collection, Iterator, Mapping, MutableSet
 from email.message import Message
-from typing import Any, Iterable, Protocol
+from typing import Any, Protocol
 from warnings import warn
 
 from toga.command import CommandSet
@@ -30,11 +30,9 @@ class AppStartupMethod(Protocol):
 
         Called during app startup to set the initial main window content.
 
-        .. note::
-            ``**kwargs`` ensures compatibility with additional arguments
-            introduced in future versions.
-
         :param app: The app instance that is starting.
+        :param kwargs: Ensures compatibility with additional arguments introduced in
+            future versions.
         :returns: The widget to use as the main window content.
         """
         ...
@@ -47,11 +45,9 @@ class OnExitHandler(Protocol):
         The return value of this callback controls whether the app is allowed to exit.
         This can be used to prevent the app exiting with unsaved changes, etc.
 
-        .. note::
-            ``**kwargs`` ensures compatibility with additional arguments
-            introduced in future versions.
-
         :param app: The app instance that is exiting.
+        :param kwargs: Ensures compatibility with additional arguments introduced in
+            future versions.
         :returns: ``True`` if the app is allowed to exit; ``False`` if the app is not
             allowed to exit.
         """
@@ -62,11 +58,9 @@ class BackgroundTask(Protocol):
     def __call__(self, app: App, **kwargs: Any) -> None:
         """Code that should be executed as a background task.
 
-        .. note::
-            ``**kwargs`` ensures compatibility with additional arguments
-            introduced in future versions.
-
         :param app: The app that is handling the background task.
+        :param kwargs: Ensures compatibility with additional arguments introduced in
+            future versions.
         """
         ...
 
@@ -264,7 +258,7 @@ class App:
         :param description: A brief (one line) description of the app. If not provided,
             the metadata key ``Summary`` will be used.
         :param startup: A callable to run before starting the app.
-        :param on_exit: The handler to invoke before the application exits.
+        :param on_exit: The initial :any:`on_exit` handler.
         :param app_name: **DEPRECATED** –  Renamed to ``distribution_name``.
         :param id: **DEPRECATED** - This argument will be ignored. If you need a
             machine-friendly identifier, use ``app_id``.
@@ -414,15 +408,11 @@ class App:
 
     @property
     def paths(self) -> Paths:
-        """Paths for platform appropriate locations on the user's file system.
+        """Paths for platform-appropriate locations on the user's file system.
 
-        Some platforms do not allow arbitrary file access to any location on disk; even
-        when arbitrary file system access is allowed, there are "preferred" locations
-        for some types of content.
-
-        The :class:`~toga.paths.Paths` object has a set of sub-properties that return
-        :class:`pathlib.Path` instances of platform-appropriate paths on the file
-        system.
+        Some platforms do not allow access to any file system location other than these
+        paths. Even when arbitrary file access is allowed, there are preferred locations
+        for each type of content.
         """
         return self._paths
 
@@ -501,7 +491,7 @@ class App:
             self._icon = Icon(icon_or_name)
 
     @property
-    def widgets(self) -> WidgetRegistry:
+    def widgets(self) -> Mapping[str, Widget]:
         """The widgets managed by the app, over all windows.
 
         Can be used to look up widgets by ID over the entire app (e.g.,
@@ -510,9 +500,9 @@ class App:
         return self._widgets
 
     @property
-    def windows(self) -> Iterable[Window]:
-        """The windows managed by the app. Windows are added to the app when they are
-        created, and removed when they are closed."""
+    def windows(self) -> Collection[Window]:
+        """The windows managed by the app. Windows are automatically added to the app
+        when they are created, and removed when they are closed."""
         return self._windows
 
     @property
@@ -527,7 +517,7 @@ class App:
 
     @property
     def current_window(self) -> Window | None:
-        """Return the currently active content window."""
+        """Return the currently active window."""
         window = self._impl.get_current_window()
         if window is None:
             return None
@@ -578,8 +568,8 @@ class App:
         """Create and show the main window for the application.
 
         Subclasses can override this method to define customized startup behavior;
-        however, as a result of invoking this method, the app *must* have a
-        ``main_window``.
+        however, any override *must* ensure the :any:`main_window` has been assigned
+        before it returns.
         """
         self.main_window = MainWindow(title=self.formal_name)
 
@@ -610,9 +600,9 @@ class App:
         self._impl.show_about_dialog()
 
     def visit_homepage(self) -> None:
-        """Open the application's homepage in the default browser.
+        """Open the application's :any:`home_page` in the default browser.
 
-        If the application metadata doesn't define a homepage, this is a no-op.
+        If the :any:`home_page` is ``None``, this is a no-op.
         """
         if self.home_page is not None:
             webbrowser.open(self.home_page)
@@ -642,7 +632,7 @@ class App:
 
     @property
     def on_exit(self) -> OnExitHandler:
-        """The handler to invoke before the application exits."""
+        """The handler to invoke if the user attempts to exit the app."""
         return self._on_exit
 
     @on_exit.setter
@@ -655,7 +645,9 @@ class App:
 
     @property
     def loop(self) -> asyncio.AbstractEventLoop:
-        """The event loop of the app's main thread (read-only)."""
+        """The `event loop
+        <https://docs.python.org/3/library/asyncio-eventloop.html>`__ of the app's main
+        thread (read-only)."""
         return self._impl.loop
 
     def add_background_task(self, handler: BackgroundTask) -> None:
