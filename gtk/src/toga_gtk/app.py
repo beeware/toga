@@ -2,7 +2,6 @@ import asyncio
 import signal
 import sys
 from pathlib import Path
-from urllib.parse import unquote, urlparse
 
 import gbulb
 
@@ -274,39 +273,24 @@ class DocumentApp(App):  # pragma: no cover
 
         try:
             # Look for a filename specified on the command line
-            path = Path(sys.argv[1])
+            self.interface._open(Path(sys.argv[1]))
         except IndexError:
             # Nothing on the command line; open a file dialog instead.
-            # TODO: This causes a blank window to be shown.
-            # Is there a way to open a file dialog without having a window?
+            # Create a temporary window so we have context for the dialog
             m = toga.Window()
-            path = m.open_file_dialog(
+            m.open_file_dialog(
                 self.interface.formal_name,
                 file_types=self.interface.document_types.keys(),
+                on_result=lambda dialog, path: self.interface._open(path)
+                if path
+                else self.exit(),
             )
 
-        self.open_document(path)
-
     def open_file(self, widget, **kwargs):
-        # TODO: This causes a blank window to be shown.
-        # Is there a way to open a file dialog without having a window?
+        # Create a temporary window so we have context for the dialog
         m = toga.Window()
-        path = m.open_file_dialog(
+        m.open_file_dialog(
             self.interface.formal_name,
             file_types=self.interface.document_types.keys(),
+            on_result=lambda dialog, path: self.interface._open(path) if path else None,
         )
-
-        self.open_document(path)
-
-    def open_document(self, fileURL):
-        """Open a new document in this app.
-
-        Args:
-            fileURL (str): The URL/path to the file to add as a document.
-        """
-        # Convert the fileURL to a file path.
-        fileURL = fileURL.rstrip("/")
-        path = Path(unquote(urlparse(fileURL).path))
-
-        # Create the document instance
-        self.interface._open(path)
