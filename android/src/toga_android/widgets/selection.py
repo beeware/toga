@@ -3,8 +3,9 @@ from travertino.size import at_least
 
 from android import R
 from android.view import View
-from android.widget import AdapterView, ArrayAdapter, Spinner
+from android.widget import AdapterView, ArrayAdapter, Spinner, SpinnerAdapter
 
+from . import label
 from .base import Widget
 
 
@@ -20,14 +21,90 @@ class TogaOnItemSelectedListener(dynamic_proxy(AdapterView.OnItemSelectedListene
         self.impl.on_change(None)
 
 
+class TogaArrayAdapter(dynamic_proxy(SpinnerAdapter)):
+    def __init__(self, impl):
+        super().__init__()
+        self.impl = impl
+        self._default_textsize = -1
+        self._default_typeface = None
+        self.adapter = ArrayAdapter(
+            self.impl._native_activity, R.layout.simple_spinner_item
+        )
+        self.adapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item)
+
+    def apply_font(self, tv):
+        if self.impl._font_impl and tv:
+            label.set_textview_font(
+                tv,
+                self.impl._font_impl,
+                self._default_typeface,
+                self._default_textsize,
+            )
+
+    def cache_textview_defaults(self, tv):
+        self._default_textsize = tv.getTextSize()
+        self._default_typeface = tv.getTypeface()
+
+    def getDropDownView(self, position, convertView, parent):
+        tv = self.adapter.getDropDownView(position, convertView, parent)
+        self.apply_font(tv)
+        return tv
+
+    def getView(self, position, convertView, parent):
+        tv = self.adapter.getView(position, convertView, parent)
+        if self._default_textsize == -1:
+            self.cache_textview_defaults(tv)
+        self.apply_font(tv)
+        return tv
+
+    def clear(self):
+        return self.adapter.clear()
+
+    def getAutofillOptions(self):
+        return self.adapter.getAutofillOptions()
+
+    def getCount(self):
+        return self.adapter.getCount()
+
+    def getItem(self, position):
+        return self.adapter.getItem(position)
+
+    def getItemId(self, position):
+        return self.adapter.getItemId(position)
+
+    def getItemViewType(self, position):
+        return self.adapter.getItemViewType(position)
+
+    def getViewTypeCount(self):
+        return self.adapter.getViewTypeCount()
+
+    def hasStableIds(self):
+        return self.adapter.hasStableIds()
+
+    def insert(self, object, index):
+        return self.adapter.insert(object, index)
+
+    def isEmpty(self):
+        return self.adapter.isEmpty()
+
+    def registerDataSetObserver(self, observer):
+        self.adapter.registerDataSetObserver(observer)
+
+    def remove(self, object):
+        self.adapter.remove(object)
+
+    def unregisterDataSetObserver(self, observer):
+        self.adapter.unregisterDataSetObserver(observer)
+
+
 class Selection(Widget):
     focusable = False
+    _font_impl = None
 
     def create(self):
         self.native = Spinner(self._native_activity, Spinner.MODE_DROPDOWN)
         self.native.setOnItemSelectedListener(TogaOnItemSelectedListener(impl=self))
-        self.adapter = ArrayAdapter(self._native_activity, R.layout.simple_spinner_item)
-        self.adapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item)
+        self.adapter = TogaArrayAdapter(impl=self)
         self.native.setAdapter(self.adapter)
         self.last_selection = None
 
@@ -87,3 +164,9 @@ class Selection(Widget):
         self.native.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
         self.interface.intrinsic.width = at_least(self.native.getMeasuredWidth())
         self.interface.intrinsic.height = self.native.getMeasuredHeight()
+
+    def set_font(self, font):
+        self._font_impl = font._impl
+        tv = self.native.getSelectedView()
+        if tv:
+            self.adapter.apply_font(tv)
