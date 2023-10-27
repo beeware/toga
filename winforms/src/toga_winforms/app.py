@@ -110,16 +110,27 @@ class App:
 
         # Call user code to populate the main window
         self.interface._startup()
-        self.create_menus()
         self._create_app_commands()
+        self.create_menus()
         self.interface.main_window._impl.set_app(self)
 
     def create_menus(self):
+        window = self.interface.main_window._impl
+        menubar = window.native.MainMenuStrip
+        if menubar:
+            menubar.Items.Clear()
+        else:
+            # The menu bar doesn't need to be positioned, because its `Dock` property
+            # defaults to `Top`.
+            menubar = WinForms.MenuStrip()
+            window.native.Controls.Add(menubar)
+            window.native.MainMenuStrip = menubar
+            menubar.SendToBack()  # In a dock, "back" means "top".
+
         self._menu_items = {}
         self._menu_groups = {}
 
         toga.Group.FILE.order = 0
-        menubar = WinForms.MenuStrip()
         submenu = None
         for cmd in self.interface.commands:
             if cmd == GROUP_BREAK:
@@ -145,11 +156,7 @@ class App:
                 self._menu_items[item] = cmd
                 submenu.DropDownItems.Add(item)
 
-        # The menu bar doesn't need to be positioned, because its `Dock` property
-        # defaults to `Top`.
-        self.interface.main_window._impl.native.Controls.Add(menubar)
-        self.interface.main_window._impl.native.MainMenuStrip = menubar
-        self.interface.main_window._impl.resize_content()
+        window.resize_content()
 
     def _submenu(self, group, menubar):
         try:

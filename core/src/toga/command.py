@@ -177,7 +177,8 @@ class Command:
         Commands may not use all the arguments - for example, on some platforms, menus
         will contain icons; on other platforms they won't.
 
-        :param action: A handler that will be invoked when the command is activated.
+        :param action: A handler to invoke when the command is activated. If this is
+            ``None``, the command will be disabled.
         :param text: A label for the command.
         :param shortcut: A key combination that can be used to invoke the command.
         :param tooltip: A short description of what the command will do.

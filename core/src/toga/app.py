@@ -275,6 +275,7 @@ class App:
                 warn(
                     "App.app_name has been renamed to distribution_name",
                     DeprecationWarning,
+                    stacklevel=2,
                 )
                 distribution_name = app_name
 
@@ -282,6 +283,7 @@ class App:
             warn(
                 "App.id is deprecated and will be ignored. Use app_id instead",
                 DeprecationWarning,
+                stacklevel=2,
             )
 
         if windows is not None:
@@ -419,7 +421,11 @@ class App:
     @property
     def name(self) -> str:
         """**DEPRECATED** – Use :any:`formal_name`."""
-        warn("App.name is deprecated. Use formal_name instead", DeprecationWarning)
+        warn(
+            "App.name is deprecated. Use formal_name instead",
+            DeprecationWarning,
+            stacklevel=2,
+        )
         return self._formal_name
 
     @property
@@ -436,7 +442,11 @@ class App:
     @property
     def app_name(self) -> str:
         """**DEPRECATED** – Renamed to ``distribution_name``."""
-        warn("App.app_name has been renamed to distribution_name", DeprecationWarning)
+        warn(
+            "App.app_name has been renamed to distribution_name",
+            DeprecationWarning,
+            stacklevel=2,
+        )
         return self._distribution_name
 
     @property
@@ -471,7 +481,9 @@ class App:
     @property
     def id(self) -> str:
         """**DEPRECATED** – Use :any:`app_id`."""
-        warn("App.id is deprecated. Use app_id instead", DeprecationWarning)
+        warn(
+            "App.id is deprecated. Use app_id instead", DeprecationWarning, stacklevel=2
+        )
         return self._app_id
 
     @property

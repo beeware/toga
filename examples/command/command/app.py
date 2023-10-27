@@ -45,10 +45,9 @@ class ExampleTestCommandApp(toga.App):
         tiberius_icon_256 = "resources/tiberius-256"
 
         # Set up main window
-        self.main_window = toga.MainWindow(title=self.name)
+        self.main_window = toga.MainWindow(title=self.formal_name)
 
         # Add commands
-        print("adding commands")
         # Create a "Things" menu group to contain some of the commands.
         # No explicit ordering is provided on the group, so it will appear
         # after application-level menus, but *before* the Command group.
@@ -113,16 +112,18 @@ class ExampleTestCommandApp(toga.App):
         )
         cmd7 = toga.Command(
             self.action7,
-            text="TB action 7",
+            text="TB Action 7",
             tooltip="Perform toolbar action 7",
+            shortcut=toga.Key.MOD_1 + "p",
             order=30,
             icon=tiberius_icon_256,
             group=sub_menu,
+            enabled=False,
         )
 
         def action4(widget):
             print("action 4")
-            cmd3.enabled = not cmd3.enabled
+            cmd7.enabled = not cmd7.enabled
             self.textpanel.value += "action 4\n"
 
         cmd4 = toga.Command(
@@ -135,7 +136,7 @@ class ExampleTestCommandApp(toga.App):
 
         # The order in which commands are added to the app or the toolbar won't
         # alter anything. Ordering is defined by the command definitions.
-        self.app.commands.add(cmd1, cmd0, cmd6, cmd4, cmd3)
+        self.app.commands.add(cmd1, cmd0, cmd6, cmd4, cmd3, cmd7)
         self.app.main_window.toolbar.add(cmd2, cmd5, cmd7)
 
         # Buttons
@@ -164,7 +165,6 @@ class ExampleTestCommandApp(toga.App):
 
 
 def main():
-    print("app.main")
     return ExampleTestCommandApp("Test Command", "org.beeware.widgets.command")
 
 
