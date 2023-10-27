@@ -59,7 +59,7 @@ class App(Scalable):
     # Represents Windows 10 Build 1703 and beyond which should use
     # SetProcessDpiAwarenessContext(-4) for DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2
     # Valid values: https://learn.microsoft.com/en-us/windows/win32/hidpi/dpi-awareness-context
-    if win_version.Major == 10 and win_version.Build >= 15063:
+    if win_version.Major >= 10 and win_version.Build >= 15063:
         windll.user32.SetProcessDpiAwarenessContext.restype = c_bool
         windll.user32.SetProcessDpiAwarenessContext.argtypes = [c_void_p]
         # SetProcessDpiAwarenessContext returns False on Failure
