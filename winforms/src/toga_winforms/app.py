@@ -103,7 +103,9 @@ class App(Scalable):
         self.native.SetCompatibleTextRenderingDefault(False)
 
         # Register the DisplaySettingsChanged event handler
-        SystemEvents.DisplaySettingsChanged += self.winforms_DisplaySettingsChanged
+        SystemEvents.DisplaySettingsChanged += WeakrefCallable(
+            self.winforms_DisplaySettingsChanged
+        )
 
         # Ensure that TLS1.2 and TLS1.3 are enabled for HTTPS connections.
         # For some reason, some Windows installs have these protocols

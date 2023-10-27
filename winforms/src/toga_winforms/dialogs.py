@@ -103,7 +103,10 @@ class StackTraceDialog(BaseDialog, Scalable):
         super().__init__(interface, on_result)
 
         self.native = WinForms.Form()
+
+        # Required for scaling on DPI changes
         self.interface.window._impl.current_stack_trace_dialog_impl = self
+
         self.native.MinimizeBox = False
         self.native.FormBorderStyle = self.native.FormBorderStyle.FixedSingle
         self.native.MaximizeBox = False
@@ -168,11 +171,11 @@ class StackTraceDialog(BaseDialog, Scalable):
 
             self.native.Controls.Add(accept)
 
+        # Required for scaling
         self.original_control_fonts = dict()
         self.original_control_bounds = dict()
         for control in self.native.Controls:
             self.original_control_fonts[control] = control.Font
-
             if isinstance(control, WinForms.Button):
                 self.original_control_bounds[control] = Rectangle(
                     self.scale_out(control.Bounds.X),
@@ -203,6 +206,7 @@ class StackTraceDialog(BaseDialog, Scalable):
     def set_result(self, result):
         super().set_result(result)
         self.native.Close()
+        # Remove the attribute when the dialog closes
         del self.interface.window._impl.current_stack_trace_dialog_impl
 
     def winforms_Click_quit(self, sender, event):

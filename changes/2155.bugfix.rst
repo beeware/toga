@@ -1,1 +1,1 @@
-Bugs affecting DPI scaling on Windows were fixed.
+DPI scaling on Windows was improved and related bugs were fixed.
