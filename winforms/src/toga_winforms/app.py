@@ -24,6 +24,8 @@ from .window import Window
 
 class MainWindow(Window):
     def update_menubar_font_scale(self):
+        # Directly using self.native.MainMenuStrip.Font instead of
+        # original_menubar_font makes the menubar font to not scale down.
         self.native.MainMenuStrip.Font = WinFont(
             self.original_menubar_font.FontFamily,
             self.scale_font(self.original_menubar_font.Size),
@@ -357,6 +359,8 @@ class App(Scalable):
             for widget in window.widgets:
                 widget.refresh()
             window._impl.resize_content()
+            if hasattr(window._impl, "current_stack_trace_dialog_impl"):
+                window._impl.current_stack_trace_dialog_impl.resize_content()
 
 
 class DocumentApp(App):
