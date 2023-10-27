@@ -90,4 +90,4 @@ class Testbed(toga.App):
 
 
 def main():
-    return Testbed(app_name="testbed")
+    return Testbed(distribution_name="testbed")

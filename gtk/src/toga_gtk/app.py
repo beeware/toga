@@ -239,11 +239,8 @@ class App:
         window._impl.native.present()
 
     def enter_full_screen(self, windows):
-        for window in self.interface.windows:
-            if window in windows:
-                window._impl.set_full_screen(True)
-            else:
-                window._impl.set_full_screen(False)
+        for window in windows:
+            window._impl.set_full_screen(True)
 
     def exit_full_screen(self, windows):
         for window in windows:

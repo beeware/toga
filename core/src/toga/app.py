@@ -561,9 +561,8 @@ class App:
             those windows will not be visible. If no windows are specified, the app will
             exit full screen mode.
         """
-        if not windows:
-            self.exit_full_screen()
-        else:
+        self.exit_full_screen()
+        if windows:
             self._impl.enter_full_screen(windows)
             self._full_screen_windows = windows
 

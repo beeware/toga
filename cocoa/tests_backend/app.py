@@ -99,7 +99,7 @@ class AppProbe(BaseProbe):
     def activate_menu_about(self):
         self._activate_menu_item(["*", "About Toga Testbed"])
 
-    def close_about_dialog(self):
+    async def close_about_dialog(self):
         about_dialog = self.app._impl.native.keyWindow
         if isinstance(about_dialog, NSPanel):
             about_dialog.close()

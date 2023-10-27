@@ -436,11 +436,6 @@ class App:
         window._impl.native.makeKeyAndOrderFront(window._impl.native)
 
     def enter_full_screen(self, windows):
-        # If we're already in full screen mode, exit so that
-        # we can re-assign windows to screens.
-        if self.interface.is_full_screen:
-            self.interface.exit_full_screen()
-
         opts = NSMutableDictionary.alloc().init()
         opts.setObject(
             NSNumber.numberWithBool(True), forKey="NSFullScreenModeAllScreens"

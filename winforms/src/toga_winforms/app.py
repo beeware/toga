@@ -115,6 +115,11 @@ class App:
         self.interface.main_window._impl.set_app(self)
 
     def create_menus(self):
+        if self.interface.main_window is None:  # pragma: no branch
+            # The startup method may create commands before creating the window, so
+            # we'll call create_menus again after it returns.
+            return
+
         window = self.interface.main_window._impl
         menubar = window.native.MainMenuStrip
         if menubar:
@@ -127,10 +132,10 @@ class App:
             window.native.MainMenuStrip = menubar
             menubar.SendToBack()  # In a dock, "back" means "top".
 
-        self._menu_items = {}
+        # The File menu should come before all user-created menus.
         self._menu_groups = {}
+        toga.Group.FILE.order = -1
 
-        toga.Group.FILE.order = 0
         submenu = None
         for cmd in self.interface.commands:
             if cmd == GROUP_BREAK:
@@ -139,21 +144,14 @@ class App:
                 submenu.DropDownItems.Add("-")
             else:
                 submenu = self._submenu(cmd.group, menubar)
-
                 item = WinForms.ToolStripMenuItem(cmd.text)
-
                 if cmd.action:
                     item.Click += WeakrefCallable(cmd._impl.winforms_handler)
+                if cmd.shortcut is not None:
+                    item.ShortcutKeys = toga_to_winforms_key(cmd.shortcut)
                 item.Enabled = cmd.enabled
 
-                if cmd.shortcut is not None:
-                    shortcut_keys = toga_to_winforms_key(cmd.shortcut)
-                    item.ShortcutKeys = shortcut_keys
-                    item.ShowShortcutKeys = True
-
                 cmd._impl.native.append(item)
-
-                self._menu_items[item] = cmd
                 submenu.DropDownItems.Add(item)
 
         window.resize_content()
@@ -180,20 +178,26 @@ class App:
 
     def _create_app_commands(self):
         self.interface.commands.add(
+            # About should be the last item in the Help menu, in a section on its own.
             toga.Command(
                 lambda _: self.interface.about(),
                 f"About {self.interface.formal_name}",
                 group=toga.Group.HELP,
+                section=sys.maxsize,
             ),
+            #
             toga.Command(None, "Preferences", group=toga.Group.FILE),
-            # Quit should always be the last item, in a section on its own
+            #
+            # On Windows, the Exit command doesn't usually contain the app name. It
+            # should be the last item in the File menu, in a section on its own.
             toga.Command(
                 lambda _: self.interface.on_exit(None),
-                "Exit",  # A Windows exit command doesn't usually contain the app name.
+                "Exit",
                 shortcut=Key.MOD_1 + "q",
                 group=toga.Group.FILE,
                 section=sys.maxsize,
             ),
+            #
             toga.Command(
                 lambda _: self.interface.visit_homepage(),
                 "Visit homepage",
@@ -310,7 +314,7 @@ class App:
     def get_current_window(self):
         for window in self.interface.windows:
             if WinForms.Form.ActiveForm == window._impl.native:
-                return window._impl.native
+                return window._impl
 
     def set_current_window(self, window):
         window._impl.native.Activate()

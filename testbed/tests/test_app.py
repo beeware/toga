@@ -303,7 +303,7 @@ else:
         await app_probe.redraw("Cursor is visible")
         assert app_probe.is_cursor_visible
 
-        # Hiding again can't make it more hidden
+        # Showing again can't make it more visible
         app.show_cursor()
         await app_probe.redraw("Cursor is still visible")
         assert app_probe.is_cursor_visible
@@ -345,8 +345,12 @@ else:
 
 async def test_main_window_toolbar(app, main_window, main_window_probe):
     """A toolbar can be added to a main window"""
-    # Add some items to the main window toolbar
-    main_window.toolbar.add(app.cmd1, app.cmd2, app.cmd3, app.cmd4)
+    # Add some items to show the toolbar
+    assert not main_window_probe.has_toolbar()
+    main_window.toolbar.add(app.cmd1, app.cmd2)
+
+    # Add some more items to an existing toolbar
+    main_window.toolbar.add(app.cmd3, app.cmd4)
 
     await main_window_probe.redraw("Main window has a toolbar")
     assert main_window_probe.has_toolbar()
@@ -415,6 +419,11 @@ async def test_main_window_toolbar(app, main_window, main_window_probe):
     await main_window_probe.redraw("Main window has no toolbar")
     assert not main_window_probe.has_toolbar()
 
+    # Removing it again should have no effect
+    main_window.toolbar.clear()
+    await main_window_probe.redraw("Main window has no toolbar")
+    assert not main_window_probe.has_toolbar()
+
 
 async def test_system_menus(app_probe):
     """System-specific menus behave as expected"""
@@ -428,7 +437,7 @@ async def test_menu_about(monkeypatch, app, app_probe):
     # When in CI, Cocoa needs a little time to guarantee the dialog is displayed.
     await app_probe.redraw("About dialog shown", delay=0.1)
 
-    app_probe.close_about_dialog()
+    await app_probe.close_about_dialog()
     await app_probe.redraw("About dialog destroyed")
 
     # Make the app definition minimal to verify the dialog still displays
@@ -441,7 +450,7 @@ async def test_menu_about(monkeypatch, app, app_probe):
     # When in CI, Cocoa needs a little time to guarantee the dialog is displayed.
     await app_probe.redraw("About dialog with no details shown", delay=0.1)
 
-    app_probe.close_about_dialog()
+    await app_probe.close_about_dialog()
     await app_probe.redraw("About dialog with no details destroyed")
 
 

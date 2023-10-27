@@ -91,7 +91,7 @@ class AppProbe(BaseProbe):
     def activate_menu_about(self):
         self._activate_menu_item(["Help", "About Toga Testbed"])
 
-    def close_about_dialog(self):
+    async def close_about_dialog(self):
         self.app._impl._close_about(self.app._impl.native_about_dialog)
 
     def activate_menu_visit_homepage(self):
