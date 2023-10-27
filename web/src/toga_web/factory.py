@@ -11,6 +11,7 @@ from .paths import Paths
 from .widgets.activityindicator import ActivityIndicator
 from .widgets.box import Box
 from .widgets.button import Button
+from .widgets.dateinput import DateInput
 from .widgets.divider import Divider
 
 # from .widgets.canvas import Canvas
@@ -59,6 +60,7 @@ __all__ = [
     "Box",
     "Button",
     # 'Canvas',
+    "DateInput",
     "Divider",
     # 'DetailedList',
     # 'ImageView',
