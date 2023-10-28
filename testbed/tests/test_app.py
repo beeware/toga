@@ -311,11 +311,14 @@ else:
 
     async def test_current_window(app, app_probe, main_window):
         """The current window can be retrieved."""
-        assert app.current_window == main_window
-        main_window.hide()
-        assert app.current_window is None
-        main_window.show()
-        assert app.current_window == main_window
+        try:
+            assert app.current_window == main_window
+            main_window.hide()
+            assert app.current_window is None
+            main_window.show()
+            assert app.current_window == main_window
+        finally:
+            main_window.show()
 
         try:
             window1 = toga.Window("Test Window 1", position=(150, 150), size=(200, 200))

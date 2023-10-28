@@ -1,5 +1,4 @@
 import ctypes
-import os
 from pathlib import Path
 from time import sleep
 
@@ -54,12 +53,6 @@ class AppProbe(BaseProbe):
             Path.home() / "AppData" / "Local" / "Tiberius Yak" / "Toga Testbed" / "Logs"
         )
 
-    # When no mouse is connected, the cursor is hidden by default
-    # (https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-showcursor).
-    if "CI" in os.environ:
-        print("FIXME show cursor in CI")
-        Cursor.Show()
-
     @property
     def is_cursor_visible(self):
         # Despite what the documentation says, Cursor.Current never returns null in
@@ -97,8 +90,12 @@ class AppProbe(BaseProbe):
         info.cbSize = ctypes.sizeof(info)
         if not GetCursorInfo(ctypes.byref(info)):
             raise RuntimeError("GetCursorInfo failed")
+
         print(f"FIXME {info.flags=}")
-        return info.flags == 1
+        # Local testing returns 1 ("the cursor is showing"). The GitHub Actions runner
+        # returns 2 ("the system is not drawing the cursor because the user is providing
+        # input through touch or pen instead of the mouse").
+        return info.flags in (1, 2)
 
     def is_full_screen(self, window):
         return WindowProbe(self.app, window).is_full_screen
