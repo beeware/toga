@@ -289,6 +289,7 @@ else:
 
     async def test_show_hide_cursor(app, app_probe):
         """The app cursor can be hidden and shown"""
+        assert app_probe.is_cursor_visible
         app.hide_cursor()
         await app_probe.redraw("Cursor is hidden")
         assert not app_probe.is_cursor_visible
@@ -308,8 +309,14 @@ else:
         await app_probe.redraw("Cursor is still visible")
         assert app_probe.is_cursor_visible
 
-    async def test_current_window(app, app_probe):
+    async def test_current_window(app, app_probe, main_window):
         """The current window can be retrieved."""
+        assert app.current_window == main_window
+        main_window.hide()
+        assert app.current_window is None
+        main_window.show()
+        assert app.current_window == main_window
+
         try:
             window1 = toga.Window("Test Window 1", position=(150, 150), size=(200, 200))
             window1.content = toga.Box(style=Pack(background_color=REBECCAPURPLE))

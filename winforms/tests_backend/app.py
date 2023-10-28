@@ -1,4 +1,5 @@
 import ctypes
+import os
 from pathlib import Path
 from time import sleep
 
@@ -52,6 +53,11 @@ class AppProbe(BaseProbe):
         return (
             Path.home() / "AppData" / "Local" / "Tiberius Yak" / "Toga Testbed" / "Logs"
         )
+
+    # When no mouse is connected, the cursor is hidden by default
+    # (https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-showcursor).
+    if "CI" in os.environ:
+        Cursor.Show()
 
     @property
     def is_cursor_visible(self):

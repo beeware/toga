@@ -24,7 +24,7 @@ class MainWindow(Window):
     def winforms_FormClosing(self, sender, event):
         # Differentiate between the handling that occurs when the user
         # requests the app to exit, and the actual application exiting.
-        if not self.interface.app._impl._is_exiting:
+        if not self.interface.app._impl._is_exiting:  # pragma: no branch
             # If there's an event handler, process it. The decision to
             # actually exit the app will be processed in the on_exit handler.
             # If there's no exit handler, assume the close/exit can proceed.
@@ -71,7 +71,7 @@ class App:
             # SetProcessDpiAwareness(True)
             if (win_version.Major == 6 and win_version.Minor == 3) or (
                 win_version.Major == 10 and win_version.Build < 15063
-            ):
+            ):  # pragma: no cover
                 windll.shcore.SetProcessDpiAwareness(True)
                 print(
                     "WARNING: Your Windows version doesn't support DPI-independent rendering.  "
@@ -82,7 +82,7 @@ class App:
             elif win_version.Major == 10 and win_version.Build >= 15063:
                 windll.user32.SetProcessDpiAwarenessContext(-2)
             # Any other version of windows should use SetProcessDPIAware()
-            else:
+            else:  # pragma: no cover
                 windll.user32.SetProcessDPIAware()
 
         self.native.EnableVisualStyles()
@@ -95,14 +95,14 @@ class App:
         # encouraged.
         try:
             ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls12
-        except AttributeError:
+        except AttributeError:  # pragma: no cover
             print(
                 "WARNING: Your Windows .NET install does not support TLS1.2. "
                 "You may experience difficulties accessing some web server content."
             )
         try:
             ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls13
-        except AttributeError:
+        except AttributeError:  # pragma: no cover
             print(
                 "WARNING: Your Windows .NET install does not support TLS1.3. "
                 "You may experience difficulties accessing some web server content."
@@ -145,8 +145,7 @@ class App:
             else:
                 submenu = self._submenu(cmd.group, menubar)
                 item = WinForms.ToolStripMenuItem(cmd.text)
-                if cmd.action:
-                    item.Click += WeakrefCallable(cmd._impl.winforms_handler)
+                item.Click += WeakrefCallable(cmd._impl.winforms_handler)
                 if cmd.shortcut is not None:
                     item.ShortcutKeys = toga_to_winforms_key(cmd.shortcut)
                 item.Enabled = cmd.enabled
@@ -206,13 +205,7 @@ class App:
             ),
         )
 
-    def open_document(self, fileURL):
-        """Add a new document to this app."""
-        print(
-            "STUB: If you want to handle opening documents, implement App.open_document(fileURL)"
-        )
-
-    def winforms_thread_exception(self, sender, winforms_exc):
+    def winforms_thread_exception(self, sender, winforms_exc):  # pragma: no cover
         # The PythonException returned by Winforms doesn't give us
         # easy access to the underlying Python stacktrace; so we
         # reconstruct it from the string message.
@@ -239,13 +232,13 @@ class App:
         print(py_exc.Message)
 
     @classmethod
-    def print_stack_trace(cls, stack_trace_line):
+    def print_stack_trace(cls, stack_trace_line):  # pragma: no cover
         for level in stack_trace_line.split("', '"):
             for line in level.split("\\n"):
                 if line:
                     print(line)
 
-    def run_app(self):
+    def run_app(self):  # pragma: no cover
         # Enable coverage tracing on this non-Python-created thread
         # (https://github.com/nedbat/coveragepy/issues/686).
         if threading._trace_hook:
@@ -278,20 +271,17 @@ class App:
         # If it's non-None, raise it, as it indicates the underlying
         # app thread had a problem; this is effectibely a re-raise over
         # a thread boundary.
-        if self._exception:
+        if self._exception:  # pragma: no cover
             raise self._exception
 
     def show_about_dialog(self):
         message_parts = []
-        if self.interface.formal_name is not None:
-            if self.interface.version is not None:
-                message_parts.append(
-                    f"{self.interface.formal_name} v{self.interface.version}"
-                )
-            else:
-                message_parts.append(self.interface.formal_name)
-        elif self.interface.version is not None:
-            message_parts.append(f"v{self.interface.version}")
+        if self.interface.version is not None:
+            message_parts.append(
+                f"{self.interface.formal_name} v{self.interface.version}"
+            )
+        else:
+            message_parts.append(self.interface.formal_name)
 
         if self.interface.author is not None:
             message_parts.append(f"Author: {self.interface.author}")
@@ -304,7 +294,7 @@ class App:
     def beep(self):
         SystemSounds.Beep.Play()
 
-    def exit(self):
+    def exit(self):  # pragma: no cover
         self._is_exiting = True
         self.native.Exit()
 
@@ -315,6 +305,7 @@ class App:
         for window in self.interface.windows:
             if WinForms.Form.ActiveForm == window._impl.native:
                 return window._impl
+        return None
 
     def set_current_window(self, window):
         window._impl.native.Activate()
@@ -338,7 +329,7 @@ class App:
         self._cursor_visible = False
 
 
-class DocumentApp(App):
+class DocumentApp(App):  # pragma: no cover
     def _create_app_commands(self):
         super()._create_app_commands()
         self.interface.commands.add(
@@ -350,11 +341,3 @@ class DocumentApp(App):
                 section=0,
             ),
         )
-
-    def open_document(self, fileURL):
-        """Open a new document in this app.
-
-        Args:
-            fileURL (str): The URL/path to the file to add as a document.
-        """
-        self.interface.factory.not_implemented("DocumentApp.open_document()")
