@@ -57,6 +57,7 @@ class AppProbe(BaseProbe):
     # When no mouse is connected, the cursor is hidden by default
     # (https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-showcursor).
     if "CI" in os.environ:
+        print("FIXME show cursor in CI")
         Cursor.Show()
 
     @property
@@ -96,6 +97,7 @@ class AppProbe(BaseProbe):
         info.cbSize = ctypes.sizeof(info)
         if not GetCursorInfo(ctypes.byref(info)):
             raise RuntimeError("GetCursorInfo failed")
+        print(f"FIXME {info.flags=}")
         return info.flags == 1
 
     def is_full_screen(self, window):
