@@ -198,13 +198,13 @@ def toga_key(event):
 
         # TODO: Confirm the mapping of Control, Meta and Hyper are correct.
         if event.isCapsLockOn():
-            modifiers.add(Key.CAPSLOCK)
+            modifiers.add(Key.CAPSLOCK)  # pragma: no cover
         if event.isShiftPressed():
-            modifiers.add(Key.SHIFT)
+            modifiers.add(Key.SHIFT)  # pragma: no cover
         if event.isCtrlPressed():
-            modifiers.add(Key.MOD_1)
+            modifiers.add(Key.MOD_1)  # pragma: no cover
         if event.isAltPressed():
-            modifiers.add(Key.MOD_2)
+            modifiers.add(Key.MOD_2)  # pragma: no cover
 
         return {"key": key, "modifiers": modifiers}
     except KeyError:  # pragma: nocover

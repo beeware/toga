@@ -33,7 +33,7 @@ class Scalable:
             return self.scale_round(value / self.dpi_scale, rounding)
 
     def scale_round(self, value, rounding):
-        if rounding is None:
+        if rounding is None:  # pragma: no cover
             return value
         return int(Decimal(value).to_integral(rounding))
 

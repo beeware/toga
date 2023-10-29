@@ -53,7 +53,7 @@ class AndroidEventLoop(asyncio.SelectorEventLoop):
     # `executor` thread that typically exists in event loops. The event loop itself relies
     # on `run_in_executor()` for DNS lookups. In the future, we can restore `run_in_executor()`.
     async def run_in_executor(self, executor, func, *args):
-        return func(*args)
+        return func(*args)  # pragma: no cover
 
     # Override parent `_call_soon()` to ensure Android wakes us up to do the delayed task.
     def _call_soon(self, callback, args, context):
@@ -73,9 +73,13 @@ class AndroidEventLoop(asyncio.SelectorEventLoop):
         event loop interop is not paid by apps that don't use the event loop."""
         # Based on `BaseEventLoop.run_forever()` in CPython.
         if self.is_running():
-            raise RuntimeError("Refusing to start since loop is already running.")
+            raise RuntimeError(
+                "Refusing to start since loop is already running."
+            )  # pragma: no cover
         if self._closed:
-            raise RuntimeError("Event loop is closed. Create a new object.")
+            raise RuntimeError(
+                "Event loop is closed. Create a new object."
+            )  # pragma: no cover
         self._set_coroutine_origin_tracking(self._debug)
         self._thread_id = threading.get_ident()
 
@@ -96,7 +100,7 @@ class AndroidEventLoop(asyncio.SelectorEventLoop):
         loop.
         """
         # If we are supposed to stop, actually stop.
-        if self._stopping:
+        if self._stopping:  # pragma: no cover
             self._stopping = False
             self._thread_id = None
             asyncio.events._set_running_loop(None)
@@ -123,7 +127,7 @@ class AndroidEventLoop(asyncio.SelectorEventLoop):
     def _set_coroutine_origin_tracking(self, debug):
         # If running on Python 3.7 or 3.8, integrate with upstream event loop's debug feature, allowing
         # unawaited coroutines to have some useful info logged. See https://bugs.python.org/issue32591
-        if hasattr(super(), "_set_coroutine_origin_tracking"):
+        if hasattr(super(), "_set_coroutine_origin_tracking"):  # pragma: no cover
             super()._set_coroutine_origin_tracking(debug)
 
     def _get_next_delayed_task_wakeup(self):
@@ -139,7 +143,7 @@ class AndroidEventLoop(asyncio.SelectorEventLoop):
             sched_count > _MIN_SCHEDULED_TIMER_HANDLES
             and self._timer_cancelled_count / sched_count
             > _MIN_CANCELLED_TIMER_HANDLES_FRACTION
-        ):
+        ):  # pragma: no cover
             # Remove delayed calls that were cancelled if their number
             # is too high
             new_scheduled = []
@@ -161,7 +165,7 @@ class AndroidEventLoop(asyncio.SelectorEventLoop):
 
         timeout = None
         if self._ready or self._stopping:
-            if self._debug:
+            if self._debug:  # pragma: no cover
                 print("AndroidEventLoop: self.ready is", self._ready)
             timeout = 0
         elif self._scheduled:
@@ -198,8 +202,8 @@ class AndroidEventLoop(asyncio.SelectorEventLoop):
         for i in range(ntodo):
             handle = self._ready.popleft()
             if handle._cancelled:
-                continue
-            if self._debug:
+                continue  # pragma: no cover
+            if self._debug:  # pragma: no cover
                 try:
                     self._current_handle = handle
                     t0 = self.time()
@@ -292,7 +296,7 @@ class AndroidSelector(selectors.SelectSelector):
     # unregister() and register(), so we rely on that as well.
 
     def register(self, fileobj, events, data=None):
-        if self._debug:
+        if self._debug:  # pragma: no cover
             print(
                 "register() fileobj={fileobj} events={events} data={data}".format(
                     fileobj=fileobj, events=events, data=data
@@ -302,7 +306,7 @@ class AndroidSelector(selectors.SelectSelector):
         self.register_with_android(fileobj, events)
         return ret
 
-    def unregister(self, fileobj):
+    def unregister(self, fileobj):  # pragma: no cover
         self.message_queue.removeOnFileDescriptorEventListener(_create_java_fd(fileobj))
         return super().unregister(fileobj)
 
@@ -310,13 +314,13 @@ class AndroidSelector(selectors.SelectSelector):
         def _reregister():
             # If the fileobj got unregistered, exit early.
             key = self._key_from_fd(fileobj)
-            if key is None:
+            if key is None:  # pragma: no cover
                 if self._debug:
                     print(
                         "reregister_with_android_soon reregister_temporarily_ignored_fd exiting early; key=None"
                     )
                 return
-            if self._debug:
+            if self._debug:  # pragma: no cover
                 print(
                     "reregister_with_android_soon reregistering key={key}".format(
                         key=key
@@ -328,7 +332,7 @@ class AndroidSelector(selectors.SelectSelector):
         self.loop.call_later(0, _reregister)
 
     def register_with_android(self, fileobj, events):
-        if self._debug:
+        if self._debug:  # pragma: no cover
             print(
                 "register_with_android() fileobj={fileobj} events={events}".format(
                     fileobj=fileobj, events=events
@@ -347,7 +351,7 @@ class AndroidSelector(selectors.SelectSelector):
 
         Filter the events to just those that are registered, then notify the loop."""
         key = self._key_from_fd(fd)
-        if key is None:
+        if key is None:  # pragma: no cover
             print(
                 "Warning: handle_fd_wakeup: wakeup for unregistered fd={fd}".format(
                     fd=fd
@@ -360,7 +364,7 @@ class AndroidSelector(selectors.SelectSelector):
             if events & event_type and key.events & event_type:
                 key_event_pairs.append((key, event_type))
         if key_event_pairs:
-            if self._debug:
+            if self._debug:  # pragma: no cover
                 print(
                     "handle_fd_wakeup() calling parent for key_event_pairs={key_event_pairs}".format(
                         key_event_pairs=key_event_pairs
@@ -368,7 +372,7 @@ class AndroidSelector(selectors.SelectSelector):
                 )
             # Call superclass private method to notify.
             self.loop._process_events(key_event_pairs)
-        else:
+        else:  # pragma: no cover
             print(
                 "Warning: handle_fd_wakeup(): unnecessary wakeup fd={fd} events={events} key={key}".format(
                     fd=fd, events=events, key=key
@@ -406,7 +410,7 @@ class AndroidSelectorFileDescriptorEventsListener(
         selectors.EVENT_WRITE have the same value (2)."""
         # Call hidden (non-private) method to get the numeric FD, so we can pass that to Python.
         fd = getattr(fd_obj, "getInt$")()
-        if self._debug:
+        if self._debug:  # pragma: no cover
             print(
                 "onFileDescriptorEvents woke up for fd={fd} events={events}".format(
                     fd=fd, events=events

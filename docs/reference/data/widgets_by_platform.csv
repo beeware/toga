@@ -1,6 +1,6 @@
 Component,Type,Component,Description,macOS,GTK,Windows,iOS,Android,Web,Terminal
-Application,Core Component,:class:`~toga.App`,The application itself,|b|,|b|,|b|,|b|,|b|,|b|,|b|
-DocumentApp,Core Component,:class:`~toga.DocumentApp`,An application that manages documents.,|b|,|b|,|b|,|b|,|b|,|b|,
+Application,Core Component,:class:`~toga.App`,The application itself,|y|,|y|,|y|,|y|,|y|,|b|,|b|
+DocumentApp,Core Component,:class:`~toga.DocumentApp`,An application that manages documents.,|b|,|b|,,,,,
 Window,Core Component,:class:`~toga.Window`,An operating system-managed container of widgets.,|y|,|y|,|y|,|y|,|y|,|b|,|b|
 MainWindow,Core Component,:class:`~toga.MainWindow`,The main window of the application.,|y|,|y|,|y|,|y|,|y|,|b|,|b|
 ActivityIndicator,General Widget,:class:`~toga.ActivityIndicator`,A spinning activity animation,|y|,|y|,,,,|b|,
@@ -30,7 +30,6 @@ SplitContainer,Layout Widget,:class:`~toga.SplitContainer`,A container that divi
 OptionContainer,Layout Widget,:class:`~toga.OptionContainer`,A container that can display multiple labeled tabs of content,|y|,|y|,|y|,,,,
 App Paths,Resource,:class:`~toga.paths.Paths`,A mechanism for obtaining platform-appropriate filesystem locations for an application.,|y|,|y|,|y|,|y|,|y|,,|b|
 Font,Resource,:class:`~toga.Font`,A text font,|y|,|y|,|y|,|y|,|y|,,
-Command,Resource,:class:`~toga.Command`,Command,|b|,|b|,|b|,,|b|,,
-Group,Resource,:class:`~toga.Group`,Command group,|b|,|b|,|b|,|b|,|b|,,
+Command,Resource,:class:`~toga.Command`,Command,|y|,|y|,|y|,,|y|,,
 Icon,Resource,:class:`~toga.Icon`,"A small, square image, used to provide easily identifiable visual context to a widget.",|y|,|y|,|y|,|y|,|y|,,|b|
 Image,Resource,:class:`~toga.Image`,An image,|y|,|y|,|y|,|y|,|y|,,
