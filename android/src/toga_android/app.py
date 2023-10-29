@@ -6,7 +6,6 @@ from android.view import Menu, MenuItem
 from java import dynamic_proxy
 from org.beeware.android import IPythonApp, MainActivity
 
-import toga
 from toga.command import GROUP_BREAK, SECTION_BREAK, Group
 
 from .libs import events
@@ -78,15 +77,13 @@ class TogaApp(dynamic_proxy(IPythonApp)):
         pass
 
     def onOptionsItemSelected(self, menuitem):
-        consumed = False
-        try:
-            cmd = self.menuitem_mapping[menuitem.getItemId()]
-            consumed = True
-            if cmd.action is not None:
-                cmd.action(menuitem)
-        except KeyError:
-            print("menu item id not found in menuitem_mapping dictionary!")
-        return consumed
+        itemid = menuitem.getItemId()
+        if itemid == Menu.NONE:
+            # This method also fires when opening submenus
+            return False
+        else:
+            self.menuitem_mapping[itemid].action(None)
+            return True
 
     def onPrepareOptionsMenu(self, menu):
         menu.clear()
@@ -98,46 +95,34 @@ class TogaApp(dynamic_proxy(IPythonApp)):
         for cmd in self._impl.interface.commands:
             if cmd == SECTION_BREAK or cmd == GROUP_BREAK:
                 continue
-            if cmd in self._impl.interface.main_window.toolbar:
-                continue  # do not show toolbar commands in the option menu (except when overflowing)
 
-            grouppath = cmd.group.path
-            if grouppath[0] != Group.COMMANDS:
-                # only the Commands group (and its subgroups) are supported
-                # other groups should eventually go into the navigation drawer
-                continue
             if cmd.group.key in menulist:
                 menugroup = menulist[cmd.group.key]
             else:
                 # create all missing submenus
                 parentmenu = menu
-                for group in grouppath:
-                    groupkey = group.key
+                groupkey = ()
+                for section, order, text in cmd.group.key:
+                    groupkey += ((section, order, text),)
                     if groupkey in menulist:
                         menugroup = menulist[groupkey]
                     else:
-                        if group.text == toga.Group.COMMANDS.text:
+                        if len(groupkey) == 1 and text == Group.COMMANDS.text:
+                            # Add this group directly to the top-level menu
                             menulist[groupkey] = menu
                             menugroup = menu
                         else:
-                            itemid += 1
-                            order = Menu.NONE if group.order is None else group.order
-                            menugroup = parentmenu.addSubMenu(
-                                Menu.NONE, itemid, order, group.text
-                            )  # groupId, itemId, order, title
+                            # Add all other groups as submenus
+                            menugroup = parentmenu.addSubMenu(text)
                             menulist[groupkey] = menugroup
                     parentmenu = menugroup
+
             # create menu item
             itemid += 1
-            order = Menu.NONE if cmd.order is None else cmd.order
-            menuitem = menugroup.add(
-                Menu.NONE, itemid, order, cmd.text
-            )  # groupId, itemId, order, title
+            menuitem = menugroup.add(Menu.NONE, itemid, Menu.NONE, cmd.text)
             menuitem.setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_NEVER)
             menuitem.setEnabled(cmd.enabled)
-            self.menuitem_mapping[
-                itemid
-            ] = cmd  # store itemid for use in onOptionsItemSelected
+            self.menuitem_mapping[itemid] = cmd
 
         # create toolbar actions
         if self._impl.interface.main_window:
@@ -145,13 +130,10 @@ class TogaApp(dynamic_proxy(IPythonApp)):
                 if cmd == SECTION_BREAK or cmd == GROUP_BREAK:
                     continue
                 itemid += 1
-                order = Menu.NONE if cmd.order is None else cmd.order
-                menuitem = menu.add(
-                    Menu.NONE, itemid, order, cmd.text
-                )  # groupId, itemId, order, title
-                menuitem.setShowAsActionFlags(
-                    MenuItem.SHOW_AS_ACTION_IF_ROOM
-                )  # toolbar button / item in options menu on overflow
+                menuitem = menu.add(Menu.NONE, itemid, Menu.NONE, cmd.text)
+                # SHOW_AS_ACTION_IF_ROOM is too conservative, showing only 2 items on
+                # a normal-size screen in portrait.
+                menuitem.setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_ALWAYS)
                 menuitem.setEnabled(cmd.enabled)
                 if cmd.icon:
                     icon = Drawable.createFromPath(str(cmd.icon._impl.path))
@@ -159,10 +141,9 @@ class TogaApp(dynamic_proxy(IPythonApp)):
                         menuitem.setIcon(icon)
                     else:
                         print("Could not create icon: " + str(cmd.icon._impl.path))
-                self.menuitem_mapping[
-                    itemid
-                ] = cmd  # store itemid for use in onOptionsItemSelected
+                self.menuitem_mapping[itemid] = cmd
 
+        # Display the menu.
         return True
 
 
@@ -185,8 +166,8 @@ class App:
         # Call user code to populate the main window
         self.interface._startup()
 
-    def open_document(self, fileURL):
-        print("Can't open document %s (yet)" % fileURL)
+    def create_menus(self):
+        self.native.invalidateOptionsMenu()  # Triggers onPrepareOptionsMenu
 
     def main_loop(self):
         # In order to support user asyncio code, start the Python/Android cooperative event loop.
