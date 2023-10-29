@@ -313,8 +313,12 @@ else:
         """The current window can be retrieved."""
         try:
             assert app.current_window == main_window
+
+            # When all windows are hidden, WinForms and Cocoa return None, while GTK
+            # returns the last active window.
             main_window.hide()
-            assert app.current_window is None
+            assert app.current_window in [None, main_window]
+
             main_window.show()
             assert app.current_window == main_window
         finally:

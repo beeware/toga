@@ -91,11 +91,11 @@ class AppProbe(BaseProbe):
         if not GetCursorInfo(ctypes.byref(info)):
             raise RuntimeError("GetCursorInfo failed")
 
-        print(f"FIXME {info.flags=}")
-        # Local testing returns 1 ("the cursor is showing"). The GitHub Actions runner
+        print(f"FIXME {info.flags=}, {info.hCursor=}")
+        # `flags` is 0 or 1 in local testing, but the GitHub Actions runner always
         # returns 2 ("the system is not drawing the cursor because the user is providing
         # input through touch or pen instead of the mouse").
-        return info.flags in (1, 2)
+        return info.hCursor is not None
 
     def is_full_screen(self, window):
         return WindowProbe(self.app, window).is_full_screen
