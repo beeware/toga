@@ -66,20 +66,12 @@ class App:
         # Windows Versioning Check Sources : https://www.lifewire.com/windows-version-numbers-2625171
         # and https://docs.microsoft.com/en-us/windows/release-information/
         win_version = Environment.OSVersion.Version
-
-        # FIXME
-        from warnings import warn
-
-        warn(str((win_version.Major, win_version.Minor, win_version.Build)))
-
         if win_version.Major >= 6:  # Checks for Windows Vista or later
             # Represents Windows 8.1 up to Windows 10 before Build 1703 which should use
             # SetProcessDpiAwareness(True)
             if (win_version.Major == 6 and win_version.Minor == 3) or (
                 win_version.Major == 10 and win_version.Build < 15063
             ):  # pragma: no cover
-                warn("FIXME 1")
-
                 windll.shcore.SetProcessDpiAwareness(True)
                 print(
                     "WARNING: Your Windows version doesn't support DPI-independent rendering.  "
@@ -88,12 +80,9 @@ class App:
             # Represents Windows 10 Build 1703 and beyond which should use
             # SetProcessDpiAwarenessContext(-2)
             elif win_version.Major == 10 and win_version.Build >= 15063:
-                warn("FIXME 2")
-
                 windll.user32.SetProcessDpiAwarenessContext(-2)
             # Any other version of windows should use SetProcessDPIAware()
             else:  # pragma: no cover
-                warn("FIXME 3")
                 windll.user32.SetProcessDPIAware()
 
         self.native.EnableVisualStyles()
