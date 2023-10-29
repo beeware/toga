@@ -1,7 +1,7 @@
 import asyncio
 import sys
 
-from android.graphics.drawable import Drawable
+from android.graphics.drawable import BitmapDrawable
 from android.media import RingtoneManager
 from android.view import Menu, MenuItem
 from java import dynamic_proxy
@@ -41,18 +41,19 @@ class TogaApp(dynamic_proxy(IPythonApp)):
         print("Toga app: onResume")
 
     def onPause(self):
-        print("Toga app: onPause")
+        print("Toga app: onPause")  # pragma: no cover
 
     def onStop(self):
-        print("Toga app: onStop")
+        print("Toga app: onStop")  # pragma: no cover
 
     def onDestroy(self):
-        print("Toga app: onDestroy")
+        print("Toga app: onDestroy")  # pragma: no cover
 
     def onRestart(self):
-        print("Toga app: onRestart")
+        print("Toga app: onRestart")  # pragma: no cover
 
-    def onActivityResult(self, requestCode, resultCode, resultData):
+    # TODO #1798: document and test this somehow
+    def onActivityResult(self, requestCode, resultCode, resultData):  # pragma: no cover
         """Callback method, called from MainActivity when an Intent ends.
 
         :param int requestCode: The integer request code originally supplied to startActivityForResult(),
@@ -75,7 +76,7 @@ class TogaApp(dynamic_proxy(IPythonApp)):
             print("No intent matching request code {requestCode}")
 
     def onConfigurationChanged(self, new_config):
-        pass
+        pass  # pragma: no cover
 
     def onOptionsItemSelected(self, menuitem):
         itemid = menuitem.getItemId()
@@ -130,7 +131,7 @@ class TogaApp(dynamic_proxy(IPythonApp)):
             itemid += 1
 
         # create toolbar actions
-        if self._impl.interface.main_window:
+        if self._impl.interface.main_window:  # pragma: no branch
             for cmd in self._impl.interface.main_window.toolbar:
                 if cmd == SECTION_BREAK or cmd == GROUP_BREAK:
                     groupid += 1
@@ -142,11 +143,11 @@ class TogaApp(dynamic_proxy(IPythonApp)):
                 menuitem.setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_ALWAYS)
                 menuitem.setEnabled(cmd.enabled)
                 if cmd.icon:
-                    icon = Drawable.createFromPath(str(cmd.icon._impl.path))
-                    if icon:
-                        menuitem.setIcon(icon)
-                    else:
-                        print("Could not create icon: " + str(cmd.icon._impl.path))
+                    menuitem.setIcon(
+                        BitmapDrawable(
+                            self.native.getResources(), cmd.icon._impl.native
+                        )
+                    )
                 self.menuitem_mapping[itemid] = cmd
                 itemid += 1
 
@@ -221,7 +222,7 @@ class App:
         ringtone.play()
 
     def exit(self):
-        pass
+        pass  # pragma: no cover
 
     def get_current_window(self):
         return self.interface.main_window._impl
@@ -229,7 +230,8 @@ class App:
     def set_current_window(self, window):
         pass
 
-    async def intent_result(self, intent):
+    # TODO #1798: document and test this somehow
+    async def intent_result(self, intent):  # pragma: no cover
         """Calls an Intent and waits for its result.
 
         A RuntimeError will be raised when the Intent cannot be invoked.

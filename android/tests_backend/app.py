@@ -51,6 +51,8 @@ class AppProbe(BaseProbe):
                 raise AssertionError(f"no item named {path[:i_path+1]}")
 
             if i_path < len(path) - 1:
+                # Simulate opening the submenu.
+                assert self.native.onOptionsItemSelected(item) is False
                 menu = item.getSubMenu()
                 assert menu is not None
 
