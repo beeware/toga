@@ -1,4 +1,5 @@
 import asyncio
+import sys
 
 from android.graphics.drawable import Drawable
 from android.media import RingtoneManager
@@ -6,7 +7,7 @@ from android.view import Menu, MenuItem
 from java import dynamic_proxy
 from org.beeware.android import IPythonApp, MainActivity
 
-from toga.command import GROUP_BREAK, SECTION_BREAK, Group
+from toga.command import GROUP_BREAK, SECTION_BREAK, Command, Group
 
 from .libs import events
 from .window import Window
@@ -87,13 +88,15 @@ class TogaApp(dynamic_proxy(IPythonApp)):
 
     def onPrepareOptionsMenu(self, menu):
         menu.clear()
-        itemid = 0
+        itemid = 1  # 0 is the same as Menu.NONE.
+        groupid = 1
         menulist = {}  # dictionary with all menus
         self.menuitem_mapping.clear()
 
         # create option menu
         for cmd in self._impl.interface.commands:
             if cmd == SECTION_BREAK or cmd == GROUP_BREAK:
+                groupid += 1
                 continue
 
             if cmd.group.key in menulist:
@@ -113,26 +116,29 @@ class TogaApp(dynamic_proxy(IPythonApp)):
                             menugroup = menu
                         else:
                             # Add all other groups as submenus
-                            menugroup = parentmenu.addSubMenu(text)
+                            menugroup = parentmenu.addSubMenu(
+                                groupid, Menu.NONE, Menu.NONE, text
+                            )
                             menulist[groupkey] = menugroup
                     parentmenu = menugroup
 
             # create menu item
-            itemid += 1
-            menuitem = menugroup.add(Menu.NONE, itemid, Menu.NONE, cmd.text)
+            menuitem = menugroup.add(groupid, itemid, Menu.NONE, cmd.text)
             menuitem.setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_NEVER)
             menuitem.setEnabled(cmd.enabled)
             self.menuitem_mapping[itemid] = cmd
+            itemid += 1
 
         # create toolbar actions
         if self._impl.interface.main_window:
             for cmd in self._impl.interface.main_window.toolbar:
                 if cmd == SECTION_BREAK or cmd == GROUP_BREAK:
+                    groupid += 1
                     continue
-                itemid += 1
-                menuitem = menu.add(Menu.NONE, itemid, Menu.NONE, cmd.text)
+
+                menuitem = menu.add(groupid, itemid, Menu.NONE, cmd.text)
                 # SHOW_AS_ACTION_IF_ROOM is too conservative, showing only 2 items on
-                # a normal-size screen in portrait.
+                # a medium-size screen in portrait.
                 menuitem.setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_ALWAYS)
                 menuitem.setEnabled(cmd.enabled)
                 if cmd.icon:
@@ -142,6 +148,7 @@ class TogaApp(dynamic_proxy(IPythonApp)):
                     else:
                         print("Could not create icon: " + str(cmd.icon._impl.path))
                 self.menuitem_mapping[itemid] = cmd
+                itemid += 1
 
         # Display the menu.
         return True
@@ -166,6 +173,15 @@ class App:
         # Call user code to populate the main window
         self.interface._startup()
 
+        self.interface.commands.add(
+            # About should be the last item in the menu, in a section on its own.
+            Command(
+                lambda _: self.interface.about(),
+                f"About {self.interface.formal_name}",
+                section=sys.maxsize,
+            ),
+        )
+
     def create_menus(self):
         self.native.invalidateOptionsMenu()  # Triggers onPrepareOptionsMenu
 
@@ -181,7 +197,21 @@ class App:
         pass
 
     def show_about_dialog(self):
-        self.interface.factory.not_implemented("App.show_about_dialog()")
+        message_parts = []
+        if self.interface.version is not None:
+            message_parts.append(
+                f"{self.interface.formal_name} v{self.interface.version}"
+            )
+        else:
+            message_parts.append(self.interface.formal_name)
+
+        if self.interface.author is not None:
+            message_parts.append(f"Author: {self.interface.author}")
+        if self.interface.description is not None:
+            message_parts.append(f"\n{self.interface.description}")
+        self.interface.main_window.info_dialog(
+            f"About {self.interface.formal_name}", "\n".join(message_parts)
+        )
 
     def beep(self):
         uri = RingtoneManager.getActualDefaultRingtoneUri(
@@ -191,6 +221,12 @@ class App:
         ringtone.play()
 
     def exit(self):
+        pass
+
+    def get_current_window(self):
+        return self.interface.main_window._impl
+
+    def set_current_window(self, window):
         pass
 
     async def intent_result(self, intent):
@@ -214,6 +250,12 @@ class App:
             return result_future.result()
         except AttributeError:
             raise RuntimeError("No appropriate Activity found to handle this intent.")
+
+    def enter_full_screen(self, windows):
+        pass
+
+    def exit_full_screen(self, windows):
+        pass
 
     def hide_cursor(self):
         pass

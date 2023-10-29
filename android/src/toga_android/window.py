@@ -65,7 +65,7 @@ class Window(Container):
         pass
 
     def create_toolbar(self):
-        pass  # Handled by onPrepareOptionsMenu in app.py
+        self.app.native.invalidateOptionsMenu()
 
     def show(self):
         pass
