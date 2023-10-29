@@ -91,10 +91,9 @@ class AppProbe(BaseProbe):
         if not GetCursorInfo(ctypes.byref(info)):
             raise RuntimeError("GetCursorInfo failed")
 
-        print(f"FIXME {info.flags=}, {info.hCursor=}")
         # `flags` is 0 or 1 in local testing, but the GitHub Actions runner always
         # returns 2 ("the system is not drawing the cursor because the user is providing
-        # input through touch or pen instead of the mouse").
+        # input through touch or pen instead of the mouse"). hCursor is more reliable.
         return info.hCursor is not None
 
     def is_full_screen(self, window):

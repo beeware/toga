@@ -77,7 +77,11 @@ class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
 
     def tick(self, *args, **kwargs):
         """Cause a single iteration of the event loop to run on the main GUI thread."""
-        if not self.app._is_exiting:  # pragma: no branch
+
+        # This function doesn't report as covered, probably because it runs on a
+        # non-Python-created thread (see App.run_app). But it must actually be covered,
+        # otherwise nothing would work.
+        if not self.app._is_exiting:  # pragma: no cover
             action = Action(self.run_once_recurring)
             self.app.app_dispatcher.Invoke(action)
 
