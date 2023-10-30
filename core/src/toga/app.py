@@ -139,6 +139,8 @@ class MainWindow(Window):
         size: tuple[int, int] = (640, 480),
         resizable: bool = True,
         minimizable: bool = True,
+        resizeable=None,  # DEPRECATED
+        closeable=None,  # DEPRECATED
     ):
         """Create a new main window.
 
@@ -151,6 +153,8 @@ class MainWindow(Window):
             pixels <css-units>`.
         :param resizable: Can the window be resized by the user?
         :param minimizable: Can the window be minimized by the user?
+        :param resizeable: **DEPRECATED** - Use ``resizable``.
+        :param closeable: **DEPRECATED** - Use ``closable``.
         """
         super().__init__(
             id=id,
@@ -160,6 +164,9 @@ class MainWindow(Window):
             resizable=resizable,
             closable=True,
             minimizable=minimizable,
+            # Deprecated arguments
+            resizeable=resizeable,
+            closeable=closeable,
         )
 
     @property
