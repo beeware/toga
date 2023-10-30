@@ -136,7 +136,7 @@ class ExampleTestCommandApp(toga.App):
 
         # The order in which commands are added to the app or the toolbar won't
         # alter anything. Ordering is defined by the command definitions.
-        self.app.commands.add(cmd1, cmd0, cmd6, cmd4, cmd3, cmd7)
+        self.app.commands.add(cmd1, cmd0, cmd6, cmd4, cmd3)
         self.app.main_window.toolbar.add(cmd2, cmd5, cmd7)
 
         # Buttons

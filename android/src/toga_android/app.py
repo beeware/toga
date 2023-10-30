@@ -100,6 +100,10 @@ class TogaApp(dynamic_proxy(IPythonApp)):
                 groupid += 1
                 continue
 
+            # Toolbar commands are added below.
+            if cmd in self._impl.interface.main_window.toolbar:
+                continue
+
             if cmd.group.key in menulist:
                 menugroup = menulist[cmd.group.key]
             else:

@@ -68,6 +68,11 @@ a similar pattern.
 It doesn't matter what order you add commands to the app - the group, section and order
 will be used to display the commands in the right order.
 
+If a command is added to a toolbar, it will automatically be added to the app
+as well. It isn't possible to have functionality exposed on a toolbar that
+isn't also exposed by the app. So, ``cmd2`` will be added to the app, even though
+it wasn't explicitly added to the app commands.
+
 
 Reference
 ---------

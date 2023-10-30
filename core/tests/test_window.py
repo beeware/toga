@@ -115,6 +115,25 @@ def test_title(window, value, expected):
     assert window.title == expected
 
 
+def test_toolbar(window, app):
+    cmd1 = toga.Command(None, "Command 1")
+    cmd2 = toga.Command(None, "Command 2")
+
+    toolbar = window.toolbar
+    assert set(toolbar) == set()
+    assert set(app.commands) == set()
+
+    # Adding a command to the toolbar automatically adds it to the app
+    toolbar.add(cmd1)
+    assert set(toolbar) == {cmd1}
+    assert set(app.commands) == {cmd1}
+
+    # But not vice versa
+    app.commands.add(cmd2)
+    assert set(toolbar) == {cmd1}
+    assert set(app.commands) == {cmd1, cmd2}
+
+
 def test_change_content(window, app):
     """The content of a window can be changed"""
     assert window.content is None

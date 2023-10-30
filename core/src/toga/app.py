@@ -265,10 +265,9 @@ class App:
                distribution name of ``my-app``.
             #. As a last resort, the name ``toga``.
         :param icon: The :any:`Icon` for the app. If not provided, Toga will attempt to
-            load an icon from ``resources/app_name``, where
-            ``app_name`` is defined above. If no resource matching this name
-            can be found, a warning will be printed, and the app will fall back to a
-            default icon.
+            load an icon from ``resources/app_name``, where ``app_name`` is defined
+            above. If no resource matching this name can be found, a warning will be
+            printed, and the app will fall back to a default icon.
         :param author: The person or organization to be credited as the author of the
             app. If not provided, the metadata key ``Author`` will be used.
         :param version: The version number of the app.  If not provided, the metadata
