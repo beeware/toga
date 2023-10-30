@@ -160,7 +160,7 @@ async def test_on_confirm(widget, probe):
     await probe.redraw("Typed newline")
 
     # The handler has been invoked
-    assert handler.call_count == 1
+    assert handler.assert_called_once_with(widget)
 
 
 async def test_validation(widget, probe):

@@ -43,12 +43,12 @@ class TogaTextFieldProxy:
 
     @staticmethod
     def becomeFirstResponder(cls, self) -> bool:
-        self.interface.on_gain_focus(self.interface)
+        self.interface.on_gain_focus()
         return send_super(cls, self, "becomeFirstResponder")
 
     @staticmethod
     def textDidEndEditing_(cls, self, textObject) -> None:
-        self.interface.on_lose_focus(self.interface)
+        self.interface.on_lose_focus()
         send_super(cls, self, "textDidEndEditing:", textObject, argtypes=[c_void_p])
 
     @staticmethod

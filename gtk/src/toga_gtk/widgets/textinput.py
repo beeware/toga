@@ -20,10 +20,10 @@ class TextInput(Widget):
         self.interface._validate()
 
     def gtk_focus_in_event(self, entry, user_data):
-        self.interface.on_gain_focus(self.interface)
+        self.interface.on_gain_focus()
 
     def gtk_focus_out_event(self, entry, user_data):
-        self.interface.on_lose_focus(self.interface)
+        self.interface.on_lose_focus()
 
     def gtk_key_press_event(self, entry, user_data):
         key_pressed = toga_key(user_data)

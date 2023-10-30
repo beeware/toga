@@ -83,13 +83,13 @@ class TextInput(Widget):
 
     def winforms_key_press(self, sender, event):
         if ord(event.KeyChar) == int(WinForms.Keys.Enter):
-            self.interface.on_confirm(self.interface)
+            self.interface.on_confirm()
 
     def winforms_got_focus(self, sender, event):
-        self.interface.on_gain_focus(self.interface)
+        self.interface.on_gain_focus()
 
     def winforms_lost_focus(self, sender, event):
-        self.interface.on_lose_focus(self.interface)
+        self.interface.on_lose_focus()
 
     def is_valid(self):
         return self.error_provider.GetError(self.native) == ""

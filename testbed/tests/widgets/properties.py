@@ -74,7 +74,7 @@ async def test_focus(widget, probe, other, other_probe, verify_focus_handlers):
     assert not other_probe.has_focus
 
     if verify_focus_handlers:
-        on_gain_handler.assert_called_once()
+        on_gain_handler.assert_called_once_with(widget)
 
         # Reset the mock so it can be tested again
         on_gain_handler.reset_mock()
@@ -93,7 +93,7 @@ async def test_focus(widget, probe, other, other_probe, verify_focus_handlers):
     assert other_probe.has_focus
 
     if verify_focus_handlers:
-        on_lose_handler.assert_called_once()
+        on_lose_handler.assert_called_once_with(widget)
 
 
 async def test_focus_noop(widget, probe, other, other_probe):
