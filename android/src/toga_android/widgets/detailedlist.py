@@ -85,8 +85,7 @@ class OnRefreshListener(dynamic_proxy(SwipeRefreshLayout.OnRefreshListener)):
         self._interface = interface
 
     def onRefresh(self):
-        if self._interface.on_refresh:
-            self._interface.on_refresh()
+        self._interface.on_refresh()
 
 
 class DetailedList(Widget):
