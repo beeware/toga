@@ -266,7 +266,7 @@ async def test_evaluate_javascript_error(widget, probe):
         assert result is None
 
     # The same value was passed to the on-result handler
-    on_result_handler.assert_called_once()
+    on_result_handler.assert_called_once_with(widget)
     assert on_result_handler.call_args.args == (None,)
     kwargs = on_result_handler.call_args.kwargs
     if probe.javascript_supports_exception:
