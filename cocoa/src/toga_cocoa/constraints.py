@@ -19,6 +19,7 @@ class Constraints:
         self.widget.native.translatesAutoresizingMaskIntoConstraints = False
 
         self._container = None
+        self._container_native = None
 
         self.width_constraint = None
         self.height_constraint = None
@@ -32,22 +33,12 @@ class Constraints:
         self._remove_constraints()
 
     def _remove_constraints(self):
-        if self.container:
+        if self._container_native:
             # print(f"Remove constraints for {self.widget} in {self.container}")
-            # Due to the unpredictability of garbage collection, it's possible for
-            # the native object of the window's container to be deleted on the ObjC
-            # side before the constraints for the window have been removed. Protect
-            # against this possibility.
-            if self.container.native:
-                self.container.native.removeConstraint(self.width_constraint)
-                self.container.native.removeConstraint(self.height_constraint)
-                self.container.native.removeConstraint(self.left_constraint)
-                self.container.native.removeConstraint(self.top_constraint)
-
-            self.width_constraint.release()
-            self.height_constraint.release()
-            self.left_constraint.release()
-            self.top_constraint.release()
+            self._container_native.removeConstraint(self.width_constraint)
+            self._container_native.removeConstraint(self.height_constraint)
+            self._container_native.removeConstraint(self.left_constraint)
+            self._container_native.removeConstraint(self.top_constraint)
 
     @property
     def container(self):
@@ -60,29 +51,32 @@ class Constraints:
 
         self._remove_constraints()
         self._container = value
-        if value is not None:
+        if value is None:
+            self._container_native = None
+        else:
+            self._container_native = value.native
             # print(f"Add constraints for {self.widget} in {self.container} {self.widget.interface.layout})
             self.left_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(  # noqa: E501
                 self.widget.native,
                 NSLayoutAttributeLeft,
                 NSLayoutRelationEqual,
-                self.container.native,
+                self._container_native,
                 NSLayoutAttributeLeft,
                 1.0,
                 10,  # Use a dummy, non-zero value for now
-            ).retain()
-            self.container.native.addConstraint(self.left_constraint)
+            )
+            self._container_native.addConstraint(self.left_constraint)
 
             self.top_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(  # noqa: E501
                 self.widget.native,
                 NSLayoutAttributeTop,
                 NSLayoutRelationEqual,
-                self.container.native,
+                self._container_native,
                 NSLayoutAttributeTop,
                 1.0,
                 5,  # Use a dummy, non-zero value for now
-            ).retain()
-            self.container.native.addConstraint(self.top_constraint)
+            )
+            self._container_native.addConstraint(self.top_constraint)
 
             self.width_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(  # noqa: E501
                 self.widget.native,
@@ -92,8 +86,8 @@ class Constraints:
                 NSLayoutAttributeLeft,
                 1.0,
                 50,  # Use a dummy, non-zero value for now
-            ).retain()
-            self.container.native.addConstraint(self.width_constraint)
+            )
+            self._container_native.addConstraint(self.width_constraint)
 
             self.height_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(  # noqa: E501
                 self.widget.native,
@@ -103,8 +97,8 @@ class Constraints:
                 NSLayoutAttributeTop,
                 1.0,
                 30,  # Use a dummy, non-zero value for now
-            ).retain()
-            self.container.native.addConstraint(self.height_constraint)
+            )
+            self._container_native.addConstraint(self.height_constraint)
 
     def update(self, x, y, width, height):
         # print(f"UPDATE CONSTRAINTS {self.widget} in {self.container} {width}x{height}@{x},{y}")
