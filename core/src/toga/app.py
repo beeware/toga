@@ -97,15 +97,21 @@ class WindowSet(MutableSet):
 
     def __iadd__(self, window: Window) -> None:
         # The standard set type does not have a += operator.
-        warn("Instead of +=, use add()", DeprecationWarning, stacklevel=2)
-        self.add(window)
+        warn(
+            "Windows are automatically associated with the app; += is not required",
+            DeprecationWarning,
+            stacklevel=2,
+        )
         return self
 
     def __isub__(self, other: Window) -> None:
         # The standard set type does have a -= operator, but it takes sets rather than
         # individual items.
-        warn("Instead of -=, use discard()", DeprecationWarning, stacklevel=2)
-        self.discard(other)
+        warn(
+            "Windows are automatically removed from the app; -= is not required",
+            DeprecationWarning,
+            stacklevel=2,
+        )
         return self
 
     ######################################################################
@@ -522,7 +528,7 @@ class App:
     @windows.setter
     def windows(self, windows):
         if windows is not self._windows:
-            raise AttributeError("can't set attribute")
+            raise AttributeError("can't set attribute 'windows'")
 
     ######################################################################
     # End backwards compatibility
