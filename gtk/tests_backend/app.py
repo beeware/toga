@@ -66,7 +66,7 @@ class AppProbe(BaseProbe):
                         ] = (menu, index)
 
                 if label == "*":
-                    item = items[self.app.name]
+                    item = items[self.app.formal_name]
                 else:
                     item = items[label]
 

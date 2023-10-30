@@ -116,7 +116,7 @@ class WebView(Widget):
             raise RuntimeError(args.InitializationException)
 
     def winforms_navigation_completed(self, sender, args):
-        self.interface.on_webview_load(self.interface)
+        self.interface.on_webview_load()
 
         if self.loaded_future:
             self.loaded_future.set_result(None)

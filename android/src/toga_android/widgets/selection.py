@@ -16,7 +16,7 @@ class TogaOnItemSelectedListener(dynamic_proxy(AdapterView.OnItemSelectedListene
         self.impl.on_change(position)
 
     def onNothingSelected(self, parent):
-        self.impl.on_change()
+        self.impl.on_change(None)
 
 
 class Selection(Widget):
@@ -80,7 +80,7 @@ class Selection(Widget):
 
     def clear(self):
         self.adapter.clear()
-        self.on_change()
+        self.on_change(None)
 
     def rehint(self):
         self.native.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)

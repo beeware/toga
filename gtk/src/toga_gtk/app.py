@@ -18,7 +18,7 @@ def gtk_menu_item_activate(cmd):
     """Convert a GTK menu item activation into a command invocation."""
 
     def _handler(action, data):
-        cmd.action(cmd)
+        cmd.action()
 
     return _handler
 
@@ -38,7 +38,7 @@ class MainWindow(Window):
         # closing the window) should be performed; so
         # "should_exit == True" must be converted to a return
         # value of False.
-        self.interface.app.on_exit(None)
+        self.interface.app.on_exit()
         return True
 
 
@@ -127,7 +127,7 @@ class App:
         self.interface.about()
 
     def _menu_quit(self, app, **kwargs):
-        self.interface.on_exit(None)
+        self.interface.on_exit()
 
     def create_menus(self):
         # Only create the menu if the menu item index has been created.

@@ -26,7 +26,7 @@ class BaseDialog(ABC):
         asyncio.get_event_loop().start_inner_loop(callback, *args)
 
     def set_result(self, result):
-        self.on_result(None, result)
+        self.on_result(result)
         self.interface.future.set_result(result)
 
 

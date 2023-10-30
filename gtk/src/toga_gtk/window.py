@@ -1,8 +1,16 @@
 from toga.command import GROUP_BREAK, SECTION_BREAK
-from toga.handlers import wrapped_handler
 
 from .container import TogaContainer
 from .libs import Gtk
+
+
+def gtk_toolbar_item_clicked(cmd):
+    """Convert a GTK toolbar item click into a command invocation."""
+
+    def _handler(widget):
+        cmd.action()
+
+    return _handler
 
 
 class Window:
@@ -92,7 +100,7 @@ class Window:
                 item_impl.set_label(cmd.text)
                 if cmd.tooltip:
                     item_impl.set_tooltip_text(cmd.tooltip)
-                item_impl.connect("clicked", wrapped_handler(cmd, cmd.action))
+                item_impl.connect("clicked", gtk_toolbar_item_clicked(cmd))
                 cmd._impl.native.append(item_impl)
             self.toolbar_items[cmd] = item_impl
             self.native_toolbar.insert(item_impl, -1)
@@ -118,7 +126,7 @@ class Window:
         if self._is_closing:
             should_close = True
         else:
-            should_close = self.interface.on_close(self.interface.app)
+            should_close = self.interface.on_close()
 
         # Return value of the GTK on_close handler indicates
         # whether the event has been fully handled. Returning
