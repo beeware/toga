@@ -76,7 +76,7 @@ class DetailedListActionListener(dynamic_proxy(DialogInterface.OnClickListener))
         self.row = row
 
     def onClick(self, dialog, which):
-        self.actions[which].handler(None, row=self.row)
+        self.actions[which].handler(row=self.row)
 
 
 class OnRefreshListener(dynamic_proxy(SwipeRefreshLayout.OnRefreshListener)):
