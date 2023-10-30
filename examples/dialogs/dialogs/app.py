@@ -181,8 +181,6 @@ class ExampleDialogsApp(toga.App):
     def action_open_secondary_window(self, widget):
         self.window_counter += 1
         window = toga.Window(title=f"New Window {self.window_counter}")
-        # Both self.windows.add() and self.windows += work:
-        self.windows += window
 
         self.set_window_label_text(len(self.windows) - 1)
         secondary_label = toga.Label(text="You are in a secondary window!")

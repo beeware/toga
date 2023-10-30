@@ -58,3 +58,25 @@ def test_add_discard(app, window1, window2):
         match=r"Can only discard objects of type toga.Window",
     ):
         app.windows.discard(object())
+
+
+def test_iadd_isub(app, window1, window2):
+    """The deprecated += and -= operators are redirected to add() and discard()"""
+    # The windowset has 3 windows - the main window, plus 2 extras
+    assert window2 in app.windows
+    assert len(app.windows) == 3
+
+    with pytest.warns(DeprecationWarning, match=r"Instead of \+=, use add\(\)"):
+        app.windows += window2
+
+    assert window2 in app.windows
+    assert len(app.windows) == 3
+
+    with pytest.warns(DeprecationWarning, match=r"Instead of -=, use discard\(\)"):
+        app.windows -= window2
+
+    assert window2 not in app.windows
+    assert len(app.windows) == 2
+
+    with pytest.raises(AttributeError, match=r"can't set attribute"):
+        app.windows = None

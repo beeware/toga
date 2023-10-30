@@ -91,6 +91,27 @@ class WindowSet(MutableSet):
             raise ValueError(f"{window!r} is not part of this app")
         self.elements.remove(window)
 
+    ######################################################################
+    # 2023-10: Backwards compatibility
+    ######################################################################
+
+    def __iadd__(self, window: Window) -> None:
+        # The standard set type does not have a += operator.
+        warn("Instead of +=, use add()", DeprecationWarning, stacklevel=2)
+        self.add(window)
+        return self
+
+    def __isub__(self, other: Window) -> None:
+        # The standard set type does have a -= operator, but it takes sets rather than
+        # individual items.
+        warn("Instead of -=, use discard()", DeprecationWarning, stacklevel=2)
+        self.discard(other)
+        return self
+
+    ######################################################################
+    # End backwards compatibility
+    ######################################################################
+
     def __iter__(self) -> Iterator:
         return iter(self.elements)
 
@@ -516,6 +537,20 @@ class App:
         """The windows managed by the app. Windows are automatically added to the app
         when they are created, and removed when they are closed."""
         return self._windows
+
+    ######################################################################
+    # 2023-10: Backwards compatibility
+    ######################################################################
+
+    # Support WindowSet __iadd__ and __isub__
+    @windows.setter
+    def windows(self, windows):
+        if windows is not self._windows:
+            raise AttributeError("can't set attribute")
+
+    ######################################################################
+    # End backwards compatibility
+    ######################################################################
 
     @property
     def commands(self) -> MutableSet[Command]:
