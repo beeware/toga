@@ -84,6 +84,7 @@ class Container:
     def __del__(self):
         self._min_height_constraint.release()
         self._min_width_constraint.release()
+        self.native = None
 
     @property
     def content(self):
