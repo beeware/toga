@@ -75,7 +75,7 @@ class Canvas(Widget):
 
     def set_bounds(self, x, y, width, height):
         super().set_bounds(x, y, width, height)
-        self.interface.on_resize(None, width=width, height=height)
+        self.interface.on_resize(width=width, height=height)
 
     def redraw(self):
         self.native.setNeedsDisplay()

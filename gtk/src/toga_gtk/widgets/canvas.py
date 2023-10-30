@@ -63,7 +63,7 @@ class Canvas(Widget):
     def gtk_on_size_allocate(self, widget, allocation):
         """Called on widget resize, and calls the handler set on the interface, if
         any."""
-        self.interface.on_resize(None, width=allocation.width, height=allocation.height)
+        self.interface.on_resize(width=allocation.width, height=allocation.height)
 
     def mouse_down(self, obj, event):
         if event.button == 1:
