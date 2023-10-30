@@ -47,13 +47,48 @@ def test_add_clear(app, change_handler):
     # Command set has commands, and the order is the opposite to the insertion order.
     assert list(cs) == [cmd1b, cmd1a]
 
-    # New Commands aren't known to the app yet
+    # New Commands aren't known to the app
     assert list(app.commands) == [cmd_a, cmd_b]
 
-    # Assign the commandset to the app
-    cs.app = app
+    # Clear the command set
+    cs.clear()
 
-    # Commands are now known to the app
+    # Change handler was called once.
+    if change_handler:
+        change_handler.assert_called_once()
+        change_handler.reset_mock()
+
+    # Command set no commands.
+    assert list(cs) == []
+
+    # App command set hasn't changed.
+    assert list(app.commands) == [cmd_a, cmd_b]
+
+
+@pytest.mark.parametrize("change_handler", [(None), (Mock())])
+def test_add_clear_with_app(app, change_handler):
+    """Commands can be added and removed from a commandset that is linked to an app"""
+    # Put some commands into the app
+    cmd_a = toga.Command(None, text="App command a")
+    cmd_b = toga.Command(None, text="App command b", order=10)
+    app.commands.add(cmd_a, cmd_b)
+    assert list(app.commands) == [cmd_a, cmd_b]
+
+    # Create a command set that is linked to the app and add some commands
+    cs = CommandSet(on_change=change_handler, app=app)
+    cmd1a = toga.Command(None, text="Test command 1a", order=3)
+    cmd1b = toga.Command(None, text="Test command 1b", order=1)
+    cs.add(cmd1a, cmd1b)
+
+    # Change handler was called once.
+    if change_handler:
+        change_handler.assert_called_once()
+        change_handler.reset_mock()
+
+    # Command set has commands, and the order is the opposite to the insertion order.
+    assert list(cs) == [cmd1b, cmd1a]
+
+    # New Commands are known to the app
     assert list(app.commands) == [cmd_a, cmd1b, cmd1a, cmd_b]
 
     # Add another command to the commandset

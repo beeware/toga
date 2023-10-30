@@ -131,13 +131,15 @@ class Window:
             size=size,
         )
 
+        # Add the window to the app
         self._app = None
         if App.app is None:
             raise RuntimeError("Cannot create a Window before creating an App")
         App.app.windows.add(self)
 
-        self._toolbar = CommandSet(on_change=self._impl.create_toolbar)
-        self._toolbar.app = self.app
+        # Create a toolbar that is linked to the app
+        self._toolbar = CommandSet(on_change=self._impl.create_toolbar, app=self._app)
+
         self.on_close = on_close
 
     @property

@@ -115,7 +115,8 @@ def test_title(window, value, expected):
     assert window.title == expected
 
 
-def test_toolbar(window, app):
+def test_toolbar_implicit_add(window, app):
+    """Adding an item to to a toolbar implicitly adds it to the app."""
     cmd1 = toga.Command(None, "Command 1")
     cmd2 = toga.Command(None, "Command 2")
 

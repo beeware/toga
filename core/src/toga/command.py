@@ -293,7 +293,11 @@ class CommandSetChangeHandler(Protocol):
 
 
 class CommandSet:
-    def __init__(self, on_change: CommandSetChangeHandler = None):
+    def __init__(
+        self,
+        on_change: CommandSetChangeHandler = None,
+        app: App | None = None,
+    ):
         """
         A collection of commands.
 
@@ -306,8 +310,10 @@ class CommandSet:
         managed by the group.
 
         :param on_change: A method that should be invoked when this command set changes.
+        :param app: The app this command set is associated with, if it is not the app's
+            own commandset.
         """
-        self._app = None
+        self._app = app
         self._commands = set()
         self.on_change = on_change
 
@@ -326,11 +332,6 @@ class CommandSet:
     @property
     def app(self) -> App:
         return self._app
-
-    @app.setter
-    def app(self, value: App):
-        self._app = value
-        self._app.commands.add(*self._commands)
 
     def __len__(self) -> int:
         return len(self._commands)
