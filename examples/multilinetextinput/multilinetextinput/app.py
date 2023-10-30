@@ -33,7 +33,7 @@ class ExampleMultilineTextInputApp(toga.App):
         self.label.text = f"{number_of_lines} lines have been written"
 
     def startup(self):
-        self.main_window = toga.MainWindow(title=self.name)
+        self.main_window = toga.MainWindow()
 
         self.multiline_input = toga.MultilineTextInput(
             placeholder="Enter text here...",

@@ -90,7 +90,7 @@ class SplitContainerApp(toga.App):
             ],
         )
 
-        self.main_window = toga.MainWindow(self.name)
+        self.main_window = toga.MainWindow()
         self.main_window.content = main_box
         self.main_window.show()
 
