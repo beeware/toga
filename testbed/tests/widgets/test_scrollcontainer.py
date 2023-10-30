@@ -85,6 +85,12 @@ async def test_clear_content(widget, probe, small_content):
     await probe.redraw("Widget content has been re-cleared")
     assert not probe.has_content
 
+    # Apply a style to guarantee a set_bounds() call has been made
+    # when there is no content.
+    widget.style.padding = 10
+    await probe.redraw("Widget has definitely been refreshed")
+    assert not probe.has_content
+
     widget.content = small_content
     await probe.redraw("Widget content has been restored")
     assert probe.has_content
