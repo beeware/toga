@@ -17,7 +17,7 @@ from toga_dummy.utils import (
 EXPLICIT_FULL_APP_KWARGS = dict(
     formal_name="Explicit App",
     app_id="org.beeware.explicit-app",
-    distribution_name="override-app",
+    app_name="override-app",
 )
 EXPLICIT_MIN_APP_KWARGS = dict(
     formal_name="Explicit App",
@@ -33,7 +33,7 @@ APP_METADATA = {
 @pytest.mark.parametrize(
     (
         "kwargs, metadata, main_module, expected_formal_name, expected_app_id, "
-        "expected_distribution_name"
+        "expected_app_name"
     ),
     [
         ###########################################################################
@@ -206,7 +206,7 @@ def test_create(
     main_module,
     expected_formal_name,
     expected_app_id,
-    expected_distribution_name,
+    expected_app_name,
 ):
     """A simple app can be created"""
     # Monkeypatch the metadata retrieval function
@@ -214,9 +214,7 @@ def test_create(
         metadata_mock = Mock(return_value=metadata)
     else:
         metadata_mock = Mock(
-            side_effect=importlib.metadata.PackageNotFoundError(
-                expected_distribution_name
-            )
+            side_effect=importlib.metadata.PackageNotFoundError(expected_app_name)
         )
     monkeypatch.setattr(importlib.metadata, "metadata", metadata_mock)
 
@@ -233,10 +231,10 @@ def test_create(
 
     assert app.formal_name == expected_formal_name
     assert app.app_id == expected_app_id
-    assert app.distribution_name == expected_distribution_name
+    assert app.app_name == expected_app_name
     assert app.on_exit._raw is None
 
-    metadata_mock.assert_called_once_with(expected_distribution_name)
+    metadata_mock.assert_called_once_with(expected_app_name)
 
 
 @pytest.mark.parametrize(
@@ -600,29 +598,6 @@ def test_background_task(app):
 
     # Once the loop has executed, the background task should have executed as well.
     canary.assert_called_once()
-
-
-def test_deprecated_app_name():
-    """The deprecated `app_name` constructor argument and property is redirected to
-    `distribution_name`
-    """
-    with pytest.raises(
-        ValueError, match="Cannot specify both app_name and distribution_name"
-    ):
-        toga.App(
-            "Test App",
-            "org.example.test",
-            app_name="test_app_name",
-            distribution_name="test_distribution_name",
-        )
-
-    app_name_warning = r"App.app_name has been renamed to distribution_name"
-    with pytest.warns(DeprecationWarning, match=app_name_warning):
-        app = toga.App("Test App", "org.example.test", app_name="test_app_name")
-
-    assert app.distribution_name == "test_app_name"
-    with pytest.warns(DeprecationWarning, match=app_name_warning):
-        assert app.app_name == "test_app_name"
 
 
 def test_deprecated_id():
