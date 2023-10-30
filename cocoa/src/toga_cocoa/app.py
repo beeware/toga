@@ -322,9 +322,17 @@ class App:
         self.interface.visit_homepage()
 
     def create_menus(self):
-        # Recreate the menu
+        # Recreate the menu.
+        # Remove any native references to the existing menu
+        for menu_item, cmd in self._menu_items.items():
+            cmd._impl.native.remove(menu_item)
+
+        # Create a clean menubar instance.
         menubar = NSMenu.alloc().initWithTitle("MainMenu")
         submenu = None
+        self._menu_groups = {}
+        self._menu_items = {}
+
         for cmd in self.interface.commands:
             if cmd == GROUP_BREAK:
                 submenu = None
