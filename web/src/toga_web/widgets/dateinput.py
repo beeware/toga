@@ -6,7 +6,11 @@ from .base import Widget
 
 
 def py_date(native_date):
-    return datetime.datetime.strptime(native_date, "%m/%d/%y").date()
+    return datetime.datetime.strptime(native_date, "%Y-%m-%d").date()
+
+
+def native_date(py_date):
+    return py_date.strftime("%Y-%m-%d")
 
 
 class DateInput(Widget):
@@ -14,7 +18,8 @@ class DateInput(Widget):
         self._return_listener = None
         self.native = self._create_native_widget("sl-input")
         self.native.setAttribute("type", "date")
-        self.set_value(datetime.date.today().strftime("%m/%d/%y"))
+
+        self.set_value(datetime.date.today().strftime("%Y-%m-%d"))
         self.native.addEventListener("sl-change", create_proxy(self.on_change))
 
     def get_value(self):
@@ -30,16 +35,16 @@ class DateInput(Widget):
 
     def get_min_date(self):
         if self.native.min:
-            return self.native.min
+            return py_date(self.native.min)
         return datetime.date(1800, 1, 1)
 
     def get_max_date(self):
         if self.native.max:
-            return self.native.max
+            return py_date(self.native.max)
         return datetime.date(8999, 12, 31)
 
     def set_min_date(self, value):
-        self.native.min = value
+        self.native.min = native_date(value)
 
     def set_max_date(self, value):
-        self.native.max = value
+        self.native.max = native_date(value)
