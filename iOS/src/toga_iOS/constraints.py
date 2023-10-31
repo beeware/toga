@@ -16,10 +16,6 @@ class Constraints:
         :param widget: The Widget implementation to be constrained.
         """
         self.widget = widget
-        # Since we can't control the order in which objects are disposed, we need to make
-        # sure the widget still has a reference to it when we delete the constraints
-        # that reference that widget
-        self.widget.native.retain()
         self.widget.native.translatesAutoresizingMaskIntoConstraints = False
 
         self._container = None
@@ -34,7 +30,6 @@ class Constraints:
     # of constraints can take several iterations before it occurs.
     def __del__(self):  # pragma: nocover
         self._remove_constraints()
-        self.widget.native.release()
 
     def _remove_constraints(self):
         if self.container:
