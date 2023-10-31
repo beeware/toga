@@ -6,49 +6,6 @@ from travertino.layout import BaseBox
 from travertino.size import BaseIntrinsicSize
 
 
-def not_required(method_or_class):
-    """This decorator function is used to mark methods or classes that they are not
-    required for interface compliance.
-
-    :param method_or_class: The method or class to decorate
-    :returns: The method or class being decorated
-    """
-    return method_or_class
-
-
-def not_required_on(*args):
-    """This decorator function is used to mark methods or classes that they are not
-    required on certain platforms. This is only used by the implementation checks
-    creation mechanism.
-
-    Examples:
-        >>> # Marks the function as only required on platforms that are not "mobile".
-        >>> @not_required_on('mobile')
-        >>> def open_window():
-        >>>     self.window.open()
-
-        >>> # Function is not required on "mobile" and "gtk" backends.
-        >>> @not_required_on('mobile', 'gtk')
-        >>> def open_window():
-        >>>     self.window.open()
-
-    :param args: The platform(s) on which the method or class isn't required.
-        Can accept a specific backend (e.g., `gtk`, `iOS`), or a class of platform
-        (e.g., `mobile`, `desktop`).
-    :returns: The method or class being decorated
-    """
-
-    def _dec(method_or_class):
-        return method_or_class
-
-    return _dec
-
-
-###########################################################################
-# The event types that can be logged
-###########################################################################
-
-
 class EventLog:
     # Event types that can be logged
     SET_VALUE = "set attribute"

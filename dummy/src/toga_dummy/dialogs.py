@@ -1,7 +1,3 @@
-from .utils import not_required
-
-
-@not_required  # Testbed coverage is complete.
 class BaseDialog:
     def __init__(self, interface, on_result):
         self.interface = interface
@@ -13,7 +9,6 @@ class BaseDialog:
         self.interface.future.set_result(result)
 
 
-@not_required  # Testbed coverage is complete.
 class InfoDialog(BaseDialog):
     def __init__(self, interface, title, message, on_result=None):
         super().__init__(interface, on_result=on_result)
@@ -24,7 +19,6 @@ class InfoDialog(BaseDialog):
         )
 
 
-@not_required  # Testbed coverage is complete.
 class QuestionDialog(BaseDialog):
     def __init__(self, interface, title, message, on_result=None):
         super().__init__(interface, on_result=on_result)
@@ -35,7 +29,6 @@ class QuestionDialog(BaseDialog):
         )
 
 
-@not_required  # Testbed coverage is complete.
 class ConfirmDialog(BaseDialog):
     def __init__(self, interface, title, message, on_result=None):
         super().__init__(interface, on_result=on_result)
@@ -46,7 +39,6 @@ class ConfirmDialog(BaseDialog):
         )
 
 
-@not_required  # Testbed coverage is complete.
 class ErrorDialog(BaseDialog):
     def __init__(self, interface, title, message, on_result=None):
         super().__init__(interface, on_result=on_result)
@@ -57,7 +49,6 @@ class ErrorDialog(BaseDialog):
         )
 
 
-@not_required  # Testbed coverage is complete.
 class StackTraceDialog(BaseDialog):
     def __init__(self, interface, title, message, content, retry, on_result=None):
         super().__init__(interface, on_result=on_result)
@@ -70,7 +61,6 @@ class StackTraceDialog(BaseDialog):
         )
 
 
-@not_required  # Testbed coverage is complete.
 class SaveFileDialog(BaseDialog):
     def __init__(
         self,
@@ -91,7 +81,6 @@ class SaveFileDialog(BaseDialog):
         )
 
 
-@not_required  # Testbed coverage is complete.
 class OpenFileDialog(BaseDialog):
     def __init__(
         self,
@@ -112,7 +101,6 @@ class OpenFileDialog(BaseDialog):
         )
 
 
-@not_required  # Testbed coverage is complete.
 class SelectFolderDialog(BaseDialog):
     def __init__(
         self,

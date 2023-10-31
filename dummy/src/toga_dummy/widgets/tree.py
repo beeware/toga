@@ -1,8 +1,6 @@
-from ..utils import not_required
 from .base import Widget
 
 
-@not_required
 def node_for_path(data, path):
     "Convert a path tuple into a specific node"
     if path is None:
@@ -13,7 +11,6 @@ def node_for_path(data, path):
     return result
 
 
-@not_required  # Testbed coverage is complete for this widget.
 class Tree(Widget):
     def create(self):
         self._action("create Tree")
