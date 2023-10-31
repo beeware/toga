@@ -487,7 +487,7 @@ async def test_cell_widget(widget, probe):
         warning_check = contextlib.nullcontext()
     else:
         warning_check = pytest.warns(
-            match=".* does not support the use of widgets in cells"
+            match=r".* does not support the use of widgets in cells"
         )
 
     with warning_check:
@@ -498,6 +498,8 @@ async def test_cell_widget(widget, probe):
 
         probe.assert_cell_content(0, 0, "A0")
         probe.assert_cell_content(0, 1, "B0")
+
+        await probe.redraw("Table row with a widget has been accessed", delay=0.1)
 
     probe.assert_cell_content(1, 0, "A1")
     probe.assert_cell_content(1, 1, "B1")

@@ -160,7 +160,7 @@ class Table(Widget):
         def text(attr):
             val = getattr(item, attr, None)
             if isinstance(val, toga.Widget):
-                warn("This backend does not support the use of widgets in cells")
+                warn("Winforms does not support the use of widgets in cells")
                 val = None
             if isinstance(val, tuple):
                 val = val[1]
