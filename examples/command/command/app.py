@@ -45,7 +45,7 @@ class ExampleTestCommandApp(toga.App):
         tiberius_icon_256 = "resources/tiberius-256"
 
         # Set up main window
-        self.main_window = toga.MainWindow(title=self.formal_name)
+        self.main_window = toga.MainWindow()
 
         # Add commands
         # Create a "Things" menu group to contain some of the commands.

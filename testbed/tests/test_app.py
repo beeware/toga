@@ -478,7 +478,7 @@ async def test_menu_visit_homepage(monkeypatch, app, app_probe):
     app_probe.activate_menu_visit_homepage()
 
     # Browser opened
-    visit_homepage.assert_called_once()
+    visit_homepage.assert_called_once_with()
 
 
 async def test_menu_items(app, app_probe):

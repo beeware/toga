@@ -40,11 +40,11 @@ class TouchListener(dynamic_proxy(View.OnTouchListener)):
     def onTouch(self, canvas, event):
         x, y = map(self.impl.scale_out, (event.getX(), event.getY()))
         if (action := event.getAction()) == MotionEvent.ACTION_DOWN:
-            self.interface.on_press(None, x, y)
+            self.interface.on_press(x, y)
         elif action == MotionEvent.ACTION_MOVE:
-            self.interface.on_drag(None, x, y)
+            self.interface.on_drag(x, y)
         elif action == MotionEvent.ACTION_UP:
-            self.interface.on_release(None, x, y)
+            self.interface.on_release(x, y)
         else:  # pragma: no cover
             return False
         return True
@@ -58,7 +58,7 @@ class Canvas(Widget):
 
     def set_bounds(self, x, y, width, height):
         super().set_bounds(x, y, width, height)
-        self.interface.on_resize(None, width=width, height=height)
+        self.interface.on_resize(width=width, height=height)
 
     def redraw(self):
         self.native.invalidate()

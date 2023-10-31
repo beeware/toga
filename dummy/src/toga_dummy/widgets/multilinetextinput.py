@@ -1,15 +1,13 @@
-from ..utils import not_required
 from .base import Widget
 
 
-@not_required  # Testbed coverage is complete for this widget.
 class MultilineTextInput(Widget):
     def create(self):
         self._action("create MultilineTextInput")
 
     def set_value(self, value):
         self._set_value("value", value)
-        self.interface.on_change(None)
+        self.interface.on_change()
 
     def get_value(self):
         return self._get_value("value")
@@ -33,4 +31,4 @@ class MultilineTextInput(Widget):
         self._action("scroll to top")
 
     def simulate_change(self):
-        self.interface.on_change(None)
+        self.interface.on_change()

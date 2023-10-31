@@ -34,7 +34,7 @@ class NumberInput(TextInput):
         pass  # This backend doesn't support stepped increments.
 
     def _on_change(self):
-        self.interface.on_change(None)
+        self.interface.on_change()
 
     def _on_confirm(self):  # pragma: nocover
         pass  # The interface doesn't support this event.

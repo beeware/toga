@@ -57,7 +57,7 @@ class TextDialog(BaseDialog):
         self.native.show()
 
     def completion_handler(self, return_value: bool) -> None:
-        self.on_result(self, return_value)
+        self.on_result(return_value)
         self.interface.future.set_result(return_value)
 
 

@@ -9,8 +9,7 @@ from toga.style import Pack
 
 class StartApp(toga.App):
     def startup(self):
-        # Main window of the application with title and size
-        self.main_window = toga.MainWindow(title=self.name, size=(150, 250))
+        self.main_window = toga.MainWindow(size=(150, 250))
 
         # Create empty canvas
         self.canvas = toga.Canvas(

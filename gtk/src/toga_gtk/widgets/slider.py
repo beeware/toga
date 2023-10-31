@@ -23,15 +23,15 @@ class Slider(Widget, toga.widgets.slider.SliderImpl):
 
         self.native.connect(
             "value-changed",
-            lambda native: self.interface.on_change(None),
+            lambda native: self.interface.on_change(),
         )
         self.native.connect(
             "button-press-event",
-            lambda native, event: self.interface.on_press(None),
+            lambda native, event: self.interface.on_press(),
         )
         self.native.connect(
             "button-release-event",
-            lambda native, event: self.interface.on_release(None),
+            lambda native, event: self.interface.on_release(),
         )
 
         # Despite what the set_digits documentation says, set_round_digits has no effect

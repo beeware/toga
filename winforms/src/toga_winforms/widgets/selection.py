@@ -35,7 +35,7 @@ class Selection(Widget):
 
     def on_change(self):
         if self._send_notifications:
-            self.interface.on_change(None)
+            self.interface.on_change()
 
     def clear(self):
         self.native.Items.Clear()

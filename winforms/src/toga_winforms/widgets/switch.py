@@ -11,7 +11,7 @@ class Switch(Widget):
         self.native.CheckedChanged += WeakrefCallable(self.winforms_checked_changed)
 
     def winforms_checked_changed(self, sender, event):
-        self.interface.on_change(None)
+        self.interface.on_change()
 
     def get_text(self):
         value = self.native.Text

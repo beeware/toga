@@ -109,7 +109,7 @@ class Selection(Widget):
 
         # Restore the original change handler and trigger it.
         self._on_change = orig_on_change
-        self.on_change(None)
+        self.on_change()
 
         self.refresh()
 

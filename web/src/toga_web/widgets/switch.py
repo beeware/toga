@@ -9,7 +9,7 @@ class Switch(Widget):
         self.native.addEventListener("sl-change", create_proxy(self.dom_onchange))
 
     def dom_onchange(self, event):
-        self.interface.on_change(None)
+        self.interface.on_change()
 
     def get_text(self):
         return self.native.innerHTML
@@ -24,4 +24,4 @@ class Switch(Widget):
         old_value = self.get_value()
         self.native.checked = value
         if value != old_value:
-            self.interface.on_change(self.interface)
+            self.interface.on_change()

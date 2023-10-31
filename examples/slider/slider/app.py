@@ -8,8 +8,7 @@ MAX_VAL = 12
 
 class SliderApp(toga.App):
     def startup(self):
-        # Main window of the application with title and size
-        self.main_window = toga.MainWindow(title=self.name, size=(1000, 500))
+        self.main_window = toga.MainWindow(size=(1000, 500))
 
         # set up common styles
         label_style = Pack(flex=1, padding_right=24)
@@ -27,14 +26,16 @@ class SliderApp(toga.App):
         self.discrete_label = toga.Label("Discrete\n(with commands)", style=label_style)
         self.discrete_slider = toga.Slider(
             on_change=self.my_discrete_on_change,
-            range=(MIN_VAL, MAX_VAL),
+            min=MIN_VAL,
+            max=MAX_VAL,
             tick_count=MAX_VAL - MIN_VAL + 1,
             style=slider_style,
         )
 
         self.scared_label = toga.Label("Try to catch me!", style=label_style)
         self.scared_slider = toga.Slider(
-            range=(100, 300.5),
+            min=100,
+            max=300.5,
             value=123.4,
             on_press=self.scared_on_press,
             on_release=self.scared_on_release,

@@ -110,13 +110,13 @@ class Table(Widget):
             self._cache.append(self._new_item(i + self._first_item))
 
     def winforms_item_selection_changed(self, sender, e):
-        self.interface.on_select(None)
+        self.interface.on_select()
 
     def winforms_double_click(self, sender, e):
         hit_test = self.native.HitTest(e.X, e.Y)
         item = hit_test.Item
         if item is not None:
-            self.interface.on_activate(None, row=self._data[item.Index])
+            self.interface.on_activate(row=self._data[item.Index])
         else:  # pragma: no cover
             # Double clicking outside of an item apparently doesn't raise the event, but
             # that isn't guaranteed by the documentation.

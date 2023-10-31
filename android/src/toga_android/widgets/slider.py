@@ -24,10 +24,10 @@ class TogaOnSeekBarChangeListener(dynamic_proxy(SeekBar.OnSeekBarChangeListener)
         self.impl.on_change()
 
     def onStartTrackingTouch(self, native_seekbar):
-        self.impl.interface.on_press(None)
+        self.impl.interface.on_press()
 
     def onStopTrackingTouch(self, native_seekbar):
-        self.impl.interface.on_release(None)
+        self.impl.interface.on_release()
 
 
 class Slider(Widget, toga.widgets.slider.IntSliderImpl):

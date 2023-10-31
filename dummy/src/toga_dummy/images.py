@@ -1,7 +1,6 @@
-from .utils import LoggedObject, not_required
+from .utils import LoggedObject
 
 
-@not_required  # Testbed coverage is complete
 class Image(LoggedObject):
     def __init__(self, interface, path=None, data=None):
         super().__init__()

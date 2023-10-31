@@ -158,13 +158,13 @@ class TogaTree(NSOutlineView):
     # OutlineViewDelegate methods
     @objc_method
     def outlineViewSelectionDidChange_(self, notification) -> None:
-        self.interface.on_select(self.interface)
+        self.interface.on_select()
 
     # target methods
     @objc_method
     def onDoubleClick_(self, sender) -> None:
         node = self.itemAtRow(self.clickedRow).attrs["node"]
-        self.interface.on_activate(self.interface, node=node)
+        self.interface.on_activate(node=node)
 
 
 class Tree(Widget):

@@ -8,7 +8,7 @@ import toga
 from toga.constants import COLUMN
 from toga.style import Pack
 
-examples_dir = Path(__file__).parents[3]
+examples_dir = Path(__file__).parents[2]
 
 
 class ExampleExamplesOverviewApp(toga.App):
@@ -31,8 +31,8 @@ class ExampleExamplesOverviewApp(toga.App):
         else:
             subprocess.run(["xdg-open", row.path])
 
-    def on_example_selected(self, widget, row):
-        readme_path = row.path / "README.rst"
+    def on_example_selected(self, widget):
+        readme_path = widget.selection.path / "README.rst"
 
         try:
             with open(readme_path) as f:
@@ -45,7 +45,7 @@ class ExampleExamplesOverviewApp(toga.App):
     def startup(self):
         # ==== Set up main window ======================================================
 
-        self.main_window = toga.MainWindow(title=self.name)
+        self.main_window = toga.MainWindow()
 
         # Label for user instructions
         label = toga.Label(
@@ -60,7 +60,7 @@ class ExampleExamplesOverviewApp(toga.App):
         # search for all folders that contain modules
         for root, dirs, files in os.walk(examples_dir):
             # skip hidden folders
-            dirs[:] = [d for d in dirs if not d.startswith(".")]
+            dirs[:] = [d for d in dirs if not d.startswith(".") and d != "build"]
             if any(name == "__main__.py" for name in files):
                 path = Path(root)
                 self.examples.append(dict(name=path.name, path=path.parent))
@@ -70,7 +70,7 @@ class ExampleExamplesOverviewApp(toga.App):
         self.table = toga.Table(
             headings=["Name", "Path"],
             data=self.examples,
-            on_double_click=self.run,
+            on_activate=self.run,
             on_select=self.on_example_selected,
             style=Pack(padding_bottom=10, flex=1),
         )
@@ -102,11 +102,14 @@ class ExampleExamplesOverviewApp(toga.App):
             ),
         )
 
-        split_container = toga.SplitContainer(content=[left_box, self.info_view])
+        split_container = toga.SplitContainer(
+            content=[left_box, self.info_view],
+            style=Pack(flex=1),
+        )
 
         outer_box = toga.Box(
             children=[label, split_container],
-            style=Pack(padding=10, direction=COLUMN),
+            style=Pack(padding=10, direction=COLUMN, flex=1),
         )
 
         # Add the content on the main window

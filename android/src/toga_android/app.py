@@ -84,7 +84,7 @@ class TogaApp(dynamic_proxy(IPythonApp)):
             # This method also fires when opening submenus
             return False
         else:
-            self.menuitem_mapping[itemid].action(None)
+            self.menuitem_mapping[itemid].action()
             return True
 
     def onPrepareOptionsMenu(self, menu):

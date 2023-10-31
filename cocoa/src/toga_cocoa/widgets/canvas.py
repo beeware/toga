@@ -50,34 +50,34 @@ class TogaCanvas(NSView):
     def mouseDown_(self, event) -> None:
         position = self.convertPoint(event.locationInWindow, fromView=None)
         if event.clickCount == 1:
-            self.interface.on_press(None, position.x, position.y)
+            self.interface.on_press(position.x, position.y)
         else:
-            self.interface.on_activate(None, position.x, position.y)
+            self.interface.on_activate(position.x, position.y)
 
     @objc_method
     def rightMouseDown_(self, event) -> None:
         position = self.convertPoint(event.locationInWindow, fromView=None)
-        self.interface.on_alt_press(None, position.x, position.y)
+        self.interface.on_alt_press(position.x, position.y)
 
     @objc_method
     def mouseUp_(self, event) -> None:
         position = self.convertPoint(event.locationInWindow, fromView=None)
-        self.interface.on_release(None, position.x, position.y)
+        self.interface.on_release(position.x, position.y)
 
     @objc_method
     def rightMouseUp_(self, event) -> None:
         position = self.convertPoint(event.locationInWindow, fromView=None)
-        self.interface.on_alt_release(None, position.x, position.y)
+        self.interface.on_alt_release(position.x, position.y)
 
     @objc_method
     def mouseDragged_(self, event) -> None:
         position = self.convertPoint(event.locationInWindow, fromView=None)
-        self.interface.on_drag(None, position.x, position.y)
+        self.interface.on_drag(position.x, position.y)
 
     @objc_method
     def rightMouseDragged_(self, event) -> None:
         position = self.convertPoint(event.locationInWindow, fromView=None)
-        self.interface.on_alt_drag(None, position.x, position.y)
+        self.interface.on_alt_drag(position.x, position.y)
 
 
 class Canvas(Widget):
@@ -94,7 +94,7 @@ class Canvas(Widget):
 
     def set_bounds(self, x, y, width, height):
         super().set_bounds(x, y, width, height)
-        self.interface.on_resize(None, width=width, height=height)
+        self.interface.on_resize(width=width, height=height)
 
     def set_background_color(self, color):
         if color is TRANSPARENT or color is None:

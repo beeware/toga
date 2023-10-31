@@ -133,7 +133,7 @@ class Window(Container, Scalable):
                 event.Cancel = True
             else:
                 # See _is_closing comment in __init__.
-                self.interface.on_close(None)
+                self.interface.on_close()
                 event.Cancel = True
 
     def set_full_screen(self, is_full_screen):

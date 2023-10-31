@@ -26,7 +26,7 @@ class TogaTabView(NSTabView):
         container.content.interface.refresh()
 
         # Notify of the change in selection.
-        self.interface.on_select(None)
+        self.interface.on_select()
 
     @objc_method
     def refreshContent(self) -> None:

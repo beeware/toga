@@ -94,7 +94,7 @@ class ExampleTableApp(toga.App):
         self.table1.scroll_to_bottom()
 
     def startup(self):
-        self.main_window = toga.MainWindow(title=self.name)
+        self.main_window = toga.MainWindow()
 
         # Label to show which row is currently selected.
         self.label_table1 = toga.Label("Ready.", style=Pack(flex=1, padding_right=5))

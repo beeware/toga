@@ -1,15 +1,13 @@
-from ..utils import not_required
 from .base import Widget
 
 
-@not_required  # Testbed coverage is complete for this widget.
 class DetailedList(Widget):
     def create(self):
         self._action("create DetailedList")
 
     def change_source(self, source):
         self._action("change source", source=source)
-        self.interface.on_select(None)
+        self.interface.on_select()
 
     def insert(self, index, item):
         self._action("insert item", index=index, item=item)
@@ -43,7 +41,7 @@ class DetailedList(Widget):
 
     def simulate_selection(self, row):
         self._set_value("selection", row)
-        self.interface.on_select(None)
+        self.interface.on_select()
 
     def stimulate_refresh(self):
-        self.interface.on_refresh(None)
+        self.interface.on_refresh()

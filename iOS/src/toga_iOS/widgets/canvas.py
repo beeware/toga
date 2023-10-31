@@ -51,17 +51,17 @@ class TogaCanvas(UIView):
     @objc_method
     def touchesBegan_withEvent_(self, touches, event) -> None:
         position = touches.allObjects()[0].locationInView(self)
-        self.interface.on_press(None, position.x, position.y)
+        self.interface.on_press(position.x, position.y)
 
     @objc_method
     def touchesMoved_withEvent_(self, touches, event) -> None:
         position = touches.allObjects()[0].locationInView(self)
-        self.interface.on_drag(None, position.x, position.y)
+        self.interface.on_drag(position.x, position.y)
 
     @objc_method
     def touchesEnded_withEvent_(self, touches, event) -> None:
         position = touches.allObjects()[0].locationInView(self)
-        self.interface.on_release(None, position.x, position.y)
+        self.interface.on_release(position.x, position.y)
 
 
 class Canvas(Widget):
@@ -75,7 +75,7 @@ class Canvas(Widget):
 
     def set_bounds(self, x, y, width, height):
         super().set_bounds(x, y, width, height)
-        self.interface.on_resize(None, width=width, height=height)
+        self.interface.on_resize(width=width, height=height)
 
     def redraw(self):
         self.native.setNeedsDisplay()

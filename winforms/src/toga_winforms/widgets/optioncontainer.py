@@ -58,7 +58,7 @@ class OptionContainer(Widget):
         self.native.SelectedIndex = current_tab_index
 
     def winforms_selected(self, sender, event):
-        self.interface.on_select(None)
+        self.interface.on_select()
 
     def winforms_client_size_changed(self, sender, event):
         for panel in self.panels:

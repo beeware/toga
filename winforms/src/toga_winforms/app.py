@@ -28,7 +28,7 @@ class MainWindow(Window):
             # If there's an event handler, process it. The decision to
             # actually exit the app will be processed in the on_exit handler.
             # If there's no exit handler, assume the close/exit can proceed.
-            self.interface.app.on_exit(None)
+            self.interface.app.on_exit()
             event.Cancel = True
 
 
@@ -190,7 +190,7 @@ class App:
             # On Windows, the Exit command doesn't usually contain the app name. It
             # should be the last item in the File menu, in a section on its own.
             toga.Command(
-                lambda _: self.interface.on_exit(None),
+                lambda _: self.interface.on_exit(),
                 "Exit",
                 shortcut=Key.MOD_1 + "q",
                 group=toga.Group.FILE,

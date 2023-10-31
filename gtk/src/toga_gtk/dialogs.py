@@ -46,7 +46,7 @@ class MessageDialog(BaseDialog):
         else:
             result = None
 
-        self.on_result(self, result)
+        self.on_result(result)
         self.interface.future.set_result(result)
 
         self.native.destroy()
@@ -218,7 +218,7 @@ class FileDialog(BaseDialog):
         else:
             result = None
 
-        self.on_result(self, result)
+        self.on_result(result)
         self.interface.future.set_result(result)
 
         self.native.destroy()

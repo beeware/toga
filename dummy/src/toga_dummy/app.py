@@ -2,16 +2,14 @@ import asyncio
 import sys
 from pathlib import Path
 
-from .utils import LoggedObject, not_required
+from .utils import LoggedObject
 from .window import Window
 
 
-@not_required  # Coverage is complete
 class MainWindow(Window):
     pass
 
 
-@not_required  # Coverage is complete
 class App(LoggedObject):
     def __init__(self, interface):
         super().__init__()
@@ -67,10 +65,9 @@ class App(LoggedObject):
         self._action("hide_cursor")
 
     def simulate_exit(self):
-        self.interface.on_exit(None)
+        self.interface.on_exit()
 
 
-@not_required
 class DocumentApp(App):
     def create(self):
         self._action("create DocumentApp")
