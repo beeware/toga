@@ -121,18 +121,23 @@ def test_toolbar_implicit_add(window, app):
     cmd2 = toga.Command(None, "Command 2")
 
     toolbar = window.toolbar
-    assert set(toolbar) == set()
-    assert set(app.commands) == set()
+    assert list(toolbar) == []
+    assert list(app.commands) == []
 
     # Adding a command to the toolbar automatically adds it to the app
     toolbar.add(cmd1)
-    assert set(toolbar) == {cmd1}
-    assert set(app.commands) == {cmd1}
+    assert list(toolbar) == [cmd1]
+    assert list(app.commands) == [cmd1]
 
     # But not vice versa
     app.commands.add(cmd2)
-    assert set(toolbar) == {cmd1}
-    assert set(app.commands) == {cmd1, cmd2}
+    assert list(toolbar) == [cmd1]
+    assert list(app.commands) == [cmd1, cmd2]
+
+    # Adding a command to both places does not cause a duplicate
+    app.commands.add(cmd1)
+    assert list(toolbar) == [cmd1]
+    assert list(app.commands) == [cmd1, cmd2]
 
 
 def test_change_content(window, app):
