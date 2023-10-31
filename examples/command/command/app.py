@@ -135,10 +135,12 @@ class ExampleTestCommandApp(toga.App):
         )
 
         # The order in which commands are added to the app or the toolbar won't
-        # alter anything. Ordering is defined by the command definitions.
-        # cmd7 is only *explicitly* added to the toolbar, which implies adding
-        # to the app.
-        self.app.commands.add(cmd1, cmd0, cmd6, cmd4, cmd3)
+        # alter anything. Ordering is determined by the command's properties.
+        #
+        # cmd2 and cmd5 are only explicitly added to the toolbar, but that should
+        # automatically add them to the app. cmd7 is added to both places, but this
+        # should not cause a duplicate menu item.
+        self.app.commands.add(cmd1, cmd0, cmd6, cmd4, cmd3, cmd7)
         self.app.main_window.toolbar.add(cmd2, cmd5, cmd7)
 
         # Buttons
