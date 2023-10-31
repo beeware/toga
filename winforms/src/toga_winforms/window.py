@@ -80,10 +80,17 @@ class Window(Container, Scalable):
 
     def get_size(self):
         size = self.native.Size
-        return tuple(map(self.scale_out, (size.Width, size.Height)))
+        return (
+            self.scale_out(size.Width - self.decor_width()),
+            self.scale_out(size.Height - self.decor_height()),
+        )
 
     def set_size(self, size):
-        self.native.Size = Size(*map(self.scale_in, size))
+        width, height = size
+        self.native.Size = Size(
+            self.scale_in(width) + self.decor_width(),
+            self.scale_in(height) + self.decor_height(),
+        )
 
     def set_app(self, app):
         icon_impl = app.interface.icon._impl
@@ -97,16 +104,13 @@ class Window(Container, Scalable):
 
     def refreshed(self):
         super().refreshed()
-
-        # Enforce a minimum window size. This takes into account the title bar and
-        # borders, which are included in Size but not in ClientSize.
-        decor_size = self.native.Size - self.native.ClientSize
         layout = self.interface.content.layout
-        min_client_size = Size(
-            self.scale_in(layout.min_width),
-            self.scale_in(layout.min_height) + self.top_bars_height(),
+        self.native.MinimumSize = Size(
+            self.scale_in(layout.min_width) + self.decor_width(),
+            self.scale_in(layout.min_height)
+            + self.top_bars_height()
+            + self.decor_height(),
         )
-        self.native.MinimumSize = decor_size + min_client_size
 
     def show(self):
         if self.interface.content is not None:
@@ -150,6 +154,15 @@ class Window(Container, Scalable):
     def close(self):
         self._is_closing = True
         self.native.Close()
+
+    # "Decor" includes the title bar and the (usually invisible) resize borders. It does
+    # not include the menu bar and toolbar, which are included in the ClientSize (see
+    # top_bars_height).
+    def decor_width(self):
+        return self.native.Size.Width - self.native.ClientSize.Width
+
+    def decor_height(self):
+        return self.native.Size.Height - self.native.ClientSize.Height
 
     def top_bars_height(self):
         vertical_shift = 0
