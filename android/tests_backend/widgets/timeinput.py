@@ -1,7 +1,7 @@
 import re
 from datetime import time
 
-from android import R as android_R
+from android import R
 from android.widget import TimePicker
 
 from .base import find_view_by_type
@@ -34,9 +34,7 @@ class TimeInputProbe(DateTimeInputProbe):
 
     @property
     def _picker(self):
-        picker = find_view_by_type(
-            self._dialog.findViewById(android_R.id.content), TimePicker
-        )
+        picker = find_view_by_type(self._dialog.findViewById(R.id.content), TimePicker)
         assert picker is not None
         assert picker.is24HourView()
         return picker

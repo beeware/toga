@@ -6,8 +6,6 @@ from .libs import Gtk
 
 
 class Window:
-    _IMPL_CLASS = Gtk.Window
-
     def __init__(self, interface, title, position, size):
         self.interface = interface
         self.interface._impl = self
@@ -16,7 +14,7 @@ class Window:
 
         self.layout = None
 
-        self.native = self._IMPL_CLASS()
+        self.create()
         self.native._impl = self
 
         self.native.connect("delete-event", self.gtk_delete_event)
@@ -33,19 +31,26 @@ class Window:
         # Window Decorator when resizable == False
         self.native.set_resizable(self.interface.resizable)
 
-        self.toolbar_native = None
-        self.toolbar_items = None
-
         # The GTK window's content is the layout; any user content is placed
         # into the container, which is the bottom widget in the layout. The
         # toolbar (if required) will be added at the top of the layout.
-        #
+        self.layout = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+
+        self.native_toolbar = Gtk.Toolbar()
+        self.native_toolbar.set_style(Gtk.ToolbarStyle.BOTH)
+        self.native_toolbar.set_visible(False)
+        self.toolbar_items = {}
+        self.layout.pack_start(self.native_toolbar, expand=False, fill=False, padding=0)
+
         # Because expand and fill are True, the container will fill the available
         # space, and will get a size_allocate callback if the window is resized.
-        self.layout = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
         self.container = TogaContainer()
         self.layout.pack_end(self.container, expand=True, fill=True, padding=0)
+
         self.native.add(self.layout)
+
+    def create(self):
+        self.native = Gtk.Window()
 
     def get_title(self):
         return self.native.get_title()
@@ -57,18 +62,20 @@ class Window:
         app.native.add_window(self.native)
 
     def create_toolbar(self):
-        if self.toolbar_items is None:
-            self.toolbar_native = Gtk.Toolbar()
-            self.toolbar_items = {}
-            self.layout.pack_start(
-                self.toolbar_native, expand=False, fill=False, padding=0
-            )
-        else:
-            for cmd, item_impl in self.toolbar_items.items():
-                self.toolbar_native.remove(item_impl)
-                cmd._impl.native.remove(item_impl)
+        # Remove any pre-existing toolbar content
+        if self.toolbar_items:
+            self.native_toolbar.set_visible(False)
 
-        self.toolbar_native.set_style(Gtk.ToolbarStyle.BOTH)
+        for cmd, item_impl in self.toolbar_items.items():
+            self.native_toolbar.remove(item_impl)
+            try:
+                cmd._impl.native.remove(item_impl)
+            except AttributeError:
+                # Breaks don't have _impls, so there's no native to clean up
+                pass
+
+        # Create the new toolbar items
+        self.toolbar_items = {}
         for cmd in self.interface.toolbar:
             if cmd == GROUP_BREAK:
                 item_impl = Gtk.SeparatorToolItem()
@@ -79,13 +86,20 @@ class Window:
             else:
                 item_impl = Gtk.ToolButton()
                 if cmd.icon:
-                    item_impl.set_icon_widget(cmd.icon._impl.native_32)
+                    item_impl.set_icon_widget(
+                        Gtk.Image.new_from_pixbuf(cmd.icon._impl.native_32)
+                    )
                 item_impl.set_label(cmd.text)
-                item_impl.set_tooltip_text(cmd.tooltip)
+                if cmd.tooltip:
+                    item_impl.set_tooltip_text(cmd.tooltip)
                 item_impl.connect("clicked", wrapped_handler(cmd, cmd.action))
                 cmd._impl.native.append(item_impl)
             self.toolbar_items[cmd] = item_impl
-            self.toolbar_native.insert(item_impl, -1)
+            self.native_toolbar.insert(item_impl, -1)
+
+        if self.toolbar_items:
+            self.native_toolbar.set_visible(True)
+            self.native_toolbar.show_all()
 
     def set_content(self, widget):
         # Set the new widget to be the container's content

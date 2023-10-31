@@ -1,10 +1,5 @@
 from math import degrees, pi
 
-from java import dynamic_proxy, jint
-from java.io import ByteArrayOutputStream
-from org.beeware.android import DrawHandlerView, IDrawHandler
-from travertino.size import at_least
-
 from android.graphics import (
     Bitmap,
     Canvas as A_Canvas,
@@ -14,6 +9,11 @@ from android.graphics import (
     Path,
 )
 from android.view import MotionEvent, View
+from java import dynamic_proxy, jint
+from java.io import ByteArrayOutputStream
+from org.beeware.android import DrawHandlerView, IDrawHandler
+from travertino.size import at_least
+
 from toga.widgets.canvas import Baseline, FillRule
 
 from ..colors import native_color

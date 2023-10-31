@@ -1,7 +1,7 @@
 import System.Windows.Forms as WinForms
 from System.Drawing import Point, Size
 
-from toga import GROUP_BREAK, SECTION_BREAK
+from toga.command import GROUP_BREAK, SECTION_BREAK
 
 from .container import Container
 from .libs.wrapper import WeakrefCallable
@@ -47,6 +47,7 @@ class Window(Container, Scalable):
                 # defaults to `Top`.
                 self.toolbar_native = WinForms.ToolStrip()
                 self.native.Controls.Add(self.toolbar_native)
+                self.toolbar_native.BringToFront()  # In a dock, "front" means "bottom".
 
             for cmd in self.interface.toolbar:
                 if cmd == GROUP_BREAK:
@@ -54,13 +55,12 @@ class Window(Container, Scalable):
                 elif cmd == SECTION_BREAK:
                     item = WinForms.ToolStripSeparator()
                 else:
+                    item = WinForms.ToolStripMenuItem(cmd.text)
+                    if cmd.tooltip is not None:
+                        item.ToolTipText = cmd.tooltip
                     if cmd.icon is not None:
-                        native_icon = cmd.icon._impl.native
-                        item = WinForms.ToolStripMenuItem(
-                            cmd.text, native_icon.ToBitmap()
-                        )
-                    else:
-                        item = WinForms.ToolStripMenuItem(cmd.text)
+                        item.Image = cmd.icon._impl.native.ToBitmap()
+                    item.Enabled = cmd.enabled
                     item.Click += WeakrefCallable(cmd._impl.winforms_handler)
                     cmd._impl.native.append(item)
                 self.toolbar_native.Items.Add(item)

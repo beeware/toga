@@ -1,4 +1,4 @@
-from toga.command import Command as BaseCommand
+from toga.command import Command
 from toga_cocoa.container import Container
 from toga_cocoa.libs import (
     SEL,
@@ -18,7 +18,10 @@ from toga_cocoa.libs import (
 
 
 def toolbar_identifier(cmd):
-    return "ToolbarItem-%s" % id(cmd)
+    if isinstance(cmd, Command):
+        return "ToolbarItem-%s" % id(cmd)
+    else:
+        return "ToolbarSeparator-%s" % id(cmd)
 
 
 class TogaWindow(NSWindow):
@@ -40,10 +43,11 @@ class TogaWindow(NSWindow):
     ######################################################################
 
     @objc_method
-    def toolbarAllowedItemIdentifiers_(self, toolbar):
+    def toolbarAllowedItemIdentifiers_(self, toolbar):  # pragma: no cover
         """Determine the list of available toolbar items."""
-        # This method is required by the Cocoa API, but isn't actually invoked,
-        # because customizable toolbars are no longer a thing.
+        # This method is required by the Cocoa API, but it's only ever called if the
+        # toolbar allows user customization. We don't turn that option on so this method
+        # can't ever be invoked - but we need to provide an implementation.
         allowed = NSMutableArray.alloc().init()
         for item in self.interface.toolbar:
             allowed.addObject_(toolbar_identifier(item))
@@ -59,25 +63,27 @@ class TogaWindow(NSWindow):
 
     @objc_method
     def toolbar_itemForItemIdentifier_willBeInsertedIntoToolbar_(
-        self, toolbar, identifier, insert: bool
+        self,
+        toolbar,
+        identifier,
+        insert: bool,
     ):
         """Create the requested toolbar button."""
         native = NSToolbarItem.alloc().initWithItemIdentifier_(identifier)
         try:
             item = self.impl._toolbar_items[str(identifier)]
-            if item.text:
-                native.setLabel(item.text)
-                native.setPaletteLabel(item.text)
+            native.setLabel(item.text)
+            native.setPaletteLabel(item.text)
             if item.tooltip:
                 native.setToolTip(item.tooltip)
             if item.icon:
                 native.setImage(item.icon._impl.native)
 
-            item._impl.native.append(native)
+            item._impl.native.add(native)
 
             native.setTarget_(self)
             native.setAction_(SEL("onToolbarButtonPress:"))
-        except KeyError:
+        except KeyError:  # Separator items
             pass
 
         # Prevent the toolbar item from being deallocated when
@@ -89,7 +95,14 @@ class TogaWindow(NSWindow):
     @objc_method
     def validateToolbarItem_(self, item) -> bool:
         """Confirm if the toolbar item should be enabled."""
-        return self.impl._toolbar_items[str(item.itemIdentifier)].enabled
+        try:
+            return self.impl._toolbar_items[str(item.itemIdentifier)].enabled
+        except KeyError:  # pragma: nocover
+            # This branch *shouldn't* ever happen; but there's an edge
+            # case where a toolbar redraw happens in the middle of deleting
+            # a toolbar item that can't be reliably reproduced, so it sometimes
+            # happens in testing.
+            return False
 
     ######################################################################
     # Toolbar button press delegate methods
@@ -130,7 +143,8 @@ class Window:
 
         # Cocoa releases windows when they are closed; this causes havoc with
         # Toga's widget cleanup because the ObjC runtime thinks there's no
-        # references to the object left. Add an explicit reference to the window.
+        # references to the object left. Add a reference that can be released
+        # in response to the close.
         self.native.retain()
 
         self.set_title(title)
@@ -142,21 +156,56 @@ class Window:
         self.container = Container(on_refresh=self.content_refreshed)
         self.native.contentView = self.container.native
 
+        # By default, no toolbar
+        self._toolbar_items = {}
+        self.native_toolbar = None
+
     def __del__(self):
+        self.purge_toolbar()
         self.native.release()
 
+    def purge_toolbar(self):
+        while self._toolbar_items:
+            dead_items = []
+            _, cmd = self._toolbar_items.popitem()
+            # The command might have toolbar representations on multiple window
+            # toolbars, and may have other representations (at the very least, a menu
+            # item). Only clean up the representation pointing at *this* window. Do this
+            # in 2 passes so that we're not modifying the set of native objects while
+            # iterating over it.
+            for item_native in cmd._impl.native:
+                if (
+                    isinstance(item_native, NSToolbarItem)
+                    and item_native.target == self.native
+                ):
+                    dead_items.append(item_native)
+
+            for item_native in dead_items:
+                cmd._impl.native.remove(item_native)
+                item_native.release()
+
     def create_toolbar(self):
-        self._toolbar_items = {}
-        for cmd in self.interface.toolbar:
-            if isinstance(cmd, BaseCommand):
-                self._toolbar_items[toolbar_identifier(cmd)] = cmd
+        # Purge any existing toolbar items
+        self.purge_toolbar()
 
-        self._toolbar_native = NSToolbar.alloc().initWithIdentifier(
-            "Toolbar-%s" % id(self)
-        )
-        self._toolbar_native.setDelegate(self.native)
+        # Create the new toolbar items.
+        if self.interface.toolbar:
+            for cmd in self.interface.toolbar:
+                if isinstance(cmd, Command):
+                    self._toolbar_items[toolbar_identifier(cmd)] = cmd
 
-        self.native.setToolbar(self._toolbar_native)
+            self.native_toolbar = NSToolbar.alloc().initWithIdentifier(
+                "Toolbar-%s" % id(self)
+            )
+            self.native_toolbar.setDelegate(self.native)
+        else:
+            self.native_toolbar = None
+
+        self.native.setToolbar(self.native_toolbar)
+
+        # Adding/removing a toolbar changes the size of the content window.
+        if self.interface.content:
+            self.interface.content.refresh()
 
     def set_content(self, widget):
         # Set the content of the window's container

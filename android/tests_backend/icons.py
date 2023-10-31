@@ -1,5 +1,4 @@
 import pytest
-
 from android.graphics import Bitmap
 
 from .probe import BaseProbe

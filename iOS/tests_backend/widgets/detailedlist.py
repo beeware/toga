@@ -1,4 +1,5 @@
 import asyncio
+import platform
 
 from rubicon.objc.api import Block
 
@@ -48,9 +49,13 @@ class DetailedListProbe(SimpleProbe):
 
     @property
     def max_scroll_position(self):
-        return max(
-            0, int(self.native.contentSize.height - self.native.frame.size.height)
-        )
+        max_value = int(self.native.contentSize.height - self.native.frame.size.height)
+        # The max value is a little higher on iOS 17.
+        # Not sure where the 34 extra pixels are coming from. It appears to be
+        # a constant, independent of the number of rows of data.
+        if int(platform.release().split(".")[0]) >= 17:
+            max_value += 34
+        return max(0, max_value)
 
     @property
     def scroll_position(self):

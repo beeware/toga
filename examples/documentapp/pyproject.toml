@@ -1,0 +1,55 @@
+[build-system]
+requires = ["briefcase"]
+
+[tool.briefcase]
+project_name = "Document App"
+bundle = "org.beeware"
+version = "0.0.1"
+url = "https://beeware.org"
+license = "BSD license"
+author = "Tiberius Yak"
+author_email = "tiberius@beeware.org"
+
+[tool.briefcase.app.documentapp]
+formal_name = "Document App"
+description = "A testing app"
+sources = ["documentapp"]
+requires = [
+    "../../core",
+]
+
+
+[tool.briefcase.app.documentapp.macOS]
+requires = [
+    "../../cocoa",
+    "std-nslog>=1.0.0",
+]
+
+[tool.briefcase.app.documentapp.linux]
+requires = [
+    "../../gtk",
+]
+
+[tool.briefcase.app.documentapp.windows]
+requires = [
+    "../../winforms",
+]
+
+# Mobile deployments
+[tool.briefcase.app.documentapp.iOS]
+requires = [
+    "../../iOS",
+    "std-nslog>=1.0.0",
+]
+
+[tool.briefcase.app.documentapp.android]
+requires = [
+    "../../android",
+]
+
+# Web deployment
+[tool.briefcase.app.documentapp.web]
+requires = [
+    "../../web",
+]
+style_framework = "Shoelace v2.3"

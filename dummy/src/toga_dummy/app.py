@@ -1,34 +1,39 @@
 import asyncio
+import sys
+from pathlib import Path
 
-from .utils import LoggedObject, not_required_on
+from .utils import LoggedObject, not_required
 from .window import Window
 
 
+@not_required  # Coverage is complete
 class MainWindow(Window):
     pass
 
 
+@not_required  # Coverage is complete
 class App(LoggedObject):
     def __init__(self, interface):
         super().__init__()
         self.interface = interface
-        self.loop = asyncio.new_event_loop()
+        self.interface._impl = self
+
+        self.loop = asyncio.get_event_loop()
+        self.create()
 
     def create(self):
-        self._action("create")
+        self._action("create App")
         self.interface._startup()
 
-    @not_required_on("mobile")
     def create_menus(self):
-        self._action("create menus")
+        self._action("create App menus")
 
     def main_loop(self):
         print("Starting app using Dummy backend.")
         self._action("main loop")
-        self.create()
 
     def set_main_window(self, window):
-        self._set_value("main_window", window)
+        self._action("set_main_window", window=window)
 
     def show_about_dialog(self):
         self._action("show_about_dialog")
@@ -39,31 +44,40 @@ class App(LoggedObject):
     def exit(self):
         self._action("exit")
 
-    @not_required_on("mobile")
     def get_current_window(self):
-        self._action("get_current_window")
+        try:
+            return self._get_value("current_window", self.interface.main_window._impl)
+        except AttributeError:
+            return None
 
-    @not_required_on("mobile")
-    def set_current_window(self):
-        self._action("set_current_window")
+    def set_current_window(self, window):
+        self._action("set_current_window", window=window)
+        self._set_value("current_window", window._impl)
 
-    @not_required_on("mobile")
     def enter_full_screen(self, windows):
         self._action("enter_full_screen", windows=windows)
 
-    @not_required_on("mobile")
     def exit_full_screen(self, windows):
         self._action("exit_full_screen", windows=windows)
 
-    @not_required_on("mobile")
     def show_cursor(self):
         self._action("show_cursor")
 
-    @not_required_on("mobile")
     def hide_cursor(self):
         self._action("hide_cursor")
 
+    def simulate_exit(self):
+        self.interface.on_exit(None)
 
-@not_required_on("mobile", "web")
+
+@not_required
 class DocumentApp(App):
-    pass
+    def create(self):
+        self._action("create DocumentApp")
+        self.interface._startup()
+
+        try:
+            # Create and show the document instance
+            self.interface._open(Path(sys.argv[1]))
+        except IndexError:
+            pass

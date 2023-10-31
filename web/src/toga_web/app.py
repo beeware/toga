@@ -1,4 +1,5 @@
 import toga
+from toga.command import GROUP_BREAK, SECTION_BREAK
 from toga_web.libs import create_element, js
 from toga_web.window import Window
 
@@ -63,9 +64,9 @@ class App:
         submenu = None
 
         for cmd in self.interface.commands:
-            if cmd == toga.GROUP_BREAK:
+            if cmd == GROUP_BREAK:
                 submenu = None
-            elif cmd == toga.SECTION_BREAK:
+            elif cmd == SECTION_BREAK:
                 # TODO - add a section break
                 pass
             else:

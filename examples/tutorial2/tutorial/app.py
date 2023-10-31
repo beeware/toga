@@ -145,6 +145,8 @@ class Tutorial2App(toga.App):
         self.commands.add(cmd1, cmd0, cmd6, cmd4, cmd5, cmd3)
 
         self.main_window = toga.MainWindow(title=self.name)
+        # Command 2 has not been *explicitly* added to the app. Adding it to
+        # a toolbar implicitly adds it to the app.
         self.main_window.toolbar.add(cmd1, cmd3, cmd2, cmd4)
         self.main_window.content = split
 
