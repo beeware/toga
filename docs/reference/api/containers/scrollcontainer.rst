@@ -8,7 +8,7 @@ overflow controlled by scroll bars.
 
   .. group-tab:: macOS
 
-    .. figure:: /reference/images/scrollcontainer-macOS.png
+    .. figure:: /reference/images/scrollcontainer-cocoa.png
        :align: center
        :width: 450px
 

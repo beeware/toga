@@ -6,7 +6,7 @@ DetailedList
 
   .. group-tab:: macOS
 
-    .. figure:: /reference/images/detailedlist-macOS.png
+    .. figure:: /reference/images/detailedlist-cocoa.png
        :align: center
        :width: 450px
 

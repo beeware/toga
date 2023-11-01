@@ -9,7 +9,7 @@ not the actual characters.
 
   .. group-tab:: macOS
 
-    .. figure:: /reference/images/passwordinput-macOS.png
+    .. figure:: /reference/images/passwordinput-cocoa.png
        :align: center
        :width: 300px
 

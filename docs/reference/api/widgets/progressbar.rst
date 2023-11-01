@@ -8,7 +8,7 @@ known or indeterminate length.
 
   .. group-tab:: macOS
 
-    .. figure:: /reference/images/progressbar-macOS.png
+    .. figure:: /reference/images/progressbar-cocoa.png
        :align: center
        :width: 300px
 

@@ -7,7 +7,7 @@ The main window of the application.
 
   .. group-tab:: macOS
 
-    .. figure:: /reference/images/mainwindow-macOS.png
+    .. figure:: /reference/images/mainwindow-cocoa.png
        :align: center
        :width: 450px
 

@@ -7,7 +7,7 @@ A separator used to visually distinguish two sections of content in a layout.
 
   .. group-tab:: macOS
 
-    .. figure:: /reference/images/divider-macOS.png
+    .. figure:: /reference/images/divider-cocoa.png
        :align: center
        :width: 300px
 
@@ -25,7 +25,9 @@ A separator used to visually distinguish two sections of content in a layout.
 
   .. group-tab:: Android |no|
 
-    Not supported
+    .. figure:: /reference/images/divider-android.png
+       :align: center
+       :width: 300px
 
   .. group-tab:: iOS |no|
 

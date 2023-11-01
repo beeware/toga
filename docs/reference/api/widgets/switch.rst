@@ -8,7 +8,7 @@ unchecked). The button has a text label.
 
   .. group-tab:: macOS
 
-    .. figure:: /reference/images/switch-macOS.png
+    .. figure:: /reference/images/switch-cocoa.png
        :align: center
        :width: 300px
 

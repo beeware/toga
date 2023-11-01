@@ -7,7 +7,7 @@ An embedded web browser.
 
   .. group-tab:: macOS
 
-    .. figure:: /reference/images/webview-macOS.png
+    .. figure:: /reference/images/webview-cocoa.png
        :align: center
        :width: 450px
 

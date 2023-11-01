@@ -7,7 +7,7 @@ A drawing area for 2D vector graphics.
 
   .. group-tab:: macOS
 
-    .. figure:: /reference/images/canvas-macOS.png
+    .. figure:: /reference/images/canvas-cocoa.png
        :align: center
        :width: 300px
 

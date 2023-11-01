@@ -8,7 +8,7 @@ and the selected value is shown as a draggable marker.
 
   .. group-tab:: macOS
 
-    .. figure:: /reference/images/slider-macOS.png
+    .. figure:: /reference/images/slider-cocoa.png
        :align: center
        :width: 300px
 

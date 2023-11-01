@@ -7,7 +7,7 @@ A container that can display multiple labeled tabs of content.
 
   .. group-tab:: macOS
 
-    .. figure:: /reference/images/optioncontainer-macOS.png
+    .. figure:: /reference/images/optioncontainer-cocoa.png
        :align: center
        :width: 450px
 

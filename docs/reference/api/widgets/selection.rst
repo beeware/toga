@@ -7,7 +7,7 @@ A widget to select a single option from a list of alternatives.
 
   .. group-tab:: macOS
 
-    .. figure:: /reference/images/selection-macOS.png
+    .. figure:: /reference/images/selection-cocoa.png
        :align: center
        :width: 300px
 

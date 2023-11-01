@@ -7,7 +7,7 @@ A widget for the display and editing of a single line of text.
 
   .. group-tab:: macOS
 
-    .. figure:: /reference/images/textinput-macOS.png
+    .. figure:: /reference/images/textinput-cocoa.png
        :align: center
        :width: 300px
 

@@ -8,7 +8,7 @@ usually rendered as a "spinner" animation.
 
   .. group-tab:: macOS
 
-    .. figure:: /reference/images/activityindicator-macOS.png
+    .. figure:: /reference/images/activityindicator-cocoa.png
        :align: center
        :width: 100px
 
@@ -35,6 +35,7 @@ usually rendered as a "spinner" animation.
     .. .. figure:: /reference/images/activityindicator-web.png
     ..    :align: center
     ..    :width: 100px
+
     Screenshot not available
 
   .. group-tab:: Textual |no|

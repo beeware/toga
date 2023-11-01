@@ -13,7 +13,7 @@ single-page web apps.
 
   .. group-tab:: macOS
 
-    .. figure:: /images/toga-demo-macOS.png
+    .. figure:: /images/toga-demo-cocoa.png
        :align: center
        :width: 450px
 

@@ -7,7 +7,7 @@ A text label for annotating forms or interfaces.
 
   .. group-tab:: macOS
 
-    .. figure:: /reference/images/label-macOS.png
+    .. figure:: /reference/images/label-cocoa.png
        :align: center
        :width: 300px
 
@@ -37,7 +37,7 @@ A text label for annotating forms or interfaces.
 
   .. group-tab:: Web |beta|
 
-    .. .. figure:: /reference/images/label-macOS.png
+    .. .. figure:: /reference/images/label-web.png
     ..    :align: center
     ..    :width: 300px
 

@@ -7,7 +7,7 @@ A button that can be pressed or clicked.
 
   .. group-tab:: macOS
 
-    .. figure:: /reference/images/button-macOS.png
+    .. figure:: /reference/images/button-cocoa.png
        :align: center
        :width: 300px
 

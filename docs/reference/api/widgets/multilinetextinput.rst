@@ -7,7 +7,7 @@ A scrollable panel that allows for the display and editing of multiple lines of 
 
   .. group-tab:: macOS
 
-    .. figure:: /reference/images/multilinetextinput-macOS.png
+    .. figure:: /reference/images/multilinetextinput-cocoa.png
        :align: center
        :width: 300px
 

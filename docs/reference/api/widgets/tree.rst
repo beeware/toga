@@ -8,7 +8,7 @@ provided if necessary.
 
   .. group-tab:: macOS
 
-    .. figure:: /reference/images/tree-macOS.png
+    .. figure:: /reference/images/tree-cocoa.png
        :align: center
        :width: 450px
 

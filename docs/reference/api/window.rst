@@ -7,7 +7,7 @@ An operating system-managed container of widgets.
 
   .. group-tab:: macOS
 
-    .. figure:: /reference/images/window-macOS.png
+    .. figure:: /reference/images/window-cocoa.png
        :align: center
        :width: 300px
 

@@ -7,7 +7,7 @@ A text input that is limited to numeric input.
 
   .. group-tab:: macOS
 
-    .. figure:: /reference/images/numberinput-macOS.png
+    .. figure:: /reference/images/numberinput-cocoa.png
        :align: center
        :width: 300px
 

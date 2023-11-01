@@ -8,7 +8,7 @@ necessary.
 
   .. group-tab:: macOS
 
-    .. figure:: /reference/images/table-macOS.png
+    .. figure:: /reference/images/table-cocoa.png
        :align: center
        :width: 450px
 

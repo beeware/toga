@@ -7,7 +7,7 @@ A container that divides an area into two panels with a movable border.
 
   .. group-tab:: macOS
 
-    .. figure:: /reference/images/splitcontainer-macOS.png
+    .. figure:: /reference/images/splitcontainer-cocoa.png
        :align: center
        :width: 450px
 
