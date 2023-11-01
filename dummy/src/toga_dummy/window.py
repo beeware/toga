@@ -1,4 +1,4 @@
-from .utils import LoggedObject
+from .utils import LoggedObject, not_required_on
 
 
 class Container:
@@ -96,7 +96,7 @@ class Window(LoggedObject):
 
     def simulate_close(self):
         self.interface.on_close()
-        
+
     @not_required_on("mobile", "web")
     def get_current_screen(self):
         self._get_value("screen")

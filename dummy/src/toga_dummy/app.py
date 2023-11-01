@@ -3,7 +3,7 @@ import sys
 from pathlib import Path
 
 from .screen import Screen as ScreenImpl
-from .utils import LoggedObject, not_required, not_required_on
+from .utils import LoggedObject, not_required_on
 from .window import Window
 
 
@@ -64,16 +64,17 @@ class App(LoggedObject):
 
     def hide_cursor(self):
         self._action("hide_cursor")
-        
+
     def simulate_exit(self):
         self.interface.on_exit()
-        
+
     @not_required_on("mobile", "web")
     def get_screens(self):
         return [
             ScreenImpl(native="primary_screen"),
             ScreenImpl(native="secondary_screen"),
         ]
+
 
 class DocumentApp(App):
     def create(self):

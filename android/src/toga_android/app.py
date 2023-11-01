@@ -2,16 +2,12 @@ import asyncio
 import sys
 
 from android.graphics.drawable import BitmapDrawable
+from android.hardware import DisplayManager
 from android.media import RingtoneManager
 from android.view import Menu, MenuItem
 from java import dynamic_proxy
 from org.beeware.android import IPythonApp, MainActivity
 
-import toga
-from android.graphics.drawable import Drawable
-from android.hardware import DisplayManager
-from android.media import RingtoneManager
-from android.view import Menu, MenuItem
 from toga.command import GROUP_BREAK, SECTION_BREAK, Command, Group
 
 from .libs import events
