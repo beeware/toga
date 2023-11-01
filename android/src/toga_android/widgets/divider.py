@@ -1,19 +1,22 @@
 from android.graphics import Color
-from android.widget import LinearLayout, TextView
+from android.view import View
+from android.widget import LinearLayout
 from travertino.size import at_least
 
-from .label import TextViewWidget
+from .base import Widget
 
 
-class Divider(TextViewWidget):
+class Divider(Widget):
     def create(self):
-        self.native = TextView(self._native_activity)
-        self.cache_textview_defaults()
+        self.native = View(self._native_activity)
 
         # Background color needs to be set or else divider will not be visible.
         self.native.setBackgroundColor(Color.LTGRAY)
 
         self._direction = self.interface.HORIZONTAL
+
+    def set_background_color(self, value):
+        self.set_background_simple(value)
 
     def get_direction(self):
         return self._direction

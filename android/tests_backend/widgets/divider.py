@@ -4,4 +4,4 @@ from .base import SimpleProbe
 
 
 class DividerProbe(SimpleProbe):
-    native_class = jclass("android.widget.TextView")
+    native_class = jclass("android.view.View")
