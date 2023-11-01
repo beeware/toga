@@ -1,8 +1,13 @@
 from decimal import ROUND_UP
 
 from android import R
+from android.graphics import (
+    Bitmap,
+    Canvas as A_Canvas,
+)
 from android.view import ViewTreeObserver
 from java import dynamic_proxy
+from java.io import ByteArrayOutputStream
 
 from .container import Container
 
@@ -97,3 +102,19 @@ class Window(Container):
 
     def set_full_screen(self, is_full_screen):
         self.interface.factory.not_implemented("Window.set_full_screen()")
+
+    def get_image_data(self):
+        bitmap = Bitmap.createBitmap(
+            self.native_content.getWidth(),
+            self.native_content.getHeight(),
+            Bitmap.Config.ARGB_8888,
+        )
+        canvas = A_Canvas(bitmap)
+        background = self.native_content.getBackground()
+        if background:
+            background.draw(canvas)
+        self.native_content.draw(canvas)
+
+        stream = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.PNG, 0, stream)
+        return bytes(stream.toByteArray())
