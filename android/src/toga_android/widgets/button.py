@@ -1,8 +1,7 @@
-from java import dynamic_proxy
-from travertino.size import at_least
-
 from android.view import View
 from android.widget import Button as A_Button
+from java import dynamic_proxy
+from travertino.size import at_least
 
 from .label import TextViewWidget
 
@@ -13,7 +12,7 @@ class TogaOnClickListener(dynamic_proxy(View.OnClickListener)):
         self.button_impl = button_impl
 
     def onClick(self, _view):
-        self.button_impl.interface.on_press(None)
+        self.button_impl.interface.on_press()
 
 
 class Button(TextViewWidget):

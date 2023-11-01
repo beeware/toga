@@ -52,7 +52,7 @@ class Container(Scalable):
         )
 
     def add_content(self, widget):
-        # The default appears to be to add new controls to the back of the Z-order.
+        # The default is to add new controls to the back of the Z-order.
         self.native_content.Controls.Add(widget.native)
         widget.native.BringToFront()
 

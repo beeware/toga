@@ -9,11 +9,6 @@ from toga_dummy.utils import (
 
 
 @pytest.fixture
-def app():
-    return toga.App("Split Container Test", "org.beeware.toga.split_container")
-
-
-@pytest.fixture
 def window():
     return toga.Window()
 

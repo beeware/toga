@@ -1,6 +1,5 @@
-from travertino.colors import NAMED_COLOR, TRANSPARENT
-
 from android.graphics import Color
+from travertino.colors import TRANSPARENT
 
 CACHE = {TRANSPARENT: Color.TRANSPARENT}
 
@@ -9,8 +8,6 @@ def native_color(c):
     try:
         color = CACHE[c]
     except KeyError:
-        if isinstance(c, str):
-            c = NAMED_COLOR[c]
         color = Color.argb(
             int(c.rgba.a * 255), int(c.rgba.r), int(c.rgba.g), int(c.rgba.b)
         )

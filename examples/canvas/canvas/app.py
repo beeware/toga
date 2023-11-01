@@ -34,7 +34,7 @@ DASH_2_3_1 = "dash 2-3-1"
 class ExampleCanvasApp(toga.App):
     def startup(self):
         # Set up main window
-        self.main_window = toga.MainWindow(title=self.name, size=(750, 500))
+        self.main_window = toga.MainWindow(size=(750, 500))
 
         self.canvas = toga.Canvas(
             style=Pack(flex=1),

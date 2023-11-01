@@ -153,3 +153,17 @@ async def test_parenting(widget, probe):
     probe.assert_layout(position=(0, 0), size=(100, 200))
     other_probe.assert_layout(position=(150, 0), size=(100, 200))
     child_probe.assert_layout(position=(100, 0), size=(50, 75))
+
+
+async def test_tab_index(widget, probe, other):
+    if toga.platform.current_platform not in {"windows"}:
+        assert widget.tab_index is None
+        assert other.tab_index is None
+    else:
+        assert widget.tab_index == 1
+        assert other.tab_index == 2
+
+        widget.tab_index = 4
+        other.tab_index = 2
+        assert widget.tab_index == 4
+        assert other.tab_index == 2

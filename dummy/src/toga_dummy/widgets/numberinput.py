@@ -1,10 +1,8 @@
 from toga.widgets.numberinput import _clean_decimal
 
-from ..utils import not_required
 from .base import Widget
 
 
-@not_required  # Testbed coverage is complete for this widget.
 class NumberInput(Widget):
     def create(self):
         self._action("create NumberInput")
@@ -26,7 +24,7 @@ class NumberInput(Widget):
 
     def set_value(self, value):
         self._set_value("value", value)
-        self.interface.on_change(None)
+        self.interface.on_change()
 
     def get_value(self):
         value = self._get_value("value", None)
@@ -39,4 +37,4 @@ class NumberInput(Widget):
         self._set_value("on_change", handler)
 
     def simulate_change(self):
-        self.interface.on_change(None)
+        self.interface.on_change()

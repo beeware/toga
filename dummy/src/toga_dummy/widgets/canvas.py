@@ -2,11 +2,9 @@ import uuid
 
 from toga.fonts import SYSTEM, SYSTEM_DEFAULT_FONT_SIZE
 
-from ..utils import not_required
 from .base import Widget
 
 
-@not_required  # Testbed coverage is complete for this widget.
 class Canvas(Widget):
     def create(self):
         self._action("create Canvas")
@@ -259,22 +257,22 @@ class Canvas(Widget):
     # 'Mouse' button handlers
 
     def simulate_press(self, x, y):
-        self.interface.on_press(None, x=x, y=y)
+        self.interface.on_press(x=x, y=y)
 
     def simulate_activate(self, x, y):
-        self.interface.on_activate(None, x=x, y=y)
+        self.interface.on_activate(x=x, y=y)
 
     def simulate_alt_press(self, x, y):
-        self.interface.on_alt_press(None, x=x, y=y)
+        self.interface.on_alt_press(x=x, y=y)
 
     def simulate_release(self, x, y):
-        self.interface.on_release(None, x=x, y=y)
+        self.interface.on_release(x=x, y=y)
 
     def simulate_alt_release(self, x, y):
-        self.interface.on_alt_release(None, x=x, y=y)
+        self.interface.on_alt_release(x=x, y=y)
 
     def simulate_drag(self, x, y):
-        self.interface.on_drag(None, x=x, y=y)
+        self.interface.on_drag(x=x, y=y)
 
     def simulate_alt_drag(self, x, y):
-        self.interface.on_alt_drag(None, x=x, y=y)
+        self.interface.on_alt_drag(x=x, y=y)

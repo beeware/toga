@@ -28,7 +28,7 @@ class ColorsApp(toga.App):
 
     def startup(self):
         # Set up main window
-        self.main_window = toga.MainWindow(title=self.name, size=(700, 800))
+        self.main_window = toga.MainWindow(size=(700, 800))
 
         # create widgets to test colors on
         button = toga.Button("This is a button", style=Pack(padding=5))

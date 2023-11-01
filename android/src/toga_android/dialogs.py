@@ -1,10 +1,9 @@
 from abc import ABC
 
-from java import dynamic_proxy
-
 from android import R
 from android.app import AlertDialog
 from android.content import DialogInterface
+from java import dynamic_proxy
 
 
 class OnClickListener(dynamic_proxy(DialogInterface.OnClickListener)):
@@ -58,7 +57,7 @@ class TextDialog(BaseDialog):
         self.native.show()
 
     def completion_handler(self, return_value: bool) -> None:
-        self.on_result(self, return_value)
+        self.on_result(return_value)
         self.interface.future.set_result(return_value)
 
 

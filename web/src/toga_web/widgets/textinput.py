@@ -9,7 +9,7 @@ class TextInput(Widget):
 
     def dom_keyup(self, event):
         if event.key == "Enter":
-            self.interface.on_confirm(None)
+            self.interface.on_confirm()
 
     def set_readonly(self, value):
         self.native.readOnly = value

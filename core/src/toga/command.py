@@ -1,97 +1,79 @@
-import warnings
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Any, Protocol
 
 from toga.handlers import wrapped_handler
 from toga.icons import Icon
 from toga.platform import get_platform_factory
 
-# BACKWARDS COMPATIBILITY: a token object that can be used to differentiate
-# between an explicitly provided ``None``, and an unspecified value falling
-# back to a default.
-NOT_PROVIDED = object()
+if TYPE_CHECKING:
+    from toga.app import App
 
 
 class Group:
-    """
-
-    Args:
-        text:
-        order:
-        parent:
-    """
-
     def __init__(
         self,
-        text=NOT_PROVIDED,  # BACKWARDS COMPATIBILITY: The default value
-        # can be removed when the handling for
-        # `label` is removed
-        order=None,
-        section=None,
-        parent=None,
-        label=None,  # DEPRECATED!
+        text: str,
+        *,
+        parent: Group | None = None,
+        section: int = 0,
+        order: int = 0,
     ):
-        ##################################################################
-        # 2022-07: Backwards compatibility
-        ##################################################################
-        # When deleting this block, also delete the NOT_PROVIDED
-        # placeholder, and replace its usage in default values.
+        """
+        An collection of commands to display together.
 
-        # label replaced with text
-        if label is not None:
-            if text is not NOT_PROVIDED:
-                raise ValueError(
-                    "Cannot specify both `label` and `text`; "
-                    "`label` has been deprecated, use `text`"
-                )
-            else:
-                warnings.warn(
-                    "Group.label has been renamed Group.text", DeprecationWarning
-                )
-                text = label
-        elif text is NOT_PROVIDED:
-            # This would be raised by Python itself; however, we need to use a placeholder
-            # value as part of the migration from text->value.
-            raise TypeError(
-                "Group.__init__ missing 1 required positional argument: 'text'"
-            )
-
-        ##################################################################
-        # End backwards compatibility.
-        ##################################################################
-
+        :param text: A label for the group.
+        :param parent: The parent of this group; use ``None`` to make a root group.
+        :param section: The section where the group should appear within its parent. A
+            section cannot be specified unless a parent is also specified.
+        :param order: The position where the group should appear within its section.
+            If multiple items have the same group, section and order, they will be
+            sorted alphabetically by their text.
+        """
         self.text = text
-        self.order = order if order else 0
-        if parent is None and section is not None:
+        self.order = order
+        if parent is None and section != 0:
             raise ValueError("Section cannot be set without parent group")
-        self.section = section if section else 0
+        self.section = section
 
-        # First initialization needed for later
+        # Prime the underlying value of _parent so that the setter has a current value
+        # to work with
         self._parent = None
         self.parent = parent
 
     @property
-    def parent(self):
+    def parent(self) -> Group | None:
+        """The parent of this group; returns ``None`` if the group is a root group."""
         return self._parent
 
     @parent.setter
-    def parent(self, parent):
+    def parent(self, parent: Group | None):
         if parent is None:
             self._parent = None
-            self._root = self
-            return
-        if parent == self or self.is_parent_of(parent):
-            error_message = (
-                "Cannot set {} to be a parent of {} "
-                "because it causes a cyclic parenting."
-            ).format(parent.text, self.text)
-            raise ValueError(error_message)
-        self._parent = parent
-        self._root = parent.root
+        elif parent == self:
+            raise ValueError("A group cannot be it's own parent")
+        elif self.is_parent_of(parent):
+            raise ValueError(
+                f"Cannot set parent; {self.text!r} is an ancestor of {parent.text!r}."
+            )
+        else:
+            self._parent = parent
 
     @property
-    def root(self):
-        return self._root
+    def root(self) -> Group:
+        """The root group for this group.
 
-    def is_parent_of(self, child):
+        This will be ``self`` if the group *is* a root group."""
+        if self.parent is None:
+            return self
+        return self.parent.root
+
+    def is_parent_of(self, child: Group | None) -> bool:
+        """Is this group a parent of the provided group, directly or indirectly?
+
+        :param child: The potential child to check
+        :returns: True if this group is a parent of the provided child.
+        """
         if child is None:
             return False
         if child.parent is None:
@@ -100,68 +82,59 @@ class Group:
             return True
         return self.is_parent_of(child.parent)
 
-    def is_child_of(self, parent):
+    def is_child_of(self, parent: Group | None) -> bool:
+        """Is this group a child of the provided group, directly or indirectly?
+
+        :param parent: The potential parent to check
+        :returns: True if this group is a child of the provided parent.
+        """
+        if parent is None:
+            return False
         return parent.is_parent_of(self)
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         return hash(self.key)
 
-    def __lt__(self, other):
+    def __lt__(self, other: Any) -> bool:
+        if not isinstance(other, (Group, Command)):
+            return False
         return self.key < other.key
 
-    def __gt__(self, other):
+    def __gt__(self, other: Any) -> bool:
+        if not isinstance(other, (Group, Command)):
+            return False
         return other < self
 
-    def __eq__(self, other):
-        if other is None:
+    def __eq__(self, other: Any) -> bool:
+        if not isinstance(other, (Group, Command)):
             return False
         return self.key == other.key
 
-    def __repr__(self):
-        parent_string = "None" if self.parent is None else self.parent.text
-        return "<Group text={} order={} parent={}>".format(
-            self.text, self.order, parent_string
+    def __repr__(self) -> str:
+        parent_string = (
+            f" parent={self.parent} section={self.section}"
+            if self.parent is not None
+            else ""
         )
+        return f"<Group text={self.text!r} order={self.order}{parent_string}>"
 
     @property
-    def key(self):
+    def key(self) -> tuple[(int, int, str)]:
         """A unique tuple describing the path to this group."""
         self_tuple = (self.section, self.order, self.text)
         if self.parent is None:
             return tuple([self_tuple])
         return tuple([*self.parent.key, self_tuple])
 
-    @property
-    def path(self):
-        """A list containing the chain of groups that contain this group."""
-        if self.parent is None:
-            return [self]
-        return [*self.parent.path, self]
-
-    ######################################################################
-    # 2022-07: Backwards compatibility
-    ######################################################################
-    # label replaced with text
-    @property
-    def label(self):
-        """Group text.
-
-        **DEPRECATED: renamed as text**
-
-        Returns:
-            The button text as a ``str``
-        """
-        warnings.warn("Group.label has been renamed Group.text", DeprecationWarning)
-        return self.text
-
-    @label.setter
-    def label(self, label):
-        warnings.warn("Group.label has been renamed Group.text", DeprecationWarning)
-        self.text = label
-
-    ######################################################################
-    # End backwards compatibility.
-    ######################################################################
+    # Standard groups - docstrings can only be provided within the `class` statement,
+    # but the objects can't be instantiated here.
+    APP = None  #: Application-level commands
+    FILE = None  #: File commands
+    EDIT = None  #: Editing commands
+    VIEW = None  #: Content appearance commands
+    COMMANDS = None  #: Default group for user-provided commands
+    WINDOW = None  #: Window management commands
+    HELP = None  #: Help commands
 
 
 Group.APP = Group("*", order=0)
@@ -173,180 +146,132 @@ Group.WINDOW = Group("Window", order=90)
 Group.HELP = Group("Help", order=100)
 
 
-class Command:
-    """
-    Args:
-        action: a function to invoke when the command is activated.
-        text: caption for the command.
-        shortcut: (optional) a key combination that can be used to invoke the
-            command.
-        tooltip: (optional) a short description for what the command will do.
-        icon: (optional) a path to an icon resource to decorate the command.
-        group: (optional) a Group object describing a collection of similar
-            commands. If no group is specified, a default "Command" group will
-            be used.
-        section: (optional) an integer providing a sub-grouping. If no section
-            is specified, the command will be allocated to section 0 within the
-            group.
-        order: (optional) an integer indicating where a command falls within a
-            section. If a Command doesn't have an order, it will be sorted
-            alphabetically by text within its section.
-        enabled: whether to enable the command or not.
-    """
+class ActionHandler(Protocol):
+    def __call__(self, command: Command, **kwargs) -> bool:
+        """A handler that will be invoked when a Command is invoked.
 
+        :param command: The command that triggered the action.
+        :param kwargs: Ensures compatibility with additional arguments introduced in
+            future versions.
+        """
+        ...
+
+
+class Command:
     def __init__(
         self,
-        action,
-        text=NOT_PROVIDED,  # BACKWARDS COMPATIBILITY: The default value
-        # can be removed when the handling for
-        # `label` is removed
-        shortcut=None,
-        tooltip=None,
-        icon=None,
-        group=None,
-        section=None,
-        order=None,
-        enabled=True,
-        factory=None,  # DEPRECATED!
-        label=None,  # DEPRECATED!
+        action: ActionHandler | None,
+        text: str,
+        *,
+        shortcut: str | None = None,
+        tooltip: str | None = None,
+        icon: str | Icon | None = None,
+        group: Group = Group.COMMANDS,
+        section: int = 0,
+        order: int = 0,
+        enabled: bool = True,
     ):
-        ######################################################################
-        # 2022-09: Backwards compatibility
-        ######################################################################
-        # factory no longer used
-        if factory:
-            warnings.warn("The factory argument is no longer used.", DeprecationWarning)
-        ######################################################################
-        # End backwards compatibility.
-        ######################################################################
+        """
+        Create a new Command.
 
-        ##################################################################
-        # 2022-07: Backwards compatibility
-        ##################################################################
-        # When deleting this block, also delete the NOT_PROVIDED
-        # placeholder, and replace its usage in default values.
+        Commands may not use all the arguments - for example, on some platforms, menus
+        will contain icons; on other platforms they won't.
 
-        # label replaced with text
-        if label is not None:
-            if text is not NOT_PROVIDED:
-                raise ValueError(
-                    "Cannot specify both `label` and `text`; "
-                    "`label` has been deprecated, use `text`"
-                )
-            else:
-                warnings.warn(
-                    "Command.label has been renamed Command.text", DeprecationWarning
-                )
-                text = label
-        elif text is NOT_PROVIDED:
-            # This would be raised by Python itself; however, we need to use a placeholder
-            # value as part of the migration from text->value.
-            raise TypeError(
-                "Command.__init__ missing 1 required positional argument: 'text'"
-            )
-
-        ##################################################################
-        # End backwards compatibility.
-        ##################################################################
+        :param action: A handler to invoke when the command is activated. If this is
+            ``None``, the command will be disabled.
+        :param text: A label for the command.
+        :param shortcut: A key combination that can be used to invoke the command.
+        :param tooltip: A short description of what the command will do.
+        :param icon: The icon, or icon resource, that can be used to decorate the
+            command if the platform requires.
+        :param group: The group to which this command belongs.
+        :param section: The section where the command should appear within its group.
+        :param order: The position where the command should appear within its section.
+            If multiple items have the same group, section and order, they will be
+            sorted alphabetically by their text.
+        :param enabled: Is the Command currently enabled?
+        """
         self.text = text
 
         self.shortcut = shortcut
         self.tooltip = tooltip
         self.icon = icon
 
-        self.group = group if group else Group.COMMANDS
-        self.section = section if section else 0
-        self.order = order if order else 0
+        self.group = group
+        self.section = section
+        self.order = order
 
-        orig_action = action
         self.action = wrapped_handler(self, action)
 
         self.factory = get_platform_factory()
         self._impl = self.factory.Command(interface=self)
 
-        self.enabled = enabled and orig_action is not None
+        self.enabled = enabled
 
     @property
-    def key(self):
-        """A unique tuple describing the path to this command."""
+    def key(self) -> tuple[(int, int, str)]:
+        """A unique tuple describing the path to this command.
+
+        Each element in the tuple describes the (section, order, text) for the
+        groups that must be navigated to invoke this action.
+        """
         return tuple([*self.group.key, (self.section, self.order, self.text)])
 
-    def bind(self, factory=None):
-        warnings.warn(
-            "Commands no longer need to be explicitly bound.", DeprecationWarning
-        )
-        return self._impl
-
     @property
-    def enabled(self):
+    def enabled(self) -> bool:
+        """Is the command currently enabled?"""
         return self._enabled
 
     @enabled.setter
-    def enabled(self, value):
-        self._enabled = value
-        if self._impl is not None:
-            self._impl.set_enabled(value)
+    def enabled(self, value: bool):
+        self._enabled = value and getattr(self.action, "_raw", True) is not None
+        self._impl.set_enabled(value)
 
     @property
-    def icon(self):
-        """The Icon for the app.
+    def icon(self) -> Icon | None:
+        """The Icon for the command.
 
-        :returns: A ``toga.Icon`` instance for the app's icon.
+        When setting the icon, you can provide either an :any:`Icon` instance, or a
+        path that will be passed to the ``Icon`` constructor.
         """
         return self._icon
 
     @icon.setter
-    def icon(self, icon_or_name):
+    def icon(self, icon_or_name: str | Icon):
         if isinstance(icon_or_name, Icon) or icon_or_name is None:
             self._icon = icon_or_name
         else:
             self._icon = Icon(icon_or_name)
 
-    def __lt__(self, other):
+    def __lt__(self, other: Any) -> bool:
+        if not isinstance(other, (Group, Command)):
+            return False
         return self.key < other.key
 
-    def __gt__(self, other):
+    def __gt__(self, other: Any) -> bool:
+        if not isinstance(other, (Group, Command)):
+            return False
         return other < self
 
-    def __repr__(self):
-        return "<Command text={} group={} section={} order={}>".format(
-            self.text,
-            self.group,
-            self.section,
-            self.order,
+    def __repr__(self) -> bool:
+        return (
+            f"<Command text={self.text!r} "
+            f"group={self.group} "
+            f"section={self.section} "
+            f"order={self.order}>"
         )
-
-    ######################################################################
-    # 2022-07: Backwards compatibility
-    ######################################################################
-    # label replaced with text
-    @property
-    def label(self):
-        """Command text.
-
-        **DEPRECATED: renamed as text**
-
-        Returns:
-            The command text as a ``str``
-        """
-        warnings.warn("Command.label has been renamed Command.text", DeprecationWarning)
-        return self.text
-
-    @label.setter
-    def label(self, label):
-        warnings.warn("Command.label has been renamed Command.text", DeprecationWarning)
-        self.text = label
-
-    ######################################################################
-    # End backwards compatibility.
-    ######################################################################
 
 
 class Break:
-    def __init__(self, name):
+    def __init__(self, name: str):
+        """A representation of a separator between Command Groups, or between sections
+        in a Group.
+
+        :param name: A name of the break type.
+        """
         self.name = name
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"<{self.name} break>"
 
 
@@ -354,49 +279,64 @@ GROUP_BREAK = Break("Group")
 SECTION_BREAK = Break("Section")
 
 
+class CommandSetChangeHandler(Protocol):
+    def __call__(self) -> None:
+        """A handler that will be invoked when a Command or Group is added to the CommandSet.
+
+        .. note::
+            ``**kwargs`` ensures compatibility with additional arguments
+            introduced in future versions.
+
+        :return: Nothing
+        """
+        ...
+
+
 class CommandSet:
-    """
-
-    Args:
-        factory:
-        widget:
-        on_change:
-
-    Todo:
-        * Add missing Docstrings.
-    """
-
     def __init__(
         self,
-        factory=None,  # DEPRECATED!
-        widget=None,
-        on_change=None,
+        on_change: CommandSetChangeHandler = None,
+        app: App | None = None,
     ):
-        ######################################################################
-        # 2022-09: Backwards compatibility
-        ######################################################################
-        # factory no longer used
-        if factory:
-            warnings.warn("The factory argument is no longer used.", DeprecationWarning)
-        ######################################################################
-        # End backwards compatibility.
-        ######################################################################
+        """
+        A collection of commands.
 
-        self.widget = widget
+        This is used as an internal representation of Menus, Toolbars, and any other
+        graphical manifestations of commands. You generally don't need to construct a
+        CommandSet of your own; you should use existing app or window level CommandSet
+        instances.
+
+        The collection can be iterated over to provide the display order of the commands
+        managed by the group.
+
+        :param on_change: A method that should be invoked when this command set changes.
+        :param app: The app this command set is associated with, if it is not the app's
+            own commandset.
+        """
+        self._app = app
         self._commands = set()
         self.on_change = on_change
 
-    def add(self, *commands):
-        if self.widget and self.widget.app is not None:
-            self.widget.app.commands.add(*commands)
+    def add(self, *commands: Command | Group):
+        if self.app and self.app is not None:
+            self.app.commands.add(*commands)
         self._commands.update(commands)
         if self.on_change:
             self.on_change()
 
-    def __len__(self):
+    def clear(self):
+        self._commands = set()
+        if self.on_change:
+            self.on_change()
+
+    @property
+    def app(self) -> App:
+        return self._app
+
+    def __len__(self) -> int:
         return len(self._commands)
 
-    def __iter__(self):
+    def __iter__(self) -> Command | Group | Break:
         prev_cmd = None
         for cmd in sorted(self._commands):
             if prev_cmd:

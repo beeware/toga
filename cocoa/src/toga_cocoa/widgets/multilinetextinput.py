@@ -21,7 +21,7 @@ class TogaTextView(NSTextView):
 
     @objc_method
     def textDidChange_(self, notification) -> None:
-        self.interface.on_change(None)
+        self.interface.on_change()
 
 
 class MultilineTextInput(Widget):
@@ -78,7 +78,7 @@ class MultilineTextInput(Widget):
 
     def set_value(self, value):
         self.native_text.string = value
-        self.interface.on_change(None)
+        self.interface.on_change()
 
     def set_color(self, value):
         self.native_text.textColor = native_color(value)

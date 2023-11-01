@@ -1,8 +1,7 @@
-from travertino.size import at_least
-
 from android import R
 from android.view import View
 from android.widget import ProgressBar as A_ProgressBar
+from travertino.size import at_least
 
 from .base import Widget
 

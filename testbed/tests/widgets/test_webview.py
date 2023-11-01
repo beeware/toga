@@ -111,7 +111,14 @@ async def widget(on_load):
             else:
                 raise
 
-    return widget
+    yield widget
+
+    if toga.platform.current_platform == "linux":
+        # On Gtk, ensure that the WebView is garbage collection before the next test
+        # case. This prevents a segfault at GC time likely coming from the test suite
+        # running in a thread and Gtk WebViews sharing resources between instances.
+        del widget
+        gc.collect()
 
 
 async def test_set_url(widget, probe, on_load):

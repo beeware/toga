@@ -148,7 +148,7 @@ class WindowDemoApp(toga.App):
         self.close_count = 0
 
         # Set up main window
-        self.main_window = toga.MainWindow(title=self.name)
+        self.main_window = toga.MainWindow()
         self.on_exit = self.exit_handler
 
         # Label to show responses.

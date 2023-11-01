@@ -46,4 +46,4 @@ class DateInput(Widget):
         self.interface.intrinsic.height = self.native.PreferredSize.Height
 
     def winforms_value_changed(self, sender, event):
-        self.interface.on_change(self.interface)
+        self.interface.on_change()

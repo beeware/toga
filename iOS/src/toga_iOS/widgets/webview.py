@@ -30,7 +30,7 @@ class TogaWebView(WKWebView):
 
     @objc_method
     def webView_didFinishNavigation_(self, navigation) -> None:
-        self.interface.on_webview_load(self.interface)
+        self.interface.on_webview_load()
 
         if self.impl.loaded_future:
             self.impl.loaded_future.set_result(None)

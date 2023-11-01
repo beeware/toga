@@ -8,11 +8,8 @@ from toga.style import Pack
 
 class ExampleButtonApp(toga.App):
     def startup(self):
-        # Window class
-        #   Main window of the application with title and size
-        #   Also make the window non-resizable and non-minimizable.
         self.main_window = toga.MainWindow(
-            title=self.name, size=(800, 500), resizeable=False, minimizable=False
+            size=(800, 500), resizable=False, minimizable=False
         )
 
         # Common style of the inner boxes

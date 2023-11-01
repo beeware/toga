@@ -144,7 +144,9 @@ class Tutorial2App(toga.App):
         # alter anything. Ordering is defined by the command definitions.
         self.commands.add(cmd1, cmd0, cmd6, cmd4, cmd5, cmd3)
 
-        self.main_window = toga.MainWindow(title=self.name)
+        self.main_window = toga.MainWindow()
+        # Command 2 has not been *explicitly* added to the app. Adding it to
+        # a toolbar implicitly adds it to the app.
         self.main_window.toolbar.add(cmd1, cmd3, cmd2, cmd4)
         self.main_window.content = split
 

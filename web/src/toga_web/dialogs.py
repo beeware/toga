@@ -41,7 +41,7 @@ class InfoDialog(BaseDialog):
         self.native.hide()
         self.native.parentElement.removeChild(self.native)
 
-        self.on_result(self, None)
+        self.on_result(None)
         self.interface.future.set_result(None)
 
 
@@ -52,7 +52,7 @@ class QuestionDialog(BaseDialog):
 
         interface.window.factory.not_implemented("Window.question_dialog()")
 
-        self.on_result(self, None)
+        self.on_result(None)
         self.interface.future.set_result(None)
 
 
@@ -63,7 +63,7 @@ class ConfirmDialog(BaseDialog):
 
         interface.window.factory.not_implemented("Window.confirm_dialog()")
 
-        self.on_result(self, None)
+        self.on_result(None)
         self.interface.future.set_result(None)
 
 
@@ -74,7 +74,7 @@ class ErrorDialog(BaseDialog):
 
         interface.window.factory.not_implemented("Window.error_dialog()")
 
-        self.on_result(self, None)
+        self.on_result(None)
         self.interface.future.set_result(None)
 
 
@@ -85,7 +85,7 @@ class StackTraceDialog(BaseDialog):
 
         interface.window.factory.not_implemented("Window.stack_trace_dialog()")
 
-        self.on_result(self, None)
+        self.on_result(None)
         self.interface.future.set_result(None)
 
 
@@ -104,7 +104,7 @@ class SaveFileDialog(BaseDialog):
 
         interface.window.factory.not_implemented("Window.save_file_dialog()")
 
-        self.on_result(self, None)
+        self.on_result(None)
         self.interface.future.set_result(None)
 
 
@@ -123,7 +123,7 @@ class OpenFileDialog(BaseDialog):
 
         interface.window.factory.not_implemented("Window.open_file_dialog()")
 
-        self.on_result(self, None)
+        self.on_result(None)
         self.interface.future.set_result(None)
 
 
@@ -141,5 +141,5 @@ class SelectFolderDialog(BaseDialog):
 
         interface.window.factory.not_implemented("Window.select_folder_dialog()")
 
-        self.on_result(self, None)
+        self.on_result(None)
         self.interface.future.set_result(None)

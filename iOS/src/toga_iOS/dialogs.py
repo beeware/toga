@@ -39,7 +39,7 @@ class AlertDialog(BaseDialog):
         ...
 
     def response(self, value):
-        self.on_result(self, value)
+        self.on_result(value)
         self.interface.future.set_result(value)
 
     def null_response(self, action: objc_id) -> None:

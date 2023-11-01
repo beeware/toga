@@ -1,8 +1,7 @@
-from java import dynamic_proxy
-from travertino.size import at_least
-
 from android.view import View
 from android.widget import CompoundButton, Switch as A_Switch
+from java import dynamic_proxy
+from travertino.size import at_least
 
 from .label import TextViewWidget
 
@@ -13,7 +12,7 @@ class OnCheckedChangeListener(dynamic_proxy(CompoundButton.OnCheckedChangeListen
         self._impl = impl
 
     def onCheckedChanged(self, _button, _checked):
-        self._impl.interface.on_change(None)
+        self._impl.interface.on_change()
 
 
 class Switch(TextViewWidget):

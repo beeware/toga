@@ -94,7 +94,6 @@ class Canvas(Box):
 
     def winforms_resize(self, *args):
         self.interface.on_resize(
-            None,
             width=self.scale_out(self.native.Width),
             height=self.scale_out(self.native.Height),
         )
@@ -103,12 +102,12 @@ class Canvas(Box):
         x, y = map(self.scale_out, (mouse_event.X, mouse_event.Y))
         if mouse_event.Button == WinForms.MouseButtons.Left:
             if mouse_event.Clicks == 2:
-                self.interface.on_activate(None, x, y)
+                self.interface.on_activate(x, y)
             else:
-                self.interface.on_press(None, x, y)
+                self.interface.on_press(x, y)
                 self.dragging = True
         elif mouse_event.Button == WinForms.MouseButtons.Right:
-            self.interface.on_alt_press(None, x, y)
+            self.interface.on_alt_press(x, y)
             self.dragging = True
         else:  # pragma: no cover
             pass
@@ -118,9 +117,9 @@ class Canvas(Box):
             return
         x, y = map(self.scale_out, (mouse_event.X, mouse_event.Y))
         if mouse_event.Button == WinForms.MouseButtons.Left:
-            self.interface.on_drag(None, x, y)
+            self.interface.on_drag(x, y)
         elif mouse_event.Button == WinForms.MouseButtons.Right:
-            self.interface.on_alt_drag(None, x, y)
+            self.interface.on_alt_drag(x, y)
         else:  # pragma: no cover
             pass
 
@@ -128,9 +127,9 @@ class Canvas(Box):
         self.dragging = False
         x, y = map(self.scale_out, (mouse_event.X, mouse_event.Y))
         if mouse_event.Button == WinForms.MouseButtons.Left:
-            self.interface.on_release(None, x, y)
+            self.interface.on_release(x, y)
         elif mouse_event.Button == WinForms.MouseButtons.Right:
-            self.interface.on_alt_release(None, x, y)
+            self.interface.on_alt_release(x, y)
         else:  # pragma: no cover
             pass
 

@@ -5,9 +5,7 @@ from toga.style import Pack
 
 class DividerApp(toga.App):
     def startup(self):
-        # Window class
-        #   Main window of the application with title and size
-        self.main_window = toga.MainWindow(title=self.name, size=(300, 150))
+        self.main_window = toga.MainWindow(size=(300, 150))
 
         style = Pack(padding_top=24)
         substyle = Pack(padding_right=12, padding_left=12, flex=1)

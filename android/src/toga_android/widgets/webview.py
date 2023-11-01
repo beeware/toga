@@ -1,9 +1,9 @@
 import json
 
+from android.webkit import ValueCallback, WebView as A_WebView, WebViewClient
 from java import dynamic_proxy
 from travertino.size import at_least
 
-from android.webkit import ValueCallback, WebView as A_WebView, WebViewClient
 from toga.widgets.webview import JavaScriptResult
 
 from .base import Widget

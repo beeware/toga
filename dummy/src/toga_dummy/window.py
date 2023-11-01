@@ -1,7 +1,6 @@
-from .utils import LoggedObject, not_required
+from .utils import LoggedObject
 
 
-@not_required  # not part of the formal API spec
 class Container:
     def __init__(self, content=None):
         self.baseline_dpi = 96
@@ -37,7 +36,6 @@ class Container:
             self.content.refresh()
 
 
-@not_required  # Testbed coverage is complete
 class Window(LoggedObject):
     def __init__(self, interface, title, position, size):
         super().__init__()
@@ -97,12 +95,8 @@ class Window(LoggedObject):
         self._action("set full screen", full_screen=is_full_screen)
 
     def simulate_close(self):
-        self.interface.on_close(None)
+        self.interface.on_close()
         
-    @not_required
-    def toga_on_close(self):
-        self._action("handle Window on_close")
-
     @not_required_on("mobile", "web")
     def get_current_screen(self):
         self._get_value("screen")

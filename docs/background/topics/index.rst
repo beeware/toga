@@ -6,5 +6,4 @@ Topic guides
    :maxdepth: 1
 
    layout
-   commands
    data-sources

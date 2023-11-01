@@ -1,11 +1,7 @@
-from ctypes import c_void_p
-
-from rubicon.objc import SEL, at, objc_method, objc_property, send_super
+from rubicon.objc import SEL, at, objc_method, objc_property
 from travertino.size import at_least
 
 import toga
-from toga.keys import Key
-from toga_cocoa.keys import toga_key
 from toga_cocoa.libs import (
     NSBezelBorder,
     NSIndexSet,
@@ -83,16 +79,6 @@ class TogaTable(NSTableView):
         # this seems to be required to prevent issue 21562075 in AppKit
         return None
 
-    @objc_method
-    def keyDown_(self, event) -> None:
-        # any time this table is in focus and a key is pressed, this method will be called
-        if toga_key(event) == {"key": Key.A, "modifiers": {Key.MOD_1}}:
-            if self.interface.multiple_select:
-                self.selectAll(self)
-        else:
-            # forward call to super
-            send_super(__class__, self, "keyDown:", event, argtypes=[c_void_p])
-
     # TableDelegate methods
     @objc_method
     def selectionShouldChangeInTableView_(self, table) -> bool:
@@ -102,7 +88,7 @@ class TogaTable(NSTableView):
 
     @objc_method
     def tableViewSelectionDidChange_(self, notification) -> None:
-        self.interface.on_select(None)
+        self.interface.on_select()
 
     # 2021-09-04: Commented out this method because it appears to be a
     # source of significant slowdown when the table has a lot of data
@@ -133,7 +119,7 @@ class TogaTable(NSTableView):
     def onDoubleClick_(self, sender) -> None:
         clicked = self.interface.data[self.clickedRow]
 
-        self.interface.on_activate(None, row=clicked)
+        self.interface.on_activate(row=clicked)
 
 
 class Table(Widget):

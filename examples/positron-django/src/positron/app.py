@@ -50,7 +50,7 @@ class Positron(toga.App):
         host, port = self._httpd.socket.getsockname()
         self.web_view.url = f"http://{host}:{port}/"
 
-        self.main_window = toga.MainWindow(title=self.formal_name)
+        self.main_window = toga.MainWindow()
         self.main_window.content = self.web_view
         self.main_window.show()
 

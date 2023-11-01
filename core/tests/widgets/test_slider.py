@@ -501,7 +501,7 @@ def test_int_impl_on_change(tick_count, data):
         impl.int_value = int_value
         impl.on_change()
         assert impl.get_value() == approx(value)
-        impl.interface.on_change.assert_called_once_with(None)
+        impl.interface.on_change.assert_called_once_with()
 
 
 def test_deprecated():

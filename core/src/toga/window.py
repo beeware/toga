@@ -2,10 +2,11 @@ from __future__ import annotations
 
 import warnings
 from builtins import id as identifier
+from collections.abc import Mapping, MutableSet
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Literal, Protocol, TypeVar, overload
 
-from toga.command import CommandSet
+from toga.command import Command, CommandSet
 from toga.handlers import AsyncResult, wrapped_handler
 from toga.platform import get_platform_factory
 from toga.widgets.base import WidgetRegistry
@@ -111,7 +112,7 @@ class Window:
         # Needs to be a late import to avoid circular dependencies.
         from toga import App
 
-        self.widgets = WidgetRegistry()
+        self._widgets = WidgetRegistry()
 
         self._id = str(id if id else identifier(self))
         self._impl = None
@@ -131,10 +132,15 @@ class Window:
             size=size,
         )
 
+        # Add the window to the app
         self._app = None
-        App.app.windows += self
+        if App.app is None:
+            raise RuntimeError("Cannot create a Window before creating an App")
+        App.app.windows.add(self)
 
-        self._toolbar = CommandSet(widget=self, on_change=self._impl.create_toolbar)
+        # Create a toolbar that is linked to the app
+        self._toolbar = CommandSet(on_change=self._impl.create_toolbar, app=self._app)
+
         self.on_close = on_close
 
     @property
@@ -210,7 +216,7 @@ class Window:
         return self._minimizable
 
     @property
-    def toolbar(self) -> CommandSet:
+    def toolbar(self) -> MutableSet[Command]:
         """Toolbar for the window."""
         return self._toolbar
 
@@ -240,6 +246,14 @@ class Window:
 
         # Update the geometry of the widget
         widget.refresh()
+
+    @property
+    def widgets(self) -> Mapping[str, Widget]:
+        """The widgets contained in the window.
+
+        Can be used to look up widgets by ID (e.g., ``window.widgets["my_id"]``).
+        """
+        return self._widgets
 
     @property
     def size(self) -> tuple[int, int]:
@@ -354,7 +368,7 @@ class Window:
         undefined, except for :attr:`closed` which can be used to check if the window
         was closed.
         """
-        self.app.windows -= self
+        self.app.windows.discard(self)
         self._impl.close()
         self._closed = True
 

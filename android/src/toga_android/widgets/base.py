@@ -1,13 +1,13 @@
 from abc import ABC, abstractmethod
 from decimal import ROUND_HALF_EVEN, ROUND_UP, Decimal
 
-from org.beeware.android import MainActivity
-from travertino.size import at_least
-
 from android.graphics import PorterDuff, PorterDuffColorFilter, Rect
 from android.graphics.drawable import ColorDrawable, InsetDrawable
 from android.view import Gravity, View
 from android.widget import RelativeLayout
+from org.beeware.android import MainActivity
+from travertino.size import at_least
+
 from toga.constants import CENTER, JUSTIFY, LEFT, RIGHT, TRANSPARENT
 
 from ..colors import native_color
@@ -33,7 +33,7 @@ class Scalable:
             return self.scale_round(value / self.dpi_scale, rounding)
 
     def scale_round(self, value, rounding):
-        if rounding is None:
+        if rounding is None:  # pragma: no cover
             return value
         return int(Decimal(value).to_integral(rounding))
 

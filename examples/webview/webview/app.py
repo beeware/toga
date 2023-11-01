@@ -49,7 +49,7 @@ class ExampleWebView(toga.App):
         self.webview.user_agent = "Mr Roboto"
 
     def startup(self):
-        self.main_window = toga.MainWindow(title=self.name)
+        self.main_window = toga.MainWindow()
         self.label = toga.Label("www is loading |", style=Pack(flex=1, padding=5))
 
         button_box = toga.Box(

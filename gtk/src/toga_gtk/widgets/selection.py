@@ -20,7 +20,7 @@ class Selection(Widget):
 
     def gtk_on_changed(self, widget):
         if self._send_notifications:
-            self.interface.on_change(None)
+            self.interface.on_change()
 
     # FIXME: 2023-05-31 Everything I can find in documentation, and every test I
     # do with manual stylesheet in the GTK Inspector, says that `.toga button`
@@ -77,7 +77,7 @@ class Selection(Widget):
     def clear(self):
         with self.suspend_notifications():
             self.native.remove_all()
-        self.interface.on_change(None)
+        self.interface.on_change()
 
     def select_item(self, index, item):
         self.native.set_active(index)

@@ -1,9 +1,8 @@
 from datetime import time
 
-from java import dynamic_proxy
-
 from android import R
 from android.app import TimePickerDialog
+from java import dynamic_proxy
 
 from .internal.pickers import PickerBase
 
@@ -39,7 +38,7 @@ class TimeInput(PickerBase):
     def set_value(self, value):
         self.native.setText(value.isoformat(timespec="minutes"))
         self._dialog.updateTime(value.hour, value.minute)
-        self.interface.on_change(None)
+        self.interface.on_change()
 
     def get_min_time(self):
         return self._min_time
