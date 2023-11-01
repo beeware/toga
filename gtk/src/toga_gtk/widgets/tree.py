@@ -55,11 +55,11 @@ class Tree(Widget):
             self.native_tree.append_column(column)
 
     def gtk_on_select(self, selection):
-        self.interface.on_select(None)
+        self.interface.on_select()
 
     def gtk_on_row_activated(self, widget, path, column):
         node = self.store[path][0].value
-        self.interface.on_activate(None, node=node)
+        self.interface.on_activate(node=node)
 
     def change_source(self, source):
         # Temporarily disconnecting the TreeStore improves performance for large

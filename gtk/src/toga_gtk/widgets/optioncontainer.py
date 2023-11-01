@@ -10,7 +10,7 @@ class OptionContainer(Widget):
         self.sub_containers = []
 
     def gtk_on_switch_page(self, widget, page, page_num):
-        self.interface.on_select(None)
+        self.interface.on_select()
 
     def add_content(self, index, text, widget):
         sub_container = TogaContainer()

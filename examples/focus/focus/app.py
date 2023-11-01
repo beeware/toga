@@ -11,11 +11,8 @@ FOCUS_ORDER_GROUP = toga.Group("Focus Order", order=3)
 
 class ExampleFocusApp(toga.App):
     def startup(self):
-        # Window class
-        #   Main window of the application with title and size
-        #   Also make the window non-resizable and non-minimizable.
         self.main_window = toga.MainWindow(
-            title=self.name, size=(800, 500), resizeable=False, minimizable=False
+            size=(800, 500), resizable=False, minimizable=False
         )
 
         self.a_button = toga.Button("A", on_press=self.on_button_press)
@@ -112,12 +109,12 @@ class ExampleFocusApp(toga.App):
         on_off = "on" if widget.value else "off"
         self.info_label.text = f"Switch turned {on_off}!"
 
-    def on_textinput_gain_focus(self, widget: toga.TextInput):
+    def on_textinput_gain_focus(self, widget: toga.TextInput, **kwargs):
         self.info_label.text = "TextInput has previously had focus " "{} times".format(
             self.text_input_focus_count
         )
 
-    def on_textinput_lose_focus(self, widget: toga.TextInput):
+    def on_textinput_lose_focus(self, widget: toga.TextInput, **kwargs):
         self.text_input_focus_count += 1
 
     def focus_with_label(self, widget: toga.Widget):

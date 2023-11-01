@@ -1,6 +1,5 @@
-from travertino.size import at_least
-
 from android.widget import RelativeLayout
+from travertino.size import at_least
 
 from .base import Widget
 

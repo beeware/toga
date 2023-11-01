@@ -81,7 +81,7 @@ class Window:
         pass
 
     def create_toolbar(self):
-        pass
+        pass  # pragma: no cover
 
     def show(self):
         self.native.makeKeyAndVisible()

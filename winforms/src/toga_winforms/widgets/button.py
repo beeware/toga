@@ -14,7 +14,7 @@ class Button(Widget):
         self.native.Click += WeakrefCallable(self.winforms_click)
 
     def winforms_click(self, sender, event):
-        self.interface.on_press(None)
+        self.interface.on_press()
 
     def get_text(self):
         value = self.native.Text

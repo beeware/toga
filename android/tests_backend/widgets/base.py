@@ -1,8 +1,6 @@
 import asyncio
 
 import pytest
-from pytest import approx
-
 from android.graphics.drawable import (
     ColorDrawable,
     DrawableContainer,
@@ -11,6 +9,7 @@ from android.graphics.drawable import (
 )
 from android.os import Build, SystemClock
 from android.view import MotionEvent, View, ViewGroup
+
 from toga.colors import TRANSPARENT
 from toga.style.pack import JUSTIFY, LEFT
 
@@ -86,12 +85,12 @@ class SimpleProbe(BaseProbe, FontMixin):
         # Size and position is as expected. Values must be scaled from DP, and
         # compared inexactly due to pixel scaling
         assert (
-            approx(self.native.getWidth() / self.scale_factor, rel=0.01),
-            approx(self.native.getHeight() / self.scale_factor, rel=0.01),
+            pytest.approx(self.native.getWidth() / self.scale_factor, rel=0.01),
+            pytest.approx(self.native.getHeight() / self.scale_factor, rel=0.01),
         ) == size
         assert (
-            approx(self.native.getLeft() / self.scale_factor, rel=0.01),
-            approx(self.native.getTop() / self.scale_factor, rel=0.01),
+            pytest.approx(self.native.getLeft() / self.scale_factor, rel=0.01),
+            pytest.approx(self.native.getTop() / self.scale_factor, rel=0.01),
         ) == position
 
     @property

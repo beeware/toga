@@ -20,22 +20,22 @@ class ExampleNumberInputApp(toga.App):
 
     def startup(self):
         # Set up main window
-        self.main_window = toga.MainWindow(title=self.name)
+        self.main_window = toga.MainWindow()
 
         # Label to show responses.
         self.label = toga.Label("Ready.")
         label1 = toga.Label("Enter value from -12 to 72:")
         self.input1 = toga.NumberInput(
-            min_value=-12,
-            max_value=72,
+            min=-12,
+            max=72,
             step=2,
             value=37,
             on_change=self.on_change,
         )
         label2 = toga.Label("Enter value from 1.2 to 7.2:")
         self.input2 = toga.NumberInput(
-            min_value=1.2,
-            max_value=7.2,
+            min=1.2,
+            max=7.2,
             step=0.1,
             value=3.7,
             on_change=self.on_change,

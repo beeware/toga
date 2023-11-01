@@ -1,8 +1,6 @@
-from ..utils import not_required
 from .base import Widget
 
 
-@not_required  # Testbed coverage is complete for this widget.
 class Selection(Widget):
     def create(self):
         self._action("create Selection")
@@ -47,4 +45,4 @@ class Selection(Widget):
 
     def simulate_selection(self, item):
         self._set_value("selected_item", item)
-        self.interface.on_change(None)
+        self.interface.on_change()

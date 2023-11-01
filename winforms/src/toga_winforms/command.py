@@ -9,4 +9,4 @@ class Command:
                 widget.Enabled = self.interface.enabled
 
     def winforms_handler(self, sender, event):
-        return self.interface.action(None)
+        return self.interface.action()

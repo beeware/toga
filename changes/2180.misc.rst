@@ -1,0 +1,1 @@
+On WinForms, the ``Window.size`` property no longer includes the title bar and the invisible borders.

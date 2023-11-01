@@ -9,11 +9,6 @@ RELATIVE_FILE_PATH = Path("resources") / "toga.png"
 ABSOLUTE_FILE_PATH = Path(toga.__file__).parent / "resources" / "toga.png"
 
 
-@pytest.fixture
-def app():
-    return toga.App("Images Test", "org.beeware.toga.images")
-
-
 @pytest.mark.parametrize(
     "args, kwargs",
     [

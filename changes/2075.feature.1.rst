@@ -1,0 +1,1 @@
+App, DocumentApp and Command now have 100% test coverage, and complete API documentation.

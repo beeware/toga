@@ -1,7 +1,6 @@
-from .utils import LoggedObject, not_required
+from .utils import LoggedObject
 
 
-@not_required  # Testbed coverage is complete for this class
 class Font(LoggedObject):
     def __init__(self, interface):
         super().__init__()

@@ -1,7 +1,6 @@
-from .utils import LoggedObject, not_required
+from .utils import LoggedObject
 
 
-@not_required  # Testbed coverage is complete.
 class Icon(LoggedObject):
     EXTENSIONS = [".png", ".ico"]
     SIZES = None

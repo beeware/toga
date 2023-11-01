@@ -20,7 +20,7 @@ class NumberInput(Widget):
         self.native.connect("changed", self.gtk_on_change)
 
     def gtk_on_change(self, widget):
-        self.interface.on_change(widget)
+        self.interface.on_change()
 
     def get_readonly(self):
         return not self.native.get_property("editable")

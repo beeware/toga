@@ -1,9 +1,8 @@
 from decimal import ROUND_UP
 
-from java import dynamic_proxy
-
 from android import R
 from android.view import ViewTreeObserver
+from java import dynamic_proxy
 
 from .container import Container
 
@@ -66,7 +65,7 @@ class Window(Container):
         pass
 
     def create_toolbar(self):
-        pass
+        self.app.native.invalidateOptionsMenu()
 
     def show(self):
         pass

@@ -1,10 +1,10 @@
-from travertino.size import at_least
-
 from android.os import Build
 from android.text import Layout
 from android.util import TypedValue
 from android.view import Gravity, View
 from android.widget import TextView
+from travertino.size import at_least
+
 from toga.constants import JUSTIFY
 from toga_android.colors import native_color
 

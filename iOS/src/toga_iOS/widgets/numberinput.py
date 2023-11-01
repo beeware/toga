@@ -22,7 +22,7 @@ class TogaNumericTextField(UITextField):
 
     @objc_method
     def textFieldDidChange_(self, notification) -> None:
-        self.interface.on_change(self.interface)
+        self.interface.on_change()
 
     @objc_method
     def textField_shouldChangeCharactersInRange_replacementString_(
@@ -106,7 +106,7 @@ class NumberInput(Widget):
             self.native.text = ""
         else:
             self.native.text = str(value)
-        self.interface.on_change(None)
+        self.interface.on_change()
 
     def set_alignment(self, value):
         self.native.textAlignment = NSTextAlignment(value)

@@ -34,10 +34,10 @@ class Slider(Widget, IntSliderImpl):
         self.on_change()
 
     def winforms_mouse_down(self, sender, event):
-        self.interface.on_press(None)
+        self.interface.on_press()
 
     def winforms_mouse_up(self, sender, event):
-        self.interface.on_release(None)
+        self.interface.on_release()
 
     def get_int_value(self):
         return self.native.Value

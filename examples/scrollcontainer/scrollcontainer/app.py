@@ -60,7 +60,7 @@ class ScrollContainerApp(toga.App):
         self.scroller.content = self.inner_box
         main_box.add(self.scroller)
 
-        self.main_window = toga.MainWindow(self.name, size=(400, 700))
+        self.main_window = toga.MainWindow(size=(400, 700))
         self.main_window.content = main_box
         self.main_window.show()
 

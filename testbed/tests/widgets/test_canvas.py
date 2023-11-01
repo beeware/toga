@@ -116,6 +116,7 @@ async def test_resize(widget, probe, on_resize_handler):
     # the most recent of which has a large
     await probe.redraw("Canvas should be full size of window")
     assert on_resize_handler.call_count >= 1
+    assert on_resize_handler.call_args.args == (widget,)
     assert on_resize_handler.call_args.kwargs["width"] > 300
     assert on_resize_handler.call_args.kwargs["height"] > 300
     on_resize_handler.reset()
@@ -123,6 +124,7 @@ async def test_resize(widget, probe, on_resize_handler):
     widget.style.width = 100
     await probe.redraw("Canvas should be tall and narrow")
     assert on_resize_handler.call_count >= 1
+    assert on_resize_handler.call_args.args == (widget,)
     assert on_resize_handler.call_args.kwargs["width"] == 100
     assert on_resize_handler.call_args.kwargs["height"] > 300
     on_resize_handler.reset()
@@ -130,6 +132,7 @@ async def test_resize(widget, probe, on_resize_handler):
     widget.style.height = 100
     await probe.redraw("Canvas should be small")
     assert on_resize_handler.call_count >= 1
+    assert on_resize_handler.call_args.args == (widget,)
     assert on_resize_handler.call_args.kwargs["width"] == 100
     assert on_resize_handler.call_args.kwargs["height"] == 100
     on_resize_handler.reset()
@@ -137,6 +140,7 @@ async def test_resize(widget, probe, on_resize_handler):
     del widget.style.width
     await probe.redraw("Canvas should be width of the screen")
     assert on_resize_handler.call_count >= 1
+    assert on_resize_handler.call_args.args == (widget,)
     assert on_resize_handler.call_args.kwargs["width"] > 300
     assert on_resize_handler.call_args.kwargs["height"] == 100
     on_resize_handler.reset()

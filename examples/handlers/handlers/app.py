@@ -54,7 +54,7 @@ class HandlerApp(toga.App):
 
     def startup(self):
         # Set up main window
-        self.main_window = toga.MainWindow(title=self.name)
+        self.main_window = toga.MainWindow()
 
         # Labels to show responses.
         self.label = toga.Label("Ready.", style=Pack(padding=10))
