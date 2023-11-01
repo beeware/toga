@@ -33,6 +33,11 @@ class Image:
     def get_height(self):
         return self.native.Height
 
+    def get_data(self):
+        stream = MemoryStream()
+        self.native.Save(stream, ImageFormat.Png)
+        return stream.ToArray()
+
     def save(self, path):
         path = Path(path)
         try:
