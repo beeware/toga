@@ -1,4 +1,5 @@
-from math import degrees, pi
+import itertools
+from math import degrees
 
 from android.graphics import (
     Bitmap,
@@ -14,7 +15,7 @@ from java.io import ByteArrayOutputStream
 from org.beeware.android import DrawHandlerView, IDrawHandler
 from travertino.size import at_least
 
-from toga.widgets.canvas import Baseline, FillRule
+from toga.widgets.canvas import Baseline, FillRule, arc_to_bezier, sweepangle
 
 from ..colors import native_color
 from .base import Widget
@@ -101,25 +102,8 @@ class Canvas(Widget):
         path.quadTo(cpx, cpy, x, y)
 
     def arc(self, x, y, radius, startangle, endangle, anticlockwise, path, **kwargs):
-        sweepangle = endangle - startangle
-        if anticlockwise:
-            if sweepangle > 0:
-                sweepangle -= 2 * pi
-        else:
-            if sweepangle < 0:
-                sweepangle += 2 * pi
-
-        # HTML says sweep angles should be clamped at +/- 360 degrees, but Android uses
-        # mod 360 instead, so 360 would cause the circle to completely disappear.
-        limit = 359.999  # Must be less than 360 in 32-bit floating point.
-        path.arcTo(
-            x - radius,
-            y - radius,
-            x + radius,
-            y + radius,
-            degrees(startangle),
-            max(-limit, min(degrees(sweepangle), limit)),
-            False,  # forceMoveTo
+        self.ellipse(
+            x, y, radius, radius, 0, startangle, endangle, anticlockwise, path, **kwargs
         )
 
     def ellipse(
@@ -136,19 +120,23 @@ class Canvas(Widget):
         **kwargs,
     ):
         matrix = Matrix()
-        matrix.postScale(radiusx, radiusy)
-        matrix.postRotate(degrees(rotation))
-        matrix.postTranslate(x, y)
+        matrix.preTranslate(x, y)
+        matrix.preRotate(degrees(rotation))
+        matrix.preScale(radiusx, radiusy)
+        matrix.preRotate(degrees(startangle))
 
-        # Creating the ellipse as a separate path and then using addPath would make it a
-        # disconnected contour. And there's no way to extract the segments from a path
-        # until getPathIterator in API level 34. So this is the simplest solution I
-        # could find.
-        inverse = Matrix()
-        matrix.invert(inverse)
-        path.transform(inverse)
-        self.arc(0, 0, 1, startangle, endangle, anticlockwise, path)
-        path.transform(matrix)
+        coords = list(
+            itertools.chain(
+                *arc_to_bezier(sweepangle(startangle, endangle, anticlockwise))
+            )
+        )
+        matrix.mapPoints(coords)
+
+        self.line_to(coords[0], coords[1], path, **kwargs)
+        i = 2
+        while i < len(coords):
+            self.bezier_curve_to(*coords[i : i + 6], path, **kwargs)
+            i += 6
 
     def rect(self, x, y, width, height, path, **kwargs):
         path.addRect(x, y, x + width, y + height, Path.Direction.CW)
