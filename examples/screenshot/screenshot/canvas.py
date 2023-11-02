@@ -1,6 +1,7 @@
 import math
 
 from toga.colors import REBECCAPURPLE, WHITE, rgb
+from toga.constants import Baseline
 from toga.fonts import SANS_SERIF, Font
 
 
@@ -28,9 +29,13 @@ def draw_eyes(canvas):
     with canvas.Fill(color=WHITE) as eye_whites:
         eye_whites.arc(58, 92, 15)
         eye_whites.arc(88, 92, 15, math.pi, 3 * math.pi)
+
+    # Draw eyes separately to avoid miter join
     with canvas.Stroke(line_width=4.0) as eye_outline:
         eye_outline.arc(58, 92, 15)
+    with canvas.Stroke(line_width=4.0) as eye_outline:
         eye_outline.arc(88, 92, 15, math.pi, 3 * math.pi)
+
     with canvas.Fill() as eye_pupils:
         eye_pupils.arc(58, 97, 3)
         eye_pupils.arc(88, 97, 3)
@@ -73,15 +78,20 @@ def draw_nostrils(canvas):
 
 def draw_text(canvas):
     font = Font(family=SANS_SERIF, size=20)
-    width, height = canvas.measure_text("Tiberius", font)
+    text_width, text_height = canvas.measure_text("Tiberius", font)
 
-    x = (150 - width) // 2
-    y = 200
+    x = (150 - text_width) // 2
+    y = 175
 
     with canvas.Stroke(color=REBECCAPURPLE, line_width=4.0) as rect_stroker:
-        rect_stroker.rect(x - 5, y - height - 5, width + 10, height + 10)
+        rect_stroker.rect(
+            x - 5,
+            y - 5,
+            text_width + 10,
+            text_height + 10,
+        )
     with canvas.Fill(color=rgb(149, 119, 73)) as text_filler:
-        text_filler.write_text("Tiberius", x, y, font)
+        text_filler.write_text("Tiberius", x, y, font, Baseline.TOP)
 
 
 def draw_tiberius(canvas):

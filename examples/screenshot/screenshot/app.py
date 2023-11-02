@@ -414,7 +414,11 @@ class ScreenshotGeneratorApp(toga.App):
                             style=Pack(direction=COLUMN),
                         )
 
-                        await asyncio.sleep(2)
+                        await asyncio.sleep(
+                            {
+                                "webview": 4,
+                            }.get(content_type, 2)
+                        )
                         image = Image.open(BytesIO(self.main_window.as_image().data))
 
                         scale_x = (
