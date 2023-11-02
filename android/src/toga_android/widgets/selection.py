@@ -1,3 +1,5 @@
+from decimal import ROUND_UP
+
 from android import R
 from android.view import View
 from android.widget import AdapterView, ArrayAdapter, Spinner
@@ -84,5 +86,9 @@ class Selection(Widget):
 
     def rehint(self):
         self.native.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
-        self.interface.intrinsic.width = at_least(self.native.getMeasuredWidth())
-        self.interface.intrinsic.height = self.native.getMeasuredHeight()
+        self.interface.intrinsic.width = self.scale_out(
+            at_least(self.native.getMeasuredWidth()), ROUND_UP
+        )
+        self.interface.intrinsic.height = self.scale_out(
+            self.native.getMeasuredHeight(), ROUND_UP
+        )
