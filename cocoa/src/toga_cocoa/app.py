@@ -60,6 +60,12 @@ class AppDelegate(NSObject):
         self.native.activateIgnoringOtherApps(True)
 
     @objc_method
+    def applicationSupportsSecureRestorableState_(
+        self, app
+    ) -> bool:  # pragma: no cover
+        return True
+
+    @objc_method
     def applicationOpenUntitledFile_(self, sender) -> bool:  # pragma: no cover
         self.impl.select_file()
         return True
