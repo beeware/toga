@@ -5,6 +5,7 @@ from android.view import View, ViewTreeObserver, WindowManagerGlobal
 from android.widget import Button
 from java import dynamic_proxy
 from org.beeware.android import MainActivity
+from pytest import approx
 
 
 class LayoutListener(dynamic_proxy(ViewTreeObserver.OnGlobalLayoutListener)):
@@ -94,7 +95,8 @@ class BaseProbe:
             await asyncio.sleep(delay)
 
     def assert_image_size(self, image_size, size):
-        assert image_size.width == (
-            size[0] * self.scale_factor,
-            size[1] * self.scale_factor,
+        # Sizes are approximate because of scaling inconsistencies.
+        assert image_size == (
+            approx(size[0] * self.scale_factor, abs=2),
+            approx(size[1] * self.scale_factor, abs=2),
         )
