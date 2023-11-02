@@ -25,12 +25,12 @@ class Testbed(toga.App):
             shortcut=toga.Key.MOD_1 + "1",
             group=group,
         )
-        # A command with no tooltip, in the default group
+        # A command with no tooltip, in the default group, with a non-printable shortcut
         self.cmd2 = toga.Command(
             self.cmd_action,
             "No Tooltip",
             icon=toga.Icon.DEFAULT_ICON,
-            shortcut=toga.Key.MOD_1 + "2",
+            shortcut=toga.Key.MOD_1 + toga.Key.DOWN,
         )
         # A command without an icon, in the default group
         self.cmd3 = toga.Command(
