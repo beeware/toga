@@ -12,7 +12,6 @@ from android.view import MotionEvent, View
 from java import dynamic_proxy, jint
 from java.io import ByteArrayOutputStream
 from org.beeware.android import DrawHandlerView, IDrawHandler
-from travertino.size import at_least
 
 from toga.widgets.canvas import Baseline, FillRule
 
@@ -265,7 +264,3 @@ class Canvas(Widget):
 
     def set_background_color(self, value):
         self.set_background_simple(value)
-
-    def rehint(self):
-        self.interface.intrinsic.width = at_least(0)
-        self.interface.intrinsic.height = at_least(0)

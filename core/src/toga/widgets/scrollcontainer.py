@@ -6,6 +6,9 @@ from .base import Widget
 
 
 class ScrollContainer(Widget):
+    _MIN_WIDTH = 0
+    _MIN_HEIGHT = 0
+
     def __init__(
         self,
         id=None,
