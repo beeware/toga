@@ -38,35 +38,39 @@ class WinformContext:
 
     def clear_paths(self):
         self.paths = []
-        self.start_point = None
-        self.at_start_point = False
+        self.add_path()
 
     @property
     def current_path(self):
-        if len(self.paths) == 0:
-            self.add_path()
         return self.paths[-1]
 
-    def add_path(self):
+    def add_path(self, start_point=None):
         self.paths.append(GraphicsPath())
+        self.start_point = start_point
 
     # Because the GraphicsPath API works in terms of segments rather than points, it has
-    # nowhere to save the starting point of each figure before we use it. In all other
+    # no equivalent to move_to, and we must save that point manually. In all other
     # situations, we can get the last point from the GraphicsPath itself.
     #
     # default_x and default_y should be set as described in the HTML spec under "ensure
     # there is a subpath".
     def get_last_point(self, default_x, default_y):
-        if self.at_start_point:
-            self.at_start_point = False
-            return self.start_point
-        elif self.current_path.PointCount:
+        if self.current_path.PointCount:
             return self.current_path.GetLastPoint()
-        else:
-            # Since we're returning start_point for immediate use, we don't set
-            # at_start_point here.
-            self.start_point = PointF(default_x, default_y)
+        elif self.start_point:
             return self.start_point
+        else:
+            return PointF(default_x, default_y)
+
+    def print_path(self, path=None):  # pragma: no cover
+        if path is None:
+            path = self.current_path
+        print(
+            "\n".join(
+                str((ptype, point.X, point.Y))
+                for ptype, point in zip(path.PathTypes, path.PathPoints)
+            )
+        )
 
 
 class Canvas(Box):
@@ -154,17 +158,15 @@ class Canvas(Box):
     # We don't use current_path.CloseFigure, because that causes the dash pattern to
     # start on the last segment of the path rather than the first one.
     def close_path(self, draw_context, **kwargs):
-        start = draw_context.start_point
-        if start:
+        if draw_context.current_path.PointCount:
+            start = draw_context.current_path.PathPoints[0]
             draw_context.current_path.AddLine(
-                draw_context.get_last_point(start.X, start.Y), start
+                draw_context.current_path.GetLastPoint(), start
             )
             self.move_to(start.X, start.Y, draw_context)
 
     def move_to(self, x, y, draw_context, **kwargs):
-        draw_context.current_path.StartFigure()
-        draw_context.start_point = PointF(x, y)
-        draw_context.at_start_point = True
+        draw_context.add_path(PointF(x, y))
 
     def line_to(self, x, y, draw_context, **kwargs):
         draw_context.current_path.AddLine(
@@ -247,8 +249,10 @@ class Canvas(Box):
         draw_context.current_path.AddBeziers(points)
 
     def rect(self, x, y, width, height, draw_context, **kwargs):
+        draw_context.add_path()
         rect = RectangleF(x, y, width, height)
         draw_context.current_path.AddRectangle(rect)
+        draw_context.add_path()
 
     # Drawing Paths
 
