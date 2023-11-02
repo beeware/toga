@@ -110,9 +110,7 @@ class Window(Container):
             Bitmap.Config.ARGB_8888,
         )
         canvas = A_Canvas(bitmap)
-        background = self.native_content.getBackground()
-        if background:
-            background.draw(canvas)
+        # TODO: Need to draw window background as well as the content.
         self.native_content.draw(canvas)
 
         stream = ByteArrayOutputStream()
