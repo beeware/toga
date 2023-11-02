@@ -246,6 +246,10 @@ class Canvas(Box):
             ]
         )
         matrix.TransformPoints(points)
+
+        start = draw_context.start_point
+        if start and not draw_context.current_path.PointCount:
+            draw_context.current_path.AddLine(start, start)
         draw_context.current_path.AddBeziers(points)
 
     def rect(self, x, y, width, height, draw_context, **kwargs):
@@ -265,7 +269,7 @@ class Canvas(Box):
                 path.FillMode = FillMode.Winding
             path.Transform(draw_context.matrix)
             draw_context.graphics.FillPath(brush, path)
-        draw_context.paths.clear()
+        draw_context.clear_paths()
 
     def stroke(self, color, line_width, line_dash, draw_context, **kwargs):
         pen = Pen(native_color(color), self.scale_in(line_width, rounding=None))
@@ -275,7 +279,7 @@ class Canvas(Box):
         for path in draw_context.paths:
             path.Transform(draw_context.matrix)
             draw_context.graphics.DrawPath(pen, path)
-        draw_context.paths.clear()
+        draw_context.clear_paths()
 
     # Transformations
 
