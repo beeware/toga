@@ -28,10 +28,12 @@ class CanvasProbe(SimpleProbe):
         self.native.OnMouseUp(self.mouse_event(x, y, clicks=2, **kwargs))
 
     async def mouse_drag(self, x1, y1, x2, y2, **kwargs):
+        # Without a mouse button pressed, a move event should be ignored.
+        move_event = self.mouse_event((x1 + x2) // 2, (y1 + y2) // 2, **kwargs)
+        self.native.OnMouseMove(move_event)
+
         self.native.OnMouseDown(self.mouse_event(x1, y1, **kwargs))
-        self.native.OnMouseMove(
-            self.mouse_event((x1 + x2) // 2, (y1 + y2) // 2, **kwargs)
-        )
+        self.native.OnMouseMove(move_event)
         self.native.OnMouseUp(self.mouse_event(x2, y2, **kwargs))
 
     async def alt_mouse_press(self, x, y):

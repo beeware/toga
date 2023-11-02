@@ -1,4 +1,5 @@
 from contextlib import contextmanager
+from decimal import ROUND_UP
 
 import System.Windows.Forms as WinForms
 from travertino.size import at_least
@@ -77,5 +78,9 @@ class Selection(Widget):
         return None if index == -1 else index
 
     def rehint(self):
-        self.interface.intrinsic.width = at_least(self.native.PreferredSize.Width)
-        self.interface.intrinsic.height = self.native.PreferredSize.Height
+        self.interface.intrinsic.width = self.scale_out(
+            at_least(self.native.PreferredSize.Width), ROUND_UP
+        )
+        self.interface.intrinsic.height = self.scale_out(
+            self.native.PreferredSize.Height, ROUND_UP
+        )

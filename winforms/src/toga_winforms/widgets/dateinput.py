@@ -1,8 +1,8 @@
 import datetime
+from decimal import ROUND_UP
 
 import System.Windows.Forms as WinForms
 from System import DateTime as WinDateTime
-from travertino.size import at_least
 
 from ..libs.wrapper import WeakrefCallable
 from .base import Widget
@@ -42,8 +42,9 @@ class DateInput(Widget):
         self.native.MaxDate = native_date(value)
 
     def rehint(self):
-        self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
-        self.interface.intrinsic.height = self.native.PreferredSize.Height
+        self.interface.intrinsic.height = self.scale_out(
+            self.native.PreferredSize.Height, ROUND_UP
+        )
 
     def winforms_value_changed(self, sender, event):
         self.interface.on_change()

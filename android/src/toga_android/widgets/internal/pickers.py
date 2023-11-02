@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from decimal import ROUND_UP
 
 from android.view import View
 from android.widget import EditText
@@ -42,4 +43,6 @@ class PickerBase(TextViewWidget, ABC):
     def rehint(self):
         self.interface.intrinsic.width = at_least(300)
         self.native.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
-        self.interface.intrinsic.height = self.native.getMeasuredHeight()
+        self.interface.intrinsic.height = self.scale_out(
+            self.native.getMeasuredHeight(), ROUND_UP
+        )

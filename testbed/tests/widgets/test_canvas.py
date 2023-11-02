@@ -1,5 +1,5 @@
 import math
-from math import pi
+from math import pi, radians
 from unittest.mock import Mock, call
 
 import pytest
@@ -311,6 +311,8 @@ async def test_paths(canvas, probe):
 
     # A stroked path requires an explicit close. For an open stroke, see test_stroke.
     canvas.context.begin_path()
+    # When there are two consecutive move_tos, the first one should leave no trace.
+    canvas.context.move_to(140, 140)
     canvas.context.move_to(180, 180)
     canvas.context.line_to(180, 60)
     canvas.context.line_to(60, 180)
@@ -320,6 +322,12 @@ async def test_paths(canvas, probe):
     # An empty path should not appear.
     canvas.context.begin_path()
     canvas.context.close_path()
+    canvas.context.stroke(RED)
+
+    # A path containing only move_to commands should not appear.
+    canvas.context.begin_path()
+    canvas.context.move_to(140, 140)
+    canvas.context.move_to(160, 160)
     canvas.context.stroke(RED)
 
     await probe.redraw("Pair of triangles should be drawn")
@@ -437,6 +445,37 @@ async def test_ellipse(canvas, probe):
 
     await probe.redraw("Atom should be drawn")
     assert_reference(probe, "ellipse", threshold=0.04)
+
+
+async def test_ellipse_path(canvas, probe):
+    "An elliptical arc can be connected to other segments of a path"
+
+    context = canvas.context
+    ellipse_args = dict(x=100, y=100, radiusx=70, radiusy=40, rotation=radians(30))
+
+    # Start of path -> arc
+    context.ellipse(**ellipse_args, startangle=radians(80), endangle=radians(160))
+    # Arc -> arc
+    context.ellipse(**ellipse_args, startangle=radians(220), endangle=radians(260))
+    context.stroke()
+
+    context.begin_path()
+    context.move_to(120, 20)
+    # Move -> arc
+    context.ellipse(**ellipse_args, startangle=radians(280), endangle=radians(340))
+    # Arc -> line
+    context.line_to(180, 50)
+    context.stroke(RED)
+
+    context.begin_path()
+    context.move_to(180, 180)
+    context.line_to(180, 160)
+    # Line -> arc
+    context.ellipse(**ellipse_args, startangle=radians(10), endangle=radians(60))
+    context.stroke(CORNFLOWERBLUE)
+
+    await probe.redraw("Broken ellipse with connected lines should be drawn")
+    assert_reference(probe, "ellipse_path", threshold=0.04)
 
 
 async def test_rect(canvas, probe):
