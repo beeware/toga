@@ -1,6 +1,7 @@
-from math import degrees, pi
+from math import degrees
 
 import System.Windows.Forms as WinForms
+from System import Array
 from System.Drawing import (
     Bitmap,
     Graphics,
@@ -21,7 +22,7 @@ from System.Drawing.Drawing2D import (
 from System.Drawing.Imaging import ImageFormat
 from System.IO import MemoryStream
 
-from toga.widgets.canvas import Baseline, FillRule
+from toga.widgets.canvas import Baseline, FillRule, arc_to_bezier, sweepangle
 from toga_winforms.colors import native_color
 
 from ..libs.wrapper import WeakrefCallable
@@ -202,16 +203,18 @@ class Canvas(Box):
     def arc(
         self, x, y, radius, startangle, endangle, anticlockwise, draw_context, **kwargs
     ):
-        sweepangle = endangle - startangle
-        if anticlockwise:
-            if sweepangle > 0:
-                sweepangle -= 2 * pi
-        else:
-            if sweepangle < 0:
-                sweepangle += 2 * pi
-
-        rect = RectangleF(x - radius, y - radius, 2 * radius, 2 * radius)
-        draw_context.current_path.AddArc(rect, degrees(startangle), degrees(sweepangle))
+        self.ellipse(
+            x,
+            y,
+            radius,
+            radius,
+            0,
+            startangle,
+            endangle,
+            anticlockwise,
+            draw_context,
+            **kwargs,
+        )
 
     def ellipse(
         self,
@@ -226,29 +229,22 @@ class Canvas(Box):
         draw_context,
         **kwargs,
     ):
-        # Transformations apply not to individual points, but to entire GraphicsPath
-        # objects, so we must create a separate one for this shape.
-        draw_context.add_path()
+        matrix = Matrix()
+        matrix.Translate(x, y)
+        matrix.Rotate(degrees(rotation))
+        matrix.Scale(radiusx, radiusy)
+        matrix.Rotate(degrees(startangle))
 
-        # The current transform will be applied when the path is filled or stroked, so
-        # make sure we don't apply it now.
-        self.push_context(draw_context)
-        draw_context.matrix.Reset()
-
-        self.translate(x, y, draw_context)
-        self.rotate(rotation, draw_context)
-        if radiusx >= radiusy:
-            self.scale(1, radiusy / radiusx, draw_context)
-            self.arc(0, 0, radiusx, startangle, endangle, anticlockwise, draw_context)
-        else:
-            self.scale(radiusx / radiusy, 1, draw_context)
-            self.arc(0, 0, radiusy, startangle, endangle, anticlockwise, draw_context)
-
-        draw_context.current_path.Transform(draw_context.matrix)
-
-        # Set up a fresh GraphicsPath for the next operation.
-        self.pop_context(draw_context)
-        draw_context.add_path()
+        points = Array[PointF](
+            [
+                PointF(x, y)
+                for x, y in arc_to_bezier(
+                    sweepangle(startangle, endangle, anticlockwise)
+                )
+            ]
+        )
+        matrix.TransformPoints(points)
+        draw_context.current_path.AddBeziers(points)
 
     def rect(self, x, y, width, height, draw_context, **kwargs):
         rect = RectangleF(x, y, width, height)
