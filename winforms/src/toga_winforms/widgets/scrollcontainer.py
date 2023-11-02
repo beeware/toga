@@ -3,7 +3,6 @@ from decimal import ROUND_DOWN
 from System.Drawing import Point
 from System.Windows.Forms import Panel, SystemInformation
 from travertino.node import Node
-from travertino.size import at_least
 
 from toga_winforms.container import Container
 
@@ -128,7 +127,3 @@ class ScrollContainer(Widget, Container):
             self.scale_in(vertical_position),
         )
         self.interface.on_scroll()
-
-    def rehint(self):
-        self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
-        self.interface.intrinsic.height = at_least(self.interface._MIN_HEIGHT)
