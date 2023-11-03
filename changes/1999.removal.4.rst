@@ -1,1 +1,0 @@
-``TimePicker.min_time`` and ``TimePicker.max_time`` has been renamed ``TimeInput.min`` and ``TimeInput.max``, respectively.

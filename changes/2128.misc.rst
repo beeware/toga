@@ -1,1 +1,0 @@
-The copyright year was removed from the documentation footer.

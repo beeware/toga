@@ -4,7 +4,7 @@ import pytest
 from PIL import Image
 from rubicon.objc import NSObject, NSPoint, ObjCClass, objc_method
 
-from toga_iOS.libs import UIScreen, UIView
+from toga_iOS.libs import UIView
 
 from .base import SimpleProbe
 
@@ -32,12 +32,6 @@ class CanvasProbe(SimpleProbe):
 
     def get_image(self):
         return Image.open(BytesIO(self.impl.get_image_data()))
-
-    def assert_image_size(self, image, width, height):
-        # Retina displays render images at a higher resolution than their reported size.
-        scale = int(UIScreen.mainScreen.scale)
-        assert image.width == width * scale
-        assert image.height == height * scale
 
     async def mouse_press(self, x, y):
         touch = MockTouch.alloc().init()

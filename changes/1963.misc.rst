@@ -1,1 +1,0 @@
-The iOS handler for focus changes was corrected to correctly resign focus.

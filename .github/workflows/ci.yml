@@ -237,3 +237,11 @@ jobs:
       with:
         name: testbed-failure-app-data-${{ matrix.backend }}
         path: testbed/app_data/*
+    # This step is only needed if you're trying to diagnose test failures that
+    # only occur in CI, and can't be reproduced locally. When it runs, it will
+    # open an SSH server (URL reported in the logs) so you can ssh into the CI
+    # machine.
+    # - uses: actions/checkout@v3
+    # - name: Setup tmate session
+    #   uses: mxschmitt/action-tmate@v3
+    #   if: failure()

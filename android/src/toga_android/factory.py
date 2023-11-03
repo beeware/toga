@@ -10,6 +10,7 @@ from .widgets.button import Button
 from .widgets.canvas import Canvas
 from .widgets.dateinput import DateInput
 from .widgets.detailedlist import DetailedList
+from .widgets.divider import Divider
 from .widgets.imageview import ImageView
 from .widgets.label import Label
 from .widgets.multilinetextinput import MultilineTextInput
@@ -33,34 +34,41 @@ def not_implemented(feature):
 
 __all__ = [
     "App",
-    "Box",
-    "Button",
-    "Canvas",
     "Command",
-    "DateInput",
+    "MainWindow",
+    "not_implemented",
+    # Resources
+    "dialogs",
     "Font",
     "Icon",
     "Image",
+    "Paths",
+    # Widgets
+    # ActivityIndicator
+    "Box",
+    "Button",
+    "Canvas",
+    "DateInput",
+    "DetailedList",
+    "Divider",
     "ImageView",
     "Label",
-    "MainWindow",
     "MultilineTextInput",
     "NumberInput",
+    # "OptionContainer",
     "PasswordInput",
     "ProgressBar",
+    "ScrollContainer",
+    # "SplitContainer",
     "Selection",
     "Slider",
-    "ScrollContainer",
     "Switch",
     "Table",
     "TextInput",
     "TimeInput",
+    # "Tree",
     "WebView",
     "Window",
-    "DetailedList",
-    "not_implemented",
-    "Paths",
-    "dialogs",
 ]
 
 

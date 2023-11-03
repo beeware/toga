@@ -1,7 +1,6 @@
 from pathlib import Path
 
-from rubicon.objc import NSPoint, ObjCClass, send_message
-from rubicon.objc.runtime import objc_id
+from rubicon.objc import NSPoint, ObjCClass, objc_id, send_message
 
 from toga_cocoa.keys import cocoa_key, toga_key
 from toga_cocoa.libs import (

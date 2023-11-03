@@ -1,1 +1,0 @@
-The ``invoke_javascript()`` method has been removed. All usage of ``invoke_javascript()`` can be replaced with ``evaluate_javascript()``.

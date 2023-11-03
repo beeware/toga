@@ -50,9 +50,13 @@ class StartApp(toga.App):
         with self.canvas.Fill(color=WHITE) as eye_whites:
             eye_whites.arc(58, 92, 15)
             eye_whites.arc(88, 92, 15, math.pi, 3 * math.pi)
+
+        # Draw eyes separately to avoid miter join
         with self.canvas.Stroke(line_width=4.0) as eye_outline:
             eye_outline.arc(58, 92, 15)
+        with self.canvas.Stroke(line_width=4.0) as eye_outline:
             eye_outline.arc(88, 92, 15, math.pi, 3 * math.pi)
+
         with self.canvas.Fill() as eye_pupils:
             eye_pupils.arc(58, 97, 3)
             eye_pupils.arc(88, 97, 3)

@@ -1,7 +1,7 @@
 from toga.command import GROUP_BREAK, SECTION_BREAK
 
 from .container import TogaContainer
-from .libs import Gtk
+from .libs import Gdk, Gtk
 
 
 def gtk_toolbar_item_clicked(cmd):
@@ -158,3 +158,32 @@ class Window:
             self.native.fullscreen()
         else:
             self.native.unfullscreen()
+
+    def get_image_data(self):
+        display = self.native.get_display()
+        display.flush()
+
+        # For some reason, converting the *window* to a pixbuf fails. But if you extract
+        # a *part* of the overall screen, that works. So - work out the origin of the
+        # window, then the allocation for the container relative to that window, and
+        # capture that rectangle.
+        window = self.native.get_window()
+        origin = window.get_origin()
+        allocation = self.container.get_allocation()
+
+        screen = display.get_default_screen()
+        root_window = screen.get_root_window()
+        screenshot = Gdk.pixbuf_get_from_window(
+            root_window,
+            origin.x + allocation.x,
+            origin.y + allocation.y,
+            allocation.width,
+            allocation.height,
+        )
+
+        success, buffer = screenshot.save_to_bufferv("png")
+        if success:
+            return buffer
+        else:  # pragma: nocover
+            # This shouldn't ever happen, and it's difficult to manufacture in test conditions
+            raise ValueError(f"Unable to generate screenshot of {self}")

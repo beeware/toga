@@ -1,5 +1,7 @@
 import System.Windows.Forms as WinForms
-from System.Drawing import Point, Size
+from System.Drawing import Bitmap, Graphics, Point, Size
+from System.Drawing.Imaging import ImageFormat
+from System.IO import MemoryStream
 
 from toga.command import GROUP_BREAK, SECTION_BREAK
 
@@ -185,3 +187,18 @@ class Window(Container, Scalable):
             self.native.ClientSize.Width,
             self.native.ClientSize.Height - vertical_shift,
         )
+
+    def get_image_data(self):
+        size = Size(self.native_content.Size.Width, self.native_content.Size.Height)
+        bitmap = Bitmap(size.Width, size.Height)
+        graphics = Graphics.FromImage(bitmap)
+
+        graphics.CopyFromScreen(
+            self.native_content.PointToScreen(Point.Empty),
+            Point(0, 0),
+            size,
+        )
+
+        stream = MemoryStream()
+        bitmap.Save(stream, ImageFormat.Png)
+        return stream.ToArray()

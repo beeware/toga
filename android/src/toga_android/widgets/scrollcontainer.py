@@ -3,7 +3,6 @@ from decimal import ROUND_DOWN
 from android.view import Gravity, View
 from android.widget import HorizontalScrollView, LinearLayout, ScrollView
 from java import dynamic_proxy
-from travertino.size import at_least
 
 from ..container import Container
 from .base import Widget
@@ -103,7 +102,3 @@ class ScrollContainer(Widget, Container):
 
     def set_background_color(self, value):
         self.set_background_simple(value)
-
-    def rehint(self):
-        self.interface.intrinsic.width = at_least(0)
-        self.interface.intrinsic.height = at_least(0)

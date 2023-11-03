@@ -1,1 +1,0 @@
-The ``on_result`` handler is now used by Cocoa file dialogs.

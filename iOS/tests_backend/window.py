@@ -1,6 +1,6 @@
 import pytest
 
-from toga_iOS.libs import UIWindow
+from toga_iOS.libs import UIApplication, UIWindow
 
 from .probe import BaseProbe
 
@@ -19,9 +19,14 @@ class WindowProbe(BaseProbe):
 
     @property
     def content_size(self):
+        # Content height doesn't include the status bar or navigation bar.
         return (
             self.native.contentView.frame.size.width,
-            self.native.contentView.frame.size.height,
+            self.native.contentView.frame.size.height
+            - (
+                UIApplication.sharedApplication.statusBarFrame.size.height
+                + self.native.rootViewController.navigationBar.frame.size.height
+            ),
         )
 
     async def close_info_dialog(self, dialog):

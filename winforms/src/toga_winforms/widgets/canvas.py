@@ -1,6 +1,7 @@
-from math import degrees, pi
+from math import degrees
 
 import System.Windows.Forms as WinForms
+from System import Array
 from System.Drawing import (
     Bitmap,
     Graphics,
@@ -21,7 +22,7 @@ from System.Drawing.Drawing2D import (
 from System.Drawing.Imaging import ImageFormat
 from System.IO import MemoryStream
 
-from toga.widgets.canvas import Baseline, FillRule
+from toga.widgets.canvas import Baseline, FillRule, arc_to_bezier, sweepangle
 from toga_winforms.colors import native_color
 
 from ..libs.wrapper import WeakrefCallable
@@ -37,35 +38,39 @@ class WinformContext:
 
     def clear_paths(self):
         self.paths = []
-        self.start_point = None
-        self.at_start_point = False
+        self.add_path()
 
     @property
     def current_path(self):
-        if len(self.paths) == 0:
-            self.add_path()
         return self.paths[-1]
 
-    def add_path(self):
+    def add_path(self, start_point=None):
         self.paths.append(GraphicsPath())
+        self.start_point = start_point
 
     # Because the GraphicsPath API works in terms of segments rather than points, it has
-    # nowhere to save the starting point of each figure before we use it. In all other
+    # no equivalent to move_to, and we must save that point manually. In all other
     # situations, we can get the last point from the GraphicsPath itself.
     #
     # default_x and default_y should be set as described in the HTML spec under "ensure
     # there is a subpath".
     def get_last_point(self, default_x, default_y):
-        if self.at_start_point:
-            self.at_start_point = False
-            return self.start_point
-        elif self.current_path.PointCount:
+        if self.current_path.PointCount:
             return self.current_path.GetLastPoint()
-        else:
-            # Since we're returning start_point for immediate use, we don't set
-            # at_start_point here.
-            self.start_point = PointF(default_x, default_y)
+        elif self.start_point:
             return self.start_point
+        else:
+            return PointF(default_x, default_y)
+
+    def print_path(self, path=None):  # pragma: no cover
+        if path is None:
+            path = self.current_path
+        print(
+            "\n".join(
+                str((ptype, point.X, point.Y))
+                for ptype, point in zip(path.PathTypes, path.PathPoints)
+            )
+        )
 
 
 class Canvas(Box):
@@ -153,17 +158,15 @@ class Canvas(Box):
     # We don't use current_path.CloseFigure, because that causes the dash pattern to
     # start on the last segment of the path rather than the first one.
     def close_path(self, draw_context, **kwargs):
-        start = draw_context.start_point
-        if start:
+        if draw_context.current_path.PointCount:
+            start = draw_context.current_path.PathPoints[0]
             draw_context.current_path.AddLine(
-                draw_context.get_last_point(start.X, start.Y), start
+                draw_context.current_path.GetLastPoint(), start
             )
             self.move_to(start.X, start.Y, draw_context)
 
     def move_to(self, x, y, draw_context, **kwargs):
-        draw_context.current_path.StartFigure()
-        draw_context.start_point = PointF(x, y)
-        draw_context.at_start_point = True
+        draw_context.add_path(PointF(x, y))
 
     def line_to(self, x, y, draw_context, **kwargs):
         draw_context.current_path.AddLine(
@@ -202,16 +205,18 @@ class Canvas(Box):
     def arc(
         self, x, y, radius, startangle, endangle, anticlockwise, draw_context, **kwargs
     ):
-        sweepangle = endangle - startangle
-        if anticlockwise:
-            if sweepangle > 0:
-                sweepangle -= 2 * pi
-        else:
-            if sweepangle < 0:
-                sweepangle += 2 * pi
-
-        rect = RectangleF(x - radius, y - radius, 2 * radius, 2 * radius)
-        draw_context.current_path.AddArc(rect, degrees(startangle), degrees(sweepangle))
+        self.ellipse(
+            x,
+            y,
+            radius,
+            radius,
+            0,
+            startangle,
+            endangle,
+            anticlockwise,
+            draw_context,
+            **kwargs,
+        )
 
     def ellipse(
         self,
@@ -226,33 +231,32 @@ class Canvas(Box):
         draw_context,
         **kwargs,
     ):
-        # Transformations apply not to individual points, but to entire GraphicsPath
-        # objects, so we must create a separate one for this shape.
-        draw_context.add_path()
+        matrix = Matrix()
+        matrix.Translate(x, y)
+        matrix.Rotate(degrees(rotation))
+        matrix.Scale(radiusx, radiusy)
+        matrix.Rotate(degrees(startangle))
 
-        # The current transform will be applied when the path is filled or stroked, so
-        # make sure we don't apply it now.
-        self.push_context(draw_context)
-        draw_context.matrix.Reset()
+        points = Array[PointF](
+            [
+                PointF(x, y)
+                for x, y in arc_to_bezier(
+                    sweepangle(startangle, endangle, anticlockwise)
+                )
+            ]
+        )
+        matrix.TransformPoints(points)
 
-        self.translate(x, y, draw_context)
-        self.rotate(rotation, draw_context)
-        if radiusx >= radiusy:
-            self.scale(1, radiusy / radiusx, draw_context)
-            self.arc(0, 0, radiusx, startangle, endangle, anticlockwise, draw_context)
-        else:
-            self.scale(radiusx / radiusy, 1, draw_context)
-            self.arc(0, 0, radiusy, startangle, endangle, anticlockwise, draw_context)
-
-        draw_context.current_path.Transform(draw_context.matrix)
-
-        # Set up a fresh GraphicsPath for the next operation.
-        self.pop_context(draw_context)
-        draw_context.add_path()
+        start = draw_context.start_point
+        if start and not draw_context.current_path.PointCount:
+            draw_context.current_path.AddLine(start, start)
+        draw_context.current_path.AddBeziers(points)
 
     def rect(self, x, y, width, height, draw_context, **kwargs):
+        draw_context.add_path()
         rect = RectangleF(x, y, width, height)
         draw_context.current_path.AddRectangle(rect)
+        draw_context.add_path()
 
     # Drawing Paths
 
@@ -265,7 +269,7 @@ class Canvas(Box):
                 path.FillMode = FillMode.Winding
             path.Transform(draw_context.matrix)
             draw_context.graphics.FillPath(brush, path)
-        draw_context.paths.clear()
+        draw_context.clear_paths()
 
     def stroke(self, color, line_width, line_dash, draw_context, **kwargs):
         pen = Pen(native_color(color), self.scale_in(line_width, rounding=None))
@@ -275,7 +279,7 @@ class Canvas(Box):
         for path in draw_context.paths:
             path.Transform(draw_context.matrix)
             draw_context.graphics.DrawPath(pen, path)
-        draw_context.paths.clear()
+        draw_context.clear_paths()
 
     # Transformations
 

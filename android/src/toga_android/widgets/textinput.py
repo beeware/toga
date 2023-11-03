@@ -1,8 +1,9 @@
+from decimal import ROUND_UP
+
 from android.text import InputType, TextWatcher
 from android.view import Gravity, View
 from android.widget import EditText
 from java import dynamic_proxy
-from travertino.size import at_least
 
 from toga_android.keys import toga_key
 
@@ -123,6 +124,7 @@ class TextInput(TextViewWidget):
         self.interface.on_lose_focus()
 
     def rehint(self):
-        self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
         self.native.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
-        self.interface.intrinsic.height = self.native.getMeasuredHeight()
+        self.interface.intrinsic.height = self.scale_out(
+            self.native.getMeasuredHeight(), ROUND_UP
+        )

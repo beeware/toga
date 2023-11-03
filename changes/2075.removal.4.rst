@@ -1,1 +1,0 @@
-``GROUP_BREAK``, ``SECTION_BREAK`` and ``CommandSet`` were removed from the ``toga`` namespace. End users generally shouldn't need to use these classes. If your code *does* need them for some reason, you can access them from the ``toga.command`` namespace.

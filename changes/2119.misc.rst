@@ -1,1 +1,0 @@
-An issue with imageview scaling on GTK was resolved.

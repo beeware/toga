@@ -7,6 +7,7 @@ from ctypes import c_bool, c_void_p, windll
 import System.Windows.Forms as WinForms
 from Microsoft.Win32 import SystemEvents
 from System import Environment, Threading
+from System.ComponentModel import InvalidEnumArgumentException
 from System.Drawing import Font as WinFont
 from System.Media import SystemSounds
 from System.Net import SecurityProtocolType, ServicePointManager
@@ -168,7 +169,16 @@ class App(Scalable):
                 item = WinForms.ToolStripMenuItem(cmd.text)
                 item.Click += WeakrefCallable(cmd._impl.winforms_handler)
                 if cmd.shortcut is not None:
-                    item.ShortcutKeys = toga_to_winforms_key(cmd.shortcut)
+                    try:
+                        item.ShortcutKeys = toga_to_winforms_key(cmd.shortcut)
+                    except (
+                        ValueError,
+                        InvalidEnumArgumentException,
+                    ) as e:  # pragma: no cover
+                        # Make this a non-fatal warning, because different backends may
+                        # accept different shortcuts.
+                        print(f"WARNING: invalid shortcut {cmd.shortcut!r}: {e}")
+
                 item.Enabled = cmd.enabled
 
                 cmd._impl.native.append(item)
