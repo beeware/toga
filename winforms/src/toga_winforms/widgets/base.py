@@ -185,7 +185,7 @@ class Widget(ABC, Scalable):
                 self.scale_font(self.original_font.Size),
                 self.original_font.Style,
             )
-        
+
         # Default values; may be overwritten by rehint().
         self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
         self.interface.intrinsic.height = at_least(self.interface._MIN_HEIGHT)
