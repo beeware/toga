@@ -248,7 +248,7 @@ async def test_refresh(widget, probe):
     await probe.refresh_action()
     # It can take a couple of cycles for the refresh handler to fully execute;
     # impose a small delay to ensure it's been processed.
-    await probe.redraw("A refresh action has occurred")
+    await probe.redraw("A refresh action has occurred", delay=0.2)
     # New data has been added
     assert len(widget.data) == 101
 
