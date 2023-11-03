@@ -45,8 +45,8 @@ The procedure for cutting a new release is as follows:
      $ tox -r -e docs-lint,docs
 
    to confirm that there are no spelling errors or formatting problems with the
-   new release notes, and the docs build using the current documentation
-   toolchain.
+   new release notes, and the docs build using the current documentation tool
+   versions.
 
 #. Tag the release, and push the branch and tag upstream:
 
