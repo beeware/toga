@@ -31,6 +31,14 @@ A container that divides an area into two panels with a movable border.
 
     Not supported
 
+  .. group-tab:: Web |no|
+
+    Not supported
+
+  .. group-tab:: Textual |no|
+
+    Not supported
+
 Usage
 -----
 

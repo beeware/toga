@@ -36,6 +36,14 @@ overflow controlled by scroll bars.
        :align: center
        :width: 450px
 
+  .. group-tab:: Web |no|
+
+    Not supported
+
+  .. group-tab:: Textual |no|
+
+    Not supported
+
 Usage
 -----
 

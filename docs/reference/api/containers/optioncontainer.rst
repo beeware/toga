@@ -31,6 +31,14 @@ A container that can display multiple labeled tabs of content.
 
     Not supported
 
+  .. group-tab:: Web |no|
+
+    Not supported
+
+  .. group-tab:: Textual |no|
+
+    Not supported
+
 Usage
 -----
 
