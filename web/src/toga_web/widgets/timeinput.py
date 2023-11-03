@@ -20,8 +20,6 @@ class TimeInput(Widget):
         self.native.setAttribute("type", "time")
 
         self.set_value(datetime.datetime.now().time().strftime("%H:%M"))
-        # self.set_value(datetime.time(0, 0, 0).strftime("%H:%M"))
-        # breakpoint()
         self.native.addEventListener("sl-change", create_proxy(self.on_change))
 
     def on_change(self, event):
