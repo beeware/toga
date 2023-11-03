@@ -1,1 +1,0 @@
-Fixed issues with elliptical arcs on WinForms and Android

@@ -1,1 +1,0 @@
-The ``windows`` constructor argument of ``toga.App`` has been removed. Windows are now automatically added to the current app.

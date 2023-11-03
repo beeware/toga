@@ -1,1 +1,0 @@
-The ``tox`` commands for building docs now use multi-processing for faster builds.

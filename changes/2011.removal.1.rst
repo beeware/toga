@@ -1,1 +1,0 @@
-``Table.on_double_click`` has been renamed ``Table.on_activate``.

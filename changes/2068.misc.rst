@@ -1,1 +1,0 @@
-App.beep() has been implemented for Android.

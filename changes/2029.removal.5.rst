@@ -1,1 +1,0 @@
-The ``new_path`` operation has been renamed ``begin_path`` for consistency with the HTML5 Canvas API.

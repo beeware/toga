@@ -1,1 +1,0 @@
-The optional arguments of ``Command`` and ``Group`` are now keyword-only.

@@ -1,1 +1,0 @@
-The usage of local ``file://`` URLs has been explicitly prohibited. ``file://`` URLs have not been reliable for some time; their usage is now explicitly prohibited.

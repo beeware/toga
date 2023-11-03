@@ -1,1 +1,0 @@
-Correct scaling of MIN_WIDTH and MIN_HEIGHT on Android and WinForms

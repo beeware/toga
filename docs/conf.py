@@ -150,8 +150,13 @@ def autodoc_process_signature(
 
 # -- Options for link checking -------------------------------------------------
 
-# GitHub generates anchors in javascript
-linkcheck_ignore = [r"https://github.com/.*#"]
+linkcheck_ignore = [
+    # GitHub generates anchors in javascript
+    r"https://github.com/.*#",
+    # References to Github issues/pulls should all be safe.
+    r"^https://github.com/beeware/toga/issues/\d+$",
+    r"^https://github.com/beeware/toga/pull/\d+$",
+]
 
 # -- Options for copy button ---------------------------------------------------
 

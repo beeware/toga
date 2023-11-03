@@ -1,1 +1,0 @@
-The WinForms event loop was decoupled from the main form, allowing background tasks to run without a main window being present.

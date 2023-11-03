@@ -1,1 +1,0 @@
-PyPI package names were removed as valid spelling words.
