@@ -20,6 +20,8 @@ class TimeInput(Widget):
         self.native.setAttribute("type", "time")
 
         self.set_value(datetime.datetime.now().time().strftime("%H:%M"))
+        # self.set_value(datetime.time(0, 0, 0).strftime("%H:%M"))
+        # breakpoint()
         self.native.addEventListener("sl-change", create_proxy(self.on_change))
 
     def on_change(self, event):
@@ -31,13 +33,13 @@ class TimeInput(Widget):
     def set_value(self, value):
         if value is None:
             self.native.value = ""
-        self.native.value = value
+        self.native.value = self._format_time(value)
 
     def set_min_time(self, value):
-        self.native.min = native_time(value)
+        self.native.min = self._format_time(value)
 
     def set_max_time(self, value):
-        self.native.max = native_time(value)
+        self.native.max = self._format_time(value)
 
     def get_min_time(self):
         if self.native.min:
@@ -48,3 +50,10 @@ class TimeInput(Widget):
         if self.native.max:
             return py_time(self.native.max)
         return datetime.time(23, 59, 59)
+
+    def _format_time(self, value):
+        if isinstance(value, str):
+            value = native_time(py_time(value))
+        if isinstance(value, datetime.time):
+            value = native_time(value)
+        return value
