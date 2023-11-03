@@ -364,6 +364,8 @@ class App(Scalable):
     def winforms_DisplaySettingsChanged(self, sender, event):
         for window in self.interface.windows:
             window._impl.update_scale()
+            if window._impl.toolbar_native is not None:
+                window._impl.update_toolbar_font_scale()
             if isinstance(window._impl, MainWindow):
                 window._impl.update_menubar_font_scale()
             for widget in window.widgets:

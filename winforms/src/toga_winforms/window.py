@@ -1,5 +1,5 @@
 import System.Windows.Forms as WinForms
-from System.Drawing import Bitmap, Graphics, Point, Size
+from System.Drawing import Bitmap, Font as WinFont, Graphics, Point, Size
 from System.Drawing.Imaging import ImageFormat
 from System.IO import MemoryStream
 
@@ -72,12 +72,20 @@ class Window(Container, Scalable):
                     item.Click += WeakrefCallable(cmd._impl.winforms_handler)
                     cmd._impl.native.append(item)
                 self.toolbar_native.Items.Add(item)
-
+            self.original_toolbar_font = self.toolbar_native.Font
         elif self.toolbar_native:
             self.native.Controls.Remove(self.toolbar_native)
             self.toolbar_native = None
 
         self.resize_content()
+
+    def update_toolbar_font_scale(self):
+        if self.toolbar_native is not None:
+            self.toolbar_native.Font = WinFont(
+                self.original_toolbar_font.FontFamily,
+                self.scale_font(self.original_toolbar_font.Size),
+                self.original_toolbar_font.Style,
+            )
 
     def get_position(self):
         location = self.native.Location
