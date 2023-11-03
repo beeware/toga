@@ -1,4 +1,3 @@
-from ctypes import POINTER, c_char, cast
 from math import ceil
 
 from rubicon.objc import objc_method, objc_property
@@ -7,6 +6,7 @@ from travertino.size import at_least
 from toga.colors import BLACK, TRANSPARENT, color
 from toga.widgets.canvas import Baseline, FillRule
 from toga_cocoa.colors import native_color
+from toga_cocoa.images import nsdata_to_bytes
 from toga_cocoa.libs import (
     CGFloat,
     CGPathDrawingMode,
@@ -325,15 +325,12 @@ class Canvas(Widget):
         bitmap.setSize(self.native.bounds.size)
         self.native.cacheDisplayInRect(self.native.bounds, toBitmapImageRep=bitmap)
 
-        data = bitmap.representationUsingType(
-            NSBitmapImageFileType.PNG,
-            properties=None,
+        return nsdata_to_bytes(
+            bitmap.representationUsingType(
+                NSBitmapImageFileType.PNG,
+                properties=None,
+            )
         )
-        # data is an NSData object that has .bytes as a c_void_p, and a .length. Cast to
-        # POINTER(c_char) to get an addressable array of bytes, and slice that array to
-        # the known length. We don't use c_char_p because it has handling of NUL
-        # termination, and POINTER(c_char) allows array subscripting.
-        return cast(data.bytes, POINTER(c_char))[: data.length]
 
     # Rehint
     def rehint(self):

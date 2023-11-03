@@ -231,7 +231,7 @@ async def test_image_data(canvas, probe):
 
     # Cloned image is the right size. The platform may do DPI scaling;
     # let the probe determine the correct scaled size.
-    probe.assert_image_size(image, 200, 200)
+    probe.assert_image_size(image.size, (200, 200))
 
 
 def assert_reference(probe, reference, threshold=0.0):

@@ -3,16 +3,33 @@ Window
 
 An operating system-managed container of widgets.
 
-.. figure:: /reference/images/Window.png
-   :align: center
-   :width: 300px
+.. tabs::
 
-.. rst-class:: widget-support
-.. csv-filter:: Availability (:ref:`Key <api-status-key>`)
-   :header-rows: 1
-   :file: ../data/widgets_by_platform.csv
-   :included_cols: 4,5,6,7,8,9,10
-   :exclude: {0: '(?!(Window|Component))'}
+  .. group-tab:: macOS
+
+    .. figure:: /reference/images/window-cocoa.png
+       :align: center
+       :width: 300px
+
+  .. group-tab:: Linux
+
+    .. figure:: /reference/images/window-gtk.png
+       :align: center
+       :width: 300px
+
+  .. group-tab:: Windows
+
+    .. figure:: /reference/images/window-winforms.png
+       :align: center
+       :width: 300px
+
+  .. group-tab:: Android |no|
+
+    Not supported
+
+  .. group-tab:: iOS |no|
+
+    Not supported
 
 Usage
 -----

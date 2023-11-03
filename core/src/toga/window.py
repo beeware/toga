@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING, Any, Literal, Protocol, TypeVar, overload
 
 from toga.command import Command, CommandSet
 from toga.handlers import AsyncResult, wrapped_handler
+from toga.images import Image
 from toga.platform import get_platform_factory
 from toga.widgets.base import WidgetRegistry
 
@@ -327,6 +328,12 @@ class Window:
         self.app.windows.discard(self)
         self._impl.close()
         self._closed = True
+
+    def as_image(self) -> Image:
+        """Render the current contents of the window as an image.
+
+        :returns: A :class:`toga.Image` containing the window content."""
+        return Image(data=self._impl.get_image_data())
 
     ############################################################
     # Dialogs

@@ -3,16 +3,39 @@ TimeInput
 
 A widget to select a clock time.
 
-.. figure:: /reference/images/TimeInput.png
-    :align: center
-    :width: 160
+.. tabs::
 
-.. rst-class:: widget-support
-.. csv-filter:: Availability (:ref:`Key <api-status-key>`)
-   :header-rows: 1
-   :file: ../../data/widgets_by_platform.csv
-   :included_cols: 4,5,6,7,8,9,10
-   :exclude: {0: '(?!(TimeInput|Component))'}
+  .. group-tab:: macOS |no|
+
+    Not supported
+
+  .. group-tab:: Linux |no|
+
+    Not supported
+
+  .. group-tab:: Windows
+
+    .. figure:: /reference/images/timeinput-winforms.png
+       :align: center
+       :width: 300px
+
+  .. group-tab:: Android
+
+    .. figure:: /reference/images/timeinput-android.png
+       :align: center
+       :width: 300px
+
+  .. group-tab:: iOS |no|
+
+    Not supported
+
+  .. group-tab:: Web |no|
+
+    Not supported
+
+  .. group-tab:: Textual |no|
+
+    Not supported
 
 Usage
 -----

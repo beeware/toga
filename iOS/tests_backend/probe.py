@@ -1,6 +1,6 @@
 import asyncio
 
-from toga_iOS.libs import NSRunLoop
+from toga_iOS.libs import NSRunLoop, UIScreen
 
 
 class BaseProbe:
@@ -17,3 +17,8 @@ class BaseProbe:
             # Running at "normal" speed, we need to release to the event loop
             # for at least one iteration. `runUntilDate:None` does this.
             NSRunLoop.currentRunLoop.runUntilDate(None)
+
+    def assert_image_size(self, image_size, size):
+        # Retina displays render images at a higher resolution than their reported size.
+        scale = int(UIScreen.mainScreen.scale)
+        assert image_size == (size[0] * scale, size[1] * scale)

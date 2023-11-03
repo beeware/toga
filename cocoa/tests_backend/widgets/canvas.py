@@ -40,12 +40,6 @@ class CanvasProbe(SimpleProbe):
         except KeyError:
             return image
 
-    def assert_image_size(self, image, width, height):
-        # Cocoa reports image sizing in the natural screen coordinates, not the size of
-        # the backing store.
-        assert image.width == width
-        assert image.height == height
-
     async def mouse_press(self, x, y):
         await self.mouse_event(
             NSEventType.LeftMouseDown,

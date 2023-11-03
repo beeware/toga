@@ -4,16 +4,45 @@ Slider
 A widget for selecting a value within a range. The range is shown as a horizontal line,
 and the selected value is shown as a draggable marker.
 
-.. figure:: /reference/images/Slider.png
-    :align: center
-    :width: 300
+.. tabs::
 
-.. rst-class:: widget-support
-.. csv-filter:: Availability (:ref:`Key <api-status-key>`)
-   :header-rows: 1
-   :file: ../../data/widgets_by_platform.csv
-   :included_cols: 4,5,6,7,8,9,10
-   :exclude: {0: '(?!^(Slider|Component)$)'}
+  .. group-tab:: macOS
+
+    .. figure:: /reference/images/slider-cocoa.png
+       :align: center
+       :width: 300px
+
+  .. group-tab:: Linux
+
+    .. figure:: /reference/images/slider-gtk.png
+       :align: center
+       :width: 300px
+
+  .. group-tab:: Windows
+
+    .. figure:: /reference/images/slider-winforms.png
+       :align: center
+       :width: 300px
+
+  .. group-tab:: Android
+
+    .. figure:: /reference/images/slider-android.png
+       :align: center
+       :width: 300px
+
+  .. group-tab:: iOS
+
+    .. figure:: /reference/images/slider-iOS.png
+       :align: center
+       :width: 300px
+
+  .. group-tab:: Web |no|
+
+    Not supported
+
+  .. group-tab:: Textual |no|
+
+    Not supported
 
 
 Usage
