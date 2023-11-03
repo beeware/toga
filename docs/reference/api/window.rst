@@ -23,7 +23,7 @@ An operating system-managed container of widgets.
        :align: center
        :width: 300px
 
-  .. group-tab:: Android
+  .. group-tab:: Android |no|
 
     Not supported
 

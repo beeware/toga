@@ -5,11 +5,11 @@ A widget to select a calendar date.
 
 .. tabs::
 
-  .. group-tab:: macOS
+  .. group-tab:: macOS |no|
 
     Not supported
 
-  .. group-tab:: Linux
+  .. group-tab:: Linux |no|
 
     Not supported
 

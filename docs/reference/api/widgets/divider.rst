@@ -23,7 +23,7 @@ A separator used to visually distinguish two sections of content in a layout.
        :align: center
        :width: 300px
 
-  .. group-tab:: Android |no|
+  .. group-tab:: Android
 
     .. figure:: /reference/images/divider-android.png
        :align: center
