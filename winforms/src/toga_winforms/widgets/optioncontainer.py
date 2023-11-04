@@ -1,41 +1,37 @@
-from toga_winforms.container import Container
-from toga_winforms.libs import WinForms
+from System.Windows.Forms import TabControl, TabPage
 
+from ..container import Container
+from ..libs.wrapper import WeakrefCallable
 from .base import Widget
 
 
 class OptionContainer(Widget):
     def create(self):
-        self.native = WinForms.TabControl()
-        self.native.Selected += self.winforms_selected
+        self.native = TabControl()
+        self.native.Selected += WeakrefCallable(self.winforms_selected)
+        self.panels = []
 
     def add_content(self, index, text, widget):
-        widget.viewport = Container(self.native)
-        widget.frame = self
-        # Add all children to the content widget.
-        for child in widget.interface.children:
-            child._impl.container = widget
+        page = TabPage(text)
+        self.native.TabPages.Insert(index, page)
 
-        item = WinForms.TabPage()
-        item.Text = text
+        panel = Container(page)
+        self.panels.insert(index, panel)
+        panel.set_content(widget)
 
-        # Enable AutoSize on the container to fill
-        # the available space in the OptionContainer.
-        widget.AutoSize = True
+        # ClientSize is set correctly for a newly-added tab, but is only updated on
+        # resize for the selected tab. And when the selection changes, the
+        # newly-selected tab's ClientSize is not updated until some time after the
+        # Selected event fires.
+        self.resize_content(panel)
 
-        item.Controls.Add(widget.native)
-        if index < self.native.TabPages.Count:
-            self.native.TabPages.Insert(index, item)
-        else:
-            self.native.TabPages.Add(item)
+        page.ClientSizeChanged += WeakrefCallable(self.winforms_client_size_changed)
 
     def remove_content(self, index):
-        tab_page = self.native.TabPages[index]
-        self.native.TabPages.Remove(self.native.TabPages[index])
-        tab_page.Dispose()
+        panel = self.panels.pop(index)
+        panel.clear_content()
 
-    def set_on_select(self, handler):
-        pass
+        self.native.TabPages.RemoveAt(index)
 
     def set_option_enabled(self, index, enabled):
         """Winforms documentation states that Enabled is not meaningful for this
@@ -61,7 +57,12 @@ class OptionContainer(Widget):
         self.native.SelectedIndex = current_tab_index
 
     def winforms_selected(self, sender, event):
-        if self.interface.on_select:
-            self.interface.on_select(
-                self.interface, option=self.interface.content[self.native.SelectedIndex]
-            )
+        self.interface.on_select()
+
+    def winforms_client_size_changed(self, sender, event):
+        for panel in self.panels:
+            self.resize_content(panel)
+
+    def resize_content(self, panel):
+        size = panel.native_parent.ClientSize
+        panel.resize_content(size.Width, size.Height)

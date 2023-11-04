@@ -37,7 +37,16 @@ The procedure for cutting a new release is as follows:
 
      $ tox -e towncrier
 
-   to generate the updated release notes.
+   to generate the updated release notes. After doing any edits that may be
+   required, run:
+
+   .. code-block:: console
+
+     $ tox -r -e docs-lint,docs
+
+   to confirm that there are no spelling errors or formatting problems with the
+   new release notes, and the docs build using the current documentation tool
+   versions.
 
 #. Tag the release, and push the branch and tag upstream:
 
@@ -68,8 +77,16 @@ The procedure for cutting a new release is as follows:
       code change, delete the old tag, make the code change, and re-tag the
       release.
 
-#. Download the "packages" artifact from the GitHub workflow, and use its wheels
-   to build some apps and perform any pre-release testing that may be appropriate.
+#. Create a clean virtual environment, install the new release from Test PyPI, and
+   perform any pre-release testing that may be appropriate:
+
+   .. code-block:: console
+
+     $ python3 -m venv testvenv
+     $ . ./testvenv/bin/activate
+     (testvenv) $ pip install --extra-index-url https://test.pypi.org/simple/ toga==1.2.3
+     (testvenv) $ toga-demo
+     (testvenv) $ #... any other manual checks you want to perform ...
 
 #. Log into ReadTheDocs, visit the `Versions tab
    <https://readthedocs.org/projects/toga/versions/>`__, and activate the

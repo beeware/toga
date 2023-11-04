@@ -1,13 +1,21 @@
+from decimal import ROUND_UP
+
+from android.os import Build
+from android.text import Layout
+from android.util import TypedValue
+from android.view import Gravity, View
+from android.widget import TextView
 from travertino.size import at_least
 
 from toga.constants import JUSTIFY
 from toga_android.colors import native_color
 
-from ..libs.android.os import Build
-from ..libs.android.text import Layout
-from ..libs.android.view import Gravity, View__MeasureSpec
-from ..libs.android.widget import TextView
 from .base import Widget, align
+
+
+def set_textview_font(tv, font, default_typeface, default_size):
+    tv.setTypeface(font.typeface(default=default_typeface))
+    tv.setTextSize(TypedValue.COMPLEX_UNIT_PX, font.size(default=default_size))
 
 
 class TextViewWidget(Widget):
@@ -17,7 +25,9 @@ class TextViewWidget(Widget):
         self._default_typeface = self.native.getTypeface()
 
     def set_font(self, font):
-        font._impl.apply(self.native, self._default_text_size, self._default_typeface)
+        set_textview_font(
+            self.native, font._impl, self._default_typeface, self._default_text_size
+        )
 
     def set_background_color(self, value):
         # In the case of EditText, this causes any custom color to hide the bottom border
@@ -56,23 +66,19 @@ class Label(TextViewWidget):
         self.native.setText(value)
 
     def rehint(self):
-        # Refuse to rehint an Android TextView if it has no LayoutParams yet.
-        # Calling measure() on an Android TextView w/o LayoutParams raises NullPointerException.
-        if not self.native.getLayoutParams():
-            return
         # Ask the Android TextView first for its minimum possible height.
         # This is the height with word-wrapping disabled.
-        self.native.measure(
-            View__MeasureSpec.UNSPECIFIED, View__MeasureSpec.UNSPECIFIED
-        )
+        self.native.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
         min_height = self.native.getMeasuredHeight()
-        self.interface.intrinsic.height = min_height
+        self.interface.intrinsic.height = self.scale_out(min_height, ROUND_UP)
         # Ask it how wide it would be if it had to be the minimum height.
         self.native.measure(
-            View__MeasureSpec.UNSPECIFIED,
-            View__MeasureSpec.makeMeasureSpec(min_height, View__MeasureSpec.AT_MOST),
+            View.MeasureSpec.UNSPECIFIED,
+            View.MeasureSpec.makeMeasureSpec(min_height, View.MeasureSpec.AT_MOST),
         )
-        self.interface.intrinsic.width = at_least(self.native.getMeasuredWidth())
+        self.interface.intrinsic.width = self.scale_out(
+            at_least(self.native.getMeasuredWidth()), ROUND_UP
+        )
 
     def set_alignment(self, value):
         self.set_textview_alignment(value, Gravity.TOP)

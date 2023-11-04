@@ -6,9 +6,7 @@ from toga.style import Pack
 
 class SwitchApp(toga.App):
     def startup(self):
-        # Window class
-        #   Main window of the application with title and size
-        self.main_window = toga.MainWindow(title=self.name, size=(350, 300))
+        self.main_window = toga.MainWindow(size=(350, 300))
 
         # Add the content on the main window
         self.main_window.content = toga.Box(

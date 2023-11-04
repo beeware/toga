@@ -6,6 +6,9 @@ from .base import Widget
 
 
 class ScrollContainer(Widget):
+    _MIN_WIDTH = 0
+    _MIN_HEIGHT = 0
+
     def __init__(
         self,
         id=None,
@@ -16,8 +19,6 @@ class ScrollContainer(Widget):
         content: Widget | None = None,
     ):
         """Create a new Scroll Container.
-
-        Inherits from :class:`toga.Widget`.
 
         :param id: The ID for the widget.
         :param style: A style object. If no style is provided, a default style

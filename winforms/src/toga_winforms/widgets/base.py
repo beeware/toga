@@ -1,10 +1,42 @@
-from abc import abstractmethod
+from abc import ABC, abstractmethod
+from decimal import ROUND_HALF_EVEN, Decimal
 
+from System.Drawing import (
+    Color,
+    Point,
+    Size,
+    SystemColors,
+)
+from travertino.size import at_least
+
+from toga.colors import TRANSPARENT
 from toga_winforms.colors import native_color
-from toga_winforms.libs import Color, Point, Size, SystemColors
 
 
-class Widget:
+class Scalable:
+    SCALE_DEFAULT_ROUNDING = ROUND_HALF_EVEN
+
+    def init_scale(self, native):
+        self.dpi_scale = native.CreateGraphics().DpiX / 96
+
+    # Convert CSS pixels to native pixels
+    def scale_in(self, value, rounding=SCALE_DEFAULT_ROUNDING):
+        return self.scale_round(value * self.dpi_scale, rounding)
+
+    # Convert native pixels to CSS pixels
+    def scale_out(self, value, rounding=SCALE_DEFAULT_ROUNDING):
+        if isinstance(value, at_least):
+            return at_least(self.scale_out(value.value, rounding))
+        else:
+            return self.scale_round(value / self.dpi_scale, rounding)
+
+    def scale_round(self, value, rounding):
+        if rounding is None:
+            return value
+        return int(Decimal(value).to_integral(rounding))
+
+
+class Widget(ABC, Scalable):
     # In some widgets, attempting to set a background color with any alpha value other
     # than 1 raises "System.ArgumentException: Control does not support transparent
     # background colors". Those widgets should set this attribute to False.
@@ -17,7 +49,7 @@ class Widget:
         self._container = None
         self.native = None
         self.create()
-        self.scale = self.native.CreateGraphics().DpiX / 96
+        self.init_scale(self.native)
         self.interface.style.reapply()
 
     @abstractmethod
@@ -48,19 +80,7 @@ class Widget:
         for child in self.interface.children:
             child._impl.container = container
 
-        self.rehint()
-
-    @property
-    def viewport(self):
-        return self._container
-
-    # Convert CSS pixels to native pixels
-    def scale_in(self, value):
-        return int(round(value * self.scale))
-
-    # Convert native pixels to CSS pixels
-    def scale_out(self, value):
-        return int(round(value / self.scale))
+        self.refresh()
 
     def get_tab_index(self):
         return self.native.TabIndex
@@ -80,8 +100,8 @@ class Widget:
     # APPLICATOR
 
     def set_bounds(self, x, y, width, height):
-        self.native.Size = Size(width, height)
-        self.native.Location = Point(x, y)
+        self.native.Size = Size(*map(self.scale_in, (width, height)))
+        self.native.Location = Point(*map(self.scale_in, (x, y)))
 
     def set_alignment(self, alignment):
         # By default, alignment can't be changed
@@ -102,11 +122,13 @@ class Widget:
     def set_background_color(self, color):
         if not hasattr(self, "_default_background"):
             self._default_background = self.native.BackColor
-        if color is None:
+        if color is None or (
+            color == TRANSPARENT and not self._background_supports_alpha
+        ):
             self.native.BackColor = self._default_background
         else:
             win_color = native_color(color)
-            if (win_color != Color.Empty) and (not self._background_supports_alpha):
+            if not self._background_supports_alpha:
                 win_color = Color.FromArgb(255, win_color.R, win_color.G, win_color.B)
             self.native.BackColor = win_color
 
@@ -122,8 +144,10 @@ class Widget:
         child.container = None
 
     def refresh(self):
+        # Default values; may be overwritten by rehint().
+        self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
+        self.interface.intrinsic.height = at_least(self.interface._MIN_HEIGHT)
         self.rehint()
 
-    @abstractmethod
     def rehint(self):
-        ...
+        pass

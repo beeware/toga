@@ -4,15 +4,16 @@ from .base import Widget
 
 
 class Box(Widget):
+    _MIN_WIDTH = 0
+    _MIN_HEIGHT = 0
+
     def __init__(
         self,
-        id=None,
+        id: str | None = None,
         style=None,
         children: list[Widget] | None = None,
     ):
         """Create a new Box container widget.
-
-        Inherits from :class:`toga.Widget`.
 
         :param id: The ID for the widget.
         :param style: A style object. If no style is provided, a default style
@@ -39,9 +40,9 @@ class Box(Widget):
         return True
 
     @enabled.setter
-    def enabled(self, value):
+    def enabled(self, value: bool) -> None:
         pass
 
-    def focus(self):
+    def focus(self) -> None:
         """No-op; Box cannot accept input focus."""
         pass

@@ -1,8 +1,8 @@
-from .app import App, DocumentApp, MainWindow
+from .app import App, DocumentApp, DocumentMainWindow, MainWindow
 
 # Resources
 from .colors import hsl, hsla, rgb, rgba
-from .command import GROUP_BREAK, SECTION_BREAK, Command, CommandSet, Group
+from .command import Command, Group
 from .documents import Document
 from .fonts import Font
 from .icons import Icon
@@ -42,12 +42,10 @@ __all__ = [
     "App",
     "DocumentApp",
     "MainWindow",
+    "DocumentMainWindow",
     # Commands
     "Command",
-    "CommandSet",
     "Group",
-    "GROUP_BREAK",
-    "SECTION_BREAK",
     # Documents
     "Document",
     # Keys
@@ -107,11 +105,7 @@ def _package_version(file, name):
         # If it *is* in the environment, but the code isn't a git checkout (e.g.,
         # it's been pip installed non-editable) the call to get_version() will fail.
         # If either of these occurs, read version from the installer metadata.
-        try:
-            from importlib import metadata as importlib_metadata
-        except ImportError:
-            # Backwards compatibility - importlib.metadata was added in Python 3.8
-            import importlib_metadata
+        from importlib import metadata as importlib_metadata
 
         # The Toga package names as defined in setup.cfg all use dashes.
         package = "toga-core" if name == "toga" else name.replace("_", "-")

@@ -1,22 +1,52 @@
+from pathlib import Path
+
+import pytest
+
 import toga
-import toga_dummy
-from toga_dummy.utils import TestCase
 
 
-class DocumentTests(TestCase):
-    def setUp(self):
-        super().setUp()
+class MyDoc(toga.Document):
+    def __init__(self, path, app):
+        super().__init__(path, "Dummy Document", app)
+        pass
 
-        self.filename = "path/to/document.txt"
-        self.document_type = "path/to/document.txt"
-        self.document = toga.Document(
-            filename=self.filename, document_type=self.document_type, app=toga_dummy
+    def create(self):
+        pass
+
+    def read(self):
+        pass
+
+
+@pytest.mark.parametrize("path", ["/path/to/doc.mydoc", Path("/path/to/doc.mydoc")])
+def test_create_document(app, path):
+    doc = MyDoc(path, app)
+
+    assert doc.path == Path(path)
+    assert doc.app == app
+    assert doc.document_type == "Dummy Document"
+
+
+class MyDeprecatedDoc(toga.Document):
+    def __init__(self, filename, app):
+        super().__init__(
+            path=filename,
+            document_type="Deprecated Document",
+            app=app,
         )
 
-    def test_app(self):
-        self.assertEqual(self.filename, self.document.filename)
-        self.assertEqual(self.document.app, toga_dummy)
+    def create(self):
+        pass
 
-    def test_read(self):
-        with self.assertRaises(NotImplementedError):
-            self.document.read()
+    def read(self):
+        pass
+
+
+def test_deprecated_names(app):
+    """Deprecated names still work."""
+    doc = MyDeprecatedDoc("/path/to/doc.mydoc", app)
+
+    with pytest.warns(
+        DeprecationWarning,
+        match=r"Document.filename has been renamed Document.path.",
+    ):
+        assert doc.filename == Path("/path/to/doc.mydoc")

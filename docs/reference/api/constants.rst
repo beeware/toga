@@ -2,5 +2,4 @@ Constants
 =========
 
 .. automodule:: toga.constants
-   :members:
-   :undoc-members:
+    :member-order: bysource

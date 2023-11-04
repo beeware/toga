@@ -9,11 +9,6 @@ RELATIVE_FILE_PATH = Path("resources") / "toga.png"
 ABSOLUTE_FILE_PATH = Path(toga.__file__).parent / "resources" / "toga.png"
 
 
-@pytest.fixture
-def app():
-    return toga.App("Images Test", "org.beeware.toga.images")
-
-
 @pytest.mark.parametrize(
     "args, kwargs",
     [
@@ -109,8 +104,16 @@ def test_dimensions():
 
     image = toga.Image(path="resources/toga.png")
 
+    assert image.size == (60, 40)
     assert image.width == 60
     assert image.height == 40
+
+
+def test_data():
+    "The raw data of the image can be retrieved."
+    image = toga.Image(path="resources/toga.png")
+
+    assert image.data == b"pretend this is PNG image data"
 
 
 def test_image_save():

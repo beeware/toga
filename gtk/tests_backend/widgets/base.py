@@ -1,12 +1,16 @@
+import asyncio
 from threading import Event
+
+import pytest
 
 from toga_gtk.libs import Gdk, Gtk
 
+from ..fonts import FontMixin
 from ..probe import BaseProbe
-from .properties import toga_color, toga_font
+from .properties import toga_color
 
 
-class SimpleProbe(BaseProbe):
+class SimpleProbe(BaseProbe, FontMixin):
     def __init__(self, widget):
         super().__init__()
         self.app = widget.app
@@ -97,7 +101,7 @@ class SimpleProbe(BaseProbe):
     @property
     def font(self):
         sc = self.native.get_style_context()
-        return toga_font(sc.get_property("font", sc.get_state()))
+        return sc.get_property("font", sc.get_state())
 
     @property
     def is_hidden(self):
@@ -160,3 +164,14 @@ class SimpleProbe(BaseProbe):
 
         # Remove the temporary handler
         self._keypress_target.disconnect(handler_id)
+
+        # GTK has an intermittent failure because on_change handler
+        # caused by typing a character doesn't fully propegate. A
+        # short delay fixes this.
+        await asyncio.sleep(0.04)
+
+    async def undo(self):
+        pytest.skip("Undo not supported on this platform")
+
+    async def redo(self):
+        pytest.skip("Redo not supported on this platform")

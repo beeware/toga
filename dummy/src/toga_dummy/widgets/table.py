@@ -7,6 +7,7 @@ class Table(Widget):
 
     def change_source(self, source):
         self._action("change source", source=source)
+        self.interface.on_select()
 
     def insert(self, index, item):
         self._action("insert row", index=index, item=item)
@@ -21,20 +22,23 @@ class Table(Widget):
         self._action("clear")
 
     def get_selection(self):
-        self._action("get selection")
-        return None
-
-    def set_on_select(self, handler):
-        self._set_value("on_select", handler)
-
-    def set_on_double_click(self, handler):
-        self._set_value("on_double_click", handler)
+        return self._get_value(
+            "selection",
+            [] if self.interface.multiple_select else None,
+        )
 
     def scroll_to_row(self, row):
-        self._set_value("scroll to", row)
+        self._action("scroll to row", row=row)
 
-    def add_column(self, heading, accessor):
-        self._action("add column", heading=heading, accessor=accessor)
+    def insert_column(self, index, heading, accessor):
+        self._action("insert column", index=index, heading=heading, accessor=accessor)
 
-    def remove_column(self, accessor):
-        self._action("remove column", accessor=accessor)
+    def remove_column(self, index):
+        self._action("remove column", index=index)
+
+    def simulate_selection(self, row):
+        self._set_value("selection", row)
+        self.interface.on_select()
+
+    def simulate_activate(self, row):
+        self.interface.on_activate(row=self.interface.data[row])

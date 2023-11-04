@@ -7,6 +7,7 @@ from .properties import toga_color
 
 class ButtonProbe(SimpleProbe):
     native_class = System.Windows.Forms.Button
+    background_supports_alpha = False
 
     @property
     def text(self):

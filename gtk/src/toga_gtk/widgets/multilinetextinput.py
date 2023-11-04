@@ -22,10 +22,10 @@ class MultilineTextInput(Widget):
 
         # The GTK TextView doesn't have an implementation of placeholder. We
         # fake it by using a different buffer that contains placeholder text.
-        # This bufer is installed by default, until the value for the widget
+        # This buffer is installed by default, until the value for the widget
         # becomes something non-empty. The placeholder buffer is also swapped
         # out when focus is gained, or a key press event occurs. The latter
-        # is needed because the value can be changed programatically when
+        # is needed because the value can be changed programmatically when
         # the widget already has focus.
         self.placeholder = Gtk.TextBuffer()
         self.tag_placeholder = self.placeholder.create_tag(
@@ -81,7 +81,7 @@ class MultilineTextInput(Widget):
             self.native_textview.set_buffer(self.buffer)
         else:
             # See gtk_on_change for why this is needed
-            self.interface.on_change(None)
+            self.interface.on_change()
             if not self.has_focus:
                 self.native_textview.set_buffer(self.placeholder)
             else:
@@ -127,7 +127,7 @@ class MultilineTextInput(Widget):
         # deliberately cleared, we add an explicit signal handler to set_value()
         # for the empty value case.
         if self.get_value():
-            self.interface.on_change(None)
+            self.interface.on_change()
 
     def gtk_on_focus_in(self, *args):
         # When focus is gained, make sure the content buffer is active.

@@ -1,6 +1,7 @@
+from __future__ import annotations
+
 import re
 from abc import abstractmethod
-from typing import Optional
 
 
 class BooleanValidator:
@@ -17,7 +18,7 @@ class BooleanValidator:
         self.error_message = error_message
         self.allow_empty = allow_empty
 
-    def __call__(self, input_string: str):
+    def __call__(self, input_string: str) -> str | None:
         if self.allow_empty and input_string == "":
             return None
         return None if self.is_valid(input_string) else self.error_message
@@ -35,7 +36,7 @@ class BooleanValidator:
 class CountValidator:
     def __init__(
         self,
-        count: Optional[int],
+        count: int | None,
         expected_existence_message: str,
         expected_non_existence_message: str,
         expected_count_message: str,
@@ -63,7 +64,7 @@ class CountValidator:
         self.expected_count_message = expected_count_message
         self.allow_empty = allow_empty
 
-    def __call__(self, input_string: str):
+    def __call__(self, input_string: str) -> str | None:
         if self.allow_empty and input_string == "":
             return None
         actual_count = self.count(input_string)
@@ -88,9 +89,9 @@ class CountValidator:
 class LengthBetween(BooleanValidator):
     def __init__(
         self,
-        min_length: int,
-        max_length: int,
-        error_message: Optional[str] = None,
+        min_length: int | None,
+        max_length: int | None,
+        error_message: str | None = None,
         allow_empty: bool = True,
     ):
         """A validator confirming that the length of input falls in a given
@@ -119,7 +120,7 @@ class LengthBetween(BooleanValidator):
         self.min_length = min_length
         self.max_length = max_length
 
-    def is_valid(self, input_string: str):
+    def is_valid(self, input_string: str) -> bool:
         if self.min_length is not None:
             if len(input_string) < self.min_length:
                 return False
@@ -133,7 +134,7 @@ class MinLength(LengthBetween):
     def __init__(
         self,
         length: int,
-        error_message: Optional[str] = None,
+        error_message: str | None = None,
         allow_empty: bool = True,
     ):
         """A validator confirming that the length of input exceeds a minimum size.
@@ -160,7 +161,7 @@ class MaxLength(LengthBetween):
     def __init__(
         self,
         length: int,
-        error_message: Optional[str] = None,
+        error_message: str | None = None,
     ):
         """A validator confirming that the length of input does not exceed a maximum size.
 
@@ -183,7 +184,7 @@ class StartsWith(BooleanValidator):
     def __init__(
         self,
         substring: str,
-        error_message: Optional[str] = None,
+        error_message: str | None = None,
         allow_empty: bool = True,
     ):
         """A validator confirming that the input starts with a given substring.
@@ -200,7 +201,7 @@ class StartsWith(BooleanValidator):
         super().__init__(error_message=error_message, allow_empty=allow_empty)
         self.substring = substring
 
-    def is_valid(self, input_string: str):
+    def is_valid(self, input_string: str) -> bool:
         return input_string.startswith(self.substring)
 
 
@@ -208,7 +209,7 @@ class EndsWith(BooleanValidator):
     def __init__(
         self,
         substring: str,
-        error_message: Optional[str] = None,
+        error_message: str | None = None,
         allow_empty: bool = True,
     ):
         """A validator confirming that the string ends with a given substring.
@@ -225,7 +226,7 @@ class EndsWith(BooleanValidator):
         super().__init__(error_message=error_message, allow_empty=allow_empty)
         self.substring = substring
 
-    def is_valid(self, input_string: str):
+    def is_valid(self, input_string: str) -> bool:
         return input_string.endswith(self.substring)
 
 
@@ -233,8 +234,8 @@ class Contains(CountValidator):
     def __init__(
         self,
         substring: str,
-        count: Optional[int] = None,
-        error_message: Optional[str] = None,
+        count: int | None = None,
+        error_message: str | None = None,
         allow_empty: bool = True,
     ):
         """A validator confirming that the string contains one or more
@@ -267,7 +268,7 @@ class Contains(CountValidator):
         )
         self.substring = substring
 
-    def count(self, input_string: str):
+    def count(self, input_string: str) -> int:
         return input_string.count(self.substring)
 
 
@@ -275,7 +276,7 @@ class NotContains(Contains):
     def __init__(
         self,
         substring: str,
-        error_message: Optional[str] = None,
+        error_message: str | None = None,
     ):
         """A validator confirming that the string does not contain a substring.
 
@@ -294,7 +295,7 @@ class MatchRegex(BooleanValidator):
     def __init__(
         self,
         regex_string,
-        error_message: Optional[str] = None,
+        error_message: str | None = None,
         allow_empty: bool = True,
     ):
         """A validator confirming that the string matches a given regular expression.
@@ -311,15 +312,15 @@ class MatchRegex(BooleanValidator):
         super().__init__(error_message=error_message, allow_empty=allow_empty)
         self.regex_string = regex_string
 
-    def is_valid(self, input_string: str):
+    def is_valid(self, input_string: str) -> bool:
         return bool(re.search(self.regex_string, input_string))
 
 
 class ContainsUppercase(CountValidator):
     def __init__(
         self,
-        count: Optional[int] = None,
-        error_message: Optional[str] = None,
+        count: int | None = None,
+        error_message: str | None = None,
         allow_empty: bool = True,
     ):
         """A validator confirming that the string contains upper case letters.
@@ -356,15 +357,15 @@ class ContainsUppercase(CountValidator):
             allow_empty=allow_empty,
         )
 
-    def count(self, input_string: str):
+    def count(self, input_string: str) -> int:
         return len([char for char in input_string if char.isupper()])
 
 
 class ContainsLowercase(CountValidator):
     def __init__(
         self,
-        count: Optional[int] = None,
-        error_message: Optional[str] = None,
+        count: int | None = None,
+        error_message: str | None = None,
         allow_empty: bool = True,
     ):
         """A validator confirming that the string contains lower case letters.
@@ -401,15 +402,15 @@ class ContainsLowercase(CountValidator):
             allow_empty=allow_empty,
         )
 
-    def count(self, input_string: str):
+    def count(self, input_string: str) -> int:
         return len([char for char in input_string if char.islower()])
 
 
 class ContainsDigit(CountValidator):
     def __init__(
         self,
-        count: Optional[int] = None,
-        error_message: Optional[str] = None,
+        count: int | None = None,
+        error_message: str | None = None,
         allow_empty: bool = True,
     ):
         """A validator confirming that the string contains digits.
@@ -441,15 +442,15 @@ class ContainsDigit(CountValidator):
             allow_empty=allow_empty,
         )
 
-    def count(self, input_string: str):
+    def count(self, input_string: str) -> int:
         return len([char for char in input_string if char.isdigit()])
 
 
 class ContainsSpecial(CountValidator):
     def __init__(
         self,
-        count: Optional[int] = None,
-        error_message: Optional[str] = None,
+        count: int | None = None,
+        error_message: str | None = None,
         allow_empty: bool = True,
     ):
         """A validator confirming that the string contains "special" (i.e.,
@@ -487,7 +488,7 @@ class ContainsSpecial(CountValidator):
             allow_empty=allow_empty,
         )
 
-    def count(self, input_string: str):
+    def count(self, input_string: str) -> int:
         return len(
             [
                 char
@@ -498,7 +499,11 @@ class ContainsSpecial(CountValidator):
 
 
 class Integer(BooleanValidator):
-    def __init__(self, error_message: Optional[str] = None, allow_empty: bool = True):
+    def __init__(
+        self,
+        error_message: str | None = None,
+        allow_empty: bool = True,
+    ):
         """A validator confirming that the string is an integer.
 
         :param error_message: Optional; the error message to display when the
@@ -519,7 +524,11 @@ class Integer(BooleanValidator):
 
 
 class Number(BooleanValidator):
-    def __init__(self, error_message: Optional[str] = None, allow_empty: bool = True):
+    def __init__(
+        self,
+        error_message: str | None = None,
+        allow_empty: bool = True,
+    ):
         """A validator confirming that the string is a number.
 
         :param error_message: Optional; the error message to display when the
@@ -544,7 +553,11 @@ class Email(MatchRegex):
         r"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$"
     )
 
-    def __init__(self, error_message: Optional[str] = None, allow_empty: bool = True):
+    def __init__(
+        self,
+        error_message: str | None = None,
+        allow_empty: bool = True,
+    ):
         """A validator confirming that the string is an email address.
 
         .. note::

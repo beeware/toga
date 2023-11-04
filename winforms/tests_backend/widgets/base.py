@@ -1,35 +1,27 @@
+import pytest
 from pytest import approx
 from System import EventArgs, Object
-from System.Drawing import SystemColors
-from System.Windows.Forms import SendKeys
+from System.Drawing import Color, SystemColors
+from System.Windows.Forms import MouseButtons, MouseEventArgs
 
 from toga.colors import TRANSPARENT
 from toga.style.pack import JUSTIFY, LEFT
 
+from ..fonts import FontMixin
 from ..probe import BaseProbe
-from .properties import toga_color, toga_font
-
-KEY_CODES = {
-    f"<{name}>": f"{{{name.upper()}}}"
-    for name in ["esc", "up", "down", "left", "right"]
-}
-KEY_CODES.update(
-    {
-        "\n": "{ENTER}",
-    }
-)
+from .properties import toga_color
 
 
-class SimpleProbe(BaseProbe):
+class SimpleProbe(BaseProbe, FontMixin):
     fixed_height = None
 
     def __init__(self, widget):
         super().__init__()
         self.app = widget.app
         self.widget = widget
-        self.native = widget._impl.native
+        self.impl = widget._impl
+        self.native = self.impl.native
         assert isinstance(self.native, self.native_class)
-        self.scale_factor = self.native.CreateGraphics().DpiX / 96
 
     def assert_container(self, container):
         assert self.widget._impl.container is container._impl.container
@@ -64,14 +56,14 @@ class SimpleProbe(BaseProbe):
 
     @property
     def background_color(self):
-        if self.native.BackColor == SystemColors.Control:
+        if self.native.BackColor == Color.Transparent:
             return TRANSPARENT
         else:
             return toga_color(self.native.BackColor)
 
     @property
     def font(self):
-        return toga_font(self.native.Font)
+        return self.native.Font
 
     @property
     def hidden(self):
@@ -92,7 +84,7 @@ class SimpleProbe(BaseProbe):
 
     def assert_height(self, min_height, max_height):
         if self.fixed_height is not None:
-            assert self.height == approx(self.fixed_height, rel=0.2)
+            assert self.height == approx(self.fixed_height, rel=0.1)
         else:
             assert min_height <= self.height <= max_height
 
@@ -115,14 +107,11 @@ class SimpleProbe(BaseProbe):
     async def press(self):
         self.native.OnClick(EventArgs.Empty)
 
-    async def type_character(self, char):
-        try:
-            key_code = KEY_CODES[char]
-        except KeyError:
-            assert len(char) == 1, char
-            key_code = char
-
-        SendKeys.SendWait(key_code)
+    def mouse_event(self, x=0, y=0, **kwargs):
+        kwargs = {**dict(button=MouseButtons.Left, clicks=1, delta=0), **kwargs}
+        return MouseEventArgs(
+            x=round(x * self.scale_factor), y=round(y * self.scale_factor), **kwargs
+        )
 
     @property
     def is_hidden(self):
@@ -131,3 +120,9 @@ class SimpleProbe(BaseProbe):
     @property
     def has_focus(self):
         return self.native.ContainsFocus
+
+    async def undo(self):
+        pytest.skip("Undo not supported on this platform")
+
+    async def redo(self):
+        pytest.skip("Redo not supported on this platform")

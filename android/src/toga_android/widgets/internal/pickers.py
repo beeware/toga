@@ -1,13 +1,15 @@
 from abc import ABC, abstractmethod
+from decimal import ROUND_UP
 
+from android.view import View
+from android.widget import EditText
+from java import dynamic_proxy
 from travertino.size import at_least
 
-from ...libs.android.view import OnClickListener, View__MeasureSpec
-from ...libs.android.widget import EditText
 from ..label import TextViewWidget
 
 
-class TogaPickerClickListener(OnClickListener):
+class TogaPickerClickListener(dynamic_proxy(View.OnClickListener)):
     def __init__(self, impl):
         super().__init__()
         self.impl = impl
@@ -40,12 +42,7 @@ class PickerBase(TextViewWidget, ABC):
 
     def rehint(self):
         self.interface.intrinsic.width = at_least(300)
-        # Refuse to call measure() if widget has no container, i.e., has no LayoutParams.
-        # On Android, EditText's measure() throws NullPointerException if the widget has no
-        # LayoutParams.
-        if not self.native.getLayoutParams():
-            return
-        self.native.measure(
-            View__MeasureSpec.UNSPECIFIED, View__MeasureSpec.UNSPECIFIED
+        self.native.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
+        self.interface.intrinsic.height = self.scale_out(
+            self.native.getMeasuredHeight(), ROUND_UP
         )
-        self.interface.intrinsic.height = self.native.getMeasuredHeight()

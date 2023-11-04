@@ -9,9 +9,17 @@ jobs:
   ci:
     uses: ./.github/workflows/ci.yml
 
+  docs:
+    name: Verify Docs Build
+    uses: beeware/.github/.github/workflows/docs-build-verify.yml@main
+    secrets: inherit
+    with:
+      project-name: "toga"
+      project-version: ${{ github.ref_name }}
+
   release:
     name: Create GitHub release
-    needs: ci
+    needs: [ ci, docs ]
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -26,7 +34,7 @@ jobs:
           name: ${{ needs.ci.outputs.artifact-name }}
 
       - name: Create release
-        uses: ncipollo/release-action@v1.12.0
+        uses: ncipollo/release-action@v1.13.0
         with:
           name: ${{ env.VERSION }}
           draft: true
@@ -51,6 +59,7 @@ jobs:
         - "toga_dummy"
         - "toga_gtk"
         - "toga_iOS"
+        - "toga_textual"
         - "toga_web"
         - "toga_winforms"
     steps:
@@ -67,4 +76,4 @@ jobs:
       - name: Publish to TestPyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
-          repository_url: https://test.pypi.org/legacy/
+          repository-url: https://test.pypi.org/legacy/

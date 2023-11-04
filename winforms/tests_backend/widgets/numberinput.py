@@ -1,3 +1,4 @@
+import pytest
 from System.Windows.Forms import NumericUpDown
 
 from .base import SimpleProbe
@@ -10,7 +11,7 @@ class NumberInputProbe(SimpleProbe):
     allows_empty_value = True
     allows_extra_digits = True
     background_supports_alpha = False
-    fixed_height = 18
+    fixed_height = 23
 
     @property
     def value(self):
@@ -38,3 +39,6 @@ class NumberInputProbe(SimpleProbe):
     def assert_vertical_alignment(self, expected):
         # Vertical alignment isn't configurable in this native widget.
         pass
+
+    def set_cursor_at_end(self):
+        pytest.skip("Cursor positioning not supported on this platform")

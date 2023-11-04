@@ -1,1 +1,0 @@
-The app paths now include a ``config`` path for storing config files.

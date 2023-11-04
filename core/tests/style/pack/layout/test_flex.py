@@ -29,34 +29,10 @@ def test_row_flex_no_hints():
         ],
     )
 
-    # Minimum size
-    root.style.layout(root, ExampleViewport(0, 0, dpi=96))
+    root.style.layout(root, ExampleViewport(640, 480))
     assert_layout(
         root,
         (50, 50),
-        {
-            "origin": (0, 0),
-            "content": (50, 50),
-            "children": [
-                {
-                    "origin": (0, 0),
-                    "content": (0, 0),
-                },
-                {
-                    "origin": (0, 0),
-                    "content": (50, 50),
-                    "children": [
-                        {"origin": (0, 0), "content": (50, 50)},
-                    ],
-                },
-            ],
-        },
-    )
-
-    # Normal size
-    root.style.layout(root, ExampleViewport(640, 480, dpi=96))
-    assert_layout(
-        root,
         (640, 480),
         {
             "origin": (0, 0),
@@ -71,30 +47,6 @@ def test_row_flex_no_hints():
                     "content": (320, 480),
                     "children": [
                         {"origin": (320, 0), "content": (50, 50)},
-                    ],
-                },
-            ],
-        },
-    )
-
-    # HiDPI Normal size
-    root.style.layout(root, ExampleViewport(640, 480, dpi=144))
-    assert_layout(
-        root,
-        (640, 480),
-        {
-            "origin": (0, 0),
-            "content": (640, 480),
-            "children": [
-                {
-                    "origin": (0, 0),
-                    "content": (320, 480),
-                },
-                {
-                    "origin": (320, 0),
-                    "content": (320, 480),
-                    "children": [
-                        {"origin": (320, 0), "content": (75, 75)},
                     ],
                 },
             ],
@@ -152,39 +104,10 @@ def test_row_flex():
         ],
     )
 
-    # Minimum size
-    root.style.layout(root, ExampleViewport(0, 0, dpi=96))
+    root.style.layout(root, ExampleViewport(640, 480))
     assert_layout(
         root,
         (300, 100),
-        {
-            "origin": (0, 0),
-            "content": (300, 100),
-            "children": [
-                {
-                    "origin": (0, 0),
-                    "content": (100, 100),
-                },
-                {
-                    "origin": (100, 0),
-                    "content": (200, 100),
-                    "children": [
-                        {"origin": (100, 0), "content": (20, 20)},
-                        {"origin": (120, 0), "content": (20, 20)},
-                        {"origin": (140, 0), "content": (20, 100)},
-                        {"origin": (160, 0), "content": (60, 100)},
-                        {"origin": (220, 0), "content": (20, 20)},
-                        {"origin": (240, 0), "content": (60, 100)},
-                    ],
-                },
-            ],
-        },
-    )
-
-    # # Normal size
-    root.style.layout(root, ExampleViewport(640, 480, dpi=96))
-    assert_layout(
-        root,
         (640, 480),
         {
             "origin": (0, 0),
@@ -204,35 +127,6 @@ def test_row_flex():
                         {"origin": (160, 0), "content": (60, 100)},
                         {"origin": (220, 0), "content": (20, 20)},
                         {"origin": (240, 0), "content": (60, 100)},
-                    ],
-                },
-            ],
-        },
-    )
-
-    # # HiDPI Normal size
-    root.style.layout(root, ExampleViewport(640, 480, dpi=144))
-    assert_layout(
-        root,
-        (640, 480),
-        {
-            "origin": (0, 0),
-            "content": (640, 480),
-            "children": [
-                {
-                    "origin": (0, 0),
-                    "content": (100, 100),
-                },
-                {
-                    "origin": (100, 0),
-                    "content": (200, 100),
-                    "children": [
-                        {"origin": (100, 0), "content": (30, 30)},
-                        {"origin": (130, 0), "content": (20, 20)},
-                        {"origin": (150, 0), "content": (20, 100)},
-                        {"origin": (170, 0), "content": (55, 100)},
-                        {"origin": (225, 0), "content": (20, 20)},
-                        {"origin": (245, 0), "content": (55, 100)},
                     ],
                 },
             ],
@@ -290,39 +184,10 @@ def test_row_flex_insufficient_space():
         ],
     )
 
-    # Minimum size
-    root.style.layout(root, ExampleViewport(0, 0, dpi=96))
+    root.style.layout(root, ExampleViewport(640, 480))
     assert_layout(
         root,
         (200, 100),
-        {
-            "origin": (0, 0),
-            "content": (200, 100),
-            "children": [
-                {
-                    "origin": (0, 0),
-                    "content": (100, 100),
-                },
-                {
-                    "origin": (100, 0),
-                    "content": (100, 100),
-                    "children": [
-                        {"origin": (100, 0), "content": (20, 20)},
-                        {"origin": (120, 0), "content": (20, 20)},
-                        {"origin": (140, 0), "content": (20, 100)},
-                        {"origin": (160, 0), "content": (0, 100)},
-                        {"origin": (160, 0), "content": (20, 20)},
-                        {"origin": (180, 0), "content": (20, 100)},
-                    ],
-                },
-            ],
-        },
-    )
-
-    # # Normal size
-    root.style.layout(root, ExampleViewport(640, 480, dpi=96))
-    assert_layout(
-        root,
         (640, 480),
         {
             "origin": (0, 0),
@@ -348,10 +213,47 @@ def test_row_flex_insufficient_space():
         },
     )
 
-    # # HiDPI Normal size
-    root.style.layout(root, ExampleViewport(640, 480, dpi=144))
+
+def test_row_flex_insufficient_space_no_flex():
+    """Children in a row layout with flexible containers, but insufficient_space for any
+    of the flexible content, and an explicit intrinsic width, doesn't collapse row
+    height.
+    """
+    root = ExampleNode(
+        "app",
+        style=Pack(direction=ROW),
+        children=[
+            ExampleNode(
+                "first",
+                style=Pack(flex=1),
+                size=(100, 100),
+            ),
+            ExampleNode(
+                "second",
+                style=Pack(direction=ROW, flex=1),
+                size=(100, 100),
+                children=[
+                    # All children are expanding flexible, but the intrinsic minimum
+                    # size is greater than what is available.
+                    ExampleNode(
+                        "child 1",
+                        style=Pack(flex=1),
+                        size=(at_least(60), 20),
+                    ),
+                    ExampleNode(
+                        "child 2",
+                        style=Pack(flex=1),
+                        size=(at_least(60), 30),
+                    ),
+                ],
+            ),
+        ],
+    )
+
+    root.style.layout(root, ExampleViewport(640, 480))
     assert_layout(
         root,
+        (220, 100),
         (640, 480),
         {
             "origin": (0, 0),
@@ -363,15 +265,63 @@ def test_row_flex_insufficient_space():
                 },
                 {
                     "origin": (100, 0),
-                    "content": (110, 100),
+                    "content": (120, 100),
                     "children": [
-                        {"origin": (100, 0), "content": (30, 30)},
-                        {"origin": (130, 0), "content": (20, 20)},
-                        {"origin": (150, 0), "content": (20, 100)},
-                        {"origin": (170, 0), "content": (0, 100)},
-                        {"origin": (170, 0), "content": (20, 20)},
-                        {"origin": (190, 0), "content": (20, 100)},
+                        {"origin": (100, 0), "content": (60, 20)},
+                        {"origin": (160, 0), "content": (60, 30)},
                     ],
+                },
+            ],
+        },
+    )
+
+
+def test_row_flex_grandchild_min_size():
+    """The minimum intrinsic sizes of grandchild of flex row containers are honored"""
+    root = ExampleNode(
+        "app",
+        size=(at_least(0), at_least(0)),
+        style=Pack(direction=ROW),
+        children=[
+            ExampleNode(
+                "inner",
+                size=(at_least(0), at_least(0)),
+                style=Pack(direction=COLUMN, flex=1),
+                children=[
+                    ExampleNode(
+                        "textbox",
+                        size=(at_least(100), at_least(100)),
+                        style=Pack(flex=1),
+                    )
+                ],
+            ),
+            ExampleNode(
+                "Button",
+                size=(20, at_least(100)),
+                style=Pack(),
+            ),
+        ],
+    )
+
+    root.style.layout(root, ExampleViewport(640, 480))
+    assert_layout(
+        root,
+        (120, 100),
+        (640, 480),
+        {
+            "origin": (0, 0),
+            "content": (640, 480),
+            "children": [
+                {
+                    "origin": (0, 0),
+                    "content": (620, 480),
+                    "children": [
+                        {"origin": (0, 0), "content": (620, 480)},
+                    ],
+                },
+                {
+                    "origin": (620, 0),
+                    "content": (20, 480),
                 },
             ],
         },
@@ -402,34 +352,10 @@ def test_column_flex_no_hints():
         ],
     )
 
-    # Minimum size
-    root.style.layout(root, ExampleViewport(0, 0, dpi=96))
+    root.style.layout(root, ExampleViewport(640, 480))
     assert_layout(
         root,
         (50, 50),
-        {
-            "origin": (0, 0),
-            "content": (50, 50),
-            "children": [
-                {
-                    "origin": (0, 0),
-                    "content": (0, 0),
-                },
-                {
-                    "origin": (0, 0),
-                    "content": (50, 50),
-                    "children": [
-                        {"origin": (0, 0), "content": (50, 50)},
-                    ],
-                },
-            ],
-        },
-    )
-
-    # # Normal size
-    root.style.layout(root, ExampleViewport(640, 480, dpi=96))
-    assert_layout(
-        root,
         (640, 480),
         {
             "origin": (0, 0),
@@ -444,30 +370,6 @@ def test_column_flex_no_hints():
                     "content": (640, 240),
                     "children": [
                         {"origin": (0, 240), "content": (50, 50)},
-                    ],
-                },
-            ],
-        },
-    )
-
-    # # HiDPI Normal size
-    root.style.layout(root, ExampleViewport(640, 480, dpi=144))
-    assert_layout(
-        root,
-        (640, 480),
-        {
-            "origin": (0, 0),
-            "content": (640, 480),
-            "children": [
-                {
-                    "origin": (0, 0),
-                    "content": (640, 240),
-                },
-                {
-                    "origin": (0, 240),
-                    "content": (640, 240),
-                    "children": [
-                        {"origin": (0, 240), "content": (75, 75)},
                     ],
                 },
             ],
@@ -525,39 +427,10 @@ def test_column_flex():
         ],
     )
 
-    # Minimum size
-    root.style.layout(root, ExampleViewport(0, 0, dpi=96))
+    root.style.layout(root, ExampleViewport(640, 480))
     assert_layout(
         root,
         (100, 300),
-        {
-            "origin": (0, 0),
-            "content": (100, 300),
-            "children": [
-                {
-                    "origin": (0, 0),
-                    "content": (100, 100),
-                },
-                {
-                    "origin": (0, 100),
-                    "content": (100, 200),
-                    "children": [
-                        {"origin": (0, 100), "content": (20, 20)},
-                        {"origin": (0, 120), "content": (20, 20)},
-                        {"origin": (0, 140), "content": (100, 20)},
-                        {"origin": (0, 160), "content": (100, 60)},
-                        {"origin": (0, 220), "content": (20, 20)},
-                        {"origin": (0, 240), "content": (100, 60)},
-                    ],
-                },
-            ],
-        },
-    )
-
-    # Normal size
-    root.style.layout(root, ExampleViewport(640, 480, dpi=96))
-    assert_layout(
-        root,
         (640, 480),
         {
             "origin": (0, 0),
@@ -577,35 +450,6 @@ def test_column_flex():
                         {"origin": (0, 160), "content": (100, 60)},
                         {"origin": (0, 220), "content": (20, 20)},
                         {"origin": (0, 240), "content": (100, 60)},
-                    ],
-                },
-            ],
-        },
-    )
-
-    # HiDPI Normal size
-    root.style.layout(root, ExampleViewport(640, 480, dpi=144))
-    assert_layout(
-        root,
-        (640, 480),
-        {
-            "origin": (0, 0),
-            "content": (640, 480),
-            "children": [
-                {
-                    "origin": (0, 0),
-                    "content": (100, 100),
-                },
-                {
-                    "origin": (0, 100),
-                    "content": (100, 200),
-                    "children": [
-                        {"origin": (0, 100), "content": (30, 30)},
-                        {"origin": (0, 130), "content": (20, 20)},
-                        {"origin": (0, 150), "content": (100, 20)},
-                        {"origin": (0, 170), "content": (100, 55)},
-                        {"origin": (0, 225), "content": (20, 20)},
-                        {"origin": (0, 245), "content": (100, 55)},
                     ],
                 },
             ],
@@ -615,7 +459,7 @@ def test_column_flex():
 
 def test_column_flex_insufficient_space():
     """Children in a column layout with flexible containers, but insufficient space to
-    accomodate them, and an explicit intrinsic width, doesn't collapse column width.
+    accommodate them, and an explicit intrinsic width, doesn't collapse column width.
     """
 
     root = ExampleNode(
@@ -665,39 +509,10 @@ def test_column_flex_insufficient_space():
         ],
     )
 
-    # Minimum size
-    root.style.layout(root, ExampleViewport(0, 0, dpi=96))
+    root.style.layout(root, ExampleViewport(640, 480))
     assert_layout(
         root,
         (100, 200),
-        {
-            "origin": (0, 0),
-            "content": (100, 200),
-            "children": [
-                {
-                    "origin": (0, 0),
-                    "content": (100, 100),
-                },
-                {
-                    "origin": (0, 100),
-                    "content": (100, 100),
-                    "children": [
-                        {"origin": (0, 100), "content": (20, 20)},
-                        {"origin": (0, 120), "content": (20, 20)},
-                        {"origin": (0, 140), "content": (100, 20)},
-                        {"origin": (0, 160), "content": (100, 0)},
-                        {"origin": (0, 160), "content": (20, 20)},
-                        {"origin": (0, 180), "content": (100, 20)},
-                    ],
-                },
-            ],
-        },
-    )
-
-    # Normal size
-    root.style.layout(root, ExampleViewport(640, 480, dpi=96))
-    assert_layout(
-        root,
         (640, 480),
         {
             "origin": (0, 0),
@@ -723,10 +538,48 @@ def test_column_flex_insufficient_space():
         },
     )
 
-    # HiDPI Normal size
-    root.style.layout(root, ExampleViewport(640, 480, dpi=144))
+
+def test_column_flex_insufficient_space_no_flex():
+    """Children in a column layout with flexible containers, but insufficient space for
+    any of the flexible content, and an explicit intrinsic width, doesn't collapse
+    column width.
+    """
+
+    root = ExampleNode(
+        "app",
+        style=Pack(direction=COLUMN),
+        children=[
+            ExampleNode(
+                "first",
+                style=Pack(flex=1),
+                size=(100, 100),
+            ),
+            ExampleNode(
+                "second",
+                style=Pack(direction=COLUMN, flex=1),
+                size=(100, 100),
+                children=[
+                    # All children are expanding flexible, but the intrinsic minimum
+                    # size is greater than what is available.
+                    ExampleNode(
+                        "child 1",
+                        style=Pack(flex=1),
+                        size=(20, at_least(60)),
+                    ),
+                    ExampleNode(
+                        "child 2",
+                        style=Pack(flex=1),
+                        size=(30, at_least(60)),
+                    ),
+                ],
+            ),
+        ],
+    )
+
+    root.style.layout(root, ExampleViewport(640, 480))
     assert_layout(
         root,
+        (100, 220),
         (640, 480),
         {
             "origin": (0, 0),
@@ -738,15 +591,63 @@ def test_column_flex_insufficient_space():
                 },
                 {
                     "origin": (0, 100),
-                    "content": (100, 110),
+                    "content": (100, 120),
                     "children": [
-                        {"origin": (0, 100), "content": (30, 30)},
-                        {"origin": (0, 130), "content": (20, 20)},
-                        {"origin": (0, 150), "content": (100, 20)},
-                        {"origin": (0, 170), "content": (100, 0)},
-                        {"origin": (0, 170), "content": (20, 20)},
-                        {"origin": (0, 190), "content": (100, 20)},
+                        {"origin": (0, 100), "content": (20, 60)},
+                        {"origin": (0, 160), "content": (30, 60)},
                     ],
+                },
+            ],
+        },
+    )
+
+
+def test_column_flex_grandchild_min_size():
+    """The minimum intrinsic sizes of grandchild of flex column containers are honored"""
+    root = ExampleNode(
+        "app",
+        size=(at_least(0), at_least(0)),
+        style=Pack(direction=COLUMN),
+        children=[
+            ExampleNode(
+                "inner",
+                size=(at_least(0), at_least(0)),
+                style=Pack(direction=ROW, flex=1),
+                children=[
+                    ExampleNode(
+                        "textbox",
+                        size=(at_least(100), at_least(100)),
+                        style=Pack(flex=1),
+                    )
+                ],
+            ),
+            ExampleNode(
+                "Button",
+                size=(at_least(100), 20),
+                style=Pack(),
+            ),
+        ],
+    )
+
+    root.style.layout(root, ExampleViewport(640, 480))
+    assert_layout(
+        root,
+        (100, 120),
+        (640, 480),
+        {
+            "origin": (0, 0),
+            "content": (640, 480),
+            "children": [
+                {
+                    "origin": (0, 0),
+                    "content": (640, 460),
+                    "children": [
+                        {"origin": (0, 0), "content": (640, 460)},
+                    ],
+                },
+                {
+                    "origin": (0, 460),
+                    "content": (640, 20),
                 },
             ],
         },

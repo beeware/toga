@@ -26,7 +26,7 @@ class Constraints:
         self.left_constraint = None
         self.top_constraint = None
 
-    # Deletion isn't an event we can programatically invoke; deletion
+    # Deletion isn't an event we can programmatically invoke; deletion
     # of constraints can take several iterations before it occurs.
     def __del__(self):  # pragma: nocover
         self._remove_constraints()
@@ -34,10 +34,15 @@ class Constraints:
     def _remove_constraints(self):
         if self.container:
             # print(f"Remove constraints for {self.widget} in {self.container}")
-            self.container.native.removeConstraint(self.width_constraint)
-            self.container.native.removeConstraint(self.height_constraint)
-            self.container.native.removeConstraint(self.left_constraint)
-            self.container.native.removeConstraint(self.top_constraint)
+            # Due to the unpredictability of garbage collection, it's possible for
+            # the native object of the window's container to be deleted on the ObjC
+            # side before the constraints for the window have been removed. Protect
+            # against this possibility.
+            if self.container.native:
+                self.container.native.removeConstraint(self.width_constraint)
+                self.container.native.removeConstraint(self.height_constraint)
+                self.container.native.removeConstraint(self.left_constraint)
+                self.container.native.removeConstraint(self.top_constraint)
 
             self.width_constraint.release()
             self.height_constraint.release()

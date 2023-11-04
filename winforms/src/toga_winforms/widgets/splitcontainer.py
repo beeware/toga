@@ -7,26 +7,24 @@ from System.Windows.Forms import (
 from toga.constants import Direction
 
 from ..container import Container
+from ..libs.wrapper import WeakrefCallable
 from .base import Widget
-
-
-class SplitPanel(Container):
-    def resize_content(self, **kwargs):
-        size = self.native_parent.ClientSize
-        super().resize_content(size.Width, size.Height, **kwargs)
 
 
 class SplitContainer(Widget):
     def create(self):
         self.native = NativeSplitContainer()
-        self.native.SplitterMoved += lambda sender, event: self.resize_content()
+        self.native.SplitterMoved += WeakrefCallable(self.winforms_splitter_moved)
 
         # Despite what the BorderStyle documentation says, there is no border by default
         # (at least on Windows 10), which would make the split bar invisible.
         self.native.BorderStyle = BorderStyle.Fixed3D
 
-        self.panels = (SplitPanel(self.native.Panel1), SplitPanel(self.native.Panel2))
+        self.panels = (Container(self.native.Panel1), Container(self.native.Panel2))
         self.pending_position = None
+
+    def winforms_splitter_moved(self, sender, event):
+        self.resize_content()
 
     def set_bounds(self, x, y, width, height):
         super().set_bounds(x, y, width, height)
@@ -81,4 +79,5 @@ class SplitContainer(Widget):
 
     def resize_content(self, **kwargs):
         for panel in self.panels:
-            panel.resize_content(**kwargs)
+            size = panel.native_parent.ClientSize
+            panel.resize_content(size.Width, size.Height, **kwargs)

@@ -5,7 +5,7 @@ from pytest import xfail
 from toga_iOS.libs import UIPickerView, UITextField
 
 from .base import SimpleProbe
-from .properties import toga_alignment, toga_color, toga_font
+from .properties import toga_alignment, toga_color
 
 
 class SelectionProbe(SimpleProbe):
@@ -30,10 +30,6 @@ class SelectionProbe(SimpleProbe):
     @property
     def color(self):
         return toga_color(self.native.textColor)
-
-    @property
-    def font(self):
-        return toga_font(self.native.font)
 
     @property
     def titles(self):

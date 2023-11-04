@@ -1,1 +1,0 @@
-The latest version of ``docformatter``, i.e. v1.6.1, was run to lint all docstrings in Toga.

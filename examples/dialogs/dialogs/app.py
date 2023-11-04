@@ -6,7 +6,7 @@ from toga.constants import COLUMN
 from toga.style import Pack
 
 
-class ExampledialogsApp(toga.App):
+class ExampleDialogsApp(toga.App):
     # Button callback functions
     def do_clear(self, widget, **kwargs):
         self.label.text = "Ready."
@@ -35,7 +35,7 @@ class ExampledialogsApp(toga.App):
         await self.main_window.error_dialog(
             "Toga", "Well that didn't work... or did it?"
         )
-        self.label.text = "Oh noes..."
+        self.label.text = "Oh no..."
 
     async def action_stack_trace(self, widget):
         await self.main_window.stack_trace_dialog(
@@ -59,9 +59,7 @@ class ExampledialogsApp(toga.App):
 
     async def action_open_file_dialog(self, widget):
         try:
-            fname = await self.main_window.open_file_dialog(
-                title="Open file with Toga", multiselect=False
-            )
+            fname = await self.main_window.open_file_dialog("Open file with Toga")
             if fname is not None:
                 self.label.text = f"File to open: {fname}"
             else:
@@ -72,9 +70,7 @@ class ExampledialogsApp(toga.App):
     async def action_open_file_filtered_dialog(self, widget):
         try:
             fname = await self.main_window.open_file_dialog(
-                title="Open file with Toga",
-                multiselect=False,
-                file_types=["doc", "txt"],
+                "Open file with Toga", file_types=["doc", "txt"]
             )
             if fname is not None:
                 self.label.text = f"File to open: {fname}"
@@ -86,7 +82,7 @@ class ExampledialogsApp(toga.App):
     async def action_open_file_dialog_multi(self, widget):
         try:
             filenames = await self.main_window.open_file_dialog(
-                title="Open file with Toga", multiselect=True
+                "Open multiple files with Toga", multiple_select=True
             )
             if filenames is not None:
                 msg = f"Files to open: {', '.join(str(f) for f in filenames)}"
@@ -102,7 +98,6 @@ class ExampledialogsApp(toga.App):
             fname = await self.main_window.open_file_dialog(
                 title="Open file with Toga in home folder",
                 initial_directory=Path.home(),
-                multiselect=False,
             )
             if fname is not None:
                 self.label.text = f"File to open: {fname}"
@@ -126,14 +121,14 @@ class ExampledialogsApp(toga.App):
     async def action_select_folder_dialog_multi(self, widget):
         try:
             path_names = await self.main_window.select_folder_dialog(
-                title="Select multiple folders with Toga", multiselect=True
+                "Select multiple folders with Toga", multiple_select=True
             )
             if path_names is not None:
                 self.label.text = (
                     f"Folders selected: {','.join([str(p) for p in path_names])}"
                 )
             else:
-                self.label.text = "No fodlers selected!"
+                self.label.text = "No folders selected!"
         except ValueError:
             self.label.text = "Folders select dialog was canceled"
 
@@ -186,8 +181,6 @@ class ExampledialogsApp(toga.App):
     def action_open_secondary_window(self, widget):
         self.window_counter += 1
         window = toga.Window(title=f"New Window {self.window_counter}")
-        # Both self.windows.add() and self.windows += work:
-        self.windows += window
 
         self.set_window_label_text(len(self.windows) - 1)
         secondary_label = toga.Label(text="You are in a secondary window!")
@@ -219,7 +212,7 @@ class ExampledialogsApp(toga.App):
 
     def startup(self):
         # Set up main window
-        self.main_window = toga.MainWindow(title=self.name)
+        self.main_window = toga.MainWindow()
         self.on_exit = self.exit_handler
 
         # Label to show responses.
@@ -333,7 +326,7 @@ class ExampledialogsApp(toga.App):
 
 
 def main():
-    return ExampledialogsApp("Dialogs", "org.beeware.widgets.dialogs")
+    return ExampleDialogsApp("Dialogs", "org.beeware.widgets.dialogs")
 
 
 if __name__ == "__main__":

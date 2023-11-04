@@ -10,32 +10,45 @@ class NativeHandler:
         self.native = handler
 
 
-async def long_running_task(generator, cleanup):
+async def long_running_task(interface, generator, cleanup):
     """Run a generator as an asynchronous coroutine."""
     try:
-        while True:
-            delay = next(generator)
-            await asyncio.sleep(delay)
-    except StopIteration:
-        if cleanup:
-            cleanup()
+        try:
+            while True:
+                delay = next(generator)
+                if delay:
+                    await asyncio.sleep(delay)
+        except StopIteration as e:
+            result = e.value
     except Exception as e:
         print("Error in long running handler:", e, file=sys.stderr)
         traceback.print_exc()
+    else:
+        if cleanup:
+            try:
+                cleanup(interface, result)
+            except Exception as e:
+                print("Error in long running handler cleanup:", e, file=sys.stderr)
+                traceback.print_exc()
 
 
 async def handler_with_cleanup(handler, cleanup, interface, *args, **kwargs):
     try:
         result = await handler(interface, *args, **kwargs)
-        if cleanup:
-            cleanup(interface, result)
     except Exception as e:
         print("Error in async handler:", e, file=sys.stderr)
         traceback.print_exc()
+    else:
+        if cleanup:
+            try:
+                cleanup(interface, result)
+            except Exception as e:
+                print("Error in async handler cleanup:", e, file=sys.stderr)
+                traceback.print_exc()
 
 
 def wrapped_handler(interface, handler, cleanup=None):
-    """Wrap a handler provided by the user so it can be invoked.
+    """Wrap a handler provided by the user, so it can be invoked.
 
     If the handler is a NativeHandler, return the handler object contained in the
     NativeHandler.
@@ -56,30 +69,42 @@ def wrapped_handler(interface, handler, cleanup=None):
         if isinstance(handler, NativeHandler):
             return handler.native
 
-        def _handler(widget, *args, **kwargs):
+        def _handler(*args, **kwargs):
             if asyncio.iscoroutinefunction(handler):
                 asyncio.ensure_future(
                     handler_with_cleanup(handler, cleanup, interface, *args, **kwargs)
                 )
             else:
-                result = handler(interface, *args, **kwargs)
-                if inspect.isgenerator(result):
-                    asyncio.ensure_future(long_running_task(result, cleanup))
+                try:
+                    result = handler(interface, *args, **kwargs)
+                except Exception as e:
+                    print("Error in handler:", e, file=sys.stderr)
+                    traceback.print_exc()
                 else:
-                    try:
-                        if cleanup:
-                            cleanup(interface, result)
-                        return result
-                    except Exception as e:
-                        print("Error in handler:", e, file=sys.stderr)
-                        traceback.print_exc()
+                    if inspect.isgenerator(result):
+                        asyncio.ensure_future(
+                            long_running_task(interface, result, cleanup)
+                        )
+                    else:
+                        try:
+                            if cleanup:
+                                cleanup(interface, result)
+                            return result
+                        except Exception as e:
+                            print("Error in handler cleanup:", e, file=sys.stderr)
+                            traceback.print_exc()
 
         _handler._raw = handler
 
     else:
         # A dummy no-op handler
-        def _handler(widget, *args, **kwargs):
-            pass
+        def _handler(*args, **kwargs):
+            try:
+                if cleanup:
+                    cleanup(interface, None)
+            except Exception as e:
+                print("Error in handler cleanup:", e, file=sys.stderr)
+                traceback.print_exc()
 
         _handler._raw = None
 

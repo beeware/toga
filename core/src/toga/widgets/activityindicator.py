@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Literal
+
 from .base import Widget
 
 
@@ -11,8 +13,6 @@ class ActivityIndicator(Widget):
         running: bool = False,
     ):
         """Create a new ActivityIndicator widget.
-
-        Inherits from :class:`toga.Widget`.
 
         :param id: The ID for the widget.
         :param style: A style object. If no style is provided, a default style
@@ -28,7 +28,7 @@ class ActivityIndicator(Widget):
             self.start()
 
     @property
-    def enabled(self) -> bool:
+    def enabled(self) -> Literal[True]:
         """Is the widget currently enabled? i.e., can the user interact with the widget?
 
         ActivityIndicator widgets cannot be disabled; this property will always return
@@ -37,10 +37,10 @@ class ActivityIndicator(Widget):
         return True
 
     @enabled.setter
-    def enabled(self, value):
+    def enabled(self, value: bool) -> None:
         pass
 
-    def focus(self):
+    def focus(self) -> None:
         "No-op; ActivityIndicator cannot accept input focus"
         pass
 
@@ -54,7 +54,7 @@ class ActivityIndicator(Widget):
         """
         return self._impl.is_running()
 
-    def start(self):
+    def start(self) -> None:
         """Start the activity indicator.
 
         If the activity indicator is already started, this is a no-op.
@@ -62,7 +62,7 @@ class ActivityIndicator(Widget):
         if not self.is_running:
             self._impl.start()
 
-    def stop(self):
+    def stop(self) -> None:
         """Stop the activity indicator.
 
         If the activity indicator is already stopped, this is a no-op.

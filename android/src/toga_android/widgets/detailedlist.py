@@ -1,215 +1,244 @@
-from rubicon.java.android_events import Handler, PythonRunnable
-from travertino.size import at_least
+from dataclasses import dataclass
 
-from ..libs.android import R__color
-from ..libs.android.graphics import BitmapFactory, Rect
-from ..libs.android.view import Gravity, OnClickListener, View__MeasureSpec
-from ..libs.android.widget import (
-    ImageView,
-    ImageView__ScaleType,
-    LinearLayout,
-    LinearLayout__LayoutParams,
-    RelativeLayout,
-    RelativeLayout__LayoutParams,
-    ScrollView,
-    TextView,
-)
-from ..libs.androidx.swiperefreshlayout import (
-    SwipeRefreshLayout,
-    SwipeRefreshLayout__OnRefreshListener,
-)
+from android import R
+from android.app import AlertDialog
+from android.content import DialogInterface
+from android.graphics import Rect
+from android.view import Gravity, View
+from android.widget import ImageView, LinearLayout, RelativeLayout, ScrollView, TextView
+from androidx.swiperefreshlayout.widget import SwipeRefreshLayout
+from java import dynamic_proxy
+
 from .base import Widget
 
 
-class DetailedListOnClickListener(OnClickListener):
+class DetailedListOnClickListener(dynamic_proxy(View.OnClickListener)):
     def __init__(self, impl, row_number):
         super().__init__()
-        self._impl = impl
-        self._row_number = row_number
+        self.impl = impl
+        self.row_number = row_number
 
     def onClick(self, _view):
-        row = self._impl.interface.data[self._row_number]
-        self._impl._selection = row
-        if self._impl.interface.on_select:
-            self._impl.interface.on_select(
-                self._impl.interface, row=self._impl.interface.data[self._row_number]
-            )
+        self.impl._set_selection(self.row_number)
+        self.impl.interface.on_select()
 
 
-class OnRefreshListener(SwipeRefreshLayout__OnRefreshListener):
+@dataclass
+class Action:
+    name: str
+    handler: callable
+    enabled: bool
+
+
+class DetailedListOnLongClickListener(dynamic_proxy(View.OnLongClickListener)):
+    def __init__(self, impl, row_number):
+        super().__init__()
+        self.impl = impl
+        self.interface = impl.interface
+        self.row_number = row_number
+
+    def onLongClick(self, _view):
+        self.impl._set_selection(self.row_number)
+        self.impl.interface.on_select()
+
+        actions = [
+            action
+            for action in [
+                Action(
+                    self.interface._primary_action,
+                    self.interface.on_primary_action,
+                    self.impl._primary_action_enabled,
+                ),
+                Action(
+                    self.interface._secondary_action,
+                    self.interface.on_secondary_action,
+                    self.impl._secondary_action_enabled,
+                ),
+            ]
+            if action.enabled
+        ]
+
+        if actions:
+            row = self.interface.data[self.row_number]
+            AlertDialog.Builder(self.impl._native_activity).setItems(
+                [action.name for action in actions],
+                DetailedListActionListener(actions, row),
+            ).show()
+
+        return True
+
+
+class DetailedListActionListener(dynamic_proxy(DialogInterface.OnClickListener)):
+    def __init__(self, actions, row):
+        super().__init__()
+        self.actions = actions
+        self.row = row
+
+    def onClick(self, dialog, which):
+        self.actions[which].handler(row=self.row)
+
+
+class OnRefreshListener(dynamic_proxy(SwipeRefreshLayout.OnRefreshListener)):
     def __init__(self, interface):
         super().__init__()
         self._interface = interface
 
     def onRefresh(self):
-        if self._interface.on_refresh:
-            self._interface.on_refresh(self._interface)
+        self._interface.on_refresh()
 
 
 class DetailedList(Widget):
-    ROW_HEIGHT = 250
-    _swipe_refresh_layout = None
-    _scroll_view = None
-    _dismissable_container = None
-    _selection = None
-
     def create(self):
-        # DetailedList is not a specific widget on Android, so we build it out
-        # of a few pieces.
-        if self.native is None:
-            self.native = LinearLayout(self._native_activity)
-            self.native.setOrientation(LinearLayout.VERTICAL)
-        else:
-            # If create() is called a second time, clear the widget and regenerate it.
-            self.native.removeAllViews()
+        # get the selection color from the current theme
+        attrs = [R.attr.colorBackground, R.attr.colorControlHighlight]
+        typed_array = self._native_activity.obtainStyledAttributes(attrs)
+        self.color_unselected = typed_array.getColor(0, 0)
+        self.color_selected = typed_array.getColor(1, 0)
+        typed_array.recycle()
 
-        scroll_view = ScrollView(self._native_activity)
-        self._scroll_view = scroll_view.__global__()
-        scroll_view_layout_params = LinearLayout__LayoutParams(
-            LinearLayout__LayoutParams.MATCH_PARENT,
-            LinearLayout__LayoutParams.MATCH_PARENT,
-        )
-        scroll_view_layout_params.gravity = Gravity.TOP
-        swipe_refresh_wrapper = SwipeRefreshLayout(self._native_activity)
-        swipe_refresh_wrapper.setOnRefreshListener(OnRefreshListener(self.interface))
-        self._swipe_refresh_layout = swipe_refresh_wrapper.__global__()
-        swipe_refresh_wrapper.addView(scroll_view)
-        self.native.addView(swipe_refresh_wrapper, scroll_view_layout_params)
-        dismissable_container = LinearLayout(self._native_activity)
-        self._dismissable_container = dismissable_container.__global__()
-        dismissable_container.setOrientation(LinearLayout.VERTICAL)
-        dismissable_container_params = LinearLayout__LayoutParams(
-            LinearLayout__LayoutParams.MATCH_PARENT,
-            LinearLayout__LayoutParams.MATCH_PARENT,
-        )
-        scroll_view.addView(dismissable_container, dismissable_container_params)
-        for i in range(len(self.interface.data or [])):
-            self._make_row(dismissable_container, i)
+        self.native = self._refresh_layout = SwipeRefreshLayout(self._native_activity)
+        self._refresh_layout.setOnRefreshListener(OnRefreshListener(self.interface))
 
-    def _make_row(self, container, i):
+        self._scroll_view = ScrollView(self._native_activity)
+        match_parent = LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            LinearLayout.LayoutParams.MATCH_PARENT,
+        )
+        self._refresh_layout.addView(self._scroll_view, match_parent)
+
+        self._linear_layout = LinearLayout(self._native_activity)
+        self._linear_layout.setOrientation(LinearLayout.VERTICAL)
+        self._scroll_view.addView(self._linear_layout, match_parent)
+
+    def _load_data(self):
+        self._selection = None
+        self._linear_layout.removeAllViews()
+        for i, row in enumerate(self.interface.data):
+            self._make_row(self._linear_layout, i, row)
+
+    def _make_row(self, container, i, row):
         # Create the foreground.
-        row_foreground = RelativeLayout(self._native_activity)
-        container.addView(row_foreground)
+        row_view = RelativeLayout(self._native_activity)
+        container.addView(row_view)
+        row_view.setOnClickListener(DetailedListOnClickListener(self, i))
+        row_view.setOnLongClickListener(DetailedListOnLongClickListener(self, i))
+        row_height = self.scale_in(80)
+
+        title, subtitle, icon = (
+            getattr(row, attr, None) for attr in self.interface.accessors
+        )
 
         # Add user-provided icon to layout.
         icon_image_view = ImageView(self._native_activity)
-        icon = self.interface.data[i].icon
         if icon is not None:
-            bitmap = BitmapFactory.decodeFile(str(icon._impl.path))
-            icon_image_view.setImageBitmap(bitmap)
-        icon_layout_params = RelativeLayout__LayoutParams(
-            RelativeLayout__LayoutParams.WRAP_CONTENT,
-            RelativeLayout__LayoutParams.WRAP_CONTENT,
+            icon_image_view.setImageBitmap(icon._impl.native)
+        icon_layout_params = RelativeLayout.LayoutParams(
+            RelativeLayout.LayoutParams.WRAP_CONTENT,
+            RelativeLayout.LayoutParams.WRAP_CONTENT,
         )
-        icon_layout_params.width = 150
-        icon_layout_params.setMargins(25, 0, 25, 0)
-        icon_layout_params.height = self.ROW_HEIGHT
-        icon_image_view.setScaleType(ImageView__ScaleType.FIT_CENTER)
-        row_foreground.addView(icon_image_view, icon_layout_params)
+        icon_width = self.scale_in(50)
+        icon_margin = self.scale_in(10)
+        icon_layout_params.width = icon_width
+        icon_layout_params.setMargins(icon_margin, 0, icon_margin, 0)
+        icon_layout_params.height = row_height
+        icon_image_view.setScaleType(ImageView.ScaleType.FIT_CENTER)
+        row_view.addView(icon_image_view, icon_layout_params)
 
         # Create layout to show top_text and bottom_text.
         text_container = LinearLayout(self._native_activity)
-        text_container_params = RelativeLayout__LayoutParams(
-            RelativeLayout__LayoutParams.WRAP_CONTENT,
-            RelativeLayout__LayoutParams.WRAP_CONTENT,
+        text_container_params = RelativeLayout.LayoutParams(
+            RelativeLayout.LayoutParams.WRAP_CONTENT,
+            RelativeLayout.LayoutParams.WRAP_CONTENT,
         )
-        text_container_params.height = self.ROW_HEIGHT
-        text_container_params.setMargins(25 + 25 + 150, 0, 0, 0)
-        row_foreground.addView(text_container, text_container_params)
+        text_container_params.height = row_height
+        text_container_params.setMargins(icon_width + (2 * icon_margin), 0, 0, 0)
+        row_view.addView(text_container, text_container_params)
         text_container.setOrientation(LinearLayout.VERTICAL)
         text_container.setWeightSum(2.0)
 
         # Create top & bottom text; add them to layout.
+        def get_string(value):
+            if value is None:
+                value = self.interface.missing_value
+            return str(value)
+
         top_text = TextView(self._native_activity)
-        top_text.setText(str(getattr(self.interface.data[i], "title", "")))
+        top_text.setText(get_string(title))
         top_text.setTextSize(20.0)
         top_text.setTextColor(
-            self._native_activity.getResources().getColor(R__color.black)
+            self._native_activity.getResources().getColor(R.color.black)
         )
         bottom_text = TextView(self._native_activity)
         bottom_text.setTextColor(
-            self._native_activity.getResources().getColor(R__color.black)
+            self._native_activity.getResources().getColor(R.color.black)
         )
-        bottom_text.setText(str(getattr(self.interface.data[i], "subtitle", "")))
+        bottom_text.setText(get_string(subtitle))
         bottom_text.setTextSize(16.0)
-        top_text_params = LinearLayout__LayoutParams(
-            RelativeLayout__LayoutParams.WRAP_CONTENT,
-            RelativeLayout__LayoutParams.MATCH_PARENT,
+        top_text_params = LinearLayout.LayoutParams(
+            RelativeLayout.LayoutParams.WRAP_CONTENT,
+            RelativeLayout.LayoutParams.MATCH_PARENT,
         )
         top_text_params.weight = 1.0
         top_text.setGravity(Gravity.BOTTOM)
         text_container.addView(top_text, top_text_params)
-        bottom_text_params = LinearLayout__LayoutParams(
-            RelativeLayout__LayoutParams.WRAP_CONTENT,
-            RelativeLayout__LayoutParams.MATCH_PARENT,
+        bottom_text_params = LinearLayout.LayoutParams(
+            RelativeLayout.LayoutParams.WRAP_CONTENT,
+            RelativeLayout.LayoutParams.MATCH_PARENT,
         )
         bottom_text_params.weight = 1.0
         bottom_text.setGravity(Gravity.TOP)
         bottom_text_params.gravity = Gravity.TOP
         text_container.addView(bottom_text, bottom_text_params)
 
-        # Apply an onclick listener so that clicking anywhere on the row triggers Toga's on_select(row).
-        row_foreground.setOnClickListener(DetailedListOnClickListener(self, i))
+    def _get_row(self, index):
+        return self._linear_layout.getChildAt(index)
 
     def change_source(self, source):
-        # If the source changes, re-build the widget.
-        self.create()
-
-    def set_on_refresh(self, handler):
-        # No special handling needed.
-        pass
+        self._load_data()
 
     def after_on_refresh(self, widget, result):
-        if self._swipe_refresh_layout:
-            self._swipe_refresh_layout.setRefreshing(False)
+        self._refresh_layout.setRefreshing(False)
 
     def insert(self, index, item):
-        # If the data changes, re-build the widget. Brutally effective.
-        self.create()
+        self._load_data()
 
     def change(self, item):
-        # If the data changes, re-build the widget. Brutally effective.
-        self.create()
+        self._load_data()
 
     def remove(self, index, item):
-        # If the data changes, re-build the widget. Brutally effective.
-        self.create()
+        self._load_data()
 
     def clear(self):
-        # If the data changes, re-build the widget. Brutally effective.
-        self.create()
+        self._load_data()
+
+    def _clear_selection(self):
+        if self._selection is not None:
+            self._get_row(self._selection).setBackgroundColor(self.color_unselected)
+            self._selection = None
+
+    def _set_selection(self, index):
+        self._clear_selection()
+        self._get_row(index).setBackgroundColor(self.color_selected)
+        self._selection = index
 
     def get_selection(self):
         return self._selection
 
-    def set_on_select(self, handler):
-        # No special handling required.
-        pass
+    def set_primary_action_enabled(self, enabled):
+        self._primary_action_enabled = enabled
 
-    def set_on_delete(self, handler):
-        # This widget currently does not implement event handlers for data change.
-        self.interface.factory.not_implemented("DetailedList.set_on_delete()")
+    def set_secondary_action_enabled(self, enabled):
+        self._secondary_action_enabled = enabled
+
+    def set_refresh_enabled(self, enabled):
+        self._refresh_layout.setEnabled(enabled)
 
     def scroll_to_row(self, row):
-        def scroll():
-            row_obj = self._dismissable_container.getChildAt(row)
-            hit_rect = Rect()
-            row_obj.getHitRect(hit_rect)
-            self._scroll_view.requestChildRectangleOnScreen(
-                self._dismissable_container,
-                hit_rect,
-                False,
-            )
-
-        Handler().post(PythonRunnable(scroll))
-
-    def rehint(self):
-        # Android can crash when rendering some widgets until they have their layout params set. Guard for that case.
-        if not self.native.getLayoutParams():
-            return
-        self.native.measure(
-            View__MeasureSpec.UNSPECIFIED,
-            View__MeasureSpec.UNSPECIFIED,
+        row_obj = self._linear_layout.getChildAt(row)
+        hit_rect = Rect()
+        row_obj.getHitRect(hit_rect)
+        self._scroll_view.requestChildRectangleOnScreen(
+            self._linear_layout,
+            hit_rect,
+            True,  # Immediate, not animated
         )
-        self.interface.intrinsic.width = at_least(self.native.getMeasuredWidth())
-        self.interface.intrinsic.height = self.native.getMeasuredHeight()

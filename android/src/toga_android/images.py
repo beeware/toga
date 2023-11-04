@@ -1,8 +1,7 @@
 from pathlib import Path
 
-from java.io import FileOutputStream
-
-from .libs.android.graphics import Bitmap, BitmapFactory
+from android.graphics import Bitmap, BitmapFactory
+from java.io import ByteArrayOutputStream, FileOutputStream
 
 
 class Image:
@@ -23,6 +22,11 @@ class Image:
 
     def get_height(self):
         return self.native.getHeight()
+
+    def get_data(self):
+        stream = ByteArrayOutputStream()
+        self.native.compress(Bitmap.CompressFormat.PNG, 90, stream)
+        return bytes(stream.toByteArray())
 
     def save(self, path):
         path = Path(path)

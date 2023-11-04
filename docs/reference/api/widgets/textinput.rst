@@ -3,16 +3,53 @@ TextInput
 
 A widget for the display and editing of a single line of text.
 
-.. figure:: /reference/images/TextInput.png
-   :align: center
-   :width: 300
+.. tabs::
 
-.. rst-class:: widget-support
-.. csv-filter:: Availability (:ref:`Key <api-status-key>`)
-   :header-rows: 1
-   :file: ../../data/widgets_by_platform.csv
-   :included_cols: 4,5,6,7,8,9
-   :exclude: {0: '(?!^(TextInput|Component)$)'}
+  .. group-tab:: macOS
+
+    .. figure:: /reference/images/textinput-cocoa.png
+       :align: center
+       :width: 300px
+
+  .. group-tab:: Linux
+
+    .. figure:: /reference/images/textinput-gtk.png
+       :align: center
+       :width: 300px
+
+  .. group-tab:: Windows
+
+    .. figure:: /reference/images/textinput-winforms.png
+       :align: center
+       :width: 300px
+
+  .. group-tab:: Android
+
+    .. figure:: /reference/images/textinput-android.png
+       :align: center
+       :width: 300px
+
+  .. group-tab:: iOS
+
+    .. figure:: /reference/images/textinput-iOS.png
+       :align: center
+       :width: 300px
+
+  .. group-tab:: Web |beta|
+
+    .. .. figure:: /reference/images/textinput-web.png
+    ..    :align: center
+    ..    :width: 300px
+
+    Screenshot not available
+
+  .. group-tab:: Textual |beta|
+
+    .. .. figure:: /reference/images/textinput-textual.png
+    ..    :align: center
+    ..    :width: 300px
+
+    Screenshot not available
 
 Usage
 -----
@@ -55,5 +92,3 @@ Reference
 ---------
 
 .. autoclass:: toga.TextInput
-   :members:
-   :undoc-members:

@@ -501,7 +501,7 @@ def test_int_impl_on_change(tick_count, data):
         impl.int_value = int_value
         impl.on_change()
         assert impl.get_value() == approx(value)
-        impl.interface.on_change.assert_called_once_with(None)
+        impl.interface.on_change.assert_called_once_with()
 
 
 def test_deprecated():
@@ -509,21 +509,21 @@ def test_deprecated():
     # Can't specify min and range
     with pytest.raises(
         ValueError,
-        match=r"range cannot be specifed if min and max are specified",
+        match=r"range cannot be specified if min and max are specified",
     ):
         toga.Slider(min=2, range=(2, 4))
 
     # Can't specify max and range
     with pytest.raises(
         ValueError,
-        match=r"range cannot be specifed if min and max are specified",
+        match=r"range cannot be specified if min and max are specified",
     ):
         toga.Slider(max=4, range=(2, 4))
 
     # Can't specify min and max and range
     with pytest.raises(
         ValueError,
-        match=r"range cannot be specifed if min and max are specified",
+        match=r"range cannot be specified if min and max are specified",
     ):
         toga.Slider(min=2, max=4, range=(2, 4))
 

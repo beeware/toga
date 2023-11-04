@@ -1,4 +1,5 @@
-from .libs import Bitmap, WinIcon
+from System import ArgumentException
+from System.Drawing import Bitmap, Icon as WinIcon
 
 
 class Icon:
@@ -9,9 +10,12 @@ class Icon:
         self.interface = interface
         self.path = path
 
-        if path.suffix == ".ico":
-            self.native = WinIcon(str(path))
-        else:
-            icon_bitmap = Bitmap(str(path))
-            icon_handle = icon_bitmap.GetHicon()
-            self.native = WinIcon.FromHandle(icon_handle)
+        try:
+            if path.suffix == ".ico":
+                self.native = WinIcon(str(path))
+                self.bitmap = Bitmap.FromHicon(self.native.Handle)
+            else:
+                self.bitmap = Bitmap(str(path))
+                self.native = WinIcon.FromHandle(self.bitmap.GetHicon())
+        except ArgumentException:
+            raise ValueError(f"Unable to load icon from {path}")

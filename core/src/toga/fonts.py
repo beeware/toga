@@ -1,12 +1,12 @@
-import warnings
+from __future__ import annotations
 
 # Use the Travertino font definitions as-is
 from travertino import constants
-from travertino.constants import ITALIC  # noqa: F401
-from travertino.constants import (  # noqa: F401
+from travertino.constants import (
     BOLD,
     CURSIVE,
     FANTASY,
+    ITALIC,
     MESSAGE,
     MONOSPACE,
     NORMAL,
@@ -16,76 +16,75 @@ from travertino.constants import (  # noqa: F401
     SMALL_CAPS,
     SYSTEM,
 )
-from travertino.fonts import font  # noqa: F401
 from travertino.fonts import Font as BaseFont
 
+import toga
 from toga.platform import get_platform_factory
 
+SYSTEM_DEFAULT_FONTS = {SYSTEM, MESSAGE, SERIF, SANS_SERIF, CURSIVE, FANTASY, MONOSPACE}
 SYSTEM_DEFAULT_FONT_SIZE = -1
+FONT_WEIGHTS = {NORMAL, BOLD}
+FONT_STYLES = {NORMAL, ITALIC, OBLIQUE}
+FONT_VARIANTS = {NORMAL, SMALL_CAPS}
+
 _REGISTERED_FONT_CACHE = {}
 
 
 class Font(BaseFont):
-    def __init__(self, family, size, style=NORMAL, variant=NORMAL, weight=NORMAL):
-        super().__init__(family, size, style, variant, weight)
+    def __init__(
+        self,
+        family: str,
+        size: int | str,
+        *,
+        weight: str = NORMAL,
+        style: str = NORMAL,
+        variant: str = NORMAL,
+    ):
+        """Constructs a reference to a font.
+
+        This class should be used when an API requires an explicit font reference (e.g.
+        :any:`Context.write_text`). In all other cases, fonts in Toga are controlled
+        using the style properties linked below.
+
+        :param family: The :ref:`font family <pack-font-family>`.
+        :param size: The :ref:`font size <pack-font-size>`.
+        :param weight: The :ref:`font weight <pack-font-weight>`.
+        :param style: The :ref:`font style <pack-font-style>`.
+        :param variant: The :ref:`font variant <pack-font-variant>`.
+        """
+        super().__init__(family, size, weight=weight, style=style, variant=variant)
         self.factory = get_platform_factory()
         self._impl = self.factory.Font(self)
 
-    def bind(self, factory=None):
-        warnings.warn(
-            "Fonts no longer need to be explicitly bound.", DeprecationWarning
+    def __str__(self) -> str:
+        size = (
+            "default size"
+            if self.size == SYSTEM_DEFAULT_FONT_SIZE
+            else f"{self.size}pt"
         )
-        return self._impl
-
-    def measure(self, text, dpi, tight=False):
-        return self._impl.measure(text, dpi=dpi, tight=tight)
+        weight = f" {self.weight}" if self.weight != NORMAL else ""
+        variant = f" {self.variant}" if self.variant != NORMAL else ""
+        style = f" {self.style}" if self.style != NORMAL else ""
+        return f"{self.family} {size}{weight}{variant}{style}"
 
     @staticmethod
-    def register(family, path, weight=NORMAL, style=NORMAL, variant=NORMAL):
-        """Registers a file-based font with its family name, style, variant
-        and weight. When invalid values for style, variant or weight are
-        passed, ``NORMAL`` will be used.
+    def register(family, path, *, weight=NORMAL, style=NORMAL, variant=NORMAL):
+        """Registers a file-based font.
 
-        When a font file includes multiple font weight/style/etc., each variant
-        must be registered separately::
+        **Note:** This is not currently supported on macOS or iOS.
 
-            # Register a simple regular font
-            Font.register("Font Awesome 5 Free Solid", "resources/Font Awesome 5 Free-Solid-900.otf")
-
-            # Register a regular and bold font, contained in separate font files
-            Font.register("Roboto", "resources/Roboto-Regular.ttf")
-            Font.register("Roboto", "resources/Roboto-Bold.ttf", weight=Font.BOLD)
-
-            # Register a single font file that contains both a regular and bold weight
-            Font.register("Bahnschrift", "resources/Bahnschrift.ttf")
-            Font.register("Bahnschrift", "resources/Bahnschrift.ttf", weight=Font.BOLD)
-
-        :param family: The font family name. This is the name that can be
-                referenced in style definitions.
-        :param path: The path to the font file.
-        :param weight: The font weight. Default value is ``NORMAL``.
-        :param style: The font style. Default value is ``NORMAL``.
-        :param variant: The font variant. Default value is ``NORMAL``.
+        :param family: The :ref:`font family <pack-font-family>`.
+        :param path: The path to the font file. This can be an absolute path, or a path
+            relative to the module that defines your :any:`App` class.
+        :param weight: The :ref:`font weight <pack-font-weight>`.
+        :param style: The :ref:`font style <pack-font-style>`.
+        :param variant: The :ref:`font variant <pack-font-variant>`.
         """
-        font_key = Font.registered_font_key(
-            family, weight=weight, style=style, variant=variant
-        )
-        _REGISTERED_FONT_CACHE[font_key] = path
+        font_key = Font._registered_font_key(family, weight, style, variant)
+        _REGISTERED_FONT_CACHE[font_key] = str(toga.App.app.paths.app / path)
 
     @staticmethod
-    def registered_font_key(family, weight, style, variant):
-        """Creates a key for storing a registered font in the font cache.
-
-        If weight, style or variant contain an invalid value, ``NORMAL`` is
-        used instead.
-
-        :param family: The font family name. This is the name that can be
-            referenced in style definitions.
-        :param weight: The font weight. Default value is ``NORMAL``.
-        :param style: The font style. Default value is ``NORMAL``.
-        :param variant: The font variant. Default value is ``NORMAL``.
-        :returns: The font key
-        """
+    def _registered_font_key(family, weight, style, variant):
         if weight not in constants.FONT_WEIGHTS:
             weight = NORMAL
         if style not in constants.FONT_STYLES:

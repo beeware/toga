@@ -3,15 +3,53 @@ Label
 
 A text label for annotating forms or interfaces.
 
-.. figure:: /reference/images/Label.jpeg
-    :align: center
+.. tabs::
 
-.. rst-class:: widget-support
-.. csv-filter:: Availability (:ref:`Key <api-status-key>`)
-   :header-rows: 1
-   :file: ../../data/widgets_by_platform.csv
-   :included_cols: 4,5,6,7,8,9
-   :exclude: {0: '(?!^(Label|Component)$)'}
+  .. group-tab:: macOS
+
+    .. figure:: /reference/images/label-cocoa.png
+       :align: center
+       :width: 300px
+
+  .. group-tab:: Linux
+
+    .. figure:: /reference/images/label-gtk.png
+       :align: center
+       :width: 300px
+
+  .. group-tab:: Windows
+
+    .. figure:: /reference/images/label-winforms.png
+       :align: center
+       :width: 300px
+
+  .. group-tab:: Android
+
+    .. figure:: /reference/images/label-android.png
+       :align: center
+       :width: 300px
+
+  .. group-tab:: iOS
+
+    .. figure:: /reference/images/label-iOS.png
+       :align: center
+       :width: 300px
+
+  .. group-tab:: Web |beta|
+
+    .. .. figure:: /reference/images/label-web.png
+    ..    :align: center
+    ..    :width: 300px
+
+    Screenshot not available
+
+  .. group-tab:: Textual |beta|
+
+    .. .. figure:: /reference/images/label-textual.png
+    ..    :align: center
+    ..    :width: 300px
+
+    Screenshot not available
 
 Usage
 -----
@@ -32,5 +70,3 @@ Reference
 ---------
 
 .. autoclass:: toga.Label
-   :members:
-   :undoc-members:

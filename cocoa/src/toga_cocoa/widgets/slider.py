@@ -20,11 +20,11 @@ class TogaSlider(NSSlider):
     def onSlide_(self, sender) -> None:
         event_type = sender.window.currentEvent().type
         if event_type == NSEventType.LeftMouseDown:
-            self.interface.on_press(None)
+            self.interface.on_press()
         elif event_type == NSEventType.LeftMouseUp:
-            self.interface.on_release(None)
+            self.interface.on_release()
 
-        self.interface.on_change(None)
+        self.interface.on_change()
 
 
 class Slider(Widget, toga.widgets.slider.SliderImpl):

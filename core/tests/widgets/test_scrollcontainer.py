@@ -12,11 +12,6 @@ from toga_dummy.utils import (
 
 
 @pytest.fixture
-def app():
-    return toga.App("Scroll Container Test", "org.beeware.toga.scroll_container")
-
-
-@pytest.fixture
 def window():
     return toga.Window()
 

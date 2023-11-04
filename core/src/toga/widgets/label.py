@@ -12,8 +12,6 @@ class Label(Widget):
     ):
         """Create a new text label.
 
-        Inherits from :class:`toga.Widget`.
-
         :param text: Text of the label.
         :param id: The ID for the widget.
         :param style: A style object. If no style is provided, a default style

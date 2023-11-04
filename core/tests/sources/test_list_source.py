@@ -2,8 +2,7 @@ from unittest.mock import Mock
 
 import pytest
 
-from toga.sources import ListSource
-from toga.sources.list_source import Row
+from toga.sources import ListSource, Row
 
 
 @pytest.fixture
@@ -16,19 +15,6 @@ def source():
         ],
         accessors=["val1", "val2"],
     )
-
-
-def test_row():
-    "A row can be created and modified"
-    source = Mock()
-    row = Row(val1="value 1", val2=42)
-    row._source = source
-
-    assert row.val1 == "value 1"
-    assert row.val2 == 42
-
-    row.val1 = "new value"
-    source.notify.assert_called_once_with("change", item=row)
 
 
 @pytest.mark.parametrize(
@@ -101,7 +87,7 @@ def test_tuples():
     # Set element 1
     source[1] = ("new element", 999)
 
-    # source is the same size, but has differen data
+    # source is the same size, but has different data
     assert len(source) == 3
     assert source[1].val1 == "new element"
     assert source[1].val2 == 999
@@ -134,7 +120,7 @@ def test_list():
     # Set element 1
     source[1] = ["new element", 999]
 
-    # source is the same size, but has differen data
+    # source is the same size, but has different data
     assert len(source) == 3
     assert source[1].val1 == "new element"
     assert source[1].val2 == 999
@@ -167,7 +153,7 @@ def test_dict():
     # Set element 1
     source[1] = ["new element", 999]
 
-    # source is the same size, but has differen data
+    # source is the same size, but has different data
     assert len(source) == 3
     assert source[1].val1 == "new element"
     assert source[1].val2 == 999
@@ -331,13 +317,33 @@ def test_append_positional(source):
     listener.insert.assert_called_once_with(index=3, item=row)
 
 
+def test_del(source):
+    "You can delete an item from a list source by index"
+    listener = Mock()
+    source.add_listener(listener)
+
+    # Delete the second element
+    row = source[1]
+    del source[1]
+
+    assert len(source) == 2
+    assert source[0].val1 == "first"
+    assert source[0].val2 == 111
+
+    assert source[1].val1 == "third"
+    assert source[1].val2 == 333
+
+    listener.remove.assert_called_once_with(item=row, index=1)
+
+
 def test_remove(source):
     "You can remove an item from a list source"
     listener = Mock()
     source.add_listener(listener)
 
     # Remove the second element
-    row = source.remove(source[1])
+    row = source[1]
+    source.remove(row)
 
     assert len(source) == 2
     assert source[0].val1 == "first"

@@ -1,6 +1,6 @@
-from travertino.size import at_least
+from decimal import ROUND_UP
 
-from toga_winforms.libs import WinForms
+import System.Windows.Forms as WinForms
 
 from .base import Widget
 
@@ -79,7 +79,6 @@ class ProgressBar(Widget):
         self.native.Value = int(value * self.TOGA_SCALE)
 
     def rehint(self):
-        # Height must be non-zero
-        # Set a sensible min-width
-        self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
-        self.interface.intrinsic.height = self.native.PreferredSize.Height
+        self.interface.intrinsic.height = self.scale_out(
+            self.native.PreferredSize.Height, ROUND_UP
+        )

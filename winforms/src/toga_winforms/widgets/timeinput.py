@@ -1,9 +1,10 @@
 import datetime
+from decimal import ROUND_UP
 
-from travertino.size import at_least
+import System.Windows.Forms as WinForms
+from System import DateTime as WinDateTime
 
-from toga_winforms.libs import WinDateTime, WinForms
-
+from ..libs.wrapper import WeakrefCallable
 from .base import Widget
 
 
@@ -22,7 +23,7 @@ class TimeInput(Widget):
 
     def create(self):
         self.native = WinForms.DateTimePicker()
-        self.native.ValueChanged += self.winforms_value_changed
+        self.native.ValueChanged += WeakrefCallable(self.winforms_value_changed)
         self.native.Format = WinForms.DateTimePickerFormat.Time
         self.native.ShowUpDown = True
 
@@ -45,8 +46,9 @@ class TimeInput(Widget):
         self.native.MaxDate = native_time(value)
 
     def rehint(self):
-        self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
-        self.interface.intrinsic.height = self.native.PreferredSize.Height
+        self.interface.intrinsic.height = self.scale_out(
+            self.native.PreferredSize.Height, ROUND_UP
+        )
 
     def winforms_value_changed(self, sender, event):
-        self.interface.on_change(self.interface)
+        self.interface.on_change()

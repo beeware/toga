@@ -4,7 +4,6 @@ from ctypes import c_void_p
 from rubicon.objc import SEL, NSArray, NSObject, ObjCClass, objc_method
 from rubicon.objc.api import NSString
 
-from toga.fonts import CURSIVE, FANTASY, MONOSPACE, SANS_SERIF, SERIF, SYSTEM
 from toga_cocoa.libs.appkit import appkit
 
 NSRunLoop = ObjCClass("NSRunLoop")
@@ -47,16 +46,6 @@ class BaseProbe:
             )
             await self.event_listener.event.wait()
 
-    def assert_font_family(self, expected):
-        assert self.font.family == {
-            CURSIVE: "Apple Chancery",
-            FANTASY: "Papyrus",
-            MONOSPACE: "Courier New",
-            SANS_SERIF: "Helvetica",
-            SERIF: "Times",
-            SYSTEM: ".AppleSystemUIFont",
-        }.get(expected, expected)
-
     async def redraw(self, message=None, delay=None):
         """Request a redraw of the app, waiting until that redraw has completed."""
         if self.app.run_slow:
@@ -70,3 +59,8 @@ class BaseProbe:
             # Running at "normal" speed, we need to release to the event loop
             # for at least one iteration. `runUntilDate:None` does this.
             NSRunLoop.currentRunLoop.runUntilDate(None)
+
+    def assert_image_size(self, image_size, size):
+        # Cocoa reports image sizing in the natural screen coordinates, not the size of
+        # the backing store.
+        assert image_size == size

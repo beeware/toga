@@ -1,56 +1,66 @@
+from __future__ import annotations
+
 import re
 
 NON_ACCESSOR_CHARS = re.compile(r"[^\w ]")
 WHITESPACE = re.compile(r"\s+")
 
 
-def to_accessor(heading):
+def to_accessor(heading: str) -> str:
     """Convert a human-readable heading into a data attribute accessor.
 
-    This won't be infallible; for ambiguous cases, you'll need to manually
-    specify the accessors.
+    This is done by:
+
+    1. Converting the heading to lower case;
+    2. Removing any character that can't be used in a Python identifier
+    3. Replacing all whitespace with "_"
+    4. Prepending ``_`` if the first character is a digit.
 
     Examples:
-        'Heading 1' -> 'heading_1'
-        'Heading - Title' -> 'heading_title'
-        'Heading!' -> 'heading'
 
-    Args:
-        heading (``str``): The column heading.
+    * 'Heading 1' -> 'heading_1'
+    * 'Heading - Title' -> 'heading_title'
+    * 'Heading!' -> 'heading'
+    * '1 Heading' -> '_1_heading'
+    * '你好' -> '你好'
 
-    Returns:
-        the accessor derived from the heading.
+    :param heading: The column heading.
+    :returns: The accessor derived from the heading.
+    :raises ValueError: If the heading cannot be converted into an accessor.
     """
     value = WHITESPACE.sub(
         " ",
         NON_ACCESSOR_CHARS.sub("", heading.lower()),
     ).replace(" ", "_")
 
-    if len(value) == 0 or value[0].isdigit():
+    try:
+        if value[0].isdigit():
+            value = f"_{value}"
+    except IndexError:
         raise ValueError(
-            f"Unable to automatically generate accessor from heading '{heading}'."
+            f"Unable to automatically generate accessor from heading {heading!r}."
         )
 
     return value
 
 
-def build_accessors(headings, accessors):
+def build_accessors(
+    headings: list[str],
+    accessors: list[str | None] | dict[str, str] | None,
+) -> list[str]:
     """Convert a list of headings (with accessor overrides) to a finalised list of
     accessors.
 
-    Args:
-        headings: a list of strings to be used as headings
-        accessors: the accessor overrides. Can be:
-         - A list, same length as headings. Each entry is
-           a string providing the override name for the accessor,
-           or None, indicating the default accessor should be used.
-         - A dictionary from the heading names to the accessor. If
-           a heading name isn't present in the dictionary, the default
-           accessor will be used
-         - Otherwise, a final list of ready-to-use accessors.
+    :param headings: The list of headings.
+    :param accessors: The list of accessor overrides. Can be specified as:
 
-    Returns:
-        A finalised list of accessors.
+        * A list the same length as headings. Each entry in the list is a a string that
+          is the override name for the accessor, or :any:`None` if the default accessor
+          for the heading at that index should be used.
+        * A dictionary mapping heading names to accessor names. If a heading name isn't
+          present in the dictionary, the default accessor will be used.
+
+    :returns: The final list of accessors.
     """
     if accessors:
         if isinstance(accessors, dict):
@@ -67,8 +77,5 @@ def build_accessors(headings, accessors):
             ]
     else:
         result = [to_accessor(h) for h in headings]
-
-    if len(result) != len(set(result)):
-        raise ValueError("Data accessors are not unique.")
 
     return result

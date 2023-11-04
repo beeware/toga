@@ -38,17 +38,17 @@ class TogaTextFieldProxy:
 
     @staticmethod
     def textDidChange_(cls, self, notification) -> None:
-        self.interface.on_change(None)
+        self.interface.on_change()
         self.interface._validate()
 
     @staticmethod
     def becomeFirstResponder(cls, self) -> bool:
-        self.interface.on_gain_focus(self.interface)
+        self.interface.on_gain_focus()
         return send_super(cls, self, "becomeFirstResponder")
 
     @staticmethod
     def textDidEndEditing_(cls, self, textObject) -> None:
-        self.interface.on_lose_focus(self.interface)
+        self.interface.on_lose_focus()
         send_super(cls, self, "textDidEndEditing:", textObject, argtypes=[c_void_p])
 
     @staticmethod
@@ -60,7 +60,7 @@ class TogaTextFieldProxy:
         selector: SEL,
     ) -> bool:
         if selector.name == b"insertNewline:":
-            self.interface.on_confirm(None)
+            self.interface.on_confirm()
         return False
 
 
@@ -178,7 +178,7 @@ class TextInput(Widget):
         self.native.selectable = True
 
     def get_placeholder(self):
-        return self.native.cell.placeholderString
+        return str(self.native.cell.placeholderString)
 
     def set_placeholder(self, value):
         self.native.cell.placeholderString = value
@@ -213,7 +213,7 @@ class TextInput(Widget):
 
     def set_value(self, value):
         self.native.stringValue = value
-        self.interface.on_change(None)
+        self.interface.on_change()
         self.interface._validate()
 
     def rehint(self):

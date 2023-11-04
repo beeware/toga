@@ -19,9 +19,5 @@ Reference
 ---------
 
 .. autoclass:: toga.sources.Listener
-   :members:
-   :undoc-members:
 
 .. autoclass:: toga.sources.Source
-   :members:
-   :undoc-members:

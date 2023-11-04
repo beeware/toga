@@ -1,12 +1,12 @@
 from pathlib import Path
 
-from toga_winforms.libs import (
+from System import (
     ArgumentException,
-    ImageFormat,
-    MemoryStream,
     OutOfMemoryException,
-    WinImage,
 )
+from System.Drawing import Image as WinImage
+from System.Drawing.Imaging import ImageFormat
+from System.IO import MemoryStream
 
 
 class Image:
@@ -32,6 +32,11 @@ class Image:
 
     def get_height(self):
         return self.native.Height
+
+    def get_data(self):
+        stream = MemoryStream()
+        self.native.Save(stream, ImageFormat.Png)
+        return stream.ToArray()
 
     def save(self, path):
         path = Path(path)

@@ -1,1 +1,0 @@
-A bug in the gtk backend for `current_window` property was fixed.

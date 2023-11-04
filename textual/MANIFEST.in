@@ -1,0 +1,6 @@
+include CONTRIBUTING.md
+include LICENSE
+include README.rst
+recursive-include tests *.py
+recursive-include toga_textual *.py
+recursive-include tests_backend *.py

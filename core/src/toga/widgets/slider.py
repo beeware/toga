@@ -12,7 +12,7 @@ from .base import Widget
 class Slider(Widget):
     def __init__(
         self,
-        id=None,
+        id: str | None = None,
         style=None,
         value: float | None = None,
         min: float = None,  # Default to 0.0 when range is removed
@@ -22,11 +22,9 @@ class Slider(Widget):
         on_press: callable | None = None,
         on_release: callable | None = None,
         enabled: bool = True,
-        range: tuple[float, float] = None,  # DEPRECATED
+        range: tuple[float, float] | None = None,  # DEPRECATED
     ):
         """Create a new Slider widget.
-
-        Inherits from :class:`toga.Widget`.
 
         :param id: The ID for the widget.
         :param style: A style object. If no style is provided, a default style will be
@@ -53,7 +51,7 @@ class Slider(Widget):
         if range is not None:
             if min is not None or max is not None:
                 raise ValueError(
-                    "range cannot be specifed if min and max are specified"
+                    "range cannot be specified if min and max are specified"
                 )
             else:
                 warnings.warn(
@@ -100,7 +98,7 @@ class Slider(Widget):
 
         self._on_change = on_change
         if self.value != old_value:
-            on_change(None)
+            on_change()
 
     @property
     def value(self) -> float:
@@ -372,7 +370,9 @@ class IntSliderImpl(SliderImpl):
 
     def set_value(self, value):
         span = self.max - self.min
-        self.set_int_value(round((value - self.min) / span * self.get_int_max()))
+        self.set_int_value(
+            0 if span == 0 else round((value - self.min) / span * self.get_int_max())
+        )
         self.value = value  # Cache the original value so we can round-trip it.
 
     def get_min(self):
@@ -404,7 +404,7 @@ class IntSliderImpl(SliderImpl):
     def on_change(self):
         span = self.max - self.min
         self.value = self.min + (self.get_int_value() / self.get_int_max() * span)
-        self.interface.on_change(None)
+        self.interface.on_change()
 
     @abstractmethod
     def get_int_value(self):

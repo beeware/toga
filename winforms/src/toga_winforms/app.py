@@ -2,22 +2,22 @@ import asyncio
 import re
 import sys
 import threading
+from ctypes import windll
+
+import System.Windows.Forms as WinForms
+from System import Environment, Threading
+from System.ComponentModel import InvalidEnumArgumentException
+from System.Media import SystemSounds
+from System.Net import SecurityProtocolType, ServicePointManager
+from System.Windows.Threading import Dispatcher
 
 import toga
 from toga import Key
+from toga.command import GROUP_BREAK, SECTION_BREAK
 
 from .keys import toga_to_winforms_key
-from .libs import (
-    SecurityProtocolType,
-    ServicePointManager,
-    SystemSounds,
-    Threading,
-    WinForms,
-    shcore,
-    user32,
-    win_version,
-)
 from .libs.proactor import WinformsProactorEventLoop
+from .libs.wrapper import WeakrefCallable
 from .window import Window
 
 
@@ -25,13 +25,12 @@ class MainWindow(Window):
     def winforms_FormClosing(self, sender, event):
         # Differentiate between the handling that occurs when the user
         # requests the app to exit, and the actual application exiting.
-        if not self.interface.app._impl._is_exiting:
+        if not self.interface.app._impl._is_exiting:  # pragma: no branch
             # If there's an event handler, process it. The decision to
             # actually exit the app will be processed in the on_exit handler.
             # If there's no exit handler, assume the close/exit can proceed.
-            if self.interface.app.on_exit:
-                self.interface.app.on_exit(self.interface.app)
-                event.Cancel = True
+            self.interface.app.on_exit()
+            event.Cancel = True
 
 
 class App:
@@ -61,25 +60,31 @@ class App:
     def create(self):
         self.native = WinForms.Application
         self.app_context = WinForms.ApplicationContext()
+        self.app_dispatcher = Dispatcher.CurrentDispatcher
 
         # Check the version of windows and make sure we are setting the DPI mode
         # with the most up to date API
         # Windows Versioning Check Sources : https://www.lifewire.com/windows-version-numbers-2625171
         # and https://docs.microsoft.com/en-us/windows/release-information/
+        win_version = Environment.OSVersion.Version
         if win_version.Major >= 6:  # Checks for Windows Vista or later
             # Represents Windows 8.1 up to Windows 10 before Build 1703 which should use
             # SetProcessDpiAwareness(True)
             if (win_version.Major == 6 and win_version.Minor == 3) or (
                 win_version.Major == 10 and win_version.Build < 15063
-            ):
-                shcore.SetProcessDpiAwareness(True)
+            ):  # pragma: no cover
+                windll.shcore.SetProcessDpiAwareness(True)
+                print(
+                    "WARNING: Your Windows version doesn't support DPI-independent rendering.  "
+                    "We recommend you upgrade to at least Windows 10 Build 1703."
+                )
             # Represents Windows 10 Build 1703 and beyond which should use
             # SetProcessDpiAwarenessContext(-2)
             elif win_version.Major == 10 and win_version.Build >= 15063:
-                user32.SetProcessDpiAwarenessContext(-2)
+                windll.user32.SetProcessDpiAwarenessContext(-2)
             # Any other version of windows should use SetProcessDPIAware()
-            else:
-                user32.SetProcessDPIAware()
+            else:  # pragma: no cover
+                windll.user32.SetProcessDPIAware()
 
         self.native.EnableVisualStyles()
         self.native.SetCompatibleTextRenderingDefault(False)
@@ -91,84 +96,74 @@ class App:
         # encouraged.
         try:
             ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls12
-        except AttributeError:
+        except AttributeError:  # pragma: no cover
             print(
                 "WARNING: Your Windows .NET install does not support TLS1.2. "
                 "You may experience difficulties accessing some web server content."
             )
         try:
             ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls13
-        except AttributeError:
+        except AttributeError:  # pragma: no cover
             print(
                 "WARNING: Your Windows .NET install does not support TLS1.3. "
                 "You may experience difficulties accessing some web server content."
             )
 
-        self.interface.commands.add(
-            toga.Command(
-                lambda _: self.interface.about(),
-                f"About {self.interface.name}",
-                group=toga.Group.HELP,
-            ),
-            toga.Command(None, "Preferences", group=toga.Group.FILE),
-            # Quit should always be the last item, in a section on its own
-            toga.Command(
-                lambda _: self.interface.exit(),
-                "Exit " + self.interface.name,
-                shortcut=Key.MOD_1 + "q",
-                group=toga.Group.FILE,
-                section=sys.maxsize,
-            ),
-            toga.Command(
-                lambda _: self.interface.visit_homepage(),
-                "Visit homepage",
-                enabled=self.interface.home_page is not None,
-                group=toga.Group.HELP,
-            ),
-        )
-        self._create_app_commands()
-
         # Call user code to populate the main window
-        self.interface.startup()
+        self.interface._startup()
+        self._create_app_commands()
         self.create_menus()
         self.interface.main_window._impl.set_app(self)
 
     def create_menus(self):
-        self._menu_items = {}
-        self._menu_groups = {}
+        if self.interface.main_window is None:  # pragma: no branch
+            # The startup method may create commands before creating the window, so
+            # we'll call create_menus again after it returns.
+            return
 
-        toga.Group.FILE.order = 0
-        menubar = WinForms.MenuStrip()
+        window = self.interface.main_window._impl
+        menubar = window.native.MainMenuStrip
+        if menubar:
+            menubar.Items.Clear()
+        else:
+            # The menu bar doesn't need to be positioned, because its `Dock` property
+            # defaults to `Top`.
+            menubar = WinForms.MenuStrip()
+            window.native.Controls.Add(menubar)
+            window.native.MainMenuStrip = menubar
+            menubar.SendToBack()  # In a dock, "back" means "top".
+
+        # The File menu should come before all user-created menus.
+        self._menu_groups = {}
+        toga.Group.FILE.order = -1
+
         submenu = None
         for cmd in self.interface.commands:
-            if cmd == toga.GROUP_BREAK:
+            if cmd == GROUP_BREAK:
                 submenu = None
-            elif cmd == toga.SECTION_BREAK:
+            elif cmd == SECTION_BREAK:
                 submenu.DropDownItems.Add("-")
             else:
                 submenu = self._submenu(cmd.group, menubar)
-
                 item = WinForms.ToolStripMenuItem(cmd.text)
+                item.Click += WeakrefCallable(cmd._impl.winforms_handler)
+                if cmd.shortcut is not None:
+                    try:
+                        item.ShortcutKeys = toga_to_winforms_key(cmd.shortcut)
+                    except (
+                        ValueError,
+                        InvalidEnumArgumentException,
+                    ) as e:  # pragma: no cover
+                        # Make this a non-fatal warning, because different backends may
+                        # accept different shortcuts.
+                        print(f"WARNING: invalid shortcut {cmd.shortcut!r}: {e}")
 
-                if cmd.action:
-                    item.Click += cmd._impl.as_handler()
                 item.Enabled = cmd.enabled
 
-                if cmd.shortcut is not None:
-                    shortcut_keys = toga_to_winforms_key(cmd.shortcut)
-                    item.ShortcutKeys = shortcut_keys
-                    item.ShowShortcutKeys = True
-
                 cmd._impl.native.append(item)
-
-                self._menu_items[item] = cmd
                 submenu.DropDownItems.Add(item)
 
-        # The menu bar doesn't need to be positioned, because its `Dock` property
-        # defaults to `Top`.
-        self.interface.main_window._impl.native.Controls.Add(menubar)
-        self.interface.main_window._impl.native.MainMenuStrip = menubar
-        self.interface.main_window._impl.resize_content()
+        window.resize_content()
 
     def _submenu(self, group, menubar):
         try:
@@ -191,16 +186,36 @@ class App:
         return submenu
 
     def _create_app_commands(self):
-        # No extra menus
-        pass
-
-    def open_document(self, fileURL):
-        """Add a new document to this app."""
-        print(
-            "STUB: If you want to handle opening documents, implement App.open_document(fileURL)"
+        self.interface.commands.add(
+            # About should be the last item in the Help menu, in a section on its own.
+            toga.Command(
+                lambda _: self.interface.about(),
+                f"About {self.interface.formal_name}",
+                group=toga.Group.HELP,
+                section=sys.maxsize,
+            ),
+            #
+            toga.Command(None, "Preferences", group=toga.Group.FILE),
+            #
+            # On Windows, the Exit command doesn't usually contain the app name. It
+            # should be the last item in the File menu, in a section on its own.
+            toga.Command(
+                lambda _: self.interface.on_exit(),
+                "Exit",
+                shortcut=Key.MOD_1 + "q",
+                group=toga.Group.FILE,
+                section=sys.maxsize,
+            ),
+            #
+            toga.Command(
+                lambda _: self.interface.visit_homepage(),
+                "Visit homepage",
+                enabled=self.interface.home_page is not None,
+                group=toga.Group.HELP,
+            ),
         )
 
-    def winforms_thread_exception(self, sender, winforms_exc):
+    def winforms_thread_exception(self, sender, winforms_exc):  # pragma: no cover
         # The PythonException returned by Winforms doesn't give us
         # easy access to the underlying Python stacktrace; so we
         # reconstruct it from the string message.
@@ -227,13 +242,13 @@ class App:
         print(py_exc.Message)
 
     @classmethod
-    def print_stack_trace(cls, stack_trace_line):
+    def print_stack_trace(cls, stack_trace_line):  # pragma: no cover
         for level in stack_trace_line.split("', '"):
             for line in level.split("\\n"):
                 if line:
                     print(line)
 
-    def run_app(self):
+    def run_app(self):  # pragma: no cover
         # Enable coverage tracing on this non-Python-created thread
         # (https://github.com/nedbat/coveragepy/issues/686).
         if threading._trace_hook:
@@ -244,9 +259,11 @@ class App:
 
             # This catches errors in handlers, and prints them
             # in a usable form.
-            self.native.ThreadException += self.winforms_thread_exception
+            self.native.ThreadException += WeakrefCallable(
+                self.winforms_thread_exception
+            )
 
-            self.loop.run_forever(self.app_context)
+            self.loop.run_forever(self)
         except Exception as e:
             # In case of an unhandled error at the level of the app,
             # preserve the Python stacktrace
@@ -264,36 +281,30 @@ class App:
         # If it's non-None, raise it, as it indicates the underlying
         # app thread had a problem; this is effectibely a re-raise over
         # a thread boundary.
-        if self._exception:
+        if self._exception:  # pragma: no cover
             raise self._exception
 
     def show_about_dialog(self):
         message_parts = []
-        if self.interface.name is not None:
-            if self.interface.version is not None:
-                message_parts.append(
-                    "{name} v{version}".format(
-                        name=self.interface.name,
-                        version=self.interface.version,
-                    )
-                )
-            else:
-                message_parts.append(f"{self.interface.name}")
-        elif self.interface.version is not None:
-            message_parts.append(f"v{self.interface.version}")
+        if self.interface.version is not None:
+            message_parts.append(
+                f"{self.interface.formal_name} v{self.interface.version}"
+            )
+        else:
+            message_parts.append(self.interface.formal_name)
 
         if self.interface.author is not None:
             message_parts.append(f"Author: {self.interface.author}")
         if self.interface.description is not None:
             message_parts.append(f"\n{self.interface.description}")
         self.interface.main_window.info_dialog(
-            f"About {self.interface.name}", "\n".join(message_parts)
+            f"About {self.interface.formal_name}", "\n".join(message_parts)
         )
 
     def beep(self):
         SystemSounds.Beep.Play()
 
-    def exit(self):
+    def exit(self):  # pragma: no cover
         self._is_exiting = True
         self.native.Exit()
 
@@ -303,7 +314,8 @@ class App:
     def get_current_window(self):
         for window in self.interface.windows:
             if WinForms.Form.ActiveForm == window._impl.native:
-                return window._impl.native
+                return window._impl
+        return None
 
     def set_current_window(self, window):
         window._impl.native.Activate()
@@ -327,8 +339,9 @@ class App:
         self._cursor_visible = False
 
 
-class DocumentApp(App):
+class DocumentApp(App):  # pragma: no cover
     def _create_app_commands(self):
+        super()._create_app_commands()
         self.interface.commands.add(
             toga.Command(
                 lambda w: self.open_file,
@@ -338,11 +351,3 @@ class DocumentApp(App):
                 section=0,
             ),
         )
-
-    def open_document(self, fileURL):
-        """Open a new document in this app.
-
-        Args:
-            fileURL (str): The URL/path to the file to add as a document.
-        """
-        self.interface.factory.not_implemented("DocumentApp.open_document()")

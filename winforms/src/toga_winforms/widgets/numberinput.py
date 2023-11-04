@@ -1,12 +1,13 @@
 import sys
-from decimal import Decimal, InvalidOperation
+from decimal import ROUND_UP, Decimal, InvalidOperation
 
-from System import String
-from travertino.size import at_least
+import System.Windows.Forms as WinForms
+from System import Convert, String
 
 from toga.widgets.numberinput import _clean_decimal
-from toga_winforms.libs import Convert, HorizontalTextAlignment, WinForms
+from toga_winforms.libs.fonts import HorizontalTextAlignment
 
+from ..libs.wrapper import WeakrefCallable
 from .base import Widget
 
 
@@ -25,10 +26,10 @@ class NumberInput(Widget):
 
     def create(self):
         self.native = WinForms.NumericUpDown()
-        self.native.TextChanged += self.winforms_text_changed
+        self.native.TextChanged += WeakrefCallable(self.winforms_text_changed)
 
     def winforms_text_changed(self, sender, event):
-        self.interface.on_change(None)
+        self.interface.on_change()
 
     def get_readonly(self):
         return self.native.ReadOnly
@@ -66,5 +67,6 @@ class NumberInput(Widget):
         self.native.TextAlign = HorizontalTextAlignment(value)
 
     def rehint(self):
-        self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
-        self.interface.intrinsic.height = self.native.PreferredSize.Height
+        self.interface.intrinsic.height = self.scale_out(
+            self.native.PreferredSize.Height, ROUND_UP
+        )
