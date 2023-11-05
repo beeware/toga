@@ -413,7 +413,7 @@ class AbstractBaseApp(ABC):
 
     def startup(self) -> None:
         """The default startup behavior for an app. This can (and usually will be)
-        overrideen by subclasses to populate the app.
+        overridden by subclasses to populate the app.
         """
 
     @property
@@ -775,7 +775,7 @@ class App(SimpleApp):
         """Create a new App instance.
 
         The default Toga application has a main window; if the platform uses window-based
-        menus, the App's main window will contain a menubar. The app will quit when the
+        menus, the App's main window will contain a menu bar. The app will quit when the
         main window is closed.
 
         Once the app has been created, you should invoke the

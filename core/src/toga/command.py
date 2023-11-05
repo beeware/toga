@@ -40,17 +40,20 @@ class Group:
         """
         self.text = text
         self.order = order
-        if parent is None and section != 0:
-            raise ValueError("Section cannot be set without parent group")
+        if parent is None:
+            if section != 0:
+                raise ValueError("Section cannot be set without parent group")
+        else:
+            if status_item:
+                raise ValueError("Sub-groups cannot be status items.")
         self.icon = icon
         self.section = section
+        self._is_status_item = status_item
 
         # Prime the underlying value of _parent so that the setter has a current value
         # to work with
         self._parent = None
         self.parent = parent
-
-        self._is_status_item = status_item
 
     @property
     def parent(self) -> Group | None:

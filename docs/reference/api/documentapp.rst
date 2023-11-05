@@ -83,6 +83,7 @@ Reference
 
 .. autoclass:: toga.DocumentApp
    :members:
+   :inherited-members:
    :undoc-members:
 
 .. autoclass:: toga.Document

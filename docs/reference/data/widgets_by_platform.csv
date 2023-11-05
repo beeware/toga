@@ -1,5 +1,7 @@
 Component,Type,Component,Description,macOS,GTK,Windows,iOS,Android,Web,Terminal
 Application,Core Component,:class:`~toga.App`,The application itself,|y|,|y|,|y|,|y|,|y|,|b|,|b|
+SimpleApp,Core Component,:class:`~toga.SimpleApp`,A base class for apps that have the minimum possible set of features for the platform.,|b|,,,,,,
+WindowlessApp,Core Component,:class:`~toga.WindowlessApp`,An app that doesn't use a window as the primary user interface.,|b|,,,,,,
 DocumentApp,Core Component,:class:`~toga.DocumentApp`,An application that manages documents.,|b|,|b|,,,,,
 Window,Core Component,:class:`~toga.Window`,An operating system-managed container of widgets.,|y|,|y|,|y|,,,,
 MainWindow,Core Component,:class:`~toga.MainWindow`,The main window of the application.,|y|,|y|,|y|,|y|,|y|,|b|,|b|

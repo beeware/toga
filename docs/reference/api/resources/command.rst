@@ -73,6 +73,10 @@ as well. It isn't possible to have functionality exposed on a toolbar that
 isn't also exposed by the app. So, ``cmd2`` will be added to the app, even though
 it wasn't explicitly added to the app commands.
 
+Top level groups (i.e., groups without a parent) can be declared as a
+``status_item`` group. Status item groups are *not* added to the main menu;
+instead, a status bar item will be created for the group, and the Commands
+associated with the group will be displayed when the status item is clicked.
 
 Reference
 ---------

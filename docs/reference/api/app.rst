@@ -74,6 +74,7 @@ Reference
 ---------
 
 .. autoclass:: toga.App
+    :inherited-members:
     :exclude-members: app
 
 .. autoprotocol:: toga.app.AppStartupMethod

@@ -7,14 +7,16 @@ API Reference
 Core application components
 ---------------------------
 
-================================================= ===================================================
- Component                                         Description
-================================================= ===================================================
- :doc:`App </reference/api/app>`                   The top-level representation of an application.
- :doc:`DocumentApp </reference/api/documentapp>`   An application that manages documents.
- :doc:`Window </reference/api/window>`             An operating system-managed container of widgets.
- :doc:`MainWindow </reference/api/mainwindow>`     The main window of the application.
-================================================= ===================================================
+===================================================== ========================================================================================
+ Component                                             Description
+===================================================== ========================================================================================
+ :doc:`App </reference/api/app>`                       The top-level representation of an application.
+ :doc:`SimpleApp </reference/api/simpleapp>`           A base class for apps that have the minimum possible set of features for the platform.
+ :doc:`WindowlessApp </reference/api/windowlessapp>`   An app that doesn't use a window as the primary user interface.
+ :doc:`DocumentApp </reference/api/documentapp>`       An application that manages documents.
+ :doc:`Window </reference/api/window>`                 An operating system-managed container of widgets.
+ :doc:`MainWindow </reference/api/mainwindow>`         The main window of the application.
+===================================================== ========================================================================================
 
 General widgets
 ---------------
@@ -103,6 +105,8 @@ Other
    :hidden:
 
    app
+   simpleapp
+   windowlessapp
    documentapp
    window
    mainwindow
