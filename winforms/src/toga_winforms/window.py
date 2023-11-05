@@ -25,7 +25,7 @@ class Window(Container, Scalable):
         self.native.FormClosing += WeakrefCallable(self.winforms_FormClosing)
         super().__init__(self.native)
 
-        self.update_scale()
+        self.update_scale(screen=WinForms.Screen.FromControl(self.native))
 
         self.native.MinimizeBox = self.interface.minimizable
         self.native.MaximizeBox = self.interface.resizable
@@ -40,11 +40,6 @@ class Window(Container, Scalable):
         self.resize_content()  # Store initial size
 
         self.set_full_screen(self.interface.full_screen)
-
-    def update_scale(self):
-        Scalable.update_scale(
-            self=self, screen=WinForms.Screen.FromControl(self.native)
-        )
 
     def create_toolbar(self):
         if self.interface.toolbar:
@@ -80,12 +75,11 @@ class Window(Container, Scalable):
         self.resize_content()
 
     def update_toolbar_font_scale(self):
-        if self.toolbar_native is not None:
-            self.toolbar_native.Font = WinFont(
-                self.original_toolbar_font.FontFamily,
-                self.scale_font(self.original_toolbar_font.Size),
-                self.original_toolbar_font.Style,
-            )
+        self.toolbar_native.Font = WinFont(
+            self.original_toolbar_font.FontFamily,
+            self.scale_font(self.original_toolbar_font.Size),
+            self.original_toolbar_font.Style,
+        )
 
     def get_position(self):
         location = self.native.Location

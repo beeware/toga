@@ -18,6 +18,17 @@ from toga_winforms.colors import native_color
 
 class Scalable:
     SCALE_DEFAULT_ROUNDING = ROUND_HALF_EVEN
+    _dpi_scale = None
+
+    @property
+    def dpi_scale(self):
+        if Scalable._dpi_scale is None:
+            self.update_scale()
+        return Scalable._dpi_scale
+
+    @dpi_scale.setter
+    def dpi_scale(self, value):
+        Scalable._dpi_scale = value
 
     def update_scale(self, screen=None):
         # Doing screen=Screen.PrimaryScreen in method signature will make
@@ -37,24 +48,20 @@ class Scalable:
         hMonitor = windll.user32.MonitorFromRect(screen_rect, 2)
         pScale = wintypes.UINT()
         windll.shcore.GetScaleFactorForMonitor(c_void_p(hMonitor), byref(pScale))
-        Scalable.dpi_scale = pScale.value / 100
+        Scalable._dpi_scale = pScale.value / 100
         if not hasattr(Scalable, "original_dpi_scale"):
-            Scalable.original_dpi_scale = Scalable.dpi_scale
+            Scalable.original_dpi_scale = Scalable._dpi_scale
 
     # Convert CSS pixels to native pixels
     def scale_in(self, value, rounding=SCALE_DEFAULT_ROUNDING):
-        if not hasattr(Scalable, "dpi_scale"):
-            self.update_scale()
-        return self.scale_round(value * Scalable.dpi_scale, rounding)
+        return self.scale_round(value * self.dpi_scale, rounding)
 
     # Convert native pixels to CSS pixels
     def scale_out(self, value, rounding=SCALE_DEFAULT_ROUNDING):
-        if not hasattr(Scalable, "dpi_scale"):
-            self.update_scale()
         if isinstance(value, at_least):
             return at_least(self.scale_out(value.value, rounding))
         else:
-            return self.scale_round(value / Scalable.dpi_scale, rounding)
+            return self.scale_round(value / self.dpi_scale, rounding)
 
     def scale_round(self, value, rounding):
         if rounding is None:
@@ -62,9 +69,7 @@ class Scalable:
         return int(Decimal(value).to_integral(rounding))
 
     def scale_font(self, value):
-        if not hasattr(Scalable, "dpi_scale"):
-            self.update_scale()
-        return value * Scalable.dpi_scale / Scalable.original_dpi_scale
+        return value * self.dpi_scale / Scalable.original_dpi_scale
 
 
 class Widget(ABC, Scalable):

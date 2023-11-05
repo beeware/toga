@@ -1,3 +1,5 @@
+import io
+import traceback
 from unittest.mock import Mock
 
 import pytest
@@ -550,3 +552,85 @@ async def test_beep(app):
     # can be invoked without raising an error, but there's no way to verify that the app
     # actually made a noise.
     app.beep()
+
+
+async def test_system_dpi_change(
+    monkeypatch, app, app_probe, main_window, main_window_probe
+):
+    # For restoring original behavior after completion of test.
+    original_values = dict()
+    # For toolbar
+    main_window.toolbar.add(app.cmd1, app.cmd2)
+    # For stack trace dialog
+    on_result_handler = Mock()
+    stack = io.StringIO()
+    traceback.print_stack(file=stack)
+    dialog_result = main_window.stack_trace_dialog(
+        "Stack Trace",
+        "Some stack trace",
+        stack.getvalue(),
+        retry=True,
+        on_result=on_result_handler,
+    )
+
+    # Setup Mock values for testing
+    original_values["update_scale"] = main_window._impl.update_scale
+    update_scale_mock = Mock()
+    monkeypatch.setattr(main_window._impl, "update_scale", update_scale_mock)
+    original_values["resize_content"] = main_window._impl.resize_content
+    resize_content_mock = Mock()
+    monkeypatch.setattr(main_window._impl, "resize_content", resize_content_mock)
+    original_values["dpi_scale"] = main_window._impl.dpi_scale
+    # Explicitly set the dpi_scale for testing
+    main_window._impl.dpi_scale = 1.5
+
+    await main_window_probe.redraw(
+        "Triggering DPI change event for testing property changes"
+    )
+    app_probe.trigger_dpi_change_event()
+
+    # Test out properties which should change on dpi change
+    main_window._impl.update_scale.assert_called_once()
+    main_window._impl.update_scale.reset_mock()
+    app_probe.assert_main_window_toolbar_font_scale_updated()
+    app_probe.assert_main_window_menubar_font_scale_updated()
+    app_probe.assert_main_window_widgets_font_scale_updated()
+    main_window._impl.resize_content.assert_called_once()
+    main_window._impl.resize_content.reset_mock()
+    app_probe.assert_main_window_stack_trace_dialog_scale_updated()
+
+    # Test if widget.refresh is called once on each widget
+    for widget in main_window.widgets:
+        original_values[id(widget)] = widget.refresh
+        monkeypatch.setattr(widget, "refresh", Mock())
+
+    await main_window_probe.redraw(
+        "Triggering DPI change event for testing widget refresh calls"
+    )
+    app_probe.trigger_dpi_change_event()
+
+    for widget in main_window.widgets:
+        widget.refresh.assert_called_once()
+
+    # Restore original state
+    for widget in main_window.widgets:
+        monkeypatch.setattr(widget, "refresh", original_values[id(widget)])
+    monkeypatch.setattr(
+        main_window._impl, "resize_content", original_values["resize_content"]
+    )
+    monkeypatch.setattr(
+        main_window._impl, "update_scale", original_values["update_scale"]
+    )
+
+    # When dpi_scale is None then calculates dpi_scale should be equal to
+    # dpi scale of Primary Screen
+    main_window._impl.dpi_scale = None
+    app_probe.assert_dpi_scale_equal_to_primary_screen_dpi_scale()
+
+    # Restore original state
+    await main_window_probe.redraw(
+        "Triggering DPI change event for restoring original state"
+    )
+    app_probe.trigger_dpi_change_event()
+    await main_window_probe.close_stack_trace_dialog(dialog_result._impl, True)
+    app.main_window.toolbar.clear()
