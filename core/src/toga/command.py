@@ -8,6 +8,8 @@ from toga.keys import Key
 from toga.platform import get_platform_factory
 
 if TYPE_CHECKING:
+    from pathlib import Path
+
     from toga.app import App
 
 
@@ -17,30 +19,38 @@ class Group:
         text: str,
         *,
         parent: Group | None = None,
+        icon: str | Path | Icon | None = None,
         section: int = 0,
         order: int = 0,
+        status_item: bool = False,
     ):
         """
         An collection of commands to display together.
 
         :param text: A label for the group.
         :param parent: The parent of this group; use ``None`` to make a root group.
+        :param icon: The icon, or icon resource, that can be used to decorate the
+            group if the platform requires.
         :param section: The section where the group should appear within its parent. A
             section cannot be specified unless a parent is also specified.
         :param order: The position where the group should appear within its section.
             If multiple items have the same group, section and order, they will be
             sorted alphabetically by their text.
+        :param status_item: The group is a status item group.
         """
         self.text = text
         self.order = order
         if parent is None and section != 0:
             raise ValueError("Section cannot be set without parent group")
+        self.icon = icon
         self.section = section
 
         # Prime the underlying value of _parent so that the setter has a current value
         # to work with
         self._parent = None
         self.parent = parent
+
+        self._is_status_item = status_item
 
     @property
     def parent(self) -> Group | None:
@@ -68,6 +78,27 @@ class Group:
         if self.parent is None:
             return self
         return self.parent.root
+
+    @property
+    def icon(self) -> Icon | None:
+        """The Icon for the group.
+
+        When setting the icon, you can provide either an :any:`Icon` instance, or a
+        path that will be passed to the ``Icon`` constructor.
+        """
+        return self._icon
+
+    @icon.setter
+    def icon(self, icon_or_name: str | Path | Icon):
+        if isinstance(icon_or_name, Icon) or icon_or_name is None:
+            self._icon = icon_or_name
+        else:
+            self._icon = Icon(icon_or_name)
+
+    @property
+    def is_status_item(self) -> bool:
+        """Is this a group representing a status item?"""
+        return self._is_status_item
 
     def is_parent_of(self, child: Group | None) -> bool:
         """Is this group a parent of the provided group, directly or indirectly?
@@ -166,7 +197,7 @@ class Command:
         *,
         shortcut: str | Key | None = None,
         tooltip: str | None = None,
-        icon: str | Icon | None = None,
+        icon: str | Path | Icon | None = None,
         group: Group = Group.COMMANDS,
         section: int = 0,
         order: int = 0,
@@ -229,7 +260,7 @@ class Command:
         self._impl.set_enabled(value)
 
     @property
-    def icon(self) -> Icon | None:
+    def icon(self) -> Icon | Path | None:
         """The Icon for the command.
 
         When setting the icon, you can provide either an :any:`Icon` instance, or a

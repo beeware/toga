@@ -1,4 +1,11 @@
-from .app import App, DocumentApp, DocumentMainWindow, MainWindow
+from .app import (
+    App,
+    DocumentApp,
+    DocumentMainWindow,
+    MainWindow,
+    SimpleApp,
+    WindowlessApp,
+)
 
 # Resources
 from .colors import hsl, hsla, rgb, rgba
@@ -40,6 +47,8 @@ from .window import Window
 __all__ = [
     # Applications
     "App",
+    "SimpleApp",
+    "WindowlessApp",
     "DocumentApp",
     "MainWindow",
     "DocumentMainWindow",

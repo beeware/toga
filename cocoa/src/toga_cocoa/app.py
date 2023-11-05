@@ -5,6 +5,13 @@ import sys
 from pathlib import Path
 from urllib.parse import unquote, urlparse
 
+from rubicon.objc import (
+    SEL,
+    NSObject,
+    NSSize,
+    objc_method,
+    objc_property,
+)
 from rubicon.objc.eventloop import CocoaLifecycle, EventLoopPolicy
 
 import toga
@@ -14,12 +21,12 @@ from toga.handlers import NativeHandler
 from .keys import cocoa_key
 from .libs import (
     NSURL,
-    SEL,
     NSAboutPanelOptionApplicationIcon,
     NSAboutPanelOptionApplicationName,
     NSAboutPanelOptionApplicationVersion,
     NSAboutPanelOptionVersion,
     NSApplication,
+    NSApplicationActivationPolicyAccessory,
     NSApplicationActivationPolicyRegular,
     NSBeep,
     NSBundle,
@@ -30,12 +37,11 @@ from .libs import (
     NSMutableArray,
     NSMutableDictionary,
     NSNumber,
-    NSObject,
     NSOpenPanel,
     NSScreen,
+    NSSquareStatusItemLength,
+    NSStatusBar,
     NSString,
-    objc_method,
-    objc_property,
 )
 from .window import Window
 
@@ -110,8 +116,6 @@ class AppDelegate(NSObject):
 
 
 class App:
-    _MAIN_WINDOW_CLASS = MainWindow
-
     def __init__(self, interface):
         self.interface = interface
         self.interface._impl = self
@@ -121,14 +125,7 @@ class App:
         asyncio.set_event_loop_policy(EventLoopPolicy())
         self.loop = asyncio.new_event_loop()
 
-        # Stimulate the build of the app
-        self.create()
-
-    def create(self):
-        self.native = NSApplication.sharedApplication
-        self.native.setActivationPolicy(NSApplicationActivationPolicyRegular)
-
-        self.native.setApplicationIconImage_(self.interface.icon._impl.native)
+        self.create_app()
 
         self.resource_path = os.path.dirname(
             os.path.dirname(NSBundle.mainBundle.bundlePath)
@@ -140,24 +137,88 @@ class App:
         self.appDelegate.native = self.native
         self.native.setDelegate_(self.appDelegate)
 
-        self._create_app_commands()
-
         # Call user code to populate the main window
         self.interface._startup()
 
-        # Create the lookup table of menu items,
+        # Add any platform-specific app commands.
+        self.create_app_commands()
+
+        # Create the lookup table of menu and status items,
         # then force the creation of the menus.
         self._menu_groups = {}
         self._menu_items = {}
+        self._status_items = set()
         self.create_menus()
 
-    def _create_app_commands(self):
-        formal_name = self.interface.formal_name
+    def create_app(self):
+        self.native = NSApplication.sharedApplication
+        self.native.setApplicationIconImage(self.interface.icon._impl.native)
+        self.native.setActivationPolicy(NSApplicationActivationPolicyRegular)
+
+    def beep(self):
+        NSBeep()
+
+    # We can't call this under test conditions, because it would kill the test harness
+    def exit(self):  # pragma: no cover
+        self.loop.stop()
+
+    def show_cursor(self):
+        if not self._cursor_visible:
+            NSCursor.unhide()
+
+        self._cursor_visible = True
+
+    def hide_cursor(self):
+        if self._cursor_visible:
+            NSCursor.hide()
+
+        self._cursor_visible = False
+
+    def set_main_window(self, window):
+        pass
+
+    def get_current_window(self):
+        return self.native.keyWindow
+
+    def set_current_window(self, window):
+        window._impl.native.makeKeyAndOrderFront(window._impl.native)
+
+    def enter_full_screen(self, windows):
+        opts = NSMutableDictionary.alloc().init()
+        opts.setObject(
+            NSNumber.numberWithBool(True), forKey="NSFullScreenModeAllScreens"
+        )
+
+        for window, screen in zip(windows, NSScreen.screens):
+            window.content._impl.native.enterFullScreenMode(screen, withOptions=opts)
+            # Going full screen causes the window content to be re-homed
+            # in a NSFullScreenWindow; teach the new parent window
+            # about its Toga representations.
+            window.content._impl.native.window._impl = window._impl
+            window.content._impl.native.window.interface = window
+            window.content.refresh()
+
+    def exit_full_screen(self, windows):
+        opts = NSMutableDictionary.alloc().init()
+        opts.setObject(
+            NSNumber.numberWithBool(True), forKey="NSFullScreenModeAllScreens"
+        )
+
+        for window in windows:
+            window.content._impl.native.exitFullScreenModeWithOptions(opts)
+            window.content.refresh()
+
+    def create_app_commands(self):
+        self._create_base_commands()
+        self._create_extended_commands()
+
+    def _create_base_commands(self):
+        # A simple app has the bare minimum of app commands.
         self.interface.commands.add(
             # ---- App menu -----------------------------------
             toga.Command(
                 self._menu_about,
-                "About " + formal_name,
+                "About " + self.interface.formal_name,
                 group=toga.Group.APP,
             ),
             toga.Command(
@@ -167,9 +228,30 @@ class App:
                 group=toga.Group.APP,
                 section=20,
             ),
+            # Quit should always be the last item, in a section on its own
+            toga.Command(
+                self._menu_quit,
+                "Quit " + self.interface.formal_name,
+                shortcut=toga.Key.MOD_1 + "q",
+                group=toga.Group.APP,
+                section=sys.maxsize,
+            ),
+            # ---- Help menu ----------------------------------
+            toga.Command(
+                self._menu_visit_homepage,
+                "Visit homepage",
+                enabled=self.interface.home_page is not None,
+                group=toga.Group.HELP,
+            ),
+        )
+
+    def _create_extended_commands(self):
+        # The "normal" app has all the commands of the SimpleApp, plus others
+        # that are expected of a well-behaved Cocoa app.
+        self.interface.commands.add(
             toga.Command(
                 NativeHandler(SEL("hide:")),
-                "Hide " + formal_name,
+                "Hide " + self.interface.formal_name,
                 shortcut=toga.Key.MOD_1 + "h",
                 group=toga.Group.APP,
                 order=0,
@@ -189,14 +271,6 @@ class App:
                 group=toga.Group.APP,
                 order=2,
                 section=sys.maxsize - 1,
-            ),
-            # Quit should always be the last item, in a section on its own
-            toga.Command(
-                self._menu_quit,
-                "Quit " + formal_name,
-                shortcut=toga.Key.MOD_1 + "q",
-                group=toga.Group.APP,
-                section=sys.maxsize,
             ),
             # ---- File menu ----------------------------------
             # This is a bit of an oddity. Apple HIG apps that don't have tabs as
@@ -289,20 +363,7 @@ class App:
                 shortcut=toga.Key.MOD_1 + "m",
                 group=toga.Group.WINDOW,
             ),
-            # ---- Help menu ----------------------------------
-            toga.Command(
-                self._menu_visit_homepage,
-                "Visit homepage",
-                enabled=self.interface.home_page is not None,
-                group=toga.Group.HELP,
-            ),
         )
-
-    def _menu_about(self, command, **kwargs):
-        self.interface.about()
-
-    def _menu_quit(self, command, **kwargs):
-        self.interface.on_exit()
 
     def _menu_close_window(self, command, **kwargs):
         if self.interface.current_window:
@@ -317,21 +378,23 @@ class App:
         if self.interface.current_window:
             self.interface.current_window._impl.native.miniaturize(None)
 
-    def _menu_visit_homepage(self, command, **kwargs):
-        self.interface.visit_homepage()
-
     def create_menus(self):
-        # Recreate the menu.
+        # Recreate the menubar for the app.
         # Remove any native references to the existing menu
         for menu_item, cmd in self._menu_items.items():
             cmd._impl.native.remove(menu_item)
 
+        # Remove any status bar items
+        for status_item in self._status_items:
+            NSStatusBar.removeStatusItem(status_item)
+
         # Create a clean menubar instance.
         menubar = NSMenu.alloc().initWithTitle("MainMenu")
-        submenu = None
         self._menu_groups = {}
         self._menu_items = {}
+        self._status_items = set()
 
+        submenu = None
         for cmd in self.interface.commands:
             submenu = self._submenu(cmd.group, menubar)
             if isinstance(cmd, Separator):
@@ -377,33 +440,63 @@ class App:
         """Obtain the submenu representing the command group.
 
         This will create the submenu if it doesn't exist. It will call itself
-        recursively to build the full path to menus inside submenus, returning the
-        "leaf" node in the submenu path. Once created, it caches the menu that has been
-        created for future lookup.
+        recursively to build the full path to menus inside submenus, returning
+        the "leaf" node in the submenu path. Once created, it caches the menu
+        that has been created for future lookup.
         """
         try:
             return self._menu_groups[group]
         except KeyError:
             if group is None:
                 submenu = menubar
+            elif group.is_status_item:
+                # Group has been flagged as a status item group.
+                # Create a new menu with a status icon.
+                submenu = NSMenu.alloc().initWithTitle(group.text)
+
+                status_item = NSStatusBar.systemStatusBar.statusItemWithLength(
+                    NSSquareStatusItemLength
+                )
+                self._status_items.add(status_item)
+                status_item.menu = submenu
+
+                # view = NSView.alloc().initWithFrame(NSMakeRect(0, 0, 200, 400))
+                # custom_item = NSMenuItem.alloc().init()
+                # custom_item.view = view
+                # submenu.addItem(custom_item)
+
+                icon = (
+                    group.icon._impl.native
+                    if group.icon
+                    else self.interface.icon._impl.native
+                )
+
+                # macOS status icons need to be 22px square, or they render weird
+                status_icon = icon.copy()
+                status_icon.setSize(NSSize(22, 22))
+                status_item.button.image = status_icon
             else:
                 parent_menu = self._submenu(group.parent, menubar)
+
+                submenu = NSMenu.alloc().initWithTitle(group.text)
 
                 menu_item = parent_menu.addItemWithTitle(
                     group.text, action=None, keyEquivalent=""
                 )
-                submenu = NSMenu.alloc().initWithTitle(group.text)
                 parent_menu.setSubmenu(submenu, forItem=menu_item)
 
             # Install the item in the group cache.
             self._menu_groups[group] = submenu
             return submenu
 
-    def main_loop(self):
-        self.loop.run_forever(lifecycle=CocoaLifecycle(self.native))
+    def _menu_about(self, command, **kwargs):
+        self.interface.about()
 
-    def set_main_window(self, window):
-        pass
+    def _menu_quit(self, command, **kwargs):
+        self.interface.on_exit()
+
+    def _menu_visit_homepage(self, command, **kwargs):
+        self.interface.visit_homepage()
 
     def show_about_dialog(self):
         options = NSMutableDictionary.alloc().init()
@@ -426,66 +519,82 @@ class App:
 
         self.native.orderFrontStandardAboutPanelWithOptions(options)
 
-    def beep(self):
-        NSBeep()
-
-    # We can't call this under test conditions, because it would kill the test harness
-    def exit(self):  # pragma: no cover
-        self.loop.stop()
-
-    def get_current_window(self):
-        return self.native.keyWindow
-
-    def set_current_window(self, window):
-        window._impl.native.makeKeyAndOrderFront(window._impl.native)
-
-    def enter_full_screen(self, windows):
-        opts = NSMutableDictionary.alloc().init()
-        opts.setObject(
-            NSNumber.numberWithBool(True), forKey="NSFullScreenModeAllScreens"
-        )
-
-        for window, screen in zip(windows, NSScreen.screens):
-            window.content._impl.native.enterFullScreenMode(screen, withOptions=opts)
-            # Going full screen causes the window content to be re-homed
-            # in a NSFullScreenWindow; teach the new parent window
-            # about its Toga representations.
-            window.content._impl.native.window._impl = window._impl
-            window.content._impl.native.window.interface = window
-            window.content.refresh()
-
-    def exit_full_screen(self, windows):
-        opts = NSMutableDictionary.alloc().init()
-        opts.setObject(
-            NSNumber.numberWithBool(True), forKey="NSFullScreenModeAllScreens"
-        )
-
-        for window in windows:
-            window.content._impl.native.exitFullScreenModeWithOptions(opts)
-            window.content.refresh()
-
-    def show_cursor(self):
-        if not self._cursor_visible:
-            NSCursor.unhide()
-
-        self._cursor_visible = True
-
-    def hide_cursor(self):
-        if self._cursor_visible:
-            NSCursor.hide()
-
-        self._cursor_visible = False
+    def main_loop(self):
+        self.loop.run_forever(lifecycle=CocoaLifecycle(self.native))
 
     def open_document(self, fileURL):
-        """No-op when the app is not a ``DocumentApp``."""
+        """A no-op method that needs to exist to satisfy the app delegate.."""
 
     def select_file(self, **kwargs):
-        """No-op when the app is not a ``DocumentApp``."""
+        """A no-op method that needs to exist to satisfy the app delegate.."""
+
+
+class WindowlessApp(App):
+    def create_app(self):
+        self.native = NSApplication.sharedApplication
+        self.native.setApplicationIconImage(self.interface.icon._impl.native)
+        self.native.setActivationPolicy(NSApplicationActivationPolicyAccessory)
+
+        # self.native.setPresentationOptions(NSApplicationPresentationDefault)
+        # NSMenu.menuBarVisible = True
+
+    def create_app_commands(self):
+        super().create_app_commands()
+
+        # The first status item group in a windowless app (by group ordering)
+        # gets the app control commands. The app control commands always form
+        # the last 2 sections in the group.
+        status_items = sorted(
+            {
+                item.group
+                for item in self.interface.commands
+                if not isinstance(item, Separator) and item.group.is_status_item
+            }
+        )
+
+        self.interface.commands.add(
+            toga.Command(
+                self._menu_about,
+                "About " + self.interface.formal_name,
+                group=status_items[0],
+                section=sys.maxsize - 1,
+            ),
+            toga.Command(
+                None,
+                "Settings\u2026",
+                shortcut=toga.Key.MOD_1 + ",",
+                group=status_items[0],
+                section=sys.maxsize - 1,
+            ),
+            toga.Command(
+                self._menu_visit_homepage,
+                "Visit homepage",
+                enabled=self.interface.home_page is not None,
+                group=status_items[0],
+                section=sys.maxsize - 1,
+            ),
+            # Quit should always be the last item, in a section on its own
+            toga.Command(
+                self._menu_quit,
+                "Quit " + self.interface.formal_name,
+                shortcut=toga.Key.MOD_1 + "q",
+                group=status_items[0],
+                section=sys.maxsize,
+            ),
+        )
+
+
+class SimpleApp(App):
+    def create_app_commands(self):
+        # A simple app only has the base commands.
+        self._create_base_commands()
 
 
 class DocumentApp(App):  # pragma: no cover
-    def _create_app_commands(self):
-        super()._create_app_commands()
+    def create_app_commands(self):
+        # A DocumentApp has all the normal app commands, plus extras for
+        # document management.
+        super().create_app_commands()
         self.interface.commands.add(
             toga.Command(
                 self._menu_open_file,
@@ -517,7 +626,7 @@ class DocumentApp(App):  # pragma: no cover
         )
 
         # print("Untitled File opened?", panel.URLs)
-        self.appDelegate.application_openFiles_(None, panel.URLs)
+        self.appDelegate.application(None, openFiles=panel.URLs)
 
     def open_document(self, fileURL):
         # Convert a cocoa fileURL to a file path.

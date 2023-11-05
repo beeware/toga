@@ -6,6 +6,7 @@ import signal
 import sys
 import warnings
 import webbrowser
+from abc import ABC, abstractmethod
 from collections.abc import Collection, Iterator, Mapping, MutableSet
 from email.message import Message
 from typing import Any, Protocol
@@ -237,7 +238,7 @@ class DocumentMainWindow(Window):
         return self.doc.path.name
 
 
-class App:
+class AbstractBaseApp(ABC):
     app = None
 
     def __init__(
@@ -253,10 +254,12 @@ class App:
         description: str | None = None,
         startup: AppStartupMethod | None = None,
         on_exit: OnExitHandler | None = None,
-        id=None,  # DEPRECATED
-        windows=None,  # DEPRECATED
     ):
-        """Create a new App instance.
+        """An abtrasct base class for all Toga applications.
+
+        Subclasses must define a ``_create_impl()`` method to instantiate a
+        backend-specific App instance, as well as overriding any type-specific
+        behavior.
 
         Once the app has been created, you should invoke the
         :meth:`~toga.App.main_loop()` method, which will start the event loop of your
@@ -291,30 +294,9 @@ class App:
             the metadata key ``Summary`` will be used.
         :param startup: A callable to run before starting the app.
         :param on_exit: The initial :any:`on_exit` handler.
-        :param id: **DEPRECATED** - This argument will be ignored. If you need a
-            machine-friendly identifier, use ``app_id``.
-        :param windows: **DEPRECATED** – Windows are now automatically added to the
-            current app. Passing this argument will cause an exception.
+
+
         """
-        ######################################################################
-        # 2023-10: Backwards compatibility
-        ######################################################################
-        if id is not None:
-            warn(
-                "App.id is deprecated and will be ignored. Use app_id instead",
-                DeprecationWarning,
-                stacklevel=2,
-            )
-
-        if windows is not None:
-            raise ValueError(
-                "The `windows` constructor argument of toga.App has been removed. "
-                "Windows are now automatically added to the current app."
-            )
-        ######################################################################
-        # End backwards compatibility
-        ######################################################################
-
         # Initialize empty widgets registry
         self._widgets = WidgetRegistry()
 
@@ -425,8 +407,14 @@ class App:
         # Now that we have an impl, set the on_change handler for commands
         self.commands.on_change = self._impl.create_menus
 
+    @abstractmethod
     def _create_impl(self):
-        self.factory.App(interface=self)
+        ...
+
+    def startup(self) -> None:
+        """The default startup behavior for an app. This can (and usually will be)
+        overrideen by subclasses to populate the app.
+        """
 
     @property
     def paths(self) -> Paths:
@@ -437,16 +425,6 @@ class App:
         for each type of content.
         """
         return self._paths
-
-    @property
-    def name(self) -> str:
-        """**DEPRECATED** – Use :any:`formal_name`."""
-        warn(
-            "App.name is deprecated. Use formal_name instead",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-        return self._formal_name
 
     @property
     def formal_name(self) -> str:
@@ -489,14 +467,6 @@ class App:
         return self._description
 
     @property
-    def id(self) -> str:
-        """**DEPRECATED** – Use :any:`app_id`."""
-        warn(
-            "App.id is deprecated. Use app_id instead", DeprecationWarning, stacklevel=2
-        )
-        return self._app_id
-
-    @property
     def icon(self) -> Icon:
         """The Icon for the app.
 
@@ -526,35 +496,6 @@ class App:
         """The windows managed by the app. Windows are automatically added to the app
         when they are created, and removed when they are closed."""
         return self._windows
-
-    ######################################################################
-    # 2023-10: Backwards compatibility
-    ######################################################################
-
-    # Support WindowSet __iadd__ and __isub__
-    @windows.setter
-    def windows(self, windows):
-        if windows is not self._windows:
-            raise AttributeError("can't set attribute 'windows'")
-
-    ######################################################################
-    # End backwards compatibility
-    ######################################################################
-
-    @property
-    def commands(self) -> MutableSet[Command]:
-        """The commands available in the app."""
-        return self._commands
-
-    @property
-    def main_window(self) -> MainWindow:
-        """The main window for the app."""
-        return self._main_window
-
-    @main_window.setter
-    def main_window(self, window: MainWindow) -> None:
-        self._main_window = window
-        self._impl.set_main_window(window)
 
     @property
     def current_window(self) -> Window | None:
@@ -604,32 +545,14 @@ class App:
         """Hide cursor from view."""
         self._impl.hide_cursor()
 
-    def startup(self) -> None:
-        """Create and show the main window for the application.
+    def beep(self) -> None:
+        """Play the default system notification sound."""
+        self._impl.beep()
 
-        Subclasses can override this method to define customized startup behavior;
-        however, any override *must* ensure the :any:`main_window` has been assigned
-        before it returns.
-        """
-        self.main_window = MainWindow(title=self.formal_name)
-
-        if self._startup_method:
-            self.main_window.content = self._startup_method(self)
-
-        self.main_window.show()
-
-    def _startup(self):
-        # This is a wrapper around the user's startup method that performs any
-        # post-setup validation.
-        self.startup()
-        self._verify_startup()
-
-    def _verify_startup(self):
-        if not isinstance(self.main_window, MainWindow):
-            raise ValueError(
-                "Application does not have a main window. "
-                "Does your startup() method assign a value to self.main_window?"
-            )
+    @property
+    def commands(self) -> MutableSet[Command]:
+        """The commands available in the app."""
+        return self._commands
 
     def about(self) -> None:
         """Display the About dialog for the app.
@@ -647,9 +570,15 @@ class App:
         if self.home_page is not None:
             webbrowser.open(self.home_page)
 
-    def beep(self) -> None:
-        """Play the default system notification sound."""
-        self._impl.beep()
+    def _startup(self):
+        # This is a wrapper around the user's startup method that performs any
+        # post-setup validation.
+        self.startup()
+        self._verify_startup()
+
+    def _verify_startup(self):
+        """Verify that any requirements of the startup method have been satisfied"""
+        pass
 
     def main_loop(self) -> None:
         """Start the application.
@@ -703,6 +632,326 @@ class App:
         """
         self.loop.call_soon_threadsafe(wrapped_handler(self, handler))
 
+    ######################################################################
+    # 2023-10: Backwards compatibility
+    ######################################################################
+
+    # Support WindowSet __iadd__ and __isub__
+    @windows.setter
+    def windows(self, windows):
+        if windows is not self._windows:
+            raise AttributeError("can't set attribute 'windows'")
+
+    ######################################################################
+    # End backwards compatibility
+    ######################################################################
+
+
+class SimpleApp(AbstractBaseApp):
+    def __init__(
+        self,
+        formal_name: str | None = None,
+        app_id: str | None = None,
+        app_name: str | None = None,
+        *,
+        icon: Icon | str | None = None,
+        author: str | None = None,
+        version: str | None = None,
+        home_page: str | None = None,
+        description: str | None = None,
+        startup: AppStartupMethod | None = None,
+        on_exit: OnExitHandler | None = None,
+    ):
+        """Create a new SimpleApp instance.
+
+        A simple app is the most minimal app that can be created. It must have a
+        main window; when that main window is closed, the app will exit.
+
+        If the platform places menu bars in windows (e.g., Windows and GTK), the
+        window will not have a menu bar.
+
+        If the platform has app-level menu bars (e.g., macOS), the menu bar will
+        have the bare minimum menu items necessary for app operation.
+
+        Once the app has been created, you should invoke the
+        :meth:`~toga.App.main_loop()` method, which will start the event loop of
+        your App.
+
+        :param formal_name: The human-readable name of the app. If not provided,
+            the metadata key ``Formal-Name`` must be present.
+        :param app_id: The unique application identifier. This will usually be a
+            reversed domain name, e.g. ``org.beeware.myapp``. If not provided, the
+            metadata key ``App-ID`` must be present.
+        :param app_name: The name of the distribution used to load metadata with
+            :any:`importlib.metadata`. If not provided, the following will be tried in
+            order:
+
+            #. If the ``__main__`` module is contained in a package, that package's name
+               will be used.
+            #. If the ``app_id`` argument was provided, its last segment will be used.
+               For example, an ``app_id`` of ``com.example.my-app`` would yield a
+               distribution name of ``my-app``.
+            #. As a last resort, the name ``toga``.
+        :param icon: The :any:`Icon` for the app. If not provided, Toga will attempt to
+            load an icon from ``resources/app_name``, where ``app_name`` is defined
+            above. If no resource matching this name can be found, a warning will be
+            printed, and the app will fall back to a default icon.
+        :param author: The person or organization to be credited as the author of the
+            app. If not provided, the metadata key ``Author`` will be used.
+        :param version: The version number of the app.  If not provided, the metadata
+            key ``Version`` will be used.
+        :param home_page: The URL of a web page for the app. Used in auto-generated help
+            menu items. If not provided, the metadata key ``Home-page`` will be used.
+        :param description: A brief (one line) description of the app. If not provided,
+            the metadata key ``Summary`` will be used.
+        :param startup: A callable to run before starting the app.
+        :param on_exit: The initial :any:`on_exit` handler.
+        """
+        super().__init__(
+            formal_name=formal_name,
+            app_id=app_id,
+            app_name=app_name,
+            icon=icon,
+            author=author,
+            version=version,
+            home_page=home_page,
+            description=description,
+            startup=startup,
+            on_exit=on_exit,
+        )
+
+    @property
+    def main_window(self) -> MainWindow:
+        """The main window for the app."""
+        return self._main_window
+
+    @main_window.setter
+    def main_window(self, window: MainWindow) -> None:
+        self._main_window = window
+        self._impl.set_main_window(window)
+
+    def startup(self) -> None:
+        """Create and show the main window for the application.
+
+        Subclasses can override this method to define customized startup behavior;
+        however, any override *must* ensure the :any:`main_window` has been assigned
+        before it returns.
+        """
+        self.main_window = MainWindow(title=self.formal_name)
+
+        if self._startup_method:
+            self.main_window.content = self._startup_method(self)
+
+        self.main_window.show()
+
+    def _verify_startup(self):
+        if not isinstance(self.main_window, MainWindow):
+            raise ValueError(
+                "Application does not have a main window. "
+                "Does your startup() method assign a value to self.main_window?"
+            )
+
+    def _create_impl(self):
+        self.factory.SimpleApp(interface=self)
+
+
+class App(SimpleApp):
+    def __init__(
+        self,
+        formal_name: str | None = None,
+        app_id: str | None = None,
+        app_name: str | None = None,
+        *,
+        icon: Icon | str | None = None,
+        author: str | None = None,
+        version: str | None = None,
+        home_page: str | None = None,
+        description: str | None = None,
+        startup: AppStartupMethod | None = None,
+        on_exit: OnExitHandler | None = None,
+        id=None,  # DEPRECATED
+        windows=None,  # DEPRECATED
+    ):
+        """Create a new App instance.
+
+        The default Toga application has a main window; if the platform uses window-based
+        menus, the App's main window will contain a menubar. The app will quit when the
+        main window is closed.
+
+        Once the app has been created, you should invoke the
+        :meth:`~toga.App.main_loop()` method, which will start the event loop of your
+        App.
+
+        :param formal_name: The human-readable name of the app. If not provided,
+            the metadata key ``Formal-Name`` must be present.
+        :param app_id: The unique application identifier. This will usually be a
+            reversed domain name, e.g. ``org.beeware.myapp``. If not provided, the
+            metadata key ``App-ID`` must be present.
+        :param app_name: The name of the distribution used to load metadata with
+            :any:`importlib.metadata`. If not provided, the following will be tried in
+            order:
+
+            #. If the ``__main__`` module is contained in a package, that package's name
+               will be used.
+            #. If the ``app_id`` argument was provided, its last segment will be used.
+               For example, an ``app_id`` of ``com.example.my-app`` would yield a
+               distribution name of ``my-app``.
+            #. As a last resort, the name ``toga``.
+        :param icon: The :any:`Icon` for the app. If not provided, Toga will attempt to
+            load an icon from ``resources/app_name``, where ``app_name`` is defined
+            above. If no resource matching this name can be found, a warning will be
+            printed, and the app will fall back to a default icon.
+        :param author: The person or organization to be credited as the author of the
+            app. If not provided, the metadata key ``Author`` will be used.
+        :param version: The version number of the app.  If not provided, the metadata
+            key ``Version`` will be used.
+        :param home_page: The URL of a web page for the app. Used in auto-generated help
+            menu items. If not provided, the metadata key ``Home-page`` will be used.
+        :param description: A brief (one line) description of the app. If not provided,
+            the metadata key ``Summary`` will be used.
+        :param startup: A callable to run before starting the app.
+        :param on_exit: The initial :any:`on_exit` handler.
+        :param id: **DEPRECATED** - This argument will be ignored. If you need a
+            machine-friendly identifier, use ``app_id``.
+        :param windows: **DEPRECATED** – Windows are now automatically added to the
+            current app. Passing this argument will cause an exception.
+        """
+        ######################################################################
+        # 2023-10: Backwards compatibility
+        ######################################################################
+        if id is not None:
+            warn(
+                "App.id is deprecated and will be ignored. Use app_id instead",
+                DeprecationWarning,
+                stacklevel=2,
+            )
+
+        if windows is not None:
+            raise ValueError(
+                "The `windows` constructor argument of toga.App has been removed. "
+                "Windows are now automatically added to the current app."
+            )
+        ######################################################################
+        # End backwards compatibility
+        ######################################################################
+
+        super().__init__(
+            formal_name=formal_name,
+            app_id=app_id,
+            app_name=app_name,
+            icon=icon,
+            author=author,
+            version=version,
+            home_page=home_page,
+            description=description,
+            startup=startup,
+            on_exit=on_exit,
+        )
+
+    def _create_impl(self):
+        self.factory.App(interface=self)
+
+    ######################################################################
+    # 2023-10: Backwards compatibility
+    ######################################################################
+
+    @property
+    def name(self) -> str:
+        """**DEPRECATED** – Use :any:`formal_name`."""
+        warn(
+            "App.name is deprecated. Use formal_name instead",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self._formal_name
+
+    @property
+    def id(self) -> str:
+        """**DEPRECATED** – Use :any:`app_id`."""
+        warn(
+            "App.id is deprecated. Use app_id instead", DeprecationWarning, stacklevel=2
+        )
+        return self._app_id
+
+    ######################################################################
+    # End backwards compatibility
+    ######################################################################
+
+
+class WindowlessApp(AbstractBaseApp):
+    def __init__(
+        self,
+        formal_name: str | None = None,
+        app_id: str | None = None,
+        app_name: str | None = None,
+        *,
+        icon: Icon | str | None = None,
+        author: str | None = None,
+        version: str | None = None,
+        home_page: str | None = None,
+        description: str | None = None,
+        startup: AppStartupMethod | None = None,
+        on_exit: OnExitHandler | None = None,
+    ):
+        """Create a new WindowlessApp instance.
+
+        A windowless app is an app that starts, but doesn't have any
+        main window. It is the responsibility of the app to provide a mechanism
+        to exit the app.
+
+        Once the app has been created, you should invoke the
+        :meth:`~toga.App.main_loop()` method, which will start the event loop of
+        your App.
+
+        :param formal_name: The human-readable name of the app. If not provided,
+            the metadata key ``Formal-Name`` must be present.
+        :param app_id: The unique application identifier. This will usually be a
+            reversed domain name, e.g. ``org.beeware.myapp``. If not provided,
+            the metadata key ``App-ID`` must be present.
+        :param app_name: The name of the distribution used to load metadata with
+            :any:`importlib.metadata`. If not provided, the following will be
+            tried in order:
+
+            #. If the ``__main__`` module is contained in a package, that
+               package's name will be used.
+            #. If the ``app_id`` argument was provided, its last segment will be
+               used. For example, an ``app_id`` of ``com.example.my-app`` would
+               yield a distribution name of ``my-app``.
+            #. As a last resort, the name ``toga``.
+        :param icon: The :any:`Icon` for the app. If not provided, Toga will
+            attempt to load an icon from ``resources/app_name``, where
+            ``app_name`` is defined above. If no resource matching this name can
+            be found, a warning will be printed, and the app will fall back to a
+            default icon.
+        :param author: The person or organization to be credited as the author
+            of the app. If not provided, the metadata key ``Author`` will be
+            used.
+        :param version: The version number of the app.  If not provided, the
+            metadata key ``Version`` will be used.
+        :param home_page: The URL of a web page for the app. Used in
+            auto-generated help menu items. If not provided, the metadata key
+            ``Home-page`` will be used.
+        :param description: A brief (one line) description of the app. If not
+            provided, the metadata key ``Summary`` will be used.
+        :param startup: A callable to run before starting the app.
+        :param on_exit: The initial :any:`on_exit` handler.
+        """
+        super().__init__(
+            formal_name=formal_name,
+            app_id=app_id,
+            app_name=app_name,
+            icon=icon,
+            author=author,
+            version=version,
+            home_page=home_page,
+            description=description,
+            startup=startup,
+            on_exit=on_exit,
+        )
+
+    def _create_impl(self):
+        self.factory.WindowlessApp(interface=self)
+
 
 class DocumentApp(App):
     def __init__(
@@ -752,10 +1001,6 @@ class DocumentApp(App):
     def _create_impl(self):
         return self.factory.DocumentApp(interface=self)
 
-    def _verify_startup(self):
-        # No post-startup validation required for DocumentApps
-        pass
-
     @property
     def document_types(self) -> dict[str, type[Document]]:
         """The document types this app can manage.
@@ -771,12 +1016,6 @@ class DocumentApp(App):
     def documents(self) -> list[Document]:
         """The list of documents associated with this app."""
         return self._documents
-
-    def startup(self) -> None:
-        """No-op; a DocumentApp has no windows until a document is opened.
-
-        Subclasses can override this method to define customized startup behavior.
-        """
 
     def _open(self, path):
         """Internal utility method; open a new document in this app, and shows the document.
