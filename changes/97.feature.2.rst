@@ -1,0 +1,1 @@
+A WindowlessApp class was added to allow the creation of apps that don't have a default window.

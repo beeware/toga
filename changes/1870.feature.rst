@@ -1,0 +1,1 @@
+A SimpleApp base class was added to allow for the creation of app without any menu bar on their main window.

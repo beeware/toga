@@ -1,0 +1,1 @@
+Toga apps can now add items to the system tray.
