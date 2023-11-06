@@ -81,7 +81,7 @@ class App:
                     content=cmd.text,
                     disabled=not cmd.enabled,
                 )
-                menu_item.onclick = cmd.action
+                menu_item.onclick = cmd._impl.dom_click
 
                 submenu.append(menu_item)
 
@@ -135,7 +135,7 @@ class App:
         else:
             self.native.append(self.menubar)
 
-    def _menu_about(self, event, widget, **kwargs):
+    def _menu_about(self, widget, **kwargs):
         self.interface.about()
 
     def main_loop(self):
