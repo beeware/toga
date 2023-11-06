@@ -4,7 +4,6 @@ from android import R
 from android.view import View
 from android.widget import SeekBar
 from java import dynamic_proxy
-from travertino.size import at_least
 
 import toga
 
@@ -69,9 +68,6 @@ class Slider(Widget, toga.widgets.slider.IntSliderImpl):
 
     def rehint(self):
         self.native.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
-        self.interface.intrinsic.width = self.scale_out(
-            at_least(self.native.getMeasuredWidth()), ROUND_UP
-        )
         self.interface.intrinsic.height = self.scale_out(
             self.native.getMeasuredHeight(), ROUND_UP
         )
