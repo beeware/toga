@@ -20,6 +20,7 @@ jobs:
         - "toga_demo"
         - "toga_dummy"
         - "toga_gtk"
+        - "toga_textual"
         - "toga_iOS"
         - "toga_web"
         - "toga_winforms"

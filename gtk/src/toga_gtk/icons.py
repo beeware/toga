@@ -3,7 +3,7 @@ from .libs import Gdk, GdkPixbuf, Gtk
 
 class Icon:
     EXTENSIONS = [".png", ".ico", ".icns"]
-    SIZES = [32, 72]
+    SIZES = [16, 32, 72]
 
     def __init__(self, interface, path):
         self.interface = interface
@@ -17,5 +17,6 @@ class Icon:
                         size, size, GdkPixbuf.InterpType.BILINEAR
                     )
                 )
-            )
-            setattr(self, f"native_{size}", native)
+                setattr(self, f"native_{size}", native)
+        except GLib.GError:
+            raise ValueError(f"Unable to load icon from {path}")

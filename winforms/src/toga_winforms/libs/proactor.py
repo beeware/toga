@@ -1,13 +1,16 @@
 import asyncio
 import sys
 import threading
+import traceback
 from asyncio import events
 
-from .winforms import Action, Task, WinForms
+import System.Windows.Forms as WinForms
+from System import Action
+from System.Threading.Tasks import Task
 
 
 class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
-    def run_forever(self, app_context):
+    def run_forever(self, app):
         """Set up the asyncio event loop, integrate it with the Winforms event loop, and
         start the application.
 
@@ -25,8 +28,8 @@ class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
         # select call to process.
         self.call_soon(self._loop_self_reading)
 
-        # Remember the application context.
-        self.app_context = app_context
+        # Remember the application.
+        self.app = app
 
         # Set up the Proactor.
         # The code between the following markers should be exactly the same as
@@ -35,9 +38,9 @@ class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
         # in Lib/ascynio/base_events.py)
         # === START BaseEventLoop.run_forever() setup ===
         self._check_closed()
-        if self.is_running():
+        if self.is_running():  # pragma: no cover
             raise RuntimeError("This event loop is already running")
-        if events._get_running_loop() is not None:
+        if events._get_running_loop() is not None:  # pragma: no cover
             raise RuntimeError(
                 "Cannot run the event loop while another loop is running"
             )
@@ -63,23 +66,31 @@ class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
         self.enqueue_tick()
 
         # Start the Winforms event loop.
-        WinForms.Application.Run(self.app_context)
+        self._inner_loop = None
+        WinForms.Application.Run(self.app.app_context)
 
     def enqueue_tick(self):
         # Queue a call to tick in 5ms.
-        self.task = Action[Task](self.tick)
-        Task.Delay(5).ContinueWith(self.task)
+        if not self.app._is_exiting:  # pragma: no branch
+            self.task = Action[Task](self.tick)
+            Task.Delay(5).ContinueWith(self.task)
 
     def tick(self, *args, **kwargs):
         """Cause a single iteration of the event loop to run on the main GUI thread."""
-        # FIXME: this only works if there is a "main window" registered with the
-        # app (#750).
-        #
-        # If the app context has a main form, invoke run_once_recurring()
-        # on the thread associated with that form.
-        if self.app_context.MainForm:
+
+        # This function doesn't report as covered, probably because it runs on a
+        # non-Python-created thread (see App.run_app). But it must actually be covered,
+        # otherwise nothing would work.
+        if not self.app._is_exiting:  # pragma: no cover
             action = Action(self.run_once_recurring)
-            self.app_context.MainForm.Invoke(action)
+            self.app.app_dispatcher.Invoke(action)
+
+    # The native dialog `Show` methods are all blocking, as they run an inner native
+    # event loop. Call them via this method to ensure the inner loop is correctly linked
+    # with this Python loop.
+    def start_inner_loop(self, callback, *args):
+        assert self._inner_loop is None
+        self._inner_loop = (callback, args)
 
     def run_once_recurring(self):
         """Run one iteration of the event loop, and enqueue the next iteration (if we're
@@ -88,23 +99,33 @@ class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
         This largely duplicates the "finally" behavior of the default Proactor
         run_forever implementation.
         """
-        # Perform one tick of the event loop.
-        self._run_once()
+        try:
+            # Perform one tick of the event loop.
+            self._run_once()
 
-        if self._stopping:
-            # If we're stopping, we can do the "finally" handling from
-            # the BaseEventLoop run_forever().
-            # === START BaseEventLoop.run_forever() finally handling ===
-            self._stopping = False
-            self._thread_id = None
-            events._set_running_loop(None)
-            self._set_coroutine_origin_tracking(False)
-            sys.set_asyncgen_hooks(*self._old_agen_hooks)
-            # === END BaseEventLoop.run_forever() finally handling ===
-        else:
-            # Otherwise, live to tick another day. Enqueue the next tick,
-            # and make sure there will be *something* to be processed.
-            # If you don't ensure there is at least one message on the
-            # queue, the select() call will block, locking the app.
-            self.enqueue_tick()
-            self.call_soon(self._loop_self_reading)
+            if self._stopping:  # pragma: no cover
+                # If we're stopping, we can do the "finally" handling from
+                # the BaseEventLoop run_forever().
+                # === START BaseEventLoop.run_forever() finally handling ===
+                self._stopping = False
+                self._thread_id = None
+                events._set_running_loop(None)
+                self._set_coroutine_origin_tracking(False)
+                sys.set_asyncgen_hooks(*self._old_agen_hooks)
+                # === END BaseEventLoop.run_forever() finally handling ===
+            else:
+                # Otherwise, live to tick another day. Enqueue the next tick,
+                # and make sure there will be *something* to be processed.
+                # If you don't ensure there is at least one message on the
+                # queue, the select() call will block, locking the app.
+                self.enqueue_tick()
+                self.call_soon(self._loop_self_reading)
+
+                if self._inner_loop:
+                    callback, args = self._inner_loop
+                    self._inner_loop = None
+                    callback(*args)
+
+        # Exceptions thrown by this method will be silently ignored.
+        except BaseException:  # pragma: no cover
+            traceback.print_exc()

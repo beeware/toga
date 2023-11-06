@@ -1,23 +1,24 @@
 import json
 import webbrowser
 
-from travertino.size import at_least
+import System.Windows.Forms as WinForms
+from System import (
+    Action,
+    String,
+    Uri,
+)
+from System.Drawing import Color
+from System.Threading.Tasks import Task, TaskScheduler
 
 import toga
 from toga.widgets.webview import JavaScriptResult
-from toga_winforms.libs import (
-    Action,
-    Color,
+from toga_winforms.libs.extensions import (
     CoreWebView2CreationProperties,
-    String,
-    Task,
-    TaskScheduler,
-    Uri,
     WebView2,
     WebView2RuntimeNotFoundException,
-    WinForms,
 )
 
+from ..libs.wrapper import WeakrefCallable
 from .base import Widget
 
 
@@ -34,10 +35,12 @@ def requires_initialization(method):
 class WebView(Widget):
     def create(self):
         self.native = WebView2()
-        self.native.CoreWebView2InitializationCompleted += (
+        self.native.CoreWebView2InitializationCompleted += WeakrefCallable(
             self.winforms_initialization_completed
         )
-        self.native.NavigationCompleted += self.winforms_navigation_completed
+        self.native.NavigationCompleted += WeakrefCallable(
+            self.winforms_navigation_completed
+        )
         self.loaded_future = None
 
         props = CoreWebView2CreationProperties()
@@ -112,7 +115,7 @@ class WebView(Widget):
             raise RuntimeError(args.InitializationException)
 
     def winforms_navigation_completed(self, sender, args):
-        self.interface.on_webview_load(self.interface)
+        self.interface.on_webview_load()
 
         if self.loaded_future:
             self.loaded_future.set_result(None)
@@ -170,7 +173,3 @@ class WebView(Widget):
 
         self.run_after_initialization(execute)
         return result
-
-    def rehint(self):
-        self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
-        self.interface.intrinsic.height = at_least(self.interface._MIN_HEIGHT)

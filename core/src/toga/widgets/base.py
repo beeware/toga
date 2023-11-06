@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from builtins import id as identifier
 from typing import TYPE_CHECKING, Iterator, NoReturn
+from weakref import WeakValueDictionary
 
 from travertino.node import Node
 
@@ -13,10 +14,12 @@ if TYPE_CHECKING:
     from toga.window import Window
 
 
-class WidgetRegistry(dict):
-    # WidgetRegistry is implemented as a subclass of dict, because it provides
-    # a mapping from ID to widget. However, it exposes a set-like API; add()
-    # and update() take instances to be added, and iteration is over values.
+class WidgetRegistry(WeakValueDictionary):
+    # WidgetRegistry is implemented as a subclass of WeakValueDictionary, because it
+    # provides a mapping from ID to widget. However, it exposes a set-like API; add()
+    # and update() take instances to be added, and iteration is over values. The
+    # mapping is weak so the registry doesn't retain a strong reference to the widget,
+    # preventing memory cleanup.
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -42,6 +45,9 @@ class WidgetRegistry(dict):
 
     def __iter__(self) -> Iterator[Widget]:
         return iter(self.values())
+
+    def __repr__(self) -> str:
+        return "{" + ", ".join(f"{k!r}: {v!r}" for k, v in self.items()) + "}"
 
 
 class Widget(Node):
@@ -99,6 +105,10 @@ class Widget(Node):
     def tab_index(self, tab_index: int) -> None:
         self._impl.set_tab_index(tab_index)
 
+    def _assert_can_have_children(self):
+        if not self.can_have_children:
+            raise ValueError(f"{type(self).__name__} cannot have children")
+
     def add(self, *children: Widget) -> None:
         """Add the provided widgets as children of this widget.
 
@@ -109,6 +119,7 @@ class Widget(Node):
         :param children: The widgets to add as children of this widget.
         :raises ValueError: If this widget cannot have children.
         """
+        self._assert_can_have_children()
         for child in children:
             if child.parent is not self:
                 # remove from old parent
@@ -139,6 +150,7 @@ class Widget(Node):
         :param child: The child to insert as a child of this node.
         :raises ValueError: If this widget cannot have children.
         """
+        self._assert_can_have_children()
         if child.parent is not self:
             # remove from old parent
             if child.parent:
@@ -167,8 +179,9 @@ class Widget(Node):
         :param children: The child nodes to remove.
         :raises ValueError: If this widget cannot have children.
         """
-        removed = False
+        self._assert_can_have_children()
 
+        removed = False
         for child in children:
             if child.parent is self:
                 removed = True
@@ -190,6 +203,7 @@ class Widget(Node):
 
         :raises ValueError: If this widget cannot have children.
         """
+        self._assert_can_have_children()
         self.remove(*self.children)
 
     @property
@@ -266,15 +280,10 @@ class Widget(Node):
             # defer the refresh call to the root node.
             self._root.refresh()
         else:
-            self.refresh_sublayouts()
-            # We can't compute a layout until we have a viewport
-            if self._impl.viewport:
-                super().refresh(self._impl.viewport)
-                self._impl.viewport.refreshed()
-
-    def refresh_sublayouts(self) -> None:
-        for child in self.children:
-            child.refresh_sublayouts()
+            # We can't compute a layout until we have a container
+            if self._impl.container:
+                super().refresh(self._impl.container)
+                self._impl.container.refreshed()
 
     def focus(self) -> None:
         """Give this widget the input focus.

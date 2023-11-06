@@ -42,20 +42,16 @@ class Slider(Widget, toga.widgets.slider.SliderImpl):
         self.tick_count = None
 
     def gtk_on_change(self, widget):
-        if self.interface.on_change:
-            self.interface.on_change(widget)
+        self.interface.on_change(widget)
 
     def gtk_on_press(self, widget, n_press, x, y):
-        if self.interface.on_press:
-            self.interface.on_press(widget)
+        self.interface.on_press(widget)
 
     def gtk_on_end(self, widget, sequence):
-        if self.interface.on_release:
-            self.interface.on_release(widget)
+        self.interface.on_release(widget)
 
     def gtk_on_unpair_release(self, widget, x, y, button, sequence):
-        if self.interface.on_release:
-            self.interface.on_release(widget)
+        self.interface.on_release(widget)
 
     def gtk_change_value(self, native, scroll_type, value):
         self.adj.set_value(self.interface._round_value(value))

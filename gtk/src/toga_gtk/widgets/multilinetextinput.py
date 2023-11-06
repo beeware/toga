@@ -87,7 +87,7 @@ class MultilineTextInput(Widget):
             self.native_textview.set_buffer(self.buffer)
         else:
             # See gtk_on_change for why this is needed
-            self.interface.on_change(None)
+            self.interface.on_change()
             if not self.has_focus:
                 self.buffer = self.placeholder
                 self.native_textview.set_buffer(self.buffer)
@@ -134,7 +134,7 @@ class MultilineTextInput(Widget):
         # deliberately cleared, we add an explicit signal handler to set_value()
         # for the empty value case.
         if self.get_value():
-            self.interface.on_change(None)
+            self.interface.on_change()
 
     def gtk_on_focus_in(self, *args):
         # When focus is gained, make sure the content buffer is active.

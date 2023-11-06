@@ -43,7 +43,7 @@ def get_font_css(value):
         "font-style": f"{value.style}",
         "font-variant": f"{value.variant}",
         "font-weight": f"{value.weight}",
-        "font-family": f"{value.family}",
+        "font-family": f"{value.family!r}",
     }
 
     if value.size != SYSTEM_DEFAULT_FONT_SIZE:

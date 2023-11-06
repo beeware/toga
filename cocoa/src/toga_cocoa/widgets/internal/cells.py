@@ -1,6 +1,7 @@
+from rubicon.objc import at, objc_method
+
 from toga_cocoa.libs import (
     NSAffineTransform,
-    NSBezierPath,
     NSColor,
     NSCompositingOperationSourceOver,
     NSFont,
@@ -24,8 +25,6 @@ from toga_cocoa.libs import (
     NSTableCellView,
     NSTextField,
     NSTextFieldCell,
-    at,
-    objc_method,
 )
 
 
@@ -120,7 +119,9 @@ class TogaIconView(NSTableCellView):
 
     @objc_method
     def setImage_(self, image):
-        if not self.imageView:
+        # This branch is here for future protection - but the image is *never* set
+        # before the text, so it can't ever happen.
+        if not self.imageView:  # pragma: no cover
             self.setup()
 
         if image:
@@ -146,8 +147,8 @@ class TogaIconView(NSTableCellView):
 
 # A TogaDetailedCell contains:
 # * an icon
-# * a main label
-# * a secondary label
+# * a main "title" label
+# * a secondary "subtitle" label
 class TogaDetailedCell(NSTextFieldCell):
     @objc_method
     def drawInteriorWithFrame_inView_(self, cellFrame: NSRect, view) -> None:
@@ -156,26 +157,28 @@ class TogaDetailedCell(NSTextFieldCell):
         title = self.objectValue.attrs["title"]
         subtitle = self.objectValue.attrs["subtitle"]
 
-        if icon and icon.native:
+        # If there's an icon, draw it.
+        if icon:
             NSGraphicsContext.currentContext.saveGraphicsState()
             yOffset = cellFrame.origin.y
-            if view.isFlipped:
-                xform = NSAffineTransform.transform()
-                xform.translateXBy(4, yBy=cellFrame.size.height)
-                xform.scaleXBy(1.0, yBy=-1.0)
-                xform.concat()
-                yOffset = 0.5 - cellFrame.origin.y
+
+            # Coordinate system is always flipped
+            xform = NSAffineTransform.transform()
+            xform.translateXBy(4, yBy=cellFrame.size.height)
+            xform.scaleXBy(1.0, yBy=-1.0)
+            xform.concat()
+            yOffset = 0.5 - cellFrame.origin.y
 
             interpolation = NSGraphicsContext.currentContext.imageInterpolation
             NSGraphicsContext.currentContext.imageInterpolation = (
                 NSImageInterpolationHigh
             )
 
-            icon.native.drawInRect(
+            icon.drawInRect(
                 NSRect(NSPoint(cellFrame.origin.x, yOffset + 4), NSSize(40.0, 40.0)),
                 fromRect=NSRect(
                     NSPoint(0, 0),
-                    NSSize(icon.native.size.width, icon.native.size.height),
+                    NSSize(icon.size.width, icon.size.height),
                 ),
                 operation=NSCompositingOperationSourceOver,
                 fraction=1.0,
@@ -183,50 +186,29 @@ class TogaDetailedCell(NSTextFieldCell):
 
             NSGraphicsContext.currentContext.imageInterpolation = interpolation
             NSGraphicsContext.currentContext.restoreGraphicsState()
+
+        # Find the right color for the text
+        if self.isHighlighted():
+            primaryColor = NSColor.alternateSelectedControlTextColor
         else:
-            path = NSBezierPath.bezierPathWithRect(
-                NSRect(
-                    NSPoint(cellFrame.origin.x, cellFrame.origin.y + 4),
-                    NSSize(40.0, 40.0),
-                )
-            )
-            NSColor.grayColor.set()
-            path.fill()
+            primaryColor = NSColor.textColor
 
-        if title:
-            # Find the right color for the text
-            if self.isHighlighted():
-                primaryColor = NSColor.alternateSelectedControlTextColor
-            else:
-                if False:
-                    primaryColor = NSColor.disabledControlTextColor
-                else:
-                    primaryColor = NSColor.textColor
+        # Draw the title
+        textAttributes = NSMutableDictionary.alloc().init()
+        textAttributes[NSForegroundColorAttributeName] = primaryColor
+        textAttributes[NSFontAttributeName] = NSFont.systemFontOfSize(15)
 
-            textAttributes = NSMutableDictionary.alloc().init()
-            textAttributes[NSForegroundColorAttributeName] = primaryColor
-            textAttributes[NSFontAttributeName] = NSFont.systemFontOfSize(15)
+        at(title).drawAtPoint(
+            NSPoint(cellFrame.origin.x + 48, cellFrame.origin.y + 4),
+            withAttributes=textAttributes,
+        )
 
-            at(title).drawAtPoint(
-                NSPoint(cellFrame.origin.x + 48, cellFrame.origin.y + 4),
-                withAttributes=textAttributes,
-            )
+        # Draw the subtitle
+        textAttributes = NSMutableDictionary.alloc().init()
+        textAttributes[NSForegroundColorAttributeName] = primaryColor
+        textAttributes[NSFontAttributeName] = NSFont.systemFontOfSize(13)
 
-        if subtitle:
-            # Find the right color for the text
-            if self.isHighlighted():
-                primaryColor = NSColor.alternateSelectedControlTextColor
-            else:
-                if False:
-                    primaryColor = NSColor.disabledControlTextColor
-                else:
-                    primaryColor = NSColor.textColor
-
-            textAttributes = NSMutableDictionary.alloc().init()
-            textAttributes[NSForegroundColorAttributeName] = primaryColor
-            textAttributes[NSFontAttributeName] = NSFont.systemFontOfSize(13)
-
-            at(subtitle).drawAtPoint(
-                NSPoint(cellFrame.origin.x + 48, cellFrame.origin.y + 24),
-                withAttributes=textAttributes,
-            )
+        at(subtitle).drawAtPoint(
+            NSPoint(cellFrame.origin.x + 48, cellFrame.origin.y + 24),
+            withAttributes=textAttributes,
+        )

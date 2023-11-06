@@ -1,1 +1,0 @@
-The ``_notify()`` method on data sources has been renamed ``notify()``, reflecting its status as a public API.

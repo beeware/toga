@@ -3,15 +3,45 @@ WebView
 
 An embedded web browser.
 
-.. figure:: /reference/images/WebView.jpeg
-    :align: center
+.. tabs::
 
-.. rst-class:: widget-support
-.. csv-filter:: Availability (:ref:`Key <api-status-key>`)
-   :header-rows: 1
-   :file: ../../data/widgets_by_platform.csv
-   :included_cols: 4,5,6,7,8,9
-   :exclude: {0: '(?!^(WebView|Component)$)'}
+  .. group-tab:: macOS
+
+    .. figure:: /reference/images/webview-cocoa.png
+       :align: center
+       :width: 450px
+
+  .. group-tab:: Linux
+
+    .. figure:: /reference/images/webview-gtk.png
+       :align: center
+       :width: 450px
+
+  .. group-tab:: Windows
+
+    .. figure:: /reference/images/webview-winforms.png
+       :align: center
+       :width: 450px
+
+  .. group-tab:: Android
+
+    .. figure:: /reference/images/webview-android.png
+       :align: center
+       :width: 450px
+
+  .. group-tab:: iOS
+
+    .. figure:: /reference/images/webview-iOS.png
+       :align: center
+       :width: 450px
+
+  .. group-tab:: Web |no|
+
+    Not supported
+
+  .. group-tab:: Textual |no|
+
+    Not supported
 
 Usage
 -----
@@ -46,20 +76,22 @@ Notes
 * Using WebView on Linux requires that the user has installed the system packages
   for WebKit2, plus the GObject Introspection bindings for WebKit2.
 
-* On macOS, the "inspect element" feature is not enabled by default. WebView
-  debugging is only available when your code is packaged as a full macOS app
-  (e.g., with Briefcase). To enable debugging, run:
+* On macOS 13.3 (Ventura) and later, the content inspector for your app can be opened by
+  running Safari, `enabling the developer tools
+  <https://support.apple.com/en-au/guide/safari/sfri20948/mac>`__, and selecting your
+  app's window from the "Develop" menu.
+
+  On macOS versions prior to Ventura, the content inspector is not enabled by default,
+  and is only available when your code is packaged as a full macOS app (e.g., with
+  Briefcase). To enable debugging, run:
 
     .. code-block:: console
 
         $ defaults write com.example.appname WebKitDeveloperExtras -bool true
 
-    Substituting ``com.example.appname`` with the bundle ID for your packaged
-    app.
+    Substituting ``com.example.appname`` with the bundle ID for your packaged app.
 
 Reference
 ---------
 
 .. autoclass:: toga.WebView
-   :members:
-   :undoc-members:

@@ -1,8 +1,6 @@
-from ..utils import not_required
 from .base import Widget
 
 
-@not_required  # Testbed coverage is complete for this widget.
 class Switch(Widget):
     def create(self):
         self._action("create Switch")
@@ -20,7 +18,7 @@ class Switch(Widget):
         old_value = self._get_value("value", None)
         self._set_value("value", value)
         if value != old_value:
-            self.interface.on_change(None)
+            self.interface.on_change()
 
     def simulate_toggle(self):
-        self.interface.on_change(None)
+        self.interface.on_change()

@@ -9,3 +9,8 @@ class ImageViewProbe(SimpleProbe):
     @property
     def preserve_aspect_ratio(self):
         return self.native.contentMode == UIViewContentMode.ScaleAspectFit.value
+
+    def assert_image_size(self, width, height):
+        # UIKit internally scales the image to the container,
+        # so there's no image size check required.
+        pass

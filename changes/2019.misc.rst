@@ -1,1 +1,0 @@
-The Toga repository checkout for Read the Docs builds is now made unshallow to ensure accurate SCM versioning.

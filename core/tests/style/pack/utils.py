@@ -64,11 +64,9 @@ class ExampleNode(Node):
 
 
 class ExampleViewport:
-    def __init__(self, width, height, dpi=96, baseline_dpi=96):
+    def __init__(self, width, height):
         self.height = height
         self.width = width
-        self.dpi = dpi
-        self.baseline_dpi = baseline_dpi
 
 
 def _assert_layout(node, expected_layout):
@@ -97,8 +95,16 @@ def _assert_layout(node, expected_layout):
         _assert_layout(child, sublayout)
 
 
-def assert_layout(node, expected_size, expected_layout):
+def assert_layout(node, min_size, expected_size, expected_layout):
     """Assert that a node's full recursive layout matches expectation."""
+    assert (
+        node.layout.min_width,
+        node.layout.min_height,
+    ) == min_size, (
+        f"minimum size {node.layout.min_width}x{node.layout.min_height} "
+        f"doesn't match expected {min_size[0]}x{min_size[1]}"
+    )
+
     assert (
         node.layout.width,
         node.layout.height,

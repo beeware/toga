@@ -1,5 +1,13 @@
 from .libs import Gdk, Gtk
 
+#######################################################################################
+# Implementation notes:
+#
+# GDK/GTK renders everything at 96dpi. When HiDPI mode is enabled, it is managed at the
+# compositor level. See https://wiki.archlinux.org/index.php/HiDPI#GDK_3_(GTK_3) for
+# details.
+#######################################################################################
+
 
 class TogaContainerLayoutManager(Gtk.LayoutManager):
     def __init__(self):
@@ -96,9 +104,6 @@ class TogaContainer(Gtk.Fixed):
         self.min_width = 100
         self.min_height = 100
 
-        # GDK/GTK always renders at 96dpi. When HiDPI mode is enabled, it is
-        # managed at the compositor level. See
-        # https://wiki.archlinux.org/index.php/HiDPI#GDK_3_(GTK_3) for details
         self.dpi = 96
         self.baseline_dpi = self.dpi
 
@@ -169,11 +174,8 @@ class TogaContainer(Gtk.Fixed):
                 child_widget._impl.rehint()
                 child_widget = child_widget.get_prev_sibling()
 
-            # Compute the layout using a 0-size container
-            self._content.interface.style.layout(
-                self._content.interface, TogaContainer()
-            )
+            # Recompute the layout
+            self._content.interface.style.layout(self._content.interface, self)
 
-            # print(" computed min layout", self._content.interface.layout)
-            self.min_width = self._content.interface.layout.width
-            self.min_height = self._content.interface.layout.height
+            self.min_width = self._content.interface.layout.min_width
+            self.min_height = self._content.interface.layout.min_height

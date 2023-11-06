@@ -82,7 +82,7 @@ class Selection(Widget):
         with self.suspend_notifications():
             items_num = self.string_list.get_n_items()
             self.string_list.splice(0, items_num, None)
-        self.interface.on_change(None)
+        self.interface.on_change()
 
     def select_item(self, index, item):
         self.native.set_selected(self.interface._items.index(item))

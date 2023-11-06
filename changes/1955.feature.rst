@@ -1,1 +1,0 @@
-The Selection widget now has 100% test coverage and complete API documentation.

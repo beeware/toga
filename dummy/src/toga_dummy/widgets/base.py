@@ -1,7 +1,6 @@
-from ..utils import LoggedObject, not_required
+from ..utils import LoggedObject
 
 
-@not_required  # Testbed coverage is complete for this widget.
 class Widget(LoggedObject):
     def __init__(self, interface):
         super().__init__()
@@ -9,10 +8,6 @@ class Widget(LoggedObject):
         self.interface._impl = self
         self.container = None
         self.create()
-
-    @property
-    def viewport(self):
-        return self.container
 
     def get_size(self):
         return (37, 42)

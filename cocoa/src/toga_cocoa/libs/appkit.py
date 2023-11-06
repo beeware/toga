@@ -589,8 +589,6 @@ NSApplicationActivationPolicyProhibited = 2
 # NSSavePanel.h
 NSSavePanel = ObjCClass("NSSavePanel")
 
-NSFileHandlingPanelOKButton = 1
-
 ######################################################################
 # NSScreen.h
 NSScreen = ObjCClass("NSScreen")
@@ -758,11 +756,24 @@ NSGrooveBorder = 3
 NSWindow = ObjCClass("NSWindow")
 NSWindow.declare_property("frame")
 
-NSBorderlessWindowMask = 0
-NSTitledWindowMask = 1 << 0
-NSClosableWindowMask = 1 << 1
-NSMiniaturizableWindowMask = 1 << 2
-NSResizableWindowMask = 1 << 3
+
+class NSWindowStyleMask(IntEnum):
+    Borderless = 0
+    Titled = 1 << 0
+    Closable = 1 << 1
+    Miniaturizable = 1 << 2
+    Resizable = 1 << 3
+    UnifiedTitleAndToolbar = 1 << 12
+    FullScreen = 1 << 14
+    FullSizeContentView = 1 << 15
+    UtilityWindow = 1 << 4
+    DocModalWindow = 1 << 6
+    NonactivatingPanel = 1 << 7
+    HUDWindow = 1 << 13
+
+
+NSModalResponseOK = 1
+NSModalResponseCancel = 0
 
 # NSCompositingOperationXXX is equivalent to NSCompositeXXX
 NSCompositingOperationClear = 0

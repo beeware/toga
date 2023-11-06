@@ -73,7 +73,7 @@ class SplitControls(toga.Box):
 
 class SplitContainerApp(toga.App):
     def startup(self):
-        self.split = toga.SplitContainer(style=Pack(padding=10))
+        self.split = toga.SplitContainer(style=Pack(padding=10, flex=1))
 
         main_box = toga.Box(
             style=Pack(direction=COLUMN),
@@ -90,7 +90,7 @@ class SplitContainerApp(toga.App):
             ],
         )
 
-        self.main_window = toga.MainWindow(self.name)
+        self.main_window = toga.MainWindow()
         self.main_window.content = main_box
         self.main_window.show()
 

@@ -22,19 +22,19 @@ class TextInput(Widget):
         self.native.add_controller(key_press_controller)
 
     def gtk_on_change(self, entry):
-        self.interface.on_change(self.interface)
+        self.interface.on_change()
         self.interface._validate()
 
-    def gtk_focus_in_event(self, *args):
+    def gtk_focus_in_event(self, entry, user_data):
         self.interface.on_gain_focus(self.interface)
 
-    def gtk_focus_out_event(self, *args):
+    def gtk_focus_out_event(self, entry, user_data):
         self.interface.on_lose_focus(self.interface)
 
     def gtk_key_press_event(self, event_controller_key, keyval, keycode, state):
         key_pressed = toga_key(keyval)
         if key_pressed and key_pressed["key"] in {Key.ENTER, Key.NUMPAD_ENTER}:
-            self.interface.on_confirm(None)
+            self.interface.on_confirm()
 
     def get_readonly(self):
         return not self.native.get_property("editable")
@@ -68,7 +68,9 @@ class TextInput(Widget):
         # )
         _, size = self.native.get_preferred_size()
 
-        self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
+        self.interface.intrinsic.width = at_least(
+            max(self.interface._MIN_WIDTH, size.width)
+        )
         self.interface.intrinsic.height = size.height
 
     def set_error(self, error_message):

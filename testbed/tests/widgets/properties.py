@@ -3,7 +3,15 @@ from unittest.mock import Mock
 from pytest import approx
 
 from toga.colors import CORNFLOWERBLUE, RED, TRANSPARENT, color as named_color
-from toga.fonts import BOLD, FANTASY, ITALIC, NORMAL, SERIF, SYSTEM
+from toga.fonts import (
+    BOLD,
+    FANTASY,
+    ITALIC,
+    NORMAL,
+    SERIF,
+    SYSTEM,
+    SYSTEM_DEFAULT_FONT_SIZE,
+)
 from toga.style.pack import CENTER, COLUMN, JUSTIFY, LEFT, LTR, RIGHT, RTL
 
 from ..assertions import assert_color
@@ -66,7 +74,7 @@ async def test_focus(widget, probe, other, other_probe, verify_focus_handlers):
     assert not other_probe.has_focus
 
     if verify_focus_handlers:
-        on_gain_handler.assert_called_once()
+        on_gain_handler.assert_called_once_with(widget)
 
         # Reset the mock so it can be tested again
         on_gain_handler.reset_mock()
@@ -85,7 +93,7 @@ async def test_focus(widget, probe, other, other_probe, verify_focus_handlers):
     assert other_probe.has_focus
 
     if verify_focus_handlers:
-        on_lose_handler.assert_called_once()
+        on_lose_handler.assert_called_once_with(widget)
 
 
 async def test_focus_noop(widget, probe, other, other_probe):
@@ -281,20 +289,14 @@ async def test_font(widget, probe, verify_font_sizes):
         orig_width = probe.width
     if verify_font_sizes[1]:
         orig_height = probe.height
-    orig_font = probe.font
     probe.assert_font_family(SYSTEM)
+    probe.assert_font_size(SYSTEM_DEFAULT_FONT_SIZE)
+    probe.assert_font_options(weight=NORMAL, variant=NORMAL, style=NORMAL)
 
-    # Set the font to larger than its original size
-    widget.style.font_size = orig_font.size * 3
+    # Set the font to be large
+    widget.style.font_size = 30
     await probe.redraw("Widget font should be larger than its original size")
-
-    # Widget has a new font size
-    new_size_font = probe.font
-    # Font size in points is an integer; however, some platforms
-    # perform rendering in pixels (or device independent pixels,
-    # so round-tripping points->pixels->points through the probe
-    # can result in rounding errors.
-    assert (orig_font.size * 2.5) < new_size_font.size < (orig_font.size * 3.5)
+    probe.assert_font_size(30)
 
     # Widget should be taller and wider
     if verify_font_sizes[0]:
@@ -307,11 +309,11 @@ async def test_font(widget, probe, verify_font_sizes):
     await probe.redraw("Widget font should be changed to FANTASY")
 
     # Font family has been changed
-    new_family_font = probe.font
     probe.assert_font_family(FANTASY)
 
     # Font size hasn't changed
-    assert new_family_font.size == new_size_font.size
+    probe.assert_font_size(30)
+
     # Widget should still be taller and wider than the original
     if verify_font_sizes[0]:
         assert probe.width > orig_width
@@ -324,7 +326,9 @@ async def test_font(widget, probe, verify_font_sizes):
     await probe.redraw(
         message="Widget text should be reset to original family and size"
     )
-    assert probe.font == orig_font
+    probe.assert_font_family(SYSTEM)
+    probe.assert_font_size(SYSTEM_DEFAULT_FONT_SIZE)
+    probe.assert_font_options(weight=NORMAL, variant=NORMAL, style=NORMAL)
     if verify_font_sizes[0] and probe.shrink_on_resize:
         assert probe.width == orig_width
     if verify_font_sizes[1]:
@@ -333,8 +337,7 @@ async def test_font(widget, probe, verify_font_sizes):
 
 async def test_font_attrs(widget, probe):
     "The font weight and style of a widget can be changed."
-    assert probe.font.weight == NORMAL
-    assert probe.font.style == NORMAL
+    probe.assert_font_options(weight=NORMAL, style=NORMAL)
 
     for family in [SYSTEM, SERIF]:
         widget.style.font_family = family
@@ -343,18 +346,17 @@ async def test_font_attrs(widget, probe):
             for style in [NORMAL, ITALIC]:
                 widget.style.font_style = style
                 await probe.redraw(
-                    message="Widget text font style should be %s" % style
+                    message=f"Widget text font should be {family} {weight} {style}"
                 )
                 probe.assert_font_family(family)
-                assert probe.font.weight == weight
-                assert probe.font.style == style
+                probe.assert_font_options(weight=weight, style=style)
 
 
 async def test_color(widget, probe):
     "The foreground color of a widget can be changed"
     for color in COLORS:
         widget.style.color = color
-        await probe.redraw("Widget text color should be %s" % color)
+        await probe.redraw("Widget foreground color should be %s" % color)
         assert_color(probe.color, color)
 
 
@@ -365,12 +367,12 @@ async def test_color_reset(widget, probe):
 
     # Set the color to something different
     widget.style.color = RED
-    await probe.redraw("Widget text color should be RED")
+    await probe.redraw("Widget foreground color should be RED")
     assert_color(probe.color, named_color(RED))
 
     # Reset the color, and check that it has been restored to the original
     del widget.style.color
-    await probe.redraw("Widget text color should be restored to the original")
+    await probe.redraw("Widget foreground color should be restored to the original")
     assert_color(probe.color, original)
 
 
@@ -378,7 +380,7 @@ async def test_background_color(widget, probe):
     "The background color of a widget can be set"
     for color in COLORS:
         widget.style.background_color = color
-        await probe.redraw("Widget text background color should be %s" % color)
+        await probe.redraw("Widget background color should be %s" % color)
         if not getattr(probe, "background_supports_alpha", True):
             color.a = 1
         assert_color(probe.background_color, color)
@@ -391,13 +393,13 @@ async def test_background_color_reset(widget, probe):
 
     # Set the background color to something different
     widget.style.background_color = RED
-    await probe.redraw("Widget text background color should be RED")
+    await probe.redraw("Widget background background color should be RED")
     assert_color(probe.background_color, named_color(RED))
 
     # Reset the background color, and check that it has been restored to the original
     del widget.style.background_color
     await probe.redraw(
-        message="Widget text background color should be restored to original"
+        message="Widget background background color should be restored to original"
     )
     assert_color(probe.background_color, original)
 
@@ -408,7 +410,7 @@ async def test_background_color_transparent(widget, probe):
     supports_alpha = getattr(probe, "background_supports_alpha", True)
 
     widget.style.background_color = TRANSPARENT
-    await probe.redraw("Widget text background color should be TRANSPARENT")
+    await probe.redraw("Widget background background color should be TRANSPARENT")
     assert_color(probe.background_color, TRANSPARENT if supports_alpha else original)
 
 
@@ -475,46 +477,46 @@ async def test_flex_widget_size(widget, probe):
     # Container is initially a non-flex row widget of fixed size.
     # Paint the background so we can easily see it against the background.
     widget.style.flex = 0
-    widget.style.width = 100
+    widget.style.width = 300
     widget.style.height = 200
     widget.style.background_color = CORNFLOWERBLUE
-    await probe.redraw("Widget should have fixed 100x200 size")
+    await probe.redraw("Widget should have fixed 300x200 size")
 
     # Check the initial widget size
     # Match isn't exact because of pixel scaling on some platforms
-    assert probe.width == approx(100, rel=0.01)
+    assert probe.width == approx(300, rel=0.01)
     assert probe.height == approx(200, rel=0.01)
 
     # Drop the fixed height, and make the widget flexible
     widget.style.flex = 1
     del widget.style.height
 
-    # Widget should now be 100 pixels wide, but as tall as the container.
-    await probe.redraw("Widget should be 100px wide now")
-    assert probe.width == approx(100, rel=0.01)
-    assert probe.height > 300
+    # Widget should now be 300 pixels wide, but as tall as the container.
+    await probe.redraw("Widget should be 300px wide, full height")
+    assert probe.width == approx(300, rel=0.01)
+    assert probe.height > 350
 
     # Make the parent a COLUMN box
     del widget.style.width
     widget.parent.style.direction = COLUMN
 
     # Widget should now be the size of the container
-    await probe.redraw("Widget should be the size of container now")
-    assert probe.width > 300
-    assert probe.height > 300
+    await probe.redraw("Widget should be the size of container")
+    assert probe.width > 350
+    assert probe.height > 350
 
     # Revert to fixed height
     widget.style.height = 150
 
-    await probe.redraw("Widget should be reverted to fixed height")
-    assert probe.width > 300
+    await probe.redraw("Widget should be full width, 150px high")
+    assert probe.width > 350
     assert probe.height == approx(150, rel=0.01)
 
     # Revert to fixed width
-    widget.style.width = 150
+    widget.style.width = 250
 
     await probe.redraw("Widget should be reverted to fixed width")
-    assert probe.width == approx(150, rel=0.01)
+    assert probe.width == approx(250, rel=0.01)
     assert probe.height == approx(150, rel=0.01)
 
 

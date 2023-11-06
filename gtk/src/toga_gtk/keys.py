@@ -217,7 +217,6 @@ GTK_KEY_CODES = {
 GTK_MODIFIER_CODES = {
     Key.CAPSLOCK: "<CapsLock>",
     Key.SHIFT: "<Shift>",
-    # TODO: Confirm the mapping of Control, Meta and Hyper are correct.
     Key.MOD_1: "<Primary>",
     Key.MOD_2: "<Alt>",
     Key.MOD_3: "<Hyper>",
@@ -226,26 +225,22 @@ GTK_MODIFIER_CODES = {
 
 def toga_key(event):
     """Convert a GDK Key Event into a Toga key."""
-    try:
-        key = GDK_KEYS[event]
+    key = GDK_KEYS[event]
 
-        modifiers = set()
+    modifiers = set()
 
-        # TODO: Confirm the mapping of Control, Meta and Hyper are correct.
-        if event.state & Gdk.ModifierType.LOCK_MASK:
-            modifiers.add(Key.CAPSLOCK)
-        if event.state & Gdk.ModifierType.SHIFT_MASK:
-            modifiers.add(Key.SHIFT)
-        if event.state & Gdk.ModifierType.CONTROL_MASK:
-            modifiers.add(Key.MOD_1)
-        if event.state & Gdk.ModifierType.META_MASK:
-            modifiers.add(Key.MOD_2)
-        if event.state & Gdk.ModifierType.HYPER_MASK:
-            modifiers.add(Key.MOD_3)
+    if event.state & Gdk.ModifierType.LOCK_MASK:
+        modifiers.add(Key.CAPSLOCK)
+    if event.state & Gdk.ModifierType.SHIFT_MASK:
+        modifiers.add(Key.SHIFT)
+    if event.state & Gdk.ModifierType.CONTROL_MASK:
+        modifiers.add(Key.MOD_1)
+    if event.state & Gdk.ModifierType.META_MASK:
+        modifiers.add(Key.MOD_2)
+    if event.state & Gdk.ModifierType.HYPER_MASK:
+        modifiers.add(Key.MOD_3)
 
-        return {"key": key, "modifiers": modifiers}
-    except KeyError:
-        return None
+    return {"key": key, "modifiers": modifiers}
 
 
 def gtk_accel(shortcut):
@@ -263,6 +258,11 @@ def gtk_accel(shortcut):
         if key.value in accel:
             accel = accel.replace(key.value, "")
             modifiers.append(code)
+
+    # If the accelerator text is upper case, add a shift modifier.
+    if accel.isalpha() and accel.isupper():
+        accel = accel.lower()
+        modifiers.append("<Shift>")
 
     # Find the canonical definition of the remaining key.
     for key, code in GTK_KEY_CODES.items():

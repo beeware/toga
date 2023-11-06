@@ -39,4 +39,4 @@ class Button(Widget):
         self.interface.intrinsic.height = size.height
 
     def gtk_clicked(self, event):
-        self.interface.on_press(None)
+        self.interface.on_press()

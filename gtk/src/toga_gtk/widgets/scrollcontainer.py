@@ -23,7 +23,7 @@ class ScrollContainer(Widget):
         self.native.set_child(self.document_container)
 
     def gtk_on_changed(self, *args):
-        self.interface.on_scroll(None)
+        self.interface.on_scroll()
 
     def set_content(self, widget):
         self.document_container.content = widget
@@ -54,7 +54,7 @@ class ScrollContainer(Widget):
         # Disabling scrolling implies a position reset; that's a scroll event.
         if not value:
             self.native.get_hadjustment().set_value(0)
-            self.interface.on_scroll(None)
+            self.interface.on_scroll()
 
     def get_vertical(self):
         return self.native.get_policy()[1] == Gtk.PolicyType.AUTOMATIC
@@ -69,7 +69,7 @@ class ScrollContainer(Widget):
         # Disabling scrolling implies a position reset; that's a scroll event.
         if not value:
             self.native.get_vadjustment().set_value(0)
-            self.interface.on_scroll(None)
+            self.interface.on_scroll()
 
     def get_max_vertical_position(self):
         return max(
@@ -98,4 +98,4 @@ class ScrollContainer(Widget):
     def set_position(self, horizontal_position, vertical_position):
         self.native.get_hadjustment().set_value(horizontal_position)
         self.native.get_vadjustment().set_value(vertical_position)
-        self.interface.on_scroll(None)
+        self.interface.on_scroll()

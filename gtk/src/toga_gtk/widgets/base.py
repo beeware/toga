@@ -27,11 +27,6 @@ class Widget:
         # Ensure initial styles are applied.
         self.interface.style.reapply()
 
-    @property
-    def viewport(self):
-        # TODO: Remove the use of viewport
-        return self._container
-
     @abstractmethod
     def create(self):
         pass
@@ -49,7 +44,7 @@ class Widget:
     @container.setter
     def container(self, container):
         if self.container:
-            assert container is None, "Widget Already have a container"
+            assert container is None, "Widget already has a container"
 
             # container is set to None, removing self from the container.native
             # Note from pygtk documentation: Note that the container will own a
@@ -167,6 +162,8 @@ class Widget:
 
     def set_hidden(self, hidden):
         self.native.set_visible(not hidden)
+        if self.container:
+            self.container.make_dirty()
 
     def set_color(self, color):
         self.apply_css("color", get_color_css(color))

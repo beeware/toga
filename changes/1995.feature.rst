@@ -1,1 +1,0 @@
-The example apps were updated to support being run with ``briefcase run`` on all platforms.

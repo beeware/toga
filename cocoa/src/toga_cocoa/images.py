@@ -1,3 +1,4 @@
+from ctypes import POINTER, c_char, cast
 from pathlib import Path
 
 from toga_cocoa.libs import (
@@ -8,16 +9,28 @@ from toga_cocoa.libs import (
 )
 
 
+def nsdata_to_bytes(data: NSData) -> bytes:
+    """Convert an NSData into a raw bytes representation"""
+    # data is an NSData object that has .bytes as a c_void_p, and a .length. Cast to
+    # POINTER(c_char) to get an addressable array of bytes, and slice that array to
+    # the known length. We don't use c_char_p because it has handling of NUL
+    # termination, and POINTER(c_char) allows array subscripting.
+    return cast(data.bytes, POINTER(c_char))[: data.length]
+
+
 class Image:
     def __init__(self, interface, path=None, data=None):
         self.interface = interface
 
         try:
-            # We *should* be able to do a direct NSImage.alloc.init...(),
-            # but for some reason, this segfaults in some environments
-            # when loading invalid images. On iOS we can avoid this by
-            # using the class-level constructors; on macOS we need to
-            # ensure we have a valid allocated image, then try to init it.
+            # We *should* be able to do a direct NSImage.alloc.init...(), but if the
+            # image file is invalid, the init fails, and returns NULL - but we've
+            # created an ObjC instance, so when the object passes out of scope, Rubicon
+            # tries to free it, which segfaults. To avoid this, we retain result of the
+            # alloc() (overriding the default Rubicon behavior of alloc), then release
+            # that reference once we're done. If the image was created successfully, we
+            # temporarily have a reference count that is 1 higher than it needs to be;
+            # if it fails, we don't end up with a stray release.
             image = NSImage.alloc().retain()
             if path:
                 self.native = image.initWithContentsOfFile(str(path))
@@ -36,6 +49,15 @@ class Image:
 
     def get_height(self):
         return self.native.size.height
+
+    def get_data(self):
+        return nsdata_to_bytes(
+            NSBitmapImageRep.representationOfImageRepsInArray(
+                self.native.representations,
+                usingType=NSBitmapImageFileType.PNG,
+                properties=None,
+            )
+        )
 
     def save(self, path):
         path = Path(path)

@@ -1,9 +1,7 @@
 import asyncio
-import os
-import os.path
 import signal
 import sys
-from urllib.parse import unquote, urlparse
+from pathlib import Path
 
 import gbulb
 
@@ -19,16 +17,15 @@ def gtk_menu_item_activate(cmd):
     """Convert a GTK menu item activation into a command invocation."""
 
     def _handler(action, data):
-        cmd.action(cmd)
+        cmd.action()
 
     return _handler
 
 
 class MainWindow(Window):
-    _IMPL_CLASS = Gtk.ApplicationWindow
-
-    def __init__(self, interface, title, position, size):
-        super().__init__(interface, title, position, size)
+    def create(self):
+        self.native = Gtk.ApplicationWindow()
+        self.native.set_role("MainWindow")
         icon_impl = toga_App.app.icon._impl
         self.native.set_icon_name(icon_impl.native_72.get_icon_name())
 
@@ -40,7 +37,8 @@ class MainWindow(Window):
         # closing the window) should be performed; so
         # "should_exit == True" must be converted to a return
         # value of False.
-        return not self.interface.app.exit()
+        self.interface.app.on_exit()
+        return True
 
 
 class App:
@@ -64,6 +62,7 @@ class App:
             application_id=self.interface.app_id,
             flags=Gio.ApplicationFlags.FLAGS_NONE,
         )
+        self.native_about_dialog = None
 
         # Connect the GTK signal that will cause app startup to occur
         self.native.connect("startup", self.gtk_startup)
@@ -100,15 +99,15 @@ class App:
     def _create_app_commands(self):
         self.interface.commands.add(
             Command(
-                lambda _: self.interface.about(),
-                "About " + self.interface.name,
+                self._menu_about,
+                "About " + self.interface.formal_name,
                 group=toga.Group.HELP,
             ),
             Command(None, "Preferences", group=toga.Group.APP),
             # Quit should always be the last item, in a section on its own
             Command(
-                lambda _: self.interface.exit(),
-                "Quit " + self.interface.name,
+                self._menu_quit,
+                "Quit " + self.interface.formal_name,
                 shortcut=toga.Key.MOD_1 + "q",
                 group=toga.Group.APP,
                 section=sys.maxsize,
@@ -117,6 +116,12 @@ class App:
 
     def gtk_activate(self, data=None):
         pass
+
+    def _menu_about(self, app, **kwargs):
+        self.interface.about()
+
+    def _menu_quit(self, app, **kwargs):
+        self.interface.on_exit()
 
     def create_menus(self):
         # TODO: Implementing menus in HeaderBar; See #1931.
@@ -136,34 +141,31 @@ class App:
         pass
 
     def show_about_dialog(self):
-        about = Gtk.AboutDialog()
+        self.native_about_dialog = Gtk.AboutDialog()
+        self.native_about_dialog.set_modal(True)
+        self.native_about_dialog.set_transient_for(self.get_current_window().native)
 
         icon_impl = toga_App.app.icon._impl
-        about.set_logo(icon_impl.native_72.get_paintable())
+        self.native_about_dialog.set_logo(icon_impl.native_72.get_paintable())
 
-        if self.interface.name is not None:
-            about.set_program_name(self.interface.name)
+        self.native_about_dialog.set_program_name(self.interface.formal_name)
         if self.interface.version is not None:
-            about.set_version(self.interface.version)
+            self.native_about_dialog.set_version(self.interface.version)
         if self.interface.author is not None:
-            about.set_authors([self.interface.author])
+            self.native_about_dialog.set_authors([self.interface.author])
         if self.interface.description is not None:
-            about.set_comments(self.interface.description)
+            self.native_about_dialog.set_comments(self.interface.description)
         if self.interface.home_page is not None:
-            about.set_website(self.interface.home_page)
+            self.native_about_dialog.set_website(self.interface.home_page)
 
-        about.set_modal(True)
-        about.set_transient_for(self.get_current_window().native)
-        about.present()
+        self.native_about_dialog.present()
 
     def beep(self):
-        Gdk.gdk_beep()
+        Gdk.beep()
 
-    def exit(self):
+    # We can't call this under test conditions, because it would kill the test harness
+    def exit(self):  # pragma: no cover
         self.native.quit()
-
-    def set_on_exit(self, value):
-        pass
 
     def get_current_window(self):
         return self.native.get_active_window()._impl
@@ -186,7 +188,7 @@ class App:
         self.interface.factory.not_implemented("App.hide_cursor()")
 
 
-class DocumentApp(App):
+class DocumentApp(App):  # pragma: no cover
     def _create_app_commands(self):
         self.interface.commands.add(
             toga.Command(
@@ -203,38 +205,24 @@ class DocumentApp(App):
 
         try:
             # Look for a filename specified on the command line
-            file_name = os.path.abspath(sys.argv[1])
+            self.interface._open(Path(sys.argv[1]))
         except IndexError:
             # Nothing on the command line; open a file dialog instead.
-            # TODO: This causes a blank window to be shown.
-            # Is there a way to open a file dialog without having a window?
+            # Create a temporary window so we have context for the dialog
             m = toga.Window()
-            file_name = m.select_folder_dialog(self.interface.name, None, False)[0]
-
-        self.open_document(file_name)
+            m.open_file_dialog(
+                self.interface.formal_name,
+                file_types=self.interface.document_types.keys(),
+                on_result=lambda dialog, path: self.interface._open(path)
+                if path
+                else self.exit(),
+            )
 
     def open_file(self, widget, **kwargs):
-        # TODO: This causes a blank window to be shown.
-        # Is there a way to open a file dialog without having a window?
+        # Create a temporary window so we have context for the dialog
         m = toga.Window()
-        file_name = m.select_folder_dialog(self.interface.name, None, False)[0]
-
-        self.open_document(file_name)
-
-    def open_document(self, fileURL):
-        """Open a new document in this app.
-
-        Args:
-            fileURL (str): The URL/path to the file to add as a document.
-        """
-        # Convert the fileURL to a file path.
-        fileURL = fileURL.rstrip("/")
-        path = unquote(urlparse(fileURL).path)
-        extension = os.path.splitext(path)[1][1:]
-
-        # Create the document instance
-        DocType = self.interface.document_types[extension]
-        document = DocType(fileURL, self.interface)
-        self.interface._documents.append(document)
-
-        document.show()
+        m.open_file_dialog(
+            self.interface.formal_name,
+            file_types=self.interface.document_types.keys(),
+            on_result=lambda dialog, path: self.interface._open(path) if path else None,
+        )

@@ -4,9 +4,6 @@ from toga_gtk.libs import GLib
 
 
 class BaseProbe:
-    def assert_font_family(self, expected):
-        assert self.font.family == expected
-
     def repaint_needed(self):
         return GLib.main_context_default().pending()
 
@@ -23,3 +20,6 @@ class BaseProbe:
 
         if delay:
             await asyncio.sleep(delay)
+
+    def assert_image_size(self, image_size, size):
+        assert image_size == size

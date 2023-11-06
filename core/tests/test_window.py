@@ -1,381 +1,831 @@
 from pathlib import Path
-from unittest.mock import MagicMock, Mock, call, patch
+from unittest.mock import Mock
+
+import pytest
 
 import toga
-from toga.command import CommandSet
-from toga.widgets.base import WidgetRegistry
-from toga_dummy.utils import TestCase
+from toga_dummy.utils import (
+    assert_action_not_performed,
+    assert_action_performed,
+    assert_action_performed_with,
+)
 
 
-class TestWindow(TestCase):
-    def setUp(self):
-        super().setUp()
-        self.window = toga.Window()
-        self.app = toga.App("test_name", "id.app")
+@pytest.fixture
+def window(app):
+    return toga.Window()
 
-    def test_window_widgets_registry_on_constructor(self):
-        self.assertTrue(isinstance(self.window.widgets, WidgetRegistry))
-        self.assertEqual(len(self.window.widgets), 0)
 
-    def test_show_is_not_called_in_constructor(self):
-        self.assertActionNotPerformed(self.window, "show")
+def test_window_created(app):
+    "A Window can be created with minimal arguments"
+    window = toga.Window()
 
-    def test_show_raises_error_when_app_not_set(self):
-        with self.assertRaisesRegex(
-            AttributeError, "^Can't show a window that doesn't have an associated app$"
-        ):
-            self.window.show()
+    assert window.app == app
+    assert window.content is None
 
-    def test_window_show_with_app_set(self):
-        self.window.app = self.app
-        self.window.show()
-        self.assertActionPerformed(self.window, "show")
-        self.assertTrue(self.window.visible)
-        self.assertValueSet(self.window, "visible", True)
+    assert window._impl.interface == window
+    assert_action_performed(window, "create Window")
 
-    def test_hide_raises_error_when_app_not_set(self):
-        with self.assertRaisesRegex(
-            AttributeError, "^Can't hide a window that doesn't have an associated app$"
-        ):
-            self.window.hide()
+    # We can't know what the ID is, but it must be a string.
+    assert isinstance(window.id, str)
+    assert window.title == "Toga"
+    assert window.position == (100, 100)
+    assert window.size == (640, 480)
+    assert window.resizable
+    assert window.closable
+    assert window.minimizable
+    assert len(window.toolbar) == 0
+    assert window.on_close._raw is None
 
-    def test_window_hide_with_app_set(self):
-        self.window.app = self.app
-        self.window.hide()
-        self.assertActionPerformed(self.window, "hide")
-        self.assertFalse(self.window.visible)
-        self.assertValueSet(self.window, "visible", False)
 
-    def test_window_show_by_setting_visible_to_true(self):
-        self.window.app = self.app
-        self.window.visible = True
-        self.assertActionPerformed(self.window, "show")
-        self.assertTrue(self.window.visible)
-        self.assertValueSet(self.window, "visible", True)
+def test_window_created_explicit(app):
+    "Explicit arguments at construction are stored"
+    on_close_handler = Mock()
 
-    def test_window_show_by_setting_visible_to_false(self):
-        self.window.app = self.app
-        self.window.visible = False
-        self.assertActionPerformed(self.window, "hide")
-        self.assertFalse(self.window.visible)
-        self.assertValueSet(self.window, "visible", False)
+    window = toga.Window(
+        id="my-window",
+        title="My Window",
+        position=(10, 20),
+        size=(200, 300),
+        resizable=False,
+        closable=False,
+        minimizable=False,
+        on_close=on_close_handler,
+    )
 
-    def test_set_window_application_twice(self):
-        self.assertIsNotNone(self.window.id)
-        new_app = toga.App("error_name", "id.error")
-        self.window.app = self.app
-        with self.assertRaisesRegex(
-            Exception, "^Window is already associated with an App$"
-        ):
-            self.window.app = new_app
+    assert window.app == app
+    assert window.content is None
 
-    def test_window_title(self):
-        # Assert default value
-        title = self.window.title
-        self.assertEqual(title, "Toga")
-        self.assertValueGet(self.window, "title")
+    assert window._impl.interface == window
+    assert_action_performed(window, "create Window")
 
-        # Set a new window title
-        self.window.title = "New title"
-        self.assertValueSet(self.window, "title", "New title")
+    assert window.id == "my-window"
+    assert window.title == "My Window"
+    assert window.position == (10, 20)
+    assert window.size == (200, 300)
+    assert not window.resizable
+    assert not window.closable
+    assert not window.minimizable
+    assert len(window.toolbar) == 0
+    assert window.on_close._raw == on_close_handler
 
-        # New window title can be retrieved
-        title = self.window.title
-        self.assertValueGet(self.window, "title")
-        self.assertEqual(title, "New title")
 
-        # Set a default window title
-        self.window.title = None
-        self.assertValueSet(self.window, "title", "Toga")
+def test_window_created_without_app():
+    "A window cannot be created without an active app"
+    toga.App.app = None
+    with pytest.raises(
+        RuntimeError, match="Cannot create a Window before creating an App"
+    ):
+        toga.Window()
 
-        # New window title can be retrieved
-        title = self.window.title
-        self.assertValueGet(self.window, "title")
-        self.assertEqual(title, "Toga")
 
-    def test_toolbar(self):
-        toolbar = self.window.toolbar
-        self.assertIsInstance(toolbar, CommandSet)
+def test_set_app(window, app):
+    """A window's app cannot be reassigned"""
+    assert window.app == app
 
-    def test_set_content_without_app(self):
-        content = MagicMock()
+    app2 = toga.App("Test App 2", "org.beeware.toga.test-app-2")
+    with pytest.raises(ValueError, match=r"Window is already associated with an App"):
+        window.app = app2
 
-        self.window.content = content
-        self.assertEqual(content.window, self.window)
-        self.assertIsNone(content.app)
 
-    def test_set_content_with_app(self):
-        content = MagicMock()
+def test_set_app_with_content(window, app):
+    """If a window has content, the content is assigned to the app"""
+    assert window.app == app
 
-        self.window.app = self.app
-        self.window.content = content
+    content = toga.Box()
+    assert content.app is None
 
-        self.assertEqual(content.window, self.window)
-        self.assertEqual(content.app, self.app)
+    window.content = content
+    assert content.app == app
 
-    def test_set_app_after_content(self):
-        content = MagicMock()
 
-        self.window.content = content
-        self.window.app = self.app
+@pytest.mark.parametrize(
+    "value, expected",
+    [
+        ("New Text", "New Text"),
+        ("", "Toga"),
+        (None, "Toga"),
+        (12345, "12345"),
+        ("Contains\nnewline", "Contains"),
+    ],
+)
+def test_title(window, value, expected):
+    """The title of the window can be changed"""
+    window.title = value
+    assert window.title == expected
 
-        self.assertEqual(content.window, self.window)
-        self.assertEqual(content.app, self.app)
 
-    def test_set_app_adds_window_widgets_to_app(self):
-        id0, id1, id2, id3 = "id0", "id1", "id2", "id3"
-        widget1, widget2, widget3 = (
-            toga.Label(id=id1, text="label 1"),
-            toga.Label(id=id2, text="label 1"),
-            toga.Label(id=id3, text="label 1"),
+def test_toolbar_implicit_add(window, app):
+    """Adding an item to to a toolbar implicitly adds it to the app."""
+    cmd1 = toga.Command(None, "Command 1")
+    cmd2 = toga.Command(None, "Command 2")
+
+    toolbar = window.toolbar
+    assert list(toolbar) == []
+    assert list(app.commands) == []
+
+    # Adding a command to the toolbar automatically adds it to the app
+    toolbar.add(cmd1)
+    assert list(toolbar) == [cmd1]
+    assert list(app.commands) == [cmd1]
+
+    # But not vice versa
+    app.commands.add(cmd2)
+    assert list(toolbar) == [cmd1]
+    assert list(app.commands) == [cmd1, cmd2]
+
+    # Adding a command to both places does not cause a duplicate
+    app.commands.add(cmd1)
+    assert list(toolbar) == [cmd1]
+    assert list(app.commands) == [cmd1, cmd2]
+
+
+def test_change_content(window, app):
+    """The content of a window can be changed"""
+    assert window.content is None
+    assert window.app == app
+
+    # Set the content of the window
+    content1 = toga.Box()
+    window.content = content1
+
+    # The content has been assigned and refreshed
+    assert content1.app == app
+    assert content1.window == window
+    assert_action_performed_with(window, "set content", widget=content1._impl)
+    assert_action_performed(content1, "refresh")
+
+    # Set the content of the window to something new
+    content2 = toga.Box()
+    window.content = content2
+
+    # The content has been assigned and refreshed
+    assert content2.app == app
+    assert content2.window == window
+    assert_action_performed_with(window, "set content", widget=content2._impl)
+    assert_action_performed(content2, "refresh")
+
+    # The original content has been removed
+    assert content1.window is None
+
+
+def test_set_position(window):
+    """The position of the window can be set."""
+    window.position = (123, 456)
+
+    assert window.position == (123, 456)
+
+
+def test_set_size(window):
+    """The size of the window can be set."""
+    window.size = (123, 456)
+
+    assert window.size == (123, 456)
+
+
+def test_set_size_with_content(window):
+    """The size of the window can be set."""
+    content = toga.Box()
+    window.content = content
+
+    window.size = (123, 456)
+
+    assert window.size == (123, 456)
+    assert_action_performed(content, "refresh")
+
+
+def test_show_hide(window, app):
+    """The window can be shown and hidden."""
+    assert window.app == app
+    window.show()
+
+    # The window has been assigned to the app, and is visible
+    assert window.app == app
+    assert window in app.windows
+    assert_action_performed(window, "show")
+    assert window.visible
+
+    # Hide with an explicit call
+    window.hide()
+
+    # Window is still assigned to the app, but is not visible
+    assert window.app == app
+    assert window in app.windows
+    assert_action_performed(window, "hide")
+    assert not window.visible
+
+
+def test_hide_show(window, app):
+    """The window can be hidden then shown."""
+    assert window.app == app
+    window.hide()
+
+    # The window has been assigned to the app, and is not visible
+    assert window.app == app
+    assert window in app.windows
+    assert_action_performed(window, "hide")
+    assert not window.visible
+
+    # Show with an explicit call
+    window.show()
+
+    # Window is still assigned to the app, but is not visible
+    assert window.app == app
+    assert window in app.windows
+    assert_action_performed(window, "show")
+    assert window.visible
+
+
+def test_visibility(window, app):
+    """The window can be shown and hidden using the visible property."""
+    assert window.app == app
+    window.visible = True
+
+    # The window has been assigned to the app, and is visible
+    assert window.app == app
+    assert window in app.windows
+    assert_action_performed(window, "show")
+    assert window.visible
+
+    # Hide with an explicit call
+    window.visible = False
+
+    # Window is still assigned to the app, but is not visible
+    assert window.app == app
+    assert window in app.windows
+    assert_action_performed(window, "hide")
+    assert not window.visible
+
+
+def test_full_screen(window, app):
+    """A window can be set full screen."""
+    assert not window.full_screen
+
+    window.full_screen = True
+    assert window.full_screen
+    assert_action_performed_with(window, "set full screen", full_screen=True)
+
+    window.full_screen = False
+    assert not window.full_screen
+    assert_action_performed_with(window, "set full screen", full_screen=False)
+
+
+def test_close_direct(window, app):
+    """A window can be closed directly"""
+    on_close_handler = Mock(return_value=True)
+    window.on_close = on_close_handler
+
+    window.show()
+    assert window.app == app
+    assert window in app.windows
+
+    # Close the window directly
+    window.close()
+
+    # Window has been closed, but the close handler has *not* been invoked.
+    assert window.closed
+    assert window.app == app
+    assert window not in app.windows
+    assert_action_performed(window, "close")
+    on_close_handler.assert_not_called()
+
+
+def test_close_no_handler(window, app):
+    """A window without a close handler can be closed"""
+    window.show()
+    assert window.app == app
+    assert window in app.windows
+
+    # Close the window
+    window._impl.simulate_close()
+
+    # Window has been closed, and is no longer in the app's list of windows.
+    assert window.closed
+    assert window.app == app
+    assert window not in app.windows
+    assert_action_performed(window, "close")
+
+
+def test_close_sucessful_handler(window, app):
+    """A window with a successful close handler can be closed"""
+    on_close_handler = Mock(return_value=True)
+    window.on_close = on_close_handler
+
+    window.show()
+    assert window.app == app
+    assert window in app.windows
+
+    # Close the window
+    window._impl.simulate_close()
+
+    # Window has been closed, and is no longer in the app's list of windows.
+    assert window.closed
+    assert window.app == app
+    assert window not in app.windows
+    assert_action_performed(window, "close")
+    on_close_handler.assert_called_once_with(window)
+
+
+def test_close_rejected_handler(window, app):
+    """A window can have a close handler that rejects closing"""
+    on_close_handler = Mock(return_value=False)
+    window.on_close = on_close_handler
+
+    window.show()
+    assert window.app == app
+    assert window in app.windows
+
+    # Close the window
+    window._impl.simulate_close()
+
+    # Window has *not* been closed
+    assert not window.closed
+    assert window.app == app
+    assert window in app.windows
+    assert_action_not_performed(window, "close")
+    on_close_handler.assert_called_once_with(window)
+
+
+def test_as_image(window):
+    """A window can be captured as an image"""
+    image = window.as_image()
+
+    assert image.data == b"pretend this is PNG image data"
+
+
+def test_info_dialog(window, app):
+    """An info dialog can be shown"""
+    on_result_handler = Mock()
+    dialog = window.info_dialog("Title", "Body", on_result=on_result_handler)
+
+    assert dialog.window == window
+    assert dialog.app == app
+
+    with pytest.raises(
+        RuntimeError,
+        match=r"Can't check dialog result directly; use await or an on_result handler",
+    ):
+        # Perform a synchronous comparison; this will raise a runtime error
+        dialog == 1
+
+    async def run_dialog(dialog):
+        dialog._impl.simulate_result(None)
+        assert await dialog is None
+
+    app._impl.loop.run_until_complete(run_dialog(dialog))
+
+    assert_action_performed_with(
+        window,
+        "show info dialog",
+        title="Title",
+        message="Body",
+    )
+    on_result_handler.assert_called_once_with(window, None)
+
+
+def test_question_dialog(window, app):
+    """A question dialog can be shown"""
+    on_result_handler = Mock()
+    dialog = window.question_dialog("Title", "Body", on_result=on_result_handler)
+
+    assert dialog.window == window
+    assert dialog.app == app
+
+    with pytest.raises(
+        RuntimeError,
+        match=r"Can't check dialog result directly; use await or an on_result handler",
+    ):
+        # Perform a synchronous comparison; this will raise a runtime error
+        dialog == 1
+
+    async def run_dialog(dialog):
+        dialog._impl.simulate_result(True)
+        assert await dialog is True
+
+    app._impl.loop.run_until_complete(run_dialog(dialog))
+
+    assert_action_performed_with(
+        window,
+        "show question dialog",
+        title="Title",
+        message="Body",
+    )
+    on_result_handler.assert_called_once_with(window, True)
+
+
+def test_confirm_dialog(window, app):
+    """A confirm dialog can be shown"""
+    on_result_handler = Mock()
+    dialog = window.confirm_dialog("Title", "Body", on_result=on_result_handler)
+
+    assert dialog.window == window
+    assert dialog.app == app
+
+    with pytest.raises(
+        RuntimeError,
+        match=r"Can't check dialog result directly; use await or an on_result handler",
+    ):
+        # Perform a synchronous comparison; this will raise a runtime error
+        dialog == 1
+
+    async def run_dialog(dialog):
+        dialog._impl.simulate_result(True)
+        assert await dialog is True
+
+    app._impl.loop.run_until_complete(run_dialog(dialog))
+
+    assert_action_performed_with(
+        window,
+        "show confirm dialog",
+        title="Title",
+        message="Body",
+    )
+    on_result_handler.assert_called_once_with(window, True)
+
+
+def test_error_dialog(window, app):
+    """An error dialog can be shown"""
+    on_result_handler = Mock()
+    dialog = window.error_dialog("Title", "Body", on_result=on_result_handler)
+
+    assert dialog.window == window
+    assert dialog.app == app
+
+    with pytest.raises(
+        RuntimeError,
+        match=r"Can't check dialog result directly; use await or an on_result handler",
+    ):
+        # Perform a synchronous comparison; this will raise a runtime error
+        dialog == 1
+
+    async def run_dialog(dialog):
+        dialog._impl.simulate_result(None)
+        assert await dialog is None
+
+    app._impl.loop.run_until_complete(run_dialog(dialog))
+
+    assert_action_performed_with(
+        window,
+        "show error dialog",
+        title="Title",
+        message="Body",
+    )
+    on_result_handler.assert_called_once_with(window, None)
+
+
+def test_stack_trace_dialog(window, app):
+    """A stack trace dialog can be shown"""
+    on_result_handler = Mock()
+    dialog = window.stack_trace_dialog(
+        "Title",
+        "Body",
+        "The error",
+        on_result=on_result_handler,
+    )
+
+    assert dialog.window == window
+    assert dialog.app == app
+
+    with pytest.raises(
+        RuntimeError,
+        match=r"Can't check dialog result directly; use await or an on_result handler",
+    ):
+        # Perform a synchronous comparison; this will raise a runtime error
+        dialog == 1
+
+    async def run_dialog(dialog):
+        dialog._impl.simulate_result(None)
+        assert await dialog is None
+
+    app._impl.loop.run_until_complete(run_dialog(dialog))
+
+    assert_action_performed_with(
+        window,
+        "show stack trace dialog",
+        title="Title",
+        message="Body",
+        content="The error",
+        retry=False,
+    )
+    on_result_handler.assert_called_once_with(window, None)
+
+
+def test_save_file_dialog(window, app):
+    """A save file dialog can be shown"""
+    on_result_handler = Mock()
+    dialog = window.save_file_dialog(
+        "Title",
+        Path("/path/to/initial_file.txt"),
+        on_result=on_result_handler,
+    )
+
+    assert dialog.window == window
+    assert dialog.app == app
+
+    with pytest.raises(
+        RuntimeError,
+        match=r"Can't check dialog result directly; use await or an on_result handler",
+    ):
+        # Perform a synchronous comparison; this will raise a runtime error
+        dialog == 1
+
+    saved_file = Path("/saved/path/filename.txt")
+
+    async def run_dialog(dialog):
+        dialog._impl.simulate_result(saved_file)
+        assert await dialog is saved_file
+
+    app._impl.loop.run_until_complete(run_dialog(dialog))
+
+    assert_action_performed_with(
+        window,
+        "show save file dialog",
+        title="Title",
+        filename="initial_file.txt",
+        initial_directory=Path("/path/to"),
+        file_types=None,
+    )
+    on_result_handler.assert_called_once_with(window, saved_file)
+
+
+def test_save_file_dialog_default_directory(window, app):
+    """If no path is provided, a save file dialog will use the default directory"""
+    on_result_handler = Mock()
+    dialog = window.save_file_dialog(
+        "Title",
+        "initial_file.txt",
+        file_types=[".txt", ".pdf"],
+        on_result=on_result_handler,
+    )
+
+    assert dialog.window == window
+    assert dialog.app == app
+
+    with pytest.raises(
+        RuntimeError,
+        match=r"Can't check dialog result directly; use await or an on_result handler",
+    ):
+        # Perform a synchronous comparison; this will raise a runtime error
+        dialog == 1
+
+    saved_file = Path("/saved/path/filename.txt")
+
+    async def run_dialog(dialog):
+        dialog._impl.simulate_result(saved_file)
+        assert await dialog is saved_file
+
+    app._impl.loop.run_until_complete(run_dialog(dialog))
+
+    assert_action_performed_with(
+        window,
+        "show save file dialog",
+        title="Title",
+        filename="initial_file.txt",
+        initial_directory=None,
+        file_types=[".txt", ".pdf"],
+    )
+    on_result_handler.assert_called_once_with(window, saved_file)
+
+
+def test_open_file_dialog(window, app):
+    """A open file dialog can be shown"""
+    on_result_handler = Mock()
+    dialog = window.open_file_dialog(
+        "Title",
+        "/path/to/folder",
+        on_result=on_result_handler,
+    )
+
+    assert dialog.window == window
+    assert dialog.app == app
+
+    with pytest.raises(
+        RuntimeError,
+        match=r"Can't check dialog result directly; use await or an on_result handler",
+    ):
+        # Perform a synchronous comparison; this will raise a runtime error
+        dialog == 1
+
+    opened_file = Path("/opened/path/filename.txt")
+
+    async def run_dialog(dialog):
+        dialog._impl.simulate_result(opened_file)
+        assert await dialog is opened_file
+
+    app._impl.loop.run_until_complete(run_dialog(dialog))
+
+    assert_action_performed_with(
+        window,
+        "show open file dialog",
+        title="Title",
+        initial_directory=Path("/path/to/folder"),
+        file_types=None,
+        multiple_select=False,
+    )
+    on_result_handler.assert_called_once_with(window, opened_file)
+
+
+def test_open_file_dialog_default_directory(window, app):
+    """If no path is provided, a open file dialog will use the default directory"""
+    on_result_handler = Mock()
+    dialog = window.open_file_dialog(
+        "Title",
+        file_types=[".txt", ".pdf"],
+        multiple_select=True,
+        on_result=on_result_handler,
+    )
+
+    assert dialog.window == window
+    assert dialog.app == app
+
+    with pytest.raises(
+        RuntimeError,
+        match=r"Can't check dialog result directly; use await or an on_result handler",
+    ):
+        # Perform a synchronous comparison; this will raise a runtime error
+        dialog == 1
+
+    opened_files = [
+        Path("/opened/path/filename.txt"),
+        Path("/other/path/filename2.txt"),
+    ]
+
+    async def run_dialog(dialog):
+        dialog._impl.simulate_result(opened_files)
+        assert await dialog is opened_files
+
+    app._impl.loop.run_until_complete(run_dialog(dialog))
+
+    assert_action_performed_with(
+        window,
+        "show open file dialog",
+        title="Title",
+        initial_directory=None,
+        file_types=[".txt", ".pdf"],
+        multiple_select=True,
+    )
+    on_result_handler.assert_called_once_with(window, opened_files)
+
+
+def test_select_folder_dialog(window, app):
+    """A select folder dialog can be shown"""
+    on_result_handler = Mock()
+    dialog = window.select_folder_dialog(
+        "Title",
+        Path("/path/to/folder"),
+        on_result=on_result_handler,
+    )
+
+    assert dialog.window == window
+    assert dialog.app == app
+
+    with pytest.raises(
+        RuntimeError,
+        match=r"Can't check dialog result directly; use await or an on_result handler",
+    ):
+        # Perform a synchronous comparison; this will raise a runtime error
+        dialog == 1
+
+    opened_file = Path("/opened/path/filename.txt")
+
+    async def run_dialog(dialog):
+        dialog._impl.simulate_result(opened_file)
+        assert await dialog is opened_file
+
+    app._impl.loop.run_until_complete(run_dialog(dialog))
+
+    assert_action_performed_with(
+        window,
+        "show select folder dialog",
+        title="Title",
+        initial_directory=Path("/path/to/folder"),
+        multiple_select=False,
+    )
+    on_result_handler.assert_called_once_with(window, opened_file)
+
+
+def test_select_folder_dialog_default_directory(window, app):
+    """If no path is provided, a select folder dialog will use the default directory"""
+    on_result_handler = Mock()
+    dialog = window.select_folder_dialog(
+        "Title",
+        multiple_select=True,
+        on_result=on_result_handler,
+    )
+
+    assert dialog.window == window
+    assert dialog.app == app
+
+    with pytest.raises(
+        RuntimeError,
+        match=r"Can't check dialog result directly; use await or an on_result handler",
+    ):
+        # Perform a synchronous comparison; this will raise a runtime error
+        dialog == 1
+
+    opened_files = [
+        Path("/opened/path/filename.txt"),
+        Path("/other/path/filename2.txt"),
+    ]
+
+    async def run_dialog(dialog):
+        dialog._impl.simulate_result(opened_files)
+        assert await dialog is opened_files
+
+    app._impl.loop.run_until_complete(run_dialog(dialog))
+
+    assert_action_performed_with(
+        window,
+        "show select folder dialog",
+        title="Title",
+        initial_directory=None,
+        multiple_select=True,
+    )
+    on_result_handler.assert_called_once_with(window, opened_files)
+
+
+def test_deprecated_names_open_file_dialog(window, app):
+    """Deprecated names still work on open file dialogs."""
+    on_result_handler = Mock()
+    with pytest.warns(
+        DeprecationWarning,
+        match=r"open_file_dialog\(multiselect\) has been renamed multiple_select",
+    ):
+        dialog = window.open_file_dialog(
+            "Title",
+            "/path/to/folder",
+            multiselect=True,
+            on_result=on_result_handler,
         )
-        content = toga.Box(id=id0, children=[widget1, widget2, widget3])
 
-        self.window.content = content
+    opened_files = [Path("/opened/path/filename.txt")]
 
-        # The window has widgets in it's repository
-        self.assertEqual(len(self.window.widgets), 4)
-        self.assertEqual(self.window.widgets[id0], content)
-        self.assertEqual(self.window.widgets[id1], widget1)
-        self.assertEqual(self.window.widgets[id2], widget2)
-        self.assertEqual(self.window.widgets[id3], widget3)
+    dialog._impl.simulate_result(opened_files)
 
-        # The app doesn't know about the widgets
-        self.assertEqual(len(self.app.widgets), 0)
+    assert_action_performed_with(
+        window,
+        "show open file dialog",
+        title="Title",
+        initial_directory=Path("/path/to/folder"),
+        file_types=None,
+        multiple_select=True,
+    )
+    on_result_handler.assert_called_once_with(window, opened_files)
 
-        # Assign the window to the app
-        self.window.app = self.app
 
-        # The window's content widgets are now known to the app.
-        self.assertEqual(len(self.app.widgets), 4)
-        self.assertEqual(self.app.widgets[id0], content)
-        self.assertEqual(self.app.widgets[id1], widget1)
-        self.assertEqual(self.app.widgets[id2], widget2)
-        self.assertEqual(self.app.widgets[id3], widget3)
-
-    def test_size(self):
-        # Add some content
-        content = MagicMock()
-        self.window.content = content
-
-        # Confirm defaults
-        self.assertEqual(self.window.size, (640, 480))
-        self.assertValueGet(self.window, "size")
-
-        content.refresh.assert_called_once_with()
-
-    def test_set_size(self):
-        # Add some content
-        content = MagicMock()
-        self.window.content = content
-
-        # A new size can be assigned
-        new_size = (1200, 40)
-        self.window.size = new_size
-        self.assertValueSet(self.window, "size", new_size)
-
-        # Side effect of setting window size is a refresh on window content
-        self.assertEqual(content.refresh.call_args_list, [call(), call()])
-
-        # New size can be retrieved
-        self.assertEqual(self.window.size, new_size)
-        self.assertValueGet(self.window, "size")
-
-    def test_position(self):
-        # Confirm defaults
-        self.assertEqual(self.window.position, (100, 100))
-
-        # A new position can be assigned
-        new_position = (40, 79)
-        self.window.position = new_position
-        self.assertValueSet(self.window, "position", new_position)
-
-        # New position can be retrieved
-        self.assertEqual(self.window.position, new_position)
-        self.assertValueGet(self.window, "position")
-
-    def test_full_screen_set(self):
-        self.assertFalse(self.window.full_screen)
-        with patch.object(self.window, "_impl"):
-            self.window.full_screen = True
-            self.assertTrue(self.window.full_screen)
-            self.window._impl.set_full_screen.assert_called_once_with(True)
-
-    def test_on_close(self):
-        with patch.object(self.window, "_impl"):
-            self.app.windows += self.window
-            self.assertIsNone(self.window.on_close._raw)
-
-            # set a new callback
-            def callback(window, **extra):
-                return f"called {type(window)} with {extra}"
-
-            self.window.on_close = callback
-            self.assertEqual(self.window.on_close._raw, callback)
-            self.assertEqual(
-                self.window.on_close(None, a=1),
-                "called <class 'toga.window.Window'> with {'a': 1}",
-            )
-
-    def test_on_close_at_create(self):
-        def callback(window, **extra):
-            return f"called {type(window)} with {extra}"
-
-        window = toga.Window(on_close=callback)
-        self.app.windows += window
-
-        self.assertEqual(window.on_close._raw, callback)
-        self.assertEqual(
-            window.on_close(None, a=1),
-            "called <class 'toga.window.Window'> with {'a': 1}",
+def test_deprecated_names_select_folder_dialog(window, app):
+    """Deprecated names still work on open file dialogs."""
+    on_result_handler = Mock()
+    with pytest.warns(
+        DeprecationWarning,
+        match=r"select_folder_dialog\(multiselect\) has been renamed multiple_select",
+    ):
+        dialog = window.select_folder_dialog(
+            "Title",
+            "/path/to/folder",
+            multiselect=True,
+            on_result=on_result_handler,
         )
 
-        self.assertActionPerformed(window, "close")
+    opened_files = [Path("/opened/path")]
 
-    def test_close(self):
-        # Ensure the window is associated with an app
-        self.app.windows += self.window
-        with patch.object(self.window, "_impl"):
-            self.window.close()
-            self.window._impl.close.assert_called_once_with()
+    dialog._impl.simulate_result(opened_files)
 
-    def test_question_dialog(self):
-        title = "question_dialog_test"
-        message = "sample_text"
+    assert_action_performed_with(
+        window,
+        "show select folder dialog",
+        title="Title",
+        initial_directory=Path("/path/to/folder"),
+        multiple_select=True,
+    )
+    on_result_handler.assert_called_once_with(window, opened_files)
 
-        self.window.question_dialog(title, message)
 
-        self.assertActionPerformedWith(
-            self.window, "question_dialog", title=title, message=message
-        )
+def test_deprecated_names_resizeable():
+    """Deprecated spelling of resizable still works"""
+    with pytest.warns(
+        DeprecationWarning,
+        match=r"Window.resizeable has been renamed Window.resizable",
+    ):
+        window = toga.Window(title="Deprecated", resizeable=True)
 
-    def test_confirm_dialog(self):
-        title = "confirm_dialog_test"
-        message = "sample_text"
+    with pytest.warns(
+        DeprecationWarning,
+        match=r"Window.resizeable has been renamed Window.resizable",
+    ):
+        assert window.resizeable
 
-        self.window.confirm_dialog(title, message)
 
-        self.assertActionPerformedWith(
-            self.window, "confirm_dialog", title=title, message=message
-        )
+def test_deprecated_names_closeable():
+    """Deprecated spelling of closable still works"""
+    with pytest.warns(
+        DeprecationWarning,
+        match=r"Window.closeable has been renamed Window.closable",
+    ):
+        window = toga.Window(title="Deprecated", closeable=True)
 
-    def test_error_dialog(self):
-        title = "error_dialog_test"
-        message = "sample_text"
-
-        self.window.error_dialog(title, message)
-
-        self.assertActionPerformedWith(
-            self.window, "error_dialog", title=title, message=message
-        )
-
-    def test_info_dialog(self):
-        title = "info_dialog_test"
-        message = "sample_text"
-
-        self.window.info_dialog(title, message)
-
-        self.assertActionPerformedWith(
-            self.window, "info_dialog", title=title, message=message
-        )
-
-    def test_stack_trace_dialog(self):
-        title = "stack_trace_dialog_test"
-        message = "sample_text"
-        content = "sample_content"
-        retry = True
-
-        self.window.stack_trace_dialog(title, message, content, retry)
-
-        self.assertActionPerformedWith(
-            self.window,
-            "stack_trace_dialog",
-            title=title,
-            message=message,
-            content=content,
-            retry=retry,
-        )
-
-    def test_save_file_dialog_with_initial_directory(self):
-        title = "save_file_dialog_test"
-        suggested_filename = "/path/to/initial_filename.doc"
-        file_types = ["test"]
-
-        self.window.save_file_dialog(title, suggested_filename, file_types)
-
-        self.assertActionPerformedWith(
-            self.window,
-            "save_file_dialog",
-            title=title,
-            filename="initial_filename.doc",
-            initial_directory=Path("/path/to"),
-            file_types=file_types,
-        )
-
-    def test_save_file_dialog_with_self_as_initial_directory(self):
-        title = "save_file_dialog_test"
-        suggested_filename = "./initial_filename.doc"
-        file_types = ["test"]
-
-        self.window.save_file_dialog(title, suggested_filename, file_types)
-
-        self.assertActionPerformedWith(
-            self.window,
-            "save_file_dialog",
-            title=title,
-            filename="initial_filename.doc",
-            initial_directory=None,
-            file_types=file_types,
-        )
-
-    def test_open_file_dialog(self):
-        title = "title_test"
-        initial_directory = "/path/to/initial_directory"
-        file_types = ["test"]
-        multiselect = True
-
-        self.window.open_file_dialog(title, initial_directory, file_types, multiselect)
-
-        self.assertActionPerformedWith(
-            self.window,
-            "open_file_dialog",
-            title=title,
-            initial_directory=Path(initial_directory),
-            file_types=file_types,
-            multiselect=multiselect,
-        )
-
-    def test_select_folder_dialog(self):
-        title = ""
-        initial_directory = "/path/to/initial_directory"
-        multiselect = True
-
-        self.window.select_folder_dialog(title, initial_directory, multiselect)
-
-        self.assertActionPerformedWith(
-            self.window,
-            "select_folder_dialog",
-            title=title,
-            initial_directory=Path(initial_directory),
-            multiselect=multiselect,
-        )
-
-    def test_window_set_content_once(self):
-        content = Mock()
-        self.window.content = content
-
-        self.assertEqual(content.window, self.window)
-
-        self.assertActionPerformed(self.window, "clear content")
-        self.assertActionPerformed(self.window, "set content")
-
-    def test_window_set_content_twice(self):
-        content1, content2 = Mock(), Mock()
-        self.window.content = content1
-        self.window.content = content2
-
-        self.assertEqual(content1.window, None)
-        self.assertEqual(content2.window, self.window)
-
-        self.assertActionPerformed(self.window, "clear content")
-        self.assertActionPerformed(self.window, "set content")
+    with pytest.warns(
+        DeprecationWarning,
+        match=r"Window.closeable has been renamed Window.closable",
+    ):
+        assert window.closeable

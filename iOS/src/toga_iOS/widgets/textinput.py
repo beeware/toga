@@ -25,20 +25,20 @@ class TogaTextField(UITextField):
 
     @objc_method
     def textFieldDidBeginEditing_(self, textField) -> None:
-        self.interface.on_gain_focus(None)
+        self.interface.on_gain_focus()
 
     @objc_method
     def textFieldDidChange_(self, textField) -> None:
-        self.interface.on_change(None)
+        self.interface.on_change()
         self.interface._validate()
 
     @objc_method
     def textFieldDidEndEditing_(self, textField) -> None:
-        self.interface.on_lose_focus(None)
+        self.interface.on_lose_focus()
 
     @objc_method
     def textFieldShouldReturn_(self, textField) -> bool:
-        self.interface.on_confirm(None)
+        self.interface.on_confirm()
         return True
 
 
@@ -127,7 +127,7 @@ class TextInput(Widget):
 
     def set_value(self, value):
         self.native.text = value
-        self.interface.on_change(None)
+        self.interface.on_change()
         self.interface._validate()
 
     def set_alignment(self, value):

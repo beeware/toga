@@ -18,6 +18,44 @@ def test_noop_handler():
     wrapped("arg1", "arg2", kwarg1=3, kwarg2=4)
 
 
+def test_noop_handler_with_cleanup():
+    """cleanup is still performed when a no-op handler is used"""
+    obj = Mock()
+    cleanup = Mock()
+
+    wrapped = wrapped_handler(obj, None, cleanup=cleanup)
+
+    assert wrapped._raw is None
+
+    # This does nothing, but doesn't raise an error.
+    wrapped("arg1", "arg2", kwarg1=3, kwarg2=4)
+
+    # Cleanup method was invoked
+    cleanup.assert_called_once_with(obj, None)
+
+
+def test_noop_handler_with_cleanup_error(capsys):
+    """If cleanup on a no-op handler raises an error, it is logged"""
+    obj = Mock()
+    cleanup = Mock(side_effect=Exception("Problem in cleanup"))
+
+    wrapped = wrapped_handler(obj, None, cleanup=cleanup)
+
+    assert wrapped._raw is None
+
+    # This does nothing, but doesn't raise an error.
+    wrapped("arg1", "arg2", kwarg1=3, kwarg2=4)
+
+    # Cleanup method was invoked
+    cleanup.assert_called_once_with(obj, None)
+
+    # Evidence of the handler cleanup error is in the log.
+    assert (
+        "Error in handler cleanup: Problem in cleanup\nTraceback (most recent call last):\n"
+        in capsys.readouterr().err
+    )
+
+
 def test_function_handler():
     """A function can be used as a handler"""
     obj = Mock()
@@ -33,7 +71,7 @@ def test_function_handler():
     assert wrapped._raw == handler
 
     # Invoke wrapper
-    wrapped("dummy", "arg1", "arg2", kwarg1=3, kwarg2=4)
+    wrapped("arg1", "arg2", kwarg1=3, kwarg2=4)
 
     # Handler arguments are as expected.
     assert handler_call == {
@@ -57,7 +95,7 @@ def test_function_handler_error(capsys):
     assert wrapped._raw == handler
 
     # Invoke handler. The exception is swallowed
-    wrapped("dummy", "arg1", "arg2", kwarg1=3, kwarg2=4)
+    wrapped("arg1", "arg2", kwarg1=3, kwarg2=4)
 
     # Handler arguments are as expected.
     assert handler_call == {
@@ -89,7 +127,7 @@ def test_function_handler_with_cleanup():
     assert wrapped._raw == handler
 
     # Invoke handler
-    wrapped("dummy", "arg1", "arg2", kwarg1=3, kwarg2=4)
+    wrapped("arg1", "arg2", kwarg1=3, kwarg2=4)
 
     # Handler arguments are as expected.
     assert handler_call == {
@@ -102,7 +140,7 @@ def test_function_handler_with_cleanup():
 
 
 def test_function_handler_with_cleanup_error(capsys):
-    """A function handler can have a cleanup method that raises an error"""
+    """A function handler can have a cleanup method that raises an error."""
     obj = Mock()
     cleanup = Mock(side_effect=Exception("Problem in cleanup"))
     handler_call = {}
@@ -118,7 +156,7 @@ def test_function_handler_with_cleanup_error(capsys):
     assert wrapped._raw == handler
 
     # Invoke handler. The exception in cleanup is swallowed
-    wrapped("dummy", "arg1", "arg2", kwarg1=3, kwarg2=4)
+    wrapped("arg1", "arg2", kwarg1=3, kwarg2=4)
 
     # Handler arguments are as expected.
     assert handler_call == {
@@ -136,12 +174,10 @@ def test_function_handler_with_cleanup_error(capsys):
     )
 
 
-def test_generator_handler():
+def test_generator_handler(event_loop):
     """A generator can be used as a handler"""
     obj = Mock()
     handler_call = {}
-
-    loop = asyncio.new_event_loop()
 
     def handler(*args, **kwargs):
         handler_call["args"] = args
@@ -158,13 +194,13 @@ def test_generator_handler():
 
     # Invoke wrapper inside an active run loop.
     async def waiter():
-        wrapped("dummy", "arg1", "arg2", kwarg1=3, kwarg2=4)
+        wrapped("arg1", "arg2", kwarg1=3, kwarg2=4)
         count = 0
         while not handler_call.get("done", False) and count < 5:
             await asyncio.sleep(0.01)
             count += 1
 
-    loop.run_until_complete(waiter())
+    event_loop.run_until_complete(waiter())
 
     # Handler arguments are as expected.
     assert handler_call == {
@@ -175,12 +211,10 @@ def test_generator_handler():
     }
 
 
-def test_generator_handler_error(capsys):
+def test_generator_handler_error(event_loop, capsys):
     """A generator can raise an error"""
     obj = Mock()
     handler_call = {}
-
-    loop = asyncio.new_event_loop()
 
     def handler(*args, **kwargs):
         handler_call["args"] = args
@@ -195,13 +229,13 @@ def test_generator_handler_error(capsys):
 
     # Invoke wrapper inside an active run loop.
     async def waiter():
-        wrapped("dummy", "arg1", "arg2", kwarg1=3, kwarg2=4)
+        wrapped("arg1", "arg2", kwarg1=3, kwarg2=4)
         count = 0
         while not handler_call.get("done", False) and count < 5:
             await asyncio.sleep(0.01)
             count += 1
 
-    loop.run_until_complete(waiter())
+    event_loop.run_until_complete(waiter())
 
     # Handler arguments are as expected.
     assert handler_call == {
@@ -216,13 +250,11 @@ def test_generator_handler_error(capsys):
     )
 
 
-def test_generator_handler_with_cleanup():
+def test_generator_handler_with_cleanup(event_loop):
     """A generator can have cleanup"""
     obj = Mock()
     cleanup = Mock()
     handler_call = {}
-
-    loop = asyncio.new_event_loop()
 
     def handler(*args, **kwargs):
         handler_call["args"] = args
@@ -240,13 +272,13 @@ def test_generator_handler_with_cleanup():
 
     # Invoke wrapper inside an active run loop.
     async def waiter():
-        wrapped("dummy", "arg1", "arg2", kwarg1=3, kwarg2=4)
+        wrapped("arg1", "arg2", kwarg1=3, kwarg2=4)
         count = 0
         while not handler_call.get("done", False) and count < 5:
             await asyncio.sleep(0.01)
             count += 1
 
-    loop.run_until_complete(waiter())
+    event_loop.run_until_complete(waiter())
 
     # Handler arguments are as expected.
     assert handler_call == {
@@ -260,13 +292,11 @@ def test_generator_handler_with_cleanup():
     cleanup.assert_called_once_with(obj, 42)
 
 
-def test_generator_handler_with_cleanup_error(capsys):
+def test_generator_handler_with_cleanup_error(event_loop, capsys):
     """A generator can raise an error during cleanup"""
     obj = Mock()
     cleanup = Mock(side_effect=Exception("Problem in cleanup"))
     handler_call = {}
-
-    loop = asyncio.new_event_loop()
 
     def handler(*args, **kwargs):
         handler_call["args"] = args
@@ -284,13 +314,13 @@ def test_generator_handler_with_cleanup_error(capsys):
 
     # Invoke wrapper inside an active run loop.
     async def waiter():
-        wrapped("dummy", "arg1", "arg2", kwarg1=3, kwarg2=4)
+        wrapped("arg1", "arg2", kwarg1=3, kwarg2=4)
         count = 0
         while not handler_call.get("done", False) and count < 5:
             await asyncio.sleep(0.01)
             count += 1
 
-    loop.run_until_complete(waiter())
+    event_loop.run_until_complete(waiter())
 
     # Handler arguments are as expected.
     assert handler_call == {
@@ -310,12 +340,10 @@ def test_generator_handler_with_cleanup_error(capsys):
     )
 
 
-def test_coroutine_handler():
+def test_coroutine_handler(event_loop):
     """A coroutine can be used as a handler"""
     obj = Mock()
     handler_call = {}
-
-    loop = asyncio.new_event_loop()
 
     async def handler(*args, **kwargs):
         handler_call["args"] = args
@@ -330,13 +358,13 @@ def test_coroutine_handler():
 
     # Invoke wrapper inside an active run loop.
     async def waiter():
-        wrapped("dummy", "arg1", "arg2", kwarg1=3, kwarg2=4)
+        wrapped("arg1", "arg2", kwarg1=3, kwarg2=4)
         count = 0
         while not handler_call.get("done", False) and count < 5:
             await asyncio.sleep(0.01)
             count += 1
 
-    loop.run_until_complete(waiter())
+    event_loop.run_until_complete(waiter())
 
     # Handler arguments are as expected.
     assert handler_call == {
@@ -346,12 +374,10 @@ def test_coroutine_handler():
     }
 
 
-def test_coroutine_handler_error(capsys):
+def test_coroutine_handler_error(event_loop, capsys):
     """A coroutine can raise an error"""
     obj = Mock()
     handler_call = {}
-
-    loop = asyncio.new_event_loop()
 
     async def handler(*args, **kwargs):
         handler_call["args"] = args
@@ -366,13 +392,13 @@ def test_coroutine_handler_error(capsys):
 
     # Invoke wrapper inside an active run loop.
     async def waiter():
-        wrapped("dummy", "arg1", "arg2", kwarg1=3, kwarg2=4)
+        wrapped("arg1", "arg2", kwarg1=3, kwarg2=4)
         count = 0
         while not handler_call.get("done", False) and count < 5:
             await asyncio.sleep(0.01)
             count += 1
 
-    loop.run_until_complete(waiter())
+    event_loop.run_until_complete(waiter())
 
     # Handler arguments are as expected.
     assert handler_call == {
@@ -387,13 +413,11 @@ def test_coroutine_handler_error(capsys):
     )
 
 
-def test_coroutine_handler_with_cleanup():
+def test_coroutine_handler_with_cleanup(event_loop):
     """A coroutine can have cleanup"""
     obj = Mock()
     cleanup = Mock()
     handler_call = {}
-
-    loop = asyncio.new_event_loop()
 
     async def handler(*args, **kwargs):
         handler_call["args"] = args
@@ -409,13 +433,13 @@ def test_coroutine_handler_with_cleanup():
 
     # Invoke wrapper inside an active run loop.
     async def waiter():
-        wrapped("dummy", "arg1", "arg2", kwarg1=3, kwarg2=4)
+        wrapped("arg1", "arg2", kwarg1=3, kwarg2=4)
         count = 0
         while not handler_call.get("done", False) and count < 5:
             await asyncio.sleep(0.01)
             count += 1
 
-    loop.run_until_complete(waiter())
+    event_loop.run_until_complete(waiter())
 
     # Handler arguments are as expected.
     assert handler_call == {
@@ -428,13 +452,11 @@ def test_coroutine_handler_with_cleanup():
     cleanup.assert_called_once_with(obj, 42)
 
 
-def test_coroutine_handler_with_cleanup_error(capsys):
+def test_coroutine_handler_with_cleanup_error(event_loop, capsys):
     """A coroutine can raise an error during cleanup"""
     obj = Mock()
     cleanup = Mock(side_effect=Exception("Problem in cleanup"))
     handler_call = {}
-
-    loop = asyncio.new_event_loop()
 
     async def handler(*args, **kwargs):
         handler_call["args"] = args
@@ -450,13 +472,13 @@ def test_coroutine_handler_with_cleanup_error(capsys):
 
     # Invoke wrapper inside an active run loop.
     async def waiter():
-        wrapped("dummy", "arg1", "arg2", kwarg1=3, kwarg2=4)
+        wrapped("arg1", "arg2", kwarg1=3, kwarg2=4)
         count = 0
         while not handler_call.get("done", False) and count < 5:
             await asyncio.sleep(0.01)
             count += 1
 
-    loop.run_until_complete(waiter())
+    event_loop.run_until_complete(waiter())
 
     # Handler arguments are as expected.
     assert handler_call == {
@@ -488,7 +510,7 @@ def test_native_handler():
     assert wrapped == native_method
 
 
-def test_async_result():
+def test_async_result(event_loop):
     class TestAsyncResult(AsyncResult):
         RESULT_TYPE = "Test"
 

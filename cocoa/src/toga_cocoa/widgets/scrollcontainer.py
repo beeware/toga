@@ -22,7 +22,7 @@ class TogaScrollView(NSScrollView):
 
     @objc_method
     def didScroll_(self, note) -> None:
-        self.interface.on_scroll(None)
+        self.interface.on_scroll()
 
     @objc_method
     def refreshContent(self):
@@ -81,10 +81,14 @@ class ScrollContainer(Widget):
             SEL("refreshContent"), withObject=None, afterDelay=0
         )
 
-    def content_refreshed(self):
+    def content_refreshed(self, container):
         width = self.native.frame.size.width
         height = self.native.frame.size.height
 
+        # If scrolling is enabled in a given axis, the document container
+        # has a minimum size equal to the layout width in that axis.
+        # Otherwise, the document container has the same size as the
+        # widget that holds the document being scrolled.
         if self.interface.horizontal:
             width = max(self.interface.content.layout.width, width)
 
@@ -105,7 +109,7 @@ class ScrollContainer(Widget):
 
         # Disabling scrolling implies a position reset; that's a scroll event.
         if not value:
-            self.interface.on_scroll(None)
+            self.interface.on_scroll()
 
     def get_horizontal(self):
         return self.native.hasHorizontalScroller
@@ -119,7 +123,7 @@ class ScrollContainer(Widget):
 
         # Disabling scrolling implies a position reset; that's a scroll event.
         if not value:
-            self.interface.on_scroll(None)
+            self.interface.on_scroll()
 
     def rehint(self):
         self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
@@ -157,4 +161,4 @@ class ScrollContainer(Widget):
         new_position = NSMakePoint(horizontal_position, vertical_position)
         self.native.contentView.scrollToPoint(new_position)
         self.native.reflectScrolledClipView(self.native.contentView)
-        self.interface.on_scroll(None)
+        self.interface.on_scroll()

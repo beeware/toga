@@ -1,14 +1,47 @@
 ImageView
 =========
 
-.. rst-class:: widget-support
-.. csv-filter:: Availability (:ref:`Key <api-status-key>`)
-   :header-rows: 1
-   :file: ../../data/widgets_by_platform.csv
-   :included_cols: 4,5,6,7,8,9
-   :exclude: {0: '(?!^(ImageView|Component)$)'}
-
 A widget that displays an image.
+
+.. tabs::
+
+  .. group-tab:: macOS
+
+    .. figure:: /reference/images/imageview.png
+       :align: center
+       :width: 150px
+
+  .. group-tab:: Linux
+
+    .. figure:: /reference/images/imageview.png
+       :align: center
+       :width: 150px
+
+  .. group-tab:: Windows
+
+    .. figure:: /reference/images/imageview.png
+       :align: center
+       :width: 150px
+
+  .. group-tab:: Android
+
+    .. figure:: /reference/images/imageview.png
+       :align: center
+       :width: 150px
+
+  .. group-tab:: iOS
+
+    .. figure:: /reference/images/imageview.png
+       :align: center
+       :width: 150px
+
+  .. group-tab:: Web |no|
+
+    Not supported
+
+  .. group-tab:: Textual |no|
+
+    Not supported
 
 Usage
 -----
@@ -50,5 +83,3 @@ Reference
 ---------
 
 .. autoclass:: toga.ImageView
-   :members:
-   :undoc-members:

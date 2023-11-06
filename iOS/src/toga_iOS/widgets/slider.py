@@ -31,16 +31,16 @@ class TogaSlider(UISlider):
     @objc_method
     def onSlide_(self, obj) -> None:
         self.impl.value = self.interface._round_value(self.value)
-        self.interface.on_change(None)
+        self.interface.on_change()
 
     @objc_method
     def onPress_(self, obj) -> None:
-        self.interface.on_press(None)
+        self.interface.on_press()
 
     @objc_method
     def onRelease_(self, obj) -> None:
         self.impl.set_value(self.impl.value)
-        self.interface.on_release(None)
+        self.interface.on_release()
 
 
 class Slider(Widget):

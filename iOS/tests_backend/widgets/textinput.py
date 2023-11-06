@@ -1,9 +1,10 @@
+import pytest
 from rubicon.objc import SEL, send_message
 
 from toga_iOS.libs import UITextField
 
 from .base import SimpleProbe
-from .properties import toga_alignment, toga_color, toga_font
+from .properties import toga_alignment, toga_color
 
 
 class TextInputProbe(SimpleProbe):
@@ -42,10 +43,6 @@ class TextInputProbe(SimpleProbe):
         return toga_color(self.native.textColor)
 
     @property
-    def font(self):
-        return toga_font(self.native.font)
-
-    @property
     def alignment(self):
         return toga_alignment(self.native.textAlignment)
 
@@ -60,3 +57,6 @@ class TextInputProbe(SimpleProbe):
     def type_return(self):
         # Invoke the return handler explicitly.
         self.native.textFieldShouldReturn(self.native)
+
+    def set_cursor_at_end(self):
+        pytest.skip("Cursor positioning not supported on this platform")

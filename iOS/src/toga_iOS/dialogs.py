@@ -1,7 +1,6 @@
-from abc import ABC
+from abc import ABC, abstractmethod
 
-from rubicon.objc import Block
-from rubicon.objc.runtime import objc_id
+from rubicon.objc import Block, objc_id
 
 from toga_iOS.libs import (
     UIAlertAction,
@@ -14,7 +13,7 @@ from toga_iOS.libs import (
 class BaseDialog(ABC):
     def __init__(self, interface):
         self.interface = interface
-        self.interface.impl = self
+        self.interface._impl = self
 
 
 class AlertDialog(BaseDialog):
@@ -34,11 +33,12 @@ class AlertDialog(BaseDialog):
             completion=None,
         )
 
+    @abstractmethod
     def populate_dialog(self, native):
-        pass
+        ...
 
     def response(self, value):
-        self.on_result(self, value)
+        self.on_result(value)
         self.interface.future.set_result(value)
 
     def null_response(self, action: objc_id) -> None:
@@ -139,7 +139,7 @@ class OpenFileDialog(BaseDialog):
         title,
         initial_directory,
         file_types,
-        multiselect,
+        multiple_select,
         on_result=None,
     ):
         super().__init__(interface=interface)
@@ -152,7 +152,7 @@ class SelectFolderDialog(BaseDialog):
         interface,
         title,
         initial_directory,
-        multiselect,
+        multiple_select,
         on_result=None,
     ):
         super().__init__(interface=interface)

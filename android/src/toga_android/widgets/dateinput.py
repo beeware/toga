@@ -1,10 +1,9 @@
 from datetime import date, datetime, time
 
-from ..libs.android import R__drawable
-from ..libs.android.widget import (
-    DatePickerDialog,
-    DatePickerDialog__OnDateSetListener as OnDateSetListener,
-)
+from android import R
+from android.app import DatePickerDialog
+from java import dynamic_proxy
+
 from .internal.pickers import PickerBase
 
 
@@ -16,7 +15,7 @@ def native_date(py_date):
     return int(datetime.combine(py_date, time.min).timestamp() * 1000)
 
 
-class DatePickerListener(OnDateSetListener):
+class DatePickerListener(dynamic_proxy(DatePickerDialog.OnDateSetListener)):
     def __init__(self, impl):
         super().__init__()
         self.impl = impl
@@ -31,7 +30,7 @@ class DatePickerListener(OnDateSetListener):
 class DateInput(PickerBase):
     @classmethod
     def _get_icon(cls):
-        return R__drawable.ic_menu_my_calendar
+        return R.drawable.ic_menu_my_calendar
 
     def create(self):
         super().create()
@@ -43,7 +42,7 @@ class DateInput(PickerBase):
     def set_value(self, value):
         self.native.setText(value.isoformat())
         self._dialog.updateDate(value.year, value.month - 1, value.day)
-        self.interface.on_change(None)
+        self.interface.on_change()
 
     def get_min_date(self):
         return py_date(self._picker.getMinDate())

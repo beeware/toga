@@ -12,7 +12,7 @@ class TogaScrollView(UIScrollView):
 
     @objc_method
     def scrollViewDidScroll_(self, scrollView) -> None:
-        self.interface.on_scroll(None)
+        self.interface.on_scroll()
 
     @objc_method
     def refreshContent(self):
@@ -54,7 +54,7 @@ class ScrollContainer(Widget):
             SEL("refreshContent"), withObject=None, afterDelay=0
         )
 
-    def content_refreshed(self):
+    def content_refreshed(self, container):
         width = self.native.frame.size.width
         height = self.native.frame.size.height
 
@@ -85,7 +85,7 @@ class ScrollContainer(Widget):
 
         # Disabling scrolling implies a position reset; that's a scroll event.
         if not value:
-            self.interface.on_scroll(None)
+            self.interface.on_scroll()
 
     def get_horizontal(self):
         return self._allow_horizontal
@@ -99,7 +99,7 @@ class ScrollContainer(Widget):
 
         # Disabling scrolling implies a position reset; that's a scroll event.
         if not value:
-            self.interface.on_scroll(None)
+            self.interface.on_scroll()
 
     def get_horizontal_position(self):
         if not self.get_horizontal():
@@ -130,7 +130,7 @@ class ScrollContainer(Widget):
         ):
             # iOS doesn't generate a scroll event unless the position actually changes.
             # Treat all scroll position assignments as a change.
-            self.interface.on_scroll(None)
+            self.interface.on_scroll()
         else:
             self.native.setContentOffset(
                 NSMakePoint(horizontal_position, vertical_position), animated=True

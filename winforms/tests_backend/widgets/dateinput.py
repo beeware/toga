@@ -10,7 +10,7 @@ from .base import SimpleProbe
 class DateTimeInputProbe(SimpleProbe, ABC):
     native_class = DateTimePicker
     background_supports_alpha = False
-    fixed_height = 18
+    fixed_height = 23
     supports_limits = True
 
     @abstractmethod

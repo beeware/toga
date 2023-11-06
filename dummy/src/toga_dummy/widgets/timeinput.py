@@ -1,10 +1,8 @@
 from datetime import datetime, time
 
-from ..utils import not_required
 from .base import Widget
 
 
-@not_required  # Testbed coverage is complete for this widget.
 class TimeInput(Widget):
     def create(self):
         self._action("create TimeInput")
@@ -14,7 +12,7 @@ class TimeInput(Widget):
 
     def set_value(self, value):
         self._set_value("value", value)
-        self.interface.on_change(None)
+        self.interface.on_change()
 
     def get_min_time(self):
         return self._get_value("min time", time(0, 0, 0))

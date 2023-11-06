@@ -1,6 +1,9 @@
+from decimal import ROUND_UP
+
+import System.Windows.Forms as WinForms
 from travertino.size import at_least
 
-from toga_winforms.libs import TextAlignment, WinForms
+from toga_winforms.libs.fonts import TextAlignment
 
 from .base import Widget
 
@@ -20,8 +23,9 @@ class Label(Widget):
         self.native.Text = value
 
     def rehint(self):
-        # Width & height of a label is known and fixed.
-        # self.native.Size = Size(0, 0)
-        # print("REHINT label", self, self.native.PreferredSize)
-        self.interface.intrinsic.width = at_least(self.native.PreferredSize.Width)
-        self.interface.intrinsic.height = self.native.PreferredSize.Height
+        self.interface.intrinsic.width = self.scale_out(
+            at_least(self.native.PreferredSize.Width), ROUND_UP
+        )
+        self.interface.intrinsic.height = self.scale_out(
+            self.native.PreferredSize.Height, ROUND_UP
+        )

@@ -1,4 +1,5 @@
-from ..libs.android.text import InputType
+from android.text import InputType
+
 from .textinput import TextInput
 
 
