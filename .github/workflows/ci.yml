@@ -135,59 +135,6 @@ jobs:
         path: core/htmlcov
       if: ${{ failure() }}
 
-<<<<<<< HEAD
-  backend:
-    runs-on: ${{ matrix.runs-on }}
-    needs: [package, core]
-    strategy:
-      matrix:
-        backend: [ "android", "cocoa", "gtk", "iOS", "web", "winforms" ]
-        include:
-          - runs-on: ubuntu-latest
-          - python-version: "3.8"  # Should be env.min_python_version (https://github.com/actions/runner/issues/480)
-          - pre-command:
-
-          - backend: cocoa
-            runs-on: macos-latest
-
-          - backend: gtk
-            pre-command: |
-              sudo apt update -y
-              sudo apt install -y pkg-config python3-dev libgirepository1.0-dev libcairo2-dev gir1.2-gtk-3.0 libgtk-4-dev
-
-          - backend: iOS
-            runs-on: macos-latest
-
-          - backend: winforms
-            runs-on: windows-latest
-            # Py3.9 is the first Python version for which
-            # a wheel of pythonnet isn't available on PyPI.
-            python-version: "3.9"
-    steps:
-    - uses: actions/checkout@v3.5.3
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v4.7.0
-      with:
-        python-version: ${{ matrix.python-version }}
-    - name: Get packages
-      uses: actions/download-artifact@v3.0.2
-      with:
-        name: ${{ needs.package.outputs.artifact-name }}
-    - name: Install dev dependencies
-      run: |
-        ${{ matrix.pre-command }}
-        # We don't actually want to install toga-core;
-        # we just want the dev extras so we have a known version of tox
-        python -m pip install ./core[dev]
-    - name: Test
-      run: |
-        # The $(ls ...) shell expansion is done in the Github environment;
-        # the value of TOGA_INSTALL_COMMAND will be a literal string,
-        # without any shell expansions to perform
-        TOGA_INSTALL_COMMAND="python -m pip install ../$(ls core/dist/toga_core-*.whl)[dev] ../$(ls dummy/dist/toga_dummy-*.whl) ../$(ls ${{ matrix.backend }}/dist/toga_${{ matrix.backend }}-*.whl)" tox -e py-${{ matrix.backend }}
-
-=======
->>>>>>> origin/main
   testbed:
     runs-on: ${{ matrix.runs-on }}
     needs: core
@@ -219,11 +166,7 @@ jobs:
             # work either. Blackbox is the lightest WM we've found that works.
             pre-command: |
               sudo apt update -y
-<<<<<<< HEAD
-              sudo apt install -y flwm pkg-config python3-dev libgirepository1.0-dev libcairo2-dev gir1.2-webkit2-4.0 libgtk-4-dev
-=======
-              sudo apt install -y blackbox pkg-config python3-dev libgirepository1.0-dev libcairo2-dev gir1.2-webkit2-4.0
->>>>>>> origin/main
+              sudo apt install -y blackbox pkg-config python3-dev libgirepository1.0-dev libcairo2-dev gir1.2-webkit2-4.0 libgtk-4-dev
 
               # Start Virtual X server
               echo "Start X server..."
