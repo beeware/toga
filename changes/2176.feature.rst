@@ -1,1 +1,1 @@
-Added the DateInput and TimeInput widgets implementations to the toga web project.
+DateInput and TimeInput widgets were added to the Web backend.
