@@ -1,4 +1,4 @@
-from .libs import Gdk, GdkPixbuf, Gtk
+from .libs import Gdk, GdkPixbuf, GLib, Gtk
 
 
 class Icon:
@@ -10,11 +10,13 @@ class Icon:
         self.paths = path
 
         # Preload all the required icon sizes
-        for size, path in self.paths.items():
-            native = Gtk.Image.new_from_paintable(
-                Gdk.Texture.new_for_pixbuf(
-                    GdkPixbuf.Pixbuf.new_from_file(str(path)).scale_simple(
-                        size, size, GdkPixbuf.InterpType.BILINEAR
+        try:
+            for size, path in self.paths.items():
+                native = Gtk.Image.new_from_paintable(
+                    Gdk.Texture.new_for_pixbuf(
+                        GdkPixbuf.Pixbuf.new_from_file(str(path)).scale_simple(
+                            size, size, GdkPixbuf.InterpType.BILINEAR
+                        )
                     )
                 )
                 setattr(self, f"native_{size}", native)

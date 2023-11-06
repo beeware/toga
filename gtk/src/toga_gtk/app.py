@@ -25,7 +25,6 @@ def gtk_menu_item_activate(cmd):
 class MainWindow(Window):
     def create(self):
         self.native = Gtk.ApplicationWindow()
-        self.native.set_role("MainWindow")
         icon_impl = toga_App.app.icon._impl
         self.native.set_icon_name(icon_impl.native_72.get_icon_name())
 

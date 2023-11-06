@@ -42,9 +42,7 @@ class Window:
         # The GTK window's content is the layout; any user content is placed
         # into the container, which is the bottom widget in the layout. The
         # toolbar (if required) will be added at the top of the layout.
-
         self.layout = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
-        self.layout.append(self.container)
 
         # Because vexpand and valign are set, the container will fill the
         # available space, and will get a size_allocate callback if the
@@ -52,6 +50,7 @@ class Window:
         self.container = TogaContainer()
         self.container.set_valign(Gtk.Align.FILL)
         self.container.set_vexpand(True)
+        self.layout.append(self.container)
 
         self.native.set_child(self.layout)
 
