@@ -4,7 +4,6 @@ from android import R
 from android.view import View
 from android.widget import AdapterView, ArrayAdapter, Spinner
 from java import dynamic_proxy
-from travertino.size import at_least
 
 from .base import Widget
 
@@ -86,9 +85,6 @@ class Selection(Widget):
 
     def rehint(self):
         self.native.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
-        self.interface.intrinsic.width = self.scale_out(
-            at_least(self.native.getMeasuredWidth()), ROUND_UP
-        )
         self.interface.intrinsic.height = self.scale_out(
             self.native.getMeasuredHeight(), ROUND_UP
         )
