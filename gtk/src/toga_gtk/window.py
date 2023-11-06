@@ -1,5 +1,3 @@
-from toga.command import GROUP_BREAK, SECTION_BREAK
-
 from .container import TogaContainer
 from .libs import Gdk, Gtk
 
