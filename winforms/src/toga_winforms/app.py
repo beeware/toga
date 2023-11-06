@@ -66,9 +66,9 @@ class App(Scalable):
         windll.user32.SetProcessDpiAwarenessContext.restype = c_bool
         windll.user32.SetProcessDpiAwarenessContext.argtypes = [c_void_p]
         # SetProcessDpiAwarenessContext returns False on Failure
-        if not windll.user32.SetProcessDpiAwarenessContext(-4):
+        if not windll.user32.SetProcessDpiAwarenessContext(-4):  # pragma: no cover
             print("WARNING: Failed to set the DPI Awareness mode for the app.")
-    else:
+    else:  # pragma: no cover
         print(
             "WARNING: Your Windows version doesn't support DPI Awareness setting.  "
             "We recommend you upgrade to at least Windows 10 Build 1703."
@@ -362,31 +362,19 @@ class App(Scalable):
         self._cursor_visible = False
 
     def winforms_DisplaySettingsChanged(self, sender, event):
-        # Print statements added only for testing, will be removed
-        # in final code cleanup.
         for window in self.interface.windows:
             window._impl.update_scale(
                 screen=WinForms.Screen.FromControl(window._impl.native)
             )
             if window._impl.toolbar_native is not None:
-                print("About to update toolbar font scale...")
                 window._impl.update_toolbar_font_scale()
-                print("Done...")
             if isinstance(window._impl, MainWindow):
-                print("About to update menubar font scale...")
                 window._impl.update_menubar_font_scale()
-                print("Done...")
             for widget in window.widgets:
-                print("About to update menubar font scale...")
                 widget.refresh()
-                print("Done...")
-            print("About to resize window content...")
             window._impl.resize_content()
-            print("Done...")
             if hasattr(window._impl, "current_stack_trace_dialog_impl"):
-                print("About to resize stack trace dialog...")
                 window._impl.current_stack_trace_dialog_impl.resize_content()
-                print("Done...")
 
 
 class DocumentApp(App):  # pragma: no cover

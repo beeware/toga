@@ -155,6 +155,8 @@ class AppProbe(BaseProbe):
     def keystroke(self, combination):
         pytest.xfail("Not applicable to this backend")
 
+    # ------------------- Functions specific to test_system_dpi_change -------------------
+
     def trigger_dpi_change_event(self):
         self.app._impl.winforms_DisplaySettingsChanged(None, None)
 
@@ -232,7 +234,7 @@ class AppProbe(BaseProbe):
                 stack_trace_dialog_impl.original_control_bounds[control].Height
             )
 
-    def assert_dpi_scale_equal_to_primary_screen_dpi_scale(self):
+    def assert_dpi_scale_equal_to_primary_screen_dpi_scale(self, window):
         screen = WinScreen.PrimaryScreen
         screen_rect = wintypes.RECT(
             screen.Bounds.Left,
@@ -247,4 +249,6 @@ class AppProbe(BaseProbe):
         pScale = wintypes.UINT()
         windll.shcore.GetScaleFactorForMonitor(c_void_p(hMonitor), byref(pScale))
 
-        assert self.main_window._impl.dpi_scale == pScale.value / 100
+        assert window._impl.dpi_scale == pScale.value / 100
+
+    # ------------------------------------------------------------------------------------

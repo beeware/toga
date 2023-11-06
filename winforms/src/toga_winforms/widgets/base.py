@@ -184,7 +184,7 @@ class Widget(ABC, Scalable):
 
     def refresh(self):
         # Update the scaling of the font
-        if hasattr(self, "original_font"):
+        if hasattr(self, "original_font"):  # pragma: no branch
             self.native.Font = WinFont(
                 self.original_font.FontFamily,
                 self.scale_font(self.original_font.Size),
