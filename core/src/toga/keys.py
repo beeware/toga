@@ -2,6 +2,9 @@ from enum import Enum
 
 
 class Key(Enum):
+    """An enumeration providing a symbolic representation for the characters on
+    a keyboard."""
+
     A = "a"
     B = "b"
     C = "c"
@@ -144,7 +147,8 @@ class Key(Enum):
     NUMPAD_MULTIPLY = "numpad:*"
     NUMPAD_PLUS = "numpad:+"
 
-    def is_printable(self):
+    def is_printable(self) -> bool:
+        """Does pressing the key result in a printable character?"""
         return not (self.value.startswith("<") and self.value.endswith(">"))
 
     def __add__(self, other):
