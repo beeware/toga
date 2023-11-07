@@ -176,6 +176,9 @@ class StackTraceDialog(BaseDialog, Scalable):
         self.original_control_bounds = dict()
         for control in self.native.Controls:
             self.original_control_fonts[control] = control.Font
+            # For Button controls, we use PreferredSize to determine the size because
+            # Buttons often adjust their preferred size based on their content (text).
+            # Using Bounds.Width and Bounds.Height may not reflect the actual preferred size.
             if isinstance(control, WinForms.Button):
                 self.original_control_bounds[control] = Rectangle(
                     self.scale_out(control.Bounds.X),
@@ -183,6 +186,8 @@ class StackTraceDialog(BaseDialog, Scalable):
                     self.scale_out(control.PreferredSize.Width),
                     self.scale_out(control.PreferredSize.Height),
                 )
+            # For other controls, we use the Bounds property to determine the size,
+            # which represents the actual dimensions of the control within its container.
             else:
                 self.original_control_bounds[control] = Rectangle(
                     self.scale_out(control.Bounds.X),

@@ -12,30 +12,18 @@ from System.Drawing import (
 from System.Windows.Forms import Screen
 from travertino.size import at_least
 
+# Importing the implementation Window class will cause circular
+# import error, hence we are using the interface Window class
+# to find out the Window instance
+from toga import Window
 from toga.colors import TRANSPARENT
 from toga_winforms.colors import native_color
 
 
 class Scalable:
     SCALE_DEFAULT_ROUNDING = ROUND_HALF_EVEN
-    _dpi_scale = None
 
-    @property
-    def dpi_scale(self):
-        if Scalable._dpi_scale is None:
-            self.update_scale()
-        return Scalable._dpi_scale
-
-    @dpi_scale.setter
-    def dpi_scale(self, value):
-        Scalable._dpi_scale = value
-
-    def update_scale(self, screen=None):
-        # Doing screen=Screen.PrimaryScreen in method signature will make
-        # the app to become unresponsive when DPI settings are changed.
-        if screen is None:
-            screen = Screen.PrimaryScreen
-
+    def get_dpi_scale(self, screen=None):
         screen_rect = wintypes.RECT(
             screen.Bounds.Left,
             screen.Bounds.Top,
@@ -48,9 +36,37 @@ class Scalable:
         hMonitor = windll.user32.MonitorFromRect(screen_rect, 2)
         pScale = wintypes.UINT()
         windll.shcore.GetScaleFactorForMonitor(c_void_p(hMonitor), byref(pScale))
-        Scalable._dpi_scale = pScale.value / 100
-        if not hasattr(Scalable, "original_dpi_scale"):
-            Scalable.original_dpi_scale = Scalable._dpi_scale
+        return pScale.value / 100
+
+    @property
+    def dpi_scale(self):
+        if (self.interface is not None) and hasattr(self, "interface"):
+            if issubclass(type(self), Widget) and (self.interface.window is not None):
+                self._original_dpi_scale = (
+                    self.interface.window._impl._original_dpi_scale
+                )
+                return self.interface.window._impl._dpi_scale
+            else:
+                _dpi_scale = self.get_dpi_scale(Screen.FromControl(self.native))
+                if not hasattr(self, "_original_dpi_scale"):
+                    self._original_dpi_scale = _dpi_scale
+                return _dpi_scale
+        elif issubclass(type(self.interface), Window):
+            self._dpi_scale = self.get_dpi_scale(Screen.FromControl(self.native))
+            if not hasattr(self, "_original_dpi_scale"):
+                self._original_dpi_scale = self._dpi_scale
+            return self._dpi_scale
+        else:
+            _dpi_scale = self.get_dpi_scale(Screen.FromControl(self.native))
+            if not hasattr(self, "_original_dpi_scale"):
+                self._original_dpi_scale = _dpi_scale
+            return _dpi_scale
+
+    def update_scale(self, screen=None):
+        if issubclass(type(self.interface), Window):
+            self._dpi_scale = self.get_dpi_scale(Screen.FromControl(self.native))
+        else:
+            print("WARNING: Only subclasses of Window can call this method.")
 
     # Convert CSS pixels to native pixels
     def scale_in(self, value, rounding=SCALE_DEFAULT_ROUNDING):
@@ -69,7 +85,7 @@ class Scalable:
         return int(Decimal(value).to_integral(rounding))
 
     def scale_font(self, value):
-        return value * self.dpi_scale / Scalable.original_dpi_scale
+        return value * self.dpi_scale / self._original_dpi_scale
 
 
 class Widget(ABC, Scalable):
@@ -85,8 +101,13 @@ class Widget(ABC, Scalable):
         self._container = None
         self.native = None
         self.create()
-        # Required to prevent Hwnd Related Bugs
+
+        # Obtain a Graphics object and immediately dispose of it.This is
+        # done to trigger the control's Paint event and force it to redraw.
+        # Since in toga, Hwnds are could be created at inappropriate times.
+        # This is required to prevent Hwnd Related Bugs.
         self.native.CreateGraphics().Dispose()
+
         self.interface.style.reapply()
 
     @abstractmethod

@@ -48,6 +48,10 @@ class MainWindow(Window):
 class App(Scalable):
     _MAIN_WINDOW_CLASS = MainWindow
 
+    # These are required for properly setting up DPI mode
+    WinForms.Application.EnableVisualStyles()
+    WinForms.Application.SetCompatibleTextRenderingDefault(False)
+
     # ------------------- Set the DPI Awareness mode for the process -------------------
     # This needs to be done at the earliest and doing this in __init__() or
     # in create() doesn't work
@@ -100,10 +104,6 @@ class App(Scalable):
         self.native = WinForms.Application
         self.app_context = WinForms.ApplicationContext()
         self.app_dispatcher = Dispatcher.CurrentDispatcher
-
-        # These are required for properly setting up DPI mode
-        self.native.EnableVisualStyles()
-        self.native.SetCompatibleTextRenderingDefault(False)
 
         # Register the DisplaySettingsChanged event handler
         SystemEvents.DisplaySettingsChanged += WeakrefCallable(
