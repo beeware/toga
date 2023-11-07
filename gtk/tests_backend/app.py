@@ -9,6 +9,9 @@ from .probe import BaseProbe
 
 
 class AppProbe(BaseProbe):
+    supports_key = True
+    supports_key_mod3 = True
+
     def __init__(self, app):
         super().__init__()
         self.app = app
@@ -130,9 +133,6 @@ class AppProbe(BaseProbe):
         if "<Hyper>" in accel:
             state |= Gdk.ModifierType.HYPER_MASK
             accel = accel.replace("<Hyper>", "")
-        if "<CapsLock>" in accel:
-            state |= Gdk.ModifierType.LOCK_MASK
-            accel = accel.replace("<CapsLock>", "")
         if "<Shift>" in accel:
             state |= Gdk.ModifierType.SHIFT_MASK
             accel = accel.replace("<Shift>", "")
