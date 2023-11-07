@@ -2,7 +2,6 @@ from contextlib import contextmanager
 from decimal import ROUND_UP
 
 import System.Windows.Forms as WinForms
-from travertino.size import at_least
 
 from ..libs.wrapper import WeakrefCallable
 from .base import Widget
@@ -78,9 +77,6 @@ class Selection(Widget):
         return None if index == -1 else index
 
     def rehint(self):
-        self.interface.intrinsic.width = self.scale_out(
-            at_least(self.native.PreferredSize.Width), ROUND_UP
-        )
         self.interface.intrinsic.height = self.scale_out(
             self.native.PreferredSize.Height, ROUND_UP
         )
