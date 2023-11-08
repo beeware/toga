@@ -31,6 +31,14 @@ An operating system-managed container of widgets.
 
     Not supported
 
+  .. group-tab:: Web |no|
+
+    Not supported
+
+  .. group-tab:: Textual |no|
+
+    Not supported
+
 Usage
 -----
 
