@@ -177,7 +177,12 @@ class App:
         self._listener = TogaApp(self)
         # Call user code to populate the main window
         self.interface._startup()
+        self._create_app_commands()
 
+    def create_menus(self):
+        self.native.invalidateOptionsMenu()  # Triggers onPrepareOptionsMenu
+
+    def _create_app_commands(self):
         self.interface.commands.add(
             # About should be the last item in the menu, in a section on its own.
             Command(
@@ -186,9 +191,6 @@ class App:
                 section=sys.maxsize,
             ),
         )
-
-    def create_menus(self):
-        self.native.invalidateOptionsMenu()  # Triggers onPrepareOptionsMenu
 
     def main_loop(self):
         # In order to support user asyncio code, start the Python/Android cooperative event loop.
