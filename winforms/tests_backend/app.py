@@ -158,8 +158,8 @@ class AppProbe(BaseProbe):
         pytest.xfail("This platform doesn't have a window management menu")
 
     def keystroke(self, combination):
-      return winforms_to_toga_key(toga_to_winforms_key(combination))
-    
+        return winforms_to_toga_key(toga_to_winforms_key(combination))
+
     # ------------------- Functions specific to test_system_dpi_change -------------------
 
     def trigger_dpi_change_event(self):
