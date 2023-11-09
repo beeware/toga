@@ -1,0 +1,1 @@
+On Android the creation of the app commands has been moved to the method _create_app_commands()

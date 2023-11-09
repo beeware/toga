@@ -1,7 +1,6 @@
 from abc import ABC, abstractmethod
 
-from rubicon.objc import Block
-from rubicon.objc.runtime import objc_id
+from rubicon.objc import Block, objc_id
 
 from toga_iOS.libs import (
     UIAlertAction,

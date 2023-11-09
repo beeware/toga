@@ -1,3 +1,5 @@
+from decimal import ROUND_UP
+
 import System.Windows.Forms as WinForms
 from travertino.size import at_least
 
@@ -26,8 +28,14 @@ class Divider(Widget):
 
     def rehint(self):
         if self.get_direction() == self.interface.HORIZONTAL:
-            self.interface.intrinsic.width = at_least(self.native.Width)
-            self.interface.intrinsic.height = self.native.Height
+            self.interface.intrinsic.width = self.scale_out(
+                at_least(self.native.Width), ROUND_UP
+            )
+            self.interface.intrinsic.height = self.scale_out(
+                self.native.Height, ROUND_UP
+            )
         else:
-            self.interface.intrinsic.width = self.native.Width
-            self.interface.intrinsic.height = at_least(self.native.Height)
+            self.interface.intrinsic.width = self.scale_out(self.native.Width, ROUND_UP)
+            self.interface.intrinsic.height = self.scale_out(
+                at_least(self.native.Height), ROUND_UP
+            )

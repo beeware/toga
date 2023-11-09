@@ -20,10 +20,6 @@ class CanvasProbe(SimpleProbe):
     def get_image(self):
         return Image.open(BytesIO(self.impl.get_image_data()))
 
-    def assert_image_size(self, image, width, height):
-        assert image.width == width * self.scale_factor
-        assert image.height == height * self.scale_factor
-
     def motion_event(self, action, x, y):
         time = SystemClock.uptimeMillis()
         super().motion_event(

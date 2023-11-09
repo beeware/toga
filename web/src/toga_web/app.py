@@ -25,7 +25,7 @@ class App:
         self.interface.commands.add(
             # ---- Help menu ----------------------------------
             toga.Command(
-                lambda _: self.interface.about(),
+                self._menu_about,
                 "About " + formal_name,
                 group=toga.Group.HELP,
             ),
@@ -36,7 +36,9 @@ class App:
             ),
         )
 
-        # Create the menus.
+        # Create the menus. This is done before main window content to ensure
+        # the <header> for the menubar is inserted before the <main> for the
+        # main window.
         self.create_menus()
 
         # Call user code to populate the main window
@@ -81,7 +83,7 @@ class App:
                     content=cmd.text,
                     disabled=not cmd.enabled,
                 )
-                menu_item.onclick = cmd.action
+                menu_item.onclick = cmd._impl.dom_click
 
                 submenu.append(menu_item)
 
@@ -105,8 +107,10 @@ class App:
             else:
                 help_menu_container.appendChild(submenu)
 
+        menubar_id = f"{self.interface.app_id}-header"
         self.menubar = create_element(
             "header",
+            id=menubar_id,
             classes=["toga"],
             children=[
                 create_element(
@@ -126,8 +130,15 @@ class App:
             ],
         )
 
-        # Menubar exists at the app level.
-        self.native.appendChild(self.menubar)
+        # If there's an existing menubar, replace it.
+        old_menubar = js.document.getElementById(menubar_id)
+        if old_menubar:
+            old_menubar.replaceWith(self.menubar)
+        else:
+            self.native.append(self.menubar)
+
+    def _menu_about(self, widget, **kwargs):
+        self.interface.about()
 
     def main_loop(self):
         self.create()

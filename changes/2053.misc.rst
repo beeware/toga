@@ -1,1 +1,0 @@
-An edge case in SplitContainer having empty content was corrected on Cocoa.

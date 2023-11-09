@@ -111,8 +111,11 @@ pygments_style = "sphinx"
 rst_prolog = """
 .. role:: stable
 .. role:: beta
+.. role:: no
 .. |y| replace:: :stable:`●`
 .. |b| replace:: :beta:`○`
+.. |beta| replace:: :beta:`β`
+.. |no| replace:: :no:`✖︎`
 """
 
 intersphinx_mapping = {"python": ("https://docs.python.org/3", None)}
@@ -147,8 +150,13 @@ def autodoc_process_signature(
 
 # -- Options for link checking -------------------------------------------------
 
-# GitHub generates anchors in javascript
-linkcheck_ignore = [r"https://github.com/.*#"]
+linkcheck_ignore = [
+    # GitHub generates anchors in javascript
+    r"https://github.com/.*#",
+    # References to Github issues/pulls should all be safe.
+    r"^https://github.com/beeware/toga/issues/\d+$",
+    r"^https://github.com/beeware/toga/pull/\d+$",
+]
 
 # -- Options for copy button ---------------------------------------------------
 

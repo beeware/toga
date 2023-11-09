@@ -1,1 +1,0 @@
-The NavigationView was removed; it wasn't exposed in public API.

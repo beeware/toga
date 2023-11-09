@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from decimal import ROUND_HALF_EVEN, ROUND_UP, Decimal
+from decimal import ROUND_HALF_EVEN, Decimal
 
 from System.Drawing import (
     Color,
@@ -144,15 +144,10 @@ class Widget(ABC, Scalable):
         child.container = None
 
     def refresh(self):
-        intrinsic = self.interface.intrinsic
-        intrinsic.width = intrinsic.height = None
+        # Default values; may be overwritten by rehint().
+        self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
+        self.interface.intrinsic.height = at_least(self.interface._MIN_HEIGHT)
         self.rehint()
-        assert intrinsic.width is not None
-        assert intrinsic.height is not None
 
-        intrinsic.width = self.scale_out(intrinsic.width, ROUND_UP)
-        intrinsic.height = self.scale_out(intrinsic.height, ROUND_UP)
-
-    @abstractmethod
     def rehint(self):
-        ...
+        pass

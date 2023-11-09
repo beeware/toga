@@ -1,8 +1,10 @@
 from toga.command import Command
 from toga_cocoa.container import Container
+from toga_cocoa.images import nsdata_to_bytes
 from toga_cocoa.libs import (
     SEL,
     NSBackingStoreBuffered,
+    NSBitmapImageFileType,
     NSMakeRect,
     NSMutableArray,
     NSPoint,
@@ -158,6 +160,10 @@ class Window:
         self.container = Container(on_refresh=self.content_refreshed)
         self.native.contentView = self.container.native
 
+        # Ensure that the container renders it's background in the same color as the window.
+        self.native.wantsLayer = True
+        self.container.native.backgroundColor = self.native.backgroundColor
+
         # By default, no toolbar
         self._toolbar_items = {}
         self.native_toolbar = None
@@ -298,3 +304,17 @@ class Window:
 
     def get_current_screen(self):
         return ScreenImpl(self.native.screen)
+
+    def get_image_data(self):
+        bitmap = self.container.native.bitmapImageRepForCachingDisplayInRect(
+            self.container.native.bounds
+        )
+        bitmap.setSize(self.container.native.bounds.size)
+        self.container.native.cacheDisplayInRect(
+            self.container.native.bounds, toBitmapImageRep=bitmap
+        )
+        data = bitmap.representationUsingType(
+            NSBitmapImageFileType.PNG,
+            properties=None,
+        )
+        return nsdata_to_bytes(data)

@@ -5,15 +5,6 @@ from .libs import Gdk, Gtk
 from .screen import Screen as ScreenImpl
 
 
-def gtk_toolbar_item_clicked(cmd):
-    """Convert a GTK toolbar item click into a command invocation."""
-
-    def _handler(widget):
-        cmd.action()
-
-    return _handler
-
-
 class Window:
     def __init__(self, interface, title, position, size):
         self.interface = interface
@@ -101,7 +92,7 @@ class Window:
                 item_impl.set_label(cmd.text)
                 if cmd.tooltip:
                     item_impl.set_tooltip_text(cmd.tooltip)
-                item_impl.connect("clicked", gtk_toolbar_item_clicked(cmd))
+                item_impl.connect("clicked", cmd._impl.gtk_clicked)
                 cmd._impl.native.append(item_impl)
             self.toolbar_items[cmd] = item_impl
             self.native_toolbar.insert(item_impl, -1)
@@ -164,3 +155,32 @@ class Window:
         display = Gdk.Display.get_default()
         monitor_native = display.get_monitor_at_window(self.native.get_window())
         return ScreenImpl(monitor_native)
+
+    def get_image_data(self):
+        display = self.native.get_display()
+        display.flush()
+
+        # For some reason, converting the *window* to a pixbuf fails. But if you extract
+        # a *part* of the overall screen, that works. So - work out the origin of the
+        # window, then the allocation for the container relative to that window, and
+        # capture that rectangle.
+        window = self.native.get_window()
+        origin = window.get_origin()
+        allocation = self.container.get_allocation()
+
+        screen = display.get_default_screen()
+        root_window = screen.get_root_window()
+        screenshot = Gdk.pixbuf_get_from_window(
+            root_window,
+            origin.x + allocation.x,
+            origin.y + allocation.y,
+            allocation.width,
+            allocation.height,
+        )
+
+        success, buffer = screenshot.save_to_bufferv("png")
+        if success:
+            return buffer
+        else:  # pragma: nocover
+            # This shouldn't ever happen, and it's difficult to manufacture in test conditions
+            raise ValueError(f"Unable to generate screenshot of {self}")

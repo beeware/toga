@@ -1,1 +1,0 @@
-Text input widgets on macOS now support undo and redo.

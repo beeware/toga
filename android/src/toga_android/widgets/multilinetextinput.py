@@ -26,6 +26,7 @@ class MultilineTextInput(TextInput):
     def set_alignment(self, value):
         self.set_textview_alignment(value, Gravity.TOP)
 
+    # This method is necessary to override the TextInput base class.
     def rehint(self):
         self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
         self.interface.intrinsic.height = at_least(self.interface._MIN_HEIGHT)

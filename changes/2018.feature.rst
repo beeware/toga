@@ -1,1 +1,0 @@
-The default system notification sound can be played via app.beep()

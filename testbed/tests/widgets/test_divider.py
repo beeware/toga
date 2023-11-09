@@ -13,7 +13,7 @@ from .properties import (  # noqa: F401
 
 @pytest.fixture
 async def widget():
-    skip_on_platforms("android", "iOS")
+    skip_on_platforms("iOS")
     return toga.Divider()
 
 

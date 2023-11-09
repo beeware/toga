@@ -1,0 +1,1 @@
+A wider range of command shortcut keys are now supported on WinForms.

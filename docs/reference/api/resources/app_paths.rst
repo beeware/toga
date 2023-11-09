@@ -25,7 +25,7 @@ cases, hard restrictions) over where certain file types should be stored. For
 example, macOS provides the ``~/Library/Application Support`` folder; Linux
 encourages use of the ``~/.config`` folder (amongst others), and Windows
 provides the ``AppData/Local`` folder in the user's home directory. Application
-sandbox and security policies will prevent sometimes prevent reading or
+sandbox and security policies will sometimes prevent reading or
 writing files in any location other than these pre-approved locations.
 
 To assist with finding an appropriate location to store application files, every

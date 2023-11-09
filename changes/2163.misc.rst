@@ -1,1 +1,0 @@
-Winforms command event handlers were made persistent objects, rather than on-demand closures.

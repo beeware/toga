@@ -1,5 +1,7 @@
 import System.Windows.Forms as WinForms
-from System.Drawing import Point, Size
+from System.Drawing import Bitmap, Graphics, Point, Size
+from System.Drawing.Imaging import ImageFormat
+from System.IO import MemoryStream
 
 from toga.command import GROUP_BREAK, SECTION_BREAK
 
@@ -62,7 +64,7 @@ class Window(Container, Scalable):
                     if cmd.icon is not None:
                         item.Image = cmd.icon._impl.native.ToBitmap()
                     item.Enabled = cmd.enabled
-                    item.Click += WeakrefCallable(cmd._impl.winforms_handler)
+                    item.Click += WeakrefCallable(cmd._impl.winforms_Click)
                     cmd._impl.native.append(item)
                 self.toolbar_native.Items.Add(item)
 
@@ -183,3 +185,18 @@ class Window(Container, Scalable):
 
     def get_current_screen(self):
         return ScreenImpl(WinForms.Screen.FromControl(self.native))
+
+    def get_image_data(self):
+        size = Size(self.native_content.Size.Width, self.native_content.Size.Height)
+        bitmap = Bitmap(size.Width, size.Height)
+        graphics = Graphics.FromImage(bitmap)
+
+        graphics.CopyFromScreen(
+            self.native_content.PointToScreen(Point.Empty),
+            Point(0, 0),
+            size,
+        )
+
+        stream = MemoryStream()
+        bitmap.Save(stream, ImageFormat.Png)
+        return stream.ToArray()

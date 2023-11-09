@@ -96,6 +96,7 @@ Other
  Component                                      Description
 ============================================== ========================================================================
  :doc:`Constants </reference/api/constants>`    Symbolic constants used by various APIs.
+ :doc:`Keys </reference/api/keys>`              Symbolic representation of keys used for keyboard shortcuts.
 ============================================== ========================================================================
 
 .. toctree::
@@ -109,3 +110,4 @@ Other
    resources/index
    widgets/index
    constants
+   keys

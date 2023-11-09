@@ -1,0 +1,49 @@
+[build-system]
+requires = ["briefcase"]
+
+[tool.briefcase]
+project_name = "Screenshot Generator"
+bundle = "org.beeware"
+version = "0.0.1"
+url = "https://beeware.org"
+license = "BSD license"
+author = "Tiberius Yak"
+author_email = "tiberius@beeware.org"
+
+[tool.briefcase.app.screenshot]
+formal_name = "Screenshot Generator"
+description = "A testing app"
+sources = ["screenshot"]
+requires = [
+    "../../core",
+    "pillow",
+]
+
+
+[tool.briefcase.app.screenshot.macOS]
+requires = [
+    "../../cocoa",
+    "std-nslog>=1.0.0",
+]
+
+[tool.briefcase.app.screenshot.linux]
+requires = [
+    "../../gtk",
+]
+
+[tool.briefcase.app.screenshot.windows]
+requires = [
+    "../../winforms",
+]
+
+# Mobile deployments
+[tool.briefcase.app.screenshot.iOS]
+requires = [
+    "../../iOS",
+    "std-nslog>=1.0.0",
+]
+
+[tool.briefcase.app.screenshot.android]
+requires = [
+    "../../android",
+]

@@ -34,19 +34,22 @@ class Image:
                 self.path = path
             else:
                 self.path = Path(path)
-            self.data = None
         else:
             self.path = None
-            self.data = data
 
         self.factory = get_platform_factory()
-        if self.data is not None:
-            self._impl = self.factory.Image(interface=self, data=self.data)
+        if data is not None:
+            self._impl = self.factory.Image(interface=self, data=data)
         else:
             self.path = toga.App.app.paths.app / self.path
             if not self.path.is_file():
                 raise FileNotFoundError(f"Image file {self.path} does not exist")
             self._impl = self.factory.Image(interface=self, path=self.path)
+
+    @property
+    def size(self) -> (int, int):
+        """The size of the image, as a tuple"""
+        return (self._impl.get_width(), self._impl.get_height())
 
     @property
     def width(self) -> int:
@@ -57,6 +60,14 @@ class Image:
     def height(self) -> int:
         """The height of the image, in pixels."""
         return self._impl.get_height()
+
+    @property
+    def data(self) -> bytes:
+        """The raw data for the image, in PNG format.
+
+        :returns: The raw image data in PNG format.
+        """
+        return self._impl.get_data()
 
     def save(self, path: str | Path):
         """Save image to given path.

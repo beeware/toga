@@ -1,1 +1,0 @@
-The use of indirect imports on Winforms has been replaced with direct imports.
