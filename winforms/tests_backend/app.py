@@ -8,11 +8,16 @@ from System import EventArgs
 from System.Drawing import Point
 from System.Windows.Forms import Application, Cursor, Screen as WinScreen
 
+from toga_winforms.keys import toga_to_winforms_key, winforms_to_toga_key
+
 from .probe import BaseProbe
 from .window import WindowProbe
 
 
 class AppProbe(BaseProbe):
+    supports_key = True
+    supports_key_mod3 = False
+
     def __init__(self, app):
         super().__init__()
         self.app = app
@@ -153,102 +158,3 @@ class AppProbe(BaseProbe):
         pytest.xfail("This platform doesn't have a window management menu")
 
     def keystroke(self, combination):
-        pytest.xfail("Not applicable to this backend")
-
-    # ------------------- Functions specific to test_system_dpi_change -------------------
-
-    def trigger_dpi_change_event(self):
-        self.app._impl.winforms_DisplaySettingsChanged(None, None)
-
-    def assert_main_window_menubar_font_scale_updated(self):
-        main_window_impl = self.main_window._impl
-        assert (
-            main_window_impl.native.MainMenuStrip.Font.FontFamily.Name
-            == main_window_impl.original_menubar_font.FontFamily.Name
-        )
-        assert (
-            main_window_impl.native.MainMenuStrip.Font.Size
-            == main_window_impl.scale_font(main_window_impl.original_menubar_font.Size)
-        )
-        assert (
-            main_window_impl.native.MainMenuStrip.Font.Style
-            == main_window_impl.original_menubar_font.Style
-        )
-
-    def assert_main_window_toolbar_font_scale_updated(self):
-        main_window_impl = self.main_window._impl
-        assert (
-            main_window_impl.toolbar_native.Font.FontFamily.Name
-            == main_window_impl.original_toolbar_font.FontFamily.Name
-        )
-        assert main_window_impl.toolbar_native.Font.Size == main_window_impl.scale_font(
-            main_window_impl.original_toolbar_font.Size
-        )
-        assert (
-            main_window_impl.toolbar_native.Font.Style
-            == main_window_impl.original_toolbar_font.Style
-        )
-
-    def assert_main_window_widgets_font_scale_updated(self):
-        for widget in self.main_window.widgets:
-            assert (
-                widget._impl.native.Font.FontFamily.Name
-                == widget._impl.original_font.FontFamily.Name
-            )
-            assert widget._impl.native.Font.Size == widget._impl.scale_font(
-                widget._impl.original_font.Size
-            )
-            assert widget._impl.native.Font.Style == widget._impl.original_font.Style
-
-    def assert_main_window_stack_trace_dialog_scale_updated(self):
-        stack_trace_dialog_impl = (
-            self.app.main_window._impl.current_stack_trace_dialog_impl
-        )
-        for control in stack_trace_dialog_impl.native.Controls:
-            # Assert Font
-            assert (
-                control.Font.FontFamily.Name
-                == stack_trace_dialog_impl.original_control_fonts[
-                    control
-                ].FontFamily.Name
-            )
-            assert control.Font.Size == stack_trace_dialog_impl.scale_font(
-                stack_trace_dialog_impl.original_control_fonts[control].Size
-            )
-            assert (
-                control.Font.Style
-                == stack_trace_dialog_impl.original_control_fonts[control].Style
-            )
-
-            # Assert Bounds
-            assert control.Bounds.X == stack_trace_dialog_impl.scale_in(
-                stack_trace_dialog_impl.original_control_bounds[control].X
-            )
-            assert control.Bounds.Y == stack_trace_dialog_impl.scale_in(
-                stack_trace_dialog_impl.original_control_bounds[control].Y
-            )
-            assert control.Bounds.Width == stack_trace_dialog_impl.scale_in(
-                stack_trace_dialog_impl.original_control_bounds[control].Width
-            )
-            assert control.Bounds.Height == stack_trace_dialog_impl.scale_in(
-                stack_trace_dialog_impl.original_control_bounds[control].Height
-            )
-
-    def assert_dpi_scale_equal_to_primary_screen_dpi_scale(self, window):
-        screen = WinScreen.PrimaryScreen
-        screen_rect = wintypes.RECT(
-            screen.Bounds.Left,
-            screen.Bounds.Top,
-            screen.Bounds.Right,
-            screen.Bounds.Bottom,
-        )
-        windll.user32.MonitorFromRect.restype = c_void_p
-        windll.user32.MonitorFromRect.argtypes = [wintypes.RECT, wintypes.DWORD]
-        # MONITOR_DEFAULTTONEAREST = 2
-        hMonitor = windll.user32.MonitorFromRect(screen_rect, 2)
-        pScale = wintypes.UINT()
-        windll.shcore.GetScaleFactorForMonitor(c_void_p(hMonitor), byref(pScale))
-
-        assert window._impl.dpi_scale == pScale.value / 100
-
-    # ------------------------------------------------------------------------------------

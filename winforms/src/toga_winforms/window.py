@@ -64,7 +64,7 @@ class Window(Container, Scalable):
                     if cmd.icon is not None:
                         item.Image = cmd.icon._impl.native.ToBitmap()
                     item.Enabled = cmd.enabled
-                    item.Click += WeakrefCallable(cmd._impl.winforms_handler)
+                    item.Click += WeakrefCallable(cmd._impl.winforms_Click)
                     cmd._impl.native.append(item)
                 self.toolbar_native.Items.Add(item)
             self.original_toolbar_font = self.toolbar_native.Font

@@ -6,6 +6,9 @@ class Command:
         self.interface = interface
         self.native = []
 
+    def dom_click(self, event):
+        self.interface.action()
+
     def set_enabled(self, value):
         pass
         # enabled = self.interface.enabled

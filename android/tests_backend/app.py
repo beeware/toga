@@ -11,6 +11,8 @@ from .window import WindowProbe
 
 
 class AppProbe(BaseProbe):
+    supports_key = False
+
     def __init__(self, app):
         super().__init__(app)
         self.native = self.app._impl.native
@@ -87,9 +89,6 @@ class AppProbe(BaseProbe):
 
     def activate_menu_minimize(self):
         xfail("This backend doesn't have a window management menu")
-
-    def keystroke(self, combination):
-        xfail("This backend doesn't use keyboard shortcuts")
 
     def enter_background(self):
         xfail(
