@@ -2,7 +2,7 @@ import asyncio
 import re
 import sys
 import threading
-from ctypes import c_bool, c_void_p, windll
+from ctypes import c_void_p, windll, wintypes
 
 import System.Windows.Forms as WinForms
 from Microsoft.Win32 import SystemEvents
@@ -67,10 +67,10 @@ class App(Scalable):
     if (win_version.Major > 10) or (
         win_version.Major == 10 and win_version.Build >= 15063
     ):
-        windll.user32.SetProcessDpiAwarenessContext.restype = c_bool
+        windll.user32.SetProcessDpiAwarenessContext.restype = wintypes.BOOL
         windll.user32.SetProcessDpiAwarenessContext.argtypes = [c_void_p]
-        # SetProcessDpiAwarenessContext returns False on Failure
-        if not windll.user32.SetProcessDpiAwarenessContext(-4):  # pragma: no cover
+        # SetProcessDpiAwarenessContext returns False(0) on Failure
+        if windll.user32.SetProcessDpiAwarenessContext(-4) == 0:  # pragma: no cover
             print("WARNING: Failed to set the DPI Awareness mode for the app.")
     else:  # pragma: no cover
         print(
