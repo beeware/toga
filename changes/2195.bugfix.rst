@@ -1,0 +1,1 @@
+An issue with the display of the About dialog on the web backend was corrected.
