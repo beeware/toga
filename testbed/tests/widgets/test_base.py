@@ -46,7 +46,8 @@ async def test_visibility(widget, probe):
     assert child_probe.is_hidden
     assert grandchild_probe.is_hidden
     # Making the widget invisible doesn't affect layout
-    probe.assert_layout(position=(0, 0), size=(100, 200))
+    # Note: The widget doesn't has size when it is hidden. So, to make sure
+    # the layout doesn't changed; we must confirm the layout of its siblings.
     other_probe.assert_layout(position=(100, 0), size=(100, 200))
 
     # Make widget visible again

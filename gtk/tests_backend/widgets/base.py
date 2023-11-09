@@ -28,9 +28,12 @@ class SimpleProbe(BaseProbe, FontMixin):
 
     def assert_container(self, container):
         container_native = container._impl.container
-        for control in container_native.get_children():
+
+        control = container_native.get_last_child()
+        while control is not None:
             if control == self.native:
                 break
+            control = control.get_prev_sibling()
         else:
             raise ValueError(f"cannot find {self.native} in {container_native}")
 
@@ -47,28 +50,26 @@ class SimpleProbe(BaseProbe, FontMixin):
 
     @property
     def width(self):
-        return self.native.get_allocation().width
+        return self.native.get_width()
 
     @property
     def height(self):
-        return self.native.get_allocation().height
+        return self.native.get_height()
 
     def assert_layout(self, size, position):
         # Widget is contained and in a window.
-        assert self.widget._impl.container is not None
+        assert self.impl.container is not None
         assert self.native.get_parent() is not None
 
-        # Measurements are relative to the container as an origin.
-        origin = self.widget._impl.container.get_allocation()
-
+        # Measurements are relative to the container as an origin coordinate.
         # size and position is as expected.
         assert (
-            self.native.get_allocation().width,
-            self.native.get_allocation().height,
+            self.width,
+            self.height,
         ) == size
         assert (
-            self.native.get_allocation().x - origin.x,
-            self.native.get_allocation().y - origin.y,
+            self.native.compute_bounds(self.impl.container)[1].origin.x,
+            self.native.compute_bounds(self.impl.container)[1].origin.y,
         ) == position
 
     def assert_width(self, min_width, max_width):
