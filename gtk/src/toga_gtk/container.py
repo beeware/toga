@@ -62,10 +62,7 @@ class TogaContainerLayoutManager(Gtk.LayoutManager):
             # in that tree are direct children of the container.
             child_widget = widget.get_last_child()
             while child_widget is not None:
-                if not child_widget.get_visible():
-                    # print("  not visible {child_widget.interface}")
-                    pass
-                else:
+                if child_widget.get_visible():
                     # Set the size of the child widget to the computed layout size.
                     # print(f"  allocate child {child_widget.interface}: {child_widget.interface.layout}")
                     child_widget_allocation = Gdk.Rectangle()
@@ -83,10 +80,10 @@ class TogaContainerLayoutManager(Gtk.LayoutManager):
                     )
                     child_widget.size_allocate(child_widget_allocation, -1)
 
-                    child_widget = child_widget.get_prev_sibling()
+                child_widget = child_widget.get_prev_sibling()
 
 
-class TogaContainer(Gtk.Fixed):
+class TogaContainer(Gtk.Box):
     """A GTK container widget implementing Toga's layout.
 
     This is a GTK widget, with no Toga interface manifestation.
@@ -118,10 +115,6 @@ class TogaContainer(Gtk.Fixed):
         """
         if self._content is None:
             return 0
-
-        is_possible, bounds = self.compute_bounds(self)
-        if is_possible:
-            return bounds.get_width()
         return self.get_width()
 
     @property
@@ -132,10 +125,6 @@ class TogaContainer(Gtk.Fixed):
         """
         if self._content is None:
             return 0
-
-        is_possible, bounds = self.compute_bounds(self)
-        if is_possible:
-            return bounds.get_height()
         return self.get_height()
 
     @property

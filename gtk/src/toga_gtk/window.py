@@ -75,6 +75,10 @@ class Window:
 
     def show(self):
         self.native.set_visible(True)
+        child = self.native.get_last_child()
+        while child is not None:
+            child.set_visible(True)
+            child = child.get_prev_sibling()
 
     def hide(self):
         self.native.set_visible(False)

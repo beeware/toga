@@ -57,8 +57,7 @@ class Widget:
         elif container:
             # setting container, adding self to container.native
             self._container = container
-            self.native.set_parent(self._container)
-            self.native.set_visible(True)
+            self._container.append(self.native)
 
         for child in self.interface.children:
             child._impl.container = container
@@ -162,8 +161,6 @@ class Widget:
 
     def set_hidden(self, hidden):
         self.native.set_visible(not hidden)
-        if self.container:
-            self.container.make_dirty()
 
     def set_color(self, color):
         self.apply_css("color", get_color_css(color))
@@ -191,7 +188,7 @@ class Widget:
         # GTK doesn't/can't immediately evaluate the hinted size of the widget.
         # Instead, put the widget onto a dirty list to be rehinted before the
         # next layout.
-        pass
+        self.native.queue_resize()
 
     def rehint(self):
         # Perform the actual GTK rehint.

@@ -59,7 +59,7 @@ class Table(Widget):
 
         self.native = Gtk.ScrolledWindow()
         self.native.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
-        self.native.add(self.native_table)
+        self.native.set_child(self.native_table)
         self.native.set_min_content_width(200)
         self.native.set_min_content_height(200)
 
