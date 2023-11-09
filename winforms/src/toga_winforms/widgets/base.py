@@ -40,33 +40,34 @@ class Scalable:
 
     @property
     def dpi_scale(self):
-        if (self.interface is not None) and hasattr(self, "interface"):
-            if issubclass(type(self), Widget) and (self.interface.window is not None):
+        if (
+            hasattr(self, "interface")
+            and (self.interface is not None)
+            and hasattr(self.interface, "window")
+            and (self.interface.window is not None)
+        ):
+            # For Widgets and Stack Trace Dialogs
+            if issubclass(type(self), Widget) or (
+                hasattr(self.interface.window._impl, "current_stack_trace_dialog_impl")
+                and (
+                    self.interface.window._impl.current_stack_trace_dialog_impl == self
+                )
+            ):
                 self._original_dpi_scale = (
                     self.interface.window._impl._original_dpi_scale
                 )
                 return self.interface.window._impl._dpi_scale
-            else:
-                _dpi_scale = self.get_dpi_scale(Screen.FromControl(self.native))
-                if not hasattr(self, "_original_dpi_scale"):
-                    self._original_dpi_scale = _dpi_scale
-                return _dpi_scale
-        elif issubclass(type(self.interface), Window):
-            self._dpi_scale = self.get_dpi_scale(Screen.FromControl(self.native))
-            if not hasattr(self, "_original_dpi_scale"):
-                self._original_dpi_scale = self._dpi_scale
-            return self._dpi_scale
-        else:
-            _dpi_scale = self.get_dpi_scale(Screen.FromControl(self.native))
-            if not hasattr(self, "_original_dpi_scale"):
-                self._original_dpi_scale = _dpi_scale
-            return _dpi_scale
+        # For Windows and others
+        _dpi_scale = self.get_dpi_scale(Screen.FromControl(self.native))
+        if not hasattr(self, "_original_dpi_scale"):
+            self._original_dpi_scale = _dpi_scale
+        return _dpi_scale
 
     def update_scale(self, screen=None):
         if issubclass(type(self.interface), Window):
             self._dpi_scale = self.get_dpi_scale(Screen.FromControl(self.native))
         else:
-            print("WARNING: Only subclasses of Window can call this method.")
+            print("WARNING: Only subclasses of Window can call update_scale() method.")
 
     # Convert CSS pixels to native pixels
     def scale_in(self, value, rounding=SCALE_DEFAULT_ROUNDING):

@@ -119,9 +119,16 @@ class StackTraceDialog(BaseDialog, Scalable):
         textLabel = WinForms.Label()
         textLabel.Left = self.scale_in(10)
         textLabel.Top = self.scale_in(10)
+        # Explicitly set width and Height to prevent scaling issues
         textLabel.Width = self.scale_in(520)
+        textLabel.Height = self.scale_in(20)
         textLabel.Alignment = ContentAlignment.MiddleCenter
         textLabel.Text = message
+        textLabel.Font = WinFont(
+            SystemFonts.MessageBoxFont.FontFamily,
+            self.scale_font(float(SystemFonts.MessageBoxFont.Size)),
+            SystemFonts.MessageBoxFont.Style,
+        )
 
         self.native.Controls.Add(textLabel)
 
@@ -135,7 +142,7 @@ class StackTraceDialog(BaseDialog, Scalable):
         trace.ReadOnly = True
         trace.Font = WinFont(
             FontFamily.GenericMonospace,
-            float(SystemFonts.MessageBoxFont.Size),
+            self.scale_font(float(SystemFonts.MessageBoxFont.Size)),
             FontStyle.Regular,
         )
         trace.Text = content
@@ -147,7 +154,14 @@ class StackTraceDialog(BaseDialog, Scalable):
             retry = WinForms.Button()
             retry.Left = self.scale_in(290)
             retry.Top = self.scale_in(250)
+            # Explicitly set width and Height to prevent scaling issues
             retry.Width = self.scale_in(100)
+            retry.Height = self.scale_in(retry.PreferredSize.Height)
+            retry.Font = WinFont(
+                SystemFonts.MessageBoxFont.FontFamily,
+                self.scale_font(float(SystemFonts.MessageBoxFont.Size)),
+                SystemFonts.MessageBoxFont.Style,
+            )
             retry.Text = "&Retry"
             retry.Click += WeakrefCallable(self.winforms_Click_retry)
 
@@ -156,7 +170,14 @@ class StackTraceDialog(BaseDialog, Scalable):
             quit = WinForms.Button()
             quit.Left = self.scale_in(400)
             quit.Top = self.scale_in(250)
+            # Explicitly set width and Height to prevent scaling issues
             quit.Width = self.scale_in(100)
+            quit.Height = self.scale_in(quit.PreferredSize.Height)
+            quit.Font = WinFont(
+                SystemFonts.MessageBoxFont.FontFamily,
+                self.scale_font(float(SystemFonts.MessageBoxFont.Size)),
+                SystemFonts.MessageBoxFont.Style,
+            )
             quit.Text = "&Quit"
             quit.Click += WeakrefCallable(self.winforms_Click_quit)
 
@@ -165,7 +186,14 @@ class StackTraceDialog(BaseDialog, Scalable):
             accept = WinForms.Button()
             accept.Left = self.scale_in(400)
             accept.Top = self.scale_in(250)
+            # Explicitly set width and Height to prevent scaling issues
             accept.Width = self.scale_in(100)
+            accept.Height = self.scale_in(accept.PreferredSize.Height)
+            accept.Font = WinFont(
+                SystemFonts.MessageBoxFont.FontFamily,
+                self.scale_font(float(SystemFonts.MessageBoxFont.Size)),
+                SystemFonts.MessageBoxFont.Style,
+            )
             accept.Text = "&OK"
             accept.Click += WeakrefCallable(self.winforms_Click_accept)
 
@@ -176,10 +204,12 @@ class StackTraceDialog(BaseDialog, Scalable):
         self.original_control_bounds = dict()
         for control in self.native.Controls:
             self.original_control_fonts[control] = control.Font
-            # For Button controls, we use PreferredSize to determine the size because
-            # Buttons often adjust their preferred size based on their content (text).
+            # For Button & Label controls, we use PreferredSize to determine the size
+            # because they often adjust their preferred size based on their content (text).
             # Using Bounds.Width and Bounds.Height may not reflect the actual preferred size.
-            if isinstance(control, WinForms.Button):
+            if isinstance(control, WinForms.Button):  # or isinstance(
+                #     control, WinForms.Label
+                # ):
                 self.original_control_bounds[control] = Rectangle(
                     self.scale_out(control.Bounds.X),
                     self.scale_out(control.Bounds.Y),
@@ -227,7 +257,7 @@ class StackTraceDialog(BaseDialog, Scalable):
         for control in self.native.Controls:
             control.Font = WinFont(
                 self.original_control_fonts[control].FontFamily,
-                self.scale_font(self.original_control_fonts[control].Size),
+                self.scale_font(float(self.original_control_fonts[control].Size)),
                 self.original_control_fonts[control].Style,
             )
             control.Bounds = Rectangle(
