@@ -167,7 +167,7 @@ class App(Scalable):
             else:
                 submenu = self._submenu(cmd.group, menubar)
                 item = WinForms.ToolStripMenuItem(cmd.text)
-                item.Click += WeakrefCallable(cmd._impl.winforms_handler)
+                item.Click += WeakrefCallable(cmd._impl.winforms_Click)
                 if cmd.shortcut is not None:
                     try:
                         item.ShortcutKeys = toga_to_winforms_key(cmd.shortcut)

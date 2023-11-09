@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING, Any, Protocol
 
 from toga.handlers import wrapped_handler
 from toga.icons import Icon
+from toga.keys import Key
 from toga.platform import get_platform_factory
 
 if TYPE_CHECKING:
@@ -163,7 +164,7 @@ class Command:
         action: ActionHandler | None,
         text: str,
         *,
-        shortcut: str | None = None,
+        shortcut: str | Key | None = None,
         tooltip: str | None = None,
         icon: str | Icon | None = None,
         group: Group = Group.COMMANDS,

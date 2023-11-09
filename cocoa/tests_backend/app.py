@@ -16,6 +16,9 @@ NSPanel = ObjCClass("NSPanel")
 
 
 class AppProbe(BaseProbe):
+    supports_key = True
+    supports_key_mod3 = True
+
     def __init__(self, app):
         super().__init__()
         self.app = app

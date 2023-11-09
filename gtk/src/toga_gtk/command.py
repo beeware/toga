@@ -9,6 +9,12 @@ class Command:
         self.interface = interface
         self.native = []
 
+    def gtk_activate(self, action, data):
+        self.interface.action()
+
+    def gtk_clicked(self, action):
+        self.interface.action()
+
     def set_enabled(self, value):
         enabled = self.interface.enabled
         for widget in self.native:

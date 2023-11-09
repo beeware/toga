@@ -1,0 +1,1 @@
+Some inconsistencies in widget support documentation were corrected.
