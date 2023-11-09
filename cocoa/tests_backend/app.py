@@ -117,8 +117,8 @@ class AppProbe(BaseProbe):
         self.assert_menu_item(["*", "Show All"], enabled=True)
         self.assert_menu_item(["*", "Quit Toga Testbed"], enabled=True)
 
-        self.assert_menu_item(["File", "Close Window"], enabled=True)
-        self.assert_menu_item(["File", "Close All Windows"], enabled=True)
+        self.assert_menu_item(["File", "Close"], enabled=True)
+        self.assert_menu_item(["File", "Close All"], enabled=True)
 
         self.assert_menu_item(["Edit", "Undo"], enabled=True)
         self.assert_menu_item(["Edit", "Redo"], enabled=True)
@@ -134,10 +134,10 @@ class AppProbe(BaseProbe):
         self.assert_menu_item(["Help", "Visit homepage"], enabled=True)
 
     def activate_menu_close_window(self):
-        self._activate_menu_item(["File", "Close Window"])
+        self._activate_menu_item(["File", "Close"])
 
     def activate_menu_close_all_windows(self):
-        self._activate_menu_item(["File", "Close All Windows"])
+        self._activate_menu_item(["File", "Close All"])
 
     def activate_menu_minimize(self):
         self._activate_menu_item(["Window", "Minimize"])
