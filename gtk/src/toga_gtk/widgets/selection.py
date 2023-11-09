@@ -22,7 +22,7 @@ class Selection(Widget):
         self._send_notifications = True
 
     def gtk_on_select(self, widget, data):
-        if self.interface.on_select and self._send_notifications:
+        if self._send_notifications:
             self.interface.on_select(widget)
 
     def set_color(self, color):

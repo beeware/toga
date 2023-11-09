@@ -52,9 +52,10 @@ class TogaContainerLayoutManager(Gtk.LayoutManager):
             # The issue of calling this virtual method in response to
             # irrelevant events like button clicks has been solved.
             #
-            # Re-evaluate the layout using the provided dimensions as
-            # the basis for geometry.
-            # print("REFRESH LAYOUT", width, height)
+            # Re-evaluate the layout using the provided dimensions (i.e. the
+            # container dimensions, which is also (width, height) args) as the
+            # basis for geometry.
+            # print("LAYOUT", width, height)
             widget._content.interface.refresh()
 
             # WARNING! This is the list of children of the *container*, not
@@ -63,8 +64,11 @@ class TogaContainerLayoutManager(Gtk.LayoutManager):
             child_widget = widget.get_last_child()
             while child_widget is not None:
                 if child_widget.get_visible():
-                    # Set the size of the child widget to the computed layout size.
-                    # print(f"  allocate child {child_widget.interface}: {child_widget.interface.layout}")
+                    # Set the allocation of the child widget to the computed
+                    # layout size.
+                    # print(
+                    #     f"  allocate child {child_widget.interface}: {child_widget.interface.layout}"
+                    # )
                     child_widget_allocation = Gdk.Rectangle()
                     child_widget_allocation.x = (
                         child_widget.interface.layout.absolute_content_left
@@ -149,14 +153,15 @@ class TogaContainer(Gtk.Box):
             widget.container = self
 
     def recompute(self):
-        """Rehint and re-layout the container's content, if necessary.
+        """Rehint and re-layout the container's content.
 
-        Any widgets known to be dirty will be rehinted. The minimum possible
-        layout size for the container will also be recomputed.
+        The minimum possible layout size for the container will also
+        be recomputed.
+
+        Note: This must be used wisely because it's relatively expensive.
         """
         if self._content:
-            # If any of the widgets have been marked as dirty,
-            # recompute their bounds, and re-evaluate the minimum
+            # Recompute the widgets bounds, and re-evaluate the minimum
             # allowed size of the layout.
             child_widget = self.get_last_child()
             while child_widget is not None:

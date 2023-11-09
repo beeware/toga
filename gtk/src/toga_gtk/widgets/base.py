@@ -113,15 +113,15 @@ class Widget:
         if native is None:
             native = self.native
 
-        style_provider = self.style_providers.pop((property, id(native)), None)
-
         # If there was a previous style provider for the given property, remove
         # it from the GTK widget
-        if style_provider:
+        old_style_provider = self.style_providers.pop((property, id(native)), None)
+        if old_style_provider:
             Gtk.StyleContext.remove_provider_for_display(
                 Gdk.Display.get_default(),
-                style_provider,
+                old_style_provider,
             )
+
         # If there's new CSS to apply, install it.
         if css:
             style_provider = Gtk.CssProvider()
@@ -186,7 +186,7 @@ class Widget:
 
     def refresh(self):
         # GTK doesn't/can't immediately evaluate the hinted size of the widget.
-        # Instead, put the widget onto a dirty list to be rehinted before the
+        # Instead, mark the widget to be its size renegotiated the for the
         # next layout.
         self.native.queue_resize()
 
