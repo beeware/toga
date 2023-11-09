@@ -616,8 +616,8 @@ if toga.platform.current_platform == "windows":
         )
         # -----------------------------------------------------------------------------
         # Explicitly set the dpi_scale for testing
-        main_window._impl.dpi_scale = 1.5
-        window1._impl.dpi_scale = 1.5
+        for window in app.windows:
+            window._impl._dpi_scale = 1.5
         # --------------------------------------------------------------------------------------
         await main_window_probe.redraw(
             "Triggering DPI change event for testing property changes"
@@ -680,15 +680,9 @@ if toga.platform.current_platform == "windows":
             original_values["main_window_update_scale"],
         )
 
-        # When dpi_scale is None then calculated dpi_scale should be equal to
-        # dpi scale of Primary Screen
-        for window in app.windows:
-            window._impl.dpi_scale = None
-            app_probe.assert_dpi_scale_equal_to_primary_screen_dpi_scale(window)
-
         # Restore original state
         for window in app.windows:
-            window._impl.dpi_scale = 1.0
+            window._impl._dpi_scale = 1.0
         await main_window_probe.redraw(
             "Triggering DPI change event for restoring original state"
         )

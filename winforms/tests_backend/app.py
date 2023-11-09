@@ -1,12 +1,11 @@
 import ctypes
-from ctypes import byref, c_void_p, windll, wintypes
 from pathlib import Path
 from time import sleep
 
 import pytest
 from System import EventArgs
 from System.Drawing import Point
-from System.Windows.Forms import Application, Cursor, Screen as WinScreen
+from System.Windows.Forms import Application, Cursor
 
 from toga_winforms.keys import toga_to_winforms_key, winforms_to_toga_key
 
@@ -238,22 +237,5 @@ class AppProbe(BaseProbe):
             assert control.Bounds.Height == stack_trace_dialog_impl.scale_in(
                 stack_trace_dialog_impl.original_control_bounds[control].Height
             )
-
-    def assert_dpi_scale_equal_to_primary_screen_dpi_scale(self, window):
-        screen = WinScreen.PrimaryScreen
-        screen_rect = wintypes.RECT(
-            screen.Bounds.Left,
-            screen.Bounds.Top,
-            screen.Bounds.Right,
-            screen.Bounds.Bottom,
-        )
-        windll.user32.MonitorFromRect.restype = c_void_p
-        windll.user32.MonitorFromRect.argtypes = [wintypes.RECT, wintypes.DWORD]
-        # MONITOR_DEFAULTTONEAREST = 2
-        hMonitor = windll.user32.MonitorFromRect(screen_rect, 2)
-        pScale = wintypes.UINT()
-        windll.shcore.GetScaleFactorForMonitor(c_void_p(hMonitor), byref(pScale))
-
-        assert window._impl.dpi_scale == pScale.value / 100
 
     # ------------------------------------------------------------------------------------
