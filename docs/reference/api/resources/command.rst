@@ -46,7 +46,7 @@ For example:
         callback,
         label='Example command',
         tooltip='Tells you when it has been activated',
-        shortcut='k',
+        shortcut=toga.Key.MOD_1 + 'k',
         icon='icons/pretty.png',
         group=stuff_group,
         section=0

@@ -35,6 +35,22 @@ The main window of the application.
        :align: center
        :width: 450px
 
+  .. group-tab:: Web |beta|
+
+    .. .. figure:: /reference/images/mainwindow-web.png
+    ..    :align: center
+    ..    :width: 300px
+
+    Screenshot not available
+
+  .. group-tab:: Textual |beta|
+
+    .. .. figure:: /reference/images/mainwindow-textual.png
+    ..    :align: center
+    ..    :width: 300px
+
+    Screenshot not available
+
 Usage
 -----
 

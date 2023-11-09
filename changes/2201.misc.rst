@@ -1,0 +1,1 @@
+Minor fix: removed a repeated word in the docs for App Paths
