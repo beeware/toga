@@ -3,6 +3,7 @@ from System.Drawing import Bitmap, Font as WinFont, Graphics, Point, Size
 from System.Drawing.Imaging import ImageFormat
 from System.IO import MemoryStream
 
+from toga import MainWindow
 from toga.command import GROUP_BREAK, SECTION_BREAK
 
 from .container import Container
@@ -25,7 +26,10 @@ class Window(Container, Scalable):
         self.native.FormClosing += WeakrefCallable(self.winforms_FormClosing)
         super().__init__(self.native)
 
-        self.update_scale(screen=WinForms.Screen.FromControl(self.native))
+        self.update_scale()
+        # # Required for detecting window moving to other screens with different dpi
+        # self._previous_screen = WinForms.Screen.FromPoint(self.native.Location)
+        self.native.LocationChanged += WeakrefCallable(self.winforms_LocationChanged)
 
         self.native.MinimizeBox = self.interface.minimizable
         self.native.MaximizeBox = self.interface.resizable
@@ -80,6 +84,31 @@ class Window(Container, Scalable):
             self.scale_font(self.original_toolbar_font.Size),
             self.original_toolbar_font.Style,
         )
+
+    # This method is called when the dpi scaling changes
+    def update_window_dpi_changed(self):
+        self.update_scale()
+        if self.toolbar_native is not None:
+            self.update_toolbar_font_scale()
+        if isinstance(self.interface, MainWindow):
+            self.update_menubar_font_scale()
+        for widget in self.interface.widgets:
+            widget.refresh()
+        self.refreshed()
+        self.resize_content()
+        if hasattr(self, "current_stack_trace_dialog_impl"):
+            self.current_stack_trace_dialog_impl.resize_content()
+
+    def winforms_LocationChanged(self, sender, event):  # pragma: no cover
+        # Check if the window has moved from one screen to another and if the new
+        # screen has a different dpi scale than the previous screen then rescale
+        current_screen = WinForms.Screen.FromControl(self.native)
+        if not hasattr(self, "_previous_screen"):
+            self._previous_screen = current_screen
+        if current_screen != self._previous_screen:
+            if self._dpi_scale != self.get_dpi_scale(current_screen):
+                self.update_window_dpi_changed()
+            self._previous_screen = current_screen
 
     def get_position(self):
         location = self.native.Location

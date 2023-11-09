@@ -63,8 +63,8 @@ class Scalable:
             self._original_dpi_scale = _dpi_scale
         return _dpi_scale
 
-    def update_scale(self, screen=None):
-        # Should be called from Window class as Widgets use the dpi scale
+    def update_scale(self):
+        # Should be called only from Window class as Widgets use the dpi scale
         # of the Window on which they are present.
         self._dpi_scale = self.get_dpi_scale(Screen.FromControl(self.native))
 

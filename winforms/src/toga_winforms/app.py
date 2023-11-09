@@ -363,18 +363,7 @@ class App(Scalable):
 
     def winforms_DisplaySettingsChanged(self, sender, event):
         for window in self.interface.windows:
-            window._impl.update_scale(
-                screen=WinForms.Screen.FromControl(window._impl.native)
-            )
-            if window._impl.toolbar_native is not None:
-                window._impl.update_toolbar_font_scale()
-            if isinstance(window._impl, MainWindow):
-                window._impl.update_menubar_font_scale()
-            for widget in window.widgets:
-                widget.refresh()
-            window._impl.resize_content()
-            if hasattr(window._impl, "current_stack_trace_dialog_impl"):
-                window._impl.current_stack_trace_dialog_impl.resize_content()
+            window._impl.update_window_dpi_changed()
 
 
 class DocumentApp(App):  # pragma: no cover
