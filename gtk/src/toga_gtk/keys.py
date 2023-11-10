@@ -215,7 +215,6 @@ GTK_KEY_CODES = {
 }
 
 GTK_MODIFIER_CODES = {
-    Key.CAPSLOCK: "<CapsLock>",
     Key.SHIFT: "<Shift>",
     Key.MOD_1: "<Primary>",
     Key.MOD_2: "<Alt>",
@@ -229,8 +228,6 @@ def toga_key(event):
 
     modifiers = set()
 
-    if event.state & Gdk.ModifierType.LOCK_MASK:
-        modifiers.add(Key.CAPSLOCK)
     if event.state & Gdk.ModifierType.SHIFT_MASK:
         modifiers.add(Key.SHIFT)
     if event.state & Gdk.ModifierType.CONTROL_MASK:

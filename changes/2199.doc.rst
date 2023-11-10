@@ -1,0 +1,1 @@
+Documentation for ``toga.Key`` was added.

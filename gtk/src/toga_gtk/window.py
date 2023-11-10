@@ -2,15 +2,6 @@ from .container import TogaContainer
 from .libs import Gdk, Gtk
 
 
-def gtk_toolbar_item_clicked(cmd):
-    """Convert a GTK toolbar item click into a command invocation."""
-
-    def _handler(widget):
-        cmd.action()
-
-    return _handler
-
-
 class Window:
     def __init__(self, interface, title, position, size):
         self.interface = interface

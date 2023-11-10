@@ -13,15 +13,6 @@ from .libs import TOGA_DEFAULT_STYLES, Gdk, Gio, Gtk
 from .window import Window
 
 
-def gtk_menu_item_activate(cmd):
-    """Convert a GTK menu item activation into a command invocation."""
-
-    def _handler(action, data):
-        cmd.action()
-
-    return _handler
-
-
 class MainWindow(Window):
     def create(self):
         self.native = Gtk.ApplicationWindow()
