@@ -12,6 +12,7 @@ class BaseProbe:
         # Force a repaint
         while self.repaint_needed():
             GLib.main_context_default().iteration(may_block=False)
+            await asyncio.sleep(0.03)
 
         # If we're running slow, wait for a second
         if self.app.run_slow:
