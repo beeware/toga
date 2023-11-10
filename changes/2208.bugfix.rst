@@ -1,0 +1,1 @@
+Test suite should run correctly on macOS now even if user's "Prefer tabs when opening documents" is set to "Always".
