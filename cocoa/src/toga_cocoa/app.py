@@ -199,24 +199,23 @@ class App:
                 section=sys.maxsize,
             ),
             # ---- File menu ----------------------------------
-            # This is a bit of an oddity. Safari has 2 distinct "Close Window" and
-            # "Close All Windows" menu items (partially to differentiate from "Close
-            # Tab"). Most other Apple HIG apps have a "Close" item that becomes
-            # "Close All" when you press Option (MOD_2). That behavior isn't something
-            # we're currently set up to implement, so we live with a separate menu item
-            # for now.
+            # This is a bit of an oddity. Apple HIG apps that don't have tabs as
+            # part of their interface (so, Preview and Numbers, but not Safari)
+            # have a "Close" item that becomes "Close All" when you press Option
+            # (MOD_2). That behavior isn't something we're currently set up to
+            # implement, so we live with a separate menu item for now.
             toga.Command(
                 self._menu_close_window,
-                "Close Window",
-                shortcut=toga.Key.MOD_1 + "W",
+                "Close",
+                shortcut=toga.Key.MOD_1 + "w",
                 group=toga.Group.FILE,
                 order=1,
                 section=50,
             ),
             toga.Command(
                 self._menu_close_all_windows,
-                "Close All Windows",
-                shortcut=toga.Key.MOD_2 + toga.Key.MOD_1 + "W",
+                "Close All",
+                shortcut=toga.Key.MOD_2 + toga.Key.MOD_1 + "w",
                 group=toga.Group.FILE,
                 order=2,
                 section=50,
