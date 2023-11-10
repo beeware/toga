@@ -708,14 +708,12 @@ run``.
 You can also use slow mode or pytest specifiers with ``briefcase run``, using
 the same ``--`` syntax as you used in developer mode.
 
-.. note::
-
-    For macOS users: there's a global System Preference setting
-    called "Prefer tabs when opening documents", which can be set
-    to "Never", "Always", or "In Full Screen Only". It shouldn't affect
-    running the full test suite, but if you run an individual test that
-    relies on creating a new window, set this to "Never" first to avoid
-    odd behavior.
+.. note:: For macOS users: there's a global System Preference setting
+   called "Prefer tabs when opening documents", which can be set
+   to "Never", "Always", or "In Full Screen Only". It shouldn't affect
+   running the full test suite, but if you run an individual test that
+   relies on creating a new window, set this to "Never" first to avoid
+   odd behavior.
 
 .. _testbed-probe:
 
