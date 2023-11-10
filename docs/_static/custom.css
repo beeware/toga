@@ -23,3 +23,21 @@ span.beta, span.stable {
     font-size: x-large;
     line-height: 1;
 }
+
+.sphinx-tabs-tab span.beta {
+    color: lightslategray;
+    font-variant: italic;
+    font-size: smaller;
+    vertical-align: super;
+}
+
+.sphinx-tabs-tab span.no {
+    color: lightcoral;
+    font-variant: italic;
+    font-size: smaller;
+    vertical-align: super;
+}
+
+.sphinx-tabs-panel p {
+    text-align: center;
+}

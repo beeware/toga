@@ -1,7 +1,6 @@
-from .utils import LoggedObject, not_required
+from .utils import LoggedObject
 
 
-@not_required  # not part of the formal API spec
 class Container:
     def __init__(self, content=None):
         self.baseline_dpi = 96
@@ -37,7 +36,6 @@ class Container:
             self.content.refresh()
 
 
-@not_required  # Testbed coverage is complete
 class Window(LoggedObject):
     def __init__(self, interface, title, position, size):
         super().__init__()
@@ -93,8 +91,11 @@ class Window(LoggedObject):
         self._action("close")
         self._set_value("visible", False)
 
+    def get_image_data(self):
+        return b"pretend this is PNG image data"
+
     def set_full_screen(self, is_full_screen):
         self._action("set full screen", full_screen=is_full_screen)
 
     def simulate_close(self):
-        self.interface.on_close(None)
+        self.interface.on_close()

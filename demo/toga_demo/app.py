@@ -6,7 +6,7 @@ from toga.style import Pack
 class TogaDemo(toga.App):
     def startup(self):
         # Create the main window
-        self.main_window = toga.MainWindow(self.name)
+        self.main_window = toga.MainWindow()
 
         left_table = toga.Table(
             headings=["Hello", "World"],
@@ -18,20 +18,24 @@ class TogaDemo(toga.App):
             ],
         )
 
-        left_tree = toga.Tree(
-            headings=["Navigate"],
-            data={
-                ("root1",): {},
-                ("root2",): {
-                    ("root2.1",): None,
-                    ("root2.2",): [
-                        ("root2.2.1",),
-                        ("root2.2.2",),
-                        ("root2.2.3",),
-                    ],
+        try:
+            left_tree = toga.Tree(
+                headings=["Navigate"],
+                data={
+                    ("root1",): {},
+                    ("root2",): {
+                        ("root2.1",): None,
+                        ("root2.2",): {
+                            ("root2.2.1",): None,
+                            ("root2.2.2",): None,
+                            ("root2.2.3",): None,
+                        },
+                    },
                 },
-            },
-        )
+            )
+        except NotImplementedError:
+            # For now, Winforms doesn't implement tree.
+            left_tree = toga.Box()
 
         left_container = toga.OptionContainer(
             content=[

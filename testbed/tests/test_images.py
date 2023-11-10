@@ -47,6 +47,12 @@ async def test_data_image(app):
     assert image.width == 110
     assert image.height == 30
 
+    # Construct a second image from the first image's data
+    image2 = toga.Image(data=image.data)
+
+    assert image2.width == 110
+    assert image2.height == 30
+
 
 async def test_bad_image_data(app):
     "If data isn't a valid image, an error is raised"

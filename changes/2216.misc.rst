@@ -1,0 +1,1 @@
+Add more tests for sliders with empty ranges

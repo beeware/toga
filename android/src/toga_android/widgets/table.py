@@ -1,13 +1,12 @@
 from warnings import warn
 
-from java import dynamic_proxy
-from travertino.size import at_least
-
-import toga
 from android import R
 from android.graphics import Rect, Typeface
 from android.view import Gravity, View
 from android.widget import LinearLayout, ScrollView, TableLayout, TableRow, TextView
+from java import dynamic_proxy
+
+import toga
 
 from .base import Widget
 from .label import set_textview_font
@@ -28,7 +27,7 @@ class TogaOnClickListener(dynamic_proxy(View.OnClickListener)):
         else:
             self.impl.clear_selection()
             self.impl.add_selection(tr_id, view)
-        self.impl.interface.on_select(None)
+        self.impl.interface.on_select()
 
 
 class TogaOnLongClickListener(dynamic_proxy(View.OnLongClickListener)):
@@ -40,8 +39,8 @@ class TogaOnLongClickListener(dynamic_proxy(View.OnLongClickListener)):
         self.impl.clear_selection()
         index = view.getId()
         self.impl.add_selection(index, view)
-        self.impl.interface.on_select(None)
-        self.impl.interface.on_activate(None, row=self.impl.interface.data[index])
+        self.impl.interface.on_select()
+        self.impl.interface.on_activate(row=self.impl.interface.data[index])
         return True
 
 
@@ -221,7 +220,3 @@ class Table(Widget):
     def set_font(self, font):
         self._font_impl = font._impl
         self.change_source(self.interface.data)
-
-    def rehint(self):
-        self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
-        self.interface.intrinsic.height = at_least(self.interface._MIN_HEIGHT)

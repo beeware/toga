@@ -1,9 +1,8 @@
 import json
 
-from java import dynamic_proxy
-from travertino.size import at_least
-
 from android.webkit import ValueCallback, WebView as A_WebView, WebViewClient
+from java import dynamic_proxy
+
 from toga.widgets.webview import JavaScriptResult
 
 from .base import Widget
@@ -81,7 +80,3 @@ class WebView(Widget):
             javascript, ReceiveString(result.future, on_result)
         )
         return result
-
-    def rehint(self):
-        self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
-        self.interface.intrinsic.height = at_least(self.interface._MIN_HEIGHT)

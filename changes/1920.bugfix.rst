@@ -1,1 +1,0 @@
-The DetailedList widget on GTK now provides an accurate size hint during layout.

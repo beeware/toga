@@ -1,10 +1,10 @@
 from pathlib import Path
 
-from org.beeware.android import MainActivity
-
 from android import R
 from android.graphics import Typeface
 from android.util import TypedValue
+from org.beeware.android import MainActivity
+
 from toga.fonts import (
     _REGISTERED_FONT_CACHE,
     BOLD,

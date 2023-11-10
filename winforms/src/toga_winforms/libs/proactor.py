@@ -38,9 +38,9 @@ class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
         # in Lib/ascynio/base_events.py)
         # === START BaseEventLoop.run_forever() setup ===
         self._check_closed()
-        if self.is_running():
+        if self.is_running():  # pragma: no cover
             raise RuntimeError("This event loop is already running")
-        if events._get_running_loop() is not None:
+        if events._get_running_loop() is not None:  # pragma: no cover
             raise RuntimeError(
                 "Cannot run the event loop while another loop is running"
             )
@@ -71,13 +71,17 @@ class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
 
     def enqueue_tick(self):
         # Queue a call to tick in 5ms.
-        if not self.app._is_exiting:
+        if not self.app._is_exiting:  # pragma: no branch
             self.task = Action[Task](self.tick)
             Task.Delay(5).ContinueWith(self.task)
 
     def tick(self, *args, **kwargs):
         """Cause a single iteration of the event loop to run on the main GUI thread."""
-        if not self.app._is_exiting:
+
+        # This function doesn't report as covered, probably because it runs on a
+        # non-Python-created thread (see App.run_app). But it must actually be covered,
+        # otherwise nothing would work.
+        if not self.app._is_exiting:  # pragma: no cover
             action = Action(self.run_once_recurring)
             self.app.app_dispatcher.Invoke(action)
 
@@ -99,7 +103,7 @@ class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
             # Perform one tick of the event loop.
             self._run_once()
 
-            if self._stopping:
+            if self._stopping:  # pragma: no cover
                 # If we're stopping, we can do the "finally" handling from
                 # the BaseEventLoop run_forever().
                 # === START BaseEventLoop.run_forever() finally handling ===
@@ -123,5 +127,5 @@ class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
                     callback(*args)
 
         # Exceptions thrown by this method will be silently ignored.
-        except BaseException:
+        except BaseException:  # pragma: no cover
             traceback.print_exc()

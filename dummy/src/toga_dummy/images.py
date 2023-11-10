@@ -1,7 +1,6 @@
-from .utils import LoggedObject, not_required
+from .utils import LoggedObject
 
 
-@not_required  # Testbed coverage is complete
 class Image(LoggedObject):
     def __init__(self, interface, path=None, data=None):
         super().__init__()
@@ -16,6 +15,9 @@ class Image(LoggedObject):
 
     def get_height(self):
         return 40
+
+    def get_data(self):
+        return b"pretend this is PNG image data"
 
     def save(self, path):
         self._action("save", path=path)

@@ -1,5 +1,6 @@
+from decimal import ROUND_UP
+
 import System.Windows.Forms as WinForms
-from travertino.size import at_least
 
 from toga.widgets.slider import IntSliderImpl
 
@@ -34,10 +35,10 @@ class Slider(Widget, IntSliderImpl):
         self.on_change()
 
     def winforms_mouse_down(self, sender, event):
-        self.interface.on_press(None)
+        self.interface.on_press()
 
     def winforms_mouse_up(self, sender, event):
-        self.interface.on_release(None)
+        self.interface.on_release()
 
     def get_int_value(self):
         return self.native.Value
@@ -55,5 +56,6 @@ class Slider(Widget, IntSliderImpl):
         self.native.TickStyle = BOTTOM_RIGHT_TICK_STYLE if visible else NONE_TICK_STYLE
 
     def rehint(self):
-        self.interface.intrinsic.width = at_least(self.native.PreferredSize.Width)
-        self.interface.intrinsic.height = self.native.PreferredSize.Height
+        self.interface.intrinsic.height = self.scale_out(
+            self.native.PreferredSize.Height, ROUND_UP
+        )

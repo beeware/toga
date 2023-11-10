@@ -48,3 +48,6 @@ class BaseProbe:
         # same app. Unfortunately that makes it difficult to run tests in the
         # background.
         SendKeys.SendWait(key_code)
+
+    def assert_image_size(self, image_size, size):
+        assert image_size == (size[0] * self.scale_factor, size[1] * self.scale_factor)

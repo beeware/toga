@@ -63,31 +63,31 @@ class Canvas(Widget):
     def gtk_on_size_allocate(self, widget, allocation):
         """Called on widget resize, and calls the handler set on the interface, if
         any."""
-        self.interface.on_resize(None, width=allocation.width, height=allocation.height)
+        self.interface.on_resize(width=allocation.width, height=allocation.height)
 
     def mouse_down(self, obj, event):
         if event.button == 1:
             if event.type == Gdk.EventType._2BUTTON_PRESS:
-                self.interface.on_activate(None, event.x, event.y)
+                self.interface.on_activate(event.x, event.y)
             else:
-                self.interface.on_press(None, event.x, event.y)
+                self.interface.on_press(event.x, event.y)
         elif event.button == 3:
-            self.interface.on_alt_press(None, event.x, event.y)
+            self.interface.on_alt_press(event.x, event.y)
         else:  # pragma: no cover
             # Don't handle other button presses
             pass
 
     def mouse_move(self, obj, event):
         if event.state == Gdk.ModifierType.BUTTON1_MASK:
-            self.interface.on_drag(None, event.x, event.y)
+            self.interface.on_drag(event.x, event.y)
         if event.state == Gdk.ModifierType.BUTTON3_MASK:
-            self.interface.on_alt_drag(None, event.x, event.y)
+            self.interface.on_alt_drag(event.x, event.y)
 
     def mouse_up(self, obj, event):
         if event.button == 1:
-            self.interface.on_release(None, event.x, event.y)
+            self.interface.on_release(event.x, event.y)
         elif event.button == 3:
-            self.interface.on_alt_release(None, event.x, event.y)
+            self.interface.on_alt_release(event.x, event.y)
         else:  # pragma: no cover
             # Don't handle other button presses
             pass

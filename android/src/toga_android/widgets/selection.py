@@ -1,9 +1,9 @@
-from java import dynamic_proxy
-from travertino.size import at_least
+from decimal import ROUND_UP
 
 from android import R
 from android.view import View
 from android.widget import AdapterView, ArrayAdapter, Spinner
+from java import dynamic_proxy
 
 from .base import Widget
 
@@ -36,7 +36,7 @@ class Selection(Widget):
     # the change, and use self.last_selection to prevent duplication.
     def on_change(self, index):
         if index != self.last_selection:
-            self.interface.on_change(None)
+            self.interface.on_change()
             self.last_selection = index
 
     def insert(self, index, item):
@@ -69,7 +69,7 @@ class Selection(Widget):
                 self.select_item(self.last_selection)
 
         if removed_selection:
-            self.interface.on_change(None)
+            self.interface.on_change()
 
     def select_item(self, index, item=None):
         self.native.setSelection(index)
@@ -85,5 +85,6 @@ class Selection(Widget):
 
     def rehint(self):
         self.native.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
-        self.interface.intrinsic.width = at_least(self.native.getMeasuredWidth())
-        self.interface.intrinsic.height = self.native.getMeasuredHeight()
+        self.interface.intrinsic.height = self.scale_out(
+            self.native.getMeasuredHeight(), ROUND_UP
+        )

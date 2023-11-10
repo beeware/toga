@@ -1,10 +1,11 @@
-from java import dynamic_proxy
-from travertino.size import at_least
+from decimal import ROUND_UP
 
-import toga
 from android import R
 from android.view import View
 from android.widget import SeekBar
+from java import dynamic_proxy
+
+import toga
 
 from .base import Widget
 
@@ -24,10 +25,10 @@ class TogaOnSeekBarChangeListener(dynamic_proxy(SeekBar.OnSeekBarChangeListener)
         self.impl.on_change()
 
     def onStartTrackingTouch(self, native_seekbar):
-        self.impl.interface.on_press(None)
+        self.impl.interface.on_press()
 
     def onStopTrackingTouch(self, native_seekbar):
-        self.impl.interface.on_release(None)
+        self.impl.interface.on_release()
 
 
 class Slider(Widget, toga.widgets.slider.IntSliderImpl):
@@ -67,5 +68,6 @@ class Slider(Widget, toga.widgets.slider.IntSliderImpl):
 
     def rehint(self):
         self.native.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
-        self.interface.intrinsic.width = at_least(self.native.getMeasuredWidth())
-        self.interface.intrinsic.height = self.native.getMeasuredHeight()
+        self.interface.intrinsic.height = self.scale_out(
+            self.native.getMeasuredHeight(), ROUND_UP
+        )

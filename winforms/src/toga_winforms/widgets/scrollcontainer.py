@@ -3,7 +3,6 @@ from decimal import ROUND_DOWN
 from System.Drawing import Point
 from System.Windows.Forms import Panel, SystemInformation
 from travertino.node import Node
-from travertino.size import at_least
 
 from toga_winforms.container import Container
 
@@ -41,7 +40,7 @@ class ScrollContainer(Widget, Container):
         self.native.MouseWheel += WeakrefCallable(self.winforms_scroll)
 
     def winforms_scroll(self, sender, event):
-        self.interface.on_scroll(None)
+        self.interface.on_scroll()
 
     def set_bounds(self, x, y, width, height):
         super().set_bounds(x, y, width, height)
@@ -92,7 +91,7 @@ class ScrollContainer(Widget, Container):
     def set_horizontal(self, value):
         self.horizontal = value
         if not value:
-            self.interface.on_scroll(None)
+            self.interface.on_scroll()
         if self.interface.content:
             self.interface.content.refresh()
 
@@ -102,7 +101,7 @@ class ScrollContainer(Widget, Container):
     def set_vertical(self, value):
         self.vertical = value
         if not value:
-            self.interface.on_scroll(None)
+            self.interface.on_scroll()
         if self.interface.content:
             self.interface.content.refresh()
 
@@ -127,8 +126,4 @@ class ScrollContainer(Widget, Container):
             self.scale_in(horizontal_position),
             self.scale_in(vertical_position),
         )
-        self.interface.on_scroll(None)
-
-    def rehint(self):
-        self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
-        self.interface.intrinsic.height = at_least(self.interface._MIN_HEIGHT)
+        self.interface.on_scroll()

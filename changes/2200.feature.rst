@@ -1,0 +1,1 @@
+Most widgets with flexible sizes now default to a minimum size of 100 CSS pixels. An explicit size will still override this value.

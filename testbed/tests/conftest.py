@@ -6,6 +6,8 @@ from importlib import import_module
 from pytest import fixture, register_assert_rewrite, skip
 
 import toga
+from toga.colors import GOLDENROD
+from toga.style import Pack
 
 # Ideally, we'd register rewrites for "tests" and get all the submodules
 # recursively; however we've already imported "tests", so that raises a warning.
@@ -48,6 +50,21 @@ async def app_probe(app):
 @fixture(scope="session")
 def main_window(app):
     return app.main_window
+
+
+@fixture(scope="session")
+async def main_window_probe(app, main_window):
+    old_content = main_window.content
+
+    # Put something in the content window so that we know it's an app test
+    main_window.content = toga.Box(style=Pack(background_color=GOLDENROD))
+
+    module = import_module("tests_backend.window")
+    if app.run_slow:
+        print("\nConstructing Window probe")
+    yield getattr(module, "WindowProbe")(app, main_window)
+
+    main_window.content = old_content
 
 
 # Controls the event loop used by pytest-asyncio.

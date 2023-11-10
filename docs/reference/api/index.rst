@@ -7,13 +7,14 @@ API Reference
 Core application components
 ---------------------------
 
-=============================================== ===================================================
- Component                                       Description
-=============================================== ===================================================
- :doc:`Application </reference/api/app>`         The application itself
- :doc:`Window </reference/api/window>`           An operating system-managed container of widgets.
- :doc:`MainWindow </reference/api/mainwindow>`   The main window of the application.
-=============================================== ===================================================
+================================================= ===================================================
+ Component                                         Description
+================================================= ===================================================
+ :doc:`App </reference/api/app>`                   The top-level representation of an application.
+ :doc:`DocumentApp </reference/api/documentapp>`   An application that manages documents.
+ :doc:`Window </reference/api/window>`             An operating system-managed container of widgets.
+ :doc:`MainWindow </reference/api/mainwindow>`     The main window of the application.
+================================================= ===================================================
 
 General widgets
 ---------------
@@ -76,9 +77,9 @@ Resources
 ==================================================================== ========================================================================
  :doc:`App Paths </reference/api/resources/app_paths>`                A mechanism for obtaining platform-appropriate file system locations
                                                                       for an application.
- :doc:`Command </reference/api/resources/command>`                    Command
+ :doc:`Command </reference/api/resources/command>`                    A representation of app functionality that the user can invoke from
+                                                                      menus or toolbars.
  :doc:`Font </reference/api/resources/fonts>`                         Fonts
- :doc:`Group </reference/api/resources/group>`                        Command group
  :doc:`Icon </reference/api/resources/icons>`                         An icon for buttons, menus, etc
  :doc:`Image </reference/api/resources/images>`                       An image
  :doc:`ListSource </reference/api/resources/sources/list_source>`     A data source describing an ordered list of data.
@@ -95,15 +96,18 @@ Other
  Component                                      Description
 ============================================== ========================================================================
  :doc:`Constants </reference/api/constants>`    Symbolic constants used by various APIs.
+ :doc:`Keys </reference/api/keys>`              Symbolic representation of keys used for keyboard shortcuts.
 ============================================== ========================================================================
 
 .. toctree::
    :hidden:
 
    app
-   mainwindow
+   documentapp
    window
+   mainwindow
    containers/index
    resources/index
    widgets/index
    constants
+   keys

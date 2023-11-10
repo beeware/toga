@@ -1,11 +1,7 @@
-from ctypes import c_void_p
-
-from rubicon.objc import SEL, at, objc_method, objc_property, send_super
+from rubicon.objc import SEL, at, objc_method, objc_property
 from travertino.size import at_least
 
 import toga
-from toga.keys import Key
-from toga_cocoa.keys import toga_key
 from toga_cocoa.libs import (
     NSBezelBorder,
     NSIndexSet,
@@ -159,26 +155,16 @@ class TogaTree(NSOutlineView):
     #         else:
     #             self.reloadData()
 
-    @objc_method
-    def keyDown_(self, event) -> None:
-        # any time this table is in focus and a key is pressed, this method will be called
-        if toga_key(event) == {"key": Key.A, "modifiers": {Key.MOD_1}}:
-            if self.interface.multiple_select:
-                self.selectAll(self)
-        else:
-            # forward call to super
-            send_super(__class__, self, "keyDown:", event, argtypes=[c_void_p])
-
     # OutlineViewDelegate methods
     @objc_method
     def outlineViewSelectionDidChange_(self, notification) -> None:
-        self.interface.on_select(self.interface)
+        self.interface.on_select()
 
     # target methods
     @objc_method
     def onDoubleClick_(self, sender) -> None:
         node = self.itemAtRow(self.clickedRow).attrs["node"]
-        self.interface.on_activate(self.interface, node=node)
+        self.interface.on_activate(node=node)
 
 
 class Tree(Widget):

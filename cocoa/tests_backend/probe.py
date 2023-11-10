@@ -59,3 +59,8 @@ class BaseProbe:
             # Running at "normal" speed, we need to release to the event loop
             # for at least one iteration. `runUntilDate:None` does this.
             NSRunLoop.currentRunLoop.runUntilDate(None)
+
+    def assert_image_size(self, image_size, size):
+        # Cocoa reports image sizing in the natural screen coordinates, not the size of
+        # the backing store.
+        assert image_size == size

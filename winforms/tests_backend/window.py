@@ -1,7 +1,15 @@
 import asyncio
 from unittest.mock import Mock
 
-from System.Windows.Forms import Form, FormBorderStyle, FormWindowState
+from System import EventArgs
+from System.Windows.Forms import (
+    Form,
+    FormBorderStyle,
+    FormWindowState,
+    MenuStrip,
+    ToolStrip,
+    ToolStripSeparator,
+)
 
 from .probe import BaseProbe
 
@@ -33,8 +41,11 @@ class WindowProbe(BaseProbe):
     @property
     def content_size(self):
         return (
-            self.native.ClientSize.Width / self.scale_factor,
-            self.native.ClientSize.Height / self.scale_factor,
+            (self.native.ClientSize.Width) / self.scale_factor,
+            (
+                (self.native.ClientSize.Height - self.impl.top_bars_height())
+                / self.scale_factor
+            ),
         )
 
     @property
@@ -111,3 +122,29 @@ class WindowProbe(BaseProbe):
         else:
             dialog.native.SelectedPath = str(result[-1] if multiple_select else result)
             await self._close_dialog("\n")
+
+    def _native_toolbar(self):
+        for control in self.native.Controls:
+            if isinstance(control, ToolStrip) and not isinstance(control, MenuStrip):
+                return control
+        else:
+            return None
+
+    def has_toolbar(self):
+        return self._native_toolbar() is not None
+
+    def _native_toolbar_item(self, index):
+        return self._native_toolbar().Items[index]
+
+    def assert_is_toolbar_separator(self, index, section=False):
+        assert isinstance(self._native_toolbar_item(index), ToolStripSeparator)
+
+    def assert_toolbar_item(self, index, label, tooltip, has_icon, enabled):
+        item = self._native_toolbar_item(index)
+        assert item.Text == label
+        assert item.ToolTipText == tooltip
+        assert (item.Image is not None) == has_icon
+        assert item.Enabled == enabled
+
+    def press_toolbar_button(self, index):
+        self._native_toolbar_item(index).OnClick(EventArgs.Empty)

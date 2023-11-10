@@ -1,1 +1,0 @@
-Support for SplitContainers with more than 2 panels of content has been removed.

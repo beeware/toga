@@ -61,6 +61,7 @@ class MultilineTextInput(TextInput):
             self._set_placeholder_visible(False)
             self.native.Text = value
 
+    # This method is necessary to override the TextInput base class.
     def rehint(self):
         self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
         self.interface.intrinsic.height = at_least(self.interface._MIN_HEIGHT)
@@ -68,7 +69,7 @@ class MultilineTextInput(TextInput):
     def winforms_text_changed(self, sender, event):
         # Showing and hiding the placeholder should not cause an interface event.
         if not self._placeholder_visible:
-            self.interface.on_change(None)
+            self.interface.on_change()
 
     def _set_placeholder_visible(self, visible):
         # Changing ForeColor causes a native TextChanged event, so the order of these

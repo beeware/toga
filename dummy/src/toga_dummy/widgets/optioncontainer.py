@@ -1,8 +1,6 @@
-from ..utils import not_required
 from .base import Widget
 
 
-@not_required
 class Option:
     def __init__(self, text, widget, enabled):
         self.text = text
@@ -10,7 +8,6 @@ class Option:
         self.enabled = enabled
 
 
-@not_required  # Testbed coverage is complete for this widget.
 class OptionContainer(Widget):
     def create(self):
         self._action("create OptionContainer")
@@ -44,7 +41,7 @@ class OptionContainer(Widget):
 
     def set_current_tab_index(self, current_tab_index):
         self._set_value("current_tab_index", current_tab_index)
-        self.interface.on_select(None)
+        self.interface.on_select()
 
     def get_current_tab_index(self):
         return self._get_value("current_tab_index", None)

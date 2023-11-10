@@ -1,4 +1,4 @@
-from travertino.size import at_least
+from decimal import ROUND_UP
 
 from android import R
 from android.view import View
@@ -93,5 +93,6 @@ class ProgressBar(Widget):
             View.MeasureSpec.UNSPECIFIED,
             View.MeasureSpec.UNSPECIFIED,
         )
-        self.interface.intrinsic.width = at_least(self.native.getMeasuredWidth())
-        self.interface.intrinsic.height = self.native.getMeasuredHeight()
+        self.interface.intrinsic.height = self.scale_out(
+            self.native.getMeasuredHeight(), ROUND_UP
+        )

@@ -1,1 +1,0 @@
-Support for custom font loading was added to the GTK, Cocoa and iOS backends.

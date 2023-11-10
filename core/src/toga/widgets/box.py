@@ -4,6 +4,9 @@ from .base import Widget
 
 
 class Box(Widget):
+    _MIN_WIDTH = 0
+    _MIN_HEIGHT = 0
+
     def __init__(
         self,
         id: str | None = None,

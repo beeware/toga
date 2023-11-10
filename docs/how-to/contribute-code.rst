@@ -356,25 +356,6 @@ What should I do?
 Depending on your level of expertise, or areas of interest, there are a number
 of ways you can contribute to Toga's code.
 
-Improve test coverage for the core API
---------------------------------------
-
-If this is your first time contributing, this is probably the easiest place to
-start.
-
-Toga has a test suite that verifies that the public API behaves as expected.
-This API is tested against a "dummy" backend - a backend that implements the
-same API as the platform backends (e.g., ``toga-cocoa`` and ``toga-winforms``),
-but without relying on any specific platform graphical behavior. The dummy
-backend mocks the behavior of a real backend, and provides additional properties
-to verify when various actions have been performed on the backend.
-
-We want to get our core API 100% coverage, but we're not there yet - and you can
-help! Your task: create a test that improves coverage - even by one more line.
-
-Details on how to run the test suite and check coverage :ref:`can be found below
-<run-core-test-suite>`.
-
 Fix a bug in an existing widget
 -------------------------------
 
@@ -408,17 +389,16 @@ information provided by the reporter, and trying to reproduce it. Again, if you
 can't reproduce the problem, report what you have found as a comment on the
 ticket, and pick another ticket.
 
-If you can reproduce the problem - try to fix it! Work out what combination of
-core and backend-specific code is implementing the feature, and see if you can
-work out what isn't working correctly. You may need to refer to platform
-specific documentation (e.g., the `Cocoa AppKit
-<https://developer.apple.com/documentation/appkit?language=objc>`__, `iOS UIKit
-<https://developer.apple.com/documentation/uikit?language=objc>`__, `GTK
+If you can reproduce the problem - try to fix it! Work out what combination of core and
+backend-specific code is implementing the feature, and see if you can work out what
+isn't working correctly. You may need to refer to platform specific documentation (e.g.,
+the `Cocoa AppKit <https://developer.apple.com/documentation/appkit?language=objc>`__,
+`iOS UIKit <https://developer.apple.com/documentation/uikit?language=objc>`__, `GTK
 <https://docs.gtk.org/gtk3/>`__, `Winforms
 <https://learn.microsoft.com/en-us/dotnet/desktop/winforms/controls/overview?view=netdesktop-7.0>`__,
-`Android <https://developer.android.com/reference>`__ or `Shoelace
-<https://shoelace.style>`__ API documentation) to work out why a widget isn't
-behaving as expected.
+`Android <https://developer.android.com/reference>`__, `Shoelace
+<https://shoelace.style>`__ or `Textual <https://textual.textualize.io>`__ API
+documentation) to work out why a widget isn't behaving as expected.
 
 If you're able to fix the problem, you'll need to add tests for :ref:`the core
 API <run-core-test-suite>` and/or :ref:`the testbed backend <run-testbed>` for
@@ -431,27 +411,6 @@ the fix, that knowledge will often be enough for someone who knows more about a
 platform to solve the problem. Even a good reproduction case (a sample app that
 does nothing but reproduce the problem) can be a huge help.
 
-Convert from ``unittest`` to pytest
------------------------------------
-
-Toga's test suite was historically written using Python's builtin ``unittest``
-library. We're currently porting these old tests to pytest. Pick a widget that
-has ``unittest``-based tests, and port those tests over to pytest format. As you
-do this, make sure the test makes good use of pytest features (like fixtures and
-parameterization). The tests that have been already been ported to pytest are a
-good reference for what a good Toga pytest looks like.
-
-Improve test coverage for a backend API
----------------------------------------
-
-If you've got expertise in a particular platform (for example, if you've got
-experience writing iOS apps), or you'd *like* to have that experience, you might
-want to look into writing tests for a platform backend. We want to get to 100%
-coverage for all the backend APIs, but we're a long way from that goal.
-
-The platform backends are tested using a testbed app. Details on how to run the
-testbed app for a given platform :ref:`can be found below <run-testbed>`.
-
 Contribute improvements to documentation
 ----------------------------------------
 
@@ -463,19 +422,21 @@ on.
 Implement a platform native widget
 ----------------------------------
 
-If the core library already specifies an interface for a widget, but the widget
-isn't implemented on your platform of choice, implement that interface. The
-:doc:`supported widgets by platform </reference/widgets_by_platform>` table can
-show you the widgets that are missing on various platforms. You can also look
-for log messages in a running app (or the direct ``factory.not_implemented()``
-function calls that produce those log messages). At present, the web backend
-has a lot of missing widgets, so if you have web skills, or would like to learn
-more about `PyScript <https://pyscript.net>`__ and `Shoelace
-<https://shoelace.style>`__, this could be a good place to contribute.
+If the core library already specifies an interface for a widget, but the widget isn't
+implemented on your platform of choice, implement that interface. The :doc:`supported
+widgets by platform </reference/widgets_by_platform>` table can show you the widgets
+that are missing on various platforms. You can also look for log messages in a running
+app (or the direct ``factory.not_implemented()`` function calls that produce those log
+messages). At present, the Web and Textual backends have the most missing widgets. If
+you have web skills, or would like to learn more about `PyScript
+<https://pyscript.net>`__ and `Shoelace <https://shoelace.style>`__, the web backend
+could be a good place to contribute; if you'd like to learn more about terminal
+applications and the or `Textual <https://textual.textualize.io>`__ API, contributing to
+the Textual backend could be a good place for you to contribute.
 
 Alternatively, if there's a widget that doesn't exist, propose an interface
 design, and implement it for at least one platform. You may find `this
-presentation by BeeWare team member Dan Yeaw
+presentation by BeeWare emeritus team member Dan Yeaw
 <https://www.youtube.com/watch?v=sWt_sEZUiY8>`__ helpful. This talk gives an
 architectural overview of Toga, as well as providing a guide to the process of
 adding new widgets.
@@ -499,11 +460,10 @@ you add.
 Implement an entirely new platform backend
 ------------------------------------------
 
-Toga currently has support for 6 backends - but there's room for more! In
+Toga currently has support for 7 backends - but there's room for more! In
 particular, we'd be interested in seeing a `Qt-based backend
 <https://github.com/beeware/toga/issues/1142>`__ to support KDE-based Linux
-desktops, and a `Textual-based console backend
-<https://github.com/beeware/toga/issues/1867>`__.
+desktops.
 
 The first steps of any new platform backend are always the same:
 
@@ -550,19 +510,19 @@ To run the core test suite:
 
     .. code-block:: console
 
-      (venv) $ tox -e py-core
+      (venv) $ tox -e py
 
   .. group-tab:: Linux
 
     .. code-block:: console
 
-      (venv) $ tox -e py-core
+      (venv) $ tox -e py
 
   .. group-tab:: Windows
 
     .. code-block:: doscon
 
-      (venv) C:\...>tox -e py-core
+      (venv) C:\...>tox -e py
 
 You should get some output indicating that tests have been run. You may see
 ``SKIPPED`` tests, but shouldn't ever get any ``FAIL`` or ``ERROR`` test
@@ -571,51 +531,31 @@ discovers any problems, we don't merge the patch. If you do find a test error or
 failure, either there's something odd in your test environment, or you've found
 an edge case that we haven't seen before - either way, let us know!
 
-Although the tests should all pass, the test suite itself is still incomplete.
-There are many aspects of the Toga Core API that aren't currently tested (or
-aren't tested thoroughly). To work out what *isn't* tested, Toga uses a tool
-called `coverage <https://coverage.readthedocs.io/en/latest>`__. Coverage allows
-you to check which lines of code have (and haven't) been executed - which then
-gives you an idea of what code has (and hasn't) been tested.
-
 At the end of the test output there should be a report of the coverage data that
 was gathered::
 
-      Name                                 Stmts   Miss  Cover   Missing
-      ------------------------------------------------------------------
-      toga/__init__.py                        29      0   100%
-      toga/app.py                             50      0   100%
-      ...
-      toga/window.py                          79     18    77%   58, 75, 87, 92, 104, 141, 155, 164, 168, 172-173, 176, 192, 204, 216, 228, 243, 257
-      ------------------------------------------------------------------
-      TOTAL                                 1034    258    75%
+    Name    Stmts   Miss Branch BrPart   Cover   Missing
+    ----------------------------------------------------
+    TOTAL    4345      0   1040      0  100.0%
 
-What does this all mean? Well, the "Cover" column tells you what proportion of
-lines in a given file were executed during the test run. In this run, every
-line of ``toga/app.py`` was executed; but only 77% of lines in
-``toga/window.py`` were executed. Which lines were missed? They're listed in
-the next column: lines 58, 75, 87, and so on weren't executed.
+This tells us that the test suite has executed every possible branching path
+in the ``toga-core`` library. This isn't a 100% guarantee that there are no bugs,
+but it does mean that we're exercising every line of code in the core API.
 
-Ideally, every single line in every single file will have 100% coverage. If you
-look in `core/tests`, you should find a test file that matches the name of the
-file that has insufficient coverage. If you don't, it's possible the entire test
-file is missing - so you'll have to create it!
+If you make changes to the core API, it's possible you'll introduce a gap in this
+coverage. When this happens, the coverage report will tell you which lines aren't
+being executed. For example, lets say we made a change to ``toga/window.py``,
+adding some new logic. The coverage report might look something like::
 
-Once you've written a test, re-run the test suite to generate fresh coverage
-data. Let's say we added a test for line 58 of ``toga/window.py`` - we'd
-expect to see something like::
+  Name                 Stmts   Miss Branch BrPart  Cover   Missing
+  ----------------------------------------------------------------
+  src/toga/window.py     186      2     22      2  98.1%   211, 238-240
+  ----------------------------------------------------------------
+  TOTAL                 4345      2   1040      2  99.9%
 
-      Name                                 Stmts   Miss  Cover   Missing
-      ------------------------------------------------------------------
-      toga/__init__.py                        29      0   100%
-      toga/app.py                             50      0   100%
-      ...
-      toga/window.py                          79     17    78%   75, 87, 92, 104, 141, 155, 164, 168, 172-173, 176, 192, 204, 216, 228, 243, 257
-      ------------------------------------------------------------------
-      TOTAL                                 1034    257    75%
-
-That is, one more test has been executed, resulting in one less missing line
-in the coverage results.
+This tells us that line 211, and lines 238-240 are not being executed by the test
+suite. You'll need to add new tests (or modify an existing test) to restore this
+coverage.
 
 When you're developing your new test, it may be helpful to run *just* that one
 test. To do this, you can pass in the name of a specific test file (or a
@@ -628,19 +568,19 @@ specific test, using `pytest specifiers
 
     .. code-block:: console
 
-      (venv) $ tox -e py-core -- tests/path_to_test_file/test_some_test.py
+      (venv) $ tox -e py -- tests/path_to_test_file/test_some_test.py
 
   .. group-tab:: Linux
 
     .. code-block:: console
 
-      (venv) $ tox -e py-core -- tests/path_to_test_file/test_some_test.py
+      (venv) $ tox -e py -- tests/path_to_test_file/test_some_test.py
 
   .. group-tab:: Windows
 
     .. code-block:: doscon
 
-      (venv) C:\...>tox -e py-core -- tests/path_to_test_file/test_some_test.py
+      (venv) C:\...>tox -e py -- tests/path_to_test_file/test_some_test.py
 
 These test paths are relative to the ``core`` directory. You'll still get a
 coverage report when running a part of the test suite - but the coverage results
@@ -835,6 +775,8 @@ For example, Cocoa doesn't support setting the text color of buttons; as a
 result, the Cocoa implementation of the ``color`` `property of the Button probe
 <https://github.com/beeware/toga/blob/main/cocoa/tests_backend/widgets/button.py#L17>`__
 performs an ``xfail`` describing that limitation.
+
+.. _pr-housekeeping:
 
 Submitting a pull request
 =========================

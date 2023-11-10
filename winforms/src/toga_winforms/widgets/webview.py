@@ -9,7 +9,6 @@ from System import (
 )
 from System.Drawing import Color
 from System.Threading.Tasks import Task, TaskScheduler
-from travertino.size import at_least
 
 import toga
 from toga.widgets.webview import JavaScriptResult
@@ -116,7 +115,7 @@ class WebView(Widget):
             raise RuntimeError(args.InitializationException)
 
     def winforms_navigation_completed(self, sender, args):
-        self.interface.on_webview_load(self.interface)
+        self.interface.on_webview_load()
 
         if self.loaded_future:
             self.loaded_future.set_result(None)
@@ -174,7 +173,3 @@ class WebView(Widget):
 
         self.run_after_initialization(execute)
         return result
-
-    def rehint(self):
-        self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
-        self.interface.intrinsic.height = at_least(self.interface._MIN_HEIGHT)

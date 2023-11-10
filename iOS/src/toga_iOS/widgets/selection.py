@@ -48,7 +48,7 @@ class TogaPickerView(UIPickerView):
         item = self.interface.items[row]
         label = self.interface._title_for_item(item)
         self.native.text = label
-        self.interface.on_change(None)
+        self.interface.on_change()
 
 
 class Selection(Widget):
@@ -156,7 +156,7 @@ class Selection(Widget):
             self.native_picker.selectRow(index, inComponent=0, animated=False)
         else:
             self.native.text = ""
-        self.interface.on_change(None)
+        self.interface.on_change()
 
     def get_selected_index(self):
         if self._empty:

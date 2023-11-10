@@ -22,7 +22,7 @@ class TogaScrollView(NSScrollView):
 
     @objc_method
     def didScroll_(self, note) -> None:
-        self.interface.on_scroll(None)
+        self.interface.on_scroll()
 
     @objc_method
     def refreshContent(self):
@@ -109,7 +109,7 @@ class ScrollContainer(Widget):
 
         # Disabling scrolling implies a position reset; that's a scroll event.
         if not value:
-            self.interface.on_scroll(None)
+            self.interface.on_scroll()
 
     def get_horizontal(self):
         return self.native.hasHorizontalScroller
@@ -123,7 +123,7 @@ class ScrollContainer(Widget):
 
         # Disabling scrolling implies a position reset; that's a scroll event.
         if not value:
-            self.interface.on_scroll(None)
+            self.interface.on_scroll()
 
     def rehint(self):
         self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
@@ -161,4 +161,4 @@ class ScrollContainer(Widget):
         new_position = NSMakePoint(horizontal_position, vertical_position)
         self.native.contentView.scrollToPoint(new_position)
         self.native.reflectScrolledClipView(self.native.contentView)
-        self.interface.on_scroll(None)
+        self.interface.on_scroll()

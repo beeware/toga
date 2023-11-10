@@ -1,15 +1,13 @@
 from dataclasses import dataclass
 
-from androidx.swiperefreshlayout.widget import SwipeRefreshLayout
-from java import dynamic_proxy
-from travertino.size import at_least
-
 from android import R
 from android.app import AlertDialog
 from android.content import DialogInterface
 from android.graphics import Rect
 from android.view import Gravity, View
 from android.widget import ImageView, LinearLayout, RelativeLayout, ScrollView, TextView
+from androidx.swiperefreshlayout.widget import SwipeRefreshLayout
+from java import dynamic_proxy
 
 from .base import Widget
 
@@ -22,7 +20,7 @@ class DetailedListOnClickListener(dynamic_proxy(View.OnClickListener)):
 
     def onClick(self, _view):
         self.impl._set_selection(self.row_number)
-        self.impl.interface.on_select(None)
+        self.impl.interface.on_select()
 
 
 @dataclass
@@ -41,7 +39,7 @@ class DetailedListOnLongClickListener(dynamic_proxy(View.OnLongClickListener)):
 
     def onLongClick(self, _view):
         self.impl._set_selection(self.row_number)
-        self.impl.interface.on_select(None)
+        self.impl.interface.on_select()
 
         actions = [
             action
@@ -77,7 +75,7 @@ class DetailedListActionListener(dynamic_proxy(DialogInterface.OnClickListener))
         self.row = row
 
     def onClick(self, dialog, which):
-        self.actions[which].handler(None, row=self.row)
+        self.actions[which].handler(row=self.row)
 
 
 class OnRefreshListener(dynamic_proxy(SwipeRefreshLayout.OnRefreshListener)):
@@ -86,7 +84,7 @@ class OnRefreshListener(dynamic_proxy(SwipeRefreshLayout.OnRefreshListener)):
         self._interface = interface
 
     def onRefresh(self):
-        self._interface.on_refresh(None)
+        self._interface.on_refresh()
 
 
 class DetailedList(Widget):
@@ -244,7 +242,3 @@ class DetailedList(Widget):
             hit_rect,
             True,  # Immediate, not animated
         )
-
-    def rehint(self):
-        self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
-        self.interface.intrinsic.height = at_least(self.interface._MIN_HEIGHT)

@@ -1,15 +1,13 @@
-from ..utils import not_required
 from .base import Widget
 
 
-@not_required  # Testbed coverage is complete for this widget.
 class Table(Widget):
     def create(self):
         self._action("create Table")
 
     def change_source(self, source):
         self._action("change source", source=source)
-        self.interface.on_select(None)
+        self.interface.on_select()
 
     def insert(self, index, item):
         self._action("insert row", index=index, item=item)
@@ -40,7 +38,7 @@ class Table(Widget):
 
     def simulate_selection(self, row):
         self._set_value("selection", row)
-        self.interface.on_select(None)
+        self.interface.on_select()
 
     def simulate_activate(self, row):
-        self.interface.on_activate(None, row=self.interface.data[row])
+        self.interface.on_activate(row=self.interface.data[row])

@@ -12,11 +12,6 @@ from toga_dummy.utils import (
 
 
 @pytest.fixture
-def app(event_loop):
-    return toga.App("Test App", "org.beeware.toga.window")
-
-
-@pytest.fixture
 def window(app):
     return toga.Window()
 
@@ -75,12 +70,22 @@ def test_window_created_explicit(app):
     assert window.on_close._raw == on_close_handler
 
 
+def test_window_created_without_app():
+    "A window cannot be created without an active app"
+    toga.App.app = None
+    with pytest.raises(
+        RuntimeError, match="Cannot create a Window before creating an App"
+    ):
+        toga.Window()
+
+
 def test_set_app(window, app):
     """A window's app cannot be reassigned"""
     assert window.app == app
 
+    app2 = toga.App("Test App 2", "org.beeware.toga.test-app-2")
     with pytest.raises(ValueError, match=r"Window is already associated with an App"):
-        window.app = app
+        window.app = app2
 
 
 def test_set_app_with_content(window, app):
@@ -108,6 +113,31 @@ def test_title(window, value, expected):
     """The title of the window can be changed"""
     window.title = value
     assert window.title == expected
+
+
+def test_toolbar_implicit_add(window, app):
+    """Adding an item to to a toolbar implicitly adds it to the app."""
+    cmd1 = toga.Command(None, "Command 1")
+    cmd2 = toga.Command(None, "Command 2")
+
+    toolbar = window.toolbar
+    assert list(toolbar) == []
+    assert list(app.commands) == []
+
+    # Adding a command to the toolbar automatically adds it to the app
+    toolbar.add(cmd1)
+    assert list(toolbar) == [cmd1]
+    assert list(app.commands) == [cmd1]
+
+    # But not vice versa
+    app.commands.add(cmd2)
+    assert list(toolbar) == [cmd1]
+    assert list(app.commands) == [cmd1, cmd2]
+
+    # Adding a command to both places does not cause a duplicate
+    app.commands.add(cmd1)
+    assert list(toolbar) == [cmd1]
+    assert list(app.commands) == [cmd1, cmd2]
 
 
 def test_change_content(window, app):
@@ -314,6 +344,13 @@ def test_close_rejected_handler(window, app):
     assert window in app.windows
     assert_action_not_performed(window, "close")
     on_close_handler.assert_called_once_with(window)
+
+
+def test_as_image(window):
+    """A window can be captured as an image"""
+    image = window.as_image()
+
+    assert image.data == b"pretend this is PNG image data"
 
 
 def test_info_dialog(window, app):

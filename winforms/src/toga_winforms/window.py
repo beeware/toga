@@ -1,7 +1,9 @@
 import System.Windows.Forms as WinForms
-from System.Drawing import Point, Size
+from System.Drawing import Bitmap, Graphics, Point, Size
+from System.Drawing.Imaging import ImageFormat
+from System.IO import MemoryStream
 
-from toga import GROUP_BREAK, SECTION_BREAK
+from toga.command import GROUP_BREAK, SECTION_BREAK
 
 from .container import Container
 from .libs.wrapper import WeakrefCallable
@@ -47,6 +49,7 @@ class Window(Container, Scalable):
                 # defaults to `Top`.
                 self.toolbar_native = WinForms.ToolStrip()
                 self.native.Controls.Add(self.toolbar_native)
+                self.toolbar_native.BringToFront()  # In a dock, "front" means "bottom".
 
             for cmd in self.interface.toolbar:
                 if cmd == GROUP_BREAK:
@@ -54,14 +57,13 @@ class Window(Container, Scalable):
                 elif cmd == SECTION_BREAK:
                     item = WinForms.ToolStripSeparator()
                 else:
+                    item = WinForms.ToolStripMenuItem(cmd.text)
+                    if cmd.tooltip is not None:
+                        item.ToolTipText = cmd.tooltip
                     if cmd.icon is not None:
-                        native_icon = cmd.icon._impl.native
-                        item = WinForms.ToolStripMenuItem(
-                            cmd.text, native_icon.ToBitmap()
-                        )
-                    else:
-                        item = WinForms.ToolStripMenuItem(cmd.text)
-                    item.Click += WeakrefCallable(cmd._impl.winforms_handler)
+                        item.Image = cmd.icon._impl.native.ToBitmap()
+                    item.Enabled = cmd.enabled
+                    item.Click += WeakrefCallable(cmd._impl.winforms_Click)
                     cmd._impl.native.append(item)
                 self.toolbar_native.Items.Add(item)
 
@@ -80,10 +82,17 @@ class Window(Container, Scalable):
 
     def get_size(self):
         size = self.native.Size
-        return tuple(map(self.scale_out, (size.Width, size.Height)))
+        return (
+            self.scale_out(size.Width - self.decor_width()),
+            self.scale_out(size.Height - self.decor_height()),
+        )
 
     def set_size(self, size):
-        self.native.Size = Size(*map(self.scale_in, size))
+        width, height = size
+        self.native.Size = Size(
+            self.scale_in(width) + self.decor_width(),
+            self.scale_in(height) + self.decor_height(),
+        )
 
     def set_app(self, app):
         icon_impl = app.interface.icon._impl
@@ -97,16 +106,13 @@ class Window(Container, Scalable):
 
     def refreshed(self):
         super().refreshed()
-
-        # Enforce a minimum window size. This takes into account the title bar and
-        # borders, which are included in Size but not in ClientSize.
-        decor_size = self.native.Size - self.native.ClientSize
         layout = self.interface.content.layout
-        min_client_size = Size(
-            self.scale_in(layout.min_width),
-            self.scale_in(layout.min_height) + self.top_bars_height(),
+        self.native.MinimumSize = Size(
+            self.scale_in(layout.min_width) + self.decor_width(),
+            self.scale_in(layout.min_height)
+            + self.top_bars_height()
+            + self.decor_height(),
         )
-        self.native.MinimumSize = decor_size + min_client_size
 
     def show(self):
         if self.interface.content is not None:
@@ -133,7 +139,7 @@ class Window(Container, Scalable):
                 event.Cancel = True
             else:
                 # See _is_closing comment in __init__.
-                self.interface.on_close(None)
+                self.interface.on_close()
                 event.Cancel = True
 
     def set_full_screen(self, is_full_screen):
@@ -151,6 +157,15 @@ class Window(Container, Scalable):
         self._is_closing = True
         self.native.Close()
 
+    # "Decor" includes the title bar and the (usually invisible) resize borders. It does
+    # not include the menu bar and toolbar, which are included in the ClientSize (see
+    # top_bars_height).
+    def decor_width(self):
+        return self.native.Size.Width - self.native.ClientSize.Width
+
+    def decor_height(self):
+        return self.native.Size.Height - self.native.ClientSize.Height
+
     def top_bars_height(self):
         vertical_shift = 0
         if self.toolbar_native:
@@ -166,3 +181,18 @@ class Window(Container, Scalable):
             self.native.ClientSize.Width,
             self.native.ClientSize.Height - vertical_shift,
         )
+
+    def get_image_data(self):
+        size = Size(self.native_content.Size.Width, self.native_content.Size.Height)
+        bitmap = Bitmap(size.Width, size.Height)
+        graphics = Graphics.FromImage(bitmap)
+
+        graphics.CopyFromScreen(
+            self.native_content.PointToScreen(Point.Empty),
+            Point(0, 0),
+            size,
+        )
+
+        stream = MemoryStream()
+        bitmap.Save(stream, ImageFormat.Png)
+        return stream.ToArray()

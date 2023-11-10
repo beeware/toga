@@ -15,11 +15,6 @@ from toga_dummy.utils import (
 
 
 @pytest.fixture
-def app():
-    return toga.App("ImageView Test", "org.beeware.toga.widgets.imageview")
-
-
-@pytest.fixture
 def widget(app):
     return toga.ImageView()
 

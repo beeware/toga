@@ -198,3 +198,13 @@ kCGBitmapByteOrder32Big = 4 << 12
 
 def CGRectMake(x, y, w, h):
     return CGRect(CGPoint(x, y), CGSize(w, h))
+
+
+######################################################################
+# CGImage.h
+
+CGImageRef = c_void_p
+register_preferred_encoding(b"^{CGImage=}", CGImageRef)
+
+core_graphics.CGImageCreateWithImageInRect.argtypes = [CGImageRef, CGRect]
+core_graphics.CGImageCreateWithImageInRect.restype = CGImageRef

@@ -25,7 +25,7 @@ class WindowProbe(BaseProbe):
         assert isinstance(self.native, Gtk.Window)
 
     async def wait_for_window(self, message, minimize=False, full_screen=False):
-        await self.redraw(message, delay=0.5 if full_screen or minimize else 0.1)
+        await self.redraw(message, delay=0.5 if (full_screen or minimize) else 0.1)
 
     def close(self):
         if self.is_closable:
@@ -229,3 +229,25 @@ class WindowProbe(BaseProbe):
                 f"({'OPEN' if result else 'CANCEL'}) dismissed"
             ),
         )
+
+    def has_toolbar(self):
+        return self.impl.native_toolbar.get_n_items() > 0
+
+    def assert_is_toolbar_separator(self, index, section=False):
+        item = self.impl.native_toolbar.get_nth_item(index)
+        assert isinstance(item, Gtk.SeparatorToolItem)
+        assert item.get_draw() == (not section)
+
+    def assert_toolbar_item(self, index, label, tooltip, has_icon, enabled):
+        item = self.impl.native_toolbar.get_nth_item(index)
+        assert item.get_label() == label
+        # FIXME: get_tooltip_text() doesn't work. The tooltip can be set, but the
+        # API to return the value just doesn't work. If it is ever fixed, this
+        # is the test for it:
+        # assert (None if item.get_tooltip_text() is None else item.get_tooltip_text()) == tooltip
+        assert (item.get_icon_widget() is not None) == has_icon
+        assert item.get_sensitive() == enabled
+
+    def press_toolbar_button(self, index):
+        item = self.impl.native_toolbar.get_nth_item(index)
+        item.emit("clicked")

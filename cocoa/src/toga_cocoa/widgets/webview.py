@@ -1,5 +1,4 @@
-from rubicon.objc import objc_method, objc_property, py_from_ns
-from rubicon.objc.runtime import objc_id
+from rubicon.objc import objc_id, objc_method, objc_property, py_from_ns
 from travertino.size import at_least
 
 from toga.widgets.webview import JavaScriptResult
@@ -31,7 +30,7 @@ class TogaWebView(WKWebView):
 
     @objc_method
     def webView_didFinishNavigation_(self, navigation) -> None:
-        self.interface.on_webview_load(self.interface)
+        self.interface.on_webview_load()
 
         if self.impl.loaded_future:
             self.impl.loaded_future.set_result(None)

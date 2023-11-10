@@ -1,9 +1,8 @@
 from datetime import date, datetime, time
 
-from java import dynamic_proxy
-
 from android import R
 from android.app import DatePickerDialog
+from java import dynamic_proxy
 
 from .internal.pickers import PickerBase
 
@@ -43,7 +42,7 @@ class DateInput(PickerBase):
     def set_value(self, value):
         self.native.setText(value.isoformat())
         self._dialog.updateDate(value.year, value.month - 1, value.day)
-        self.interface.on_change(None)
+        self.interface.on_change()
 
     def get_min_date(self):
         return py_date(self._picker.getMinDate())

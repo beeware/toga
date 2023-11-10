@@ -1,13 +1,13 @@
 from abc import ABC, abstractmethod
-from decimal import ROUND_HALF_EVEN, ROUND_UP, Decimal
-
-from org.beeware.android import MainActivity
-from travertino.size import at_least
+from decimal import ROUND_HALF_EVEN, Decimal
 
 from android.graphics import PorterDuff, PorterDuffColorFilter, Rect
 from android.graphics.drawable import ColorDrawable, InsetDrawable
 from android.view import Gravity, View
 from android.widget import RelativeLayout
+from org.beeware.android import MainActivity
+from travertino.size import at_least
+
 from toga.constants import CENTER, JUSTIFY, LEFT, RIGHT, TRANSPARENT
 
 from ..colors import native_color
@@ -33,7 +33,7 @@ class Scalable:
             return self.scale_round(value / self.dpi_scale, rounding)
 
     def scale_round(self, value, rounding):
-        if rounding is None:
+        if rounding is None:  # pragma: no cover
             return value
         return int(Decimal(value).to_integral(rounding))
 
@@ -182,18 +182,13 @@ class Widget(ABC, Scalable):
     # TODO: consider calling requestLayout or forceLayout here
     # (https://github.com/beeware/toga/issues/1289#issuecomment-1453096034)
     def refresh(self):
-        intrinsic = self.interface.intrinsic
-        intrinsic.width = intrinsic.height = None
+        # Default values; may be overwritten by rehint().
+        self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
+        self.interface.intrinsic.height = at_least(self.interface._MIN_HEIGHT)
         self.rehint()
-        assert intrinsic.width is not None, self
-        assert intrinsic.height is not None, self
 
-        intrinsic.width = self.scale_out(intrinsic.width, ROUND_UP)
-        intrinsic.height = self.scale_out(intrinsic.height, ROUND_UP)
-
-    @abstractmethod
     def rehint(self):
-        ...
+        pass
 
 
 def align(value):

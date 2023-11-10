@@ -1,1 +1,0 @@
-The root user prompt ``#`` has been removed as a prompt match for copying commands from code blocks.

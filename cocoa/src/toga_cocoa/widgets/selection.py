@@ -11,7 +11,7 @@ class TogaPopupButton(NSPopUpButton):
 
     @objc_method
     def onSelect_(self, obj) -> None:
-        self.interface.on_change(None)
+        self.interface.on_change()
 
 
 class Selection(Widget):
@@ -41,7 +41,7 @@ class Selection(Widget):
         # If this is the first time item in the list, it will be automatically
         # selected; trigger a change event.
         if len(self.interface.items) == 1:
-            self.interface.on_change(None)
+            self.interface.on_change()
 
     def change(self, item):
         index = self.interface._items.index(item)
@@ -56,15 +56,15 @@ class Selection(Widget):
         self.native.removeItemAtIndex(index)
 
         if selection_change:
-            self.interface.on_change(None)
+            self.interface.on_change()
 
     def clear(self):
         self.native.removeAllItems()
-        self.interface.on_change(None)
+        self.interface.on_change()
 
     def select_item(self, index, item):
         self.native.selectItemAtIndex(index)
-        self.interface.on_change(None)
+        self.interface.on_change()
 
     def get_selected_index(self):
         index = self.native.indexOfSelectedItem

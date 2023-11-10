@@ -1,8 +1,8 @@
 from ctypes import c_uint, windll
 from ctypes.wintypes import HWND, WPARAM
+from decimal import ROUND_UP
 
 import System.Windows.Forms as WinForms
-from travertino.size import at_least
 
 from toga_winforms.colors import native_color
 from toga_winforms.libs.fonts import HorizontalTextAlignment
@@ -71,25 +71,23 @@ class TextInput(Widget):
             self.native.ForeColor = self.native.DefaultForeColor
 
     def rehint(self):
-        # Height of a text input is known and fixed.
-        # Width must be > 100
-        # print("REHINT TextInput", self, self.native.PreferredSize)
-        self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
-        self.interface.intrinsic.height = self.native.PreferredSize.Height
+        self.interface.intrinsic.height = self.scale_out(
+            self.native.PreferredSize.Height, ROUND_UP
+        )
 
     def winforms_text_changed(self, sender, event):
-        self.interface.on_change(self.interface)
+        self.interface.on_change()
         self.interface._validate()
 
     def winforms_key_press(self, sender, event):
         if ord(event.KeyChar) == int(WinForms.Keys.Enter):
-            self.interface.on_confirm(self.interface)
+            self.interface.on_confirm()
 
     def winforms_got_focus(self, sender, event):
-        self.interface.on_gain_focus(self.interface)
+        self.interface.on_gain_focus()
 
     def winforms_lost_focus(self, sender, event):
-        self.interface.on_lose_focus(self.interface)
+        self.interface.on_lose_focus()
 
     def is_valid(self):
         return self.error_provider.GetError(self.native) == ""

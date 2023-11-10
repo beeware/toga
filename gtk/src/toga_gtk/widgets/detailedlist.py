@@ -283,11 +283,11 @@ class DetailedList(Widget):
         self.hide_actions()
 
     def gtk_on_refresh_clicked(self, widget):
-        self.interface.on_refresh(self.interface)
+        self.interface.on_refresh()
 
     def gtk_on_row_selected(self, w: Gtk.ListBox, item_impl: Gtk.ListBoxRow):
         self.hide_actions()
-        self.interface.on_select(self.interface)
+        self.interface.on_select()
 
     def gtk_on_right_click(self, gesture, n_press, x, y):
         rect = Gdk.Rectangle()
@@ -307,11 +307,11 @@ class DetailedList(Widget):
             self._active_row = None
 
     def gtk_on_primary_clicked(self, widget):
-        self.interface.on_primary_action(None, row=self._active_row.row)
+        self.interface.on_primary_action(row=self._active_row.row)
         self.hide_actions()
 
     def gtk_on_secondary_clicked(self, widget):
-        self.interface.on_secondary_action(None, row=self._active_row.row)
+        self.interface.on_secondary_action(row=self._active_row.row)
         self.hide_actions()
 
     def update_refresh_button(self):

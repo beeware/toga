@@ -25,6 +25,14 @@ class Image:
     def get_height(self):
         return self.native.get_height()
 
+    def get_data(self):
+        success, buffer = self.native.save_to_bufferv("png")
+        if success:
+            return buffer
+        else:  # pragma: nocover
+            # This shouldn't ever happen, and it's difficult to manufacture in test conditions
+            raise ValueError("Unable to get PNG data for image")
+
     def save(self, path):
         path = Path(path)
         try:
