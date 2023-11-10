@@ -18,8 +18,6 @@ class DateInput(Widget):
         self._return_listener = None
         self.native = self._create_native_widget("sl-input")
         self.native.setAttribute("type", "date")
-
-        self.set_value(datetime.date.today().strftime("%Y-%m-%d"))
         self.native.addEventListener("sl-change", create_proxy(self.on_change))
 
     def get_value(self):
