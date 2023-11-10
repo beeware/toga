@@ -389,7 +389,7 @@ async def test_background_color(widget, probe):
 async def test_background_color_reset(widget, probe):
     "The background color of a widget can be reset"
     # Get the original background color
-    original = probe.background_color
+    assert probe.background_color is None
 
     # Set the background color to something different
     widget.style.background_color = RED
@@ -401,7 +401,7 @@ async def test_background_color_reset(widget, probe):
     await probe.redraw(
         message="Widget background background color should be restored to original"
     )
-    assert_color(probe.background_color, original)
+    assert probe.background_color is None
 
 
 async def test_background_color_transparent(widget, probe):

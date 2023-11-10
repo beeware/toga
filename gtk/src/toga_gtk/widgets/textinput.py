@@ -25,10 +25,10 @@ class TextInput(Widget):
         self.interface.on_change()
         self.interface._validate()
 
-    def gtk_focus_in_event(self, entry, user_data):
+    def gtk_focus_in_event(self, event_controller_key):
         self.interface.on_gain_focus(self.interface)
 
-    def gtk_focus_out_event(self, entry, user_data):
+    def gtk_focus_out_event(self, event_controller_key):
         self.interface.on_lose_focus(self.interface)
 
     def gtk_key_press_event(self, event_controller_key, keyval, keycode, state):

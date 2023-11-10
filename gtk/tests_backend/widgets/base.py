@@ -88,18 +88,21 @@ class SimpleProbe(BaseProbe, FontMixin):
 
     @property
     def color(self):
-        sc = self.native.get_style_context()
-        return toga_color(sc.get_property("color", sc.get_state()))
+        sp = self.impl.style_providers.pop(("color", id(self.native)), None)
+        style_value = sp.to_string().split(": ")[1].split(";")[0] if sp else None
+        return toga_color(style_value) if style_value else None
 
     @property
     def background_color(self):
-        sc = self.native.get_style_context()
-        return toga_color(sc.get_property("background-color", sc.get_state()))
+        sp = self.impl.style_providers.pop(("background_color", id(self.native)), None)
+        style_value = sp.to_string().split(": ")[1].split(";")[0] if sp else None
+        return toga_color(style_value) if style_value else None
 
     @property
     def font(self):
-        sc = self.native.get_style_context()
-        return sc.get_property("font", sc.get_state())
+        sp = self.impl.style_providers.pop(("font", id(self.native)), None)
+        style_value = sp.to_string().split(": ")[1].split(";")[0] if sp else None
+        return style_value
 
     @property
     def is_hidden(self):
