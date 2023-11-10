@@ -14,7 +14,7 @@ def toga_color(color):
                 int(color.g),
                 int(color.b),
                 1.0,
-            ) 
+            )
         else:
             color = eval(color, {"rgba": rgba})
             c = rgba(
