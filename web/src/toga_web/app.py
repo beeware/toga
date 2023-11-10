@@ -1,3 +1,5 @@
+import asyncio
+
 import toga
 from toga.command import GROUP_BREAK, SECTION_BREAK
 from toga_web.libs import create_element, js
@@ -13,6 +15,7 @@ class App:
     def __init__(self, interface):
         self.interface = interface
         self.interface._impl = self
+        self.loop = asyncio.get_event_loop()
 
     def create(self):
         # self.resource_path = os.path.dirname(os.path.dirname(NSBundle.mainBundle.bundlePath))

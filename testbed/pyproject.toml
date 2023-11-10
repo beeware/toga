@@ -105,3 +105,5 @@ android.defaultConfig.python {
 requires = [
     "../web"
 ]
+# FIXME: needed for test purposes to use a pre-release template.
+template_branch = "web-test"
