@@ -33,12 +33,6 @@ class WindowProbe(BaseProbe):
         self.native = window._impl.native
         assert isinstance(self.native, NSWindow)
 
-        # This overrides the user's global "Prefer tabs when opening
-        # documents" if enabled, so that secondary windows created will
-        # be actual windows rather than tabs. For some reason, is
-        # ignored for the very first test in any run.
-        NSWindow.allowsAutomaticWindowTabbing = False
-
     async def wait_for_window(self, message, minimize=False, full_screen=False):
         await self.redraw(
             message,
