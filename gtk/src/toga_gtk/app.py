@@ -34,13 +34,6 @@ class MainWindow(Window):
 
 
 class App:
-    """
-    Todo:
-        * Creation of Menus is not working.
-        * Disabling of menu items is not working.
-        * App Icon is not showing up
-    """
-
     def __init__(self, interface):
         self.interface = interface
         self.interface._impl = self
@@ -48,9 +41,6 @@ class App:
         gbulb.install(gtk=True)
         self.loop = asyncio.new_event_loop()
 
-        self.create()
-
-    def create(self):
         # Stimulate the build of the app
         self.native = Gtk.Application(
             application_id=self.interface.app_id,
@@ -60,11 +50,30 @@ class App:
 
         # Connect the GTK signal that will cause app startup to occur
         self.native.connect("startup", self.gtk_startup)
+        # Activate is a no-op, but GTK complains if you don't implement it.
         self.native.connect("activate", self.gtk_activate)
 
         self.actions = None
 
     def gtk_startup(self, data=None):
+        self.interface._startup()
+
+        self.create_app_commands()
+
+        # Create the lookup table of menu items,
+        # then force the creation of the menus.
+        self.create_menus()
+
+        # Set any custom styles
+        css_provider = Gtk.CssProvider()
+        css_provider.load_from_data(TOGA_DEFAULT_STYLES)
+
+        context = Gtk.StyleContext()
+        context.add_provider_for_screen(
+            Gdk.Screen.get_default(), css_provider, Gtk.STYLE_PROVIDER_PRIORITY_USER
+        )
+
+    def create_app_commands(self):
         # Set up the default commands for the interface.
         self.interface.commands.add(
             Command(
@@ -82,34 +91,6 @@ class App:
                 section=sys.maxsize,
             ),
         )
-        self._create_app_commands()
-
-        self.interface._startup()
-
-        # Create the lookup table of menu items,
-        # then force the creation of the menus.
-        self.create_menus()
-
-        # Now that we have menus, make the app take responsibility for
-        # showing the menubar.
-        # This is required because of inconsistencies in how the Gnome
-        # shell operates on different windowing environments;
-        # see #872 for details.
-        settings = Gtk.Settings.get_default()
-        settings.set_property("gtk-shell-shows-menubar", False)
-
-        # Set any custom styles
-        css_provider = Gtk.CssProvider()
-        css_provider.load_from_data(TOGA_DEFAULT_STYLES)
-
-        context = Gtk.StyleContext()
-        context.add_provider_for_screen(
-            Gdk.Screen.get_default(), css_provider, Gtk.STYLE_PROVIDER_PRIORITY_USER
-        )
-
-    def _create_app_commands(self):
-        # No extra menus
-        pass
 
     def gtk_activate(self, data=None):
         pass
@@ -160,17 +141,27 @@ class App:
         # Set the menu for the app.
         self.native.set_menubar(menubar)
 
+        # Now that we have menus, make the app take responsibility for
+        # showing the menubar.
+        #
+        # This is required because of inconsistencies in how the Gnome
+        # shell operates on different windowing environments;
+        # see #872 for details.
+        settings = Gtk.Settings.get_default()
+        settings.set_property("gtk-shell-shows-menubar", False)
+
     def _submenu(self, group, menubar):
         try:
             return self._menu_groups[group], False
         except KeyError:
             if group is None:
                 submenu = menubar
+            elif group.is_status_item:
+                self.interface.factory.not_implemented("App status items")
+                submenu = Gio.Menu()
             else:
                 parent_menu, _ = self._submenu(group.parent, menubar)
                 submenu = Gio.Menu()
-                self._menu_groups[group] = submenu
-
                 text = group.text
                 if text == "*":
                     text = self.interface.formal_name
@@ -185,7 +176,14 @@ class App:
         # Modify signal handlers to make sure Ctrl-C is caught and handled.
         signal.signal(signal.SIGINT, signal.SIG_DFL)
 
+        # Retain a reference to the app so that no-window apps can exist
+        self.native.hold()
+
+        # Run the event loop.
         self.loop.run_forever(application=self.native)
+
+        # Release the reference to the app
+        self.native.release()
 
     def set_main_window(self, window):
         pass
@@ -242,8 +240,20 @@ class App:
         self.interface.factory.not_implemented("App.hide_cursor()")
 
 
+class SimpleApp(App):
+    def create_app_commands(self):
+        pass
+
+    def create_menus(self):
+        pass
+
+
+class WindowlessApp(App):
+    pass
+
+
 class DocumentApp(App):  # pragma: no cover
-    def _create_app_commands(self):
+    def create_app_commands(self):
         self.interface.commands.add(
             toga.Command(
                 self.open_file,
