@@ -8,6 +8,7 @@ from System.Drawing import (
     Font as WinFont,
     FontFamily,
     FontStyle,
+    Point,
     Rectangle,
     SystemFonts,
 )
@@ -106,7 +107,10 @@ class StackTraceDialog(BaseDialog, Scalable):
 
         # Required for scaling on DPI changes
         self.interface.window._impl.current_stack_trace_dialog_impl = self
-
+        self.native.StartPosition = WinForms.FormStartPosition.Manual
+        self.native.Location = Point(
+            *map(self.scale_in, self.interface.window._impl.get_position())
+        )
         self.native.MinimizeBox = False
         self.native.FormBorderStyle = self.native.FormBorderStyle.FixedSingle
         self.native.MaximizeBox = False

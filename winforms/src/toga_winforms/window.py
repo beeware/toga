@@ -27,8 +27,7 @@ class Window(Container, Scalable):
         super().__init__(self.native)
 
         self.update_scale()
-        # # Required for detecting window moving to other screens with different dpi
-        # self._previous_screen = WinForms.Screen.FromPoint(self.native.Location)
+        # Required for detecting window moving to other screens with different dpi
         self.native.LocationChanged += WeakrefCallable(self.winforms_LocationChanged)
 
         self.native.MinimizeBox = self.interface.minimizable
