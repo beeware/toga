@@ -8,6 +8,7 @@ from toga_cocoa.libs import (
     NSEvent,
     NSEventModifierFlagShift,
     NSEventType,
+    NSWindow,
 )
 
 from .probe import BaseProbe
@@ -22,6 +23,8 @@ class AppProbe(BaseProbe):
     def __init__(self, app):
         super().__init__()
         self.app = app
+        # Prevents erroneous test fails from secondary windows opening as tabs
+        NSWindow.allowsAutomaticWindowTabbing = False
         assert isinstance(self.app._impl.native, NSApplication)
 
     @property
