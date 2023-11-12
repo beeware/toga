@@ -26,8 +26,7 @@ async def second_window(second_window_kwargs):
 
 
 @pytest.fixture
-async def second_window_probe(app_probe, second_window):
-    app = app_probe.app
+async def second_window_probe(app, app_probe, second_window):
     second_window.show()
     probe = window_probe(app, second_window)
     await probe.wait_for_window(f"Window ({second_window.title}) has been created")
