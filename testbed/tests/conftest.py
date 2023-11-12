@@ -8,6 +8,7 @@ from pytest import fixture, register_assert_rewrite, skip
 import toga
 from toga.colors import GOLDENROD
 from toga.style import Pack
+from toga_cocoa.libs import NSWindow
 
 # Ideally, we'd register rewrites for "tests" and get all the submodules
 # recursively; however we've already imported "tests", so that raises a warning.
@@ -41,6 +42,7 @@ def app():
 async def app_probe(app):
     module = import_module("tests_backend.app")
     probe = getattr(module, "AppProbe")(app)
+    NSWindow.allowsAutomaticWindowTabbing = False
 
     if app.run_slow:
         print("\nConstructing app probe")
