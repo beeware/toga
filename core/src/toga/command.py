@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from contextlib import contextmanager
 from typing import TYPE_CHECKING, Any, Protocol
 
 from toga.handlers import wrapped_handler
@@ -363,6 +364,23 @@ class CommandSet:
         self._commands = set()
         if self.on_change:
             self.on_change()
+
+    @contextmanager
+    def suspend_updates(self):
+        """Temporarily suspend ``on_change`` updates.
+
+        Inside this context manager, the ``on_change`` handler will not be
+        invoked if the CommandSet is modified. The ``on_change`` handler (if it
+        exists0 will be invoked when the context manager exits.
+        """
+        orig_on_change = self.on_change
+        self.on_change = None
+        try:
+            yield
+        finally:
+            self.on_change = orig_on_change
+            if self.on_change:
+                self.on_change()
 
     @property
     def app(self) -> App:

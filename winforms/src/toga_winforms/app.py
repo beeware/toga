@@ -109,13 +109,19 @@ class App:
                 "You may experience difficulties accessing some web server content."
             )
 
-        # Call user code to populate the main window
-        self.interface._startup()
-        self._create_app_commands()
-        self.create_menus()
-        self.interface.main_window._impl.set_app(self)
+        # The winforms App impl's create() is deferred so that it can run inside
+        # the GUI thread. This means the on_change handler for commands has already
+        # been installed - even though we haven't added any commands yet. Temporarily
+        # suspend on_change events so we can create all the commands,
+        with self.interface.commands.suspend_updates():
+            # Call user code to populate the main window
+            self.interface._startup()
+            self.create_app_commands()
 
-    def create_menus(self):
+            self._menu_groups = {}
+            self._status_items = set()
+
+    def _reset_menubar(self):
         if self.interface.main_window is None:  # pragma: no branch
             # The startup method may create commands before creating the window, so
             # we'll call create_menus again after it returns.
@@ -133,18 +139,38 @@ class App:
             window.native.MainMenuStrip = menubar
             menubar.SendToBack()  # In a dock, "back" means "top".
 
+    def create_menus(self):
+        # Reset the menubar.
+        menubar = self._reset_menubar()
+
+        # Reset the status items. Any existing status item will be made invisible
+        for item in self._status_items:
+            item.Visible = False
+            item.Dispose()
+
         # The File menu should come before all user-created menus.
         self._menu_groups = {}
+        self._status_items = set()
         toga.Group.FILE.order = -1
 
         submenu = None
         for cmd in self.interface.commands:
             submenu = self._submenu(cmd.group, menubar)
             if isinstance(cmd, Separator):
-                submenu.DropDownItems.Add("-")
+                if cmd.group.root.is_status_item:
+                    submenu.DropDownItems.Add("-")
+                else:
+                    submenu.MenuItems.Add("-")
             else:
                 submenu = self._submenu(cmd.group, menubar)
-                item = WinForms.ToolStripMenuItem(cmd.text)
+
+                # Items inside a Notify Icon are MenuItems; in a menubar,
+                # they're ToolStripMenuItems
+                if cmd.group.root.is_status_item:
+                    item = WinForms.MenuItem(cmd.text)
+                else:
+                    item = WinForms.ToolStripMenuItem(cmd.text)
+
                 item.Click += WeakrefCallable(cmd._impl.winforms_Click)
                 if cmd.shortcut is not None:
                     try:
@@ -160,9 +186,18 @@ class App:
                 item.Enabled = cmd.enabled
 
                 cmd._impl.native.append(item)
-                submenu.DropDownItems.Add(item)
 
-        window.resize_content()
+                # Items inside a Notify Icon are added to MenuItems; in a
+                # menubar, they're added to DropDownItems.
+                if cmd.group.root.is_status_item:
+                    submenu.MenuItems.Add(item)
+                else:
+                    submenu.DropDownItems.Add(item)
+
+        self._resize_menubar()
+
+    def _resize_menubar(self):
+        self.interface.main_window._impl.resize_content()
 
     def _submenu(self, group, menubar):
         try:
@@ -170,25 +205,48 @@ class App:
         except KeyError:
             if group is None:
                 submenu = menubar
+            elif group.is_status_item:
+                submenu = WinForms.ContextMenu()
+
+                notify_icon = WinForms.NotifyIcon()
+                notify_icon.Icon = (
+                    group.icon._impl.native
+                    if group.icon
+                    else self.interface.icon._impl.native
+                )
+                notify_icon.ContextMenu = submenu
+                notify_icon.label = group.text
+                notify_icon.Visible = True
+
+                self._status_items.add(notify_icon)
             else:
                 parent_menu = self._submenu(group.parent, menubar)
 
-                submenu = WinForms.ToolStripMenuItem(group.text)
-
-                # Top level menus are added in a different way to submenus
+                # If the group is a top level menu, create a ToolStripMenuItem
+                # and it to the menubar. If it's inside a NotifyIcon,
+                # create a MenuItem, and add it there; otherwise, it's a
+                # normal submenu, so it's added as a DropDownItem.
                 if group.parent is None:
-                    parent_menu.Items.Add(submenu)
+                    submenu = WinForms.ToolStripMenuItem(group.text)
+                    # If there's no menubar, don't add it. This will happen
+                    # if it's a windowless app.
+                    if parent_menu:
+                        parent_menu.Items.Add(submenu)
+                elif group.root.is_status_item:
+                    submenu = WinForms.MenuItem(group.text)
+                    parent_menu.MenuItems.Add(submenu)
                 else:
+                    submenu = WinForms.ToolStripMenuItem(group.text)
                     parent_menu.DropDownItems.Add(submenu)
 
             self._menu_groups[group] = submenu
         return submenu
 
-    def _create_app_commands(self):
+    def create_app_commands(self):
         self.interface.commands.add(
             # About should be the last item in the Help menu, in a section on its own.
             toga.Command(
-                lambda _: self.interface.about(),
+                self._menu_about,
                 f"About {self.interface.formal_name}",
                 group=toga.Group.HELP,
                 section=sys.maxsize,
@@ -199,7 +257,7 @@ class App:
             # On Windows, the Exit command doesn't usually contain the app name. It
             # should be the last item in the File menu, in a section on its own.
             toga.Command(
-                lambda _: self.interface.on_exit(),
+                self._menu_exit,
                 "Exit",
                 shortcut=Key.MOD_1 + "q",
                 group=toga.Group.FILE,
@@ -207,12 +265,21 @@ class App:
             ),
             #
             toga.Command(
-                lambda _: self.interface.visit_homepage(),
+                self._menu_visit_homepage,
                 "Visit homepage",
                 enabled=self.interface.home_page is not None,
                 group=toga.Group.HELP,
             ),
         )
+
+    def _menu_about(self, widget, **kwargs):
+        self.interface.about()
+
+    def _menu_exit(self, widget, **kwargs):
+        self.interface.on_exit()
+
+    def _menu_visit_homepage(self, widget, **kwargs):
+        self.interface.visit_homepage()
 
     def winforms_thread_exception(self, sender, winforms_exc):  # pragma: no cover
         # The PythonException returned by Winforms doesn't give us
@@ -338,9 +405,64 @@ class App:
         self._cursor_visible = False
 
 
+class SimpleApp(App):
+    def create_app_commands(self):
+        pass
+
+    def create_menus(self):
+        pass
+
+
+class WindowlessApp(App):
+    def _reset_menubar(self):
+        pass
+
+    def _resize_menubar(self):
+        pass
+
+    def create_app_commands(self):
+        super().create_app_commands()
+
+        # The first status item group in a windowless app (by group ordering)
+        # gets the app control commands. The app control commands always form
+        # the last 2 sections in the group.
+        status_items = sorted(
+            {
+                item.group
+                for item in self.interface.commands
+                if item != SECTION_BREAK
+                and item != GROUP_BREAK
+                and item.group.is_status_item
+            }
+        )
+
+        self.interface.commands.add(
+            toga.Command(
+                self._menu_about,
+                f"About {self.interface.formal_name}",
+                group=status_items[0],
+                section=sys.maxsize - 1,
+            ),
+            toga.Command(
+                self._menu_visit_homepage,
+                "Visit homepage",
+                enabled=self.interface.home_page is not None,
+                group=status_items[0],
+                section=sys.maxsize - 1,
+            ),
+            # Quit should always be the last item, in a section on its own
+            toga.Command(
+                self._menu_exit,
+                "Exit",
+                group=status_items[0],
+                section=sys.maxsize,
+            ),
+        )
+
+
 class DocumentApp(App):  # pragma: no cover
-    def _create_app_commands(self):
-        super()._create_app_commands()
+    def create_app_commands(self):
+        super().create_app_commands()
         self.interface.commands.add(
             toga.Command(
                 lambda w: self.open_file,

@@ -218,7 +218,7 @@ class App:
             # ---- App menu -----------------------------------
             toga.Command(
                 self._menu_about,
-                "About " + self.interface.formal_name,
+                f"About {self.interface.formal_name}",
                 group=toga.Group.APP,
             ),
             toga.Command(
@@ -231,7 +231,7 @@ class App:
             # Quit should always be the last item, in a section on its own
             toga.Command(
                 self._menu_quit,
-                "Quit " + self.interface.formal_name,
+                f"Quit {self.interface.formal_name}",
                 shortcut=toga.Key.MOD_1 + "q",
                 group=toga.Group.APP,
                 section=sys.maxsize,
@@ -555,7 +555,7 @@ class WindowlessApp(App):
         self.interface.commands.add(
             toga.Command(
                 self._menu_about,
-                "About " + self.interface.formal_name,
+                f"About {self.interface.formal_name}",
                 group=status_items[0],
                 section=sys.maxsize - 1,
             ),
@@ -576,7 +576,7 @@ class WindowlessApp(App):
             # Quit should always be the last item, in a section on its own
             toga.Command(
                 self._menu_quit,
-                "Quit " + self.interface.formal_name,
+                f"Quit {self.interface.formal_name}",
                 shortcut=toga.Key.MOD_1 + "q",
                 group=status_items[0],
                 section=sys.maxsize,

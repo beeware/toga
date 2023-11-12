@@ -1,5 +1,5 @@
 from . import dialogs
-from .app import App, MainWindow
+from .app import App, DocumentApp, MainWindow, SimpleApp, WindowlessApp
 from .command import Command
 from .fonts import Font
 from .icons import Icon
@@ -37,6 +37,9 @@ def not_implemented(feature):
 __all__ = [
     "not_implemented",
     "App",
+    "SimpleApp",
+    "WindowlessApp",
+    "DocumentApp",
     "MainWindow",
     "Command",
     # Resources
