@@ -298,26 +298,26 @@ class App:
             ),
         )
 
-    def _menu_about(self, app, **kwargs):
+    def _menu_about(self, command, **kwargs):
         self.interface.about()
 
-    def _menu_quit(self, app, **kwargs):
+    def _menu_quit(self, command, **kwargs):
         self.interface.on_exit()
 
-    def _menu_close_window(self, app, **kwargs):
+    def _menu_close_window(self, command, **kwargs):
         if self.interface.current_window:
             self.interface.current_window._impl.native.performClose(None)
 
-    def _menu_close_all_windows(self, app, **kwargs):
+    def _menu_close_all_windows(self, command, **kwargs):
         # Convert to a list to so that we're not altering a set while iterating
         for window in list(self.interface.windows):
             window._impl.native.performClose(None)
 
-    def _menu_minimize(self, app, **kwargs):
+    def _menu_minimize(self, command, **kwargs):
         if self.interface.current_window:
             self.interface.current_window._impl.native.miniaturize(None)
 
-    def _menu_visit_homepage(self, app, **kwargs):
+    def _menu_visit_homepage(self, command, **kwargs):
         self.interface.visit_homepage()
 
     def create_menus(self):
