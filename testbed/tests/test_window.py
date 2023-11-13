@@ -479,6 +479,19 @@ else:
         assert not second_window_probe.is_full_screen
         assert second_window_probe.content_size == initial_content_size
 
+    @pytest.mark.parametrize("second_window_kwargs", [{}])
+    async def test_merge_all_windows(
+        app, main_window, second_window, second_window_probe
+    ):
+        if toga.platform.current_platform != "macOS":
+            pytest.xfail("Merging all windows is only implemented for macOS.")
+
+        tab_group = second_window._impl.native.tabGroup
+        assert len(tab_group.windows) == 1
+
+        app._impl._menu_merge_all_windows(None)
+        assert len(tab_group.windows) == 2
+
 
 async def test_as_image(main_window, main_window_probe):
     """The window can be captured as a screenshot"""

@@ -1,6 +1,7 @@
 import asyncio
 import inspect
 import os
+import platform
 import sys
 from pathlib import Path
 from urllib.parse import unquote, urlparse
@@ -38,6 +39,11 @@ from .libs import (
     objc_property,
 )
 from .window import Window
+
+
+def macos_version_at_least(min_major: int, min_minor: int = 0) -> bool:
+    major, minor, *_ = platform.mac_ver()[0].split(".")
+    return (int(major), int(minor)) >= (min_major, min_minor)
 
 
 class MainWindow(Window):
@@ -297,6 +303,17 @@ class App:
                 group=toga.Group.HELP,
             ),
         )
+        if macos_version_at_least(10, 12):
+            self.interface.commands.add(
+                toga.Command(
+                    self._menu_merge_all_windows,
+                    "Merge All Windows",
+                    group=toga.Group.WINDOW,
+                )
+            )
+        else:  # pragma: no cover
+            # CI testbed isn't run on macOS < 10.12
+            pass
 
     def _menu_about(self, command, **kwargs):
         self.interface.about()
@@ -312,6 +329,10 @@ class App:
         # Convert to a list to so that we're not altering a set while iterating
         for window in list(self.interface.windows):
             window._impl.native.performClose(None)
+
+    def _menu_merge_all_windows(self, command, **kwargs):
+        native = self.interface.main_window._impl.native
+        native.mergeAllWindows(native)
 
     def _menu_minimize(self, command, **kwargs):
         if self.interface.current_window:
