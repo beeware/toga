@@ -492,6 +492,7 @@ else:
         assert native.tabbedWindows is None
 
         app._impl._menu_merge_all_windows(None)
+        await second_window_probe.wait_for_window("Windows have been merged.")
         assert len(native.tabbedWindows) == 2
 
 
