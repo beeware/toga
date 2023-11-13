@@ -63,10 +63,6 @@ different widget.
     # Change the window's content to something new
     window.content = toga.Box(children=[...])
 
-The operating system may provide controls that allow the user to resize, reposition,
-minimize, maximize or close the window. However, the availability of these controls is
-entirely operating system dependent.
-
 If the user attempts to close the window, Toga will call the ``on_close`` handler. This
 handler must return a ``bool`` confirming whether the close is permitted. This can be
 used to implement protections against closing a window with unsaved changes.
@@ -77,6 +73,17 @@ Once a window has been closed (either by user action, or programmatically with
 
 Notes
 -----
+* The operating system may provide controls that allow the user to resize, reposition,
+  minimize, maximize or close the window. However, the availability of these controls
+  is entirely operating system dependent.
+
+* While Toga provides methods for specifying the size and position of windows,
+  these are ultimately at the discretion of the OS (or window manager). For
+  example, on macOS, depending on a user's OS-level settings, new windows may
+  open as tabs on the main window; on Linux, some window managers (e.g., tiling
+  window managers) may not honor an app's size and position requests. You should
+  avoid making UI design decisions that are dependent on specific size and
+  placement of windows.
 
 * A mobile application can only have a single window (the :class:`~toga.MainWindow`),
   and that window cannot be moved, resized, hidden, or made full screen. Toga will raise
