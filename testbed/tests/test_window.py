@@ -481,9 +481,7 @@ else:
         assert second_window_probe.content_size == initial_content_size
 
     @pytest.mark.parametrize("second_window_kwargs", [{}])
-    async def test_merge_all_windows(
-        app, main_window, second_window, second_window_probe
-    ):
+    async def test_merge_all_windows(app, second_window, second_window_probe):
         if toga.platform.current_platform != "macOS":
             pytest.xfail("Merging all windows is only implemented for macOS.")
 
