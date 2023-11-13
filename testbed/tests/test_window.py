@@ -486,11 +486,11 @@ else:
         if toga.platform.current_platform != "macOS":
             pytest.xfail("Merging all windows is only implemented for macOS.")
 
-        tab_group = second_window._impl.native.tabGroup
-        assert len(tab_group.windows) == 1
+        native = second_window._impl.native
+        assert native.tabbedWindows is None
 
         app._impl._menu_merge_all_windows(None)
-        assert len(tab_group.windows) == 2
+        assert len(native.tabbedWindows) == 2
 
 
 async def test_as_image(main_window, main_window_probe):
