@@ -77,11 +77,13 @@ Notes
   minimize, maximize or close the window. However, the availability of these controls
   is entirely operating system dependent.
 
-* Similarly, while Toga provides methods for specifying the size and position of
-  windows, these are ultimately at the discretion of the OS (or window manager). For
-  example, depending on users' settings on macOS, new windows may open as tabs instead,
-  and many GTK window managers for Linux may not honor an app's size and position
-  requests.
+* While Toga provides methods for specifying the size and position of windows,
+  these are ultimately at the discretion of the OS (or window manager). For
+  example, on macOS, depending on a user's OS-level settings, new windows may
+  open as tabs on the main window; on Linux, some window managers (e.g., tiling
+  window managers) may not honor an app's size and position requests. You should
+  avoid making UI design decisions that are dependent on specific size and
+  placement of windows.
 
 * A mobile application can only have a single window (the :class:`~toga.MainWindow`),
   and that window cannot be moved, resized, hidden, or made full screen. Toga will raise
