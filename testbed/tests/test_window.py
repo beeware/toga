@@ -13,6 +13,7 @@ import pytest
 import toga
 from toga.colors import CORNFLOWERBLUE, GOLDENROD, REBECCAPURPLE
 from toga.style.pack import COLUMN, Pack
+from toga_cocoa.app import macos_version_at_least
 
 
 def window_probe(app, window):
@@ -485,6 +486,9 @@ else:
     ):
         if toga.platform.current_platform != "macOS":
             pytest.xfail("Merging all windows is only implemented for macOS.")
+
+        if not macos_version_at_least(10, 12):
+            pytest.xfail("Merging all windows is unsupported on macOS prior to 10.12.")
 
         native = second_window._impl.native
         assert native.tabbedWindows is None
