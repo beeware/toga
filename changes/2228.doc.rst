@@ -1,0 +1,1 @@
+Toga on macOS now supports a minimum version of 11 (Big Sur).
