@@ -13,6 +13,7 @@ on:
 env:
   min_python_version: "3.8"
   max_python_version: "3.12"
+  FORCE_COLOR: "1"
 
 defaults:
   run:
@@ -68,7 +69,6 @@ jobs:
         python-version: [ "3.8", "3.9", "3.10", "3.11", "3.12" ]
         include:
           - experimental: false
-
           # - python-version: "3.13-dev"
           #   experimental: true
     steps:
@@ -162,7 +162,7 @@ jobs:
             # manager that is reasonably lightweight, honors full screen mode, and
             # treats the window position as the top-left corner of the *window*, not the
             # top-left corner of the window *content*. The default GNOME window managers of
-            # most distros meet these requirementt, but they're heavyweight; flwm doesn't
+            # most distros meet these requirement, but they're heavyweight; flwm doesn't
             # work either. Blackbox is the lightest WM we've found that works.
             pre-command: |
               sudo apt update -y
@@ -191,8 +191,16 @@ jobs:
             # app data path is determined at runtime, as the path contains the Simulator and app ID.
 
           - backend: android
-            runs-on: macos-12
+            runs-on: ubuntu-latest
             briefcase-run-args: " -d '{\"avd\":\"beePhone\"}' --Xemulator=-no-window --Xemulator=-no-snapshot --Xemulator=-no-audio --Xemulator=-no-boot-anim --shutdown-on-exit"
+            pre-command: |
+              # check if virtualization is supported...
+              sudo apt install -y --no-install-recommends cpu-checker coreutils && echo "CPUs=$(nproc --all)" && kvm-ok
+              # allow access to KVM to run the emulator
+              echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' \
+                | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+              sudo udevadm control --reload-rules
+              sudo udevadm trigger --name-match=kvm
     steps:
     - uses: actions/checkout@v4.1.1
       with:
