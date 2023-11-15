@@ -12,7 +12,7 @@ The Toga backend for macOS is `toga-cocoa
 Prerequisites
 -------------
 
-``toga-cocoa`` requires macOS 10.10 (Yosemite) or newer.
+``toga-cocoa`` requires macOS 11 (Big Sur) or newer.
 
 Installation
 ------------

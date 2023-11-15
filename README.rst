@@ -36,7 +36,7 @@ Minimum requirements
 
 * Toga requires **Python 3.8 or higher**. Python 2 is not supported.
 
-* If you're on macOS, you need to be on 10.10 (Yosemite) or newer.
+* If you're on macOS, you need to be on 11 (Big Sur) or newer.
 
 * If you're on Windows, you'll need Windows 10 or newer. If you are using
   Windows 10 and want to use a WebView to display web content, you will also
