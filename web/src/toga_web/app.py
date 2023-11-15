@@ -137,7 +137,7 @@ class App:
         else:
             self.native.append(self.menubar)
 
-    def _menu_about(self, widget, **kwargs):
+    def _menu_about(self, command, **kwargs):
         self.interface.about()
 
     def main_loop(self):

@@ -56,29 +56,21 @@ NSApplicationDidUnhideNotification = c_void_p.in_dll(
     appkit, "NSApplicationDidUnhideNotification"
 )
 
-# NSAboutPanelOption* keys are available only 10.13+
-try:
-    NSAboutPanelOptionApplicationIcon = NSString(
-        c_void_p.in_dll(appkit, "NSAboutPanelOptionApplicationIcon")
-    )
-    NSAboutPanelOptionApplicationName = NSString(
-        c_void_p.in_dll(appkit, "NSAboutPanelOptionApplicationName")
-    )
-    NSAboutPanelOptionApplicationVersion = NSString(
-        c_void_p.in_dll(appkit, "NSAboutPanelOptionApplicationVersion")
-    )
-    NSAboutPanelOptionCredits = NSString(
-        c_void_p.in_dll(appkit, "NSAboutPanelOptionCredits")
-    )
-    NSAboutPanelOptionVersion = NSString(
-        c_void_p.in_dll(appkit, "NSAboutPanelOptionVersion")
-    )
-except ValueError:  # pragma: no cover
-    NSAboutPanelOptionApplicationIcon = None
-    NSAboutPanelOptionApplicationName = None
-    NSAboutPanelOptionApplicationVersion = None
-    NSAboutPanelOptionCredits = None
-    NSAboutPanelOptionVersion = None
+NSAboutPanelOptionApplicationIcon = NSString(
+    c_void_p.in_dll(appkit, "NSAboutPanelOptionApplicationIcon")
+)
+NSAboutPanelOptionApplicationName = NSString(
+    c_void_p.in_dll(appkit, "NSAboutPanelOptionApplicationName")
+)
+NSAboutPanelOptionApplicationVersion = NSString(
+    c_void_p.in_dll(appkit, "NSAboutPanelOptionApplicationVersion")
+)
+NSAboutPanelOptionCredits = NSString(
+    c_void_p.in_dll(appkit, "NSAboutPanelOptionCredits")
+)
+NSAboutPanelOptionVersion = NSString(
+    c_void_p.in_dll(appkit, "NSAboutPanelOptionVersion")
+)
 
 ######################################################################
 # NSAttributedString.h
@@ -98,9 +90,7 @@ NSStrokeColorAttributeName = objc_const(appkit, "NSStrokeColorAttributeName")
 NSStrokeWidthAttributeName = objc_const(appkit, "NSStrokeWidthAttributeName")
 NSShadowAttributeName = objc_const(appkit, "NSShadowAttributeName")
 
-# NSTextEffectAttributeName is supported in OS 10.10+
-# goes against minimum requirements: current support is for OS 10.7+
-# NSTextEffectAttributeName = objc_const(appkit, "NSTextEffectAttributeName")
+NSTextEffectAttributeName = objc_const(appkit, "NSTextEffectAttributeName")
 
 NSAttachmentAttributeName = objc_const(appkit, "NSAttachmentAttributeName")
 NSLinkAttributeName = objc_const(appkit, "NSLinkAttributeName")

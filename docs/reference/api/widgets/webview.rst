@@ -70,7 +70,7 @@ Notes
 
 * Using WebView on Windows 10 requires that your users have installed the `Edge
   WebView2 Evergreen Runtime
-  <https://developer.microsoft.com/en-us/microsoft-edge/webview2/#download-section>`__.
+  <https://developer.microsoft.com/en-us/microsoft-edge/webview2/#download>`__.
   This is installed by default on Windows 11.
 
 * Using WebView on Linux requires that the user has installed the system packages

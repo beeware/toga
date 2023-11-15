@@ -116,10 +116,10 @@ class App:
     def gtk_activate(self, data=None):
         pass
 
-    def _menu_about(self, app, **kwargs):
+    def _menu_about(self, command, **kwargs):
         self.interface.about()
 
-    def _menu_quit(self, app, **kwargs):
+    def _menu_quit(self, command, **kwargs):
         self.interface.on_exit()
 
     def create_menus(self):

@@ -229,36 +229,44 @@ def test_range(slider, on_change, min, max, value):
 
 
 @pytest.mark.parametrize(
-    "new_min, new_max",
+    "new_min, new_value, new_max",
     [
-        [-5, 10],  # less than old min
-        [5, 10],  # more than old min, less than max
-        [15, 15],  # more than max
+        [-5, 5, 10],  # less than old min
+        [5, 5, 10],  # more than old min
+        [6, 6, 10],  # more than old min and value
+        [15, 15, 15],  # more than old min, value and max
     ],
 )
-def test_min_clipping(slider, new_min, new_max):
+def test_min_clipping(slider, new_min, new_value, new_max):
+    slider.tick_count = None
     slider.min = 0
+    slider.value = 5
     slider.max = 10
 
     slider.min = new_min
     assert slider.min == new_min
+    assert slider.value == new_value
     assert slider.max == new_max
 
 
 @pytest.mark.parametrize(
-    "new_max, new_min",
+    "new_min, new_value, new_max",
     [
-        [15, 0],  # less than old max
-        [5, 0],  # less than old max, more than min
-        [-5, -5],  # less than min
+        [0, 5, 15],  # more than old max
+        [0, 5, 5],  # less than old max
+        [0, 4, 4],  # less than old max and value
+        [-5, -5, -5],  # less than old max, value and min
     ],
 )
-def test_max_clipping(slider, new_max, new_min):
+def test_max_clipping(slider, new_min, new_value, new_max):
+    slider.tick_count = None
     slider.min = 0
+    slider.value = 5
     slider.max = 10
 
     slider.max = new_max
     assert slider.min == new_min
+    assert slider.value == new_value
     assert slider.max == new_max
 
 
@@ -429,7 +437,7 @@ def test_int_impl_continuous():
         assert impl.int_value == int_value
         assert impl.get_value() == value
 
-    # Check a range that doesn't start at zero.
+    # Range that doesn't start at zero
     impl.set_min(-0.4)
     assert impl.get_min() == pytest.approx(-0.4)
     impl.set_max(0.6)
@@ -437,6 +445,23 @@ def test_int_impl_continuous():
     impl.set_value(0.5)
     assert impl.get_value() == 0.5
     assert impl.int_value == 9000
+    assert impl.int_max == 10000
+
+    # Empty range
+    impl.set_min(0)
+    impl.set_max(0)
+    impl.set_value(0)
+    assert impl.get_value() == 0
+    assert impl.int_value == 0
+    assert impl.int_max == 10000
+
+    # Empty range that doesn't start at zero
+    impl.set_min(1)
+    impl.set_max(1)
+    impl.set_value(1)
+    assert impl.get_value() == 1
+    assert impl.int_value == 0
+    assert impl.int_max == 10000
 
 
 def test_int_impl_discrete():
@@ -467,7 +492,7 @@ def test_int_impl_discrete():
         assert impl.get_value() == value
         assert impl.int_value == int_value
 
-    # Check a range that doesn't start at zero.
+    # Range that doesn't start at zero
     impl.set_min(-0.4)
     assert impl.get_min() == pytest.approx(-0.4)
     impl.set_max(0.6)
@@ -475,6 +500,23 @@ def test_int_impl_discrete():
     impl.set_value(0.5)
     assert impl.get_value() == 0.5
     assert impl.int_value == 7
+    assert impl.int_max == 8
+
+    # Empty range
+    impl.set_min(0)
+    impl.set_max(0)
+    impl.set_value(0)
+    assert impl.get_value() == 0
+    assert impl.int_value == 0
+    assert impl.int_max == 8
+
+    # Empty range that doesn't start at zero
+    impl.set_min(1)
+    impl.set_max(1)
+    impl.set_value(1)
+    assert impl.get_value() == 1
+    assert impl.int_value == 0
+    assert impl.int_max == 8
 
 
 @pytest.mark.parametrize(
