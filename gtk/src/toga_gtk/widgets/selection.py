@@ -25,6 +25,9 @@ class Selection(Widget):
         if self._send_notifications:
             self.interface.on_change(widget)
 
+        # Changing the selected text can change the layout size
+        self.interface.refresh()
+
     def set_color(self, color):
         self.apply_css(
             "color",
