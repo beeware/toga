@@ -153,7 +153,7 @@ class Widget:
     def set_bounds(self, x, y, width, height):
         # Any position changes are applied by the container during
         # do_size_allocate after rehinting.
-        pass
+        self.container.make_dirty()
 
     def set_alignment(self, alignment):
         # By default, alignment can't be changed
@@ -161,6 +161,8 @@ class Widget:
 
     def set_hidden(self, hidden):
         self.native.set_visible(not hidden)
+        if self.container:
+            self.container.make_dirty()
 
     def set_color(self, color):
         self.apply_css("color", get_color_css(color))
@@ -186,9 +188,10 @@ class Widget:
 
     def refresh(self):
         # GTK doesn't/can't immediately evaluate the hinted size of the widget.
-        # Instead, mark the widget to be its size renegotiated the for the
+        # Instead, put the widget onto a dirty list to be rehinted before the
         # next layout.
-        self.native.queue_resize()
+        if self.container:
+            self.container.make_dirty(self)
 
     def rehint(self):
         # Perform the actual GTK rehint.

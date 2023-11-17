@@ -41,22 +41,21 @@ class TogaContainerLayoutManager(Gtk.LayoutManager):
     def do_allocate(self, widget, width, height, baseline):
         """Perform the actual layout for the all widget's children.
 
-        The container will assume whatever size it has been given by GTK - usually the
-        full space of the window that holds the container. The layout will then be re-
-        computed based on this new available size, and that new geometry will be applied
-        to all child widgets of the container.
+        The manager will assume whatever size it has been given by GTK - usually the
+        full space of the window that holds the container (`widget`). The layout will
+        then be re-computed based on this new available size, and that new geometry
+        will be applied to all child widgets of the container.
         """
         # print(widget._content, f"Container layout {width}x{height} @ 0x0")
 
         if widget._content:
-            # The issue of calling this virtual method in response to
-            # irrelevant events like button clicks has been solved.
-            #
-            # Re-evaluate the layout using the provided dimensions (i.e. the
-            # container dimensions, which is also (width, height) args) as the
-            # basis for geometry.
-            # print("LAYOUT", width, height)
-            widget._content.interface.refresh()
+            # Re-evaluate the layout using the  size as the basis for geometry
+            # print("REFRESH LAYOUT", width, height)
+            widget._content.interface.style.layout(widget._content.interface, widget)
+
+            # Ensure the minimum content size from the layout is retained
+            widget.min_width = widget._content.interface.layout.min_width
+            widget.min_height = widget._content.interface.layout.min_height
 
             # WARNING! This is the list of children of the *container*, not
             # the Toga widget. Toga maintains a tree of children; all nodes
@@ -67,7 +66,7 @@ class TogaContainerLayoutManager(Gtk.LayoutManager):
                     # Set the allocation of the child widget to the computed
                     # layout size.
                     # print(
-                    #     f"  allocate child {child_widget.interface}: {child_widget.interface.layout}"
+                    #     f" allocate child {child_widget.interface}: {child_widget.interface.layout}"
                     # )
                     child_widget_allocation = Gdk.Rectangle()
                     child_widget_allocation.x = (
@@ -83,8 +82,10 @@ class TogaContainerLayoutManager(Gtk.LayoutManager):
                         child_widget.interface.layout.content_height
                     )
                     child_widget.size_allocate(child_widget_allocation, -1)
-
                 child_widget = child_widget.get_prev_sibling()
+
+        # The layout has been redrawn
+        widget.needs_redraw = False
 
 
 class TogaContainer(Gtk.Box):
@@ -96,8 +97,8 @@ class TogaContainer(Gtk.Box):
     def __init__(self):
         super().__init__()
 
-        # We don’t have access to the existing layout manager, we must create
-        # our custom layout manager class.
+        # Because we don’t have access to the existing layout manager, we must
+        # create our custom layout manager class.
         layout_manager = TogaContainerLayoutManager()
         self.set_layout_manager(layout_manager)
 
@@ -108,8 +109,27 @@ class TogaContainer(Gtk.Box):
         self.dpi = 96
         self.baseline_dpi = self.dpi
 
+        # Note: These following two properties were added primarily to help in
+        # testing process, we adapted them later to improve the performance in
+        # determining when re-hinting the widget is needed.
+        #
+        # A flag that can be used to explicitly flag that a redraw is required.
+        self.needs_redraw = True
+        # The dirty widgets are the set of widgets that are known to need
+        # re-hinting before any redraw occurs.
+        self._dirty_widgets = set()
+
     def refreshed(self):
         pass
+
+    def make_dirty(self, widget=None):
+        """Mark the container (or a specific widget in the container) as dirty.
+        :param widget: If provided, this widget will be rehinted before the next layout.
+        """
+        self.needs_redraw = True
+        if widget is not None:
+            self._dirty_widgets.add(widget)
+        self.queue_resize()
 
     @property
     def width(self):
@@ -151,6 +171,9 @@ class TogaContainer(Gtk.Box):
         self._content = widget
         if widget:
             widget.container = self
+            self.make_dirty(widget)
+        else:
+            self.make_dirty()
 
     def recompute(self):
         """Rehint and re-layout the container's content.
@@ -160,13 +183,13 @@ class TogaContainer(Gtk.Box):
 
         Note: This must be used wisely because it's relatively expensive.
         """
-        if self._content:
-            # Recompute the widgets bounds, and re-evaluate the minimum
-            # allowed size of the layout.
-            child_widget = self.get_last_child()
-            while child_widget is not None:
-                child_widget._impl.rehint()
-                child_widget = child_widget.get_prev_sibling()
+        if self._content and self._dirty_widgets:
+            # If any of the widgets have been marked as dirty,
+            # recompute their bounds, and re-evaluate the minimum
+            # allowed size for the layout.
+            while self._dirty_widgets:
+                widget = self._dirty_widgets.pop()
+                widget.rehint()
 
             # Recompute the layout
             self._content.interface.style.layout(self._content.interface, self)
