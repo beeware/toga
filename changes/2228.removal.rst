@@ -1,0 +1,1 @@
+Support for macOS release prior to Big Sur (11) has been dropped.
