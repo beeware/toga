@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from pathlib import Path
-
 from typing import Any
 
 from travertino.size import at_least
@@ -9,11 +7,6 @@ from travertino.size import at_least
 from toga.images import Image
 from toga.style.pack import NONE
 from toga.widgets.base import Widget
-
-try:
-    from PIL import Image as PIL_Image
-except ImportError as e:
-    PIL_Image = None
 
 
 def rehint_imageview(image, style, scale=1):
@@ -70,7 +63,7 @@ def rehint_imageview(image, style, scale=1):
 class ImageView(Widget):
     def __init__(
         self,
-        image: Image | Path | str | Any | None = None,
+        image: Any = None,
         id=None,
         style=None,
     ):
@@ -131,25 +124,10 @@ class ImageView(Widget):
 
         self._impl.set_image(self._image)
         self.refresh()
-    
-    def as_image(self, format: Any=Image):
-        '''
-        Get image content of the imageview.
 
-        To get the image as toga.Image Object
-        ```
-        toga_img = imageview.as_image()
-        ```
+    def as_image(self, format: Any = Image) -> Any:
+        """Return the image in the specified format.
 
-        To get the image as Pillow Object
-        ```
-        from PIL import Image as PIL_Image
-        pil_img = imageview.as_image(PIL_Image.Image)
-        ```
-        '''
-        if isinstance(format, Image):
-            return self.image
-        elif PIL_Image!=None and format==PIL_Image.Image:
-            return self.image.as_format(PIL_Image.Image)
-        else:
-            return TypeError(f"Unknown conversion format: {format}")
+        :param format: Format to provide. Defaults to :class:`~toga.images.Image`; also
+            supports `Pillow <https://python-pillow.org/>`_ ``Image``."""
+        return self.image.as_format(format)

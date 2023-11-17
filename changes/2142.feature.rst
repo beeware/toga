@@ -1,1 +1,1 @@
-Added Pillow Object Support in toga.Image, toga.ImageView and toga.Canvas
+Toga images can now be created from (and converted to) PIL images. Image constructor also now takes a single argument, src; path and data are deprecated.

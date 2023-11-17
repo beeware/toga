@@ -1,5 +1,3 @@
-import uuid
-
 from toga.fonts import SYSTEM, SYSTEM_DEFAULT_FONT_SIZE
 
 from .base import Widget
@@ -245,9 +243,9 @@ class Canvas(Widget):
     # Image
 
     def get_image_data(self):
-        """Return a dummy uuid string as the "native" image."""
+        """Return a dummy bytes as the "native" image."""
         self._action("get image data")
-        return uuid.uuid4()
+        return b"pretend this is PNG image data"
 
     # Resize handlers
 

@@ -4,7 +4,7 @@ import warnings
 from abc import ABC, abstractmethod
 from contextlib import contextmanager
 from math import cos, pi, sin, tan
-from typing import Protocol, Any
+from typing import Any, Protocol
 
 from travertino.colors import Color
 
@@ -14,14 +14,12 @@ from toga.constants import Baseline, FillRule
 from toga.fonts import SYSTEM, SYSTEM_DEFAULT_FONT_SIZE, Font
 from toga.handlers import wrapped_handler
 
-from .. import Image
 from .base import Widget
 
-from io import BytesIO
 try:
-    from PIL import Image as PIL_Image
-except:
-    PIL_Image = None
+    import PIL
+except ImportError:  # pragma: no cover
+    PIL = None
 
 #######################################################################################
 # Simple drawing objects
@@ -1454,27 +1452,9 @@ class Canvas(Widget):
     # As image
     ###########################################################################
 
-    def as_image(self, format: Any=toga.Image):
-        
-        """Render the canvas as an Image.
-        
-        To get toga.Image Object
-        ```
-        toga_img = canvas.as_image()
-        ```
-        
-        To get Pillow Object
-        ```
-        from PIL import Image as PIL_Image
-        pil_img = canvas.as_image(PIL_Image.Image)
-        ```
-        """
-        if isinstance(format, toga.Image):
-            return Image(data=self._impl.get_image_data())
-        elif PIL_Image != None and format==PIL_Image.Image:
-            return PIL_Image.open(BytesIO(self._impl.get_image_data()))
-        else:
-            raise TypeError(f"Unsupported image format: {format}")
+    def as_image(self, format: Any = toga.Image) -> Any:
+        """Render the canvas as an image."""
+        return toga.Image(self._impl.get_image_data()).as_format(format)
 
     ###########################################################################
     # 2023-07 Backwards compatibility

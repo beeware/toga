@@ -1,6 +1,7 @@
 from pathlib import Path
 from unittest.mock import ANY
 
+import PIL.Image
 import pytest
 from travertino.size import at_least
 
@@ -13,17 +14,14 @@ from toga_dummy.utils import (
     assert_action_performed_with,
 )
 
-from PIL import Image as PIL_Image
-
 
 @pytest.fixture
 def widget(app):
     return toga.ImageView()
 
 
-def test_widget_created(widget):
-    "A empty ImageView can be created"
-
+def test_create_empty(widget):
+    """A empty ImageView can be created"""
     # interface/impl round trips
     assert widget._impl.interface is widget
     assert_action_performed(widget, "create ImageView")
@@ -33,12 +31,15 @@ def test_widget_created(widget):
     assert widget.image is None
 
 
-def test_widget_created_with_args(app):
-    "An ImageView can be created with argumentgs"
-    image = toga.Image(Path("resources") / "toga.png")
+ABSOLUTE_FILE_PATH = Path(toga.__file__).parent / "resources/toga.png"
+
+
+def test_create_from_toga_image(app):
+    """An ImageView can be created from a Toga image"""
+    image = toga.Image(ABSOLUTE_FILE_PATH)
     widget = toga.ImageView(image=image)
 
-    # interface/impl round trips
+    # Interface/impl round trips
     assert widget._impl.interface is widget
     assert_action_performed(widget, "create ImageView")
     assert_action_performed_with(widget, "set image", image=image)
@@ -48,8 +49,17 @@ def test_widget_created_with_args(app):
     assert widget.image == image
 
 
+def test_create_from_pil():
+    """An ImageView can be created from a PIL image"""
+    pil_img = PIL.Image.open(ABSOLUTE_FILE_PATH)
+
+    imageview = toga.ImageView(pil_img)
+    assert isinstance(imageview.image, toga.Image)
+    assert imageview.image.size == (60, 40)
+
+
 def test_disable_no_op(widget):
-    "ImageView doesn't have a disabled state"
+    """ImageView doesn't have a disabled state"""
 
     # Enabled by default
     assert widget.enabled
@@ -62,35 +72,35 @@ def test_disable_no_op(widget):
 
 
 def test_focus_noop(widget):
-    "Focus is a no-op."
+    """Focus is a no-op."""
 
     widget.focus()
     assert_action_not_performed(widget, "focus")
 
 
 def test_set_image_str(widget):
-    "The image can be set with a string"
-    widget.image = "resources/toga.png"
+    """The image can be set with a string"""
+    widget.image = ABSOLUTE_FILE_PATH
     assert_action_performed_with(widget, "set image", image=ANY)
     assert_action_performed(widget, "refresh")
 
     assert isinstance(widget.image, toga.Image)
-    assert widget.image.path == Path(toga.__file__).parent / "resources" / "toga.png"
+    assert widget.image.path == ABSOLUTE_FILE_PATH
 
 
 def test_set_image_path(widget):
-    "The image can be set with a Path"
-    widget.image = Path("resources") / "toga.png"
+    """The image can be set with a Path"""
+    widget.image = Path(ABSOLUTE_FILE_PATH)
     assert_action_performed_with(widget, "set image", image=ANY)
     assert_action_performed(widget, "refresh")
 
     assert isinstance(widget.image, toga.Image)
-    assert widget.image.path == Path(toga.__file__).parent / "resources" / "toga.png"
+    assert widget.image.path == ABSOLUTE_FILE_PATH
 
 
 def test_set_image(widget):
     "The image can be set with an Image instance"
-    image = toga.Image(Path("resources") / "toga.png")
+    image = toga.Image(Path(ABSOLUTE_FILE_PATH))
 
     widget.image = image
     assert_action_performed_with(widget, "set image", image=image)
@@ -101,7 +111,7 @@ def test_set_image(widget):
 
 def test_set_image_none(app):
     "The image can be cleared"
-    widget = toga.ImageView(image="resources/toga.png")
+    widget = toga.ImageView(image=ABSOLUTE_FILE_PATH)
     assert widget.image is not None
 
     widget.image = None
@@ -147,7 +157,7 @@ def test_rehint_image(
     expected_height,
     expected_aspect_ratio,
 ):
-    image = toga.Image(path="resources/toga.png")
+    image = toga.Image("resources/toga.png")
 
     width, height, aspect_ratio = rehint_imageview(image=image, **params)
     assert width == expected_width
@@ -174,18 +184,18 @@ def test_rehint_empty_image(params):
     assert height == 0
     assert aspect_ratio is None
 
-def test_pil_support():
-    pil_img = PIL_Image.open("resources/toga.png")
 
-    imageview = toga.ImageView(pil_img)
-    assert type(imageview.image) == toga.Image, "Internal conversion from PIL_Image.Image to toga.Image is faulty"
-    assert (imageview.image.width, imageview.image.height) == (60, 40), "PIL support for imageview is faulty"
+def test_as_image_toga():
+    toga_img = toga.Image(ABSOLUTE_FILE_PATH)
+    imageview = toga.ImageView(toga_img)
+    toga_img_2 = imageview.as_image()
+    assert toga_img_2.size == (60, 40)
 
-def test_as_image_format():
-    img = toga.Image("resources/toga.png")
-    imageview = toga.ImageView(image=img)
-    img2 = imageview.as_image()
-    assert (img2.width, img2.height) == (60, 40), "ImageView.as_image should return toga.Image when nothing is provided as parameter, but failed"
 
-    pil_img = imageview.as_image(PIL_Image.Image)
-    assert pil_img.size == (60, 40), "Faulty conversion to pil image"
+def test_as_image_pil():
+    imageview = toga.ImageView(ABSOLUTE_FILE_PATH)
+
+    # Doesn't work with dummy backend
+    with pytest.raises(PIL.UnidentifiedImageError):
+        pil_img = imageview.as_image(PIL.Image.Image)
+        assert pil_img.size == (60, 40)

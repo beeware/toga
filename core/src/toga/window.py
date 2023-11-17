@@ -333,7 +333,7 @@ class Window:
         """Render the current contents of the window as an image.
 
         :returns: A :class:`toga.Image` containing the window content."""
-        return Image(data=self._impl.get_image_data())
+        return Image(self._impl.get_image_data())
 
     ############################################################
     # Dialogs
