@@ -13,7 +13,7 @@ class Selection(Widget):
 
         self.native = Gtk.DropDown.new(model=self.string_list)
         self.native.set_show_arrow(True)
-        self.native.connect("notify::selected-item", self.gtk_on_select)
+        self.native.connect("notify::selected-item", self.gtk_on_change)
 
     @contextmanager
     def suspend_notifications(self):
@@ -21,9 +21,9 @@ class Selection(Widget):
         yield
         self._send_notifications = True
 
-    def gtk_on_select(self, widget, data):
+    def gtk_on_change(self, widget, data):
         if self._send_notifications:
-            self.interface.on_select(widget)
+            self.interface.on_change(widget)
 
     def set_color(self, color):
         self.apply_css(
