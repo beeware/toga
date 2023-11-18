@@ -1,20 +1,9 @@
 import asyncio
 
-from toga.fonts import CURSIVE, FANTASY, MONOSPACE, SANS_SERIF, SERIF, SYSTEM
-from toga_iOS.libs import NSRunLoop
+from toga_iOS.libs import NSRunLoop, UIScreen
 
 
 class BaseProbe:
-    def assert_font_family(self, expected):
-        assert self.font.family == {
-            CURSIVE: "Apple Chancery",
-            FANTASY: "Papyrus",
-            MONOSPACE: "Courier New",
-            SANS_SERIF: "Helvetica",
-            SERIF: "Times New Roman",
-            SYSTEM: ".AppleSystemUIFont",
-        }.get(expected, expected)
-
     async def redraw(self, message=None, delay=None):
         """Request a redraw of the app, waiting until that redraw has completed."""
         # If we're running slow, wait for a second
@@ -28,3 +17,8 @@ class BaseProbe:
             # Running at "normal" speed, we need to release to the event loop
             # for at least one iteration. `runUntilDate:None` does this.
             NSRunLoop.currentRunLoop.runUntilDate(None)
+
+    def assert_image_size(self, image_size, size):
+        # Retina displays render images at a higher resolution than their reported size.
+        scale = int(UIScreen.mainScreen.scale)
+        assert image_size == (size[0] * scale, size[1] * scale)

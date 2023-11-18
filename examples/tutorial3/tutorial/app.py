@@ -4,7 +4,7 @@ from toga.style.pack import CENTER, COLUMN, ROW, Pack
 
 class Graze(toga.App):
     def startup(self):
-        self.main_window = toga.MainWindow(title=self.name)
+        self.main_window = toga.MainWindow()
 
         self.webview = toga.WebView(
             on_webview_load=self.on_webview_loaded, style=Pack(flex=1)

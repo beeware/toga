@@ -2,7 +2,7 @@
 # System/Library/Frameworks/UIKit.framework
 ##########################################################################
 from ctypes import POINTER, c_char_p, c_int, c_void_p, cdll, util
-from enum import Enum
+from enum import Enum, IntEnum
 
 from rubicon.objc import ObjCClass, ObjCProtocol, objc_const
 
@@ -284,6 +284,10 @@ UIFontDescriptorTraitBold = 1 << 1
 uikit.UIGraphicsGetCurrentContext.restype = CGContextRef
 
 ######################################################################
+# UIGraphicsImageRenderer.h
+UIGraphicsImageRenderer = ObjCClass("UIGraphicsImageRenderer")
+
+######################################################################
 # UIImage.h
 UIImage = ObjCClass("UIImage")
 
@@ -452,6 +456,16 @@ class UIViewContentMode(Enum):
     TopRight = 10
     BottomLeft = 11
     BottomRight = 12
+
+
+class UIViewAutoresizing(IntEnum):
+    NoResizing = 0
+    FlexibleLeftMargin = 1 << 0
+    FlexibleWidth = 1 << 1
+    FlexibleRightMargin = 1 << 2
+    FlexibleTopMargin = 1 << 3
+    FlexibleHeight = 1 << 4
+    FlexibleBottomMargin = 1 << 5
 
 
 ######################################################################

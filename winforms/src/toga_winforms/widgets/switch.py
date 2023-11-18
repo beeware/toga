@@ -1,16 +1,19 @@
+from decimal import ROUND_UP
+
 import System.Windows.Forms as WinForms
 from travertino.size import at_least
 
+from ..libs.wrapper import WeakrefCallable
 from .base import Widget
 
 
 class Switch(Widget):
     def create(self):
         self.native = WinForms.CheckBox()
-        self.native.CheckedChanged += self.winforms_checked_changed
+        self.native.CheckedChanged += WeakrefCallable(self.winforms_checked_changed)
 
     def winforms_checked_changed(self, sender, event):
-        self.interface.on_change(None)
+        self.interface.on_change()
 
     def get_text(self):
         value = self.native.Text
@@ -33,5 +36,9 @@ class Switch(Widget):
         self.native.Checked = value
 
     def rehint(self):
-        self.interface.intrinsic.width = at_least(self.native.PreferredSize.Width)
-        self.interface.intrinsic.height = self.native.PreferredSize.Height
+        self.interface.intrinsic.width = self.scale_out(
+            at_least(self.native.PreferredSize.Width), ROUND_UP
+        )
+        self.interface.intrinsic.height = self.scale_out(
+            self.native.PreferredSize.Height, ROUND_UP
+        )

@@ -2,6 +2,7 @@ from .libs import (
     UIApplication,
     UINavigationController,
     UIView,
+    UIViewAutoresizing,
     UIViewController,
 )
 
@@ -39,7 +40,7 @@ class BaseContainer:
 
     @content.setter
     def content(self, widget):
-        if self._content:
+        if self.content:
             self._content.container = None
 
         self._content = widget
@@ -47,8 +48,7 @@ class BaseContainer:
             widget.container = self
 
     def refreshed(self):
-        if self.on_refresh:
-            self.on_refresh(self)
+        self.on_refresh(self)
 
 
 class Container(BaseContainer):
@@ -66,6 +66,9 @@ class Container(BaseContainer):
         super().__init__(content=content, on_refresh=on_refresh)
         self.native = UIView.alloc().init()
         self.native.translatesAutoresizingMaskIntoConstraints = True
+        self.native.autoresizingMask = (
+            UIViewAutoresizing.FlexibleWidth | UIViewAutoresizing.FlexibleHeight
+        )
 
         self.layout_native = self.native if layout_native is None else layout_native
 

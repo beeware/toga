@@ -1,5 +1,4 @@
 import pytest
-
 from android.graphics import Bitmap
 
 from .probe import BaseProbe
@@ -10,8 +9,7 @@ class IconProbe(BaseProbe):
     alternate_resource = "resources/icons/blue"
 
     def __init__(self, app, icon):
-        super().__init__()
-        self.app = app
+        super().__init__(app)
         self.icon = icon
         assert isinstance(self.icon._impl.native, Bitmap)
 

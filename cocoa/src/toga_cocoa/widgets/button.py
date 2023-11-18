@@ -22,7 +22,7 @@ class TogaButton(NSButton):
 
     @objc_method
     def onPress_(self, obj) -> None:
-        self.interface.on_press(None)
+        self.interface.on_press()
 
 
 class Button(Widget):

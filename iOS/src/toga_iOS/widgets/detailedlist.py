@@ -76,7 +76,7 @@ class TogaTableViewController(UITableViewController):
 
     @objc_method
     def tableView_didSelectRowAtIndexPath_(self, tableView, indexPath):
-        self.interface.on_select(None)
+        self.interface.on_select()
 
     # UITableViewDelegate methods
     @objc_method
@@ -119,7 +119,7 @@ class TogaTableViewController(UITableViewController):
 
     @objc_method
     def refresh(self):
-        self.interface.on_refresh(None)
+        self.interface.on_refresh()
 
 
 class DetailedList(Widget):
@@ -164,7 +164,7 @@ class DetailedList(Widget):
             actionPerformed: ObjCInstance,
         ) -> None:
             item = self.interface.data[row]
-            self.interface.on_primary_action(self, row=item)
+            self.interface.on_primary_action(row=item)
             ObjCBlock(actionPerformed, None, bool)(True)
 
         return handle_primary_action
@@ -179,7 +179,7 @@ class DetailedList(Widget):
             actionPerformed: ObjCInstance,
         ) -> None:
             item = self.interface.data[row]
-            self.interface.on_secondary_action(self, row=item)
+            self.interface.on_secondary_action(row=item)
             ObjCBlock(actionPerformed, None, bool)(True)
 
         return handle_secondary_action

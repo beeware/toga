@@ -13,7 +13,7 @@ class DateAndTimeApp(toga.App):
         print(f"{widget.id} is {widget.value.strftime('%I:%M:%S %p')}")
 
     def startup(self):
-        self.main_window = toga.MainWindow(title=self.name)
+        self.main_window = toga.MainWindow()
 
         any_date_box = toga.Box(
             children=[

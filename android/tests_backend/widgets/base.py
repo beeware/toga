@@ -1,8 +1,6 @@
 import asyncio
 
-from java import dynamic_proxy
-from pytest import approx
-
+import pytest
 from android.graphics.drawable import (
     ColorDrawable,
     DrawableContainer,
@@ -10,54 +8,26 @@ from android.graphics.drawable import (
     LayerDrawable,
 )
 from android.os import Build, SystemClock
-from android.view import (
-    MotionEvent,
-    View,
-    ViewGroup,
-    ViewTreeObserver,
-    WindowManagerGlobal,
-)
+from android.view import MotionEvent, View, ViewGroup
+
 from toga.colors import TRANSPARENT
 from toga.style.pack import JUSTIFY, LEFT
 
+from ..fonts import FontMixin
 from ..probe import BaseProbe
 from .properties import toga_color, toga_vertical_alignment
 
 
-class LayoutListener(dynamic_proxy(ViewTreeObserver.OnGlobalLayoutListener)):
-    def __init__(self):
-        super().__init__()
-        self.event = asyncio.Event()
+class SimpleProbe(BaseProbe, FontMixin):
+    default_font_family = "sans-serif"
+    default_font_size = 14
 
-    def onGlobalLayout(self):
-        self.event.set()
-
-
-class SimpleProbe(BaseProbe):
     def __init__(self, widget):
-        super().__init__()
-        self.app = widget.app
+        super().__init__(widget.app)
         self.widget = widget
+        self.impl = widget._impl
         self.native = widget._impl.native
-        self.layout_listener = LayoutListener()
-        self.native.getViewTreeObserver().addOnGlobalLayoutListener(
-            self.layout_listener
-        )
-        self.window_manager = WindowManagerGlobal.getInstance()
-        self.original_window_names = self.window_manager.getViewRootNames()
-
-        # Store the device DPI, as it will be needed to scale some values
-        self.dpi = (
-            self.native.getContext().getResources().getDisplayMetrics().densityDpi
-        )
-        self.scale_factor = self.dpi / 160
-
         assert isinstance(self.native, self.native_class)
-
-    def __del__(self):
-        self.native.getViewTreeObserver().removeOnGlobalLayoutListener(
-            self.layout_listener
-        )
 
     def assert_container(self, container):
         assert self.widget._impl.container is container._impl.container
@@ -78,18 +48,6 @@ class SimpleProbe(BaseProbe):
 
     def assert_vertical_alignment(self, expected):
         assert toga_vertical_alignment(self.native.getGravity()) == expected
-
-    async def redraw(self, message=None, delay=None):
-        """Request a redraw of the app, waiting until that redraw has completed."""
-        self.native.requestLayout()
-        try:
-            event = self.layout_listener.event
-            event.clear()
-            await asyncio.wait_for(event.wait(), 5)
-        except asyncio.TimeoutError:
-            print("Redraw timed out")
-
-        await super().redraw(message=message, delay=delay)
 
     @property
     def enabled(self):
@@ -127,12 +85,12 @@ class SimpleProbe(BaseProbe):
         # Size and position is as expected. Values must be scaled from DP, and
         # compared inexactly due to pixel scaling
         assert (
-            approx(self.native.getWidth() / self.scale_factor, rel=0.01),
-            approx(self.native.getHeight() / self.scale_factor, rel=0.01),
+            pytest.approx(self.native.getWidth() / self.scale_factor, rel=0.01),
+            pytest.approx(self.native.getHeight() / self.scale_factor, rel=0.01),
         ) == size
         assert (
-            approx(self.native.getLeft() / self.scale_factor, rel=0.01),
-            approx(self.native.getTop() / self.scale_factor, rel=0.01),
+            pytest.approx(self.native.getLeft() / self.scale_factor, rel=0.01),
+            pytest.approx(self.native.getTop() / self.scale_factor, rel=0.01),
         ) == position
 
     @property
@@ -165,19 +123,6 @@ class SimpleProbe(BaseProbe):
             return toga_color(filter.getColor())
         else:
             return TRANSPARENT
-
-    def find_dialog(self):
-        new_windows = [
-            name
-            for name in self.window_manager.getViewRootNames()
-            if name not in self.original_window_names
-        ]
-        if len(new_windows) == 0:
-            return None
-        elif len(new_windows) == 1:
-            return self.window_manager.getRootView(new_windows[0])
-        else:
-            raise RuntimeError(f"More than one new window: {new_windows}")
 
     async def press(self):
         self.native.performClick()
@@ -225,6 +170,12 @@ class SimpleProbe(BaseProbe):
     @property
     def has_focus(self):
         return self.widget.app._impl.native.getCurrentFocus() == self.native
+
+    async def undo(self):
+        pytest.skip("Undo not supported on this platform")
+
+    async def redo(self):
+        pytest.skip("Redo not supported on this platform")
 
 
 def find_view_by_type(root, cls):

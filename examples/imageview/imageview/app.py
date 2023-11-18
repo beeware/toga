@@ -8,7 +8,7 @@ from toga.style.pack import CENTER, COLUMN, Pack
 
 class ImageViewApp(toga.App):
     def startup(self):
-        self.main_window = toga.MainWindow(title=self.name)
+        self.main_window = toga.MainWindow()
 
         box = toga.Box(
             style=Pack(

@@ -1,3 +1,5 @@
+from decimal import ROUND_UP
+
 import System.Windows.Forms as WinForms
 from System.Drawing import Bitmap
 
@@ -9,7 +11,6 @@ from .base import Widget
 class ImageView(Widget):
     def create(self):
         self.native = WinForms.PictureBox()
-        self.native.interface = self.interface
         self.native.SizeMode = WinForms.PictureBoxSizeMode.Zoom
 
         # If self.native.Image is None, Winforms renders it as a white square
@@ -31,10 +32,10 @@ class ImageView(Widget):
 
     def rehint(self):
         width, height, aspect_ratio = rehint_imageview(
-            self.interface.image, self.interface.style, self.scale
+            self.interface.image, self.interface.style, self.dpi_scale
         )
-        self.interface.intrinsic.width = width
-        self.interface.intrinsic.height = height
+        self.interface.intrinsic.width = self.scale_out(width, ROUND_UP)
+        self.interface.intrinsic.height = self.scale_out(height, ROUND_UP)
         if aspect_ratio is not None:
             self.native.SizeMode = WinForms.PictureBoxSizeMode.Zoom
         else:

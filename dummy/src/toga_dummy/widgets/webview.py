@@ -1,10 +1,8 @@
 from toga.widgets.webview import JavaScriptResult
 
-from ..utils import not_required
 from .base import Widget
 
 
-@not_required  # Testbed coverage is complete for this widget.
 class WebView(Widget):
     def create(self):
         self._action("create WebView")
@@ -32,7 +30,7 @@ class WebView(Widget):
         return self._js_result
 
     def simulate_page_loaded(self):
-        self.interface.on_webview_load(self.interface)
+        self.interface.on_webview_load()
 
         loaded_future = self._get_value("loaded_future", None)
         if loaded_future:

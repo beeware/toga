@@ -1,110 +1,108 @@
-import math
+import itertools
+from math import degrees
 
-from travertino.size import at_least
-
-from ..libs import activity
-from ..libs.android.graphics import (
+from android.graphics import (
+    Bitmap,
+    Canvas as A_Canvas,
     DashPathEffect,
     Matrix,
     Paint,
-    Paint__Style,
     Path,
-    Path__Direction,
 )
+from android.view import MotionEvent, View
+from java import dynamic_proxy, jint
+from java.io import ByteArrayOutputStream
+from org.beeware.android import DrawHandlerView, IDrawHandler
+
+from toga.widgets.canvas import Baseline, FillRule, arc_to_bezier, sweepangle
+
+from ..colors import native_color
 from .base import Widget
 
 
-class DrawHandler(activity.IDrawHandler):
-    def __init__(self, interface):
-        self.interface = interface
+class DrawHandler(dynamic_proxy(IDrawHandler)):
+    def __init__(self, impl):
         super().__init__()
+        self.impl = impl
+        self.interface = impl.interface
 
     def handleDraw(self, canvas):
-        canvas.save()
-        self.interface._draw(self.interface._impl, path=Path(), canvas=canvas)
+        self.impl.reset_transform(canvas)
+        self.interface.context._draw(self.impl, path=Path(), canvas=canvas)
+
+
+class TouchListener(dynamic_proxy(View.OnTouchListener)):
+    def __init__(self, impl):
+        super().__init__()
+        self.impl = impl
+        self.interface = impl.interface
+
+    def onTouch(self, canvas, event):
+        x, y = map(self.impl.scale_out, (event.getX(), event.getY()))
+        if (action := event.getAction()) == MotionEvent.ACTION_DOWN:
+            self.interface.on_press(x, y)
+        elif action == MotionEvent.ACTION_MOVE:
+            self.interface.on_drag(x, y)
+        elif action == MotionEvent.ACTION_UP:
+            self.interface.on_release(x, y)
+        else:  # pragma: no cover
+            return False
+        return True
 
 
 class Canvas(Widget):
     def create(self):
-        # Our native widget is a DrawHandlerView, which delegates drawing to DrawHandler,
-        # so we can pass the `android.graphics.Canvas` around as `canvas`.
-        self.native = activity.DrawHandlerView(
-            self._native_activity.getApplicationContext()
-        )
-        self.native.setDrawHandler(DrawHandler(self.interface))
+        self.native = DrawHandlerView(self._native_activity)
+        self.native.setDrawHandler(DrawHandler(self))
+        self.native.setOnTouchListener(TouchListener(self))
 
-    def set_hidden(self, hidden):
-        self.interface.factory.not_implemented("Canvas.set_hidden()")
+    def set_bounds(self, x, y, width, height):
+        super().set_bounds(x, y, width, height)
+        self.interface.on_resize(width=width, height=height)
 
     def redraw(self):
-        pass
+        self.native.invalidate()
 
-    def set_on_press(self, handler):
-        self.interface.factory.not_implemented("Canvas.set_on_press()")
+    # Context management
 
-    def set_on_release(self, handler):
-        self.interface.factory.not_implemented("Canvas.set_on_release()")
+    def push_context(self, canvas, **kwargs):
+        canvas.save()
 
-    def set_on_drag(self, handler):
-        self.interface.factory.not_implemented("Canvas.set_on_drag()")
-
-    def set_on_alt_press(self, handler):
-        self.interface.factory.not_implemented("Canvas.set_on_alt_press()")
-
-    def set_on_alt_release(self, handler):
-        self.interface.factory.not_implemented("Canvas.set_on_alt_release()")
-
-    def set_on_alt_drag(self, handler):
-        self.interface.factory.not_implemented("Canvas.set_on_alt_drag()")
+    def pop_context(self, canvas, **kwargs):
+        canvas.restore()
 
     # Basic paths
 
-    def new_path(self, *args, **kwargs):
-        self.interface.factory.not_implemented("Canvas.new_path()")
+    def begin_path(self, path, **kwargs):
+        path.reset()
 
-    def closed_path(self, x, y, path, *args, **kwargs):
+    def close_path(self, path, **kwargs):
         path.close()
 
-    def move_to(self, x, y, path, *args, **kwargs):
-        path.moveTo(self.container.scale * x, self.container.scale * y)
+    def move_to(self, x, y, path, **kwargs):
+        path.moveTo(x, y)
 
-    def line_to(self, x, y, path, *args, **kwargs):
-        path.lineTo(self.container.scale * x, self.container.scale * y)
+    def line_to(self, x, y, path, **kwargs):
+        self._ensure_subpath(x, y, path)
+        path.lineTo(x, y)
+
+    def _ensure_subpath(self, x, y, path):
+        if path.isEmpty():
+            self.move_to(x, y, path)
 
     # Basic shapes
 
-    def bezier_curve_to(self, cp1x, cp1y, cp2x, cp2y, x, y, path, *args, **kwargs):
-        path.cubicTo(
-            cp1x * self.container.scale,
-            cp1y * self.container.scale,
-            cp2x * self.container.scale,
-            cp2y * self.container.scale,
-            x * self.container.scale,
-            y * self.container.scale,
-        )
+    def bezier_curve_to(self, cp1x, cp1y, cp2x, cp2y, x, y, path, **kwargs):
+        self._ensure_subpath(cp1x, cp1y, path)
+        path.cubicTo(cp1x, cp1y, cp2x, cp2y, x, y)
 
-    def quadratic_curve_to(self, cpx, cpy, x, y, path, *args, **kwargs):
-        path.quadTo(
-            cpx * self.container.scale,
-            cpy * self.container.scale,
-            x * self.container.scale,
-            y * self.container.scale,
-        )
+    def quadratic_curve_to(self, cpx, cpy, x, y, path, **kwargs):
+        self._ensure_subpath(cpx, cpy, path)
+        path.quadTo(cpx, cpy, x, y)
 
-    def arc(
-        self, x, y, radius, startangle, endangle, anticlockwise, path, *args, **kwargs
-    ):
-        sweep_angle = endangle - startangle
-        if anticlockwise:
-            sweep_angle -= math.radians(360)
-        path.arcTo(
-            self.container.scale * (x - radius),
-            self.container.scale * (y - radius),
-            self.container.scale * (x + radius),
-            self.container.scale * (y + radius),
-            math.degrees(startangle),
-            math.degrees(sweep_angle),
-            False,
+    def arc(self, x, y, radius, startangle, endangle, anticlockwise, path, **kwargs):
+        self.ellipse(
+            x, y, radius, radius, 0, startangle, endangle, anticlockwise, path, **kwargs
         )
 
     def ellipse(
@@ -118,105 +116,139 @@ class Canvas(Widget):
         endangle,
         anticlockwise,
         path,
-        *args,
-        **kwargs
+        **kwargs,
     ):
-        sweep_angle = endangle - startangle
-        if anticlockwise:
-            sweep_angle -= math.radians(360)
-        ellipse_path = Path()
-        ellipse_path.addArc(
-            self.container.scale * (x - radiusx),
-            self.container.scale * (y - radiusy),
-            self.container.scale * (x + radiusx),
-            self.container.scale * (y + radiusy),
-            math.degrees(startangle),
-            math.degrees(sweep_angle),
-        )
-        rotation_matrix = Matrix()
-        rotation_matrix.postRotate(
-            math.degrees(rotation),
-            self.container.scale * x,
-            self.container.scale * y,
-        )
-        ellipse_path.transform(rotation_matrix)
-        path.addPath(ellipse_path)
+        matrix = Matrix()
+        matrix.preTranslate(x, y)
+        matrix.preRotate(degrees(rotation))
+        matrix.preScale(radiusx, radiusy)
+        matrix.preRotate(degrees(startangle))
 
-    def rect(self, x, y, width, height, path, *args, **kwargs):
-        path.addRect(
-            self.container.scale * x,
-            self.container.scale * y,
-            self.container.scale * (x + width),
-            self.container.scale * (y + height),
-            Path__Direction.CW,
+        coords = list(
+            itertools.chain(
+                *arc_to_bezier(sweepangle(startangle, endangle, anticlockwise))
+            )
         )
+        matrix.mapPoints(coords)
+
+        self.line_to(coords[0], coords[1], path, **kwargs)
+        i = 2
+        while i < len(coords):
+            self.bezier_curve_to(*coords[i : i + 6], path, **kwargs)
+            i += 6
+
+    def rect(self, x, y, width, height, path, **kwargs):
+        path.addRect(x, y, x + width, y + height, Path.Direction.CW)
 
     # Drawing Paths
 
-    def fill(self, color, fill_rule, preserve, path, canvas, *args, **kwargs):
+    def fill(self, color, fill_rule, path, canvas, **kwargs):
         draw_paint = Paint()
         draw_paint.setAntiAlias(True)
-        draw_paint.setStyle(Paint__Style.FILL)
-        if color is None:
-            a, r, g, b = 255, 0, 0, 0
-        else:
-            a, r, g, b = round(color.a * 255), int(color.r), int(color.g), int(color.b)
-        draw_paint.setARGB(a, r, g, b)
+        draw_paint.setStyle(Paint.Style.FILL)
+        draw_paint.setColor(jint(native_color(color)))
 
+        path.setFillType(
+            {
+                FillRule.EVENODD: Path.FillType.EVEN_ODD,
+                FillRule.NONZERO: Path.FillType.WINDING,
+            }.get(fill_rule, Path.FillType.WINDING)
+        )
         canvas.drawPath(path, draw_paint)
         path.reset()
 
-    def stroke(self, color, line_width, line_dash, path, canvas, *args, **kwargs):
+    def stroke(self, color, line_width, line_dash, path, canvas, **kwargs):
         draw_paint = Paint()
         draw_paint.setAntiAlias(True)
-        draw_paint.setStrokeWidth(self.container.scale * line_width)
-        draw_paint.setStyle(Paint__Style.STROKE)
-        if color is None:
-            a, r, g, b = 255, 0, 0, 0
-        else:
-            a, r, g, b = round(color.a * 255), int(color.r), int(color.g), int(color.b)
+        draw_paint.setStyle(Paint.Style.STROKE)
+        draw_paint.setColor(jint(native_color(color)))
+
+        # The stroke respects the canvas transform, so we don't need to scale it here.
+        draw_paint.setStrokeWidth(line_width)
         if line_dash is not None:
-            draw_paint.setPathEffect(
-                DashPathEffect(
-                    [(self.container.scale * float(d)) for d in line_dash], 0.0
-                )
-            )
-        draw_paint.setARGB(a, r, g, b)
+            draw_paint.setPathEffect(DashPathEffect(line_dash, 0))
 
         canvas.drawPath(path, draw_paint)
         path.reset()
 
     # Transformations
 
-    def rotate(self, radians, canvas, *args, **kwargs):
-        canvas.rotate(math.degrees(radians))
+    def rotate(self, radians, canvas, **kwargs):
+        canvas.rotate(degrees(radians))
 
-    def scale(self, sx, sy, canvas, *args, **kwargs):
-        canvas.scale(float(sx), float(sy))
+    def scale(self, sx, sy, canvas, **kwargs):
+        canvas.scale(sx, sy)
 
-    def translate(self, tx, ty, canvas, *args, **kwargs):
-        canvas.translate(self.container.scale * tx, self.container.scale * ty)
+    def translate(self, tx, ty, canvas, **kwargs):
+        canvas.translate(tx, ty)
 
-    def reset_transform(self, canvas, *args, **kwargs):
-        canvas.restore()
-        canvas.save()
+    def reset_transform(self, canvas, **kwargs):
+        canvas.setMatrix(None)
+        self.scale(self.dpi_scale, self.dpi_scale, canvas)
 
     # Text
 
-    def measure_text(self, text, font, tight=False):
-        self.interface.factory.not_implemented("Canvas.measure_text")
+    def measure_text(self, text, font):
+        paint = self._text_paint(font)
+        sizes = [paint.measureText(line) for line in text.splitlines()]
+        return (
+            max(size for size in sizes),
+            paint.getFontSpacing() * len(sizes),
+        )
 
-    def write_text(self, text, x, y, font, *args, **kwargs):
-        self.interface.factory.not_implemented("Canvas.write_text")
+    def write_text(self, text, x, y, font, baseline, canvas, **kwargs):
+        lines = text.splitlines()
+        paint = self._text_paint(font)
+        line_height = paint.getFontSpacing()
+        total_height = line_height * len(lines)
+
+        # paint.ascent returns a negative number.
+        if baseline == Baseline.TOP:
+            top = y - paint.ascent()
+        elif baseline == Baseline.MIDDLE:
+            top = y - paint.ascent() - (total_height / 2)
+        elif baseline == Baseline.BOTTOM:
+            top = y - paint.ascent() - total_height
+        else:
+            # Default to Baseline.ALPHABETIC
+            top = y
+
+        for line_num, line in enumerate(text.splitlines()):
+            # FILL_AND_STROKE doesn't allow separate colors, so we have to draw twice.
+            def draw():
+                canvas.drawText(line, x, top + (line_height * line_num), paint)
+
+            if (color := kwargs.get("fill_color")) is not None:
+                paint.setStyle(Paint.Style.FILL)
+                paint.setColor(jint(native_color(color)))
+                draw()
+            if (color := kwargs.get("stroke_color")) is not None:
+                paint.setStyle(Paint.Style.STROKE)
+                paint.setStrokeWidth(kwargs["line_width"])
+                paint.setColor(jint(native_color(color)))
+                draw()
+
+    def _text_paint(self, font):
+        # font.size applies the scale factor, and the canvas transformation matrix
+        # will apply it again, so we need to cancel one of those with a scale_out.
+        paint = Paint()
+        paint.setTypeface(font.typeface())
+        paint.setTextSize(self.scale_out(font.size()))
+        return paint
 
     def get_image_data(self):
-        self.interface.factory.not_implemented("Canvas.get_image_data()")
+        bitmap = Bitmap.createBitmap(
+            self.native.getWidth(), self.native.getHeight(), Bitmap.Config.ARGB_8888
+        )
+        canvas = A_Canvas(bitmap)
+        background = self.native.getBackground()
+        if background:
+            background.draw(canvas)
+        self.native.draw(canvas)
 
-    # Rehint
+        stream = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.PNG, 0, stream)
+        return bytes(stream.toByteArray())
 
-    def set_on_resize(self, handler):
-        self.interface.factory.not_implemented("Canvas.on_resize")
-
-    def rehint(self):
-        self.interface.intrinsic.width = at_least(0)
-        self.interface.intrinsic.height = at_least(0)
+    def set_background_color(self, value):
+        self.set_background_simple(value)

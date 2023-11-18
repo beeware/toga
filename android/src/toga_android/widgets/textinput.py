@@ -1,19 +1,16 @@
-from travertino.size import at_least
+from decimal import ROUND_UP
+
+from android.text import InputType, TextWatcher
+from android.view import Gravity, View
+from android.widget import EditText
+from java import dynamic_proxy
 
 from toga_android.keys import toga_key
 
-from ..libs.android.text import InputType, TextWatcher
-from ..libs.android.view import (
-    Gravity,
-    OnKeyListener,
-    View__MeasureSpec,
-    View__OnFocusChangeListener,
-)
-from ..libs.android.widget import EditText
 from .label import TextViewWidget
 
 
-class TogaTextWatcher(TextWatcher):
+class TogaTextWatcher(dynamic_proxy(TextWatcher)):
     def __init__(self, impl):
         super().__init__()
         self.impl = impl
@@ -28,7 +25,7 @@ class TogaTextWatcher(TextWatcher):
         pass
 
 
-class TogaKeyListener(OnKeyListener):
+class TogaKeyListener(dynamic_proxy(View.OnKeyListener)):
     def __init__(self, impl):
         super().__init__()
         self.impl = impl
@@ -46,7 +43,7 @@ class TogaKeyListener(OnKeyListener):
         return False
 
 
-class TogaFocusListener(View__OnFocusChangeListener):
+class TogaFocusListener(dynamic_proxy(View.OnFocusChangeListener)):
     def __init__(self, impl):
         super().__init__()
         self.impl = impl
@@ -81,9 +78,19 @@ class TextInput(TextViewWidget):
         if readonly:
             # Implicitly calls setFocusableInTouchMode(False)
             self.native.setFocusable(False)
+            # Add TYPE_TEXT_FLAG_NO_SUGGESTIONS to the input type to disable suggestions
+            input_type = (
+                self.native.getInputType() | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS
+            )
+            self.native.setInputType(input_type)
         else:
             # Implicitly calls setFocusable(True)
             self.native.setFocusableInTouchMode(True)
+            # Remove TYPE_TEXT_FLAG_NO_SUGGESTIONS to enable suggestions
+            input_type = (
+                self.native.getInputType() & ~InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS
+            )
+            self.native.setInputType(input_type)
 
     def get_placeholder(self):
         return str(self.native.getHint())
@@ -104,21 +111,20 @@ class TextInput(TextViewWidget):
         return self.native.getError() is None
 
     def _on_change(self):
-        self.interface.on_change(None)
+        self.interface.on_change()
         self.interface._validate()
 
     def _on_confirm(self):
-        self.interface.on_confirm(None)
+        self.interface.on_confirm()
 
     def _on_gain_focus(self):
-        self.interface.on_gain_focus(None)
+        self.interface.on_gain_focus()
 
     def _on_lose_focus(self):
-        self.interface.on_lose_focus(None)
+        self.interface.on_lose_focus()
 
     def rehint(self):
-        self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
-        self.native.measure(
-            View__MeasureSpec.UNSPECIFIED, View__MeasureSpec.UNSPECIFIED
+        self.native.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
+        self.interface.intrinsic.height = self.scale_out(
+            self.native.getMeasuredHeight(), ROUND_UP
         )
-        self.interface.intrinsic.height = self.native.getMeasuredHeight()

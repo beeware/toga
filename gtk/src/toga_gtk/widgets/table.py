@@ -90,10 +90,10 @@ class Table(Widget):
 
     def gtk_on_row_activated(self, widget, path, column):
         row = self.store[path][0].value
-        self.interface.on_activate(None, row=row)
+        self.interface.on_activate(row=row)
 
     def gtk_on_select(self, selection):
-        self.interface.on_select(None)
+        self.interface.on_select()
 
     def change_source(self, source):
         # Temporarily disconnecting the TreeStore improves performance for large

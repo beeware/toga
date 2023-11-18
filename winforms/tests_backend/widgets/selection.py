@@ -7,7 +7,7 @@ from .base import SimpleProbe
 class SelectionProbe(SimpleProbe):
     native_class = System.Windows.Forms.ComboBox
     background_supports_alpha = False
-    fixed_height = 19
+    fixed_height = 23
 
     def assert_resizes_on_content_change(self):
         xfail("Selection doesn't resize on content changes on this backend")

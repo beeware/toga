@@ -1,7 +1,5 @@
 import asyncio
 
-from androidx.swiperefreshlayout.widget import SwipeRefreshLayout
-
 from android.os import SystemClock
 from android.view import KeyEvent
 from android.widget import (
@@ -12,6 +10,7 @@ from android.widget import (
     ScrollView,
     TextView,
 )
+from androidx.swiperefreshlayout.widget import SwipeRefreshLayout
 
 from .base import SimpleProbe, find_view_by_type
 
@@ -116,12 +115,12 @@ class DetailedListProbe(SimpleProbe):
         self._row_layout(row).performLongClick()
         await self.redraw("Long-pressed row")
 
-        decor = self.find_dialog()
+        dialog_view = self.get_dialog_view()
         if not expected_actions:
-            assert decor is None
+            assert dialog_view is None
             return
 
-        menu = find_view_by_type(decor, ListView)
+        menu = find_view_by_type(dialog_view, ListView)
         assert [
             str(find_view_by_type(menu.getChildAt(i), TextView).getText())
             for i in range(menu.getChildCount())
@@ -132,7 +131,7 @@ class DetailedListProbe(SimpleProbe):
             await self.redraw("Clicked menu item")
         else:
             timestamp = SystemClock.uptimeMillis()
-            decor.dispatchKeyEvent(
+            dialog_view.dispatchKeyEvent(
                 KeyEvent(
                     timestamp,  # downTime
                     timestamp,  # eventTime
@@ -146,4 +145,4 @@ class DetailedListProbe(SimpleProbe):
                 ),
             )
             await self.redraw("Closed menu")
-            assert self.find_dialog() is None
+            assert self.get_dialog_view() is None

@@ -1,1 +1,0 @@
-The ``TextInput.validate`` method has been removed. Validation now happens automatically whenever the ``value`` or ``validators`` properties are changed.

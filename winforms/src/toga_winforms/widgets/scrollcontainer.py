@@ -3,10 +3,10 @@ from decimal import ROUND_DOWN
 from System.Drawing import Point
 from System.Windows.Forms import Panel, SystemInformation
 from travertino.node import Node
-from travertino.size import at_least
 
 from toga_winforms.container import Container
 
+from ..libs.wrapper import WeakrefCallable
 from .base import Widget
 
 # On Windows, scroll bars usually appear only when the content is larger than the
@@ -36,11 +36,11 @@ class ScrollContainer(Widget, Container):
         # The Scroll event only fires on direct interaction with the scroll bar. It
         # doesn't fire when using the mouse wheel, and it doesn't fire when setting
         # AutoScrollPosition either, despite the documentation saying otherwise.
-        self.native.Scroll += self.winforms_scroll
-        self.native.MouseWheel += self.winforms_scroll
+        self.native.Scroll += WeakrefCallable(self.winforms_scroll)
+        self.native.MouseWheel += WeakrefCallable(self.winforms_scroll)
 
     def winforms_scroll(self, sender, event):
-        self.interface.on_scroll(None)
+        self.interface.on_scroll()
 
     def set_bounds(self, x, y, width, height):
         super().set_bounds(x, y, width, height)
@@ -91,7 +91,7 @@ class ScrollContainer(Widget, Container):
     def set_horizontal(self, value):
         self.horizontal = value
         if not value:
-            self.interface.on_scroll(None)
+            self.interface.on_scroll()
         if self.interface.content:
             self.interface.content.refresh()
 
@@ -101,7 +101,7 @@ class ScrollContainer(Widget, Container):
     def set_vertical(self, value):
         self.vertical = value
         if not value:
-            self.interface.on_scroll(None)
+            self.interface.on_scroll()
         if self.interface.content:
             self.interface.content.refresh()
 
@@ -126,8 +126,4 @@ class ScrollContainer(Widget, Container):
             self.scale_in(horizontal_position),
             self.scale_in(vertical_position),
         )
-        self.interface.on_scroll(None)
-
-    def rehint(self):
-        self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
-        self.interface.intrinsic.height = at_least(self.interface._MIN_HEIGHT)
+        self.interface.on_scroll()

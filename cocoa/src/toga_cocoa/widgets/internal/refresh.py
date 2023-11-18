@@ -273,7 +273,7 @@ class RefreshableScrollView(NSScrollView):
                 NSMakePoint(self.contentView.bounds.origin.x, -HEADER_HEIGHT)
             )
             self.refresh_indicator.startAnimation(self)
-            self.interface.on_refresh(self.interface)
+            self.interface.on_refresh()
 
         send_super(__class__, self, "scrollWheel:", event, argtypes=[c_void_p])
 

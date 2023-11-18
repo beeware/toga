@@ -5,6 +5,7 @@ from travertino.size import at_least
 from toga_winforms.colors import native_color
 from toga_winforms.libs.fonts import HorizontalTextAlignment
 
+from ..libs.wrapper import WeakrefCallable
 from .textinput import TextInput
 
 
@@ -14,12 +15,12 @@ class MultilineTextInput(TextInput):
         # (https://stackoverflow.com/a/612234).
         self.native = WinForms.RichTextBox()
         self.native.Multiline = True
-        self.native.TextChanged += self.winforms_text_changed
+        self.native.TextChanged += WeakrefCallable(self.winforms_text_changed)
 
         # When moving focus with the tab key, the Enter/Leave event handlers see the
         # wrong value of ContainsFocus, so we use GotFocus/LostFocus instead.
-        self.native.GotFocus += self.winforms_got_focus
-        self.native.LostFocus += self.winforms_lost_focus
+        self.native.GotFocus += WeakrefCallable(self.winforms_got_focus)
+        self.native.LostFocus += WeakrefCallable(self.winforms_lost_focus)
 
         # Dummy values used during initialization
         self._placeholder = ""
@@ -60,6 +61,7 @@ class MultilineTextInput(TextInput):
             self._set_placeholder_visible(False)
             self.native.Text = value
 
+    # This method is necessary to override the TextInput base class.
     def rehint(self):
         self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
         self.interface.intrinsic.height = at_least(self.interface._MIN_HEIGHT)
@@ -67,7 +69,7 @@ class MultilineTextInput(TextInput):
     def winforms_text_changed(self, sender, event):
         # Showing and hiding the placeholder should not cause an interface event.
         if not self._placeholder_visible:
-            self.interface.on_change(None)
+            self.interface.on_change()
 
     def _set_placeholder_visible(self, visible):
         # Changing ForeColor causes a native TextChanged event, so the order of these

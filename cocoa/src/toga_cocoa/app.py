@@ -2,11 +2,13 @@ import asyncio
 import inspect
 import os
 import sys
+from pathlib import Path
 from urllib.parse import unquote, urlparse
 
 from rubicon.objc.eventloop import CocoaLifecycle, EventLoopPolicy
 
 import toga
+from toga.command import GROUP_BREAK, SECTION_BREAK
 from toga.handlers import NativeHandler
 
 from .keys import cocoa_key
@@ -16,6 +18,7 @@ from .libs import (
     NSAboutPanelOptionApplicationIcon,
     NSAboutPanelOptionApplicationName,
     NSAboutPanelOptionApplicationVersion,
+    NSAboutPanelOptionVersion,
     NSApplication,
     NSApplicationActivationPolicyRegular,
     NSBeep,
@@ -40,11 +43,11 @@ from .window import Window
 class MainWindow(Window):
     def cocoa_windowShouldClose(self):
         # Main Window close is a proxy for "Exit app".
-        # Defer all handling to the app's exit method.
+        # Defer all handling to the app's on_exit handler.
         # As a result of calling that method, the app will either
         # exit, or the user will cancel the exit; in which case
         # the main window shouldn't close, either.
-        self.interface.app.exit()
+        self.interface.app.on_exit()
         return False
 
 
@@ -57,21 +60,21 @@ class AppDelegate(NSObject):
         self.native.activateIgnoringOtherApps(True)
 
     @objc_method
-    def applicationOpenUntitledFile_(self, sender) -> bool:
+    def applicationOpenUntitledFile_(self, sender) -> bool:  # pragma: no cover
         self.impl.select_file()
         return True
 
     @objc_method
-    def addDocument_(self, document) -> None:
+    def addDocument_(self, document) -> None:  # pragma: no cover
         # print("Add Document", document)
         super().addDocument_(document)
 
     @objc_method
-    def applicationShouldOpenUntitledFile_(self, sender) -> bool:
+    def applicationShouldOpenUntitledFile_(self, sender) -> bool:  # pragma: no cover
         return True
 
     @objc_method
-    def application_openFiles_(self, app, filenames) -> None:
+    def application_openFiles_(self, app, filenames) -> None:  # pragma: no cover
         for i in range(0, len(filenames)):
             filename = filenames[i]
             # If you start your Toga application as `python myapp.py` or
@@ -98,8 +101,7 @@ class AppDelegate(NSObject):
     @objc_method
     def selectMenuItem_(self, sender) -> None:
         cmd = self.impl._menu_items[sender]
-        if cmd.action:
-            cmd.action(None)
+        cmd.action()
 
     @objc_method
     def validateMenuItem_(self, sender) -> bool:
@@ -119,6 +121,9 @@ class App:
         asyncio.set_event_loop_policy(EventLoopPolicy())
         self.loop = asyncio.new_event_loop()
 
+        # Stimulate the build of the app
+        self.create()
+
     def create(self):
         self.native = NSApplication.sharedApplication
         self.native.setActivationPolicy(NSApplicationActivationPolicyRegular)
@@ -135,18 +140,29 @@ class App:
         self.appDelegate.native = self.native
         self.native.setDelegate_(self.appDelegate)
 
-        formal_name = self.interface.formal_name
+        self._create_app_commands()
 
+        # Call user code to populate the main window
+        self.interface._startup()
+
+        # Create the lookup table of menu items,
+        # then force the creation of the menus.
+        self._menu_groups = {}
+        self._menu_items = {}
+        self.create_menus()
+
+    def _create_app_commands(self):
+        formal_name = self.interface.formal_name
         self.interface.commands.add(
             # ---- App menu -----------------------------------
             toga.Command(
-                lambda _: self.interface.about(),
+                self._menu_about,
                 "About " + formal_name,
                 group=toga.Group.APP,
             ),
             toga.Command(
                 None,
-                "Preferences",
+                "Settings\u2026",
                 shortcut=toga.Key.MOD_1 + ",",
                 group=toga.Group.APP,
                 section=20,
@@ -176,11 +192,33 @@ class App:
             ),
             # Quit should always be the last item, in a section on its own
             toga.Command(
-                lambda _: self.interface.exit(),
+                self._menu_quit,
                 "Quit " + formal_name,
                 shortcut=toga.Key.MOD_1 + "q",
                 group=toga.Group.APP,
                 section=sys.maxsize,
+            ),
+            # ---- File menu ----------------------------------
+            # This is a bit of an oddity. Apple HIG apps that don't have tabs as
+            # part of their interface (so, Preview and Numbers, but not Safari)
+            # have a "Close" item that becomes "Close All" when you press Option
+            # (MOD_2). That behavior isn't something we're currently set up to
+            # implement, so we live with a separate menu item for now.
+            toga.Command(
+                self._menu_close_window,
+                "Close",
+                shortcut=toga.Key.MOD_1 + "w",
+                group=toga.Group.FILE,
+                order=1,
+                section=50,
+            ),
+            toga.Command(
+                self._menu_close_all_windows,
+                "Close All",
+                shortcut=toga.Key.MOD_2 + toga.Key.MOD_1 + "w",
+                group=toga.Group.FILE,
+                order=2,
+                section=50,
             ),
             # ---- Edit menu ----------------------------------
             toga.Command(
@@ -244,38 +282,61 @@ class App:
                 section=10,
                 order=60,
             ),
+            # ---- Window menu ----------------------------------
+            toga.Command(
+                self._menu_minimize,
+                "Minimize",
+                shortcut=toga.Key.MOD_1 + "m",
+                group=toga.Group.WINDOW,
+            ),
             # ---- Help menu ----------------------------------
             toga.Command(
-                lambda _: self.interface.visit_homepage(),
+                self._menu_visit_homepage,
                 "Visit homepage",
                 enabled=self.interface.home_page is not None,
                 group=toga.Group.HELP,
             ),
         )
-        self._create_app_commands()
 
-        # Call user code to populate the main window
-        self.interface._startup()
+    def _menu_about(self, command, **kwargs):
+        self.interface.about()
 
-        # Create the lookup table of menu items,
-        # then force the creation of the menus.
-        self.create_menus()
+    def _menu_quit(self, command, **kwargs):
+        self.interface.on_exit()
 
-    def _create_app_commands(self):
-        # No extra commands
-        pass
+    def _menu_close_window(self, command, **kwargs):
+        if self.interface.current_window:
+            self.interface.current_window._impl.native.performClose(None)
+
+    def _menu_close_all_windows(self, command, **kwargs):
+        # Convert to a list to so that we're not altering a set while iterating
+        for window in list(self.interface.windows):
+            window._impl.native.performClose(None)
+
+    def _menu_minimize(self, command, **kwargs):
+        if self.interface.current_window:
+            self.interface.current_window._impl.native.miniaturize(None)
+
+    def _menu_visit_homepage(self, command, **kwargs):
+        self.interface.visit_homepage()
 
     def create_menus(self):
-        # Recreate the menu
-        self._menu_items = {}
-        self._menu_groups = {}
+        # Recreate the menu.
+        # Remove any native references to the existing menu
+        for menu_item, cmd in self._menu_items.items():
+            cmd._impl.native.remove(menu_item)
+
+        # Create a clean menubar instance.
         menubar = NSMenu.alloc().initWithTitle("MainMenu")
         submenu = None
+        self._menu_groups = {}
+        self._menu_items = {}
+
         for cmd in self.interface.commands:
-            if cmd == toga.GROUP_BREAK:
+            if cmd == GROUP_BREAK:
                 submenu = None
-            elif cmd == toga.SECTION_BREAK:
-                submenu.addItem_(NSMenuItem.separatorItem())
+            elif cmd == SECTION_BREAK:
+                submenu.addItem(NSMenuItem.separatorItem())
             else:
                 submenu = self._submenu(cmd.group, menubar)
 
@@ -298,8 +359,16 @@ class App:
                     action=action,
                     keyEquivalent=key,
                 )
+
                 if modifier is not None:
                     item.keyEquivalentModifierMask = modifier
+
+                # Explicit set the initial enabled/disabled state on the menu item
+                item.setEnabled(cmd.enabled)
+
+                # Associated the MenuItem with the command, so that future
+                # changes to enabled etc are reflected.
+                cmd._impl.native.add(item)
 
                 self._menu_items[item] = cmd
                 submenu.addItem(item)
@@ -334,9 +403,6 @@ class App:
             return submenu
 
     def main_loop(self):
-        # Stimulate the build of the app
-        self.create()
-
         self.loop.run_forever(lifecycle=CocoaLifecycle(self.native))
 
     def set_main_window(self, window):
@@ -346,28 +412,28 @@ class App:
         options = NSMutableDictionary.alloc().init()
 
         options[NSAboutPanelOptionApplicationIcon] = self.interface.icon._impl.native
+        options[NSAboutPanelOptionApplicationName] = self.interface.formal_name
 
-        if self.interface.name is not None:
-            options[NSAboutPanelOptionApplicationName] = self.interface.name
-
-        if self.interface.version is not None:
+        if self.interface.version is None:
+            options[NSAboutPanelOptionApplicationVersion] = "0.0"
+        else:
             options[NSAboutPanelOptionApplicationVersion] = self.interface.version
 
         # The build number
-        # if self.interface.version is not None:
-        #     options[NSAboutPanelOptionVersion] = "the build"
+        options[NSAboutPanelOptionVersion] = "1"
 
-        if self.interface.author is not None:
-            options["Copyright"] = "Copyright © {author}".format(
-                author=self.interface.author
-            )
+        if self.interface.author is None:
+            options["Copyright"] = ""
+        else:
+            options["Copyright"] = f"Copyright © {self.interface.author}"
 
         self.native.orderFrontStandardAboutPanelWithOptions(options)
 
     def beep(self):
         NSBeep()
 
-    def exit(self):
+    # We can't call this under test conditions, because it would kill the test harness
+    def exit(self):  # pragma: no cover
         self.loop.stop()
 
     def get_current_window(self):
@@ -377,11 +443,6 @@ class App:
         window._impl.native.makeKeyAndOrderFront(window._impl.native)
 
     def enter_full_screen(self, windows):
-        # If we're already in full screen mode, exit so that
-        # we can re-assign windows to screens.
-        if self.interface.is_full_screen:
-            self.interface.exit_full_screen()
-
         opts = NSMutableDictionary.alloc().init()
         opts.setObject(
             NSNumber.numberWithBool(True), forKey="NSFullScreenModeAllScreens"
@@ -425,17 +486,21 @@ class App:
         """No-op when the app is not a ``DocumentApp``."""
 
 
-class DocumentApp(App):
+class DocumentApp(App):  # pragma: no cover
     def _create_app_commands(self):
+        super()._create_app_commands()
         self.interface.commands.add(
             toga.Command(
-                lambda _: self.select_file(),
-                text="Open...",
+                self._menu_open_file,
+                text="Open\u2026",
                 shortcut=toga.Key.MOD_1 + "o",
                 group=toga.Group.FILE,
                 section=0,
             ),
         )
+
+    def _menu_open_file(self, app, **kwargs):
+        self.select_file()
 
     def select_file(self, **kwargs):
         # FIXME This should be all we need; but for some reason, application types
@@ -458,20 +523,9 @@ class DocumentApp(App):
         self.appDelegate.application_openFiles_(None, panel.URLs)
 
     def open_document(self, fileURL):
-        """Open a new document in this app.
-
-        Args:
-            fileURL (str): The URL/path to the file to add as a document.
-        """
         # Convert a cocoa fileURL to a file path.
         fileURL = fileURL.rstrip("/")
-        path = unquote(urlparse(fileURL).path)
-        extension = os.path.splitext(path)[1][1:]
+        path = Path(unquote(urlparse(fileURL).path))
 
-        # Create the document instance
-        DocType = self.interface.document_types[extension]
-        document = DocType(path, app=self.interface)
-        self.interface._documents.append(document)
-
-        # Show the document.
-        document.show()
+        # Create and show the document instance
+        self.interface._open(path)

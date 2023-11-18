@@ -1,22 +1,24 @@
 import asyncio
+import sys
 
-from rubicon.java import android_events
-
-import toga
+from android.graphics.drawable import BitmapDrawable
 from android.media import RingtoneManager
 from android.os import Build
-from toga.command import Group
+from android.view import Menu, MenuItem
+from java import dynamic_proxy
+from org.beeware.android import IPythonApp, MainActivity
 
-from .libs.activity import IPythonApp, MainActivity
-from .libs.android.graphics import Drawable
-from .libs.android.view import Menu, MenuItem
+from toga.command import GROUP_BREAK, SECTION_BREAK, Command, Group
+
+from .libs import events
 from .window import Window
 
-# `MainWindow` is defined here in `app.py`, not `window.py`, to mollify the test suite.
-MainWindow = Window
+
+class MainWindow(Window):
+    _is_main_window = True
 
 
-class TogaApp(IPythonApp):
+class TogaApp(dynamic_proxy(IPythonApp)):
     last_intent_requestcode = (
         -1
     )  # always increment before using it for invoking new Intents
@@ -48,7 +50,7 @@ class TogaApp(IPythonApp):
                 window.on_gain_focus(self._impl.interface)
 
     def onPause(self):
-        print("Toga app: onPause")
+        print("Toga app: onPause")  # pragma: no cover
         # onTopResumedActivityChanged is not available on android versions less
         # than Q. onPause is the best indicator for the lost input focus event.
         if Build.VERSION.SDK_INT < Build.VERSION_CODES.Q:
@@ -56,18 +58,18 @@ class TogaApp(IPythonApp):
                 window.on_lose_focus(self._impl.interface)
 
     def onStop(self):
-        print("Toga app: onStop")
+        print("Toga app: onStop")  # pragma: no cover
         for window in self._impl.interface.windows:
             window.on_hide(self._impl.interface)
 
     def onDestroy(self):
-        print("Toga app: onDestroy")
+        print("Toga app: onDestroy")  # pragma: no cover
 
     def onRestart(self):
-        print("Toga app: onRestart")
+        print("Toga app: onRestart")  # pragma: no cover
 
     def onTopResumedActivityChanged(self, isTopResumedActivity):
-        print("Toga app: onTopResumedActivityChanged")
+        print("Toga app: onTopResumedActivityChanged")  # pragma: no cover
         if isTopResumedActivity:
             for window in self._impl.interface.windows:
                 window.on_gain_focus(self._impl.interface)
@@ -75,7 +77,8 @@ class TogaApp(IPythonApp):
             for window in self._impl.interface.windows:
                 window.on_lose_focus(self._impl.interface)
 
-    def onActivityResult(self, requestCode, resultCode, resultData):
+    # TODO #1798: document and test this somehow
+    def onActivityResult(self, requestCode, resultCode, resultData):  # pragma: no cover
         """Callback method, called from MainActivity when an Intent ends.
 
         :param int requestCode: The integer request code originally supplied to startActivityForResult(),
@@ -98,94 +101,86 @@ class TogaApp(IPythonApp):
             print("No intent matching request code {requestCode}")
 
     def onConfigurationChanged(self, new_config):
-        pass
+        pass  # pragma: no cover
 
     def onOptionsItemSelected(self, menuitem):
-        consumed = False
-        try:
-            cmd = self.menuitem_mapping[menuitem.getItemId()]
-            consumed = True
-            if cmd.action is not None:
-                cmd.action(menuitem)
-        except KeyError:
-            print("menu item id not found in menuitem_mapping dictionary!")
-        return consumed
+        itemid = menuitem.getItemId()
+        if itemid == Menu.NONE:
+            # This method also fires when opening submenus
+            return False
+        else:
+            self.menuitem_mapping[itemid].action()
+            return True
 
     def onPrepareOptionsMenu(self, menu):
         menu.clear()
-        itemid = 0
+        itemid = 1  # 0 is the same as Menu.NONE.
+        groupid = 1
         menulist = {}  # dictionary with all menus
         self.menuitem_mapping.clear()
 
         # create option menu
         for cmd in self._impl.interface.commands:
-            if cmd == toga.SECTION_BREAK or cmd == toga.GROUP_BREAK:
+            if cmd == SECTION_BREAK or cmd == GROUP_BREAK:
+                groupid += 1
                 continue
-            if cmd in self._impl.interface.main_window.toolbar:
-                continue  # do not show toolbar commands in the option menu (except when overflowing)
 
-            grouppath = cmd.group.path
-            if grouppath[0] != Group.COMMANDS:
-                # only the Commands group (and its subgroups) are supported
-                # other groups should eventually go into the navigation drawer
+            # Toolbar commands are added below.
+            if cmd in self._impl.interface.main_window.toolbar:
                 continue
+
             if cmd.group.key in menulist:
                 menugroup = menulist[cmd.group.key]
             else:
                 # create all missing submenus
                 parentmenu = menu
-                for group in grouppath:
-                    groupkey = group.key
+                groupkey = ()
+                for section, order, text in cmd.group.key:
+                    groupkey += ((section, order, text),)
                     if groupkey in menulist:
                         menugroup = menulist[groupkey]
                     else:
-                        if group.text == toga.Group.COMMANDS.text:
+                        if len(groupkey) == 1 and text == Group.COMMANDS.text:
+                            # Add this group directly to the top-level menu
                             menulist[groupkey] = menu
                             menugroup = menu
                         else:
-                            itemid += 1
-                            order = Menu.NONE if group.order is None else group.order
+                            # Add all other groups as submenus
                             menugroup = parentmenu.addSubMenu(
-                                Menu.NONE, itemid, order, group.text
-                            )  # groupId, itemId, order, title
+                                groupid, Menu.NONE, Menu.NONE, text
+                            )
                             menulist[groupkey] = menugroup
                     parentmenu = menugroup
+
             # create menu item
-            itemid += 1
-            order = Menu.NONE if cmd.order is None else cmd.order
-            menuitem = menugroup.add(
-                Menu.NONE, itemid, order, cmd.text
-            )  # groupId, itemId, order, title
+            menuitem = menugroup.add(groupid, itemid, Menu.NONE, cmd.text)
             menuitem.setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_NEVER)
             menuitem.setEnabled(cmd.enabled)
-            self.menuitem_mapping[
-                itemid
-            ] = cmd  # store itemid for use in onOptionsItemSelected
+            self.menuitem_mapping[itemid] = cmd
+            itemid += 1
 
         # create toolbar actions
-        if self._impl.interface.main_window:
+        if self._impl.interface.main_window:  # pragma: no branch
             for cmd in self._impl.interface.main_window.toolbar:
-                if cmd == toga.SECTION_BREAK or cmd == toga.GROUP_BREAK:
+                if cmd == SECTION_BREAK or cmd == GROUP_BREAK:
+                    groupid += 1
                     continue
-                itemid += 1
-                order = Menu.NONE if cmd.order is None else cmd.order
-                menuitem = menu.add(
-                    Menu.NONE, itemid, order, cmd.text
-                )  # groupId, itemId, order, title
-                menuitem.setShowAsActionFlags(
-                    MenuItem.SHOW_AS_ACTION_IF_ROOM
-                )  # toolbar button / item in options menu on overflow
+
+                menuitem = menu.add(groupid, itemid, Menu.NONE, cmd.text)
+                # SHOW_AS_ACTION_IF_ROOM is too conservative, showing only 2 items on
+                # a medium-size screen in portrait.
+                menuitem.setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_ALWAYS)
                 menuitem.setEnabled(cmd.enabled)
                 if cmd.icon:
-                    icon = Drawable.createFromPath(str(cmd.icon._impl.path))
-                    if icon:
-                        menuitem.setIcon(icon)
-                    else:
-                        print("Could not create icon: " + str(cmd.icon._impl.path))
-                self.menuitem_mapping[
-                    itemid
-                ] = cmd  # store itemid for use in onOptionsItemSelected
+                    menuitem.setIcon(
+                        BitmapDrawable(
+                            self.native.getResources(), cmd.icon._impl.native
+                        )
+                    )
+                self.menuitem_mapping[itemid] = cmd
+                itemid += 1
 
+        # Display the menu.
         return True
 
 
@@ -195,7 +190,7 @@ class App:
         self.interface._impl = self
         self._listener = None
 
-        self.loop = android_events.AndroidEventLoop()
+        self.loop = events.AndroidEventLoop()
 
     @property
     def native(self):
@@ -207,9 +202,20 @@ class App:
         self._listener = TogaApp(self)
         # Call user code to populate the main window
         self.interface._startup()
+        self._create_app_commands()
 
-    def open_document(self, fileURL):
-        print("Can't open document %s (yet)" % fileURL)
+    def create_menus(self):
+        self.native.invalidateOptionsMenu()  # Triggers onPrepareOptionsMenu
+
+    def _create_app_commands(self):
+        self.interface.commands.add(
+            # About should be the last item in the menu, in a section on its own.
+            Command(
+                lambda _: self.interface.about(),
+                f"About {self.interface.formal_name}",
+                section=sys.maxsize,
+            ),
+        )
 
     def main_loop(self):
         # In order to support user asyncio code, start the Python/Android cooperative event loop.
@@ -223,7 +229,21 @@ class App:
         pass
 
     def show_about_dialog(self):
-        self.interface.factory.not_implemented("App.show_about_dialog()")
+        message_parts = []
+        if self.interface.version is not None:
+            message_parts.append(
+                f"{self.interface.formal_name} v{self.interface.version}"
+            )
+        else:
+            message_parts.append(self.interface.formal_name)
+
+        if self.interface.author is not None:
+            message_parts.append(f"Author: {self.interface.author}")
+        if self.interface.description is not None:
+            message_parts.append(f"\n{self.interface.description}")
+        self.interface.main_window.info_dialog(
+            f"About {self.interface.formal_name}", "\n".join(message_parts)
+        )
 
     def beep(self):
         uri = RingtoneManager.getActualDefaultRingtoneUri(
@@ -233,9 +253,16 @@ class App:
         ringtone.play()
 
     def exit(self):
+        pass  # pragma: no cover
+
+    def get_current_window(self):
+        return self.interface.main_window._impl
+
+    def set_current_window(self, window):
         pass
 
-    async def intent_result(self, intent):
+    # TODO #1798: document and test this somehow
+    async def intent_result(self, intent):  # pragma: no cover
         """Calls an Intent and waits for its result.
 
         A RuntimeError will be raised when the Intent cannot be invoked.
@@ -256,6 +283,12 @@ class App:
             return result_future.result()
         except AttributeError:
             raise RuntimeError("No appropriate Activity found to handle this intent.")
+
+    def enter_full_screen(self, windows):
+        pass
+
+    def exit_full_screen(self, windows):
+        pass
 
     def hide_cursor(self):
         pass

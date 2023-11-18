@@ -1,48 +1,45 @@
 import System.Windows.Forms as WinForms
-from System.Drawing import Point, Size
+from System.Drawing import Bitmap, Graphics, Point, Size
+from System.Drawing.Imaging import ImageFormat
+from System.IO import MemoryStream
 
-from toga import GROUP_BREAK, SECTION_BREAK
+from toga.command import GROUP_BREAK, SECTION_BREAK
 
 from .container import Container
+from .libs.wrapper import WeakrefCallable
 from .widgets.base import Scalable
 
 
 class Window(Container, Scalable):
     def __init__(self, interface, title, position, size):
         self.interface = interface
-        self.interface._impl = self
 
         # Winforms close handling is caught on the FormClosing handler. To allow
-        # for async close handling, we need to be able to abort this close
-        # event, and then manually cause the close as part of the async result
-        # handling. However, this then causes an is_closing event, which we need
-        # to ignore. The `_is_closing` flag lets us easily identify if the
-        # window is in the process of closing.
+        # for async close handling, we need to be able to abort this close event,
+        # call the Toga event handler, and let that decide whether to call close().
+        # If it does, there will be another FormClosing event, which we need
+        # to ignore. The `_is_closing` flag lets us do this.
         self._is_closing = False
         self._is_previously_shown = False
 
         self.native = WinForms.Form()
-        self.native.interface = self.interface
-        self.native._impl = self
-        self.native.FormClosing += self.winforms_FormClosing
+        self.native.FormClosing += WeakrefCallable(self.winforms_FormClosing)
         super().__init__(self.native)
         self.init_scale(self.native)
 
-        self.native.MinimizeBox = self.native.interface.minimizable
+        self.native.MinimizeBox = self.interface.minimizable
+        self.native.MaximizeBox = self.interface.resizable
 
         self.set_title(title)
         self.set_size(size)
         self.set_position(position)
 
         self.toolbar_native = None
-        self.toolbar_items = None
 
-        self.native.Resize += lambda sender, args: self.resize_content()
+        self.native.Resize += WeakrefCallable(self.winforms_Resize)
         self.resize_content()  # Store initial size
 
-        if not self.native.interface.resizeable:
-            self.native.FormBorderStyle = self.native.FormBorderStyle.FixedSingle
-            self.native.MaximizeBox = False
+        self.set_full_screen(self.interface.full_screen)
 
         self.native.Activated += self.winforms_on_gain_focus
         self.native.Deactivate += self.winforms_on_lose_focus
@@ -59,6 +56,7 @@ class Window(Container, Scalable):
                 # defaults to `Top`.
                 self.toolbar_native = WinForms.ToolStrip()
                 self.native.Controls.Add(self.toolbar_native)
+                self.toolbar_native.BringToFront()  # In a dock, "front" means "bottom".
 
             for cmd in self.interface.toolbar:
                 if cmd == GROUP_BREAK:
@@ -66,14 +64,13 @@ class Window(Container, Scalable):
                 elif cmd == SECTION_BREAK:
                     item = WinForms.ToolStripSeparator()
                 else:
+                    item = WinForms.ToolStripMenuItem(cmd.text)
+                    if cmd.tooltip is not None:
+                        item.ToolTipText = cmd.tooltip
                     if cmd.icon is not None:
-                        native_icon = cmd.icon._impl.native
-                        item = WinForms.ToolStripMenuItem(
-                            cmd.text, native_icon.ToBitmap()
-                        )
-                    else:
-                        item = WinForms.ToolStripMenuItem(cmd.text)
-                    item.Click += cmd._impl.as_handler()
+                        item.Image = cmd.icon._impl.native.ToBitmap()
+                    item.Enabled = cmd.enabled
+                    item.Click += WeakrefCallable(cmd._impl.winforms_Click)
                     cmd._impl.native.append(item)
                 self.toolbar_native.Items.Add(item)
 
@@ -91,18 +88,21 @@ class Window(Container, Scalable):
         self.native.Location = Point(*map(self.scale_in, position))
 
     def get_size(self):
-        size = self.native.ClientSize
-        return tuple(map(self.scale_out, (size.Width, size.Height)))
+        size = self.native.Size
+        return (
+            self.scale_out(size.Width - self.decor_width()),
+            self.scale_out(size.Height - self.decor_height()),
+        )
 
     def set_size(self, size):
-        self.native.ClientSize = Size(*map(self.scale_in, size))
+        width, height = size
+        self.native.Size = Size(
+            self.scale_in(width) + self.decor_width(),
+            self.scale_in(height) + self.decor_height(),
+        )
 
     def set_app(self, app):
-        if app is None:
-            return
         icon_impl = app.interface.icon._impl
-        if icon_impl is None:
-            return
         self.native.Icon = icon_impl.native
 
     def get_title(self):
@@ -113,16 +113,13 @@ class Window(Container, Scalable):
 
     def refreshed(self):
         super().refreshed()
-
-        # Enforce a minimum window size. This takes into account the title bar and
-        # borders, which are included in Size but not in ClientSize.
-        decor_size = self.native.Size - self.native.ClientSize
         layout = self.interface.content.layout
-        min_client_size = Size(
-            self.scale_in(layout.min_width),
-            self.scale_in(layout.min_height) + self.top_bars_height(),
+        self.native.MinimumSize = Size(
+            self.scale_in(layout.min_width) + self.decor_width(),
+            self.scale_in(layout.min_height)
+            + self.top_bars_height()
+            + self.decor_height(),
         )
-        self.native.MinimumSize = decor_size + min_client_size
 
     def show(self):
         if self.interface.content is not None:
@@ -137,33 +134,44 @@ class Window(Container, Scalable):
     def get_visible(self):
         return self.native.Visible
 
+    def winforms_Resize(self, sender, event):
+        self.resize_content()
+
     def winforms_FormClosing(self, sender, event):
-        # If the app is exiting, or a manual close has been requested,
-        # don't get confirmation; just close.
+        # If the app is exiting, or a manual close has been requested, don't get
+        # confirmation; just close.
         if not self.interface.app._impl._is_exiting and not self._is_closing:
-            if not self.interface.closeable:
-                # Closeability is implemented by shortcutting the close handler.
+            if not self.interface.closable:
+                # Window isn't closable, so any request to close should be cancelled.
                 event.Cancel = True
-            elif self.interface.on_close._raw:
-                # If there is an on_close event handler, process it;
-                # but then cancel the close event. If the result of
-                # on_close handling indicates the window should close,
-                # then it will be manually triggered as part of that
-                # result handling.
-                self.interface.on_close(self)
+            else:
+                # See _is_closing comment in __init__.
+                self.interface.on_close()
                 event.Cancel = True
 
     def set_full_screen(self, is_full_screen):
         if is_full_screen:
-            self.native.FormBorderStyle = WinForms.FormBorderStyle(0)
+            self.native.FormBorderStyle = getattr(WinForms.FormBorderStyle, "None")
             self.native.WindowState = WinForms.FormWindowState.Maximized
         else:
-            self.native.FormBorderStyle = WinForms.FormBorderStyle(1)
+            self.native.FormBorderStyle = getattr(
+                WinForms.FormBorderStyle,
+                "Sizable" if self.interface.resizable else "FixedSingle",
+            )
             self.native.WindowState = WinForms.FormWindowState.Normal
 
     def close(self):
         self._is_closing = True
         self.native.Close()
+
+    # "Decor" includes the title bar and the (usually invisible) resize borders. It does
+    # not include the menu bar and toolbar, which are included in the ClientSize (see
+    # top_bars_height).
+    def decor_width(self):
+        return self.native.Size.Width - self.native.ClientSize.Width
+
+    def decor_height(self):
+        return self.native.Size.Height - self.native.ClientSize.Height
 
     def top_bars_height(self):
         vertical_shift = 0
@@ -216,3 +224,18 @@ class Window(Container, Scalable):
         ):
             self._is_previously_shown = True
             self.interface.on_show(self.interface)
+
+    def get_image_data(self):
+        size = Size(self.native_content.Size.Width, self.native_content.Size.Height)
+        bitmap = Bitmap(size.Width, size.Height)
+        graphics = Graphics.FromImage(bitmap)
+
+        graphics.CopyFromScreen(
+            self.native_content.PointToScreen(Point.Empty),
+            Point(0, 0),
+            size,
+        )
+
+        stream = MemoryStream()
+        bitmap.Save(stream, ImageFormat.Png)
+        return stream.ToArray()

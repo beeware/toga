@@ -4,16 +4,39 @@ Tree
 A widget for displaying a hierarchical tree of tabular data. Scroll bars will be
 provided if necessary.
 
-.. figure:: /reference/images/Tree.png
-   :width: 300px
-   :align: center
+.. tabs::
 
-.. rst-class:: widget-support
-.. csv-filter:: Availability (:ref:`Key <api-status-key>`)
-   :header-rows: 1
-   :file: ../../data/widgets_by_platform.csv
-   :included_cols: 4,5,6,7,8,9,10
-   :exclude: {0: '(?!^(Tree|Component)$)'}
+  .. group-tab:: macOS
+
+    .. figure:: /reference/images/tree-cocoa.png
+       :align: center
+       :width: 450px
+
+  .. group-tab:: Linux
+
+    .. figure:: /reference/images/tree-gtk.png
+       :align: center
+       :width: 450px
+
+  .. group-tab:: Windows |no|
+
+    Not supported
+
+  .. group-tab:: Android |no|
+
+    Not supported
+
+  .. group-tab:: iOS |no|
+
+    Not supported
+
+  .. group-tab:: Web |no|
+
+    Not supported
+
+  .. group-tab:: Textual |no|
+
+    Not supported
 
 Usage
 -----

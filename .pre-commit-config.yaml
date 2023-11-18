@@ -1,7 +1,7 @@
 exclude: "^(attic|examples/.template|nursery)/"
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.4.0
+    rev: v4.5.0
     hooks:
       - id: check-toml
       - id: check-yaml
@@ -15,21 +15,21 @@ repos:
       - id: isort
         additional_dependencies: [toml]
   - repo: https://github.com/asottile/pyupgrade
-    rev: v3.10.1
+    rev: v3.15.0
     hooks:
       - id: pyupgrade
         args: [--py38-plus]
-  - repo: https://github.com/psf/black
-    rev: 23.9.0
+  - repo: https://github.com/psf/black-pre-commit-mirror
+    rev: 23.11.0
     hooks:
-    - id: black
+      - id: black
+        language_version: python3
   - repo: https://github.com/PyCQA/flake8
     rev: 6.1.0
     hooks:
       - id: flake8
   - repo: https://github.com/codespell-project/codespell
-    rev: v2.2.5
+    rev: v2.2.6
     hooks:
     - id: codespell
-      additional_dependencies:
-        - tomli
+      additional_dependencies: [tomli]

@@ -85,6 +85,12 @@ async def test_clear_content(widget, probe, small_content):
     await probe.redraw("Widget content has been re-cleared")
     assert not probe.has_content
 
+    # Apply a style to guarantee a set_bounds() call has been made
+    # when there is no content.
+    widget.style.padding = 10
+    await probe.redraw("Widget has definitely been refreshed")
+    assert not probe.has_content
+
     widget.content = small_content
     await probe.redraw("Widget content has been restored")
     assert probe.has_content
@@ -475,16 +481,23 @@ async def test_manual_scroll(widget, probe, content, on_scroll):
 
 async def test_no_content(widget, probe, content):
     "The content of the scroll container can be cleared"
+    original_width = probe.width
+    assert original_width > 100
     widget.content = None
     await probe.redraw("Content of the scroll container has been cleared")
+    assert probe.width == original_width
 
-    # Force a refresh to see the impact of a set_bounds() when there's
+    # Force a resize to see the impact of a set_bounds() when there's
     # no inner content.
-    widget.refresh()
-    await probe.redraw("Scroll container layout has been refreshed")
+    widget.parent.add(other := toga.Box(style=Pack(flex=1)))
+    await probe.redraw("Scroll container size has been reduced")
+    reduced_width = probe.width
+    assert reduced_width == approx(original_width / 2, abs=1)
 
     widget.content = content
     await probe.redraw("Content of the scroll container has been restored")
+    assert probe.width == reduced_width
 
-    widget.refresh()
-    await probe.redraw("Scroll container layout has been refreshed")
+    widget.parent.remove(other)
+    await probe.redraw("Scroll container size has been restored")
+    assert probe.width == original_width

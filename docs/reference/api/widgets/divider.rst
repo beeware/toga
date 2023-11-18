@@ -3,15 +3,47 @@ Divider
 
 A separator used to visually distinguish two sections of content in a layout.
 
-.. figure:: /reference/images/Divider.jpeg
-    :align: center
+.. tabs::
 
-.. rst-class:: widget-support
-.. csv-filter:: Availability (:ref:`Key <api-status-key>`)
-   :header-rows: 1
-   :file: ../../data/widgets_by_platform.csv
-   :included_cols: 4,5,6,7,8,9,10
-   :exclude: {0: '(?!(Divider|Component))'}
+  .. group-tab:: macOS
+
+    .. figure:: /reference/images/divider-cocoa.png
+       :align: center
+       :width: 300px
+
+  .. group-tab:: Linux
+
+    .. figure:: /reference/images/divider-gtk.png
+       :align: center
+       :width: 300px
+
+  .. group-tab:: Windows
+
+    .. figure:: /reference/images/divider-winforms.png
+       :align: center
+       :width: 300px
+
+  .. group-tab:: Android
+
+    .. figure:: /reference/images/divider-android.png
+       :align: center
+       :width: 300px
+
+  .. group-tab:: iOS |no|
+
+    Not supported
+
+  .. group-tab:: Web |beta|
+
+    .. .. figure:: /reference/images/divider-web.png
+    ..    :align: center
+    ..    :width: 300px
+
+    Screenshot not available
+
+  .. group-tab:: Textual |no|
+
+    Not supported
 
 Usage
 -----
@@ -21,7 +53,7 @@ To separate two labels stacked vertically with a horizontal line:
 .. code-block:: python
 
     import toga
-    from toga.style import Pack, COLUMN
+    from toga.style.pack import Pack, COLUMN
 
     box = toga.Box(
         children=[

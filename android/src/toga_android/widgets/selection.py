@@ -1,12 +1,14 @@
-from travertino.size import at_least
+from decimal import ROUND_UP
 
-from ..libs.android import R__layout
-from ..libs.android.view import Gravity, View__MeasureSpec
-from ..libs.android.widget import ArrayAdapter, OnItemSelectedListener, Spinner
-from .base import Widget, align
+from android import R
+from android.view import View
+from android.widget import AdapterView, ArrayAdapter, Spinner
+from java import dynamic_proxy
+
+from .base import Widget
 
 
-class TogaOnItemSelectedListener(OnItemSelectedListener):
+class TogaOnItemSelectedListener(dynamic_proxy(AdapterView.OnItemSelectedListener)):
     def __init__(self, impl):
         super().__init__()
         self.impl = impl
@@ -24,10 +26,8 @@ class Selection(Widget):
     def create(self):
         self.native = Spinner(self._native_activity, Spinner.MODE_DROPDOWN)
         self.native.setOnItemSelectedListener(TogaOnItemSelectedListener(impl=self))
-        self.adapter = ArrayAdapter(
-            self._native_activity, R__layout.simple_spinner_item
-        )
-        self.adapter.setDropDownViewResource(R__layout.simple_spinner_dropdown_item)
+        self.adapter = ArrayAdapter(self._native_activity, R.layout.simple_spinner_item)
+        self.adapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item)
         self.native.setAdapter(self.adapter)
         self.last_selection = None
 
@@ -36,7 +36,7 @@ class Selection(Widget):
     # the change, and use self.last_selection to prevent duplication.
     def on_change(self, index):
         if index != self.last_selection:
-            self.interface.on_change(None)
+            self.interface.on_change()
             self.last_selection = index
 
     def insert(self, index, item):
@@ -69,7 +69,7 @@ class Selection(Widget):
                 self.select_item(self.last_selection)
 
         if removed_selection:
-            self.interface.on_change(None)
+            self.interface.on_change()
 
     def select_item(self, index, item=None):
         self.native.setSelection(index)
@@ -84,11 +84,7 @@ class Selection(Widget):
         self.on_change(None)
 
     def rehint(self):
-        self.native.measure(
-            View__MeasureSpec.UNSPECIFIED, View__MeasureSpec.UNSPECIFIED
+        self.native.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
+        self.interface.intrinsic.height = self.scale_out(
+            self.native.getMeasuredHeight(), ROUND_UP
         )
-        self.interface.intrinsic.width = at_least(self.native.getMeasuredWidth())
-        self.interface.intrinsic.height = self.native.getMeasuredHeight()
-
-    def set_alignment(self, value):
-        self.native.setGravity(Gravity.CENTER_VERTICAL | align(value))

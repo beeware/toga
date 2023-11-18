@@ -1,1 +1,0 @@
-The implementation of ``current_window`` on Winforms was corrected.

@@ -178,10 +178,7 @@ class TogaContainer(Gtk.Fixed):
             # the Toga widget. Toga maintains a tree of children; all nodes
             # in that tree are direct children of the container.
             for widget in self.get_children():
-                if not widget.get_visible():
-                    # print("  not visible {widget.interface}")
-                    pass
-                else:
+                if widget.get_visible():
                     # Set the size of the child widget to the computed layout size.
                     # print(f"  allocate child {widget.interface}: {widget.interface.layout}")
                     widget_allocation = Gdk.Rectangle()

@@ -1,31 +1,32 @@
-from toga.command import Command as BaseCommand
+from toga.command import Command
 from toga_cocoa.container import Container
+from toga_cocoa.images import nsdata_to_bytes
 from toga_cocoa.libs import (
     SEL,
     NSBackingStoreBuffered,
-    NSClosableWindowMask,
+    NSBitmapImageFileType,
     NSMakeRect,
-    NSMiniaturizableWindowMask,
     NSMutableArray,
-    NSObject,
     NSPoint,
-    NSResizableWindowMask,
     NSScreen,
     NSSize,
-    NSTitledWindowMask,
     NSToolbar,
     NSToolbarItem,
     NSWindow,
+    NSWindowStyleMask,
     objc_method,
     objc_property,
 )
 
 
 def toolbar_identifier(cmd):
-    return "ToolbarItem-%s" % id(cmd)
+    if isinstance(cmd, Command):
+        return "ToolbarItem-%s" % id(cmd)
+    else:
+        return "ToolbarSeparator-%s" % id(cmd)
 
 
-class WindowDelegate(NSObject):
+class TogaWindow(NSWindow):
     interface = objc_property(object, weak=True)
     impl = objc_property(object, weak=True)
 
@@ -36,17 +37,8 @@ class WindowDelegate(NSObject):
     @objc_method
     def windowDidResize_(self, notification) -> None:
         if self.interface.content:
-            # print()
-            # print("Window resize", (
-            #   notification.object.contentView.frame.size.width,
-            #   notification.object.contentView.frame.size.height
-            # ))
-            if (
-                notification.object.contentView.frame.size.width > 0.0
-                and notification.object.contentView.frame.size.height > 0.0
-            ):
-                # Set the window to the new size
-                self.interface.content.refresh()
+            # Set the window to the new size
+            self.interface.content.refresh()
 
     @objc_method
     def windowDidBecomeMain_(self, notification):
@@ -105,10 +97,11 @@ class WindowDelegate(NSObject):
     ######################################################################
 
     @objc_method
-    def toolbarAllowedItemIdentifiers_(self, toolbar):
+    def toolbarAllowedItemIdentifiers_(self, toolbar):  # pragma: no cover
         """Determine the list of available toolbar items."""
-        # This method is required by the Cocoa API, but isn't actually invoked,
-        # because customizable toolbars are no longer a thing.
+        # This method is required by the Cocoa API, but it's only ever called if the
+        # toolbar allows user customization. We don't turn that option on so this method
+        # can't ever be invoked - but we need to provide an implementation.
         allowed = NSMutableArray.alloc().init()
         for item in self.interface.toolbar:
             allowed.addObject_(toolbar_identifier(item))
@@ -124,25 +117,27 @@ class WindowDelegate(NSObject):
 
     @objc_method
     def toolbar_itemForItemIdentifier_willBeInsertedIntoToolbar_(
-        self, toolbar, identifier, insert: bool
+        self,
+        toolbar,
+        identifier,
+        insert: bool,
     ):
         """Create the requested toolbar button."""
         native = NSToolbarItem.alloc().initWithItemIdentifier_(identifier)
         try:
             item = self.impl._toolbar_items[str(identifier)]
-            if item.text:
-                native.setLabel(item.text)
-                native.setPaletteLabel(item.text)
+            native.setLabel(item.text)
+            native.setPaletteLabel(item.text)
             if item.tooltip:
                 native.setToolTip(item.tooltip)
             if item.icon:
                 native.setImage(item.icon._impl.native)
 
-            item._impl.native.append(native)
+            item._impl.native.add(native)
 
             native.setTarget_(self)
             native.setAction_(SEL("onToolbarButtonPress:"))
-        except KeyError:
+        except KeyError:  # Separator items
             pass
 
         # Prevent the toolbar item from being deallocated when
@@ -154,7 +149,14 @@ class WindowDelegate(NSObject):
     @objc_method
     def validateToolbarItem_(self, item) -> bool:
         """Confirm if the toolbar item should be enabled."""
-        return self.impl._toolbar_items[str(item.itemIdentifier)].enabled
+        try:
+            return self.impl._toolbar_items[str(item.itemIdentifier)].enabled
+        except KeyError:  # pragma: nocover
+            # This branch *shouldn't* ever happen; but there's an edge
+            # case where a toolbar redraw happens in the middle of deleting
+            # a toolbar item that can't be reliably reproduced, so it sometimes
+            # happens in testing.
+            return False
 
     ######################################################################
     # Toolbar button press delegate methods
@@ -164,12 +166,7 @@ class WindowDelegate(NSObject):
     def onToolbarButtonPress_(self, obj) -> None:
         """Invoke the action tied to the toolbar button."""
         item = self.impl._toolbar_items[str(obj.itemIdentifier)]
-        item.action(obj)
-
-
-class TogaWindow(NSWindow):
-    interface = objc_property(object, weak=True)
-    impl = objc_property(object, weak=True)
+        item.action()
 
 
 class Window:
@@ -179,15 +176,15 @@ class Window:
 
         self._is_previously_shown = False
 
-        mask = NSTitledWindowMask
-        if self.interface.closeable:
-            mask |= NSClosableWindowMask
+        mask = NSWindowStyleMask.Titled
+        if self.interface.closable:
+            mask |= NSWindowStyleMask.Closable
 
-        if self.interface.resizeable:
-            mask |= NSResizableWindowMask
+        if self.interface.resizable:
+            mask |= NSWindowStyleMask.Resizable
 
         if self.interface.minimizable:
-            mask |= NSMiniaturizableWindowMask
+            mask |= NSWindowStyleMask.Miniaturizable
 
         # Create the window with a default frame;
         # we'll update size and position later.
@@ -200,31 +197,75 @@ class Window:
         self.native.interface = self.interface
         self.native.impl = self
 
+        # Cocoa releases windows when they are closed; this causes havoc with
+        # Toga's widget cleanup because the ObjC runtime thinks there's no
+        # references to the object left. Add a reference that can be released
+        # in response to the close.
+        self.native.retain()
+
         self.set_title(title)
         self.set_size(size)
         self.set_position(position)
 
-        self.delegate = WindowDelegate.alloc().init()
-        self.delegate.interface = self.interface
-        self.delegate.impl = self
-
-        self.native.delegate = self.delegate
+        self.native.delegate = self.native
 
         self.container = Container(on_refresh=self.content_refreshed)
         self.native.contentView = self.container.native
 
-    def create_toolbar(self):
+        # Ensure that the container renders it's background in the same color as the window.
+        self.native.wantsLayer = True
+        self.container.native.backgroundColor = self.native.backgroundColor
+
+        # By default, no toolbar
         self._toolbar_items = {}
-        for cmd in self.interface.toolbar:
-            if isinstance(cmd, BaseCommand):
-                self._toolbar_items[toolbar_identifier(cmd)] = cmd
+        self.native_toolbar = None
 
-        self._toolbar_native = NSToolbar.alloc().initWithIdentifier(
-            "Toolbar-%s" % id(self)
-        )
-        self._toolbar_native.setDelegate(self.delegate)
+    def __del__(self):
+        self.purge_toolbar()
+        self.native.release()
 
-        self.native.setToolbar(self._toolbar_native)
+    def purge_toolbar(self):
+        while self._toolbar_items:
+            dead_items = []
+            _, cmd = self._toolbar_items.popitem()
+            # The command might have toolbar representations on multiple window
+            # toolbars, and may have other representations (at the very least, a menu
+            # item). Only clean up the representation pointing at *this* window. Do this
+            # in 2 passes so that we're not modifying the set of native objects while
+            # iterating over it.
+            for item_native in cmd._impl.native:
+                if (
+                    isinstance(item_native, NSToolbarItem)
+                    and item_native.target == self.native
+                ):
+                    dead_items.append(item_native)
+
+            for item_native in dead_items:
+                cmd._impl.native.remove(item_native)
+                item_native.release()
+
+    def create_toolbar(self):
+        # Purge any existing toolbar items
+        self.purge_toolbar()
+
+        # Create the new toolbar items.
+        if self.interface.toolbar:
+            for cmd in self.interface.toolbar:
+                if isinstance(cmd, Command):
+                    self._toolbar_items[toolbar_identifier(cmd)] = cmd
+
+            self.native_toolbar = NSToolbar.alloc().initWithIdentifier(
+                "Toolbar-%s" % id(self)
+            )
+            self.native_toolbar.setDelegate(self.native)
+        else:
+            self.native_toolbar = None
+
+        self.native.setToolbar(self.native_toolbar)
+
+        # Adding/removing a toolbar changes the size of the content window.
+        if self.interface.content:
+            self.interface.content.refresh()
 
     def set_content(self, widget):
         # Set the content of the window's container
@@ -254,10 +295,6 @@ class Window:
         self.native.title = title
 
     def get_position(self):
-        # If there is no active screen, we can't get a position
-        if len(NSScreen.screens) == 0:
-            return 0, 0
-
         # The "primary" screen has index 0 and origin (0, 0).
         primary_screen = NSScreen.screens[0].frame
         window_frame = self.native.frame
@@ -271,10 +308,6 @@ class Window:
         )
 
     def set_position(self, position):
-        # If there is no active screen, we can't set a position
-        if len(NSScreen.screens) == 0:
-            return
-
         # The "primary" screen has index 0 and origin (0, 0).
         primary_screen = NSScreen.screens[0].frame
 
@@ -307,17 +340,30 @@ class Window:
         return bool(self.native.isVisible)
 
     def set_full_screen(self, is_full_screen):
-        self.interface.factory.not_implemented("Window.set_full_screen()")
+        current_state = bool(self.native.styleMask & NSWindowStyleMask.FullScreen)
+        if is_full_screen != current_state:
+            self.native.toggleFullScreen(self.native)
 
     def cocoa_windowShouldClose(self):
-        if self.interface.on_close._raw:
-            # The on_close handler has a cleanup method that will enforce
-            # the close if the on_close handler requests it; this initial
-            # "should close" request can always return False.
-            self.interface.on_close(self)
-            return False
-        else:
-            return True
+        # The on_close handler has a cleanup method that will enforce
+        # the close if the on_close handler requests it; this initial
+        # "should close" request can always return False.
+        self.interface.on_close()
+        return False
 
     def close(self):
         self.native.close()
+
+    def get_image_data(self):
+        bitmap = self.container.native.bitmapImageRepForCachingDisplayInRect(
+            self.container.native.bounds
+        )
+        bitmap.setSize(self.container.native.bounds.size)
+        self.container.native.cacheDisplayInRect(
+            self.container.native.bounds, toBitmapImageRep=bitmap
+        )
+        data = bitmap.representationUsingType(
+            NSBitmapImageFileType.PNG,
+            properties=None,
+        )
+        return nsdata_to_bytes(data)

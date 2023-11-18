@@ -51,7 +51,7 @@ master_doc = "index"
 
 # General information about the project.
 project = "Toga"
-copyright = "2013, Russell Keith-Magee"
+copyright = "Russell Keith-Magee"
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -111,8 +111,11 @@ pygments_style = "sphinx"
 rst_prolog = """
 .. role:: stable
 .. role:: beta
+.. role:: no
 .. |y| replace:: :stable:`●`
 .. |b| replace:: :beta:`○`
+.. |beta| replace:: :beta:`β`
+.. |no| replace:: :no:`✖︎`
 """
 
 intersphinx_mapping = {"python": ("https://docs.python.org/3", None)}
@@ -134,14 +137,26 @@ def setup(app):
 def autodoc_process_signature(
     app, what, name, obj, options, signature, return_annotation
 ):
-    if (what == "class") and (obj.__bases__ != (object,)):
-        options.show_inheritance = True
+    if what == "class":
+        # Travertino classes are not part of the public API.
+        bases = [
+            base
+            for base in obj.__bases__
+            if (base != object) and not base.__module__.startswith("travertino.")
+        ]
+        if bases:
+            options.show_inheritance = True
 
 
 # -- Options for link checking -------------------------------------------------
 
-# GitHub generates anchors in javascript
-linkcheck_ignore = [r"https://github.com/.*#"]
+linkcheck_ignore = [
+    # GitHub generates anchors in javascript
+    r"https://github.com/.*#",
+    # References to Github issues/pulls should all be safe.
+    r"^https://github.com/beeware/toga/issues/\d+$",
+    r"^https://github.com/beeware/toga/pull/\d+$",
+]
 
 # -- Options for copy button ---------------------------------------------------
 

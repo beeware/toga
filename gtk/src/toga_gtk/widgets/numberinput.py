@@ -20,7 +20,7 @@ class NumberInput(Widget):
         self.native.connect("changed", self.gtk_on_change)
 
     def gtk_on_change(self, widget):
-        self.interface.on_change(widget)
+        self.interface.on_change()
 
     def get_readonly(self):
         return not self.native.get_property("editable")
@@ -67,5 +67,7 @@ class NumberInput(Widget):
         width = self.native.get_preferred_width()
         height = self.native.get_preferred_height()
 
-        self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH + width[1])
+        self.interface.intrinsic.width = at_least(
+            max(self.interface._MIN_WIDTH, width[1])
+        )
         self.interface.intrinsic.height = height[1]

@@ -1,1 +1,0 @@
-The testbed app has better diagnostic output when running in test mode.

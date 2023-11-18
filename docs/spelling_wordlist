@@ -12,11 +12,11 @@ Bugfixes
 Cairo
 cancelled
 clickable
-closable
 codepoint
 coroutine
 CSS
 Ctrl
+dialogs
 Django
 draggable
 Flexbox
@@ -33,7 +33,6 @@ KDE
 linters
 macOS
 Manjaro
-minimizable
 Monetization
 namespace
 OpenStreetMap
@@ -60,12 +59,15 @@ reStructuredText
 runtime
 scrollable
 scrollers
+Segoe
 selectable
 Stimpy
 stylesheet
+subclasses
 Subclasses
 substring
 substrings
+Sur
 testbed
 Todo
 toolbar

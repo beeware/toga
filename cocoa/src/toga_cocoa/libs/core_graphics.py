@@ -4,6 +4,7 @@
 from ctypes import (
     POINTER,
     Structure,
+    c_bool,
     c_int,
     c_int32,
     c_size_t,
@@ -109,6 +110,8 @@ core_graphics.CGContextDrawPath.restype = c_void_p
 core_graphics.CGContextDrawPath.argtypes = [CGContextRef, CGPathDrawingMode]
 core_graphics.CGContextGetCTM.restype = CGAffineTransform
 core_graphics.CGContextGetCTM.argtypes = [CGContextRef]
+core_graphics.CGContextIsPathEmpty.restype = c_bool
+core_graphics.CGContextIsPathEmpty.argtypes = [CGContextRef]
 core_graphics.CGContextMoveToPoint.restype = c_void_p
 core_graphics.CGContextMoveToPoint.argtypes = [CGContextRef, CGFloat, CGFloat]
 core_graphics.CGContextRestoreGState.restype = c_void_p

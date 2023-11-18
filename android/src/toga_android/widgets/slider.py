@@ -1,10 +1,12 @@
-from travertino.size import at_least
+from decimal import ROUND_UP
+
+from android import R
+from android.view import View
+from android.widget import SeekBar
+from java import dynamic_proxy
 
 import toga
 
-from ..libs.android import R__attr, R__style
-from ..libs.android.view import View__MeasureSpec
-from ..libs.android.widget import SeekBar, SeekBar__OnSeekBarChangeListener
 from .base import Widget
 
 # Implementation notes
@@ -14,7 +16,7 @@ from .base import Widget
 # used to convert between integers and floats.
 
 
-class TogaOnSeekBarChangeListener(SeekBar__OnSeekBarChangeListener):
+class TogaOnSeekBarChangeListener(dynamic_proxy(SeekBar.OnSeekBarChangeListener)):
     def __init__(self, impl):
         super().__init__()
         self.impl = impl
@@ -23,10 +25,10 @@ class TogaOnSeekBarChangeListener(SeekBar__OnSeekBarChangeListener):
         self.impl.on_change()
 
     def onStartTrackingTouch(self, native_seekbar):
-        self.impl.interface.on_press(None)
+        self.impl.interface.on_press()
 
     def onStopTrackingTouch(self, native_seekbar):
-        self.impl.interface.on_release(None)
+        self.impl.interface.on_release()
 
 
 class Slider(Widget, toga.widgets.slider.IntSliderImpl):
@@ -59,14 +61,13 @@ class Slider(Widget, toga.widgets.slider.IntSliderImpl):
 
     def _load_tick_drawable(self):
         attrs = self._native_activity.obtainStyledAttributes(
-            R__style.Widget_Material_SeekBar_Discrete, [R__attr.tickMark]
+            R.style.Widget_Material_SeekBar_Discrete, [R.attr.tickMark]
         )
         Slider.TICK_DRAWABLE = attrs.getDrawable(0)
         attrs.recycle()
 
     def rehint(self):
-        self.native.measure(
-            View__MeasureSpec.UNSPECIFIED, View__MeasureSpec.UNSPECIFIED
+        self.native.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
+        self.interface.intrinsic.height = self.scale_out(
+            self.native.getMeasuredHeight(), ROUND_UP
         )
-        self.interface.intrinsic.width = at_least(self.native.getMeasuredWidth())
-        self.interface.intrinsic.height = self.native.getMeasuredHeight()

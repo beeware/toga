@@ -1,10 +1,10 @@
 from warnings import warn
 
 import System.Windows.Forms as WinForms
-from travertino.size import at_least
 
 import toga
 
+from ..libs.wrapper import WeakrefCallable
 from .base import Widget
 
 
@@ -54,13 +54,22 @@ class Table(Widget):
         self.native.Columns.AddRange(dataColumn)
         self.native.SmallImageList = WinForms.ImageList()
 
-        self.native.ItemSelectionChanged += self.winforms_item_selection_changed
-        self.native.RetrieveVirtualItem += self.winforms_retrieve_virtual_item
-        self.native.CacheVirtualItems += self.winforms_cache_virtual_items
-        self.native.MouseDoubleClick += self.winforms_double_click
-        self.native.VirtualItemsSelectionRangeChanged += (
+        self.native.ItemSelectionChanged += WeakrefCallable(
             self.winforms_item_selection_changed
         )
+        self.native.RetrieveVirtualItem += WeakrefCallable(
+            self.winforms_retrieve_virtual_item
+        )
+        self.native.CacheVirtualItems += WeakrefCallable(
+            self.winforms_cache_virtual_items
+        )
+        self.native.VirtualItemsSelectionRangeChanged += WeakrefCallable(
+            self.winforms_item_selection_changed
+        )
+        self.add_action_events()
+
+    def add_action_events(self):
+        self.native.MouseDoubleClick += WeakrefCallable(self.winforms_double_click)
 
     def set_bounds(self, x, y, width, height):
         super().set_bounds(x, y, width, height)
@@ -100,13 +109,13 @@ class Table(Widget):
             self._cache.append(self._new_item(i + self._first_item))
 
     def winforms_item_selection_changed(self, sender, e):
-        self.interface.on_select(None)
+        self.interface.on_select()
 
     def winforms_double_click(self, sender, e):
         hit_test = self.native.HitTest(e.X, e.Y)
         item = hit_test.Item
         if item is not None:
-            self.interface.on_activate(None, row=self._data[item.Index])
+            self.interface.on_activate(row=self._data[item.Index])
         else:  # pragma: no cover
             # Double clicking outside of an item apparently doesn't raise the event, but
             # that isn't guaranteed by the documentation.
@@ -150,7 +159,7 @@ class Table(Widget):
         def text(attr):
             val = getattr(item, attr, None)
             if isinstance(val, toga.Widget):
-                warn("This backend does not support the use of widgets in cells")
+                warn("Winforms does not support the use of widgets in cells")
                 val = None
             if isinstance(val, tuple):
                 val = val[1]
@@ -206,10 +215,6 @@ class Table(Widget):
 
     def scroll_to_row(self, index):
         self.native.EnsureVisible(index)
-
-    def rehint(self):
-        self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
-        self.interface.intrinsic.height = at_least(self.interface._MIN_HEIGHT)
 
     def remove_column(self, index):
         self.native.Columns.RemoveAt(index)
