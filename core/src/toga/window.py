@@ -346,7 +346,6 @@ class Window:
 
     @property
     def on_gain_focus(self) -> callable:
-        print("--dewwejhjkhjkhjhkj")
         return self._on_gain_focus
 
     @on_gain_focus.setter
