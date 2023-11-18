@@ -99,3 +99,15 @@ class Window(LoggedObject):
 
     def simulate_close(self):
         self.interface.on_close()
+
+    def simulate_on_gain_focus(self):
+        self.interface.on_gain_focus()
+
+    def simulate_on_lose_focus(self):
+        self.interface.on_lose_focus()
+
+    def simulate_on_show(self):
+        self.interface.on_show()
+
+    def simulate_on_hide(self):
+        self.interface.on_hide()
