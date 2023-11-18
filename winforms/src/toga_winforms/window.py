@@ -41,11 +41,11 @@ class Window(Container, Scalable):
 
         self.set_full_screen(self.interface.full_screen)
 
-        self.native.Activated += self.winforms_on_gain_focus
-        self.native.Deactivate += self.winforms_on_lose_focus
+        self.native.Activated += WeakrefCallable(self.winforms_on_gain_focus)
+        self.native.Deactivate += WeakrefCallable(self.winforms_on_lose_focus)
 
-        self.native.VisibleChanged += self.winforms_on_visible_changed
-        self.native.SizeChanged += self.winforms_on_size_changed
+        self.native.VisibleChanged += WeakrefCallable(self.winforms_on_visible_changed)
+        self.native.SizeChanged += WeakrefCallable(self.winforms_on_size_changed)
 
     def create_toolbar(self):
         if self.interface.toolbar:
