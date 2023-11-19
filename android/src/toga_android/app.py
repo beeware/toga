@@ -7,7 +7,7 @@ from android.view import Menu, MenuItem
 from java import dynamic_proxy
 from org.beeware.android import IPythonApp, MainActivity
 
-from toga.command import GROUP_BREAK, SECTION_BREAK, Command, Group
+from toga.command import Command, Group, Separator
 
 from .libs import events
 from .window import Window
@@ -96,7 +96,7 @@ class TogaApp(dynamic_proxy(IPythonApp)):
 
         # create option menu
         for cmd in self._impl.interface.commands:
-            if cmd == SECTION_BREAK or cmd == GROUP_BREAK:
+            if isinstance(cmd, Separator):
                 groupid += 1
                 continue
 
@@ -137,7 +137,7 @@ class TogaApp(dynamic_proxy(IPythonApp)):
         # create toolbar actions
         if self._impl.interface.main_window:  # pragma: no branch
             for cmd in self._impl.interface.main_window.toolbar:
-                if cmd == SECTION_BREAK or cmd == GROUP_BREAK:
+                if isinstance(cmd, Separator):
                     groupid += 1
                     continue
 

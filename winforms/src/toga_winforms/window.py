@@ -3,7 +3,7 @@ from System.Drawing import Bitmap, Graphics, Point, Size
 from System.Drawing.Imaging import ImageFormat
 from System.IO import MemoryStream
 
-from toga.command import GROUP_BREAK, SECTION_BREAK
+from toga.command import Separator
 
 from .container import Container
 from .libs.wrapper import WeakrefCallable
@@ -52,9 +52,7 @@ class Window(Container, Scalable):
                 self.toolbar_native.BringToFront()  # In a dock, "front" means "bottom".
 
             for cmd in self.interface.toolbar:
-                if cmd == GROUP_BREAK:
-                    item = WinForms.ToolStripSeparator()
-                elif cmd == SECTION_BREAK:
+                if isinstance(cmd, Separator):
                     item = WinForms.ToolStripSeparator()
                 else:
                     item = WinForms.ToolStripMenuItem(cmd.text)

@@ -93,6 +93,18 @@ class Group:
             return False
         return parent.is_parent_of(self)
 
+    def descendent(self, parent: Group | None) -> Group | None:
+        """Return the immediate descendent of parent used by this group.
+
+        :param parent: The parent to check
+        :returns: The descendent, or None if no descendent exists
+        """
+        if self.parent == parent:
+            return self
+        if self.parent:
+            return self.parent.descendent(parent)
+        return None
+
     def __hash__(self) -> int:
         return hash(self.key)
 
@@ -263,21 +275,21 @@ class Command:
         )
 
 
-class Break:
-    def __init__(self, name: str):
-        """A representation of a separator between Command Groups, or between sections
-        in a Group.
+class Separator:
+    def __init__(self, group: Group = None):
+        """A representation of a separator between sections in a Group.
 
-        :param name: A name of the break type.
+        :param group: The group that contains the separator.
         """
-        self.name = name
+        self.group = group
 
     def __repr__(self) -> str:
-        return f"<{self.name} break>"
+        return f"<Separator group={self.group.text}>"
 
-
-GROUP_BREAK = Break("Group")
-SECTION_BREAK = Break("Section")
+    def __eq__(self, other) -> bool:
+        if isinstance(other, Separator):
+            return self.group == other.group
+        return False
 
 
 class CommandSetChangeHandler(Protocol):
@@ -337,14 +349,72 @@ class CommandSet:
     def __len__(self) -> int:
         return len(self._commands)
 
-    def __iter__(self) -> Command | Group | Break:
-        prev_cmd = None
-        for cmd in sorted(self._commands):
-            if prev_cmd:
-                if cmd.group != prev_cmd.group:
-                    yield GROUP_BREAK
-                elif cmd.section != prev_cmd.section:
-                    yield SECTION_BREAK
+    def __iter__(self) -> Command | Separator:
+        cmd_iter = iter(sorted(self._commands))
 
-            yield cmd
-            prev_cmd = cmd
+        # The iteration over commands tells us the exact order of commands, but doesn't
+        # tell us anything about menu and submenu structure. In order to insert section
+        # breaks in the right place (including before and after submenus), we need to
+        # iterate over commands inside each group, dealing with each subgroup as an
+        # independent iteration.
+        #
+        # The iterator over commands is maintained external to this recursive iteration,
+        # because we may need to inspect the command at multiple group levels, but we
+        # can't `peek` at the top element of an iterator, `push` an item back on after
+        # it has been consumed, or pass the consumed item as a return value in addition
+        # to the generator result.
+        def _iter_group(parent):
+            nonlocal command
+            nonlocal finished
+            section = None
+            while not finished:
+                if parent is None:
+                    # Handle root-level menus
+                    yield from _iter_group(command.group.root)
+                elif command.group == parent:
+                    # A normal command at this level of the group. If the section has
+                    # changed from something other than none, insert a section break.
+                    if section is not None:
+                        if section != command.section:
+                            yield Separator(parent)
+                            section = command.section
+                    else:
+                        section = command.section
+
+                    yield command
+
+                    # Consume the next item on the iterator; if we run out, mark the
+                    # sentinel that says we've finished. We can't just raise
+                    # StopIteration, because that stops the *generator* we're creating.
+                    try:
+                        command = next(cmd_iter)
+                    except StopIteration:
+                        finished = True
+                else:
+                    # The command isn't in this group. If the command is in descendent
+                    # group, yield items from the group. If it's not a descendent, then
+                    # there are no more commands in this group; we can return to the
+                    # previous group for processing.
+                    descendent = command.group.descendent(parent)
+                    if descendent:
+                        # If the descendent group changes section from something other
+                        # than None, insert a section break.
+                        if section is not None:
+                            if section != descendent.section:
+                                yield Separator(parent)
+                                section = descendent.section
+                        else:
+                            section = command.section
+
+                        yield from _iter_group(descendent)
+                    else:
+                        return
+
+        # Prime the initial command into the command iterator
+        try:
+            command = next(cmd_iter)
+        except StopIteration:
+            pass
+        else:
+            finished = False
+            yield from _iter_group(None)

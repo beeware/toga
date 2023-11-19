@@ -4,7 +4,7 @@ from unittest.mock import Mock
 import pytest
 
 import toga
-from toga.command import Break
+from toga.command import Separator
 from toga_dummy.utils import assert_action_performed_with
 
 
@@ -21,11 +21,28 @@ def assert_order(*items):
             assert not items[i] > 42
 
 
-def test_break():
-    """A break can be created"""
+def test_separator(parent_group_1):
+    """A separator can be created"""
 
-    example_break = Break("Example")
-    assert repr(example_break) == "<Example break>"
+    separator = Separator(group=parent_group_1)
+    assert repr(separator) == "<Separator group=P1>"
+
+
+def test_separator_eq(parent_group_1, parent_group_2):
+    """Separator objects can be compared for equality"""
+
+    separator_1a = Separator(parent_group_1)
+    separator_1b = Separator(parent_group_1)
+    separator_2 = Separator(parent_group_2)
+
+    # Separators are equal to breaks in the same section, but not to other
+    # sections
+    assert separator_1a == separator_1a
+    assert separator_1a == separator_1b
+    assert separator_1a != separator_2
+
+    # Separators aren't equal to non-separator objects
+    assert separator_1a != 3
 
 
 def test_create():

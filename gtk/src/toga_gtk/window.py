@@ -1,4 +1,4 @@
-from toga.command import GROUP_BREAK, SECTION_BREAK
+from toga.command import Separator
 
 from .container import TogaContainer
 from .libs import Gdk, Gtk
@@ -76,12 +76,9 @@ class Window:
         # Create the new toolbar items
         self.toolbar_items = {}
         for cmd in self.interface.toolbar:
-            if cmd == GROUP_BREAK:
+            if isinstance(cmd, Separator):
                 item_impl = Gtk.SeparatorToolItem()
                 item_impl.set_draw(True)
-            elif cmd == SECTION_BREAK:
-                item_impl = Gtk.SeparatorToolItem()
-                item_impl.set_draw(False)
             else:
                 item_impl = Gtk.ToolButton()
                 if cmd.icon:
