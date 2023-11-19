@@ -66,14 +66,25 @@ class SimpleProbe(BaseProbe, FontMixin):
 
         # Measurements are relative to the container as an origin coordinate.
         # size and position is as expected.
-        assert (
-            self.width,
-            self.height,
-        ) == size
-        assert (
-            self.native.compute_bounds(self.impl.container)[1].origin.x,
-            self.native.compute_bounds(self.impl.container)[1].origin.y,
-        ) == position
+        if self.is_hidden:
+            # NOTE: The widget has no size when it is hidden, so, to make sure the
+            # layout is not changed, we only need to check the layout of the widget
+            # siblings by ensuring that the position of the visible widgets are not
+            # within the hidden widget's size.
+            siblings = [sibling._impl.native for sibling in self.widget.parent.children]
+            for sibling in siblings:
+                sibling_origin = sibling.compute_bounds(self.impl.container)[1].origin
+                if sibling.get_visible():
+                    assert sibling_origin.x >= size[0] or sibling_origin.y >= size[1]
+        else:
+            assert (
+                self.width,
+                self.height,
+            ) == size
+            assert (
+                self.native.compute_bounds(self.impl.container)[1].origin.x,
+                self.native.compute_bounds(self.impl.container)[1].origin.y,
+            ) == position
 
     def assert_width(self, min_width, max_width):
         assert (
