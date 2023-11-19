@@ -72,7 +72,9 @@ class Widget:
 
     @property
     def has_focus(self):
-        return self.native.has_focus()
+        root = self.native.get_root()
+        focus_widget = root.get_focus()
+        return focus_widget.is_ancestor(self.native)
 
     def focus(self):
         if not self.has_focus:
