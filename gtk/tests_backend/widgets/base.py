@@ -113,7 +113,9 @@ class SimpleProbe(BaseProbe, FontMixin):
 
     @property
     def has_focus(self):
-        return self.native.has_focus()
+        root = self.native.get_root()
+        focus_widget = root.get_focus()
+        return focus_widget.is_ancestor(self.native)
 
     async def type_character(self, char):
         # Construct a GDK KeyPress event.
