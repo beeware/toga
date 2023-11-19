@@ -93,16 +93,16 @@ class Group:
             return False
         return parent.is_parent_of(self)
 
-    def descendent(self, parent: Group | None) -> Group | None:
-        """Return the immediate descendent of parent used by this group.
+    def descendant(self, parent: Group | None) -> Group | None:
+        """Return the immediate descendant of parent used by this group.
 
         :param parent: The parent to check
-        :returns: The descendent, or None if no descendent exists
+        :returns: The descendant, or None if no descendant exists
         """
         if self.parent == parent:
             return self
         if self.parent:
-            return self.parent.descendent(parent)
+            return self.parent.descendant(parent)
         return None
 
     def __hash__(self) -> int:
@@ -391,22 +391,22 @@ class CommandSet:
                     except StopIteration:
                         finished = True
                 else:
-                    # The command isn't in this group. If the command is in descendent
-                    # group, yield items from the group. If it's not a descendent, then
+                    # The command isn't in this group. If the command is in descendant
+                    # group, yield items from the group. If it's not a descendant, then
                     # there are no more commands in this group; we can return to the
                     # previous group for processing.
-                    descendent = command.group.descendent(parent)
-                    if descendent:
-                        # If the descendent group changes section from something other
+                    descendant = command.group.descendant(parent)
+                    if descendant:
+                        # If the descendant group changes section from something other
                         # than None, insert a section break.
                         if section is not None:
-                            if section != descendent.section:
+                            if section != descendant.section:
                                 yield Separator(parent)
-                                section = descendent.section
+                                section = descendant.section
                         else:
                             section = command.section
 
-                        yield from _iter_group(descendent)
+                        yield from _iter_group(descendant)
                     else:
                         return
 
