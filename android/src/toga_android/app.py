@@ -40,7 +40,7 @@ class TogaApp(dynamic_proxy(IPythonApp)):
         for window in self._impl.interface.windows:
             window.on_show()
 
-    def onResume(self):
+    def onResume(self):  # pragma: no cover
         print("Toga app: onResume")
         # onTopResumedActivityChanged is not available on android versions less
         # than Q. onResume is the best indicator for the gain input focus event.
@@ -49,16 +49,16 @@ class TogaApp(dynamic_proxy(IPythonApp)):
             for window in self._impl.interface.windows:
                 window.on_gain_focus()
 
-    def onPause(self):
-        print("Toga app: onPause")  # pragma: no cover
+    def onPause(self):  # pragma: no cover
+        print("Toga app: onPause")
         # onTopResumedActivityChanged is not available on android versions less
         # than Q. onPause is the best indicator for the lost input focus event.
         if Build.VERSION.SDK_INT < Build.VERSION_CODES.Q:
             for window in self._impl.interface.windows:
                 window.on_lose_focus()
 
-    def onStop(self):
-        print("Toga app: onStop")  # pragma: no cover
+    def onStop(self):  # pragma: no cover
+        print("Toga app: onStop")
         for window in self._impl.interface.windows:
             window.on_hide()
 
@@ -68,8 +68,8 @@ class TogaApp(dynamic_proxy(IPythonApp)):
     def onRestart(self):
         print("Toga app: onRestart")  # pragma: no cover
 
-    def onTopResumedActivityChanged(self, isTopResumedActivity):
-        print("Toga app: onTopResumedActivityChanged")  # pragma: no cover
+    def onTopResumedActivityChanged(self, isTopResumedActivity):  # pragma: no cover
+        print("Toga app: onTopResumedActivityChanged")
         if isTopResumedActivity:
             for window in self._impl.interface.windows:
                 window.on_gain_focus()

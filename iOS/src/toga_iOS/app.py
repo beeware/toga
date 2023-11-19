@@ -18,28 +18,28 @@ class PythonAppDelegate(UIResponder):
         app_state = application.applicationState
         if app_state == UIApplicationState.UIApplicationStateActive:
             for window in App.app.interface.windows:
-                window.on_gain_focus(App.app.interface)
+                window.on_gain_focus()
         else:
             for window in App.app.interface.windows:
-                window.on_lose_focus(App.app.interface)
+                window.on_lose_focus()
 
     @objc_method
     def applicationWillResignActive_(self, application) -> None:
         print("App about to leave foreground.", flush=True)
         for window in App.app.interface.windows:
-            window.on_lose_focus(App.app.interface)
+            window.on_lose_focus()
 
     @objc_method
     def applicationDidEnterBackground_(self, application) -> None:
         print("App entered background.")
         for window in App.app.interface.windows:
-            window.on_hide(App.app.interface)
+            window.on_hide()
 
     @objc_method
     def applicationWillEnterForeground_(self, application) -> None:
         print("App about to enter foreground.")
         for window in App.app.interface.windows:
-            window.on_show(App.app.interface)
+            window.on_show()
 
     @objc_method
     def application_didFinishLaunchingWithOptions_(
