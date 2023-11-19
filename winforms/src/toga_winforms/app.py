@@ -119,7 +119,7 @@ class App:
             self.create_app_commands()
 
             self._menu_groups = {}
-            self._status_items = set()
+            self._status_indicators = {}
 
     def _reset_menubar(self):
         if self.interface.main_window is None:  # pragma: no branch
@@ -143,15 +143,14 @@ class App:
         # Reset the menubar.
         menubar = self._reset_menubar()
 
-        # Reset the status items. Any existing status item will be made invisible
-        for item in self._status_items:
+        # Reset the status indicators. Any existing indicators will be made invisible
+        for _, item in self._status_indicators.items():
             item.Visible = False
             item.Dispose()
 
         # The File menu should come before all user-created menus.
         self._menu_groups = {}
-        self._status_items = set()
-        toga.Group.FILE.order = -1
+        self._status_indicators = {}
 
         submenu = None
         for cmd in self.interface.commands:
@@ -218,7 +217,7 @@ class App:
                 notify_icon.label = group.text
                 notify_icon.Visible = True
 
-                self._status_items.add(notify_icon)
+                self._status_indicators[group] = notify_icon
             else:
                 parent_menu = self._submenu(group.parent, menubar)
 
@@ -271,6 +270,43 @@ class App:
                 group=toga.Group.HELP,
             ),
         )
+
+        # The first status item group (by group ordering) gets the app control
+        # commands. The app control commands always form the last 2 sections in
+        # the group.
+        try:
+            main_status_item = sorted(
+                {
+                    item.group
+                    for item in self.interface.commands
+                    if not isinstance(item, Separator) and item.group.is_status_item
+                }
+            )[0]
+        except IndexError:
+            pass
+        else:
+            self.interface.commands.add(
+                toga.Command(
+                    self._menu_about,
+                    f"About {self.interface.formal_name}",
+                    group=main_status_item,
+                    section=sys.maxsize - 1,
+                ),
+                toga.Command(
+                    self._menu_visit_homepage,
+                    "Visit homepage",
+                    enabled=self.interface.home_page is not None,
+                    group=main_status_item,
+                    section=sys.maxsize - 1,
+                ),
+                # Quit should always be the last item, in a section on its own
+                toga.Command(
+                    self._menu_exit,
+                    "Exit",
+                    group=main_status_item,
+                    section=sys.maxsize,
+                ),
+            )
 
     def _menu_about(self, widget, **kwargs):
         self.interface.about()
@@ -419,45 +455,6 @@ class WindowlessApp(App):
 
     def _resize_menubar(self):
         pass
-
-    def create_app_commands(self):
-        super().create_app_commands()
-
-        # The first status item group in a windowless app (by group ordering)
-        # gets the app control commands. The app control commands always form
-        # the last 2 sections in the group.
-        status_items = sorted(
-            {
-                item.group
-                for item in self.interface.commands
-                if item != SECTION_BREAK
-                and item != GROUP_BREAK
-                and item.group.is_status_item
-            }
-        )
-
-        self.interface.commands.add(
-            toga.Command(
-                self._menu_about,
-                f"About {self.interface.formal_name}",
-                group=status_items[0],
-                section=sys.maxsize - 1,
-            ),
-            toga.Command(
-                self._menu_visit_homepage,
-                "Visit homepage",
-                enabled=self.interface.home_page is not None,
-                group=status_items[0],
-                section=sys.maxsize - 1,
-            ),
-            # Quit should always be the last item, in a section on its own
-            toga.Command(
-                self._menu_exit,
-                "Exit",
-                group=status_items[0],
-                section=sys.maxsize,
-            ),
-        )
 
 
 class DocumentApp(App):  # pragma: no cover

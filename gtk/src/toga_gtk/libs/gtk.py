@@ -43,3 +43,9 @@ try:
     from gi.repository import PangoFc  # noqa: F401
 except (ImportError, ValueError):  # pragma: no cover
     PangoFc = None
+
+try:
+    gi.require_version("AyatanaAppIndicator3", "0.1")
+    from gi.repository import AyatanaAppIndicator3 as AppIndicator
+except (ImportError, ValueError):
+    AppIndicator = None

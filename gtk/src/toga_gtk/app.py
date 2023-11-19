@@ -10,7 +10,7 @@ from toga import App as toga_App
 from toga.command import Command, Separator
 
 from .keys import gtk_accel
-from .libs import TOGA_DEFAULT_STYLES, Gdk, Gio, GLib, Gtk
+from .libs import TOGA_DEFAULT_STYLES, AppIndicator, Gdk, Gio, GLib, Gtk
 from .window import Window
 
 
@@ -92,51 +92,105 @@ class App:
             ),
         )
 
+        # The first status item group in a windowless app (by group ordering)
+        # gets the app control commands. The app control commands always form
+        # the last 2 sections in the group.
+        try:
+            main_status_item = sorted(
+                {
+                    item.group
+                    for item in self.interface.commands
+                    if not isinstance(item, Separator) and item.group.is_status_item
+                }
+            )[0]
+        except IndexError:
+            pass
+        else:
+            self.interface.commands.add(
+                Command(
+                    self._menu_about,
+                    "About " + self.interface.formal_name,
+                    group=main_status_item,
+                    section=sys.maxsize - 1,
+                ),
+                Command(
+                    None,
+                    "Preferences",
+                    group=main_status_item,
+                    section=sys.maxsize - 1,
+                ),
+                # Quit should always be the last item, in a section on its own
+                Command(
+                    self._menu_quit,
+                    "Quit " + self.interface.formal_name,
+                    shortcut=toga.Key.MOD_1 + "q",
+                    group=main_status_item,
+                    section=sys.maxsize,
+                ),
+            )
+
     def gtk_activate(self, data=None):
         pass
 
-    def _menu_about(self, command, **kwargs):
+    def _menu_about(self, app, **kwargs):
         self.interface.about()
 
-    def _menu_quit(self, command, **kwargs):
+    def _menu_quit(self, app, **kwargs):
         self.interface.on_exit()
 
     def create_menus(self):
-        # Only create the menu if the menu item index has been created.
         self._menu_items = {}
         self._menu_groups = {}
+        self._status_indicators = {}
+
+        # Hide all the status indicators. They will be made visible
+        # again if the status item group still exists.
+        for _, indicator in self._status_indicators:
+            indicator.set_status(AppIndicator.IndicatorStatus.PASSIVE)
 
         # Create the menu for the top level menubar.
         menubar = Gio.Menu()
         section = None
         for cmd in self.interface.commands:
+            submenu, created = self._submenu(cmd.group, menubar)
             if isinstance(cmd, Separator):
                 section = None
+                # Gtk.Menu (used by status items) uses an explicit separator item.
+                if isinstance(submenu, Gtk.Menu):
+                    item = Gtk.SeparatorMenuItem.new()
+                    submenu.append(item)
+                    submenu.show_all()
             else:
-                submenu, created = self._submenu(cmd.group, menubar)
-                if created:
-                    section = None
+                # Status items use Gtk.Menu; regular menus use Gio.Menu
+                if isinstance(submenu, Gtk.Menu):
+                    item = Gtk.MenuItem.new_with_label(cmd.text)
+                    item.connect("activate", cmd._impl.gtk_activate)
+                    submenu.append(item)
+                    submenu.show_all()
+                else:
+                    if created:
+                        section = None
 
-                if section is None:
-                    section = Gio.Menu()
-                    submenu.append_section(None, section)
+                    if section is None:
+                        section = Gio.Menu()
+                        submenu.append_section(None, section)
 
-                cmd_id = "command-%s" % id(cmd)
-                action = Gio.SimpleAction.new(cmd_id, None)
-                action.connect("activate", cmd._impl.gtk_activate)
+                    cmd_id = "command-%s" % id(cmd)
+                    action = Gio.SimpleAction.new(cmd_id, None)
+                    action.connect("activate", cmd._impl.gtk_activate)
 
-                cmd._impl.native.append(action)
-                cmd._impl.set_enabled(cmd.enabled)
-                self._menu_items[action] = cmd
-                self.native.add_action(action)
+                    cmd._impl.native.append(action)
+                    cmd._impl.set_enabled(cmd.enabled)
+                    self._menu_items[action] = cmd
+                    self.native.add_action(action)
 
-                item = Gio.MenuItem.new(cmd.text, "app." + cmd_id)
-                if cmd.shortcut:
-                    item.set_attribute_value(
-                        "accel", GLib.Variant("s", gtk_accel(cmd.shortcut))
-                    )
+                    item = Gio.MenuItem.new(cmd.text, "app." + cmd_id)
+                    if cmd.shortcut:
+                        item.set_attribute_value(
+                            "accel", GLib.Variant("s", gtk_accel(cmd.shortcut))
+                        )
 
-                section.append_item(item)
+                    section.append_item(item)
 
         # Set the menu for the app.
         self.native.set_menubar(menubar)
@@ -157,15 +211,52 @@ class App:
             if group is None:
                 submenu = menubar
             elif group.is_status_item:
-                self.interface.factory.not_implemented("App status items")
-                submenu = Gio.Menu()
+                if AppIndicator is None:
+                    raise RuntimeError(
+                        "Unable to import AyatanaAppIndicator3. Ensure that "
+                        "the system package providing AyatanaAppIndicator3 "
+                        "its GTK bindings have been installed."
+                    )
+
+                try:
+                    # Indicators must be unique; so make sure the indicator is
+                    # re-used if the group has already been used to create an
+                    # indicator.
+                    indicator = self._status_indicators[group]
+                except KeyError:
+                    indicator = AppIndicator.Indicator.new(
+                        f"indicator-{id(group)}",
+                        "",
+                        AppIndicator.IndicatorCategory.APPLICATION_STATUS,
+                    )
+                    self._status_indicators[group] = indicator
+
+                icon = group.icon._impl if group.icon else self.interface.icon._impl
+
+                indicator.set_title(group.text)
+                indicator.set_icon_full(str(icon.paths[32]), group.text)
+                indicator.set_status(AppIndicator.IndicatorStatus.ACTIVE)
+
+                submenu = Gtk.Menu.new()
+                indicator.set_menu(submenu)
             else:
                 parent_menu, _ = self._submenu(group.parent, menubar)
-                submenu = Gio.Menu()
                 text = group.text
                 if text == "*":
                     text = self.interface.formal_name
-                parent_menu.append_submenu(text, submenu)
+
+                # GTK has 2 types of menu - GTK.Menu (used for status icons),
+                # and Gio.Menu (used for normal app menus).
+                if isinstance(parent_menu, Gtk.Menu):
+                    submenu = Gtk.Menu.new()
+                    item = Gtk.MenuItem.new_with_label(text)
+                    item.set_submenu(submenu)
+
+                    parent_menu.append(item)
+                    parent_menu.show_all()
+                else:
+                    submenu = Gio.Menu()
+                    parent_menu.append_submenu(text, submenu)
 
             # Install the item in the group cache.
             self._menu_groups[group] = submenu

@@ -166,7 +166,7 @@ jobs:
             # work either. Blackbox is the lightest WM we've found that works.
             pre-command: |
               sudo apt update -y
-              sudo apt install -y blackbox pkg-config python3-dev libgirepository1.0-dev libcairo2-dev gir1.2-webkit2-4.0
+              sudo apt install -y blackbox pkg-config python3-dev libgirepository1.0-dev libcairo2-dev gir1.2-webkit2-4.0 gir1.2-ayatanaappindicator3-0.1
 
               # Start Virtual X server
               echo "Start X server..."
