@@ -210,16 +210,9 @@ class Window(Container, Scalable):
         ):
             self._is_previously_shown = False
             self.interface.on_hide()
-
         elif (
-            self.native.WindowState == WinForms.FormWindowState.Maximized
-            and not self._is_previously_shown
-        ):
-            self._is_previously_shown = True
-            self.interface.on_show()
-
-        elif (
-            self.native.WindowState == WinForms.FormWindowState.Normal
+            self.native.WindowState
+            in (WinForms.FormWindowState.Maximized, WinForms.FormWindowState.Normal)
             and not self._is_previously_shown
         ):
             self._is_previously_shown = True

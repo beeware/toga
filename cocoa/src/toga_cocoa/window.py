@@ -42,55 +42,55 @@ class TogaWindow(NSWindow):
 
     @objc_method
     def windowDidBecomeMain_(self, notification):
-        self.impl.interface.on_gain_focus(self.interface)
+        self.impl.interface.on_gain_focus()
 
     @objc_method
     def windowDidResignMain_(self, notification):
-        self.impl.interface.on_lose_focus(self.interface)
+        self.impl.interface.on_lose_focus()
 
     @objc_method
     def windowDidBecomeKey_(self, notification):
         if bool(self.impl.native.isVisible) and not self.impl._is_previously_shown:
             self.impl._is_previously_shown = True
-            self.impl.interface.on_show(self.interface)
+            self.impl.interface.on_show()
 
     @objc_method
     def windowDidMiniaturize_(self, notification):
         if not bool(self.impl.native.isVisible) and self.impl._is_previously_shown:
             self.impl._is_previously_shown = False
-            self.impl.interface.on_hide(self.interface)
+            self.impl.interface.on_hide()
 
     @objc_method
     def windowDidDeminiaturize_(self, notification):
         if bool(self.impl.native.isVisible) and not self.impl._is_previously_shown:
             self.impl._is_previously_shown = True
-            self.impl.interface.on_show(self.interface)
+            self.impl.interface.on_show()
 
     @objc_method
     def windowDidEnterFullScreen_(self, notification):
         if bool(self.impl.native.isVisible) and not self.impl._is_previously_shown:
             self.impl._is_previously_shown = True
-            self.impl.interface.on_show(self.interface)
+            self.impl.interface.on_show()
 
     @objc_method
     def windowDidExitFullScreen_(self, notification):
         if bool(self.impl.native.isVisible) and not self.impl._is_previously_shown:
             self.impl._is_previously_shown = True
-            self.impl.interface.on_show(self.interface)
+            self.impl.interface.on_show()
 
     # when the user clicks the zoom button to unzoom a window
     @objc_method
     def windowWillUseStandardFrame_defaultFrame_(self, window, defaultFrame):
         if bool(self.impl.native.isVisible) and not self.impl._is_previously_shown:
             self.impl._is_previously_shown = True
-            self.impl.interface.on_show(self.interface)
+            self.impl.interface.on_show()
 
     # when the user clicks the zoom button to zoom a window
     @objc_method
     def windowShouldZoom_toFrame_(self, window, toFrame):
         if bool(self.impl.native.isVisible) and not self.impl._is_previously_shown:
             self.impl._is_previously_shown = True
-            self.impl.interface.on_show(self.interface)
+            self.impl.interface.on_show()
 
     ######################################################################
     # Toolbar delegate methods
