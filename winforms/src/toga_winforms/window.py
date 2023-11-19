@@ -190,40 +190,40 @@ class Window(Container, Scalable):
         )
 
     def winforms_on_gain_focus(self, sender, event):
-        self.interface.on_gain_focus(self.interface)
+        self.interface.on_gain_focus()
 
     def winforms_on_lose_focus(self, sender, event):
-        self.interface.on_lose_focus(self.interface)
+        self.interface.on_lose_focus()
 
     def winforms_on_visible_changed(self, sender, event):
         if self.native.Visible and not self._is_previously_shown:
             self._is_previously_shown = True
-            self.interface.on_show(self.interface)
+            self.interface.on_show()
         else:
             self._is_previously_shown = False
-            self.interface.on_hide(self.interface)
+            self.interface.on_hide()
 
-    def winforms_on_size_changed(self, sender, event):
+    def winforms_on_size_changed(self, sender, event):  # pragma: no cover
         if (
             self.native.WindowState == WinForms.FormWindowState.Minimized
             and self._is_previously_shown
         ):
             self._is_previously_shown = False
-            self.interface.on_hide(self.interface)
+            self.interface.on_hide()
 
         elif (
             self.native.WindowState == WinForms.FormWindowState.Maximized
             and not self._is_previously_shown
         ):
             self._is_previously_shown = True
-            self.interface.on_show(self.interface)
+            self.interface.on_show()
 
         elif (
             self.native.WindowState == WinForms.FormWindowState.Normal
             and not self._is_previously_shown
         ):
             self._is_previously_shown = True
-            self.interface.on_show(self.interface)
+            self.interface.on_show()
 
     def get_image_data(self):
         size = Size(self.native_content.Size.Width, self.native_content.Size.Height)

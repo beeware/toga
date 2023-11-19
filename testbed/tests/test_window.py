@@ -487,6 +487,60 @@ async def test_as_image(main_window, main_window_probe):
     main_window_probe.assert_image_size(screenshot.size, main_window_probe.content_size)
 
 
+@pytest.mark.parametrize(
+    "second_window_kwargs",
+    [dict(title="Secondary Window", position=(200, 150))],
+)
+async def test_on_gain_focus(
+    main_window, main_window_probe, second_window, second_window_probe
+):
+    on_gain_focus_handler = Mock()
+    main_window.on_gain_focus = on_gain_focus_handler
+    main_window.app.current_window = second_window
+    await second_window_probe.wait_for_window("Setting second window as current window")
+    main_window.app.current_window = main_window
+    await main_window_probe.wait_for_window("Setting main window as current window")
+    on_gain_focus_handler.assert_called_once_with(main_window)
+
+
+@pytest.mark.parametrize(
+    "second_window_kwargs",
+    [dict(title="Secondary Window", position=(200, 150))],
+)
+async def test_on_lose_focus(
+    main_window, main_window_probe, second_window, second_window_probe
+):
+    on_lose_focus_handler = Mock()
+    main_window.on_lose_focus = on_lose_focus_handler
+    main_window.app.current_window = main_window
+    await main_window_probe.wait_for_window("Setting main window as current window")
+    second_window.app.current_window = second_window
+    await second_window_probe.wait_for_window("Setting second window as current window")
+    on_lose_focus_handler.assert_called_once_with(main_window)
+    main_window.app.current_window = main_window
+    await main_window_probe.wait_for_window("Setting main window as current window")
+
+
+async def test_on_show(main_window, main_window_probe):
+    on_show_handler = Mock()
+    main_window.on_show = on_show_handler
+    main_window.hide()
+    await main_window_probe.wait_for_window("Hiding the MainWindow")
+    main_window.show()
+    await main_window_probe.wait_for_window("Showing the MainWindow")
+    on_show_handler.assert_called_once_with(main_window)
+
+
+async def test_on_hide(main_window, main_window_probe):
+    on_hide_handler = Mock()
+    main_window.on_hide = on_hide_handler
+    main_window.hide()
+    await main_window_probe.wait_for_window("Hiding the MainWindow")
+    on_hide_handler.assert_called_once_with(main_window)
+    main_window.show()
+    await main_window_probe.wait_for_window("Showing the MainWindow")
+
+
 ########################################################################################
 # Dialog tests
 ########################################################################################
