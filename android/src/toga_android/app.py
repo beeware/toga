@@ -38,7 +38,7 @@ class TogaApp(dynamic_proxy(IPythonApp)):
     def onStart(self):
         print("Toga app: onStart")
         for window in self._impl.interface.windows:
-            window.on_show(self._impl.interface)
+            window.on_show()
 
     def onResume(self):
         print("Toga app: onResume")
@@ -47,7 +47,7 @@ class TogaApp(dynamic_proxy(IPythonApp)):
         # https://developer.android.com/reference/android/app/Activity#onWindowFocusChanged(boolean):~:text=If%20the%20intent,the%20best%20indicator.
         if Build.VERSION.SDK_INT < Build.VERSION_CODES.Q:
             for window in self._impl.interface.windows:
-                window.on_gain_focus(self._impl.interface)
+                window.on_gain_focus()
 
     def onPause(self):
         print("Toga app: onPause")  # pragma: no cover
@@ -55,12 +55,12 @@ class TogaApp(dynamic_proxy(IPythonApp)):
         # than Q. onPause is the best indicator for the lost input focus event.
         if Build.VERSION.SDK_INT < Build.VERSION_CODES.Q:
             for window in self._impl.interface.windows:
-                window.on_lose_focus(self._impl.interface)
+                window.on_lose_focus()
 
     def onStop(self):
         print("Toga app: onStop")  # pragma: no cover
         for window in self._impl.interface.windows:
-            window.on_hide(self._impl.interface)
+            window.on_hide()
 
     def onDestroy(self):
         print("Toga app: onDestroy")  # pragma: no cover
@@ -72,10 +72,10 @@ class TogaApp(dynamic_proxy(IPythonApp)):
         print("Toga app: onTopResumedActivityChanged")  # pragma: no cover
         if isTopResumedActivity:
             for window in self._impl.interface.windows:
-                window.on_gain_focus(self._impl.interface)
+                window.on_gain_focus()
         else:
             for window in self._impl.interface.windows:
-                window.on_lose_focus(self._impl.interface)
+                window.on_lose_focus()
 
     # TODO #1798: document and test this somehow
     def onActivityResult(self, requestCode, resultCode, resultData):  # pragma: no cover
