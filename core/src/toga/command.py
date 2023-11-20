@@ -147,12 +147,13 @@ class Group:
         return self.key == other.key
 
     def __repr__(self) -> str:
+        title_string = "Status group" if self.is_status_item else "Group"
         parent_string = (
             f" parent={self.parent} section={self.section}"
             if self.parent is not None
             else ""
         )
-        return f"<Group text={self.text!r} order={self.order}{parent_string}>"
+        return f"<{title_string} text={self.text!r} order={self.order}{parent_string}>"
 
     @property
     def key(self) -> tuple[(int, int, str)]:

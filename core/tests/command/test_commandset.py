@@ -121,6 +121,42 @@ def test_add_clear_with_app(app, change_handler):
     assert list(app.commands) == [cmd_a, cmd1b, cmd2, cmd1a, cmd_b]
 
 
+@pytest.mark.parametrize("change_handler", [(None), (Mock())])
+def test_suspend_updates(change_handler):
+    """Updates can be suspended."""
+    # Put some commands into the app
+    cmd_a = toga.Command(None, text="App command a")
+    cmd_b = toga.Command(None, text="App command b")
+    cs = CommandSet(on_change=change_handler)
+    cs.add(cmd_a, cmd_b)
+    assert list(cs) == [cmd_a, cmd_b]
+
+    # Clear the change handler
+    if change_handler:
+        change_handler.reset_mock()
+
+    # Suspend updates and add some more commands
+    with cs.suspend_updates():
+        cmd_c = toga.Command(None, text="App command c")
+        cmd_d = toga.Command(None, text="App command d")
+        cs.add(cmd_c, cmd_d)
+
+        # New commands exist
+        assert list(cs) == [cmd_a, cmd_b, cmd_c, cmd_d]
+
+        # change handler hasn't been invoked
+        if change_handler:
+            change_handler.assert_not_called()
+
+    # Change handler was called once.
+    if change_handler:
+        change_handler.assert_called_once()
+        change_handler.reset_mock()
+
+    # New commands still exist
+    assert list(cs) == [cmd_a, cmd_b, cmd_c, cmd_d]
+
+
 def test_ordering(
     parent_group_1,
     parent_group_2,

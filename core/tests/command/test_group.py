@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import pytest
 
 import toga
@@ -10,6 +12,8 @@ def test_create():
     grp = toga.Group("Group name")
     assert grp.text == "Group name"
     assert grp.order == 0
+    assert grp.section == 0
+    assert grp.parent is None
 
     assert repr(grp) == "<Group text='Group name' order=0>"
 
@@ -37,6 +41,62 @@ def test_create_section_without_parent():
         match=r"Section cannot be set without parent group",
     ):
         toga.Group("Group name", order=2, section=3)
+
+
+def test_create_status_group():
+    """A status group cannot be created."""
+    grp = toga.Group("Group name", order=2, status_item=True)
+
+    assert grp.text == "Group name"
+    assert grp.order == 2
+    assert grp.section == 0
+    assert grp.parent is None
+
+    assert repr(grp) == "<Status group text='Group name' order=2>"
+
+
+def test_create_status_subgroup():
+    """A status group cannot be created with parent."""
+    parent = toga.Group("Parent name")
+    with pytest.raises(
+        ValueError,
+        match=r"Sub-groups cannot be status items",
+    ):
+        toga.Group("Group name", parent=parent, status_item=True)
+
+
+@pytest.mark.parametrize("construct", [True, False])
+def test_icon_construction(app, construct):
+    """The command icon can be set during construction"""
+    if construct:
+        icon = toga.Icon("path/to/icon")
+    else:
+        icon = "path/to/icon"
+
+    grp = toga.Group("Test group", icon=icon)
+    assert isinstance(grp.icon, toga.Icon)
+    assert grp.icon.path == Path("path/to/icon")
+
+
+@pytest.mark.parametrize("construct", [True, False])
+def test_icon(app, construct):
+    """The command icon can be changed"""
+    if construct:
+        icon = toga.Icon("path/to/icon")
+    else:
+        icon = "path/to/icon"
+
+    grp = toga.Group("Test command")
+
+    # No icon by default
+    assert grp.icon is None
+
+    # Change icon
+    grp.icon = icon
+
+    # Icon path matches
+    assert isinstance(grp.icon, toga.Icon)
+    assert grp.icon.path == Path("path/to/icon")
 
 
 def test_hashable():
