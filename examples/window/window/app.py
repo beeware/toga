@@ -122,19 +122,19 @@ class WindowDemoApp(toga.App):
             return False
         return True
 
-    def on_window_gain_focus(self, widget, **kwargs):
+    def on_window_gain_focus(self, window, **kwargs):
         self.window_focus_label.text = "MainWindow is in focus"
         print("MainWindow is in focus")
 
-    def on_window_lose_focus(self, widget, **kwargs):
+    def on_window_lose_focus(self, window, **kwargs):
         self.window_focus_label.text = "MainWindow is not in focus"
         print("MainWindow is not in focus")
 
-    def on_window_show(self, widget, **kwargs):
+    def on_window_show(self, window, **kwargs):
         self.window_visible_label.text = "MainWindow is visible"
         print("MainWindow is visible")
 
-    def on_window_hide(self, widget, **kwargs):
+    def on_window_hide(self, window, **kwargs):
         self.window_visible_label.text = "MainWindow is not visible"
         print("MainWindow is not visible")
 

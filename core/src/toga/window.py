@@ -33,6 +33,54 @@ class OnCloseHandler(Protocol):
         ...
 
 
+class OnGainFocusHandler(Protocol):
+    def __call__(self, window: Window, **kwargs: Any) -> None:
+        """A handler to invoke when a window gains input focus.
+
+        :param window: The window instance that gains input focus.
+        :param kwargs: Ensures compatibility with additional arguments introduced in
+            future versions.
+        """
+        ...
+
+
+class OnLoseFocusHandler(Protocol):
+    def __call__(self, window: Window, **kwargs: Any) -> None:
+        """A handler to invoke when a window loses input focus.
+
+        :param window: The window instance that loses input focus.
+        :param kwargs: Ensures compatibility with additional arguments introduced in
+            future ver
+        """
+        ...
+
+
+class OnShowHandler(Protocol):
+    def __call__(self, window: Window, **kwargs: Any) -> None:
+        """A handler to invoke when a window becomes visible to the user from a not visible state.
+
+        Not visible to the user refers to window states like minimized, hidden, etc.
+
+        :param window: The window instance that becomes visible.
+        :param kwargs: Ensures compatibility with additional arguments introduced in
+            future ver
+        """
+        ...
+
+
+class OnHideHandler(Protocol):
+    def __call__(self, window: Window, **kwargs: Any) -> None:
+        """A handler to invoke when a window becomes not visible to the user.
+
+        Not visible to the user refers to window states like minimized, hidden, etc.
+
+        :param window: The window instance that becomes not visible to the user.
+        :param kwargs: Ensures compatibility with additional arguments introduced in
+            future ver
+        """
+        ...
+
+
 T = TypeVar("T")
 
 
@@ -70,10 +118,10 @@ class Window:
         closable: bool = True,
         minimizable: bool = True,
         on_close: OnCloseHandler | None = None,
-        on_gain_focus: callable | None = None,
-        on_lose_focus: callable | None = None,
-        on_show: callable | None = None,
-        on_hide: callable | None = None,
+        on_gain_focus: OnGainFocusHandler | None = None,
+        on_lose_focus: OnLoseFocusHandler | None = None,
+        on_show: OnShowHandler | None = None,
+        on_hide: OnHideHandler | None = None,
         resizeable=None,  # DEPRECATED
         closeable=None,  # DEPRECATED
     ) -> None:
