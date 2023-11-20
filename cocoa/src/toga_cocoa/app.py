@@ -221,13 +221,6 @@ class App:
                 f"About {self.interface.formal_name}",
                 group=toga.Group.APP,
             ),
-            toga.Command(
-                None,
-                "Settings\u2026",
-                shortcut=toga.Key.MOD_1 + ",",
-                group=toga.Group.APP,
-                section=20,
-            ),
             # Quit should always be the last item, in a section on its own
             toga.Command(
                 self._menu_quit,
@@ -249,6 +242,13 @@ class App:
         # The "normal" app has all the commands of the SimpleApp, plus others
         # that are expected of a well-behaved Cocoa app.
         self.interface.commands.add(
+            toga.Command(
+                None,
+                "Settings\u2026",
+                shortcut=toga.Key.MOD_1 + ",",
+                group=toga.Group.APP,
+                section=20,
+            ),
             toga.Command(
                 NativeHandler(SEL("hide:")),
                 "Hide " + self.interface.formal_name,

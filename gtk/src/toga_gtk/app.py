@@ -56,13 +56,14 @@ class App:
         self.actions = None
 
     def gtk_startup(self, data=None):
-        self.interface._startup()
+        # As the call to _startup() isn't made in the constructor, the on_change
+        # handler for commands is already installed. We don't want to start creating
+        # menus until after _startup() and any default app commands have been created,
+        # so suspend updates; this will call create_menus when the context exits.
+        with self.interface.commands.suspend_updates():
+            self.interface._startup()
 
-        self.create_app_commands()
-
-        # Create the lookup table of menu items,
-        # then force the creation of the menus.
-        self.create_menus()
+            self.create_app_commands()
 
         # Set any custom styles
         css_provider = Gtk.CssProvider()

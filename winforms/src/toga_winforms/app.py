@@ -112,7 +112,8 @@ class App:
         # The winforms App impl's create() is deferred so that it can run inside
         # the GUI thread. This means the on_change handler for commands has already
         # been installed - even though we haven't added any commands yet. Temporarily
-        # suspend on_change events so we can create all the commands,
+        # suspend on_change events so we can create all the commands. This will call
+        # create_menus when when context exits.
         with self.interface.commands.suspend_updates():
             # Call user code to populate the main window
             self.interface._startup()
@@ -139,6 +140,8 @@ class App:
             window.native.MainMenuStrip = menubar
             menubar.SendToBack()  # In a dock, "back" means "top".
 
+        return menubar
+
     def create_menus(self):
         # Reset the menubar.
         menubar = self._reset_menubar()
@@ -148,7 +151,6 @@ class App:
             item.Visible = False
             item.Dispose()
 
-        # The File menu should come before all user-created menus.
         self._menu_groups = {}
         self._status_indicators = {}
 
@@ -157,12 +159,10 @@ class App:
             submenu = self._submenu(cmd.group, menubar)
             if isinstance(cmd, Separator):
                 if cmd.group.root.is_status_item:
-                    submenu.DropDownItems.Add("-")
-                else:
                     submenu.MenuItems.Add("-")
+                else:
+                    submenu.DropDownItems.Add("-")
             else:
-                submenu = self._submenu(cmd.group, menubar)
-
                 # Items inside a Notify Icon are MenuItems; in a menubar,
                 # they're ToolStripMenuItems
                 if cmd.group.root.is_status_item:
