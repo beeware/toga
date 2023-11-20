@@ -139,10 +139,6 @@ class MainWindow(Window):
         size: tuple[int, int] = (640, 480),
         resizable: bool = True,
         minimizable: bool = True,
-        on_gain_focus: callable | None = None,
-        on_lose_focus: callable | None = None,
-        on_show: callable | None = None,
-        on_hide: callable | None = None,
         resizeable=None,  # DEPRECATED
         closeable=None,  # DEPRECATED
     ):
@@ -168,10 +164,6 @@ class MainWindow(Window):
             resizable=resizable,
             closable=True,
             minimizable=minimizable,
-            on_gain_focus=on_gain_focus,
-            on_lose_focus=on_lose_focus,
-            on_show=on_show,
-            on_hide=on_hide,
             # Deprecated arguments
             resizeable=resizeable,
             closeable=closeable,
