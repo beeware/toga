@@ -953,7 +953,7 @@ class WindowlessApp(AbstractBaseApp):
         self.factory.WindowlessApp(interface=self)
 
 
-class DocumentApp(App):
+class DocumentApp(AbstractBaseApp):
     def __init__(
         self,
         formal_name: str | None = None,
@@ -978,6 +978,19 @@ class DocumentApp(App):
 
         :param document_types: Initial :any:`document_types` mapping.
         """
+        ######################################################################
+        # 2023-10: Backwards compatibility
+        ######################################################################
+        if id is not None:
+            warn(
+                "App.id is deprecated and will be ignored. Use app_id instead",
+                DeprecationWarning,
+                stacklevel=2,
+            )
+        ######################################################################
+        # End Backwards compatibility
+        ######################################################################
+
         if document_types is None:
             raise ValueError("A document must manage at least one document type.")
 
@@ -995,7 +1008,6 @@ class DocumentApp(App):
             description=description,
             startup=startup,
             on_exit=on_exit,
-            id=id,
         )
 
     def _create_impl(self):

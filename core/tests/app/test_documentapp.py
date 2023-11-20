@@ -156,3 +156,23 @@ def test_no_close(monkeypatch, is_single_doc_app):
 
     assert not asyncio.get_event_loop().run_until_complete(_do_close())
     app.exit.assert_not_called()
+
+
+def test_deprecated_args(monkeypatch):
+    """Deprecated arguments to the DocumentApp constructor raise warnings."""
+    monkeypatch.setattr(sys, "argv", ["app-exe"])
+
+    # Range is deprecated
+    with pytest.warns(
+        DeprecationWarning,
+        match="App.id is deprecated and will be ignored. Use app_id instead",
+    ):
+        app = toga.DocumentApp(
+            "Test App",
+            "org.beeware.document-app",
+            id="my-app",
+            document_types={"foobar": ExampleDocument},
+        )
+
+    assert app._impl.interface == app
+    assert_action_performed(app, "create DocumentApp")

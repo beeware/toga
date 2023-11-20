@@ -10,7 +10,7 @@ class MainWindow(Window):
     pass
 
 
-class App(LoggedObject):
+class BaseApp(LoggedObject):
     def __init__(self, interface):
         super().__init__()
         self.interface = interface
@@ -19,19 +19,12 @@ class App(LoggedObject):
         self.loop = asyncio.get_event_loop()
         self.create()
 
-    def create(self):
-        self._action("create App")
-        self.interface._startup()
-
     def create_menus(self):
         self._action("create App menus")
 
     def main_loop(self):
         print("Starting app using Dummy backend.")
         self._action("main loop")
-
-    def set_main_window(self, window):
-        self._action("set_main_window", window=window)
 
     def show_about_dialog(self):
         self._action("show_about_dialog")
@@ -68,7 +61,28 @@ class App(LoggedObject):
         self.interface.on_exit()
 
 
-class DocumentApp(App):
+class SimpleApp(BaseApp):
+    def create(self):
+        self._action("create Simple App")
+        self.interface._startup()
+
+    def set_main_window(self, window):
+        self._action("set_main_window", window=window)
+
+
+class App(SimpleApp):
+    def create(self):
+        self._action("create App")
+        self.interface._startup()
+
+
+class WindowlessApp(BaseApp):
+    def create(self):
+        self._action("create Windowless App")
+        self.interface._startup()
+
+
+class DocumentApp(BaseApp):
     def create(self):
         self._action("create DocumentApp")
         self.interface._startup()

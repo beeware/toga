@@ -1,5 +1,5 @@
 from . import dialogs
-from .app import App, DocumentApp, MainWindow
+from .app import App, DocumentApp, MainWindow, SimpleApp, WindowlessApp
 from .command import Command
 from .documents import Document
 from .fonts import Font
@@ -42,6 +42,8 @@ __all__ = [
     "not_implemented",
     "App",
     "DocumentApp",
+    "SimpleApp",
+    "WindowlessApp",
     "MainWindow",
     "Command",
     "Document",

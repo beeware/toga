@@ -236,6 +236,9 @@ def test_create(
 
     metadata_mock.assert_called_once_with(expected_app_name)
 
+    # A normal app was created.
+    assert_action_performed(app, "create App")
+
 
 @pytest.mark.parametrize(
     "kwargs, exc_type, message",
@@ -289,6 +292,9 @@ def test_app_metadata(monkeypatch):
     assert app.home_page == "https://example.com/test-app"
     assert app.description == "A test app"
 
+    # A normal app was created.
+    assert_action_performed(app, "create App")
+
 
 def test_explicit_app_metadata(monkeypatch):
     """App metadata can be provided explicitly, overriding module-level metadata"""
@@ -326,6 +332,9 @@ def test_explicit_app_metadata(monkeypatch):
     assert app.description == "A test app"
 
     assert app.on_exit._raw == on_exit_handler
+
+    # A normal app was created.
+    assert_action_performed(app, "create App")
 
 
 @pytest.mark.parametrize("construct", [True, False])
