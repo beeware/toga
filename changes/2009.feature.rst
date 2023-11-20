@@ -1,1 +1,1 @@
-App and Window can now respond to changes in focus.
+Window can now respond to changes in focus and visibility.
