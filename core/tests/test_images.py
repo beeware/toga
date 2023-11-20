@@ -87,10 +87,12 @@ BYTES = ABSOLUTE_FILE_PATH.read_bytes()
 @pytest.mark.parametrize(
     "args, kwargs",
     [
-        # Empty string
         ((BYTES,), {}),
         ((), {"src": BYTES}),
         ((), {"data": BYTES}),
+        # Other "lump of bytes" data types
+        ((bytearray(BYTES),), {}),
+        ((memoryview(BYTES),), {}),
     ],
 )
 def test_create_from_bytes(args, kwargs):

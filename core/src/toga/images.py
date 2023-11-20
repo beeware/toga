@@ -65,7 +65,8 @@ class Image:
         self.factory = get_platform_factory()
         self._path = None
 
-        if isinstance(src, bytes):
+        # Any "lump of bytes" should be valid here.
+        if isinstance(src, (bytes, bytearray, memoryview)):
             self._impl = self.factory.Image(interface=self, data=src)
 
         elif isinstance(src, (str, Path)):
