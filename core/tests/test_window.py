@@ -346,11 +346,11 @@ def test_close_rejected_handler(window, app):
     on_close_handler.assert_called_once_with(window)
 
 
-def test_as_image(window):
+def test_as_image(app, window):
     """A window can be captured as an image"""
     image = window.as_image()
-
-    assert image.data == b"pretend this is PNG image data"
+    assert_action_performed(window, "get image data")
+    assert image.data == (app.paths.app / "resources/toga.png").read_bytes()
 
 
 def test_info_dialog(window, app):

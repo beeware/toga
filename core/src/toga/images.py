@@ -3,7 +3,6 @@ from __future__ import annotations
 import warnings
 from io import BytesIO
 from pathlib import Path
-from typing import Any
 from warnings import warn
 
 try:
@@ -28,10 +27,10 @@ class Image:
     ):
         """Create a new image.
 
-        :param src: The source from which to load the image. Can be a filepath
-            (relative or absolute, as a string or :any:`pathlib.Path`), raw binary data
-            in any supported image format, or a `Pillow <https://python-pillow.org/>`_
-            ``Image``.
+        :param src: The source from which to load the image. Can be a file path
+            (relative or absolute, as a string or :external:class:`pathlib.Path`) or raw
+            binary data in any supported image format. Can also accept a
+            :external:class:`PIL.Image.Image` if Pillow is installed.
         :param path: **DEPRECATED** - Use ``src``.
         :param data: **DEPRECATED** - Use ``src``.
         :raises FileNotFoundError: If a path is provided, but that path does not exist.
@@ -85,7 +84,7 @@ class Image:
 
     @property
     def size(self) -> (int, int):
-        """The size of the image, as a tuple."""
+        """The size of the image, as a (width, height) tuple."""
         return (self._impl.get_width(), self._impl.get_height())
 
     @property
@@ -114,16 +113,16 @@ class Image:
         The file format of the saved image will be determined by the extension of
         the filename provided (e.g ``path/to/mypicture.png`` will save a PNG file).
 
-        :param path: Path where to save the image.
+        :param path: Path to save the image to.
         """
         self._impl.save(path)
 
-    def as_format(self, format: type) -> Any:
+    def as_format(self, format: type) -> toga.Image | PIL_Image.Image:
         """Return the image, converted to the image format specified.
 
         :param format: The image class to return. Currently supports only :class:`Image`
-            (which simply returns self) and ``Image`` from from
-            `Pillow <https://python-pillow.org/>`_.
+            (which simply returns self), and :external:class:`PIL.Image.Image` if Pillow
+            is installed.
         :returns: The image in the requested format
         :raises TypeError: If the format supplied is not recognized.
         """

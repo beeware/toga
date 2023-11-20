@@ -16,6 +16,11 @@ if TYPE_CHECKING:
     from toga.app import App
     from toga.widgets.base import Widget
 
+    try:
+        import PIL.Image as PIL_Image
+    except ImportError:  # pragma: no cover
+        PIL_Image = None
+
 
 class OnCloseHandler(Protocol):
     def __call__(self, window: Window, **kwargs: Any) -> bool:
@@ -329,11 +334,16 @@ class Window:
         self._impl.close()
         self._closed = True
 
-    def as_image(self) -> Image:
+    def as_image(
+        self, format: Image | PIL_Image.Image = Image
+    ) -> Image | PIL_Image.Image:
         """Render the current contents of the window as an image.
 
-        :returns: A :class:`toga.Image` containing the window content."""
-        return Image(self._impl.get_image_data())
+        :param format: Format to provide. Defaults to :class:`~toga.images.Image`; also
+            supports :external:class:`PIL.Image.Image` if Pillow is installed
+        :returns: An image containing the window content, in the format requested.
+        """
+        return Image(self._impl.get_image_data()).as_format(format)
 
     ############################################################
     # Dialogs

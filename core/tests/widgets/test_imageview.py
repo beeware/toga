@@ -51,11 +51,12 @@ def test_create_from_toga_image(app):
 
 def test_create_from_pil():
     """An ImageView can be created from a PIL image"""
-    pil_img = PIL.Image.open(ABSOLUTE_FILE_PATH)
+    with PIL.Image.open(ABSOLUTE_FILE_PATH) as pil_img:
+        pil_img.load()
 
     imageview = toga.ImageView(pil_img)
     assert isinstance(imageview.image, toga.Image)
-    assert imageview.image.size == (60, 40)
+    assert imageview.image.size == (32, 32)
 
 
 def test_disable_no_op(widget):
@@ -125,26 +126,26 @@ def test_set_image_none(app):
     "params, expected_width, expected_height, expected_aspect_ratio",
     [
         # Intrinsic image size
-        (dict(style=Pack()), 60, 40, 1.5),
-        (dict(style=Pack(), scale=2), 120, 80, 1.5),
+        (dict(style=Pack()), 32, 32, 1),
+        (dict(style=Pack(), scale=2), 64, 64, 1),
         # Fixed width
-        (dict(style=Pack(width=150)), 150, 100, 1.5),
-        (dict(style=Pack(width=150), scale=2), 300, 200, 1.5),
+        (dict(style=Pack(width=150)), 150, 150, 1),
+        (dict(style=Pack(width=150), scale=2), 300, 300, 1),
         # Fixed height
-        (dict(style=Pack(height=80)), 120, 80, 1.5),
-        (dict(style=Pack(height=80), scale=2), 240, 160, 1.5),
+        (dict(style=Pack(height=80)), 80, 80, 1),
+        (dict(style=Pack(height=80), scale=2), 160, 160, 1),
         # Explicit image size
         (dict(style=Pack(width=37, height=42)), 37, 42, None),
         (dict(style=Pack(width=37, height=42), scale=2), 74, 84, None),
         # Intrinsic image size, flex widget
-        (dict(style=Pack(flex=1)), at_least(60), at_least(40), 1.5),
-        (dict(style=Pack(flex=1), scale=2), at_least(120), at_least(80), 1.5),
+        (dict(style=Pack(flex=1)), at_least(32), at_least(32), 1),
+        (dict(style=Pack(flex=1), scale=2), at_least(64), at_least(64), 1),
         # Fixed width, flex widget
-        (dict(style=Pack(width=150, flex=1)), 150, at_least(100), 1.5),
-        (dict(style=Pack(width=150, flex=1), scale=2), 300, at_least(200), 1.5),
+        (dict(style=Pack(width=150, flex=1)), 150, at_least(150), 1),
+        (dict(style=Pack(width=150, flex=1), scale=2), 300, at_least(300), 1),
         # Fixed height, flex widget
-        (dict(style=Pack(height=80, flex=1)), at_least(120), 80, 1.5),
-        (dict(style=Pack(height=80, flex=1), scale=2), at_least(240), 160, 1.5),
+        (dict(style=Pack(height=80, flex=1)), at_least(80), 80, 1),
+        (dict(style=Pack(height=80, flex=1), scale=2), at_least(160), 160, 1),
         # Explicit image size, flex widget
         (dict(style=Pack(width=37, height=42, flex=1)), 37, 42, None),
         (dict(style=Pack(width=37, height=42, flex=1), scale=2), 74, 84, None),
@@ -189,13 +190,10 @@ def test_as_image_toga():
     toga_img = toga.Image(ABSOLUTE_FILE_PATH)
     imageview = toga.ImageView(toga_img)
     toga_img_2 = imageview.as_image()
-    assert toga_img_2.size == (60, 40)
+    assert toga_img_2.size == (32, 32)
 
 
 def test_as_image_pil():
     imageview = toga.ImageView(ABSOLUTE_FILE_PATH)
-
-    # Doesn't work with dummy backend
-    with pytest.raises(PIL.UnidentifiedImageError):
-        pil_img = imageview.as_image(PIL.Image.Image)
-        assert pil_img.size == (60, 40)
+    pil_img = imageview.as_image(PIL.Image.Image)
+    assert pil_img.size == (32, 32)

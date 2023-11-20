@@ -1,3 +1,4 @@
+import toga
 from toga.fonts import SYSTEM, SYSTEM_DEFAULT_FONT_SIZE
 
 from .base import Widget
@@ -243,9 +244,9 @@ class Canvas(Widget):
     # Image
 
     def get_image_data(self):
-        """Return a dummy bytes as the "native" image."""
+        """Return the Toga logo as the "native" image."""
         self._action("get image data")
-        return b"pretend this is PNG image data"
+        return (toga.App.app.paths.app / "resources/toga.png").read_bytes()
 
     # Resize handlers
 

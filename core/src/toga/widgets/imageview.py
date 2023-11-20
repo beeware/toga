@@ -1,12 +1,19 @@
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING
 
 from travertino.size import at_least
 
-from toga.images import Image
+import toga
 from toga.style.pack import NONE
 from toga.widgets.base import Widget
+
+if TYPE_CHECKING:
+    try:
+        import PIL.Image as PIL_Image
+    except ImportError:  # pragma: no cover
+        PIL_Image = None
+    from pathlib import Path
 
 
 def rehint_imageview(image, style, scale=1):
@@ -63,14 +70,17 @@ def rehint_imageview(image, style, scale=1):
 class ImageView(Widget):
     def __init__(
         self,
-        image: Any = None,
+        image: str | Path | bytes | PIL_Image.Image | None = None,
         id=None,
         style=None,
     ):
         """
         Create a new image view.
 
-        :param image: The image to display.
+        :param image: The image to display. This can take all the same formats as the
+            `src` parameter to :class:`toga.Image` -- namely, a file path (as string
+            or :external:class:`pathlib.Path`), bytes data in a supported image format,
+            or :external:class:`PIL.Image.Image`.
         :param id: The ID for the widget.
         :param style: A style object. If no style is provided, a default style will be
             applied to the widget.
@@ -99,7 +109,7 @@ class ImageView(Widget):
         pass
 
     @property
-    def image(self) -> Image | None:
+    def image(self) -> toga.Image | None:
         """The image to display.
 
         When setting an image, you can provide:
@@ -115,19 +125,23 @@ class ImageView(Widget):
 
     @image.setter
     def image(self, image):
-        if isinstance(image, Image):
+        if isinstance(image, toga.Image):
             self._image = image
         elif image is None:
             self._image = None
         else:
-            self._image = Image(image)
+            self._image = toga.Image(image)
 
         self._impl.set_image(self._image)
         self.refresh()
 
-    def as_image(self, format: Any = Image) -> Any:
+    def as_image(
+        self, format: toga.Image | PIL_Image.Image = toga.Image
+    ) -> toga.Image | PIL_Image.Image:
         """Return the image in the specified format.
 
         :param format: Format to provide. Defaults to :class:`~toga.images.Image`; also
-            supports `Pillow <https://python-pillow.org/>`_ ``Image``."""
+            supports :external:class:``PIL.Image.Image`` if Pillow is installed.
+        :returns: The image in the specified format.
+        """
         return self.image.as_format(format)

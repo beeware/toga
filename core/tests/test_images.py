@@ -80,7 +80,7 @@ def test_create_with_nonexistent_file(app, args, kwargs):
         toga.Image(*args, **kwargs)
 
 
-BYTES = bytes([1])
+BYTES = ABSOLUTE_FILE_PATH.read_bytes()
 
 
 @pytest.mark.filterwarnings("ignore::DeprecationWarning")
@@ -125,10 +125,12 @@ def test_invalid_input_format():
 
 def test_create_from_pil(app):
     """An image can be created from a PIL image"""
-    pil_img = PIL.Image.open(ABSOLUTE_FILE_PATH)
-    toga_img = toga.Image(pil_img)
+    with PIL.Image.open(ABSOLUTE_FILE_PATH) as pil_image:
+        pil_image.load()
+    toga_image = toga.Image(pil_image)
 
-    assert isinstance(toga_img, toga.Image)
+    assert isinstance(toga_image, toga.Image)
+    assert toga_image.size == (32, 32)
 
 
 @pytest.mark.parametrize("kwargs", [{"data": BYTES}, {"path": ABSOLUTE_FILE_PATH}])
@@ -163,15 +165,14 @@ def test_dimensions(app):
     """The dimensions of the image can be retrieved"""
     image = toga.Image(RELATIVE_FILE_PATH)
 
-    assert image.size == (60, 40)
-    assert image.width == 60
-    assert image.height == 40
+    assert image.size == (32, 32)
+    assert image.width == image.height == 32
 
 
 def test_data(app):
     """The raw data of the image can be retrieved."""
     image = toga.Image(ABSOLUTE_FILE_PATH)
-    assert image.data == b"pretend this is PNG image data"
+    assert image.data == ABSOLUTE_FILE_PATH.read_bytes()
 
 
 def test_image_save(tmp_path):
@@ -183,20 +184,24 @@ def test_image_save(tmp_path):
     assert_action_performed_with(image, "save", path=save_path)
 
 
+def test_as_format_toga(app):
+    """as_format can successfully return self"""
+    toga_image = toga.Image(ABSOLUTE_FILE_PATH)
+    assert toga_image is toga_image.as_format(toga.Image)
+
+
 def test_as_format_pil(app):
     """as_format can successfully return a PIL image"""
-    toga_img = toga.Image(ABSOLUTE_FILE_PATH)
-    # The dummy backend only supplies toy data, but this verifies that it is being
-    # fed to PIL.Image.open
-    with pytest.raises(PIL.UnidentifiedImageError):
-        toga_img.as_format(PIL.Image.Image)
+    toga_image = toga.Image(ABSOLUTE_FILE_PATH)
+    pil_image = toga_image.as_format(PIL.Image.Image)
+    assert pil_image.size == (32, 32)
 
 
 # None is same as supplying nothing; also test a random unrecognized class
 @pytest.mark.parametrize("arg", [None, toga.Button])
 def test_as_format_invalid_input(app, arg):
     """An unsupported format raises an error"""
-    toga_img = toga.Image(ABSOLUTE_FILE_PATH)
+    toga_image = toga.Image(ABSOLUTE_FILE_PATH)
 
     with pytest.raises(TypeError, match=r"Unknown conversion format for Image:"):
-        toga_img.as_format(arg)
+        toga_image.as_format(arg)
