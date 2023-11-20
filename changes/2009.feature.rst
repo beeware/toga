@@ -1,1 +1,1 @@
-Added `on_gain_focus` and `on_lose_focus` handlers both on the `toga.App` and `toga.Window`.
+App and Window can now respond to changes in focus.
