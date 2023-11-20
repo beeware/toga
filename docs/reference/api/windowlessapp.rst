@@ -15,9 +15,9 @@ Usage
 -----
 
 A WindowlessApp is a specialized subclass of App that is used for apps that *don't* have
-a main window, such as an app that generates a icon in the system tray or status bar.
-As there is no main window controlling the app, the app is responsible for defining the
-user action that will exit the app.
+a main window, such as an app that generates a :ref:`icon in the system tray or status
+bar <status-item-group>`. As there is no main window controlling the app, the app is
+responsible for defining the user action that will exit the app.
 
 Reference
 ---------

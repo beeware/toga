@@ -73,6 +73,8 @@ It isn't possible to have functionality exposed on a toolbar that isn't also exp
 the app. So, ``cmd2`` will be added to the app, even though it wasn't explicitly added
 to the app commands.
 
+.. _status-item-group:
+
 Status Item Groups
 ~~~~~~~~~~~~~~~~~~
 
@@ -102,8 +104,8 @@ Notes
   installed by default for most users. Toga has no way to detect if the user's
   environment supports status indicators, so there is not guarantee that any status
   indicators provided by your app will be visible. If your app is using a status item as
-  the only user interface (e.g., in a :ref:`Windowless app
-  </reference/api/windowlessapp>`__), this may result in an app that appears to do
+  the only user interface (e.g., in a :doc:`Windowless app
+  </reference/api/windowlessapp>`), this may result in an app that appears to do
   nothing, but raises no errors.
 
 Reference
