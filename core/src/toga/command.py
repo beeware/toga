@@ -93,18 +93,6 @@ class Group:
             return False
         return parent.is_parent_of(self)
 
-    def descendant(self, parent: Group | None) -> Group | None:
-        """Return the immediate descendant of parent used by this group.
-
-        :param parent: The parent to check
-        :returns: The descendant, or None if no descendant exists
-        """
-        if self.parent == parent:
-            return self
-        if self.parent:
-            return self.parent.descendant(parent)
-        return None
-
     def __hash__(self) -> int:
         return hash(self.key)
 
@@ -352,6 +340,14 @@ class CommandSet:
     def __iter__(self) -> Command | Separator:
         cmd_iter = iter(sorted(self._commands))
 
+        def descendant(group, ancestor):
+            # Return the immediate descendant of ancestor used by this group.
+            if group.parent == ancestor:
+                return group
+            if group.parent:
+                return descendant(group.parent, ancestor)
+            return None
+
         # The iteration over commands tells us the exact order of commands, but doesn't
         # tell us anything about menu and submenu structure. In order to insert section
         # breaks in the right place (including before and after submenus), we need to
@@ -367,20 +363,29 @@ class CommandSet:
             nonlocal command
             nonlocal finished
             section = None
+
+            def _section_break(obj):
+                # Utility method that will insert a section break, if required.
+                # A section break is needed if the section for the object we're
+                # processing (either a command, or a group acting as a submenu)
+                # has a section ID different to the previous object processed at
+                # this level, excluding the very first object (as there's no need
+                # for a section break before the first command/submenu).
+                nonlocal section
+                if section is not None:
+                    if section != obj.section:
+                        yield Separator(parent)
+                        section = obj.section
+                else:
+                    section = obj.section
+
             while not finished:
                 if parent is None:
                     # Handle root-level menus
                     yield from _iter_group(command.group.root)
                 elif command.group == parent:
-                    # A normal command at this level of the group. If the section has
-                    # changed from something other than none, insert a section break.
-                    if section is not None:
-                        if section != command.section:
-                            yield Separator(parent)
-                            section = command.section
-                    else:
-                        section = command.section
-
+                    # A normal command at this level of the group.
+                    yield from _section_break(command)
                     yield command
 
                     # Consume the next item on the iterator; if we run out, mark the
@@ -395,18 +400,10 @@ class CommandSet:
                     # group, yield items from the group. If it's not a descendant, then
                     # there are no more commands in this group; we can return to the
                     # previous group for processing.
-                    descendant = command.group.descendant(parent)
-                    if descendant:
-                        # If the descendant group changes section from something other
-                        # than None, insert a section break.
-                        if section is not None:
-                            if section != descendant.section:
-                                yield Separator(parent)
-                                section = descendant.section
-                        else:
-                            section = command.section
-
-                        yield from _iter_group(descendant)
+                    subgroup = descendant(command.group, parent)
+                    if subgroup:
+                        yield from _section_break(subgroup)
+                        yield from _iter_group(subgroup)
                     else:
                         return
 
