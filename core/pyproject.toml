@@ -4,6 +4,7 @@ requires = [
     "setuptools_scm[toml]==7.0.5",
     "setuptools_dynamic_dependencies @ git+https://github.com/beeware/setuptools_dynamic_dependencies",
 ]
+build-backend = "setuptools.build_meta"
 
 [project]
 dynamic = ["version"]

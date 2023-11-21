@@ -4,6 +4,7 @@ requires = [
     "setuptools_scm[toml]==7.0.5",
     "setuptools_dynamic_dependencies @ git+https://github.com/beeware/setuptools_dynamic_dependencies",
 ]
+build-backend = "setuptools.build_meta"
 
 [project]
 dynamic = ["version", "dependencies"]
@@ -69,10 +70,10 @@ relative_files = true
 
 # See notes in the root pyproject.toml file.
 source = ["src"]
-source_pkgs = ["toga_textual"]
+source_pkgs = ["toga_uwp"]
 
 [tool.coverage.paths]
 source = [
-    "src/toga_curses",
-    "**/toga_curses",
+    "src/toga_uwp",
+    "**/toga_uwp",
 ]

@@ -66,4 +66,8 @@ type = [
     { directory = "removal", name = "Backward Incompatible Changes", showcontent = true },
     { directory = "doc", name = "Documentation", showcontent = true },
     { directory = "misc", name = "Misc", showcontent = false },
- ]
+]
+
+[tool.setuptools_scm]
+# We're not packaging at the root repo, but we need this declaration
+# to prevent warnings in some contexts.
