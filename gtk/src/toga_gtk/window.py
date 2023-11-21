@@ -75,7 +75,7 @@ class Window:
         self.native.set_visible(False)
 
     def get_visible(self):
-        return self.native.get_property("visible")
+        return self.native.get_visible()
 
     def gtk_close_request(self, data):
         if self._is_closing:
