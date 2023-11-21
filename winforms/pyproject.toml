@@ -52,7 +52,7 @@ Tracker = "https://github.com/beeware/toga/issues"
 Source = "https://github.com/beeware/toga"
 
 [project.entry-points."toga.backends"]
-macOS = "toga_cocoa"
+windows = "toga_winforms"
 
 [tool.setuptools_scm]
 root = ".."
