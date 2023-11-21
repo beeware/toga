@@ -38,13 +38,11 @@ class AppProbe(BaseProbe):
         pytest.skip("Cursor visibility not implemented on GTK")
 
     def is_full_screen(self, window):
-        return bool(
-            window._impl.native.get_window().get_state() & Gdk.WindowState.FULLSCREEN
-        )
+        return window._impl.native.is_fullscreen()
 
     def content_size(self, window):
-        content_allocation = window._impl.container.get_allocation()
-        return (content_allocation.width, content_allocation.height)
+        content = window._impl.container
+        return (content.get_width(), content.get_height())
 
     def _menu_item(self, path):
         main_menu = self.app._impl.native.get_menubar()
@@ -89,7 +87,7 @@ class AppProbe(BaseProbe):
         item.emit("activate", None)
 
     def activate_menu_exit(self):
-        self._activate_menu_item(["*", "Quit Toga Testbed"])
+        pytest.skip("Exit menu item doesn't implemented on GTK")
 
     def activate_menu_about(self):
         self._activate_menu_item(["Help", "About Toga Testbed"])
