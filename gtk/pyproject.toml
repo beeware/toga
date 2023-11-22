@@ -49,7 +49,7 @@ classifiers = [
 [project.urls]
 Homepage = "https://beeware.org/project/projects/libraries/toga/"
 Funding = "https://beeware.org/contributing/membership/"
-Documentation = "http://toga.readthedocs.io/en/latest/"
+Documentation = "https://toga.readthedocs.io/en/latest/"
 Tracker = "https://github.com/beeware/toga/issues"
 Source = "https://github.com/beeware/toga"
 
