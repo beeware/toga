@@ -196,6 +196,7 @@ def test_as_format_pil(app):
     """as_format can successfully return a PIL image"""
     toga_image = toga.Image(ABSOLUTE_FILE_PATH)
     pil_image = toga_image.as_format(PIL.Image.Image)
+    assert isinstance(pil_image, PIL.Image.Image)
     assert pil_image.size == (32, 32)
 
 

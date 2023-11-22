@@ -13,13 +13,12 @@ from toga.platform import get_platform_factory
 from toga.widgets.base import WidgetRegistry
 
 if TYPE_CHECKING:
+    import PIL.Image
+
     from toga.app import App
     from toga.widgets.base import Widget
 
-    try:
-        import PIL.Image as PIL_Image
-    except ImportError:  # pragma: no cover
-        PIL_Image = None
+    ImageT = TypeVar("ImageT", bound=Image | PIL.Image.Image)
 
 
 class OnCloseHandler(Protocol):
@@ -334,9 +333,7 @@ class Window:
         self._impl.close()
         self._closed = True
 
-    def as_image(
-        self, format: Image | PIL_Image.Image = Image
-    ) -> Image | PIL_Image.Image:
+    def as_image(self, format: Image | type[ImageT] = Image) -> ImageT:
         """Render the current contents of the window as an image.
 
         :param format: Format to provide. Defaults to :class:`~toga.images.Image`; also

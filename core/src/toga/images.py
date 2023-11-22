@@ -3,15 +3,21 @@ from __future__ import annotations
 import warnings
 from io import BytesIO
 from pathlib import Path
+from typing import TYPE_CHECKING, TypeVar
 from warnings import warn
 
 try:
-    import PIL.Image as PIL_Image
+    import PIL.Image
+
+    PIL_imported = True
 except ImportError:  # pragma: no cover
-    PIL_Image = None
+    PIL_imported = False
 
 import toga
 from toga.platform import get_platform_factory
+
+if TYPE_CHECKING:
+    ImageT = TypeVar("ImageT", bound=toga.Image | PIL.Image.Image)
 
 # Make sure deprecation warnings are shown by default
 warnings.filterwarnings("default", category=DeprecationWarning)
@@ -20,7 +26,7 @@ warnings.filterwarnings("default", category=DeprecationWarning)
 class Image:
     def __init__(
         self,
-        src: str | Path | bytes | PIL_Image.Image | None = None,
+        src: str | Path | bytes | PIL.Image.Image | None = None,
         *,
         path=None,  # DEPRECATED
         data=None,  # DEPRECATED
@@ -28,9 +34,9 @@ class Image:
         """Create a new image.
 
         :param src: The source from which to load the image. Can be a file path
-            (relative or absolute, as a string or :external:class:`pathlib.Path`) or raw
+            (relative or absolute, as a string or :external:any:`pathlib.Path`) or raw
             binary data in any supported image format. Can also accept a
-            :external:class:`PIL.Image.Image` if Pillow is installed.
+            :external:any:`PIL.Image.Image` if Pillow is installed.
         :param path: **DEPRECATED** - Use ``src``.
         :param data: **DEPRECATED** - Use ``src``.
         :raises FileNotFoundError: If a path is provided, but that path does not exist.
@@ -75,7 +81,7 @@ class Image:
                 raise FileNotFoundError(f"Image file {self._path} does not exist")
             self._impl = self.factory.Image(interface=self, path=self._path)
 
-        elif isinstance(src, PIL_Image.Image):
+        elif PIL_imported and isinstance(src, PIL.Image.Image):
             buffer = BytesIO()
             src.save(buffer, format="png", compress_level=0)
             self._impl = self.factory.Image(interface=self, data=buffer.getvalue())
@@ -118,11 +124,11 @@ class Image:
         """
         self._impl.save(path)
 
-    def as_format(self, format: type) -> toga.Image | PIL_Image.Image:
+    def as_format(self, format: type[ImageT]) -> ImageT:
         """Return the image, converted to the image format specified.
 
-        :param format: The image class to return. Currently supports only :class:`Image`
-            (which simply returns self), and :external:class:`PIL.Image.Image` if Pillow
+        :param format: The image class to return. Currently supports only :any:`Image`
+            (which simply returns self), and :external:any:`PIL.Image.Image` if Pillow
             is installed.
         :returns: The image in the requested format
         :raises TypeError: If the format supplied is not recognized.
@@ -131,8 +137,8 @@ class Image:
             # This is mostly here to simplify calling logic.
             return self
 
-        if PIL_Image is not None and format is PIL_Image.Image:
+        if PIL_imported and format is PIL.Image.Image:
             buffer = BytesIO(self.data)
-            return PIL_Image.open(buffer)
+            return PIL.Image.open(buffer)
 
         raise TypeError(f"Unknown conversion format for Image: {format}")

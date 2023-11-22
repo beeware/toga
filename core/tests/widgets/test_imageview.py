@@ -126,26 +126,26 @@ def test_set_image_none(app):
     "params, expected_width, expected_height, expected_aspect_ratio",
     [
         # Intrinsic image size
-        (dict(style=Pack()), 32, 32, 1),
-        (dict(style=Pack(), scale=2), 64, 64, 1),
+        (dict(style=Pack()), 144, 72, 2),
+        (dict(style=Pack(), scale=2), 288, 144, 2),
         # Fixed width
-        (dict(style=Pack(width=150)), 150, 150, 1),
-        (dict(style=Pack(width=150), scale=2), 300, 300, 1),
+        (dict(style=Pack(width=150)), 150, 75, 2),
+        (dict(style=Pack(width=150), scale=2), 300, 150, 2),
         # Fixed height
-        (dict(style=Pack(height=80)), 80, 80, 1),
-        (dict(style=Pack(height=80), scale=2), 160, 160, 1),
+        (dict(style=Pack(height=80)), 160, 80, 2),
+        (dict(style=Pack(height=80), scale=2), 320, 160, 2),
         # Explicit image size
         (dict(style=Pack(width=37, height=42)), 37, 42, None),
         (dict(style=Pack(width=37, height=42), scale=2), 74, 84, None),
         # Intrinsic image size, flex widget
-        (dict(style=Pack(flex=1)), at_least(32), at_least(32), 1),
-        (dict(style=Pack(flex=1), scale=2), at_least(64), at_least(64), 1),
+        (dict(style=Pack(flex=1)), at_least(144), at_least(72), 2),
+        (dict(style=Pack(flex=1), scale=2), at_least(288), at_least(144), 2),
         # Fixed width, flex widget
-        (dict(style=Pack(width=150, flex=1)), 150, at_least(150), 1),
-        (dict(style=Pack(width=150, flex=1), scale=2), 300, at_least(300), 1),
+        (dict(style=Pack(width=150, flex=1)), 150, at_least(75), 2),
+        (dict(style=Pack(width=150, flex=1), scale=2), 300, at_least(150), 2),
         # Fixed height, flex widget
-        (dict(style=Pack(height=80, flex=1)), at_least(80), 80, 1),
-        (dict(style=Pack(height=80, flex=1), scale=2), at_least(160), 160, 1),
+        (dict(style=Pack(height=80, flex=1)), at_least(160), 80, 2),
+        (dict(style=Pack(height=80, flex=1), scale=2), at_least(320), 160, 2),
         # Explicit image size, flex widget
         (dict(style=Pack(width=37, height=42, flex=1)), 37, 42, None),
         (dict(style=Pack(width=37, height=42, flex=1), scale=2), 74, 84, None),
@@ -158,7 +158,7 @@ def test_rehint_image(
     expected_height,
     expected_aspect_ratio,
 ):
-    image = toga.Image("resources/toga.png")
+    image = toga.Image("resources/sample.png")
 
     width, height, aspect_ratio = rehint_imageview(image=image, **params)
     assert width == expected_width
@@ -190,10 +190,12 @@ def test_as_image_toga():
     toga_img = toga.Image(ABSOLUTE_FILE_PATH)
     imageview = toga.ImageView(toga_img)
     toga_img_2 = imageview.as_image()
+    assert isinstance(toga_img_2, toga.Image)
     assert toga_img_2.size == (32, 32)
 
 
 def test_as_image_pil():
     imageview = toga.ImageView(ABSOLUTE_FILE_PATH)
     pil_img = imageview.as_image(PIL.Image.Image)
+    assert isinstance(pil_img, PIL.Image.Image)
     assert pil_img.size == (32, 32)

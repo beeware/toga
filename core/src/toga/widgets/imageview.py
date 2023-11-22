@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, TypeVar
 
 from travertino.size import at_least
 
@@ -9,11 +9,11 @@ from toga.style.pack import NONE
 from toga.widgets.base import Widget
 
 if TYPE_CHECKING:
-    try:
-        import PIL.Image as PIL_Image
-    except ImportError:  # pragma: no cover
-        PIL_Image = None
     from pathlib import Path
+
+    import PIL.Image
+
+    ImageT = TypeVar("ImageT", bound=toga.Image | PIL.Image.Image)
 
 
 def rehint_imageview(image, style, scale=1):
@@ -70,7 +70,7 @@ def rehint_imageview(image, style, scale=1):
 class ImageView(Widget):
     def __init__(
         self,
-        image: str | Path | bytes | PIL_Image.Image | None = None,
+        image: str | Path | bytes | PIL.Image.Image | None = None,
         id=None,
         style=None,
     ):
@@ -135,9 +135,7 @@ class ImageView(Widget):
         self._impl.set_image(self._image)
         self.refresh()
 
-    def as_image(
-        self, format: toga.Image | PIL_Image.Image = toga.Image
-    ) -> toga.Image | PIL_Image.Image:
+    def as_image(self, format: ImageT = toga.Image) -> ImageT:
         """Return the image in the specified format.
 
         :param format: Format to provide. Defaults to :class:`~toga.images.Image`; also
