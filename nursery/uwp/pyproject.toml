@@ -12,7 +12,7 @@ name = "toga-uwp"
 description = "A Universal Windows Platform (UWP) backend for the Toga widget toolkit."
 readme = "README.rst"
 requires-python = ">= 3.8"
-license.file = "LICENSE"
+license.text = "New BSD"
 authors = [
     {name="Russell Keith-Magee", email="russell@keith-magee.com"},
 ]
@@ -46,7 +46,7 @@ classifiers = [
 ]
 
 [project.urls]
-Project = "https://beeware.org/project/projects/libraries/toga/"
+Homepage = "https://beeware.org/project/projects/libraries/toga/"
 Funding = "https://beeware.org/contributing/membership/"
 Documentation = "http://toga.readthedocs.io/en/latest/"
 Tracker = "https://github.com/beeware/toga/issues"
