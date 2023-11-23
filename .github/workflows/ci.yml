@@ -220,6 +220,10 @@ jobs:
     - name: Install dependencies
       run: |
         ${{ matrix.pre-command }}
+        # Make sure we have an up-to-date pip; Old pip doesn't deal well with projects
+        # that use pure PEP621 metadata.
+        python -m pip install -U pip
+
         # Use the development version of Briefcase
         python -m pip install git+https://github.com/beeware/briefcase.git
 
