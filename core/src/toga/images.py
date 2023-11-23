@@ -140,6 +140,8 @@ class Image:
 
         if PIL_imported and format is PIL.Image.Image:
             buffer = BytesIO(self.data)
-            return PIL.Image.open(buffer)
+            with PIL.Image.open(buffer) as pil_image:
+                pil_image.load()
+            return pil_image
 
         raise TypeError(f"Unknown conversion format for Image: {format}")
