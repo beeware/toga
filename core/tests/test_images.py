@@ -141,7 +141,7 @@ def test_create_from_toga_image(app):
     toga_image_2 = toga.Image(toga_image)
 
     assert isinstance(toga_image_2, toga.Image)
-    assert toga_image.data == toga_image_2.data
+    assert toga_image_2.size == (32, 32)
 
 
 @pytest.mark.parametrize("kwargs", [{"data": BYTES}, {"path": ABSOLUTE_FILE_PATH}])
@@ -195,10 +195,26 @@ def test_image_save(tmp_path):
     assert_action_performed_with(image, "save", path=save_path)
 
 
-def test_as_format_toga(app):
-    """as_format can successfully return self"""
-    toga_image = toga.Image(ABSOLUTE_FILE_PATH)
-    assert toga_image is toga_image.as_format(toga.Image)
+class ImageSubclass(toga.Image):
+    pass
+
+
+@pytest.mark.parametrize(
+    "class_1, class_2",
+    [
+        (toga.Image, toga.Image),
+        (toga.Image, ImageSubclass),
+        (ImageSubclass, toga.Image),
+        (ImageSubclass, ImageSubclass),
+    ],
+)
+def test_as_format_toga(app, class_1, class_2):
+    """as_format can successfully return a "copy" Image, with support for subclassing"""
+    image_1 = class_1(ABSOLUTE_FILE_PATH)
+    image_2 = image_1.as_format(class_2)
+
+    assert isinstance(image_2, class_2)
+    assert image_2.size == (32, 32)
 
 
 def test_as_format_pil(app):

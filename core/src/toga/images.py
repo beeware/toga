@@ -130,15 +130,13 @@ class Image:
     def as_format(self, format: type[ImageT]) -> ImageT:
         """Return the image, converted to the image format specified.
 
-        :param format: The image class to return. Currently supports only :any:`Image`
-            (which simply returns self), and :external:any:`PIL.Image.Image` if Pillow
-            is installed.
+        :param format: The image class to return. Currently supports only :any:`Image`,
+            and :external:any:`PIL.Image.Image` if Pillow is installed.
         :returns: The image in the requested format
         :raises TypeError: If the format supplied is not recognized.
         """
-        if format is Image:
-            # This is mostly here to simplify calling logic.
-            return self
+        if isinstance(format, type) and issubclass(format, Image):
+            return format(self.data)
 
         if PIL_imported and format is PIL.Image.Image:
             buffer = BytesIO(self.data)
