@@ -26,7 +26,7 @@ warnings.filterwarnings("default", category=DeprecationWarning)
 class Image:
     def __init__(
         self,
-        src: str | Path | bytes | PIL.Image.Image | None = None,
+        src: str | Path | bytes | Image | PIL.Image.Image | None = None,
         *,
         path=None,  # DEPRECATED
         data=None,  # DEPRECATED
@@ -34,9 +34,9 @@ class Image:
         """Create a new image.
 
         :param src: The source from which to load the image. Can be a file path
-            (relative or absolute, as a string or :external:any:`pathlib.Path`) or raw
-            binary data in any supported image format. Can also accept a
-            :external:any:`PIL.Image.Image` if Pillow is installed.
+            (relative or absolute, as a string or :external:any:`pathlib.Path`), raw
+            binary data in any supported image format, or another Toga image. Can also
+            accept a :external:any:`PIL.Image.Image` if Pillow is installed.
         :param path: **DEPRECATED** - Use ``src``.
         :param data: **DEPRECATED** - Use ``src``.
         :raises FileNotFoundError: If a path is provided, but that path does not exist.
@@ -80,6 +80,9 @@ class Image:
             if not self._path.is_file():
                 raise FileNotFoundError(f"Image file {self._path} does not exist")
             self._impl = self.factory.Image(interface=self, path=self._path)
+
+        elif isinstance(src, Image):
+            self._impl = self.factory.Image(interface=self, data=src.data)
 
         elif PIL_imported and isinstance(src, PIL.Image.Image):
             buffer = BytesIO()

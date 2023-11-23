@@ -135,6 +135,15 @@ def test_create_from_pil(app):
     assert toga_image.size == (32, 32)
 
 
+def test_create_from_toga_image(app):
+    """An image can be create from another Toga image"""
+    toga_image = toga.Image(ABSOLUTE_FILE_PATH)
+    toga_image_2 = toga.Image(toga_image)
+
+    assert isinstance(toga_image_2, toga.Image)
+    assert toga_image.data == toga_image_2.data
+
+
 @pytest.mark.parametrize("kwargs", [{"data": BYTES}, {"path": ABSOLUTE_FILE_PATH}])
 def test_deprecated_arguments(kwargs):
     with pytest.deprecated_call():
