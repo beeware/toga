@@ -3,7 +3,7 @@ from __future__ import annotations
 import warnings
 from io import BytesIO
 from pathlib import Path
-from typing import TYPE_CHECKING, TypeVar
+from typing import overload
 from warnings import warn
 
 try:
@@ -15,9 +15,6 @@ except ImportError:  # pragma: no cover
 
 import toga
 from toga.platform import get_platform_factory
-
-if TYPE_CHECKING:
-    ImageT = TypeVar("ImageT", bound=toga.Image | PIL.Image.Image)
 
 # Make sure deprecation warnings are shown by default
 warnings.filterwarnings("default", category=DeprecationWarning)
@@ -34,9 +31,9 @@ class Image:
         """Create a new image.
 
         :param src: The source from which to load the image. Can be a file path
-            (relative or absolute, as a string or :external:any:`pathlib.Path`), raw
+            (relative or absolute, as a string or :any:`pathlib.Path`), raw
             binary data in any supported image format, or another Toga image. Can also
-            accept a :external:any:`PIL.Image.Image` if Pillow is installed.
+            accept a :any:`PIL.Image.Image` if Pillow is installed.
         :param path: **DEPRECATED** - Use ``src``.
         :param data: **DEPRECATED** - Use ``src``.
         :raises FileNotFoundError: If a path is provided, but that path does not exist.
@@ -127,11 +124,19 @@ class Image:
         """
         self._impl.save(path)
 
-    def as_format(self, format: type[ImageT]) -> ImageT:
+    @overload
+    def as_format(self, type: Image) -> Image:
+        ...
+
+    @overload
+    def as_format(self, type: PIL.Image.Image) -> PIL.Image.Image:
+        ...
+
+    def as_format(self, format):
         """Return the image, converted to the image format specified.
 
         :param format: The image class to return. Currently supports only :any:`Image`,
-            and :external:any:`PIL.Image.Image` if Pillow is installed.
+            and :any:`PIL.Image.Image` if Pillow is installed.
         :returns: The image in the requested format
         :raises TypeError: If the format supplied is not recognized.
         """

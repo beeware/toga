@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, TypeVar
+from typing import TYPE_CHECKING, overload
 
 from travertino.size import at_least
 
@@ -12,8 +12,6 @@ if TYPE_CHECKING:
     from pathlib import Path
 
     import PIL.Image
-
-    ImageT = TypeVar("ImageT", bound=toga.Image | PIL.Image.Image)
 
 
 def rehint_imageview(image, style, scale=1):
@@ -79,8 +77,8 @@ class ImageView(Widget):
 
         :param image: The image to display. This can take all the same formats as the
             `src` parameter to :class:`toga.Image` -- namely, a file path (as string
-            or :external:class:`pathlib.Path`), bytes data in a supported image format,
-            or :external:class:`PIL.Image.Image`.
+            or :any:`pathlib.Path`), bytes data in a supported image format,
+            or :any:`PIL.Image.Image`.
         :param id: The ID for the widget.
         :param style: A style object. If no style is provided, a default style will be
             applied to the widget.
@@ -135,11 +133,19 @@ class ImageView(Widget):
         self._impl.set_image(self._image)
         self.refresh()
 
-    def as_image(self, format: ImageT = toga.Image) -> ImageT:
+    @overload
+    def as_image(self, type: toga.Image) -> toga.Image:
+        ...
+
+    @overload
+    def as_image(self, type: PIL.Image.Image) -> PIL.Image.Image:
+        ...
+
+    def as_image(self, format=toga.Image):
         """Return the image in the specified format.
 
         :param format: Format to provide. Defaults to :class:`~toga.images.Image`; also
-            supports :external:class:``PIL.Image.Image`` if Pillow is installed.
+            supports :any:`PIL.Image.Image` if Pillow is installed.
         :returns: The image in the specified format.
         """
         return self.image.as_format(format)

@@ -200,7 +200,7 @@ class ImageSubclass(toga.Image):
 
 
 @pytest.mark.parametrize(
-    "class_1, class_2",
+    "Class_1, Class_2",
     [
         (toga.Image, toga.Image),
         (toga.Image, ImageSubclass),
@@ -208,12 +208,12 @@ class ImageSubclass(toga.Image):
         (ImageSubclass, ImageSubclass),
     ],
 )
-def test_as_format_toga(app, class_1, class_2):
+def test_as_format_toga(app, Class_1, Class_2):
     """as_format can successfully return a "copy" Image, with support for subclassing"""
-    image_1 = class_1(ABSOLUTE_FILE_PATH)
-    image_2 = image_1.as_format(class_2)
+    image_1 = Class_1(ABSOLUTE_FILE_PATH)
+    image_2 = image_1.as_format(Class_2)
 
-    assert isinstance(image_2, class_2)
+    assert isinstance(image_2, Class_2)
     assert image_2.size == (32, 32)
 
 
