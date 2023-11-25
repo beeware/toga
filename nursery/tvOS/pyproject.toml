@@ -8,8 +8,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 dynamic = ["version", "dependencies"]
-name = "toga-cocoa"
-description = "A Cocoa (macOS) backend for the Toga widget toolkit."
+name = "toga-tvOS"
+description = "An Apple tvOS backend for the Toga widget toolkit."
 readme = "README.rst"
 requires-python = ">= 3.8"
 license.text = "New BSD"
@@ -24,9 +24,9 @@ keywords = [
     "widget",
     "cross-platform",
     "toga",
-    "desktop",
-    "macOS",
-    "cocoa",
+    "set-top box",
+    "tvOS",
+    "Apple TV",
 ]
 classifiers = [
     "Development Status :: 4 - Beta",
@@ -53,15 +53,13 @@ Tracker = "https://github.com/beeware/toga/issues"
 Source = "https://github.com/beeware/toga"
 
 [project.entry-points."toga.backends"]
-macOS = "toga_cocoa"
+tvOS = "toga_tvOS"
 
 [tool.setuptools_scm]
 root = ".."
 
 [tool.setuptools_dynamic_dependencies]
 dependencies = [
-    "fonttools >= 4.42.1, < 5.0.0",
-    "rubicon-objc >= 0.4.7, < 0.5.0",
     "toga-core == {version}",
 ]
 
@@ -72,10 +70,10 @@ relative_files = true
 
 # See notes in the root pyproject.toml file.
 source = ["src"]
-source_pkgs = ["toga_cocoa"]
+source_pkgs = ["toga_tvOS"]
 
 [tool.coverage.paths]
 source = [
-    "src/toga_cocoa",
-    "**/toga_cocoa",
+    "src/toga_tvOS",
+    "**/toga_tvOS",
 ]
