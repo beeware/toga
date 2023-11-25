@@ -342,7 +342,7 @@ class Window:
     def as_image(self, format=Image):
         """Render the current contents of the window as an image.
 
-        :param format: Format to provide. Defaults to :any:`~toga.images.Image`; also
+        :param format: Format to provide. Defaults to :class:`~toga.images.Image`; also
             supports :any:`PIL.Image.Image` if Pillow is installed
         :returns: An image containing the window content, in the format requested.
         """
