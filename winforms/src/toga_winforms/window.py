@@ -4,7 +4,7 @@ from System.Drawing.Imaging import ImageFormat
 from System.IO import MemoryStream
 
 from toga import MainWindow
-from toga.command import GROUP_BREAK, SECTION_BREAK
+from toga.command import Separator
 
 from .container import Container
 from .libs.wrapper import WeakrefCallable
@@ -55,12 +55,19 @@ class Window(Container, Scalable):
                 self.native.Controls.Add(self.toolbar_native)
                 self.toolbar_native.BringToFront()  # In a dock, "front" means "bottom".
 
+            prev_group = None
             for cmd in self.interface.toolbar:
-                if cmd == GROUP_BREAK:
+                if isinstance(cmd, Separator):
                     item = WinForms.ToolStripSeparator()
-                elif cmd == SECTION_BREAK:
-                    item = WinForms.ToolStripSeparator()
+                    prev_group = None
                 else:
+                    # A change in group requires adding a toolbar separator
+                    if prev_group is not None and prev_group != cmd.group:
+                        self.toolbar_native.Items.Add(WinForms.ToolStripSeparator())
+                        prev_group = None
+                    else:
+                        prev_group = cmd.group
+
                     item = WinForms.ToolStripMenuItem(cmd.text)
                     if cmd.tooltip is not None:
                         item.ToolTipText = cmd.tooltip
