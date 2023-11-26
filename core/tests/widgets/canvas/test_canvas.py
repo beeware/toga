@@ -153,7 +153,7 @@ def test_measure_text(widget, font, expected):
     assert widget.measure_text("Hello world", font=font) == expected
 
 
-def test_as_image(app, widget):
+def test_as_image(widget):
     """A rendered canvas can be retrieved as an image"""
     image = widget.as_image()
     assert image is not None

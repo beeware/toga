@@ -158,7 +158,8 @@ def test_rehint_image(
     expected_height,
     expected_aspect_ratio,
 ):
-    image = toga.Image("resources/sample.png")
+    path = Path(__file__).parent.parent / "resources/sample.png"
+    image = toga.Image(path)
 
     width, height, aspect_ratio = rehint_imageview(image=image, **params)
     assert width == expected_width
