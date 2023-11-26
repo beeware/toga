@@ -3,7 +3,7 @@ from __future__ import annotations
 import warnings
 from io import BytesIO
 from pathlib import Path
-from typing import overload
+from typing import TypeVar
 from warnings import warn
 
 try:
@@ -18,6 +18,8 @@ from toga.platform import get_platform_factory
 
 # Make sure deprecation warnings are shown by default
 warnings.filterwarnings("default", category=DeprecationWarning)
+
+ImageT = TypeVar("ImageT")
 
 
 class Image:
@@ -124,15 +126,7 @@ class Image:
         """
         self._impl.save(path)
 
-    @overload
-    def as_format(self, type: Image) -> Image:
-        ...
-
-    @overload
-    def as_format(self, type: PIL.Image.Image) -> PIL.Image.Image:
-        ...
-
-    def as_format(self, format):
+    def as_format(self, format: type[ImageT]) -> ImageT:
         """Return the image, converted to the image format specified.
 
         :param format: The image class to return. Currently supports only :any:`Image`,

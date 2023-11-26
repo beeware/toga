@@ -13,9 +13,8 @@ from toga.platform import get_platform_factory
 from toga.widgets.base import WidgetRegistry
 
 if TYPE_CHECKING:
-    import PIL.Image
-
     from toga.app import App
+    from toga.images import ImageT
     from toga.widgets.base import Widget
 
 
@@ -331,15 +330,7 @@ class Window:
         self._impl.close()
         self._closed = True
 
-    @overload
-    def as_image(self, type: Image) -> Image:
-        ...
-
-    @overload
-    def as_image(self, type: PIL.Image.Image) -> PIL.Image.Image:
-        ...
-
-    def as_image(self, format=Image):
+    def as_image(self, format: type[ImageT] = Image) -> ImageT:
         """Render the current contents of the window as an image.
 
         :param format: Format to provide. Defaults to :class:`~toga.images.Image`; also

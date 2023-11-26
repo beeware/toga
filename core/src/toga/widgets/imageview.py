@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, overload
+from typing import TYPE_CHECKING
 
 from travertino.size import at_least
 
@@ -12,6 +12,8 @@ if TYPE_CHECKING:
     from pathlib import Path
 
     import PIL.Image
+
+    from toga.images import ImageT
 
 
 def rehint_imageview(image, style, scale=1):
@@ -133,15 +135,7 @@ class ImageView(Widget):
         self._impl.set_image(self._image)
         self.refresh()
 
-    @overload
-    def as_image(self, type: toga.Image) -> toga.Image:
-        ...
-
-    @overload
-    def as_image(self, type: PIL.Image.Image) -> PIL.Image.Image:
-        ...
-
-    def as_image(self, format=toga.Image):
+    def as_image(self, format: type[ImageT] = toga.Image) -> ImageT:
         """Return the image in the specified format.
 
         :param format: Format to provide. Defaults to :class:`~toga.images.Image`; also

@@ -4,7 +4,7 @@ import warnings
 from abc import ABC, abstractmethod
 from contextlib import contextmanager
 from math import cos, pi, sin, tan
-from typing import TYPE_CHECKING, Protocol, overload
+from typing import TYPE_CHECKING, Protocol
 
 from travertino.colors import Color
 
@@ -17,7 +17,7 @@ from toga.handlers import wrapped_handler
 from .base import Widget
 
 if TYPE_CHECKING:
-    import PIL.Image
+    from toga.images import ImageT
 
 #######################################################################################
 # Simple drawing objects
@@ -1450,15 +1450,7 @@ class Canvas(Widget):
     # As image
     ###########################################################################
 
-    @overload
-    def as_image(self, type: toga.Image) -> toga.Image:
-        ...
-
-    @overload
-    def as_image(self, type: PIL.Image.Image) -> PIL.Image.Image:
-        ...
-
-    def as_image(self, format=toga.Image):
+    def as_image(self, format: type[ImageT] = toga.Image) -> ImageT:
         """Render the canvas as an image.
 
         :param format: Format to provide. Defaults to :class:`~toga.images.Image`; also
