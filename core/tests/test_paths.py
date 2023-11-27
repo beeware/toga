@@ -16,7 +16,7 @@ def run_app(args, cwd):
             "COVERAGE_PROCESS_START": str(
                 Path(__file__).parent.parent / "pyproject.toml"
             ),
-            "PYTHONPATH": str(Path(__file__).parent / "testbed" / "customize"),
+            "PYTHONPATH": str(Path(__file__).parent / "testbed/customize"),
             "TOGA_BACKEND": "toga_dummy",
         }
     )
@@ -68,7 +68,7 @@ def test_simple_as_file_in_module():
     """When a simple app is started as `python app.py` inside a runnable module, the
     app path is the folder holding app.py."""
     # Spawn the simple testbed app using `app.py`
-    cwd = Path(__file__).parent / "testbed" / "simple"
+    cwd = Path(__file__).parent / "testbed/simple"
     output = run_app(["app.py"], cwd=cwd)
     assert_paths(output, app_path=Path(toga.__file__).parent, app_name="simple-app")
 
@@ -77,7 +77,7 @@ def test_simple_as_module():
     """When a simple apps is started as `python -m app` inside a runnable module,
     the app path is the folder holding app.py."""
     # Spawn the simple testbed app using `-m app`
-    cwd = Path(__file__).parent / "testbed" / "simple"
+    cwd = Path(__file__).parent / "testbed/simple"
     output = run_app(["-m", "app"], cwd=cwd)
     assert_paths(output, app_path=Path(toga.__file__).parent, app_name="simple-app")
 
@@ -102,7 +102,7 @@ def test_subclassed_as_file_in_module():
     """When a subclassed app is started as `python app.py` inside a runnable module, the
     app path is the folder holding app.py."""
     # Spawn the simple testbed app using `app.py`
-    cwd = Path(__file__).parent / "testbed" / "subclassed"
+    cwd = Path(__file__).parent / "testbed/subclassed"
     output = run_app(["app.py"], cwd=cwd)
     assert_paths(output, app_path=cwd, app_name="subclassed-app")
 
@@ -111,7 +111,7 @@ def test_subclassed_as_module():
     """When a subclassed app is started as `python -m app` inside a runnable module,
     the app path is the folder holding app.py."""
     # Spawn the subclassed testbed app using `-m app`
-    cwd = Path(__file__).parent / "testbed" / "subclassed"
+    cwd = Path(__file__).parent / "testbed/subclassed"
     output = run_app(["-m", "app"], cwd=cwd)
     assert_paths(output, app_path=cwd, app_name="subclassed-app")
 
