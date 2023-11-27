@@ -154,7 +154,7 @@ async def test_non_existent_font_file(widget: toga.Label, app: toga.App):
     "Invalid font files fail registration"
     Font.register(
         family="non-existent",
-        path=app.paths.app / "resources" / "fonts" / "nonexistent.ttf",
+        path=app.paths.app / "resources/fonts/nonexistent.ttf",
     )
     with pytest.raises(
         ValueError, match=r"Font file .*nonexistent.ttf could not be found"
@@ -173,7 +173,7 @@ async def test_corrupted_font_file(
 
     Font.register(
         family="corrupted",
-        path=app.paths.app / "resources" / "fonts" / "Corrupted.ttf",
+        path=app.paths.app / "resources/fonts/Corrupted.ttf",
     )
     with pytest.raises(ValueError, match=r"Unable to load font file .*Corrupted.ttf"):
         widget.style.font_family = "corrupted"

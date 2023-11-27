@@ -5,8 +5,8 @@ import pytest
 import toga
 from toga_dummy.utils import assert_action_performed_with
 
-RELATIVE_FILE_PATH = Path("resources") / "toga.png"
-ABSOLUTE_FILE_PATH = Path(toga.__file__).parent / "resources" / "toga.png"
+RELATIVE_FILE_PATH = Path("resources/toga.png")
+ABSOLUTE_FILE_PATH = Path(toga.__file__).parent / "resources/toga.png"
 
 
 @pytest.mark.parametrize(
@@ -39,8 +39,8 @@ def test_create_from_file(app, args, kwargs):
     assert image._impl.interface.path == ABSOLUTE_FILE_PATH
 
 
-MISSING_ABSOLUTE_PATH = Path.home() / "does" / "not" / "exist" / "image.jpg"
-MISSING_RELATIVE_PATH = Path("does") / "not" / "exist" / "image.jpg"
+MISSING_ABSOLUTE_PATH = Path.home() / "does/not/exist/image.jpg"
+MISSING_RELATIVE_PATH = Path("does/not/exist/image.jpg")
 
 
 @pytest.mark.parametrize(

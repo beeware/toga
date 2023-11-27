@@ -19,7 +19,7 @@ class LocalHTTPServer(ThreadingHTTPServer):
 class Positron(toga.App):
     def web_server(self):
         print("Starting server...")
-        self._httpd = LocalHTTPServer(self.paths.app / "resources" / "webapp")
+        self._httpd = LocalHTTPServer(self.paths.app / "resources/webapp")
         # The server is now listening, but connections will block until
         # serve_forever is run.
         self.server_exists.set()

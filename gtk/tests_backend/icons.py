@@ -19,22 +19,22 @@ class IconProbe(BaseProbe):
     def assert_icon_content(self, path):
         if path == "resources/icons/green":
             assert self.icon._impl.paths == {
-                16: self.app.paths.app / "resources" / "icons" / "green-16.png",
-                32: self.app.paths.app / "resources" / "icons" / "green-32.png",
-                72: self.app.paths.app / "resources" / "icons" / "green-72.png",
+                16: self.app.paths.app / "resources/icons/green-16.png",
+                32: self.app.paths.app / "resources/icons/green-32.png",
+                72: self.app.paths.app / "resources/icons/green-72.png",
             }
         elif path == "resources/icons/orange":
             assert self.icon._impl.paths == {
-                16: self.app.paths.app / "resources" / "icons" / "orange.ico",
-                32: self.app.paths.app / "resources" / "icons" / "orange.ico",
-                72: self.app.paths.app / "resources" / "icons" / "orange.ico",
+                16: self.app.paths.app / "resources/icons/orange.ico",
+                32: self.app.paths.app / "resources/icons/orange.ico",
+                72: self.app.paths.app / "resources/icons/orange.ico",
             }
         else:
             pytest.fail("Unknown icon resource")
 
     def assert_default_icon_content(self):
         assert self.icon._impl.paths == {
-            16: self.app.paths.toga / "resources" / "toga.png",
-            32: self.app.paths.toga / "resources" / "toga.png",
-            72: self.app.paths.toga / "resources" / "toga.png",
+            16: self.app.paths.toga / "resources/toga.png",
+            32: self.app.paths.toga / "resources/toga.png",
+            72: self.app.paths.toga / "resources/toga.png",
         }

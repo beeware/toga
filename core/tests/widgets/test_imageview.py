@@ -33,7 +33,7 @@ def test_widget_created(widget):
 
 def test_widget_created_with_args(app):
     "An ImageView can be created with argumentgs"
-    image = toga.Image(Path("resources") / "toga.png")
+    image = toga.Image(Path("resources/toga.png"))
     widget = toga.ImageView(image=image)
 
     # interface/impl round trips
@@ -73,22 +73,22 @@ def test_set_image_str(widget):
     assert_action_performed(widget, "refresh")
 
     assert isinstance(widget.image, toga.Image)
-    assert widget.image.path == Path(toga.__file__).parent / "resources" / "toga.png"
+    assert widget.image.path == Path(toga.__file__).parent / "resources/toga.png"
 
 
 def test_set_image_path(widget):
     "The image can be set with a Path"
-    widget.image = Path("resources") / "toga.png"
+    widget.image = Path("resources/toga.png")
     assert_action_performed_with(widget, "set image", image=ANY)
     assert_action_performed(widget, "refresh")
 
     assert isinstance(widget.image, toga.Image)
-    assert widget.image.path == Path(toga.__file__).parent / "resources" / "toga.png"
+    assert widget.image.path == Path(toga.__file__).parent / "resources/toga.png"
 
 
 def test_set_image(widget):
     "The image can be set with an Image instance"
-    image = toga.Image(Path("resources") / "toga.png")
+    image = toga.Image(Path("resources/toga.png"))
 
     widget.image = image
     assert_action_performed_with(widget, "set image", image=image)
