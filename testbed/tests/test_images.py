@@ -42,13 +42,13 @@ async def test_data_image(app):
     pil_image.save(buffer, format="png", compress_level=0)
 
     # Construct a Toga image.
-    image = toga.Image(data=buffer.getvalue())
+    image = toga.Image(buffer.getvalue())
 
     assert image.width == 110
     assert image.height == 30
 
     # Construct a second image from the first image's data
-    image2 = toga.Image(data=image.data)
+    image2 = toga.Image(image.data)
 
     assert image2.width == 110
     assert image2.height == 30
@@ -60,7 +60,7 @@ async def test_bad_image_data(app):
         ValueError,
         match=r"Unable to load image from data",
     ):
-        toga.Image(data=b"Not an image")
+        toga.Image(b"Not an image")
 
 
 async def test_save(app):

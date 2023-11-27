@@ -1,3 +1,7 @@
+from pathlib import Path
+
+import toga_dummy
+
 from .utils import LoggedObject
 
 
@@ -92,7 +96,9 @@ class Window(LoggedObject):
         self._set_value("visible", False)
 
     def get_image_data(self):
-        return b"pretend this is PNG image data"
+        self._action("get image data")
+        path = Path(toga_dummy.__file__).parent / "resources/screenshot.png"
+        return path.read_bytes()
 
     def set_full_screen(self, is_full_screen):
         self._action("set full screen", full_screen=is_full_screen)

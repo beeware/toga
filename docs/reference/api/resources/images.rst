@@ -29,6 +29,11 @@ Usage
     with (Path.home() / "path/to/brutus.png").open("rb") as f:
         my_image = toga.Image(data=f.read())
 
+    # Create an image from a PIL image (if PIL is installed)
+    import PIL.Image
+    my_pil_image = PIL.Image.new("L", (30, 30))
+    my_toga_image = toga.Image(my_pil_image)
+
 Notes
 -----
 
