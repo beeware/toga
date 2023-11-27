@@ -74,7 +74,6 @@ def test_disable_no_op(widget):
 
 def test_focus_noop(widget):
     """Focus is a no-op."""
-
     widget.focus()
     assert_action_not_performed(widget, "focus")
 
@@ -82,6 +81,7 @@ def test_focus_noop(widget):
 def test_set_image_str(widget):
     """The image can be set with a string"""
     widget.image = ABSOLUTE_FILE_PATH
+
     assert_action_performed_with(widget, "set image", image=ANY)
     assert_action_performed(widget, "refresh")
 
@@ -92,6 +92,7 @@ def test_set_image_str(widget):
 def test_set_image_path(widget):
     """The image can be set with a Path"""
     widget.image = Path(ABSOLUTE_FILE_PATH)
+
     assert_action_performed_with(widget, "set image", image=ANY)
     assert_action_performed(widget, "refresh")
 
@@ -102,7 +103,6 @@ def test_set_image_path(widget):
 def test_set_image(widget):
     "The image can be set with an Image instance"
     image = toga.Image(Path(ABSOLUTE_FILE_PATH))
-
     widget.image = image
     assert_action_performed_with(widget, "set image", image=image)
     assert_action_performed(widget, "refresh")

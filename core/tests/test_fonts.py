@@ -151,11 +151,11 @@ def test_registered_font_key(app, family, style, weight, variant, key):
         # Relative path
         (
             Path("path/to/custom/font.otf"),
-            Path(toga.__file__).parent / "path" / "to" / "custom" / "font.otf",
+            Path(toga.__file__).parent / "path/to/custom/font.otf",
         ),
         (
             "path/to/custom/font.otf",
-            Path(toga.__file__).parent / "path" / "to" / "custom" / "font.otf",
+            Path(toga.__file__).parent / "path/to/custom/font.otf",
         ),
     ],
 )
@@ -180,11 +180,11 @@ def test_register_font(app, path, registered):
         # Relative path
         (
             Path("path/to/custom/font.otf"),
-            Path(toga.__file__).parent / "path" / "to" / "custom" / "font.otf",
+            Path(toga.__file__).parent / "path/to/custom/font.otf",
         ),
         (
             str(Path("path/to/custom/font.otf")),
-            Path(toga.__file__).parent / "path" / "to" / "custom" / "font.otf",
+            Path(toga.__file__).parent / "path/to/custom/font.otf",
         ),
     ],
 )

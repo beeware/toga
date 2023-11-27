@@ -16,16 +16,14 @@ class IconProbe(BaseProbe):
     def assert_icon_content(self, path):
         if path == "resources/icons/green":
             assert (
-                self.icon._impl.path
-                == self.app.paths.app / "resources" / "icons" / "green.png"
+                self.icon._impl.path == self.app.paths.app / "resources/icons/green.png"
             )
         elif path == "resources/icons/blue":
             assert (
-                self.icon._impl.path
-                == self.app.paths.app / "resources" / "icons" / "blue.png"
+                self.icon._impl.path == self.app.paths.app / "resources/icons/blue.png"
             )
         else:
             pytest.fail("Unknown icon resource")
 
     def assert_default_icon_content(self):
-        assert self.icon._impl.path == self.app.paths.toga / "resources" / "toga.png"
+        assert self.icon._impl.path == self.app.paths.toga / "resources/toga.png"
