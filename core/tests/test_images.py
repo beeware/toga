@@ -110,8 +110,8 @@ def test_create_from_bytes(args, kwargs):
 
 def test_not_enough_arguments():
     with pytest.raises(
-        ValueError,
-        match=r"No image source supplied.",
+        TypeError,
+        match=r"Image.__init__\(\) missing 1 required positional argument: 'src'",
     ):
         toga.Image(None)
 

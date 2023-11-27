@@ -67,10 +67,18 @@ def rehint_imageview(image, style, scale=1):
     return width, height, aspect_ratio
 
 
+# Note: remove PIL type annotation when plugin system is implemented for image format
+# registration; replace with ImageT?
 class ImageView(Widget):
     def __init__(
         self,
-        image: str | Path | bytes | PIL.Image.Image | None = None,
+        image: str
+        | Path
+        | bytes
+        | bytearray
+        | memoryview
+        | PIL.Image.Image
+        | None = None,
         id=None,
         style=None,
     ):

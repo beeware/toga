@@ -22,10 +22,19 @@ warnings.filterwarnings("default", category=DeprecationWarning)
 ImageT = TypeVar("ImageT")
 
 
+# Note: remove PIL type annotation when plugin system is implemented for image format
+# registration; replace with ImageT?
 class Image:
     def __init__(
         self,
-        src: str | Path | bytes | Image | PIL.Image.Image | None = None,
+        src: str
+        | Path
+        | bytes
+        | bytearray
+        | memoryview
+        | Image
+        | PIL.Image.Image
+        | None = None,
         *,
         path=None,  # DEPRECATED
         data=None,  # DEPRECATED
@@ -48,7 +57,9 @@ class Image:
         if num_provided > 1:
             raise ValueError("Received multiple arguments to constructor.")
         if num_provided == 0:
-            raise ValueError("No image source supplied.")
+            raise TypeError(
+                "Image.__init__() missing 1 required positional argument: 'src'"
+            )
         if path is not None:
             src = path
             warn(
