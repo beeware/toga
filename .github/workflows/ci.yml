@@ -193,7 +193,7 @@ jobs:
 
           - backend: android
             runs-on: ubuntu-latest
-            briefcase-run-args: " -d '{\"avd\":\"beePhone\"}' --Xemulator=-no-window --Xemulator=-no-snapshot --Xemulator=-no-audio --Xemulator=-no-boot-anim --shutdown-on-exit"
+            briefcase-run-args: " -d '{\"avd\":\"beePhone\",\"skin\":\"pixel_3a\"}' --Xemulator=-no-window --Xemulator=-no-snapshot --Xemulator=-no-audio --Xemulator=-no-boot-anim --shutdown-on-exit"
             pre-command: |
               # check if virtualization is supported...
               sudo apt install -qq --no-install-recommends cpu-checker coreutils && echo "CPUs=$(nproc --all)" && kvm-ok
@@ -222,8 +222,7 @@ jobs:
         ${{ matrix.pre-command }}
         # Use the development version of Briefcase
         python -m pip install -U pip
-        # python -m pip install git+https://github.com/beeware/briefcase.git
-        python -m pip install git+https://github.com/beeware/briefcase.git@018931b3c6428896edb7ebffb76680602ad5d06b
+        python -m pip install git+https://github.com/beeware/briefcase.git
 
     - name: Test App
       working-directory: testbed
