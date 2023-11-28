@@ -9,16 +9,15 @@ repos:
       - id: check-docstring-first
       - id: end-of-file-fixer
       - id: trailing-whitespace
-  - repo: https://github.com/PyCQA/isort
-    rev: 5.12.0
-    hooks:
-      - id: isort
-        additional_dependencies: [toml]
   - repo: https://github.com/asottile/pyupgrade
     rev: v3.15.0
     hooks:
       - id: pyupgrade
         args: [--py38-plus]
+  - repo: https://github.com/PyCQA/isort
+    rev: 5.12.0
+    hooks:
+      - id: isort
   - repo: https://github.com/psf/black-pre-commit-mirror
     rev: 23.11.0
     hooks:
@@ -32,4 +31,5 @@ repos:
     rev: v2.2.6
     hooks:
     - id: codespell
-      additional_dependencies: [tomli]
+      # remove toml extra once Python 3.10 is no longer supported
+      additional_dependencies: ['.[toml]']
