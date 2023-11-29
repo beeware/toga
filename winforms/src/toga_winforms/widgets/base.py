@@ -19,7 +19,7 @@ from toga_winforms.colors import native_color
 class Scalable:
     SCALE_DEFAULT_ROUNDING = ROUND_HALF_EVEN
 
-    def get_dpi_scale(self, screen=None):
+    def get_dpi_scale(self, screen):
         screen_rect = wintypes.RECT(
             screen.Bounds.Left,
             screen.Bounds.Top,
@@ -36,24 +36,14 @@ class Scalable:
 
     @property
     def dpi_scale(self):
+        # For Widgets and Stack Trace Dialogs which have an assigned window
         if (
-            hasattr(self, "interface")
-            and (self.interface is not None)
-            and hasattr(self.interface, "window")
-            and (self.interface.window is not None)
+            getattr(self, "interface", None) is not None
+            and getattr(self.interface, "window", None) is not None
         ):
-            # For Widgets and Stack Trace Dialogs
-            if issubclass(type(self), Widget) or (  # pragma: no branch
-                hasattr(self.interface.window._impl, "current_stack_trace_dialog_impl")
-                and (
-                    self.interface.window._impl.current_stack_trace_dialog_impl == self
-                )
-            ):
-                self._original_dpi_scale = (
-                    self.interface.window._impl._original_dpi_scale
-                )
-                return self.interface.window._impl._dpi_scale
-        # For Containers
+            self._original_dpi_scale = self.interface.window._impl._original_dpi_scale
+            return self.interface.window._impl._dpi_scale
+        # For Container Widgets when not assigned to a window
         if hasattr(self, "native_content"):
             _dpi_scale = self.get_dpi_scale(Screen.FromControl(self.native_content))
         else:
@@ -104,10 +94,11 @@ class Widget(ABC, Scalable):
         self.native = None
         self.create()
 
-        # Obtain a Graphics object and immediately dispose of it.This is
+        # Obtain a Graphics object and immediately dispose of it. This is
         # done to trigger the control's Paint event and force it to redraw.
         # Since in toga, Hwnds are could be created at inappropriate times.
-        # This is required to prevent Hwnd Related Bugs.
+        # This is required to prevent Hwnd Related Bugs. Removing this will
+        # cause the OptionContainer test to fail.
         self.native.CreateGraphics().Dispose()
 
         self.interface.style.reapply()

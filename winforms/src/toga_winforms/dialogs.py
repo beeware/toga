@@ -111,6 +111,7 @@ class StackTraceDialog(BaseDialog, Scalable):
         self.native.Location = Point(
             *map(self.scale_in, self.interface.window._impl.get_position())
         )
+        self.native.Move += WeakrefCallable(self.winforms_Move)
         self.native.MinimizeBox = False
         self.native.FormBorderStyle = self.native.FormBorderStyle.FixedSingle
         self.native.MaximizeBox = False
@@ -208,27 +209,12 @@ class StackTraceDialog(BaseDialog, Scalable):
         self.original_control_bounds = dict()
         for control in self.native.Controls:
             self.original_control_fonts[control] = control.Font
-            # For Button & Label controls, we use PreferredSize to determine the size
-            # because they often adjust their preferred size based on their content (text).
-            # Using Bounds.Width and Bounds.Height may not reflect the actual preferred size.
-            if isinstance(control, WinForms.Button):  # or isinstance(
-                #     control, WinForms.Label
-                # ):
-                self.original_control_bounds[control] = Rectangle(
-                    self.scale_out(control.Bounds.X),
-                    self.scale_out(control.Bounds.Y),
-                    self.scale_out(control.PreferredSize.Width),
-                    self.scale_out(control.PreferredSize.Height),
-                )
-            # For other controls, we use the Bounds property to determine the size,
-            # which represents the actual dimensions of the control within its container.
-            else:
-                self.original_control_bounds[control] = Rectangle(
-                    self.scale_out(control.Bounds.X),
-                    self.scale_out(control.Bounds.Y),
-                    self.scale_out(control.Bounds.Width),
-                    self.scale_out(control.Bounds.Height),
-                )
+            self.original_control_bounds[control] = Rectangle(
+                self.scale_out(control.Bounds.X),
+                self.scale_out(control.Bounds.Y),
+                self.scale_out(control.Bounds.Width),
+                self.scale_out(control.Bounds.Height),
+            )
 
         self.start_inner_loop(self.native.ShowDialog)
 
@@ -256,6 +242,11 @@ class StackTraceDialog(BaseDialog, Scalable):
 
     def winforms_Click_accept(self, sender, event):
         self.set_result(None)
+
+    def winforms_Move(self, sender, event):
+        self.native.Location = Point(
+            *map(self.scale_in, self.interface.window._impl.get_position())
+        )
 
     def resize_content(self):
         for control in self.native.Controls:
