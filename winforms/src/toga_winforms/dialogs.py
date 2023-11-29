@@ -244,7 +244,7 @@ class StackTraceDialog(BaseDialog, Scalable):
         self.set_result(None)
 
     def winforms_Move(self, sender, event):
-        self.native.Location = Point(
+        self.native.Location = Point(  # pragma: no cover
             *map(self.scale_in, self.interface.window._impl.get_position())
         )
 
