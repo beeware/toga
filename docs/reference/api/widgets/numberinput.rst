@@ -61,3 +61,7 @@ Reference
 ---------
 
 .. autoclass:: toga.NumberInput
+
+.. autoprotocol:: toga.widgets.numberinput.OnChangeHandlerSync
+.. autoprotocol:: toga.widgets.numberinput.OnChangeHandlerAsync
+.. autoprotocol:: toga.widgets.numberinput.OnChangeHandlerGenerator

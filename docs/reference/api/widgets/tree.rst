@@ -152,3 +152,10 @@ Reference
 ---------
 
 .. autoclass:: toga.Tree
+
+.. autoprotocol:: toga.widgets.tree.OnSelectHandlerSync
+.. autoprotocol:: toga.widgets.tree.OnSelectHandlerAsync
+.. autoprotocol:: toga.widgets.tree.OnSelectHandlerGenerator
+.. autoprotocol:: toga.widgets.tree.OnActivateHandlerSync
+.. autoprotocol:: toga.widgets.tree.OnActivateHandlerAsync
+.. autoprotocol:: toga.widgets.tree.OnActivateHandlerGenerator

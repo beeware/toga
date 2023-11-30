@@ -146,3 +146,16 @@ Reference
 ---------
 
 .. autoclass:: toga.DetailedList
+
+.. autoprotocol:: toga.widgets.detailedlist.OnPrimaryActionHandlerSync
+.. autoprotocol:: toga.widgets.detailedlist.OnPrimaryActionHandlerAsync
+.. autoprotocol:: toga.widgets.detailedlist.OnPrimaryActionHandlerGenerator
+.. autoprotocol:: toga.widgets.detailedlist.OnSecondaryActionHandlerSync
+.. autoprotocol:: toga.widgets.detailedlist.OnSecondaryActionHandlerAsync
+.. autoprotocol:: toga.widgets.detailedlist.OnSecondaryActionHandlerGenerator
+.. autoprotocol:: toga.widgets.detailedlist.OnRefreshHandlerSync
+.. autoprotocol:: toga.widgets.detailedlist.OnRefreshHandlerAsync
+.. autoprotocol:: toga.widgets.detailedlist.OnRefreshHandlerGenerator
+.. autoprotocol:: toga.widgets.detailedlist.OnSelectHandlerSync
+.. autoprotocol:: toga.widgets.detailedlist.OnSelectHandlerAsync
+.. autoprotocol:: toga.widgets.detailedlist.OnSelectHandlerGenerator

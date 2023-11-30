@@ -83,4 +83,6 @@ Reference
 .. autoclass:: toga.Group
     :exclude-members: key
 
-.. autoprotocol:: toga.command.ActionHandler
+.. autoprotocol:: toga.command.ActionHandlerSync
+.. autoprotocol:: toga.command.ActionHandlerAsync
+.. autoprotocol:: toga.command.ActionHandlerGenerator

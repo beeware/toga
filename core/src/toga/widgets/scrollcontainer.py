@@ -1,18 +1,42 @@
 from __future__ import annotations
 
-from toga.handlers import wrapped_handler
+from typing import Literal, Protocol, SupportsInt, Union, no_type_check
+
+from toga.handlers import HandlerGeneratorReturnT, WrappedHandlerT, wrapped_handler
+from toga.style import Pack
+from toga.types import TypeAlias
 
 from .base import Widget
+
+
+class OnScrollHandlerSync(Protocol):
+    def __call__(self, /) -> object:
+        """A handler to invoke when the container is scrolled."""
+
+
+class OnScrollHandlerAsync(Protocol):
+    async def __call__(self, /) -> object:
+        """Async definition of :any:`OnScrollHandlerSync`."""
+
+
+class OnScrollHandlerGenerator(Protocol):
+    def __call__(self, /) -> HandlerGeneratorReturnT[object]:
+        """Generator definition of :any:`OnScrollHandlerSync`."""
+
+
+OnScrollHandlerT: TypeAlias = Union[
+    OnScrollHandlerSync, OnScrollHandlerAsync, OnScrollHandlerGenerator
+]
 
 
 class ScrollContainer(Widget):
     def __init__(
         self,
-        id=None,
-        style=None,
+        id: str | None = None,
+        style: Pack | None = None,
         horizontal: bool = True,
         vertical: bool = True,
-        on_scroll: callable | None = None,
+        on_scroll: OnScrollHandlerT | None = None,
         content: Widget | None = None,
     ):
         """Create a new Scroll Container.
@@ -27,8 +51,9 @@ class ScrollContainer(Widget):
         """
         super().__init__(id=id, style=style)
 
-        self._content = None
-        self.on_scroll = None
+        self._content: Widget | None = None
+        self.on_scroll = None  # type: ignore[assignment]
+
         # Create a platform specific implementation of a Scroll Container
         self._impl = self.factory.ScrollContainer(interface=self)
 
@@ -36,10 +61,11 @@ class ScrollContainer(Widget):
         self.vertical = vertical
         self.horizontal = horizontal
         self.content = content
-        self.on_scroll = on_scroll
+        self.on_scroll = on_scroll  # type: ignore[assignment]
 
     @Widget.app.setter
-    def app(self, app):
+    @no_type_check
+    def app(self, app) -> None:
         # Invoke the superclass property setter
         Widget.app.fset(self, app)
 
@@ -48,7 +74,8 @@ class ScrollContainer(Widget):
             self._content.app = app
 
     @Widget.window.setter
-    def window(self, window):
+    @no_type_check
+    def window(self, window) -> None:
         # Invoke the superclass property setter
         Widget.window.fset(self, window)
 
@@ -56,8 +83,8 @@ class ScrollContainer(Widget):
         if self._content:
             self._content.window = window
 
-    @property
-    def enabled(self) -> bool:
+    @property  # type: ignore[override]
+    def enabled(self) -> Literal[True]:
         """Is the widget currently enabled? i.e., can the user interact with the widget?
 
         ScrollContainer widgets cannot be disabled; this property will always return
@@ -66,20 +93,20 @@ class ScrollContainer(Widget):
         return True
 
     @enabled.setter
-    def enabled(self, value):
+    def enabled(self, value: object) -> None:
         pass
 
-    def focus(self):
-        "No-op; ScrollContainer cannot accept input focus"
+    def focus(self) -> None:
+        """No-op; ScrollContainer cannot accept input focus."""
         pass
 
     @property
-    def content(self) -> Widget:
+    def content(self) -> Widget | None:
         """The root content widget displayed inside the scroll container."""
         return self._content
 
     @content.setter
-    def content(self, widget):
+    def content(self, widget: Widget | None) -> None:
         if self._content:
             # Clear the window before the app so that registry entries can be cleared
             self._content.window = None
@@ -102,7 +129,7 @@ class ScrollContainer(Widget):
         return self._impl.get_vertical()
 
     @vertical.setter
-    def vertical(self, value):
+    def vertical(self, value: object) -> None:
         self._impl.set_vertical(bool(value))
         if self._content:
             self._content.refresh()
@@ -113,18 +140,18 @@ class ScrollContainer(Widget):
         return self._impl.get_horizontal()
 
     @horizontal.setter
-    def horizontal(self, value):
+    def horizontal(self, value: object) -> None:
         self._impl.set_horizontal(bool(value))
         if self._content:
             self._content.refresh()
 
     @property
-    def on_scroll(self) -> callable:
+    def on_scroll(self) -> WrappedHandlerT:
         """Handler to invoke when the user moves a scroll bar."""
         return self._on_scroll
 
     @on_scroll.setter
-    def on_scroll(self, on_scroll):
+    def on_scroll(self, on_scroll: OnScrollHandlerT) -> None:
         self._on_scroll = wrapped_handler(self, on_scroll)
 
     @property
@@ -149,13 +176,13 @@ class ScrollContainer(Widget):
         return self._impl.get_horizontal_position()
 
     @horizontal_position.setter
-    def horizontal_position(self, horizontal_position):
+    def horizontal_position(self, horizontal_position: SupportsInt) -> None:
         if not self.horizontal:
             raise ValueError(
                 "Cannot set horizontal position when horizontal scrolling is not enabled."
             )
 
-        self.position = (horizontal_position, self._impl.get_vertical_position())
+        self.position = (horizontal_position, self._impl.get_vertical_position())  # type: ignore[assignment]
 
     @property
     def max_vertical_position(self) -> int:
@@ -179,13 +206,13 @@ class ScrollContainer(Widget):
         return self._impl.get_vertical_position()
 
     @vertical_position.setter
-    def vertical_position(self, vertical_position):
+    def vertical_position(self, vertical_position: SupportsInt) -> None:
         if not self.vertical:
             raise ValueError(
                 "Cannot set vertical position when vertical scrolling is not enabled."
             )
 
-        self.position = (self._impl.get_horizontal_position(), vertical_position)
+        self.position = (self._impl.get_horizontal_position(), vertical_position)  # type: ignore[assignment]
 
     # This combined property is necessary because on some platforms (e.g. iOS), setting
     # the horizontal and vertical position separately would cause the horizontal and
@@ -200,10 +227,10 @@ class ScrollContainer(Widget):
         If scrolling is disabled in either axis, the value provided for that axis will
         be ignored.
         """
-        return (self.horizontal_position, self.vertical_position)
+        return self.horizontal_position, self.vertical_position
 
     @position.setter
-    def position(self, position):
+    def position(self, position: tuple[SupportsInt, SupportsInt]) -> None:
         horizontal_position, vertical_position = map(int, position)
         if self.horizontal:
             if horizontal_position < 0:

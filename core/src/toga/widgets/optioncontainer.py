@@ -1,38 +1,53 @@
 from __future__ import annotations
 
-import sys
-from typing import TYPE_CHECKING, Any, Protocol, overload
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Iterable,
+    Protocol,
+    Tuple,
+    Union,
+    no_type_check,
+    overload,
+)
 
 import toga
-from toga.handlers import wrapped_handler
+from toga.handlers import HandlerGeneratorReturnT, WrappedHandlerT, wrapped_handler
 from toga.platform import get_platform_factory
+from toga.style import Pack
+from toga.types import TypeAlias
 
 from .base import Widget
 
 if TYPE_CHECKING:
-    if sys.version_info < (3, 10):
-        from typing_extensions import TypeAlias
-    else:
-        from typing import TypeAlias
-
     from toga.icons import IconContent
 
-    OptionContainerContent: TypeAlias = (
-        tuple[str, Widget]
-        | tuple[str, Widget, IconContent | None]
-        | tuple[str, Widget, IconContent | None, bool]
-        | toga.OptionItem
-    )
+    OptionContainerContent: TypeAlias = Union[
+        Tuple[str, Widget],
+        Tuple[str, Widget, Union[IconContent, None]],
+        Tuple[str, Widget, Union[IconContent, None], bool],
+        toga.OptionItem,
+    ]
 
 
-class OnSelectHandler(Protocol):
-    def __call__(self, widget: OptionContainer, **kwargs: Any) -> None:
-        """A handler that will be invoked when a new tab is selected in the OptionContainer.
+class OnSelectHandlerSync(Protocol):
+    def __call__(self, /) -> object:
+        """A handler to invoke when the option list is selected."""
 
-        :param widget: The OptionContainer that had a selection change.
-        :param kwargs: Ensures compatibility with arguments added in future versions.
-        """
-        ...
+
+class OnSelectHandlerAsync(Protocol):
+    async def __call__(self, /) -> object:
+        """Async definition of :any:`OnSelectHandlerSync`."""
+
+
+class OnSelectHandlerGenerator(Protocol):
+    def __call__(self, /) -> HandlerGeneratorReturnT[object]:
+        """Generator definition of :any:`OnSelectHandlerSync`."""
+
+
+OnSelectHandlerT: TypeAlias = Union[
+    OnSelectHandlerSync, OnSelectHandlerAsync, OnSelectHandlerGenerator
+]
 
 
 class OptionItem:
@@ -60,18 +75,18 @@ class OptionItem:
         # will become the source of truth. Initially prime the attributes with None (so
         # that the attribute exists), then use the setter to enforce validation on the
         # provided values.
-        self._text = None
-        self._icon = None
-        self._enabled = None
+        self._text: str = None  # type:ignore[assignment]
+        self._icon: toga.Icon = None  # type:ignore[assignment]
+        self._enabled: bool = None  # type:ignore[assignment]
 
         self.text = text
-        self.icon = icon
+        self.icon = icon  # type:ignore[assignment]
         self.enabled = enabled
 
         # Prime the attributes for properties that will be set when the OptionItem is
         # set as content.
-        self._interface = None
-        self._index = None
+        self._interface: OptionContainer = None  # type:ignore[assignment]
+        self._index: int = None  # type:ignore[assignment]
 
     @property
     def interface(self) -> OptionContainer:
@@ -90,7 +105,7 @@ class OptionItem:
             return self._interface._impl.is_option_enabled(self.index)
 
     @enabled.setter
-    def enabled(self, value):
+    def enabled(self, value: object) -> None:
         enable = bool(value)
         if hasattr(self, "_enabled"):
             self._enabled = enable
@@ -112,7 +127,7 @@ class OptionItem:
             return self._interface._impl.get_option_text(self.index)
 
     @text.setter
-    def text(self, value):
+    def text(self, value: object) -> None:
         if value is None:
             raise ValueError("Item text cannot be None")
 
@@ -140,7 +155,7 @@ class OptionItem:
             return self._interface._impl.get_option_icon(self.index)
 
     @icon.setter
-    def icon(self, icon_or_name: IconContent | None):
+    def icon(self, icon_or_name: IconContent | None) -> None:
         if get_platform_factory().OptionContainer.uses_icons:
             if icon_or_name is None:
                 icon = None
@@ -150,7 +165,7 @@ class OptionItem:
                 icon = toga.Icon(icon_or_name)
 
             if hasattr(self, "_icon"):
-                self._icon = icon
+                self._icon = icon  # type:ignore[assignment]
             else:
                 self._interface._impl.set_option_icon(self.index, icon)
 
@@ -167,17 +182,17 @@ class OptionItem:
         """The content widget displayed in this tab of the OptionContainer."""
         return self._content
 
-    def _preserve_option(self):
+    def _preserve_option(self) -> None:
         # Move the ground truth back to the OptionItem instance
         self._text = self.text
         self._icon = self.icon
         self._enabled = self.enabled
 
         # Clear
-        self._index = None
-        self._interface = None
+        self._index = None  # type:ignore[assignment]
+        self._interface = None  # type:ignore[assignment]
 
-    def _add_as_option(self, index, interface):
+    def _add_as_option(self, index: int, interface: OptionContainer) -> None:
         text = self._text
         del self._text
 
@@ -198,23 +213,23 @@ class OptionItem:
 
 
 class OptionList:
-    def __init__(self, interface):
+    def __init__(self, interface: Any):
         self.interface = interface
-        self._options = []
+        self._options: list[OptionItem] = []
 
-    def __repr__(self):
-        items = ", ".join(repr(option.text) for option in self)
+    def __repr__(self) -> str:
+        items = ", ".join(repr(option.text) for option in self)  # type: ignore[attr-defined]
         return f"<OptionList {items}>"
 
     def __getitem__(self, index: int | str | OptionItem) -> OptionItem:
         """Obtain a specific tab of content."""
         return self._options[self.index(index)]
 
-    def __delitem__(self, index: int | str | OptionItem):
+    def __delitem__(self, index: int | str | OptionItem) -> None:
         """Same as :any:`remove`."""
         self.remove(index)
 
-    def remove(self, index: int | str | OptionItem):
+    def remove(self, index: int | str | OptionItem) -> None:
         """Remove the specified tab of content.
 
         The currently selected item cannot be deleted.
@@ -244,7 +259,7 @@ class OptionList:
         """The number of tabs of content in the OptionContainer."""
         return len(self._options)
 
-    def index(self, value: str | int | OptionItem):
+    def index(self, value: str | int | OptionItem) -> int:
         """Find the index of the tab that matches the given value.
 
         :param value: The value to look for. An integer is returned as-is;
@@ -256,10 +271,10 @@ class OptionList:
         if isinstance(value, int):
             return value
         elif isinstance(value, OptionItem):
-            return value.index
+            return value.index  # type:ignore[return-value]
         else:
             try:
-                return next(filter(lambda item: item.text == str(value), self)).index
+                return next(filter(lambda item: item.text == str(value), self)).index  # type: ignore
             except StopIteration:
                 raise ValueError(f"No tab named {value!r}")
 
@@ -267,7 +282,7 @@ class OptionList:
     def append(
         self,
         text_or_item: OptionItem,
-    ): ...
+    ) -> None: ...
 
     @overload
     def append(
@@ -276,17 +291,17 @@ class OptionList:
         content: Widget,
         *,
         icon: IconContent | None = None,
-        enabled: bool = True,
-    ): ...
+        enabled: bool | None = True,
+    ) -> None: ...
 
     def append(
         self,
-        text_or_item: str,
+        text_or_item: str | OptionItem,
         content: Widget | None = None,
         *,
         icon: IconContent | None = None,
-        enabled: bool = None,
-    ):
+        enabled: bool | None = None,
+    ) -> None:
         """Add a new tab of content to the OptionContainer.
 
         The new tab can be specified as an existing :any:`OptionItem` instance, or by
@@ -299,14 +314,20 @@ class OptionList:
         :param icon: The :any:`icon content <IconContent>` to use to represent the tab.
         :param enabled: Should the new tab be enabled? (Default: ``True``)
         """
-        self.insert(len(self), text_or_item, content, icon=icon, enabled=enabled)
+        self.insert(  # type:ignore[misc]
+            len(self),
+            text_or_item,  # type:ignore[arg-type]
+            content,  # type:ignore[arg-type]
+            icon=icon,
+            enabled=enabled,
+        )
 
     @overload
     def insert(
         self,
         index: int | str | OptionItem,
         text_or_item: OptionItem,
-    ): ...
+    ) -> None: ...
 
     @overload
     def insert(
@@ -316,8 +337,8 @@ class OptionList:
         content: Widget,
         *,
         icon: IconContent | None = None,
-        enabled: bool = True,
-    ): ...
+        enabled: bool | None = True,
+    ) -> None: ...
 
     def insert(
         self,
@@ -327,7 +348,7 @@ class OptionList:
         *,
         icon: IconContent | None = None,
         enabled: bool | None = None,
-    ):
+    ) -> None:
         """Insert a new tab of content to the OptionContainer at the specified index.
 
         The new tab can be specified as an existing :any:`OptionItem` instance, or by
@@ -357,7 +378,7 @@ class OptionList:
             # Create an interface wrapper for the option.
             item = OptionItem(
                 text_or_item,
-                content,
+                content,  # type:ignore[arg-type]
                 icon=icon,
                 enabled=enabled if enabled is not None else True,
             )
@@ -379,10 +400,10 @@ class OptionList:
 class OptionContainer(Widget):
     def __init__(
         self,
-        id=None,
-        style=None,
-        content: list[OptionContainerContent] | None = None,
-        on_select: toga.widgets.optioncontainer.OnSelectHandler | None = None,
+        id: str | None = None,
+        style: Pack | None = None,
+        content: Iterable[tuple[str, Widget]] | None = None,
+        on_select: OnSelectHandlerT | None = None,
     ):
         """Create a new OptionContainer.
 
@@ -395,20 +416,22 @@ class OptionContainer(Widget):
         """
         super().__init__(id=id, style=style)
         self._content = OptionList(self)
-        self.on_select = None
+        self.on_select = None  # type: ignore[assignment]
 
         self._impl = self.factory.OptionContainer(interface=self)
 
         if content:
             for item in content:
+                # TODO:PR: OptionItem is not a widget...but iterating content returns widgets...
                 if isinstance(item, OptionItem):
-                    self.content.append(item)
+                    self.content.append(item)  # type:ignore[unreachable]
                 else:
                     if len(item) == 2:
                         text, widget = item
                         icon = None
                         enabled = True
-                    elif len(item) == 3:
+                    # TODO:PR: type of content is Iterable of tuples soooo....
+                    elif len(item) == 3:  # type:ignore[unreachable]
                         text, widget, icon = item
                         enabled = True
                     elif len(item) == 4:
@@ -422,7 +445,7 @@ class OptionContainer(Widget):
 
                     self.content.append(text, widget, enabled=enabled, icon=icon)
 
-        self.on_select = on_select
+        self.on_select = on_select  # type: ignore[assignment]
 
     @property
     def enabled(self) -> bool:
@@ -434,12 +457,11 @@ class OptionContainer(Widget):
         return True
 
     @enabled.setter
-    def enabled(self, value):
+    def enabled(self, value: object) -> None:
         pass
 
-    def focus(self):
-        """No-op; OptionContainer cannot accept input focus"""
-        pass
+    def focus(self) -> None:
+        """No-op; OptionContainer cannot accept input focus."""
 
     @property
     def content(self) -> OptionList:
@@ -459,7 +481,7 @@ class OptionContainer(Widget):
         return self._content[index]
 
     @current_tab.setter
-    def current_tab(self, value):
+    def current_tab(self, value: OptionItem | str | int) -> None:
         index = self._content.index(value)
         if not self._impl.is_option_enabled(index):
             raise ValueError("A disabled tab cannot be made the current tab.")
@@ -467,7 +489,8 @@ class OptionContainer(Widget):
         self._impl.set_current_tab_index(index)
 
     @Widget.app.setter
-    def app(self, app):
+    @no_type_check
+    def app(self, app) -> None:
         # Invoke the superclass property setter
         Widget.app.fset(self, app)
 
@@ -476,7 +499,8 @@ class OptionContainer(Widget):
             item._content.app = app
 
     @Widget.window.setter
-    def window(self, window):
+    @no_type_check
+    def window(self, window) -> None:
         # Invoke the superclass property setter
         Widget.window.fset(self, window)
 
@@ -485,10 +509,10 @@ class OptionContainer(Widget):
             item._content.window = window
 
     @property
-    def on_select(self) -> toga.widgets.optioncontainer.OnSelectHandler:
+    def on_select(self) -> WrappedHandlerT:
         """The callback to invoke when a new tab of content is selected."""
         return self._on_select
 
     @on_select.setter
-    def on_select(self, handler):
+    def on_select(self, handler: OnSelectHandlerT) -> None:
         self._on_select = wrapped_handler(self, handler)

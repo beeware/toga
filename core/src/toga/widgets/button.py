@@ -1,9 +1,11 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Protocol
+from typing import TYPE_CHECKING, Protocol, Union
 
 import toga
-from toga.handlers import wrapped_handler
+from toga.handlers import HandlerGeneratorReturnT, WrappedHandlerT, wrapped_handler
+from toga.style import Pack
+from toga.types import TypeAlias
 
 from .base import Widget
 
@@ -11,14 +13,29 @@ if TYPE_CHECKING:
     from toga.icons import IconContent
 
 
-class OnPressHandler(Protocol):
-    def __call__(self, widget: Button, **kwargs: Any) -> None:
+class OnPressHandlerSync(Protocol):
+    def __call__(self, widget: Button, /) -> object:
         """A handler that will be invoked when a button is pressed.
 
         :param widget: The button that was pressed.
-        :param kwargs: Ensures compatibility with arguments added in future versions.
         """
-        ...
+
+
+class OnPressHandlerAsync(Protocol):
+    async def __call__(self, widget: Button, /) -> object:
+        """Async definition of :any:`OnPressHandlerSync`."""
+
+
+class OnPressHandlerGenerator(Protocol):
+    def __call__(self, widget: Button, /) -> HandlerGeneratorReturnT[object]:
+        """Generator definition of :any:`OnPressHandlerSync`."""
+
+
+OnPressHandlerT: TypeAlias = Union[
+    OnPressHandlerSync,
+    OnPressHandlerAsync,
+    OnPressHandlerGenerator,
+]
 
 
 class Button(Widget):
@@ -27,8 +44,8 @@ class Button(Widget):
         text: str | None = None,
         icon: IconContent | None = None,
         id: str | None = None,
-        style=None,
-        on_press: OnPressHandler | None = None,
+        style: Pack | None = None,
+        on_press: OnPressHandlerT | None = None,
         enabled: bool = True,
     ):
         """Create a new button widget.
@@ -50,18 +67,18 @@ class Button(Widget):
 
         # Set a dummy handler before installing the actual on_press, because we do not want
         # on_press triggered by the initial value being set
-        self.on_press = None
+        self.on_press = None  # type: ignore[assignment]
 
         # Set the content of the button - either an icon, or text, but not both.
         if icon:
             if text is not None:
                 raise ValueError("Cannot specify both text and an icon")
             else:
-                self.icon = icon
+                self.icon = icon  # type:ignore[assignment]
         else:
-            self.text = text
+            self.text = text  # type:ignore[assignment]
 
-        self.on_press = on_press
+        self.on_press = on_press  # type: ignore[assignment]
         self.enabled = enabled
 
     @property
@@ -133,10 +150,10 @@ class Button(Widget):
         self.refresh()
 
     @property
-    def on_press(self) -> OnPressHandler:
+    def on_press(self) -> WrappedHandlerT:
         """The handler to invoke when the button is pressed."""
         return self._on_press
 
     @on_press.setter
-    def on_press(self, handler):
+    def on_press(self, handler: OnPressHandlerT) -> None:
         self._on_press = wrapped_handler(self, handler)

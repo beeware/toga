@@ -1,34 +1,26 @@
 from __future__ import annotations
 
-import sys
 import warnings
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Callable, Iterable, Union
 
 import toga
 from toga.platform import get_platform_factory
+from toga.types import TypeAlias
 
 if TYPE_CHECKING:
-    if sys.version_info < (3, 10):
-        from typing_extensions import TypeAlias
-    else:
-        from typing import TypeAlias
-
-    IconContent: TypeAlias = str | Path | toga.Icon
+    IconContent: TypeAlias = Union[str, Path, toga.Icon]
 
 
 class cachedicon:
-    def __init__(self, f):
+    def __init__(self, f: Callable[..., Icon]):
         self.f = f
         self.__doc__ = f.__doc__
 
-    def __get__(self, obj, owner):
+    def __get__(self, obj: object, owner: type[Icon]) -> Icon:
         # If you ask for Icon.CACHED_ICON, obj is None, and owner is the Icon class
         # If you ask for self.CACHED_ICON, obj is self, from which we can get the class.
-        if obj is None:
-            cls = owner
-        else:
-            cls = obj.__class__
+        cls = owner if obj is None else obj.__class__
 
         try:
             # Look for a __CACHED_ICON attribute on the class
@@ -107,10 +99,14 @@ class Icon:
 
             self.system = system
             if self.system:
-                resource_path = Path(self.factory.__file__).parent / "resources"
+                resource_path = (
+                    Path(self.factory.__file__).parent  # type:ignore[arg-type]
+                    / "resources"
+                )
             else:
                 resource_path = toga.App.app.paths.app
 
+            full_path: dict[str, Path] | Path
             if self.factory.Icon.SIZES:
                 full_path = {}
                 for size in self.factory.Icon.SIZES:
@@ -154,7 +150,12 @@ class Icon:
                 )
                 self._impl = self.DEFAULT_ICON._impl
 
-    def _full_path(self, size, extensions, resource_path):
+    def _full_path(
+        self,
+        size: str | None,
+        extensions: Iterable[str],
+        resource_path: Path,
+    ) -> Path:
         platform = toga.platform.current_platform
         if size:
             for extension in extensions:

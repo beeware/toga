@@ -1,29 +1,132 @@
 from __future__ import annotations
 
 import warnings
-from typing import Any
+from typing import (
+    Any,
+    Generic,
+    Iterable,
+    Literal,
+    Protocol,
+    TypeVar,
+    Union,
+)
 
-from toga.handlers import wrapped_handler
+from toga.handlers import HandlerGeneratorReturnT, WrappedHandlerT, wrapped_handler
 from toga.sources import ListSource, Row, Source
+from toga.style import Pack
+from toga.types import TypeAlias
 
 from .base import Widget
 
+T = TypeVar("T")
+SourceT = TypeVar("SourceT", bound=Source)
 
-class DetailedList(Widget):
+
+class OnPrimaryActionHandlerSync(Protocol):
+    def __call__(self, row: Any, /) -> object:
+        """A handler to invoke for the primary action.
+
+        :param row: The current row for the detailed list.
+        """
+
+
+class OnPrimaryActionHandlerAsync(Protocol):
+    async def __call__(self, row: Any, /) -> object:
+        """Async definition of :any:`OnPrimaryActionHandlerSync`."""
+
+
+class OnPrimaryActionHandlerGenerator(Protocol):
+    def __call__(self, row: Any, /) -> HandlerGeneratorReturnT[object]:
+        """Generator definition of :any:`OnPrimaryActionHandlerSync`."""
+
+
+OnPrimaryActionHandlerT: TypeAlias = Union[
+    OnPrimaryActionHandlerSync,
+    OnPrimaryActionHandlerAsync,
+    OnPrimaryActionHandlerGenerator,
+]
+
+
+class OnSecondaryActionHandlerSync(Protocol):
+    def __call__(self, row: Any, /) -> object:
+        """A handler to invoke for the secondary action.
+
+        :param row: The current row for the detailed list.
+        """
+
+
+class OnSecondaryActionHandlerAsync(Protocol):
+    async def __call__(self, row: Any, /) -> object:
+        """Async definition of :any:`OnSecondaryActionHandlerSync`."""
+
+
+class OnSecondaryActionHandlerGenerator(Protocol):
+    def __call__(self, row: Any, /) -> HandlerGeneratorReturnT[object]:
+        """Generator definition of :any:`OnSecondaryActionHandlerSync`."""
+
+
+OnSecondaryActionHandlerT: TypeAlias = Union[
+    OnSecondaryActionHandlerSync,
+    OnSecondaryActionHandlerAsync,
+    OnSecondaryActionHandlerGenerator,
+]
+
+
+class OnRefreshHandlerSync(Protocol):
+    def __call__(self, /) -> object:
+        """A handler to invoke when the detailed list is refreshed."""
+
+
+class OnRefreshHandlerAsync(Protocol):
+    async def __call__(self, /) -> object:
+        """Async definition of :any:`OnRefreshHandlerSync`."""
+
+
+class OnRefreshHandlerGenerator(Protocol):
+    def __call__(self, /) -> HandlerGeneratorReturnT[object]:
+        """Generator definition of :any:`OnRefreshHandlerSync`."""
+
+
+OnRefreshHandlerT: TypeAlias = Union[
+    OnRefreshHandlerSync, OnRefreshHandlerAsync, OnRefreshHandlerGenerator
+]
+
+
+class OnSelectHandlerSync(Protocol):
+    def __call__(self, /) -> object:
+        """A handler to invoke when the detailed list is selected."""
+
+
+class OnSelectHandlerAsync(Protocol):
+    async def __call__(self, /) -> object:
+        """Async definition of :any:`OnSelectHandlerSync`."""
+
+
+class OnSelectHandlerGenerator(Protocol):
+    def __call__(self, /) -> HandlerGeneratorReturnT[object]:
+        """Generator definition of :any:`OnSelectHandlerSync`."""
+
+
+OnSelectHandlerT: TypeAlias = Union[
+    OnSelectHandlerSync, OnSelectHandlerAsync, OnSelectHandlerGenerator
+]
+
+
+class DetailedList(Widget, Generic[T]):
     def __init__(
         self,
-        id=None,
-        style=None,
-        data: Any = None,
+        id: str | None = None,
+        style: Pack | None = None,
+        data: SourceT | Iterable[T] | None = None,
         accessors: tuple[str, str, str] = ("title", "subtitle", "icon"),
         missing_value: str = "",
         primary_action: str | None = "Delete",
-        on_primary_action: callable = None,
+        on_primary_action: OnPrimaryActionHandlerT | None = None,
         secondary_action: str | None = "Action",
-        on_secondary_action: callable = None,
-        on_refresh: callable = None,
-        on_select: callable = None,
-        on_delete: callable = None,  # DEPRECATED
+        on_secondary_action: OnSecondaryActionHandlerT | None = None,
+        on_refresh: OnRefreshHandlerT | None = None,
+        on_select: OnSelectHandlerT | None = None,
+        on_delete: None = None,  # DEPRECATED
     ):
         """Create a new DetailedList widget.
 
@@ -49,7 +152,7 @@ class DetailedList(Widget):
         # 2023-06: Backwards compatibility
         ######################################################################
         if on_delete:
-            if on_primary_action:
+            if on_primary_action:  # type: ignore[unreachable]
                 raise ValueError("Cannot specify both on_delete and on_primary_action")
             else:
                 warnings.warn(
@@ -63,22 +166,24 @@ class DetailedList(Widget):
 
         # Prime the attributes and handlers that need to exist when the widget is created.
         self._accessors = accessors
+        self._missing_value = missing_value
         self._primary_action = primary_action
         self._secondary_action = secondary_action
-        self._missing_value = missing_value
-        self._data = None
-        self.on_select = None
+        self.on_select = None  # type: ignore[assignment]
+
+        # TODO:PR: in reality, _data needs to be Sized and SupportsIndex...
+        self._data: SourceT | ListSource[T] = None  # type: ignore[assignment]
 
         self._impl = self.factory.DetailedList(interface=self)
 
-        self.data = data
-        self.on_primary_action = on_primary_action
-        self.on_secondary_action = on_secondary_action
-        self.on_refresh = on_refresh
-        self.on_select = on_select
+        self.data = data  # type: ignore[assignment]
+        self.on_primary_action = on_primary_action  # type: ignore[assignment]
+        self.on_secondary_action = on_secondary_action  # type: ignore[assignment]
+        self.on_refresh = on_refresh  # type: ignore[assignment]
+        self.on_select = on_select  # type: ignore[assignment]
 
-    @property
-    def enabled(self) -> bool:
+    @property  # type: ignore[override]
+    def enabled(self) -> Literal[True]:
         """Is the widget currently enabled? i.e., can the user interact with the widget?
         DetailedList widgets cannot be disabled; this property will always return True; any
         attempt to modify it will be ignored.
@@ -86,15 +191,15 @@ class DetailedList(Widget):
         return True
 
     @enabled.setter
-    def enabled(self, value):
+    def enabled(self, value: object) -> None:
         pass
 
-    def focus(self):
-        "No-op; DetailedList cannot accept input focus"
+    def focus(self) -> None:
+        """No-op; DetailedList cannot accept input focus."""
         pass
 
     @property
-    def data(self) -> ListSource:
+    def data(self) -> SourceT | ListSource[T]:
         """The data to display in the table.
 
         When setting this property:
@@ -110,39 +215,39 @@ class DetailedList(Widget):
         return self._data
 
     @data.setter
-    def data(self, data: Any):
+    def data(self, data: SourceT | Iterable[T] | None) -> None:
         if data is None:
             self._data = ListSource(data=[], accessors=self.accessors)
         elif isinstance(data, Source):
-            self._data = data
+            self._data = data  # type: ignore[assignment]
         else:
             self._data = ListSource(data=data, accessors=self.accessors)
 
         self._data.add_listener(self._impl)
         self._impl.change_source(source=self._data)
 
-    def scroll_to_top(self):
+    def scroll_to_top(self) -> None:
         """Scroll the view so that the top of the list (first row) is visible."""
         self.scroll_to_row(0)
 
-    def scroll_to_row(self, row: int):
+    def scroll_to_row(self, row: int) -> None:
         """Scroll the view so that the specified row index is visible.
 
         :param row: The index of the row to make visible. Negative values refer to the
             nth last row (-1 is the last row, -2 second last, and so on).
         """
-        if len(self.data) > 1:
+        if len(self.data) > 1:  # type: ignore[arg-type]
             if row >= 0:
-                self._impl.scroll_to_row(min(row, len(self.data)))
+                self._impl.scroll_to_row(min(row, len(self.data)))  # type: ignore[arg-type]
             else:
-                self._impl.scroll_to_row(max(len(self.data) + row, 0))
+                self._impl.scroll_to_row(max(len(self.data) + row, 0))  # type: ignore[arg-type]
 
-    def scroll_to_bottom(self):
+    def scroll_to_bottom(self) -> None:
         """Scroll the view so that the bottom of the list (last row) is visible."""
         self.scroll_to_row(-1)
 
     @property
-    def accessors(self) -> list[str]:
+    def accessors(self) -> tuple[str, str, str]:
         """The accessors used to populate the list (read-only)"""
         return self._accessors
 
@@ -154,18 +259,18 @@ class DetailedList(Widget):
         return self._missing_value
 
     @property
-    def selection(self) -> Row | None:
+    def selection(self) -> Row[T] | None:
         """The current selection of the table.
 
         Returns the selected Row object, or :any:`None` if no row is currently selected.
         """
         try:
-            return self.data[self._impl.get_selection()]
+            return self.data[self._impl.get_selection()]  # type: ignore[index]
         except TypeError:
             return None
 
     @property
-    def on_primary_action(self) -> callable:
+    def on_primary_action(self) -> WrappedHandlerT:
         """The handler to invoke when the user performs the primary action on a row of
         the DetailedList.
 
@@ -178,12 +283,12 @@ class DetailedList(Widget):
         return self._on_primary_action
 
     @on_primary_action.setter
-    def on_primary_action(self, handler: callable):
+    def on_primary_action(self, handler: OnPrimaryActionHandlerT) -> None:
         self._on_primary_action = wrapped_handler(self, handler)
         self._impl.set_primary_action_enabled(handler is not None)
 
     @property
-    def on_secondary_action(self) -> callable:
+    def on_secondary_action(self) -> WrappedHandlerT:
         """The handler to invoke when the user performs the secondary action on a row of
         the DetailedList.
 
@@ -196,12 +301,12 @@ class DetailedList(Widget):
         return self._on_secondary_action
 
     @on_secondary_action.setter
-    def on_secondary_action(self, handler: callable):
+    def on_secondary_action(self, handler: OnSecondaryActionHandlerT) -> None:
         self._on_secondary_action = wrapped_handler(self, handler)
         self._impl.set_secondary_action_enabled(handler is not None)
 
     @property
-    def on_refresh(self) -> callable:
+    def on_refresh(self) -> WrappedHandlerT:
         """The callback function to invoke when the user performs a refresh action
         (usually "pull down") on the DetailedList.
 
@@ -211,19 +316,19 @@ class DetailedList(Widget):
         return self._on_refresh
 
     @on_refresh.setter
-    def on_refresh(self, handler: callable):
+    def on_refresh(self, handler: OnRefreshHandlerT) -> None:
         self._on_refresh = wrapped_handler(
             self, handler, cleanup=self._impl.after_on_refresh
         )
         self._impl.set_refresh_enabled(handler is not None)
 
     @property
-    def on_select(self) -> callable:
+    def on_select(self) -> WrappedHandlerT:
         """The callback function that is invoked when a row of the DetailedList is selected."""
         return self._on_select
 
     @on_select.setter
-    def on_select(self, handler: callable):
+    def on_select(self, handler: OnSelectHandlerT) -> None:
         self._on_select = wrapped_handler(self, handler)
 
     ######################################################################
@@ -231,7 +336,7 @@ class DetailedList(Widget):
     ######################################################################
 
     @property
-    def on_delete(self):
+    def on_delete(self) -> WrappedHandlerT:
         """**DEPRECATED**; Use :any:`on_primary_action`"""
         warnings.warn(
             "DetailedList.on_delete has been renamed DetailedList.on_primary_action.",
@@ -240,7 +345,7 @@ class DetailedList(Widget):
         return self.on_primary_action
 
     @on_delete.setter
-    def on_delete(self, handler):
+    def on_delete(self, handler: OnPrimaryActionHandlerT) -> None:
         warnings.warn(
             "DetailedList.on_delete has been renamed DetailedList.on_primary_action.",
             DeprecationWarning,

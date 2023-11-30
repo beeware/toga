@@ -94,3 +94,16 @@ Reference
 ---------
 
 .. autoclass:: toga.TextInput
+
+.. autoprotocol:: toga.widgets.textinput.OnChangeHandlerSync
+.. autoprotocol:: toga.widgets.textinput.OnChangeHandlerAsync
+.. autoprotocol:: toga.widgets.textinput.OnChangeHandlerGenerator
+.. autoprotocol:: toga.widgets.textinput.OnConfirmHandlerSync
+.. autoprotocol:: toga.widgets.textinput.OnConfirmHandlerAsync
+.. autoprotocol:: toga.widgets.textinput.OnConfirmHandlerGenerator
+.. autoprotocol:: toga.widgets.textinput.OnGainFocusHandlerSync
+.. autoprotocol:: toga.widgets.textinput.OnGainFocusHandlerAsync
+.. autoprotocol:: toga.widgets.textinput.OnGainFocusHandlerGenerator
+.. autoprotocol:: toga.widgets.textinput.OnLoseFocusHandlerSync
+.. autoprotocol:: toga.widgets.textinput.OnLoseFocusHandlerAsync
+.. autoprotocol:: toga.widgets.textinput.OnLoseFocusHandlerGenerator

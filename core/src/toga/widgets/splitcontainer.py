@@ -1,8 +1,14 @@
 from __future__ import annotations
 
+from typing import Tuple, Union, no_type_check
+
 from toga.constants import Direction
+from toga.style import Pack
+from toga.types import TypeAlias
 
 from .base import Widget
+
+ContentT: TypeAlias = Union[Widget, Tuple[Widget, float], None]
 
 
 class SplitContainer(Widget):
@@ -11,10 +17,10 @@ class SplitContainer(Widget):
 
     def __init__(
         self,
-        id=None,
-        style=None,
+        id: str | None = None,
+        style: Pack | None = None,
         direction: Direction = Direction.VERTICAL,
-        content: tuple[Widget | None | tuple, Widget | None | tuple] = (None, None),
+        content: tuple[ContentT, ContentT] = (None, None),
     ):
         """Create a new SplitContainer.
 
@@ -29,7 +35,7 @@ class SplitContainer(Widget):
             being empty.
         """
         super().__init__(id=id, style=style)
-        self._content = (None, None)
+        self._content: tuple[ContentT, ContentT] = (None, None)
 
         # Create a platform specific implementation of a SplitContainer
         self._impl = self.factory.SplitContainer(interface=self)
@@ -47,17 +53,15 @@ class SplitContainer(Widget):
         return True
 
     @enabled.setter
-    def enabled(self, value):
+    def enabled(self, value: object) -> None:
         pass
 
-    def focus(self):
-        "No-op; SplitContainer cannot accept input focus"
+    def focus(self) -> None:
+        """No-op; SplitContainer cannot accept input focus."""
         pass
 
-    # The inner tuple's full type is tuple[Widget | None, float], but that would make
-    # the documentation unreadable.
     @property
-    def content(self) -> tuple[Widget | None | tuple, Widget | None | tuple]:
+    def content(self) -> tuple[ContentT, ContentT]:
         """The widgets displayed in the SplitContainer.
 
         This property accepts a sequence of exactly 2 elements, each of which can be
@@ -75,7 +79,7 @@ class SplitContainer(Widget):
         return self._content
 
     @content.setter
-    def content(self, content):
+    def content(self, content: tuple[ContentT, ContentT]) -> None:
         try:
             if len(content) != 2:
                 raise TypeError()
@@ -115,10 +119,11 @@ class SplitContainer(Widget):
             tuple(w._impl if w is not None else None for w in _content),
             flex,
         )
-        self._content = tuple(_content)
+        self._content = tuple(_content)  # type: ignore[assignment]
         self.refresh()
 
     @Widget.app.setter
+    @no_type_check
     def app(self, app):
         # Invoke the superclass property setter
         Widget.app.fset(self, app)
@@ -129,6 +134,7 @@ class SplitContainer(Widget):
                 content.app = app
 
     @Widget.window.setter
+    @no_type_check
     def window(self, window):
         # Invoke the superclass property setter
         Widget.window.fset(self, window)
@@ -144,6 +150,6 @@ class SplitContainer(Widget):
         return self._impl.get_direction()
 
     @direction.setter
-    def direction(self, value):
+    def direction(self, value: object) -> None:
         self._impl.set_direction(value)
         self.refresh()

@@ -70,7 +70,7 @@ of content can be modified after initial construction:
     icecream = toga.Box()
     container.content.append("Ice Cream", icecream, toga.Icon("icecream"))
 
-OptionContainer content can also be specified by using :any:`OptionItem` instances
+OptionContainer content can also be specified by using :any:`toga.OptionItem` instances
 instead of tuples. This enables you to be explicit when setting an icon or enabled
 status; it also allows you to set the initial enabled status *without* setting an icon:
 
@@ -119,7 +119,7 @@ item, you can specify an item using:
       # Delete tab labeled "Pasta"
       del container.content["Pasta"]
 
-* A reference to an :any:`OptionItem`:
+* A reference to an :any:`toga.OptionItem`:
 
   .. code-block:: python
 
@@ -183,7 +183,7 @@ Reference
       for the tab;
     * a 4-tuple, containing the title, content widget, :any:`icon <IconContent>` for
       the tab, and enabled status; or
-    * an :any:`OptionItem` instance.
+    * an :any:`toga.OptionItem` instance.
 
 .. autoclass:: toga.OptionContainer
    :exclude-members: app, window
@@ -193,4 +193,8 @@ Reference
 .. autoclass:: toga.widgets.optioncontainer.OptionList
     :special-members: __getitem__, __delitem__
 
-.. autoprotocol:: toga.widgets.optioncontainer.OnSelectHandler
+.. autoclass:: toga.widgets.optioncontainer.OptionItem
+
+.. autoprotocol:: toga.widgets.optioncontainer.OnSelectHandlerSync
+.. autoprotocol:: toga.widgets.optioncontainer.OnSelectHandlerAsync
+.. autoprotocol:: toga.widgets.optioncontainer.OnSelectHandlerGenerator

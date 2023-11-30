@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import re
+from typing import Collection, Mapping
 
 NON_ACCESSOR_CHARS = re.compile(r"[^\w ]")
 WHITESPACE = re.compile(r"\s+")
@@ -45,8 +46,8 @@ def to_accessor(heading: str) -> str:
 
 
 def build_accessors(
-    headings: list[str],
-    accessors: list[str | None] | dict[str, str] | None,
+    headings: Collection[str],
+    accessors: Collection[str | None] | Mapping[str, str] | None,
 ) -> list[str]:
     """Convert a list of headings (with accessor overrides) to a finalised list of
     accessors.

@@ -6,32 +6,25 @@ import signal
 import sys
 import warnings
 import webbrowser
-from collections.abc import (
-    Collection,
-    ItemsView,
-    Iterator,
-    KeysView,
-    Mapping,
-    MutableSet,
-    ValuesView,
-)
+from collections.abc import Iterator
 from email.message import Message
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Protocol
+from typing import TYPE_CHECKING, AbstractSet, Any, MutableSet, Protocol, Union
 from warnings import warn
 from weakref import WeakValueDictionary
 
-from toga.command import Command, CommandSet
+from toga.command import CommandSet
 from toga.documents import Document
-from toga.handlers import wrapped_handler
+from toga.handlers import HandlerGeneratorReturnT, WrappedHandlerT, wrapped_handler
 from toga.hardware.camera import Camera
 from toga.hardware.location import Location
 from toga.icons import Icon
 from toga.paths import Paths
 from toga.platform import get_platform_factory
 from toga.screens import Screen
+from toga.types import TypeAlias
 from toga.widgets.base import Widget
-from toga.window import Window
+from toga.window import OnCloseHandlerT, Window
 
 if TYPE_CHECKING:
     from toga.icons import IconContent
@@ -41,47 +34,68 @@ warnings.filterwarnings("default", category=DeprecationWarning)
 
 
 class AppStartupMethod(Protocol):
-    def __call__(self, app: App, **kwargs: Any) -> Widget:
+    def __call__(self, app: App, /) -> Widget:
         """The startup method of the app.
 
         Called during app startup to set the initial main window content.
 
         :param app: The app instance that is starting.
-        :param kwargs: Ensures compatibility with additional arguments introduced in
-            future versions.
         :returns: The widget to use as the main window content.
         """
-        ...
 
 
-class OnExitHandler(Protocol):
-    def __call__(self, app: App, **kwargs: Any) -> bool:
+class OnExitHandlerSync(Protocol):
+    def __call__(self, app: App, /) -> bool:
         """A handler to invoke when the app is about to exit.
 
         The return value of this callback controls whether the app is allowed to exit.
         This can be used to prevent the app exiting with unsaved changes, etc.
 
         :param app: The app instance that is exiting.
-        :param kwargs: Ensures compatibility with additional arguments introduced in
-            future versions.
         :returns: ``True`` if the app is allowed to exit; ``False`` if the app is not
             allowed to exit.
         """
-        ...
 
 
-class BackgroundTask(Protocol):
-    def __call__(self, app: App, **kwargs: Any) -> None:
-        """Code that should be executed as a background task.
+class OnExitHandlerAsync(Protocol):
+    async def __call__(self, app: App, /) -> bool:
+        """Async definition of :any:`OnExitHandlerSync`."""
+
+
+class OnExitHandlerGenerator(Protocol):
+    def __call__(self, app: App, /) -> HandlerGeneratorReturnT[bool]:
+        """Generator definition of :any:`OnExitHandlerSync`."""
+
+
+OnExitHandlerT: TypeAlias = Union[
+    OnExitHandlerSync, OnExitHandlerAsync, OnExitHandlerGenerator
+]
+
+
+class BackgroundTaskSync(Protocol):
+    def __call__(self, app: App, /) -> object:
+        """Code that will be executed as a background task.
 
         :param app: The app that is handling the background task.
-        :param kwargs: Ensures compatibility with additional arguments introduced in
-            future versions.
         """
-        ...
 
 
-class WindowSet(MutableSet):
+class BackgroundTaskAsync(Protocol):
+    async def __call__(self, app: App, /) -> object:
+        """Async definition of :any:`BackgroundTaskSync`."""
+
+
+class BackgroundTaskGenerator(Protocol):
+    def __call__(self, app: App, /) -> HandlerGeneratorReturnT[object]:
+        """Generator definition of :any:`BackgroundTaskSync`."""
+
+
+BackgroundTaskT: TypeAlias = Union[
+    BackgroundTaskSync, BackgroundTaskAsync, BackgroundTaskGenerator
+]
+
+
+class WindowSet(MutableSet[Window]):
     def __init__(self, app: App):
         """A collection of windows managed by an app.
 
@@ -90,7 +104,7 @@ class WindowSet(MutableSet):
         :attr:`~toga.Window.app` property of the Window.
         """
         self.app = app
-        self.elements = set()
+        self.elements: set[Window] = set()
 
     def add(self, window: Window) -> None:
         if not isinstance(window, Window):
@@ -111,7 +125,7 @@ class WindowSet(MutableSet):
     # 2023-10: Backwards compatibility
     ######################################################################
 
-    def __iadd__(self, window: Window) -> None:
+    def __iadd__(self, window: AbstractSet[Any]) -> WindowSet:
         # The standard set type does not have a += operator.
         warn(
             "Windows are automatically associated with the app; += is not required",
@@ -120,7 +134,7 @@ class WindowSet(MutableSet):
         )
         return self
 
-    def __isub__(self, other: Window) -> None:
+    def __isub__(self, other: AbstractSet[Any]) -> WindowSet:
         # The standard set type does have a -= operator, but it takes sets rather than
         # individual items.
         warn(
@@ -134,10 +148,10 @@ class WindowSet(MutableSet):
     # End backwards compatibility
     ######################################################################
 
-    def __iter__(self) -> Iterator:
+    def __iter__(self) -> Iterator[Window]:
         return iter(self.elements)
 
-    def __contains__(self, value: Window) -> bool:
+    def __contains__(self, value: object) -> bool:
         return value in self.elements
 
     def __len__(self) -> int:
@@ -153,7 +167,7 @@ class WidgetRegistry:
     # values()) are all proxied to underlying data store. Private methods exist for
     # internal use, but those methods shouldn't be used by end-users.
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args: Any, **kwargs: Any):
         self._registry = WeakValueDictionary(*args, **kwargs)
 
     def __len__(self) -> int:
@@ -175,13 +189,13 @@ class WidgetRegistry:
             + "}"
         )
 
-    def items(self) -> ItemsView:
+    def items(self) -> Iterator[tuple[str, Widget]]:
         return self._registry.items()
 
-    def keys(self) -> KeysView:
+    def keys(self) -> Iterator[str]:
         return self._registry.keys()
 
-    def values(self) -> ValuesView:
+    def values(self) -> Iterator[Widget]:
         return self._registry.values()
 
     # Private methods for internal use
@@ -211,8 +225,8 @@ class MainWindow(Window):
         resizable: bool = True,
         minimizable: bool = True,
         content: Widget | None = None,
-        resizeable=None,  # DEPRECATED
-        closeable=None,  # DEPRECATED
+        resizeable: None = None,  # DEPRECATED
+        closeable: None = None,  # DEPRECATED
     ):
         """Create a new main window.
 
@@ -247,7 +261,7 @@ class MainWindow(Window):
     def _default_title(self) -> str:
         return App.app.formal_name
 
-    @property
+    @property  # type: ignore[override]
     def on_close(self) -> None:
         """The handler to invoke before the window is closed in response to a user
         action.
@@ -260,7 +274,7 @@ class MainWindow(Window):
         return None
 
     @on_close.setter
-    def on_close(self, handler: Any):
+    def on_close(self, handler: OnCloseHandlerT | None) -> None:
         if handler:
             raise ValueError(
                 "Cannot set on_close handler for the main window. "
@@ -286,7 +300,7 @@ class DocumentMainWindow(Window):
         (e.g., due to having unsaved change), override
         :meth:`toga.Document.can_close()`, rather than implementing an on_close handler.
 
-        :param document: The document being managed by this window
+        :param doc: The document being managed by this window
         :param id: The ID of the window.
         :param title: Title for the window. Defaults to the formal name of the app.
         :param position: Position of the window, as a tuple of ``(x, y)`` coordinates.
@@ -314,7 +328,9 @@ class DocumentMainWindow(Window):
 class App:
     #: The currently running :class:`~toga.App`. Since there can only be one running
     #: Toga app in a process, this is available as a class property via ``toga.App.app``.
-    app: App = None
+    app: App
+    _impl: Any
+    _camera: Camera
 
     def __init__(
         self,
@@ -328,9 +344,9 @@ class App:
         home_page: str | None = None,
         description: str | None = None,
         startup: AppStartupMethod | None = None,
-        on_exit: OnExitHandler | None = None,
-        id=None,  # DEPRECATED
-        windows=None,  # DEPRECATED
+        on_exit: OnExitHandlerT | None = None,
+        id: None = None,  # DEPRECATED
+        windows: None = None,  # DEPRECATED
     ):
         """Create a new App instance.
 
@@ -374,7 +390,7 @@ class App:
         # 2023-10: Backwards compatibility
         ######################################################################
         if id is not None:
-            warn(
+            warn(  # type: ignore[unreachable]
                 "App.id is deprecated and will be ignored. Use app_id instead",
                 DeprecationWarning,
                 stacklevel=2,
@@ -434,7 +450,7 @@ class App:
         if formal_name:
             self._formal_name = formal_name
         else:
-            self._formal_name = self.metadata.get("Formal-Name")
+            self._formal_name = self.metadata.get("Formal-Name")  # type: ignore[assignment]
         if self._formal_name is None:
             raise RuntimeError("Toga application must have a formal name")
 
@@ -443,30 +459,26 @@ class App:
         if app_id:
             self._app_id = app_id
         else:
-            self._app_id = self.metadata.get("App-ID", None)
+            self._app_id = self.metadata.get("App-ID")  # type: ignore[assignment]
         if self._app_id is None:
             raise RuntimeError("Toga application must have an app ID")
 
         # Other metadata may be passed to the constructor, or loaded with importlib.
-        if author:
-            self._author = author
-        else:
-            self._author = self.metadata.get("Author", None)
+        self._author = author
+        if not self._author:
+            self._author = self.metadata.get("Author")
 
-        if version:
-            self._version = version
-        else:
-            self._version = self.metadata.get("Version", None)
+        self._version = version
+        if not self._version:
+            self._version = self.metadata.get("Version")
 
-        if home_page:
-            self._home_page = home_page
-        else:
-            self._home_page = self.metadata.get("Home-page", None)
+        self._home_page = home_page
+        if not self._home_page:
+            self._home_page = self.metadata.get("Home-page")
 
-        if description:
-            self._description = description
-        else:
-            self._description = self.metadata.get("Summary", None)
+        self._description = description
+        if not self._description:
+            self._description = self.metadata.get("Summary")
 
         # Get a platform factory.
         self.factory = get_platform_factory()
@@ -479,26 +491,26 @@ class App:
         else:
             self.icon = icon
 
-        self.on_exit = on_exit
+        self.on_exit = on_exit  # type: ignore[assignment]
 
-        # We need the command set to exist so that startup et al can add commands;
+        # We need the command set to exist so that startup et al. can add commands;
         # but we don't have an impl yet, so we can't set the on_change handler
         self._commands = CommandSet()
 
         self._startup_method = startup
 
-        self._main_window = None
+        self._main_window: MainWindow | None = None
         self._windows = WindowSet(self)
 
-        self._full_screen_windows = None
+        self._full_screen_windows: tuple[Window, ...] | None = None
 
         self._create_impl()
 
         # Now that we have an impl, set the on_change handler for commands
         self.commands.on_change = self._impl.create_menus
 
-    def _create_impl(self):
-        return self.factory.App(interface=self)
+    def _create_impl(self) -> None:
+        self.factory.App(interface=self)
 
     ######################################################################
     # App properties
@@ -552,7 +564,8 @@ class App:
         if isinstance(icon_or_name, Icon):
             self._icon = icon_or_name
         else:
-            self._icon = Icon(icon_or_name)
+            # TODO:PR: not valid for icon_or_name to be None
+            self._icon = Icon(icon_or_name)  # type:ignore[arg-type]
 
         try:
             self._impl.set_icon(self._icon)
@@ -587,7 +600,7 @@ class App:
     # App lifecycle
     ######################################################################
 
-    def add_background_task(self, handler: BackgroundTask) -> None:
+    def add_background_task(self, handler: BackgroundTaskT) -> None:
         """Schedule a task to run in the background.
 
         Schedules a coroutine or a generator to run in the background. Control
@@ -627,23 +640,23 @@ class App:
         self._impl.main_loop()
 
     @property
-    def main_window(self) -> MainWindow:
+    def main_window(self) -> MainWindow | None:
         """The main window for the app."""
         return self._main_window
 
     @main_window.setter
-    def main_window(self, window: MainWindow) -> None:
+    def main_window(self, window: MainWindow | None) -> None:
         self._main_window = window
         self._impl.set_main_window(window)
 
-    def _verify_startup(self):
+    def _verify_startup(self) -> None:
         if not isinstance(self.main_window, MainWindow):
             raise ValueError(
                 "Application does not have a main window. "
                 "Does your startup() method assign a value to self.main_window?"
             )
 
-    def _startup(self):
+    def _startup(self) -> None:
         # This is a wrapper around the user's startup method that performs any
         # post-setup validation.
         self.startup()
@@ -680,7 +693,7 @@ class App:
         return self._camera
 
     @property
-    def commands(self) -> MutableSet[Command]:
+    def commands(self) -> CommandSet:
         """The commands available in the app."""
         return self._commands
 
@@ -712,7 +725,7 @@ class App:
         return [screen.interface for screen in self._impl.get_screens()]
 
     @property
-    def widgets(self) -> Mapping[str, Widget]:
+    def widgets(self) -> WidgetRegistry:
         """The widgets managed by the app, over all windows.
 
         Can be used to look up widgets by ID over the entire app (e.g.,
@@ -725,7 +738,7 @@ class App:
         return self._widgets
 
     @property
-    def windows(self) -> Collection[Window]:
+    def windows(self) -> WindowSet:
         """The windows managed by the app. Windows are automatically added to the app
         when they are created, and removed when they are closed."""
         return self._windows
@@ -779,7 +792,7 @@ class App:
         return window.interface
 
     @current_window.setter
-    def current_window(self, window: Window):
+    def current_window(self, window: Window) -> None:
         """Set a window into current active focus."""
         self._impl.set_current_window(window)
 
@@ -819,13 +832,13 @@ class App:
     ######################################################################
 
     @property
-    def on_exit(self) -> OnExitHandler:
+    def on_exit(self) -> WrappedHandlerT:
         """The handler to invoke if the user attempts to exit the app."""
         return self._on_exit
 
     @on_exit.setter
-    def on_exit(self, handler: OnExitHandler | None) -> None:
-        def cleanup(app, should_exit):
+    def on_exit(self, handler: OnExitHandlerT | None) -> None:
+        def cleanup(app: App, should_exit: bool) -> None:
             if should_exit or handler is None:
                 app.exit()
 
@@ -846,8 +859,8 @@ class App:
         return self._formal_name
 
     # Support WindowSet __iadd__ and __isub__
-    @windows.setter
-    def windows(self, windows):
+    @windows.setter  # type:ignore[no-redef,attr-defined,misc]
+    def windows(self, windows: WindowSet) -> None:
         if windows is not self._windows:
             raise AttributeError("can't set attribute 'windows'")
 
@@ -869,9 +882,9 @@ class DocumentApp(App):
         home_page: str | None = None,
         description: str | None = None,
         startup: AppStartupMethod | None = None,
-        document_types: dict[str, type[Document]] = None,
-        on_exit: OnExitHandler | None = None,
-        id=None,  # DEPRECATED
+        document_types: dict[str, type[Document]] | None = None,
+        on_exit: OnExitHandlerT | None = None,
+        id: None = None,  # DEPRECATED
     ):
         """Create a document-based application.
 
@@ -885,7 +898,7 @@ class DocumentApp(App):
             raise ValueError("A document must manage at least one document type.")
 
         self._document_types = document_types
-        self._documents = []
+        self._documents: list[Document] = []
 
         super().__init__(
             formal_name=formal_name,
@@ -901,10 +914,10 @@ class DocumentApp(App):
             id=id,
         )
 
-    def _create_impl(self):
-        return self.factory.DocumentApp(interface=self)
+    def _create_impl(self) -> None:
+        self.factory.DocumentApp(interface=self)
 
-    def _verify_startup(self):
+    def _verify_startup(self) -> None:
         # No post-startup validation required for DocumentApps
         pass
 
@@ -930,7 +943,7 @@ class DocumentApp(App):
         Subclasses can override this method to define customized startup behavior.
         """
 
-    def _open(self, path):
+    def _open(self, path: Path) -> None:
         """Internal utility method; open a new document in this app, and shows the document.
 
         :param path: The path to the document to be opened.
@@ -942,6 +955,8 @@ class DocumentApp(App):
         except KeyError:
             raise ValueError(f"Don't know how to open documents of type {path.suffix}")
         else:
-            document = DocType(path, app=self)
+            # TODO:PR: does this need `document_type`? or is `Document` not the right type?
+            # TODO:PR: revisit this once #2244 is merged
+            document = DocType(path, app=self)  # type: ignore[call-arg]
             self._documents.append(document)
             document.show()

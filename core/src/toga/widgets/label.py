@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from toga.style import Pack
+
 from .base import Widget
 
 
@@ -7,8 +9,8 @@ class Label(Widget):
     def __init__(
         self,
         text: str,
-        id=None,
-        style=None,
+        id: str | None = None,
+        style: Pack | None = None,
     ):
         """Create a new text label.
 
@@ -24,8 +26,8 @@ class Label(Widget):
 
         self.text = text
 
-    def focus(self):
-        "No-op; Label cannot accept input focus"
+    def focus(self) -> None:
+        """No-op; Label cannot accept input focus."""
         pass
 
     @property
@@ -39,7 +41,7 @@ class Label(Widget):
         return self._impl.get_text()
 
     @text.setter
-    def text(self, value):
+    def text(self, value: object) -> None:
         if value is None or value == "\u200B":
             text = ""
         else:

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from toga.images import Image
 from toga.platform import get_platform_factory
@@ -10,7 +10,7 @@ if TYPE_CHECKING:
 
 
 class Screen:
-    def __init__(self, _impl):
+    def __init__(self, _impl: Any):
         self._impl = _impl
         self.factory = get_platform_factory()
 
@@ -29,7 +29,7 @@ class Screen:
         """The size of the screen, as a ``(width, height)`` tuple."""
         return self._impl.get_size()
 
-    def as_image(self, format: type[ImageT] = Image) -> ImageT:
+    def as_image(self, format: type[ImageT] = Image) -> ImageT:  # type: ignore[assignment]
         """Render the current contents of the screen as an image.
 
         :param format: Format to provide. Defaults to :class:`~toga.images.Image`; also

@@ -1,9 +1,12 @@
+from __future__ import annotations
+
 import warnings
+from pathlib import Path
 
 from .app import App, DocumentApp, DocumentMainWindow, MainWindow
 
 # Resources
-from .colors import hsl, hsla, rgb, rgba
+from .colors import hsl, hsla, rgb, rgba  # type: ignore[attr-defined]
 from .command import Command, Group
 from .documents import Document
 from .fonts import Font
@@ -49,7 +52,7 @@ class NotImplementedWarning(RuntimeWarning):
     # single argument (the warning message). Use a factory method to avoid reproducing
     # the message format and the warn invocation.
     @classmethod
-    def warn(self, platform, feature):
+    def warn(cls, platform: str, feature: str) -> None:
         """Raise a warning that a feature isn't implemented on a platform."""
         warnings.warn(NotImplementedWarning(f"[{platform}] Not implemented: {feature}"))
 
@@ -114,7 +117,7 @@ __all__ = [
 ]
 
 
-def _package_version(file, name):
+def _package_version(file: Path | str | None, name: str) -> str:
     try:
         # Read version from SCM metadata
         # This will only exist in a development environment

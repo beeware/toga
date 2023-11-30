@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from toga.constants import FlashMode
 from toga.handlers import AsyncResult, PermissionResult
@@ -15,7 +15,7 @@ class PhotoResult(AsyncResult):
 
 
 class CameraDevice:
-    def __init__(self, impl):
+    def __init__(self, impl: Any):
         self._impl = impl
 
     @property
@@ -33,8 +33,8 @@ class CameraDevice:
         """Does the device have a flash?"""
         return self._impl.has_flash()
 
-    def __eq__(self, other) -> bool:
-        return self.id == other.id
+    def __eq__(self, other: object) -> bool:
+        return self.id == other.id  # type:ignore[attr-defined]
 
     def __repr__(self) -> str:
         return f"<CameraDevice id={self.id} {self.name!r}>"
