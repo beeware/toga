@@ -1,5 +1,9 @@
 from __future__ import annotations
 
+from typing import Iterable
+
+from toga.style import Pack
+
 from .base import Widget
 
 
@@ -10,8 +14,8 @@ class Box(Widget):
     def __init__(
         self,
         id: str | None = None,
-        style=None,
-        children: list[Widget] | None = None,
+        style: Pack | None = None,
+        children: Iterable[Widget] | None = None,
     ):
         """Create a new Box container widget.
 
@@ -26,7 +30,7 @@ class Box(Widget):
         self._impl = self.factory.Box(interface=self)
 
         # Children need to be added *after* the impl has been created.
-        self._children = []
+        self._children: list[Widget] = []
         if children:
             self.add(*children)
 

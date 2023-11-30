@@ -84,3 +84,7 @@ Reference
 ---------
 
 .. autoclass:: toga.Switch
+
+.. autoprotocol:: toga.widgets.switch.OnChangeHandlerSync
+.. autoprotocol:: toga.widgets.switch.OnChangeHandlerAsync
+.. autoprotocol:: toga.widgets.switch.OnChangeHandlerGenerator

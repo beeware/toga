@@ -71,3 +71,7 @@ Reference
 ---------
 
 .. autoclass:: toga.MultilineTextInput
+
+.. autoprotocol:: toga.widgets.multilinetextinput.OnChangeHandlerSync
+.. autoprotocol:: toga.widgets.multilinetextinput.OnChangeHandlerAsync
+.. autoprotocol:: toga.widgets.multilinetextinput.OnChangeHandlerGenerator

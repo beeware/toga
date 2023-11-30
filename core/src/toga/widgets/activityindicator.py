@@ -2,14 +2,16 @@ from __future__ import annotations
 
 from typing import Literal
 
+from toga.style import Pack
+
 from .base import Widget
 
 
 class ActivityIndicator(Widget):
     def __init__(
         self,
-        id=None,
-        style=None,
+        id: str | None = None,
+        style: Pack | None = None,
         running: bool = False,
     ):
         """Create a new ActivityIndicator widget.
@@ -27,7 +29,7 @@ class ActivityIndicator(Widget):
         if running:
             self.start()
 
-    @property
+    @property  # type: ignore[override]
     def enabled(self) -> Literal[True]:
         """Is the widget currently enabled? i.e., can the user interact with the widget?
 
@@ -41,7 +43,7 @@ class ActivityIndicator(Widget):
         pass
 
     def focus(self) -> None:
-        "No-op; ActivityIndicator cannot accept input focus"
+        """No-op; ActivityIndicator cannot accept input focus."""
         pass
 
     @property

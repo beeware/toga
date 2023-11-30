@@ -1,18 +1,22 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Literal
 
 from travertino.size import at_least
 
 import toga
-from toga.style.pack import NONE
+from toga.style.pack import NONE, Pack
 from toga.widgets.base import Widget
 
 if TYPE_CHECKING:
     from toga.images import ImageContent, ImageT
 
 
-def rehint_imageview(image, style, scale=1):
+def rehint_imageview(
+    image: toga.Image,
+    style: Pack,
+    scale: int = 1,
+) -> tuple[int, int, float | None]:
     """Compute the size hints for an ImageView based on the image.
 
     This logic is common across all backends, so it's shared here.
@@ -69,8 +73,8 @@ class ImageView(Widget):
     def __init__(
         self,
         image: ImageContent | None = None,
-        id=None,
-        style=None,
+        id: str | None = None,
+        style: Pack | None = None,
     ):
         """
         Create a new image view.
@@ -85,10 +89,10 @@ class ImageView(Widget):
         # Prime the image attribute
         self._image = None
         self._impl = self.factory.ImageView(interface=self)
-        self.image = image
+        self.image = image  # type: ignore[assignment]
 
-    @property
-    def enabled(self) -> bool:
+    @property  # type: ignore[override]
+    def enabled(self) -> Literal[True]:
         """Is the widget currently enabled? i.e., can the user interact with the widget?
 
         ImageView widgets cannot be disabled; this property will always return True; any
@@ -97,11 +101,11 @@ class ImageView(Widget):
         return True
 
     @enabled.setter
-    def enabled(self, value):
+    def enabled(self, value: object) -> None:
         pass
 
-    def focus(self):
-        "No-op; ImageView cannot accept input focus"
+    def focus(self) -> None:
+        """No-op; ImageView cannot accept input focus."""
         pass
 
     @property
@@ -114,7 +118,7 @@ class ImageView(Widget):
         return self._image
 
     @image.setter
-    def image(self, image):
+    def image(self, image: ImageContent) -> None:
         if isinstance(image, toga.Image):
             self._image = image
         elif image is None:
@@ -125,7 +129,7 @@ class ImageView(Widget):
         self._impl.set_image(self._image)
         self.refresh()
 
-    def as_image(self, format: type[ImageT] = toga.Image) -> ImageT:
+    def as_image(self, format: type[ImageT] = toga.Image) -> ImageT:  # type: ignore[assignment]
         """Return the image in the specified format.
 
         :param format: Format to provide. Defaults to :class:`~toga.images.Image`; also
@@ -134,4 +138,5 @@ class ImageView(Widget):
             </reference/plugins/image_formats>`.
         :returns: The image in the specified format.
         """
-        return self.image.as_format(format)
+        # TODO:PR: what's the use-case for initializing with image=None? cause this won't work then...
+        return self.image.as_format(format)  # type: ignore[union-attr]

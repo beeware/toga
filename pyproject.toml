@@ -72,3 +72,36 @@ type = [
 # We're not doing anything Python-related at the root level of the repo, but if this
 # declaration isn't here, tox commands run from the root directory raise a warning that
 # pyproject.toml doesn't contain a setuptools_scm section.
+
+[tool.mypy]
+python_version = "3.8"
+strict = true
+show_error_context = true
+warn_unused_ignores = true
+warn_redundant_casts = true
+warn_unreachable = true
+disallow_any_unimported = true
+warn_return_any = false  # disable from strict=true
+#disallow_any_explicit = true
+#disallow_any_expr = true
+#disallow_any_decorated = true
+
+# Specific overrides
+[[tool.mypy.overrides]]
+module = [
+    "toga.style.*",
+    "toga.fonts",
+    "toga.widgets.base",
+    "toga.widgets.canvas",
+]
+disallow_subclassing_any = false
+disallow_any_unimported = false
+
+# Ignore missing types for imports
+[[tool.mypy.overrides]]
+module = [
+    "travertino.*",
+    "setuptools_scm",
+    "importlib_metadata",  # alternatively, this could be installed always with [dev]
+]
+ignore_missing_imports = true

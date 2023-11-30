@@ -132,4 +132,7 @@ Reference
 
 .. autoclass:: toga.widgets.mapview.MapPinSet
 
-.. autoprotocol:: toga.widgets.mapview.OnSelectHandler
+.. autoprotocol:: toga.widgets.mapview.OnSelectHandlerSync
+.. autoprotocol:: toga.widgets.mapview.OnSelectHandlerAsync
+.. autoprotocol:: toga.widgets.mapview.OnSelectHandlerGenerator
+.. autoprotocol:: toga.widgets.mapview.OnSelectHandlerT

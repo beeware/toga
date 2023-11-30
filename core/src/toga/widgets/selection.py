@@ -1,24 +1,50 @@
 from __future__ import annotations
 
 import warnings
+from typing import Any, Generic, Iterable, Protocol, TypeVar, Union
 
-from toga.handlers import wrapped_handler
+from toga.handlers import HandlerGeneratorReturnT, WrappedHandlerT, wrapped_handler
 from toga.sources import ListSource, Source
+from toga.style import Pack
+from toga.types import TypeAlias
 
 from .base import Widget
 
+T = TypeVar("T")
+SourceT = TypeVar("SourceT", bound=Source)
 
-class Selection(Widget):
+
+class OnChangeHandlerSync(Protocol):
+    def __call__(self, /) -> object:
+        """A handler to invoke when the value is changed."""
+
+
+class OnChangeHandlerAsync(Protocol):
+    async def __call__(self, /) -> object:
+        """Async definition of :any:`OnChangeHandlerSync`."""
+
+
+class OnChangeHandlerGenerator(Protocol):
+    def __call__(self, /) -> HandlerGeneratorReturnT[object]:
+        """Generator definition of :any:`OnChangeHandlerSync`."""
+
+
+OnChangeHandlerT: TypeAlias = Union[
+    OnChangeHandlerSync, OnChangeHandlerAsync, OnChangeHandlerGenerator
+]
+
+
+class Selection(Widget, Generic[T]):
     def __init__(
         self,
-        id=None,
-        style=None,
-        items: list | ListSource | None = None,
+        id: str | None = None,
+        style: Pack | None = None,
+        items: SourceT | Iterable[T] | None = None,
         accessor: str | None = None,
-        value: None = None,
-        on_change: callable | None = None,
-        enabled=True,
-        on_select: callable | None = None,  # DEPRECATED
+        value: T | None = None,
+        on_change: OnChangeHandlerT | None = None,
+        enabled: bool = True,
+        on_select: None = None,  # DEPRECATED
     ):
         """Create a new Selection widget.
 
@@ -40,7 +66,7 @@ class Selection(Widget):
         # 2023-05: Backwards compatibility
         ######################################################################
         if on_select:  # pragma: no cover
-            if on_change:
+            if on_change:  # type: ignore[unreachable]
                 raise ValueError("Cannot specify both on_select and on_change")
             else:
                 warnings.warn(
@@ -52,19 +78,22 @@ class Selection(Widget):
         # End backwards compatibility.
         ######################################################################
 
-        self.on_change = None  # needed for _impl initialization
+        self._items: SourceT | ListSource[T]
+        self._on_change: WrappedHandlerT
+
+        self.on_change = None  # type: ignore[assignment]  # needed for _impl initialization
         self._impl = self.factory.Selection(interface=self)
 
         self._accessor = accessor
-        self.items = items
+        self.items = items  # type: ignore[assignment]
         if value:
             self.value = value
 
-        self.on_change = on_change
+        self.on_change = on_change  # type: ignore[assignment]
         self.enabled = enabled
 
     @property
-    def items(self) -> ListSource:
+    def items(self) -> SourceT | ListSource[T]:
         """The items to display in the selection.
 
         When setting this property:
@@ -81,7 +110,7 @@ class Selection(Widget):
         return self._items
 
     @items.setter
-    def items(self, items):
+    def items(self, items: SourceT | Iterable[T] | None) -> None:
         if self._accessor is None:
             accessors = ["value"]
         else:
@@ -92,7 +121,7 @@ class Selection(Widget):
         elif isinstance(items, Source):
             if self._accessor is None:
                 raise ValueError("Must specify an accessor to use a data source")
-            self._items = items
+            self._items = items  # type: ignore[assignment]
         else:
             self._items = ListSource(accessors=accessors, data=items)
 
@@ -100,11 +129,11 @@ class Selection(Widget):
 
         # Temporarily halt notifications
         orig_on_change = self._on_change
-        self.on_change = None
+        self.on_change = None  # type: ignore[assignment]
 
         # Clear the widget, and insert all the data rows
         self._impl.clear()
-        for index, item in enumerate(self.items):
+        for index, item in enumerate(self.items):  # type: ignore[arg-type,var-annotated]
             self._impl.insert(index, item)
 
         # Restore the original change handler and trigger it.
@@ -113,7 +142,7 @@ class Selection(Widget):
 
         self.refresh()
 
-    def _title_for_item(self, item):
+    def _title_for_item(self, item: Any) -> str:
         """Internal utility method; return the display title for an item"""
         if self._accessor:
             title = getattr(item, self._accessor)
@@ -123,7 +152,7 @@ class Selection(Widget):
         return str(title).split("\n")[0]
 
     @property
-    def value(self):
+    def value(self) -> T | None:
         """The currently selected item.
 
         Returns None if there are no items in the selection.
@@ -143,34 +172,34 @@ class Selection(Widget):
         if index is None:
             return None
 
-        item = self._items[index]
+        item = self._items[index]  # type: ignore[index]
         # If there was no accessor specified, the data values are literals.
         # Dereference the value out of the Row object.
         if item and self._accessor is None:
-            return item.value
-        return item
+            return item.value  # type: ignore[union-attr]
+        return item  # type: ignore[return-value]
 
     @value.setter
-    def value(self, value):
+    def value(self, value: T) -> None:
         try:
             if self._accessor is None:
-                item = self._items.find(dict(value=value))
+                item = self._items.find(dict(value=value))  # type: ignore[union-attr]
             else:
                 item = value
 
-            index = self._items.index(item)
+            index = self._items.index(item)  # type: ignore[union-attr]
             self._impl.select_item(index=index, item=item)
         except ValueError:
             raise ValueError(f"{value!r} is not a current item in the selection")
 
     @property
-    def on_change(self) -> callable:
+    def on_change(self) -> WrappedHandlerT:
         """Handler to invoke when the value of the selection is changed, either by the user
         or programmatically."""
         return self._on_change
 
     @on_change.setter
-    def on_change(self, handler):
+    def on_change(self, handler: OnChangeHandlerT) -> None:
         self._on_change = wrapped_handler(self, handler)
 
     ######################################################################
@@ -178,7 +207,7 @@ class Selection(Widget):
     ######################################################################
 
     @property
-    def on_select(self) -> callable:
+    def on_select(self) -> WrappedHandlerT:
         """**DEPRECATED**: Use ``on_change``"""
         warnings.warn(
             "Selection.on_select has been renamed Selection.on_change.",
@@ -187,7 +216,7 @@ class Selection(Widget):
         return self.on_change
 
     @on_select.setter
-    def on_select(self, handler):
+    def on_select(self, handler: OnChangeHandlerT) -> None:
         warnings.warn(
             "Selection.on_select has been renamed Selection.on_change.",
             DeprecationWarning,
