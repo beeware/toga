@@ -37,9 +37,7 @@ class AppProbe(BaseProbe):
 
     @property
     def data_path(self):
-        return (
-            Path.home() / "AppData" / "Local" / "Tiberius Yak" / "Toga Testbed" / "Data"
-        )
+        return Path.home() / "AppData/Local/Tiberius Yak/Toga Testbed/Data"
 
     @property
     def cache_path(self):
@@ -54,9 +52,7 @@ class AppProbe(BaseProbe):
 
     @property
     def logs_path(self):
-        return (
-            Path.home() / "AppData" / "Local" / "Tiberius Yak" / "Toga Testbed" / "Logs"
-        )
+        return Path.home() / "AppData/Local/Tiberius Yak/Toga Testbed/Logs"
 
     @property
     def is_cursor_visible(self):

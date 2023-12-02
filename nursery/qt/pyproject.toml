@@ -7,9 +7,9 @@ requires = [
 build-backend = "setuptools.build_meta"
 
 [project]
-dynamic = ["version"]
-name = "toga-core"
-description = "A Python native, OS native GUI toolkit."
+dynamic = ["version", "dependencies"]
+name = "toga-qt"
+description = "A Qt backend for the Toga widget toolkit."
 readme = "README.rst"
 requires-python = ">= 3.8"
 license.text = "New BSD"
@@ -25,19 +25,7 @@ keywords = [
     "cross-platform",
     "toga",
     "desktop",
-    "mobile",
-    "web",
-    "macOS",
-    "cocoa",
-    "iOS",
-    "android",
-    "windows",
-    "winforms",
-    "linux",
-    "freeBSD",
-    "gtk",
-    "console",
-    "web",
+    "qt",
 ]
 classifiers = [
     "Development Status :: 4 - Beta",
@@ -55,40 +43,6 @@ classifiers = [
     "Topic :: Software Development :: User Interfaces",
     "Topic :: Software Development :: Widget Sets",
 ]
-dependencies = [
-    "travertino >= 0.3.0",
-    # limited to <=3.9 for the `group` argument for `entry_points()`
-    "importlib_metadata >= 4.4.0; python_version <= '3.9'",
-]
-
-[project.optional-dependencies]
-# Extras used by developers *of* briefcase are pinned to specific versions to
-# ensure environment consistency.
-dev = [
-    "coverage[toml] == 7.3.2",
-    "Pillow == 10.1.0",
-    "pre-commit == 3.5.0",
-    "pytest == 7.4.3",
-    "pytest-asyncio == 0.21.1",
-    "pytest-freezer == 0.4.8",
-    "setuptools-scm == 8.0.4",
-    "tox == 4.11.3",
-]
-docs = [
-    "furo == 2023.9.10",
-    "Pillow == 10.1.0",
-    "pyenchant == 3.2.2",
-    # Sphinx 7.2 deprecated support for Python 3.8
-    "sphinx == 7.1.2 ; python_version < '3.9'",
-    "sphinx == 7.2.6 ; python_version >= '3.9'",
-    "sphinx_tabs == 3.4.4",
-    "sphinx-autobuild == 2021.3.14",
-    "sphinx-autodoc-typehints == 1.25.2",
-    "sphinx-csv-filter == 0.4.1",
-    "sphinx-copybutton == 0.5.2",
-    "sphinx-toolbox == 3.5.0",
-    "sphinxcontrib-spelling == 8.0.0",
-]
 
 [project.urls]
 Homepage = "https://beeware.org/project/projects/libraries/toga/"
@@ -97,8 +51,19 @@ Documentation = "https://toga.readthedocs.io/en/latest/"
 Tracker = "https://github.com/beeware/toga/issues"
 Source = "https://github.com/beeware/toga"
 
+[project.entry-points."toga.backends"]
+linux = "toga_curses"
+windows = "toga_curses"
+macOS = "toga_curses"
+freeBSD = "toga_curses"
+
 [tool.setuptools_scm]
 root = ".."
+
+[tool.setuptools_dynamic_dependencies]
+dependencies = [
+    "toga-core == {version}",
+]
 
 [tool.coverage.run]
 parallel = true
@@ -107,13 +72,10 @@ relative_files = true
 
 # See notes in the root pyproject.toml file.
 source = ["src"]
-source_pkgs = ["toga"]
+source_pkgs = ["toga_qt"]
 
 [tool.coverage.paths]
 source = [
-    "src/toga",
-    "**/toga",
+    "src/toga_qt",
+    "**/toga_qt",
 ]
-
-[tool.pytest.ini_options]
-asyncio_mode = "auto"

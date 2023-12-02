@@ -40,7 +40,7 @@ We foster a welcoming and respectful community as described in our
 .. _@beeware@fosstodon.org on Mastodon: https://fosstodon.org/@beeware
 .. _Discord: https://beeware.org/bee/chat/
 .. _Github Discussions forum: https://github.com/beeware/toga/discussions
-.. _BeeWare Community Code of Conduct: http://beeware.org/community/behavior/
+.. _BeeWare Community Code of Conduct: https://beeware.org/community/behavior/
 
 Contributing
 ------------
