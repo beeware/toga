@@ -1,4 +1,4 @@
-from toga.command import GROUP_BREAK, SECTION_BREAK
+from toga.command import Separator
 
 from .container import TogaContainer
 from .libs import Gdk, Gtk
@@ -40,6 +40,7 @@ class Window:
         self.native_toolbar.set_style(Gtk.ToolbarStyle.BOTH)
         self.native_toolbar.set_visible(False)
         self.toolbar_items = {}
+        self.toolbar_separators = set()
         self.layout.pack_start(self.native_toolbar, expand=False, fill=False, padding=0)
 
         # Because expand and fill are True, the container will fill the available
@@ -62,28 +63,39 @@ class Window:
         app.native.add_window(self.native)
 
     def create_toolbar(self):
-        # Remove any pre-existing toolbar content
+        # If there's an existing toolbar, hide it until we know we need it.
         if self.toolbar_items:
             self.native_toolbar.set_visible(False)
 
+        # Deregister any toolbar buttons from their commands, and remove them from the toolbar
         for cmd, item_impl in self.toolbar_items.items():
             self.native_toolbar.remove(item_impl)
-            try:
-                cmd._impl.native.remove(item_impl)
-            except AttributeError:
-                # Breaks don't have _impls, so there's no native to clean up
-                pass
+            cmd._impl.native.remove(item_impl)
+        # Remove any toolbar separators
+        for sep in self.toolbar_separators:
+            self.native_toolbar.remove(sep)
 
         # Create the new toolbar items
         self.toolbar_items = {}
+        self.toolbar_separators = set()
+        prev_group = None
         for cmd in self.interface.toolbar:
-            if cmd == GROUP_BREAK:
-                item_impl = Gtk.SeparatorToolItem()
-                item_impl.set_draw(True)
-            elif cmd == SECTION_BREAK:
+            if isinstance(cmd, Separator):
                 item_impl = Gtk.SeparatorToolItem()
                 item_impl.set_draw(False)
+                self.toolbar_separators.add(item_impl)
+                prev_group = None
             else:
+                # A change in group requires adding a toolbar separator
+                if prev_group is not None and prev_group != cmd.group:
+                    group_sep = Gtk.SeparatorToolItem()
+                    group_sep.set_draw(True)
+                    self.toolbar_separators.add(group_sep)
+                    self.native_toolbar.insert(group_sep, -1)
+                    prev_group = None
+                else:
+                    prev_group = cmd.group
+
                 item_impl = Gtk.ToolButton()
                 if cmd.icon:
                     item_impl.set_icon_widget(
@@ -94,7 +106,8 @@ class Window:
                     item_impl.set_tooltip_text(cmd.tooltip)
                 item_impl.connect("clicked", cmd._impl.gtk_clicked)
                 cmd._impl.native.append(item_impl)
-            self.toolbar_items[cmd] = item_impl
+                self.toolbar_items[cmd] = item_impl
+
             self.native_toolbar.insert(item_impl, -1)
 
         if self.toolbar_items:

@@ -1,0 +1,1 @@
+Ensure ``pip`` is upgraded to the latest version before installing Briefcase for running testbed tests.

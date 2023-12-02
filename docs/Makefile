@@ -174,7 +174,7 @@ install:
 		    "* check spelling: make spelling \n" \
 		    "\n" \
 				"enchant must be installed in order for pyenchant (and therefore spelling checks) to work. See \n" \
-				"http://docs.django-cms.org/en/latest/contributing/documentation.html#install-the-spelling-software \n" \
+				"https://docs.django-cms.org/en/latest/contributing/documentation.html#install-the-spelling-software \n" \
 	      "-------------------------------------------------------------------------------------------------- \n" \
 
 run:

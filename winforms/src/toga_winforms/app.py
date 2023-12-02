@@ -13,7 +13,7 @@ from System.Windows.Threading import Dispatcher
 
 import toga
 from toga import Key
-from toga.command import GROUP_BREAK, SECTION_BREAK
+from toga.command import Separator
 
 from .keys import toga_to_winforms_key
 from .libs.proactor import WinformsProactorEventLoop
@@ -140,9 +140,8 @@ class App:
 
         submenu = None
         for cmd in self.interface.commands:
-            if cmd == GROUP_BREAK:
-                submenu = None
-            elif cmd == SECTION_BREAK:
+            submenu = self._submenu(cmd.group, menubar)
+            if isinstance(cmd, Separator):
                 submenu.DropDownItems.Add("-")
             else:
                 submenu = self._submenu(cmd.group, menubar)

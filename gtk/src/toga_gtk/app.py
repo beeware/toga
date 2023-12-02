@@ -8,7 +8,7 @@ import gbulb
 
 import toga
 from toga import App as toga_App
-from toga.command import GROUP_BREAK, SECTION_BREAK, Command
+from toga.command import Command, Separator
 
 from .keys import gtk_accel
 from .libs import TOGA_DEFAULT_STYLES, Gdk, Gio, GLib, Gtk
@@ -131,12 +131,12 @@ class App:
         menubar = Gio.Menu()
         section = None
         for cmd in self.interface.commands:
-            if cmd == GROUP_BREAK:
-                section = None
-            elif cmd == SECTION_BREAK:
+            if isinstance(cmd, Separator):
                 section = None
             else:
-                submenu = self._submenu(cmd.group, menubar)
+                submenu, created = self._submenu(cmd.group, menubar)
+                if created:
+                    section = None
 
                 if section is None:
                     section = Gio.Menu()
@@ -164,26 +164,24 @@ class App:
 
     def _submenu(self, group, menubar):
         try:
-            return self._menu_groups[group]
+            return self._menu_groups[group], False
         except KeyError:
             if group is None:
                 submenu = menubar
             else:
-                parent_menu = self._submenu(group.parent, menubar)
-
+                parent_menu, _ = self._submenu(group.parent, menubar)
                 submenu = Gio.Menu()
                 self._menu_groups[group] = submenu
 
                 text = group.text
                 if text == "*":
                     text = self.interface.formal_name
-
                 parent_menu.append_submenu(text, submenu)
 
             # Install the item in the group cache.
             self._menu_groups[group] = submenu
 
-            return submenu
+            return submenu, True
 
     def main_loop(self):
         # Modify signal handlers to make sure Ctrl-C is caught and handled.

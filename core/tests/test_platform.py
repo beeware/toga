@@ -5,15 +5,12 @@ import pytest
 
 import toga_dummy
 
-try:
-    # Usually, the pattern is "import module; if it doesn't exist,
-    # import the shim". However, we need the 3.10 API for entry_points,
-    # as the 3.8 didn't support the `groups` argument to entry_points.
-    # Therefore, we try to import the compatibility shim first; and fall
-    # back to the stdlib module if the shim isn't there.
-    from importlib_metadata import EntryPoint
-except ImportError:
+if sys.version_info >= (3, 10):
     from importlib.metadata import EntryPoint
+else:
+    # Before Python 3.10, entry_points did not support the group argument;
+    # so, the backport package must be used on older versions.
+    from importlib_metadata import EntryPoint
 
 import toga.platform
 from toga.platform import current_platform, get_current_platform, get_platform_factory

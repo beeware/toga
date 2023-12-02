@@ -8,7 +8,7 @@ from urllib.parse import unquote, urlparse
 from rubicon.objc.eventloop import CocoaLifecycle, EventLoopPolicy
 
 import toga
-from toga.command import GROUP_BREAK, SECTION_BREAK
+from toga.command import Separator
 from toga.handlers import NativeHandler
 
 from .keys import cocoa_key
@@ -334,13 +334,10 @@ class App:
         self._menu_items = {}
 
         for cmd in self.interface.commands:
-            if cmd == GROUP_BREAK:
-                submenu = None
-            elif cmd == SECTION_BREAK:
+            submenu = self._submenu(cmd.group, menubar)
+            if isinstance(cmd, Separator):
                 submenu.addItem(NSMenuItem.separatorItem())
             else:
-                submenu = self._submenu(cmd.group, menubar)
-
                 if cmd.shortcut:
                     key, modifier = cocoa_key(cmd.shortcut)
                 else:
