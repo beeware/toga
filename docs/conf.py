@@ -118,7 +118,10 @@ rst_prolog = """
 .. |no| replace:: :no:`✖︎`
 """
 
-intersphinx_mapping = {"python": ("https://docs.python.org/3", None)}
+intersphinx_mapping = {
+    "python": ("https://docs.python.org/3", None),
+    "PIL": ("https://pillow.readthedocs.io/en/stable/", None),
+}
 
 # -- Local extensions ----------------------------------------------------------
 

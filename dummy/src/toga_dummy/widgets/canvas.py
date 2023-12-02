@@ -1,5 +1,6 @@
-import uuid
+from pathlib import Path
 
+import toga_dummy
 from toga.fonts import SYSTEM, SYSTEM_DEFAULT_FONT_SIZE
 
 from .base import Widget
@@ -245,9 +246,10 @@ class Canvas(Widget):
     # Image
 
     def get_image_data(self):
-        """Return a dummy uuid string as the "native" image."""
+        """Return the Toga logo as the "native" image."""
         self._action("get image data")
-        return uuid.uuid4()
+        path = Path(toga_dummy.__file__).parent / "resources/toga.png"
+        return path.read_bytes()
 
     # Resize handlers
 

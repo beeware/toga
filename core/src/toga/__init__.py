@@ -105,11 +105,11 @@ def _package_version(file, name):
         # If it *is* in the environment, but the code isn't a git checkout (e.g.,
         # it's been pip installed non-editable) the call to get_version() will fail.
         # If either of these occurs, read version from the installer metadata.
-        from importlib import metadata as importlib_metadata
+        import importlib.metadata
 
         # The Toga package names as defined in setup.cfg all use dashes.
         package = "toga-core" if name == "toga" else name.replace("_", "-")
-        return importlib_metadata.version(package)
+        return importlib.metadata.version(package)
 
 
 __version__ = _package_version(__file__, __name__)

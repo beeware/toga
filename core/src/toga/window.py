@@ -14,6 +14,7 @@ from toga.widgets.base import WidgetRegistry
 
 if TYPE_CHECKING:
     from toga.app import App
+    from toga.images import ImageT
     from toga.widgets.base import Widget
 
 
@@ -386,11 +387,14 @@ class Window:
         self._impl.close()
         self._closed = True
 
-    def as_image(self) -> Image:
+    def as_image(self, format: type[ImageT] = Image) -> ImageT:
         """Render the current contents of the window as an image.
 
-        :returns: A :class:`toga.Image` containing the window content."""
-        return Image(data=self._impl.get_image_data())
+        :param format: Format to provide. Defaults to :class:`~toga.images.Image`; also
+            supports :any:`PIL.Image.Image` if Pillow is installed
+        :returns: An image containing the window content, in the format requested.
+        """
+        return Image(self._impl.get_image_data()).as_format(format)
 
     @property
     def on_gain_focus(self) -> callable:
