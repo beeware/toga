@@ -70,6 +70,14 @@ details, along with many of the other constructor arguments, as packaging metada
 format compatible with :any:`importlib.metadata`. If you deploy your app with `Briefcase
 <https://briefcase.readthedocs.io/en/stable>`__, this will be done automatically.
 
+Notes
+-----
+
+* Apps ran in a Gnome Wayland environment with python -m or briefcase dev will not show
+  the formal app name in the title bar. In order to make the title show properly, you
+  will need to build or package your app with `Briefcase
+  <https://briefcase.readthedocs.io/en/stable>`__.
+
 Reference
 ---------
 
