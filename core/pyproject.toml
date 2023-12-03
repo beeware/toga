@@ -72,7 +72,7 @@ dev = [
     "pytest-asyncio == 0.23.1",
     "pytest-freezer == 0.4.8",
     "setuptools-scm == 8.0.4",
-    "tox == 4.11.3",
+    "tox == 4.11.4",
 ]
 docs = [
     "furo == 2023.9.10",
