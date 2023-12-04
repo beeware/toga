@@ -1,0 +1,1 @@
+Some limitations on App presentation imposed by Wayland have been documented.
