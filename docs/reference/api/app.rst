@@ -73,10 +73,12 @@ format compatible with :any:`importlib.metadata`. If you deploy your app with `B
 Notes
 -----
 
-* Apps ran in a Gnome Wayland environment with python -m or briefcase dev will not show
-  the formal app name in the title bar. In order to make the title show properly, you
-  will need to build or package your app with `Briefcase
-  <https://briefcase.readthedocs.io/en/stable>`__.
+* Apps executed under Wayland on Linux environment may not show the app's formal name
+  correctly. Wayland considers many aspects of app operation to be the domain of the
+  windowing environment, not the app; as a result, some API requests will be ignored
+  under a Wayland environment. Correctly displaying the app's formal name requires the
+  use of a desktop metadata that Wayland can read. Packaging your app with `Briefcase
+  <https://briefcase.readthedocs.io/en/stable>`__ is one way to produce this metadata.
 
 Reference
 ---------
