@@ -242,7 +242,7 @@ def assert_reference(probe, reference, threshold=0.0):
 
     # Look for a platform-specific reference variant.
     reference_variant = probe.reference_variant(reference)
-    path = toga.App.app.paths.app / "resources" / "canvas" / f"{reference_variant}.png"
+    path = toga.App.app.paths.app / "resources/canvas" / f"{reference_variant}.png"
     save_dir = toga.App.app.paths.data / "canvas"
 
     def save():

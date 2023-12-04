@@ -349,4 +349,4 @@ class Canvas(Box):
 
         stream = MemoryStream()
         bitmap.Save(stream, ImageFormat.Png)
-        return stream.ToArray()
+        return bytes(stream.ToArray())

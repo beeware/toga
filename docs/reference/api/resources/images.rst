@@ -23,11 +23,16 @@ Usage
     my_image = toga.Image("brutus.png")
 
     # Load an image at an absolute path
-    my_image = toga.Image(Path.home() / "path" / "to" / "brutus.png")
+    my_image = toga.Image(Path.home() / "path/to/brutus.png")
 
     # Create an image from raw data
-    with (Path.home() / "path" / "to" / "brutus.png").open("rb") as f:
+    with (Path.home() / "path/to/brutus.png").open("rb") as f:
         my_image = toga.Image(data=f.read())
+
+    # Create an image from a PIL image (if PIL is installed)
+    import PIL.Image
+    my_pil_image = PIL.Image.new("L", (30, 30))
+    my_toga_image = toga.Image(my_pil_image)
 
 Notes
 -----

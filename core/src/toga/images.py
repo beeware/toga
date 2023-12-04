@@ -1,54 +1,110 @@
 from __future__ import annotations
 
+import warnings
+from io import BytesIO
 from pathlib import Path
+from typing import TypeVar
+from warnings import warn
+
+try:
+    import PIL.Image
+
+    PIL_imported = True
+except ImportError:  # pragma: no cover
+    PIL_imported = False
 
 import toga
 from toga.platform import get_platform_factory
 
+# Make sure deprecation warnings are shown by default
+warnings.filterwarnings("default", category=DeprecationWarning)
 
+ImageT = TypeVar("ImageT")
+
+
+# Note: remove PIL type annotation when plugin system is implemented for image format
+# registration; replace with ImageT?
 class Image:
     def __init__(
         self,
-        path: str | None | Path = None,
+        src: str
+        | Path
+        | bytes
+        | bytearray
+        | memoryview
+        | Image
+        | PIL.Image.Image
+        | None = None,
         *,
-        data: bytes | None = None,
+        path=None,  # DEPRECATED
+        data=None,  # DEPRECATED
     ):
         """Create a new image.
 
-        An image must be provided either a ``path`` or ``data``, but not both.
-
-        :param path: Path to the image to load. This can be specified as a string, or as
-            a :any:`pathlib.Path` object. The path can be an absolute file system path,
-            or a path relative to the module that defines your Toga application class.
-        :param data: A bytes object with the contents of an image in a supported format.
+        :param src: The source from which to load the image. Can be a file path
+            (relative or absolute, as a string or :any:`pathlib.Path`), raw
+            binary data in any supported image format, or another Toga image. Can also
+            accept a :any:`PIL.Image.Image` if Pillow is installed.
+        :param path: **DEPRECATED** - Use ``src``.
+        :param data: **DEPRECATED** - Use ``src``.
         :raises FileNotFoundError: If a path is provided, but that path does not exist.
-        :raises ValueError: If the path or data cannot be loaded as an image.
+        :raises ValueError: If the source cannot be loaded as an image.
         """
-        if path is None and data is None:
-            raise ValueError("Either path or data must be set.")
-        if path is not None and data is not None:
-            raise ValueError("Only either path or data can be set.")
-
+        ######################################################################
+        # 2023-11: Backwards compatibility
+        ######################################################################
+        num_provided = sum(arg is not None for arg in (src, path, data))
+        if num_provided > 1:
+            raise ValueError("Received multiple arguments to constructor.")
+        if num_provided == 0:
+            raise TypeError(
+                "Image.__init__() missing 1 required positional argument: 'src'"
+            )
         if path is not None:
-            if isinstance(path, Path):
-                self.path = path
-            else:
-                self.path = Path(path)
-        else:
-            self.path = None
+            src = path
+            warn(
+                "Path argument is deprecated, use src instead.",
+                DeprecationWarning,
+                stacklevel=2,
+            )
+        elif data is not None:
+            src = data
+            warn(
+                "Data argument is deprecated, use src instead.",
+                DeprecationWarning,
+                stacklevel=2,
+            )
+        ######################################################################
+        # End backwards compatibility
+        ######################################################################
 
         self.factory = get_platform_factory()
-        if data is not None:
-            self._impl = self.factory.Image(interface=self, data=data)
+        self._path = None
+
+        # Any "lump of bytes" should be valid here.
+        if isinstance(src, (bytes, bytearray, memoryview)):
+            self._impl = self.factory.Image(interface=self, data=src)
+
+        elif isinstance(src, (str, Path)):
+            self._path = toga.App.app.paths.app / src
+            if not self._path.is_file():
+                raise FileNotFoundError(f"Image file {self._path} does not exist")
+            self._impl = self.factory.Image(interface=self, path=self._path)
+
+        elif isinstance(src, Image):
+            self._impl = self.factory.Image(interface=self, data=src.data)
+
+        elif PIL_imported and isinstance(src, PIL.Image.Image):
+            buffer = BytesIO()
+            src.save(buffer, format="png", compress_level=0)
+            self._impl = self.factory.Image(interface=self, data=buffer.getvalue())
+
         else:
-            self.path = toga.App.app.paths.app / self.path
-            if not self.path.is_file():
-                raise FileNotFoundError(f"Image file {self.path} does not exist")
-            self._impl = self.factory.Image(interface=self, path=self.path)
+            raise TypeError("Unsupported source type for Image")
 
     @property
     def size(self) -> (int, int):
-        """The size of the image, as a tuple"""
+        """The size of the image, as a (width, height) tuple."""
         return (self._impl.get_width(), self._impl.get_height())
 
     @property
@@ -63,18 +119,39 @@ class Image:
 
     @property
     def data(self) -> bytes:
-        """The raw data for the image, in PNG format.
-
-        :returns: The raw image data in PNG format.
-        """
+        """The raw data for the image, in PNG format."""
         return self._impl.get_data()
 
-    def save(self, path: str | Path):
+    @property
+    def path(self) -> Path | None:
+        """The path from which the image was opened, if any (or None)."""
+        return self._path
+
+    def save(self, path: str | Path) -> None:
         """Save image to given path.
 
         The file format of the saved image will be determined by the extension of
         the filename provided (e.g ``path/to/mypicture.png`` will save a PNG file).
 
-        :param path: Path where to save the image.
+        :param path: Path to save the image to.
         """
         self._impl.save(path)
+
+    def as_format(self, format: type[ImageT]) -> ImageT:
+        """Return the image, converted to the image format specified.
+
+        :param format: The image class to return. Currently supports only :any:`Image`,
+            and :any:`PIL.Image.Image` if Pillow is installed.
+        :returns: The image in the requested format
+        :raises TypeError: If the format supplied is not recognized.
+        """
+        if isinstance(format, type) and issubclass(format, Image):
+            return format(self.data)
+
+        if PIL_imported and format is PIL.Image.Image:
+            buffer = BytesIO(self.data)
+            with PIL.Image.open(buffer) as pil_image:
+                pil_image.load()
+            return pil_image
+
+        raise TypeError(f"Unknown conversion format for Image: {format}")

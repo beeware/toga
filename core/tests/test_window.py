@@ -4,6 +4,7 @@ from unittest.mock import Mock
 import pytest
 
 import toga
+import toga_dummy
 from toga_dummy.utils import (
     assert_action_not_performed,
     assert_action_performed,
@@ -349,8 +350,9 @@ def test_close_rejected_handler(window, app):
 def test_as_image(window):
     """A window can be captured as an image"""
     image = window.as_image()
-
-    assert image.data == b"pretend this is PNG image data"
+    assert_action_performed(window, "get image data")
+    path = Path(toga_dummy.__file__).parent / "resources/screenshot.png"
+    assert image.data == path.read_bytes()
 
 
 def test_info_dialog(window, app):

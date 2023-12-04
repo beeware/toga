@@ -1,4 +1,4 @@
-from toga.command import Command
+from toga.command import Command, Separator
 from toga_cocoa.container import Container
 from toga_cocoa.images import nsdata_to_bytes
 from toga_cocoa.libs import (
@@ -20,10 +20,7 @@ from toga_cocoa.libs import (
 
 
 def toolbar_identifier(cmd):
-    if isinstance(cmd, Command):
-        return "ToolbarItem-%s" % id(cmd)
-    else:
-        return "ToolbarSeparator-%s" % id(cmd)
+    return f"Toolbar-{type(cmd).__name__}-{id(cmd)}"
 
 
 class TogaWindow(NSWindow):
@@ -59,8 +56,16 @@ class TogaWindow(NSWindow):
     def toolbarDefaultItemIdentifiers_(self, toolbar):
         """Determine the list of toolbar items that will display by default."""
         default = NSMutableArray.alloc().init()
+        prev_group = None
         for item in self.interface.toolbar:
+            # If there's been a group change, and this item isn't a separator,
+            # add a separator between groups.
+            if prev_group is not None:
+                if item.group != prev_group and not isinstance(item, Separator):
+                    default.addObject_(toolbar_identifier(prev_group))
             default.addObject_(toolbar_identifier(item))
+            prev_group = item.group
+
         return default
 
     @objc_method

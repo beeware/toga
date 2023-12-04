@@ -5,7 +5,7 @@ A demonstration of the capabilities of the `Toga widget toolkit`_.
 
 **Toga requires Python 3**
 
-.. _Toga widget toolkit: http://beeware.org/toga
+.. _Toga widget toolkit: https://beeware.org/toga
 
 Quickstart
 ----------
@@ -50,11 +50,11 @@ Toga Demo is part of the `BeeWare suite`_. You can talk to the community through
 We foster a welcoming and respectful community as described in our
 `BeeWare Community Code of Conduct`_.
 
-.. _BeeWare suite: http://beeware.org
+.. _BeeWare suite: https://beeware.org
 .. _@beeware@fosstodon.org on Mastodon: https://fosstodon.org/@beeware
 .. _Discord: https://beeware.org/bee/chat/
 .. _Github Discussions forum: https://github.com/beeware/toga/discussions
-.. _BeeWare Community Code of Conduct: http://beeware.org/community/behavior/
+.. _BeeWare Community Code of Conduct: https://beeware.org/community/behavior/
 
 Contributing
 ------------
