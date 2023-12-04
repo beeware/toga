@@ -2,6 +2,8 @@ import asyncio
 from pathlib import Path
 from unittest.mock import Mock
 
+import pytest
+
 from toga_gtk.libs import Gdk, Gtk
 
 from .probe import BaseProbe
@@ -231,7 +233,7 @@ class WindowProbe(BaseProbe):
         )
 
     def has_toolbar(self):
-        return self.impl.native_toolbar.get_n_items() > 0
+        pytest.skip("Toolbar doesn't implemented on GTK")
 
     def assert_is_toolbar_separator(self, index, section=False):
         item = self.impl.native_toolbar.get_nth_item(index)

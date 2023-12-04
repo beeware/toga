@@ -151,7 +151,7 @@ class App:
         self.native_about_dialog.present()
 
     def beep(self):
-        Gdk.beep()
+        Gdk.Display.get_default().beep()
 
     # We can't call this under test conditions, because it would kill the test harness
     def exit(self):  # pragma: no cover
@@ -161,6 +161,7 @@ class App:
         return self.native.get_active_window()._impl
 
     def set_current_window(self, window):
+        # Behavior of present() varies depending on the user's platform, WM and preferences.
         window._impl.native.present()
 
     def enter_full_screen(self, windows):
