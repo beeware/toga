@@ -64,7 +64,7 @@ class OptionContainer(Widget):
 
     def content_refreshed(self, container):
         container.min_width = container.content.interface.layout.min_width
-        container.min_height = container.content.interface.layout.min_width
+        container.min_height = container.content.interface.layout.min_height
 
     def add_content(self, index, text, widget):
         # Create the container for the widget
