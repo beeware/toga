@@ -392,6 +392,15 @@ UITableViewCellSeparatorStyleNone = 0
 UITableViewCellSeparatorStyleSingleLine = 1
 
 ######################################################################
+# UITabBarController.h
+
+UITabBarController = ObjCClass("UITabBarController")
+
+######################################################################
+# UITabBarItem.h
+UITabBarItem = ObjCClass("UITabBarItem")
+
+######################################################################
 # UITextField.h
 UITextField = ObjCClass("UITextField")
 
