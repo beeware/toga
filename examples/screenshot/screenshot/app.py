@@ -262,9 +262,9 @@ class ScreenshotGeneratorApp(toga.App):
                 (
                     "Blue",
                     toga.Box(style=Pack(background_color="cornflowerblue")),
-                    "resources/smile-iOS",
+                    "resources/smile",
                 ),
-                ("Green", toga.Box(), "resources/landmark-iOS"),
+                ("Green", toga.Box(), "resources/landmark"),
                 ("Red", toga.Box()),
             ],
             style=Pack(padding=10, width=self.MAX_WIDTH, height=300),

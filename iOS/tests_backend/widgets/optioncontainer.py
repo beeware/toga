@@ -51,3 +51,4 @@ class OptionContainerProbe(SimpleProbe):
             assert actual is None
         else:
             assert actual.path.name == expected
+            assert actual._impl.path.name == f"{expected}-iOS.png"
