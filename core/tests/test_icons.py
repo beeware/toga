@@ -104,13 +104,14 @@ def test_create_fallback(app):
     [
         ("DEFAULT_ICON", "resources/toga"),
         ("TOGA_ICON", "resources/toga"),
+        ("OPTION_CONTAINER_DEFAULT_TAB_ICON", "resources/optioncontainer-tab"),
     ],
 )
 def test_cached_icons(app, name, path):
     "Default icons exist, and are cached"
 
     icon = getattr(toga.Icon, name)
-    assert icon.path == Path("resources/toga")
+    assert icon.path == Path(path)
 
     # Retrieve the icon a second time; The same instance is returned.
     assert id(getattr(toga.Icon, name)) == id(icon)
