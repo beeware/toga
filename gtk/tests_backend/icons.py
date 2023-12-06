@@ -1,5 +1,8 @@
+from pathlib import Path
+
 import pytest
 
+import toga_gtk
 from toga_gtk.libs import GdkPixbuf
 
 from .probe import BaseProbe
@@ -34,7 +37,14 @@ class IconProbe(BaseProbe):
 
     def assert_default_icon_content(self):
         assert self.icon._impl.paths == {
-            16: self.app.paths.toga / "resources/toga.png",
-            32: self.app.paths.toga / "resources/toga.png",
-            72: self.app.paths.toga / "resources/toga.png",
+            16: Path(toga_gtk.__file__).parent / "resources/toga.png",
+            32: Path(toga_gtk.__file__).parent / "resources/toga.png",
+            72: Path(toga_gtk.__file__).parent / "resources/toga.png",
+        }
+
+    def assert_platform_icon_content(self):
+        assert self.icon._impl.paths == {
+            16: self.app.paths.app / "resources/logo-linux-16.png",
+            32: self.app.paths.app / "resources/logo-linux-32.png",
+            72: self.app.paths.app / "resources/logo-linux-72.png",
         }
