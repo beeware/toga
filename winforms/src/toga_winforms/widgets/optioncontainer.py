@@ -6,6 +6,8 @@ from .base import Widget
 
 
 class OptionContainer(Widget):
+    uses_icons = False
+
     def create(self):
         self.native = TabControl()
         self.native.Selected += WeakrefCallable(self.winforms_selected)
@@ -50,8 +52,8 @@ class OptionContainer(Widget):
     def get_option_text(self, index):
         return self.native.TabPages[index].Text
 
-    def set_option_icon(self, index, value):
-        # Icons aren't supported
+    def set_option_icon(self, index, value):  # pragma: nocover
+        # This shouldn't ever be invoked, but it's included for completeness.
         pass
 
     def get_option_icon(self, index):

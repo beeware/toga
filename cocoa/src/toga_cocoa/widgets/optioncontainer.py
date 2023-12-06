@@ -36,6 +36,8 @@ class TogaTabView(NSTabView):
 
 
 class OptionContainer(Widget):
+    uses_icons = False
+
     def create(self):
         self.native = TogaTabView.alloc().init()
         self.native.interface = self.interface
@@ -117,8 +119,8 @@ class OptionContainer(Widget):
         tabview = self.native.tabViewItemAtIndex(index)
         tabview.label = value
 
-    def set_option_icon(self, index, value):
-        # Icons aren't supported
+    def set_option_icon(self, index, value):  # pragma: nocover
+        # This shouldn't ever be invoked, but it's included for completeness.
         pass
 
     def get_option_icon(self, index):

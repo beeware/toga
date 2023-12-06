@@ -10,6 +10,8 @@ class Option:
 
 
 class OptionContainer(Widget):
+    uses_icons = True
+
     def create(self):
         self._action("create OptionContainer")
         self._items = []
