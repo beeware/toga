@@ -27,9 +27,11 @@ A container that can display multiple labeled tabs of content.
 
     Not supported
 
-  .. group-tab:: iOS |no|
+  .. group-tab:: iOS
 
-    Not supported
+    .. figure:: /reference/images/optioncontainer-iOS.png
+       :align: center
+       :width: 450px
 
   .. group-tab:: Web |no|
 
@@ -42,6 +44,10 @@ A container that can display multiple labeled tabs of content.
 Usage
 -----
 
+The content of an OptionContainer is a list of widgets that will form discrete
+tabs in the display. Each tab can be identified by a label, and, optionally, an
+icon. This list of content can be modified after initial construction:
+
 .. code-block:: python
 
     import toga
@@ -49,16 +55,21 @@ Usage
     pizza = toga.Box()
     pasta = toga.Box()
 
+    # Create 2 initial tabs; one with an icon, and one without.
     container = toga.OptionContainer(
-        content=[("Pizza", pizza), ("Pasta", pasta)]
+        content=[("Pizza", pizza), ("Pasta", pasta, toga.Icon("pasta"))]
     )
 
-    # Add another tab of content
+    # Add another tab of content, without an icon.
     salad = toga.Box()
     container.content.append("Salad", salad)
 
-When retrieving or deleting items, or when specifying the
-currently selected item, you can specify an item using:
+    # Add another tab of content, with an icon
+    icecream = toga.Box()
+    container.content.append("Ice Cream", icecream, toga.Icon("icecream"))
+
+When retrieving or deleting items, or when specifying the currently selected
+item, you can specify an item using:
 
 * The index of the item in the list of content:
 
@@ -94,6 +105,28 @@ currently selected item, you can specify an item using:
       container.current_tab = pasta_tab
       # Delete the pasta tab
       del container.content[pasta_tab]
+
+Notes
+-----
+
+* The use of icons on tabs varies between platforms. If the platform supports
+  icons, and no icon is provided, a default icon will be provided. If the
+  platform does not support icons, any icon provided will be ignored, and
+  requests to retrieve the icon will return ``None``.
+
+* The behavior of hidden tabs varies between platforms. Some platforms will
+  display the tab, but leave it in a disabled or unselectable state; some will
+  hide the tab. A hidden tab can still be referenced by index - the tab index
+  refers to the logical order, not the visible order.
+
+* iOS can only display 5 tabs. If there are more than 5 visible tabs in an
+  OptionContainer, the last item will be converted into a "More" option that
+  will allow the user to select the additional items. While the "More" menu is
+  displayed, the current tab will return as ``None``.
+
+* iOS allows for the user to rearrange icons on an OptionContainer. When
+  referring to tabs by index, user re-ordering is ignored; the logical order as
+  configured in Toga itself is used to identify tabs.
 
 Reference
 ---------
