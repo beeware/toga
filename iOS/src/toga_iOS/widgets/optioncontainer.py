@@ -13,8 +13,9 @@ class TogaTabBarController(UITabBarController):
     @objc_method
     def tabBar_didSelectItem_(self, tabBar, item) -> None:
         # An item that actually on the tab bar has been selected
-        # Ensure that the layout of items is
         self.performSelector(SEL("refreshContent"), withObject=None, afterDelay=0)
+        # Notify of the change in selection.
+        self.interface.on_select()
 
     @objc_method
     def navigationController_willShowViewController_animated_(
@@ -23,11 +24,16 @@ class TogaTabBarController(UITabBarController):
         viewController,
         animated: bool,
     ) -> None:
-        # An item on the "more" menu has been selected.
-        # This is implemented as a full NavigationController; but we don't
-        # need to see the back button, as it will obscure the actual content.
-        viewController.navigationItem.setHidesBackButton(True)
-        self.performSelector(SEL("refreshContent"), withObject=None, afterDelay=0)
+        # An item on the "more" menu has been selected. This will also be
+        # triggered for the display of the more menu itself, so we need to
+        # filter for that.
+        if viewController != self.moreNavigationController.viewControllers[0]:
+            # If a content view is being this is an actual content view, hide
+            # the back button added by the navigation view, and notify of the
+            # change in selection.
+            viewController.navigationItem.setHidesBackButton(True)
+            self.performSelector(SEL("refreshContent"), withObject=None, afterDelay=0)
+            self.interface.on_select()
 
     @objc_method
     def refreshContent(self) -> None:
@@ -39,7 +45,6 @@ class TogaTabBarController(UITabBarController):
 
 class OptionContainer(Widget):
     def create(self):
-        print("Create tab bar controller")
         self.native_controller = TogaTabBarController.alloc().init()
         self.native_controller.interface = self.interface
         self.native_controller.impl = self
@@ -47,8 +52,6 @@ class OptionContainer(Widget):
 
         # Make the tab bar non-translucent, so you can actually see it.
         self.native_controller.tabBar.setTranslucent(False)
-
-        print(self.native_controller.moreNavigationController)
 
         # The native widget representing the container is the view of the native
         # controller. This doesn't change once it's created, so we can cache it.
@@ -61,7 +64,6 @@ class OptionContainer(Widget):
 
     def set_bounds(self, x, y, width, height):
         super().set_bounds(x, y, width, height)
-        print("SET BOUNDS", x, y, width, height)
 
         # Setting the bounds changes the constraints, but that doesn't mean
         # the constraints have been fully applied. Schedule a refresh to be done
@@ -71,12 +73,10 @@ class OptionContainer(Widget):
         )
 
     def content_refreshed(self, container):
-        print("Content refreshed")
         container.min_width = container.content.interface.layout.min_width
         container.min_height = container.content.interface.layout.min_height
 
     def add_content(self, index, text, widget, icon=None):
-        print("add content", index, text, widget)
         # Create the container for the widget
         sub_container = ControlledContainer(on_refresh=self.content_refreshed)
         sub_container.content = widget
@@ -92,7 +92,6 @@ class OptionContainer(Widget):
         return UITabBarItem.alloc().initWithTitle(text, image=icon, tag=0)
 
     def remove_content(self, index):
-        print("Remove content", index)
         sub_container = self.sub_containers[index]
         sub_container.content = None
         del self.sub_containers[index]
@@ -111,16 +110,13 @@ class OptionContainer(Widget):
         )
 
     def set_option_enabled(self, index, enabled):
-        print("Set option enabled", index, enabled)
         self.sub_containers[index].enabled = enabled
         self.refresh_tabs()
 
     def is_option_enabled(self, index):
-        print("is option enabled", index)
         return self.sub_containers[index].enabled
 
     def set_option_text(self, index, value):
-        print("Set option text", index, value)
         self.sub_containers[index].controller.tabBarItem = self.create_tab_item(
             value, None
         )
@@ -130,24 +126,28 @@ class OptionContainer(Widget):
         # self.sub_containers[index].controller.tabBarItem = self.create_tab_item(value, value)
 
     def get_option_text(self, index):
-        print("Get option text", index)
         return str(self.sub_containers[index].controller.tabBarItem.title)
 
     def get_current_tab_index(self):
-        print("Get current tab index")
-        # Although UITabBarController provides selectedIndex, it doesn't
-        # handle the "more" items, and doesn't reflect hidden items.
+        # As iOS allows the user to reorder tabs, we can't use selectedIndex,
+        # as that reflects the visible order, not the logical order.
         for i, container in enumerate(self.sub_containers):
-            if container.controller == self.selectedViewController:
+            if container.controller == self.native_controller.selectedViewController:
                 return i
-        return None
 
     def set_current_tab_index(self, current_tab_index):
-        # Although UITabBarController provides selectedIndex, it (a) doesn't
-        # handle the "more" items, and doesn't reflect hidden items.
-        for controller in self.native.viewControllers:
+        # As iOS allows the user to reorder tabs, we can't use selectedIndex,
+        # as that reflects the visible order, not the logical order.
+        for controller in self.native_controller.viewControllers:
             if self.sub_containers[current_tab_index].controller == controller:
-                self.native.selectedViewController = controller
+                self.native_controller.selectedViewController = controller
+                # Setting the view controller doesn't trigger the didSelect event
+                # for regular (non-"more") tabs.
+                if self.native_controller.selectedIndex <= 4:
+                    self.native_controller.tabBar_didSelectItem_(
+                        self.native_controller.tabBar,
+                        current_tab_index,
+                    )
 
     def rehint(self):
         self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)

@@ -61,7 +61,7 @@ async def on_select_handler():
 
 @pytest.fixture
 async def widget(content1, content2, content3, on_select_handler):
-    skip_on_platforms("android", "iOS")
+    skip_on_platforms("android")
     return toga.OptionContainer(
         content=[("Tab 1", content1), ("Tab 2", content2), ("Tab 3", content3)],
         style=Pack(flex=1),
@@ -73,6 +73,7 @@ async def test_select_tab(
     widget,
     probe,
     on_select_handler,
+    container_probe,
     content1_probe,
     content2_probe,
     content3_probe,
@@ -81,8 +82,13 @@ async def test_select_tab(
     # Initially selected tab has content that is the full size of the widget
     await probe.redraw("Tab 1 should be selected")
     assert widget.current_tab.index == 0
-    assert content1_probe.width > 600
-    assert content1_probe.height > 380
+
+    # The content should be the same size as the container; this is simple to
+    # test in width, but the height can be impacted by the size of the tabs
+    # themselves. Test that the content has expanded; but for height, check that
+    # the size is > 80% of the container (allowing up to 20% for tabs)
+    assert content1_probe.width == pytest.approx(container_probe.width, abs=2)
+    assert content1_probe.height > container_probe.height * 0.8
 
     # on_select hasn't been invoked.
     on_select_handler.assert_not_called()
@@ -92,8 +98,8 @@ async def test_select_tab(
     await probe.redraw("Tab 2 should be selected")
 
     assert widget.current_tab.index == 1
-    assert content2_probe.width > 600
-    assert content2_probe.height > 380
+    assert content2_probe.width == pytest.approx(container_probe.width, abs=2)
+    assert content2_probe.height > container_probe.height * 0.8
     # on_select has been invoked
     on_select_handler.assert_called_once_with(widget)
     on_select_handler.reset_mock()
@@ -103,10 +109,143 @@ async def test_select_tab(
     await probe.redraw("Tab 3 should be selected")
 
     assert widget.current_tab.index == 2
-    assert content3_probe.width > 600
-    assert content3_probe.height > 380
+    assert content3_probe.width == pytest.approx(container_probe.width, abs=2)
+    assert content3_probe.height > container_probe.height * 0.8
     # on_select has been invoked
     on_select_handler.assert_called_once_with(widget)
+    on_select_handler.reset_mock()
+
+
+async def test_select_tab_overflow(
+    widget,
+    probe,
+    on_select_handler,
+    container_probe,
+):
+    """If there's a lot of tabs, content can still be selected"""
+    # Set up 5 extra tabs
+    extra_widgets = [
+        toga.Box(
+            children=[toga.Label(f"Box {i + 4} content", style=Pack(flex=1))],
+            style=Pack(
+                background_color={
+                    0: CORNFLOWERBLUE,
+                    1: GOLDENROD,
+                    2: REBECCAPURPLE,
+                }[i % 3]
+            ),
+        )
+        for i in range(0, 5)
+    ]
+    extra_probes = [get_probe(w) for w in extra_widgets]
+
+    # Add the extra widgets
+    for i, extra in enumerate(extra_widgets, start=4):
+        widget.content.append(f"Tab {i}", extra)
+
+    await probe.redraw("Tab 1 should be selected initially")
+    assert widget.current_tab.index == 0
+
+    # Ensure mock call count is clean
+    on_select_handler.reset_mock()
+
+    # Some platforms have a "more" option for tabs beyond a display limit. If
+    # `select_more()` doesn't exist, that feature doesn't exist on the platform.
+    try:
+        probe.select_more()
+        await probe.redraw("More option should be displayed")
+        # When the "more" menu is visible, the current tab is None.
+        assert widget.current_tab.index is None
+    except AttributeError:
+        pass
+
+    # on_select has been not been invoked
+    on_select_handler.assert_not_called()
+
+    # Select the second last tab in the GUI
+    probe.select_tab(6)
+    await probe.redraw("Tab 7 should be selected")
+
+    assert widget.current_tab.index == 6
+    assert extra_probes[3].width == pytest.approx(container_probe.width, abs=2)
+    assert extra_probes[3].height > container_probe.height * 0.8
+
+    # on_select has been invoked
+    on_select_handler.assert_called_once_with(widget)
+    on_select_handler.reset_mock()
+
+    # Select the last tab programmatically while already on a "more" option
+    widget.current_tab = "Tab 8"
+    await probe.redraw("Tab 8 should be selected")
+
+    assert widget.current_tab.index == 7
+    assert extra_probes[4].width == pytest.approx(container_probe.width, abs=2)
+    assert extra_probes[4].height > container_probe.height * 0.8
+    # on_select has been invoked
+    on_select_handler.assert_called_once_with(widget)
+    on_select_handler.reset_mock()
+
+    # Select the first tab in the GUI
+    probe.select_tab(0)
+    await probe.redraw("Tab 0 should be selected")
+    assert widget.current_tab.index == 0
+    # on_select has been invoked
+    on_select_handler.assert_called_once_with(widget)
+    on_select_handler.reset_mock()
+
+    # Select the "more" option again. If the more option is stateful,
+    # this will result is displaying the last "more" option selected
+    try:
+        probe.select_more()
+        if probe.more_option_is_stateful:
+            await probe.redraw("Previous more option should be displayed")
+            assert widget.current_tab.index == 7
+            # more is stateful, so there's a been a select event for the
+            # previously selected "more" option.
+            on_select_handler.assert_called_once_with(widget)
+            on_select_handler.reset_mock()
+
+            probe.reset_more()
+            await probe.redraw("More option should be reset")
+        else:
+            await probe.redraw("More option should be displayed")
+
+        assert widget.current_tab.index is None
+    except AttributeError:
+        pass
+
+    on_select_handler.assert_not_called()
+
+    # Select the second last tab in the GUI
+    probe.select_tab(6)
+    await probe.redraw("Tab 7 should be selected")
+
+    assert widget.current_tab.index == 6
+    assert extra_probes[3].width == pytest.approx(container_probe.width, abs=2)
+    assert extra_probes[3].height > container_probe.height * 0.8
+
+    # on_select has been invoked
+    on_select_handler.assert_called_once_with(widget)
+    on_select_handler.reset_mock()
+
+    # Select the first tab in the GUI
+    probe.select_tab(0)
+    await probe.redraw("Tab 0 should be selected")
+    assert widget.current_tab.index == 0
+    # on_select has been invoked
+    on_select_handler.assert_called_once_with(widget)
+    on_select_handler.reset_mock()
+
+    # Select the last tab programmatically while on a non-more option
+    widget.current_tab = "Tab 8"
+    await probe.redraw("Tab 8 should be selected")
+
+    assert widget.current_tab.index == 7
+    assert extra_probes[4].width == pytest.approx(container_probe.width, abs=2)
+    assert extra_probes[4].height > container_probe.height * 0.8
+    # on_select has been invoked. There may be a refresh event
+    # associated with the display of the the stateful more option.
+    on_select_handler.assert_called_with(widget)
     on_select_handler.reset_mock()
 
 
@@ -197,6 +336,7 @@ async def test_enable_tab(widget, probe, on_select_handler):
 async def test_change_content(
     widget,
     probe,
+    container_probe,
     content2,
     content2_probe,
     on_select_handler,
@@ -224,8 +364,12 @@ async def test_change_content(
 
     assert widget.current_tab.index == 1
     assert widget.current_tab.text == "New tab"
-    assert new_probe.width > 600
-    assert new_probe.height > 380
+    # The content should be the same size as the container; this is simple to
+    # test in width, but the height can be impacted by the size of the tabs
+    # themselves. Test that the content has expanded; but for height, check that
+    # the size is > 80% of the container (allowing up to 20% for tabs)
+    assert new_probe.width == pytest.approx(container_probe.width, abs=2)
+    assert new_probe.height > container_probe.height * 0.8
 
     # on_select has been invoked
     on_select_handler.assert_called_once_with(widget)
@@ -251,8 +395,12 @@ async def test_change_content(
 
     assert widget.current_tab.index == 3
     assert widget.current_tab.text == "New Tab 2"
-    assert content2_probe.width > 600
-    assert content2_probe.height > 380
+    # The content should be the same size as the container; this is simple to
+    # test in width, but the height can be impacted by the size of the tabs
+    # themselves. Test that the content has expanded; but for height, check that
+    # the size is > 80% of the container (allowing up to 20% for tabs)
+    assert content2_probe.width == pytest.approx(container_probe.width, abs=2)
+    assert content2_probe.height > container_probe.height * 0.8
 
     # on_select has been invoked
     on_select_handler.assert_called_once_with(widget)
