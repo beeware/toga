@@ -50,6 +50,14 @@ class OptionContainer(Widget):
     def get_option_text(self, index):
         return self.native.TabPages[index].Text
 
+    def set_option_icon(self, index, value):
+        # Icons aren't supported
+        pass
+
+    def get_option_icon(self, index):
+        # Icons aren't supported
+        return None
+
     def get_current_tab_index(self):
         return self.native.SelectedIndex
 

@@ -4,6 +4,7 @@ import pytest
 
 import toga
 from toga_dummy.utils import (
+    EventLog,
     assert_action_not_performed,
     assert_action_performed,
     assert_action_performed_with,
@@ -36,9 +37,18 @@ def on_select_handler():
 
 
 @pytest.fixture
-def optioncontainer(content1, content2, content3, on_select_handler):
+def tab_icon(app):
+    return toga.Icon("tab-icon")
+
+
+@pytest.fixture
+def optioncontainer(content1, content2, content3, on_select_handler, tab_icon):
     return toga.OptionContainer(
-        content=[("Item 1", content1), ("Item 2", content2), ("Item 3", content3)],
+        content=[
+            ("Item 1", content1),
+            ("Item 2", content2, "other-icon"),
+            ("Item 3", content3, tab_icon),
+        ],
         on_select=on_select_handler,
     )
 
@@ -53,14 +63,37 @@ def test_widget_create():
     assert optioncontainer.on_select._raw is None
 
 
-def test_widget_create_with_args(optioncontainer, on_select_handler):
+def test_widget_create_with_args(optioncontainer, on_select_handler, tab_icon):
     "An option container can be created with arguments"
     assert optioncontainer._impl.interface == optioncontainer
     assert_action_performed(optioncontainer, "create OptionContainer")
 
     assert len(optioncontainer.content) == 3
     assert optioncontainer.current_tab.text == "Item 1"
+    assert optioncontainer.current_tab.icon is None
     assert optioncontainer.on_select._raw == on_select_handler
+
+    assert optioncontainer.content[1].text == "Item 2"
+    assert optioncontainer.content[1].icon.path.name == "other-icon"
+
+    assert optioncontainer.content[2].text == "Item 3"
+    assert optioncontainer.content[2].icon == tab_icon
+
+
+@pytest.mark.parametrize(
+    "value",
+    [
+        ("label",),
+        ("label", toga.Box(), None, "extra"),
+    ],
+)
+def test_widget_create_invalid_content(value):
+    """If the content provided at construction isn't 2- or 3-tuples, an error is raised."""
+    with pytest.raises(
+        ValueError,
+        match=r"Content items must be a tuples of \(title, widget\) or \(title, widget, icon\)",
+    ):
+        toga.OptionContainer(content=value)
 
 
 def test_assign_to_app(app, optioncontainer, content1, content2, content3):
@@ -232,6 +265,51 @@ def test_invalid_item_text(optioncontainer, value, error):
     # Using invalid text raises an error
     with pytest.raises(ValueError, match=error):
         item.text = value
+
+
+def test_item_icon(optioncontainer):
+    """The icon of an item can be changed."""
+    item = optioncontainer.content[0]
+
+    # Icon is initially empty
+    assert item.icon is None
+
+    test_icon = toga.Icon("test-icon")
+    item.icon = test_icon
+
+    # Icon has been set
+    assert item.icon == test_icon
+    assert_action_performed_with(
+        optioncontainer,
+        "set option icon",
+        index=0,
+        icon=test_icon,
+    )
+    EventLog.reset()
+
+    # Clear the icon
+    item.icon = None
+
+    # Icon has been reset
+    assert item.icon is None
+    assert_action_performed_with(
+        optioncontainer,
+        "set option icon",
+        index=0,
+        icon=None,
+    )
+    EventLog.reset()
+
+    # Icon has been set by name
+    item.icon = "new-icon"
+
+    # Icon has been set to the new value
+    assert item.icon.path.name == "new-icon"
+    assert_action_performed_with(
+        optioncontainer,
+        "set option icon",
+        index=0,
+    )
 
 
 def test_optionlist_repr(optioncontainer):

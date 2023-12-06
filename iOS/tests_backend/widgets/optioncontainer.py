@@ -44,3 +44,10 @@ class OptionContainerProbe(SimpleProbe):
 
     def tab_enabled(self, index):
         return self.impl.sub_containers[index].enabled
+
+    def assert_tab_icon(self, index, expected):
+        actual = self.widget.content[index].icon
+        if expected is None:
+            assert actual is None
+        else:
+            assert actual.path.name == expected

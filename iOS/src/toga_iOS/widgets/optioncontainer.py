@@ -1,6 +1,7 @@
 from rubicon.objc import SEL, objc_method, objc_property
 from travertino.size import at_least
 
+import toga
 from toga_iOS.container import ControlledContainer
 from toga_iOS.libs import UITabBarController, UITabBarItem
 from toga_iOS.widgets.base import Widget
@@ -83,13 +84,21 @@ class OptionContainer(Widget):
         sub_container.enabled = True
         self.sub_containers.insert(index, sub_container)
 
-        sub_container.controller.tabBarItem = self.create_tab_item(text, icon)
+        self.configure_tab_item(sub_container, text, icon)
 
         self.refresh_tabs()
 
-    def create_tab_item(self, text, icon):
+    def configure_tab_item(self, container, text, icon):
         # Create a UITabViewItem for the content
-        return UITabBarItem.alloc().initWithTitle(text, image=icon, tag=0)
+        container.icon = icon
+
+        container.controller.tabBarItem = UITabBarItem.alloc().initWithTitle(
+            text,
+            image=(
+                icon if icon else toga.Icon.OPTION_CONTAINER_DEFAULT_TAB_ICON
+            )._impl.native,
+            tag=0,
+        )
 
     def remove_content(self, index):
         sub_container = self.sub_containers[index]
@@ -116,17 +125,25 @@ class OptionContainer(Widget):
     def is_option_enabled(self, index):
         return self.sub_containers[index].enabled
 
-    def set_option_text(self, index, value):
-        self.sub_containers[index].controller.tabBarItem = self.create_tab_item(
-            value, None
+    def set_option_text(self, index, text):
+        self.configure_tab_item(
+            self.sub_containers[index],
+            text,
+            self.get_option_icon(index),
         )
-
-    def set_option_icon(self, index, value):
-        print("Set option icon", index, value)
-        # self.sub_containers[index].controller.tabBarItem = self.create_tab_item(value, value)
 
     def get_option_text(self, index):
         return str(self.sub_containers[index].controller.tabBarItem.title)
+
+    def set_option_icon(self, index, icon):
+        self.configure_tab_item(
+            self.sub_containers[index],
+            self.get_option_text(index),
+            icon,
+        )
+
+    def get_option_icon(self, index):
+        return self.sub_containers[index].icon
 
     def get_current_tab_index(self):
         # As iOS allows the user to reorder tabs, we can't use selectedIndex,

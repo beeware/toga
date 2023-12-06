@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import toga
 from toga.handlers import wrapped_handler
 
 from .base import Widget
@@ -44,6 +45,26 @@ class OptionItem:
             raise ValueError("Item text cannot be blank")
 
         self._interface._impl.set_option_text(self.index, text)
+
+    @property
+    def icon(self) -> toga.Icon:
+        """The Icon for the tab of content.
+
+        If the platform does not support the display of icons, this property
+        will return ``None`` regardless of any value provided.
+        """
+        return self._interface._impl.get_option_icon(self.index)
+
+    @icon.setter
+    def icon(self, icon_or_name: toga.Icon | str | None):
+        if icon_or_name is None:
+            icon = None
+        elif isinstance(icon_or_name, toga.Icon):
+            icon = icon_or_name
+        else:
+            icon = toga.Icon(icon_or_name)
+
+        self._interface._impl.set_option_icon(self.index, icon)
 
     @property
     def index(self) -> int:
@@ -115,13 +136,21 @@ class OptionList:
             except StopIteration:
                 raise ValueError(f"No tab named {value!r}")
 
-    def append(self, text: str, widget: Widget, enabled: bool = True):
+    def append(
+        self,
+        text: str,
+        widget: Widget,
+        enabled: bool = True,
+        icon: str | toga.Icon | None = None,
+    ):
         """Add a new tab of content to the OptionContainer.
 
         :param text: The text label for the new tab
         :param widget: The content widget to use for the new tab.
+        :param enabled: Should the new tab be enabled?
+        :param icon: The icon to use to represent the tab.
         """
-        self.insert(len(self), text, widget, enabled=enabled)
+        self.insert(len(self), text, widget, enabled=enabled, icon=icon)
 
     def insert(
         self,
@@ -129,6 +158,7 @@ class OptionList:
         text: str,
         widget: Widget,
         enabled: bool = True,
+        icon: str | toga.Icon | None = None,
     ):
         """Insert a new tab of content to the OptionContainer at the specified index.
 
@@ -136,6 +166,7 @@ class OptionList:
         :param text: The text label for the new tab.
         :param widget: The content widget to use for the new tab.
         :param enabled: Should the new tab be enabled?
+        :param icon: The icon to use to represent the tab.
         """
         # Convert the index into an integer
         index = self.index(index)
@@ -148,6 +179,10 @@ class OptionList:
         if not text:
             raise ValueError("Item text cannot be blank")
 
+        # Ensure the icon is in icon form
+        if icon is not None and not isinstance(icon, toga.Icon):
+            icon = toga.Icon(icon)
+
         # Create an interface wrapper for the option.
         item = OptionItem(self.interface, widget, index)
 
@@ -159,7 +194,7 @@ class OptionList:
 
         # Add the content to the implementation.
         # This will cause the native implementation to be created.
-        self.interface._impl.add_content(index, text, widget._impl)
+        self.interface._impl.add_content(index, text, widget._impl, icon)
 
         # The option now exists on the implementation;
         # finalize the display properties that can't be resolved until the
@@ -183,7 +218,8 @@ class OptionContainer(Widget):
             applied to the widget.
         :param content: The initial content to display in the OptionContainer. A list of
             2-tuples, each of which is the title for the option, and the content widget
-            to display for that title.
+            to display for that title; or 3-tuples, describing the title, content widget,
+            and icon for the content.
         :param on_select: Initial :any:`on_select` handler.
         """
         super().__init__(id=id, style=style)
@@ -193,8 +229,18 @@ class OptionContainer(Widget):
         self._impl = self.factory.OptionContainer(interface=self)
 
         if content:
-            for text, widget in content:
-                self.content.append(text, widget)
+            for item in content:
+                if len(item) == 2:
+                    text, widget = item
+                    icon = None
+                elif len(item) == 3:
+                    text, widget, icon = item
+                else:
+                    raise ValueError(
+                        "Content items must be a tuples of (title, widget) or (title, widget, icon)"
+                    )
+
+                self.content.append(text, widget, icon=icon)
 
         self.on_select = on_select
 
@@ -222,7 +268,8 @@ class OptionContainer(Widget):
 
     @property
     def current_tab(self) -> OptionItem | None:
-        """The currently selected tab of content, or ``None`` if there are no tabs.
+        """The currently selected tab of content, or ``None`` if there are no tabs,
+        or the OptionContainer is in a state where no tab is currently selected.
 
         This property can also be set with an ``int`` index, or a ``str`` label.
         """

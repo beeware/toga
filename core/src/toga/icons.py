@@ -36,6 +36,10 @@ class Icon:
     def DEFAULT_ICON(cls) -> Icon:
         return Icon("resources/toga", system=True)
 
+    @cachedicon
+    def OPTION_CONTAINER_DEFAULT_TAB_ICON(cls) -> Icon:
+        return Icon("resources/optioncontainer-tab", system=True)
+
     def __init__(
         self,
         path: str | Path,
