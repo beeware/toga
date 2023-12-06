@@ -31,7 +31,7 @@ def test_create_empty(widget):
     assert widget.image is None
 
 
-ABSOLUTE_FILE_PATH = Path(toga.__file__).parent / "resources/toga.png"
+ABSOLUTE_FILE_PATH = Path(__file__).parent.parent / "resources/toga.png"
 
 
 def test_create_from_toga_image(app):

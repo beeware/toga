@@ -3,10 +3,11 @@ from pathlib import Path
 import pytest
 
 import toga
+import toga_dummy
 from toga_dummy.icons import Icon as DummyIcon
 
 APP_RESOURCES = Path(__file__).parent / "resources"
-TOGA_RESOURCES = Path(toga.__file__).parent / "resources"
+TOGA_RESOURCES = Path(toga_dummy.__file__).parent / "resources"
 
 
 class MyApp(toga.App):
@@ -26,11 +27,11 @@ def app():
         # Absolute path (points at a file in the system resource folder,
         # but that's just because it's a location we know exists.)
         (
-            Path(__file__).parent.parent / "src/toga/resources/toga",
+            TOGA_RESOURCES / "toga",
             False,
             None,
             [".png"],
-            Path(__file__).parent.parent / "src/toga/resources/toga.png",
+            TOGA_RESOURCES / "toga.png",
         ),
         # PNG format
         ("resources/red", False, None, [".png"], APP_RESOURCES / "red.png"),
@@ -68,10 +69,26 @@ def app():
             [".bmp", ".png"],
             APP_RESOURCES / "orange.bmp",
         ),
+        # Relative path, platform-specific resource
+        (
+            Path("resources/widget"),
+            False,
+            None,
+            [".png"],
+            APP_RESOURCES / "widget-dummy.png",
+        ),
+        # Relative path as string, platform-specific resource
+        (
+            "resources/widget",
+            False,
+            None,
+            [".png"],
+            APP_RESOURCES / "widget-dummy.png",
+        ),
         # Relative path, system resource
-        (Path("resources/toga"), True, None, [".png"], TOGA_RESOURCES / "toga.png"),
+        (Path("toga"), True, None, [".png"], TOGA_RESOURCES / "toga.png"),
         # Relative path as string, system resource
-        (Path("resources/toga"), True, None, [".png"], TOGA_RESOURCES / "toga.png"),
+        ("toga", True, None, [".png"], TOGA_RESOURCES / "toga.png"),
     ],
 )
 def test_create(monkeypatch, app, path, system, sizes, extensions, final_paths):
@@ -79,6 +96,9 @@ def test_create(monkeypatch, app, path, system, sizes, extensions, final_paths):
     # Patch the dummy Icon class to evaluated different lookup strategies.
     monkeypatch.setattr(DummyIcon, "SIZES", sizes)
     monkeypatch.setattr(DummyIcon, "EXTENSIONS", extensions)
+
+    # monkeypatch the current platform to report as dummy
+    monkeypatch.setattr(toga.platform, "current_platform", "dummy")
 
     icon = toga.Icon(path, system=system)
 
@@ -102,9 +122,9 @@ def test_create_fallback(app):
 @pytest.mark.parametrize(
     "name, path",
     [
-        ("DEFAULT_ICON", "resources/toga"),
-        ("TOGA_ICON", "resources/toga"),
-        ("OPTION_CONTAINER_DEFAULT_TAB_ICON", "resources/optioncontainer-tab"),
+        ("DEFAULT_ICON", "toga"),
+        ("TOGA_ICON", "toga"),
+        ("OPTION_CONTAINER_DEFAULT_TAB_ICON", "optioncontainer-tab"),
     ],
 )
 def test_cached_icons(app, name, path):

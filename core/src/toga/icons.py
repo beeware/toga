@@ -40,15 +40,15 @@ class cachedicon:
 class Icon:
     @cachedicon
     def TOGA_ICON(cls) -> Icon:
-        return Icon("resources/toga", system=True)
+        return Icon("toga", system=True)
 
     @cachedicon
     def DEFAULT_ICON(cls) -> Icon:
-        return Icon("resources/toga", system=True)
+        return Icon("toga", system=True)
 
     @cachedicon
     def OPTION_CONTAINER_DEFAULT_TAB_ICON(cls) -> Icon:
-        return Icon("resources/optioncontainer-tab", system=True)
+        return Icon("optioncontainer-tab", system=True)
 
     def __init__(
         self,
@@ -71,7 +71,7 @@ class Icon:
         self.factory = get_platform_factory()
         try:
             if self.system:
-                resource_path = toga.App.app.paths.toga
+                resource_path = Path(self.factory.__file__).parent / "resources"
             else:
                 resource_path = toga.App.app.paths.app
 
@@ -97,20 +97,21 @@ class Icon:
             self._impl = self.DEFAULT_ICON._impl
 
     def _full_path(self, size, extensions, resource_path):
+        platform = toga.platform.current_platform
         for extension in extensions:
-            if size:
-                icon_path = (
-                    resource_path
-                    / self.path.parent
-                    / f"{self.path.stem}-{size}{extension}"
-                )
+            for filename in (
+                [
+                    f"{self.path.stem}-{platform}-{size}{extension}",
+                    f"{self.path.stem}-{size}{extension}",
+                ]
+                if size
+                else []
+            ) + [
+                f"{self.path.stem}-{platform}{extension}",
+                f"{self.path.stem}{extension}",
+            ]:
+                icon_path = resource_path / self.path.parent / filename
                 if icon_path.exists():
                     return icon_path
-
-            icon_path = (
-                resource_path / self.path.parent / f"{self.path.stem}{extension}"
-            )
-            if icon_path.exists():
-                return icon_path
 
         raise FileNotFoundError(f"Can't find icon {self.path}")
