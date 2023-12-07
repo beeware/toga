@@ -4,7 +4,6 @@ from unittest.mock import Mock
 import pytest
 
 import toga
-import toga_dummy
 from toga_dummy.utils import (
     assert_action_not_performed,
     assert_action_performed,
@@ -351,8 +350,8 @@ def test_as_image(window):
     """A window can be captured as an image"""
     image = window.as_image()
     assert_action_performed(window, "get image data")
-    path = Path(toga_dummy.__file__).parent / "resources/screenshot.png"
-    assert image.data == path.read_bytes()
+    # Don't need to check the raw data; just check it's the right size.
+    assert image.size == (318, 346)
 
 
 def test_info_dialog(window, app):

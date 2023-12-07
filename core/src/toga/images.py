@@ -99,6 +99,9 @@ class Image:
             src.save(buffer, format="png", compress_level=0)
             self._impl = self.factory.Image(interface=self, data=buffer.getvalue())
 
+        elif isinstance(src, self.factory.Image.RAW_TYPE):
+            self._impl = self.factory.Image(interface=self, raw=src)
+
         else:
             raise TypeError("Unsupported source type for Image")
 
