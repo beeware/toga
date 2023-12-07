@@ -112,7 +112,6 @@ def test_create_from_raw():
     """An image can be created from a raw data source"""
     orig = toga.Image(BYTES)
 
-    print("NATIVE", orig._impl.native)
     copy = toga.Image(orig._impl.native)
     # Image is bound
     assert copy._impl is not None
