@@ -4,7 +4,7 @@ from toga_gtk.libs import GdkPixbuf, Gio, GLib
 
 
 class Image:
-    RAW_TYPE = GdkPixbuf
+    RAW_TYPE = GdkPixbuf.Pixbuf
 
     def __init__(self, interface, path=None, data=None, raw=None):
         self.interface = interface

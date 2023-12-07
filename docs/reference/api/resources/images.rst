@@ -57,7 +57,7 @@ Notes
 * The native platform representations for images are:
 
   - Android: ``android.graphics.Bitmap``
-  - GTK: ``GdkPixbuf``
+  - GTK: ``GdkPixbuf.Pixbuf``
   - iOS: ``UIImage``
   - macOS: ``NSImage``
   - Windows: ``System.Drawing.Image``
