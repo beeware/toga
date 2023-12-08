@@ -287,6 +287,38 @@ UIGraphicsImageRenderer = ObjCClass("UIGraphicsImageRenderer")
 UIImage = ObjCClass("UIImage")
 
 ######################################################################
+# UIImagePicker.h
+
+# Camera
+UIImagePickerController = ObjCClass("UIImagePickerController")
+
+# PhotoLibrary and SavedPhotosAlbumn constants also exist, but they're marked as deprecated
+UIImagePickerControllerSourceTypeCamera = 1
+
+
+class UIImagePickerControllerQualityType(Enum):
+    High = 0
+    Medium = 1
+    Low = 2
+
+
+class UIImagePickerControllerCameraCaptureMode(Enum):
+    Photo = 0
+    Video = 1
+
+
+class UIImagePickerControllerCameraDevice(Enum):
+    Rear = 0
+    Front = 1
+
+
+class UIImagePickerControllerCameraFlashMode(Enum):
+    Off = -1
+    Auto = 0
+    On = 1
+
+
+######################################################################
 # UIImageView.h
 UIImageView = ObjCClass("UIImageView")
 
