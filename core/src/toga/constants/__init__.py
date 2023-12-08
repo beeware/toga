@@ -21,3 +21,40 @@ class FillRule(Enum):
     "The rule to use when filling paths."
     EVENODD = 0
     NONZERO = 1
+
+
+##########################################################################
+# Camera
+##########################################################################
+
+
+class FlashMode(Enum):
+    """The flash mode to use when capturing photos or videos."""
+
+    # These constant values allow `flash=True` and `flash=False` to work
+    AUTO = -1
+    OFF = 0
+    ON = 1
+
+
+class VideoQuality(Enum):
+    """The quality of the video recording.
+
+    The values of ``LOW``, ``MEDIUM`` and ``HIGH`` represent specific (platform
+    dependent) resolutions. These resolutions will remain the same over time.
+
+    The values of ``CELLULAR`` and ``WIFI`` may change over time to reflect the
+    capabilities of network hardware.
+
+    ``HIGHEST`` will always refer to the highest quality that the device can
+    record.
+    """
+
+    LOW = 0
+    MEDIUM = 1
+    HIGH = 2
+
+    # Qualitative alternatives to these constants
+    CELLULAR = 0
+    WIFI = 1
+    HIGHEST = 2

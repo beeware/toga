@@ -23,6 +23,7 @@ from weakref import WeakValueDictionary
 from toga.command import Command, CommandSet
 from toga.documents import Document
 from toga.handlers import wrapped_handler
+from toga.hardware.camera import Camera
 from toga.icons import Icon
 from toga.paths import Paths
 from toga.platform import get_platform_factory
@@ -504,6 +505,18 @@ class App:
         for each type of content.
         """
         return self._paths
+
+    @property
+    def camera(self) -> Camera:
+        """A representation of the device's camera (or cameras)."""
+        try:
+            return self._camera
+        except AttributeError:
+            # Instantiate the camera instance for this app on first access
+            # This will raise a exception if the platform doesn't implement
+            # the Camera API.
+            self._camera = Camera(self)
+        return self._camera
 
     @property
     def name(self) -> str:
