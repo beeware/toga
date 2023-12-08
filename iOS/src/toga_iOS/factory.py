@@ -2,10 +2,17 @@ from . import dialogs
 from .app import App, MainWindow
 from .colors import native_color
 from .command import Command
+
+# Resources
 from .fonts import Font
+
+# Hardware
+from .hardware.camera import Camera
 from .icons import Icon
 from .images import Image
 from .paths import Paths
+
+# Widgets
 from .widgets.box import Box
 from .widgets.button import Button
 from .widgets.canvas import Canvas
@@ -48,6 +55,8 @@ __all__ = [
     "Image",
     "Paths",
     "dialogs",
+    # Hardware
+    "Camera",
     # Widgets
     "Box",
     "Button",
