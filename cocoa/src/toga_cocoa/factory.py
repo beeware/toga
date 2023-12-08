@@ -34,6 +34,9 @@ from .widgets.tree import Tree
 from .widgets.webview import WebView
 from .window import Window
 
+# Hardware
+# from .hardware.camera import Camera
+
 
 def not_implemented(feature):
     print(f"[Cocoa] Not implemented: {feature}")  # pragma: nocover
@@ -52,6 +55,8 @@ __all__ = [
     "Image",
     "Paths",
     "dialogs",
+    # Hardware
+    # "Camera",
     # Widgets
     "ActivityIndicator",
     "Box",
