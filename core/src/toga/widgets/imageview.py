@@ -11,9 +11,7 @@ from toga.widgets.base import Widget
 if TYPE_CHECKING:
     from pathlib import Path
 
-    import PIL.Image
-
-    from toga.images import ImageT
+    from toga.images import ImageT, ImageType
 
 
 def rehint_imageview(image, style, scale=1):
@@ -72,26 +70,21 @@ def rehint_imageview(image, style, scale=1):
 class ImageView(Widget):
     def __init__(
         self,
-        image: str
-        | Path
-        | bytes
-        | bytearray
-        | memoryview
-        | PIL.Image.Image
-        | None = None,
+        image: str | Path | bytes | bytearray | memoryview | ImageType | None = None,
         id=None,
         style=None,
     ):
         """
         Create a new image view.
 
-        :param image: The image to display. This can take all the same formats as the
-            `src` parameter to :class:`toga.Image` -- namely, a file path (as string
-            or :any:`pathlib.Path`), bytes data in a supported image format,
-            or :any:`PIL.Image.Image`.
+        :param image: The image to display. This can take all the same formats
+            as the `src` parameter to :class:`toga.Image` -- namely, a file path
+            (as string or :any:`pathlib.Path`), bytes data in a supported image
+            format, an instance of the platform's native Image type, or
+            :any:`PIL.Image.Image`.
         :param id: The ID for the widget.
-        :param style: A style object. If no style is provided, a default style will be
-            applied to the widget.
+        :param style: A style object. If no style is provided, a default style
+            will be applied to the widget.
         """
         super().__init__(id=id, style=style)
         # Prime the image attribute

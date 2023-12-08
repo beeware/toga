@@ -3,7 +3,7 @@ from __future__ import annotations
 import warnings
 from io import BytesIO
 from pathlib import Path
-from typing import TypeVar
+from typing import Any, TypeVar
 from warnings import warn
 
 try:
@@ -19,22 +19,16 @@ from toga.platform import get_platform_factory
 # Make sure deprecation warnings are shown by default
 warnings.filterwarnings("default", category=DeprecationWarning)
 
+# Define a bucket type for any accepted image type.
+ImageType = Any
+# Define a type variable for generics where an Image type is required.
 ImageT = TypeVar("ImageT")
 
 
-# Note: remove PIL type annotation when plugin system is implemented for image format
-# registration; replace with ImageT?
 class Image:
     def __init__(
         self,
-        src: str
-        | Path
-        | bytes
-        | bytearray
-        | memoryview
-        | Image
-        | PIL.Image.Image
-        | None = None,
+        src: str | Path | bytes | bytearray | memoryview | ImageType | None = None,
         *,
         path=None,  # DEPRECATED
         data=None,  # DEPRECATED
@@ -43,11 +37,13 @@ class Image:
 
         :param src: The source from which to load the image. Can be a file path
             (relative or absolute, as a string or :any:`pathlib.Path`), raw
-            binary data in any supported image format, or another Toga image. Can also
-            accept a :any:`PIL.Image.Image` if Pillow is installed.
+            binary data in any supported image format, or another Toga image.
+            Can also accept the platform's native Image format; if Pillow is
+            installed, :any:`PIL.Image.Image` can be used.
         :param path: **DEPRECATED** - Use ``src``.
         :param data: **DEPRECATED** - Use ``src``.
-        :raises FileNotFoundError: If a path is provided, but that path does not exist.
+        :raises FileNotFoundError: If a path is provided, but that path does not
+            exist.
         :raises ValueError: If the source cannot be loaded as an image.
         """
         ######################################################################
