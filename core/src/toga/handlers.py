@@ -112,9 +112,22 @@ def wrapped_handler(interface, handler, cleanup=None):
 
 
 class AsyncResult(ABC):
-    def __init__(self):
+    def __init__(self, on_result):
         loop = asyncio.get_event_loop()
         self.future = loop.create_future()
+        self.on_result = on_result
+
+    def set_result(self, result):
+        if not self.future.cancelled():
+            self.future.set_result(result)
+        if self.on_result:
+            self.on_result(result)
+
+    def set_exception(self, exc):
+        if not self.future.cancelled():
+            self.future.set_exception(exc)
+        if self.on_result:
+            self.on_result(None, exception=exc)
 
     def __repr__(self):
         return f"<Async {self.RESULT_TYPE} result; future={self.future}>"

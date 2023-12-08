@@ -6,6 +6,10 @@ import pytest
 from toga.handlers import AsyncResult, NativeHandler, wrapped_handler
 
 
+class ExampleAsyncResult(AsyncResult):
+    RESULT_TYPE = "Test"
+
+
 def test_noop_handler():
     """None can be wrapped as a valid handler"""
     obj = Mock()
@@ -510,11 +514,9 @@ def test_native_handler():
     assert wrapped == native_method
 
 
-def test_async_result(event_loop):
-    class TestAsyncResult(AsyncResult):
-        RESULT_TYPE = "Test"
-
-    result = TestAsyncResult()
+def test_async_result_non_comparable(event_loop):
+    """An async result can't be compared or evaluated"""
+    result = ExampleAsyncResult(None)
 
     # repr for the result is useful
     assert repr(result) == "<Async Test result; future=<Future pending>>"
@@ -556,3 +558,101 @@ def test_async_result(event_loop):
         match=r"Can't check Test result directly; use await or an on_result handler",
     ):
         result != 42
+
+
+def test_async_result(event_loop):
+    """An async result can be set"""
+    on_result = Mock()
+
+    result = ExampleAsyncResult(on_result)
+
+    result.set_result(42)
+
+    # Evaluate the future
+    async_answer = event_loop.run_until_complete(result.future)
+
+    # The answer was returned, and passed to the callback
+    assert async_answer == 42
+    on_result.assert_called_once_with(42)
+
+
+def test_async_result_cancelled(event_loop):
+    """An async result can be set even if the future is cancelled"""
+    on_result = Mock()
+
+    result = ExampleAsyncResult(on_result)
+
+    # cancel the future.
+    result.future.cancel()
+
+    result.set_result(42)
+
+    # Evaluate the future. This will raise an error
+    with pytest.raises(asyncio.CancelledError):
+        event_loop.run_until_complete(result.future)
+
+    # The answer was still passed to the callback
+    on_result.assert_called_once_with(42)
+
+
+def test_async_result_no_sync(event_loop):
+    """An async result can be set when there's no on_result handler"""
+    result = ExampleAsyncResult(None)
+
+    result.set_result(42)
+
+    # Evaluate the future
+    async_answer = event_loop.run_until_complete(result.future)
+
+    # The answer was returned, and passed to the callback
+    assert async_answer == 42
+
+
+def test_async_exception(event_loop):
+    """An async result can raise an exception"""
+    on_result = Mock()
+
+    result = ExampleAsyncResult(on_result)
+
+    result.set_exception(ValueError("Bad stuff"))
+
+    # Evaluate the future; this will raise an exception
+    with pytest.raises(ValueError, match=r"Bad stuff"):
+        event_loop.run_until_complete(result.future)
+
+    # The answer was returned, and passed to the callback
+    on_result.assert_called_once()
+    assert on_result.call_args[0] == (None,)
+    assert isinstance(on_result.call_args[1]["exception"], ValueError)
+
+
+def test_async_exception_cancelled(event_loop):
+    """An async result can raise an exception even if the future is cancelled"""
+    on_result = Mock()
+
+    result = ExampleAsyncResult(on_result)
+
+    # Cancel the future
+    result.future.cancel()
+
+    result.set_exception(ValueError("Bad stuff"))
+
+    # Evaluate the future. This will raise an error
+    with pytest.raises(asyncio.CancelledError):
+        event_loop.run_until_complete(result.future)
+
+    # The answer was returned, and passed to the callback
+    on_result.assert_called_once()
+    assert on_result.call_args[0] == (None,)
+    assert isinstance(on_result.call_args[1]["exception"], ValueError)
+
+
+def test_async_exception_no_sync(event_loop):
+    """An async result can raise an exception when there's no on_result handler"""
+    result = ExampleAsyncResult(None)
+
+    result.set_exception(ValueError("Bad stuff"))
+
+    # Evaluate the future; this will raise an exception
+    with pytest.raises(ValueError, match=r"Bad stuff"):
+        event_loop.run_until_complete(result.future)
