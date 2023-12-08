@@ -49,10 +49,9 @@ class TextualDialog(ModalScreen[bool]):
 
 
 class BaseDialog(ABC):
-    def __init__(self, interface, title, message, on_result):
+    def __init__(self, interface, title, message):
         self.interface = interface
         self.interface._impl = self
-        self.on_result = on_result
         self.title = title
         self.message = message
 
@@ -75,8 +74,7 @@ class BaseDialog(ABC):
         self.native.dismiss(None)
 
     def on_close(self, result: bool):
-        self.on_result(self, result)
-        self.interface.future.set_result(result)
+        self.interface.set_result(result)
 
 
 class InfoDialog(BaseDialog):
@@ -121,7 +119,6 @@ class StackTraceDialog(BaseDialog):
         interface,
         title,
         message,
-        on_result=None,
         retry=False,
         content="",
     ):
@@ -129,7 +126,6 @@ class StackTraceDialog(BaseDialog):
             interface=interface,
             title=title,
             message=message,
-            on_result=on_result,
         )
         self.retry = retry
         self.content = content
@@ -229,13 +225,11 @@ class SaveFileDialog(BaseDialog):
         filename,
         initial_directory,
         file_types=None,
-        on_result=None,
     ):
         super().__init__(
             interface=interface,
             title=title,
             message=None,
-            on_result=on_result,
         )
         self.initial_filename = filename
         self.initial_directory = initial_directory if initial_directory else Path.cwd()
@@ -299,13 +293,11 @@ class OpenFileDialog(BaseDialog):
         initial_directory,
         file_types,
         multiselect,
-        on_result=None,
     ):
         super().__init__(
             interface=interface,
             title=title,
             message=None,
-            on_result=on_result,
         )
 
         self.initial_directory = initial_directory if initial_directory else Path.cwd()
@@ -360,13 +352,11 @@ class SelectFolderDialog(BaseDialog):
         title,
         initial_directory,
         multiselect,
-        on_result=None,
     ):
         super().__init__(
             interface=interface,
             title=title,
             message=None,
-            on_result=on_result,
         )
         self.initial_directory = initial_directory if initial_directory else Path.cwd()
         self.filter_func = lambda path: path.is_dir()

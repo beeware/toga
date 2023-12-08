@@ -10,7 +10,7 @@ class BaseDialog(ABC):
 
 
 class InfoDialog(BaseDialog):
-    def __init__(self, interface, title, message, on_result=None):
+    def __init__(self, interface, title, message):
         super().__init__(interface=interface)
         self.native = create_element(
             "sl-dialog",
@@ -21,7 +21,6 @@ class InfoDialog(BaseDialog):
             ]
             + self.create_buttons(),
         )
-        self.on_result = on_result
 
         # Add the dialog to the DOM.
         interface.window.app._impl.native.appendChild(self.native)
@@ -41,52 +40,43 @@ class InfoDialog(BaseDialog):
         self.native.hide()
         self.native.parentElement.removeChild(self.native)
 
-        self.on_result(None)
-        self.interface.future.set_result(None)
+        self.interface.set_result(None)
 
 
 class QuestionDialog(BaseDialog):
-    def __init__(self, interface, title, message, on_result=None):
+    def __init__(self, interface, title, message):
         super().__init__(interface=interface)
-        self.on_result = on_result
 
         interface.window.factory.not_implemented("Window.question_dialog()")
 
-        self.on_result(None)
-        self.interface.future.set_result(None)
+        self.interface.set_result(None)
 
 
 class ConfirmDialog(BaseDialog):
-    def __init__(self, interface, title, message, on_result=None):
+    def __init__(self, interface, title, message):
         super().__init__(interface=interface)
-        self.on_result = on_result
 
         interface.window.factory.not_implemented("Window.confirm_dialog()")
 
-        self.on_result(None)
-        self.interface.future.set_result(None)
+        self.interface.set_result(None)
 
 
 class ErrorDialog(BaseDialog):
-    def __init__(self, interface, title, message, on_result=None):
+    def __init__(self, interface, title, message):
         super().__init__(interface=interface)
-        self.on_result = on_result
 
         interface.window.factory.not_implemented("Window.error_dialog()")
 
-        self.on_result(None)
-        self.interface.future.set_result(None)
+        self.interface.set_result(None)
 
 
 class StackTraceDialog(BaseDialog):
-    def __init__(self, interface, title, message, on_result=None, **kwargs):
+    def __init__(self, interface, title, message, **kwargs):
         super().__init__(interface=interface)
-        self.on_result = on_result
 
         interface.window.factory.not_implemented("Window.stack_trace_dialog()")
 
-        self.on_result(None)
-        self.interface.future.set_result(None)
+        self.interface.set_result(None)
 
 
 class SaveFileDialog(BaseDialog):
@@ -97,15 +87,12 @@ class SaveFileDialog(BaseDialog):
         filename,
         initial_directory,
         file_types=None,
-        on_result=None,
     ):
         super().__init__(interface=interface)
-        self.on_result = on_result
 
         interface.window.factory.not_implemented("Window.save_file_dialog()")
 
-        self.on_result(None)
-        self.interface.future.set_result(None)
+        self.interface.set_result(None)
 
 
 class OpenFileDialog(BaseDialog):
@@ -116,15 +103,12 @@ class OpenFileDialog(BaseDialog):
         initial_directory,
         file_types,
         multiselect,
-        on_result=None,
     ):
         super().__init__(interface=interface)
-        self.on_result = on_result
 
         interface.window.factory.not_implemented("Window.open_file_dialog()")
 
-        self.on_result(None)
-        self.interface.future.set_result(None)
+        self.interface.set_result(None)
 
 
 class SelectFolderDialog(BaseDialog):
@@ -134,12 +118,9 @@ class SelectFolderDialog(BaseDialog):
         title,
         initial_directory,
         multiselect,
-        on_result=None,
     ):
         super().__init__(interface=interface)
-        self.on_result = on_result
 
         interface.window.factory.not_implemented("Window.select_folder_dialog()")
 
-        self.on_result(None)
-        self.interface.future.set_result(None)
+        self.interface.set_result(None)

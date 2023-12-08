@@ -75,7 +75,7 @@ class WebView(Widget):
 
     def evaluate_javascript(self, javascript, on_result=None):
         # Construct a future on the event loop
-        result = JavaScriptResult()
+        result = JavaScriptResult(on_result)
 
         # Define a callback that will update the future when
         # the Javascript is complete.
@@ -91,14 +91,10 @@ class WebView(Widget):
                 else:
                     value = value.to_string()
 
-                result.future.set_result(value)
-                if on_result:
-                    on_result(value)
+                result.set_result(value)
             except Exception as e:
                 exc = RuntimeError(str(e))
-                result.future.set_exception(exc)
-                if on_result:
-                    on_result(None, exception=exc)
+                result.set_exception(exc)
 
         # Invoke the javascript method, with a callback that will set
         # the future when a result is available.
