@@ -41,6 +41,9 @@ class WebView(Widget):
         self.settings = self.native.getSettings()
         self.default_user_agent = self.settings.getUserAgentString()
         self.settings.setJavaScriptEnabled(True)
+        # enable pinch-to-zoom without the deprecated on-screen controls
+        self.settings.setBuiltInZoomControls(True)
+        self.settings.setDisplayZoomControls(False)
 
     def get_url(self):
         url = self.native.getUrl()
