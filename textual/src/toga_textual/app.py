@@ -23,6 +23,8 @@ class TogaApp(TextualApp):
 class App:
     def __init__(self, interface):
         self.interface = interface
+        self.interface._impl = self
+
         self.loop = asyncio.new_event_loop()
         self.native = TogaApp(self)
 
