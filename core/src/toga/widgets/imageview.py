@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from travertino.size import at_least
 
@@ -11,7 +11,7 @@ from toga.widgets.base import Widget
 if TYPE_CHECKING:
     from pathlib import Path
 
-    from toga.images import ImageT, ImageType
+    from toga.images import ImageT
 
 
 def rehint_imageview(image, style, scale=1):
@@ -70,7 +70,7 @@ def rehint_imageview(image, style, scale=1):
 class ImageView(Widget):
     def __init__(
         self,
-        image: str | Path | bytes | bytearray | memoryview | ImageType | None = None,
+        image: str | Path | bytes | bytearray | memoryview | Any | None = None,
         id=None,
         style=None,
     ):

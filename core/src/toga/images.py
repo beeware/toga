@@ -19,8 +19,6 @@ from toga.platform import get_platform_factory
 # Make sure deprecation warnings are shown by default
 warnings.filterwarnings("default", category=DeprecationWarning)
 
-# Define a bucket type for any accepted image type.
-ImageType = Any
 # Define a type variable for generics where an Image type is required.
 ImageT = TypeVar("ImageT")
 
@@ -28,7 +26,7 @@ ImageT = TypeVar("ImageT")
 class Image:
     def __init__(
         self,
-        src: str | Path | bytes | bytearray | memoryview | ImageType | None = None,
+        src: str | Path | bytes | bytearray | memoryview | Any | None = None,
         *,
         path=None,  # DEPRECATED
         data=None,  # DEPRECATED
