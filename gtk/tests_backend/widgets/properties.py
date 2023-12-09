@@ -36,14 +36,22 @@ def toga_font(font):
         family_font_value = font.split("\n  ")[1].split(";")[0].split(": ")[1]
         size_font_value = font.split("\n  ")[2].split(";")[0].split(": ")[1]
         style_font_value = font.split("\n  ")[3].split(";")[0].split(": ")[1]
-        variant_font_value = font.split("\n  ")[4].split(";")[0].split(": ")[1]
+        variant_font_value = font.split("\n  ")[5].split(";")[0].split(": ")[1]
         weight_font_value = font.split("\n  ")[10].split(";")[0].split(": ")[1]
     else:
         family_font_value = font.split("\n  ")[1].split(";")[0].split(": ")[1]
         size_font_value = -1
         style_font_value = font.split("\n  ")[2].split(";")[0].split(": ")[1]
-        variant_font_value = font.split("\n  ")[3].split(";")[0].split(": ")[1]
+        variant_font_value = font.split("\n  ")[4].split(";")[0].split(": ")[1]
         weight_font_value = font.split("\n  ")[9].split(";")[0].split(": ")[1]
+
+    if variant_font_value == "initial":
+        variant_font_value = "normal"
+
+    if weight_font_value == "400":
+        weight_font_value = "normal"
+    elif weight_font_value == "700":
+        weight_font_value = "bold"
 
     return Font(
         family=family_font_value,
