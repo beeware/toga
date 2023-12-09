@@ -1,6 +1,6 @@
 import pytest
 
-from toga_gtk.libs import GdkPixbuf
+from toga_gtk.libs import Gtk
 
 from .probe import BaseProbe
 
@@ -12,9 +12,9 @@ class IconProbe(BaseProbe):
         super().__init__()
         self.app = app
         self.icon = icon
-        assert isinstance(self.icon._impl.native_16, GdkPixbuf.Pixbuf)
-        assert isinstance(self.icon._impl.native_32, GdkPixbuf.Pixbuf)
-        assert isinstance(self.icon._impl.native_72, GdkPixbuf.Pixbuf)
+        assert isinstance(self.icon._impl.native_16, Gtk.Widget)
+        assert isinstance(self.icon._impl.native_32, Gtk.Widget)
+        assert isinstance(self.icon._impl.native_72, Gtk.Widget)
 
     def assert_icon_content(self, path):
         if path == "resources/icons/green":
