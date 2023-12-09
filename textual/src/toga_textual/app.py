@@ -7,7 +7,7 @@ from .window import Window
 
 class MainWindow(Window):
     def textual_close(self):
-        self.interface.app.on_exit(None)
+        self.interface.app.on_exit()
 
 
 class TogaApp(TextualApp):
