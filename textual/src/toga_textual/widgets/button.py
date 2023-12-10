@@ -12,7 +12,7 @@ class TogaButton(TextualButton):
         self.impl = impl
 
     def on_button_pressed(self, event: TextualButton.Pressed) -> None:
-        self.interface.on_press(None)
+        self.interface.on_press()
 
 
 class Button(Widget):

@@ -161,7 +161,7 @@ class Window:
         return True
 
     def textual_close(self):
-        self.interface.on_close(self)
+        self.interface.on_close()
 
     def close(self):
         self.native.dismiss(None)
