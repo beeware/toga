@@ -270,6 +270,7 @@ UIControlStateReserved = 0xFF000000
 ######################################################################
 # UIFont.h
 UIFont = ObjCClass("UIFont")
+UIFont.declare_class_property("labelFontSize")
 UIFontDescriptorTraitItalic = 1 << 0
 UIFontDescriptorTraitBold = 1 << 1
 
