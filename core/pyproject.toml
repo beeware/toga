@@ -69,10 +69,10 @@ dev = [
     "Pillow == 10.1.0",
     "pre-commit == 3.5.0",
     "pytest == 7.4.3",
-    "pytest-asyncio == 0.21.1",
+    "pytest-asyncio == 0.23.1",
     "pytest-freezer == 0.4.8",
     "setuptools-scm == 8.0.4",
-    "tox == 4.11.3",
+    "tox == 4.11.4",
 ]
 docs = [
     "furo == 2023.9.10",
