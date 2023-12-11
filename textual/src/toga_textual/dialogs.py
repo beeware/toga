@@ -15,12 +15,12 @@ class TextualDialog(ModalScreen[bool]):
         self.impl = impl
 
     def compose(self) -> ComposeResult:
-        self.title = TitleBar(self.impl.title)
+        self.titlebar = TitleBar(self.impl.title)
         self.impl.compose_content(self)
         self.buttons = self.impl.create_buttons()
         self.button_box = Horizontal(*self.buttons)
         self.container = Vertical(
-            self.title,
+            self.titlebar,
             self.content,
             self.button_box,
             id="dialog",
@@ -292,7 +292,7 @@ class OpenFileDialog(BaseDialog):
         title,
         initial_directory,
         file_types,
-        multiselect,
+        multiple_select,
     ):
         super().__init__(
             interface=interface,
@@ -307,7 +307,7 @@ class OpenFileDialog(BaseDialog):
         else:
             self.filter_func = None
 
-        self.multiselect = multiselect
+        self.multiple_select = multiple_select
 
     def compose_content(self, dialog):
         dialog.directory_tree = FilteredDirectoryTree(self)
@@ -351,7 +351,7 @@ class SelectFolderDialog(BaseDialog):
         interface,
         title,
         initial_directory,
-        multiselect,
+        multiple_select,
     ):
         super().__init__(
             interface=interface,
@@ -360,7 +360,7 @@ class SelectFolderDialog(BaseDialog):
         )
         self.initial_directory = initial_directory if initial_directory else Path.cwd()
         self.filter_func = lambda path: path.is_dir()
-        self.multiselect = multiselect
+        self.multiple_select = multiple_select
 
     def compose_content(self, dialog):
         dialog.directory_tree = FilteredDirectoryTree(self)
