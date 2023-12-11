@@ -22,9 +22,9 @@ def rehint_imageview(image, style, scale=1):
     :param image: The image being displayed.
     :param style: The style object for the imageview.
     :param scale: The scale factor (if any) to apply to native pixel sizes.
-    :returns: A triple containing the intrinsic width hint, intrinsic height
-        hint, and the aspect ratio to preserve (or None if the aspect ratio
-        should not be preserved).
+    :returns: A triple containing the intrinsic width hint, intrinsic height hint, and
+        the aspect ratio to preserve (or None if the aspect ratio should not be
+        preserved).
     """
     if image:
         if style.width != NONE and style.height != NONE:
@@ -77,14 +77,13 @@ class ImageView(Widget):
         """
         Create a new image view.
 
-        :param image: The image to display. This can take all the same formats
-            as the `src` parameter to :class:`toga.Image` -- namely, a file path
-            (as string or :any:`pathlib.Path`), bytes data in a supported image
-            format, an instance of the platform's native Image type, or
-            :any:`PIL.Image.Image`.
+        :param image: The image to display. This can take all the same formats as the
+            `src` parameter to :class:`toga.Image` -- namely, a file path (as string or
+            :any:`pathlib.Path`), bytes data in a supported image format, an instance of
+            the platform's native Image type, or :any:`PIL.Image.Image`.
         :param id: The ID for the widget.
-        :param style: A style object. If no style is provided, a default style
-            will be applied to the widget.
+        :param style: A style object. If no style is provided, a default style will be
+            applied to the widget.
         """
         super().__init__(id=id, style=style)
         # Prime the image attribute

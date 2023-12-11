@@ -34,14 +34,13 @@ class Image:
         """Create a new image.
 
         :param src: The source from which to load the image. Can be a file path
-            (relative or absolute, as a string or :any:`pathlib.Path`), raw
-            binary data in any supported image format, or another Toga image.
-            Can also accept the platform's native Image format; if Pillow is
-            installed, :any:`PIL.Image.Image` can be used.
+            (relative or absolute, as a string or :any:`pathlib.Path`), raw binary data
+            in any supported image format, or another Toga image. Can also accept the
+            platform's native Image format; if Pillow is installed,
+            :any:`PIL.Image.Image` can be used.
         :param path: **DEPRECATED** - Use ``src``.
         :param data: **DEPRECATED** - Use ``src``.
-        :raises FileNotFoundError: If a path is provided, but that path does not
-            exist.
+        :raises FileNotFoundError: If a path is provided, but that path does not exist.
         :raises ValueError: If the source cannot be loaded as an image.
         """
         ######################################################################
