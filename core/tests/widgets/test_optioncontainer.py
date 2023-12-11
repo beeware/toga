@@ -47,7 +47,7 @@ def optioncontainer(content1, content2, content3, on_select_handler, tab_icon):
         content=[
             ("Item 1", content1),
             ("Item 2", content2, "other-icon"),
-            ("Item 3", content3, tab_icon),
+            ("Item 3", content3, tab_icon, False),
         ],
         on_select=on_select_handler,
     )
@@ -71,27 +71,33 @@ def test_widget_create_with_args(optioncontainer, on_select_handler, tab_icon):
     assert len(optioncontainer.content) == 3
     assert optioncontainer.current_tab.text == "Item 1"
     assert optioncontainer.current_tab.icon is None
+    assert optioncontainer.current_tab.enabled
     assert optioncontainer.on_select._raw == on_select_handler
 
     assert optioncontainer.content[1].text == "Item 2"
     assert optioncontainer.content[1].icon.path.name == "other-icon"
+    assert optioncontainer.content[1].enabled
 
     assert optioncontainer.content[2].text == "Item 3"
     assert optioncontainer.content[2].icon == tab_icon
+    assert not optioncontainer.content[2].enabled
 
 
 @pytest.mark.parametrize(
     "value",
     [
         ("label",),
-        ("label", toga.Box(), None, "extra"),
+        ("label", toga.Box(), None, True, "extra"),
     ],
 )
 def test_widget_create_invalid_content(value):
     """If the content provided at construction isn't 2- or 3-tuples, an error is raised."""
     with pytest.raises(
         ValueError,
-        match=r"Content items must be a tuples of \(title, widget\) or \(title, widget, icon\)",
+        match=(
+            r"Content items must be a tuples of \(title, widget\), "
+            r"\(title, widget, icon\), or \(title, widget, icon, enabled\)"
+        ),
     ):
         toga.OptionContainer(content=value)
 
@@ -470,7 +476,7 @@ def test_item_insert_invalid_text(optioncontainer, value, error):
 
 @pytest.mark.parametrize("enabled", [True, False])
 def test_item_insert_enabled(optioncontainer, enabled):
-    """The enabled status of content can be set"""
+    """The enabled status of content can be set on insert"""
     new_content = toga.Box()
 
     optioncontainer.content.insert(1, "New content", new_content, enabled=enabled)

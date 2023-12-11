@@ -1,9 +1,14 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import toga
 from toga.handlers import wrapped_handler
 
 from .base import Widget
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 
 class OptionItem:
@@ -56,7 +61,7 @@ class OptionItem:
         return self._interface._impl.get_option_icon(self.index)
 
     @icon.setter
-    def icon(self, icon_or_name: toga.Icon | str | None):
+    def icon(self, icon_or_name: toga.Icon | str | Path | None):
         if icon_or_name is None:
             icon = None
         elif isinstance(icon_or_name, toga.Icon):
@@ -140,33 +145,35 @@ class OptionList:
         self,
         text: str,
         widget: Widget,
+        *,
+        icon: str | Path | toga.Icon | None = None,
         enabled: bool = True,
-        icon: str | toga.Icon | None = None,
     ):
         """Add a new tab of content to the OptionContainer.
 
         :param text: The text label for the new tab
         :param widget: The content widget to use for the new tab.
-        :param enabled: Should the new tab be enabled?
         :param icon: The icon to use to represent the tab.
+        :param enabled: Should the new tab be enabled?
         """
-        self.insert(len(self), text, widget, enabled=enabled, icon=icon)
+        self.insert(len(self), text, widget, icon=icon, enabled=enabled)
 
     def insert(
         self,
         index: int | str | OptionItem,
         text: str,
         widget: Widget,
+        *,
+        icon: str | Path | toga.Icon | None = None,
         enabled: bool = True,
-        icon: str | toga.Icon | None = None,
     ):
         """Insert a new tab of content to the OptionContainer at the specified index.
 
         :param index: The index where the new tab should be inserted.
         :param text: The text label for the new tab.
         :param widget: The content widget to use for the new tab.
-        :param enabled: Should the new tab be enabled?
         :param icon: The icon to use to represent the tab.
+        :param enabled: Should the new tab be enabled?
         """
         # Convert the index into an integer
         index = self.index(index)
@@ -208,7 +215,12 @@ class OptionContainer(Widget):
         self,
         id=None,
         style=None,
-        content: list[tuple[str, Widget]] | None = None,
+        content: list[
+            tuple[str, Widget]
+            | tuple[str, Widget, str | Path | toga.Icon | None]
+            | tuple[str, Widget, str | Path | toga.Icon | None, bool]
+        ]
+        | None = None,
         on_select: callable | None = None,
     ):
         """Create a new OptionContainer.
@@ -233,14 +245,19 @@ class OptionContainer(Widget):
                 if len(item) == 2:
                     text, widget = item
                     icon = None
+                    enabled = True
                 elif len(item) == 3:
                     text, widget, icon = item
+                    enabled = True
+                elif len(item) == 4:
+                    text, widget, icon, enabled = item
                 else:
                     raise ValueError(
-                        "Content items must be a tuples of (title, widget) or (title, widget, icon)"
+                        "Content items must be a tuples of (title, widget), "
+                        "(title, widget, icon), or (title, widget, icon, enabled)"
                     )
 
-                self.content.append(text, widget, icon=icon)
+                self.content.append(text, widget, enabled=enabled, icon=icon)
 
         self.on_select = on_select
 
