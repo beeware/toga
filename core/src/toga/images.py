@@ -36,7 +36,7 @@ class Image:
         :param src: The source from which to load the image. Can be a file path
             (relative or absolute, as a string or :any:`pathlib.Path`), raw binary data
             in any supported image format, or another Toga image. Can also accept the
-            platform's native Image format; if Pillow is installed,
+            platform's native image format; if Pillow is installed,
             :any:`PIL.Image.Image` can be used.
         :param path: **DEPRECATED** - Use ``src``.
         :param data: **DEPRECATED** - Use ``src``.

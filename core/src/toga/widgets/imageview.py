@@ -80,7 +80,7 @@ class ImageView(Widget):
         :param image: The image to display. This can take all the same formats as the
             `src` parameter to :class:`toga.Image` -- namely, a file path (as string or
             :any:`pathlib.Path`), bytes data in a supported image format, an instance of
-            the platform's native Image type, or :any:`PIL.Image.Image`.
+            the platform's native image type, or :any:`PIL.Image.Image`.
         :param id: The ID for the widget.
         :param style: A style object. If no style is provided, a default style will be
             applied to the widget.
