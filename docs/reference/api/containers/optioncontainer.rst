@@ -114,7 +114,7 @@ Notes
   platform does not support icons, any icon provided will be ignored, and
   requests to retrieve the icon will return ``None``.
 
-* The behavior of disabled tabs varies between platforms. Some platforms 
+* The behavior of disabled tabs varies between platforms. Some platforms
   will display the tab, but put it in an unselectable state; some will hide
   the tab. A hidden tab can still be referenced by index - the tab index
   refers to the logical order, not the visible order.
