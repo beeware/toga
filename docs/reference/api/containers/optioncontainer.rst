@@ -109,14 +109,14 @@ item, you can specify an item using:
 Notes
 -----
 
-* The use of icons on tabs varies between platforms. If the platform supports
-  icons, and no icon is provided, a default icon will be provided. If the
+* The use of icons on tabs varies between platforms. If the platform requires
+  icons, and no icon is provided, a default icon will be used. If the
   platform does not support icons, any icon provided will be ignored, and
   requests to retrieve the icon will return ``None``.
 
-* The behavior of hidden tabs varies between platforms. Some platforms will
-  display the tab, but leave it in a disabled or unselectable state; some will
-  hide the tab. A hidden tab can still be referenced by index - the tab index
+* The behavior of disabled tabs varies between platforms. Some platforms 
+  will display the tab, but put it in an unselectable state; some will hide
+  the tab. A hidden tab can still be referenced by index - the tab index
   refers to the logical order, not the visible order.
 
 * iOS can only display 5 tabs. If there are more than 5 visible tabs in an
