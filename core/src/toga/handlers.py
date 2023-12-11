@@ -120,14 +120,14 @@ class AsyncResult(ABC):
     def set_result(self, result):
         if not self.future.cancelled():
             self.future.set_result(result)
-        if self.on_result:
-            self.on_result(result)
+            if self.on_result:
+                self.on_result(result)
 
     def set_exception(self, exc):
         if not self.future.cancelled():
             self.future.set_exception(exc)
-        if self.on_result:
-            self.on_result(None, exception=exc)
+            if self.on_result:
+                self.on_result(None, exception=exc)
 
     def __repr__(self):
         return f"<Async {self.RESULT_TYPE} result; future={self.future}>"

@@ -591,8 +591,8 @@ def test_async_result_cancelled(event_loop):
     with pytest.raises(asyncio.CancelledError):
         event_loop.run_until_complete(result.future)
 
-    # The answer was still passed to the callback
-    on_result.assert_called_once_with(42)
+    # The callback wasn't called
+    on_result.assert_not_called()
 
 
 def test_async_result_no_sync(event_loop):
@@ -641,10 +641,8 @@ def test_async_exception_cancelled(event_loop):
     with pytest.raises(asyncio.CancelledError):
         event_loop.run_until_complete(result.future)
 
-    # The answer was returned, and passed to the callback
-    on_result.assert_called_once()
-    assert on_result.call_args[0] == (None,)
-    assert isinstance(on_result.call_args[1]["exception"], ValueError)
+    # The callback wasn't called
+    on_result.assert_not_called()
 
 
 def test_async_exception_no_sync(event_loop):
