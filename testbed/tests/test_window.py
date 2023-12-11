@@ -508,9 +508,13 @@ async def assert_dialog_result(window, dialog, on_result, expected):
 async def test_info_dialog(main_window, main_window_probe):
     """An info dialog can be displayed and acknowledged."""
     on_result_handler = Mock()
-    dialog_result = main_window.info_dialog(
-        "Info", "Some info", on_result=on_result_handler
-    )
+    with pytest.warns(
+        DeprecationWarning,
+        match=r"Synchronous `on_result` handlers have been deprecated;",
+    ):
+        dialog_result = main_window.info_dialog(
+            "Info", "Some info", on_result=on_result_handler
+        )
     await main_window_probe.redraw("Info dialog displayed")
     await main_window_probe.close_info_dialog(dialog_result._impl)
     await assert_dialog_result(main_window, dialog_result, on_result_handler, None)
@@ -520,11 +524,15 @@ async def test_info_dialog(main_window, main_window_probe):
 async def test_question_dialog(main_window, main_window_probe, result):
     """An question dialog can be displayed and acknowledged."""
     on_result_handler = Mock()
-    dialog_result = main_window.question_dialog(
-        "Question",
-        "Some question",
-        on_result=on_result_handler,
-    )
+    with pytest.warns(
+        DeprecationWarning,
+        match=r"Synchronous `on_result` handlers have been deprecated;",
+    ):
+        dialog_result = main_window.question_dialog(
+            "Question",
+            "Some question",
+            on_result=on_result_handler,
+        )
     await main_window_probe.redraw("Question dialog displayed")
     await main_window_probe.close_question_dialog(dialog_result._impl, result)
     await assert_dialog_result(main_window, dialog_result, on_result_handler, result)
@@ -534,11 +542,15 @@ async def test_question_dialog(main_window, main_window_probe, result):
 async def test_confirm_dialog(main_window, main_window_probe, result):
     """A confirmation dialog can be displayed and acknowledged."""
     on_result_handler = Mock()
-    dialog_result = main_window.confirm_dialog(
-        "Confirm",
-        "Some confirmation",
-        on_result=on_result_handler,
-    )
+    with pytest.warns(
+        DeprecationWarning,
+        match=r"Synchronous `on_result` handlers have been deprecated;",
+    ):
+        dialog_result = main_window.confirm_dialog(
+            "Confirm",
+            "Some confirmation",
+            on_result=on_result_handler,
+        )
     await main_window_probe.redraw("Confirmation dialog displayed")
     await main_window_probe.close_confirm_dialog(dialog_result._impl, result)
     await assert_dialog_result(main_window, dialog_result, on_result_handler, result)
@@ -547,9 +559,13 @@ async def test_confirm_dialog(main_window, main_window_probe, result):
 async def test_error_dialog(main_window, main_window_probe):
     """An error dialog can be displayed and acknowledged."""
     on_result_handler = Mock()
-    dialog_result = main_window.error_dialog(
-        "Error", "Some error", on_result=on_result_handler
-    )
+    with pytest.warns(
+        DeprecationWarning,
+        match=r"Synchronous `on_result` handlers have been deprecated;",
+    ):
+        dialog_result = main_window.error_dialog(
+            "Error", "Some error", on_result=on_result_handler
+        )
     await main_window_probe.redraw("Error dialog displayed")
     await main_window_probe.close_error_dialog(dialog_result._impl)
     await assert_dialog_result(main_window, dialog_result, on_result_handler, None)
@@ -561,13 +577,17 @@ async def test_stack_trace_dialog(main_window, main_window_probe, result):
     on_result_handler = Mock()
     stack = io.StringIO()
     traceback.print_stack(file=stack)
-    dialog_result = main_window.stack_trace_dialog(
-        "Stack Trace",
-        "Some stack trace",
-        stack.getvalue(),
-        retry=result is not None,
-        on_result=on_result_handler,
-    )
+    with pytest.warns(
+        DeprecationWarning,
+        match=r"Synchronous `on_result` handlers have been deprecated;",
+    ):
+        dialog_result = main_window.stack_trace_dialog(
+            "Stack Trace",
+            "Some stack trace",
+            stack.getvalue(),
+            retry=result is not None,
+            on_result=on_result_handler,
+        )
     await main_window_probe.redraw(
         f"Stack trace dialog (with{'out' if result is None else ''} retry) displayed"
     )
@@ -593,12 +613,16 @@ async def test_save_file_dialog(
 ):
     """A file open dialog can be displayed and acknowledged."""
     on_result_handler = Mock()
-    dialog_result = main_window.save_file_dialog(
-        "Save file",
-        suggested_filename=filename,
-        file_types=file_types,
-        on_result=on_result_handler,
-    )
+    with pytest.warns(
+        DeprecationWarning,
+        match=r"Synchronous `on_result` handlers have been deprecated;",
+    ):
+        dialog_result = main_window.save_file_dialog(
+            "Save file",
+            suggested_filename=filename,
+            file_types=file_types,
+            on_result=on_result_handler,
+        )
     await main_window_probe.redraw("Save File dialog displayed")
     await main_window_probe.close_save_file_dialog(dialog_result._impl, result)
 
@@ -655,13 +679,17 @@ async def test_open_file_dialog(
 ):
     """A file open dialog can be displayed and acknowledged."""
     on_result_handler = Mock()
-    dialog_result = main_window.open_file_dialog(
-        "Open file",
-        initial_directory=initial_directory,
-        file_types=file_types,
-        multiple_select=multiple_select,
-        on_result=on_result_handler,
-    )
+    with pytest.warns(
+        DeprecationWarning,
+        match=r"Synchronous `on_result` handlers have been deprecated;",
+    ):
+        dialog_result = main_window.open_file_dialog(
+            "Open file",
+            initial_directory=initial_directory,
+            file_types=file_types,
+            multiple_select=multiple_select,
+            on_result=on_result_handler,
+        )
     await main_window_probe.redraw("Open File dialog displayed")
     await main_window_probe.close_open_file_dialog(
         dialog_result._impl, result, multiple_select
@@ -695,12 +723,16 @@ async def test_select_folder_dialog(
 ):
     """A folder selection dialog can be displayed and acknowledged."""
     on_result_handler = Mock()
-    dialog_result = main_window.select_folder_dialog(
-        "Select folder",
-        initial_directory=initial_directory,
-        multiple_select=multiple_select,
-        on_result=on_result_handler,
-    )
+    with pytest.warns(
+        DeprecationWarning,
+        match=r"Synchronous `on_result` handlers have been deprecated;",
+    ):
+        dialog_result = main_window.select_folder_dialog(
+            "Select folder",
+            initial_directory=initial_directory,
+            multiple_select=multiple_select,
+            on_result=on_result_handler,
+        )
     await main_window_probe.redraw("Select Folder dialog displayed")
     await main_window_probe.close_select_folder_dialog(
         dialog_result._impl, result, multiple_select

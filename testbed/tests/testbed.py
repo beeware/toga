@@ -34,6 +34,9 @@ def run_tests(app, cov, args, report_coverage, run_slow):
                 "--no-header",
                 "--tb=native",
                 "--color=no",
+                # Convert all warnings into errors
+                "-W",
+                "error",
                 # Run all async tests and fixtures using pytest-asyncio.
                 "--asyncio-mode=auto",
                 # Override the cache directory to be somewhere known writable
