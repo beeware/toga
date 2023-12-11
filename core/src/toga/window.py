@@ -355,8 +355,7 @@ class Window:
 
         :param title: The title of the dialog window.
         :param message: The message to display.
-        :param on_result: A callback that will be invoked when the user
-            selects an option on the dialog.
+        :param on_result: **DEPRECATED** ``await`` the return value of this method.
         :returns: An awaitable Dialog object. The Dialog object returns
             ``None`` when the user presses the 'OK' button.
         """
@@ -376,8 +375,7 @@ class Window:
 
         :param title: The title of the dialog window.
         :param message: The question to be answered.
-        :param on_result: A callback that will be invoked when the user
-            selects an option on the dialog.
+        :param on_result: **DEPRECATED** ``await`` the return value of this method.
         :returns: An awaitable Dialog object. The Dialog object returns
             ``True`` when the "Yes" button is pressed, ``False`` when
             the "No" button is pressed.
@@ -399,8 +397,7 @@ class Window:
 
         :param title: The title of the dialog window.
         :param message: A message describing the action to be confirmed.
-        :param on_result: A callback that will be invoked when the user
-            selects an option on the dialog.
+        :param on_result: **DEPRECATED** ``await`` the return value of this method.
         :returns: An awaitable Dialog object. The Dialog object returns
             ``True`` when the "OK" button is pressed, ``False`` when
             the "Cancel" button is pressed.
@@ -421,8 +418,7 @@ class Window:
 
         :param title: The title of the dialog window.
         :param message: The error message to display.
-        :param on_result: A callback that will be invoked when the user
-            selects an option on the dialog.
+        :param on_result: **DEPRECATED** ``await`` the return value of this method.
         :returns: An awaitable Dialog object. The Dialog object returns
             ``None`` when the user presses the "OK" button.
         """
@@ -479,8 +475,7 @@ class Window:
         :param retry: If true, the user will be given options to "Retry" or
             "Quit"; if false, a single option to acknowledge the error will
             be displayed.
-        :param on_result: A callback that will be invoked when the user
-            selects an option on the dialog.
+        :param on_result: **DEPRECATED** ``await`` the return value of this method.
         :returns: An awaitable Dialog object. If ``retry`` is true, the Dialog object
             returns ``True`` when the user selects "Retry", and ``False`` when they
             select "Quit". If ``retry`` is false, the Dialog object returns ``None``.
@@ -510,8 +505,7 @@ class Window:
         :param suggested_filename: A default filename
         :param file_types: The allowed filename extensions, without leading dots. If
             not provided, any extension will be allowed.
-        :param on_result: A callback that will be invoked when the user selects an
-            option on the dialog.
+        :param on_result: **DEPRECATED** ``await`` the return value of this method.
         :returns: An awaitable Dialog object. The Dialog object returns a path object
             for the selected file location, or ``None`` if the user cancelled the save
             operation.
@@ -591,8 +585,7 @@ class Window:
             not provided, all files will be shown.
         :param multiple_select: If True, the user will be able to select multiple
             files; if False, the selection will be restricted to a single file.
-        :param on_result: A callback that will be invoked when the user
-            selects an option on the dialog.
+        :param on_result: **DEPRECATED** ``await`` the return value of this method.
         :param multiselect: **DEPRECATED** Use ``multiple_select``.
         :returns: An awaitable Dialog object. The Dialog object returns
             a list of ``Path`` objects if ``multiple_select`` is ``True``, or a single
@@ -674,8 +667,7 @@ class Window:
         :param multiple_select: If True, the user will be able to select multiple
             directories; if False, the selection will be restricted to a single
             directory. This option is not supported on WinForms.
-        :param on_result: A callback that will be invoked when the user
-            selects an option on the dialog.
+        :param on_result: **DEPRECATED** ``await`` the return value of this method.
         :param multiselect: **DEPRECATED** Use ``multiple_select``.
         :returns: An awaitable Dialog object. The Dialog object returns
             a list of ``Path`` objects if ``multiple_select`` is ``True``, or a single

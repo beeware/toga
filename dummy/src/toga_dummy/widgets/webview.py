@@ -38,4 +38,4 @@ class WebView(Widget):
             self._set_value("loaded_future", None)
 
     def simulate_javascript_result(self, value):
-        self._js_result.future.set_result(42)
+        self._js_result.set_result(42)

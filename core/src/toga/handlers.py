@@ -2,6 +2,7 @@ import asyncio
 import inspect
 import sys
 import traceback
+import warnings
 from abc import ABC
 
 
@@ -112,10 +113,25 @@ def wrapped_handler(interface, handler, cleanup=None):
 
 
 class AsyncResult(ABC):
-    def __init__(self, on_result):
+    def __init__(self, on_result=None):
         loop = asyncio.get_event_loop()
         self.future = loop.create_future()
-        self.on_result = on_result
+
+        ######################################################################
+        # 2023-12: Backwards compatibility
+        ######################################################################
+        if on_result:
+            warnings.warn(
+                "Synchronous `on_result` handlers have been deprecated; use `await` on the asynchronous result",
+                DeprecationWarning,
+            )
+
+            self.on_result = on_result
+        else:
+            self.on_result = None
+        ######################################################################
+        # End backwards compatibility.
+        ######################################################################
 
     def set_result(self, result):
         if not self.future.cancelled():

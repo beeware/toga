@@ -135,12 +135,6 @@ class WebView(Widget):
         but no exception will be provided.
 
         :param javascript: The JavaScript expression to evaluate.
-        :param on_result: A callback that will be invoked when the JavaScript
-            completes. It should take one positional argument, which is the
-            value of the expression.
-
-            If evaluation fails, the positional argument will be ``None``, and a
-            keyword argument ``exception`` will be passed with an exception
-            object.
+        :param on_result: **DEPRECATED** ``await`` the return value of this method.
         """
         return self._impl.evaluate_javascript(javascript, on_result=on_result)
