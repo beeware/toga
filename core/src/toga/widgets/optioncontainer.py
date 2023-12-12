@@ -44,7 +44,7 @@ class OptionItem:
 
         :param text: The text label for the new tab.
         :param content: The content widget to use for the new tab.
-        :param icon: The icon to use to represent the tab.
+        :param icon: The :any:`icon content <IconContent>` to use to represent the tab.
         :param enabled: Should the new tab be enabled?
         """
         if content is None:
@@ -124,6 +124,8 @@ class OptionItem:
     @property
     def icon(self) -> toga.Icon:
         """The Icon for the tab of content.
+
+        Can be specified as any valid :any:`icon content <IconContent>`.
 
         If the platform does not support the display of icons, this property
         will return ``None`` regardless of any value provided.
@@ -259,14 +261,14 @@ class OptionList:
     @overload
     def append(
         self,
-        item: OptionItem,
+        text_or_item: OptionItem,
     ):
         ...
 
     @overload
     def append(
         self,
-        text: str,
+        text_or_item: str,
         content: Widget,
         *,
         icon: IconContent = None,
@@ -291,7 +293,7 @@ class OptionList:
 
         :param text_or_item: An :any:`OptionItem`; or, the text label for the new tab.
         :param content: The content widget to use for the new tab.
-        :param icon: The icon to use to represent the tab.
+        :param icon: The :any:`icon content <IconContent>` to use to represent the tab.
         :param enabled: Should the new tab be enabled? (Default: ``True``)
         """
         self.insert(len(self), text_or_item, content, icon=icon, enabled=enabled)
@@ -300,7 +302,7 @@ class OptionList:
     def insert(
         self,
         index: int | str | OptionItem,
-        item: OptionItem,
+        text_or_item: OptionItem,
     ):
         ...
 
@@ -308,7 +310,7 @@ class OptionList:
     def insert(
         self,
         index: int | str | OptionItem,
-        text: str,
+        text_or_item: str,
         content: Widget,
         *,
         icon: IconContent = None,
@@ -335,7 +337,7 @@ class OptionList:
         :param index: The index where the new tab should be inserted.
         :param text_or_item: An :any:`OptionItem`; or, the text label for the new tab.
         :param content: The content widget to use for the new tab.
-        :param icon: The icon to use to represent the tab.
+        :param icon: The :any:`icon content <IconContent>` to use to represent the tab.
         :param enabled: Should the new tab be enabled? (Default: ``True``)
         """
         if isinstance(text_or_item, OptionItem):
@@ -386,14 +388,8 @@ class OptionContainer(Widget):
         :param id: The ID for the widget.
         :param style: A style object. If no style is provided, a default style will be
             applied to the widget.
-        :param content: The initial content to display in the OptionContainer. Each item in the provided
-            list must be either:
-
-            * a 2-tuple, containing the title for the option, and the content widget;
-            * a 3-tuple, containing the title, content widget, and icon for the content;
-            * a 4-tuple, containing the title, content widget, icon for the content, and enabled status; or
-            * an OptionItem instance.
-
+        :param content: The initial :any:`OptionContainer content
+            <OptionContainerContent>` to display in the OptionContainer.
         :param on_select: Initial :any:`on_select` handler.
         """
         super().__init__(id=id, style=style)

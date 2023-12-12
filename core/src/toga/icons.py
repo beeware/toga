@@ -7,8 +7,7 @@ import toga
 from toga.platform import get_platform_factory
 
 if TYPE_CHECKING:
-    PathContent: TypeAlias = str | Path
-    IconContent: TypeAlias = toga.Icon | PathContent | None
+    IconContent: TypeAlias = str | Path | toga.Icon | None
 
 
 class cachedicon:
@@ -47,7 +46,7 @@ class Icon:
 
     def __init__(
         self,
-        path: PathContent,
+        path: str | Path,
         *,
         system: bool = False,  # Deliberately undocumented; for internal use only
     ):
