@@ -68,6 +68,31 @@ icon. This list of content can be modified after initial construction:
     icecream = toga.Box()
     container.content.append("Ice Cream", icecream, toga.Icon("icecream"))
 
+OptionContainer content can also be specified by using :any:`OptionItem` instances
+instead of tuples. This enables you to be explicit when setting an icon or enabled
+status; it also allows you to set the initial enabled status *without* setting
+an icon:
+
+.. code-block:: python
+
+    import toga
+
+    pizza = toga.Box()
+    pasta = toga.Box()
+
+    # Create 2 initial tabs; one with an icon, and one without.
+    container = toga.OptionContainer(
+        content=[
+          toga.OptionItem("Pizza", pizza),
+          toga.OptionItem("Pasta", pasta, icon=toga.Icon("pasta"))
+        ]
+    )
+
+    # Add another tab of content, initially disabled, without an icon.
+    salad = toga.Box()
+    container.content.append(toga.OptionItem("Salad", salad, enabled=False))
+
+
 When retrieving or deleting items, or when specifying the currently selected
 item, you can specify an item using:
 

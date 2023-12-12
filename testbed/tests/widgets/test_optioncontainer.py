@@ -65,7 +65,9 @@ async def widget(content1, content2, content3, on_select_handler):
     return toga.OptionContainer(
         content=[
             ("Tab 1", content1, "resources/tab-icon-1-iOS"),
-            ("Tab 2", content2, toga.Icon("resources/tab-icon-2-iOS")),
+            toga.OptionItem(
+                "Tab 2", content2, icon=toga.Icon("resources/tab-icon-2-iOS")
+            ),
             ("Tab 3", content3),
         ],
         style=Pack(flex=1),
