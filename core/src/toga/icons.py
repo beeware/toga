@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import sys
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -7,7 +8,10 @@ import toga
 from toga.platform import get_platform_factory
 
 if TYPE_CHECKING:
-    from typing import TypeAlias
+    if sys.version_info < (3, 10):
+        from typing_extensions import TypeAlias
+    else:
+        from typing import TypeAlias
 
     IconContent: TypeAlias = str | Path | toga.Icon | None
 

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import sys
 from typing import TYPE_CHECKING, Any, Protocol, overload
 
 import toga
@@ -8,7 +9,10 @@ from toga.handlers import wrapped_handler
 from .base import Widget
 
 if TYPE_CHECKING:
-    from typing import TypeAlias
+    if sys.version_info < (3, 10):
+        from typing_extensions import TypeAlias
+    else:
+        from typing import TypeAlias
 
     from toga.icons import IconContent
 
