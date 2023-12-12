@@ -191,6 +191,8 @@ class OptionList:
         """Remove the specified tab of content.
 
         The currently selected item cannot be deleted.
+
+        :param index: The index where the new tab should be inserted.
         """
         index = self.index(index)
         if index == self.interface._impl.get_current_tab_index():
@@ -262,10 +264,15 @@ class OptionList:
     ):
         """Add a new tab of content to the OptionContainer.
 
-        :param text_or_item: The text label for the new tab
+        The new tab can be specified as an existing :any:`OptionItem` instance, or by
+        specifying the full details of the new tab of content. If an :any:`OptionItem`
+        is provided, specifying ``content``, ``icon`` or ``enabled`` will raise an
+        error.
+
+        :param text_or_item: An :any:`OptionItem`; or, the text label for the new tab.
         :param content: The content widget to use for the new tab.
         :param icon: The icon to use to represent the tab.
-        :param enabled: Should the new tab be enabled?
+        :param enabled: Should the new tab be enabled? (Default: ``True``)
         """
         self.insert(len(self), text_or_item, content, icon=icon, enabled=enabled)
 
@@ -296,15 +303,20 @@ class OptionList:
         content: Widget | None = None,
         *,
         icon: str | Path | toga.Icon | None = None,
-        enabled: bool = None,
+        enabled: bool | None = None,
     ):
         """Insert a new tab of content to the OptionContainer at the specified index.
 
+        The new tab can be specified as an existing :any:`OptionItem` instance, or by
+        specifying the full details of the new tab of content. If an :any:`OptionItem`
+        is provided, specifying ``content``, ``icon`` or ``enabled`` will raise an
+        error.
+
         :param index: The index where the new tab should be inserted.
-        :param text_or_item: The text label for the new tab.
+        :param text_or_item: An :any:`OptionItem`; or, the text label for the new tab.
         :param content: The content widget to use for the new tab.
         :param icon: The icon to use to represent the tab.
-        :param enabled: Should the new tab be enabled?
+        :param enabled: Should the new tab be enabled? (Default: ``True``)
         """
         if isinstance(text_or_item, OptionItem):
             if content is not None:

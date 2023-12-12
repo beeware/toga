@@ -159,7 +159,7 @@ Reference
 .. autoclass:: toga.OptionContainer
    :exclude-members: app, window
 
+.. autoclass:: toga.OptionItem
+
 .. autoclass:: toga.widgets.optioncontainer.OptionList
     :special-members: __getitem__, __delitem__
-
-.. autoclass:: toga.widgets.optioncontainer.OptionItem
