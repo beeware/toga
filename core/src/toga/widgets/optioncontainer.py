@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Protocol, TypeAlias, overload
+from typing import TYPE_CHECKING, Any, Protocol, overload
 
 import toga
 from toga.handlers import wrapped_handler
@@ -8,6 +8,8 @@ from toga.handlers import wrapped_handler
 from .base import Widget
 
 if TYPE_CHECKING:
+    from typing import TypeAlias
+
     from toga.icons import IconContent
 
     OptionContainerContent: TypeAlias = (

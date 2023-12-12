@@ -1,12 +1,14 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import TYPE_CHECKING, TypeAlias
+from typing import TYPE_CHECKING
 
 import toga
 from toga.platform import get_platform_factory
 
 if TYPE_CHECKING:
+    from typing import TypeAlias
+
     IconContent: TypeAlias = str | Path | toga.Icon | None
 
 
