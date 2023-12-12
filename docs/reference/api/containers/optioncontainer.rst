@@ -163,3 +163,5 @@ Reference
 
 .. autoclass:: toga.widgets.optioncontainer.OptionList
     :special-members: __getitem__, __delitem__
+
+.. autoprotocol:: toga.widgets.optioncontainer.OnSelectHandler

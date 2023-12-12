@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, overload
+from typing import TYPE_CHECKING, Any, Protocol, TypeAlias, overload
 
 import toga
 from toga.handlers import wrapped_handler
@@ -8,7 +8,27 @@ from toga.handlers import wrapped_handler
 from .base import Widget
 
 if TYPE_CHECKING:
-    from pathlib import Path
+    from toga.icons import IconContent
+
+    OptionContainerContent: TypeAlias = (
+        tuple[str, Widget]
+        | tuple[str, Widget, IconContent]
+        | tuple[str, Widget, IconContent, bool]
+        | toga.OptionItem
+    )
+
+
+class OnSelectHandler(Protocol):
+    def __call__(self, widget: OptionContainer, **kwargs: Any) -> None:
+        """A handler that will be invoked when a new tab is selected in the OptionContainer.
+
+        .. note::
+            ``**kwargs`` ensures compatibility with additional arguments
+            introduced in future versions.
+
+        :param widget: The OptionContainer that had a selection change.
+        """
+        ...
 
 
 class OptionItem:
@@ -17,7 +37,7 @@ class OptionItem:
         text: str,
         content: Widget,
         *,
-        icon: toga.Icon | str | Path | None = None,
+        icon: IconContent = None,
         enabled: bool = True,
     ):
         """A tab of content in an OptionContainer.
@@ -114,7 +134,7 @@ class OptionItem:
             return self._interface._impl.get_option_icon(self.index)
 
     @icon.setter
-    def icon(self, icon_or_name: toga.Icon | str | Path | None):
+    def icon(self, icon_or_name: IconContent):
         if icon_or_name is None:
             icon = None
         elif isinstance(icon_or_name, toga.Icon):
@@ -249,7 +269,7 @@ class OptionList:
         text: str,
         content: Widget,
         *,
-        icon: str | Path | toga.Icon | None = None,
+        icon: IconContent = None,
         enabled: bool = True,
     ):
         ...
@@ -259,7 +279,7 @@ class OptionList:
         text_or_item: str,
         content: Widget | None = None,
         *,
-        icon: str | Path | toga.Icon | None = None,
+        icon: IconContent = None,
         enabled: bool = None,
     ):
         """Add a new tab of content to the OptionContainer.
@@ -291,7 +311,7 @@ class OptionList:
         text: str,
         content: Widget,
         *,
-        icon: str | Path | toga.Icon | None = None,
+        icon: IconContent = None,
         enabled: bool = True,
     ):
         ...
@@ -302,7 +322,7 @@ class OptionList:
         text_or_item: str | OptionItem,
         content: Widget | None = None,
         *,
-        icon: str | Path | toga.Icon | None = None,
+        icon: IconContent = None,
         enabled: bool | None = None,
     ):
         """Insert a new tab of content to the OptionContainer at the specified index.
@@ -358,22 +378,16 @@ class OptionContainer(Widget):
         self,
         id=None,
         style=None,
-        content: list[
-            tuple[str, Widget]
-            | tuple[str, Widget, str | Path | toga.Icon | None]
-            | tuple[str, Widget, str | Path | toga.Icon | None, bool]
-            | OptionItem
-        ]
-        | None = None,
-        on_select: callable | None = None,
+        content: list[OptionContainerContent] | None = None,
+        on_select: OnSelectHandler | None = None,
     ):
         """Create a new OptionContainer.
 
         :param id: The ID for the widget.
         :param style: A style object. If no style is provided, a default style will be
             applied to the widget.
-        :param content: The initial content to display in the OptionContainer. A list,
-            each of which is either:
+        :param content: The initial content to display in the OptionContainer. Each item in the provided
+            list must be either:
 
             * a 2-tuple, containing the title for the option, and the content widget;
             * a 3-tuple, containing the title, content widget, and icon for the content;
@@ -474,7 +488,7 @@ class OptionContainer(Widget):
             item._content.window = window
 
     @property
-    def on_select(self) -> callable:
+    def on_select(self) -> OnSelectHandler:
         """The callback to invoke when a new tab of content is selected."""
         return self._on_select
 

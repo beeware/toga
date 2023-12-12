@@ -1,9 +1,14 @@
 from __future__ import annotations
 
 from pathlib import Path
+from typing import TYPE_CHECKING, TypeAlias
 
 import toga
 from toga.platform import get_platform_factory
+
+if TYPE_CHECKING:
+    PathContent: TypeAlias = str | Path
+    IconContent: TypeAlias = toga.Icon | PathContent | None
 
 
 class cachedicon:
@@ -42,7 +47,7 @@ class Icon:
 
     def __init__(
         self,
-        path: str | Path,
+        path: PathContent,
         *,
         system: bool = False,  # Deliberately undocumented; for internal use only
     ):
