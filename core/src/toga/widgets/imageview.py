@@ -9,11 +9,7 @@ from toga.style.pack import NONE
 from toga.widgets.base import Widget
 
 if TYPE_CHECKING:
-    from pathlib import Path
-
-    import PIL.Image
-
-    from toga.images import ImageT
+    from toga.images import ImageContent, ImageT
 
 
 def rehint_imageview(image, style, scale=1):
@@ -24,9 +20,9 @@ def rehint_imageview(image, style, scale=1):
     :param image: The image being displayed.
     :param style: The style object for the imageview.
     :param scale: The scale factor (if any) to apply to native pixel sizes.
-    :returns: A triple containing the intrinsic width hint, intrinsic height
-        hint, and the aspect ratio to preserve (or None if the aspect ratio
-        should not be preserved).
+    :returns: A triple containing the intrinsic width hint, intrinsic height hint, and
+        the aspect ratio to preserve (or None if the aspect ratio should not be
+        preserved).
     """
     if image:
         if style.width != NONE and style.height != NONE:
@@ -72,23 +68,15 @@ def rehint_imageview(image, style, scale=1):
 class ImageView(Widget):
     def __init__(
         self,
-        image: str
-        | Path
-        | bytes
-        | bytearray
-        | memoryview
-        | PIL.Image.Image
-        | None = None,
+        image: ImageContent | None = None,
         id=None,
         style=None,
     ):
         """
         Create a new image view.
 
-        :param image: The image to display. This can take all the same formats as the
-            `src` parameter to :class:`toga.Image` -- namely, a file path (as string
-            or :any:`pathlib.Path`), bytes data in a supported image format,
-            or :any:`PIL.Image.Image`.
+        :param image: The image to display. Can be any valid :any:`image content
+            <ImageContent>` type; or :any:`None` to display no image.
         :param id: The ID for the widget.
         :param style: A style object. If no style is provided, a default style will be
             applied to the widget.
@@ -120,14 +108,8 @@ class ImageView(Widget):
     def image(self) -> toga.Image | None:
         """The image to display.
 
-        When setting an image, you can provide:
-
-        * An :class:`~toga.images.Image` instance; or
-
-        * Any value that would be a valid path specifier when creating a new
-          :class:`~toga.images.Image` instance; or
-
-        * :any:`None` to clear the image view.
+        When setting an image, you can provide any valid :any:`image content
+        <ImageContent>` type; or :any:`None` to clear the image view.
         """
         return self._image
 

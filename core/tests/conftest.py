@@ -22,6 +22,10 @@ def clear_sys_modules(monkeypatch):
         pass
 
 
+class TestApp(toga.App):
+    pass
+
+
 @pytest.fixture
 def app(event_loop):
-    return toga.App(formal_name="Test App", app_id="org.beeware.toga.test-app")
+    return TestApp(formal_name="Test App", app_id="org.beeware.toga.test-app")
