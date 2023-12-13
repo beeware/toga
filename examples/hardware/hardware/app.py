@@ -10,7 +10,7 @@ class ExampleHardwareApp(toga.App):
             # If permission is denied, the app will continue.
             self.camera.request_photo_permission()
         except NotImplementedError:
-            print("The Camera API is not implemented")
+            print("The Camera API is not implemented on this platform")
 
         self.photo = toga.ImageView(
             image=toga.Image("resources/default.png"), style=Pack(width=200)

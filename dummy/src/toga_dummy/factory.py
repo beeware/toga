@@ -3,6 +3,7 @@ from .app import App, DocumentApp, MainWindow
 from .command import Command
 from .documents import Document
 from .fonts import Font
+from .hardware.camera import Camera
 from .icons import Icon
 from .images import Image
 from .paths import Paths
@@ -50,6 +51,8 @@ __all__ = [
     "Image",
     "Paths",
     "dialogs",
+    # Hardware
+    "Camera",
     # Widgets
     "ActivityIndicator",
     "Box",
@@ -80,3 +83,7 @@ __all__ = [
     # Real backends shouldn't expose Widget.
     "Widget",
 ]
+
+
+def __getattr__(name):  # pragma: no cover
+    raise NotImplementedError(f"Toga's Dummy backend doesn't implement {name}")

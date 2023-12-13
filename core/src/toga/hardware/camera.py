@@ -1,38 +1,15 @@
 from __future__ import annotations
 
-from typing import Any, Protocol, TypeVar
+import asyncio
 
 import toga
 from toga.constants import FlashMode
-from toga.handlers import AsyncResult, wrapped_handler
+from toga.handlers import AsyncResult
 from toga.platform import get_platform_factory
-
-
-class PhotoResult(AsyncResult):
-    RESULT_TYPE = "photo"
 
 
 class PermissionResult(AsyncResult):
     RESULT_TYPE = "permission"
-
-
-# class VideoResult(AsyncResult):
-#     RESULT_TYPE = "video"
-
-
-T = TypeVar("T")
-
-
-class CameraResultHandler(Protocol[T]):
-    def __call__(self, camera: Camera, result: T, **kwargs: Any) -> None:
-        """A handler to invoke when a camera returns an image or video.
-
-        :param camera: The camera
-        :param result: The content returned by the camera.
-        :param kwargs: Ensures compatibility with additional arguments introduced in
-            future versions.
-        """
-        ...
 
 
 class Camera:
@@ -53,39 +30,38 @@ class Camera:
         """
         return self._impl.has_photo_permission()
 
-    def request_photo_permission(
-        self,
-        on_result: CameraResultHandler[toga.Image] | None = None,
-    ) -> PermissionResult:
+    def request_photo_permission(self) -> PermissionResult:
         """Request sufficient permissions to capture photos.
 
-        If permission has already been granted, this will return immediately
-        without prompting the user.
+        If permission has already been granted, this will return immediately without
+        prompting the user.
 
-        :param on_result: A handler that will be invoked with the success or
-            failure of the request.
-        :returns: An awaitable PermissionResult object. The PermissionResult
-            object returns the success or failure of the permission request.
+        **This is an asynchronous method**. If you invoke this method in synchronous
+        context, it will start the process of requesting permissions, but will return
+        *immediately*. The return value can be awaited in an asynchronous context,
+        but cannot be compared directly.
+
+        :returns: An asynchronous result; when awaited, returns True if the app has
+            permission to take a photo; False otherwise.
         """
-        result = PermissionResult(wrapped_handler(self, on_result))
+        result = PermissionResult(None)
 
         if has_permission := self.has_photo_permission:
             result.set_result(has_permission)
-            return result
         else:
-            return self._impl.request_photo_permission(result)
+            self._impl.request_photo_permission(result)
 
-    # def request_video_permission(
-    #     self,
-    #     on_result: CameraResultHandler[toga.Image] | None = None,
-    # ) -> PermissionResult:
-    #     result = PermissionResult(wrapped_handler(self, on_result))
+        return result
+
+    # async def request_video_permission(self) -> bool:
+    #     result = PermissionResult(None)
     #
     #     if has_permission := self.has_video_permission:
     #         result.set_result(has_permission)
-    #         return result
     #     else:
-    #         return self._impl.request_video_permission(result)
+    #         self._impl.request_video_permission(result)
+    #
+    #     return result
 
     @property
     def devices(self) -> list[str]:
@@ -98,14 +74,13 @@ class Camera:
         :param device: The camera device to check. If a specific device is *not*
             specified, a default camera will be used.
         """
-        return self.native.has_flash(device)
+        return self._impl.has_flash(device)
 
-    def take_photo(
+    async def take_photo(
         self,
         device: str | None = None,
         flash: FlashMode = FlashMode.AUTO,
-        on_result: CameraResultHandler[toga.Image] | None = None,
-    ) -> PhotoResult:
+    ) -> toga.Image:
         """Capture a photo using one of the device's cameras.
 
         If the platform requires permission to access the camera, and the user
@@ -115,41 +90,29 @@ class Camera:
         :param device: The camera device to use. If a specific device is *not*
             specified, a default camera will be used.
         :param flash: The flash mode to use; defaults to "auto"
-        :param on_result: A callback that will be invoked when the photo has
-            been taken (or the photo operation has been cancelled).
-        :returns: An awaitable CameraResult object. The CameraResult object
-            returns ``None`` when the user cancels the photo capture.
+        :returns: The :any:`toga.Image` captured by the camera.
         """
-        photo = PhotoResult(wrapped_handler(self, on_result))
-        self._impl.take_photo(photo, device=device, flash=flash)
-        return photo
+        future = asyncio.get_event_loop().create_future()
+        self._impl.take_photo(future, device=device, flash=flash)
+        return await future
 
-    # def record_video(
+    # async def record_video(
     #     self,
     #     device: str | None = None,
     #     flash: FlashMode = FlashMode.AUTO,
     #     quality: VideoQuality = VideoQuality.MEDIUM,
-    #     on_result: CamreaResultHandler[toga.Video] | None = None,
-    # ) -> VideoResult:
+    # ) -> toga.Video:
     #     """Capture a video using one of the device's cameras.
-
+    #
     #     If the platform requires permission to access the camera and/or
     #     microphone, and the user hasn't previously provided that permission,
     #     this will cause permission to be requested.
-
+    #
     #     :param device: The camera device to use. If a specific device is *not*
     #         specified, a default camera will be used.
     #     :param flash: The flash mode to use; defaults to "auto"
-    #     :param on_result: A callback that will be invoked when the photo has
-    #         been taken (or the photo operation has been cancelled).
-    #     :returns: An awaitable CameraResult object. The CameraResult object
-    #         returns ``None`` when the user cancels the photo capture.
+    #     :returns: The :any:`toga.Video` captured by the camera.
     #     """
-    #     video = VideoResult()
-    #     self._impl.record_video(
-    #         video,
-    #         device=device,
-    #         flash=flash,
-    #         on_result=wrapped_handler(self, on_result),
-    #     )
-    #     return video
+    #     future = asyncio.get_event_loop().create_future()
+    #     self._impl.record_video(future, device=device, flash=flash)
+    #     return future

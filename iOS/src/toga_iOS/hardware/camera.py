@@ -50,7 +50,7 @@ class TogaImagePickerController(UIImagePickerController):
         picker.dismissViewControllerAnimated(True, completion=None)
 
         image = toga.Image(info["UIImagePickerControllerOriginalImage"])
-        self.result.set_result(image)
+        self.future.set_result(image)
 
         picker.delegate.release()
 
@@ -58,7 +58,7 @@ class TogaImagePickerController(UIImagePickerController):
     def imagePickerControllerDidCancel_(self, picker) -> None:
         picker.dismissViewControllerAnimated(True, completion=None)
 
-        self.result.set_result(None)
+        self.future.set_result(None)
 
         picker.delegate.release()
 
@@ -93,9 +93,9 @@ class Camera:
     #         allow_unknown=allow_unknown,
     #     )
 
-    def request_photo_permission(self, result):
+    def request_photo_permission(self, future):
         def video_complete(permission: bool) -> None:
-            result.set_result(permission)
+            future.set_result(permission)
 
         AVCaptureDevice.requestAccessForMediaType(
             AVMediaTypeVideo,
@@ -120,7 +120,7 @@ class Camera:
     def has_flash(self, device):
         return self.native.isFlashAvailableForCameraDevice(native_device(device))
 
-    def take_photo(self, result, device, flash):
+    def take_photo(self, future, device, flash):
         if self.has_photo_permission(allow_unknown=True):
             # Configure the controller to take a photo
             camera_session = TogaImagePickerController.alloc().init()
@@ -134,7 +134,7 @@ class Camera:
             camera_session.cameraFlashMode = native_flash_mode(flash)
 
             # Create a delegate to handle the callback
-            camera_session.result = result
+            camera_session.future = future
             camera_session.delegate = camera_session
 
             # Show the pane
@@ -144,7 +144,7 @@ class Camera:
         else:
             raise PermissionError("App does not have permission to take photos")
 
-    # def record_video(self, result, device, flash):
+    # def record_video(self, future, device, flash):
     #     if self.has_video_permission(allow_unknown=True):
     #         # Configure the controller to take a photo
     #         camera_session = TogaImagePickerController.alloc().init()
@@ -158,7 +158,7 @@ class Camera:
     #         camera_session.cameraFlashMode = native_flash_mode(flash)
 
     #         # Create a delegate to handle the callback
-    #         camera_session.result = result
+    #         camera_session.future = future
     #         camera_session.delegate = camera_session
 
     #         # Show the pane
