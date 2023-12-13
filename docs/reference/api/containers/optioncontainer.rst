@@ -27,9 +27,11 @@ A container that can display multiple labeled tabs of content.
 
     Not supported
 
-  .. group-tab:: iOS |no|
+  .. group-tab:: iOS
 
-    Not supported
+    .. figure:: /reference/images/optioncontainer-iOS.png
+       :align: center
+       :width: 450px
 
   .. group-tab:: Web |no|
 
@@ -42,6 +44,10 @@ A container that can display multiple labeled tabs of content.
 Usage
 -----
 
+The content of an OptionContainer is a list of widgets that will form discrete tabs in
+the display. Each tab can be identified by a label, and, optionally, an icon. This list
+of content can be modified after initial construction:
+
 .. code-block:: python
 
     import toga
@@ -49,16 +55,45 @@ Usage
     pizza = toga.Box()
     pasta = toga.Box()
 
+    # Create 2 initial tabs; one with an icon, and one without.
     container = toga.OptionContainer(
-        content=[("Pizza", pizza), ("Pasta", pasta)]
+        content=[("Pizza", pizza), ("Pasta", pasta, toga.Icon("pasta"))]
     )
 
-    # Add another tab of content
+    # Add another tab of content, without an icon.
     salad = toga.Box()
     container.content.append("Salad", salad)
 
-When retrieving or deleting items, or when specifying the
-currently selected item, you can specify an item using:
+    # Add another tab of content, with an icon
+    icecream = toga.Box()
+    container.content.append("Ice Cream", icecream, toga.Icon("icecream"))
+
+OptionContainer content can also be specified by using :any:`OptionItem` instances
+instead of tuples. This enables you to be explicit when setting an icon or enabled
+status; it also allows you to set the initial enabled status *without* setting an icon:
+
+.. code-block:: python
+
+    import toga
+
+    pizza = toga.Box()
+    pasta = toga.Box()
+
+    # Create 2 initial tabs; one with an icon, and one without.
+    container = toga.OptionContainer(
+        content=[
+          toga.OptionItem("Pizza", pizza),
+          toga.OptionItem("Pasta", pasta, icon=toga.Icon("pasta"))
+        ]
+    )
+
+    # Add another tab of content, initially disabled, without an icon.
+    salad = toga.Box()
+    container.content.append(toga.OptionItem("Salad", salad, enabled=False))
+
+
+When retrieving or deleting items, or when specifying the currently selected
+item, you can specify an item using:
 
 * The index of the item in the list of content:
 
@@ -95,13 +130,48 @@ currently selected item, you can specify an item using:
       # Delete the pasta tab
       del container.content[pasta_tab]
 
+Notes
+-----
+
+* The use of icons on tabs varies between platforms. If the platform requires icons, and
+  no icon is provided, a default icon will be used. If the platform does not support
+  icons, any icon provided will be ignored, and requests to retrieve the icon will
+  return ``None``.
+
+* The behavior of disabled tabs varies between platforms. Some platforms will display
+  the tab, but put it in an unselectable state; some will hide the tab. A hidden tab can
+  still be referenced by index - the tab index refers to the logical order, not the
+  visible order.
+
+* iOS can only display 5 tabs. If there are more than 5 visible tabs in an
+  OptionContainer, the last item will be converted into a "More" option that will allow
+  the user to select the additional items. While the "More" menu is displayed, the
+  current tab will return as ``None``.
+
+* iOS allows the user to rearrange icons on an OptionContainer. When referring to tabs
+  by index, user re-ordering is ignored; the logical order as configured in Toga itself
+  is used to identify tabs.
+
 Reference
 ---------
+
+.. c:type:: OptionContainerContent
+
+    An item of :any:`OptionContainer` content can be:
+
+    * a 2-tuple, containing the title for the tab, and the content widget;
+    * a 3-tuple, containing the title, content widget, and :any:`icon <IconContent>`
+      for the tab;
+    * a 4-tuple, containing the title, content widget, :any:`icon <IconContent>` for
+      the tab, and enabled status; or
+    * an :any:`OptionItem` instance.
 
 .. autoclass:: toga.OptionContainer
    :exclude-members: app, window
 
+.. autoclass:: toga.OptionItem
+
 .. autoclass:: toga.widgets.optioncontainer.OptionList
     :special-members: __getitem__, __delitem__
 
-.. autoclass:: toga.widgets.optioncontainer.OptionItem
+.. autoprotocol:: toga.widgets.optioncontainer.OnSelectHandler

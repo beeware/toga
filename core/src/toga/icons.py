@@ -1,9 +1,19 @@
 from __future__ import annotations
 
+import sys
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import toga
 from toga.platform import get_platform_factory
+
+if TYPE_CHECKING:
+    if sys.version_info < (3, 10):
+        from typing_extensions import TypeAlias
+    else:
+        from typing import TypeAlias
+
+    IconContent: TypeAlias = str | Path | toga.Icon | None
 
 
 class cachedicon:
@@ -35,6 +45,10 @@ class Icon:
     @cachedicon
     def DEFAULT_ICON(cls) -> Icon:
         return Icon("resources/toga", system=True)
+
+    @cachedicon
+    def OPTION_CONTAINER_DEFAULT_TAB_ICON(cls) -> Icon:
+        return Icon("resources/optioncontainer-tab", system=True)
 
     def __init__(
         self,

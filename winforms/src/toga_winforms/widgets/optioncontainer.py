@@ -11,7 +11,7 @@ class OptionContainer(Widget):
         self.native.Selected += WeakrefCallable(self.winforms_selected)
         self.panels = []
 
-    def add_content(self, index, text, widget):
+    def add_content(self, index, text, widget, icon):
         page = TabPage(text)
         self.native.TabPages.Insert(index, page)
 
@@ -49,6 +49,14 @@ class OptionContainer(Widget):
 
     def get_option_text(self, index):
         return self.native.TabPages[index].Text
+
+    def set_option_icon(self, index, value):
+        # Icons aren't supported
+        pass
+
+    def get_option_icon(self, index):
+        # Icons aren't supported
+        return None
 
     def get_current_tab_index(self):
         return self.native.SelectedIndex

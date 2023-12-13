@@ -64,9 +64,9 @@ class OptionContainer(Widget):
 
     def content_refreshed(self, container):
         container.min_width = container.content.interface.layout.min_width
-        container.min_height = container.content.interface.layout.min_width
+        container.min_height = container.content.interface.layout.min_height
 
-    def add_content(self, index, text, widget):
+    def add_content(self, index, text, widget, icon):
         # Create the container for the widget
         container = Container(on_refresh=self.content_refreshed)
         container.content = widget
@@ -116,6 +116,14 @@ class OptionContainer(Widget):
     def set_option_text(self, index, value):
         tabview = self.native.tabViewItemAtIndex(index)
         tabview.label = value
+
+    def set_option_icon(self, index, value):
+        # Icons aren't supported
+        pass
+
+    def get_option_icon(self, index):
+        # Icons aren't supported
+        return None
 
     def get_option_text(self, index):
         tabview = self.native.tabViewItemAtIndex(index)

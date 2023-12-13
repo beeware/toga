@@ -37,4 +37,16 @@ default "Tiberius the yak" icon.
 Reference
 ---------
 
+.. c:type:: IconContent
+
+    When specifying an :any:`Icon`, you can provide:
+
+    * a string specifying an absolute or relative path;
+    * an absolute or relative :any:`pathlib.Path` object;
+    * an instance of :any:`toga.Icon`; or
+    * :any:`None` to specify no icon.
+
+    If a relative path is provided, it will be anchored relative to the module that
+    defines your Toga application class.
+
 .. autoclass:: toga.Icon

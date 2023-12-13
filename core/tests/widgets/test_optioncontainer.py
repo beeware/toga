@@ -4,6 +4,7 @@ import pytest
 
 import toga
 from toga_dummy.utils import (
+    EventLog,
     assert_action_not_performed,
     assert_action_performed,
     assert_action_performed_with,
@@ -31,14 +32,36 @@ def content3():
 
 
 @pytest.fixture
+def content4():
+    return toga.Box()
+
+
+@pytest.fixture
 def on_select_handler():
     return Mock()
 
 
 @pytest.fixture
-def optioncontainer(content1, content2, content3, on_select_handler):
+def tab_icon(app):
+    return toga.Icon("tab-icon")
+
+
+@pytest.fixture
+def optioncontainer(
+    content1,
+    content2,
+    content3,
+    content4,
+    on_select_handler,
+    tab_icon,
+):
     return toga.OptionContainer(
-        content=[("Item 1", content1), ("Item 2", content2), ("Item 3", content3)],
+        content=[
+            ("Item 1", content1),
+            ("Item 2", content2, "other-icon"),
+            ("Item 3", content3, tab_icon, False),
+            toga.OptionItem("Item 4", content4),
+        ],
         on_select=on_select_handler,
     )
 
@@ -53,14 +76,97 @@ def test_widget_create():
     assert optioncontainer.on_select._raw is None
 
 
-def test_widget_create_with_args(optioncontainer, on_select_handler):
+def test_widget_create_with_args(
+    optioncontainer,
+    content1,
+    content2,
+    content3,
+    content4,
+    on_select_handler,
+    tab_icon,
+):
     "An option container can be created with arguments"
     assert optioncontainer._impl.interface == optioncontainer
     assert_action_performed(optioncontainer, "create OptionContainer")
 
-    assert len(optioncontainer.content) == 3
+    assert len(optioncontainer.content) == 4
     assert optioncontainer.current_tab.text == "Item 1"
+    assert optioncontainer.current_tab.icon is None
+    assert optioncontainer.current_tab.enabled
+    assert optioncontainer.current_tab.content == content1
     assert optioncontainer.on_select._raw == on_select_handler
+
+    assert optioncontainer.content[1].text == "Item 2"
+    assert optioncontainer.content[1].icon.path.name == "other-icon"
+    assert optioncontainer.content[1].content == content2
+    assert optioncontainer.content[1].enabled
+
+    assert optioncontainer.content[2].text == "Item 3"
+    assert optioncontainer.content[2].icon == tab_icon
+    assert optioncontainer.content[2].content == content3
+    assert not optioncontainer.content[2].enabled
+
+    assert optioncontainer.content[3].text == "Item 4"
+    assert optioncontainer.content[3].icon is None
+    assert optioncontainer.content[3].content == content4
+    assert optioncontainer.content[3].enabled
+
+
+@pytest.mark.parametrize(
+    "value",
+    [
+        ("label",),
+        ("label", toga.Box(), None, True, "extra"),
+    ],
+)
+def test_widget_create_invalid_content(value):
+    """If the content provided at construction isn't 2- or 3-tuples, an error is raised."""
+    with pytest.raises(
+        ValueError,
+        match=(
+            r"Content items must be an OptionItem instance, or tuples of \(title, widget\), "
+            r"\(title, widget, icon\), or \(title, widget, icon, enabled\)"
+        ),
+    ):
+        toga.OptionContainer(content=value)
+
+
+def test_item_create(content1):
+    """An OptionItem can be created"""
+    item = toga.OptionItem("label", content1)
+
+    assert item.text == "label"
+    assert item.content == content1
+    assert item.index is None
+    assert item.interface is None
+
+
+@pytest.mark.parametrize(
+    "title, has_content, has_icon, enabled, message",
+    [
+        (None, True, True, True, r"Item text cannot be None"),
+        ("", True, True, True, r"Item text cannot be blank"),
+        ("label", False, True, True, r"Content widget cannot be None"),
+    ],
+)
+def test_item_create_invalid_item(
+    title,
+    has_content,
+    has_icon,
+    enabled,
+    message,
+    content1,
+    tab_icon,
+):
+    """If item details are invalid, an exception is raised"""
+
+    with pytest.raises(ValueError, match=message):
+        toga.OptionItem(
+            title,
+            content1 if has_content else None,
+            icon=tab_icon if has_icon else None,
+            enabled=enabled,
+        )
 
 
 def test_assign_to_app(app, optioncontainer, content1, content2, content3):
@@ -143,6 +249,7 @@ def test_focus_noop(optioncontainer):
     assert_action_not_performed(optioncontainer, "focus")
 
 
+@pytest.mark.parametrize("bare_item", [True, False])
 @pytest.mark.parametrize(
     "value, expected",
     [
@@ -154,9 +261,12 @@ def test_focus_noop(optioncontainer):
         (1234, True),
     ],
 )
-def test_item_enabled(optioncontainer, value, expected):
+def test_item_enabled(optioncontainer, value, expected, bare_item):
     """The enabled status of an item can be changed."""
-    item = optioncontainer.content[1]
+    if bare_item:
+        item = toga.OptionItem("title", toga.Box())
+    else:
+        item = optioncontainer.content[1]
 
     # item is initially enabled by default.
     assert item.enabled
@@ -200,6 +310,7 @@ class MyTitle:
         return self.title
 
 
+@pytest.mark.parametrize("bare_item", [True, False])
 @pytest.mark.parametrize(
     "value, expected",
     [
@@ -208,15 +319,19 @@ class MyTitle:
         (MyTitle("Custom Title"), "Custom Title"),  # Evaluated as a string
     ],
 )
-def test_item_text(optioncontainer, value, expected):
+def test_item_text(optioncontainer, value, expected, bare_item):
     """The title of an item can be changed."""
-    item = optioncontainer.content[1]
+    if bare_item:
+        item = toga.OptionItem("title", toga.Box())
+    else:
+        item = optioncontainer.content[1]
 
     # Set the item text
     item.text = value
     assert item.text == expected
 
 
+@pytest.mark.parametrize("bare_item", [True, False])
 @pytest.mark.parametrize(
     "value, error",
     [
@@ -225,18 +340,81 @@ def test_item_text(optioncontainer, value, expected):
         (MyTitle(""), r"Item text cannot be blank"),
     ],
 )
-def test_invalid_item_text(optioncontainer, value, error):
+def test_invalid_item_text(optioncontainer, value, error, bare_item):
     """Invalid item titles are prevented"""
-    item = optioncontainer.content[1]
+    if bare_item:
+        item = toga.OptionItem("title", toga.Box())
+    else:
+        item = optioncontainer.content[1]
 
     # Using invalid text raises an error
     with pytest.raises(ValueError, match=error):
         item.text = value
 
 
+@pytest.mark.parametrize("bare_item", [True, False])
+def test_item_icon(optioncontainer, bare_item):
+    """The icon of an item can be changed."""
+    if bare_item:
+        item = toga.OptionItem("title", toga.Box())
+    else:
+        item = optioncontainer.content[0]
+
+    # Icon is initially empty
+    assert item.icon is None
+
+    test_icon = toga.Icon("test-icon")
+    item.icon = test_icon
+
+    # Icon has been set
+    assert item.icon == test_icon
+    if bare_item:
+        assert_action_not_performed(optioncontainer, "set option icon")
+    else:
+        assert_action_performed_with(
+            optioncontainer,
+            "set option icon",
+            index=0,
+        )
+    EventLog.reset()
+
+    # Clear the icon
+    item.icon = None
+
+    # Icon has been reset
+    assert item.icon is None
+    if bare_item:
+        assert_action_not_performed(optioncontainer, "set option icon")
+    else:
+        assert_action_performed_with(
+            optioncontainer,
+            "set option icon",
+            index=0,
+            icon=None,
+        )
+    EventLog.reset()
+
+    # Icon has been set by name
+    item.icon = "new-icon"
+
+    # Icon has been set to the new value
+    assert item.icon.path.name == "new-icon"
+    if bare_item:
+        assert_action_not_performed(optioncontainer, "set option icon")
+    else:
+        assert_action_performed_with(
+            optioncontainer,
+            "set option icon",
+            index=0,
+        )
+
+
 def test_optionlist_repr(optioncontainer):
     """OptionContainer content has a helpful repr"""
-    assert repr(optioncontainer.content) == "<OptionList 'Item 1', 'Item 2', 'Item 3'>"
+    assert (
+        repr(optioncontainer.content)
+        == "<OptionList 'Item 1', 'Item 2', 'Item 3', 'Item 4'>"
+    )
 
 
 def test_optionlist_iter(optioncontainer):
@@ -245,12 +423,13 @@ def test_optionlist_iter(optioncontainer):
         "Item 1",
         "Item 2",
         "Item 3",
+        "Item 4",
     ]
 
 
 def test_optionlist_len(optioncontainer):
     """OptionContainer content has length"""
-    assert len(optioncontainer.content) == 3
+    assert len(optioncontainer.content) == 4
 
 
 @pytest.mark.parametrize("index", [1, "Item 2", None])
@@ -278,7 +457,7 @@ def test_delitem(optioncontainer, index):
 
     # delete item
     del optioncontainer.content[index]
-    assert len(optioncontainer.content) == 2
+    assert len(optioncontainer.content) == 3
     assert_action_performed_with(optioncontainer, "remove content", index=1)
 
     # There's no item with the deleted label
@@ -317,7 +496,7 @@ def test_item_remove(optioncontainer, index):
 
     # remove item
     optioncontainer.content.remove(index)
-    assert len(optioncontainer.content) == 2
+    assert len(optioncontainer.content) == 3
     assert_action_performed_with(optioncontainer, "remove content", index=1)
 
     # There's no item with the deleted label
@@ -342,6 +521,61 @@ def test_item_remove_current(optioncontainer, index):
         ValueError, match=r"The currently selected tab cannot be deleted."
     ):
         optioncontainer.content.remove(index)
+
+
+def test_item_insert_item(optioncontainer):
+    """The text of an inserted item can be set"""
+    new_content = toga.Box()
+    item = toga.OptionItem("New Tab", new_content)
+
+    optioncontainer.content.insert(1, item)
+
+    # Backend added an item and set enabled
+    assert_action_performed_with(
+        optioncontainer,
+        "add content",
+        index=1,
+        text="New Tab",
+        widget=new_content._impl,
+    )
+    assert_action_performed_with(
+        optioncontainer,
+        "set option enabled",
+        index=1,
+        value=True,
+    )
+    assert_action_performed_with(optioncontainer, "refresh")
+
+
+@pytest.mark.parametrize(
+    "args,kwargs,message",
+    [
+        (
+            ("New Tab",),
+            {},
+            r"Content widget cannot be None.",
+        ),
+        (
+            (toga.OptionItem("New Tab", toga.Box()),),
+            {"content": toga.Box()},
+            r"Cannot specify content if using an OptionItem instance.",
+        ),
+        (
+            (toga.OptionItem("New Tab", toga.Box()),),
+            {"icon": "tab-icon"},
+            r"Cannot specify icon if using an OptionItem instance.",
+        ),
+        (
+            (toga.OptionItem("New Tab", toga.Box()),),
+            {"enabled": False},
+            r"Cannot specify enabled if using an OptionItem instance.",
+        ),
+    ],
+)
+def test_item_insert_item_invalid(optioncontainer, args, kwargs, message):
+    """If both an item and specific details are provided, an error is raised"""
+    with pytest.raises(ValueError, match=message):
+        optioncontainer.content.insert(1, *args, **kwargs)
 
 
 @pytest.mark.parametrize(
@@ -392,7 +626,7 @@ def test_item_insert_invalid_text(optioncontainer, value, error):
 
 @pytest.mark.parametrize("enabled", [True, False])
 def test_item_insert_enabled(optioncontainer, enabled):
-    """The enabled status of content can be set"""
+    """The enabled status of content can be set on insert"""
     new_content = toga.Box()
 
     optioncontainer.content.insert(1, "New content", new_content, enabled=enabled)
@@ -423,10 +657,10 @@ def test_item_append(optioncontainer, enabled):
 
     optioncontainer.content.append("New content", new_content, enabled=enabled)
     assert_action_performed_with(
-        optioncontainer, "add content", index=3, widget=new_content._impl
+        optioncontainer, "add content", index=4, widget=new_content._impl
     )
     assert_action_performed_with(
-        optioncontainer, "set option enabled", index=3, value=enabled
+        optioncontainer, "set option enabled", index=4, value=enabled
     )
     assert_action_performed_with(optioncontainer, "refresh")
 

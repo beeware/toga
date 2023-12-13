@@ -1,0 +1,1 @@
+When inserting or appending a tab to an OptionContainer, the ``enabled`` argument must now be provided as a keyword argument.
