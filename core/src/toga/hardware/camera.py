@@ -33,13 +33,13 @@ class Camera:
     def request_photo_permission(self) -> PermissionResult:
         """Request sufficient permissions to capture photos.
 
-        If permission has already been granted, this will return immediately without
-        prompting the user.
+        If permission has already been granted, this will return without prompting the
+        user.
 
         **This is an asynchronous method**. If you invoke this method in synchronous
         context, it will start the process of requesting permissions, but will return
-        *immediately*. The return value can be awaited in an asynchronous context,
-        but cannot be compared directly.
+        *immediately*. The return value can be awaited in an asynchronous context, but
+        cannot be compared directly.
 
         :returns: An asynchronous result; when awaited, returns True if the app has
             permission to take a photo; False otherwise.
@@ -69,10 +69,10 @@ class Camera:
         return self._impl.get_devices()
 
     def has_flash(self, device: str | None = None):
-        """Does the camera device have a flash?
+        """Does the specified camera device have a flash?
 
         :param device: The camera device to check. If a specific device is *not*
-            specified, a default camera will be used.
+            specified, the features of the default camera will be returned.
         """
         return self._impl.has_flash(device)
 
