@@ -1,0 +1,59 @@
+Camera
+======
+
+A sensor that can capture photos and/or video.
+
+.. rst-class:: widget-support
+.. csv-filter:: Availability (:ref:`Key <api-status-key>`)
+   :header-rows: 1
+   :file: ../../data/widgets_by_platform.csv
+   :included_cols: 4,5,6,7,8,9,10
+   :exclude: {0: '(?!(Camera|Hardware))'}
+
+Usage
+-----
+
+The device camera is accessed using the :attr:`~toga.App.camera` attribute on the app
+object. This attribute exposes an API that allows you to check if you have have
+permission to access the camera device; and if so, capture photographs.
+
+The Camera API is *asynchronous*. This means the methods that have long-running behavior
+(such as requesting permissions and taking photographs) must be ``await``-ed, rather than
+being invoked directly. This requires that they must be invoked from inside an
+asynchronous handler:
+
+.. code-block:: python
+
+    import toga
+
+    class MyApp(toga.App):
+        ...
+        async def time_for_a_selfie(self, widget, **kwargs):
+            photo = await self.camera.take_photo()
+
+Many platforms will require some form of device permission to access the camera. The
+permission APIs are paired with the specific actions performs on those APIs; that is, to
+take a photo, you require :any:`Camera.has_photo_permission`, which you can request
+using :any:`Camera.request_photo_permission()`.
+
+The calls to request permissions *can* be invoked from a synchronous context (i.e., a
+non ``async`` method); however, they are non-blocking when used in this way. Invoking a
+method like :any:`Camera.request_photo_permission()` will start the process of requesting
+permission, but will return  *immediately*, without waiting for the user's response.
+
+Toga will confirm whether the app has been granted permission to use the camera before
+invoking any camera API. If permission has not yet been requested, and the platform
+allows, Toga will attempt to request permission at the time of first camera access.
+
+Notes
+-----
+
+* Any iOS app using the Camera API *must* declare the
+
+* The iOS simulator implements the iOS Camera APIs, but is not able to take photographs.
+  To test your app's Camera usage, you need to use a physical iOS device.
+
+Reference
+---------
+
+.. autoclass:: toga.hardware.camera.Camera
