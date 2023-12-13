@@ -126,13 +126,13 @@ class WebView(Widget):
     def evaluate_javascript(self, javascript, on_result=None) -> JavaScriptResult:
         """Evaluate a JavaScript expression.
 
-        There is no guarantee that the JavaScript has finished evaluating when this
-        method returns. The object returned by this method can be awaited to obtain the
-        value of the expression, or you can provide an ``on_result`` callback.
+        **This is an asynchronous method**. There is no guarantee that the JavaScript
+        has finished evaluating when this method returns. The object returned by this
+        method can be awaited to obtain the value of the expression.
 
-        **Note:** On Android and Windows, *no exception handling is performed*.
-        If a JavaScript error occurs, a return value of None will be reported,
-        but no exception will be provided.
+        **Note:** On Android and Windows, *no exception handling is performed*. If a
+        JavaScript error occurs, a return value of None will be reported, but no
+        exception will be provided.
 
         :param javascript: The JavaScript expression to evaluate.
         :param on_result: **DEPRECATED** ``await`` the return value of this method.

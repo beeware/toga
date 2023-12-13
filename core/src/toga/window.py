@@ -353,11 +353,15 @@ class Window:
 
         Presents as a dialog with a single "OK" button to close the dialog.
 
+        **This is an asynchronous method**. If you invoke this method in synchronous
+        context, it will show the dialog, but will return *immediately*. The object
+        returned by this method can be awaited to obtain the result of the dialog.
+
         :param title: The title of the dialog window.
         :param message: The message to display.
         :param on_result: **DEPRECATED** ``await`` the return value of this method.
-        :returns: An awaitable Dialog object. The Dialog object returns
-            ``None`` when the user presses the 'OK' button.
+        :returns: An awaitable Dialog object. The Dialog object returns ``None`` when
+            the user presses the 'OK' button.
         """
         dialog = Dialog(
             self,
@@ -376,12 +380,15 @@ class Window:
 
         Presents as a dialog with "Yes" and "No" buttons.
 
+        **This is an asynchronous method**. If you invoke this method in synchronous
+        context, it will show the dialog, but will return *immediately*. The object
+        returned by this method can be awaited to obtain the result of the dialog.
+
         :param title: The title of the dialog window.
         :param message: The question to be answered.
         :param on_result: **DEPRECATED** ``await`` the return value of this method.
-        :returns: An awaitable Dialog object. The Dialog object returns
-            ``True`` when the "Yes" button is pressed, ``False`` when
-            the "No" button is pressed.
+        :returns: An awaitable Dialog object. The Dialog object returns ``True`` when
+            the "Yes" button is pressed, ``False`` when the "No" button is pressed.
         """
         dialog = Dialog(
             self,
@@ -398,15 +405,18 @@ class Window:
     ) -> Dialog:
         """Ask the user to confirm if they wish to proceed with an action.
 
-        Presents as a dialog with "Cancel" and "OK" buttons (or whatever labels
-        are appropriate on the current platform).
+        Presents as a dialog with "Cancel" and "OK" buttons (or whatever labels are
+        appropriate on the current platform).
+
+        **This is an asynchronous method**. If you invoke this method in synchronous
+        context, it will show the dialog, but will return *immediately*. The object
+        returned by this method can be awaited to obtain the result of the dialog.
 
         :param title: The title of the dialog window.
         :param message: A message describing the action to be confirmed.
         :param on_result: **DEPRECATED** ``await`` the return value of this method.
-        :returns: An awaitable Dialog object. The Dialog object returns
-            ``True`` when the "OK" button is pressed, ``False`` when
-            the "Cancel" button is pressed.
+        :returns: An awaitable Dialog object. The Dialog object returns ``True`` when
+            the "OK" button is pressed, ``False`` when the "Cancel" button is pressed.
         """
         dialog = Dialog(
             self,
@@ -425,11 +435,15 @@ class Window:
 
         Presents as an error dialog with a "OK" button to close the dialog.
 
+        **This is an asynchronous method**. If you invoke this method in synchronous
+        context, it will show the dialog, but will return *immediately*. The object
+        returned by this method can be awaited to obtain the result of the dialog.
+
         :param title: The title of the dialog window.
         :param message: The error message to display.
         :param on_result: **DEPRECATED** ``await`` the return value of this method.
-        :returns: An awaitable Dialog object. The Dialog object returns
-            ``None`` when the user presses the "OK" button.
+        :returns: An awaitable Dialog object. The Dialog object returns ``None`` when
+            the user presses the "OK" button.
         """
         dialog = Dialog(
             self,
@@ -481,12 +495,15 @@ class Window:
     ) -> Dialog:
         """Open a dialog to display a large block of text, such as a stack trace.
 
+        **This is an asynchronous method**. If you invoke this method in synchronous
+        context, it will show the dialog, but will return *immediately*. The object
+        returned by this method can be awaited to obtain the result of the dialog.
+
         :param title: The title of the dialog window.
         :param message: Contextual information about the source of the stack trace.
         :param content: The stack trace, pre-formatted as a multi-line string.
-        :param retry: If true, the user will be given options to "Retry" or
-            "Quit"; if false, a single option to acknowledge the error will
-            be displayed.
+        :param retry: If true, the user will be given options to "Retry" or "Quit"; if
+            false, a single option to acknowledge the error will be displayed.
         :param on_result: **DEPRECATED** ``await`` the return value of this method.
         :returns: An awaitable Dialog object. If ``retry`` is true, the Dialog object
             returns ``True`` when the user selects "Retry", and ``False`` when they
@@ -516,10 +533,14 @@ class Window:
 
         This dialog is not currently supported on Android or iOS.
 
+        **This is an asynchronous method**. If you invoke this method in synchronous
+        context, it will show the dialog, but will return *immediately*. The object
+        returned by this method can be awaited to obtain the result of the dialog.
+
         :param title: The title of the dialog window
         :param suggested_filename: A default filename
-        :param file_types: The allowed filename extensions, without leading dots. If
-            not provided, any extension will be allowed.
+        :param file_types: The allowed filename extensions, without leading dots. If not
+            provided, any extension will be allowed.
         :param on_result: **DEPRECATED** ``await`` the return value of this method.
         :returns: An awaitable Dialog object. The Dialog object returns a path object
             for the selected file location, or ``None`` if the user cancelled the save
@@ -595,20 +616,23 @@ class Window:
 
         This dialog is not currently supported on Android or iOS.
 
+        **This is an asynchronous method**. If you invoke this method in synchronous
+        context, it will show the dialog, but will return *immediately*. The object
+        returned by this method can be awaited to obtain the result of the dialog.
+
         :param title: The title of the dialog window
-        :param initial_directory: The initial folder in which to open the dialog.
-            If ``None``, use the default location provided by the operating system
-            (which will often be the last used location)
-        :param file_types: The allowed filename extensions, without leading dots. If
-            not provided, all files will be shown.
-        :param multiple_select: If True, the user will be able to select multiple
-            files; if False, the selection will be restricted to a single file.
+        :param initial_directory: The initial folder in which to open the dialog. If
+            ``None``, use the default location provided by the operating system (which
+            will often be the last used location)
+        :param file_types: The allowed filename extensions, without leading dots. If not
+            provided, all files will be shown.
+        :param multiple_select: If True, the user will be able to select multiple files;
+            if False, the selection will be restricted to a single file.
         :param on_result: **DEPRECATED** ``await`` the return value of this method.
         :param multiselect: **DEPRECATED** Use ``multiple_select``.
-        :returns: An awaitable Dialog object. The Dialog object returns
-            a list of ``Path`` objects if ``multiple_select`` is ``True``, or a single
-            ``Path`` otherwise. Returns ``None`` if the open operation is
-            cancelled by the user.
+        :returns: An awaitable Dialog object. The Dialog object returns a list of
+            ``Path`` objects if ``multiple_select`` is ``True``, or a single ``Path``
+            otherwise. Returns ``None`` if the open operation is cancelled by the user.
         """
         ######################################################################
         # 2023-08: Backwards compatibility
@@ -681,19 +705,22 @@ class Window:
 
         This dialog is not currently supported on Android or iOS.
 
+        **This is an asynchronous method**. If you invoke this method in synchronous
+        context, it will show the dialog, but will return *immediately*. The object
+        returned by this method can be awaited to obtain the result of the dialog.
+
         :param title: The title of the dialog window
-        :param initial_directory: The initial folder in which to open the dialog.
-            If ``None``, use the default location provided by the operating system
-            (which will often be "last used location")
+        :param initial_directory: The initial folder in which to open the dialog. If
+            ``None``, use the default location provided by the operating system (which
+            will often be "last used location")
         :param multiple_select: If True, the user will be able to select multiple
             directories; if False, the selection will be restricted to a single
             directory. This option is not supported on WinForms.
         :param on_result: **DEPRECATED** ``await`` the return value of this method.
         :param multiselect: **DEPRECATED** Use ``multiple_select``.
-        :returns: An awaitable Dialog object. The Dialog object returns
-            a list of ``Path`` objects if ``multiple_select`` is ``True``, or a single
-            ``Path`` otherwise. Returns ``None`` if the open operation is
-            cancelled by the user.
+        :returns: An awaitable Dialog object. The Dialog object returns a list of
+            ``Path`` objects if ``multiple_select`` is ``True``, or a single ``Path``
+            otherwise. Returns ``None`` if the open operation is cancelled by the user.
         """
         ######################################################################
         # 2023-08: Backwards compatibility
