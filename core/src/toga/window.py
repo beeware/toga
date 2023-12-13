@@ -359,7 +359,10 @@ class Window:
         :returns: An awaitable Dialog object. The Dialog object returns
             ``None`` when the user presses the 'OK' button.
         """
-        dialog = Dialog(self, on_result=wrapped_handler(self, on_result))
+        dialog = Dialog(
+            self,
+            on_result=wrapped_handler(self, on_result) if on_result else None,
+        )
         self.factory.dialogs.InfoDialog(dialog, title, message)
         return dialog
 
@@ -380,7 +383,10 @@ class Window:
             ``True`` when the "Yes" button is pressed, ``False`` when
             the "No" button is pressed.
         """
-        dialog = Dialog(self, on_result=wrapped_handler(self, on_result))
+        dialog = Dialog(
+            self,
+            on_result=wrapped_handler(self, on_result) if on_result else None,
+        )
         self.factory.dialogs.QuestionDialog(dialog, title, message)
         return dialog
 
@@ -402,7 +408,10 @@ class Window:
             ``True`` when the "OK" button is pressed, ``False`` when
             the "Cancel" button is pressed.
         """
-        dialog = Dialog(self, on_result=wrapped_handler(self, on_result))
+        dialog = Dialog(
+            self,
+            on_result=wrapped_handler(self, on_result) if on_result else None,
+        )
         self.factory.dialogs.ConfirmDialog(dialog, title, message)
         return dialog
 
@@ -422,7 +431,10 @@ class Window:
         :returns: An awaitable Dialog object. The Dialog object returns
             ``None`` when the user presses the "OK" button.
         """
-        dialog = Dialog(self, on_result=wrapped_handler(self, on_result))
+        dialog = Dialog(
+            self,
+            on_result=wrapped_handler(self, on_result) if on_result else None,
+        )
         self.factory.dialogs.ErrorDialog(dialog, title, message)
         return dialog
 
@@ -480,7 +492,10 @@ class Window:
             returns ``True`` when the user selects "Retry", and ``False`` when they
             select "Quit". If ``retry`` is false, the Dialog object returns ``None``.
         """
-        dialog = Dialog(self, on_result=wrapped_handler(self, on_result))
+        dialog = Dialog(
+            self,
+            on_result=wrapped_handler(self, on_result) if on_result else None,
+        )
         self.factory.dialogs.StackTraceDialog(
             dialog,
             title,
@@ -510,7 +525,10 @@ class Window:
             for the selected file location, or ``None`` if the user cancelled the save
             operation.
         """
-        dialog = Dialog(self, on_result=wrapped_handler(self, on_result))
+        dialog = Dialog(
+            self,
+            on_result=wrapped_handler(self, on_result) if on_result else None,
+        )
         # Convert suggested filename to a path (if it isn't already),
         # and break it into a filename and a directory
         suggested_path = Path(suggested_filename)
@@ -605,7 +623,10 @@ class Window:
         # End Backwards compatibility
         ######################################################################
 
-        dialog = Dialog(self, on_result=wrapped_handler(self, on_result))
+        dialog = Dialog(
+            self,
+            on_result=wrapped_handler(self, on_result) if on_result else None,
+        )
         self.factory.dialogs.OpenFileDialog(
             dialog,
             title,
@@ -687,7 +708,10 @@ class Window:
         # End Backwards compatibility
         ######################################################################
 
-        dialog = Dialog(self, on_result=wrapped_handler(self, on_result))
+        dialog = Dialog(
+            self,
+            on_result=wrapped_handler(self, on_result) if on_result else None,
+        )
         self.factory.dialogs.SelectFolderDialog(
             dialog,
             title,
