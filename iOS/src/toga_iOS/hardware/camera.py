@@ -1,7 +1,7 @@
 from rubicon.objc import objc_method
 
 import toga
-from toga.constants import FlashMode, VideoQuality
+from toga.constants import FlashMode
 from toga.hardware.camera import Camera as TogaCamera
 from toga_iOS.libs import (
     AVAuthorizationStatus,
@@ -11,7 +11,6 @@ from toga_iOS.libs import (
     UIImagePickerControllerCameraCaptureMode,
     UIImagePickerControllerCameraDevice,
     UIImagePickerControllerCameraFlashMode,
-    UIImagePickerControllerQualityType,
     UIImagePickerControllerSourceTypeCamera,
 )
 
@@ -35,11 +34,11 @@ def native_flash_mode(flash):
     }.get(flash, UIImagePickerControllerCameraFlashMode.Auto)
 
 
-def native_video_quality(quality):
-    return {
-        VideoQuality.HIGH: UIImagePickerControllerQualityType.High,
-        VideoQuality.LOW: UIImagePickerControllerQualityType.Low,
-    }.get(quality, UIImagePickerControllerQualityType.Medium)
+# def native_video_quality(quality):
+#     return {
+#         VideoQuality.HIGH: UIImagePickerControllerQualityType.High,
+#         VideoQuality.LOW: UIImagePickerControllerQualityType.Low,
+#     }.get(quality, UIImagePickerControllerQualityType.Medium)
 
 
 class TogaImagePickerController(UIImagePickerController):
