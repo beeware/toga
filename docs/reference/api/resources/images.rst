@@ -13,14 +13,7 @@ Graphical content of arbitrary size.
 Usage
 -----
 
-An image can be constructed from:
-
-* A path to a file on disk;
-* A blob of bytes containing image data in a known image format;
-* A :any:`PIL.Image` object;
-* Another :any:`toga.Image`; or
-* The native platform representation of an image (see the :ref:`Notes
-  <native-image-rep>` section below for details).
+An image can be constructed from a :any:`wide range of sources <ImageContent>`:
 
 .. code-block:: python
 
@@ -45,6 +38,8 @@ An image can be constructed from:
 Notes
 -----
 
+.. _known-image-formats:
+
 * PNG and JPEG formats are guaranteed to be supported.
   Other formats are available on some platforms:
 
@@ -64,5 +59,23 @@ Notes
 
 Reference
 ---------
+
+.. c:type:: ImageContent
+
+    When specifying content for an :any:`Image`, you can provide:
+
+    * a string specifying an absolute or relative path to a file in a :ref:`known image
+      format <known-image-formats>`;
+    * an absolute or relative :any:`pathlib.Path` object describing a file in a
+      :ref:`known image format <known-image-formats>`;
+    * a "blob of bytes" data type (:any:`bytes`, :any:`bytearray`, or :any:`memoryview`)
+      containing raw image data in a :ref:`known image format <known-image-formats>`;
+    * an instance of :any:`toga.Image`; or
+    * if `Pillow <https://pillow.readthedocs.io/>`__ is installed, an instance of
+      :any:`PIL.Image.Image`; or
+    * an instance of the :ref:`native platform image representation <native-image-rep>`.
+
+    If a relative path is provided, it will be anchored relative to the module that
+    defines your Toga application class.
 
 .. autoclass:: toga.Image

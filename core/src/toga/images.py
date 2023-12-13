@@ -1,9 +1,10 @@
 from __future__ import annotations
 
+import sys
 import warnings
 from io import BytesIO
 from pathlib import Path
-from typing import Any, TypeVar
+from typing import TYPE_CHECKING, Any
 from warnings import warn
 
 try:
@@ -19,25 +20,34 @@ from toga.platform import get_platform_factory
 # Make sure deprecation warnings are shown by default
 warnings.filterwarnings("default", category=DeprecationWarning)
 
-# Define a type variable for generics where an Image type is required.
-ImageT = TypeVar("ImageT")
+if TYPE_CHECKING:
+    if sys.version_info < (3, 10):
+        from typing_extensions import TypeAlias, TypeVar
+    else:
+        from typing import TypeAlias, TypeVar
+
+    # Define a type variable for generics where an Image type is required.
+    ImageT = TypeVar("ImageT")
+
+    # Define the types that can be used as Image content
+    PathLike: TypeAlias = str | Path
+    BytesLike: TypeAlias = bytes | bytearray | memoryview
+    ImageLike: TypeAlias = Any
+    ImageContent: TypeAlias = PathLike | BytesLike | ImageLike
 
 
 class Image:
     def __init__(
         self,
-        src: str | Path | bytes | bytearray | memoryview | Any | None = None,
+        src: ImageContent | None = None,
         *,
         path=None,  # DEPRECATED
         data=None,  # DEPRECATED
     ):
         """Create a new image.
 
-        :param src: The source from which to load the image. Can be a file path
-            (relative or absolute, as a string or :any:`pathlib.Path`), raw binary data
-            in any supported image format, or another Toga image. Can also accept the
-            platform's native image format; if Pillow is installed,
-            :any:`PIL.Image.Image` can be used.
+        :param src: The source from which to load the image. Can be any valid
+            :any:`image content <ImageContent>` type.
         :param path: **DEPRECATED** - Use ``src``.
         :param data: **DEPRECATED** - Use ``src``.
         :raises FileNotFoundError: If a path is provided, but that path does not exist.
