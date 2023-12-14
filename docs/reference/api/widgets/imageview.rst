@@ -75,8 +75,7 @@ Notes
 
   * If the cross axis has an explicit size, the image will be scaled to fill the
     available space so that the entire image can be seen, while preserving its aspect
-    ratio. Any extra space on the main axis will be distributed equally between both
-    sides.
+    ratio. Any extra space will be distributed equally between both sides.
 
 
 Reference
