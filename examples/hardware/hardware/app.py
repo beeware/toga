@@ -27,16 +27,18 @@ class ExampleHardwareApp(toga.App):
                 ),
                 toga.Box(
                     children=[
+                        # Take a fresh photo
                         toga.Button(
                             "Take Photo",
                             on_press=self.take_photo,
                             style=Pack(flex=1, padding=5),
                         ),
-                        toga.Button(
-                            "Sync",
-                            on_press=self.take_photo_sync,
-                            style=Pack(flex=1, padding=5),
-                        ),
+                        # Select a photo from the photo library
+                        # toga.Button(
+                        #     "Select Photo",
+                        #     on_press=self.select_photo,
+                        #     style=Pack(flex=1, padding=5),
+                        # ),
                     ],
                 ),
             ],
@@ -50,26 +52,14 @@ class ExampleHardwareApp(toga.App):
     async def take_photo(self, widget, **kwargs):
         try:
             image = await self.camera.take_photo()
-            self.update_photo(None, image)
+            if image is None:
+                self.photo.image = "resources/default.png"
+            else:
+                self.photo.image = image
         except PermissionError:
-            self.main_window.info_dialog(
+            await self.main_window.info_dialog(
                 "Oh no!", "You have not granted permission to take photos"
             )
-
-    def take_photo_sync(self, widget, **kwargs):
-        try:
-            self.camera.take_photo(on_result=self.update_photo)
-        except PermissionError:
-            self.main_window.info_dialog(
-                "Oh no!", "You have not granted permission to take photos"
-            )
-
-    def update_photo(self, camera, image):
-        # Set the photo to be the new image
-        if image is None:
-            self.photo.image = "resources/default.png"
-        else:
-            self.photo.image = image
 
 
 def main():
