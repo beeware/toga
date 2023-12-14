@@ -38,22 +38,22 @@ def rehint_imageview(image, style, scale=1):
             width = int(style.width * scale)
             height = int(style.width * scale / aspect_ratio)
             if style.flex:
-                height = at_least(height)
+                height = at_least(0)
         elif style.height != NONE:
             # Explicit height, implicit width. Preserve aspect ratio.
             aspect_ratio = image.width / image.height
             width = int(style.height * scale * aspect_ratio)
             height = int(style.height * scale)
             if style.flex:
-                width = at_least(width)
+                width = at_least(0)
         else:
             # Use the image's actual size.
             aspect_ratio = image.width / image.height
             width = int(image.width * scale)
             height = int(image.height * scale)
             if style.flex:
-                width = at_least(width)
-                height = at_least(height)
+                width = at_least(0)
+                height = at_least(0)
     else:
         # No image. Hinted size is 0.
         width = 0
