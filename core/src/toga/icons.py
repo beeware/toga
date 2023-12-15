@@ -20,6 +20,7 @@ if TYPE_CHECKING:
 class cachedicon:
     def __init__(self, f):
         self.f = f
+        self.__doc__ = f.__doc__
 
     def __get__(self, obj, owner):
         # If you ask for Icon.CACHED_ICON, obj is None, and owner is the Icon class
@@ -41,6 +42,7 @@ class cachedicon:
 class Icon:
     @cachedicon
     def TOGA_ICON(cls) -> Icon:
+        """**DEPRECATED** - Use ``DEFAULT_ICON``, or your own icon."""
         warnings.warn(
             "TOGA_ICON has been deprecated; Use DEFAULT_ICON, or your own icon.",
             DeprecationWarning,
@@ -48,21 +50,15 @@ class Icon:
 
         return Icon("toga", system=True)
 
-    TOGA_ICON.__doc__ = """**DEPRECATED** - Use ``DEFAULT_ICON``, or your own icon."""
-
     @cachedicon
     def DEFAULT_ICON(cls) -> Icon:
+        """The default icon used as a fallback."""
         return Icon("toga", system=True)
-
-    DEFAULT_ICON.__doc__ = """The default icon used as a fallback."""
 
     @cachedicon
     def OPTION_CONTAINER_DEFAULT_TAB_ICON(cls) -> Icon:
-        return Icon("optioncontainer-tab", system=True)
-
-    OPTION_CONTAINER_DEFAULT_TAB_ICON.__doc__ = (
         """The default icon used to decorate option container tabs."""
-    )
+        return Icon("optioncontainer-tab", system=True)
 
     def __init__(
         self,
