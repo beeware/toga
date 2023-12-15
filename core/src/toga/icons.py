@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import sys
+import warnings
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -40,15 +41,28 @@ class cachedicon:
 class Icon:
     @cachedicon
     def TOGA_ICON(cls) -> Icon:
+        warnings.warn(
+            "TOGA_ICON has been deprecated; Use DEFAULT_ICON, or your own icon.",
+            DeprecationWarning,
+        )
+
         return Icon("toga", system=True)
+
+    TOGA_ICON.__doc__ = """**DEPRECATED** - Use ``DEFAULT_ICON``, or your own icon."""
 
     @cachedicon
     def DEFAULT_ICON(cls) -> Icon:
         return Icon("toga", system=True)
 
+    DEFAULT_ICON.__doc__ = """The default icon used as a fallback."""
+
     @cachedicon
     def OPTION_CONTAINER_DEFAULT_TAB_ICON(cls) -> Icon:
         return Icon("optioncontainer-tab", system=True)
+
+    OPTION_CONTAINER_DEFAULT_TAB_ICON.__doc__ = (
+        """The default icon used to decorate option container tabs."""
+    )
 
     def __init__(
         self,
@@ -64,6 +78,7 @@ class Icon:
 
             This base filename should *not* contain an extension. If an extension is
             specified, it will be ignored.
+        :param system: **For internal use only**
         """
         self.path = Path(path)
         self.system = system

@@ -37,6 +37,7 @@ will cause Toga to look for (in order):
 * ``myicon.bmp``
 
 On GTK, Toga will look for (in order):
+
 * ``myicon-linux-72.png``
 * ``myicon-72.png``
 * ``myicon-linux-32.png``
