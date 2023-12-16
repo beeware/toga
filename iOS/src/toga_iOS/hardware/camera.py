@@ -1,4 +1,4 @@
-from rubicon.objc import objc_method
+from rubicon.objc import Block, objc_method
 
 import toga
 from toga.constants import FlashMode
@@ -24,7 +24,7 @@ def native_device(device):
             TogaCamera.REAR: UIImagePickerControllerCameraDevice.Rear,
         }[device]
     except KeyError:
-        return ValueError("Unknown camera device {device!r}")
+        raise ValueError(f"Unknown camera device {device!r}")
 
 
 def native_flash_mode(flash):
@@ -49,22 +49,22 @@ class TogaImagePickerController(UIImagePickerController):
         picker.dismissViewControllerAnimated(True, completion=None)
 
         image = toga.Image(info["UIImagePickerControllerOriginalImage"])
-        self.future.set_result(image)
-
-        picker.delegate.release()
+        self.result.set_result(image)
 
     @objc_method
     def imagePickerControllerDidCancel_(self, picker) -> None:
         picker.dismissViewControllerAnimated(True, completion=None)
 
-        self.future.set_result(None)
-
-        picker.delegate.release()
+        self.result.set_result(None)
 
 
 class Camera:
     def __init__(self, interface):
         self.interface = interface
+
+        self.native = TogaImagePickerController.alloc().init()
+        self.native.sourceType = UIImagePickerControllerSourceTypeCamera
+        self.native.delegate = self.native
 
     def _has_permission(self, media_types, allow_unknown=False):
         if allow_unknown:
@@ -93,76 +93,74 @@ class Camera:
     #     )
 
     def request_photo_permission(self, future):
-        def video_complete(permission: bool) -> None:
-            future.set_result(permission)
+        # This block is invoked when the permission is granted; however, permission is
+        # granted from a different (inaccessible) thread, so it isn't picked up by
+        # coverage.
+        def permission_complete(result) -> None:  # pragma: no cover
+            future.set_result(result)
 
         AVCaptureDevice.requestAccessForMediaType(
-            AVMediaTypeVideo,
-            completionHandler=video_complete,
+            AVMediaTypeVideo, completionHandler=Block(permission_complete, None, bool)
         )
 
     def get_devices(self):
         return (
             [TogaCamera.REAR]
-            if self.native.isCameraDeviceAvailable(
+            if UIImagePickerController.isCameraDeviceAvailable(
                 UIImagePickerControllerCameraDevice.Rear
             )
             else []
         ) + (
             [TogaCamera.FRONT]
-            if self.native.isCameraDeviceAvailable(
+            if UIImagePickerController.isCameraDeviceAvailable(
                 UIImagePickerControllerCameraDevice.Front
             )
             else []
         )
 
     def has_flash(self, device):
-        return self.native.isFlashAvailableForCameraDevice(native_device(device))
+        return UIImagePickerController.isFlashAvailableForCameraDevice(
+            native_device(device)
+        )
 
-    def take_photo(self, future, device, flash):
+    def take_photo(self, result, device, flash):
         if self.has_photo_permission(allow_unknown=True):
             # Configure the controller to take a photo
-            camera_session = TogaImagePickerController.alloc().init()
-            camera_session.sourceType = UIImagePickerControllerSourceTypeCamera
-            camera_session.cameraCaptureMode = (
+            self.native.cameraCaptureMode = (
                 UIImagePickerControllerCameraCaptureMode.Photo
             )
 
-            camera_session.showsCameraControls = True
-            camera_session.cameraDevice = native_device(device)
-            camera_session.cameraFlashMode = native_flash_mode(flash)
+            self.native.showsCameraControls = True
+            self.native.cameraDevice = native_device(device)
+            self.native.cameraFlashMode = native_flash_mode(flash)
 
-            # Create a delegate to handle the callback
-            camera_session.future = future
-            camera_session.delegate = camera_session
+            # Attach the result to the picker
+            self.native.result = result
 
             # Show the pane
             toga.App.app.current_window._impl.native.rootViewController.presentViewController(
-                camera_session, animated=True, completion=None
+                self.native, animated=True, completion=None
             )
         else:
             raise PermissionError("App does not have permission to take photos")
 
-    # def record_video(self, future, device, flash):
+    # def record_video(self, result, device, flash):
     #     if self.has_video_permission(allow_unknown=True):
     #         # Configure the controller to take a photo
-    #         camera_session = TogaImagePickerController.alloc().init()
-    #         camera_session.sourceType = UIImagePickerControllerSourceTypeCamera
-    #         camera_session.cameraCaptureMode = (
+    #         self.native.cameraCaptureMode = (
     #             UIImagePickerControllerCameraCaptureMode.Video
     #         )
 
-    #         camera_session.showsCameraControls = True
-    #         camera_session.cameraDevice = native_device(device)
-    #         camera_session.cameraFlashMode = native_flash_mode(flash)
+    #         self.native.showsCameraControls = True
+    #         self.native.cameraDevice = native_device(device)
+    #         self.native.cameraFlashMode = native_flash_mode(flash)
 
-    #         # Create a delegate to handle the callback
-    #         camera_session.future = future
-    #         camera_session.delegate = camera_session
+    #         # Attach the result to the picker
+    #         self.native.result = result
 
     #         # Show the pane
     #         toga.App.app.current_window._impl.native.rootViewController.presentViewController(
-    #             camera_session, animated=True, completion=None
+    #             self.native, animated=True, completion=None
     #         )
     #     else:
     #         raise PermissionError("App does not have permission to take photos")
