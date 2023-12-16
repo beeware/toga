@@ -64,10 +64,8 @@ async def widget(content1, content2, content3, on_select_handler):
     skip_on_platforms("android")
     return toga.OptionContainer(
         content=[
-            ("Tab 1", content1, "resources/tab-icon-1-iOS"),
-            toga.OptionItem(
-                "Tab 2", content2, icon=toga.Icon("resources/tab-icon-2-iOS")
-            ),
+            ("Tab 1", content1, "resources/tab-icon-1"),
+            toga.OptionItem("Tab 2", content2, icon=toga.Icon("resources/tab-icon-2")),
             ("Tab 3", content3),
         ],
         style=Pack(flex=1),
@@ -382,10 +380,10 @@ async def test_change_content(
     assert widget.content[2].text == "New 2"
 
     # Change the icon of Tab 2
-    widget.content["New 2"].icon = "resources/new-tab-iOS"
+    widget.content["New 2"].icon = "resources/new-tab"
     await probe.redraw("Tab 2 has a new icon")
 
-    probe.assert_tab_icon(2, "new-tab-iOS")
+    probe.assert_tab_icon(2, "new-tab")
 
     # Clear the icon of Tab 2
     widget.content["New 2"].icon = None

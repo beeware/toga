@@ -45,6 +45,8 @@ class TogaTabBarController(UITabBarController):
 
 
 class OptionContainer(Widget):
+    uses_icons = True
+
     def create(self):
         self.native_controller = TogaTabBarController.alloc().init()
         self.native_controller.interface = self.interface

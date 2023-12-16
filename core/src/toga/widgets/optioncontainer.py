@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Any, Protocol, overload
 
 import toga
 from toga.handlers import wrapped_handler
+from toga.platform import get_platform_factory
 
 from .base import Widget
 
@@ -143,17 +144,18 @@ class OptionItem:
 
     @icon.setter
     def icon(self, icon_or_name: IconContent):
-        if icon_or_name is None:
-            icon = None
-        elif isinstance(icon_or_name, toga.Icon):
-            icon = icon_or_name
-        else:
-            icon = toga.Icon(icon_or_name)
+        if get_platform_factory().OptionContainer.uses_icons:
+            if icon_or_name is None:
+                icon = None
+            elif isinstance(icon_or_name, toga.Icon):
+                icon = icon_or_name
+            else:
+                icon = toga.Icon(icon_or_name)
 
-        if hasattr(self, "_icon"):
-            self._icon = icon
-        else:
-            self._interface._impl.set_option_icon(self.index, icon)
+            if hasattr(self, "_icon"):
+                self._icon = icon
+            else:
+                self._interface._impl.set_option_icon(self.index, icon)
 
     @property
     def index(self) -> int | None:

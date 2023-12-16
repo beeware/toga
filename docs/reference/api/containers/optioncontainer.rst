@@ -152,6 +152,8 @@ Notes
   by index, user re-ordering is ignored; the logical order as configured in Toga itself
   is used to identify tabs.
 
+* Icons for iOS OptionContainer tabs should be 25x25px alpha masks.
+
 Reference
 ---------
 
