@@ -1,8 +1,5 @@
 from __future__ import annotations
 
-import asyncio
-
-import toga
 from toga.constants import FlashMode
 from toga.handlers import AsyncResult
 from toga.platform import get_platform_factory
@@ -10,6 +7,10 @@ from toga.platform import get_platform_factory
 
 class PermissionResult(AsyncResult):
     RESULT_TYPE = "permission"
+
+
+class PhotoResult(AsyncResult):
+    RESULT_TYPE = "photo"
 
 
 class Camera:
@@ -76,25 +77,30 @@ class Camera:
         """
         return self._impl.has_flash(device)
 
-    async def take_photo(
+    def take_photo(
         self,
         device: str | None = None,
         flash: FlashMode = FlashMode.AUTO,
-    ) -> toga.Image:
+    ) -> PhotoResult:
         """Capture a photo using one of the device's cameras.
 
-        If the platform requires permission to access the camera, and the user
-        hasn't previously provided that permission, this will cause permission
-        to be requested.
+        If the platform requires permission to access the camera, and the user hasn't
+        previously provided that permission, this will cause permission to be requested.
+
+        **This is an asynchronous method**. If you invoke this method in synchronous
+        context, it will start the process of requesting permissions, but will return
+        *immediately*. The return value can be awaited in an asynchronous context, but
+        cannot be compared directly.
 
         :param device: The camera device to use. If a specific device is *not*
             specified, a default camera will be used.
         :param flash: The flash mode to use; defaults to "auto"
-        :returns: The :any:`toga.Image` captured by the camera.
+        :returns: An asynchronous result; when awaited, returns the :any:`toga.Image`
+            captured by the camera, or ``None`` if the photo was  cancelled.
         """
-        future = asyncio.get_event_loop().create_future()
-        self._impl.take_photo(future, device=device, flash=flash)
-        return await future
+        photo = PhotoResult(None)
+        self._impl.take_photo(photo, device=device, flash=flash)
+        return photo
 
     # async def record_video(
     #     self,
