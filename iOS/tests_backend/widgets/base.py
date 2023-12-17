@@ -39,13 +39,15 @@ CATransaction = ObjCClass("CATransaction")
 
 
 class SimpleProbe(BaseProbe, FontMixin):
+    native_attr = "native"
+
     def __init__(self, widget):
         super().__init__()
         self.app = widget.app
         self.widget = widget
         self.impl = widget._impl
         self.native = widget._impl.native
-        assert isinstance(self.native, self.native_class)
+        assert isinstance(getattr(self.impl, self.native_attr), self.native_class)
 
     def assert_container(self, container):
         assert container._impl.container == self.impl.container

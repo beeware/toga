@@ -1,5 +1,9 @@
+from pathlib import Path
+
 import pytest
 from System.Drawing import Icon as WinIcon
+
+import toga_winforms
 
 from .probe import BaseProbe
 
@@ -26,4 +30,10 @@ class IconProbe(BaseProbe):
             pytest.fail("Unknown icon resource")
 
     def assert_default_icon_content(self):
-        assert self.icon._impl.path == self.app.paths.toga / "resources/toga.ico"
+        assert (
+            self.icon._impl.path
+            == Path(toga_winforms.__file__).parent / "resources/toga.ico"
+        )
+
+    def assert_platform_icon_content(self):
+        assert self.icon._impl.path == self.app.paths.app / "resources/logo-windows.ico"

@@ -72,7 +72,7 @@ class SplitContainer(Widget):
 
     def content_refreshed(self, container):
         container.min_width = container.content.interface.layout.min_width
-        container.min_height = container.content.interface.layout.min_width
+        container.min_height = container.content.interface.layout.min_height
 
     def set_content(self, content, flex):
         # Clear any existing content

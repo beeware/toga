@@ -63,7 +63,7 @@ root = ".."
 
 [tool.setuptools_dynamic_dependencies]
 dependencies = [
-    "textual",
+    "textual >= 0.44.0",
     "toga-core == {version}",
 ]
 

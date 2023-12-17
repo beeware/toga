@@ -189,3 +189,33 @@ async def test_evaluate_javascript_async(widget):
     assert_action_performed(widget, "evaluate_javascript")
 
     assert result == 42
+
+
+async def test_evaluate_javascript_sync(widget):
+    """Deprecated sync handlers can be used for Javascript evaluation"""
+
+    # An async task that simulates evaluation of Javascript after a delay
+    async def delayed_page_load():
+        await asyncio.sleep(0.1)
+
+        # Complete the Javascript
+        widget._impl.simulate_javascript_result(42)
+
+    asyncio.create_task(delayed_page_load())
+
+    on_result_handler = Mock()
+
+    with pytest.warns(
+        DeprecationWarning,
+        match=r"Synchronous `on_result` handlers have been deprecated;",
+    ):
+        result = await widget.evaluate_javascript(
+            "test(1);", on_result=on_result_handler
+        )
+
+    assert_action_performed(widget, "evaluate_javascript")
+
+    assert result == 42
+
+    # The async handler was invoked
+    on_result_handler.assert_called_once_with(42)

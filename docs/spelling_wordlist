@@ -28,6 +28,7 @@ Helvetica
 initializer
 instantiation
 iOS
+ImageT
 iterable
 KDE
 linters
@@ -79,6 +80,7 @@ triaged
 Triaging
 tvOS
 Ubuntu
+unselectable
 validator
 validators
 Ventura
