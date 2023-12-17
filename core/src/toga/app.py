@@ -8,7 +8,7 @@ import warnings
 import webbrowser
 from collections.abc import Collection, Iterator, Mapping, MutableSet
 from email.message import Message
-from typing import Any, Protocol
+from typing import TYPE_CHECKING, Any, Protocol
 from warnings import warn
 
 from toga.command import Command, CommandSet
@@ -19,6 +19,9 @@ from toga.paths import Paths
 from toga.platform import get_platform_factory
 from toga.widgets.base import Widget, WidgetRegistry
 from toga.window import Window
+
+if TYPE_CHECKING:
+    from toga.icons import IconContent
 
 # Make sure deprecation warnings are shown by default
 warnings.filterwarnings("default", category=DeprecationWarning)
@@ -246,7 +249,7 @@ class App:
         app_id: str | None = None,
         app_name: str | None = None,
         *,
-        icon: Icon | str | None = None,
+        icon: IconContent = None,
         author: str | None = None,
         version: str | None = None,
         home_page: str | None = None,
@@ -262,8 +265,8 @@ class App:
         :meth:`~toga.App.main_loop()` method, which will start the event loop of your
         App.
 
-        :param formal_name: The human-readable name of the app. If not provided,
-            the metadata key ``Formal-Name`` must be present.
+        :param formal_name: The human-readable name of the app. If not provided, the
+            metadata key ``Formal-Name`` must be present.
         :param app_id: The unique application identifier. This will usually be a
             reversed domain name, e.g. ``org.beeware.myapp``. If not provided, the
             metadata key ``App-ID`` must be present.
@@ -277,10 +280,10 @@ class App:
                For example, an ``app_id`` of ``com.example.my-app`` would yield a
                distribution name of ``my-app``.
             #. As a last resort, the name ``toga``.
-        :param icon: The :any:`Icon` for the app. If not provided, Toga will attempt to
-            load an icon from ``resources/app_name``, where ``app_name`` is defined
-            above. If no resource matching this name can be found, a warning will be
-            printed, and the app will fall back to a default icon.
+        :param icon: The :any:`icon <IconContent>` for the app. If not provided, Toga
+            will attempt to load an icon from ``resources/app_name``, where ``app_name``
+            is defined above. If no resource matching this name can be found, a warning
+            will be printed, and the app will fall back to a default icon.
         :param author: The person or organization to be credited as the author of the
             app. If not provided, the metadata key ``Author`` will be used.
         :param version: The version number of the app.  If not provided, the metadata
@@ -505,13 +508,15 @@ class App:
     def icon(self) -> Icon:
         """The Icon for the app.
 
+        Can be specified as any valid :any:`icon content <IconContent>`.
+
         When setting the icon, you can provide either an :any:`Icon` instance, or a
         path that will be passed to the ``Icon`` constructor.
         """
         return self._icon
 
     @icon.setter
-    def icon(self, icon_or_name: Icon | str) -> None:
+    def icon(self, icon_or_name: IconContent) -> None:
         if isinstance(icon_or_name, Icon):
             self._icon = icon_or_name
         else:
@@ -716,7 +721,7 @@ class DocumentApp(App):
         app_id: str | None = None,
         app_name: str | None = None,
         *,
-        icon: str | None = None,
+        icon: IconContent = None,
         author: str | None = None,
         version: str | None = None,
         home_page: str | None = None,

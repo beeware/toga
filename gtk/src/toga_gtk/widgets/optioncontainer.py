@@ -4,6 +4,8 @@ from .base import Widget
 
 
 class OptionContainer(Widget):
+    uses_icons = False
+
     def create(self):
         self.native = Gtk.Notebook()
         self.native.connect("switch-page", self.gtk_on_switch_page)
@@ -12,7 +14,7 @@ class OptionContainer(Widget):
     def gtk_on_switch_page(self, widget, page, page_num):
         self.interface.on_select()
 
-    def add_content(self, index, text, widget):
+    def add_content(self, index, text, widget, icon):
         sub_container = TogaContainer()
         sub_container.content = widget
 
@@ -40,6 +42,14 @@ class OptionContainer(Widget):
     def get_option_text(self, index):
         tab = self.native.get_nth_page(index)
         return self.native.get_tab_label(tab).get_label()
+
+    def set_option_icon(self, index, value):  # pragma: nocover
+        # This shouldn't ever be invoked, but it's included for completeness.
+        pass
+
+    def get_option_icon(self, index):
+        # Icons aren't supported
+        return None
 
     def get_current_tab_index(self):
         return self.native.get_current_page()

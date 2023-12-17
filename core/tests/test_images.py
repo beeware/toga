@@ -6,8 +6,8 @@ import pytest
 import toga
 from toga_dummy.utils import assert_action_performed_with
 
-RELATIVE_FILE_PATH = Path("resources/toga.png")
-ABSOLUTE_FILE_PATH = Path(toga.__file__).parent / "resources/toga.png"
+RELATIVE_FILE_PATH = Path("resources/sample.png")
+ABSOLUTE_FILE_PATH = Path(__file__).parent / "resources/sample.png"
 
 
 @pytest.mark.filterwarnings("ignore::DeprecationWarning")
@@ -108,6 +108,20 @@ def test_create_from_bytes(args, kwargs):
     assert_action_performed_with(image, "load image data", data=BYTES)
 
 
+def test_create_from_raw():
+    """An image can be created from a raw data source"""
+    orig = toga.Image(BYTES)
+
+    copy = toga.Image(orig._impl.native)
+    # Image is bound
+    assert copy._impl is not None
+    # impl/interface round trips
+    assert copy._impl.interface == copy
+
+    # Image was constructed from raw data
+    assert_action_performed_with(copy, "load image from raw")
+
+
 def test_not_enough_arguments():
     with pytest.raises(
         TypeError,
@@ -132,7 +146,7 @@ def test_create_from_pil(app):
     toga_image = toga.Image(pil_image)
 
     assert isinstance(toga_image, toga.Image)
-    assert toga_image.size == (32, 32)
+    assert toga_image.size == (144, 72)
 
 
 def test_create_from_toga_image(app):
@@ -141,7 +155,7 @@ def test_create_from_toga_image(app):
     toga_image_2 = toga.Image(toga_image)
 
     assert isinstance(toga_image_2, toga.Image)
-    assert toga_image_2.size == (32, 32)
+    assert toga_image_2.size == (144, 72)
 
 
 @pytest.mark.parametrize("kwargs", [{"data": BYTES}, {"path": ABSOLUTE_FILE_PATH}])
@@ -176,14 +190,23 @@ def test_dimensions(app):
     """The dimensions of the image can be retrieved"""
     image = toga.Image(RELATIVE_FILE_PATH)
 
-    assert image.size == (32, 32)
-    assert image.width == image.height == 32
+    assert image.size == (144, 72)
+    assert image.width == 144
+    assert image.height == 72
 
 
 def test_data(app):
     """The raw data of the image can be retrieved."""
     image = toga.Image(ABSOLUTE_FILE_PATH)
-    assert image.data == ABSOLUTE_FILE_PATH.read_bytes()
+
+    # We can't guarantee the round-trip of image data,
+    # but the data starts with a PNG header
+    assert image.data.startswith(b"\x89PNG\r\n\x1a\n")
+
+    # If we build a new image from the data, it has the same properties.
+    from_data = toga.Image(image.data)
+    assert from_data.width == image.width
+    assert from_data.height == image.height
 
 
 def test_image_save(tmp_path):
@@ -214,7 +237,7 @@ def test_as_format_toga(app, Class_1, Class_2):
     image_2 = image_1.as_format(Class_2)
 
     assert isinstance(image_2, Class_2)
-    assert image_2.size == (32, 32)
+    assert image_2.size == (144, 72)
 
 
 def test_as_format_pil(app):
@@ -222,7 +245,7 @@ def test_as_format_pil(app):
     toga_image = toga.Image(ABSOLUTE_FILE_PATH)
     pil_image = toga_image.as_format(PIL.Image.Image)
     assert isinstance(pil_image, PIL.Image.Image)
-    assert pil_image.size == (32, 32)
+    assert pil_image.size == (144, 72)
 
 
 # None is same as supplying nothing; also test a random unrecognized class

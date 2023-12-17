@@ -1,0 +1,1 @@
+Synchronous ``on_result`` handling was merged into AsyncResult.

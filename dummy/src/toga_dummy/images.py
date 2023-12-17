@@ -12,34 +12,57 @@ if TYPE_CHECKING:
     import toga
 
 
+# We need a dummy "internal image format" for the dummy backend It's a wrapper
+# around a PIL image. We can't just use a PIL image because that will be
+# interpreted *as* a PIL image.
+class DummyImage:
+    def __init__(self, image=None):
+        self.raw = image
+        if image:
+            buffer = BytesIO()
+            self.raw.save(buffer, format="png", compress_level=0)
+            self.data = buffer.getvalue()
+        else:
+            self.data = b"pretend this is PNG image data"
+
+
 class Image(LoggedObject):
-    def __init__(self, interface: toga.Image, path: Path = None, data: bytes = None):
+    RAW_TYPE = DummyImage
+
+    def __init__(
+        self,
+        interface: toga.Image,
+        path: Path = None,
+        data: bytes = None,
+        raw: BytesIO = None,
+    ):
         super().__init__()
         self.interface = interface
         if path:
             self._action("load image file", path=path)
             if path.is_file():
-                self._data = path.read_bytes()
-                with PIL.Image.open(path) as image:
-                    self._width, self._height = image.size
+                self.native = DummyImage(PIL.Image.open(path))
             else:
-                self._data = b"pretend this is PNG image data"
-                self._width, self._height = 60, 40
-        else:
+                self.native = DummyImage()
+        elif data:
             self._action("load image data", data=data)
-            self._data = data
-            buffer = BytesIO(data)
-            with PIL.Image.open(buffer) as image:
-                self._width, self._height = image.size
+            self.native = DummyImage(PIL.Image.open(BytesIO(data)))
+        else:
+            self._action("load image from raw")
+            self.native = raw
 
     def get_width(self):
-        return self._width
+        if self.native.raw is None:
+            return 60
+        return self.native.raw.size[0]
 
     def get_height(self):
-        return self._height
+        if self.native.raw is None:
+            return 40
+        return self.native.raw.size[1]
 
     def get_data(self):
-        return self._data
+        return self.native.data
 
     def save(self, path):
         self._action("save", path=path)
