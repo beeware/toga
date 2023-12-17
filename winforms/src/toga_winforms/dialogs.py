@@ -99,10 +99,10 @@ class ErrorDialog(MessageDialog):
         )
 
 
-class StackTraceDialog(BaseDialog):
+class StackTraceDialog(BaseDialog, Scalable):
     def __init__(self, interface, title, message, content, retry):
         super().__init__(interface)
-        
+
         self.native = WinForms.Form()
 
         # Required for scaling on DPI changes
