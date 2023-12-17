@@ -85,6 +85,38 @@ class Container(BaseContainer):
         return 0
 
 
+class ControlledContainer(Container):
+    def __init__(
+        self,
+        content=None,
+        layout_native=None,
+        on_refresh=None,
+    ):
+        """
+        :param content: The widget impl that is the container's initial content.
+        :param layout_native: The native widget that should be used to provide
+            size hints to the layout. This will usually be the container widget
+            itself; however, for widgets like ScrollContainer where the layout
+            needs to be computed based on a different size to what will be
+            rendered, the source of the size can be different.
+        :param on_refresh: The callback to be notified when this container's layout is
+            refreshed.
+        """
+        super().__init__(
+            content=content,
+            layout_native=layout_native,
+            on_refresh=on_refresh,
+        )
+
+        # Construct a ViewController that provides a navigation bar, and
+        # is able to maintain a stack of navigable content. This is initialized
+        # with a root UIViewController that is the actual content
+        self.controller = UIViewController.alloc().init()
+
+        # Set the controller's view to be the root content widget
+        self.controller.view = self.native
+
+
 class RootContainer(Container):
     def __init__(
         self,

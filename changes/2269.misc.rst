@@ -1,0 +1,1 @@
+The ``pre-commit`` hook for ``isort`` was updated to its latest version.

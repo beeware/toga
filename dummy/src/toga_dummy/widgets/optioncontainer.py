@@ -2,20 +2,23 @@ from .base import Widget
 
 
 class Option:
-    def __init__(self, text, widget, enabled):
+    def __init__(self, text, widget, enabled, icon):
         self.text = text
         self.widget = widget
         self.enabled = enabled
+        self.icon = icon
 
 
 class OptionContainer(Widget):
+    uses_icons = True
+
     def create(self):
         self._action("create OptionContainer")
         self._items = []
 
-    def add_content(self, index, text, widget):
-        self._action("add content", index=index, text=text, widget=widget)
-        self._items.insert(index, Option(text, widget, True))
+    def add_content(self, index, text, widget, icon):
+        self._action("add content", index=index, text=text, widget=widget, icon=icon)
+        self._items.insert(index, Option(text, widget, True, icon))
 
         # if this is the first item of content, set it as the selected item.
         if len(self._items) == 1:
@@ -38,6 +41,13 @@ class OptionContainer(Widget):
 
     def get_option_text(self, index):
         return self._items[index].text
+
+    def set_option_icon(self, index, icon):
+        self._action("set option icon", index=index, icon=icon)
+        self._items[index].icon = icon
+
+    def get_option_icon(self, index):
+        return self._items[index].icon
 
     def set_current_tab_index(self, current_tab_index):
         self._set_value("current_tab_index", current_tab_index)

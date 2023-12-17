@@ -100,8 +100,8 @@ class DialogResultHandler(Protocol[T]):
 class Dialog(AsyncResult):
     RESULT_TYPE = "dialog"
 
-    def __init__(self, window: Window):
-        super().__init__()
+    def __init__(self, window: Window, on_result: DialogResultHandler[Any]):
+        super().__init__(on_result=on_result)
         self.window = window
         self.app = window.app
 
@@ -442,17 +442,21 @@ class Window:
 
         Presents as a dialog with a single "OK" button to close the dialog.
 
+        **This is an asynchronous method**. If you invoke this method in synchronous
+        context, it will show the dialog, but will return *immediately*. The object
+        returned by this method can be awaited to obtain the result of the dialog.
+
         :param title: The title of the dialog window.
         :param message: The message to display.
-        :param on_result: A callback that will be invoked when the user
-            selects an option on the dialog.
-        :returns: An awaitable Dialog object. The Dialog object returns
-            ``None`` when the user presses the 'OK' button.
+        :param on_result: **DEPRECATED** ``await`` the return value of this method.
+        :returns: An awaitable Dialog object. The Dialog object returns ``None`` when
+            the user presses the 'OK' button.
         """
-        dialog = Dialog(self)
-        self.factory.dialogs.InfoDialog(
-            dialog, title, message, on_result=wrapped_handler(self, on_result)
+        dialog = Dialog(
+            self,
+            on_result=wrapped_handler(self, on_result) if on_result else None,
         )
+        self.factory.dialogs.InfoDialog(dialog, title, message)
         return dialog
 
     def question_dialog(
@@ -465,18 +469,21 @@ class Window:
 
         Presents as a dialog with "Yes" and "No" buttons.
 
+        **This is an asynchronous method**. If you invoke this method in synchronous
+        context, it will show the dialog, but will return *immediately*. The object
+        returned by this method can be awaited to obtain the result of the dialog.
+
         :param title: The title of the dialog window.
         :param message: The question to be answered.
-        :param on_result: A callback that will be invoked when the user
-            selects an option on the dialog.
-        :returns: An awaitable Dialog object. The Dialog object returns
-            ``True`` when the "Yes" button is pressed, ``False`` when
-            the "No" button is pressed.
+        :param on_result: **DEPRECATED** ``await`` the return value of this method.
+        :returns: An awaitable Dialog object. The Dialog object returns ``True`` when
+            the "Yes" button is pressed, ``False`` when the "No" button is pressed.
         """
-        dialog = Dialog(self)
-        self.factory.dialogs.QuestionDialog(
-            dialog, title, message, on_result=wrapped_handler(self, on_result)
+        dialog = Dialog(
+            self,
+            on_result=wrapped_handler(self, on_result) if on_result else None,
         )
+        self.factory.dialogs.QuestionDialog(dialog, title, message)
         return dialog
 
     def confirm_dialog(
@@ -487,21 +494,24 @@ class Window:
     ) -> Dialog:
         """Ask the user to confirm if they wish to proceed with an action.
 
-        Presents as a dialog with "Cancel" and "OK" buttons (or whatever labels
-        are appropriate on the current platform).
+        Presents as a dialog with "Cancel" and "OK" buttons (or whatever labels are
+        appropriate on the current platform).
+
+        **This is an asynchronous method**. If you invoke this method in synchronous
+        context, it will show the dialog, but will return *immediately*. The object
+        returned by this method can be awaited to obtain the result of the dialog.
 
         :param title: The title of the dialog window.
         :param message: A message describing the action to be confirmed.
-        :param on_result: A callback that will be invoked when the user
-            selects an option on the dialog.
-        :returns: An awaitable Dialog object. The Dialog object returns
-            ``True`` when the "OK" button is pressed, ``False`` when
-            the "Cancel" button is pressed.
+        :param on_result: **DEPRECATED** ``await`` the return value of this method.
+        :returns: An awaitable Dialog object. The Dialog object returns ``True`` when
+            the "OK" button is pressed, ``False`` when the "Cancel" button is pressed.
         """
-        dialog = Dialog(self)
-        self.factory.dialogs.ConfirmDialog(
-            dialog, title, message, on_result=wrapped_handler(self, on_result)
+        dialog = Dialog(
+            self,
+            on_result=wrapped_handler(self, on_result) if on_result else None,
         )
+        self.factory.dialogs.ConfirmDialog(dialog, title, message)
         return dialog
 
     def error_dialog(
@@ -514,17 +524,21 @@ class Window:
 
         Presents as an error dialog with a "OK" button to close the dialog.
 
+        **This is an asynchronous method**. If you invoke this method in synchronous
+        context, it will show the dialog, but will return *immediately*. The object
+        returned by this method can be awaited to obtain the result of the dialog.
+
         :param title: The title of the dialog window.
         :param message: The error message to display.
-        :param on_result: A callback that will be invoked when the user
-            selects an option on the dialog.
-        :returns: An awaitable Dialog object. The Dialog object returns
-            ``None`` when the user presses the "OK" button.
+        :param on_result: **DEPRECATED** ``await`` the return value of this method.
+        :returns: An awaitable Dialog object. The Dialog object returns ``None`` when
+            the user presses the "OK" button.
         """
-        dialog = Dialog(self)
-        self.factory.dialogs.ErrorDialog(
-            dialog, title, message, on_result=wrapped_handler(self, on_result)
+        dialog = Dialog(
+            self,
+            on_result=wrapped_handler(self, on_result) if on_result else None,
         )
+        self.factory.dialogs.ErrorDialog(dialog, title, message)
         return dialog
 
     @overload
@@ -570,26 +584,30 @@ class Window:
     ) -> Dialog:
         """Open a dialog to display a large block of text, such as a stack trace.
 
+        **This is an asynchronous method**. If you invoke this method in synchronous
+        context, it will show the dialog, but will return *immediately*. The object
+        returned by this method can be awaited to obtain the result of the dialog.
+
         :param title: The title of the dialog window.
         :param message: Contextual information about the source of the stack trace.
         :param content: The stack trace, pre-formatted as a multi-line string.
-        :param retry: If true, the user will be given options to "Retry" or
-            "Quit"; if false, a single option to acknowledge the error will
-            be displayed.
-        :param on_result: A callback that will be invoked when the user
-            selects an option on the dialog.
+        :param retry: If true, the user will be given options to "Retry" or "Quit"; if
+            false, a single option to acknowledge the error will be displayed.
+        :param on_result: **DEPRECATED** ``await`` the return value of this method.
         :returns: An awaitable Dialog object. If ``retry`` is true, the Dialog object
             returns ``True`` when the user selects "Retry", and ``False`` when they
             select "Quit". If ``retry`` is false, the Dialog object returns ``None``.
         """
-        dialog = Dialog(self)
+        dialog = Dialog(
+            self,
+            on_result=wrapped_handler(self, on_result) if on_result else None,
+        )
         self.factory.dialogs.StackTraceDialog(
             dialog,
             title,
             message=message,
             content=content,
             retry=retry,
-            on_result=wrapped_handler(self, on_result),
         )
         return dialog
 
@@ -604,17 +622,23 @@ class Window:
 
         This dialog is not currently supported on Android or iOS.
 
+        **This is an asynchronous method**. If you invoke this method in synchronous
+        context, it will show the dialog, but will return *immediately*. The object
+        returned by this method can be awaited to obtain the result of the dialog.
+
         :param title: The title of the dialog window
         :param suggested_filename: A default filename
-        :param file_types: The allowed filename extensions, without leading dots. If
-            not provided, any extension will be allowed.
-        :param on_result: A callback that will be invoked when the user selects an
-            option on the dialog.
+        :param file_types: The allowed filename extensions, without leading dots. If not
+            provided, any extension will be allowed.
+        :param on_result: **DEPRECATED** ``await`` the return value of this method.
         :returns: An awaitable Dialog object. The Dialog object returns a path object
             for the selected file location, or ``None`` if the user cancelled the save
             operation.
         """
-        dialog = Dialog(self)
+        dialog = Dialog(
+            self,
+            on_result=wrapped_handler(self, on_result) if on_result else None,
+        )
         # Convert suggested filename to a path (if it isn't already),
         # and break it into a filename and a directory
         suggested_path = Path(suggested_filename)
@@ -629,7 +653,6 @@ class Window:
             filename=filename,
             initial_directory=initial_directory,
             file_types=file_types,
-            on_result=wrapped_handler(self, on_result),
         )
         return dialog
 
@@ -682,21 +705,23 @@ class Window:
 
         This dialog is not currently supported on Android or iOS.
 
+        **This is an asynchronous method**. If you invoke this method in synchronous
+        context, it will show the dialog, but will return *immediately*. The object
+        returned by this method can be awaited to obtain the result of the dialog.
+
         :param title: The title of the dialog window
-        :param initial_directory: The initial folder in which to open the dialog.
-            If ``None``, use the default location provided by the operating system
-            (which will often be the last used location)
-        :param file_types: The allowed filename extensions, without leading dots. If
-            not provided, all files will be shown.
-        :param multiple_select: If True, the user will be able to select multiple
-            files; if False, the selection will be restricted to a single file.
-        :param on_result: A callback that will be invoked when the user
-            selects an option on the dialog.
+        :param initial_directory: The initial folder in which to open the dialog. If
+            ``None``, use the default location provided by the operating system (which
+            will often be the last used location)
+        :param file_types: The allowed filename extensions, without leading dots. If not
+            provided, all files will be shown.
+        :param multiple_select: If True, the user will be able to select multiple files;
+            if False, the selection will be restricted to a single file.
+        :param on_result: **DEPRECATED** ``await`` the return value of this method.
         :param multiselect: **DEPRECATED** Use ``multiple_select``.
-        :returns: An awaitable Dialog object. The Dialog object returns
-            a list of ``Path`` objects if ``multiple_select`` is ``True``, or a single
-            ``Path`` otherwise. Returns ``None`` if the open operation is
-            cancelled by the user.
+        :returns: An awaitable Dialog object. The Dialog object returns a list of
+            ``Path`` objects if ``multiple_select`` is ``True``, or a single ``Path``
+            otherwise. Returns ``None`` if the open operation is cancelled by the user.
         """
         ######################################################################
         # 2023-08: Backwards compatibility
@@ -711,14 +736,16 @@ class Window:
         # End Backwards compatibility
         ######################################################################
 
-        dialog = Dialog(self)
+        dialog = Dialog(
+            self,
+            on_result=wrapped_handler(self, on_result) if on_result else None,
+        )
         self.factory.dialogs.OpenFileDialog(
             dialog,
             title,
             initial_directory=Path(initial_directory) if initial_directory else None,
             file_types=file_types,
             multiple_select=multiple_select,
-            on_result=wrapped_handler(self, on_result),
         )
         return dialog
 
@@ -767,20 +794,22 @@ class Window:
 
         This dialog is not currently supported on Android or iOS.
 
+        **This is an asynchronous method**. If you invoke this method in synchronous
+        context, it will show the dialog, but will return *immediately*. The object
+        returned by this method can be awaited to obtain the result of the dialog.
+
         :param title: The title of the dialog window
-        :param initial_directory: The initial folder in which to open the dialog.
-            If ``None``, use the default location provided by the operating system
-            (which will often be "last used location")
+        :param initial_directory: The initial folder in which to open the dialog. If
+            ``None``, use the default location provided by the operating system (which
+            will often be "last used location")
         :param multiple_select: If True, the user will be able to select multiple
             directories; if False, the selection will be restricted to a single
             directory. This option is not supported on WinForms.
-        :param on_result: A callback that will be invoked when the user
-            selects an option on the dialog.
+        :param on_result: **DEPRECATED** ``await`` the return value of this method.
         :param multiselect: **DEPRECATED** Use ``multiple_select``.
-        :returns: An awaitable Dialog object. The Dialog object returns
-            a list of ``Path`` objects if ``multiple_select`` is ``True``, or a single
-            ``Path`` otherwise. Returns ``None`` if the open operation is
-            cancelled by the user.
+        :returns: An awaitable Dialog object. The Dialog object returns a list of
+            ``Path`` objects if ``multiple_select`` is ``True``, or a single ``Path``
+            otherwise. Returns ``None`` if the open operation is cancelled by the user.
         """
         ######################################################################
         # 2023-08: Backwards compatibility
@@ -795,13 +824,15 @@ class Window:
         # End Backwards compatibility
         ######################################################################
 
-        dialog = Dialog(self)
+        dialog = Dialog(
+            self,
+            on_result=wrapped_handler(self, on_result) if on_result else None,
+        )
         self.factory.dialogs.SelectFolderDialog(
             dialog,
             title,
             initial_directory=Path(initial_directory) if initial_directory else None,
             multiple_select=multiple_select,
-            on_result=wrapped_handler(self, on_result),
         )
         return dialog
 
