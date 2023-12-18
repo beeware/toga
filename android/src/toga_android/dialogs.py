@@ -31,10 +31,8 @@ class TextDialog(BaseDialog):
         positive_text,
         negative_text=None,
         icon=None,
-        on_result=None,
     ):
         super().__init__(interface=interface)
-        self.on_result = on_result
 
         self.native = AlertDialog.Builder(interface.window._impl.app.native)
         self.native.setCancelable(False)
@@ -57,54 +55,49 @@ class TextDialog(BaseDialog):
         self.native.show()
 
     def completion_handler(self, return_value: bool) -> None:
-        self.on_result(return_value)
-        self.interface.future.set_result(return_value)
+        self.interface.set_result(return_value)
 
 
 class InfoDialog(TextDialog):
-    def __init__(self, interface, title, message, on_result=None):
+    def __init__(self, interface, title, message):
         super().__init__(
             interface=interface,
             title=title,
             message=message,
             positive_text="OK",
-            on_result=on_result,
         )
 
 
 class QuestionDialog(TextDialog):
-    def __init__(self, interface, title, message, on_result=None):
+    def __init__(self, interface, title, message):
         super().__init__(
             interface=interface,
             title=title,
             message=message,
             positive_text="Yes",
             negative_text="No",
-            on_result=on_result,
         )
 
 
 class ConfirmDialog(TextDialog):
-    def __init__(self, interface, title, message, on_result=None):
+    def __init__(self, interface, title, message):
         super().__init__(
             interface=interface,
             title=title,
             message=message,
             positive_text="OK",
             negative_text="Cancel",
-            on_result=on_result,
         )
 
 
 class ErrorDialog(TextDialog):
-    def __init__(self, interface, title, message, on_result=None):
+    def __init__(self, interface, title, message):
         super().__init__(
             interface=interface,
             title=title,
             message=message,
             positive_text="OK",
             icon=R.drawable.ic_dialog_alert,
-            on_result=on_result,
         )
 
 
@@ -114,7 +107,6 @@ class StackTraceDialog(BaseDialog):
         interface,
         title,
         message,
-        on_result=None,
         **kwargs,
     ):
         super().__init__(interface=interface)
@@ -129,7 +121,6 @@ class SaveFileDialog(BaseDialog):
         filename,
         initial_directory,
         file_types=None,
-        on_result=None,
     ):
         super().__init__(interface=interface)
         interface.window.factory.not_implemented("Window.save_file_dialog()")
@@ -143,7 +134,6 @@ class OpenFileDialog(BaseDialog):
         initial_directory,
         file_types,
         multiple_select,
-        on_result=None,
     ):
         super().__init__(interface=interface)
         interface.window.factory.not_implemented("Window.open_file_dialog()")
@@ -156,7 +146,6 @@ class SelectFolderDialog(BaseDialog):
         title,
         initial_directory,
         multiple_select,
-        on_result=None,
     ):
         super().__init__(interface=interface)
         interface.window.factory.not_implemented("Window.select_folder_dialog()")

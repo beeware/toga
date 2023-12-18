@@ -16,25 +16,29 @@ from .libs.wrapper import WeakrefCallable
 
 
 class BaseDialog(ABC):
-    def __init__(self, interface, on_result):
+    def __init__(self, interface):
         self.interface = interface
         self.interface._impl = self
-        self.on_result = on_result
 
     # See libs/proactor.py
     def start_inner_loop(self, callback, *args):
         asyncio.get_event_loop().start_inner_loop(callback, *args)
 
     def set_result(self, result):
-        self.on_result(result)
-        self.interface.future.set_result(result)
+        self.interface.set_result(result)
 
 
 class MessageDialog(BaseDialog):
     def __init__(
-        self, interface, title, message, buttons, icon, on_result, success_result=None
+        self,
+        interface,
+        title,
+        message,
+        buttons,
+        icon,
+        success_result=None,
     ):
-        super().__init__(interface, on_result)
+        super().__init__(interface)
 
         def show():
             return_value = WinForms.MessageBox.Show(message, title, buttons, icon)
@@ -47,58 +51,54 @@ class MessageDialog(BaseDialog):
 
 
 class InfoDialog(MessageDialog):
-    def __init__(self, interface, title, message, on_result):
+    def __init__(self, interface, title, message):
         super().__init__(
             interface,
             title,
             message,
             MessageBoxButtons.OK,
             MessageBoxIcon.Information,
-            on_result,
         )
 
 
 class QuestionDialog(MessageDialog):
-    def __init__(self, interface, title, message, on_result):
+    def __init__(self, interface, title, message):
         super().__init__(
             interface,
             title,
             message,
             MessageBoxButtons.YesNo,
             MessageBoxIcon.Information,
-            on_result,
             success_result=DialogResult.Yes,
         )
 
 
 class ConfirmDialog(MessageDialog):
-    def __init__(self, interface, title, message, on_result):
+    def __init__(self, interface, title, message):
         super().__init__(
             interface,
             title,
             message,
             MessageBoxButtons.OKCancel,
             MessageBoxIcon.Warning,
-            on_result,
             success_result=DialogResult.OK,
         )
 
 
 class ErrorDialog(MessageDialog):
-    def __init__(self, interface, title, message, on_result=None):
+    def __init__(self, interface, title, message=None):
         super().__init__(
             interface,
             title,
             message,
             WinForms.MessageBoxButtons.OK,
             WinForms.MessageBoxIcon.Error,
-            on_result,
         )
 
 
 class StackTraceDialog(BaseDialog):
-    def __init__(self, interface, title, message, content, retry, on_result):
-        super().__init__(interface, on_result)
+    def __init__(self, interface, title, message, content, retry):
+        super().__init__(interface)
 
         self.native = WinForms.Form()
         self.native.MinimizeBox = False
@@ -198,12 +198,11 @@ class FileDialog(BaseDialog):
         interface,
         title,
         initial_directory,
-        on_result,
         *,
         filename=None,
         file_types=None,
     ):
-        super().__init__(interface, on_result)
+        super().__init__(interface)
         self.native = native
 
         self._set_title(title)
@@ -241,15 +240,12 @@ class FileDialog(BaseDialog):
 
 
 class SaveFileDialog(FileDialog):
-    def __init__(
-        self, interface, title, filename, initial_directory, file_types, on_result
-    ):
+    def __init__(self, interface, title, filename, initial_directory, file_types):
         super().__init__(
             WinForms.SaveFileDialog(),
             interface,
             title,
             initial_directory,
-            on_result,
             filename=filename,
             file_types=file_types,
         )
@@ -266,14 +262,12 @@ class OpenFileDialog(FileDialog):
         initial_directory,
         file_types,
         multiple_select,
-        on_result,
     ):
         super().__init__(
             WinForms.OpenFileDialog(),
             interface,
             title,
             initial_directory,
-            on_result,
             file_types=file_types,
         )
         if multiple_select:
@@ -287,13 +281,12 @@ class OpenFileDialog(FileDialog):
 
 
 class SelectFolderDialog(FileDialog):
-    def __init__(self, interface, title, initial_directory, multiple_select, on_result):
+    def __init__(self, interface, title, initial_directory, multiple_select):
         super().__init__(
             WinForms.FolderBrowserDialog(),
             interface,
             title,
             initial_directory,
-            on_result,
         )
 
         # The native dialog doesn't support multiple selection, so the only effect

@@ -7,7 +7,7 @@ from .window import Window
 
 class MainWindow(Window):
     def textual_close(self):
-        self.interface.app.on_exit(None)
+        self.interface.app.on_exit()
 
 
 class TogaApp(TextualApp):
@@ -23,6 +23,8 @@ class TogaApp(TextualApp):
 class App:
     def __init__(self, interface):
         self.interface = interface
+        self.interface._impl = self
+
         self.loop = asyncio.new_event_loop()
         self.native = TogaApp(self)
 

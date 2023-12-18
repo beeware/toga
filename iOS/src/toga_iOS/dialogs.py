@@ -17,9 +17,8 @@ class BaseDialog(ABC):
 
 
 class AlertDialog(BaseDialog):
-    def __init__(self, interface, title, message, on_result=None):
+    def __init__(self, interface, title, message):
         super().__init__(interface=interface)
-        self.on_result = on_result
 
         self.native = UIAlertController.alertControllerWithTitle(
             title, message=message, preferredStyle=UIAlertControllerStyle.Alert
@@ -38,8 +37,7 @@ class AlertDialog(BaseDialog):
         ...
 
     def response(self, value):
-        self.on_result(value)
-        self.interface.future.set_result(value)
+        self.interface.set_result(value)
 
     def null_response(self, action: objc_id) -> None:
         self.response(None)
@@ -79,16 +77,16 @@ class AlertDialog(BaseDialog):
 
 
 class InfoDialog(AlertDialog):
-    def __init__(self, interface, title, message, on_result=None):
-        super().__init__(interface, title, message, on_result=on_result)
+    def __init__(self, interface, title, message):
+        super().__init__(interface, title, message)
 
     def populate_dialog(self):
         self.add_null_response_button("OK")
 
 
 class QuestionDialog(AlertDialog):
-    def __init__(self, interface, title, message, on_result=None):
-        super().__init__(interface, title, message, on_result=on_result)
+    def __init__(self, interface, title, message):
+        super().__init__(interface, title, message)
 
     def populate_dialog(self):
         self.add_true_response_button("Yes")
@@ -96,8 +94,8 @@ class QuestionDialog(AlertDialog):
 
 
 class ConfirmDialog(AlertDialog):
-    def __init__(self, interface, title, message, on_result=None):
-        super().__init__(interface, title, message, on_result=on_result)
+    def __init__(self, interface, title, message):
+        super().__init__(interface, title, message)
 
     def populate_dialog(self):
         self.add_true_response_button("OK")
@@ -105,15 +103,15 @@ class ConfirmDialog(AlertDialog):
 
 
 class ErrorDialog(AlertDialog):
-    def __init__(self, interface, title, message, on_result=None):
-        super().__init__(interface, title, message, on_result=on_result)
+    def __init__(self, interface, title, message):
+        super().__init__(interface, title, message)
 
     def populate_dialog(self):
         self.add_null_response_button("OK")
 
 
 class StackTraceDialog(BaseDialog):
-    def __init__(self, interface, title, message, on_result=None, **kwargs):
+    def __init__(self, interface, title, message, **kwargs):
         super().__init__(interface=interface)
         interface.window.factory.not_implemented("Window.stack_trace_dialog()")
 
@@ -126,7 +124,6 @@ class SaveFileDialog(BaseDialog):
         filename,
         initial_directory,
         file_types=None,
-        on_result=None,
     ):
         super().__init__(interface=interface)
         interface.window.factory.not_implemented("Window.save_file_dialog()")
@@ -140,7 +137,6 @@ class OpenFileDialog(BaseDialog):
         initial_directory,
         file_types,
         multiple_select,
-        on_result=None,
     ):
         super().__init__(interface=interface)
         interface.window.factory.not_implemented("Window.open_file_dialog()")
@@ -153,7 +149,6 @@ class SelectFolderDialog(BaseDialog):
         title,
         initial_directory,
         multiple_select,
-        on_result=None,
     ):
         super().__init__(interface=interface)
         interface.window.factory.not_implemented("Window.select_folder_dialog()")

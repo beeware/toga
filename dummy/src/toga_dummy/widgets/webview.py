@@ -26,7 +26,7 @@ class WebView(Widget):
 
     def evaluate_javascript(self, javascript, on_result=None):
         self._action("evaluate_javascript", javascript=javascript)
-        self._js_result = JavaScriptResult()
+        self._js_result = JavaScriptResult(on_result)
         return self._js_result
 
     def simulate_page_loaded(self):
@@ -38,4 +38,4 @@ class WebView(Widget):
             self._set_value("loaded_future", None)
 
     def simulate_javascript_result(self, value):
-        self._js_result.future.set_result(42)
+        self._js_result.set_result(42)

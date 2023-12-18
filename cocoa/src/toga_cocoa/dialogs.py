@@ -31,11 +31,9 @@ class NSAlertDialog(BaseDialog):
         message,
         alert_style,
         completion_handler,
-        on_result=None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__(interface=interface)
-        self.on_result = on_result
 
         self.native = NSAlert.alloc().init()
         self.native.icon = interface.app.icon._impl.native
@@ -54,39 +52,31 @@ class NSAlertDialog(BaseDialog):
         pass
 
     def completion_handler(self, return_value: int) -> None:
-        self.on_result(None)
-
-        self.interface.future.set_result(None)
+        self.interface.set_result(None)
 
     def bool_completion_handler(self, return_value: int) -> None:
-        result = return_value == NSAlertFirstButtonReturn
-
-        self.on_result(result)
-
-        self.interface.future.set_result(result)
+        self.interface.set_result(return_value == NSAlertFirstButtonReturn)
 
 
 class InfoDialog(NSAlertDialog):
-    def __init__(self, interface, title, message, on_result=None):
+    def __init__(self, interface, title, message):
         super().__init__(
             interface=interface,
             title=title,
             message=message,
             alert_style=NSAlertStyle.Informational,
             completion_handler=self.completion_handler,
-            on_result=on_result,
         )
 
 
 class QuestionDialog(NSAlertDialog):
-    def __init__(self, interface, title, message, on_result=None):
+    def __init__(self, interface, title, message):
         super().__init__(
             interface=interface,
             title=title,
             message=message,
             alert_style=NSAlertStyle.Informational,
             completion_handler=self.bool_completion_handler,
-            on_result=on_result,
         )
 
     def build_dialog(self):
@@ -95,14 +85,13 @@ class QuestionDialog(NSAlertDialog):
 
 
 class ConfirmDialog(NSAlertDialog):
-    def __init__(self, interface, title, message, on_result=None):
+    def __init__(self, interface, title, message):
         super().__init__(
             interface=interface,
             title=title,
             message=message,
             alert_style=NSAlertStyle.Informational,
             completion_handler=self.bool_completion_handler,
-            on_result=on_result,
         )
 
     def build_dialog(self):
@@ -111,19 +100,18 @@ class ConfirmDialog(NSAlertDialog):
 
 
 class ErrorDialog(NSAlertDialog):
-    def __init__(self, interface, title, message, on_result=None):
+    def __init__(self, interface, title, message):
         super().__init__(
             interface=interface,
             title=title,
             message=message,
             alert_style=NSAlertStyle.Critical,
             completion_handler=self.completion_handler,
-            on_result=on_result,
         )
 
 
 class StackTraceDialog(NSAlertDialog):
-    def __init__(self, interface, title, message, on_result=None, **kwargs):
+    def __init__(self, interface, title, message, **kwargs):
         if kwargs.get("retry"):
             completion_handler = self.bool_completion_handler
         else:
@@ -135,7 +123,6 @@ class StackTraceDialog(NSAlertDialog):
             message=message,
             alert_style=NSAlertStyle.Critical,
             completion_handler=completion_handler,
-            on_result=on_result,
             **kwargs,
         )
 
@@ -216,8 +203,7 @@ class FileDialog(BaseDialog):
         else:
             result = None
 
-        self.on_result(result)
-        self.interface.future.set_result(result)
+        self.interface.set_result(result)
 
     def multi_path_completion_handler(self, return_value: int) -> None:
         if return_value == NSModalResponseOK:
@@ -225,9 +211,7 @@ class FileDialog(BaseDialog):
         else:
             result = None
 
-        self.on_result(result)
-
-        self.interface.future.set_result(result)
+        self.interface.set_result(result)
 
 
 class SaveFileDialog(FileDialog):
@@ -247,7 +231,6 @@ class SaveFileDialog(FileDialog):
             initial_directory=initial_directory,
             file_types=None,  # File types aren't offered by Cocoa save panels.
             multiple_select=False,
-            on_result=on_result,
         )
 
     def create_panel(self, multiple_select):
@@ -271,7 +254,6 @@ class OpenFileDialog(FileDialog):
             initial_directory=initial_directory,
             file_types=file_types,
             multiple_select=multiple_select,
-            on_result=on_result,
         )
 
     def create_panel(self, multiple_select):
@@ -298,7 +280,6 @@ class SelectFolderDialog(FileDialog):
             initial_directory=initial_directory,
             file_types=None,
             multiple_select=multiple_select,
-            on_result=on_result,
         )
 
     def create_panel(self, multiple_select):

@@ -1,0 +1,1 @@
+Apps can now specify platform-specific icon resources by appending the platform name (e.g., ``-macOS`` or ``-windows``) to the icon filename.

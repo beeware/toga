@@ -19,7 +19,9 @@ def nsdata_to_bytes(data: NSData) -> bytes:
 
 
 class Image:
-    def __init__(self, interface, path=None, data=None):
+    RAW_TYPE = NSImage
+
+    def __init__(self, interface, path=None, data=None, raw=None):
         self.interface = interface
 
         try:
@@ -36,11 +38,13 @@ class Image:
                 self.native = image.initWithContentsOfFile(str(path))
                 if self.native is None:
                     raise ValueError(f"Unable to load image from {path}")
-            else:
+            elif data:
                 nsdata = NSData.dataWithBytes(data, length=len(data))
                 self.native = image.initWithData(nsdata)
                 if self.native is None:
                     raise ValueError("Unable to load image from data")
+            else:
+                self.native = raw
         finally:
             image.release()
 

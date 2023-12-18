@@ -31,6 +31,12 @@ async def test_system_icon(app):
     probe.assert_default_icon_content()
 
 
+async def test_platform_icon(app):
+    "A platform-specific icon can be loaded"
+    probe = icon_probe(app, toga.Icon("resources/logo"))
+    probe.assert_platform_icon_content()
+
+
 async def test_bad_icon_file(app):
     "If a file isn't a loadable icon, an error is raised"
     with pytest.raises(
