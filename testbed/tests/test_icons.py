@@ -33,8 +33,9 @@ async def test_system_icon(app):
 
 async def test_platform_icon(app):
     "A platform-specific icon can be loaded"
+    platform = toga.platform.current_platform
     probe = icon_probe(app, toga.Icon("resources/logo"))
-    probe.assert_platform_icon_content()
+    probe.assert_platform_icon_content(platform)
 
 
 async def test_bad_icon_file(app):

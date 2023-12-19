@@ -36,5 +36,5 @@ class IconProbe(BaseProbe):
             == Path(toga_cocoa.__file__).parent / "resources/toga.icns"
         )
 
-    def assert_platform_icon_content(self):
-        assert self.icon._impl.path == self.app.paths.app / "resources/logo-macOS.icns"
+    def assert_platform_icon_content(self, platform):
+        assert self.icon._impl.path == self.app.paths.app / f"resources/logo-{platform}.icns"

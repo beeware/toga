@@ -35,5 +35,5 @@ class IconProbe(BaseProbe):
             == Path(toga_android.__file__).parent / "resources/toga.png"
         )
 
-    def assert_platform_icon_content(self):
-        assert self.icon._impl.path == self.app.paths.app / "resources/logo-android.png"
+    def assert_platform_icon_content(self, platform):
+        assert self.icon._impl.path == self.app.paths.app / f"resources/logo-{platform}.png"

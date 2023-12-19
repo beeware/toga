@@ -99,6 +99,8 @@ if __name__ == "__main__":
     except KeyError:
         if hasattr(sys, "getandroidapilevel"):
             toga_backend = "toga_android"
+        elif sys.platform.startswith("freebsd"):
+            toga_backend = "freeBSD"
         else:
             toga_backend = {
                 "darwin": "toga_cocoa",

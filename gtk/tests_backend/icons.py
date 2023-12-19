@@ -42,9 +42,9 @@ class IconProbe(BaseProbe):
             72: Path(toga_gtk.__file__).parent / "resources/toga.png",
         }
 
-    def assert_platform_icon_content(self):
+    def assert_platform_icon_content(self, platform):
         assert self.icon._impl.paths == {
-            16: self.app.paths.app / "resources/logo-linux-16.png",
-            32: self.app.paths.app / "resources/logo-linux-32.png",
-            72: self.app.paths.app / "resources/logo-linux-72.png",
+            16: self.app.paths.app / f"resources/logo-{platform}-16.png",
+            32: self.app.paths.app / f"resources/logo-{platform}-32.png",
+            72: self.app.paths.app / f"resources/logo-{platform}-72.png",
         }
