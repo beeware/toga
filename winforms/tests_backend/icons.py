@@ -36,4 +36,7 @@ class IconProbe(BaseProbe):
         )
 
     def assert_platform_icon_content(self, platform):
-        assert self.icon._impl.path == self.app.paths.app / f"resources/logo-{platform}.ico"
+        assert (
+            self.icon._impl.path
+            == self.app.paths.app / f"resources/logo-{platform}.ico"
+        )
