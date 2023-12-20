@@ -92,7 +92,7 @@ class Tutorial2App(toga.App):
             action2,
             text="Action 2",
             tooltip="Perform action 2",
-            icon=toga.Icon.TOGA_ICON,
+            icon=toga.Icon.DEFAULT_ICON,
             group=things,
         )
 
