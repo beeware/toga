@@ -348,7 +348,7 @@ else:
 
         # Move and resize the window while offscreen
         second_window.size = (250, 200)
-        second_window_probe.assert_position((300, 150))
+        second_window.position = (300, 150)
 
         second_window.show()
         await second_window_probe.wait_for_window(
