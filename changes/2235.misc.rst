@@ -1,1 +1,0 @@
-If the testbed fails on Windows, the user's app data path contents are now uploaded.

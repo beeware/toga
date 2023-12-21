@@ -1,1 +1,0 @@
-Corrected event handling and app impl assignment on the Textual backend.

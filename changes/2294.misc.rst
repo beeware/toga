@@ -1,1 +1,0 @@
-Some minor bugs and inconsistencies discovered during pre-release testing were corrected.

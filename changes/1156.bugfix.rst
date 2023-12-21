@@ -1,1 +1,0 @@
-TableViews on macOS will no longer crash if a drag operation is initiated from inside the table.
