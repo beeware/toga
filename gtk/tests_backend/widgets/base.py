@@ -70,7 +70,7 @@ class SimpleProbe(BaseProbe, FontMixin):
             # NOTE: The widget has no size when it is hidden, so, to make sure the
             # layout is not changed, we only need to check the layout of the widget
             # siblings by ensuring that the position of the visible widgets are not
-            # within the hidden widget's size.
+            # within the hidden widget's boundaries.
             siblings = [sibling._impl.native for sibling in self.widget.parent.children]
             for sibling in siblings:
                 sibling_origin = sibling.compute_bounds(self.impl.container)[1].origin
