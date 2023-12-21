@@ -48,6 +48,9 @@ class WindowProbe(BaseProbe):
             ),
         )
 
+    def assert_position(self, expected):
+        assert self.impl.interface.position == expected
+
     @property
     def is_full_screen(self):
         return (

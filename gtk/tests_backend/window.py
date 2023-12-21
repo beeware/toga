@@ -13,7 +13,7 @@ class WindowProbe(BaseProbe):
     # GTK defers a lot of window behavior to the window manager, which means some features
     # either don't exist, or we can't guarantee they behave the way Toga would like.
     supports_closable = True
-    supports_minimizable = False
+    supports_minimizable = True
     supports_multiple_select_folder = True
     supports_move_while_hidden = False
     supports_unminimize = False
@@ -35,12 +35,15 @@ class WindowProbe(BaseProbe):
 
     @property
     def content_size(self):
-        content_allocation = self.impl.container.get_allocation()
-        return (content_allocation.width, content_allocation.height)
+        content = self.impl.container
+        return (content.get_width(), content.get_height())
+
+    def assert_position(self, expected):
+        pytest.xfail("Gtk doesn't support window positioning")
 
     @property
     def is_full_screen(self):
-        return bool(self.native.get_window().get_state() & Gdk.WindowState.FULLSCREEN)
+        return self.native.is_fullscreen()
 
     @property
     def is_resizable(self):
@@ -52,13 +55,13 @@ class WindowProbe(BaseProbe):
 
     @property
     def is_minimized(self):
-        return bool(self.native.get_window().get_state() & Gdk.WindowState.ICONIFIED)
+        return bool(self.native.get_surface().get_state() & Gdk.ToplevelState.MINIMIZED)
 
     def minimize(self):
-        self.native.iconify()
+        self.native.minimize()
 
     def unminimize(self):
-        self.native.deiconify()
+        self.native.present()
 
     async def wait_for_dialog(self, dialog, message):
         # It can take a moment for the dialog to disappear and the response to be

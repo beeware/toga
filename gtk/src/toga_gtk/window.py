@@ -95,24 +95,14 @@ class Window:
         self.native.close()
 
     def get_position(self):
-        # Gtk believes/claims that positioning top level windows is not
-        # the toolkit’s job but WM job. They are suggesting leaving
-        # positioning to windowing system.
-        # See https://discourse.gnome.org/t/how-to-center-gtkwindows-in-gtk4/3112/4
-        self.interface.factory.not_implemented("Window.get_position()")
         pass
 
     def set_position(self, position):
-        # Gtk believes/claims that positioning top level windows is not
-        # the toolkit’s job but WM job. They are suggesting leaving
-        # positioning to windowing system.
-        # See https://discourse.gnome.org/t/how-to-center-gtkwindows-in-gtk4/3112/4
-        self.interface.factory.not_implemented("Window.set_position()")
+        # Does nothing on gtk4
         pass
 
     def get_size(self):
-        width = self.native.get_width()
-        height = self.native.get_height()
+        width, height = self.native.get_default_size()
         return width, height
 
     def set_size(self, size):

@@ -165,7 +165,8 @@ else:
 
         assert second_window.title == "Toga"
         assert second_window.size == (640, 480)
-        assert second_window.position == (100, 100)
+        second_window_probe.assert_position((100, 100))
+
         assert second_window_probe.is_resizable
         if second_window_probe.supports_closable:
             assert second_window_probe.is_closable
@@ -194,7 +195,7 @@ else:
 
         assert second_window.title == "Secondary Window"
         assert second_window.size == (300, 200)
-        assert second_window.position == (200, 300)
+        second_window_probe.assert_position((200, 300))
 
         second_window_probe.close()
         await second_window_probe.wait_for_window(
@@ -319,14 +320,14 @@ else:
 
         assert second_window.visible
         assert second_window.size == (640, 480)
-        assert second_window.position == (200, 150)
+        second_window_probe.assert_position((200, 150))
 
         # Move the window
         second_window.position = (250, 200)
 
         await second_window_probe.wait_for_window("Secondary window has been moved")
         assert second_window.size == (640, 480)
-        assert second_window.position == (250, 200)
+        second_window_probe.assert_position((250, 200))
 
         # Resize the window
         second_window.size = (300, 250)
@@ -347,7 +348,7 @@ else:
 
         # Move and resize the window while offscreen
         second_window.size = (250, 200)
-        second_window.position = (300, 150)
+        second_window_probe.assert_position((300, 150))
 
         second_window.show()
         await second_window_probe.wait_for_window(
@@ -396,7 +397,7 @@ else:
 
         second_window.position = (150, 50)
         await second_window_probe.wait_for_window("Secondary window has been moved")
-        assert second_window.position == (150, 50)
+        second_window_probe.assert_position((150, 50))
 
         second_window.size = (200, 150)
         await second_window_probe.wait_for_window("Secondary window has been resized")

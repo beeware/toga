@@ -49,6 +49,9 @@ class WindowProbe(BaseProbe):
             self.native.contentView.frame.size.height,
         )
 
+    def assert_position(self, expected):
+        assert self.impl.interface.position == expected
+
     @property
     def is_full_screen(self):
         return bool(self.native.styleMask & NSWindowStyleMask.FullScreen)
