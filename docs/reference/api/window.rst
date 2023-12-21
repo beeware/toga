@@ -81,15 +81,19 @@ Notes
   these are ultimately at the discretion of the OS (or window manager). For
   example, on macOS, depending on a user's OS-level settings, new windows may
   open as tabs on the main window; on Linux, some window managers (e.g., tiling
-  window managers) may not honor an app's size and position requests. You should
-  avoid making UI design decisions that are dependent on specific size and
-  placement of windows.
+  window managers) may not honor an app's size request. You should avoid making
+  UI design decisions that are dependent on specific size of windows.
+
+* Gtk4 doesn't provide an api for windows positioning and it is suggesting leaving
+  the positioning task to the window managers. See `this discussion`_ for details.
 
 * A mobile application can only have a single window (the :class:`~toga.MainWindow`),
   and that window cannot be moved, resized, hidden, or made full screen. Toga will raise
   an exception if you attempt to create a secondary window on a mobile platform. If you
   try to modify the size, position, or visibility of the main window, the request will
   be ignored.
+  
+.. _this discussion: https://discourse.gnome.org/t/how-to-center-gtkwindows-in-gtk4/3112/4
 
 Reference
 ---------
