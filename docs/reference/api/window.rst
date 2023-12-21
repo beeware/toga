@@ -92,7 +92,7 @@ Notes
   an exception if you attempt to create a secondary window on a mobile platform. If you
   try to modify the size, position, or visibility of the main window, the request will
   be ignored.
-  
+
 .. _this discussion: https://discourse.gnome.org/t/how-to-center-gtkwindows-in-gtk4/3112/4
 
 Reference
