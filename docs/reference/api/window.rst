@@ -84,7 +84,7 @@ Notes
   window managers) may not honor an app's size request. You should avoid making
   UI design decisions that are dependent on specific size of windows.
 
-* GTK doesn't provide an api for windows positioning and it is suggesting leaving
+* GTK doesn't provide an api for windows positioning and it's suggesting leaving
   the positioning task to the window managers. See `this discussion`_ for details.
 
 * A mobile application can only have a single window (the :class:`~toga.MainWindow`),
