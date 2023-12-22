@@ -1,1 +1,0 @@
-Compliance with Apple's HIG regarding the naming and shortcuts for the Close and Close All menu items was improved.

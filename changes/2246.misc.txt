@@ -1,1 +1,0 @@
-Path declarations across the project have been simplified, with unneeded slash operators removed.
