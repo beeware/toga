@@ -1,1 +1,0 @@
-The use of synchronous ``on_result`` callbacks on dialogs and ``Webview.evaluate_javascript()`` calls has been deprecated. These methods should be used in their asynchronous form.

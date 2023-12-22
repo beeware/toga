@@ -1,1 +1,0 @@
-ImageViews with ``flex=1`` will now shrink to fit if the image is larger than the available space.

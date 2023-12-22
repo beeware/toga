@@ -11,7 +11,7 @@ class ExampleTableApp(toga.App):
     lbl_fontsize = None
 
     def load_data(self):
-        yak = toga.Icon.TOGA_ICON
+        yak = toga.Icon.DEFAULT_ICON
         red = toga.Icon("icons/red")
         green = toga.Icon("icons/green")
 

@@ -1,1 +1,0 @@
-Separators before and after command sub-groups are now included in menus.
