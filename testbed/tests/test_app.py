@@ -566,7 +566,6 @@ if toga.platform.current_platform == "windows":
         # For toolbar
         main_window.toolbar.add(app.cmd1, app.cmd2)
         # For stack trace dialog
-        on_result_handler = Mock()
         stack = io.StringIO()
         traceback.print_stack(file=stack)
         dialog_result = main_window.stack_trace_dialog(
@@ -574,7 +573,6 @@ if toga.platform.current_platform == "windows":
             "Some stack trace",
             stack.getvalue(),
             retry=True,
-            on_result=on_result_handler,
         )
 
         # ----------------------- Setup Mock values for testing -----------------------
