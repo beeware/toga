@@ -1,1 +1,0 @@
-The pinch-to-zoom feature has been added to WebView on Android.

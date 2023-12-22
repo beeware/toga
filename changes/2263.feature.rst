@@ -1,1 +1,0 @@
-Images can now be created from the native platform representation of an image, without needing to be transformed to bytes.

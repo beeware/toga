@@ -1,1 +1,0 @@
-Packaging was updated to use PEP621-compatible metadata definitions.

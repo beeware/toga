@@ -72,7 +72,7 @@ class TogaDemo(toga.App):
             self.action2,
             "Action 2",
             tooltip="Perform action 2",
-            icon=toga.Icon.TOGA_ICON,
+            icon=toga.Icon.DEFAULT_ICON,
         )
 
         self.main_window.toolbar.add(cmd1, cmd2)
