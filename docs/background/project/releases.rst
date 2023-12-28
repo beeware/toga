@@ -6,6 +6,52 @@ Release History
 
 .. towncrier release notes start
 
+0.4.1 (2023-12-21)
+==================
+
+Features
+--------
+
+* Toga images can now be created from (and converted to) PIL images. (`#2142 <https://github.com/beeware/toga/issues/2142>`__)
+* A wider range of command shortcut keys are now supported on WinForms. (`#2198 <https://github.com/beeware/toga/issues/2198>`__)
+* Most widgets with flexible sizes now default to a minimum size of 100 CSS pixels. An explicit size will still override this value. (`#2200 <https://github.com/beeware/toga/issues/2200>`__)
+* OptionContainer content can now be constructed using ``toga.OptionItem`` objects. (`#2259 <https://github.com/beeware/toga/issues/2259>`__)
+* An OptionContainer widget was added for iOS. (`#2259 <https://github.com/beeware/toga/issues/2259>`__)
+* Apps can now specify platform-specific icon resources by appending the platform name (e.g., ``-macOS`` or ``-windows``) to the icon filename. (`#2260 <https://github.com/beeware/toga/issues/2260>`__)
+* Images can now be created from the native platform representation of an image, without needing to be transformed to bytes. (`#2263 <https://github.com/beeware/toga/issues/2263>`__)
+
+Bugfixes
+--------
+
+* TableViews on macOS will no longer crash if a drag operation is initiated from inside the table. (`#1156 <https://github.com/beeware/toga/issues/1156>`__)
+* Separators before and after command sub-groups are now included in menus. (`#2193 <https://github.com/beeware/toga/issues/2193>`__)
+* The web backend no longer generates a duplicate title bar. (`#2194 <https://github.com/beeware/toga/issues/2194>`__)
+* The web backend is now able to display the About dialog on first page load. (`#2195 <https://github.com/beeware/toga/issues/2195>`__)
+* The testbed is now able to run on macOS when the user running the tests has the macOS display setting "Prefer tabs when opening documents" set to "Always". (`#2208 <https://github.com/beeware/toga/issues/2208>`__)
+* Compliance with Apple's HIG regarding the naming and shortcuts for the Close and Close All menu items was improved. (`#2214 <https://github.com/beeware/toga/issues/2214>`__)
+* Font handling on older versions of iOS has been corrected. (`#2265 <https://github.com/beeware/toga/issues/2265>`__)
+* ImageViews with ``flex=1`` will now shrink to fit if the image is larger than the available space. (`#2275 <https://github.com/beeware/toga/issues/2275>`__)
+
+Backward Incompatible Changes
+-----------------------------
+
+* The ``toga.Image`` constructor now takes a single argument (``src``); the ``path`` and ``data`` arguments are deprecated. (`#2142 <https://github.com/beeware/toga/issues/2142>`__)
+* The use of Caps Lock as a keyboard modifier for commands was removed. (`#2198 <https://github.com/beeware/toga/issues/2198>`__)
+* Support for macOS release prior to Big Sur (11) has been dropped. (`#2228 <https://github.com/beeware/toga/issues/2228>`__)
+* When inserting or appending a tab to an OptionContainer, the ``enabled`` argument must now be provided as a keyword argument. (`#2259 <https://github.com/beeware/toga/issues/2259>`__)
+* The use of synchronous ``on_result`` callbacks on dialogs and ``Webview.evaluate_javascript()`` calls has been deprecated. These methods should be used in their asynchronous form. (`#2264 <https://github.com/beeware/toga/issues/2264>`__)
+
+Documentation
+-------------
+
+* Documentation for ``toga.Key`` was added. (`#2199 <https://github.com/beeware/toga/issues/2199>`__)
+* Some limitations on App presentation imposed by Wayland have been documented. (`#2255 <https://github.com/beeware/toga/issues/2255>`__)
+
+Misc
+----
+
+* `#2201 <https://github.com/beeware/toga/issues/2201>`__, `#2204 <https://github.com/beeware/toga/issues/2204>`__, `#2215 <https://github.com/beeware/toga/issues/2215>`__, `#2216 <https://github.com/beeware/toga/issues/2216>`__, `#2219 <https://github.com/beeware/toga/issues/2219>`__, `#2222 <https://github.com/beeware/toga/issues/2222>`__, `#2224 <https://github.com/beeware/toga/issues/2224>`__, `#2226 <https://github.com/beeware/toga/issues/2226>`__, `#2230 <https://github.com/beeware/toga/issues/2230>`__, `#2235 <https://github.com/beeware/toga/issues/2235>`__, `#2240 <https://github.com/beeware/toga/issues/2240>`__, `#2246 <https://github.com/beeware/toga/issues/2246>`__, `#2249 <https://github.com/beeware/toga/issues/2249>`__, `#2256 <https://github.com/beeware/toga/issues/2256>`__, `#2257 <https://github.com/beeware/toga/issues/2257>`__, `#2261 <https://github.com/beeware/toga/issues/2261>`__, `#2264 <https://github.com/beeware/toga/issues/2264>`__, `#2267 <https://github.com/beeware/toga/issues/2267>`__, `#2269 <https://github.com/beeware/toga/issues/2269>`__, `#2270 <https://github.com/beeware/toga/issues/2270>`__, `#2271 <https://github.com/beeware/toga/issues/2271>`__, `#2272 <https://github.com/beeware/toga/issues/2272>`__, `#2283 <https://github.com/beeware/toga/issues/2283>`__, `#2284 <https://github.com/beeware/toga/issues/2284>`__, `#2287 <https://github.com/beeware/toga/issues/2287>`__, `#2294 <https://github.com/beeware/toga/issues/2294>`__
+
 0.4.0 (2023-11-03)
 ==================
 
