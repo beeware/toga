@@ -162,6 +162,7 @@ GTK_KEY_CODES = {
     Key.Y: "Y",
     Key.Z: "Z",
     Key.ESCAPE: "Escape",
+    Key.EXCLAMATION: "exclam",
     Key.TAB: "Tab",
     Key.BACKSPACE: "Backspace",
     Key.ENTER: "Enter",
@@ -222,19 +223,20 @@ GTK_MODIFIER_CODES = {
 }
 
 
-def toga_key(event):
+def toga_key(shortcut):
     """Convert a GDK Key Event into a Toga key."""
-    key = GDK_KEYS[event]
+    gtk_trigger = shortcut.get_trigger()
+
+    key = GDK_KEYS[gtk_trigger.get_keyval()]
 
     modifiers = set()
-
-    if event.state & Gdk.ModifierType.SHIFT_MASK:
+    if gtk_trigger.get_modifiers() & Gdk.ModifierType.SHIFT_MASK:
         modifiers.add(Key.SHIFT)
-    if event.state & Gdk.ModifierType.CONTROL_MASK:
+    if gtk_trigger.get_modifiers() & Gdk.ModifierType.CONTROL_MASK:
         modifiers.add(Key.MOD_1)
-    if event.state & Gdk.ModifierType.META_MASK:
+    if gtk_trigger.get_modifiers() & Gdk.ModifierType.ALT_MASK:
         modifiers.add(Key.MOD_2)
-    if event.state & Gdk.ModifierType.HYPER_MASK:
+    if gtk_trigger.get_modifiers() & Gdk.ModifierType.HYPER_MASK:
         modifiers.add(Key.MOD_3)
 
     return {"key": key, "modifiers": modifiers}
@@ -242,7 +244,6 @@ def toga_key(event):
 
 def gtk_accel(shortcut):
     """Convert a Toga shortcut definition into GTK accelerator definition."""
-    accel = shortcut
     # Convert the shortcut into string form.
     try:
         accel = shortcut.value
