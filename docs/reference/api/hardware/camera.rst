@@ -13,14 +13,15 @@ A sensor that can capture photos and/or video.
 Usage
 -----
 
-The device camera is accessed using the :attr:`~toga.App.camera` attribute on the app
-object. This attribute exposes an API that allows you to check if you have have
-permission to access the camera device; and if so, capture photographs.
+Cameras attached to a device running an app can be accessed using the
+:attr:`~toga.App.camera` attribute. This attribute exposes an API that allows you to
+check if you have have permission to access the camera device; and if permission exists,
+capture photographs.
 
 The Camera API is *asynchronous*. This means the methods that have long-running behavior
-(such as requesting permissions and taking photographs) must be ``await``-ed, rather than
-being invoked directly. This requires that they must be invoked from inside an
-asynchronous handler:
+(such as requesting permissions and taking photographs) must be ``await``-ed, rather
+than being invoked directly. This means they must be invoked from inside an asynchronous
+handler:
 
 .. code-block:: python
 
@@ -32,14 +33,16 @@ asynchronous handler:
             photo = await self.camera.take_photo()
 
 Many platforms will require some form of device permission to access the camera. The
-permission APIs are paired with the specific actions performs on those APIs; that is, to
-take a photo, you require :any:`Camera.has_photo_permission`, which you can request
+permission APIs are paired with the specific actions performed on those APIs - that is,
+to take a photo, you require :any:`Camera.has_photo_permission()`, which you can request
 using :any:`Camera.request_photo_permission()`.
 
 The calls to request permissions *can* be invoked from a synchronous context (i.e., a
 non ``async`` method); however, they are non-blocking when used in this way. Invoking a
-method like :any:`Camera.request_photo_permission()` will start the process of requesting
-permission, but will return  *immediately*, without waiting for the user's response.
+method like :any:`Camera.request_photo_permission()` will start the process of
+requesting permission, but will return *immediately*, without waiting for the user's
+response. This allows an app to *request* permissions as part of the startup process,
+prior to using the camera APIs.
 
 Toga will confirm whether the app has been granted permission to use the camera before
 invoking any camera API. If permission has not yet been requested, and the platform
@@ -48,12 +51,18 @@ allows, Toga will attempt to request permission at the time of first camera acce
 Notes
 -----
 
-* Any iOS app using the Camera API *must* declare the
+* Apps that use a camera must be configured to provide permission to the camera device.
+  The permissions required are platform specific:
+
+  * iOS: ``NSCameraUsageDescription`` must be defined in the app's ``Info.plist`` file.
+  * macOS: The ``com.apple.security.device.camera`` entitlement must be enabled.
 
 * The iOS simulator implements the iOS Camera APIs, but is not able to take photographs.
-  To test your app's Camera usage, you need to use a physical iOS device.
+  To test your app's Camera usage, you must use a physical iOS device.
 
 Reference
 ---------
 
 .. autoclass:: toga.hardware.camera.Camera
+
+.. autoclass:: toga.hardware.camera.Device

@@ -2,7 +2,7 @@ from rubicon.objc import Block, objc_method
 
 import toga
 from toga.constants import FlashMode
-from toga.hardware.camera import Camera as TogaCamera
+from toga.hardware.camera import Device as TogaDevice
 from toga_iOS.libs import (
     AVAuthorizationStatus,
     AVCaptureDevice,
@@ -16,15 +16,11 @@ from toga_iOS.libs import (
 
 
 def native_device(device):
-    try:
-        return {
-            # Rear camera is the default
-            None: UIImagePickerControllerCameraDevice.Rear,
-            TogaCamera.FRONT: UIImagePickerControllerCameraDevice.Front,
-            TogaCamera.REAR: UIImagePickerControllerCameraDevice.Rear,
-        }[device]
-    except KeyError:
-        raise ValueError(f"Unknown camera device {device!r}")
+    if device:
+        return device._native
+    else:
+        # Rear camera is the default
+        return UIImagePickerControllerCameraDevice.Rear
 
 
 def native_flash_mode(flash):
@@ -105,13 +101,25 @@ class Camera:
 
     def get_devices(self):
         return (
-            [TogaCamera.REAR]
+            [
+                TogaDevice(
+                    id="Rear",
+                    name="Rear",
+                    native=UIImagePickerControllerCameraDevice.Rear,
+                )
+            ]
             if UIImagePickerController.isCameraDeviceAvailable(
                 UIImagePickerControllerCameraDevice.Rear
             )
             else []
         ) + (
-            [TogaCamera.FRONT]
+            [
+                TogaDevice(
+                    id="Front",
+                    name="Front",
+                    native=UIImagePickerControllerCameraDevice.Front,
+                )
+            ]
             if UIImagePickerController.isCameraDeviceAvailable(
                 UIImagePickerControllerCameraDevice.Front
             )

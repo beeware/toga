@@ -1,9 +1,12 @@
-from toga.hardware.camera import Camera as TogaCamera
+from toga.hardware.camera import Device as TogaDevice
 
 from ..utils import LoggedObject
 
 
 class Camera(LoggedObject):
+    CAMERA_1 = TogaDevice(id="camera-1", name="Camera 1", native=object())
+    CAMERA_2 = TogaDevice(id="camera-2", name="Camera 2", native=object())
+
     def __init__(self, interface):
         self.interface = interface
 
@@ -26,12 +29,12 @@ class Camera(LoggedObject):
 
     def get_devices(self):
         self._action("get devices")
-        return [TogaCamera.REAR, TogaCamera.FRONT]
+        return [self.CAMERA_1, self.CAMERA_2]
 
     def has_flash(self, device):
         self._action("has flash", device=device)
-        # Front camera doesn't have a flash.
-        return device == TogaCamera.REAR
+        # Camera 1 has a flash; camera 2 doesn't.
+        return device.id == "camera-1"
 
     def take_photo(self, future, device, flash):
         if self.has_photo_permission(allow_unknown=True):

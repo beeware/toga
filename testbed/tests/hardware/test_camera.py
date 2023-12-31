@@ -1,7 +1,6 @@
 import pytest
 
 from toga.constants import FlashMode
-from toga.hardware.camera import Camera
 
 from ..conftest import skip_on_platforms
 from .probe import get_probe
@@ -9,20 +8,14 @@ from .probe import get_probe
 
 @pytest.fixture
 async def camera_probe(monkeypatch, app_probe):
-    skip_on_platforms("android", "macOS", "linux", "windows")
+    skip_on_platforms("android", "linux", "windows")
     return get_probe(monkeypatch, app_probe, "Camera")
 
 
 async def test_camera_properties(app, camera_probe):
-    assert app.camera.devices == camera_probe.known_cameras()
-
-    assert app.camera.has_flash(Camera.FRONT) == camera_probe.has_flash(Camera.FRONT)
-    assert app.camera.has_flash(Camera.REAR) == camera_probe.has_flash(Camera.REAR)
-    assert app.camera.has_flash(None) == camera_probe.has_flash(Camera.REAR)
-
-    # Test the properties of a camera that doesn't exist
-    with pytest.raises(ValueError, match=r"Unknown camera device 'selfiestick'"):
-        app.camera.has_flash("selfiestick")
+    assert {
+        device.id: app.camera.has_flash(device) for device in app.camera.devices
+    } == camera_probe.known_cameras()
 
 
 async def test_grant_photo_permission(app, camera_probe):
@@ -38,34 +31,42 @@ async def test_grant_photo_permission(app, camera_probe):
     assert app.camera.has_photo_permission
 
 
-@pytest.mark.parametrize(
-    "camera,flash_mode",
-    [
-        (None, None),
-        (Camera.FRONT, FlashMode.AUTO),
-        (Camera.REAR, FlashMode.AUTO),
-        (Camera.REAR, FlashMode.ON),
-        (Camera.REAR, FlashMode.OFF),
-    ],
-)
-async def test_take_photo(app, camera_probe, camera, flash_mode):
-    """A user can take a photo with the camera"""
+async def test_take_photo(app, camera_probe):
+    """A user can take a photo with the all the available cameras"""
 
     # Ensure the camera has permissions
     camera_probe.grant_photo_permission()
 
-    # Trigger taking a photo
-    photo = app.camera.take_photo(device=camera, flash=flash_mode)
+    for camera in [None] + app.camera.devices:
+        # Trigger taking a photo
+        photo = app.camera.take_photo(device=camera)
 
-    # Simulate pressing the shutter on the camer
-    image = await camera_probe.take_photo(photo)
+        # Simulate pressing the shutter on the camera
+        image = await camera_probe.take_photo(photo)
 
-    # The image exists, and has the expected size.
-    assert image.size == (512, 512)
+        # The image exists, and has the expected size.
+        assert image.size == (512, 512)
+
+
+async def test_flash_mode(app, camera_probe):
+    """A user can take a photo with all the flash modes"""
+
+    # Ensure the camera has permissions
+    camera_probe.grant_photo_permission()
+
+    for flash_mode in [FlashMode.AUTO, FlashMode.ON, FlashMode.OFF]:
+        # Trigger taking a photo with the default device
+        photo = app.camera.take_photo(flash=flash_mode)
+
+        # Simulate pressing the shutter on the camera
+        image = await camera_probe.take_photo(photo)
+
+        # The image exists, and has the expected size.
+        assert image.size == (512, 512)
 
 
 async def test_take_photo_unknown_permission(app, camera_probe):
-    """A user can take a photo with the camera,"""
+    """If a user hasn't explicitly granted permissions, they can take a photo with the camera"""
 
     # This test relies on the fact that permissions have been "pre-granted".
 

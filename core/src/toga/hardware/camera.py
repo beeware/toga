@@ -1,8 +1,13 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING, Any
+
 from toga.constants import FlashMode
 from toga.handlers import AsyncResult
 from toga.platform import get_platform_factory
+
+if TYPE_CHECKING:
+    from toga.app import App
 
 
 class PermissionResult(AsyncResult):
@@ -13,13 +18,36 @@ class PhotoResult(AsyncResult):
     RESULT_TYPE = "photo"
 
 
-class Camera:
-    FRONT = "Front"
-    REAR = "Rear"
+class Device:
+    def __init__(self, id: str, name: str, native: Any):
+        self._id = id
+        self._name = name
+        self._native = native
 
-    def __init__(self, app):
+    @property
+    def id(self) -> str:
+        """A unique identifier for the device"""
+        return self._id
+
+    @property
+    def name(self) -> str:
+        """A human-readable name for the device"""
+        return self._name
+
+    def __str__(self):
+        return self._name
+
+
+class Camera:
+    def __init__(self, app: App):
         self.factory = get_platform_factory()
+        self._app = app
         self._impl = self.factory.Camera(self)
+
+    @property
+    def app(self) -> App:
+        """The app with which the camera is associated"""
+        return self._app
 
     @property
     def has_photo_permission(self) -> bool:
@@ -65,11 +93,11 @@ class Camera:
     #     return result
 
     @property
-    def devices(self) -> list[str]:
-        """The list of identifiers for available camera devices."""
+    def devices(self) -> list[Device]:
+        """The list of available camera devices."""
         return self._impl.get_devices()
 
-    def has_flash(self, device: str | None = None):
+    def has_flash(self, device: Device | None = None):
         """Does the specified camera device have a flash?
 
         :param device: The camera device to check. If a specific device is *not*
@@ -79,7 +107,7 @@ class Camera:
 
     def take_photo(
         self,
-        device: str | None = None,
+        device: Device | None = None,
         flash: FlashMode = FlashMode.AUTO,
     ) -> PhotoResult:
         """Capture a photo using one of the device's cameras.
