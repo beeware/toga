@@ -1,10 +1,14 @@
 from __future__ import annotations
 
-from typing import Any, Protocol
+from typing import TYPE_CHECKING, Any, Protocol
 
+import toga
 from toga.handlers import wrapped_handler
 
 from .base import Widget
+
+if TYPE_CHECKING:
+    from toga.icons import IconContent
 
 
 class OnPressHandler(Protocol):
@@ -23,7 +27,8 @@ class OnPressHandler(Protocol):
 class Button(Widget):
     def __init__(
         self,
-        text: str | None,
+        text: str | None = None,
+        icon: IconContent = None,
         id: str | None = None,
         style=None,
         on_press: OnPressHandler | None = None,
@@ -32,6 +37,7 @@ class Button(Widget):
         """Create a new button widget.
 
         :param text: The text to display on the button.
+        :param icon: The icon to display on the button.
         :param id: The ID for the widget.
         :param style: A style object. If no style is provided, a default style
             will be applied to the widget.
@@ -48,7 +54,17 @@ class Button(Widget):
         # Set a dummy handler before installing the actual on_press, because we do not want
         # on_press triggered by the initial value being set
         self.on_press = None
-        self.text = text
+
+        # Set the content of the button - either an icon, or text, but not both.
+        if text:
+            if icon:
+                raise ValueError("Cannot specify both text and an icon")
+            else:
+                self.text = text
+        elif icon:
+            self.icon = icon
+        else:
+            raise ValueError("Must specify either text or an icon")
 
         self.on_press = on_press
         self.enabled = enabled
@@ -58,11 +74,14 @@ class Button(Widget):
         """The text displayed on the button.
 
         ``None``, and the Unicode codepoint U+200B (ZERO WIDTH SPACE), will be
-        interpreted and returned as an empty string. Any other object will be
-        converted to a string using ``str()``.
+        interpreted and returned as an empty string. Any other object will be converted
+        to a string using ``str()``.
 
-        Only one line of text can be displayed. Any content after the first
-        newline will be ignored.
+        Only one line of text can be displayed. Any content after the first newline will
+        be ignored.
+
+        If the button is currently displaying an icon, the empty string will be
+        returned.
         """
         return self._impl.get_text()
 
@@ -76,6 +95,26 @@ class Button(Widget):
             value = str(value).split("\n")[0]
 
         self._impl.set_text(value)
+        self._impl.set_icon(None)
+        self.refresh()
+
+    @property
+    def icon(self) -> toga.Icon | None:
+        """The icon displayed on the button.
+
+        Returns ``None`` if the button is currently displaying text.
+        """
+        return self._impl.get_icon()
+
+    @icon.setter
+    def icon(self, value: IconContent) -> None:
+        if isinstance(value, toga.Icon):
+            icon = value
+        else:
+            icon = toga.Icon(value)
+
+        self._impl.set_icon(icon)
+        self._impl.set_text("")
         self.refresh()
 
     @property
