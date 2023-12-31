@@ -36,6 +36,9 @@ class FlashMode(Enum):
     OFF = 0
     ON = 1
 
+    def __str__(self):
+        return self.name.title()
+
 
 # class VideoQuality(Enum):
 #     """The quality of the video recording.

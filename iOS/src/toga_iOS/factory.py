@@ -2,11 +2,7 @@ from . import dialogs
 from .app import App, MainWindow
 from .colors import native_color
 from .command import Command
-
-# Resources
 from .fonts import Font
-
-# Hardware
 from .hardware.camera import Camera
 from .icons import Icon
 from .images import Image

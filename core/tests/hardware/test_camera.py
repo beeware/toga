@@ -2,8 +2,8 @@ import pytest
 
 import toga
 from toga.constants import FlashMode
-from toga.hardware.camera import Camera
 from toga_dummy import factory
+from toga_dummy.hardware.camera import Camera as DummyCamera
 from toga_dummy.utils import (
     assert_action_not_performed,
     assert_action_performed,
@@ -39,6 +39,9 @@ def test_no_camera(monkeypatch, app):
 )
 def test_request_photo_permission(app, initial, should_request, has_permission):
     """An app can request permission to take photos"""
+    # The camera instance round-trips the app instance
+    assert app.camera.app == app
+
     # Set initial permission
     app.camera._impl._has_photo_permission = initial
 
@@ -78,16 +81,25 @@ def test_device_properties(app):
     assert [
         {
             "device": device,
+            "__str__": str(device),
+            "name": device.name,
+            "id": device.id,
             "has_flash": app.camera.has_flash(device),
         }
         for device in app.camera.devices
     ] == [
         {
-            "device": Camera.REAR,
+            "device": DummyCamera.CAMERA_1,
+            "__str__": "Camera 1",
+            "name": "Camera 1",
+            "id": "camera-1",
             "has_flash": True,
         },
         {
-            "device": Camera.FRONT,
+            "device": DummyCamera.CAMERA_2,
+            "__str__": "Camera 2",
+            "name": "Camera 2",
+            "id": "camera-2",
             "has_flash": False,
         },
     ]
@@ -95,7 +107,7 @@ def test_device_properties(app):
 
 @pytest.mark.parametrize(
     "device",
-    [None, Camera.FRONT, Camera.REAR],
+    [None, DummyCamera.CAMERA_1, DummyCamera.CAMERA_2],
 )
 @pytest.mark.parametrize(
     "flash",

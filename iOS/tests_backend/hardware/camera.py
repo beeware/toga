@@ -6,7 +6,11 @@ import pytest
 
 import toga
 from toga_iOS.hardware.camera import Camera
-from toga_iOS.libs import NSBundle
+from toga_iOS.libs import (
+    NSBundle,
+    UIImagePickerController,
+    UIImagePickerControllerCameraDevice,
+)
 
 from ..app import AppProbe
 
@@ -42,12 +46,32 @@ class CameraProbe(AppProbe):
         tcc_db.commit()
         tcc_db.close()
 
-    def known_cameras(self):
-        # iPhone simulator has no camera devices
-        return []
+        # iPhone simulator has no camera devices. Mock the response of the camera
+        # identifiers to report a rear camera with a flash, and a front camera with
+        # no flash.
 
-    def has_flash(self, camera):
-        return False
+        def _is_available(self, device):
+            return True
+
+        def _has_flash(self, device):
+            return device == UIImagePickerControllerCameraDevice.Rear
+
+        monkeypatch.setitem(
+            UIImagePickerController.objc_class.__dict__["instance_methods"],
+            "isCameraDeviceAvailable:",
+            _is_available,
+        )
+        monkeypatch.setitem(
+            UIImagePickerController.objc_class.__dict__["instance_methods"],
+            "isFlashAvailableForCameraDevice:",
+            _has_flash,
+        )
+
+    def known_cameras(self):
+        return {
+            "Rear": True,
+            "Front": False,
+        }
 
     def reset_photo_permission(self):
         # Mock the *next* call to retrieve photo permission.
