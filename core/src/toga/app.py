@@ -144,7 +144,7 @@ class MainWindow(Window):
         minimizable: bool = True,
         resizeable=None,  # DEPRECATED
         closeable=None,  # DEPRECATED
-        content=None
+        content=None,
     ):
         """Create a new main window.
 

@@ -73,7 +73,7 @@ class Window:
         on_close: OnCloseHandler | None = None,
         resizeable=None,  # DEPRECATED
         closeable=None,  # DEPRECATED
-        content: Widget | None = None
+        content: Widget | None = None,
     ) -> None:
         """Create a new Window.
 
