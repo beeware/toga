@@ -249,7 +249,7 @@ class App:
         app_id: str | None = None,
         app_name: str | None = None,
         *,
-        icon: IconContent = None,
+        icon: IconContent | None = None,
         author: str | None = None,
         version: str | None = None,
         home_page: str | None = None,
@@ -511,7 +511,7 @@ class App:
         return self._icon
 
     @icon.setter
-    def icon(self, icon_or_name: IconContent) -> None:
+    def icon(self, icon_or_name: IconContent | None) -> None:
         if isinstance(icon_or_name, Icon):
             self._icon = icon_or_name
         else:
@@ -716,7 +716,7 @@ class DocumentApp(App):
         app_id: str | None = None,
         app_name: str | None = None,
         *,
-        icon: IconContent = None,
+        icon: IconContent | None = None,
         author: str | None = None,
         version: str | None = None,
         home_page: str | None = None,

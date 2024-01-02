@@ -28,7 +28,7 @@ class Button(Widget):
     def __init__(
         self,
         text: str | None = None,
-        icon: IconContent = None,
+        icon: IconContent | None = None,
         id: str | None = None,
         style=None,
         on_press: OnPressHandler | None = None,
