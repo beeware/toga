@@ -1,9 +1,9 @@
 from __future__ import annotations
 
+import weakref
 from builtins import id as identifier
 from typing import TYPE_CHECKING, Iterator, NoReturn
 from weakref import WeakValueDictionary
-import weakref
 
 from travertino.node import Node
 
