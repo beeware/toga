@@ -31,7 +31,8 @@ jobs:
       - name: Get packages
         uses: actions/download-artifact@v4.1.0
         with:
-          name: ${{ needs.ci.outputs.artifact-name }}
+          pattern: ${{ needs.ci.outputs.artifact-name }}-*
+          merge-multiple: true
 
       - name: Create release
         uses: ncipollo/release-action@v1.13.0
@@ -64,9 +65,10 @@ jobs:
         - "toga_winforms"
     steps:
       - name: Get packages
-        uses: actions/download-artifact@v3.0.2
+        uses: actions/download-artifact@v4.1.0
         with:
-          name: ${{ needs.ci.outputs.artifact-name }}
+          pattern: ${{ needs.ci.outputs.artifact-name }}-*
+          merge-multiple: true
 
       - name: Extract ${{ matrix.package }}
         run: |
