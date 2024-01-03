@@ -3,6 +3,7 @@ from __future__ import annotations
 from builtins import id as identifier
 from typing import TYPE_CHECKING, Iterator, NoReturn
 from weakref import WeakValueDictionary
+import weakref
 
 from travertino.node import Node
 
@@ -244,7 +245,7 @@ class Widget(Node):
         When setting the window for a widget, all children of this widget will be
         recursively assigned to the same window.
         """
-        return self._window
+        return self._window() if self._window else self._window
 
     @window.setter
     def window(self, window: Window | None) -> None:
@@ -252,7 +253,7 @@ class Widget(Node):
         if self.window is not None:
             self.window.widgets.remove(self.id)
 
-        self._window = window
+        self._window = weakref.ref(window) if window else window
         self._impl.set_window(window)
 
         for child in self.children:
