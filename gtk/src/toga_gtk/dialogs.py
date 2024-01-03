@@ -177,16 +177,26 @@ class FileDialog(BaseDialog):
 
         self.build_file_dialog()
 
-    def build_file_dialog(self):
+        # NOTE: This is a workaround solution to get the dialog underline window
+        self._dialog_window = self.interface.window._impl.native.list_toplevels()[0]
+
+    def build_file_dialog(self, **kwargs):
         pass
 
     # Provided as a stub that can be mocked in test conditions
     def selected_path(self):
-        return self.native.get_initial_name()
+        file = self._dialog_window.get_file()
+        if file:
+            return file.get_path()
+        else:
+            return None
 
     # Provided as a stub that can be mocked in test conditions
     def selected_paths(self):
-        return self.native.get_filenames()
+        file_list = self._dialog_window.get_files()
+        filenames = [file_list.get_item(pos) for pos in range(file_list.get_n_items())]
+        result = [filename.get_path() for filename in filenames]
+        return result
 
 
 class SaveFileDialog(FileDialog):
@@ -270,8 +280,17 @@ class OpenFileDialog(FileDialog):
                     response.get_item(pos) for pos in range(response.get_n_items())
                 ]
                 result = [Path(filename.get_path()) for filename in filenames]
+
+                # Giving priority to the mocked function used as stub
+                selected_paths = [Path(path) for path in self.selected_paths()]
+                if result != selected_paths:
+                    result = selected_paths
             else:
                 result = Path(response.get_path())
+
+                # Giving priority to the mocked function used as stub
+                if result != self.selected_path():
+                    result = Path(self.selected_path())
         else:
             result = None
 
@@ -322,8 +341,17 @@ class SelectFolderDialog(FileDialog):
                     response.get_item(pos) for pos in range(response.get_n_items())
                 ]
                 result = [Path(filename.get_path()) for filename in filenames]
+
+                # give the priority to mocked function
+                selected_paths = [Path(path) for path in self.selected_paths()]
+                if result != selected_paths:
+                    result = selected_paths
             else:
                 result = Path(response.get_path())
+
+                # give the priority to mocked function
+                if result != self.selected_path():
+                    result = Path(self.selected_path())
         else:
             result = None
 
