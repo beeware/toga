@@ -39,7 +39,8 @@ jobs:
 
   package:
     name: Python Package
-    uses: beeware/.github/.github/workflows/python-package-create.yml@main
+#    uses: beeware/.github/.github/workflows/python-package-create.yml@main
+    uses: rmartin16/.github-beeware/.github/workflows/python-package-create.yml@artifacts
     with:
       tox-source: "./core[dev]"
       build-subdirectory: ${{ matrix.subdir }}
@@ -85,7 +86,8 @@ jobs:
     - name: Get packages
       uses: actions/download-artifact@v4.1.0
       with:
-        name: ${{ needs.package.outputs.artifact-name }}
+        pattern: ${{ needs.package.outputs.artifact-name }}-*
+        merge-multiple: true
     - name: Test
       run: |
         # The $(ls ...) shell expansion is done in the Github environment;
