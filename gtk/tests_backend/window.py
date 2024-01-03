@@ -137,9 +137,9 @@ class WindowProbe(BaseProbe):
         assert isinstance(dialog.native, Gtk.FileDialog)
 
         if result:
-            dialog._dialog_window.response(0)
+            dialog._dialog_window.response(Gtk.ResponseType.ACCEPT)
         else:
-            dialog._dialog_window.response(1)
+            dialog._dialog_window.response(Gtk.ResponseType.CANCEL)
 
         await self.wait_for_dialog(
             dialog._dialog_window,
@@ -153,43 +153,40 @@ class WindowProbe(BaseProbe):
         # "open" button is pressed, it opens that folder. To prevent this, if we're
         # expecting this dialog to return a result, ensure a file is selected. We don't
         # care which file it is, as we're mocking the return value of the dialog.
-        if result:
-            dialog.native.select_filename(__file__)
+        if result is not None:
+            gtk_file = Gio.File.new_for_path(__file__)
+            dialog._dialog_window.set_file(gtk_file)
+
             # We don't know how long it will take for the GUI to update, so iterate
             # for a while until the change has been applied.
             await self.redraw("Selected a single (arbitrary) file")
             count = 0
-            while dialog.native.get_filename() != __file__ and count < 10:
+            while dialog.selected_path() != __file__ and count < 10:
                 await asyncio.sleep(0.1)
                 count += 1
-            assert (
-                dialog.native.get_filename() == __file__
-            ), "Dialog didn't select dummy file"
+
+            assert dialog.selected_path() == __file__, "Dialog didn't select dummy file"
 
         if result is not None:
             if multiple_select:
-                if result:
-                    # Since we are mocking selected_path(), it's never actually invoked
-                    # under test conditions. Call it just to confirm that it returns the
-                    # type we think it does.
-                    assert isinstance(dialog.selected_paths(), list)
+                # Since we are mocking selected_paths(), it's never actually invoked
+                # under test conditions. Call it just to confirm that it returns the
+                # type we think it does.
+                assert isinstance(dialog.selected_paths(), list)
 
-                    dialog.selected_paths = Mock(
-                        return_value=[str(path) for path in result]
-                    )
+                dialog.selected_paths = Mock(
+                    return_value=[str(path) for path in result]
+                )
             else:
                 dialog.selected_path = Mock(return_value=str(result))
 
-            # If there's nothing selected, you can't press OK.
-            if result:
-                dialog.native.response(Gtk.ResponseType.OK)
-            else:
-                dialog.native.response(Gtk.ResponseType.CANCEL)
+            # If there's nothing selected, you can't press Open.
+            dialog._dialog_window.response(Gtk.ResponseType.ACCEPT)
         else:
-            dialog.native.response(Gtk.ResponseType.CANCEL)
+            dialog._dialog_window.response(Gtk.ResponseType.CANCEL)
 
         await self.wait_for_dialog(
-            dialog,
+            dialog._dialog_window,
             (
                 f"Open {'multiselect ' if multiple_select else ''}file dialog "
                 f"({'OPEN' if result else 'CANCEL'}) dismissed"
@@ -197,51 +194,47 @@ class WindowProbe(BaseProbe):
         )
 
     async def close_select_folder_dialog(self, dialog, result, multiple_select):
-        assert isinstance(dialog.native, Gtk.FileChooserDialog)
+        assert isinstance(dialog.native, Gtk.FileDialog)
 
         # GTK's file dialog might open on default location that doesn't have anything
         # that can be selected, which alters closing behavior. To provide consistent
         # test conditions, select an arbitrary folder that we know has subfolders. We
         # don't care which folder it is, as we're mocking the return value of the
         # dialog.
-        if result:
+        if result is not None:
             folder = str(Path(__file__).parent.parent)
-            dialog.native.set_current_folder(folder)
+            dialog._dialog_window.set_current_folder(Gio.File.new_for_path(folder))
+
             # We don't know how long it will take for the GUI to update, so iterate
             # for a while until the change has been applied.
             await self.redraw("Selected a single (arbitrary) folder")
             count = 0
-            while dialog.native.get_current_folder() != folder and count < 10:
+            while dialog.selected_path() != folder and count < 10:
                 await asyncio.sleep(0.1)
                 count += 1
-            assert (
-                dialog.native.get_current_folder() == folder
-            ), "Dialog didn't select dummy folder"
+
+            assert dialog.selected_path() == folder, "Dialog didn't select dummy folder"
 
         if result is not None:
             if multiple_select:
-                if result:
-                    # Since we are mocking selected_path(), it's never actually invoked
-                    # under test conditions. Call it just to confirm that it returns the
-                    # type we think it does.
-                    assert isinstance(dialog.selected_paths(), list)
+                # Since we are mocking selected_paths(), it's never actually invoked
+                # under test conditions. Call it just to confirm that it returns the
+                # type we think it does.
+                assert isinstance(dialog.selected_paths(), list)
 
-                    dialog.selected_paths = Mock(
-                        return_value=[str(path) for path in result]
-                    )
+                dialog.selected_paths = Mock(
+                    return_value=[str(path) for path in result]
+                )
             else:
                 dialog.selected_path = Mock(return_value=str(result))
 
-            # If there's nothing selected, you can't press OK.
-            if result:
-                dialog.native.response(Gtk.ResponseType.OK)
-            else:
-                dialog.native.response(Gtk.ResponseType.CANCEL)
+            # If there's nothing selected, you can't press Select.
+            dialog._dialog_window.response(Gtk.ResponseType.ACCEPT)
         else:
-            dialog.native.response(Gtk.ResponseType.CANCEL)
+            dialog._dialog_window.response(Gtk.ResponseType.CANCEL)
 
         await self.wait_for_dialog(
-            dialog,
+            dialog._dialog_window,
             (
                 f"{'Multiselect' if multiple_select else ' Select'} folder dialog "
                 f"({'OPEN' if result else 'CANCEL'}) dismissed"
