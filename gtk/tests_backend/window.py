@@ -4,7 +4,7 @@ from unittest.mock import Mock
 
 import pytest
 
-from toga_gtk.libs import Gdk, Gtk
+from toga_gtk.libs import Gdk, Gio, Gtk
 
 from .probe import BaseProbe
 
@@ -70,71 +70,84 @@ class WindowProbe(BaseProbe):
         # indefinite wait.
         await self.redraw(message, delay=0.1)
         count = 0
-        while dialog.native.get_visible() and count < 20:
+        while dialog.get_visible() and count < 20:
             await asyncio.sleep(0.1)
             count += 1
-        assert not dialog.native.get_visible(), "Dialog didn't close"
+        assert not dialog.get_visible(), "Dialog didn't close"
 
     async def close_info_dialog(self, dialog):
-        dialog.native.response(Gtk.ResponseType.OK)
-        await self.wait_for_dialog(dialog, "Info dialog dismissed")
+        assert isinstance(dialog.native, Gtk.AlertDialog)
+
+        dialog._dialog_window.response(0)
+        await self.wait_for_dialog(dialog._dialog_window, "Info dialog dismissed")
 
     async def close_question_dialog(self, dialog, result):
+        assert isinstance(dialog.native, Gtk.AlertDialog)
+
         if result:
-            dialog.native.response(Gtk.ResponseType.YES)
+            dialog._dialog_window.response(0)
         else:
-            dialog.native.response(Gtk.ResponseType.NO)
+            dialog._dialog_window.response(1)
 
         await self.wait_for_dialog(
-            dialog,
+            dialog._dialog_window,
             f"Question dialog ({'YES' if result else 'NO'}) dismissed",
         )
 
     async def close_confirm_dialog(self, dialog, result):
+        assert isinstance(dialog.native, Gtk.AlertDialog)
+
+        # get the dialog window
         if result:
-            dialog.native.response(Gtk.ResponseType.OK)
+            dialog._dialog_window.response(0)
         else:
-            dialog.native.response(Gtk.ResponseType.CANCEL)
+            dialog._dialog_window.response(1)
 
         await self.wait_for_dialog(
-            dialog,
+            dialog._dialog_window,
             f"Question dialog ({'OK' if result else 'CANCEL'}) dismissed",
         )
 
     async def close_error_dialog(self, dialog):
-        dialog.native.response(Gtk.ResponseType.CANCEL)
-        await self.wait_for_dialog(dialog, "Error dialog dismissed")
+        assert isinstance(dialog.native, Gtk.AlertDialog)
+
+        dialog._dialog_window.response(0)
+        await self.wait_for_dialog(dialog._dialog_window, "Error dialog dismissed")
 
     async def close_stack_trace_dialog(self, dialog, result):
+        assert isinstance(dialog.native, Gtk.AlertDialog)
+
         if result is None:
-            dialog.native.response(Gtk.ResponseType.OK)
-            await self.wait_for_dialog(dialog, "Stack trace dialog dismissed")
+            dialog._dialog_window.response(0)
+            await self.wait_for_dialog(
+                dialog._dialog_window, "Stack trace dialog dismissed"
+            )
         else:
             if result:
-                dialog.native.response(Gtk.ResponseType.OK)
+                dialog._dialog_window.response(0)
             else:
-                dialog.native.response(Gtk.ResponseType.CANCEL)
+                dialog._dialog_window.response(1)
 
             await self.wait_for_dialog(
-                dialog,
+                dialog._dialog_window,
                 f"Stack trace dialog ({'RETRY' if result else 'QUIT'}) dismissed",
             )
 
     async def close_save_file_dialog(self, dialog, result):
-        assert isinstance(dialog.native, Gtk.FileChooserDialog)
+        assert isinstance(dialog.native, Gtk.FileDialog)
 
         if result:
-            dialog.native.response(Gtk.ResponseType.OK)
+            dialog._dialog_window.response(0)
         else:
-            dialog.native.response(Gtk.ResponseType.CANCEL)
+            dialog._dialog_window.response(1)
 
         await self.wait_for_dialog(
-            dialog,
+            dialog._dialog_window,
             f"Save file dialog ({'SAVE' if result else 'CANCEL'}) dismissed",
         )
 
     async def close_open_file_dialog(self, dialog, result, multiple_select):
-        assert isinstance(dialog.native, Gtk.FileChooserDialog)
+        assert isinstance(dialog.native, Gtk.FileDialog)
 
         # GTK's file dialog shows folders first; but if a folder is selected when the
         # "open" button is pressed, it opens that folder. To prevent this, if we're
