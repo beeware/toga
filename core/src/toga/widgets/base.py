@@ -1,9 +1,8 @@
 from __future__ import annotations
 
-import weakref
 from builtins import id as identifier
 from typing import TYPE_CHECKING, Iterator, NoReturn
-from weakref import WeakValueDictionary
+from weakref import WeakValueDictionary, ref
 
 from travertino.node import Node
 
@@ -253,7 +252,7 @@ class Widget(Node):
         if self.window is not None:
             self.window.widgets.remove(self.id)
 
-        self._window = weakref.ref(window) if window else window
+        self._window = ref(window) if window else window
         self._impl.set_window(window)
 
         for child in self.children:
