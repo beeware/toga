@@ -1,5 +1,11 @@
 from .container import TogaContainer
-from .libs import Gdk, Gtk
+from .libs import Gtk
+
+
+class TogaWindow(Gtk.Window):
+    def do_snapshot(self, snapshot):
+        self.snapshot = snapshot
+        Gtk.ApplicationWindow.do_snapshot(self, self.snapshot)
 
 
 class Window:
@@ -44,7 +50,7 @@ class Window:
         self.native.set_child(self.layout)
 
     def create(self):
-        self.native = Gtk.Window()
+        self.native = TogaWindow()
 
     def get_title(self):
         return self.native.get_title()
@@ -115,30 +121,13 @@ class Window:
             self.native.unfullscreen()
 
     def get_image_data(self):
-        display = self.native.get_display()
-        display.flush()
-
-        # For some reason, converting the *window* to a pixbuf fails. But if you extract
-        # a *part* of the overall screen, that works. So - work out the origin of the
-        # window, then the allocation for the container relative to that window, and
-        # capture that rectangle.
-        window = self.native.get_window()
-        origin = window.get_origin()
-        allocation = self.container.get_allocation()
-
-        screen = display.get_default_screen()
-        root_window = screen.get_root_window()
-        screenshot = Gdk.pixbuf_get_from_window(
-            root_window,
-            origin.x + allocation.x,
-            origin.y + allocation.y,
-            allocation.width,
-            allocation.height,
-        )
-
-        success, buffer = screenshot.save_to_bufferv("png")
-        if success:
-            return buffer
-        else:  # pragma: nocover
-            # This shouldn't ever happen, and it's difficult to manufacture in test conditions
-            raise ValueError(f"Unable to generate screenshot of {self}")
+        # FIXME: The following should be work but it doesn't. Please, see this
+        # https://gitlab.gnome.org/GNOME/pygobject/-/issues/601 for details.
+        # snapshot_node = self.native.snapshot.to_node()
+        # screenshot_texture = self.native.get_renderer().render_texture(
+        #     snapshot_node, None
+        # )
+        # screenshot = screenshot_texture.save_to_png_bytes()
+        # return screenshot.get_data()
+        self.interface.factory.not_implemented("Window.get_image_data()")
+        pass

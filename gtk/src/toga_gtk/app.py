@@ -13,9 +13,15 @@ from .libs import TOGA_DEFAULT_STYLES, Gdk, Gio, Gtk
 from .window import Window
 
 
+class TogaAppWindow(Gtk.ApplicationWindow):
+    def do_snapshot(self, snapshot):
+        self.snapshot = snapshot
+        Gtk.ApplicationWindow.do_snapshot(self, self.snapshot)
+
+
 class MainWindow(Window):
     def create(self):
-        self.native = Gtk.ApplicationWindow()
+        self.native = TogaAppWindow()
         icon_impl = toga_App.app.icon._impl
         self.native.set_icon_name(icon_impl.native_72.get_icon_name())
 

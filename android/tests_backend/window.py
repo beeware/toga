@@ -19,6 +19,9 @@ class WindowProbe(BaseProbe):
             self.root_view.getHeight() / self.scale_factor,
         )
 
+    def assert_as_image(self, screenshot_size, content_size):
+        self.assert_image_size(screenshot_size, content_size)
+
     async def close_info_dialog(self, dialog):
         dialog_view = self.get_dialog_view()
         self.assert_dialog_buttons(dialog_view, ["OK"])

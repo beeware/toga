@@ -17,6 +17,7 @@ class WindowProbe(BaseProbe):
     supports_multiple_select_folder = True
     supports_move_while_hidden = False
     supports_unminimize = False
+    supports_positioning = False
 
     def __init__(self, app, window):
         super().__init__()
@@ -37,9 +38,6 @@ class WindowProbe(BaseProbe):
     def content_size(self):
         content = self.impl.container
         return (content.get_width(), content.get_height())
-
-    def assert_position(self, expected):
-        pytest.xfail("Gtk doesn't support window positioning")
 
     @property
     def is_full_screen(self):
@@ -62,6 +60,9 @@ class WindowProbe(BaseProbe):
 
     def unminimize(self):
         self.native.present()
+
+    def assert_as_image(self, screenshot_size, content_size):
+        return self.assert_image_size(screenshot_size, content_size)
 
     async def wait_for_dialog(self, dialog, message):
         # It can take a moment for the dialog to disappear and the response to be
