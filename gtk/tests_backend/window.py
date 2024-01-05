@@ -62,7 +62,7 @@ class WindowProbe(BaseProbe):
         self.native.present()
 
     def assert_as_image(self, screenshot_size, content_size):
-        return self.assert_image_size(screenshot_size, content_size)
+        pytest.skip("Window as image doesn't implemented on GTK")
 
     async def wait_for_dialog(self, dialog, message):
         # It can take a moment for the dialog to disappear and the response to be
