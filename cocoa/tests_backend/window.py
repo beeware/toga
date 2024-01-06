@@ -76,8 +76,8 @@ class WindowProbe(BaseProbe):
     def unminimize(self):
         self.native.deminiaturize(None)
 
-    def assert_as_image(self, screenshot_size, content_size):
-        self.assert_image_size(screenshot_size, content_size)
+    def assert_as_image(self, screenshot, window_content_size):
+        self.assert_image_size(screenshot.size, window_content_size)
 
     async def close_info_dialog(self, dialog):
         self.native.endSheet(

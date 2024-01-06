@@ -490,7 +490,7 @@ async def test_as_image(main_window, main_window_probe):
     """The window can be captured as a screenshot"""
 
     screenshot = main_window.as_image()
-    main_window_probe.assert_as_image(screenshot.size, main_window_probe.content_size)
+    main_window_probe.assert_as_image(screenshot, main_window_probe.content_size)
 
 
 ########################################################################################
