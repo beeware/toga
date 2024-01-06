@@ -109,7 +109,7 @@ class TogaContainer(Gtk.Box):
         self.dpi = 96
         self.baseline_dpi = self.dpi
 
-        # Note: These following two properties were added primarily to help in
+        # NOTE: These following two properties were added primarily to help in
         # testing process, we adapted them later to improve the performance in
         # determining when re-hinting the widget is needed.
         #
