@@ -69,3 +69,7 @@ class AppProbe(BaseProbe):
     def rotate(self):
         self.native = self.app._impl.native
         self.native.delegate.application(self.native, didChangeStatusBarOrientation=0)
+
+    @property
+    def tabbing_enabled(self):
+        pytest.xfail("Tabbed windows not implemented for this backend.")

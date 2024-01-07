@@ -149,7 +149,7 @@ class Window:
         self.native.impl = self
 
         # This causes windows to only tab together with others of the same class.
-        self.native.tabbingIdentifier = str(self.__class__)
+        self.native.tabbingIdentifier = str(self.interface.__class__)
 
         # Cocoa releases windows when they are closed; this causes havoc with
         # Toga's widget cleanup because the ObjC runtime thinks there's no

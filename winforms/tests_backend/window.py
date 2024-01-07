@@ -1,6 +1,7 @@
 import asyncio
 from unittest.mock import Mock
 
+from pytest import xfail
 from System import EventArgs
 from System.Windows.Forms import (
     Form,
@@ -148,3 +149,10 @@ class WindowProbe(BaseProbe):
 
     def press_toolbar_button(self, index):
         self._native_toolbar_item(index).OnClick(EventArgs.Empty)
+
+    @property
+    def tabs(self):
+        xfail("Tabbed windows not implemented for this backend.")
+
+    def merge_all_windows(self):
+        xfail("Tabbed windows not implemented for this backend.")

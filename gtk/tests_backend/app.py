@@ -154,3 +154,7 @@ class AppProbe(BaseProbe):
         event.state = state
 
         return toga_key(event)
+
+    @property
+    def tabbing_enabled(self):
+        pytest.xfail("Tabbed windows not implemented for this backend.")

@@ -17,7 +17,7 @@ from toga.style.pack import COLUMN, Pack
 
 def window_probe(app, window):
     module = import_module("tests_backend.window")
-    return getattr(module, "WindowProbe")(app, window)
+    return module.WindowProbe(app, window)
 
 
 @pytest.fixture
@@ -215,6 +215,68 @@ else:
         on_close_handler.assert_called_once_with(second_window)
 
         assert second_window not in app.windows
+
+    def probe_for_window_class(app, WindowClass):
+        window = WindowClass()
+        window.show()
+        probe = window_probe(app, window)
+        return probe
+
+    async def test_window_tabbing(app, app_probe, main_window_probe):
+        """Windows tab only with others of the same class (only implemented on macOS)"""
+
+        class WindowSubclass(toga.Window):
+            pass
+
+        base_probes = [probe_for_window_class(app, toga.Window) for _ in range(2)]
+        subclass_probes = [
+            probe_for_window_class(app, WindowSubclass) for _ in range(2)
+        ]
+
+        try:
+            base_probe, _ = base_probes
+            subclass_probe, _ = subclass_probes
+
+            app_probe.tabbing_enabled = True
+
+            # Double check that nothing's tabbed initially.
+            assert not any(
+                [main_window_probe.tabs, base_probe.tabs, subclass_probe.tabs]
+            )
+
+            main_window_probe.merge_all_windows()
+            await main_window_probe.wait_for_window(
+                "Merge All Windows called on MainWindow"
+            )
+            assert not any(
+                [main_window_probe.tabs, base_probe.tabs, subclass_probe.tabs]
+            )
+
+            base_probe.merge_all_windows()
+
+            await main_window_probe.wait_for_window(
+                "Merge All Windows called on base Window"
+            )
+            assert (
+                not main_window_probe.tabs
+                and len(base_probe.tabs) == 2
+                and not subclass_probe.tabs
+            )
+
+            subclass_probe.merge_all_windows()
+            await main_window_probe.wait_for_window(
+                "Merge All Windows called on Window subclass"
+            )
+            assert (
+                not main_window_probe.tabs
+                and len(base_probe.tabs) == 2
+                and len(subclass_probe.tabs) == 2
+            )
+
+        finally:
+            app_probe.tabbing_enabled = False
+            for probe in [*base_probes, *subclass_probes]:
+                probe.close()
 
     async def test_secondary_window_cleanup(app_probe):
         """Memory for windows is cleaned up when windows are deleted."""

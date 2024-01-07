@@ -261,3 +261,10 @@ class WindowProbe(BaseProbe):
             restype=None,
             argtypes=[objc_id],
         )
+
+    @property
+    def tabs(self):
+        return self.native.tabbedWindows
+
+    def merge_all_windows(self):
+        self.native.mergeAllWindows(self.native)
