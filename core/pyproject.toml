@@ -66,7 +66,7 @@ dependencies = [
 # ensure environment consistency.
 dev = [
     "coverage[toml] == 7.4.0",
-    "Pillow == 10.1.0",
+    "Pillow == 10.2.0",
     # Pre-commit 3.6.0 deprecated support for Python 3.8
     "pre-commit == 3.5.0 ; python_version < '3.9'",
     "pre-commit == 3.6.0 ; python_version >= '3.9'",
@@ -80,7 +80,7 @@ dev = [
 ]
 docs = [
     "furo == 2023.9.10",
-    "Pillow == 10.1.0",
+    "Pillow == 10.2.0",
     "pyenchant == 3.2.2",
     # Sphinx 7.2 deprecated support for Python 3.8
     "sphinx == 7.1.2 ; python_version < '3.9'",
