@@ -10,11 +10,12 @@ from toga.constants import FlashMode
 from toga.hardware.camera import Device as TogaDevice
 from toga.style import Pack
 from toga.style.pack import COLUMN
+
+# for classes that need to be monkeypatched for testing
+from toga_cocoa import libs as cocoa
 from toga_cocoa.images import nsdata_to_bytes
 from toga_cocoa.libs import (
     AVAuthorizationStatus,
-    AVCaptureDevice,
-    AVCaptureDeviceInput,
     AVCaptureFlashMode,
     AVCapturePhotoOutput,
     AVCapturePhotoSettings,
@@ -33,20 +34,16 @@ def native_flash_mode(flash):
     }.get(flash, AVCaptureFlashMode.Auto)
 
 
-class TogaCameraCaptureSession(AVCaptureSession):
+# This is the native delegate, but we can't force the delegate to be invoked because we
+# can't create a mock Photo; so we push all logic to the window, and mark this class no
+# cover
+class TogaCameraCaptureSession(AVCaptureSession):  # pragma: no cover
     @objc_method
     def captureOutput_didFinishProcessingPhoto_error_(
         self, output, photo, error
     ) -> None:
-        # Create the result image.
-        image = toga.Image(nsdata_to_bytes(photo.fileDataRepresentation()))
-        self.result.set_result(image)
-
-        # Stop the camera session
-        output.session.stopRunning()
-
-        # Clear the reference to the preview window.
-        self.camera.window = None
+        # A photo has been taken.
+        self.window.photo_taken(photo)
 
 
 class TogaCameraWindow(toga.Window):
@@ -60,8 +57,11 @@ class TogaCameraWindow(toga.Window):
         )
         self.camera = camera
         self.result = result
-        self.camera_session = None
 
+        self.create_preview_window()
+        self.create_camera_session(device, flash)
+
+    def create_preview_window(self):
         # A preview window, fixed 16:9 aspect ratio
         self.preview = toga.Box(style=Pack(width=640, height=360))
 
@@ -75,7 +75,7 @@ class TogaCameraWindow(toga.Window):
         )
 
         # The shutter button. Initially disabled until we know we have a camera available
-        self.take_photo_button = toga.Button(
+        self.shutter_button = toga.Button(
             "📷",  # TODO: Use an icon
             on_press=self.take_photo,
             style=Pack(background_color=RED),
@@ -106,7 +106,7 @@ class TogaCameraWindow(toga.Window):
                             children=[self.device_select],
                             style=Pack(flex=1),
                         ),
-                        self.take_photo_button,
+                        self.shutter_button,
                         toga.Box(
                             children=[
                                 toga.Box(style=Pack(flex=1)),
@@ -122,28 +122,28 @@ class TogaCameraWindow(toga.Window):
             style=Pack(direction=COLUMN),
         )
 
-        # Create the camera session
+    # This is the method that creates the native camera session. Mocking these methods
+    # is extremely difficult (impossible?); plus we can't know what cameras the test
+    # machine will have. So - we mock this entire method, and mark it no-cover.
+    def create_camera_session(self, device, flash):  # pragma: no cover
         self.camera_session = TogaCameraCaptureSession.alloc().init()
-        self.camera_session.result = result
-        self.camera_session.camera = self.camera
-        # self.camera_session.beginConfiguration()
+        self.camera_session.window = self
+        self.camera_session.beginConfiguration()
 
         # Create a preview layer, rendering into the preview box
-        self.preview_layer = AVCaptureVideoPreviewLayer.layerWithSession(
-            self.camera_session
-        )
-        self.preview_layer.setVideoGravity(AVLayerVideoGravityResizeAspectFill)
-        self.preview_layer.frame = self.preview._impl.native.bounds
-        self.preview._impl.native.setLayer(self.preview_layer)
+        preview_layer = AVCaptureVideoPreviewLayer.layerWithSession(self.camera_session)
+        preview_layer.setVideoGravity(AVLayerVideoGravityResizeAspectFill)
+        preview_layer.frame = self.preview._impl.native.bounds
+        self.preview._impl.native.setLayer(preview_layer)
 
         # Specify that we want photo output.
-        self.camera_output = AVCapturePhotoOutput.alloc().init()
-        self.camera_output.setHighResolutionCaptureEnabled(True)
-        self.camera_session.addOutput(self.camera_output)
+        output = AVCapturePhotoOutput.alloc().init()
+        output.setHighResolutionCaptureEnabled(True)
+        self.camera_session.addOutput(output)
         self.camera_session.setSessionPreset(AVCaptureSessionPresetPhoto)
 
         # Set a sentinel for the camera input; this won't be set until the user has
-        # selected a camera.
+        # selected a camera (either explicitly or implicitly)
         self.camera_input = None
 
         # Apply the configuration
@@ -185,20 +185,17 @@ class TogaCameraWindow(toga.Window):
 
     def change_camera(self, widget=None, **kwargs):
         # Remove the existing camera input (if it exists)
-        if self.camera_input:
-            self.camera_session.removeInput(self.camera_input)
+        for input in self.camera_session.inputs:
+            self.camera_session.removeInput(input)
 
         if device := self.device_select.value:
-            self.camera_input = AVCaptureDeviceInput.deviceInputWithDevice(
+            input = cocoa.AVCaptureDeviceInput.deviceInputWithDevice(
                 device._native, error=None
             )
-            self.camera_session.addInput(self.camera_input)
-
-            self.take_photo_button.enabled = True
-
+            self.camera_session.addInput(input)
+            self.shutter_button.enabled = True
         else:
-            self.camera_input = None
-            self.take_photo_button.enabled = False
+            self.shutter_button.enabled = False
 
         self._update_flash_mode()
 
@@ -210,26 +207,48 @@ class TogaCameraWindow(toga.Window):
         self.result.set_result(None)
 
         # Clear the reference to the preview window, and allow the window to close
-        self.camera.window = None
+        self.camera.preview_windows.remove(self)
         return True
 
     def take_photo(self, widget, **kwargs):
         settings = AVCapturePhotoSettings.photoSettings()
         settings.flashMode = native_flash_mode(self.flash_mode.value)
 
-        self.camera_output.capturePhotoWithSettings(
+        self.camera_session.outputs[0].capturePhotoWithSettings(
             settings,
             delegate=self.camera_session,
         )
         self.close()
 
+    def photo_taken(self, photo):
+        # Create the result image.
+        image = toga.Image(nsdata_to_bytes(photo.fileDataRepresentation()))
+        self.result.set_result(image)
+
+        # Stop the camera session
+        self.camera_session.stopRunning()
+
+        # Clear the reference to the preview window.
+        self.camera.preview_windows.remove(self)
+
 
 class Camera:
     def __init__(self, interface):
         self.interface = interface
-        self.window = None
+        self.preview_windows = []
 
     def _has_permission(self, media_types, allow_unknown=False):
+        # To reset permissions to "factory" status, run:
+        #     tccutil reset Camera
+        #
+        # To reset a single app:
+        #     tccutil reset Camera <bundleID>
+        #
+        # e.g.
+        #     tccutil reset Camera org.beeware.appname  # for a bundled app
+        #     tccutil reset Camera com.microsoft.VSCode  # for code running in Visual Studio
+        #     tccutil reset Camera com.apple.Terminal  # for code running in the Apple terminal
+
         if allow_unknown:
             valid_values = {
                 AVAuthorizationStatus.Authorized.value,
@@ -239,7 +258,8 @@ class Camera:
             valid_values = {AVAuthorizationStatus.Authorized.value}
 
         return all(
-            AVCaptureDevice.authorizationStatusForMediaType(media_type) in valid_values
+            cocoa.AVCaptureDevice.authorizationStatusForMediaType(media_type)
+            in valid_values
             for media_type in media_types
         )
 
@@ -262,7 +282,7 @@ class Camera:
         def permission_complete(result) -> None:  # pragma: no cover
             future.set_result(result)
 
-        AVCaptureDevice.requestAccessForMediaType(
+        cocoa.AVCaptureDevice.requestAccessForMediaType(
             AVMediaTypeVideo,
             completionHandler=Block(permission_complete, None, bool),
         )
@@ -274,17 +294,16 @@ class Camera:
                 name=str(device.localizedName),
                 native=device,
             )
-            for device in AVCaptureDevice.devicesWithMediaType(AVMediaTypeVideo)
+            for device in cocoa.AVCaptureDevice.devicesWithMediaType(AVMediaTypeVideo)
         ]
 
     def has_flash(self, device):
-        return device._native.flashAvailable
+        return device._native.isFlashAvailable()
 
     def take_photo(self, result, device, flash):
-        if self.window:
-            raise RuntimeError("Already taking a photo")
-        elif self.has_photo_permission(allow_unknown=True):
-            self.window = TogaCameraWindow(self, device, flash, result)
-            self.window.show()
+        if self.has_photo_permission(allow_unknown=True):
+            window = TogaCameraWindow(self, device, flash, result)
+            self.preview_windows.append(window)
+            window.show()
         else:
             raise PermissionError("App does not have permission to take photos")

@@ -2,6 +2,7 @@ import pytest
 
 import toga
 from toga.constants import FlashMode
+from toga.hardware.camera import Device
 from toga_dummy import factory
 from toga_dummy.hardware.camera import Camera as DummyCamera
 from toga_dummy.utils import (
@@ -103,6 +104,14 @@ def test_device_properties(app):
             "has_flash": False,
         },
     ]
+
+    # Identity check
+    assert DummyCamera.CAMERA_1 == DummyCamera.CAMERA_1
+    # A different instance with the same ID is equal
+    duplicate = Device(id="camera-1", name="Duplicate Camera 1", native=None)
+    assert DummyCamera.CAMERA_1 == duplicate
+    # Different cameras aren't equal
+    assert DummyCamera.CAMERA_1 != DummyCamera.CAMERA_2
 
 
 @pytest.mark.parametrize(

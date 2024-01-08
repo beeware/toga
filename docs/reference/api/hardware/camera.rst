@@ -42,7 +42,7 @@ non ``async`` method); however, they are non-blocking when used in this way. Inv
 method like :any:`Camera.request_photo_permission()` will start the process of
 requesting permission, but will return *immediately*, without waiting for the user's
 response. This allows an app to *request* permissions as part of the startup process,
-prior to using the camera APIs.
+prior to using the camera APIs, without blocking the rest of app startup.
 
 Toga will confirm whether the app has been granted permission to use the camera before
 invoking any camera API. If permission has not yet been requested, and the platform
