@@ -73,6 +73,12 @@ class CameraProbe(AppProbe):
             "Front": False,
         }
 
+    def select_other_camera(self):
+        raise pytest.xfail("Cannot programmatically change camera on iOS")
+
+    def disconnect_cameras(self):
+        raise pytest.xfail("Cameras cannot be removed on iOS")
+
     def reset_photo_permission(self):
         # Mock the *next* call to retrieve photo permission.
         orig = Camera.has_photo_permission
@@ -83,23 +89,24 @@ class CameraProbe(AppProbe):
 
         self.monkeypatch.setattr(Camera, "has_photo_permission", reset_permission)
 
-    def grant_photo_permission(self):
+    def allow_photo_permission(self):
         # Mock the result of has_photo_permission to allow
         def grant_permission(mock, allow_unknown=False):
             return True
 
         self.monkeypatch.setattr(Camera, "has_photo_permission", grant_permission)
 
-    def deny_photo_permission(self):
+    def reject_photo_permission(self):
         # Mock the result of has_photo_permission to deny
         def deny_permission(mock, allow_unknown=False):
             return False
 
         self.monkeypatch.setattr(Camera, "has_photo_permission", deny_permission)
 
-    async def take_photo(self, photo):
+    async def wait_for_camera(self):
         await self.redraw("Camera view displayed", delay=0.5)
 
+    async def press_shutter_button(self, photo):
         # Fake the result of a successful photo being taken
         image = toga.Image("resources/photo.png")
         picker = self.app.camera._impl.native
@@ -112,11 +119,9 @@ class CameraProbe(AppProbe):
 
         await self.redraw("Photo taken", delay=0.5)
 
-        return await photo
+        return await photo, None
 
     async def cancel_photo(self, photo):
-        await self.redraw("Camera view displayed", delay=0.5)
-
         # Fake the result of a cancelling the photo
         picker = self.app.camera._impl.native
         picker.imagePickerControllerDidCancel(picker)
@@ -124,3 +129,8 @@ class CameraProbe(AppProbe):
         await self.redraw("Photo cancelled", delay=0.5)
 
         return await photo
+
+    def same_device(self, device, native):
+        # As the iOS camera is an external UI, we can't programmatically influence or
+        # modify it; so we make all device checks pass.
+        return True
