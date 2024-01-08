@@ -16,6 +16,9 @@ class CameraProbe(AppProbe):
 
         self.monkeypatch = monkeypatch
 
+        # A mocked permissions table. The key is the media type; the value is True
+        # if permission has been granted, False if it has be denied. A missing value
+        # will be turned into a grant if permission is requested.
         self._mock_permissions = {}
 
         # Mock AVCaptureDevice
@@ -38,7 +41,6 @@ class CameraProbe(AppProbe):
                 return {
                     1: AVAuthorizationStatus.Authorized.value,
                     0: AVAuthorizationStatus.Denied.value,
-                    -1: AVAuthorizationStatus.NotDetermined.value,
                 }[self._mock_permissions[str(media_type)]]
             except KeyError:
                 return AVAuthorizationStatus.NotDetermined.value
@@ -48,13 +50,11 @@ class CameraProbe(AppProbe):
         def _mock_request_access(media_type, completionHandler):
             # Fire completion handler
             try:
-                # Convert an "allow" in to a full grant.
-                if self._mock_permissions[str(media_type)] == -1:
-                    self._mock_permissions[str(media_type)] = 1
-
                 result = self._mock_permissions[str(media_type)]
             except KeyError:
-                result = False
+                # If there's no permission, convert into a full grant
+                self._mock_permissions[str(media_type)] = True
+                result = True
             completionHandler.func(result)
 
         self._mock_AVCaptureDevice.requestAccessForMediaType = _mock_request_access
@@ -112,10 +112,10 @@ class CameraProbe(AppProbe):
         self._mock_permissions = {}
 
     def allow_photo_permission(self):
-        self._mock_permissions[str(AVMediaTypeVideo)] = -1
+        self._mock_permissions[str(AVMediaTypeVideo)] = True
 
     def reject_photo_permission(self):
-        self._mock_permissions[str(AVMediaTypeVideo)] = 0
+        self._mock_permissions[str(AVMediaTypeVideo)] = False
 
     async def wait_for_camera(self, device_count=2):
         # A short delay is needed to ensure that the window fully creates.

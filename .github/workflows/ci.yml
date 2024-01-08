@@ -228,6 +228,7 @@ jobs:
 
     - name: Test App
       working-directory: testbed
+      timeout-minutes: 15
       run: ${{ matrix.briefcase-run-prefix }} briefcase run ${{ matrix.backend }} --test ${{ matrix.briefcase-run-args }}
 
     - name: Upload logs
