@@ -267,4 +267,5 @@ class WindowProbe(BaseProbe):
         return self.native.tabbedWindows
 
     def merge_all_windows(self):
-        self.native.mergeAllWindows(self.native)
+        self.app.current_window = self.window
+        self.app._impl._menu_merge_all_windows(None)
