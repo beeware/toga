@@ -110,3 +110,7 @@ class AppProbe(BaseProbe):
     @property
     def tabbing_enabled(self):
         xfail("Tabbed windows not implemented for this backend.")
+
+    @tabbing_enabled.setter
+    def tabbing_enabled(self, value):
+        xfail("Tabbed windows not implemented for this backend.")
