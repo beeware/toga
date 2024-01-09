@@ -49,11 +49,11 @@ async def test_take_photo(app, camera_probe):
         await camera_probe.wait_for_camera()
 
         # Simulate pressing the shutter on the camera
-        image, used_device = await camera_probe.press_shutter_button(photo)
+        image, device_used, _ = await camera_probe.press_shutter_button(photo)
 
         # The image exists, and has the expected size, using the requested camera
         assert image.size == (512, 512)
-        assert camera_probe.same_device(camera, used_device)
+        assert camera_probe.same_device(camera, device_used)
 
 
 async def test_flash_mode(app, camera_probe):
@@ -68,10 +68,11 @@ async def test_flash_mode(app, camera_probe):
         await camera_probe.wait_for_camera()
 
         # Simulate pressing the shutter on the camera
-        image, _ = await camera_probe.press_shutter_button(photo)
+        image, _, flash_mode_used = await camera_probe.press_shutter_button(photo)
 
         # The image exists, and has the expected size.
         assert image.size == (512, 512)
+        assert camera_probe.same_flash_mode(flash_mode, flash_mode_used)
 
 
 async def test_take_photo_unknown_permission(app, camera_probe):
@@ -83,7 +84,7 @@ async def test_take_photo_unknown_permission(app, camera_probe):
     await camera_probe.wait_for_camera()
 
     # Simulate pressing the shutter on the camera
-    image, _ = await camera_probe.press_shutter_button(photo)
+    image, _, _ = await camera_probe.press_shutter_button(photo)
 
     # The image exists, and has the expected size.
     assert image.size == (512, 512)
@@ -133,7 +134,7 @@ async def test_change_camera(app, camera_probe):
     assert camera_probe.shutter_enabled
 
     # Simulate pressing the shutter on the camer
-    image, used_device = await camera_probe.press_shutter_button(photo)
+    image, used_device, _ = await camera_probe.press_shutter_button(photo)
 
     # The camera used the selected device
     assert camera_probe.same_device(selected_device, used_device)
