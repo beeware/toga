@@ -1,9 +1,11 @@
 from unittest.mock import Mock
 
+from toga.constants import FlashMode
 from toga_cocoa import libs as cocoa
 from toga_cocoa.hardware.camera import TogaCameraWindow
 from toga_cocoa.libs import (
     AVAuthorizationStatus,
+    AVCaptureFlashMode,
     AVMediaTypeVideo,
 )
 
@@ -73,6 +75,18 @@ class CameraProbe(AppProbe):
             cocoa, "AVCaptureDeviceInput", self._mock_AVCaptureDeviceInput
         )
 
+        # Mock AVCapturePhotoSettings
+        self._mock_AVCapturePhotoSettings = Mock()
+
+        self._mock_photoSettings = Mock()
+        self._mock_AVCapturePhotoSettings.photoSettings.return_value = (
+            self._mock_photoSettings
+        )
+
+        monkeypatch.setattr(
+            cocoa, "AVCapturePhotoSettings", self._mock_AVCapturePhotoSettings
+        )
+
         # Mock creation of a camera Session
         def _mock_camera_session(window, device, flash):
             def _addInput(input):
@@ -132,15 +146,31 @@ class CameraProbe(AppProbe):
         return self.app.camera._impl.preview_windows[0].shutter_button.enabled
 
     async def press_shutter_button(self, photo):
+        print("press shutter")
         window = self.app.camera._impl.preview_windows[0]
+        print("preview window", window)
         device_used = window.camera_session.inputs[0].device
-
+        print("Device used", device_used)
         # The shutter button should be enabled
         assert self.shutter_enabled
 
         # Press the shutter button
+        print("take photo")
         window.take_photo(None)
         await self.redraw("Shutter pressed")
+
+        # Photo settings were created with the right flash mode
+        self._mock_AVCapturePhotoSettings.photoSettings.assert_called_once_with()
+        self._mock_AVCapturePhotoSettings.photoSettings.reset_mock()
+        flash_mode = self._mock_photoSettings.flashMode
+
+        # The capture mechanism was invoked
+        output = window.camera_session.outputs[0]
+        output.capturePhotoWithSettings.assert_called_once_with(
+            self._mock_photoSettings,
+            delegate=window.camera_session,
+        )
+        output.capturePhotoWithSettings.reset_mock()
 
         # Fake the result of a successful photo being taken
         image_data = (self.app.paths.app / "resources/photo.png").read_bytes()
@@ -150,14 +180,16 @@ class CameraProbe(AppProbe):
             bytes=image_data, length=len(image_data)
         )
 
+        print("trigger photo taken")
         window.photo_taken(result)
 
         # The window has been closed and the session ended
         assert window.closed
         window.camera_session.stopRunning.assert_called_once_with()
+        window.camera_session.stopRunning.reset_mock()
         assert window not in self.app.camera._impl.preview_windows
 
-        return await photo, device_used
+        return await photo, device_used, flash_mode
 
     async def cancel_photo(self, photo):
         window = self.app.camera._impl.preview_windows[0]
@@ -178,3 +210,20 @@ class CameraProbe(AppProbe):
             return self._mock_camera_1 == native
         else:
             return device._native == native
+
+    def same_flash_mode(self, expected, actual):
+        print("EXPECTED", expected, type(expected))
+        converted = {
+            AVCaptureFlashMode.Auto: FlashMode.AUTO,
+            AVCaptureFlashMode.On: FlashMode.ON,
+            AVCaptureFlashMode.Off: FlashMode.OFF,
+        }[actual]
+        print("ACTUAL", actual, converted, type(actual), type(converted))
+        return (
+            expected
+            == {
+                AVCaptureFlashMode.Auto: FlashMode.AUTO,
+                AVCaptureFlashMode.On: FlashMode.ON,
+                AVCaptureFlashMode.Off: FlashMode.OFF,
+            }[actual]
+        )

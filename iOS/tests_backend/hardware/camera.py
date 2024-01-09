@@ -134,3 +134,8 @@ class CameraProbe(AppProbe):
         # As the iOS camera is an external UI, we can't programmatically influence or
         # modify it; so we make all device checks pass.
         return True
+
+    def same_flash_mode(self, expected, actual):
+        # As the iOS camera is an external UI, we can't programmatically influence or
+        # modify it; so we make all device checks pass.
+        return True

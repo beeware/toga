@@ -18,7 +18,6 @@ from toga_cocoa.libs import (
     AVAuthorizationStatus,
     AVCaptureFlashMode,
     AVCapturePhotoOutput,
-    AVCapturePhotoSettings,
     AVCaptureSession,
     AVCaptureSessionPresetPhoto,
     AVCaptureVideoPreviewLayer,
@@ -211,24 +210,32 @@ class TogaCameraWindow(toga.Window):
         return True
 
     def take_photo(self, widget, **kwargs):
-        settings = AVCapturePhotoSettings.photoSettings()
+        print("create settings")
+        settings = cocoa.AVCapturePhotoSettings.photoSettings()
+        print("set flash mode")
         settings.flashMode = native_flash_mode(self.flash_mode.value)
 
+        print("capture photo")
         self.camera_session.outputs[0].capturePhotoWithSettings(
             settings,
             delegate=self.camera_session,
         )
+        print("close window")
         self.close()
 
     def photo_taken(self, photo):
         # Create the result image.
+        print("create image")
         image = toga.Image(nsdata_to_bytes(photo.fileDataRepresentation()))
+        print("set result")
         self.result.set_result(image)
 
         # Stop the camera session
+        print("stop session")
         self.camera_session.stopRunning()
 
         # Clear the reference to the preview window.
+        print("remove preview window")
         self.camera.preview_windows.remove(self)
 
 
