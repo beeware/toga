@@ -56,15 +56,13 @@ class Button(Widget):
         self.on_press = None
 
         # Set the content of the button - either an icon, or text, but not both.
-        if text:
-            if icon:
+        if icon:
+            if text is not None:
                 raise ValueError("Cannot specify both text and an icon")
             else:
-                self.text = text
-        elif icon:
-            self.icon = icon
+                self.icon = icon
         else:
-            raise ValueError("Must specify either text or an icon")
+            self.text = text
 
         self.on_press = on_press
         self.enabled = enabled
@@ -79,6 +77,9 @@ class Button(Widget):
 
         Only one line of text can be displayed. Any content after the first newline will
         be ignored.
+
+        If the icon is currently displaying an icon, and text is assigned, the icon will
+        be replaced by the new text.
 
         If the button is currently displaying an icon, the empty string will be
         returned.
@@ -102,14 +103,24 @@ class Button(Widget):
     def icon(self) -> toga.Icon | None:
         """The icon displayed on the button.
 
+        Can be specified as any valid :any:`icon content <IconContent>`.
+
+        If the icon is currently displaying text, and an icon is assigned, the text will
+        be replaced by the new icon.
+
+        If ``None`` is assigned as an icon, the button will become a text button with an
+        empty label.
+
         Returns ``None`` if the button is currently displaying text.
         """
         return self._impl.get_icon()
 
     @icon.setter
-    def icon(self, value: IconContent) -> None:
+    def icon(self, value: IconContent | None) -> None:
         if isinstance(value, toga.Icon):
             icon = value
+        elif value is None:
+            icon = None
         else:
             icon = toga.Icon(value)
 

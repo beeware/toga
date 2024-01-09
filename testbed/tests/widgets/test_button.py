@@ -71,7 +71,7 @@ async def test_icon(widget, probe):
     widget.text = "Goodbye"
     await probe.redraw("Button is a text button again")
 
-    # Text has been removed
+    # Text has been added
     assert probe.text == "Goodbye"
     # Icon no longer exists
     assert widget.icon is None
