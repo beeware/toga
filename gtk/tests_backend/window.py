@@ -257,6 +257,3 @@ class WindowProbe(BaseProbe):
     @property
     def tabs(self):
         xfail("Tabbed windows not implemented for this backend.")
-
-    def merge_all_windows(self):
-        xfail("Tabbed windows not implemented for this backend.")

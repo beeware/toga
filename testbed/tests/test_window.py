@@ -238,7 +238,10 @@ else:
             assert not base_probe.tabs
             assert not subclass_probe.tabs
 
-            main_window_probe.merge_all_windows()
+            # Merge All Windows command operates based on which window is active.
+            app.current_window = main_window
+            await main_window_probe.wait_for_window("Switched to MainWindow")
+            app_probe._activate_menu_item(["Window", "Merge All Windows"])
             await main_window_probe.wait_for_window(
                 "Merge All Windows called on MainWindow"
             )
@@ -247,7 +250,9 @@ else:
             assert not base_probe.tabs
             assert not subclass_probe.tabs
 
-            base_probe.merge_all_windows()
+            app.current_window = base_probe.window
+            await main_window_probe.wait_for_window("Switched to base Window")
+            app_probe._activate_menu_item(["Window", "Merge All Windows"])
             await main_window_probe.wait_for_window(
                 "Merge All Windows called on base Window"
             )
@@ -255,7 +260,9 @@ else:
             assert len(base_probe.tabs) == 2
             assert not subclass_probe.tabs
 
-            subclass_probe.merge_all_windows()
+            app.current_window = subclass_probe.window
+            await main_window_probe.wait_for_window("Switched to subclassed Window")
+            app_probe._activate_menu_item(["Window", "Merge All Windows"])
             await main_window_probe.wait_for_window(
                 "Merge All Windows called on Window subclass"
             )

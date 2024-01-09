@@ -290,7 +290,7 @@ class App:
                 group=toga.Group.WINDOW,
             ),
             toga.Command(
-                self._menu_merge_all_windows,
+                NativeHandler(SEL("mergeAllWindows:")),
                 "Merge All Windows",
                 group=toga.Group.WINDOW,
                 section=10,
@@ -322,10 +322,6 @@ class App:
     def _menu_minimize(self, command, **kwargs):
         if self.interface.current_window:
             self.interface.current_window._impl.native.miniaturize(None)
-
-    def _menu_merge_all_windows(self, command, **kwargs):
-        native_window = self.interface.current_window._impl.native
-        native_window.mergeAllWindows(native_window)
 
     def _menu_visit_homepage(self, command, **kwargs):
         self.interface.visit_homepage()
