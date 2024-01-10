@@ -119,7 +119,7 @@ class Camera:
         previously provided that permission, this will cause permission to be requested.
 
         **This is an asynchronous method**. If you invoke this method in synchronous
-        context, it will start the process of requesting permissions, but will return
+        context, it will start the process of taking a photo, but will return
         *immediately*. The return value can be awaited in an asynchronous context, but
         cannot be compared directly.
 
