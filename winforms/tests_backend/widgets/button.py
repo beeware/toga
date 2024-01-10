@@ -1,3 +1,4 @@
+import pytest
 import System.Windows.Forms
 from System.Drawing import SystemColors
 
@@ -15,6 +16,16 @@ class ButtonProbe(SimpleProbe):
         if self.native.Text == "\u200B":
             return ""
         return self.native.Text
+
+    def assert_no_icon(self):
+        assert self.native.Image is None
+
+    def assert_icon_size(self):
+        icon = self.native.Image
+        if icon:
+            assert (icon.Size.Width, icon.Size.Height) == (32, 32)
+        else:
+            pytest.fail("Icon does not exist")
 
     @property
     def background_color(self):
