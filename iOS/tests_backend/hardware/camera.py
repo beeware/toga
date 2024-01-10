@@ -67,10 +67,19 @@ class CameraProbe(AppProbe):
             _has_flash,
         )
 
+    def cleanup(self):
+        picker = self.app.camera._impl.native
+        try:
+            result = picker.result
+            if not result.future.done():
+                picker.imagePickerControllerDidCancel(picker)
+        except AttributeError:
+            pass
+
     def known_cameras(self):
         return {
-            "Rear": True,
-            "Front": False,
+            "Rear": ("Rear", True),
+            "Front": ("Front", False),
         }
 
     def select_other_camera(self):
@@ -119,7 +128,7 @@ class CameraProbe(AppProbe):
 
         await self.redraw("Photo taken", delay=0.5)
 
-        return await photo, None
+        return await photo, None, None
 
     async def cancel_photo(self, photo):
         # Fake the result of a cancelling the photo

@@ -108,10 +108,15 @@ class CameraProbe(AppProbe):
             TogaCameraWindow, "create_camera_session", _mock_camera_session
         )
 
+    def cleanup(self):
+        # Ensure there are no open camrea preview windows at the end of a test.
+        for window in self.app.camera._impl.preview_windows:
+            window.cocoa_windowShouldClose()
+
     def known_cameras(self):
         return {
-            "camera-1": True,
-            "camera-2": False,
+            "camera-1": ("Camera 1", True),
+            "camera-2": ("Camera 2", False),
         }
 
     def select_other_camera(self):
@@ -204,7 +209,7 @@ class CameraProbe(AppProbe):
         if device is None:
             return self._mock_camera_1 == native
         else:
-            return device._native == native
+            return device._impl.native == native
 
     def same_flash_mode(self, expected, actual):
         return (

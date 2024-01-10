@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from toga.constants import FlashMode
 from toga.handlers import AsyncResult
@@ -19,26 +19,32 @@ class PhotoResult(AsyncResult):
 
 
 class Device:
-    def __init__(self, id: str, name: str, native: Any):
-        self._id = id
-        self._name = name
-        self._native = native
+    def __init__(self, impl):
+        self._impl = impl
 
     @property
     def id(self) -> str:
         """A unique identifier for the device"""
-        return self._id
+        return self._impl.id()
 
     @property
     def name(self) -> str:
         """A human-readable name for the device"""
-        return self._name
+        return self._impl.name()
 
-    def __eq__(self, other):
+    @property
+    def has_flash(self) -> bool:
+        """Does the device have a flash?"""
+        return self._impl.has_flash()
+
+    def __eq__(self, other) -> bool:
         return self.id == other.id
 
-    def __str__(self):
-        return self._name
+    def __repr__(self) -> str:
+        return f"<Camera Device id={self.id} {self.name!r}>"
+
+    def __str__(self) -> str:
+        return self.name
 
 
 class Camera:
@@ -98,15 +104,7 @@ class Camera:
     @property
     def devices(self) -> list[Device]:
         """The list of available camera devices."""
-        return self._impl.get_devices()
-
-    def has_flash(self, device: Device | None = None):
-        """Does the specified camera device have a flash?
-
-        :param device: The camera device to check. If a specific device is *not*
-            specified, the features of the default camera will be returned.
-        """
-        return self._impl.has_flash(device)
+        return [Device(impl) for impl in self._impl.get_devices()]
 
     def take_photo(
         self,

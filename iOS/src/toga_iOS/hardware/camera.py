@@ -2,7 +2,6 @@ from rubicon.objc import Block, objc_method
 
 import toga
 from toga.constants import FlashMode
-from toga.hardware.camera import Device as TogaDevice
 from toga_iOS.libs import (
     AVAuthorizationStatus,
     AVCaptureDevice,
@@ -15,12 +14,20 @@ from toga_iOS.libs import (
 )
 
 
-def native_device(device):
-    if device:
-        return device._native
-    else:
-        # Rear camera is the default
-        return UIImagePickerControllerCameraDevice.Rear
+class Device:
+    def __init__(self, id, name, native):
+        self._id = id
+        self._name = name
+        self.native = native
+
+    def id(self):
+        return self._id
+
+    def name(self):
+        return self._name
+
+    def has_flash(self):
+        return UIImagePickerController.isFlashAvailableForCameraDevice(self.native)
 
 
 def native_flash_mode(flash):
@@ -102,7 +109,7 @@ class Camera:
     def get_devices(self):
         return (
             [
-                TogaDevice(
+                Device(
                     id="Rear",
                     name="Rear",
                     native=UIImagePickerControllerCameraDevice.Rear,
@@ -114,7 +121,7 @@ class Camera:
             else []
         ) + (
             [
-                TogaDevice(
+                Device(
                     id="Front",
                     name="Front",
                     native=UIImagePickerControllerCameraDevice.Front,
@@ -126,11 +133,6 @@ class Camera:
             else []
         )
 
-    def has_flash(self, device):
-        return UIImagePickerController.isFlashAvailableForCameraDevice(
-            native_device(device)
-        )
-
     def take_photo(self, result, device, flash):
         if self.has_photo_permission(allow_unknown=True):
             # Configure the controller to take a photo
@@ -139,7 +141,11 @@ class Camera:
             )
 
             self.native.showsCameraControls = True
-            self.native.cameraDevice = native_device(device)
+            self.native.cameraDevice = (
+                device._impl.native
+                if device
+                else UIImagePickerControllerCameraDevice.Rear
+            )
             self.native.cameraFlashMode = native_flash_mode(flash)
 
             # Attach the result to the picker
@@ -160,7 +166,11 @@ class Camera:
     #         )
 
     #         self.native.showsCameraControls = True
-    #         self.native.cameraDevice = native_device(device)
+    #         self.native.cameraDevice = (
+    #             device._impl.native
+    #             if device
+    #             else UIImagePickerControllerCameraDevice.Rear
+    #         )
     #         self.native.cameraFlashMode = native_flash_mode(flash)
 
     #         # Attach the result to the picker

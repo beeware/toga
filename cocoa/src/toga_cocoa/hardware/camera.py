@@ -7,7 +7,6 @@ from rubicon.objc import Block, objc_method
 import toga
 from toga.colors import BLACK, RED
 from toga.constants import FlashMode
-from toga.hardware.camera import Device as TogaDevice
 from toga.style import Pack
 from toga.style.pack import COLUMN
 
@@ -31,6 +30,20 @@ def native_flash_mode(flash):
         FlashMode.ON: AVCaptureFlashMode.On,
         FlashMode.OFF: AVCaptureFlashMode.Off,
     }.get(flash, AVCaptureFlashMode.Auto)
+
+
+class Device:
+    def __init__(self, native):
+        self.native = native
+
+    def id(self):
+        return str(self.native.uniqueID)
+
+    def name(self):
+        return str(self.native.localizedName)
+
+    def has_flash(self):
+        return self.native.isFlashAvailable()
 
 
 # This is the native delegate, but we can't force the delegate to be invoked because we
@@ -162,7 +175,7 @@ class TogaCameraWindow(toga.Window):
         # The GUI can only be modified from inside the GUI thread. Add a background task
         # to apply the new device list.
         self.camera.interface.app.loop.create_task(
-            self._update_camera_list(self.camera.get_devices(), device, flash)
+            self._update_camera_list(toga.App.app.camera.devices, device, flash)
         )
 
     async def _update_camera_list(self, devices, device, flash):
@@ -174,7 +187,7 @@ class TogaCameraWindow(toga.Window):
 
     def _update_flash_mode(self, flash=FlashMode.AUTO):
         if device := self.device_select.value:
-            if device._native.isFlashAvailable():
+            if device.has_flash:
                 self.flash_mode.items = [FlashMode.AUTO, FlashMode.OFF, FlashMode.ON]
                 self.flash_mode.value = flash
             else:
@@ -189,7 +202,7 @@ class TogaCameraWindow(toga.Window):
 
         if device := self.device_select.value:
             input = cocoa.AVCaptureDeviceInput.deviceInputWithDevice(
-                device._native, error=None
+                device._impl.native, error=None
             )
             self.camera_session.addInput(input)
             self.shutter_button.enabled = True
@@ -288,16 +301,9 @@ class Camera:
 
     def get_devices(self):
         return [
-            TogaDevice(
-                id=str(device.uniqueID),
-                name=str(device.localizedName),
-                native=device,
-            )
+            Device(device)
             for device in cocoa.AVCaptureDevice.devicesWithMediaType(AVMediaTypeVideo)
         ]
-
-    def has_flash(self, device):
-        return device._native.isFlashAvailable()
 
     def take_photo(self, result, device, flash):
         if self.has_photo_permission(allow_unknown=True):

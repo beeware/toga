@@ -4,7 +4,7 @@ import toga
 from toga.constants import FlashMode
 from toga.hardware.camera import Device
 from toga_dummy import factory
-from toga_dummy.hardware.camera import Camera as DummyCamera
+from toga_dummy.hardware.camera import Camera as DummyCamera, Device as DummyDevice
 from toga_dummy.utils import (
     assert_action_not_performed,
     assert_action_performed,
@@ -82,22 +82,25 @@ def test_device_properties(app):
     assert [
         {
             "device": device,
+            "__repr__": repr(device),
             "__str__": str(device),
             "name": device.name,
             "id": device.id,
-            "has_flash": app.camera.has_flash(device),
+            "has_flash": device.has_flash,
         }
         for device in app.camera.devices
     ] == [
         {
-            "device": DummyCamera.CAMERA_1,
+            "device": Device(DummyCamera.CAMERA_1),
+            "__repr__": "<Camera Device id=camera-1 'Camera 1'>",
             "__str__": "Camera 1",
             "name": "Camera 1",
             "id": "camera-1",
             "has_flash": True,
         },
         {
-            "device": DummyCamera.CAMERA_2,
+            "device": Device(DummyCamera.CAMERA_2),
+            "__repr__": "<Camera Device id=camera-2 'Camera 2'>",
             "__str__": "Camera 2",
             "name": "Camera 2",
             "id": "camera-2",
@@ -106,17 +109,19 @@ def test_device_properties(app):
     ]
 
     # Identity check
-    assert DummyCamera.CAMERA_1 == DummyCamera.CAMERA_1
+    assert Device(DummyCamera.CAMERA_1) == Device(DummyCamera.CAMERA_1)
     # A different instance with the same ID is equal
-    duplicate = Device(id="camera-1", name="Duplicate Camera 1", native=None)
-    assert DummyCamera.CAMERA_1 == duplicate
+    duplicate = Device(
+        DummyDevice(id="camera-1", name="Duplicate Camera 1", has_flash=True)
+    )
+    assert Device(DummyCamera.CAMERA_1) == duplicate
     # Different cameras aren't equal
-    assert DummyCamera.CAMERA_1 != DummyCamera.CAMERA_2
+    assert Device(DummyCamera.CAMERA_1) != Device(DummyCamera.CAMERA_2)
 
 
 @pytest.mark.parametrize(
     "device",
-    [None, DummyCamera.CAMERA_1, DummyCamera.CAMERA_2],
+    [None, Device(DummyCamera.CAMERA_1), Device(DummyCamera.CAMERA_2)],
 )
 @pytest.mark.parametrize(
     "flash",

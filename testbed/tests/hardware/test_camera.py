@@ -9,12 +9,14 @@ from .probe import get_probe
 @pytest.fixture
 async def camera_probe(monkeypatch, app_probe):
     skip_on_platforms("android", "linux", "windows")
-    return get_probe(monkeypatch, app_probe, "Camera")
+    probe = get_probe(monkeypatch, app_probe, "Camera")
+    yield probe
+    probe.cleanup()
 
 
 async def test_camera_properties(app, camera_probe):
     assert {
-        device.id: app.camera.has_flash(device) for device in app.camera.devices
+        device.id: (device.name, device.has_flash) for device in app.camera.devices
     } == camera_probe.known_cameras()
 
 
