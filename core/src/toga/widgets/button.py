@@ -37,14 +37,14 @@ class Button(Widget):
         """Create a new button widget.
 
         :param text: The text to display on the button.
-        :param icon: The icon to display on the button.
+        :param icon: The icon to display on the button. Can be specified as any valid
+            :any:`icon content <IconContent>`.
         :param id: The ID for the widget.
-        :param style: A style object. If no style is provided, a default style
-            will be applied to the widget.
-        :param on_press: A handler that will be invoked when the button is
-            pressed.
-        :param enabled: Is the button enabled (i.e., can it be pressed?).
-            Optional; by default, buttons are created in an enabled state.
+        :param style: A style object. If no style is provided, a default style will be
+            applied to the widget.
+        :param on_press: A handler that will be invoked when the button is pressed.
+        :param enabled: Is the button enabled (i.e., can it be pressed?). Optional; by
+            default, buttons are created in an enabled state.
         """
         super().__init__(id=id, style=style)
 
@@ -78,8 +78,8 @@ class Button(Widget):
         Only one line of text can be displayed. Any content after the first newline will
         be ignored.
 
-        If the icon is currently displaying an icon, and text is assigned, the icon will
-        be replaced by the new text.
+        If the button is currently displaying an icon, and text is assigned, the icon
+        will be replaced by the new text.
 
         If the button is currently displaying an icon, the empty string will be
         returned.
@@ -105,8 +105,8 @@ class Button(Widget):
 
         Can be specified as any valid :any:`icon content <IconContent>`.
 
-        If the icon is currently displaying text, and an icon is assigned, the text will
-        be replaced by the new icon.
+        If the button is currently displaying text, and an icon is assigned, the text
+        will be replaced by the new icon.
 
         If ``None`` is assigned as an icon, the button will become a text button with an
         empty label.
