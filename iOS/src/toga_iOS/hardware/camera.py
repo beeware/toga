@@ -14,7 +14,7 @@ from toga_iOS.libs import (
 )
 
 
-class Device:
+class CameraDevice:
     def __init__(self, id, name, native):
         self._id = id
         self._name = name
@@ -109,7 +109,7 @@ class Camera:
     def get_devices(self):
         return (
             [
-                Device(
+                CameraDevice(
                     id="Rear",
                     name="Rear",
                     native=UIImagePickerControllerCameraDevice.Rear,
@@ -121,7 +121,7 @@ class Camera:
             else []
         ) + (
             [
-                Device(
+                CameraDevice(
                     id="Front",
                     name="Front",
                     native=UIImagePickerControllerCameraDevice.Front,

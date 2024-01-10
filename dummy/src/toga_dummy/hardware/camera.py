@@ -1,7 +1,7 @@
 from ..utils import LoggedObject
 
 
-class Device:
+class CameraDevice:
     def __init__(self, id, name, has_flash):
         self._id = id
         self._name = name
@@ -18,8 +18,8 @@ class Device:
 
 
 class Camera(LoggedObject):
-    CAMERA_1 = Device(id="camera-1", name="Camera 1", has_flash=True)
-    CAMERA_2 = Device(id="camera-2", name="Camera 2", has_flash=False)
+    CAMERA_1 = CameraDevice(id="camera-1", name="Camera 1", has_flash=True)
+    CAMERA_2 = CameraDevice(id="camera-2", name="Camera 2", has_flash=False)
 
     def __init__(self, interface):
         self.interface = interface

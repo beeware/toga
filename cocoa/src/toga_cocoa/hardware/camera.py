@@ -32,7 +32,7 @@ def native_flash_mode(flash):
     }.get(flash, AVCaptureFlashMode.Auto)
 
 
-class Device:
+class CameraDevice:
     def __init__(self, native):
         self.native = native
 
@@ -301,7 +301,7 @@ class Camera:
 
     def get_devices(self):
         return [
-            Device(device)
+            CameraDevice(device)
             for device in cocoa.AVCaptureDevice.devicesWithMediaType(AVMediaTypeVideo)
         ]
 

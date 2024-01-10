@@ -18,7 +18,7 @@ class PhotoResult(AsyncResult):
     RESULT_TYPE = "photo"
 
 
-class Device:
+class CameraDevice:
     def __init__(self, impl):
         self._impl = impl
 
@@ -41,7 +41,7 @@ class Device:
         return self.id == other.id
 
     def __repr__(self) -> str:
-        return f"<Camera Device id={self.id} {self.name!r}>"
+        return f"<CameraDevice id={self.id} {self.name!r}>"
 
     def __str__(self) -> str:
         return self.name
@@ -102,13 +102,13 @@ class Camera:
     #     return result
 
     @property
-    def devices(self) -> list[Device]:
+    def devices(self) -> list[CameraDevice]:
         """The list of available camera devices."""
-        return [Device(impl) for impl in self._impl.get_devices()]
+        return [CameraDevice(impl) for impl in self._impl.get_devices()]
 
     def take_photo(
         self,
-        device: Device | None = None,
+        device: CameraDevice | None = None,
         flash: FlashMode = FlashMode.AUTO,
     ) -> PhotoResult:
         """Capture a photo using one of the device's cameras.
@@ -133,7 +133,7 @@ class Camera:
 
     # async def record_video(
     #     self,
-    #     device: str | None = None,
+    #     device: CameraDevice | None = None,
     #     flash: FlashMode = FlashMode.AUTO,
     #     quality: VideoQuality = VideoQuality.MEDIUM,
     # ) -> toga.Video:

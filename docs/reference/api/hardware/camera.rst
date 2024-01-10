@@ -34,7 +34,7 @@ handler:
 
 Many platforms will require some form of device permission to access the camera. The
 permission APIs are paired with the specific actions performed on those APIs - that is,
-to take a photo, you require :any:`Camera.has_photo_permission()`, which you can request
+to take a photo, you require :any:`Camera.has_photo_permission`, which you can request
 using :any:`Camera.request_photo_permission()`.
 
 The calls to request permissions *can* be invoked from a synchronous context (i.e., a
@@ -65,4 +65,4 @@ Reference
 
 .. autoclass:: toga.hardware.camera.Camera
 
-.. autoclass:: toga.hardware.camera.Device
+.. autoclass:: toga.hardware.camera.CameraDevice
