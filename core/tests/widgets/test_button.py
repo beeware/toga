@@ -4,7 +4,12 @@ from unittest.mock import Mock
 import pytest
 
 import toga
-from toga_dummy.utils import EventLog, assert_action_performed, attribute_value
+from toga_dummy.utils import (
+    EventLog,
+    assert_action_not_performed,
+    assert_action_performed,
+    attribute_value,
+)
 
 
 @pytest.fixture
@@ -83,6 +88,7 @@ def test_button_text(button, sample_icon, value, expected):
 
     # A refresh was performed
     assert_action_performed(button, "refresh")
+    EventLog.reset()
 
     # Change to an icon
     button.icon = sample_icon
@@ -118,6 +124,7 @@ def test_button_icon(button, construct):
 
     # A refresh was performed
     assert_action_performed(button, "refresh")
+    EventLog.reset()
 
     # Change back to text
     button.text = "New value"
@@ -139,6 +146,19 @@ def test_button_icon_none(button):
 
     icon = toga.Icon("path/to/icon")
 
+    EventLog.reset()
+
+    # Set the icon to None; the button is already a text button,
+    # so this doesn't change the text label.
+    button.icon = None
+
+    assert button.text == "Test Button"
+    assert button.icon is None
+
+    # No refresh was performed
+    assert_action_not_performed(button, "refresh")
+    EventLog.reset()
+
     # Set the icon
     button.icon = icon
     assert isinstance(button.icon, toga.Icon)
@@ -150,6 +170,7 @@ def test_button_icon_none(button):
 
     # A refresh was performed
     assert_action_performed(button, "refresh")
+    EventLog.reset()
 
     # Assign a None icon
     button.icon = None
@@ -162,6 +183,17 @@ def test_button_icon_none(button):
 
     # A refresh was performed
     assert_action_performed(button, "refresh")
+    EventLog.reset()
+
+    # Set the icon to None again; the button is already an icon button,
+    # so the label is still ""
+    button.icon = None
+
+    assert button.text == ""
+    assert button.icon is None
+
+    # No refresh was performed
+    assert_action_not_performed(button, "refresh")
 
 
 def test_button_on_press(button):

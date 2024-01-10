@@ -119,13 +119,20 @@ class Button(Widget):
     def icon(self, value: IconContent | None) -> None:
         if isinstance(value, toga.Icon):
             icon = value
+            text = ""
         elif value is None:
-            icon = None
+            if self.icon is None:
+                # Already a null icon; nothing changes.
+                return
+            else:
+                icon = None
+                text = self._impl.get_text()
         else:
             icon = toga.Icon(value)
+            text = ""
 
         self._impl.set_icon(icon)
-        self._impl.set_text("")
+        self._impl.set_text(text)
         self.refresh()
 
     @property
