@@ -1,0 +1,1 @@
+Remove Android get_terminal_size monkey patch
