@@ -110,9 +110,11 @@ class Camera:
         *immediately*. The return value can be awaited in an asynchronous context, but
         cannot be compared directly.
 
-        :param device: The camera device to use. If a specific device is *not*
-            specified, a default camera will be used.
-        :param flash: The flash mode to use; defaults to "auto"
+        :param device: The initial camera device to use. If a device is *not* specified,
+            a default camera will be used. Depending on the hardware available, the user
+            may be able to change the camera used to capture the image at runtime.
+        :param flash: The initial flash mode to use; defaults to "auto". Depending on
+            the hardware available, this may be modified by the user at runtime.
         :returns: An asynchronous result; when awaited, returns the :any:`toga.Image`
             captured by the camera, or ``None`` if the photo was  cancelled.
         """
