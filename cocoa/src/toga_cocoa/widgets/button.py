@@ -1,3 +1,4 @@
+from rubicon.objc import SEL, objc_method, objc_property
 from travertino.size import at_least
 
 from toga.colors import TRANSPARENT
@@ -5,12 +6,9 @@ from toga.fonts import SYSTEM_DEFAULT_FONT_SIZE
 from toga.style.pack import NONE
 from toga_cocoa.colors import native_color
 from toga_cocoa.libs import (
-    SEL,
     NSBezelStyle,
     NSButton,
     NSMomentaryPushInButton,
-    objc_method,
-    objc_property,
 )
 
 from .base import Widget
@@ -31,6 +29,8 @@ class Button(Widget):
         self.native.interface = self.interface
         self.native.impl = self
 
+        self._icon = None
+
         self.native.buttonType = NSMomentaryPushInButton
         self._set_button_style()
 
@@ -48,6 +48,7 @@ class Button(Widget):
         if (
             self.interface.style.font_size != SYSTEM_DEFAULT_FONT_SIZE
             or self.interface.style.height != NONE
+            or self._icon is not None
         ):
             self.native.bezelStyle = NSBezelStyle.RegularSquare
         else:
@@ -71,6 +72,19 @@ class Button(Widget):
 
     def set_text(self, text):
         self.native.title = text
+
+    def get_icon(self):
+        return self._icon
+
+    def set_icon(self, icon):
+        self._icon = icon
+        if icon:
+            self.native.image = icon._impl._as_size(32)
+        else:
+            self.native.image = None
+
+        # Button style is sensitive to whether an icon is being used
+        self._set_button_style()
 
     def set_background_color(self, color):
         if color == TRANSPARENT or color is None:

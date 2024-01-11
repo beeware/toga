@@ -91,6 +91,20 @@ async def test_item_titles(widget, probe):
                 111,
                 "111",
             ),
+            # List of strings with newlines
+            (
+                ["first\nitem", "second\nitem", "third\nitem"],
+                ["first", "second", "third"],
+                "first\nitem",
+                "first",
+            ),
+            # List of strings with duplicates
+            (
+                ["first", "second", "third", "first", "second"],
+                ["first", "second", "third", "first", "second"],
+                "first",
+                "first",
+            ),
         ],
         start=1,
     ):

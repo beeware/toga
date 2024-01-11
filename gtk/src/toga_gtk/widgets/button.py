@@ -11,11 +11,25 @@ class Button(Widget):
         self.native = Gtk.Button()
         self.native.connect("clicked", self.gtk_clicked)
 
+        self._icon = None
+
     def get_text(self):
         return self.native.get_label()
 
     def set_text(self, text):
         self.native.set_label(text)
+
+    def get_icon(self):
+        return self._icon
+
+    def set_icon(self, icon):
+        self._icon = icon
+        if icon:
+            self.native.set_image(Gtk.Image.new_from_pixbuf(icon._impl.native_32))
+            self.native.set_always_show_image(True)
+        else:
+            self.native.set_image(None)
+            self.native.set_always_show_image(False)
 
     def set_enabled(self, value):
         self.native.set_sensitive(value)
