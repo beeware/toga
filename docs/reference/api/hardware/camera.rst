@@ -34,15 +34,15 @@ handler:
 
 Many platforms will require some form of device permission to access the camera. The
 permission APIs are paired with the specific actions performed on those APIs - that is,
-to take a photo, you require :any:`Camera.has_photo_permission`, which you can request
-using :any:`Camera.request_photo_permission()`.
+to take a photo, you require :any:`Camera.has_permission`, which you can request using
+:any:`Camera.request_permission()`.
 
 The calls to request permissions *can* be invoked from a synchronous context (i.e., a
 non ``async`` method); however, they are non-blocking when used in this way. Invoking a
-method like :any:`Camera.request_photo_permission()` will start the process of
-requesting permission, but will return *immediately*, without waiting for the user's
-response. This allows an app to *request* permissions as part of the startup process,
-prior to using the camera APIs, without blocking the rest of app startup.
+method like :any:`Camera.request_permission()` will start the process of requesting
+permission, but will return *immediately*, without waiting for the user's response. This
+allows an app to *request* permissions as part of the startup process, prior to using
+the camera APIs, without blocking the rest of app startup.
 
 Toga will confirm whether the app has been granted permission to use the camera before
 invoking any camera API. If permission has not yet been requested, and the platform
