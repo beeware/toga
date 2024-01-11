@@ -88,29 +88,29 @@ class CameraProbe(AppProbe):
     def disconnect_cameras(self):
         raise pytest.xfail("Cameras cannot be removed on iOS")
 
-    def reset_photo_permission(self):
+    def reset_permission(self):
         # Mock the *next* call to retrieve photo permission.
-        orig = Camera.has_photo_permission
+        orig = Camera.has_permission
 
         def reset_permission(mock, allow_unknown=False):
-            self.monkeypatch.setattr(Camera, "has_photo_permission", orig)
+            self.monkeypatch.setattr(Camera, "has_permission", orig)
             return allow_unknown
 
-        self.monkeypatch.setattr(Camera, "has_photo_permission", reset_permission)
+        self.monkeypatch.setattr(Camera, "has_permission", reset_permission)
 
-    def allow_photo_permission(self):
-        # Mock the result of has_photo_permission to allow
+    def allow_permission(self):
+        # Mock the result of has_permission to allow
         def grant_permission(mock, allow_unknown=False):
             return True
 
-        self.monkeypatch.setattr(Camera, "has_photo_permission", grant_permission)
+        self.monkeypatch.setattr(Camera, "has_permission", grant_permission)
 
-    def reject_photo_permission(self):
-        # Mock the result of has_photo_permission to deny
+    def reject_permission(self):
+        # Mock the result of has_permission to deny
         def deny_permission(mock, allow_unknown=False):
             return False
 
-        self.monkeypatch.setattr(Camera, "has_photo_permission", deny_permission)
+        self.monkeypatch.setattr(Camera, "has_permission", deny_permission)
 
     async def wait_for_camera(self):
         await self.redraw("Camera view displayed", delay=0.5)

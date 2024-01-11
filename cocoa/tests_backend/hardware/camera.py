@@ -127,13 +127,13 @@ class CameraProbe(AppProbe):
     def disconnect_cameras(self):
         self._mock_AVCaptureDevice.devicesWithMediaType.return_value = []
 
-    def reset_photo_permission(self):
+    def reset_permission(self):
         self._mock_permissions = {}
 
-    def allow_photo_permission(self):
+    def allow_permission(self):
         self._mock_permissions[str(AVMediaTypeVideo)] = True
 
-    def reject_photo_permission(self):
+    def reject_permission(self):
         self._mock_permissions[str(AVMediaTypeVideo)] = False
 
     async def wait_for_camera(self, device_count=2):

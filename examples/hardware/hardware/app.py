@@ -8,7 +8,7 @@ class ExampleHardwareApp(toga.App):
         try:
             # This will provide a prompt for camera permissions at startup.
             # If permission is denied, the app will continue.
-            self.camera.request_photo_permission()
+            self.camera.request_permission()
         except NotImplementedError:
             print("The Camera API is not implemented on this platform")
 

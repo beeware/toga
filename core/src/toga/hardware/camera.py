@@ -59,15 +59,15 @@ class Camera:
         return self._app
 
     @property
-    def has_photo_permission(self) -> bool:
+    def has_permission(self) -> bool:
         """Does the user have permission to use camera devices?
 
         If the platform requires the user to explicitly confirm permission, and
         the user has not yet given permission, this will return ``False``.
         """
-        return self._impl.has_photo_permission()
+        return self._impl.has_permission()
 
-    def request_photo_permission(self) -> PermissionResult:
+    def request_permission(self) -> PermissionResult:
         """Request sufficient permissions to capture photos.
 
         If permission has already been granted, this will return without prompting the
@@ -83,22 +83,12 @@ class Camera:
         """
         result = PermissionResult(None)
 
-        if has_permission := self.has_photo_permission:
+        if has_permission := self.has_permission:
             result.set_result(has_permission)
         else:
-            self._impl.request_photo_permission(result)
+            self._impl.request_permission(result)
 
         return result
-
-    # async def request_video_permission(self) -> bool:
-    #     result = PermissionResult(None)
-    #
-    #     if has_permission := self.has_video_permission:
-    #         result.set_result(has_permission)
-    #     else:
-    #         self._impl.request_video_permission(result)
-    #
-    #     return result
 
     @property
     def devices(self) -> list[CameraDevice]:

@@ -249,7 +249,7 @@ class Camera:
         self.interface = interface
         self.preview_windows = []
 
-    def _has_permission(self, media_types, allow_unknown=False):
+    def has_permission(self, allow_unknown=False):
         # To reset permissions to "factory" status, run:
         #     tccutil reset Camera
         #
@@ -269,25 +269,12 @@ class Camera:
         else:
             valid_values = {AVAuthorizationStatus.Authorized.value}
 
-        return all(
-            cocoa.AVCaptureDevice.authorizationStatusForMediaType(media_type)
+        return (
+            cocoa.AVCaptureDevice.authorizationStatusForMediaType(AVMediaTypeVideo)
             in valid_values
-            for media_type in media_types
         )
 
-    def has_photo_permission(self, allow_unknown=False):
-        return self._has_permission(
-            [AVMediaTypeVideo],
-            allow_unknown=allow_unknown,
-        )
-
-    # def has_video_permission(self, allow_unknown=False):
-    #     return self._has_permission(
-    #         [AVMediaTypeAudio, AVMediaTypeVideo],
-    #         allow_unknown=allow_unknown,
-    #     )
-
-    def request_photo_permission(self, future):
+    def request_permission(self, future):
         # This block is invoked when the permission is granted; however, permission is
         # granted from a different (inaccessible) thread, so it isn't picked up by
         # coverage.
@@ -306,7 +293,7 @@ class Camera:
         ]
 
     def take_photo(self, result, device, flash):
-        if self.has_photo_permission(allow_unknown=True):
+        if self.has_permission(allow_unknown=True):
             window = TogaCameraWindow(self, device, flash, result)
             self.preview_windows.append(window)
             window.show()

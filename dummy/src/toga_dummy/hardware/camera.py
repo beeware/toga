@@ -27,29 +27,29 @@ class Camera(LoggedObject):
         # -1: permission *could* be granted, but hasn't been
         # 1: permission has been granted
         # 0: permission has been denied, or can't be granted
-        self._has_photo_permission = -1
+        self._has_permission = -1
 
-    def has_photo_permission(self, allow_unknown=False):
-        self._action("has photo permission")
+    def has_permission(self, allow_unknown=False):
+        self._action("has permission")
         if allow_unknown:
-            return abs(self._has_photo_permission)
+            return abs(self._has_permission)
         else:
-            return self._has_photo_permission > 0
+            return self._has_permission > 0
 
-    def request_photo_permission(self, future):
-        self._action("request photo permission")
-        self._has_photo_permission = abs(self._has_photo_permission)
-        future.set_result(self._has_photo_permission != 0)
+    def request_permission(self, future):
+        self._action("request permission")
+        self._has_permission = abs(self._has_permission)
+        future.set_result(self._has_permission != 0)
 
     def get_devices(self):
         self._action("get devices")
         return [self.CAMERA_1, self.CAMERA_2]
 
     def take_photo(self, future, device, flash):
-        if self.has_photo_permission(allow_unknown=True):
+        if self.has_permission(allow_unknown=True):
             self._action(
                 "take photo",
-                permission_requested=self._has_photo_permission < 0,
+                permission_requested=self._has_permission < 0,
                 device=device,
                 flash=flash,
             )

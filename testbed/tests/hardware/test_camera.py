@@ -20,30 +20,30 @@ async def test_camera_properties(app, camera_probe):
     } == camera_probe.known_cameras()
 
 
-async def test_grant_photo_permission(app, camera_probe):
+async def test_grant_permission(app, camera_probe):
     """A user can grant permission to use the camera"""
     # Reset camera permissions
-    camera_probe.reset_photo_permission()
+    camera_probe.reset_permission()
 
     # Initiate the permission request. Since there hasn't been an explicit
     # allow or deny, this will allow access.
-    assert await app.camera.request_photo_permission()
+    assert await app.camera.request_permission()
 
     # Permission now exists
-    assert app.camera.has_photo_permission
+    assert app.camera.has_permission
 
     # A second request to grant permissions is a no-op
-    assert await app.camera.request_photo_permission()
+    assert await app.camera.request_permission()
 
     # Permission still exists
-    assert app.camera.has_photo_permission
+    assert app.camera.has_permission
 
 
 async def test_take_photo(app, camera_probe):
     """A user can take a photo with the all the available cameras"""
 
     # Ensure the camera has permissions
-    camera_probe.allow_photo_permission()
+    camera_probe.allow_permission()
 
     for camera in [None] + app.camera.devices:
         # Trigger taking a photo
@@ -62,7 +62,7 @@ async def test_flash_mode(app, camera_probe):
     """A user can take a photo with all the flash modes"""
 
     # Ensure the camera has permissions
-    camera_probe.allow_photo_permission()
+    camera_probe.allow_permission()
 
     for flash_mode in [FlashMode.AUTO, FlashMode.ON, FlashMode.OFF]:
         # Trigger taking a photo with the default device
@@ -96,7 +96,7 @@ async def test_cancel_photo(app, camera_probe):
     """A user can cancel taking a photo"""
 
     # Ensure the camera has permissions
-    camera_probe.allow_photo_permission()
+    camera_probe.allow_permission()
 
     # Trigger taking a photo
     photo = app.camera.take_photo()
@@ -112,7 +112,7 @@ async def test_cancel_photo(app, camera_probe):
 async def test_take_photo_no_permission(app, camera_probe):
     """If the user doesn't have camera permission, an error is raised"""
     # Revoke camera permission
-    camera_probe.reject_photo_permission()
+    camera_probe.reject_permission()
 
     with pytest.raises(PermissionError):
         await app.camera.take_photo()
@@ -122,7 +122,7 @@ async def test_change_camera(app, camera_probe):
     """The currently selected camera can be changed"""
 
     # Ensure the camera has permissions
-    camera_probe.allow_photo_permission()
+    camera_probe.allow_permission()
 
     # Trigger taking a photo
     photo = app.camera.take_photo()
@@ -149,7 +149,7 @@ async def test_no_cameras(app, camera_probe):
     camera_probe.disconnect_cameras()
 
     # Ensure the camera has permissions
-    camera_probe.allow_photo_permission()
+    camera_probe.allow_permission()
 
     # Trigger taking a photo
     photo = app.camera.take_photo()
