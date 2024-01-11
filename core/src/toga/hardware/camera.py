@@ -63,8 +63,7 @@ class Camera:
         """Does the user have permission to use camera devices?
 
         If the platform requires the user to explicitly confirm permission, and
-        the user has not given confirmation, this will prompt the user to provide
-        permission.
+        the user has not yet given permission, this will return ``False``.
         """
         return self._impl.has_photo_permission()
 
