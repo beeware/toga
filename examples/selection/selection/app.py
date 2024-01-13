@@ -70,7 +70,14 @@ class SelectionApp(toga.App):
                         ),
                         toga.Selection(
                             on_change=self.my_on_change,
-                            items=["Dubnium", "Holmium", "Zirconium"],
+                            items=[
+                                "Dubnium",
+                                "Holmium",
+                                "Zirconium",
+                                "Dubnium",
+                                "Holmium",
+                                "Zirconium",
+                            ],
                         ),
                     ],
                 ),

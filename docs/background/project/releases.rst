@@ -38,7 +38,7 @@ Backward Incompatible Changes
 * The ``toga.Image`` constructor now takes a single argument (``src``); the ``path`` and ``data`` arguments are deprecated. (`#2142 <https://github.com/beeware/toga/issues/2142>`__)
 * The use of Caps Lock as a keyboard modifier for commands was removed. (`#2198 <https://github.com/beeware/toga/issues/2198>`__)
 * Support for macOS release prior to Big Sur (11) has been dropped. (`#2228 <https://github.com/beeware/toga/issues/2228>`__)
-* When inserting or appending a tab to an OptionContainer, the ``enabled`` argument must now be provided as a keyword argument. (`#2259 <https://github.com/beeware/toga/issues/2259>`__)
+* When inserting or appending a tab to an OptionContainer, the ``enabled`` argument must now be provided as a keyword argument. The name of the first argument has been also been renamed (from ``text`` to ``text_or_item``); it should generally be passed as a positional, rather than keyword argument. (`#2259 <https://github.com/beeware/toga/issues/2259>`__)
 * The use of synchronous ``on_result`` callbacks on dialogs and ``Webview.evaluate_javascript()`` calls has been deprecated. These methods should be used in their asynchronous form. (`#2264 <https://github.com/beeware/toga/issues/2264>`__)
 
 Documentation

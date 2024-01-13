@@ -6,10 +6,19 @@ import signal
 import sys
 import warnings
 import webbrowser
-from collections.abc import Collection, Iterator, Mapping, MutableSet
+from collections.abc import (
+    Collection,
+    ItemsView,
+    Iterator,
+    KeysView,
+    Mapping,
+    MutableSet,
+    ValuesView,
+)
 from email.message import Message
 from typing import TYPE_CHECKING, Any, Protocol
 from warnings import warn
+from weakref import WeakValueDictionary
 
 from toga.command import Command, CommandSet
 from toga.documents import Document
@@ -17,7 +26,7 @@ from toga.handlers import wrapped_handler
 from toga.icons import Icon
 from toga.paths import Paths
 from toga.platform import get_platform_factory
-from toga.widgets.base import Widget, WidgetRegistry
+from toga.widgets.base import Widget
 from toga.window import Window
 
 if TYPE_CHECKING:
@@ -129,6 +138,61 @@ class WindowSet(MutableSet):
 
     def __len__(self) -> int:
         return len(self.elements)
+
+
+class WidgetRegistry:
+    # WidgetRegistry is implemented as a wrapper around a WeakValueDictionary, because
+    # it provides a mapping from ID to widget. The mapping is weak so the registry
+    # doesn't retain a strong reference to the widget, preventing memory cleanup.
+    #
+    # The lookup methods (__getitem__(), __iter__(), __len()__, keys(), items(), and
+    # values()) are all proxied to to underlying data store. Private methods exist for
+    # internal use, but those methods shouldn't be used by end-users.
+
+    def __init__(self, *args, **kwargs):
+        self._registry = WeakValueDictionary(*args, **kwargs)
+
+    def __len__(self) -> int:
+        return len(self._registry)
+
+    def __getitem__(self, key: str) -> Widget:
+        return self._registry[key]
+
+    def __contains__(self, key: str) -> bool:
+        return key in self._registry
+
+    def __iter__(self) -> Iterator[Widget]:
+        return self.values()
+
+    def __repr__(self) -> str:
+        return (
+            "{"
+            + ", ".join(f"{k!r}: {v!r}" for k, v in sorted(self._registry.items()))
+            + "}"
+        )
+
+    def items(self) -> ItemsView:
+        return self._registry.items()
+
+    def keys(self) -> KeysView:
+        return self._registry.keys()
+
+    def values(self) -> ValuesView:
+        return self._registry.values()
+
+    # Private methods for internal use
+    def _update(self, widgets: list[Widget]) -> None:
+        for widget in widgets:
+            self._add(widget)
+
+    def _add(self, widget: Widget) -> None:
+        if widget.id in self._registry:
+            # Prevent adding the same widget twice or adding 2 widgets with the same id
+            raise KeyError(f"There is already a widget with the id {widget.id!r}")
+        self._registry[widget.id] = widget
+
+    def _remove(self, id: str) -> None:
+        del self._registry[id]
 
 
 class MainWindow(Window):
@@ -249,7 +313,7 @@ class App:
         app_id: str | None = None,
         app_name: str | None = None,
         *,
-        icon: IconContent = None,
+        icon: IconContent | None = None,
         author: str | None = None,
         version: str | None = None,
         home_page: str | None = None,
@@ -511,7 +575,7 @@ class App:
         return self._icon
 
     @icon.setter
-    def icon(self, icon_or_name: IconContent) -> None:
+    def icon(self, icon_or_name: IconContent | None) -> None:
         if isinstance(icon_or_name, Icon):
             self._icon = icon_or_name
         else:
@@ -523,6 +587,10 @@ class App:
 
         Can be used to look up widgets by ID over the entire app (e.g.,
         ``app.widgets["my_id"]``).
+
+        Only returns widgets that are currently part of a layout. A widget that has been
+        created, but not assigned as part of window content will not be returned by
+        widget lookup.
         """
         return self._widgets
 
@@ -616,7 +684,7 @@ class App:
         however, any override *must* ensure the :any:`main_window` has been assigned
         before it returns.
         """
-        self.main_window = MainWindow(title=self.formal_name)
+        self.main_window = MainWindow(title=self.formal_name, id="main")
 
         if self._startup_method:
             self.main_window.content = self._startup_method(self)
@@ -716,7 +784,7 @@ class DocumentApp(App):
         app_id: str | None = None,
         app_name: str | None = None,
         *,
-        icon: IconContent = None,
+        icon: IconContent | None = None,
         author: str | None = None,
         version: str | None = None,
         home_page: str | None = None,

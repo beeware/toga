@@ -15,6 +15,8 @@ class Button(Widget):
         self.native.AutoSizeMode = WinForms.AutoSizeMode.GrowAndShrink
         self.native.Click += WeakrefCallable(self.winforms_click)
 
+        self._icon = None
+
     def winforms_click(self, sender, event):
         self.interface.on_press()
 
@@ -31,6 +33,16 @@ class Button(Widget):
             # Unicode ZERO WIDTH SPACE instead.
             text = "\u200B"
         self.native.Text = text
+
+    def get_icon(self):
+        return self._icon
+
+    def set_icon(self, icon):
+        self._icon = icon
+        if icon:
+            self.native.Image = icon._impl.native.ToBitmap()
+        else:
+            self.native.Image = None
 
     def rehint(self):
         self.interface.intrinsic.width = self.scale_out(

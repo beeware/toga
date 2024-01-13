@@ -4,18 +4,73 @@ import warnings
 from builtins import id as identifier
 from collections.abc import Mapping, MutableSet
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Literal, Protocol, TypeVar, overload
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    ItemsView,
+    Iterator,
+    KeysView,
+    Literal,
+    Protocol,
+    TypeVar,
+    ValuesView,
+    overload,
+)
 
 from toga.command import Command, CommandSet
 from toga.handlers import AsyncResult, wrapped_handler
 from toga.images import Image
 from toga.platform import get_platform_factory
-from toga.widgets.base import WidgetRegistry
 
 if TYPE_CHECKING:
     from toga.app import App
     from toga.images import ImageT
     from toga.widgets.base import Widget
+
+
+class FilteredWidgetRegistry:
+    # A class that exposes a mapping lookup interface, filtered to widgets from a single
+    # window. The underlying data store is on the app.
+
+    def __init__(self, window):
+        self._window = window
+
+    def __len__(self) -> int:
+        return len(list(self.items()))
+
+    def __getitem__(self, key: str) -> Widget:
+        item = self._window.app.widgets[key]
+        if item.window != self._window:
+            raise KeyError(key)
+        return item
+
+    def __contains__(self, key: str) -> bool:
+        try:
+            item = self._window.app.widgets[key]
+            return item.window == self._window
+        except KeyError:
+            return False
+
+    def __iter__(self) -> Iterator[Widget]:
+        return iter(self.values())
+
+    def __repr__(self) -> str:
+        return "{" + ", ".join(f"{k!r}: {v!r}" for k, v in sorted(self.items())) + "}"
+
+    def items(self) -> ItemsView:
+        for item in self._window.app.widgets.items():
+            if item[1].window == self._window:
+                yield item
+
+    def keys(self) -> KeysView:
+        for item in self._window.app.widgets.items():
+            if item[1].window == self._window:
+                yield item[0]
+
+    def values(self) -> ValuesView:
+        for item in self._window.app.widgets.items():
+            if item[1].window == self._window:
+                yield item[1]
 
 
 class OnCloseHandler(Protocol):
@@ -165,8 +220,6 @@ class Window:
         # Needs to be a late import to avoid circular dependencies.
         from toga import App
 
-        self._widgets = WidgetRegistry()
-
         self._id = str(id if id else identifier(self))
         self._impl = None
         self._content = None
@@ -205,6 +258,9 @@ class Window:
     def id(self) -> str:
         """A unique identifier for the window."""
         return self._id
+
+    def __lt__(self, other) -> bool:
+        return self.id < other.id
 
     @property
     def app(self) -> App:
@@ -296,7 +352,7 @@ class Window:
 
         Can be used to look up widgets by ID (e.g., ``window.widgets["my_id"]``).
         """
-        return self._widgets
+        return FilteredWidgetRegistry(self)
 
     @property
     def size(self) -> tuple[int, int]:
