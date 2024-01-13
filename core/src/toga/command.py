@@ -167,7 +167,7 @@ class Command:
         *,
         shortcut: str | Key | None = None,
         tooltip: str | None = None,
-        icon: IconContent = None,
+        icon: IconContent | None = None,
         group: Group = Group.COMMANDS,
         section: int = 0,
         order: int = 0,
@@ -238,7 +238,7 @@ class Command:
         return self._icon
 
     @icon.setter
-    def icon(self, icon_or_name: str | Icon):
+    def icon(self, icon_or_name: IconContent | None):
         if isinstance(icon_or_name, Icon) or icon_or_name is None:
             self._icon = icon_or_name
         else:

@@ -50,10 +50,11 @@ The Selection uses a :class:`~toga.sources.ListSource` to manage the list of
 options. If ``items`` is not specified as a ListSource, it will be converted
 into a ListSource at runtime.
 
-The simplest instantiation of a Selection is to use a list of strings. If a list
-of non-string objects are provided, they will be converted into a string for
-display purposes, but the original data type will be retained when returning the
-current value.
+The simplest instantiation of a Selection is to use a list of strings. If a list of
+non-string objects are provided, they will be converted into a string for display
+purposes, but the original data type will be retained when returning the current value.
+If the string value contains newlines, only the substring up to the first newline will
+be displayed.
 
 .. code-block:: python
 

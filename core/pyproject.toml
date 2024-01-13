@@ -65,13 +65,13 @@ dependencies = [
 # Extras used by developers *of* briefcase are pinned to specific versions to
 # ensure environment consistency.
 dev = [
-    "coverage[toml] == 7.3.3",
-    "Pillow == 10.1.0",
+    "coverage[toml] == 7.4.0",
+    "Pillow == 10.2.0",
     # Pre-commit 3.6.0 deprecated support for Python 3.8
     "pre-commit == 3.5.0 ; python_version < '3.9'",
     "pre-commit == 3.6.0 ; python_version >= '3.9'",
-    "pytest == 7.4.3",
-    "pytest-asyncio == 0.23.2",
+    "pytest == 7.4.4",
+    "pytest-asyncio == 0.23.3",
     "pytest-freezer == 0.4.8",
     "setuptools-scm == 8.0.4",
     "tox == 4.11.4",
@@ -80,7 +80,7 @@ dev = [
 ]
 docs = [
     "furo == 2023.9.10",
-    "Pillow == 10.1.0",
+    "Pillow == 10.2.0",
     "pyenchant == 3.2.2",
     # Sphinx 7.2 deprecated support for Python 3.8
     "sphinx == 7.1.2 ; python_version < '3.9'",

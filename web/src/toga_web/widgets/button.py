@@ -15,6 +15,14 @@ class Button(Widget):
     def set_text(self, text):
         self.native.innerHTML = text
 
+    def get_icon(self):
+        return self._icon
+
+    def set_icon(self, icon):
+        self._icon = icon
+        if icon:
+            self.interface.factory.not_implemented("Button.icon")
+
     def set_enabled(self, value):
         self.native.disabled = not value
 

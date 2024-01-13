@@ -1,0 +1,1 @@
+New widgets with an ID matching an ID that was previously used no longer cause an error.

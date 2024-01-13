@@ -281,6 +281,7 @@ uikit.UIGraphicsGetCurrentContext.restype = CGContextRef
 ######################################################################
 # UIGraphicsImageRenderer.h
 UIGraphicsImageRenderer = ObjCClass("UIGraphicsImageRenderer")
+UIGraphicsImageRendererContext = ObjCClass("UIGraphicsImageRendererContext")
 
 ######################################################################
 # UIImage.h

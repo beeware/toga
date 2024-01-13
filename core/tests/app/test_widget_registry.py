@@ -1,7 +1,7 @@
 import pytest
 
 import toga
-from toga.widgets.base import WidgetRegistry
+from toga.app import WidgetRegistry
 
 
 @pytest.fixture
@@ -29,7 +29,7 @@ def test_add_widget(widget_registry):
     "Widgets can be added to the registry"
     # Add a widget to the registry
     widget1 = ExampleWidget(id="widget-1")
-    widget_registry.add(widget1)
+    widget_registry._add(widget1)
 
     assert len(widget_registry) == 1
     assert list(widget_registry) == [widget1]
@@ -38,7 +38,7 @@ def test_add_widget(widget_registry):
 
     # Add a second widget
     widget2 = ExampleWidget(id="widget-2")
-    widget_registry.add(widget2)
+    widget_registry._add(widget2)
 
     assert len(widget_registry) == 2
     assert widget_registry["widget-1"] == widget1
@@ -49,12 +49,12 @@ def test_update_widgets(widget_registry):
     "The registry can be bulk updated"
     # Add a widget to the registry
     widget1 = ExampleWidget(id="widget-1")
-    widget_registry.add(widget1)
+    widget_registry._add(widget1)
 
     widget2 = ExampleWidget(id="widget-2")
     widget3 = ExampleWidget(id="widget-3")
     widget4 = ExampleWidget(id="widget-4")
-    widget_registry.update({widget2, widget3, widget4})
+    widget_registry._update({widget2, widget3, widget4})
 
     assert len(widget_registry) == 4
     assert widget_registry["widget-1"] == widget1
@@ -69,11 +69,11 @@ def test_remove_widget(widget_registry):
     # Add a widget to the registry
     widget1 = ExampleWidget(id="widget-1")
     widget2 = ExampleWidget(id="widget-2")
-    widget_registry.update({widget1, widget2})
+    widget_registry._update({widget1, widget2})
 
     assert len(widget_registry) == 2
 
-    widget_registry.remove("widget-2")
+    widget_registry._remove("widget-2")
 
     assert widget_registry["widget-1"] == widget1
     assert "widget-2" not in widget_registry
@@ -83,7 +83,7 @@ def test_add_same_widget_twice(widget_registry):
     "A widget cannot be added to the same registry twice"
     # Add a widget to the registry
     widget1 = ExampleWidget(id="widget-1")
-    widget_registry.add(widget1)
+    widget_registry._add(widget1)
 
     assert len(widget_registry) == 1
 
@@ -92,7 +92,7 @@ def test_add_same_widget_twice(widget_registry):
         KeyError,
         match=r"There is already a widget with the id 'widget-1'",
     ):
-        widget_registry.add(widget1)
+        widget_registry._add(widget1)
 
     # Widget is still there
     assert len(widget_registry) == 1
@@ -103,7 +103,7 @@ def test_add_duplicate_id(widget_registry):
     "A widget cannot be added to the same registry twice"
     # Add a widget to the registry
     widget1 = ExampleWidget(id="widget-1")
-    widget_registry.add(widget1)
+    widget_registry._add(widget1)
 
     assert len(widget_registry) == 1
 
@@ -114,7 +114,7 @@ def test_add_duplicate_id(widget_registry):
         KeyError,
         match=r"There is already a widget with the id 'widget-1'",
     ):
-        widget_registry.add(new_widget)
+        widget_registry._add(new_widget)
 
     # Widget is still there
     assert len(widget_registry) == 1
@@ -126,7 +126,7 @@ def test_setitem(widget_registry):
     widget1 = ExampleWidget(id="widget-1")
 
     with pytest.raises(
-        RuntimeError,
-        match=r"Widgets cannot be directly added to a registry",
+        TypeError,
+        match=r"'WidgetRegistry' object does not support item assignment",
     ):
         widget_registry["new is"] = widget1

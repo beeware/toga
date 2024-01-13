@@ -19,8 +19,8 @@ if TYPE_CHECKING:
 
     OptionContainerContent: TypeAlias = (
         tuple[str, Widget]
-        | tuple[str, Widget, IconContent]
-        | tuple[str, Widget, IconContent, bool]
+        | tuple[str, Widget, IconContent | None]
+        | tuple[str, Widget, IconContent | None, bool]
         | toga.OptionItem
     )
 
@@ -44,7 +44,7 @@ class OptionItem:
         text: str,
         content: Widget,
         *,
-        icon: IconContent = None,
+        icon: IconContent | None = None,
         enabled: bool = True,
     ):
         """A tab of content in an OptionContainer.
@@ -143,7 +143,7 @@ class OptionItem:
             return self._interface._impl.get_option_icon(self.index)
 
     @icon.setter
-    def icon(self, icon_or_name: IconContent):
+    def icon(self, icon_or_name: IconContent | None):
         if get_platform_factory().OptionContainer.uses_icons:
             if icon_or_name is None:
                 icon = None
@@ -279,7 +279,7 @@ class OptionList:
         text_or_item: str,
         content: Widget,
         *,
-        icon: IconContent = None,
+        icon: IconContent | None = None,
         enabled: bool = True,
     ):
         ...
@@ -289,7 +289,7 @@ class OptionList:
         text_or_item: str,
         content: Widget | None = None,
         *,
-        icon: IconContent = None,
+        icon: IconContent | None = None,
         enabled: bool = None,
     ):
         """Add a new tab of content to the OptionContainer.
@@ -321,7 +321,7 @@ class OptionList:
         text_or_item: str,
         content: Widget,
         *,
-        icon: IconContent = None,
+        icon: IconContent | None = None,
         enabled: bool = True,
     ):
         ...
@@ -332,7 +332,7 @@ class OptionList:
         text_or_item: str | OptionItem,
         content: Widget | None = None,
         *,
-        icon: IconContent = None,
+        icon: IconContent | None = None,
         enabled: bool | None = None,
     ):
         """Insert a new tab of content to the OptionContainer at the specified index.

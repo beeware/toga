@@ -1,0 +1,1 @@
+Selection widgets on macOS can now include duplicated titles.
