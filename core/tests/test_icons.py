@@ -71,19 +71,19 @@ def app():
         ),
         # Relative path, platform-specific resource
         (
-            Path("resources/widget"),
+            Path("resources/sample"),
             False,
             None,
             [".png"],
-            APP_RESOURCES / "widget-dummy.png",
+            APP_RESOURCES / "sample-dummy.png",
         ),
         # Relative path as string, platform-specific resource
         (
-            "resources/widget",
+            "resources/sample",
             False,
             None,
             [".png"],
-            APP_RESOURCES / "widget-dummy.png",
+            APP_RESOURCES / "sample-dummy.png",
         ),
         # Relative path, system resource
         (Path("toga"), True, None, [".png"], TOGA_RESOURCES / "toga.png"),

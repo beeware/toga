@@ -13,7 +13,7 @@ class ExampleButtonApp(toga.App):
         )
 
         # Common style of the inner boxes
-        style_inner_box = Pack(direction=ROW)
+        style_inner_box = Pack(direction=COLUMN)
 
         # Button class
         #   Simple button with text and callback function called when
@@ -69,14 +69,20 @@ class ExampleButtonApp(toga.App):
             style=Pack(font_family="serif", font_size=20, font_weight="bold"),
         )
 
+        # Button with icon
+        button9 = toga.Button(
+            icon=toga.Icon("resources/star"),
+        )
+
         # Add components for the second row of the outer box
         inner_box2 = toga.Box(
-            style=style_inner_box, children=[button5, button6, button7, button8]
+            style=style_inner_box,
+            children=[button5, button6, button7, button8, button9],
         )
 
         #  Create the outer box with 2 rows
         outer_box = toga.Box(
-            style=Pack(direction=COLUMN, height=10), children=[inner_box1, inner_box2]
+            style=Pack(direction=ROW), children=[inner_box1, inner_box2]
         )
 
         # Add the content on the main window

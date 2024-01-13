@@ -83,9 +83,10 @@ jobs:
         # we just want the dev extras so we have a known version of tox and coverage
         python -m pip install ./core[dev]
     - name: Get packages
-      uses: actions/download-artifact@v3.0.2
+      uses: actions/download-artifact@v4.1.1
       with:
-        name: ${{ needs.package.outputs.artifact-name }}
+        pattern: ${{ needs.package.outputs.artifact-name }}-*
+        merge-multiple: true
     - name: Test
       run: |
         # The $(ls ...) shell expansion is done in the Github environment;
@@ -94,9 +95,9 @@ jobs:
         TOGA_INSTALL_COMMAND="python -m pip install ../$(ls core/dist/toga_core-*.whl)[dev] ../$(ls dummy/dist/toga_dummy-*.whl)" tox -e py
         mv core/.coverage core/.coverage.${{ matrix.platform }}.${{ matrix.python-version }}
     - name: Store coverage data
-      uses: actions/upload-artifact@v3.1.3
+      uses: actions/upload-artifact@v4.0.0
       with:
-        name: core-coverage-data
+        name: core-coverage-data-${{ matrix.platform }}-${{ matrix.python-version }}
         path: "core/.coverage.*"
         if-no-files-found: error
 
@@ -118,10 +119,11 @@ jobs:
         # we just want the dev extras so we have a known version of coverage
         python -m pip install ./core[dev]
     - name: Retrieve coverage data
-      uses: actions/download-artifact@v3.0.2
+      uses: actions/download-artifact@v4.1.1
       with:
-        name: core-coverage-data
+        pattern: core-coverage-data-*
         path: core
+        merge-multiple: true
     - name: Generate coverage report
       run: |
         cd core
@@ -129,11 +131,11 @@ jobs:
         python -m coverage html --skip-covered --skip-empty
         python -m coverage report --rcfile ../pyproject.toml --fail-under=100
     - name: Upload HTML report if check failed.
-      uses: actions/upload-artifact@v3.1.3
+      uses: actions/upload-artifact@v4.0.0
+      if: failure()
       with:
         name: html-coverage-report
         path: core/htmlcov
-      if: ${{ failure() }}
 
   testbed:
     runs-on: ${{ matrix.runs-on }}
@@ -229,7 +231,7 @@ jobs:
       run: ${{ matrix.briefcase-run-prefix }} briefcase run ${{ matrix.backend }} --test ${{ matrix.briefcase-run-args }}
 
     - name: Upload logs
-      uses: actions/upload-artifact@v3.1.3
+      uses: actions/upload-artifact@v4.0.0
       if: failure()
       with:
         name: testbed-failure-logs-${{ matrix.backend }}
@@ -242,7 +244,7 @@ jobs:
         cp -r "${{ matrix.app-user-data-path }}" testbed/app_data/testbed-app_data-${{ matrix.backend }}
 
     - name: Upload app data
-      uses: actions/upload-artifact@v3.1.3
+      uses: actions/upload-artifact@v4.0.0
       if: failure() && matrix.backend != 'android'
       with:
         name: testbed-failure-app-data-${{ matrix.backend }}

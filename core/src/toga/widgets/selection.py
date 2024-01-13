@@ -120,7 +120,7 @@ class Selection(Widget):
         else:
             title = item.value
 
-        return str(title)
+        return str(title).split("\n")[0]
 
     @property
     def value(self):
