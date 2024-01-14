@@ -12,6 +12,7 @@ import pytest
 
 import toga
 from toga.colors import CORNFLOWERBLUE, GOLDENROD, REBECCAPURPLE
+from toga.screen import Screen as ScreenInterface
 from toga.style.pack import COLUMN, Pack
 
 
@@ -485,6 +486,11 @@ async def test_as_image(main_window, main_window_probe):
 
     screenshot = main_window.as_image()
     main_window_probe.assert_image_size(screenshot.size, main_window_probe.content_size)
+
+
+async def test_screen(main_window, main_window_probe):
+    assert isinstance(main_window.screen, ScreenInterface)
+    main_window_probe.assert_screen_implementation_type(main_window.screen._impl)
 
 
 ########################################################################################

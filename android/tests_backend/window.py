@@ -1,6 +1,8 @@
 import pytest
 from androidx.appcompat import R as appcompat_R
 
+from toga_android.screen import Screen as ScreenImpl
+
 from .probe import BaseProbe
 
 
@@ -87,3 +89,6 @@ class WindowProbe(BaseProbe):
 
     def press_toolbar_button(self, index):
         self.native.onOptionsItemSelected(self._toolbar_items()[index])
+
+    def assert_screen_implementation_type(self, screen):
+        assert isinstance(screen, ScreenImpl)

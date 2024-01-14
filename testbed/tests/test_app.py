@@ -4,6 +4,7 @@ import pytest
 
 import toga
 from toga.colors import CORNFLOWERBLUE, FIREBRICK, REBECCAPURPLE
+from toga.screen import Screen as ScreenInterface
 from toga.style.pack import Pack
 
 from .test_window import window_probe
@@ -550,3 +551,10 @@ async def test_beep(app):
     # can be invoked without raising an error, but there's no way to verify that the app
     # actually made a noise.
     app.beep()
+
+
+async def test_screens(app, app_probe):
+    assert type(app.screens) is list
+    for screen in app.screens:
+        assert isinstance(screen, ScreenInterface)
+        # app_probe.assert_scree
