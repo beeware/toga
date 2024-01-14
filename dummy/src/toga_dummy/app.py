@@ -3,7 +3,7 @@ import sys
 from pathlib import Path
 
 from .screen import Screen as ScreenImpl
-from .utils import LoggedObject, not_required_on
+from .utils import LoggedObject
 from .window import Window
 
 
@@ -68,7 +68,6 @@ class App(LoggedObject):
     def simulate_exit(self):
         self.interface.on_exit()
 
-    @not_required_on("mobile", "web")
     def get_screens(self):
         return [
             ScreenImpl(native="primary_screen"),

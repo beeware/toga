@@ -1,9 +1,8 @@
 from toga.screen import Screen as ScreenInterface
 
-from .utils import LoggedObject, not_required, not_required_on  # noqa
+from .utils import LoggedObject  # noqa
 
 
-@not_required_on("mobile", "web")
 class Screen(LoggedObject):
     _instances = {}
 
