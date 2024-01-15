@@ -1,10 +1,5 @@
-from typing import TYPE_CHECKING
-
 from toga.images import Image
 from toga.platform import get_platform_factory
-
-if TYPE_CHECKING:
-    from toga.images import ImageT
 
 
 class Screen:
@@ -27,5 +22,5 @@ class Screen:
         """The size of the screen, as a ``(width, height)`` tuple."""
         return self._impl.get_size()
 
-    def as_image(self, format: type[ImageT] = Image) -> ImageT:
+    def as_image(self, format: Image):
         return Image(self._impl.get_image_data()).as_format(format)
