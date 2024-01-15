@@ -80,4 +80,4 @@ class WindowProbe(BaseProbe):
         pytest.skip("Toolbars not implemented on iOS")
 
     def assert_screen_implementation_type(self, screen):
-        assert isinstance(screen, ScreenImpl)
+        assert isinstance(screen._impl, ScreenImpl)

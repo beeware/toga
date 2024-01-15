@@ -554,7 +554,7 @@ async def test_beep(app):
 
 
 async def test_screens(app, app_probe):
-    assert type(app.screens) is list
+    assert isinstance(app.screens, list)
     for screen in app.screens:
         assert isinstance(screen, ScreenInterface)
-        # app_probe.assert_scree
+        app_probe.assert_screen_implementation_type(screen)

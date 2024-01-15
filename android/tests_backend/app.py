@@ -5,6 +5,7 @@ from org.beeware.android import MainActivity
 from pytest import xfail
 
 from toga import Group
+from toga_android.screen import Screen as ScreenImpl
 
 from .probe import BaseProbe
 from .window import WindowProbe
@@ -106,3 +107,6 @@ class AppProbe(BaseProbe):
         self.native.findViewById(
             R.id.content
         ).getViewTreeObserver().dispatchOnGlobalLayout()
+
+    def assert_screen_implementation_type(self, screen):
+        assert isinstance(screen._impl, ScreenImpl)

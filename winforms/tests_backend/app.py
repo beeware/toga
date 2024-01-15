@@ -8,6 +8,7 @@ from System.Drawing import Point
 from System.Windows.Forms import Application, Cursor
 
 from toga_winforms.keys import toga_to_winforms_key, winforms_to_toga_key
+from toga_winforms.screen import Screen as ScreenImpl
 
 from .probe import BaseProbe
 from .window import WindowProbe
@@ -154,3 +155,6 @@ class AppProbe(BaseProbe):
 
     def keystroke(self, combination):
         return winforms_to_toga_key(toga_to_winforms_key(combination))
+
+    def assert_screen_implementation_type(self, screen):
+        assert isinstance(screen._impl, ScreenImpl)

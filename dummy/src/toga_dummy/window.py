@@ -2,6 +2,7 @@ from pathlib import Path
 
 import toga_dummy
 
+from .screen import Screen as ScreenImpl
 from .utils import LoggedObject
 
 
@@ -107,4 +108,4 @@ class Window(LoggedObject):
         self.interface.on_close()
 
     def get_current_screen(self):
-        self._get_value("screen")
+        return ScreenImpl(native="primary_screen")

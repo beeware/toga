@@ -91,4 +91,4 @@ class WindowProbe(BaseProbe):
         self.native.onOptionsItemSelected(self._toolbar_items()[index])
 
     def assert_screen_implementation_type(self, screen):
-        assert isinstance(screen, ScreenImpl)
+        assert isinstance(screen._impl, ScreenImpl)

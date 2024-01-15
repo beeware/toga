@@ -10,6 +10,7 @@ from toga_cocoa.libs import (
     NSEventType,
     NSWindow,
 )
+from toga_cocoa.screen import Screen as ScreenImpl
 
 from .probe import BaseProbe
 
@@ -175,3 +176,6 @@ class AppProbe(BaseProbe):
             keyCode=key_code,
         )
         return toga_key(event)
+
+    def assert_screen_implementation_type(self, screen):
+        assert isinstance(screen._impl, ScreenImpl)

@@ -264,4 +264,4 @@ class WindowProbe(BaseProbe):
         )
 
     def assert_screen_implementation_type(self, screen):
-        assert isinstance(screen, ScreenImpl)
+        assert isinstance(screen._impl, ScreenImpl)

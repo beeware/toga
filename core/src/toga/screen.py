@@ -22,5 +22,5 @@ class Screen:
         """The size of the screen, as a ``(width, height)`` tuple."""
         return self._impl.get_size()
 
-    def as_image(self, format: Image):
+    def as_image(self, format=Image):
         return Image(self._impl.get_image_data()).as_format(format)

@@ -490,7 +490,7 @@ async def test_as_image(main_window, main_window_probe):
 
 async def test_screen(main_window, main_window_probe):
     assert isinstance(main_window.screen, ScreenInterface)
-    main_window_probe.assert_screen_implementation_type(main_window.screen._impl)
+    main_window_probe.assert_screen_implementation_type(main_window.screen)
 
 
 ########################################################################################

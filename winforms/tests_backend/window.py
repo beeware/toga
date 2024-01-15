@@ -152,4 +152,4 @@ class WindowProbe(BaseProbe):
         self._native_toolbar_item(index).OnClick(EventArgs.Empty)
 
     def assert_screen_implementation_type(self, screen):
-        assert isinstance(screen, ScreenImpl)
+        assert isinstance(screen._impl, ScreenImpl)
