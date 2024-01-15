@@ -41,4 +41,4 @@ class Screen:
         graphics.CopyFromScreen(source_point, destination_point, copy_size)
         stream = MemoryStream()
         bitmap.Save(stream, Imaging.ImageFormat.Png)
-        return stream.ToArray()
+        return bytes(stream.ToArray())
