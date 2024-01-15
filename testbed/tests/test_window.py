@@ -744,3 +744,10 @@ async def test_select_folder_dialog(
     ):
         result = result[-1:]
     await assert_dialog_result(main_window, dialog_result, on_result_handler, result)
+
+
+async def test_instantiate_window_with_content(app):
+    content = toga.Box()
+    window = toga.Window(content=content)
+
+    assert window.content == content
