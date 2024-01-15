@@ -144,10 +144,7 @@ class Window:
 
         self.on_close = on_close
 
-        if content:
-            self.content(content)
-        else:
-            self._content = None
+        self._content = content
 
     @property
     def id(self) -> str:
