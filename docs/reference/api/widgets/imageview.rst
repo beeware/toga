@@ -46,6 +46,9 @@ A widget that displays an image.
 Usage
 -----
 
+An :class:`~toga.ImageView` provides a mechanism to display an :class:`~toga.Image` as
+part of an interface.
+
 .. code-block:: python
 
     import toga
@@ -55,6 +58,10 @@ Usage
 
 Notes
 -----
+
+* An ImageView **is not** an interactive element - there is no ``on_press`` handler for
+  ImageView. If you want a graphical element that can be clicked or pressed, try using a
+  :any:`toga.Button` that uses an :any:`toga.Icon`.
 
 * The default size of the view is the size of the image, or 0x0 if ``image`` is
   ``None``.
