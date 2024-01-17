@@ -13,6 +13,8 @@ from ..app import AppProbe
 
 
 class CameraProbe(AppProbe):
+    allow_no_camera = True
+
     def __init__(self, monkeypatch, app_probe):
         super().__init__(app_probe.app)
 

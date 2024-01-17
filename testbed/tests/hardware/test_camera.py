@@ -1,3 +1,5 @@
+import warnings
+
 import pytest
 
 from toga.constants import FlashMode
@@ -144,22 +146,32 @@ async def test_change_camera(app, camera_probe):
 
 
 async def test_no_cameras(app, camera_probe):
-    """If there are no cameras attached, the dialog is displayed, but the button is disabled"""
+    """If there are no cameras attached, the only option is cancelling."""
     # Disconnect the cameras
     camera_probe.disconnect_cameras()
 
     # Ensure the camera has permissions
     camera_probe.allow_permission()
 
-    # Trigger taking a photo
-    photo = app.camera.take_photo()
-    await camera_probe.wait_for_camera(device_count=0)
+    # Trigger taking a photo. This may raise a warning.
+    with warnings.catch_warnings():
+        warnings.filterwarnings("ignore", "No camera is available")
+        photo = app.camera.take_photo()
 
-    # The shutter is *not* enabled
-    assert not camera_probe.shutter_enabled
+    # Some platforms (e.g., macOS) can't know ahead of time that there are no cameras,
+    # so they show the camera dialog, but disable the shutter until a camera is
+    # available, leaving cancel as the only option. Other platforms know ahead of time
+    # that there are no cameras, so they can short cut and cancel the photo request.
+    if camera_probe.allow_no_camera:
+        await camera_probe.wait_for_camera(device_count=0)
 
-    # Simulate pressing the shutter on the camer
-    image = await camera_probe.cancel_photo(photo)
+        # The shutter is *not* enabled
+        assert not camera_probe.shutter_enabled
+
+        # Simulate pressing the shutter on the camera
+        image = await camera_probe.cancel_photo(photo)
+    else:
+        image = await photo
 
     # No image was returned
     assert image is None

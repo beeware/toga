@@ -1,78 +1,99 @@
-import sqlite3
-import sys
-from pathlib import Path
-
-import pytest
+from unittest.mock import Mock
 
 import toga
+from toga.constants import FlashMode
+from toga_iOS import libs as iOS
 from toga_iOS.hardware.camera import Camera
 from toga_iOS.libs import (
-    NSBundle,
-    UIImagePickerController,
+    AVAuthorizationStatus,
+    AVMediaTypeVideo,
+    UIImagePickerControllerCameraCaptureMode,
     UIImagePickerControllerCameraDevice,
+    UIImagePickerControllerCameraFlashMode,
+    UIImagePickerControllerSourceTypeCamera,
+    UIViewController,
 )
 
 from ..app import AppProbe
 
 
 class CameraProbe(AppProbe):
-    def __init__(self, monkeypatch, app_probe):
-        if not sys.implementation._simulator:
-            pytest.skip("Can't run Camera tests on physical hardware")
+    allow_no_camera = False
 
+    def __init__(self, monkeypatch, app_probe):
         super().__init__(app_probe.app)
 
         self.monkeypatch = monkeypatch
 
-        # iOS doesn't allow for permissions to be changed once they're initially set.
-        # Since we need permissions to be enabled to test most features, set the
-        # state of the TCC database to enable camera permissions when they're actually
-        # interrogated by the UIKit APIs.
-        tcc_db = sqlite3.connect(
-            str(
-                Path(NSBundle.mainBundle.resourcePath)
-                / "../../../../../Library/TCC/TCC.db"
-            ),
-        )
-        cursor = tcc_db.cursor()
-        cursor.execute(
-            (
-                "REPLACE INTO access "
-                "(service, client, client_type, auth_value, auth_reason, auth_version, flags) "
-                "VALUES (?, ?, ?, ?, ?, ?, ?)"
-            ),
-            ("kTCCServiceCamera", "org.beeware.toga.testbed", 0, 2, 2, 1, 0),
-        )
-        tcc_db.commit()
-        tcc_db.close()
+        # A mocked permissions table. The key is the media type; the value is True
+        # if permission has been granted, False if it has be denied. A missing value
+        # will be turned into a grant if permission is requested.
+        self._mock_permissions = {}
 
-        # iPhone simulator has no camera devices. Mock the response of the camera
-        # identifiers to report a rear camera with a flash, and a front camera with
-        # no flash.
+        # Mock AVCaptureDevice
+        self._mock_AVCaptureDevice = Mock()
 
-        def _is_available(self, device):
-            return True
+        def _mock_auth_status(media_type):
+            try:
+                return {
+                    1: AVAuthorizationStatus.Authorized.value,
+                    0: AVAuthorizationStatus.Denied.value,
+                }[self._mock_permissions[str(media_type)]]
+            except KeyError:
+                return AVAuthorizationStatus.NotDetermined.value
 
-        def _has_flash(self, device):
+        self._mock_AVCaptureDevice.authorizationStatusForMediaType = _mock_auth_status
+
+        def _mock_request_access(media_type, completionHandler):
+            # Fire completion handler
+            try:
+                result = self._mock_permissions[str(media_type)]
+            except KeyError:
+                # If there's no explicit permission, convert into a full grant
+                self._mock_permissions[str(media_type)] = True
+                result = True
+            completionHandler.func(result)
+
+        self._mock_AVCaptureDevice.requestAccessForMediaType = _mock_request_access
+
+        monkeypatch.setattr(iOS, "AVCaptureDevice", self._mock_AVCaptureDevice)
+
+        # Mock UIImagePickerController
+        self._mock_UIImagePickerController = Mock()
+
+        # On x86, the simulator crashes if you try to set the sourceType
+        # for the picker, because the simulator doesn't support that source type.
+        # On ARM, the hardware will let you show the dialog, but logs multiple errors.
+        # Avoid the problem by using a neutral UIViewController. This also allows
+        # us to mock behaviors that we can't do programmatically, like changing
+        # the camera while the view is displayed.
+        self._mock_picker = UIViewController.new()
+        self._mock_UIImagePickerController.new.return_value = self._mock_picker
+
+        # Simulate both cameras being available
+        self._mock_UIImagePickerController.isCameraDeviceAvailable.return_value = True
+
+        # Ensure the controller says that the camera source type is available.
+        self._mock_UIImagePickerController.isSourceTypeAvailable.return_value = True
+
+        # Flash is available on the rear camera
+        def _mock_flash_available(device):
             return device == UIImagePickerControllerCameraDevice.Rear
 
-        monkeypatch.setitem(
-            UIImagePickerController.objc_class.__dict__["instance_methods"],
-            "isCameraDeviceAvailable:",
-            _is_available,
+        self._mock_UIImagePickerController.isFlashAvailableForCameraDevice = (
+            _mock_flash_available
         )
-        monkeypatch.setitem(
-            UIImagePickerController.objc_class.__dict__["instance_methods"],
-            "isFlashAvailableForCameraDevice:",
-            _has_flash,
+
+        monkeypatch.setattr(
+            iOS, "UIImagePickerController", self._mock_UIImagePickerController
         )
 
     def cleanup(self):
-        picker = self.app.camera._impl.native
         try:
-            result = picker.result
+            picker = self.app.camera._impl.native
+            result = picker.delegate.result
             if not result.future.done():
-                picker.imagePickerControllerDidCancel(picker)
+                picker.delegate.imagePickerControllerDidCancel(picker)
         except AttributeError:
             pass
 
@@ -83,43 +104,43 @@ class CameraProbe(AppProbe):
         }
 
     def select_other_camera(self):
-        raise pytest.xfail("Cannot programmatically change camera on iOS")
+        other = self.app.camera.devices[1]
+        self.app.camera._impl.native.cameraDevice = other._impl.native
+        return other
 
     def disconnect_cameras(self):
-        raise pytest.xfail("Cameras cannot be removed on iOS")
+        # Set the source type as *not* available and re-create the Camera impl.
+        self._mock_UIImagePickerController.isSourceTypeAvailable.return_value = False
+        self.app.camera._impl = Camera(self.app)
 
     def reset_permission(self):
-        # Mock the *next* call to retrieve photo permission.
-        orig = Camera.has_permission
-
-        def reset_permission(mock, allow_unknown=False):
-            self.monkeypatch.setattr(Camera, "has_permission", orig)
-            return allow_unknown
-
-        self.monkeypatch.setattr(Camera, "has_permission", reset_permission)
+        self._mock_permissions = {}
 
     def allow_permission(self):
-        # Mock the result of has_permission to allow
-        def grant_permission(mock, allow_unknown=False):
-            return True
-
-        self.monkeypatch.setattr(Camera, "has_permission", grant_permission)
+        self._mock_permissions[str(AVMediaTypeVideo)] = True
 
     def reject_permission(self):
-        # Mock the result of has_permission to deny
-        def deny_permission(mock, allow_unknown=False):
-            return False
+        self._mock_permissions[str(AVMediaTypeVideo)] = False
 
-        self.monkeypatch.setattr(Camera, "has_permission", deny_permission)
-
-    async def wait_for_camera(self):
+    async def wait_for_camera(self, device_count=0):
         await self.redraw("Camera view displayed", delay=0.5)
 
+    @property
+    def shutter_enabled(self):
+        # Shutter can't be disabled
+        return True
+
     async def press_shutter_button(self, photo):
+        # The camera picker was correctly configured
+        picker = self.app.camera._impl.native
+        assert picker.sourceType == UIImagePickerControllerSourceTypeCamera
+        assert (
+            picker.cameraCaptureMode == UIImagePickerControllerCameraCaptureMode.Photo
+        )
+
         # Fake the result of a successful photo being taken
         image = toga.Image("resources/photo.png")
-        picker = self.app.camera._impl.native
-        picker.imagePickerController(
+        picker.delegate.imagePickerController(
             picker,
             didFinishPickingMediaWithInfo={
                 "UIImagePickerControllerOriginalImage": image._impl.native
@@ -128,23 +149,35 @@ class CameraProbe(AppProbe):
 
         await self.redraw("Photo taken", delay=0.5)
 
-        return await photo, None, None
+        return await photo, picker.cameraDevice, picker.cameraFlashMode
 
     async def cancel_photo(self, photo):
-        # Fake the result of a cancelling the photo
+        # The camera picker was correctly configured
         picker = self.app.camera._impl.native
-        picker.imagePickerControllerDidCancel(picker)
+        assert picker.sourceType == UIImagePickerControllerSourceTypeCamera
+        assert (
+            picker.cameraCaptureMode == UIImagePickerControllerCameraCaptureMode.Photo
+        )
+
+        # Fake the result of a cancelling the photo
+        picker.delegate.imagePickerControllerDidCancel(picker)
 
         await self.redraw("Photo cancelled", delay=0.5)
 
         return await photo
 
     def same_device(self, device, native):
-        # As the iOS camera is an external UI, we can't programmatically influence or
-        # modify it; so we make all device checks pass.
-        return True
+        if device is None:
+            return native == UIImagePickerControllerCameraDevice.Rear
+        else:
+            return device._impl.native == native
 
     def same_flash_mode(self, expected, actual):
-        # As the iOS camera is an external UI, we can't programmatically influence or
-        # modify it; so we make all device checks pass.
-        return True
+        return (
+            expected
+            == {
+                UIImagePickerControllerCameraFlashMode.Auto: FlashMode.AUTO,
+                UIImagePickerControllerCameraFlashMode.On: FlashMode.ON,
+                UIImagePickerControllerCameraFlashMode.Off: FlashMode.OFF,
+            }[actual]
+        )

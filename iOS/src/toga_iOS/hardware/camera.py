@@ -1,12 +1,16 @@
-from rubicon.objc import Block, objc_method
+import warnings
+
+from rubicon.objc import Block, NSObject, objc_method
 
 import toga
 from toga.constants import FlashMode
+
+# for classes that need to be monkeypatched for testing
+from toga_iOS import libs as iOS
 from toga_iOS.libs import (
     AVAuthorizationStatus,
-    AVCaptureDevice,
     AVMediaTypeVideo,
-    UIImagePickerController,
+    NSBundle,
     UIImagePickerControllerCameraCaptureMode,
     UIImagePickerControllerCameraDevice,
     UIImagePickerControllerCameraFlashMode,
@@ -27,7 +31,7 @@ class CameraDevice:
         return self._name
 
     def has_flash(self):
-        return UIImagePickerController.isFlashAvailableForCameraDevice(self.native)
+        return iOS.UIImagePickerController.isFlashAvailableForCameraDevice(self.native)
 
 
 def native_flash_mode(flash):
@@ -44,7 +48,7 @@ def native_flash_mode(flash):
 #     }.get(quality, UIImagePickerControllerQualityType.Medium)
 
 
-class TogaImagePickerController(UIImagePickerController):
+class TogaImagePickerDelegate(NSObject):
     @objc_method
     def imagePickerController_didFinishPickingMediaWithInfo_(
         self, picker, info
@@ -57,7 +61,6 @@ class TogaImagePickerController(UIImagePickerController):
     @objc_method
     def imagePickerControllerDidCancel_(self, picker) -> None:
         picker.dismissViewControllerAnimated(True, completion=None)
-
         self.result.set_result(None)
 
 
@@ -65,9 +68,22 @@ class Camera:
     def __init__(self, interface):
         self.interface = interface
 
-        self.native = TogaImagePickerController.alloc().init()
-        self.native.sourceType = UIImagePickerControllerSourceTypeCamera
-        self.native.delegate = self.native
+        if NSBundle.mainBundle.objectForInfoDictionaryKey("NSCameraUsageDescription"):
+            if iOS.UIImagePickerController.isSourceTypeAvailable(
+                UIImagePickerControllerSourceTypeCamera
+            ):
+                self.native = iOS.UIImagePickerController.new()
+                self.native.sourceType = UIImagePickerControllerSourceTypeCamera
+                self.native.delegate = TogaImagePickerDelegate.new()
+            else:
+                self.native = None
+        else:  # pragma: no cover
+            # The app doesn't have the NSCameraUsageDescription key (e.g., via
+            # `permission.camera` in Briefcase). No-cover because we can't manufacture
+            # this condition in testing.
+            raise RuntimeError(
+                "Application metadata does not declare that the app will use the camera."
+            )
 
     def has_permission(self, allow_unknown=False):
         if allow_unknown:
@@ -79,7 +95,7 @@ class Camera:
             valid_values = {AVAuthorizationStatus.Authorized.value}
 
         return (
-            AVCaptureDevice.authorizationStatusForMediaType(AVMediaTypeVideo)
+            iOS.AVCaptureDevice.authorizationStatusForMediaType(AVMediaTypeVideo)
             in valid_values
         )
 
@@ -87,10 +103,10 @@ class Camera:
         # This block is invoked when the permission is granted; however, permission is
         # granted from a different (inaccessible) thread, so it isn't picked up by
         # coverage.
-        def permission_complete(result) -> None:  # pragma: no cover
+        def permission_complete(result) -> None:
             future.set_result(result)
 
-        AVCaptureDevice.requestAccessForMediaType(
+        iOS.AVCaptureDevice.requestAccessForMediaType(
             AVMediaTypeVideo, completionHandler=Block(permission_complete, None, bool)
         )
 
@@ -103,7 +119,7 @@ class Camera:
                     native=UIImagePickerControllerCameraDevice.Rear,
                 )
             ]
-            if UIImagePickerController.isCameraDeviceAvailable(
+            if iOS.UIImagePickerController.isCameraDeviceAvailable(
                 UIImagePickerControllerCameraDevice.Rear
             )
             else []
@@ -115,14 +131,17 @@ class Camera:
                     native=UIImagePickerControllerCameraDevice.Front,
                 )
             ]
-            if UIImagePickerController.isCameraDeviceAvailable(
+            if iOS.UIImagePickerController.isCameraDeviceAvailable(
                 UIImagePickerControllerCameraDevice.Front
             )
             else []
         )
 
     def take_photo(self, result, device, flash):
-        if self.has_permission(allow_unknown=True):
+        if self.native is None:
+            warnings.warn("No camera is available")
+            result.set_result(None)
+        elif self.has_permission(allow_unknown=True):
             # Configure the controller to take a photo
             self.native.cameraCaptureMode = (
                 UIImagePickerControllerCameraCaptureMode.Photo
@@ -136,8 +155,8 @@ class Camera:
             )
             self.native.cameraFlashMode = native_flash_mode(flash)
 
-            # Attach the result to the picker
-            self.native.result = result
+            # Attach the result to the delegate
+            self.native.delegate.result = result
 
             # Show the pane
             toga.App.app.current_window._impl.native.rootViewController.presentViewController(
@@ -145,28 +164,3 @@ class Camera:
             )
         else:
             raise PermissionError("App does not have permission to take photos")
-
-    # def record_video(self, result, device, flash):
-    #     if self.has_video_permission(allow_unknown=True):
-    #         # Configure the controller to take a photo
-    #         self.native.cameraCaptureMode = (
-    #             UIImagePickerControllerCameraCaptureMode.Video
-    #         )
-
-    #         self.native.showsCameraControls = True
-    #         self.native.cameraDevice = (
-    #             device._impl.native
-    #             if device
-    #             else UIImagePickerControllerCameraDevice.Rear
-    #         )
-    #         self.native.cameraFlashMode = native_flash_mode(flash)
-
-    #         # Attach the result to the picker
-    #         self.native.result = result
-
-    #         # Show the pane
-    #         toga.App.app.current_window._impl.native.rootViewController.presentViewController(
-    #             self.native, animated=True, completion=None
-    #         )
-    #     else:
-    #         raise PermissionError("App does not have permission to take photos")
