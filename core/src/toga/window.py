@@ -387,15 +387,16 @@ class Window:
         self._closed = True
 
     def as_image(self, format: type[ImageT] = Image) -> ImageT | None:
-        """Render the current contents of the window as an image if it's possible.
+        """Render the current contents of the window as an image if it's possible
+        otherwise nothing will be rendered.
 
-        :param format: Format to provide. Defaults to :class:`~toga.images.Image`; also
-            supports :any:`PIL.Image.Image` if Pillow is installed
-        :returns: An image containing the window content, in the format requested.
+        :param format: Format to provide. Defaults to :class:`~toga.images.Image`;
+            also supports :any:`PIL.Image.Image` if Pillow is installed.
+        :returns: An image containing the window content, in the format requested
+            if possible otherwise return None.
         """
-        if self._impl.get_image_data():
-            return Image(self._impl.get_image_data()).as_format(format)
-        return
+        image_data = self._impl.get_image_data()
+        return Image(image_data).as_format(format) if image_data else None
 
     ############################################################
     # Dialogs
