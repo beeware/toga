@@ -1,0 +1,1 @@
+A cross-platform API for camera access was added.
