@@ -1,5 +1,3 @@
-import pytest
-
 from toga_cocoa.libs import NSScreen
 from toga_cocoa.screen import Screen as ScreenImpl
 
@@ -32,4 +30,6 @@ class ScreenProbe(BaseProbe):
         assert self.screen.size == (frame_native.size.width, frame_native.size.height)
 
     def assert_screen_as_image_size(self):
-        pytest.xfail("Screen.as_image() is not supported on wayland.")
+        screenshot = self.screen.as_image()
+        print(screenshot)
+        # TODO: Check screenshot size with actual screen size

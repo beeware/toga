@@ -21,7 +21,7 @@ class Screen:
         return (0, 0)
 
     def get_size(self):
-        return self.native.bounds.size.width, self.native.bounds.size.height
+        return int(self.native.bounds.size.width), int(self.native.bounds.size.height)
 
     def get_image_data(self):
         self.interface.factory.not_implemented("Screen.get_image_data()")

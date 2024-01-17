@@ -28,9 +28,9 @@ class ScreenProbe(BaseProbe):
 
     def assert_size(self):
         assert self.screen.size == (
-            self.native.bounds.size.width,
-            self.native.bounds.size.height,
+            int(self.native.bounds.size.width),
+            int(self.native.bounds.size.height),
         )
 
     def assert_screen_as_image_size(self):
-        pytest.xfail("Screen.as_image() is not supported on wayland.")
+        pytest.xfail("Screen.as_image() is not implemented on iOS.")

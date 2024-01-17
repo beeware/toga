@@ -31,4 +31,4 @@ class ScreenProbe(BaseProbe):
         pytest.xfail("TODO: Check screen size")
 
     def assert_screen_as_image_size(self):
-        pytest.xfail("Screen.as_image() is not supported on wayland.")
+        pytest.xfail("Screen.as_image() is not implemented on wayland.")

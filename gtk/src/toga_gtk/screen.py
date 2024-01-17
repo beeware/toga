@@ -29,8 +29,8 @@ class Screen:
         geometry = self.native.get_geometry()
         return geometry.width, geometry.height
 
-    def get_image_data(self):
-        if os.environ.get("XDG_SESSION_TYPE", "").lower() == "x11":
+    def get_image_data(self):  # CI runs on wayland
+        if os.environ.get("XDG_SESSION_TYPE", "").lower() == "x11":  # pragma: no cover
             # Only works for x11
             display = self.native.get_display()
             screen = display.get_default_screen()

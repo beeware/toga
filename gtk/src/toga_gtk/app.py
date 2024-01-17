@@ -191,7 +191,8 @@ class App:
 
     def get_screens(self):
         display = Gdk.Display.get_default()
-        if os.environ.get("XDG_SESSION_TYPE", "").lower() == "x11":
+        # CI runs on wayland
+        if os.environ.get("XDG_SESSION_TYPE", "").lower() == "x11":  # pragma: no cover
             primary_screen = ScreenImpl(display.get_primary_monitor())
             screen_list = [primary_screen] + [
                 ScreenImpl(native=display.get_monitor(i))
