@@ -8,6 +8,8 @@ from unittest.mock import Mock
 import pytest
 
 import toga
+from toga.screen import Screen as ScreenInterface
+from toga_dummy.screen import Screen as ScreenImpl
 from toga_dummy.utils import (
     assert_action_not_performed,
     assert_action_performed,
@@ -621,3 +623,10 @@ def test_deprecated_name():
     assert app.formal_name == "Test App"
     with pytest.warns(DeprecationWarning, match=name_warning):
         assert app.name == "Test App"
+
+
+def test_screens(app):
+    assert isinstance(app.screens, list)
+    for screen in app.screens:
+        assert isinstance(screen, ScreenInterface)
+        assert isinstance(screen._impl, ScreenImpl)

@@ -8,7 +8,7 @@ if sys.version_info >= (3, 10):
 else:
     # Before Python 3.10, entry_points did not support the group argument;
     # so, the backport package must be used on older versions.
-    from importlib_metadata import entry_points
+    from importlib_metadata import entry_points  # pragma: no cover
 
 
 # Map python sys.platform with toga platforms names

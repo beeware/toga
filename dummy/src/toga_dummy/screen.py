@@ -1,3 +1,6 @@
+from pathlib import Path
+
+import toga_dummy
 from toga.screen import Screen as ScreenInterface
 
 from .utils import LoggedObject  # noqa
@@ -28,5 +31,8 @@ class Screen(LoggedObject):
     def get_size(self):
         return (1920, 1080)
 
+    # Same as for the window as_image().
     def get_image_data(self):
-        self._action("get_image_data")
+        self._action("get image data")
+        path = Path(toga_dummy.__file__).parent / "resources/screenshot.png"
+        return path.read_bytes()

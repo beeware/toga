@@ -4,6 +4,8 @@ from unittest.mock import Mock
 import pytest
 
 import toga
+from toga.screen import Screen as ScreenInterface
+from toga_dummy.screen import Screen as ScreenImpl
 from toga_dummy.utils import (
     assert_action_not_performed,
     assert_action_performed,
@@ -352,6 +354,22 @@ def test_as_image(window):
     assert_action_performed(window, "get image data")
     # Don't need to check the raw data; just check it's the right size.
     assert image.size == (318, 346)
+
+
+def test_screen(window, app):
+    assert isinstance(window.screen, ScreenInterface)
+    assert isinstance(window.screen._impl, ScreenImpl)
+    # Cannot actually change window.screen, so just check
+    # the window positions as a substitute for moving the
+    # window between the screens.
+    assert window.position == (100, 100)
+    window.screen = app.screens[1]
+    assert window.position == (-1820, 100)
+
+
+def test_screen_position(window, app):
+    window.screen_position = (0, 0)
+    assert window.screen_position == (0, 0)
 
 
 def test_info_dialog(window, app):
