@@ -48,4 +48,3 @@ class Screen:
         else:
             # Not implemented for wayland
             self.interface.factory.not_implemented("Screen.get_image_data()")
-            return None
