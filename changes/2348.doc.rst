@@ -1,0 +1,1 @@
+The difference between Icon and Image was clarified, and a note about the lack of an ``on_press`` handler on ImageView was added.

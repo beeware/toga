@@ -13,6 +13,23 @@ Graphical content of arbitrary size.
 Usage
 -----
 
+.. admonition:: Images and Icons are *not* the same!
+
+    Toga draws a distinction between an *Image* and an *Icon*. An :class:`~toga.Image`
+    can have an arbitrary size or aspect ratio, and is *not* platform dependent - the
+    same image will be used on *every* platform. An Image is *not* an interactive
+    element, because there is no visual cue to the user that the image *can* be
+    interacted with.
+
+    An :class:`~toga.Icon`, on the other hand, is small, square, and might vary between
+    platforms. It is a visual element that is often used as part of an interactive
+    element such as a button, a toolbar item, or a tab selector - but the Icon *itself*
+    isn't an interactive element.
+
+    If you are looking for a widget that the user can click on, you're looking for a
+    widget configured to use an Icon (probably :class:`~toga.Button`), *not* an
+    ``on_press`` handler on an :class:`~toga.Image` or :class:`~toga.ImageView`.
+
 An image can be constructed from a :any:`wide range of sources <ImageContent>`:
 
 .. code-block:: python
