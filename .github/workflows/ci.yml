@@ -151,9 +151,9 @@ jobs:
             briefcase-run-args:
             setup-python: true
 
-          # - backend: macOS
-          #   runs-on: macos-12
-          #   app-user-data-path: $HOME/Library/Application Support/org.beeware.toga.testbed
+          - backend: macOS
+            runs-on: macos-12
+            app-user-data-path: $HOME/Library/Application Support/org.beeware.toga.testbed
 
           # # We use a fixed Ubuntu version rather than `-latest` because at some point,
           # # `-latest` will be updated, but it will be a soft changeover, which would cause
