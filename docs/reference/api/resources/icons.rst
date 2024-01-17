@@ -13,6 +13,22 @@ A small, square image, used to provide easily identifiable visual context to a w
 Usage
 -----
 
+.. admonition:: Icons and Images are *not* the same!
+
+    Toga draws a distinction between an *Icon* and an *Image*. An :class:`~toga.Icon` is
+    small, square, and might vary between platforms. It is a visual element that is
+    often used as part of an interactive element such as a button, toolbar item, or tab
+    selector - but the Icon *itself* isn't an interactive element.
+
+    An :class:`~toga.Image`, on the other hand, can have an arbitrary size or aspect
+    ratio, and is *not* platform dependent - the same image will be used on *every*
+    platform. An Image is *not* an interactive element, because there is no visual cue
+    to the user that the image *can* be interacted with.
+
+    If you are looking for a widget that the user can click on, you're looking for a
+    widget configured to use an Icon (probably :class:`~toga.Button`), *not* an
+    ``on_press`` handler on an :class:`~toga.Image` or :class:`~toga.ImageView`.
+
 The filename specified for an icon should be specified *without* an extension; the
 platform will determine an appropriate extension, and may also modify the name of the
 icon to include a platform and/or size qualifier.
