@@ -122,12 +122,31 @@ def test_create_from_raw():
     assert_action_performed_with(copy, "load image from raw")
 
 
-def test_not_enough_arguments():
+def test_no_source():
+    """If no source is provided, an error is raised"""
     with pytest.raises(
         TypeError,
         match=r"Image.__init__\(\) missing 1 required positional argument: 'src'",
     ):
+        toga.Image()
+
+
+def test_empty_image():
+    """If the image source is provided as None, an error is raised"""
+    with pytest.raises(
+        TypeError,
+        match=r"Unsupported source type for Image",
+    ):
         toga.Image(None)
+
+
+def test_empty_image_explicit():
+    """If src is explicitly provided as None, an error is raised"""
+    with pytest.raises(
+        TypeError,
+        match=r"Unsupported source type for Image",
+    ):
+        toga.Image(src=None)
 
 
 def test_invalid_input_format():
