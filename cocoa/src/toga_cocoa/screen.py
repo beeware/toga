@@ -22,15 +22,15 @@ class Screen:
             return instance
 
     def get_name(self):
-        return self.native.localizedName
+        return str(self.native.localizedName)
 
     def get_origin(self):
         frame_native = self.native.frame
-        return (frame_native.origin.x, frame_native.origin.y)
+        return (int(frame_native.origin.x), int(frame_native.origin.y))
 
     def get_size(self):
         frame_native = self.native.frame
-        return (frame_native.size.width, frame_native.size.height)
+        return (int(frame_native.size.width), int(frame_native.size.height))
 
     def get_image_data(self):
         image = core_graphics.CGDisplayCreateImage(

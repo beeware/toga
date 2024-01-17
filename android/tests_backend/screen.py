@@ -1,7 +1,7 @@
 import pytest
 from android.view import Display
 
-from toga_cocoa.screen import Screen as ScreenImpl
+from toga_android.screen import Screen as ScreenImpl
 
 from .probe import BaseProbe
 
@@ -28,4 +28,7 @@ class ScreenProbe(BaseProbe):
 
     def assert_size(self):
         # assert self.screen.size == (frame_native.size.width, frame_native.size.height)
-        pytest.skip("TODO: Check screen size")
+        pytest.xfail("TODO: Check screen size")
+
+    def assert_screen_as_image_size(self):
+        pytest.xfail("Screen.as_image() is not supported on wayland.")

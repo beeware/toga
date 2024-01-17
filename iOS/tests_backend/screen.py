@@ -1,5 +1,7 @@
-from toga_cocoa.screen import Screen as ScreenImpl
+import pytest
+
 from toga_iOS.libs import UIScreen
+from toga_iOS.screen import Screen as ScreenImpl
 
 from .probe import BaseProbe
 
@@ -29,3 +31,6 @@ class ScreenProbe(BaseProbe):
             self.native.bounds.size.width,
             self.native.bounds.size.height,
         )
+
+    def assert_screen_as_image_size(self):
+        pytest.xfail("Screen.as_image() is not supported on wayland.")

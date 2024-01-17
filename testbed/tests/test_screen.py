@@ -48,6 +48,4 @@ async def test_size(screen_probe_list):
 
 async def test_as_image(screen_probe_list):
     for screen_probe in screen_probe_list:
-        screenshot = screen_probe.screen.as_image()
-        # TODO: Check screenshot size with actual screen size
-        print(screenshot)
+        screen_probe.assert_screen_as_image_size()
