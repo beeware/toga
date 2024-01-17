@@ -7,8 +7,8 @@ from .probe import BaseProbe
 
 
 class ScreenProbe(BaseProbe):
-    def __init__(self, screen):
-        super().__init__()
+    def __init__(self, app, screen):
+        super().__init__(app)
         self.screen = screen
         self._impl = screen._impl
         self.native = screen._impl.native
@@ -27,8 +27,7 @@ class ScreenProbe(BaseProbe):
         assert self.screen.origin == (0, 0)
 
     def assert_size(self):
-        # assert self.screen.size == (frame_native.size.width, frame_native.size.height)
-        pytest.xfail("TODO: Check screen size")
+        assert self.screen.size == (self.native.getWidth(), self.native.getHeight())
 
     def assert_screen_as_image_size(self):
-        pytest.xfail("Screen.as_image() is not implemented on wayland.")
+        pytest.xfail("Screen.as_image() is not implemented on Android.")

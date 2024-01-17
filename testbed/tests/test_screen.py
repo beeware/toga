@@ -2,13 +2,17 @@ from importlib import import_module
 
 import pytest
 
+from toga.platform import current_platform
 from toga.screen import Screen as ScreenInterface
 
 
 @pytest.fixture
 def screen_probe_list(app):
     module = import_module("tests_backend.screen")
-    return [getattr(module, "ScreenProbe")(screen) for screen in app.screens]
+    if current_platform == "android":
+        return [getattr(module, "ScreenProbe")(app, screen) for screen in app.screens]
+    else:
+        return [getattr(module, "ScreenProbe")(screen) for screen in app.screens]
 
 
 async def test_type(screen_probe_list):

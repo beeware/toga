@@ -1,8 +1,8 @@
 import asyncio
 import sys
 
+from android.content import Context
 from android.graphics.drawable import BitmapDrawable
-from android.hardware import DisplayManager
 from android.media import RingtoneManager
 from android.view import Menu, MenuItem
 from java import dynamic_proxy
@@ -286,5 +286,7 @@ class App:
         pass
 
     def get_screens(self):
-        screen_list = DisplayManager.getDisplays()
+        context = self.native.getApplicationContext()
+        display_manager = context.getSystemService(Context.DISPLAY_SERVICE)
+        screen_list = display_manager.getDisplays()
         return [ScreenImpl(screen) for screen in screen_list]

@@ -1,5 +1,3 @@
-from android.view import WindowInsets, WindowManager
-
 from toga.screen import Screen as ScreenInterface
 
 
@@ -23,15 +21,7 @@ class Screen:
         return (0, 0)
 
     def get_size(self):
-        metrics = WindowManager.getCurrentWindowMetrics()
-        window_insets = metrics.getWindowInsets()
-        insets = window_insets.getInsetsIgnoringVisibility(
-            WindowInsets.Type.navigationBars() | WindowInsets.Type.displayCutout()
-        )
-        insets_width = insets.right + insets.left
-        insets_height = insets.top + insets.bottom
-        bounds = metrics.getBounds()
-        return (bounds.width() - insets_width, bounds.height() - insets_height)
+        return self.native.getWidth(), self.native.getHeight()
 
     def get_image_data(self):
         self.interface.factory.not_implemented("Screen.get_image_data()")
