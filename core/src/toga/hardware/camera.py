@@ -121,24 +121,3 @@ class Camera:
         photo = PhotoResult(None)
         self._impl.take_photo(photo, device=device, flash=flash)
         return photo
-
-    # async def record_video(
-    #     self,
-    #     device: CameraDevice | None = None,
-    #     flash: FlashMode = FlashMode.AUTO,
-    #     quality: VideoQuality = VideoQuality.MEDIUM,
-    # ) -> toga.Video:
-    #     """Capture a video using one of the device's cameras.
-    #
-    #     If the platform requires permission to access the camera and/or
-    #     microphone, and the user hasn't previously provided that permission,
-    #     this will cause permission to be requested.
-    #
-    #     :param device: The camera device to use. If a specific device is *not*
-    #         specified, a default camera will be used.
-    #     :param flash: The flash mode to use; defaults to "auto"
-    #     :returns: The :any:`toga.Video` captured by the camera.
-    #     """
-    #     future = asyncio.get_event_loop().create_future()
-    #     self._impl.record_video(future, device=device, flash=flash)
-    #     return future
