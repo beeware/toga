@@ -19,6 +19,7 @@ class TogaOption:
     text: str
     icon: toga.Icon
     widget: Widget
+    enabled: bool = True
     menu_item: MenuItem | None = None
 
 
@@ -100,16 +101,13 @@ class OptionContainer(Widget, Container):
         self.options.insert(index, option)
 
         # Create a menu item for the tab
-        print("ADD INDEX", index)
         if index >= self.max_items:
-            print(f"Index > {self.max_items}")
             warnings.warn(
                 "OptionContainer is limited to 5 items on Android. Additional item will be ignored."
             )
             option.menu_item = None
         else:
             if len(self.options) > self.max_items:
-                print(f"N items {len(self.options)} > {self.max_items}")
                 warnings.warn(
                     "OptionContainer is limited to 5 items on Android. Excess items will be ignored."
                 )
@@ -136,33 +134,36 @@ class OptionContainer(Widget, Container):
         if len(self.options) >= self.max_items:
             self._populate_menu_item(
                 self.max_items - 1,
-                self.option[self.max_items - 1],
+                self.options[self.max_items - 1],
             )
 
     def set_option_enabled(self, index, enabled):
-        menu_item = self.options[index].menu_item
-        if menu_item:
-            menu_item.setEnabled(enabled)
+        print("SET OPTION", index, enabled)
+        option = self.options[index]
+        option.enabled = enabled
+        if option.menu_item:
+            print("SET MENU ITEM")
+            option.menu_item.setEnabled(enabled)
 
     def is_option_enabled(self, index):
-        menu_item = self.options[index].menu_item
-        if menu_item:
-            return menu_item.isEnabled()
+        option = self.options[index]
+        if option.menu_item:
+            return option.menu_item.isEnabled()
         else:
-            return False
+            return option.enabled
 
     def set_option_text(self, index, text):
-        menu_item = self.options[index].menu_item
-        menu_item.text = text
-        if menu_item:
-            menu_item.setTitle(text)
+        option = self.options[index]
+        option.text = text
+        if option.menu_item:
+            option.menu_item.setTitle(text)
 
     def get_option_text(self, index):
-        menu_item = self.options[index].menu_item
-        if menu_item:
-            return menu_item.getTitle()
+        option = self.options[index]
+        if option.menu_item:
+            return option.menu_item.getTitle()
         else:
-            return self.options[index].text
+            return option.text
 
     def set_option_icon(self, index, icon):
         option = self.options[index]

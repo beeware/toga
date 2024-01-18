@@ -7,6 +7,7 @@ from .base import SimpleProbe
 
 class OptionContainerProbe(SimpleProbe):
     native_class = NSTabView
+    max_tabs = None
     disabled_tab_selectable = False
 
     # 2023-06-20: This makes no sense, but here we are. If you render an NSTabView with

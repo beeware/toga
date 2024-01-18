@@ -93,6 +93,16 @@ requires = [
 test_requires = [
     "fonttools==4.42.1",
 ]
+
+base_theme = "Theme.MaterialComponents.Light.DarkActionBar"
+
+build_gradle_dependencies = [
+    "androidx.appcompat:appcompat:1.0.2",
+    "androidx.constraintlayout:constraintlayout:1.1.3",
+    "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0",
+    "com.google.android.material:material:1.11.0",
+]
+
 build_gradle_extra_content = """\
 android.defaultConfig.python {
     // Coverage requires access to individual .py files.
