@@ -1,7 +1,5 @@
 from decimal import ROUND_UP
 
-from android.graphics import Bitmap, Rect
-from android.graphics.drawable import BitmapDrawable
 from android.view import View
 from android.widget import Button as A_Button
 from java import dynamic_proxy
@@ -41,17 +39,8 @@ class Button(TextViewWidget):
     def set_icon(self, icon):
         self._icon = icon
         if icon:
-            # Scale icon to to a 48x48 CSS pixel bitmap.
-            bitmap = Bitmap.createScaledBitmap(
-                icon._impl.native,
-                self.scale_in(48),
-                self.scale_in(48),
-                True,
-            )
-            drawable = BitmapDrawable(self.native.getContext().getResources(), bitmap)
-            drawable.setBounds(
-                Rect(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight())
-            )
+            # Scale icon to to a 48x48 CSS pixel bitmap drawable.
+            drawable = icon._impl.as_drawable(self, 48)
         else:
             drawable = None
 
