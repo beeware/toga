@@ -170,7 +170,7 @@ class OptionItem:
         """The content widget displayed in this tab of the OptionContainer."""
         return self._content
 
-    def _preserve_content(self):
+    def _preserve_option(self):
         # Move the ground truth back to the OptionItem instance
         self._text = self.text
         self._icon = self.icon
@@ -180,7 +180,7 @@ class OptionItem:
         self._index = None
         self._interface = None
 
-    def _add_as_content(self, index, interface):
+    def _add_as_option(self, index, interface):
         text = self._text
         del self._text
 
@@ -192,7 +192,7 @@ class OptionItem:
 
         self._index = index
         self._interface = interface
-        interface._impl.add_content(index, text, self.content._impl, icon)
+        interface._impl.add_option(index, text, self.content._impl, icon)
 
         # The option now exists on the implementation; finalize the display properties
         # that can't be resolved until the implementation exists.
@@ -231,9 +231,9 @@ class OptionList:
         # Ensure that the current ground truth of the item to be deleted is preserved as
         # attributes on the item
         deleted_item = self._options[index]
-        deleted_item._preserve_content()
+        deleted_item._preserve_option()
 
-        self.interface._impl.remove_content(index)
+        self.interface._impl.remove_option(index)
         del self._options[index]
         # Update the index for each of the options
         # after the one that was removed.
@@ -380,7 +380,7 @@ class OptionList:
 
         # Add the content to the implementation.
         # This will cause the native implementation to be created.
-        item._add_as_content(index, self.interface)
+        item._add_as_option(index, self.interface)
 
 
 class OptionContainer(Widget):
