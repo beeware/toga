@@ -1,6 +1,5 @@
-from pathlib import Path
+from PIL import Image, ImageDraw
 
-import toga_dummy
 from toga.screen import Screen as ScreenInterface
 
 from .utils import LoggedObject  # noqa
@@ -9,6 +8,11 @@ from .utils import LoggedObject  # noqa
 class Screen(LoggedObject):
     _instances = {}
 
+    # native: tuple = (
+    #   name: str,
+    #   origin: tuple(x:int, y:int),
+    #   size: tuple(width:int, height:int)
+    # )
     def __new__(cls, native):
         if native in cls._instances:
             return cls._instances[native]
@@ -20,19 +24,18 @@ class Screen(LoggedObject):
             return instance
 
     def get_name(self):
-        return self.native
+        return self.native[0]
 
     def get_origin(self):
-        if self.native == "primary_screen":
-            return (0, 0)
-        else:
-            return (-1920, 0)
+        return self.native[1]
 
     def get_size(self):
-        return (1920, 1080)
+        return self.native[2]
 
-    # Same as for the window as_image().
     def get_image_data(self):
         self._action("get image data")
-        path = Path(toga_dummy.__file__).parent / "resources/screenshot.png"
-        return path.read_bytes()
+
+        img = Image.new("RGB", self.native[2], "white")
+        draw = ImageDraw.Draw(img)
+        draw.text((0, 0), self.native[0], fill="black")  # text = self.native[0]
+        return img

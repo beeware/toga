@@ -108,4 +108,5 @@ class Window(LoggedObject):
         self.interface.on_close()
 
     def get_current_screen(self):
-        return ScreenImpl(native="primary_screen")
+        # `window.screen` will return `Secondary Screen`
+        return ScreenImpl(native=("Secondary Screen", (-1366, -768), (1366, 768)))

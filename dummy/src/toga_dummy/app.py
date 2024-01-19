@@ -69,9 +69,25 @@ class App(LoggedObject):
         self.interface.on_exit()
 
     def get_screens(self):
+        # _________________________________________________
+        # Display Setup:                                  |
+        # ________________________________________________|
+        #              |--1366--|                         |
+        # (-1366,-768) _________                          |
+        #          |  |         |                         |
+        #         768 |Secondary|                         |
+        #          |  | Screen  |                         |
+        #          |  |_________|(0,0)                    |
+        #                          _________              |
+        #                      |  |         |             |
+        #                    1080 | Primary |             |
+        #                      |  | Screen  |             |
+        #                      |  |_________|(1920,1080)  |
+        #                         |---1920--|             |
+        # ________________________________________________|
         return [
-            ScreenImpl(native="primary_screen"),
-            ScreenImpl(native="secondary_screen"),
+            ScreenImpl(native=("Primary Screen", (0, 0), (1920, 1080))),
+            ScreenImpl(native=("Secondary Screen", (-1366, -768), (1366, 768))),
         ]
 
 

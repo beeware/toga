@@ -362,14 +362,46 @@ def test_screen(window, app):
     # Cannot actually change window.screen, so just check
     # the window positions as a substitute for moving the
     # window between the screens.
+    # `window.screen` will return `Secondary Screen`
+    assert window.screen == app.screens[1]
     assert window.position == (100, 100)
-    window.screen = app.screens[1]
-    assert window.position == (-1820, 100)
+    window.screen = app.screens[0]
+    assert window.position == (1466, 868)
 
 
 def test_screen_position(window, app):
-    window.screen_position = (0, 0)
-    assert window.screen_position == (0, 0)
+    # _________________________________________________
+    # Display Setup:                                  |
+    # ________________________________________________|
+    #              |--1366--|                         |
+    # (-1366,-768) _________                          |
+    #          |  |         |                         |
+    #         768 |Secondary|                         |
+    #          |  | Screen  |                         |
+    #          |  |_________|(0,0)                    |
+    #                          _________              |
+    #                      |  |         |             |
+    #                    1080 | Primary |             |
+    #                      |  | Screen  |             |
+    #                      |  |_________|(1920,1080)  |
+    #                         |---1920--|             |
+    # ________________________________________________|
+    # Assumptions:                                    |
+    # ________________________________________________|
+    # * `window.screen` will return `Secondary Screen`|
+    #   as window is on secondary screen to better    |
+    #   test out the differences between              |
+    #   `window.position` & `window.screen_position`. |
+    # ________________________________________________|
+    initial_position = window.position
+    window.position = (-100, -100)
+    assert window.position != initial_position
+    assert window.position == (-100, -100)
+
+    assert window.screen_position == (1266, 668)
+    window.screen_position = (100, 100)
+    assert window.position == (-1266, -668)
+    assert window.screen_position == (100, 100)
 
 
 def test_info_dialog(window, app):
