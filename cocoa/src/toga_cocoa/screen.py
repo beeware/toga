@@ -1,9 +1,7 @@
-from ctypes import POINTER, c_char, cast
-
 from toga.screen import Screen as ScreenInterface
 from toga_cocoa.libs import (
-    NSBitmapImageFileType,
-    NSBitmapImageRep,
+    NSAutoreleasePool,
+    NSImage,
     core_graphics,
 )
 
@@ -33,18 +31,22 @@ class Screen:
         return (int(frame_native.size.width), int(frame_native.size.height))
 
     def get_image_data(self):
-        image = core_graphics.CGDisplayCreateImage(
-            core_graphics.CGMainDisplayID(),
+        # Retrieve the device description dictionary for the NSScreen
+        device_description = self.native.deviceDescription()
+        # Extract the CGDirectDisplayID from the device description
+        cg_direct_display_id = device_description.objectForKey_("NSScreenNumber")
+
+        cg_image = core_graphics.CGDisplayCreateImage(
+            cg_direct_display_id,
             self.native.frame,
         )
-        bitmap_rep = NSBitmapImageRep.alloc().initWithCGImage(image)
-        data = bitmap_rep.representationUsingType(
-            NSBitmapImageFileType.PNG,
-            properties=None,
-        )
+        # Create an autorelease pool to manage memory
+        pool = NSAutoreleasePool.alloc().init()
+        # Get the size of the CGImage
+        size = cg_image.size()
+        # Create an NSImage from the CGImage
+        ns_image = NSImage.alloc().initWithCGImage_size_(cg_image, size)
+        # Drain the autorelease pool to release memory
+        pool.release()
 
-        # data is an NSData object that has .bytes as a c_void_p, and a .length. Cast to
-        # POINTER(c_char) to get an addressable array of bytes, and slice that array to
-        # the known length. We don't use c_char_p because it has handling of NUL
-        # termination, and POINTER(c_char) allows array subscripting.
-        return cast(data.bytes, POINTER(c_char))[: data.length]
+        return ns_image

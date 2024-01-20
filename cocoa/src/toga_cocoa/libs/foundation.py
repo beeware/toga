@@ -51,3 +51,7 @@ NSURLRequest = ObjCClass("NSURLRequest")
 ######################################################################
 # NSValue.h
 NSNumber = ObjCClass("NSNumber")
+
+######################################################################
+# NSAutoreleasePool.h
+NSAutoreleasePool = ObjCClass("NSAutoreleasePool")

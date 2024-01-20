@@ -553,8 +553,24 @@ async def test_beep(app):
     app.beep()
 
 
+# Test primary screen `origin` and `name` & `origin` uniqueness of other screens.
 async def test_screens(app, app_probe):
     assert isinstance(app.screens, list)
     for screen in app.screens:
         assert isinstance(screen, ScreenInterface)
         app_probe.assert_screen_implementation_type(screen)
+
+    # Get the origin of screen 0
+    assert app.screens[0].origin == (0, 0)
+
+    # Check for unique names
+    screen_names = set()
+    unique_names = all(
+        screen.name not in screen_names and not screen_names.add(screen.name)
+        for screen in app.screens
+    )
+    assert unique_names is True
+
+    # Check that the origin of every other screen is not "0,0"
+    origins_not_zero = all(screen.origin != (0, 0) for screen in app.screens[1:])
+    assert origins_not_zero is True

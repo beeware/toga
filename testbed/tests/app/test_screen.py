@@ -1,3 +1,4 @@
+import os
 from importlib import import_module
 
 import pytest
@@ -52,4 +53,12 @@ async def test_size(screen_probe_list):
 
 async def test_as_image(screen_probe_list):
     for screen_probe in screen_probe_list:
-        screen_probe.assert_screen_as_image_size()
+        if current_platform in {"android", "iOS"}:
+            pytest.xfail("Screen.as_image is not implemented on current platform.")
+        elif (
+            current_platform == "linux"
+            and os.environ.get("XDG_SESSION_TYPE", "").lower() != "x11"
+        ):
+            pytest.xfail("Screen.as_image() is not supported on wayland.")
+        screenshot = screen_probe.screen.as_image()
+        assert screenshot.size == screen_probe.screen.size

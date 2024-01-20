@@ -386,9 +386,7 @@ def test_screen_position(window, app):
     #                      |  |_________|(1920,1080)  |
     #                         |---1920--|             |
     # ________________________________________________|
-    # Assumptions:                                    |
-    # ________________________________________________|
-    # * `window.screen` will return `Secondary Screen`|
+    #  `window.screen` will return `Secondary Screen` |
     #   as window is on secondary screen to better    |
     #   test out the differences between              |
     #   `window.position` & `window.screen_position`. |

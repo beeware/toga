@@ -289,4 +289,4 @@ class App:
         context = self.native.getApplicationContext()
         display_manager = context.getSystemService(Context.DISPLAY_SERVICE)
         screen_list = display_manager.getDisplays()
-        return [ScreenImpl(screen) for screen in screen_list]
+        return [ScreenImpl(self, screen) for screen in screen_list]

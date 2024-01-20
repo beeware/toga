@@ -1,6 +1,5 @@
 import os
 
-import pytest
 from gi.repository import GdkX11
 
 from toga_gtk.screen import Screen as ScreenImpl
@@ -35,11 +34,3 @@ class ScreenProbe(BaseProbe):
     def assert_size(self):
         geometry = self.native.get_geometry()
         assert self.screen.size == (geometry.width, geometry.height)
-
-    def assert_screen_as_image_size(self):
-        if os.environ.get("XDG_SESSION_TYPE", "").lower() == "x11":
-            screenshot = self.screen.as_image()
-            print(screenshot)
-            # TODO: Check screenshot size with actual screen size
-        else:
-            pytest.xfail("Screen.as_image() is not supported on wayland.")

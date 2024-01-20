@@ -28,8 +28,3 @@ class ScreenProbe(BaseProbe):
     def assert_size(self):
         frame_native = self.native.frame
         assert self.screen.size == (frame_native.size.width, frame_native.size.height)
-
-    def assert_screen_as_image_size(self):
-        screenshot = self.screen.as_image()
-        print(screenshot)
-        # TODO: Check screenshot size with actual screen size

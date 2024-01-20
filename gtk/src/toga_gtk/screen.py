@@ -46,5 +46,5 @@ class Screen:
                 print("Failed to save screenshot to buffer.")
                 return None
         else:
-            # Not implemented for wayland
-            self.interface.factory.not_implemented("Screen.get_image_data()")
+            # Not implemented on wayland due to wayland security policies.
+            self.interface.factory.not_implemented("Screen.get_image_data() on Wayland")

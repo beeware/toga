@@ -1,17 +1,18 @@
-import pytest
 from android.view import Display
 
 from toga_android.screen import Screen as ScreenImpl
+from toga_android.widgets.base import Scalable
 
 from .probe import BaseProbe
 
 
-class ScreenProbe(BaseProbe):
+class ScreenProbe(BaseProbe, Scalable):
     def __init__(self, app, screen):
         super().__init__(app)
         self.screen = screen
         self._impl = screen._impl
         self.native = screen._impl.native
+        self.init_scale(app._impl.native)
 
     def assert_implementation_type(self):
         assert isinstance(self._impl, ScreenImpl)
@@ -27,7 +28,7 @@ class ScreenProbe(BaseProbe):
         assert self.screen.origin == (0, 0)
 
     def assert_size(self):
-        assert self.screen.size == (self.native.getWidth(), self.native.getHeight())
-
-    def assert_screen_as_image_size(self):
-        pytest.xfail("Screen.as_image() is not implemented on Android.")
+        assert self.screen.size == (
+            self.scale_out(self.native.getWidth()),
+            self.scale_out(self.native.getHeight()),
+        )

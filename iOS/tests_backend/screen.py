@@ -1,5 +1,3 @@
-import pytest
-
 from toga_iOS.libs import UIScreen
 from toga_iOS.screen import Screen as ScreenImpl
 
@@ -31,6 +29,3 @@ class ScreenProbe(BaseProbe):
             int(self.native.bounds.size.width),
             int(self.native.bounds.size.height),
         )
-
-    def assert_screen_as_image_size(self):
-        pytest.xfail("Screen.as_image() is not implemented on iOS.")

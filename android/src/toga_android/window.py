@@ -108,7 +108,7 @@ class Window(Container):
     def get_current_screen(self):
         context = self.app.native.getApplicationContext()
         window_manager = context.getSystemService(Context.WINDOW_SERVICE)
-        return ScreenImpl(window_manager.getDefaultDisplay())
+        return ScreenImpl(self.app, window_manager.getDefaultDisplay())
 
     def get_image_data(self):
         bitmap = Bitmap.createBitmap(

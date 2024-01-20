@@ -222,7 +222,7 @@ kCGBitmapByteOrder16Big = 3 << 12
 kCGBitmapByteOrder32Big = 4 << 12
 
 ######################################################################
-# Quartz functions
+# CoreGraphics.h
 
 CGDirectDisplayID = c_uint32
 
@@ -231,8 +231,7 @@ core_graphics.CGMainDisplayID.restype = CGDirectDisplayID
 core_graphics.CGMainDisplayID.argtypes = None
 
 
-class CGImageRef(c_void_p):
-    pass
+CGImageRef = c_void_p
 
 
 register_preferred_encoding(b"^{CGImage=}", CGImageRef)

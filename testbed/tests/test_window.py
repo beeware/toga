@@ -488,9 +488,19 @@ async def test_as_image(main_window, main_window_probe):
     main_window_probe.assert_image_size(screenshot.size, main_window_probe.content_size)
 
 
+# Test the `origin`, `position` and `screen_position`.
 async def test_screen(main_window, main_window_probe):
     assert isinstance(main_window.screen, ScreenInterface)
     main_window_probe.assert_screen_implementation_type(main_window.screen)
+    if main_window.screen.origin == (0, 0):
+        if toga.platform.current_platform in {"android", "iOS"}:
+            pytest.xfail("Window.position is non functional on current platform.")
+        initial_position = main_window.position
+        main_window.position = (200, 200)
+        assert main_window.position != initial_position
+        # position and screen_position should be equal on screen with origin (0, 0)
+        assert main_window.position == (200, 200)
+        assert main_window.screen_position == (200, 200)
 
 
 ########################################################################################
