@@ -255,13 +255,6 @@ class App:
 
     # TODO #1798: document and test this somehow
     async def intent_result(self, intent):  # pragma: no cover
-        """Calls an Intent and waits for its result.
-
-        A RuntimeError will be raised when the Intent cannot be invoked.
-
-        :param Intent intent: The Intent to call
-        :returns: A Dictionary containing "resultCode" (int) and "resultData" (Intent or None)
-        """
         warnings.warn(
             "intent_result has been deprecated; use start_activity",
             DeprecationWarning,
