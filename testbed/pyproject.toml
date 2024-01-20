@@ -28,6 +28,8 @@ test_requires = [
     "pillow==9.2.0",
 ]
 
+permission.camera = "The testbed needs to exercise Camera APIs"
+
 [tool.briefcase.app.testbed.macOS]
 requires = [
     "../cocoa",
