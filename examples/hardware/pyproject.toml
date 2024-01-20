@@ -18,6 +18,7 @@ requires = [
     '../../core',
 ]
 
+permission.camera = "This app demonstrates camera capabilities"
 
 [tool.briefcase.app.hardware.macOS]
 requires = [
@@ -45,4 +46,11 @@ requires = [
 [tool.briefcase.app.hardware.android]
 requires = [
     '../../android',
+]
+
+base_theme = "Theme.MaterialComponents.Light.DarkActionBar"
+
+build_gradle_dependencies = [
+    "com.google.android.material:material:1.11.0",
+    "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0",
 ]

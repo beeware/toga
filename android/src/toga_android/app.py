@@ -1,5 +1,6 @@
 import asyncio
 import sys
+import warnings
 
 from android.graphics.drawable import BitmapDrawable
 from android.media import RingtoneManager
@@ -18,10 +19,9 @@ class MainWindow(Window):
 
 
 class TogaApp(dynamic_proxy(IPythonApp)):
-    last_intent_requestcode = (
-        -1
-    )  # always increment before using it for invoking new Intents
+    last_requestcode = -1  # A unique ID for native background requests
     running_intents = {}  # dictionary for currently running Intents
+    permission_requests = {}  # dictionary for outstanding permission requests
     menuitem_mapping = {}  # dictionary for mapping menuitems to commands
 
     def __init__(self, app):
@@ -52,28 +52,33 @@ class TogaApp(dynamic_proxy(IPythonApp)):
     def onRestart(self):
         print("Toga app: onRestart")  # pragma: no cover
 
-    # TODO #1798: document and test this somehow
-    def onActivityResult(self, requestCode, resultCode, resultData):  # pragma: no cover
-        """Callback method, called from MainActivity when an Intent ends.
+    def onActivityResult(self, requestCode, resultCode, resultData):
+        print(f"Toga app: onActivityResult, {requestCode=}, {resultData=}")
+        try:
+            # Retrieve the completion callback; if non-none, invoke it.
+            callback = self.running_intents.pop(requestCode)
+            # In theory, the callback can be empty; however, we don't
+            # have any practical use for this at present, so the branch
+            # is marked no-cover
+            if callback:  # pragma: no branch
+                callback(resultCode, resultData)
+        except KeyError:  # pragma: no cover
+            # This shouldn't happen; we shouldn't get notified of an
+            # intent that we didn't start
+            print(f"No intent matching request code {requestCode}")
 
-        :param int requestCode: The integer request code originally supplied to startActivityForResult(),
-                                allowing you to identify who this result came from.
-        :param int resultCode: The integer result code returned by the child activity through its setResult().
-        :param Intent resultData: An Intent, which can return result data to the caller (various data can be attached
-                                  to Intent "extras").
-        """
+    def onRequestPermissionsResult(self, requestCode, permissions, grantResults):
         print(
-            f"Toga app: onActivityResult, requestCode={requestCode}, resultData={resultData}"
+            f"Toga app: onRequestPermissionsResult, {requestCode=}, {permissions=} {grantResults=}"
         )
         try:
-            # remove Intent from the list of running Intents,
-            # and set the result of the intent.
-            result_future = self.running_intents.pop(requestCode)
-            result_future.set_result(
-                {"resultCode": resultCode, "resultData": resultData}
-            )
-        except KeyError:
-            print("No intent matching request code {requestCode}")
+            # Retrieve the completion callback and invoke it.
+            callback = self.permission_requests.pop(requestCode)
+            callback(permissions, grantResults)
+        except KeyError:  # pragma: no cover
+            # This shouldn't happen; we shouldn't get notified of an
+            # permission that we didn't request.
+            print(f"No permission request matching request code {requestCode}")
 
     def onConfigurationChanged(self, new_config):
         pass  # pragma: no cover
@@ -256,20 +261,65 @@ class App:
 
         :param Intent intent: The Intent to call
         :returns: A Dictionary containing "resultCode" (int) and "resultData" (Intent or None)
-        :rtype: dict
         """
+        warnings.warn(
+            "intent_result has been deprecated; use start_activity",
+            DeprecationWarning,
+        )
         try:
-            self._listener.last_intent_requestcode += 1
-            code = self._listener.last_intent_requestcode
-
             result_future = asyncio.Future()
-            self._listener.running_intents[code] = result_future
 
-            self.native.startActivityForResult(intent, code)
+            def complete_handler(code, data):
+                result_future.set_result({"resultCode": code, "resultData": data})
+
+            self.start_activity(intent, on_complete=complete_handler)
+
             await result_future
             return result_future.result()
         except AttributeError:
             raise RuntimeError("No appropriate Activity found to handle this intent.")
+
+    def _native_startActivityForResult(
+        self, activity, code, *options
+    ):  # pragma: no cover
+        # A wrapper around the native method so that it can be mocked during testing.
+        self.native.startActivityForResult(activity, code, *options)
+
+    def start_activity(self, activity, *options, on_complete=None):
+        """Start a native Android activity.
+
+        :param activity: The Intent/Activity to start
+        :param options: Any additional arguments to pass to the native
+            ``startActivityForResult`` call.
+        :param on_complete: The callback to invoke when the activity
+            completes. The callback will be invoked with 2 arguments:
+            the result code, and the result data.
+        """
+        self._listener.last_requestcode += 1
+        code = self._listener.last_requestcode
+
+        self._listener.running_intents[code] = on_complete
+
+        self._native_startActivityForResult(activity, code, *options)
+
+    def _native_requestPermissions(self, permissions, code):  # pragma: no cover
+        # A wrapper around the native method so that it can be mocked during testing.
+        self.native.requestPermissions(permissions, code)
+
+    def request_permissions(self, permissions, on_complete):
+        """Request a set of permissions from the user.
+
+        :param permissions: The list of permissions to request.
+        :param on_complete: The callback to invoke when the permission request
+            completes. The callback will be invoked with 2 arguments: the list of
+            permissions that were processed, and a second list of the same size,
+            containing the grant status of each of those permissions.
+        """
+        self._listener.last_requestcode += 1
+        code = self._listener.last_requestcode
+
+        self._listener.permission_requests[code] = on_complete
+        self._native_requestPermissions(permissions, code)
 
     def enter_full_screen(self, windows):
         pass

@@ -28,7 +28,7 @@ Box,Layout Widget,:class:`~toga.Box`,Container for components,|y|,|y|,|y|,|y|,|y
 ScrollContainer,Layout Widget,:class:`~toga.ScrollContainer`,A container that can display a layout larger than the area of the container,|y|,|y|,|y|,|y|,|y|,,
 SplitContainer,Layout Widget,:class:`~toga.SplitContainer`,A container that divides an area into two panels with a movable border,|y|,|y|,|y|,,,,
 OptionContainer,Layout Widget,:class:`~toga.OptionContainer`,A container that can display multiple labeled tabs of content,|y|,|y|,|y|,,,,
-Camera,Hardware,:class:`~toga.hardware.camera.Camera`,A sensor that can capture photos and/or video.,|y|,,,|y|,,,
+Camera,Hardware,:class:`~toga.hardware.camera.Camera`,A sensor that can capture photos and/or video.,|y|,,,|y|,|y|,,
 App Paths,Resource,:class:`~toga.paths.Paths`,A mechanism for obtaining platform-appropriate filesystem locations for an application.,|y|,|y|,|y|,|y|,|y|,,|b|
 Font,Resource,:class:`~toga.Font`,A text font,|y|,|y|,|y|,|y|,|y|,,
 Command,Resource,:class:`~toga.Command`,Command,|y|,|y|,|y|,,|y|,,
