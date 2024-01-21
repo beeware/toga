@@ -493,7 +493,7 @@ async def test_screen(main_window, main_window_probe):
     assert isinstance(main_window.screen, ScreenInterface)
     main_window_probe.assert_screen_implementation_type(main_window.screen)
     if main_window.screen.origin == (0, 0):
-        if toga.platform.current_platform in {"android", "iOS"}:
+        if toga.platform.current_platform in {"android", "iOS", "textual"}:
             pytest.xfail("Window.position is non functional on current platform.")
         initial_position = main_window.position
         main_window.position = (200, 200)

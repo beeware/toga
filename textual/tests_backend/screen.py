@@ -1,10 +1,9 @@
 from toga_textual.screen import Screen as ScreenImpl
-from toga_textual.window import TogaWindow
 
-from .probe import BaseProbe
+from textual.screen import Screen as TextualScreen
 
 
-class ScreenProbe(BaseProbe):
+class ScreenProbe:
     def __init__(self, screen):
         super().__init__()
         self.screen = screen
@@ -16,7 +15,7 @@ class ScreenProbe(BaseProbe):
 
     def assert_native_type(self):
         print(type(self.native))
-        assert isinstance(self.native, TogaWindow)
+        assert isinstance(self.native, TextualScreen)
 
     def assert_name(self):
         assert self.screen.name == "Textual Screen"
