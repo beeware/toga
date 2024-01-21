@@ -490,6 +490,9 @@ async def test_as_image(main_window, main_window_probe):
 
 # Test the `origin`, `position` and `screen_position`.
 async def test_screen(main_window, main_window_probe):
+    """A window can be moved to a different screen
+    and can be moved using both the absolute position
+    and relative screen position"""
     assert isinstance(main_window.screen, ScreenInterface)
     main_window_probe.assert_screen_implementation_type(main_window.screen)
     if main_window.screen.origin == (0, 0):

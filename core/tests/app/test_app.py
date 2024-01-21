@@ -626,6 +626,7 @@ def test_deprecated_name():
 
 
 def test_screens(app):
+    """All available screens can be accessed using `App.screens`"""
     assert isinstance(app.screens, list)
     for screen in app.screens:
         assert isinstance(screen, ScreenInterface)

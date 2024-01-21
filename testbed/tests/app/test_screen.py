@@ -17,6 +17,7 @@ def screen_probe_list(app):
 
 
 async def test_type(screen_probe_list):
+    """The type of the implementation and native classes should be correct"""
     for screen_probe in screen_probe_list:
         assert isinstance(screen_probe.screen, ScreenInterface)
         screen_probe.assert_implementation_type()
@@ -24,12 +25,14 @@ async def test_type(screen_probe_list):
 
 
 async def test_name(screen_probe_list):
+    """The name of the screens can be retrieved"""
     for screen_probe in screen_probe_list:
         assert isinstance(screen_probe.screen.name, str)
         screen_probe.assert_name()
 
 
 async def test_origin(screen_probe_list):
+    """The origin of the screens can be retrieved"""
     for screen_probe in screen_probe_list:
         origin = screen_probe.screen.origin
         assert (
@@ -41,6 +44,7 @@ async def test_origin(screen_probe_list):
 
 
 async def test_size(screen_probe_list):
+    """The size of the screens can be retrieved"""
     for screen_probe in screen_probe_list:
         size = screen_probe.screen.size
         assert (
@@ -52,6 +56,7 @@ async def test_size(screen_probe_list):
 
 
 async def test_as_image(screen_probe_list):
+    """A screen can be captured as an image"""
     for screen_probe in screen_probe_list:
         if current_platform in {"android", "iOS", "textual"}:
             pytest.xfail("Screen.as_image is not implemented on current platform.")

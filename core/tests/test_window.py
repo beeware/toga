@@ -357,6 +357,7 @@ def test_as_image(window):
 
 
 def test_screen(window, app):
+    """A window can be moved to a different screen"""
     assert isinstance(window.screen, ScreenInterface)
     assert isinstance(window.screen._impl, ScreenImpl)
     # Cannot actually change window.screen, so just check
@@ -370,6 +371,8 @@ def test_screen(window, app):
 
 
 def test_screen_position(window, app):
+    """A window can be moved using both the
+    absolute position and relative screen position"""
     # _________________________________________________
     # Display Setup:                                  |
     # ________________________________________________|
