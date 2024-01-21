@@ -53,7 +53,7 @@ async def test_size(screen_probe_list):
 
 async def test_as_image(screen_probe_list):
     for screen_probe in screen_probe_list:
-        if current_platform in {"android", "iOS"}:
+        if current_platform in {"android", "iOS", "textual"}:
             pytest.xfail("Screen.as_image is not implemented on current platform.")
         elif (
             current_platform == "linux"
