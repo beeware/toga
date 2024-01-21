@@ -239,3 +239,11 @@ register_preferred_encoding(b"^{CGImage=}", CGImageRef)
 # CGImageRef CGDisplayCreateImage(CGDirectDisplayID displayID, CGRect rect);
 core_graphics.CGDisplayCreateImage.restype = CGImageRef
 core_graphics.CGDisplayCreateImage.argtypes = [CGDirectDisplayID, CGRect]
+
+CGImageGetWidth = core_graphics.CGImageGetWidth
+CGImageGetWidth.argtypes = [c_void_p]
+CGImageGetWidth.restype = c_size_t
+
+CGImageGetHeight = core_graphics.CGImageGetHeight
+CGImageGetHeight.argtypes = [c_void_p]
+CGImageGetHeight.restype = c_size_t

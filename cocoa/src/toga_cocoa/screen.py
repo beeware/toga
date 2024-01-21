@@ -1,5 +1,7 @@
 from toga.screen import Screen as ScreenInterface
 from toga_cocoa.libs import (
+    CGImageGetHeight,
+    CGImageGetWidth,
     NSAutoreleasePool,
     NSImage,
     core_graphics,
@@ -32,9 +34,11 @@ class Screen:
 
     def get_image_data(self):
         # Retrieve the device description dictionary for the NSScreen
-        device_description = self.native.deviceDescription()
+        device_description = self.native.deviceDescription
         # Extract the CGDirectDisplayID from the device description
-        cg_direct_display_id = device_description.objectForKey_("NSScreenNumber")
+        cg_direct_display_id = device_description.objectForKey_(
+            "NSScreenNumber"
+        ).unsignedIntValue
 
         cg_image = core_graphics.CGDisplayCreateImage(
             cg_direct_display_id,
@@ -43,7 +47,7 @@ class Screen:
         # Create an autorelease pool to manage memory
         pool = NSAutoreleasePool.alloc().init()
         # Get the size of the CGImage
-        size = cg_image.size()
+        size = CGImageGetWidth(cg_image), CGImageGetHeight(cg_image)
         # Create an NSImage from the CGImage
         ns_image = NSImage.alloc().initWithCGImage_size_(cg_image, size)
         # Drain the autorelease pool to release memory
