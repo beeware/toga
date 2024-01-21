@@ -403,7 +403,7 @@ class App:
     def main_loop(self):
         self.loop.run_forever(lifecycle=CocoaLifecycle(self.native))
 
-    def get_screens(self):
+    def get_screens(self) -> tuple[ScreenImpl, ...]:
         return [ScreenImpl(native=screen) for screen in NSScreen.screens]
 
     def set_main_window(self, window):

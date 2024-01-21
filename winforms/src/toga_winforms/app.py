@@ -308,7 +308,7 @@ class App:
         self._is_exiting = True
         self.native.Exit()
 
-    def get_screens(self):
+    def get_screens(self) -> tuple[ScreenImpl, ...]:
         primary_screen = ScreenImpl(WinForms.Screen.PrimaryScreen)
         screen_list = [primary_screen] + [
             ScreenImpl(native=screen)

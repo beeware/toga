@@ -105,7 +105,7 @@ class Window(Container):
     def set_full_screen(self, is_full_screen):
         self.interface.factory.not_implemented("Window.set_full_screen()")
 
-    def get_current_screen(self):
+    def get_current_screen(self) -> ScreenImpl:
         context = self.app.native.getApplicationContext()
         window_manager = context.getSystemService(Context.WINDOW_SERVICE)
         return ScreenImpl(self.app, window_manager.getDefaultDisplay())

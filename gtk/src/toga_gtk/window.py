@@ -164,7 +164,7 @@ class Window:
         else:
             self.native.unfullscreen()
 
-    def get_current_screen(self):
+    def get_current_screen(self) -> ScreenImpl:
         display = Gdk.Display.get_default()
         monitor_native = display.get_monitor_at_window(self.native.get_window())
         return ScreenImpl(monitor_native)

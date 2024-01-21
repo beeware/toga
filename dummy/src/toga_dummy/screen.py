@@ -23,16 +23,16 @@ class Screen(LoggedObject):
             cls._instances[native] = instance
             return instance
 
-    def get_name(self):
+    def get_name(self) -> str:
         return self.native[0]
 
-    def get_origin(self):
+    def get_origin(self) -> tuple[int, int]:
         return self.native[1]
 
-    def get_size(self):
+    def get_size(self) -> tuple[int, int]:
         return self.native[2]
 
-    def get_image_data(self):
+    def get_image_data(self) -> Image:
         self._action("get image data")
 
         img = Image.new("RGB", self.native[2], "white")

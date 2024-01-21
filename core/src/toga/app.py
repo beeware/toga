@@ -27,6 +27,7 @@ from toga.hardware.camera import Camera
 from toga.icons import Icon
 from toga.paths import Paths
 from toga.platform import get_platform_factory
+from toga.screen import Screen
 from toga.widgets.base import Widget
 from toga.window import Window
 
@@ -497,7 +498,7 @@ class App:
         self.factory.App(interface=self)
 
     @property
-    def screens(self):
+    def screens(self) -> tuple[Screen, ...]:
         """Returns a list of available screens."""
         return [screen.interface for screen in self._impl.get_screens()]
 

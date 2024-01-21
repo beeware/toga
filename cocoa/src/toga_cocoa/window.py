@@ -307,7 +307,7 @@ class Window:
     def close(self):
         self.native.close()
 
-    def get_current_screen(self):
+    def get_current_screen(self) -> ScreenImpl:
         return ScreenImpl(self.native.screen)
 
     def get_image_data(self):

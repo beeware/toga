@@ -14,13 +14,13 @@ class Screen:
             cls._instances[native] = instance
             return instance
 
-    def get_name(self):
+    def get_name(self) -> str:
         return "iOS Screen"
 
-    def get_origin(self):
+    def get_origin(self) -> tuple[int, int]:
         return (0, 0)
 
-    def get_size(self):
+    def get_size(self) -> tuple[int, int]:
         return int(self.native.bounds.size.width), int(self.native.bounds.size.height)
 
     def get_image_data(self):

@@ -107,6 +107,6 @@ class Window(LoggedObject):
     def simulate_close(self):
         self.interface.on_close()
 
-    def get_current_screen(self):
+    def get_current_screen(self) -> ScreenImpl:
         # `window.screen` will return `Secondary Screen`
         return ScreenImpl(native=("Secondary Screen", (-1366, -768), (1366, 768)))

@@ -18,18 +18,18 @@ class Screen:
             cls._instances[native] = instance
             return instance
 
-    def get_name(self):
-        return self.native.get_model()
+    def get_name(self) -> str:
+        return str(self.native.get_model())
 
-    def get_origin(self):
+    def get_origin(self) -> tuple[int, int]:
         geometry = self.native.get_geometry()
         return geometry.x, geometry.y
 
-    def get_size(self):
+    def get_size(self) -> tuple[int, int]:
         geometry = self.native.get_geometry()
         return geometry.width, geometry.height
 
-    def get_image_data(self):  # CI runs on wayland
+    def get_image_data(self) -> bytes | None:
         if os.environ.get("XDG_SESSION_TYPE", "").lower() == "x11":  # pragma: no cover
             # Only works for x11
             display = self.native.get_display()
@@ -45,6 +45,7 @@ class Screen:
             else:
                 print("Failed to save screenshot to buffer.")
                 return None
+        # CI runs on wayland
         else:
             # Not implemented on wayland due to wayland security policies.
             self.interface.factory.not_implemented("Screen.get_image_data() on Wayland")

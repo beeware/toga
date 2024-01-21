@@ -123,5 +123,5 @@ class App:
         # No-op; mobile doesn't support cursors
         pass
 
-    def get_screens(self):
+    def get_screens(self) -> ScreenImpl:
         return [ScreenImpl(UIScreen.mainScreen)]

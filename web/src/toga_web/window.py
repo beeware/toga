@@ -80,5 +80,5 @@ class Window:
     def set_full_screen(self, is_full_screen):
         self.interface.factory.not_implemented("Window.set_full_screen()")
 
-    def get_current_screen(self):
+    def get_current_screen(self) -> ScreenImpl:
         return ScreenImpl(js.document.documentElement)

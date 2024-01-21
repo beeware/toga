@@ -70,7 +70,7 @@ class App:
     def hide_cursor(self):
         pass
 
-    def get_screens(self):
+    def get_screens(self) -> tuple[ScreenImpl, ...]:
         return [ScreenImpl(window._impl.native) for window in self.interface.windows]
 
 

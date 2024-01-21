@@ -18,13 +18,13 @@ class Screen(Scalable):
             instance.init_scale(instance.app.native)
             return instance
 
-    def get_name(self):
-        return self.native.getName()
+    def get_name(self) -> str:
+        return str(self.native.getName())
 
-    def get_origin(self):
+    def get_origin(self) -> tuple[int, int]:
         return (0, 0)
 
-    def get_size(self):
+    def get_size(self) -> tuple[int, int]:
         return (
             self.scale_out(self.native.getWidth()),
             self.scale_out(self.native.getHeight()),

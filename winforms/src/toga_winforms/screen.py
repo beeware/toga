@@ -23,16 +23,16 @@ class Screen:
             cls._instances[native] = instance
             return instance
 
-    def get_name(self):
-        return self.native.DeviceName
+    def get_name(self) -> str:
+        return str(self.native.DeviceName)
 
-    def get_origin(self):
+    def get_origin(self) -> tuple[int, int]:
         return self.native.Bounds.X, self.native.Bounds.Y
 
-    def get_size(self):
+    def get_size(self) -> tuple[int, int]:
         return self.native.Bounds.Width, self.native.Bounds.Height
 
-    def get_image_data(self):
+    def get_image_data(self) -> bytes:
         bitmap = Bitmap(*self.get_size())
         graphics = Graphics.FromImage(bitmap)
         source_point = Point(*self.get_origin())

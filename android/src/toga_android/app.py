@@ -285,7 +285,7 @@ class App:
     def show_cursor(self):
         pass
 
-    def get_screens(self):
+    def get_screens(self) -> tuple[ScreenImpl, ...]:
         context = self.native.getApplicationContext()
         display_manager = context.getSystemService(Context.DISPLAY_SERVICE)
         screen_list = display_manager.getDisplays()

@@ -68,7 +68,7 @@ class App(LoggedObject):
     def simulate_exit(self):
         self.interface.on_exit()
 
-    def get_screens(self):
+    def get_screens(self) -> tuple[ScreenImpl, ...]:
         # _________________________________________________
         # Display Setup:                                  |
         # ________________________________________________|

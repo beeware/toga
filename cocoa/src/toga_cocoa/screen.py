@@ -21,18 +21,18 @@ class Screen:
             cls._instances[native] = instance
             return instance
 
-    def get_name(self):
+    def get_name(self) -> str:
         return str(self.native.localizedName)
 
-    def get_origin(self):
+    def get_origin(self) -> tuple[int, int]:
         frame_native = self.native.frame
         return (int(frame_native.origin.x), int(frame_native.origin.y))
 
-    def get_size(self):
+    def get_size(self) -> tuple[int, int]:
         frame_native = self.native.frame
         return (int(frame_native.size.width), int(frame_native.size.height))
 
-    def get_image_data(self):
+    def get_image_data(self) -> NSImage:
         # Retrieve the device description dictionary for the NSScreen
         device_description = self.native.deviceDescription
         # Extract the CGDirectDisplayID from the device description
