@@ -331,6 +331,15 @@ class Window:
         :ref:`CSS pixels <css-units>`."""
         absolute_origin = self._app.screens[0].origin
         absolute_window_position = self._impl.get_position()
+        # Using the name `assumed_absolute_window_position` due to the
+        # differences of the position of the origin on different platforms.
+
+        # For example, On cocoa the origin is at the bottom left corner
+        # while on most platforms the origin is at the top left. But, for
+        # toga, the position of the origin will always be at the top left.
+
+        # So, the actual absolute window position on cocoa will be different from
+        # the absolute position that toga works with and provides to the user.
         assumed_absolute_window_position = (
             absolute_window_position[0] - absolute_origin[0],
             absolute_window_position[1] - absolute_origin[1],
