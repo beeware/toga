@@ -328,7 +328,7 @@ class Window:
     @property
     def position(self) -> tuple[int, int]:
         """Absolute position of the window, as a ``(x, y)`` tuple coordinates, in
-        :ref:`CSS pixels <css-units>`."""
+        :ref:`CSS pixels <css-units>`. The origin is at the top left corner."""
         absolute_origin = self._app.screens[0].origin
         absolute_window_position = self._impl.get_position()
         # Using the name `assumed_absolute_window_position` due to the
