@@ -55,13 +55,13 @@ class Image:
         return self.native.size.height
 
     def get_data(self):
-        return nsdata_to_bytes(
-            NSBitmapImageRep.representationOfImageRepsInArray(
-                self.native.representations,
-                usingType=NSBitmapImageFileType.PNG,
-                properties=None,
-            )
+        bitmap_rep = NSBitmapImageRep.imageRepWithData_(
+            self.native.TIFFRepresentation
+        )  # Using NSImage.TIFFRepresentation as it is documented.
+        image_data = bitmap_rep.representationUsingType(
+            NSBitmapImageFileType.PNG, properties=None
         )
+        return nsdata_to_bytes(image_data)
 
     def save(self, path):
         path = Path(path)
