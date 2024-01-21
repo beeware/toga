@@ -1,4 +1,5 @@
 import os
+from typing import Tuple
 
 from toga.screen import Screen as ScreenInterface
 
@@ -21,11 +22,11 @@ class Screen:
     def get_name(self) -> str:
         return str(self.native.get_model())
 
-    def get_origin(self) -> tuple[int, int]:
+    def get_origin(self) -> Tuple[int, int]:
         geometry = self.native.get_geometry()
         return geometry.x, geometry.y
 
-    def get_size(self) -> tuple[int, int]:
+    def get_size(self) -> Tuple[int, int]:
         geometry = self.native.get_geometry()
         return geometry.width, geometry.height
 

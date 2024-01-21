@@ -3,6 +3,7 @@ import re
 import sys
 import threading
 from ctypes import windll
+from typing import Tuple
 
 import System.Windows.Forms as WinForms
 from System import Environment, Threading
@@ -308,7 +309,7 @@ class App:
         self._is_exiting = True
         self.native.Exit()
 
-    def get_screens(self) -> tuple[ScreenImpl, ...]:
+    def get_screens(self) -> Tuple[ScreenImpl, ...]:
         primary_screen = ScreenImpl(WinForms.Screen.PrimaryScreen)
         screen_list = [primary_screen] + [
             ScreenImpl(native=screen)

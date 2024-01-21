@@ -1,3 +1,5 @@
+from typing import Tuple
+
 from System.Drawing import (
     Bitmap,
     Graphics,
@@ -26,10 +28,10 @@ class Screen:
     def get_name(self) -> str:
         return str(self.native.DeviceName)
 
-    def get_origin(self) -> tuple[int, int]:
+    def get_origin(self) -> Tuple[int, int]:
         return self.native.Bounds.X, self.native.Bounds.Y
 
-    def get_size(self) -> tuple[int, int]:
+    def get_size(self) -> Tuple[int, int]:
         return self.native.Bounds.Width, self.native.Bounds.Height
 
     def get_image_data(self) -> bytes:

@@ -1,4 +1,5 @@
 import asyncio
+from typing import Tuple
 
 from rubicon.objc import objc_method
 from rubicon.objc.eventloop import EventLoopPolicy, iOSLifecycle
@@ -123,5 +124,5 @@ class App:
         # No-op; mobile doesn't support cursors
         pass
 
-    def get_screens(self) -> ScreenImpl:
+    def get_screens(self) -> Tuple[ScreenImpl, ...]:
         return [ScreenImpl(UIScreen.mainScreen)]

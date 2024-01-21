@@ -1,3 +1,5 @@
+from typing import Tuple
+
 from toga.screen import Screen as ScreenInterface
 
 
@@ -17,10 +19,10 @@ class Screen:
     def get_name(self) -> str:
         return "Web Screen"
 
-    def get_origin(self) -> tuple[int, int]:
+    def get_origin(self) -> Tuple[int, int]:
         return (0, 0)
 
-    def get_size(self) -> tuple[int, int]:
+    def get_size(self) -> Tuple[int, int]:
         return self.native.clientWidth, self.native.clientHeight
 
     def get_image_data(self):

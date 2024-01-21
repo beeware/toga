@@ -1,3 +1,5 @@
+from typing import Tuple
+
 from toga.images import Image
 from toga.platform import get_platform_factory
 
@@ -13,12 +15,12 @@ class Screen:
         return self._impl.get_name()
 
     @property
-    def origin(self) -> tuple[int, int]:
+    def origin(self) -> Tuple[int, int]:
         """The absolute coordinates of the screen's origin, as a ``(x, y)`` tuple."""
         return self._impl.get_origin()
 
     @property
-    def size(self) -> tuple[int, int]:
+    def size(self) -> Tuple[int, int]:
         """The size of the screen, as a ``(width, height)`` tuple."""
         return self._impl.get_size()
 

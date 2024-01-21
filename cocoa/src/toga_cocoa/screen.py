@@ -1,3 +1,5 @@
+from typing import Tuple
+
 from toga.screen import Screen as ScreenInterface
 from toga_cocoa.libs import (
     CGImageGetHeight,
@@ -24,11 +26,11 @@ class Screen:
     def get_name(self) -> str:
         return str(self.native.localizedName)
 
-    def get_origin(self) -> tuple[int, int]:
+    def get_origin(self) -> Tuple[int, int]:
         frame_native = self.native.frame
         return (int(frame_native.origin.x), int(frame_native.origin.y))
 
-    def get_size(self) -> tuple[int, int]:
+    def get_size(self) -> Tuple[int, int]:
         frame_native = self.native.frame
         return (int(frame_native.size.width), int(frame_native.size.height))
 

@@ -1,4 +1,5 @@
 import asyncio
+from typing import Tuple
 
 from textual.app import App as TextualApp
 
@@ -70,7 +71,7 @@ class App:
     def hide_cursor(self):
         pass
 
-    def get_screens(self) -> tuple[ScreenImpl, ...]:
+    def get_screens(self) -> Tuple[ScreenImpl, ...]:
         return [ScreenImpl(window._impl.native) for window in self.interface.windows]
 
 

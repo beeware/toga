@@ -1,6 +1,7 @@
 import asyncio
 import sys
 from pathlib import Path
+from typing import Tuple
 
 from .screen import Screen as ScreenImpl
 from .utils import LoggedObject
@@ -68,7 +69,7 @@ class App(LoggedObject):
     def simulate_exit(self):
         self.interface.on_exit()
 
-    def get_screens(self) -> tuple[ScreenImpl, ...]:
+    def get_screens(self) -> Tuple[ScreenImpl, ...]:
         # _________________________________________________
         # Display Setup:                                  |
         # ________________________________________________|
