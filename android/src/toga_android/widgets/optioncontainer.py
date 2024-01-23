@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import warnings
 from dataclasses import dataclass
 
@@ -45,22 +47,16 @@ class OptionContainer(Widget, Container):
     def create(self):
         self.native = LinearLayout(self._native_activity)
         self.native.setOrientation(LinearLayout.VERTICAL)
-        self.native.setLayoutParams(
+
+        # Define layout parameters for children; expand to fill,
+        self.init_container(self.native)
+        self.native_content.setLayoutParams(
             LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.MATCH_PARENT,
+                1,  # weight 1; child content should expand
             )
         )
-
-        # Define layout parameters for children; expand to fill,
-        self.content_layout_params = LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.MATCH_PARENT,
-            LinearLayout.LayoutParams.MATCH_PARENT,
-            1,  # weight 1; child content should expand
-        )
-
-        # Initialize the container before the navigation bar
-        self.init_container(self.native)
 
         # Add the navigation bar
         self.native_navigationview = BottomNavigationView(self._native_activity)
@@ -84,10 +80,17 @@ class OptionContainer(Widget, Container):
 
         self.options = []
 
+    def set_bounds(self, x, y, width, height):
+        super().set_bounds(x, y, width, height)
+        lp = self.native.getLayoutParams()
+        super().resize_content(
+            lp.width, lp.height - self.native_navigationview.getHeight()
+        )
+
     def select_option(self, index):
         option = self.options[index]
         self.set_content(option.widget)
-        self.native_content.setLayoutParams(self.content_layout_params)
+        option.widget.interface.refresh()
 
     def _populate_menu_item(self, index, option):
         option.menu_item = self.native_navigationview.getMenu().add(

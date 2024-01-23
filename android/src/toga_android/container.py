@@ -36,8 +36,8 @@ class Container(Scalable):
     def resize_content(self, width, height):
         if (self.native_width, self.native_height) != (width, height):
             self.native_width, self.native_height = (width, height)
-            if self.interface.content:
-                self.interface.content.refresh()
+            if self.content:
+                self.content.interface.refresh()
 
     def refreshed(self):
         # We must use the correct LayoutParams class, but we don't know what that class
@@ -45,7 +45,7 @@ class Container(Scalable):
         # an option, but would probably be less safe because a subclass might change the
         # meaning of the (int, int) constructor.
         lp = self.native_content.getLayoutParams()
-        layout = self.interface.content.layout
+        layout = self.content.interface.layout
         lp.width = max(self.native_width, self.scale_in(layout.width))
         lp.height = max(self.native_height, self.scale_in(layout.height))
         self.native_content.setLayoutParams(lp)
