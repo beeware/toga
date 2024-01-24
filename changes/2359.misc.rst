@@ -1,0 +1,1 @@
+Updated sphinx-tabs from 3.4.4 to 3.4.5 in /core.

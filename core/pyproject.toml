@@ -85,7 +85,7 @@ docs = [
     # Sphinx 7.2 deprecated support for Python 3.8
     "sphinx == 7.1.2 ; python_version < '3.9'",
     "sphinx == 7.2.6 ; python_version >= '3.9'",
-    "sphinx_tabs == 3.4.4",
+    "sphinx_tabs == 3.4.5",
     "sphinx-autobuild == 2021.3.14",
     "sphinx-autodoc-typehints == 1.25.2",
     "sphinx-csv-filter == 0.4.1",
