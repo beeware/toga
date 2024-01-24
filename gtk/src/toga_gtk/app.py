@@ -23,7 +23,7 @@ class MainWindow(Window):
     def create(self):
         self.native = TogaAppWindow()
         icon_impl = toga_App.app.icon._impl
-        self.native.set_icon_name(icon_impl.native_72.get_icon_name())
+        self.native.set_icon_name(icon_impl.native.get_icon_name())
 
     def gtk_close_request(self, *args):
         # Return value of the GTK on_close handler indicates

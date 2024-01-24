@@ -15,36 +15,18 @@ class IconProbe(BaseProbe):
         super().__init__()
         self.app = app
         self.icon = icon
-        assert isinstance(self.icon._impl.native_16, Gtk.Widget)
-        assert isinstance(self.icon._impl.native_32, Gtk.Widget)
-        assert isinstance(self.icon._impl.native_72, Gtk.Widget)
+        assert isinstance(self.icon._impl.native, Gtk.Widget)
 
     def assert_icon_content(self, path):
         if path == "resources/icons/green":
-            assert self.icon._impl.paths == {
-                16: self.app.paths.app / "resources/icons/green-16.png",
-                32: self.app.paths.app / "resources/icons/green-32.png",
-                72: self.app.paths.app / "resources/icons/green-72.png",
-            }
+            assert self.icon._impl.path == self.app.paths.app / "resources/icons/green.png"
         elif path == "resources/icons/orange":
-            assert self.icon._impl.paths == {
-                16: self.app.paths.app / "resources/icons/orange.ico",
-                32: self.app.paths.app / "resources/icons/orange.ico",
-                72: self.app.paths.app / "resources/icons/orange.ico",
-            }
+            assert self.icon._impl.path == self.app.paths.app / "resources/icons/orange.ico"
         else:
             pytest.fail("Unknown icon resource")
 
     def assert_default_icon_content(self):
-        assert self.icon._impl.paths == {
-            16: Path(toga_gtk.__file__).parent / "resources/toga.png",
-            32: Path(toga_gtk.__file__).parent / "resources/toga.png",
-            72: Path(toga_gtk.__file__).parent / "resources/toga.png",
-        }
+        assert self.icon._impl.path == Path(toga_gtk.__file__).parent / "resources/toga.png"
 
     def assert_platform_icon_content(self, platform):
-        assert self.icon._impl.paths == {
-            16: self.app.paths.app / f"resources/logo-{platform}-16.png",
-            32: self.app.paths.app / f"resources/logo-{platform}-32.png",
-            72: self.app.paths.app / f"resources/logo-{platform}-72.png",
-        }
+        assert self.icon._impl.path == self.app.paths.app / f"resources/logo-{platform}.png"
