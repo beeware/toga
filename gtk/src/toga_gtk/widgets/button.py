@@ -25,11 +25,12 @@ class Button(Widget):
     def set_icon(self, icon):
         self._icon = icon
         if icon:
-            self.native.set_image(Gtk.Image.new_from_pixbuf(icon._impl.native_32))
-            self.native.set_always_show_image(True)
+            icon._impl.native.set_icon_size(Gtk.IconSize.LARGE)
+            self.native.set_child(icon._impl.native)
         else:
-            self.native.set_image(None)
-            self.native.set_always_show_image(False)
+            text = self.native.get_label()
+            self.native.set_child(None)
+            self.native.set_label(text)
 
     def set_enabled(self, value):
         self.native.set_sensitive(value)

@@ -14,11 +14,11 @@ class ButtonProbe(SimpleProbe):
         return self.native.get_label()
 
     def assert_no_icon(self):
-        assert self.native.get_image() is None
+        assert not isinstance(self.native.get_child(), Gtk.Image)
 
     def assert_icon_size(self):
-        icon = self.native.get_image().get_pixbuf()
-        if icon:
+        icon = self.native.get_child()
+        if isinstance(icon, Gtk.Image):
             assert (icon.get_width(), icon.get_height()) == (32, 32)
         else:
             pytest.fail("Icon does not exist")
