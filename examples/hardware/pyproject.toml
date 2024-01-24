@@ -1,0 +1,48 @@
+[build-system]
+requires = ["briefcase"]
+
+[tool.briefcase]
+project_name = "Hardware"
+bundle = "org.beeware"
+version = "0.0.1"
+url = "https://beeware.org"
+license = "BSD license"
+author = 'Tiberius Yak'
+author_email = "tiberius@beeware.org"
+
+[tool.briefcase.app.hardware]
+formal_name = "Hardware"
+description = "A testing app"
+sources = ['hardware']
+requires = [
+    '../../core',
+]
+
+
+[tool.briefcase.app.hardware.macOS]
+requires = [
+    '../../cocoa',
+    'std-nslog>=1.0.0',
+]
+
+[tool.briefcase.app.hardware.linux]
+requires = [
+    '../../gtk',
+]
+
+[tool.briefcase.app.hardware.windows]
+requires = [
+    '../../winforms',
+]
+
+# Mobile deployments
+[tool.briefcase.app.hardware.iOS]
+requires = [
+    '../../iOS',
+    'std-nslog>=1.0.0',
+]
+
+[tool.briefcase.app.hardware.android]
+requires = [
+    '../../android',
+]

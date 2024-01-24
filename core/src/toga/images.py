@@ -36,13 +36,16 @@ if TYPE_CHECKING:
     ImageContent: TypeAlias = PathLike | BytesLike | ImageLike
 
 
+NOT_PROVIDED = object()
+
+
 class Image:
     def __init__(
         self,
-        src: ImageContent | None = None,
+        src: ImageContent = NOT_PROVIDED,
         *,
-        path=None,  # DEPRECATED
-        data=None,  # DEPRECATED
+        path=NOT_PROVIDED,  # DEPRECATED
+        data=NOT_PROVIDED,  # DEPRECATED
     ):
         """Create a new image.
 
@@ -56,21 +59,21 @@ class Image:
         ######################################################################
         # 2023-11: Backwards compatibility
         ######################################################################
-        num_provided = sum(arg is not None for arg in (src, path, data))
+        num_provided = sum(arg is not NOT_PROVIDED for arg in (src, path, data))
         if num_provided > 1:
             raise ValueError("Received multiple arguments to constructor.")
         if num_provided == 0:
             raise TypeError(
                 "Image.__init__() missing 1 required positional argument: 'src'"
             )
-        if path is not None:
+        if path is not NOT_PROVIDED:
             src = path
             warn(
                 "Path argument is deprecated, use src instead.",
                 DeprecationWarning,
                 stacklevel=2,
             )
-        elif data is not None:
+        elif data is not NOT_PROVIDED:
             src = data
             warn(
                 "Data argument is deprecated, use src instead.",
