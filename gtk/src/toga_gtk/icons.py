@@ -1,4 +1,4 @@
-from .libs import Gdk, GdkPixbuf, GLib, Gtk
+from .libs import Gdk, GLib, Gtk
 
 
 class Icon:
