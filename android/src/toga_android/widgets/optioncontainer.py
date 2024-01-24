@@ -5,8 +5,14 @@ from dataclasses import dataclass
 
 from android.view import MenuItem
 from android.widget import LinearLayout
-from com.google.android.material.bottomnavigation import BottomNavigationView
-from com.google.android.material.navigation import NavigationBarView
+
+try:
+    from com.google.android.material.bottomnavigation import BottomNavigationView
+    from com.google.android.material.navigation import NavigationBarView
+except ImportError:
+    BottomNavigationView = None
+    NavigationBarView = None
+
 from java import dynamic_proxy
 from travertino.size import at_least
 
@@ -25,26 +31,35 @@ class TogaOption:
     menu_item: MenuItem | None = None
 
 
-class TogaOnItemSelectedListener(
-    dynamic_proxy(NavigationBarView.OnItemSelectedListener)
-):
-    def __init__(self, impl):
-        super().__init__()
-        self.impl = impl
+if NavigationBarView is not None:  # pragma: no branch
 
-    def onNavigationItemSelected(self, item):
-        for index, option in enumerate(self.impl.options):
-            if option.menu_item == item:
-                self.impl.select_option(index)
-                return True
+    class TogaOnItemSelectedListener(
+        dynamic_proxy(NavigationBarView.OnItemSelectedListener)
+    ):
+        def __init__(self, impl):
+            super().__init__()
+            self.impl = impl
 
-        return False
+        def onNavigationItemSelected(self, item):
+            for index, option in enumerate(self.impl.options):
+                if option.menu_item == item:
+                    self.impl.select_option(index)
+                    return True
+
+            return False
 
 
 class OptionContainer(Widget, Container):
     uses_icons = True
 
     def create(self):
+        if BottomNavigationView is None:  # pragma: no cover
+            raise RuntimeError(
+                "Unable to import BottomNavigationView. Ensure that the Material "
+                "system package (com.google.android.material:material:1.11.0) "
+                "is listed in your app's dependencies."
+            )
+
         self.native = LinearLayout(self._native_activity)
         self.native.setOrientation(LinearLayout.VERTICAL)
 
@@ -106,13 +121,15 @@ class OptionContainer(Widget, Container):
         # Create a menu item for the tab
         if index >= self.max_items:
             warnings.warn(
-                "OptionContainer is limited to 5 items on Android. Additional item will be ignored."
+                f"OptionContainer is limited to {self.max_items} items on "
+                "Android. Additional item will be ignored."
             )
             option.menu_item = None
         else:
             if len(self.options) > self.max_items:
                 warnings.warn(
-                    "OptionContainer is limited to 5 items on Android. Excess items will be ignored."
+                    f"OptionContainer is limited to {self.max_items} items on "
+                    "Android. Excess items will be ignored."
                 )
                 last_option = self.options[self.max_items - 1]
                 self.native_navigationview.getMenu().removeItem(
@@ -141,11 +158,9 @@ class OptionContainer(Widget, Container):
             )
 
     def set_option_enabled(self, index, enabled):
-        print("SET OPTION", index, enabled)
         option = self.options[index]
         option.enabled = enabled
         if option.menu_item:
-            print("SET MENU ITEM")
             option.menu_item.setEnabled(enabled)
 
     def is_option_enabled(self, index):
