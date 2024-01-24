@@ -14,10 +14,12 @@ class Button(Widget):
         self._icon = None
 
     def get_text(self):
-        return self.native.get_label()
+        text = self.native.get_label()
+        return text if text else ""
 
     def set_text(self, text):
-        self.native.set_label(text)
+        if not isinstance(self.native.get_child(), Gtk.Image) or text != "":
+            self.native.set_label(text)
 
     def get_icon(self):
         return self._icon

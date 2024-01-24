@@ -11,7 +11,8 @@ class ButtonProbe(SimpleProbe):
 
     @property
     def text(self):
-        return self.native.get_label()
+        text = self.native.get_label()
+        return text if text else ""
 
     def assert_no_icon(self):
         assert not isinstance(self.native.get_child(), Gtk.Image)
