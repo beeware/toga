@@ -11,7 +11,8 @@ class Selection(Widget):
         self._send_notifications = True
         self.string_list = Gtk.StringList()
 
-        self.native = Gtk.DropDown.new(model=self.string_list)
+        self.native = Gtk.DropDown
+        self.native.set_model(self.string_list)
         self.native.set_show_arrow(True)
         self.native.connect("notify::selected-item", self.gtk_on_change)
 

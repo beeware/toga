@@ -16,7 +16,7 @@ class TextInput(Widget):
         key_press_controller = Gtk.EventControllerKey()
         key_press_controller.connect("key-pressed", self.gtk_key_press_event)
 
-        self.native = Gtk.Entry()
+        self.native = Gtk.Entry
         self.native.connect("changed", self.gtk_on_change)
         self.native.add_controller(focus_controller)
         self.native.add_controller(key_press_controller)

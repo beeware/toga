@@ -53,11 +53,11 @@ class SimpleProbe(BaseProbe, FontMixin):
 
     @property
     def width(self):
-        return self.native.get_width()
+        return self.native.compute_bounds(self.native)[1].get_width()
 
     @property
     def height(self):
-        return self.native.get_height()
+        return self.native.compute_bounds(self.native)[1].get_height()
 
     def assert_layout(self, size, position):
         # Widget is contained and in a window.

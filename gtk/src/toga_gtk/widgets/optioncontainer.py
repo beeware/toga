@@ -7,7 +7,7 @@ class OptionContainer(Widget):
     uses_icons = False
 
     def create(self):
-        self.native = Gtk.Notebook()
+        self.native = Gtk.Notebook
         self.native.connect("switch-page", self.gtk_on_switch_page)
         self.sub_containers = []
 

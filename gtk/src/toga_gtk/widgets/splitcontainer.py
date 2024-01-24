@@ -7,7 +7,7 @@ from .base import Widget
 
 class SplitContainer(Widget):
     def create(self):
-        self.native = Gtk.Paned()
+        self.native = Gtk.Paned
         self.native.set_wide_handle(True)
 
         self.sub_containers = [TogaContainer(), TogaContainer()]

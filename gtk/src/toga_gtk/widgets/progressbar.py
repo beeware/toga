@@ -32,7 +32,7 @@ async def pulse(progressbar):
 
 class ProgressBar(Widget):
     def create(self):
-        self.native = Gtk.ProgressBar()
+        self.native = Gtk.ProgressBar
 
         self._max = 1.0
         self._running = False

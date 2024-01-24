@@ -6,7 +6,7 @@ from .base import Widget
 
 class ImageView(Widget):
     def create(self):
-        self.native = Gtk.Image()
+        self.native = Gtk.Image
         self.native.connect("size-allocate", self.gtk_size_allocate)
         self._aspect_ratio = None
 

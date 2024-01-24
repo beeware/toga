@@ -10,7 +10,7 @@ class Widget:
         super().__init__()
         self.interface = interface
         self.interface._impl = self
-        self.native = None
+        self._native = None
         self._container = None
         self.style_providers = {}
         self.create()
@@ -36,6 +36,38 @@ class Widget:
 
     def set_window(self, window):
         pass
+
+    @property
+    def native(self):
+        return self._native
+
+    @native.setter
+    def native(self, native):
+        self._native = self._native_base_builder(native)
+
+    def _native_base_builder(self, native):
+        class NativeWidget(native):
+            def do_direction_changed(self, previous_direction):
+                native.do_direction_changed(self, previous_direction)
+                if self._impl.container and self._impl.container.needs_redraw:
+                    self._impl.refresh()
+
+            def do_css_changed(self, change):
+                native.do_css_changed(self, change)
+                if self._impl.container and self._impl.container.needs_redraw:
+                    self._impl.refresh()
+
+            def do_state_flags_changed(self, previous_state_flags):
+                native.do_state_flags_changed(self, previous_state_flags)
+                if self._impl.container and self._impl.container.needs_redraw:
+                    self._impl.refresh()
+
+            def do_snapshot(self, snapshot):
+                native.do_snapshot(self, snapshot)
+                if self._impl.container and self._impl.container.needs_redraw:
+                    self._impl.refresh()
+
+        return NativeWidget()
 
     @property
     def container(self):
@@ -163,8 +195,7 @@ class Widget:
 
     def set_hidden(self, hidden):
         self.native.set_visible(not hidden)
-        if self.container:
-            self.container.make_dirty()
+        self.refresh()
 
     def set_color(self, color):
         self.apply_css("color", get_color_css(color))
@@ -196,6 +227,7 @@ class Widget:
             self.container.make_dirty(self)
 
     def rehint(self):
+        # print(3)
         # Perform the actual GTK rehint.
         min_size, _ = self.native.get_preferred_size()
 

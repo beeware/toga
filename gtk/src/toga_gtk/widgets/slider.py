@@ -19,7 +19,10 @@ from .base import Widget
 class Slider(Widget, toga.widgets.slider.SliderImpl):
     def create(self):
         self.adj = Gtk.Adjustment()
-        self.native = Gtk.Scale.new(Gtk.Orientation.HORIZONTAL, self.adj)
+
+        self.native = Gtk.Scale
+        self.native.set_orientation(Gtk.Orientation.HORIZONTAL)
+        self.native.set_adjustment(self.adj)
 
         self.native.connect("value-changed", self.gtk_on_change)
 

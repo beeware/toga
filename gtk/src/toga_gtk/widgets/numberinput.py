@@ -13,7 +13,7 @@ class NumberInput(Widget):
     def create(self):
         self.adjustment = Gtk.Adjustment()
 
-        self.native = Gtk.SpinButton()
+        self.native = Gtk.SpinButton
         self.native.set_adjustment(self.adjustment)
         self.native.set_numeric(True)
 

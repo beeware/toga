@@ -6,7 +6,7 @@ from .base import Widget
 
 class Divider(Widget):
     def create(self):
-        self.native = Gtk.Separator()
+        self.native = Gtk.Separator
 
     def rehint(self):
         min_size, size = self.native.get_preferred_size()

@@ -23,7 +23,7 @@ class Tree(Widget):
 
         self._create_columns()
 
-        self.native = Gtk.ScrolledWindow()
+        self.native = Gtk.ScrolledWindow
         self.native.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
         self.native.set_child(self.native_tree)
         self.native.set_min_content_width(200)

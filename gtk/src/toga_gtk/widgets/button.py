@@ -8,7 +8,7 @@ from .base import Widget
 
 class Button(Widget):
     def create(self):
-        self.native = Gtk.Button()
+        self.native = Gtk.Button
         self.native.connect("clicked", self.gtk_clicked)
 
         self._icon = None

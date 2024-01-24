@@ -8,9 +8,9 @@ class Switch(Widget):
     SPACING = 10
 
     def create(self):
-        self.native = Gtk.Box(
-            orientation=Gtk.Orientation.HORIZONTAL, spacing=self.SPACING
-        )
+        self.native = Gtk.Box
+        self.native.set_orientation(orientation=Gtk.Orientation.HORIZONTAL)
+        self.native.set_spacing(spacing=self.SPACING)
 
         self.native_label = Gtk.Label(xalign=0)
         self.native_label.set_name(f"toga-{self.interface.id}-label")

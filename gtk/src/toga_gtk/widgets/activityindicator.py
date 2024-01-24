@@ -4,7 +4,7 @@ from .base import Widget
 
 class ActivityIndicator(Widget):
     def create(self):
-        self.native = Gtk.Spinner()
+        self.native = Gtk.Spinner
 
     def is_running(self):
         return self.native.get_spinning()

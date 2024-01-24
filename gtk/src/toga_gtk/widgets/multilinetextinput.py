@@ -14,7 +14,7 @@ class MultilineTextInput(Widget):
     def create(self):
         # Wrap the TextView in a ScrolledWindow in order to show a
         # vertical scroll bar when necessary.
-        self.native = Gtk.ScrolledWindow()
+        self.native = Gtk.ScrolledWindow
         self.native.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
 
         self.buffer = Gtk.TextBuffer()

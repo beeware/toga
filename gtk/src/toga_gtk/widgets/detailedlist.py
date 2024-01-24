@@ -152,7 +152,7 @@ class DetailedList(Widget):
 
         # The actual native widget is an overlay, made up of the scrolled window, with
         # the revealer over the top.
-        self.native = Gtk.Overlay()
+        self.native = Gtk.Overlay
         self.native.add_overlay(scrolled_window)
         self.native.add_overlay(self.native_revealer)
 

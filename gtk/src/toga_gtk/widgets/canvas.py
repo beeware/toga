@@ -21,7 +21,7 @@ class Canvas(Widget):
                 "providing Cairo and its GTK bindings have been installed."
             )
 
-        self.native = Gtk.DrawingArea()
+        self.native = Gtk.DrawingArea
 
         self.native.connect("draw", self.gtk_draw_callback)
         self.native.connect("size-allocate", self.gtk_on_size_allocate)

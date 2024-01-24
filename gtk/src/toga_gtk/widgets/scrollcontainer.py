@@ -7,7 +7,7 @@ from .base import Widget
 
 class ScrollContainer(Widget):
     def create(self):
-        self.native = Gtk.ScrolledWindow()
+        self.native = Gtk.ScrolledWindow
 
         self.native.get_hadjustment().connect("changed", self.gtk_on_changed)
         self.native.get_vadjustment().connect("changed", self.gtk_on_changed)
