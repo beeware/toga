@@ -33,4 +33,4 @@ class ButtonProbe(SimpleProbe):
         return color
 
     async def press(self):
-        self.native.clicked()
+        self.native.emit("clicked")
