@@ -222,7 +222,8 @@ class App:
         self.native.quit()
 
     def get_current_window(self):
-        return self.native.get_active_window()._impl
+        current_window = self.native.get_active_window()._impl
+        return current_window if current_window.interface.visible else None
 
     def set_current_window(self, window):
         window._impl.native.present()
