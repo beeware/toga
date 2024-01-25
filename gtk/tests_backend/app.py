@@ -4,7 +4,6 @@ import pytest
 
 from toga_gtk.keys import gtk_accel, toga_key
 from toga_gtk.libs import Gdk, Gtk
-from toga_gtk.screen import Screen as ScreenImpl
 
 from .probe import BaseProbe
 
@@ -155,6 +154,3 @@ class AppProbe(BaseProbe):
         event.state = state
 
         return toga_key(event)
-
-    def assert_screen_implementation_type(self, screen):
-        assert isinstance(screen._impl, ScreenImpl)

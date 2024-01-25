@@ -11,8 +11,6 @@ from System.Windows.Forms import (
     ToolStripSeparator,
 )
 
-from toga_winforms.screen import Screen as ScreenImpl
-
 from .probe import BaseProbe
 
 
@@ -150,6 +148,3 @@ class WindowProbe(BaseProbe):
 
     def press_toolbar_button(self, index):
         self._native_toolbar_item(index).OnClick(EventArgs.Empty)
-
-    def assert_screen_implementation_type(self, screen):
-        assert isinstance(screen._impl, ScreenImpl)

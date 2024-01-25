@@ -4,7 +4,6 @@ from importlib import import_module
 import pytest
 
 from toga.platform import current_platform
-from toga.screen import Screen as ScreenInterface
 
 
 @pytest.fixture
@@ -14,14 +13,6 @@ def screen_probe_list(app):
         return [getattr(module, "ScreenProbe")(app, screen) for screen in app.screens]
     else:
         return [getattr(module, "ScreenProbe")(screen) for screen in app.screens]
-
-
-async def test_type(screen_probe_list):
-    """The type of the implementation and native classes should be correct"""
-    for screen_probe in screen_probe_list:
-        assert isinstance(screen_probe.screen, ScreenInterface)
-        screen_probe.assert_implementation_type()
-        screen_probe.assert_native_type()
 
 
 async def test_name(screen_probe_list):

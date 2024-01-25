@@ -3,7 +3,6 @@ import inspect
 import os
 import sys
 from pathlib import Path
-from typing import Tuple
 from urllib.parse import unquote, urlparse
 
 from rubicon.objc.eventloop import CocoaLifecycle, EventLoopPolicy
@@ -404,7 +403,7 @@ class App:
     def main_loop(self):
         self.loop.run_forever(lifecycle=CocoaLifecycle(self.native))
 
-    def get_screens(self) -> Tuple[ScreenImpl, ...]:
+    def get_screens(self):
         return [ScreenImpl(native=screen) for screen in NSScreen.screens]
 
     def set_main_window(self, window):

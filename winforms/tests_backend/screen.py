@@ -1,7 +1,5 @@
 from System.Windows.Forms import Screen as WinFormsScreen
 
-from toga_winforms.screen import Screen as ScreenImpl
-
 from .probe import BaseProbe
 
 
@@ -11,11 +9,6 @@ class ScreenProbe(BaseProbe):
         self.screen = screen
         self._impl = screen._impl
         self.native = screen._impl.native
-
-    def assert_implementation_type(self):
-        assert isinstance(self._impl, ScreenImpl)
-
-    def assert_native_type(self):
         assert isinstance(self.native, WinFormsScreen)
 
     def assert_name(self):

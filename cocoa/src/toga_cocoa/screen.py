@@ -1,5 +1,3 @@
-from typing import Tuple
-
 from toga.screen import Screen as ScreenInterface
 from toga_cocoa.libs import (
     CGImageGetHeight,
@@ -23,18 +21,18 @@ class Screen:
             cls._instances[native] = instance
             return instance
 
-    def get_name(self) -> str:
+    def get_name(self):
         return str(self.native.localizedName)
 
-    def get_origin(self) -> Tuple[int, int]:
+    def get_origin(self):
         frame_native = self.native.frame
         return (int(frame_native.origin.x), int(frame_native.origin.y))
 
-    def get_size(self) -> Tuple[int, int]:
+    def get_size(self):
         frame_native = self.native.frame
         return (int(frame_native.size.width), int(frame_native.size.height))
 
-    def get_image_data(self) -> NSImage:
+    def get_image_data(self):
         # Retrieve the device description dictionary for the NSScreen
         device_description = self.native.deviceDescription
         # Extract the CGDirectDisplayID from the device description

@@ -1,5 +1,3 @@
-from typing import Tuple
-
 from toga.screen import Screen as ScreenInterface
 
 from .widgets.base import Scalable
@@ -20,13 +18,13 @@ class Screen(Scalable):
             instance.init_scale(instance.app.native)
             return instance
 
-    def get_name(self) -> str:
-        return str(self.native.getName())
+    def get_name(self):
+        return self.native.getName()
 
-    def get_origin(self) -> Tuple[int, int]:
+    def get_origin(self):
         return (0, 0)
 
-    def get_size(self) -> Tuple[int, int]:
+    def get_size(self):
         return (
             self.scale_out(self.native.getWidth()),
             self.scale_out(self.native.getHeight()),

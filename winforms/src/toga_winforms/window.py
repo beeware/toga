@@ -190,7 +190,7 @@ class Window(Container, Scalable):
             self.native.ClientSize.Height - vertical_shift,
         )
 
-    def get_current_screen(self) -> ScreenImpl:
+    def get_current_screen(self):
         return ScreenImpl(WinForms.Screen.FromControl(self.native))
 
     def get_image_data(self):

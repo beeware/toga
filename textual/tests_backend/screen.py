@@ -1,5 +1,3 @@
-from toga_textual.screen import Screen as ScreenImpl
-
 from textual.screen import Screen as TextualScreen
 
 
@@ -9,12 +7,6 @@ class ScreenProbe:
         self.screen = screen
         self._impl = screen._impl
         self.native = screen._impl.native
-
-    def assert_implementation_type(self):
-        assert isinstance(self._impl, ScreenImpl)
-
-    def assert_native_type(self):
-        print(type(self.native))
         assert isinstance(self.native, TextualScreen)
 
     def assert_name(self):

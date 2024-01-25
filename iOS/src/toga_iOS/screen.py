@@ -1,5 +1,3 @@
-from typing import Tuple
-
 from toga.screen import Screen as ScreenInterface
 
 
@@ -16,13 +14,14 @@ class Screen:
             cls._instances[native] = instance
             return instance
 
-    def get_name(self) -> str:
+    def get_name(self):
+        # Return a dummy name as UIScreen object has no name related attributes.
         return "iOS Screen"
 
-    def get_origin(self) -> Tuple[int, int]:
+    def get_origin(self):
         return (0, 0)
 
-    def get_size(self) -> Tuple[int, int]:
+    def get_size(self):
         return int(self.native.bounds.size.width), int(self.native.bounds.size.height)
 
     def get_image_data(self):

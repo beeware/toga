@@ -1,6 +1,5 @@
 import asyncio
 import sys
-from typing import Tuple
 
 from android.content import Context
 from android.graphics.drawable import BitmapDrawable
@@ -286,7 +285,7 @@ class App:
     def show_cursor(self):
         pass
 
-    def get_screens(self) -> Tuple[ScreenImpl, ...]:
+    def get_screens(self):
         context = self.native.getApplicationContext()
         display_manager = context.getSystemService(Context.DISPLAY_SERVICE)
         screen_list = display_manager.getDisplays()

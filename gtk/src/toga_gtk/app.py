@@ -3,7 +3,6 @@ import os
 import signal
 import sys
 from pathlib import Path
-from typing import Tuple
 
 import gbulb
 
@@ -190,7 +189,7 @@ class App:
 
         self.loop.run_forever(application=self.native)
 
-    def get_screens(self) -> Tuple[ScreenImpl, ...]:
+    def get_screens(self):
         display = Gdk.Display.get_default()
         # CI runs on wayland
         if os.environ.get("XDG_SESSION_TYPE", "").lower() == "x11":  # pragma: no cover

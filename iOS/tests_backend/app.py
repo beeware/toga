@@ -8,7 +8,6 @@ from toga_iOS.libs import (
     NSSearchPathDomainMask,
     UIApplication,
 )
-from toga_iOS.screen import Screen as ScreenImpl
 
 from .probe import BaseProbe
 
@@ -70,6 +69,3 @@ class AppProbe(BaseProbe):
     def rotate(self):
         self.native = self.app._impl.native
         self.native.delegate.application(self.native, didChangeStatusBarOrientation=0)
-
-    def assert_screen_implementation_type(self, screen):
-        assert isinstance(screen._impl, ScreenImpl)

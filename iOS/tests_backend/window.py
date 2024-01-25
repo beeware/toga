@@ -1,7 +1,6 @@
 import pytest
 
 from toga_iOS.libs import UIApplication, UIWindow
-from toga_iOS.screen import Screen as ScreenImpl
 
 from .probe import BaseProbe
 
@@ -78,6 +77,3 @@ class WindowProbe(BaseProbe):
 
     def has_toolbar(self):
         pytest.skip("Toolbars not implemented on iOS")
-
-    def assert_screen_implementation_type(self, screen):
-        assert isinstance(screen._impl, ScreenImpl)

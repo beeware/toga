@@ -170,5 +170,5 @@ class Window:
     def set_full_screen(self, is_full_screen):
         pass
 
-    def get_current_screen(self) -> ScreenImpl:
+    def get_current_screen(self):
         return ScreenImpl(self.native)

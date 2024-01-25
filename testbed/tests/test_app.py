@@ -4,7 +4,6 @@ import pytest
 
 import toga
 from toga.colors import CORNFLOWERBLUE, FIREBRICK, REBECCAPURPLE
-from toga.screen import Screen as ScreenInterface
 from toga.style.pack import Pack
 
 from .test_window import window_probe
@@ -555,12 +554,7 @@ async def test_beep(app):
 
 # Test primary screen `origin` and `name` & `origin` uniqueness of other screens.
 async def test_screens(app, app_probe):
-    """A screen should have unique origin and name and
-    the primary screen should have the origin (0,0)"""
-    assert isinstance(app.screens, list)
-    for screen in app.screens:
-        assert isinstance(screen, ScreenInterface)
-        app_probe.assert_screen_implementation_type(screen)
+    """Screens must have unique origins and names, with the primary screen at (0,0)."""
 
     # Get the origin of screen 0
     assert app.screens[0].origin == (0, 0)

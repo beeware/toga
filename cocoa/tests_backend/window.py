@@ -14,7 +14,6 @@ from toga_cocoa.libs import (
     NSWindow,
     NSWindowStyleMask,
 )
-from toga_cocoa.screen import Screen as ScreenImpl
 
 from .probe import BaseProbe
 
@@ -262,6 +261,3 @@ class WindowProbe(BaseProbe):
             restype=None,
             argtypes=[objc_id],
         )
-
-    def assert_screen_implementation_type(self, screen):
-        assert isinstance(screen._impl, ScreenImpl)

@@ -2,8 +2,6 @@ import os
 
 from gi.repository import GdkX11
 
-from toga_gtk.screen import Screen as ScreenImpl
-
 from .probe import BaseProbe
 
 
@@ -13,11 +11,6 @@ class ScreenProbe(BaseProbe):
         self.screen = screen
         self._impl = screen._impl
         self.native = screen._impl.native
-
-    def assert_implementation_type(self):
-        assert isinstance(self._impl, ScreenImpl)
-
-    def assert_native_type(self):
         if os.environ.get("XDG_SESSION_TYPE", "").lower() == "x11":
             assert isinstance(self.native, GdkX11.X11Monitor)
         else:

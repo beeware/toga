@@ -1,5 +1,3 @@
-from typing import Tuple
-
 from PIL import Image, ImageDraw
 
 from toga.screen import Screen as ScreenInterface
@@ -25,16 +23,16 @@ class Screen(LoggedObject):
             cls._instances[native] = instance
             return instance
 
-    def get_name(self) -> str:
+    def get_name(self):
         return self.native[0]
 
-    def get_origin(self) -> Tuple[int, int]:
+    def get_origin(self):
         return self.native[1]
 
-    def get_size(self) -> Tuple[int, int]:
+    def get_size(self):
         return self.native[2]
 
-    def get_image_data(self) -> Image:
+    def get_image_data(self):
         self._action("get image data")
 
         img = Image.new("RGB", self.native[2], "white")

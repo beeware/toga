@@ -117,7 +117,7 @@ class Window:
     def close(self):
         pass
 
-    def get_current_screen(self) -> ScreenImpl:
+    def get_current_screen(self):
         return ScreenImpl(UIScreen.mainScreen)
 
     def get_image_data(self):

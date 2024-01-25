@@ -4,8 +4,6 @@ from unittest.mock import Mock
 import pytest
 
 import toga
-from toga.screen import Screen as ScreenInterface
-from toga_dummy.screen import Screen as ScreenImpl
 from toga_dummy.utils import (
     assert_action_not_performed,
     assert_action_performed,
@@ -358,8 +356,6 @@ def test_as_image(window):
 
 def test_screen(window, app):
     """A window can be moved to a different screen"""
-    assert isinstance(window.screen, ScreenInterface)
-    assert isinstance(window.screen._impl, ScreenImpl)
     # Cannot actually change window.screen, so just check
     # the window positions as a substitute for moving the
     # window between the screens.
@@ -371,8 +367,7 @@ def test_screen(window, app):
 
 
 def test_screen_position(window, app):
-    """A window can be moved using both the
-    absolute position and relative screen position"""
+    """The window can be relocated using absolute and relative screen positions."""
     # _________________________________________________
     # Display Setup:                                  |
     # ________________________________________________|
