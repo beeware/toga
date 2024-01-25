@@ -38,7 +38,7 @@ The following formats are supported (in order of preference):
 * **Android** - PNG
 * **iOS** - ICNS, PNG, BMP, ICO
 * **macOS** - ICNS, PNG, PDF
-* **GTK** - PNG, ICO, ICNS 
+* **GTK** - PNG, ICO, ICNS
 * **Windows** - ICO, PNG, BMP
 
 The first matching icon of the most specific platform, with the most specific
