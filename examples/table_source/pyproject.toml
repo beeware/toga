@@ -47,6 +47,13 @@ requires = [
     "../../android",
 ]
 
+base_theme = "Theme.MaterialComponents.Light.DarkActionBar"
+
+build_gradle_dependencies = [
+    "com.google.android.material:material:1.11.0",
+    "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0",
+]
+
 # Web deployment
 [tool.briefcase.app.table_source.web]
 requires = [
