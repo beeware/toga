@@ -142,10 +142,19 @@ async def test_native_image(app):
     pil_image.save(buffer, format="png", compress_level=0)
 
     # Construct a Toga image from PIL image
-    image = toga.Image(buffer.getvalue())
+    image1 = toga.Image(buffer.getvalue())
+
+    assert image1.width == 110
+    assert image1.height == 30
 
     # Construct a Toga image using the native image type
-    image_from_native = toga.Image(image._impl.native)
+    image_from_native = toga.Image(image1._impl.native)
 
     assert image_from_native.width == 110
     assert image_from_native.height == 30
+
+    # Construct an image from `image_from_native`'s data
+    image2 = toga.Image(image_from_native.data)
+
+    assert image2.width == 110
+    assert image2.height == 30
