@@ -130,3 +130,22 @@ async def test_save(app):
                 # suite is run; and the files have a PID in them to ensure that
                 # they're unique across test runs.
                 pass
+
+
+async def test_native_image(app):
+    # Generate an image using pillow
+    pil_image = PIL_Image.new("RGBA", size=(110, 30))
+    draw_context = PIL_ImageDraw.Draw(pil_image)
+    draw_context.text((20, 10), "Hello World", fill="green")
+
+    buffer = io.BytesIO()
+    pil_image.save(buffer, format="png", compress_level=0)
+
+    # Construct a Toga image from PIL image
+    image = toga.Image(buffer.getvalue())
+
+    # Construct a Toga image using the native image type
+    image_from_native = toga.Image(image._impl.native)
+
+    assert image_from_native.width == 110
+    assert image_from_native.height == 30
