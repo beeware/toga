@@ -9,24 +9,30 @@ from .base import Widget
 
 class TextInput(Widget):
     def create(self):
-        self.native = Gtk.Entry()
+        focus_controller = Gtk.EventControllerFocus()
+        focus_controller.connect("enter", self.gtk_focus_in_event)
+        focus_controller.connect("leave", self.gtk_focus_out_event)
+
+        key_press_controller = Gtk.EventControllerKey()
+        key_press_controller.connect("key-pressed", self.gtk_key_press_event)
+
+        self.native = Gtk.Entry
         self.native.connect("changed", self.gtk_on_change)
-        self.native.connect("focus-in-event", self.gtk_focus_in_event)
-        self.native.connect("focus-out-event", self.gtk_focus_out_event)
-        self.native.connect("key-press-event", self.gtk_key_press_event)
+        self.native.add_controller(focus_controller)
+        self.native.add_controller(key_press_controller)
 
     def gtk_on_change(self, entry):
         self.interface.on_change()
         self.interface._validate()
 
-    def gtk_focus_in_event(self, entry, user_data):
-        self.interface.on_gain_focus()
+    def gtk_focus_in_event(self, event_controller_key):
+        self.interface.on_gain_focus(self.interface)
 
-    def gtk_focus_out_event(self, entry, user_data):
-        self.interface.on_lose_focus()
+    def gtk_focus_out_event(self, event_controller_key):
+        self.interface.on_lose_focus(self.interface)
 
-    def gtk_key_press_event(self, entry, user_data):
-        key_pressed = toga_key(user_data)
+    def gtk_key_press_event(self, event_controller_key, keyval, keycode, state):
+        key_pressed = toga_key(keyval)
         if key_pressed and key_pressed["key"] in {Key.ENTER, Key.NUMPAD_ENTER}:
             self.interface.on_confirm()
 
@@ -56,16 +62,16 @@ class TextInput(Widget):
 
     def rehint(self):
         # print("REHINT", self,
-        #     self._impl.get_preferred_width(), self._impl.get_preferred_height(),
+        #     self._impl.get_preferred_size()[0],
+        #     self._impl.get_preferred_size()[1],
         #     getattr(self, '_fixed_height', False), getattr(self, '_fixed_width', False)
         # )
-        width = self.native.get_preferred_width()
-        height = self.native.get_preferred_height()
+        _, size = self.native.get_preferred_size()
 
         self.interface.intrinsic.width = at_least(
-            max(self.interface._MIN_WIDTH, width[1])
+            max(self.interface._MIN_WIDTH, size.width)
         )
-        self.interface.intrinsic.height = height[1]
+        self.interface.intrinsic.height = size.height
 
     def set_error(self, error_message):
         self.native.set_icon_from_icon_name(Gtk.EntryIconPosition.SECONDARY, "error")

@@ -2,15 +2,19 @@ from contextlib import contextmanager
 
 from travertino.size import at_least
 
-from ..libs import Gtk
+from ..libs import Gtk, get_background_color_css, get_color_css
 from .base import Widget
 
 
 class Selection(Widget):
     def create(self):
-        self.native = Gtk.ComboBoxText.new()
-        self.native.connect("changed", self.gtk_on_changed)
         self._send_notifications = True
+        self.string_list = Gtk.StringList()
+
+        self.native = Gtk.DropDown
+        self.native.set_model(self.string_list)
+        self.native.set_show_arrow(True)
+        self.native.connect("notify::selected-item", self.gtk_on_change)
 
     @contextmanager
     def suspend_notifications(self):
@@ -18,88 +22,91 @@ class Selection(Widget):
         yield
         self._send_notifications = True
 
-    def gtk_on_changed(self, widget):
+    def gtk_on_change(self, widget, data):
         if self._send_notifications:
-            self.interface.on_change()
+            self.interface.on_change(widget)
 
-    # FIXME: 2023-05-31 Everything I can find in documentation, and every test I
-    # do with manual stylesheet in the GTK Inspector, says that `.toga button`
-    # should target the colors of a GTK ComboBoxText widget. But when applied to
-    # the widget, it either doesn't hit, or it's being overridden, and I can't
-    # work out why.
+        # Changing the selected text can change the layout size
+        self.interface.refresh()
 
-    # def set_color(self, color):
-    #     self.apply_css(
-    #         "color",
-    #         get_color_css(color),
-    #         selector=".toga, .toga button",
-    #     )
+    def set_color(self, color):
+        self.apply_css(
+            "color",
+            get_color_css(color),
+            selector=".toga *",
+        )
 
-    # def set_background_color(self, color):
-    #     self.apply_css(
-    #         "background_color",
-    #         get_background_color_css(color),
-    #         selector=".toga, .toga button",
-    #     )
+    def set_background_color(self, color):
+        self.apply_css(
+            "background_color",
+            get_background_color_css(color),
+            selector=".toga *",
+        )
 
     def change(self, item):
         index = self.interface._items.index(item)
-        selection = self.native.get_active()
+        selection_index = self.native.get_selected()
         # Insert a new entry at the same index,
         # then delete the old entry (at the increased index)
         with self.suspend_notifications():
-            self.native.insert_text(index, self.interface._title_for_item(item))
-            self.native.remove(index + 1)
-            if selection == index:
-                self.native.set_active(index)
+            self.string_list.splice(index, 1, [self.interface._title_for_item(item)])
+            if selection_index == index:
+                self.native.set_selected(index)
 
         # Changing the item text can change the layout size
         self.interface.refresh()
 
     def insert(self, index, item):
         with self.suspend_notifications():
-            self.native.insert_text(index, self.interface._title_for_item(item))
+            item_at_index = self.string_list.get_string(index)
+            if item_at_index is None:
+                self.string_list.splice(
+                    index, 0, [self.interface._title_for_item(item)]
+                )
+            else:
+                self.string_list.splice(
+                    index, 1, [self.interface._title_for_item(item), item_at_index]
+                )
 
         # If you're inserting the first item, make sure it's selected
-        if self.native.get_active() == -1:
-            self.native.set_active(0)
+        if self.native.get_selected() == Gtk.INVALID_LIST_POSITION:
+            self.native.set_selected(0)
 
     def remove(self, index, item):
-        selection = self.native.get_active()
+        selection_index = self.native.get_selected()
         with self.suspend_notifications():
-            self.native.remove(index)
+            self.string_list.splice(index, 1, None)
 
         # If we deleted the item that is currently selected, reset the
         # selection to the first item
-        if index == selection:
-            self.native.set_active(0)
+        if selection_index == index:
+            self.native.set_selected(0)
 
     def clear(self):
         with self.suspend_notifications():
-            self.native.remove_all()
+            items_num = self.string_list.get_n_items()
+            self.string_list.splice(0, items_num, None)
         self.interface.on_change()
 
     def select_item(self, index, item):
-        self.native.set_active(index)
+        self.native.set_selected(self.interface._items.index(item))
 
     def get_selected_index(self):
-        index = self.native.get_active()
-        if index == -1:
+        index = self.native.get_selected()
+        if index == Gtk.INVALID_LIST_POSITION:
             return None
         return index
 
     def rehint(self):
-        width = self.native.get_preferred_width()
-        height = self.native.get_preferred_height()
+        # print(
+        #     "REHINT",
+        #     self,
+        #     self.native.get_preferred_size()[0].width,
+        #     self.native.get_preferred_size()[0].height,
+        # )
+        min_size, size = self.native.get_preferred_size()
 
-        # FIXME: 2023-05-31 This will always provide a size that is big enough,
-        # but sometimes it will be *too* big. For example, if you set the font size
-        # large, then reduce it again, the widget *could* reduce in size. However,
-        # I can't find any way to prod GTK to perform a resize that will reduce
-        # it's minimum size. This is the reason the test probe has a `shrink_on_resize`
-        # property; if we can fix this resize issue, `shrink_on_resize` may not
-        # be necessary.
         self.interface.intrinsic.width = at_least(
-            max(self.interface._MIN_WIDTH, width[1])
+            max(min_size.width, self.interface._MIN_WIDTH)
         )
-        self.interface.intrinsic.height = height[1]
+        self.interface.intrinsic.height = size.height

@@ -1,7 +1,11 @@
-from toga.command import Separator
-
 from .container import TogaContainer
-from .libs import Gdk, Gtk
+from .libs import Gtk
+
+
+class TogaWindow(Gtk.Window):
+    def do_snapshot(self, snapshot):
+        self.snapshot = snapshot
+        Gtk.ApplicationWindow.do_snapshot(self, self.snapshot)
 
 
 class Window:
@@ -16,7 +20,7 @@ class Window:
         self.create()
         self.native._impl = self
 
-        self.native.connect("delete-event", self.gtk_delete_event)
+        self.native.connect("close-request", self.gtk_close_request)
 
         self.native.set_default_size(size[0], size[1])
 
@@ -35,22 +39,18 @@ class Window:
         # toolbar (if required) will be added at the top of the layout.
         self.layout = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
 
-        self.native_toolbar = Gtk.Toolbar()
-        self.native_toolbar.set_style(Gtk.ToolbarStyle.BOTH)
-        self.native_toolbar.set_visible(False)
-        self.toolbar_items = {}
-        self.toolbar_separators = set()
-        self.layout.pack_start(self.native_toolbar, expand=False, fill=False, padding=0)
-
-        # Because expand and fill are True, the container will fill the available
-        # space, and will get a size_allocate callback if the window is resized.
+        # Because vexpand and valign are set, the container will fill the
+        # available space, and will get a size_allocate callback if the
+        # window is resized.
         self.container = TogaContainer()
-        self.layout.pack_end(self.container, expand=True, fill=True, padding=0)
+        self.container.set_valign(Gtk.Align.FILL)
+        self.container.set_vexpand(True)
+        self.layout.append(self.container)
 
-        self.native.add(self.layout)
+        self.native.set_child(self.layout)
 
     def create(self):
-        self.native = Gtk.Window()
+        self.native = TogaWindow()
 
     def get_title(self):
         return self.native.get_title()
@@ -62,71 +62,28 @@ class Window:
         app.native.add_window(self.native)
 
     def create_toolbar(self):
-        # If there's an existing toolbar, hide it until we know we need it.
-        if self.toolbar_items:
-            self.native_toolbar.set_visible(False)
-
-        # Deregister any toolbar buttons from their commands, and remove them from the toolbar
-        for cmd, item_impl in self.toolbar_items.items():
-            self.native_toolbar.remove(item_impl)
-            cmd._impl.native.remove(item_impl)
-        # Remove any toolbar separators
-        for sep in self.toolbar_separators:
-            self.native_toolbar.remove(sep)
-
-        # Create the new toolbar items
-        self.toolbar_items = {}
-        self.toolbar_separators = set()
-        prev_group = None
-        for cmd in self.interface.toolbar:
-            if isinstance(cmd, Separator):
-                item_impl = Gtk.SeparatorToolItem()
-                item_impl.set_draw(False)
-                self.toolbar_separators.add(item_impl)
-                prev_group = None
-            else:
-                # A change in group requires adding a toolbar separator
-                if prev_group is not None and prev_group != cmd.group:
-                    group_sep = Gtk.SeparatorToolItem()
-                    group_sep.set_draw(True)
-                    self.toolbar_separators.add(group_sep)
-                    self.native_toolbar.insert(group_sep, -1)
-                    prev_group = None
-                else:
-                    prev_group = cmd.group
-
-                item_impl = Gtk.ToolButton()
-                if cmd.icon:
-                    item_impl.set_icon_widget(
-                        Gtk.Image.new_from_pixbuf(cmd.icon._impl.native_32)
-                    )
-                item_impl.set_label(cmd.text)
-                if cmd.tooltip:
-                    item_impl.set_tooltip_text(cmd.tooltip)
-                item_impl.connect("clicked", cmd._impl.gtk_clicked)
-                cmd._impl.native.append(item_impl)
-                self.toolbar_items[cmd] = item_impl
-
-            self.native_toolbar.insert(item_impl, -1)
-
-        if self.toolbar_items:
-            self.native_toolbar.set_visible(True)
-            self.native_toolbar.show_all()
+        # TODO: Implementing toolbar commands in HeaderBar; See #1931.
+        self.interface.factory.not_implemented("Window.create_toolbar()")
+        pass
 
     def set_content(self, widget):
         # Set the new widget to be the container's content
         self.container.content = widget
 
     def show(self):
-        self.native.show_all()
+        self.native.set_visible(True)
+        child = self.native.get_last_child()
+        while child is not None:
+            child.set_visible(True)
+            child = child.get_prev_sibling()
 
     def hide(self):
-        self.native.hide()
+        self.native.set_visible(False)
 
     def get_visible(self):
-        return self.native.get_property("visible")
+        return self.native.get_visible()
 
-    def gtk_delete_event(self, widget, data):
+    def gtk_close_request(self, data):
         if self._is_closing:
             should_close = True
         else:
@@ -144,18 +101,18 @@ class Window:
         self.native.close()
 
     def get_position(self):
-        pos = self.native.get_position()
-        return pos.root_x, pos.root_y
+        pass
 
     def set_position(self, position):
-        self.native.move(position[0], position[1])
+        # Does nothing on gtk4
+        pass
 
     def get_size(self):
-        size = self.native.get_size()
-        return size.width, size.height
+        width, height = self.native.get_default_size()
+        return width, height
 
     def set_size(self, size):
-        self.native.resize(size[0], size[1])
+        self.native.set_default_size(size[0], size[1])
 
     def set_full_screen(self, is_full_screen):
         if is_full_screen:
@@ -164,30 +121,13 @@ class Window:
             self.native.unfullscreen()
 
     def get_image_data(self):
-        display = self.native.get_display()
-        display.flush()
-
-        # For some reason, converting the *window* to a pixbuf fails. But if you extract
-        # a *part* of the overall screen, that works. So - work out the origin of the
-        # window, then the allocation for the container relative to that window, and
-        # capture that rectangle.
-        window = self.native.get_window()
-        origin = window.get_origin()
-        allocation = self.container.get_allocation()
-
-        screen = display.get_default_screen()
-        root_window = screen.get_root_window()
-        screenshot = Gdk.pixbuf_get_from_window(
-            root_window,
-            origin.x + allocation.x,
-            origin.y + allocation.y,
-            allocation.width,
-            allocation.height,
-        )
-
-        success, buffer = screenshot.save_to_bufferv("png")
-        if success:
-            return buffer
-        else:  # pragma: nocover
-            # This shouldn't ever happen, and it's difficult to manufacture in test conditions
-            raise ValueError(f"Unable to generate screenshot of {self}")
+        # FIXME: The following should be work but it doesn't. Please, see this
+        # https://gitlab.gnome.org/GNOME/pygobject/-/issues/601 for details.
+        # snapshot_node = self.native.snapshot.to_node()
+        # screenshot_texture = self.native.get_renderer().render_texture(
+        #     snapshot_node, None
+        # )
+        # screenshot = screenshot_texture.save_to_png_bytes()
+        # return screenshot.get_data()
+        self.interface.factory.not_implemented("Window.get_image_data()")
+        pass

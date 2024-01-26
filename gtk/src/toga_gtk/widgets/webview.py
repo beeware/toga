@@ -16,7 +16,7 @@ class WebView(Widget):
                 "providing Webkit2 and its GTK bindings have been installed."
             )
 
-        self.native = WebKit2.WebView()
+        self.native = WebKit2.WebView
 
         settings = self.native.get_settings()
         settings.set_property("enable-developer-extras", True)

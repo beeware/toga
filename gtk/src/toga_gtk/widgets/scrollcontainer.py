@@ -7,7 +7,7 @@ from .base import Widget
 
 class ScrollContainer(Widget):
     def create(self):
-        self.native = Gtk.ScrolledWindow()
+        self.native = Gtk.ScrolledWindow
 
         self.native.get_hadjustment().connect("changed", self.gtk_on_changed)
         self.native.get_vadjustment().connect("changed", self.gtk_on_changed)
@@ -20,7 +20,7 @@ class ScrollContainer(Widget):
         self.native.set_overlay_scrolling(True)
 
         self.document_container = TogaContainer()
-        self.native.add(self.document_container)
+        self.native.set_child(self.document_container)
 
     def gtk_on_changed(self, *args):
         self.interface.on_scroll()
@@ -29,7 +29,7 @@ class ScrollContainer(Widget):
         self.document_container.content = widget
 
         # Force the display of the new content
-        self.native.show_all()
+        self.native.set_visible(True)
 
     def set_app(self, app):
         self.interface.content.app = app

@@ -122,6 +122,7 @@ class DetailedList(Widget):
         scrolled_window.set_min_content_width(self.interface._MIN_WIDTH)
         scrolled_window.set_min_content_height(self.interface._MIN_HEIGHT)
         scrolled_window.add(self.native_detailedlist)
+        scrolled_window.set_child(self.native_detailedlist)
 
         self.native_vadj = scrolled_window.get_vadjustment()
         self.native_vadj.connect("value-changed", self.gtk_on_value_changed)
@@ -151,55 +152,55 @@ class DetailedList(Widget):
 
         # The actual native widget is an overlay, made up of the scrolled window, with
         # the revealer over the top.
-        self.native = Gtk.Overlay()
+        self.native = Gtk.Overlay
         self.native.add_overlay(scrolled_window)
         self.native.add_overlay(self.native_revealer)
 
         # Set up a gesture to capture right clicks.
-        self.gesture = Gtk.GestureMultiPress.new(self.native_detailedlist)
-        self.gesture.set_button(3)
-        self.gesture.set_propagation_phase(Gtk.PropagationPhase.BUBBLE)
-        self.gesture.connect("pressed", self.gtk_on_right_click)
+        right_click_gesture = Gtk.GestureClick.new()
+        right_click_gesture.set_button(3)  # Montoring right mouse button
+        right_click_gesture.set_propagation_phase(Gtk.PropagationPhase.BUBBLE)
+        right_click_gesture.connect("pressed", self.gtk_on_right_click)
+        self.native_detailedlist.add_controller(right_click_gesture)
 
-        # Set up a box that contains action buttons. This widget can be can be re-used
+        # Set up a box that contains action buttons. This widget can be re-used
         # for any row when it is activated.
         self.native_action_buttons = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+
         action_buttons_hbox = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
+        action_buttons_hbox.set_valign(Gtk.Align.FILL)
+        action_buttons_hbox.set_vexpand(True)
 
         # TODO: Can we replace "magic words" like delete with an appropriate icon?
         # self.native_primary_action_button = Gtk.Button.new_from_icon_name(
         #     "user-trash-symbolic", Gtk.IconSize.BUTTON
         # )
-        action_buttons_hbox.pack_start(Gtk.Box(), True, True, 0)
+        box1 = Gtk.Box()
+        box1.set_valign(Gtk.Align.FILL)
+        box1.set_vexpand(True)
+        action_buttons_hbox.append(box1)
 
         self.native_primary_action_button = Gtk.Button.new_with_label(
             self.interface._primary_action
         )
+        self.native_primary_action_button.set_valign(Gtk.Align.CENTER)
+        self.native_primary_action_button.set_vexpand(False)
+        self.native_primary_action_button.set_margin_top(10)
+        self.native_primary_action_button.set_margin_bottom(10)
+        self.native_primary_action_button.set_margin_start(10)
+        self.native_primary_action_button.set_margin_end(10)
         self.native_primary_action_button.connect(
             "clicked", self.gtk_on_primary_clicked
         )
-        action_buttons_hbox.pack_start(
-            self.native_primary_action_button, False, False, 10
-        )
+        action_buttons_hbox.append(self.native_primary_action_button)
 
-        # TODO: Can we replace "magic words" like delete with an appropriate icon?
-        # self.native_secondary_action_button = Gtk.Button.new_from_icon_name(
-        #     "user-trash-symbolic", Gtk.IconSize.BUTTON
-        # )
-        self.native_secondary_action_button = Gtk.Button.new_with_label(
-            self.interface._secondary_action
-        )
-        self.native_secondary_action_button.connect(
-            "clicked", self.gtk_on_secondary_clicked
-        )
-        action_buttons_hbox.pack_start(
-            self.native_secondary_action_button, False, False, 10
-        )
+        box2 = Gtk.Box()
+        box2.set_valign(Gtk.Align.FILL)
+        box2.set_vexpand(True)
+        action_buttons_hbox.append(box2)
 
-        action_buttons_hbox.pack_start(Gtk.Box(), True, True, 0)
-
-        self.native_action_buttons.pack_start(action_buttons_hbox, True, False, 0)
-        self.native_action_buttons.show_all()
+        self.native_action_buttons.append(action_buttons_hbox)
+        self.native_action_buttons.set_visible(True)
 
     def row_factory(self, item):
         return DetailedListRow(self.interface, item)
@@ -213,7 +214,7 @@ class DetailedList(Widget):
         self.hide_actions()
         item_impl = self.row_factory(item)
         self.store.insert(index, item_impl)
-        self.native_detailedlist.show_all()
+        self.native_detailedlist.set_visible(True)
         self.update_refresh_button()
 
     def change(self, item):
@@ -323,5 +324,11 @@ class DetailedList(Widget):
         self.native_revealer.set_reveal_child(show_refresh)
 
     def rehint(self):
-        self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
-        self.interface.intrinsic.height = at_least(self.interface._MIN_HEIGHT)
+        min_size, _ = self.native.get_preferred_size()
+
+        self.interface.intrinsic.width = at_least(
+            max(min_size.width, self.interface._MIN_WIDTH)
+        )
+        self.interface.intrinsic.height = at_least(
+            max(min_size.height, self.interface._MIN_HEIGHT)
+        )

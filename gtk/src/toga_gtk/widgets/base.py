@@ -2,7 +2,7 @@ from abc import abstractmethod
 
 from travertino.size import at_least
 
-from ..libs import Gtk, get_background_color_css, get_color_css, get_font_css
+from ..libs import Gdk, Gtk, get_background_color_css, get_color_css, get_font_css
 
 
 class Widget:
@@ -10,8 +10,8 @@ class Widget:
         super().__init__()
         self.interface = interface
         self.interface._impl = self
+        self._native = None
         self._container = None
-        self.native = None
         self.style_providers = {}
         self.create()
 
@@ -22,20 +22,55 @@ class Widget:
         # Ensure the native widget has GTK CSS style attributes; create() should
         # ensure any other widgets are also styled appropriately.
         self.native.set_name(f"toga-{self.interface.id}")
-        self.native.get_style_context().add_class("toga")
+        self.native.add_css_class("toga")
 
         # Ensure initial styles are applied.
         self.interface.style.reapply()
 
     @abstractmethod
     def create(self):
-        ...
+        pass
 
     def set_app(self, app):
         pass
 
     def set_window(self, window):
         pass
+
+    @property
+    def native(self):
+        return self._native
+
+    @native.setter
+    def native(self, native):
+        self._native = self._native_base_builder(native)
+
+    def _native_base_builder(self, native):
+        class NativeWidget(native):
+            def do_direction_changed(self, previous_direction):
+                native.do_direction_changed(self, previous_direction)
+                if self._impl.container and self._impl.container.needs_redraw:
+                    self._impl.refresh()
+
+            def do_css_changed(self, change):
+                native.do_css_changed(self, change)
+                if self._impl.container and self._impl.container.needs_redraw:
+                    self._impl.refresh()
+
+            def do_state_flags_changed(self, previous_state_flags):
+                native.do_state_flags_changed(self, previous_state_flags)
+                if self._impl.container and self._impl.container.needs_redraw:
+                    self._impl.refresh()
+
+            def do_snapshot(self, snapshot):
+                native.do_snapshot(self, snapshot)
+                if self._impl.container and self._impl.container.needs_redraw:
+                    self._impl.refresh()
+
+            def __str__(self) -> str:
+                return str(native)
+
+        return NativeWidget()
 
     @property
     def container(self):
@@ -57,8 +92,7 @@ class Widget:
         elif container:
             # setting container, adding self to container.native
             self._container = container
-            self._container.add(self.native)
-            self.native.show_all()
+            self._container.append(self.native)
 
         for child in self.interface.children:
             child._impl.container = container
@@ -73,7 +107,15 @@ class Widget:
 
     @property
     def has_focus(self):
-        return self.native.has_focus()
+        root = self.native.get_root()
+        focus_widget = root.get_focus()
+        if focus_widget:
+            if focus_widget == self.native:
+                return self.native.has_focus()
+            else:
+                return focus_widget.is_ancestor(self.native)
+        else:
+            return False
 
     def focus(self):
         if not self.has_focus:
@@ -114,27 +156,36 @@ class Widget:
         if native is None:
             native = self.native
 
-        style_context = native.get_style_context()
-        style_provider = self.style_providers.pop((property, id(native)), None)
-
         # If there was a previous style provider for the given property, remove
         # it from the GTK widget
-        if style_provider:
-            style_context.remove_provider(style_provider)
+        old_style_provider = self.style_providers.pop((property, id(native)), None)
+        if old_style_provider:
+            Gtk.StyleContext.remove_provider_for_display(
+                Gdk.Display.get_default(),
+                old_style_provider,
+            )
 
-        # If there's new CSS to apply, construct a new provider, and install it.
-        if css is not None:
-            # Create a new CSS StyleProvider
+        # If there's new CSS to apply, install it.
+        if css:
             style_provider = Gtk.CssProvider()
             styles = " ".join(f"{key}: {value};" for key, value in css.items())
-            declaration = selector + " {" + styles + "}"
-            style_provider.load_from_data(declaration.encode())
+            declaration = f"#{native.get_name()}" + selector + " {" + styles + "}"
 
-            # Add the provider to the widget
-            style_context.add_provider(
+            # Backward compatibility fix for different gtk versions ===========
+            if Gtk.get_major_version() >= 4 and Gtk.get_minor_version() >= 12:
+                style_provider.load_from_string(declaration)
+            elif Gtk.get_major_version() >= 4 and Gtk.get_minor_version() > 8:
+                style_provider.load_from_data(declaration, len(declaration))
+            else:
+                style_provider.load_from_data(declaration.encode("utf-8"))
+            # =================================================================
+
+            Gtk.StyleContext.add_provider_for_display(
+                Gdk.Display.get_default(),
                 style_provider,
-                Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION,
+                Gtk.STYLE_PROVIDER_PRIORITY_USER,
             )
+
             # Store the provider so it can be removed later
             self.style_providers[(property, id(native))] = style_provider
 
@@ -143,7 +194,8 @@ class Widget:
     ######################################################################
 
     def set_bounds(self, x, y, width, height):
-        # Any position changes are applied by the container during do_size_allocate.
+        # Any position changes are applied by the container during
+        # do_size_allocate after rehinting.
         self.container.make_dirty()
 
     def set_alignment(self, alignment):
@@ -152,8 +204,7 @@ class Widget:
 
     def set_hidden(self, hidden):
         self.native.set_visible(not hidden)
-        if self.container:
-            self.container.make_dirty()
+        self.refresh()
 
     def set_color(self, color):
         self.apply_css("color", get_color_css(color))
@@ -185,10 +236,10 @@ class Widget:
             self.container.make_dirty(self)
 
     def rehint(self):
+        # print(3)
         # Perform the actual GTK rehint.
-        # print("REHINT", self, self.native.get_preferred_width(), self.native.get_preferred_height())
-        width = self.native.get_preferred_width()
-        height = self.native.get_preferred_height()
+        min_size, _ = self.native.get_preferred_size()
 
-        self.interface.intrinsic.width = at_least(width[0])
-        self.interface.intrinsic.height = at_least(height[0])
+        # print("REHINT", self, f"{width_info[0]}x{height_info[0]}")
+        self.interface.intrinsic.width = at_least(min_size.width)
+        self.interface.intrinsic.height = at_least(min_size.height)

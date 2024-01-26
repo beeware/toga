@@ -165,8 +165,10 @@ else:
 
         assert second_window.title == "Toga"
         assert second_window.size == (640, 480)
-        assert second_window.position == (100, 100)
+
         assert second_window_probe.is_resizable
+        if second_window_probe.supports_positioning:
+            assert second_window.position == (100, 100)
         if second_window_probe.supports_closable:
             assert second_window_probe.is_closable
         if second_window_probe.supports_minimizable:
@@ -194,7 +196,8 @@ else:
 
         assert second_window.title == "Secondary Window"
         assert second_window.size == (300, 200)
-        assert second_window.position == (200, 300)
+        if second_window_probe.supports_positioning:
+            assert second_window.position == (200, 300)
 
         second_window_probe.close()
         await second_window_probe.wait_for_window(
@@ -319,14 +322,16 @@ else:
 
         assert second_window.visible
         assert second_window.size == (640, 480)
-        assert second_window.position == (200, 150)
+        if second_window_probe.supports_positioning:
+            assert second_window.position == (200, 150)
 
         # Move the window
         second_window.position = (250, 200)
 
         await second_window_probe.wait_for_window("Secondary window has been moved")
         assert second_window.size == (640, 480)
-        assert second_window.position == (250, 200)
+        if second_window_probe.supports_positioning:
+            assert second_window.position == (250, 200)
 
         # Resize the window
         second_window.size = (300, 250)
@@ -396,7 +401,8 @@ else:
 
         second_window.position = (150, 50)
         await second_window_probe.wait_for_window("Secondary window has been moved")
-        assert second_window.position == (150, 50)
+        if second_window_probe.supports_positioning:
+            assert second_window.position == (150, 50)
 
         second_window.size = (200, 150)
         await second_window_probe.wait_for_window("Secondary window has been resized")
@@ -484,7 +490,7 @@ async def test_as_image(main_window, main_window_probe):
     """The window can be captured as a screenshot"""
 
     screenshot = main_window.as_image()
-    main_window_probe.assert_image_size(screenshot.size, main_window_probe.content_size)
+    main_window_probe.assert_as_image(screenshot, main_window_probe.content_size)
 
 
 ########################################################################################

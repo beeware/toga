@@ -7,21 +7,25 @@ import gbulb
 
 import toga
 from toga import App as toga_App
-from toga.command import Command, Separator
+from toga.command import Command
 
-from .keys import gtk_accel
-from .libs import TOGA_DEFAULT_STYLES, Gdk, Gio, GLib, Gtk
+from .libs import TOGA_DEFAULT_STYLES, Gdk, Gio, Gtk
 from .window import Window
+
+
+class TogaAppWindow(Gtk.ApplicationWindow):
+    def do_snapshot(self, snapshot):
+        self.snapshot = snapshot
+        Gtk.ApplicationWindow.do_snapshot(self, self.snapshot)
 
 
 class MainWindow(Window):
     def create(self):
-        self.native = Gtk.ApplicationWindow()
-        self.native.set_role("MainWindow")
+        self.native = TogaAppWindow()
         icon_impl = toga_App.app.icon._impl
-        self.native.set_icon(icon_impl.native_72)
+        self.native.set_icon_name(icon_impl.native.get_icon_name())
 
-    def gtk_delete_event(self, *args):
+    def gtk_close_request(self, *args):
         # Return value of the GTK on_close handler indicates
         # whether the event has been fully handled. Returning
         # False indicates the event handling is *not* complete,
@@ -35,10 +39,8 @@ class MainWindow(Window):
 
 class App:
     """
-    Todo:
-        * Creation of Menus is not working.
-        * Disabling of menu items is not working.
-        * App Icon is not showing up
+    This is the Gtk-backed implementation of the App interface class. It is
+    the manager of all the other bits of the GUI app in Gtk-backend.
     """
 
     def __init__(self, interface):
@@ -66,6 +68,31 @@ class App:
 
     def gtk_startup(self, data=None):
         # Set up the default commands for the interface.
+        self._create_app_commands()
+
+        self.interface.startup()
+
+        # Create the lookup table of menu items,
+        # then force the creation of the menus.
+        self.create_menus()
+
+        # Set the default Toga styles
+        css_provider = Gtk.CssProvider()
+
+        # Backward compatibility fix for different gtk versions ===============
+        if Gtk.get_major_version() >= 4 and Gtk.get_minor_version() >= 12:
+            css_provider.load_from_string(TOGA_DEFAULT_STYLES)
+        elif Gtk.get_major_version() >= 4 and Gtk.get_minor_version() > 8:
+            css_provider.load_from_data(TOGA_DEFAULT_STYLES, len(TOGA_DEFAULT_STYLES))
+        else:
+            css_provider.load_from_data(TOGA_DEFAULT_STYLES.encode("utf-8"))
+        # =====================================================================
+
+        Gtk.StyleContext.add_provider_for_display(
+            Gdk.Display.get_default(), css_provider, Gtk.STYLE_PROVIDER_PRIORITY_USER
+        )
+
+    def _create_app_commands(self):
         self.interface.commands.add(
             Command(
                 self._menu_about,
@@ -82,34 +109,6 @@ class App:
                 section=sys.maxsize,
             ),
         )
-        self._create_app_commands()
-
-        self.interface._startup()
-
-        # Create the lookup table of menu items,
-        # then force the creation of the menus.
-        self.create_menus()
-
-        # Now that we have menus, make the app take responsibility for
-        # showing the menubar.
-        # This is required because of inconsistencies in how the Gnome
-        # shell operates on different windowing environments;
-        # see #872 for details.
-        settings = Gtk.Settings.get_default()
-        settings.set_property("gtk-shell-shows-menubar", False)
-
-        # Set any custom styles
-        css_provider = Gtk.CssProvider()
-        css_provider.load_from_data(TOGA_DEFAULT_STYLES)
-
-        context = Gtk.StyleContext()
-        context.add_provider_for_screen(
-            Gdk.Screen.get_default(), css_provider, Gtk.STYLE_PROVIDER_PRIORITY_USER
-        )
-
-    def _create_app_commands(self):
-        # No extra menus
-        pass
 
     def gtk_activate(self, data=None):
         pass
@@ -121,65 +120,12 @@ class App:
         self.interface.on_exit()
 
     def create_menus(self):
-        # Only create the menu if the menu item index has been created.
-        self._menu_items = {}
-        self._menu_groups = {}
-
-        # Create the menu for the top level menubar.
-        menubar = Gio.Menu()
-        section = None
-        for cmd in self.interface.commands:
-            if isinstance(cmd, Separator):
-                section = None
-            else:
-                submenu, created = self._submenu(cmd.group, menubar)
-                if created:
-                    section = None
-
-                if section is None:
-                    section = Gio.Menu()
-                    submenu.append_section(None, section)
-
-                cmd_id = "command-%s" % id(cmd)
-                action = Gio.SimpleAction.new(cmd_id, None)
-                action.connect("activate", cmd._impl.gtk_activate)
-
-                cmd._impl.native.append(action)
-                cmd._impl.set_enabled(cmd.enabled)
-                self._menu_items[action] = cmd
-                self.native.add_action(action)
-
-                item = Gio.MenuItem.new(cmd.text, "app." + cmd_id)
-                if cmd.shortcut:
-                    item.set_attribute_value(
-                        "accel", GLib.Variant("s", gtk_accel(cmd.shortcut))
-                    )
-
-                section.append_item(item)
-
-        # Set the menu for the app.
-        self.native.set_menubar(menubar)
+        # TODO: Implementing menus in HeaderBar; See #1931.
+        self.interface.factory.not_implemented("Window.create_menus()")
+        pass
 
     def _submenu(self, group, menubar):
-        try:
-            return self._menu_groups[group], False
-        except KeyError:
-            if group is None:
-                submenu = menubar
-            else:
-                parent_menu, _ = self._submenu(group.parent, menubar)
-                submenu = Gio.Menu()
-                self._menu_groups[group] = submenu
-
-                text = group.text
-                if text == "*":
-                    text = self.interface.formal_name
-                parent_menu.append_submenu(text, submenu)
-
-            # Install the item in the group cache.
-            self._menu_groups[group] = submenu
-
-            return submenu, True
+        pass
 
     def main_loop(self):
         # Modify signal handlers to make sure Ctrl-C is caught and handled.
@@ -193,9 +139,10 @@ class App:
     def show_about_dialog(self):
         self.native_about_dialog = Gtk.AboutDialog()
         self.native_about_dialog.set_modal(True)
+        self.native_about_dialog.set_transient_for(self.get_current_window().native)
 
         icon_impl = toga_App.app.icon._impl
-        self.native_about_dialog.set_logo(icon_impl.native_72)
+        self.native_about_dialog.set_logo(icon_impl.native_72.get_paintable())
 
         self.native_about_dialog.set_program_name(self.interface.formal_name)
         if self.interface.version is not None:
@@ -207,15 +154,10 @@ class App:
         if self.interface.home_page is not None:
             self.native_about_dialog.set_website(self.interface.home_page)
 
-        self.native_about_dialog.show()
-        self.native_about_dialog.connect("close", self._close_about)
-
-    def _close_about(self, dialog):
-        self.native_about_dialog.destroy()
-        self.native_about_dialog = None
+        self.native_about_dialog.present()
 
     def beep(self):
-        Gdk.beep()
+        Gdk.Display.get_default().beep()
 
     # We can't call this under test conditions, because it would kill the test harness
     def exit(self):  # pragma: no cover
@@ -226,6 +168,7 @@ class App:
         return current_window if current_window.interface.visible else None
 
     def set_current_window(self, window):
+        # Behavior of present() varies depending on the user's platform, WM and preferences.
         window._impl.native.present()
 
     def enter_full_screen(self, windows):

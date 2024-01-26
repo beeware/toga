@@ -7,7 +7,7 @@ from toga_gtk.libs import Gdk, Gtk
 
 from ..fonts import FontMixin
 from ..probe import BaseProbe
-from .properties import toga_color
+from .properties import toga_color, toga_font
 
 
 class SimpleProbe(BaseProbe, FontMixin):
@@ -23,14 +23,17 @@ class SimpleProbe(BaseProbe, FontMixin):
         self._keypress_target = self.native
 
         # Ensure that the theme isn't using animations for the widget.
-        settings = Gtk.Settings.get_for_screen(self.native.get_screen())
+        settings = Gtk.Settings.get_for_display(self.native.get_display())
         settings.set_property("gtk-enable-animations", False)
 
     def assert_container(self, container):
         container_native = container._impl.container
-        for control in container_native.get_children():
+
+        control = container_native.get_last_child()
+        while control is not None:
             if control == self.native:
                 break
+            control = control.get_prev_sibling()
         else:
             raise ValueError(f"cannot find {self.native} in {container_native}")
 
@@ -50,29 +53,38 @@ class SimpleProbe(BaseProbe, FontMixin):
 
     @property
     def width(self):
-        return self.native.get_allocation().width
+        return self.native.compute_bounds(self.native)[1].get_width()
 
     @property
     def height(self):
-        return self.native.get_allocation().height
+        return self.native.compute_bounds(self.native)[1].get_height()
 
     def assert_layout(self, size, position):
         # Widget is contained and in a window.
-        assert self.widget._impl.container is not None
+        assert self.impl.container is not None
         assert self.native.get_parent() is not None
 
-        # Measurements are relative to the container as an origin.
-        origin = self.widget._impl.container.get_allocation()
-
+        # Measurements are relative to the container as an origin coordinate.
         # size and position is as expected.
-        assert (
-            self.native.get_allocation().width,
-            self.native.get_allocation().height,
-        ) == size
-        assert (
-            self.native.get_allocation().x - origin.x,
-            self.native.get_allocation().y - origin.y,
-        ) == position
+        if self.is_hidden:
+            # NOTE: The widget has no size when it is hidden, so, to make sure the
+            # layout is not changed, we only need to check the layout of the widget
+            # siblings by ensuring that the position of the visible widgets are not
+            # within the hidden widget's boundaries.
+            siblings = [sibling._impl.native for sibling in self.widget.parent.children]
+            for sibling in siblings:
+                sibling_origin = sibling.compute_bounds(self.impl.container)[1].origin
+                if sibling.get_visible():
+                    assert sibling_origin.x >= size[0] or sibling_origin.y >= size[1]
+        else:
+            assert (
+                self.width,
+                self.height,
+            ) == size
+            assert (
+                self.native.compute_bounds(self.impl.container)[1].origin.x,
+                self.native.compute_bounds(self.impl.container)[1].origin.y,
+            ) == position
 
     def assert_width(self, min_width, max_width):
         assert (
@@ -90,18 +102,21 @@ class SimpleProbe(BaseProbe, FontMixin):
 
     @property
     def color(self):
-        sc = self.native.get_style_context()
-        return toga_color(sc.get_property("color", sc.get_state()))
+        sp = self.impl.style_providers.get(("color", id(self.native)))
+        style_value = sp.to_string().split(": ")[1].split(";")[0] if sp else None
+        return toga_color(style_value) if style_value else None
 
     @property
     def background_color(self):
-        sc = self.native.get_style_context()
-        return toga_color(sc.get_property("background-color", sc.get_state()))
+        sp = self.impl.style_providers.get(("background_color", id(self.native)))
+        style_value = sp.to_string().split(": ")[1].split(";")[0] if sp else None
+        return toga_color(style_value) if style_value else None
 
     @property
     def font(self):
-        sc = self.native.get_style_context()
-        return sc.get_property("font", sc.get_state())
+        sp = self.impl.style_providers.get(("font", id(self.native)))
+        font_value = sp.to_string() if sp else None
+        return toga_font(font_value) if font_value else None
 
     @property
     def is_hidden(self):
@@ -109,7 +124,15 @@ class SimpleProbe(BaseProbe, FontMixin):
 
     @property
     def has_focus(self):
-        return self.native.has_focus()
+        root = self.native.get_root()
+        focus_widget = root.get_focus()
+        if focus_widget:
+            if focus_widget == self.native:
+                return self.native.has_focus()
+            else:
+                return focus_widget.is_ancestor(self.native)
+        else:
+            return False
 
     async def type_character(self, char):
         # Construct a GDK KeyPress event.

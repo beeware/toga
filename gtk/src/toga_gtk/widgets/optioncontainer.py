@@ -7,7 +7,7 @@ class OptionContainer(Widget):
     uses_icons = False
 
     def create(self):
-        self.native = Gtk.Notebook()
+        self.native = Gtk.Notebook
         self.native.connect("switch-page", self.gtk_on_switch_page)
         self.sub_containers = []
 
@@ -22,7 +22,7 @@ class OptionContainer(Widget):
         self.native.insert_page(sub_container, Gtk.Label(label=text), index)
         # Tabs aren't visible by default;
         # tell the notebook to show all content.
-        self.native.show_all()
+        self.native.set_visible(True)
 
     def remove_content(self, index):
         self.native.remove_page(index)

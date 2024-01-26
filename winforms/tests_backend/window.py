@@ -23,6 +23,7 @@ class WindowProbe(BaseProbe):
     supports_move_while_hidden = True
     supports_multiple_select_folder = False
     supports_unminimize = True
+    supports_positioning = True
 
     def __init__(self, app, window):
         super().__init__()
@@ -73,6 +74,9 @@ class WindowProbe(BaseProbe):
 
     def unminimize(self):
         self.native.WindowState = FormWindowState.Normal
+
+    def assert_as_image(self, screenshot, window_content_size):
+        self.assert_image_size(screenshot.size, window_content_size)
 
     async def _close_dialog(self, *args, **kwargs):
         # Give the inner event loop a chance to start. The MessageBox dialogs work with

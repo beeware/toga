@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from builtins import id as identifier
 from typing import TYPE_CHECKING
+from weakref import ref
 
 from travertino.node import Node
 
@@ -214,7 +215,7 @@ class Widget(Node):
         If the widget has a value for :any:`window`, it *must* also have a value for
         :any:`app`.
         """
-        return self._window
+        return self._window() if self._window else self._window
 
     @window.setter
     def window(self, window: Window | None) -> None:
@@ -226,7 +227,7 @@ class Widget(Node):
             # If the widget is being assigned to a window for the first time, add it to the widget registry
             window.app.widgets._add(self)
 
-        self._window = window
+        self._window = ref(window) if window else window
         self._impl.set_window(window)
 
         for child in self.children:

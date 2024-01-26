@@ -6,4 +6,4 @@ class Box(Widget):
     def create(self):
         self.min_width = None
         self.min_height = None
-        self.native = Gtk.Box()
+        self.native = Gtk.Box

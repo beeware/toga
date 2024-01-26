@@ -24,6 +24,7 @@ class WindowProbe(BaseProbe):
     supports_move_while_hidden = True
     supports_multiple_select_folder = True
     supports_unminimize = True
+    supports_positioning = True
 
     def __init__(self, app, window):
         super().__init__()
@@ -74,6 +75,9 @@ class WindowProbe(BaseProbe):
 
     def unminimize(self):
         self.native.deminiaturize(None)
+
+    def assert_as_image(self, screenshot, window_content_size):
+        self.assert_image_size(screenshot.size, window_content_size)
 
     async def close_info_dialog(self, dialog):
         self.native.endSheet(

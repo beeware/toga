@@ -1,0 +1,1 @@
+Now, Toga is using ``Gtk4`` instead of ``Gtk3`` as the native GUI backend for Linux.

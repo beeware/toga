@@ -11,14 +11,15 @@ class ButtonProbe(SimpleProbe):
 
     @property
     def text(self):
-        return self.native.get_label()
+        text = self.native.get_label()
+        return text if text else ""
 
     def assert_no_icon(self):
-        assert self.native.get_image() is None
+        assert not isinstance(self.native.get_child(), Gtk.Image)
 
     def assert_icon_size(self):
-        icon = self.native.get_image().get_pixbuf()
-        if icon:
+        icon = self.native.get_child()
+        if isinstance(icon, Gtk.Image):
             assert (icon.get_width(), icon.get_height()) == (32, 32)
         else:
             pytest.fail("Icon does not exist")
@@ -32,4 +33,4 @@ class ButtonProbe(SimpleProbe):
         return color
 
     async def press(self):
-        self.native.clicked()
+        self.native.emit("clicked")

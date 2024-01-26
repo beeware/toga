@@ -1,7 +1,7 @@
 from toga.colors import TRANSPARENT
 from toga.fonts import SYSTEM_DEFAULT_FONT_SIZE
 
-TOGA_DEFAULT_STYLES = b"""
+TOGA_DEFAULT_STYLES = """
 .toga-detailed-list-floating-buttons {
     min-width: 24px;
     min-height: 24px;

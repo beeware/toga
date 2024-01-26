@@ -745,7 +745,7 @@ the Toga public API doesn't provide a way to determine the physical size of a
 widget, or interrogate the font being used to render a widget; the probe
 implementation does. This allows a testbed test case to verify that a widget has
 been laid out correctly inside the Toga window, is drawn using the right font,
-and has any other other appropriate physical properties or internal state.
+and has any other appropriate physical properties or internal state.
 
 The probe also provides a programmatic interface for interacting *with* a
 widget. For example, in order to test a button, you need to be able to press
@@ -762,10 +762,10 @@ test case can call ``await probe.redraw()``. This guarantees that any
 outstanding redraw events have been processed. These ``redraw()`` requests are
 also used to implement slow mode - each redraw is turned into a 1 second sleep.
 
-If a widget doesn't have a probe for a given widget, the testbed should call
-``pytest.skip()`` for that platform when constructing the widget fixture (there
-is a ``skip_on_platforms()`` helper method in the testbed method to do this).
-If a widget hasn't implemented a specific probe method that the testbed
+If a Toga widget doesn't have a probe for a given widget, the testbed should
+call ``pytest.skip()`` for that platform when constructing the widget fixture
+(there is a ``skip_on_platforms()`` helper method in the testbed method to do
+this). If a widget hasn't implemented a specific probe method that the testbed
 required, it should call ``pytest.skip()`` so that the backend knows to skip the
 test.
 
