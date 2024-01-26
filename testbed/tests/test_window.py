@@ -481,7 +481,7 @@ else:
 
 
 async def test_on_resize(main_window, main_window_probe):
-    if toga.platform.current_platform in {"android", "iOS", "textual", "web"}:
+    if toga.platform.current_platform in {"android", "iOS", "web"}:
         pytest.xfail("Window.on_resize is non functional on current platform.")
     main_window_on_resize_handler = Mock()
     main_window.on_resize = main_window_on_resize_handler
