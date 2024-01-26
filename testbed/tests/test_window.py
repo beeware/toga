@@ -480,6 +480,19 @@ else:
         assert second_window_probe.content_size == initial_content_size
 
 
+async def test_on_resize(main_window, main_window_probe):
+    if toga.platform.current_platform in {"android", "iOS", "textual", "web"}:
+        pytest.xfail("Window.on_resize is non functional on current platform.")
+    main_window_on_resize_handler = Mock()
+    main_window.on_resize = main_window_on_resize_handler
+
+    main_window.size = (200, 150)
+    await main_window_probe.wait_for_window("Main window has been resized")
+    assert main_window.size == (200, 150)
+
+    main_window_on_resize_handler.assert_called_once_with(main_window)
+
+
 async def test_as_image(main_window, main_window_probe):
     """The window can be captured as a screenshot"""
 

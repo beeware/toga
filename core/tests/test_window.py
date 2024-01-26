@@ -354,6 +354,19 @@ def test_as_image(window):
     assert image.size == (318, 346)
 
 
+def test_on_resize(window):
+    assert window.on_resize._raw is None
+
+    on_resize_handler = Mock()
+    window.on_resize = on_resize_handler
+
+    assert window.on_resize._raw == on_resize_handler
+
+    window._impl.simulate_on_resize()
+
+    on_resize_handler.assert_called_once_with(window)
+
+
 def test_info_dialog(window, app):
     """An info dialog can be shown"""
     on_result_handler = Mock()

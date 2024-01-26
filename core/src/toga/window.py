@@ -89,6 +89,17 @@ class OnCloseHandler(Protocol):
         ...
 
 
+class OnResizeHandler(Protocol):
+    def __call__(self, window: Window, **kwargs: Any) -> None:
+        """A handler to invoke when a window resizes.
+
+        :param window: The window instance that resizes.
+        :param kwargs: Ensures compatibility with additional arguments introduced in
+            future ver
+        """
+        ...
+
+
 T = TypeVar("T")
 
 
@@ -125,6 +136,7 @@ class Window:
         resizable: bool = True,
         closable: bool = True,
         minimizable: bool = True,
+        on_resize: OnResizeHandler | None = None,
         on_close: OnCloseHandler | None = None,
         resizeable=None,  # DEPRECATED
         closeable=None,  # DEPRECATED
@@ -196,6 +208,7 @@ class Window:
         self._toolbar = CommandSet(on_change=self._impl.create_toolbar, app=self._app)
 
         self.on_close = on_close
+        self.on_resize = on_resize
 
     @property
     def id(self) -> str:
@@ -357,6 +370,15 @@ class Window:
             self.show()
         else:
             self.hide()
+
+    @property
+    def on_resize(self) -> OnResizeHandler:
+        """The handler to invoke when the window resizes."""
+        return self._on_resize
+
+    @on_resize.setter
+    def on_resize(self, handler):
+        self._on_resize = wrapped_handler(self, handler)
 
     @property
     def on_close(self) -> OnCloseHandler:

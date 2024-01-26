@@ -136,6 +136,7 @@ class Window(Container, Scalable):
 
     def winforms_Resize(self, sender, event):
         self.resize_content()
+        self.interface.on_resize()
 
     def winforms_FormClosing(self, sender, event):
         # If the app is exiting, or a manual close has been requested, don't get

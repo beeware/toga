@@ -105,3 +105,6 @@ class Window(LoggedObject):
 
     def simulate_close(self):
         self.interface.on_close()
+
+    def simulate_on_resize(self):
+        self.interface.on_resize()
