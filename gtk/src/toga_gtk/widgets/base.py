@@ -67,6 +67,9 @@ class Widget:
                 if self._impl.container and self._impl.container.needs_redraw:
                     self._impl.refresh()
 
+            def __str__(self) -> str:
+                return str(native)
+
         return NativeWidget()
 
     @property

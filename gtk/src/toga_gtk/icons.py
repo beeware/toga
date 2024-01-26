@@ -10,6 +10,7 @@ class Icon:
         self.path = path
 
         try:
+            # GtkImage displays its image as an icon, with app-controlled size.
             self.native = Gtk.Image.new_from_paintable(
                 Gdk.Texture.new_from_filename(str(path))
             )
