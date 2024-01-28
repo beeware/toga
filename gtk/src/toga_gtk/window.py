@@ -16,7 +16,7 @@ class Window:
         self.create()
         self.native._impl = self
 
-        self.native.connect("configure-event", self.gtk_size_allocate)
+        self.native.connect("configure-event", self.gtk_configure_event)
         self.native.connect("delete-event", self.gtk_delete_event)
 
         self.native.set_default_size(size[0], size[1])
@@ -127,7 +127,7 @@ class Window:
     def get_visible(self):
         return self.native.get_property("visible")
 
-    def gtk_size_allocate(self, widget, data):
+    def gtk_configure_event(self, widget, data):
         self.interface.on_resize()
 
     def gtk_delete_event(self, widget, data):
