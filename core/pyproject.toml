@@ -71,7 +71,7 @@ dev = [
     "pre-commit == 3.5.0 ; python_version < '3.9'",
     "pre-commit == 3.6.0 ; python_version >= '3.9'",
     "pytest == 7.4.4",
-    "pytest-asyncio == 0.23.3",
+    "pytest-asyncio == 0.23.4",
     "pytest-freezer == 0.4.8",
     "setuptools-scm == 8.0.4",
     "tox == 4.12.1",
