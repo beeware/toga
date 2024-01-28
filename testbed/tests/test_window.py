@@ -492,10 +492,11 @@ async def test_on_resize(main_window, main_window_probe):
     await main_window_probe.wait_for_window("Main window has been resized")
     assert main_window.size == (200, 150)
 
-    main_window_on_resize_handler.assert_called_once_with(main_window)
+    main_window_on_resize_handler.assert_called_with(main_window)
 
     main_window.size = initial_size
     await main_window_probe.wait_for_window("Main window has been resized")
+    assert main_window.size == initial_size
 
 
 async def test_as_image(main_window, main_window_probe):

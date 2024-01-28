@@ -16,7 +16,7 @@ class Window:
         self.create()
         self.native._impl = self
 
-        self.native.connect("size-allocate", self.gtk_size_allocate)
+        self.native.connect("configure-event", self.gtk_size_allocate)
         self.native.connect("delete-event", self.gtk_delete_event)
 
         self.native.set_default_size(size[0], size[1])
