@@ -486,6 +486,9 @@ async def test_on_resize(main_window, main_window_probe):
     main_window_on_resize_handler = Mock()
     main_window.on_resize = main_window_on_resize_handler
 
+    main_window.show()
+    await main_window_probe.wait_for_window("Main window has been shown")
+
     initial_size = main_window.size
 
     main_window.size = (200, 150)
