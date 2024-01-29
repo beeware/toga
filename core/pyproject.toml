@@ -87,7 +87,7 @@ docs = [
     "sphinx == 7.2.6 ; python_version >= '3.9'",
     "sphinx_tabs == 3.4.5",
     "sphinx-autobuild == 2021.3.14",
-    "sphinx-autodoc-typehints == 1.25.2",
+    "sphinx-autodoc-typehints == 1.25.3",
     "sphinx-csv-filter == 0.4.1",
     "sphinx-copybutton == 0.5.2",
     "sphinx-toolbox == 3.5.0",
