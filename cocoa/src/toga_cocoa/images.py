@@ -59,7 +59,7 @@ class Image:
         # representation. Create a TIFF representation, then convert to PNG.
         bitmap_rep = NSBitmapImageRep.imageRepWithData(self.native.TIFFRepresentation)
         image_data = bitmap_rep.representationUsingType(
-            NSBitmapImageFileType.PNG, 
+            NSBitmapImageFileType.PNG,
             properties=None,
         )
         return nsdata_to_bytes(image_data)
