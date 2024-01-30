@@ -222,7 +222,8 @@ class App:
         self.native.quit()
 
     def get_current_window(self):
-        return self.native.get_active_window()._impl
+        current_window = self.native.get_active_window()._impl
+        return current_window if current_window.interface.visible else None
 
     def set_current_window(self, window):
         window._impl.native.present()
@@ -267,9 +268,9 @@ class DocumentApp(App):  # pragma: no cover
             m.open_file_dialog(
                 self.interface.formal_name,
                 file_types=self.interface.document_types.keys(),
-                on_result=lambda dialog, path: self.interface._open(path)
-                if path
-                else self.exit(),
+                on_result=lambda dialog, path: (
+                    self.interface._open(path) if path else self.exit()
+                ),
             )
 
     def open_file(self, widget, **kwargs):

@@ -17,8 +17,7 @@ class Widget:
         self.interface.style.reapply()
 
     @abstractmethod
-    def create(self):
-        ...
+    def create(self): ...
 
     def set_app(self, app):
         pass
@@ -116,5 +115,4 @@ class Widget:
         self.rehint()
 
     @abstractmethod
-    def rehint(self):
-        ...
+    def rehint(self): ...
