@@ -22,6 +22,16 @@ async def test_local_image(app):
     assert image.height == 72
 
 
+async def test_raw_image(app):
+    "An image can be created from the platform's raw representation"
+    original = toga.Image("resources/sample.png")
+
+    image = toga.Image(original._impl.native)
+
+    assert image.width == original.width
+    assert image.height == original.height
+
+
 async def test_bad_image_file(app):
     "If a file isn't a loadable image, an error is raised"
     with pytest.raises(
