@@ -55,12 +55,12 @@ class Image:
         return self.native.size.height
 
     def get_data(self):
-        # A file created from a data source won't necessarily have 
-        # a pre-existing PNG representation. Create a TIFF 
+        # A file created from a data source won't necessarily have
+        # a pre-existing PNG representation. Create a TIFF
         # representation, then convert to PNG.
         bitmap_rep = NSBitmapImageRep.imageRepWithData_(
             self.native.TIFFRepresentation
-        )  
+        )
         image_data = bitmap_rep.representationUsingType(
             NSBitmapImageFileType.PNG, properties=None
         )
