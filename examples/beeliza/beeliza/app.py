@@ -93,7 +93,7 @@ class BeelizaApp(toga.App):
 
 
 def main():
-    return BeelizaApp("Beeliza", "org.beeware.beeliza")
+    return BeelizaApp("Beeliza", "org.beeware.toga.examples.beeliza")
 
 
 if __name__ == "__main__":

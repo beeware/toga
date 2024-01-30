@@ -3,7 +3,7 @@ requires = ["briefcase"]
 
 [tool.briefcase]
 project_name = "Box Demo"
-bundle = "org.beeware"
+bundle = "org.beeware.toga.examples"
 version = "0.0.1"
 url = "https://beeware.org"
 license = "BSD license"
@@ -50,6 +50,7 @@ requires = [
 base_theme = "Theme.MaterialComponents.Light.DarkActionBar"
 
 build_gradle_dependencies = [
+    "androidx.appcompat:appcompat:1.6.1",
     "com.google.android.material:material:1.11.0",
     "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0",
 ]
