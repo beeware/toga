@@ -1,10 +1,10 @@
+import shutil
 from unittest.mock import Mock
 
 import pytest
 from android.content.pm import PackageManager
 from android.provider import MediaStore
 
-import toga
 from toga_android.app import App
 from toga_android.hardware.camera import Camera
 
@@ -66,7 +66,8 @@ class CameraProbe(AppProbe):
         )
 
     def cleanup(self):
-        pass
+        # Ensure that after a test runs, there's no shared files.
+        shutil.rmtree(self.app.paths.cache / "shared", ignore_errors=True)
 
     def known_cameras(self):
         # The Android emulator has a single camera. Physical devices will have other
@@ -76,7 +77,7 @@ class CameraProbe(AppProbe):
         }
 
     def select_other_camera(self):
-        pytest.xfail("Android can't programmativally select other cameras")
+        pytest.xfail("Android can't programmatically select other cameras")
 
     def disconnect_cameras(self):
         # native=False
@@ -109,10 +110,19 @@ class CameraProbe(AppProbe):
         assert intent.getAction() == MediaStore.ACTION_IMAGE_CAPTURE
         self._mock_startActivityForResult.reset_mock()
 
-        # Fake the result of a successful photo being taken
-        image = toga.Image("resources/photo.png")
+        # Fake the result of a successful photo being taken.
+        output_uri = intent.getExtras().get(MediaStore.EXTRA_OUTPUT)
+        shared_suffix = output_uri.getPath()[1:]
+
+        # The shared folder *must* exist as a result of the camera being triggered.
+        assert (self.app.paths.cache / shared_suffix).parent.is_dir()
+        # Copy the reference file to the location that the camera intent would have
+        # populated.
+        shutil.copy(
+            self.app.paths.app / "resources/photo.png",
+            self.app.paths.cache / shared_suffix,
+        )
         data = Mock()
-        data.getExtras.return_value = {"data": image._impl.native}
         # Activity.RESULT_OK = -1
         self.app._impl._listener.onActivityResult(code, -1, data)
 

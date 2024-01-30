@@ -1,10 +1,12 @@
 import warnings
+from pathlib import Path
 
 from android.content import Context, Intent
 from android.content.pm import PackageManager
 from android.hardware.camera2 import CameraCharacteristics
 from android.provider import MediaStore
-from androidx.core.content import ContextCompat
+from androidx.core.content import ContextCompat, FileProvider
+from java.io import File
 
 import toga
 
@@ -82,21 +84,32 @@ class Camera:
             warnings.warn("No camera is available")
             result.set_result(None)
         elif self.has_permission():
-            # We have permission; go directly to taking the photo
+            # We have permission; go directly to taking the photo.
+            # The "shared" subfolder of the app's cache folder is
+            # marked as a file provider. Ensure the folder exists.
+            shared_folder = File(self.context.getCacheDir(), "shared")
+            if not shared_folder.exists():
+                shared_folder.mkdirs()
+
+            # Create a temporary file in the shared folder,
+            # and convert it to a URI using the app's fileprovider.
+            photo_file = File.createTempFile("camera", ".jpg", shared_folder)
+            photo_uri = FileProvider.getUriForFile(
+                self.context,
+                f"{self.interface.app.app_id}.fileprovider",
+                photo_file,
+            )
+
             def photo_taken(code, data):
                 # Activity.RESULT_CANCELED == 0
                 if code:
-                    bundle = data.getExtras()
-                    bitmap = bundle.get("data")
-                    thumb = toga.Image(bitmap)
-                    result.set_result(thumb)
+                    photo = toga.Image(Path(photo_file.getAbsolutePath()))
+                    result.set_result(photo)
                 else:
                     result.set_result(None)
 
             intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-            # TODO: The image returned by default is only a thumbnail. There's some sort
-            # of jiggery-pokery needed to return an actual image.
-            # intent.putExtra(MediaStore.EXTRA_OUTPUT, ...)
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, photo_uri)
             self.interface.app._impl.start_activity(intent, on_complete=photo_taken)
         else:
             raise PermissionError("App does not have permission to take photos")

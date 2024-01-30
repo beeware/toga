@@ -53,7 +53,7 @@ class TogaApp(dynamic_proxy(IPythonApp)):
         print("Toga app: onRestart")  # pragma: no cover
 
     def onActivityResult(self, requestCode, resultCode, resultData):
-        print(f"Toga app: onActivityResult, {requestCode=}, {resultData=}")
+        print(f"Toga app: onActivityResult {requestCode=} {resultCode=} {resultData=}")
         try:
             # Retrieve the completion callback; if non-none, invoke it.
             callback = self.running_intents.pop(requestCode)
@@ -69,7 +69,7 @@ class TogaApp(dynamic_proxy(IPythonApp)):
 
     def onRequestPermissionsResult(self, requestCode, permissions, grantResults):
         print(
-            f"Toga app: onRequestPermissionsResult, {requestCode=}, {permissions=} {grantResults=}"
+            f"Toga app: onRequestPermissionsResult {requestCode=} {permissions=} {grantResults=}"
         )
         try:
             # Retrieve the completion callback and invoke it.
