@@ -1,0 +1,1 @@
+`App.current_window` on Gtk now returns `None` when all windows are hidden.

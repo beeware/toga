@@ -270,8 +270,7 @@ class OptionList:
     def append(
         self,
         text_or_item: OptionItem,
-    ):
-        ...
+    ): ...
 
     @overload
     def append(
@@ -281,8 +280,7 @@ class OptionList:
         *,
         icon: IconContent | None = None,
         enabled: bool = True,
-    ):
-        ...
+    ): ...
 
     def append(
         self,
@@ -311,8 +309,7 @@ class OptionList:
         self,
         index: int | str | OptionItem,
         text_or_item: OptionItem,
-    ):
-        ...
+    ): ...
 
     @overload
     def insert(
@@ -323,8 +320,7 @@ class OptionList:
         *,
         icon: IconContent | None = None,
         enabled: bool = True,
-    ):
-        ...
+    ): ...
 
     def insert(
         self,
