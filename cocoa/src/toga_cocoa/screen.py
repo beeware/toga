@@ -2,7 +2,6 @@ from toga.screen import Screen as ScreenInterface
 from toga_cocoa.libs import (
     CGImageGetHeight,
     CGImageGetWidth,
-    NSAutoreleasePool,
     NSImage,
     core_graphics,
 )
@@ -44,13 +43,9 @@ class Screen:
             cg_direct_display_id,
             self.native.frame,
         )
-        # Create an autorelease pool to manage memory
-        pool = NSAutoreleasePool.alloc().init()
         # Get the size of the CGImage
         size = CGImageGetWidth(cg_image), CGImageGetHeight(cg_image)
         # Create an NSImage from the CGImage
         ns_image = NSImage.alloc().initWithCGImage(cg_image, size=size)
-        # Drain the autorelease pool to release memory
-        pool.release()
 
         return ns_image

@@ -11,11 +11,5 @@ class ScreenProbe(BaseProbe):
         self.native = screen._impl.native
         assert isinstance(self.native, WinFormsScreen)
 
-    def assert_name(self):
-        assert self.screen.name == self.native.DeviceName
-
-    def assert_origin(self):
-        assert self.screen.origin == (self.native.Bounds.X, self.native.Bounds.Y)
-
-    def assert_size(self):
-        assert self.screen.size == (self.native.Bounds.Width, self.native.Bounds.Height)
+    def get_screenshot(self):
+        return self.screen.as_image()

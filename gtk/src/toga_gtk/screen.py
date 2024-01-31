@@ -30,8 +30,11 @@ class Screen:
         return geometry.width, geometry.height
 
     def get_image_data(self):
-        if os.environ.get("XDG_SESSION_TYPE", "").lower() == "x11":  # pragma: no cover
-            # Only works for x11
+        if "WAYLAND_DISPLAY" in os.environ:
+            # Not implemented on wayland due to wayland security policies.
+            self.interface.factory.not_implemented("Screen.get_image_data() on Wayland")
+        else:
+            # Only works for Xorg
             display = self.native.get_display()
             screen = display.get_default_screen()
             window = screen.get_root_window()
@@ -45,7 +48,3 @@ class Screen:
             else:
                 print("Failed to save screenshot to buffer.")
                 return None
-        # CI runs on wayland
-        else:
-            # Not implemented on wayland due to wayland security policies.
-            self.interface.factory.not_implemented("Screen.get_image_data() on Wayland")

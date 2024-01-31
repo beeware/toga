@@ -1,5 +1,6 @@
 import os
 
+import pytest
 from gi.repository import GdkX11
 
 from .probe import BaseProbe
@@ -14,16 +15,11 @@ class ScreenProbe(BaseProbe):
         if os.environ.get("XDG_SESSION_TYPE", "").lower() == "x11":
             assert isinstance(self.native, GdkX11.X11Monitor)
         else:
-            # TODO: Check for the wayland monitor native type
+            # TODO: Check for the other monitor native types
             pass
 
-    def assert_name(self):
-        assert self.screen.name == self.native.get_model()
-
-    def assert_origin(self):
-        geometry = self.native.get_geometry()
-        assert self.screen.origin == (geometry.x, geometry.y)
-
-    def assert_size(self):
-        geometry = self.native.get_geometry()
-        assert self.screen.size == (geometry.width, geometry.height)
+    def get_screenshot(self):
+        if "WAYLAND_DISPLAY" in os.environ:
+            pytest.skip("Screen.as_image() is not implemented on wayland.")
+        else:
+            return self.screen.as_image()

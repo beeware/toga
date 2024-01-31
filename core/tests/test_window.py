@@ -368,27 +368,7 @@ def test_screen(window, app):
 
 def test_screen_position(window, app):
     """The window can be relocated using absolute and relative screen positions."""
-    # _________________________________________________
-    # Display Setup:                                  |
-    # ________________________________________________|
-    #              |--1366--|                         |
-    # (-1366,-768) _________                          |
-    #          |  |         |                         |
-    #         768 |Secondary|                         |
-    #          |  | Screen  |                         |
-    #          |  |_________|(0,0)                    |
-    #                          _________              |
-    #                      |  |         |             |
-    #                    1080 | Primary |             |
-    #                      |  | Screen  |             |
-    #                      |  |_________|(1920,1080)  |
-    #                         |---1920--|             |
-    # ________________________________________________|
-    #  `window.screen` will return `Secondary Screen` |
-    #   as window is on secondary screen to better    |
-    #   test out the differences between              |
-    #   `window.position` & `window.screen_position`. |
-    # ________________________________________________|
+    # Details about screen layout are in toga_dummy=>app.py=>get_screens()
     initial_position = window.position
     window.position = (-100, -100)
     assert window.position != initial_position

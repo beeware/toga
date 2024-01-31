@@ -152,6 +152,17 @@ if toga.platform.current_platform in {"iOS", "android"}:
         main_window.full_screen = False
         await main_window_probe.wait_for_window("Full screen is a no-op")
 
+    # Test the `origin`, `position` and `screen_position`.
+    async def test_screen(main_window, main_window_probe):
+        """The window can be relocated to another screen, using both absolute and relative screen positions."""
+        assert main_window.screen.origin == (0, 0)
+        initial_size = main_window.size
+        main_window.position = (150, 50)
+        await main_window_probe.wait_for_window("Main window can't be moved")
+        assert main_window.size == initial_size
+        assert main_window.position == (0, 0)
+        assert main_window.screen_position == (0, 0)
+
 else:
     ####################################################################################
     # Desktop platform tests
@@ -479,27 +490,41 @@ else:
         assert not second_window_probe.is_full_screen
         assert second_window_probe.content_size == initial_content_size
 
+    # Test the `position`, `screen_position` and `screen`.
+    @pytest.mark.parametrize(
+        "second_window_kwargs",
+        [dict(title="Secondary Window", position=(200, 150))],
+    )
+    async def test_screen(second_window, second_window_probe):
+        """The window can be relocated to another screen, using both absolute and relative screen positions."""
+
+        initial_position = second_window.position
+
+        # Move the window using absolute position.
+        second_window.position = (200, 200)
+        await second_window_probe.wait_for_window("Secondary window has been moved")
+        assert second_window.position != initial_position
+
+        # `position` and `screen_position` will be same as the window will be in primary screen.
+        assert second_window.position == (200, 200)
+        assert second_window.screen_position == (200, 200)
+
+        # Move the window between available screens and assert its `screen_position`
+        for screen in second_window.app.screens:
+            second_window.screen = screen
+            await second_window_probe.wait_for_window("Secondary window has been moved")
+            assert second_window.screen == screen
+            assert second_window.screen_position == (
+                second_window.position[0] - screen.origin[0],
+                second_window.position[1] - screen.origin[1],
+            )
+
 
 async def test_as_image(main_window, main_window_probe):
     """The window can be captured as a screenshot"""
 
     screenshot = main_window.as_image()
     main_window_probe.assert_image_size(screenshot.size, main_window_probe.content_size)
-
-
-# Test the `origin`, `position` and `screen_position`.
-async def test_screen(main_window, main_window_probe):
-    """The window can be relocated to another screen, using both absolute and relative screen positions."""
-
-    if main_window.screen.origin == (0, 0):
-        if toga.platform.current_platform in {"android", "iOS", "textual"}:
-            pytest.xfail("Window.position is non functional on current platform.")
-        initial_position = main_window.position
-        main_window.position = (200, 200)
-        assert main_window.position != initial_position
-        # position and screen_position should be equal on screen with origin (0, 0)
-        assert main_window.position == (200, 200)
-        assert main_window.screen_position == (200, 200)
 
 
 ########################################################################################

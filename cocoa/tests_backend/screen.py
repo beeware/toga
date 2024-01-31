@@ -11,13 +11,5 @@ class ScreenProbe(BaseProbe):
         self.native = screen._impl.native
         assert isinstance(self.native, NSScreen)
 
-    def assert_name(self):
-        assert self.screen.name == self.native.localizedName
-
-    def assert_origin(self):
-        frame_native = self.native.frame
-        assert self.screen.origin == (frame_native.origin.x, frame_native.origin.y)
-
-    def assert_size(self):
-        frame_native = self.native.frame
-        assert self.screen.size == (frame_native.size.width, frame_native.size.height)
+    def get_screenshot(self):
+        return self.screen.as_image()

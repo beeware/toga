@@ -85,6 +85,11 @@ class App(LoggedObject):
         #                      |  |_________|(1920,1080)  |
         #                         |---1920--|             |
         # ________________________________________________|
+        #  `window.screen` will return `Secondary Screen` |
+        #   as window is on secondary screen to better    |
+        #   test out the differences between              |
+        #   `window.position` & `window.screen_position`. |
+        # ________________________________________________|
         return [
             ScreenImpl(native=("Primary Screen", (0, 0), (1920, 1080))),
             ScreenImpl(native=("Secondary Screen", (-1366, -768), (1366, 768))),
