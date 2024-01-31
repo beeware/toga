@@ -45,6 +45,6 @@ class Screen:
             success, buffer = screenshot.save_to_bufferv("png", [], [])
             if success:
                 return bytes(buffer)
-            else:
+            else:  # pragma: no cover
                 print("Failed to save screenshot to buffer.")
                 return None
