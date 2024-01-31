@@ -79,7 +79,7 @@ class OptionContainer(Widget):
         container.min_width = container.content.interface.layout.min_width
         container.min_height = container.content.interface.layout.min_height
 
-    def add_content(self, index, text, widget, icon=None):
+    def add_option(self, index, text, widget, icon=None):
         # Create the container for the widget
         sub_container = ControlledContainer(on_refresh=self.content_refreshed)
         sub_container.content = widget
@@ -102,7 +102,7 @@ class OptionContainer(Widget):
             tag=0,
         )
 
-    def remove_content(self, index):
+    def remove_option(self, index):
         sub_container = self.sub_containers[index]
         sub_container.content = None
         del self.sub_containers[index]

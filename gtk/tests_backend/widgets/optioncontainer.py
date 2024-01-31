@@ -5,6 +5,7 @@ from .base import SimpleProbe
 
 class OptionContainerProbe(SimpleProbe):
     native_class = Gtk.Notebook
+    max_tabs = None
     disabled_tab_selectable = False
 
     def repaint_needed(self):
