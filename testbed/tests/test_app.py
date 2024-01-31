@@ -560,12 +560,9 @@ async def test_screens(app, app_probe):
     assert app.screens[0].origin == (0, 0)
 
     # Check for unique names
-    screen_names = set()
-    unique_names = all(
-        screen.name not in screen_names and not screen_names.add(screen.name)
-        for screen in app.screens
-    )
-    assert unique_names is True
+    screen_names = [s.name for s in app.screens]
+    unique_names = set(screen_names)
+    assert len(screen_names) == len(unique_names)
 
     # Check that the origin of every other screen is not "0,0"
     origins_not_zero = all(screen.origin != (0, 0) for screen in app.screens[1:])
