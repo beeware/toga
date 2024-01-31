@@ -49,7 +49,7 @@ class Screen:
         # Get the size of the CGImage
         size = CGImageGetWidth(cg_image), CGImageGetHeight(cg_image)
         # Create an NSImage from the CGImage
-        ns_image = NSImage.alloc().initWithCGImage_size_(cg_image, size)
+        ns_image = NSImage.alloc().initWithCGImage(cg_image, size=size)
         # Drain the autorelease pool to release memory
         pool.release()
 
