@@ -58,8 +58,7 @@ class DrawingObject(ABC):
         return f"{self.__class__.__name__}()"
 
     @abstractmethod
-    def _draw(self, impl, **kwargs):
-        ...
+    def _draw(self, impl, **kwargs): ...
 
 
 class BeginPath(DrawingObject):

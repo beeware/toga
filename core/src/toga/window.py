@@ -561,8 +561,7 @@ class Window:
         content: str,
         retry: Literal[False] = False,
         on_result: DialogResultHandler[None] | None = None,
-    ) -> Dialog:
-        ...
+    ) -> Dialog: ...
 
     @overload
     def stack_trace_dialog(
@@ -572,8 +571,7 @@ class Window:
         content: str,
         retry: Literal[True] = False,
         on_result: DialogResultHandler[bool] | None = None,
-    ) -> Dialog:
-        ...
+    ) -> Dialog: ...
 
     @overload
     def stack_trace_dialog(
@@ -583,8 +581,7 @@ class Window:
         content: str,
         retry: bool = False,
         on_result: DialogResultHandler[bool | None] | None = None,
-    ) -> Dialog:
-        ...
+    ) -> Dialog: ...
 
     def stack_trace_dialog(
         self,
@@ -677,8 +674,7 @@ class Window:
         multiple_select: Literal[False] = False,
         on_result: DialogResultHandler[Path | None] | None = None,
         multiselect=None,  # DEPRECATED
-    ) -> Dialog:
-        ...
+    ) -> Dialog: ...
 
     @overload
     def open_file_dialog(
@@ -689,8 +685,7 @@ class Window:
         multiple_select: Literal[True] = True,
         on_result: DialogResultHandler[list[Path] | None] | None = None,
         multiselect=None,  # DEPRECATED
-    ) -> Dialog:
-        ...
+    ) -> Dialog: ...
 
     @overload
     def open_file_dialog(
@@ -701,8 +696,7 @@ class Window:
         multiple_select: bool = False,
         on_result: DialogResultHandler[list[Path] | Path | None] | None = None,
         multiselect=None,  # DEPRECATED
-    ) -> Dialog:
-        ...
+    ) -> Dialog: ...
 
     def open_file_dialog(
         self,
@@ -769,8 +763,7 @@ class Window:
         multiple_select: Literal[False] = False,
         on_result: DialogResultHandler[Path | None] | None = None,
         multiselect=None,  # DEPRECATED
-    ) -> Dialog:
-        ...
+    ) -> Dialog: ...
 
     @overload
     def select_folder_dialog(
@@ -780,8 +773,7 @@ class Window:
         multiple_select: Literal[True] = True,
         on_result: DialogResultHandler[list[Path] | None] | None = None,
         multiselect=None,  # DEPRECATED
-    ) -> Dialog:
-        ...
+    ) -> Dialog: ...
 
     @overload
     def select_folder_dialog(
@@ -791,8 +783,7 @@ class Window:
         multiple_select: bool = False,
         on_result: DialogResultHandler[list[Path] | Path | None] | None = None,
         multiselect=None,  # DEPRECATED
-    ) -> Dialog:
-        ...
+    ) -> Dialog: ...
 
     def select_folder_dialog(
         self,

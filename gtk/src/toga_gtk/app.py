@@ -287,9 +287,9 @@ class DocumentApp(App):  # pragma: no cover
             m.open_file_dialog(
                 self.interface.formal_name,
                 file_types=self.interface.document_types.keys(),
-                on_result=lambda dialog, path: self.interface._open(path)
-                if path
-                else self.exit(),
+                on_result=lambda dialog, path: (
+                    self.interface._open(path) if path else self.exit()
+                ),
             )
 
     def open_file(self, widget, **kwargs):
