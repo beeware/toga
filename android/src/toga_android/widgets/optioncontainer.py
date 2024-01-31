@@ -9,7 +9,9 @@ from android.widget import LinearLayout
 try:
     from com.google.android.material.bottomnavigation import BottomNavigationView
     from com.google.android.material.navigation import NavigationBarView
-except ImportError:
+except ImportError:  # pragma: no cover
+    # If you've got an older project that doesn't include the Material library,
+    # this import will fail. We can't validate that in CI, so it's marked no cover
     BottomNavigationView = None
     NavigationBarView = None
 
@@ -43,10 +45,11 @@ if NavigationBarView is not None:  # pragma: no branch
         def onNavigationItemSelected(self, item):
             for index, option in enumerate(self.impl.options):
                 if option.menu_item == item:
-                    self.impl.select_option(index)
+                    self.impl.set_current_tab_index(index, programmatic=False)
                     return True
 
-            return False
+            # You shouldn't be able to select an item that isn't isn't selectable.
+            return False  # pragma: no cover
 
 
 class OptionContainer(Widget, Container):
@@ -89,8 +92,9 @@ class OptionContainer(Widget, Container):
             ),
         )
 
+        self.onItemSelectedListener = TogaOnItemSelectedListener(self)
         self.native_navigationview.setOnItemSelectedListener(
-            TogaOnItemSelectedListener(self)
+            self.onItemSelectedListener
         )
 
         self.options = []
@@ -102,16 +106,19 @@ class OptionContainer(Widget, Container):
             lp.width, lp.height - self.native_navigationview.getHeight()
         )
 
-    def select_option(self, index):
-        option = self.options[index]
-        self.set_content(option.widget)
-        option.widget.interface.refresh()
+    def purge_options(self):
+        for option in self.options:
+            option.menu_item = None
+        self.native_navigationview.getMenu().clear()
 
-    def _populate_menu_item(self, index, option):
-        option.menu_item = self.native_navigationview.getMenu().add(
-            0, 0, index, option.text
-        )
-        self.set_option_icon(index, option.icon)
+    def rebuld_options(self):
+        for index, option in enumerate(self.options):
+            if index < self.max_items:
+                option.menu_item = self.native_navigationview.getMenu().add(
+                    0, 0, index, option.text
+                )
+                self.set_option_icon(index, option.icon)
+                self.set_option_enabled(index, option.enabled)
 
     def add_option(self, index, text, widget, icon=None):
         # Store the details of the new option
@@ -137,25 +144,24 @@ class OptionContainer(Widget, Container):
                 )
                 last_option.menu_item = None
 
-            self._populate_menu_item(index, option)
+        # Android doesn't let you change the order index of an item after it has been
+        # created, which means there's no way to insert an item into an existing
+        # ordering. As a workaround, rebuild the entire navigation menu on every
+        # insertion.
+        self.purge_options()
+        self.rebuld_options()
 
         # If this is the only option, make sure the content is selected
         if len(self.options) == 1:
-            self.select_option(0)
+            self.set_current_tab_index(0)
 
     def remove_option(self, index):
-        option = self.options[index]
-        if option.menu_item:
-            self.native_navigationview.getMenu().removeItem(
-                option.menu_item.getItemId()
-            )
-
+        # Android doesn't let you change the order index of an item after it has been
+        # created, which means there's no way to insert an item into an existing
+        # ordering. If an item is deleted, rebuild the entire navigation menu.
+        self.purge_options()
         del self.options[index]
-        if len(self.options) >= self.max_items:
-            self._populate_menu_item(
-                self.max_items - 1,
-                self.options[self.max_items - 1],
-            )
+        self.rebuld_options()
 
     def set_option_enabled(self, index, enabled):
         option = self.options[index]
@@ -201,12 +207,17 @@ class OptionContainer(Widget, Container):
         for index, option in enumerate(self.options):
             if option.menu_item.isChecked():
                 return index
-        return None
+        # One of the tabs has to be selected
+        return None  # pragma: no cover
 
-    def set_current_tab_index(self, current_tab_index):
-        if current_tab_index < self.max_items:
-            option = self.options[current_tab_index]
-            option.menu_item.setChecked(True)
+    def set_current_tab_index(self, index, programmatic=True):
+        if index < self.max_items:
+            option = self.options[index]
+            self.set_content(option.widget)
+            option.widget.interface.refresh()
+            if programmatic:
+                option.menu_item.setChecked(True)
+            self.interface.on_select()
         else:
             warnings.warn("Tab is outside selectable range")
 

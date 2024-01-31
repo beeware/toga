@@ -265,11 +265,12 @@ async def test_select_tab_overflow(widget, probe, on_select_handler):
             extra_probes.pop(0)
             widget.content.append("Tab A", extra)
 
+        with pytest.warns(match=r"Additional item will be ignored"):
             extra = extra_widgets.pop(0)
             extra_probes.pop(0)
             widget.content.append("Tab B", extra)
 
-        await probe.redraw("Appended item was ignored")
+        await probe.redraw("Appended items were ignored")
 
         # Excess tab details can still be read and written
         widget.content[probe.max_tabs].text = "Extra Tab"
@@ -284,11 +285,12 @@ async def test_select_tab_overflow(widget, probe, on_select_handler):
         probe.assert_tab_icon(probe.max_tabs + 1, None)
         assert widget.content[probe.max_tabs + 1].enabled
 
-        # Programamtically selecting a non-visible tab raises a warning, doesn't change
+        # Programmatically selecting a non-visible tab raises a warning, doesn't change
         # the tab, and doesn't generate a selection event.
         with pytest.warns(match=r"Tab is outside selectable range"):
             widget.current_tab = probe.max_tabs + 1
 
+        await probe.redraw("Item selection was ignored")
         on_select_handler.assert_not_called()
 
         # Insert a tab at the start. This will bump the last tab into the void
@@ -299,10 +301,19 @@ async def test_select_tab_overflow(widget, probe, on_select_handler):
 
         await probe.redraw("Inserted item bumped the last item")
 
+        # Assert the properties of the last visible item
         assert widget.content[probe.max_tabs - 1].text == f"Tab {probe.max_tabs - 1}"
         probe.assert_tab_icon(probe.max_tabs - 1, None)
         assert widget.content[probe.max_tabs - 1].enabled
 
+        # As the item is visible, also verify the actual widget properties
+        probe.assert_tab_content(
+            probe.max_tabs - 1,
+            f"Tab {probe.max_tabs - 1}",
+            enabled=True,
+        )
+
+        # Assert the properties of the first invisible item
         assert widget.content[probe.max_tabs].text == f"Tab {probe.max_tabs}"
         probe.assert_tab_icon(probe.max_tabs, None)
         assert widget.content[probe.max_tabs].enabled
@@ -317,6 +328,13 @@ async def test_select_tab_overflow(widget, probe, on_select_handler):
         probe.assert_tab_icon(probe.max_tabs - 1, None)
         assert widget.content[probe.max_tabs - 1].enabled
 
+        # As the item is visible, also verify the actual widget properties
+        probe.assert_tab_content(
+            probe.max_tabs - 1,
+            f"Tab {probe.max_tabs}",
+            enabled=True,
+        )
+
         # Remove another visible tab. This will make the first "extra" tab
         # come into view for the first time. It has a custom icon, and
         # was disabled while it wasn't visible.
@@ -327,6 +345,13 @@ async def test_select_tab_overflow(widget, probe, on_select_handler):
         assert widget.content[probe.max_tabs - 1].text == "Extra Tab"
         probe.assert_tab_icon(probe.max_tabs - 1, "new-tab")
         assert not widget.content[probe.max_tabs - 1].enabled
+
+        # As the item is visible, also verify the actual widget properties
+        probe.assert_tab_content(
+            probe.max_tabs - 1,
+            "Extra Tab",
+            enabled=False,
+        )
 
 
 async def test_enable_tab(widget, probe, on_select_handler):
