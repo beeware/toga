@@ -393,8 +393,9 @@ def test_screen_position(window, app):
     window.position = (-100, -100)
     assert window.position != initial_position
     assert window.position == (-100, -100)
-
     assert window.screen_position == (1266, 668)
+
+    # Move the window to a new position.
     window.screen_position = (100, 100)
     assert window.position == (-1266, -668)
     assert window.screen_position == (100, 100)
