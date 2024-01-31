@@ -135,7 +135,7 @@ class StartApp(toga.App):
 
 
 def main():
-    return StartApp("Tutorial 4", "org.beeware.helloworld")
+    return StartApp("Tutorial 4", "org.beeware.toga.tutorial")
 
 
 if __name__ == "__main__":

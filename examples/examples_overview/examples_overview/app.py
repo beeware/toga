@@ -121,7 +121,7 @@ class ExampleExamplesOverviewApp(toga.App):
 
 def main():
     return ExampleExamplesOverviewApp(
-        "Examples Overview", "org.beeware.widgets.examples_overview"
+        "Examples Overview", "org.beeware.toga.examples.examples_overview"
     )
 
 

@@ -229,7 +229,7 @@ class WindowDemoApp(toga.App):
 
 
 def main():
-    return WindowDemoApp("Window Demo", "org.beeware.widgets.window")
+    return WindowDemoApp("Window Demo", "org.beeware.toga.examples.window")
 
 
 if __name__ == "__main__":
