@@ -17,7 +17,7 @@ def build(app):
 
 
 def main():
-    return toga.App("First App", "org.beeware.helloworld", startup=build)
+    return toga.App("First App", "org.beeware.toga.tutorial", startup=build)
 
 
 if __name__ == "__main__":

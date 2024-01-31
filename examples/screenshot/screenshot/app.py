@@ -479,7 +479,9 @@ class ScreenshotGeneratorApp(toga.App):
 
 
 def main():
-    return ScreenshotGeneratorApp("My Application", "org.beeware.widgets.screenshot")
+    return ScreenshotGeneratorApp(
+        "My Application", "org.beeware.toga.examples.screenshot"
+    )
 
 
 if __name__ == "__main__":
