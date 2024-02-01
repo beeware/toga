@@ -25,7 +25,9 @@ class Screen:
         return (0, 0)
 
     def get_size(self):
-        return int(self.native.bounds.size.width), int(self.native.bounds.size.height)
+        return int(self.native.nativeBounds.size.width), int(
+            self.native.nativeBounds.size.height
+        )
 
     def get_image_data(self):
         ui_view = self.native.snapshotViewAfterScreenUpdates_(True)
