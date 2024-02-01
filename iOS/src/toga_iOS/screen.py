@@ -1,4 +1,7 @@
+from rubicon.objc import Block, objc_id
+
 from toga.screen import Screen as ScreenInterface
+from toga_iOS.libs import UIGraphicsImageRenderer, UIImage
 
 
 class Screen:
@@ -25,4 +28,15 @@ class Screen:
         return int(self.native.bounds.size.width), int(self.native.bounds.size.height)
 
     def get_image_data(self):
-        self.interface.factory.not_implemented("Screen.get_image_data()")
+        renderer = UIGraphicsImageRenderer.alloc().initWithSize(self.native.bounds.size)
+
+        def render(context):
+            self.native.drawViewHierarchyInRect(
+                self.native.bounds, afterScreenUpdates=True
+            )
+
+        # Render the full image
+        full_image = UIImage.imageWithData(
+            renderer.PNGDataWithActions(Block(render, None, objc_id))
+        )
+        return full_image
