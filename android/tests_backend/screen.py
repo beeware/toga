@@ -1,6 +1,7 @@
 import pytest
 from android.view import Display
 
+from toga.images import Image as TogaImage
 from toga_android.widgets.base import Scalable
 
 from .probe import BaseProbe
@@ -15,5 +16,5 @@ class ScreenProbe(BaseProbe, Scalable):
         self.init_scale(app._impl.native)
         assert isinstance(self.native, Display)
 
-    def get_screenshot(self):
+    def get_screenshot(self, format=TogaImage):
         pytest.skip("Screen.as_image is not implemented on Android.")

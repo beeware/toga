@@ -3,31 +3,28 @@ import os
 import pytest
 from gi.repository import GdkX11
 
+from toga.images import Image as TogaImage
+
 from .probe import BaseProbe
 
 
 class ScreenProbe(BaseProbe):
-    def __init__(self, screen):
+    def __init__(self, app, screen):
         super().__init__()
         self.screen = screen
         self._impl = screen._impl
         self.native = screen._impl.native
-        # Using XDG_SESSION_TYPE to detect specific native monitor types
-        # Use WAYLAND_DISPLAY for everything else
-        session_type = os.environ.get("XDG_SESSION_TYPE", "").lower()
-        if session_type == "x11":
-            assert isinstance(self.native, GdkX11.X11Monitor)
-        elif session_type == "wayland":
-            # For wayland, the native type is __gi__.GdkWaylandMonitor
+        if "WAYLAND_DISPLAY" in os.environ:
+            # TODO:
+            # For wayland, the native type is `__gi__.GdkWaylandMonitor`
             # But it cannot be imported directly.
             pass
         else:
-            assert self.native == "a"
-            # session_type is "" for CI
-            # TODO: Check for the other monitor native types
+            assert isinstance(self.native, GdkX11.X11Monitor)
+            # For CI, the native type is also GdkX11.X11Monitor
 
-    def get_screenshot(self):
+    def get_screenshot(self, format=TogaImage):
         if "WAYLAND_DISPLAY" in os.environ:
             pytest.skip("Screen.as_image() is not implemented on wayland.")
         else:
-            return self.screen.as_image()
+            return self.screen.as_image(format=format)

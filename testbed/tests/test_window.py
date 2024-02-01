@@ -512,7 +512,9 @@ else:
         # Move the window between available screens and assert its `screen_position`
         for screen in second_window.app.screens:
             second_window.screen = screen
-            await second_window_probe.wait_for_window("Secondary window has been moved")
+            await second_window_probe.wait_for_window(
+                f"Secondary window has been moved to {screen.name}"
+            )
             assert second_window.screen == screen
             assert second_window.screen_position == (
                 second_window.position[0] - screen.origin[0],

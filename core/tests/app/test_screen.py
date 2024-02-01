@@ -1,3 +1,6 @@
+from PIL.Image import Image as PILImage
+
+from toga.images import Image as TogaImage
 from toga_dummy.utils import assert_action_performed
 
 
@@ -21,7 +24,17 @@ def test_size(app):
 
 def test_as_image(app):
     """A screen can be captured as an image"""
-    screenshot = app.screens[0].as_image()
-    assert_action_performed(app.screens[0], "get image data")
-    # Don't need to check the raw data; just check it's the right screen size.
-    assert screenshot.size == app.screens[0].size
+    for screen in app.screens:
+        # `as_image()` should default to `toga.images.Image` as format.
+        toga_image_screenshot = screen.as_image()
+        assert_action_performed(screen, "get image data")
+        # Check if returned image is of type `toga.images.Image`.
+        assert isinstance(toga_image_screenshot, TogaImage)
+        # Don't need to check the raw data; just check it's the right screen size.
+        assert toga_image_screenshot.size == screen.size
+
+        pil_screenshot = screen.as_image(format=PILImage)
+        assert_action_performed(screen, "get image data")
+        # Check if returned image is of type `PIL.Image.Image`.
+        assert isinstance(pil_screenshot, PILImage)
+        assert pil_screenshot.size == screen.size
