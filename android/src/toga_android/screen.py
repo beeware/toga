@@ -1,3 +1,8 @@
+from android.graphics import (
+    Bitmap,
+    Canvas as A_Canvas,
+)
+
 from toga.screen import Screen as ScreenInterface
 
 from .widgets.base import Scalable
@@ -26,9 +31,19 @@ class Screen(Scalable):
 
     def get_size(self):
         return (
-            self.scale_out(self.native.getWidth()),
-            self.scale_out(self.native.getHeight()),
+            # Using scaling(scale_out) produces wrong results.
+            self.native.getWidth(),
+            self.native.getHeight(),
         )
 
     def get_image_data(self):
-        self.interface.factory.not_implemented("Screen.get_image_data()")
+        # Get the root view of the current activity
+        root_view = self.app.native.getWindow().getDecorView().getRootView()
+        bitmap = Bitmap.createBitmap(
+            *self.get_size(),
+            Bitmap.Config.ARGB_8888,
+        )
+        canvas = A_Canvas(bitmap)
+        root_view.draw(canvas)
+
+        return bitmap
