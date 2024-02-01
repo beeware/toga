@@ -499,7 +499,7 @@ class App:
         self.factory.App(interface=self)
 
     @property
-    def screens(self) -> tuple[Screen, ...]:
+    def screens(self) -> list[Screen, ...]:
         """Returns a list of available screens."""
         return [screen.interface for screen in self._impl.get_screens()]
 

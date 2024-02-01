@@ -191,8 +191,13 @@ class App:
 
     def get_screens(self):
         display = Gdk.Display.get_default()
-        # CI runs on wayland
-        if os.environ.get("XDG_SESSION_TYPE", "").lower() == "x11":  # pragma: no cover
+        if "WAYLAND_DISPLAY" in os.environ:  # pragma: no cover
+            # `get_primary_monitor()` doesn't work on wayland, so return as it is.
+            return [
+                ScreenImpl(native=display.get_monitor(i))
+                for i in range(display.get_n_monitors())
+            ]
+        else:
             primary_screen = ScreenImpl(display.get_primary_monitor())
             screen_list = [primary_screen] + [
                 ScreenImpl(native=display.get_monitor(i))
@@ -200,11 +205,6 @@ class App:
                 if display.get_monitor(i) != primary_screen.native
             ]
             return screen_list
-        else:
-            return [
-                ScreenImpl(native=display.get_monitor(i))
-                for i in range(display.get_n_monitors())
-            ]
 
     def set_main_window(self, window):
         pass
