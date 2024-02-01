@@ -19,11 +19,11 @@ class ScreenProbe(BaseProbe):
             assert isinstance(self.native, GdkX11.X11Monitor)
         elif session_type == "wayland":
             # For wayland, the native type is __gi__.GdkWaylandMonitor
-            # But cannot be imported directly.
+            # But it cannot be imported directly.
             pass
         else:
-            print(session_type)
-            assert session_type == "a"
+            assert self.native == "a"
+            # session_type is "" for CI
             # TODO: Check for the other monitor native types
 
     def get_screenshot(self):
