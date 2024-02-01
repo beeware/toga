@@ -1,1 +1,1 @@
-APIs for detecting multiple displays or screens and setting windows on them were added.
+Toga apps can now access details about the screens attached to the computer. Window position APIs have been extended to allow for placement on a specific screen, and positioning relative to a specific screen.
