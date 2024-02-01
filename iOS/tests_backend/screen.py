@@ -1,5 +1,3 @@
-import pytest
-
 from toga.images import Image as TogaImage
 from toga_iOS.libs import UIScreen
 
@@ -15,4 +13,4 @@ class ScreenProbe(BaseProbe):
         assert isinstance(self.native, UIScreen)
 
     def get_screenshot(self, format=TogaImage):
-        pytest.skip("Screen.as_image is not implemented on iOS.")
+        return self.screen.as_image(format=format)

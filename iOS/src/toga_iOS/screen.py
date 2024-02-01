@@ -28,15 +28,13 @@ class Screen:
         return int(self.native.bounds.size.width), int(self.native.bounds.size.height)
 
     def get_image_data(self):
-        renderer = UIGraphicsImageRenderer.alloc().initWithSize(self.native.bounds.size)
+        ui_view = self.native.snapshotViewAfterScreenUpdates_(True)
+        renderer = UIGraphicsImageRenderer.alloc().initWithSize(ui_view.bounds.size)
 
         def render(context):
-            self.native.drawViewHierarchyInRect(
-                self.native.bounds, afterScreenUpdates=True
-            )
+            ui_view.drawViewHierarchyInRect(ui_view.bounds, afterScreenUpdates=True)
 
-        # Render the full image
-        full_image = UIImage.imageWithData(
+        ui_image = UIImage.imageWithData(
             renderer.PNGDataWithActions(Block(render, None, objc_id))
         )
-        return full_image
+        return ui_image
