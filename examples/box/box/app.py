@@ -82,7 +82,7 @@ class ExampleBoxApp(toga.App):
 def main():
     # Application class
     #   App name and namespace
-    app = ExampleBoxApp("Box", "org.beeware.widgets.boxes")
+    app = ExampleBoxApp("Box", "org.beeware.toga.examples.boxes")
     return app
 
 

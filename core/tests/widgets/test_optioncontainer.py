@@ -486,7 +486,7 @@ def test_delitem(optioncontainer, index):
     # delete item
     del optioncontainer.content[index]
     assert len(optioncontainer.content) == 3
-    assert_action_performed_with(optioncontainer, "remove content", index=1)
+    assert_action_performed_with(optioncontainer, "remove option", index=1)
 
     # There's no item with the deleted label
     with pytest.raises(ValueError, match=r"No tab named 'Item 2'"):
@@ -525,7 +525,7 @@ def test_item_remove(optioncontainer, index):
     # remove item
     optioncontainer.content.remove(index)
     assert len(optioncontainer.content) == 3
-    assert_action_performed_with(optioncontainer, "remove content", index=1)
+    assert_action_performed_with(optioncontainer, "remove option", index=1)
 
     # There's no item with the deleted label
     with pytest.raises(ValueError, match=r"No tab named 'Item 2'"):
@@ -561,7 +561,7 @@ def test_item_insert_item(optioncontainer):
     # Backend added an item and set enabled
     assert_action_performed_with(
         optioncontainer,
-        "add content",
+        "add option",
         index=1,
         text="New Tab",
         widget=new_content._impl,
@@ -623,7 +623,7 @@ def test_item_insert_text(optioncontainer, value, expected):
     # Backend added an item and set enabled
     assert_action_performed_with(
         optioncontainer,
-        "add content",
+        "add option",
         index=1,
         text=expected,
         widget=new_content._impl,
@@ -662,7 +662,7 @@ def test_item_insert_enabled(optioncontainer, enabled):
     # Backend added an item and set enabled
     assert_action_performed_with(
         optioncontainer,
-        "add content",
+        "add option",
         index=1,
         text="New content",
         widget=new_content._impl,
@@ -685,7 +685,7 @@ def test_item_append(optioncontainer, enabled):
 
     optioncontainer.content.append("New content", new_content, enabled=enabled)
     assert_action_performed_with(
-        optioncontainer, "add content", index=4, widget=new_content._impl
+        optioncontainer, "add option", index=4, widget=new_content._impl
     )
     assert_action_performed_with(
         optioncontainer, "set option enabled", index=4, value=enabled

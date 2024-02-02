@@ -119,7 +119,7 @@ class ExampleButtonApp(toga.App):
 def main():
     # Application class
     #   App name and namespace
-    app = ExampleButtonApp("Button", "org.beeware.widgets.buttons")
+    app = ExampleButtonApp("Button", "org.beeware.toga.examples.buttons")
     return app
 
 

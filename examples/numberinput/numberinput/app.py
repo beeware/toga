@@ -70,7 +70,9 @@ class ExampleNumberInputApp(toga.App):
 
 
 def main():
-    return ExampleNumberInputApp("Demo NumberInput", "org.beeware.widgets.numberinput")
+    return ExampleNumberInputApp(
+        "Demo NumberInput", "org.beeware.toga.examples.numberinput"
+    )
 
 
 if __name__ == "__main__":
