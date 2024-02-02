@@ -19,7 +19,7 @@ from toga_iOS.libs import (
     uikit,
 )
 
-from .screen import Screen as ScreenImpl
+from .screens import Screen as ScreenImpl
 
 
 class Window:

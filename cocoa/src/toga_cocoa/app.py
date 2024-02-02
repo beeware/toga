@@ -37,7 +37,7 @@ from .libs import (
     objc_method,
     objc_property,
 )
-from .screen import Screen as ScreenImpl
+from .screens import Screen as ScreenImpl
 from .window import Window
 
 

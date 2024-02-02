@@ -3,7 +3,7 @@ from toga.command import Separator
 from toga_web.libs import create_element, js
 from toga_web.window import Window
 
-from .screen import Screen as ScreenImpl
+from .screens import Screen as ScreenImpl
 
 
 class MainWindow(Window):

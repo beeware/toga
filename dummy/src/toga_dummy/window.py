@@ -2,7 +2,7 @@ from pathlib import Path
 
 import toga_dummy
 
-from .screen import Screen as ScreenImpl
+from .screens import Screen as ScreenImpl
 from .utils import LoggedObject
 
 

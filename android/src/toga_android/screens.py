@@ -3,7 +3,7 @@ from android.graphics import (
     Canvas as A_Canvas,
 )
 
-from toga.screen import Screen as ScreenInterface
+from toga.screens import Screen as ScreenInterface
 
 from .widgets.base import Scalable
 

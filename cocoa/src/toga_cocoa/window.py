@@ -18,7 +18,7 @@ from toga_cocoa.libs import (
     objc_property,
 )
 
-from .screen import Screen as ScreenImpl
+from .screens import Screen as ScreenImpl
 
 
 def toolbar_identifier(cmd):

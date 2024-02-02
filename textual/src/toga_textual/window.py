@@ -7,7 +7,7 @@ from textual.widget import Widget as TextualWidget
 from textual.widgets import Button as TextualButton
 
 from .container import Container
-from .screen import Screen as ScreenImpl
+from .screens import Screen as ScreenImpl
 
 
 class WindowCloseButton(TextualButton):

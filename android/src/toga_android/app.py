@@ -11,7 +11,7 @@ from org.beeware.android import IPythonApp, MainActivity
 from toga.command import Command, Group, Separator
 
 from .libs import events
-from .screen import Screen as ScreenImpl
+from .screens import Screen as ScreenImpl
 from .window import Window
 
 

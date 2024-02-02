@@ -2,7 +2,7 @@ import asyncio
 import sys
 from pathlib import Path
 
-from .screen import Screen as ScreenImpl
+from .screens import Screen as ScreenImpl
 from .utils import LoggedObject
 from .window import Window
 

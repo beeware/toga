@@ -12,7 +12,7 @@ from toga.command import Command, Separator
 
 from .keys import gtk_accel
 from .libs import TOGA_DEFAULT_STYLES, Gdk, Gio, GLib, Gtk
-from .screen import Screen as ScreenImpl
+from .screens import Screen as ScreenImpl
 from .window import Window
 
 

@@ -6,7 +6,7 @@ from rubicon.objc.eventloop import EventLoopPolicy, iOSLifecycle
 from toga_iOS.libs import UIResponder, UIScreen, av_foundation
 from toga_iOS.window import Window
 
-from .screen import Screen as ScreenImpl
+from .screens import Screen as ScreenImpl
 
 
 class MainWindow(Window):

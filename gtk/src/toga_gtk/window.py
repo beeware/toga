@@ -2,7 +2,7 @@ from toga.command import Separator
 
 from .container import TogaContainer
 from .libs import Gdk, Gtk
-from .screen import Screen as ScreenImpl
+from .screens import Screen as ScreenImpl
 
 
 class Window:

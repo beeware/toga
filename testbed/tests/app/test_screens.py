@@ -7,9 +7,9 @@ from toga.images import Image as TogaImage
 
 
 @pytest.fixture
-def screen_probe_list(app):
-    module = import_module("tests_backend.screen")
-    return [getattr(module, "ScreenProbe")(app, screen) for screen in app.screens]
+def screen_probes(app):
+    module = import_module("tests_backend.screens")
+    return [getattr(module, "ScreenProbe")(screen) for screen in app.screens]
 
 
 async def test_name(app):
@@ -42,16 +42,17 @@ async def test_size(app):
         )
 
 
-async def test_as_image(screen_probe_list):
+async def test_as_image(screen_probes):
     """A screen can be captured as an image"""
     # Using a probe for test as the feature is not implemented on some platforms.
-    for screen_probe in screen_probe_list:
+    for screen_probe in screen_probes:
         # `get_screenshot()` should default to `toga.images.Image` as format.
         toga_image_screenshot = screen_probe.get_screenshot()
         # Check if returned image is of type `toga.images.Image`.
         assert isinstance(toga_image_screenshot, TogaImage)
         assert toga_image_screenshot.size == screen_probe.screen.size
 
+        # Capture screenshot in PIL format
         pil_screenshot = screen_probe.get_screenshot(format=PILImage)
         # Check if returned image is of type `PIL.Image.Image`.
         assert isinstance(pil_screenshot, PILImage)

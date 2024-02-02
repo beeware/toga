@@ -28,13 +28,19 @@ def test_as_image(app):
         # `as_image()` should default to `toga.images.Image` as format.
         toga_image_screenshot = screen.as_image()
         assert_action_performed(screen, "get image data")
-        # Check if returned image is of type `toga.images.Image`.
+
+        # Check if returned image is of type `toga.images.Image`, and the right size
         assert isinstance(toga_image_screenshot, TogaImage)
-        # Don't need to check the raw data; just check it's the right screen size.
         assert toga_image_screenshot.size == screen.size
 
+
+def test_as_image_format(app):
+    """A screen can be captured as an image in a non-default format"""
+    for screen in app.screens:
+        # Capture image in PIL format
         pil_screenshot = screen.as_image(format=PILImage)
         assert_action_performed(screen, "get image data")
-        # Check if returned image is of type `PIL.Image.Image`.
+
+        # Check if returned image is of type `PIL.Image.Image`, and the right size
         assert isinstance(pil_screenshot, PILImage)
         assert pil_screenshot.size == screen.size

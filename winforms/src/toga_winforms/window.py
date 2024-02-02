@@ -7,7 +7,7 @@ from toga.command import Separator
 
 from .container import Container
 from .libs.wrapper import WeakrefCallable
-from .screen import Screen as ScreenImpl
+from .screens import Screen as ScreenImpl
 from .widgets.base import Scalable
 
 

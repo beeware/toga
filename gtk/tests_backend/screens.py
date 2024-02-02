@@ -9,19 +9,17 @@ from .probe import BaseProbe
 
 
 class ScreenProbe(BaseProbe):
-    def __init__(self, app, screen):
+    def __init__(self, screen):
         super().__init__()
         self.screen = screen
         self._impl = screen._impl
         self.native = screen._impl.native
         if "WAYLAND_DISPLAY" in os.environ:
-            # TODO:
-            # For wayland, the native type is `__gi__.GdkWaylandMonitor`
-            # But it cannot be imported directly.
+            # The native display type on Wayland is `__gi__.GdkWaylandMonitor`
+            # However, that class can't be imported directly.
             pass
         else:
             assert isinstance(self.native, GdkX11.X11Monitor)
-            # For CI, the native type is also GdkX11.X11Monitor
 
     def get_screenshot(self, format=TogaImage):
         if "WAYLAND_DISPLAY" in os.environ:

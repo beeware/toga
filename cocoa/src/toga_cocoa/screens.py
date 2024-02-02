@@ -1,4 +1,4 @@
-from toga.screen import Screen as ScreenInterface
+from toga.screens import Screen as ScreenInterface
 from toga_cocoa.libs import (
     CGImageGetHeight,
     CGImageGetWidth,

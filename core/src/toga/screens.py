@@ -32,8 +32,9 @@ class Screen:
     def as_image(self, format: type[ImageT] = Image) -> ImageT:
         """Render the current contents of the screen as an image.
 
-        :param format: Format to provide. Defaults to :class:`~toga.images.Image`; also
-            supports :any:`PIL.Image.Image` if Pillow is installed
+        :param format: Format for the resulting image. Defaults to
+            :class:`~toga.images.Image`; also supports :any:`PIL.Image.Image` if Pillow
+            is installed
         :returns: An image containing the screen content, in the format requested.
         """
         return Image(self._impl.get_image_data()).as_format(format)

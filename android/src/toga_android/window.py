@@ -11,7 +11,7 @@ from java import dynamic_proxy
 from java.io import ByteArrayOutputStream
 
 from .container import Container
-from .screen import Screen as ScreenImpl
+from .screens import Screen as ScreenImpl
 
 
 class LayoutListener(dynamic_proxy(ViewTreeObserver.OnGlobalLayoutListener)):

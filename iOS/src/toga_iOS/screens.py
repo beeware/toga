@@ -1,6 +1,6 @@
 from rubicon.objc import Block, objc_id
 
-from toga.screen import Screen as ScreenInterface
+from toga.screens import Screen as ScreenInterface
 from toga_iOS.libs import UIGraphicsImageRenderer, UIImage
 
 
@@ -25,8 +25,9 @@ class Screen:
         return (0, 0)
 
     def get_size(self):
-        return int(self.native.nativeBounds.size.width), int(
-            self.native.nativeBounds.size.height
+        return (
+            int(self.native.nativeBounds.size.width),
+            int(self.native.nativeBounds.size.height),
         )
 
     def get_image_data(self):

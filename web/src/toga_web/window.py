@@ -1,6 +1,6 @@
 from toga_web.libs import create_element, js
 
-from .screen import Screen as ScreenImpl
+from .screens import Screen as ScreenImpl
 
 
 class Window:

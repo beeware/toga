@@ -2,7 +2,7 @@ import asyncio
 
 from textual.app import App as TextualApp
 
-from .screen import Screen as ScreenImpl
+from .screens import Screen as ScreenImpl
 from .window import Window
 
 

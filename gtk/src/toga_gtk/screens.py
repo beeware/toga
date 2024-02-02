@@ -1,6 +1,6 @@
 import os
 
-from toga.screen import Screen as ScreenInterface
+from toga.screens import Screen as ScreenInterface
 
 from .libs import Gdk
 

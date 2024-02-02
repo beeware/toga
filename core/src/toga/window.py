@@ -25,7 +25,7 @@ from toga.platform import get_platform_factory
 if TYPE_CHECKING:
     from toga.app import App
     from toga.images import ImageT
-    from toga.screen import Screen
+    from toga.screens import Screen
     from toga.widgets.base import Widget
 
 

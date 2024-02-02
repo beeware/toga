@@ -7,7 +7,7 @@ from System.Drawing import (
 )
 from System.IO import MemoryStream
 
-from toga.screen import Screen as ScreenInterface
+from toga.screens import Screen as ScreenInterface
 
 
 class Screen:

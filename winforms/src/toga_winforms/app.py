@@ -18,7 +18,7 @@ from toga.command import Separator
 from .keys import toga_to_winforms_key
 from .libs.proactor import WinformsProactorEventLoop
 from .libs.wrapper import WeakrefCallable
-from .screen import Screen as ScreenImpl
+from .screens import Screen as ScreenImpl
 from .window import Window
 
 
