@@ -1,15 +1,13 @@
 from importlib import import_module
 
-import pytest
 from PIL.Image import Image as PILImage
 
 from toga.images import Image as TogaImage
 
 
-@pytest.fixture
-def screen_probes(app):
+def screen_probe(screen):
     module = import_module("tests_backend.screens")
-    return [getattr(module, "ScreenProbe")(screen) for screen in app.screens]
+    return getattr(module, "ScreenProbe")(screen)
 
 
 async def test_name(app):
@@ -42,18 +40,25 @@ async def test_size(app):
         )
 
 
-async def test_as_image(screen_probes):
+async def test_as_image(app):
     """A screen can be captured as an image"""
     # Using a probe for test as the feature is not implemented on some platforms.
-    for screen_probe in screen_probes:
+    for screen in app.screens:
+        probe = screen_probe(screen)
+
         # `get_screenshot()` should default to `toga.images.Image` as format.
-        toga_image_screenshot = screen_probe.get_screenshot()
+        toga_image_screenshot = probe.get_screenshot()
+        await probe.redraw(f"Screenshot of {screen} has been taken")
         # Check if returned image is of type `toga.images.Image`.
         assert isinstance(toga_image_screenshot, TogaImage)
-        assert toga_image_screenshot.size == screen_probe.screen.size
+        probe.assert_image_size(
+            toga_image_screenshot.size,
+            probe.screen.size,
+        )
 
         # Capture screenshot in PIL format
-        pil_screenshot = screen_probe.get_screenshot(format=PILImage)
+        pil_screenshot = probe.get_screenshot(format=PILImage)
+        await probe.redraw(f"Screenshot of {screen} has been taken in PIL format")
         # Check if returned image is of type `PIL.Image.Image`.
         assert isinstance(pil_screenshot, PILImage)
-        assert pil_screenshot.size == screen_probe.screen.size
+        probe.assert_image_size(pil_screenshot.size, probe.screen.size)

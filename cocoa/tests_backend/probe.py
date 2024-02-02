@@ -4,6 +4,7 @@ from ctypes import c_void_p
 from rubicon.objc import SEL, NSArray, NSObject, ObjCClass, objc_method
 from rubicon.objc.api import NSString
 
+import toga
 from toga_cocoa.libs.appkit import appkit
 
 NSRunLoop = ObjCClass("NSRunLoop")
@@ -48,7 +49,7 @@ class BaseProbe:
 
     async def redraw(self, message=None, delay=None):
         """Request a redraw of the app, waiting until that redraw has completed."""
-        if self.app.run_slow:
+        if toga.App.app.run_slow:
             # If we're running slow, wait for a second
             print("Waiting for redraw" if message is None else message)
             delay = 1

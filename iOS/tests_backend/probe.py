@@ -1,5 +1,6 @@
 import asyncio
 
+import toga
 from toga_iOS.libs import NSRunLoop, UIScreen
 
 
@@ -7,7 +8,7 @@ class BaseProbe:
     async def redraw(self, message=None, delay=None):
         """Request a redraw of the app, waiting until that redraw has completed."""
         # If we're running slow, wait for a second
-        if self.app.run_slow:
+        if toga.App.app.run_slow:
             print("Waiting for redraw" if message is None else message)
             delay = 1
 

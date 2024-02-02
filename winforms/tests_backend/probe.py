@@ -2,6 +2,8 @@ import asyncio
 
 from System.Windows.Forms import SendKeys
 
+import toga
+
 KEY_CODES = {
     f"<{name}>": f"{{{name.upper()}}}"
     for name in ["esc", "up", "down", "left", "right"]
@@ -19,7 +21,7 @@ class BaseProbe:
         # Winforms style changes always take effect immediately.
 
         # If we're running slow, wait for a second
-        if self.app.run_slow:
+        if toga.App.app.run_slow:
             delay = 1
 
         if delay:
