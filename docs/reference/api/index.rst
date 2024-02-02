@@ -96,6 +96,7 @@ Device and Hardware
  Usage                                                                Description
 ==================================================================== ========================================================================
  :doc:`Camera </reference/api/hardware/camera>`                       A sensor that can capture photos and/or video.
+ :doc:`Screen </reference/api/screens>`                               A representation of a screen attached to a device.
 ==================================================================== ========================================================================
 
 Other
@@ -121,3 +122,4 @@ Other
    widgets/index
    constants
    keys
+   screens
