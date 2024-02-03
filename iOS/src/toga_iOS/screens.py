@@ -26,8 +26,8 @@ class Screen:
 
     def get_size(self):
         return (
-            int(self.native.nativeBounds.size.width),
-            int(self.native.nativeBounds.size.height),
+            int(self.native.bounds.size.width),
+            int(self.native.bounds.size.height),
         )
 
     def get_image_data(self):

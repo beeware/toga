@@ -1,5 +1,7 @@
 import asyncio
 
+from System import IntPtr
+from System.Drawing import Graphics
 from System.Windows.Forms import SendKeys
 
 import toga
@@ -30,7 +32,8 @@ class BaseProbe:
 
     @property
     def scale_factor(self):
-        return self.native.CreateGraphics().DpiX / 96
+        # Does the same thing as `return self.native.CreateGraphics().DpiX / 96`
+        return Graphics.FromHdc(Graphics.FromHwnd(IntPtr.Zero).GetHdc()).DpiX / 96
 
     async def type_character(self, char, *, shift=False, ctrl=False, alt=False):
         try:

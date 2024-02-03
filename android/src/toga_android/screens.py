@@ -30,17 +30,15 @@ class Screen(Scalable):
         return (0, 0)
 
     def get_size(self):
-        return (
-            # Using scaling(scale_out) produces wrong results.
-            self.native.getWidth(),
-            self.native.getHeight(),
+        return tuple(
+            map(self.scale_out, (self.native.getWidth(), self.native.getHeight()))
         )
 
     def get_image_data(self):
         # Get the root view of the current activity
         root_view = self.app.native.getWindow().getDecorView().getRootView()
         bitmap = Bitmap.createBitmap(
-            *self.get_size(),
+            *map(self.scale_in, self.get_size()),
             Bitmap.Config.ARGB_8888,
         )
         canvas = A_Canvas(bitmap)
