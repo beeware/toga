@@ -145,7 +145,7 @@ class ExampleFocusApp(toga.App):
 def main():
     # Application class
     #   App name and namespace
-    app = ExampleFocusApp("Focus", "org.beeware.widgets.focus")
+    app = ExampleFocusApp("Focus", "org.beeware.toga.examples.focus")
     return app
 
 

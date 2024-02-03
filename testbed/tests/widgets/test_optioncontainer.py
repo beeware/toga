@@ -6,7 +6,6 @@ import toga
 from toga.colors import CORNFLOWERBLUE, GOLDENROD, REBECCAPURPLE, SEAGREEN
 from toga.style.pack import Pack
 
-from ..conftest import skip_on_platforms
 from .probe import get_probe
 from .properties import (  # noqa: F401
     test_enable_noop,
@@ -61,7 +60,6 @@ async def on_select_handler():
 
 @pytest.fixture
 async def widget(content1, content2, content3, on_select_handler):
-    skip_on_platforms("android")
     return toga.OptionContainer(
         content=[
             ("Tab 1", content1, "resources/tab-icon-1"),
@@ -137,114 +135,223 @@ async def test_select_tab_overflow(widget, probe, on_select_handler):
     ]
     extra_probes = [get_probe(w) for w in extra_widgets]
 
-    # Add the extra widgets
-    for i, extra in enumerate(extra_widgets, start=4):
-        widget.content.append(f"Tab {i}", extra)
+    # Some platforms (Android) are limited in the number of tabs they can display.
+    # Other platforms have no tab limit.
+    if probe.max_tabs is None:
+        # No tab limit. Add all the extra widgets
+        for i, extra in enumerate(extra_widgets, start=4):
+            widget.content.append(f"Tab {i}", extra)
 
-    await probe.redraw("Tab 1 should be selected initially")
-    assert widget.current_tab.index == 0
+        await probe.redraw("Tab 1 should be selected initially")
+        assert widget.current_tab.index == 0
 
-    # Ensure mock call count is clean
-    on_select_handler.reset_mock()
+        # Ensure mock call count is clean
+        on_select_handler.reset_mock()
 
-    # Some platforms have a "more" option for tabs beyond a display limit. If
-    # `select_more()` doesn't exist, that feature doesn't exist on the platform.
-    try:
-        probe.select_more()
-        await probe.redraw("More option should be displayed")
-        # When the "more" menu is visible, the current tab is None.
-        assert widget.current_tab.index is None
-    except AttributeError:
-        pass
-
-    # on_select has been not been invoked
-    on_select_handler.assert_not_called()
-
-    # Select the second last tab in the GUI
-    probe.select_tab(6)
-    await probe.redraw("Tab 7 should be selected")
-
-    assert widget.current_tab.index == 6
-    assert extra_probes[3].width > probe.width * 0.8
-    assert extra_probes[3].height > probe.height * 0.8
-
-    # on_select has been invoked
-    on_select_handler.assert_called_once_with(widget)
-    on_select_handler.reset_mock()
-
-    # Select the last tab programmatically while already on a "more" option
-    widget.current_tab = "Tab 8"
-    await probe.redraw("Tab 8 should be selected")
-
-    assert widget.current_tab.index == 7
-    assert extra_probes[4].width > probe.width * 0.8
-    assert extra_probes[4].height > probe.height * 0.8
-    # on_select has been invoked
-    on_select_handler.assert_called_once_with(widget)
-    on_select_handler.reset_mock()
-
-    # Select the first tab in the GUI
-    probe.select_tab(0)
-    await probe.redraw("Tab 0 should be selected")
-    assert widget.current_tab.index == 0
-    # on_select has been invoked
-    on_select_handler.assert_called_once_with(widget)
-    on_select_handler.reset_mock()
-
-    # Select the "more" option again. If the more option is stateful,
-    # this will result is displaying the last "more" option selected
-    try:
-        probe.select_more()
-        if probe.more_option_is_stateful:
-            await probe.redraw("Previous more option should be displayed")
-            assert widget.current_tab.index == 7
-            # more is stateful, so there's a been a select event for the
-            # previously selected "more" option.
-            on_select_handler.assert_called_once_with(widget)
-            on_select_handler.reset_mock()
-
-            probe.reset_more()
-            await probe.redraw("More option should be reset")
-        else:
+        # Some platforms (iOS) have a "more" option for tabs beyond a display limit. If
+        # `select_more()` doesn't exist, that feature doesn't exist on the platform.
+        try:
+            probe.select_more()
             await probe.redraw("More option should be displayed")
+            # When the "more" menu is visible, the current tab is None.
+            assert widget.current_tab.index is None
+        except AttributeError:
+            pass
 
-        assert widget.current_tab.index is None
-    except AttributeError:
-        pass
+        # on_select has been not been invoked
+        on_select_handler.assert_not_called()
 
-    on_select_handler.assert_not_called()
+        # Select the second last tab in the GUI
+        probe.select_tab(6)
+        await probe.redraw("Tab 7 should be selected")
 
-    # Select the second last tab in the GUI
-    probe.select_tab(6)
-    await probe.redraw("Tab 7 should be selected")
+        assert widget.current_tab.index == 6
+        assert extra_probes[3].width > probe.width * 0.8
+        assert extra_probes[3].height > probe.height * 0.8
 
-    assert widget.current_tab.index == 6
-    assert extra_probes[3].width > probe.width * 0.8
-    assert extra_probes[3].height > probe.height * 0.8
+        # on_select has been invoked
+        on_select_handler.assert_called_once_with(widget)
+        on_select_handler.reset_mock()
 
-    # on_select has been invoked
-    on_select_handler.assert_called_once_with(widget)
-    on_select_handler.reset_mock()
+        # Select the last tab programmatically while already on a "more" option
+        widget.current_tab = "Tab 8"
+        await probe.redraw("Tab 8 should be selected")
 
-    # Select the first tab in the GUI
-    probe.select_tab(0)
-    await probe.redraw("Tab 0 should be selected")
-    assert widget.current_tab.index == 0
-    # on_select has been invoked
-    on_select_handler.assert_called_once_with(widget)
-    on_select_handler.reset_mock()
+        assert widget.current_tab.index == 7
+        assert extra_probes[4].width > probe.width * 0.8
+        assert extra_probes[4].height > probe.height * 0.8
+        # on_select has been invoked
+        on_select_handler.assert_called_once_with(widget)
+        on_select_handler.reset_mock()
 
-    # Select the last tab programmatically while on a non-more option
-    widget.current_tab = "Tab 8"
-    await probe.redraw("Tab 8 should be selected")
+        # Select the first tab in the GUI
+        probe.select_tab(0)
+        await probe.redraw("Tab 0 should be selected")
+        assert widget.current_tab.index == 0
+        # on_select has been invoked
+        on_select_handler.assert_called_once_with(widget)
+        on_select_handler.reset_mock()
 
-    assert widget.current_tab.index == 7
-    assert extra_probes[4].width > probe.width * 0.8
-    assert extra_probes[4].height > probe.height * 0.8
-    # on_select has been invoked. There may be a refresh event
-    # associated with the display of the the stateful more option.
-    on_select_handler.assert_called_with(widget)
-    on_select_handler.reset_mock()
+        # Select the "more" option again. If the more option is stateful,
+        # this will result is displaying the last "more" option selected
+        try:
+            probe.select_more()
+            if probe.more_option_is_stateful:
+                await probe.redraw("Previous more option should be displayed")
+                assert widget.current_tab.index == 7
+                # more is stateful, so there's a been a select event for the
+                # previously selected "more" option.
+                on_select_handler.assert_called_once_with(widget)
+                on_select_handler.reset_mock()
+
+                probe.reset_more()
+                await probe.redraw("More option should be reset")
+            else:
+                await probe.redraw("More option should be displayed")
+
+            assert widget.current_tab.index is None
+        except AttributeError:
+            pass
+
+        on_select_handler.assert_not_called()
+
+        # Select the second last tab in the GUI
+        probe.select_tab(6)
+        await probe.redraw("Tab 7 should be selected")
+
+        assert widget.current_tab.index == 6
+        assert extra_probes[3].width > probe.width * 0.8
+        assert extra_probes[3].height > probe.height * 0.8
+
+        # on_select has been invoked
+        on_select_handler.assert_called_once_with(widget)
+        on_select_handler.reset_mock()
+
+        # Select the first tab in the GUI
+        probe.select_tab(0)
+        await probe.redraw("Tab 0 should be selected")
+        assert widget.current_tab.index == 0
+        # on_select has been invoked
+        on_select_handler.assert_called_once_with(widget)
+        on_select_handler.reset_mock()
+
+        # Select the last tab programmatically while on a non-more option
+        widget.current_tab = "Tab 8"
+        await probe.redraw("Tab 8 should be selected")
+
+        assert widget.current_tab.index == 7
+        assert extra_probes[4].width > probe.width * 0.8
+        assert extra_probes[4].height > probe.height * 0.8
+        # on_select has been invoked. There may be a refresh event
+        # associated with the display of the the stateful more option.
+        on_select_handler.assert_called_with(widget)
+        on_select_handler.reset_mock()
+    else:
+        # Platform has a tab limit. Add as many tabs as the tab limit allows
+        for i in range(4, probe.max_tabs + 1):
+            extra = extra_widgets.pop(0)
+            extra_probes.pop(0)
+            widget.content.append(f"Tab {i}", extra)
+
+        await probe.redraw("OptionContainer is at capacity")
+
+        # Ensure mock call count is clean
+        on_select_handler.reset_mock()
+
+        # Append two more widgets. This raises a warning; the new content will
+        # be stored, but not displayed
+        with pytest.warns(match=r"Additional item will be ignored"):
+            extra = extra_widgets.pop(0)
+            extra_probes.pop(0)
+            widget.content.append("Tab A", extra)
+
+        with pytest.warns(match=r"Additional item will be ignored"):
+            extra = extra_widgets.pop(0)
+            extra_probes.pop(0)
+            widget.content.append("Tab B", extra)
+
+        await probe.redraw("Appended items were ignored")
+
+        # Excess tab details can still be read and written
+        widget.content[probe.max_tabs].text = "Extra Tab"
+        widget.content[probe.max_tabs].icon = "resources/new-tab"
+        widget.content[probe.max_tabs].enabled = False
+
+        assert widget.content[probe.max_tabs].text == "Extra Tab"
+        probe.assert_tab_icon(probe.max_tabs, "new-tab")
+        assert not widget.content[probe.max_tabs].enabled
+
+        assert widget.content[probe.max_tabs + 1].text == "Tab B"
+        probe.assert_tab_icon(probe.max_tabs + 1, None)
+        assert widget.content[probe.max_tabs + 1].enabled
+
+        # Programmatically selecting a non-visible tab raises a warning, doesn't change
+        # the tab, and doesn't generate a selection event.
+        with pytest.warns(match=r"Tab is outside selectable range"):
+            widget.current_tab = probe.max_tabs + 1
+
+        await probe.redraw("Item selection was ignored")
+        on_select_handler.assert_not_called()
+
+        # Insert a tab at the start. This will bump the last tab into the void
+        with pytest.warns(match=r"Excess items will be ignored"):
+            extra = extra_widgets.pop(0)
+            extra_probes.pop(0)
+            widget.content.insert(2, "Tab C", extra)
+
+        await probe.redraw("Inserted item bumped the last item")
+
+        # Assert the properties of the last visible item
+        assert widget.content[probe.max_tabs - 1].text == f"Tab {probe.max_tabs - 1}"
+        probe.assert_tab_icon(probe.max_tabs - 1, None)
+        assert widget.content[probe.max_tabs - 1].enabled
+
+        # As the item is visible, also verify the actual widget properties
+        probe.assert_tab_content(
+            probe.max_tabs - 1,
+            f"Tab {probe.max_tabs - 1}",
+            enabled=True,
+        )
+
+        # Assert the properties of the first invisible item
+        assert widget.content[probe.max_tabs].text == f"Tab {probe.max_tabs}"
+        probe.assert_tab_icon(probe.max_tabs, None)
+        assert widget.content[probe.max_tabs].enabled
+
+        # Remove a visible tab. This will bring the tab that was bumped by
+        # the previous insertion back into view.
+        widget.content.remove(1)
+
+        await probe.redraw("Deleting an item restores previously bumped item")
+
+        assert widget.content[probe.max_tabs - 1].text == f"Tab {probe.max_tabs}"
+        probe.assert_tab_icon(probe.max_tabs - 1, None)
+        assert widget.content[probe.max_tabs - 1].enabled
+
+        # As the item is visible, also verify the actual widget properties
+        probe.assert_tab_content(
+            probe.max_tabs - 1,
+            f"Tab {probe.max_tabs}",
+            enabled=True,
+        )
+
+        # Remove another visible tab. This will make the first "extra" tab
+        # come into view for the first time. It has a custom icon, and
+        # was disabled while it wasn't visible.
+        widget.content.remove(1)
+
+        await probe.redraw("Deleting an item creates a previously excess item")
+
+        assert widget.content[probe.max_tabs - 1].text == "Extra Tab"
+        probe.assert_tab_icon(probe.max_tabs - 1, "new-tab")
+        assert not widget.content[probe.max_tabs - 1].enabled
+
+        # As the item is visible, also verify the actual widget properties
+        probe.assert_tab_content(
+            probe.max_tabs - 1,
+            "Extra Tab",
+            enabled=False,
+        )
 
 
 async def test_enable_tab(widget, probe, on_select_handler):

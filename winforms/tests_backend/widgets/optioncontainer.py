@@ -5,6 +5,7 @@ from .base import SimpleProbe
 
 class OptionContainerProbe(SimpleProbe):
     native_class = TabControl
+    max_tabs = None
     disabled_tab_selectable = True
 
     def select_tab(self, index):

@@ -68,7 +68,7 @@ class OptionContainer(Widget):
         container.min_width = container.content.interface.layout.min_width
         container.min_height = container.content.interface.layout.min_height
 
-    def add_content(self, index, text, widget, icon):
+    def add_option(self, index, text, widget, icon):
         # Create the container for the widget
         container = Container(on_refresh=self.content_refreshed)
         container.content = widget
@@ -81,7 +81,7 @@ class OptionContainer(Widget):
         item.view = container.native
         self.native.insertTabViewItem(item, atIndex=index)
 
-    def remove_content(self, index):
+    def remove_option(self, index):
         tabview = self.native.tabViewItemAtIndex(index)
         self.native.removeTabViewItem(tabview)
 

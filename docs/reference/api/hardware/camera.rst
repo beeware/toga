@@ -32,7 +32,7 @@ handler:
         async def time_for_a_selfie(self, widget, **kwargs):
             photo = await self.camera.take_photo()
 
-Many platforms will require some form of device permission to access the camera. The
+Most platforms will require some form of device permission to access the camera. The
 permission APIs are paired with the specific actions performed on those APIs - that is,
 to take a photo, you require :any:`Camera.has_permission`, which you can request using
 :any:`Camera.request_permission()`.
@@ -45,8 +45,9 @@ allows an app to *request* permissions as part of the startup process, prior to 
 the camera APIs, without blocking the rest of app startup.
 
 Toga will confirm whether the app has been granted permission to use the camera before
-invoking any camera API. If permission has not yet been requested, and the platform
-allows, Toga will attempt to request permission at the time of first camera access.
+invoking any camera API. If permission has not yet been granted, the platform *may*
+request access at the time of first camera access; however, this is not guaranteed to be
+the behavior on all platforms.
 
 Notes
 -----
@@ -56,6 +57,7 @@ Notes
 
   * iOS: ``NSCameraUsageDescription`` must be defined in the app's ``Info.plist`` file.
   * macOS: The ``com.apple.security.device.camera`` entitlement must be enabled.
+  * Android: The ``android.permission.CAMERA`` permission must be declared.
 
 * The iOS simulator implements the iOS Camera APIs, but is not able to take photographs.
   To test your app's Camera usage, you must use a physical iOS device.

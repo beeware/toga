@@ -29,7 +29,7 @@ class ExampleDocument(toga.Document):
 def main():
     return toga.DocumentApp(
         "Document App",
-        "org.beeware.widgets.documentapp",
+        "org.beeware.toga.examples.documentapp",
         document_types={
             "exampledoc": ExampleDocument,
         },
