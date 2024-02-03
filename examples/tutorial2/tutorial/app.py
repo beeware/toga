@@ -154,7 +154,7 @@ class Tutorial2App(toga.App):
 
 
 def main():
-    return Tutorial2App("Tutorial 2", "org.beeware.helloworld")
+    return Tutorial2App("Tutorial 2", "org.beeware.toga.tutorial")
 
 
 if __name__ == "__main__":

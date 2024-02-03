@@ -1,0 +1,1 @@
+On macOS, `toga.Image()` objects can now be created from raw data that didn't originate from a file.

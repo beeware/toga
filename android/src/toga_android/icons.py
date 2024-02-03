@@ -1,4 +1,5 @@
-from android.graphics import BitmapFactory
+from android.graphics import Bitmap, BitmapFactory, Rect
+from android.graphics.drawable import BitmapDrawable
 
 
 class Icon:
@@ -13,3 +14,16 @@ class Icon:
         self.native = BitmapFactory.decodeFile(str(path))
         if self.native is None:
             raise ValueError(f"Unable to load icon from {path}")
+
+    def as_drawable(self, widget, size):
+        bitmap = Bitmap.createScaledBitmap(
+            self.native,
+            widget.scale_in(size),
+            widget.scale_in(size),
+            True,
+        )
+        drawable = BitmapDrawable(widget.native.getContext().getResources(), bitmap)
+        drawable.setBounds(
+            Rect(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight())
+        )
+        return drawable

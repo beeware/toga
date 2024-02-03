@@ -98,7 +98,7 @@ class ImageViewApp(toga.App):
 
 
 def main():
-    return ImageViewApp("ImageView", "org.beeware.widgets.imageview")
+    return ImageViewApp("ImageView", "org.beeware.toga.examples.imageview")
 
 
 if __name__ == "__main__":

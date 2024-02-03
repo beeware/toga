@@ -68,8 +68,7 @@ class Widget(ABC, Scalable):
         self.interface.style.reapply()
 
     @abstractmethod
-    def create(self):
-        ...
+    def create(self): ...
 
     def set_app(self, app):
         pass

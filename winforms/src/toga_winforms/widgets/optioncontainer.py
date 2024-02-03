@@ -13,7 +13,7 @@ class OptionContainer(Widget):
         self.native.Selected += WeakrefCallable(self.winforms_selected)
         self.panels = []
 
-    def add_content(self, index, text, widget, icon):
+    def add_option(self, index, text, widget, icon):
         page = TabPage(text)
         self.native.TabPages.Insert(index, page)
 
@@ -29,7 +29,7 @@ class OptionContainer(Widget):
 
         page.ClientSizeChanged += WeakrefCallable(self.winforms_client_size_changed)
 
-    def remove_content(self, index):
+    def remove_option(self, index):
         panel = self.panels.pop(index)
         panel.clear_content()
 

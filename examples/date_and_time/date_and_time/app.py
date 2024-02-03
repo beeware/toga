@@ -136,7 +136,7 @@ class DateAndTimeApp(toga.App):
 
 
 def main():
-    return DateAndTimeApp("Dates and Times", "org.beeware.widgets.date_and_time")
+    return DateAndTimeApp("Dates and Times", "org.beeware.toga.examples.date_and_time")
 
 
 if __name__ == "__main__":

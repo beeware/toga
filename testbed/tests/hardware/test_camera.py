@@ -10,7 +10,7 @@ from .probe import get_probe
 
 @pytest.fixture
 async def camera_probe(monkeypatch, app_probe):
-    skip_on_platforms("android", "linux", "windows")
+    skip_on_platforms("linux", "windows")
     probe = get_probe(monkeypatch, app_probe, "Camera")
     yield probe
     probe.cleanup()
@@ -24,11 +24,10 @@ async def test_camera_properties(app, camera_probe):
 
 async def test_grant_permission(app, camera_probe):
     """A user can grant permission to use the camera"""
-    # Reset camera permissions
-    camera_probe.reset_permission()
+    # Prime the permission system to approve permission requests
+    camera_probe.allow_permission()
 
-    # Initiate the permission request. Since there hasn't been an explicit
-    # allow or deny, this will allow access.
+    # Initiate the permission request. As permissions are primed, they will be approved.
     assert await app.camera.request_permission()
 
     # Permission now exists
@@ -41,11 +40,25 @@ async def test_grant_permission(app, camera_probe):
     assert app.camera.has_permission
 
 
+async def test_deny_permission(app, camera_probe):
+    """A user can deny permission to use the camera"""
+    # Initiate the permission request. As permissions are not primed, they will be denied.
+    assert not await app.camera.request_permission()
+
+    # Permission has been denied
+    assert not app.camera.has_permission
+
+    # A second request to request permissions is a no-op
+    assert not await app.camera.request_permission()
+
+    # Permission is still denied
+    assert not app.camera.has_permission
+
+
 async def test_take_photo(app, camera_probe):
     """A user can take a photo with the all the available cameras"""
-
     # Ensure the camera has permissions
-    camera_probe.allow_permission()
+    camera_probe.grant_permission()
 
     for camera in [None] + app.camera.devices:
         # Trigger taking a photo
@@ -62,9 +75,8 @@ async def test_take_photo(app, camera_probe):
 
 async def test_flash_mode(app, camera_probe):
     """A user can take a photo with all the flash modes"""
-
     # Ensure the camera has permissions
-    camera_probe.allow_permission()
+    camera_probe.grant_permission()
 
     for flash_mode in [FlashMode.AUTO, FlashMode.ON, FlashMode.OFF]:
         # Trigger taking a photo with the default device
@@ -81,8 +93,10 @@ async def test_flash_mode(app, camera_probe):
 
 async def test_take_photo_unknown_permission(app, camera_probe):
     """If a user hasn't explicitly granted permissions, they can take a photo with the camera"""
-    # Don't pre-grant permission; use default grant.
+    if not camera_probe.request_permission_on_first_use:
+        pytest.xfail("Platform does not request permission on first use")
 
+    # Don't pre-grant permission; use default grant.
     # Trigger taking a photo
     photo = app.camera.take_photo()
     await camera_probe.wait_for_camera()
@@ -96,9 +110,8 @@ async def test_take_photo_unknown_permission(app, camera_probe):
 
 async def test_cancel_photo(app, camera_probe):
     """A user can cancel taking a photo"""
-
     # Ensure the camera has permissions
-    camera_probe.allow_permission()
+    camera_probe.grant_permission()
 
     # Trigger taking a photo
     photo = app.camera.take_photo()
@@ -122,9 +135,8 @@ async def test_take_photo_no_permission(app, camera_probe):
 
 async def test_change_camera(app, camera_probe):
     """The currently selected camera can be changed"""
-
     # Ensure the camera has permissions
-    camera_probe.allow_permission()
+    camera_probe.grant_permission()
 
     # Trigger taking a photo
     photo = app.camera.take_photo()
@@ -151,7 +163,7 @@ async def test_no_cameras(app, camera_probe):
     camera_probe.disconnect_cameras()
 
     # Ensure the camera has permissions
-    camera_probe.allow_permission()
+    camera_probe.grant_permission()
 
     # Trigger taking a photo. This may raise a warning.
     with warnings.catch_warnings():

@@ -86,9 +86,11 @@ class TogaTableViewController(UITableViewController):
         if self.impl.primary_action_enabled:
             actions = [
                 UIContextualAction.contextualActionWithStyle(
-                    UIContextualActionStyle.Destructive
-                    if self.interface._primary_action in self.impl.DESTRUCTIVE_NAMES
-                    else UIContextualActionStyle.Normal,
+                    (
+                        UIContextualActionStyle.Destructive
+                        if self.interface._primary_action in self.impl.DESTRUCTIVE_NAMES
+                        else UIContextualActionStyle.Normal
+                    ),
                     title=self.interface._primary_action,
                     handler=self.impl.primary_action_handler(indexPath.row),
                 )
@@ -105,9 +107,12 @@ class TogaTableViewController(UITableViewController):
         if self.impl.secondary_action_enabled:
             actions = [
                 UIContextualAction.contextualActionWithStyle(
-                    UIContextualActionStyle.Destructive
-                    if self.interface._secondary_action in self.impl.DESTRUCTIVE_NAMES
-                    else UIContextualActionStyle.Normal,
+                    (
+                        UIContextualActionStyle.Destructive
+                        if self.interface._secondary_action
+                        in self.impl.DESTRUCTIVE_NAMES
+                        else UIContextualActionStyle.Normal
+                    ),
                     title=self.interface._secondary_action,
                     handler=self.impl.secondary_action_handler(indexPath.row),
                 )

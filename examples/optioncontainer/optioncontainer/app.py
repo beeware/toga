@@ -39,9 +39,9 @@ class ExampleOptionContainerApp(toga.App):
     def on_enable_option(self, button):
         index = int(self.select_option.value)
         try:
-            self.optioncontainer.content[
-                index
-            ].enabled = not self.optioncontainer.content[index].enabled
+            self.optioncontainer.content[index].enabled = (
+                not self.optioncontainer.content[index].enabled
+            )
         except ValueError as e:
             self.main_window.info_dialog("Oops", str(e))
 
@@ -180,7 +180,7 @@ class ExampleOptionContainerApp(toga.App):
 
 def main():
     return ExampleOptionContainerApp(
-        "Option Container Example", "org.beeware.widgets.optioncontainer"
+        "Option Container Example", "org.beeware.toga.examples.optioncontainer"
     )
 
 
