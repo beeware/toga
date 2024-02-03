@@ -44,7 +44,10 @@ class Screen:
             self.native.frame,
         )
         # Get the size of the CGImage
-        size = CGImageGetWidth(cg_image), CGImageGetHeight(cg_image)
+        size = (
+            CGImageGetWidth(cg_image) / self.native.backingScaleFactor,
+            CGImageGetHeight(cg_image) / self.native.backingScaleFactor,
+        )
         # Create an NSImage from the CGImage
         ns_image = NSImage.alloc().initWithCGImage(cg_image, size=size)
 
