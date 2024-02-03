@@ -603,9 +603,9 @@ if toga.platform.current_platform == "windows":
         monkeypatch.setattr(
             window1._impl, "resize_content", window1_resize_content_mock
         )
-        original_values[
-            "window1_update_toolbar_font_scale"
-        ] = window1._impl.update_toolbar_font_scale
+        original_values["window1_update_toolbar_font_scale"] = (
+            window1._impl.update_toolbar_font_scale
+        )
         window1_update_toolbar_font_scale_mock = Mock()
         monkeypatch.setattr(
             window1._impl,
