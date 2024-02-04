@@ -54,5 +54,5 @@ class BaseProbe:
         # background.
         SendKeys.SendWait(key_code)
 
-    def assert_image_size(self, image_size, size):
+    def assert_image_size(self, image_size, size, screen=None):
         assert image_size == (size[0] * self.scale_factor, size[1] * self.scale_factor)

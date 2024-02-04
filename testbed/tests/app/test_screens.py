@@ -61,4 +61,4 @@ async def test_as_image(app):
         await probe.redraw(f"Screenshot of {screen} has been taken in PIL format")
         # Check if returned image is of type `PIL.Image.Image`.
         assert isinstance(pil_screenshot, PILImage)
-        probe.assert_image_size(pil_screenshot.size, probe.screen.size)
+        probe.assert_image_size(pil_screenshot.size, probe.screen.size, probe.screen)
