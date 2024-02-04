@@ -22,5 +22,5 @@ class BaseProbe:
         if delay:
             await asyncio.sleep(delay)
 
-    def assert_image_size(self, image_size, size, screen=None):
+    def assert_image_size(self, image_size, size, screen):
         assert image_size == size

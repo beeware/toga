@@ -19,7 +19,7 @@ class BaseProbe:
             # for at least one iteration. `runUntilDate:None` does this.
             NSRunLoop.currentRunLoop.runUntilDate(None)
 
-    def assert_image_size(self, image_size, size, screen=None):
+    def assert_image_size(self, image_size, size, screen):
         # Retina displays render images at a higher resolution than their reported size.
         scale = int(UIScreen.mainScreen.scale)
         assert image_size == (size[0] * scale, size[1] * scale)

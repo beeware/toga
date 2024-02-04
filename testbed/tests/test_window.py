@@ -527,7 +527,9 @@ async def test_as_image(main_window, main_window_probe):
 
     screenshot = main_window.as_image()
     main_window_probe.assert_image_size(
-        screenshot.size, main_window_probe.content_size, screen=main_window.screen
+        screenshot.size,
+        main_window_probe.content_size,
+        screen=main_window.screen,
     )
 
 

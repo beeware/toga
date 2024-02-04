@@ -47,12 +47,14 @@ async def test_as_image(app):
         probe = screen_probe(screen)
 
         # `get_screenshot()` should default to `toga.images.Image` as format.
-        toga_image_screenshot = probe.get_screenshot()
+        screenshot = probe.get_screenshot()
         await probe.redraw(f"Screenshot of {screen} has been taken")
         # Check if returned image is of type `toga.images.Image`.
-        assert isinstance(toga_image_screenshot, TogaImage)
+        assert isinstance(screenshot, TogaImage)
         probe.assert_image_size(
-            toga_image_screenshot.size, probe.screen.size, probe.screen
+            screenshot.size,
+            probe.screen.size,
+            screen=probe.screen,
         )
 
         # Capture screenshot in PIL format
@@ -60,4 +62,8 @@ async def test_as_image(app):
         await probe.redraw(f"Screenshot of {screen} has been taken in PIL format")
         # Check if returned image is of type `PIL.Image.Image`.
         assert isinstance(pil_screenshot, PILImage)
-        probe.assert_image_size(pil_screenshot.size, probe.screen.size, probe.screen)
+        probe.assert_image_size(
+            pil_screenshot.size,
+            probe.screen.size,
+            screen=probe.screen,
+        )

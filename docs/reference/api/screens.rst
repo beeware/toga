@@ -25,7 +25,6 @@ the "primary" screen. Screen sizes and positions are given in CSS pixels.
     # Print the identifying name of the second screen
     print(my_app.screens[1].name)
 
-
 Notes
 -----
 

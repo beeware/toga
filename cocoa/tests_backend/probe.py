@@ -61,12 +61,7 @@ class BaseProbe:
             # for at least one iteration. `runUntilDate:None` does this.
             NSRunLoop.currentRunLoop.runUntilDate(None)
 
-    def assert_image_size(self, image_size, size, screen=None):
-        if isinstance(screen, toga.screens.Screen):
-            # Screenshots are captured in native device resolution, not in CSS pixels.
-            scale = int(screen._impl.native.backingScaleFactor)
-            assert image_size == (size[0] * scale, size[1] * scale)
-        else:
-            # Cocoa reports image sizing in the natural screen coordinates, not the size of
-            # the backing store.
-            assert image_size == size
+    def assert_image_size(self, image_size, size, screen):
+        # Screenshots are captured in native device resolution, not in CSS pixels.
+        scale = int(screen._impl.native.backingScaleFactor)
+        assert image_size == (size[0] * scale, size[1] * scale)
