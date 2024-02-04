@@ -311,12 +311,17 @@ class Window:
         return ScreenImpl(self.native.screen)
 
     def get_image_data(self):
-        bitmap = self.container.native.bitmapImageRepForCachingDisplayInRect(
+        # Convert to native backing scale bounds.
+        native_bounds_backing = self.native.screen.convertRectToBacking(
             self.container.native.bounds
         )
-        bitmap.setSize(self.container.native.bounds.size)
+
+        bitmap = self.container.native.bitmapImageRepForCachingDisplayInRect(
+            native_bounds_backing
+        )
+        bitmap.setSize(native_bounds_backing.size)
         self.container.native.cacheDisplayInRect(
-            self.container.native.bounds, toBitmapImageRep=bitmap
+            native_bounds_backing, toBitmapImageRep=bitmap
         )
         data = bitmap.representationUsingType(
             NSBitmapImageFileType.PNG,

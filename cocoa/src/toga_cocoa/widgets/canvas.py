@@ -321,9 +321,15 @@ class Canvas(Widget):
             )
 
     def get_image_data(self):
-        bitmap = self.native.bitmapImageRepForCachingDisplayInRect(self.native.bounds)
-        bitmap.setSize(self.native.bounds.size)
-        self.native.cacheDisplayInRect(self.native.bounds, toBitmapImageRep=bitmap)
+        # Convert to native backing scale bounds.
+        native_bounds_backing = self.native.window.screen.convertRectToBacking(
+            self.native.bounds
+        )
+        bitmap = self.native.bitmapImageRepForCachingDisplayInRect(
+            native_bounds_backing
+        )
+        bitmap.setSize(native_bounds_backing.size)
+        self.native.cacheDisplayInRect(native_bounds_backing, toBitmapImageRep=bitmap)
 
         return nsdata_to_bytes(
             bitmap.representationUsingType(

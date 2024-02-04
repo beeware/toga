@@ -52,9 +52,7 @@ async def test_as_image(app):
         # Check if returned image is of type `toga.images.Image`.
         assert isinstance(toga_image_screenshot, TogaImage)
         probe.assert_image_size(
-            toga_image_screenshot.size,
-            probe.screen.size,
-            probe.screen,
+            toga_image_screenshot.size, probe.screen.size, probe.screen
         )
 
         # Capture screenshot in PIL format
