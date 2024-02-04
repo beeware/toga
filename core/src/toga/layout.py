@@ -62,6 +62,14 @@ def get_element_attrs(app, element):
             else:
                 attributes[key] = int(value)
             continue
+
+        # Handling booleans
+        if value.strip() == "true":
+            attributes[key] = True
+            continue
+
+        if value.strip() == "false":
+            attributes[key] = False
             continue
 
         # Handling styles
