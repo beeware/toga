@@ -54,6 +54,7 @@ async def test_as_image(app):
         probe.assert_image_size(
             toga_image_screenshot.size,
             probe.screen.size,
+            probe.screen,
         )
 
         # Capture screenshot in PIL format
