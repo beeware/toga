@@ -1,0 +1,1 @@
+Updated furo from 2023.9.10 to 2024.1.29 in /core.
