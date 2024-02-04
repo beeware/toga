@@ -110,7 +110,7 @@ def element_to_class(element_tag, attributes):
         try:
             # Sometimes attr has no setter or it is repeated (content/children/image)
             # So this try is a hacky way to solve it
-            instance.__setattr__(key, value)
+            setattr(instance, key, value)
         except:
             pass
 
