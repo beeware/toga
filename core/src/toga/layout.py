@@ -57,7 +57,11 @@ def get_element_attrs(app, element):
 
         # Handling numeric values
         if value.isnumeric():
-            attributes[key] = float(value)
+            if "." in value:
+                attributes[key] = float(value)
+            else:
+                attributes[key] = int(value)
+            continue
             continue
 
         # Handling styles
