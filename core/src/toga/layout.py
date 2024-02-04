@@ -5,9 +5,9 @@ from toga.style import Pack
 from xml.etree import ElementTree
 
 
-def parse_node_as_json(node):
+def parse_node_as_dict(node):
     return {
-        child.tag: parse_node_as_json(child) if len(child) else child.text or ""
+        child.tag: parse_node_as_dict(child) if len(child) else child.text or ""
         for child in node
     }
 
@@ -15,7 +15,7 @@ def parse_node_as_json(node):
 def parse_attribute(app, element):
     # If attribute is a list item and has children, parse it as dict
     if element.tag == "item" and len(element):
-        return {element.tag: parse_node_as_json(element)}
+        return {element.tag: parse_node_as_dict(element)}
 
     # Get attributes
     attributes = {**element.attrib}
