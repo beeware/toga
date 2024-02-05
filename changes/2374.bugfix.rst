@@ -1,0 +1,1 @@
+Winforms no longer generates a system beep when pressing Enter in a TextInput.
