@@ -83,7 +83,7 @@ class TextInput(Widget):
         if ord(event.KeyChar) == int(WinForms.Keys.Enter):
             self.interface.on_confirm()
             # Mark the event as handled; otherwise the Enter event will
-            # propegate upstream, and generate a system beep.
+            # propagate upstream, and generate a system beep.
             event.Handled = True
 
     def winforms_got_focus(self, sender, event):
