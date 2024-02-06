@@ -103,7 +103,6 @@ class Window(Container, Scalable):
             widget.refresh()
         self.refreshed()
         self.resize_content()
-        self.native.Size = Size(100, 500)
 
     def winforms_LocationChanged(self, sender, event):  # pragma: no cover
         # Check if the window has moved from one screen to another and if the new
