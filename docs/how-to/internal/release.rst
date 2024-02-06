@@ -37,16 +37,14 @@ The procedure for cutting a new release is as follows:
 
      $ tox -e towncrier
 
-   to generate the updated release notes. After doing any edits that may be
-   required, run:
+   to generate the updated release notes.
+
+#. Build the documentation to ensure that the new release notes don't include any
+   spelling errors or markup problems:
 
    .. code-block:: console
 
-     $ tox -r -e docs-lint,docs
-
-   to confirm that there are no spelling errors or formatting problems with the
-   new release notes, and the docs build using the current documentation tool
-   versions.
+     $ tox -e docs-lint,docs
 
 #. Tag the release, and push the branch and tag upstream:
 

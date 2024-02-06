@@ -1,1 +1,0 @@
-Initial documentation of backend-specific features has been added.

@@ -1,1 +1,0 @@
-Widgets and Windows can now be sorted. The ID of the widget is used for the sorting order.
