@@ -36,7 +36,7 @@ class Scalable:
 
     @property
     def dpi_scale(self):
-        # For Widgets and Stack Trace Dialogs which have an assigned window
+        # For Widgets which have an assigned window
         if (
             getattr(self, "interface", None) is not None
             and getattr(self.interface, "window", None) is not None
@@ -93,13 +93,6 @@ class Widget(ABC, Scalable):
         self._container = None
         self.native = None
         self.create()
-
-        # Obtain a Graphics object and immediately dispose of it. This is
-        # done to trigger the control's Paint event and force it to redraw.
-        # Since in toga, Hwnds are could be created at inappropriate times.
-        # This is required to prevent Hwnd Related Bugs. Removing this will
-        # cause the OptionContainer test to fail.
-        self.native.CreateGraphics().Dispose()
 
         self.interface.style.reapply()
 

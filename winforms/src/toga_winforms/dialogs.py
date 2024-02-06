@@ -8,14 +8,11 @@ from System.Drawing import (
     Font as WinFont,
     FontFamily,
     FontStyle,
-    Point,
-    Rectangle,
     SystemFonts,
 )
 from System.Windows.Forms import DialogResult, MessageBoxButtons, MessageBoxIcon
 
 from .libs.wrapper import WeakrefCallable
-from .widgets.base import Scalable
 
 
 class BaseDialog(ABC):
@@ -99,55 +96,40 @@ class ErrorDialog(MessageDialog):
         )
 
 
-class StackTraceDialog(BaseDialog, Scalable):
+class StackTraceDialog(BaseDialog):
     def __init__(self, interface, title, message, content, retry):
         super().__init__(interface)
 
         self.native = WinForms.Form()
-
-        # Required for scaling on DPI changes
-        self.interface.window._impl.current_stack_trace_dialog_impl = self
-        self.native.StartPosition = WinForms.FormStartPosition.Manual
-        self.native.Location = Point(
-            *map(self.scale_in, self.interface.window._impl.get_position())
-        )
-        self.native.Move += WeakrefCallable(self.winforms_Move)
         self.native.MinimizeBox = False
         self.native.FormBorderStyle = self.native.FormBorderStyle.FixedSingle
         self.native.MaximizeBox = False
         self.native.FormClosing += WeakrefCallable(self.winforms_FormClosing)
-        self.native.Width = self.scale_in(540)
-        self.native.Height = self.scale_in(320)
+        self.native.Width = 540
+        self.native.Height = 320
         self.native.Text = title
 
         # The top-of-page introductory message
         textLabel = WinForms.Label()
-        textLabel.Left = self.scale_in(10)
-        textLabel.Top = self.scale_in(10)
-        # Explicitly set width and Height to prevent scaling issues
-        textLabel.Width = self.scale_in(520)
-        textLabel.Height = self.scale_in(20)
+        textLabel.Left = 10
+        textLabel.Top = 10
+        textLabel.Width = 520
         textLabel.Alignment = ContentAlignment.MiddleCenter
         textLabel.Text = message
-        textLabel.Font = WinFont(
-            SystemFonts.MessageBoxFont.FontFamily,
-            self.scale_font(float(SystemFonts.MessageBoxFont.Size)),
-            SystemFonts.MessageBoxFont.Style,
-        )
 
         self.native.Controls.Add(textLabel)
 
         # A scrolling text box for the stack trace.
         trace = WinForms.RichTextBox()
-        trace.Left = self.scale_in(10)
-        trace.Top = self.scale_in(30)
-        trace.Width = self.scale_in(504)
-        trace.Height = self.scale_in(210)
+        trace.Left = 10
+        trace.Top = 30
+        trace.Width = 504
+        trace.Height = 210
         trace.Multiline = True
         trace.ReadOnly = True
         trace.Font = WinFont(
             FontFamily.GenericMonospace,
-            self.scale_font(float(SystemFonts.MessageBoxFont.Size)),
+            float(SystemFonts.DefaultFont.Size),
             FontStyle.Regular,
         )
         trace.Text = content
@@ -157,64 +139,31 @@ class StackTraceDialog(BaseDialog, Scalable):
         # Add acceptance/close buttons
         if retry:
             retry = WinForms.Button()
-            retry.Left = self.scale_in(290)
-            retry.Top = self.scale_in(250)
-            # Explicitly set width and Height to prevent scaling issues
-            retry.Width = self.scale_in(100)
-            retry.Height = self.scale_in(retry.PreferredSize.Height)
-            retry.Font = WinFont(
-                SystemFonts.MessageBoxFont.FontFamily,
-                self.scale_font(float(SystemFonts.MessageBoxFont.Size)),
-                SystemFonts.MessageBoxFont.Style,
-            )
+            retry.Left = 290
+            retry.Top = 250
+            retry.Width = 100
             retry.Text = "&Retry"
             retry.Click += WeakrefCallable(self.winforms_Click_retry)
 
             self.native.Controls.Add(retry)
 
             quit = WinForms.Button()
-            quit.Left = self.scale_in(400)
-            quit.Top = self.scale_in(250)
-            # Explicitly set width and Height to prevent scaling issues
-            quit.Width = self.scale_in(100)
-            quit.Height = self.scale_in(quit.PreferredSize.Height)
-            quit.Font = WinFont(
-                SystemFonts.MessageBoxFont.FontFamily,
-                self.scale_font(float(SystemFonts.MessageBoxFont.Size)),
-                SystemFonts.MessageBoxFont.Style,
-            )
+            quit.Left = 400
+            quit.Top = 250
+            quit.Width = 100
             quit.Text = "&Quit"
             quit.Click += WeakrefCallable(self.winforms_Click_quit)
 
             self.native.Controls.Add(quit)
         else:
             accept = WinForms.Button()
-            accept.Left = self.scale_in(400)
-            accept.Top = self.scale_in(250)
-            # Explicitly set width and Height to prevent scaling issues
-            accept.Width = self.scale_in(100)
-            accept.Height = self.scale_in(accept.PreferredSize.Height)
-            accept.Font = WinFont(
-                SystemFonts.MessageBoxFont.FontFamily,
-                self.scale_font(float(SystemFonts.MessageBoxFont.Size)),
-                SystemFonts.MessageBoxFont.Style,
-            )
+            accept.Left = 400
+            accept.Top = 250
+            accept.Width = 100
             accept.Text = "&OK"
             accept.Click += WeakrefCallable(self.winforms_Click_accept)
 
             self.native.Controls.Add(accept)
-
-        # Required for scaling
-        self.original_control_fonts = dict()
-        self.original_control_bounds = dict()
-        for control in self.native.Controls:
-            self.original_control_fonts[control] = control.Font
-            self.original_control_bounds[control] = Rectangle(
-                self.scale_out(control.Bounds.X),
-                self.scale_out(control.Bounds.Y),
-                self.scale_out(control.Bounds.Width),
-                self.scale_out(control.Bounds.Height),
-            )
 
         self.start_inner_loop(self.native.ShowDialog)
 
@@ -231,8 +180,6 @@ class StackTraceDialog(BaseDialog, Scalable):
     def set_result(self, result):
         super().set_result(result)
         self.native.Close()
-        # Remove the attribute when the dialog closes
-        del self.interface.window._impl.current_stack_trace_dialog_impl
 
     def winforms_Click_quit(self, sender, event):
         self.set_result(False)
@@ -242,25 +189,6 @@ class StackTraceDialog(BaseDialog, Scalable):
 
     def winforms_Click_accept(self, sender, event):
         self.set_result(None)
-
-    def winforms_Move(self, sender, event):
-        self.native.Location = Point(  # pragma: no cover
-            *map(self.scale_in, self.interface.window._impl.get_position())
-        )
-
-    def resize_content(self):
-        for control in self.native.Controls:
-            control.Font = WinFont(
-                self.original_control_fonts[control].FontFamily,
-                self.scale_font(float(self.original_control_fonts[control].Size)),
-                self.original_control_fonts[control].Style,
-            )
-            control.Bounds = Rectangle(
-                self.scale_in(self.original_control_bounds[control].X),
-                self.scale_in(self.original_control_bounds[control].Y),
-                self.scale_in(self.original_control_bounds[control].Width),
-                self.scale_in(self.original_control_bounds[control].Height),
-            )
 
 
 class FileDialog(BaseDialog):

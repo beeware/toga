@@ -200,38 +200,4 @@ class AppProbe(BaseProbe):
             )
             assert widget._impl.native.Font.Style == widget._impl.original_font.Style
 
-    def assert_main_window_stack_trace_dialog_scale_updated(self):
-        stack_trace_dialog_impl = (
-            self.app.main_window._impl.current_stack_trace_dialog_impl
-        )
-        for control in stack_trace_dialog_impl.native.Controls:
-            # Assert Font
-            assert (
-                control.Font.FontFamily.Name
-                == stack_trace_dialog_impl.original_control_fonts[
-                    control
-                ].FontFamily.Name
-            )
-            assert control.Font.Size == stack_trace_dialog_impl.scale_font(
-                stack_trace_dialog_impl.original_control_fonts[control].Size
-            )
-            assert (
-                control.Font.Style
-                == stack_trace_dialog_impl.original_control_fonts[control].Style
-            )
-
-            # Assert Bounds
-            assert control.Bounds.X == stack_trace_dialog_impl.scale_in(
-                stack_trace_dialog_impl.original_control_bounds[control].X
-            )
-            assert control.Bounds.Y == stack_trace_dialog_impl.scale_in(
-                stack_trace_dialog_impl.original_control_bounds[control].Y
-            )
-            assert control.Bounds.Width == stack_trace_dialog_impl.scale_in(
-                stack_trace_dialog_impl.original_control_bounds[control].Width
-            )
-            assert control.Bounds.Height == stack_trace_dialog_impl.scale_in(
-                stack_trace_dialog_impl.original_control_bounds[control].Height
-            )
-
     # ------------------------------------------------------------------------------------

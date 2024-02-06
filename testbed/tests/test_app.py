@@ -1,5 +1,3 @@
-import io
-import traceback
 from unittest.mock import Mock
 
 import pytest
@@ -565,15 +563,6 @@ if toga.platform.current_platform == "windows":
         # --------------------------------- Set up for testing ---------------------------------
         # For toolbar
         main_window.toolbar.add(app.cmd1, app.cmd2)
-        # For stack trace dialog
-        stack = io.StringIO()
-        traceback.print_stack(file=stack)
-        dialog_result = main_window.stack_trace_dialog(
-            "Stack Trace",
-            "Some stack trace",
-            stack.getvalue(),
-            retry=True,
-        )
 
         # ----------------------- Setup Mock values for testing -----------------------
         # For main_window
@@ -634,8 +623,6 @@ if toga.platform.current_platform == "windows":
         app_probe.assert_main_window_widgets_font_scale_updated()
         main_window._impl.resize_content.assert_called_once()
         window1._impl.resize_content.assert_called_once()
-        app_probe.assert_main_window_stack_trace_dialog_scale_updated()
-        assert not hasattr(window1._impl, "current_stack_trace_dialog_impl")
 
         # Test if widget.refresh is called once on each widget
         for window in app.windows:
@@ -684,8 +671,6 @@ if toga.platform.current_platform == "windows":
         await main_window_probe.redraw(
             "Triggering DPI change event for restoring original state"
         )
-
         app_probe.trigger_dpi_change_event()
-        await main_window_probe.close_stack_trace_dialog(dialog_result._impl, True)
         main_window.toolbar.clear()
         window1.close()
