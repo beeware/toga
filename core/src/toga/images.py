@@ -39,14 +39,9 @@ if TYPE_CHECKING:
 NOT_PROVIDED = object()
 
 
-image_converters = []
-
-for image_format in entry_points(group="toga.image_formats"):
-    converter = importlib.import_module(f"{image_format.value}.converter")
-    image_converters.append(converter)
-
-
 class Image:
+    converters = {}
+
     def __init__(
         self,
         src: ImageContent = NOT_PROVIDED,
@@ -94,12 +89,6 @@ class Image:
         self.factory = get_platform_factory()
         self._path = None
 
-        for converter in image_converters:
-            if isinstance(src, converter.image_class):
-                data = converter.convert_from_format(src)
-                self._impl = self.factory.Image(interface=self, data=data)
-                return
-
         # Any "lump of bytes" should be valid here.
         if isinstance(src, (bytes, bytearray, memoryview)):
             self._impl = self.factory.Image(interface=self, data=src)
@@ -117,7 +106,28 @@ class Image:
             self._impl = self.factory.Image(interface=self, raw=src)
 
         else:
+            # If it's a registered format, convert as necessary.
+            if converter := self.converters.get(src.__class__):
+                data = converter.convert_from_format(src)
+                self._impl = self.factory.Image(interface=self, data=data)
+                return
+
+            # If it's a subclass of a registered format, convert and also save it so it
+            # doesn't have to be searched for next time.
+            for image_class, converter in self.converters.items():
+                if isinstance(src, image_class):
+                    self.converters[src.__class__] = converter
+                    data = converter.convert_from_format(src)
+                    self._impl = self.factory.Image(interface=self, data=data)
+                    return
+
             raise TypeError("Unsupported source type for Image")
+
+    @classmethod
+    def load_converters(cls):
+        for image_format in entry_points(group="toga.image_formats"):
+            converter = importlib.import_module(f"{image_format.value}.converter")
+            cls.converters[converter.image_class] = converter
 
     @property
     def size(self) -> (int, int):
@@ -162,11 +172,19 @@ class Image:
         :returns: The image in the requested format
         :raises TypeError: If the format supplied is not recognized.
         """
-        if isinstance(format, type) and issubclass(format, Image):
-            return format(self.data)
+        if isinstance(format, type):
+            if issubclass(format, Image):
+                return format(self.data)
 
-        for converter in image_converters:
-            if format is converter.image_class:
-                return converter.convert_to_format(self.data)
+            # If it's a registered format, convert as necessary.
+            if converter := self.converters.get(format):
+                return converter.convert_to_format(self.data, format)
+
+            # If it's a subclass of a registered format, convert and also save it so it
+            # doesn't have to be searched for next time.
+            for image_class, converter in self.converters.items():
+                if issubclass(format, image_class):
+                    self.converters[format] = converter
+                    return converter.convert_to_format(self.data, format)
 
         raise TypeError(f"Unknown conversion format for Image: {format}")

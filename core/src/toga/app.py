@@ -25,6 +25,7 @@ from toga.documents import Document
 from toga.handlers import wrapped_handler
 from toga.hardware.camera import Camera
 from toga.icons import Icon
+from toga.images import Image
 from toga.paths import Paths
 from toga.platform import get_platform_factory
 from toga.widgets.base import Widget
@@ -492,6 +493,10 @@ class App:
 
         # Now that we have an impl, set the on_change handler for commands
         self.commands.on_change = self._impl.create_menus
+
+        # This has to be done after everything's imported, to avoid a circular import
+        # from the PIL plugin's dynamic version declaration.
+        Image.load_converters()
 
     def _create_impl(self):
         self.factory.App(interface=self)

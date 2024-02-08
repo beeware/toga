@@ -19,7 +19,9 @@ def convert_from_format(image_in_format):
     return buffer.getvalue()
 
 
-def convert_to_format(data):
+def convert_to_format(data, image_format=None):
+    # PIL Images aren't designed to be subclassed, so no implementation is necessary for
+    # a supplied format.
     buffer = BytesIO(data)
     with PIL.Image.open(buffer) as pil_image:
         pil_image.load()
