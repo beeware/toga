@@ -199,7 +199,7 @@ def test_deprecated_arguments(kwargs):
 def test_too_many_arguments(args, kwargs):
     """If multiple arguments are supplied, an error is raised"""
     with pytest.raises(
-        ValueError,
+        TypeError,
         match=r"Received multiple arguments to constructor.",
     ):
         toga.Image(*args, **kwargs)

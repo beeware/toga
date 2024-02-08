@@ -63,7 +63,7 @@ class Image:
         ######################################################################
         num_provided = sum(arg is not NOT_PROVIDED for arg in (src, path, data))
         if num_provided > 1:
-            raise ValueError("Received multiple arguments to constructor.")
+            raise TypeError("Received multiple arguments to constructor.")
         if num_provided == 0:
             raise TypeError(
                 "Image.__init__() missing 1 required positional argument: 'src'"
