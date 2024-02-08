@@ -148,10 +148,12 @@ class MapView(Widget):
         :param style: A style object. If no style is provided, a default style will be
             applied to the widget.
         :param location: The initial latitude/longitude where the map should be
-            centered. If not provided, the initial location for the map is undefined.
+            centered. If not provided, the initial location for the map is Perth,
+            Australia.
         :param zoom: The initial zoom level for the map.
         :param pins: The initial pins to display on the map.
-        :param on_select: A handler that will be invoked when the user selects a map pin.
+        :param on_select: A handler that will be invoked when the user selects a map
+            pin.
         """
         super().__init__(id=id, style=style)
 
@@ -159,10 +161,16 @@ class MapView(Widget):
 
         self._pins = MapPinSet(self, pins)
 
+        # Set zoom before location, because on some platforms changing the
+        # zoom requires reading (and therefore resetting) the location.
+        self.zoom = zoom
+
         if location:
             self.location = location
+        else:
+            # Default location is Perth, Australia. Because why not?
+            self.location = (-31.9513, 115.8553)
 
-        self.zoom = zoom
         self.on_select = on_select
 
     @property
@@ -195,13 +203,13 @@ class MapView(Widget):
         raise RuntimeError("zoom is not a readable property")
 
     @zoom.setter
-    def zoom(self, value):
+    def zoom(self, value: int):
         if value < 0:
             value = 0
         elif value > 5:
             value = 5
 
-        self._impl.set_zoom(value)
+        self._impl.set_zoom(int(value))
 
     @property
     def pins(self) -> MapPinSet:
