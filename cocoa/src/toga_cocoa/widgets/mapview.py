@@ -28,6 +28,9 @@ class MapView(Widget):
         self.native.impl = self
         self.native.delegate = self.native
 
+        self.native.zoomEnabled = True
+        self.native.scrollEnabled = True
+
         # Reverse lookup of map annotations to pins
         self.pins = {}
 
@@ -71,6 +74,11 @@ class MapView(Widget):
         self.pins[annotation] = pin
 
         self.native.addAnnotation(annotation)
+
+    def update_pin(self, pin):
+        pin._native.coordinate = CLLocationCoordinate2D(*pin.location)
+        pin._native.title = pin.title
+        pin._native.subtitle = pin.subtitle
 
     def remove_pin(self, pin):
         self.native.removeAnnotation(pin._native)

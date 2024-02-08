@@ -8,10 +8,26 @@ from .base import Widget
 
 
 class MapPin:
-    def __init__(self, location, *, title=None, subtitle=None):
-        self.location = location
-        self.title = title
-        self.subtitle = subtitle
+    def __init__(
+        self,
+        location: tuple[float, float],
+        *,
+        title: str | None = None,
+        subtitle: str | None = None,
+    ):
+        """Create a new map pin.
+
+        :param location: A tuple describing the (latitude, longitude) for the pin.
+        :param title: The title to apply to the pin.
+        :param subtitle: A subtitle label to apply to the pin.
+        """
+        self._location = location
+        self._title = title
+        self._subtitle = subtitle
+
+        # A pin isn't tied to a map at time of creation.
+        self.interface = None
+        self._native = None
 
     def __repr__(self):
         if self.title and self.subtitle:
@@ -22,6 +38,39 @@ class MapPin:
             label = ""
 
         return f"<Map Pin @ {self.location}{label}>"
+
+    @property
+    def location(self) -> tuple[float, float]:
+        "The (latitude, longitude) where the pin is located."
+        return self._location
+
+    @location.setter
+    def location(self, coord: tuple[float, float]) -> None:
+        self._location = coord
+        if self.interface:
+            self.interface._impl.update_pin(self)
+
+    @property
+    def title(self) -> tuple[float, float]:
+        "The title of the pin."
+        return self._title
+
+    @title.setter
+    def title(self, coord: tuple[float, float]) -> None:
+        self._title = coord
+        if self.interface:
+            self.interface._impl.update_pin(self)
+
+    @property
+    def subtitle(self) -> tuple[float, float]:
+        "The subtitle of the pin."
+        return self._subtitle
+
+    @subtitle.setter
+    def subtitle(self, coord: tuple[float, float]) -> None:
+        self._subtitle = coord
+        if self.interface:
+            self.interface._impl.update_pin(self)
 
 
 class MapPinSet:
@@ -47,20 +96,20 @@ class MapPinSet:
     def add(self, pin):
         """Add a new pin to the map.
 
-        :param pin: The :any:`toga.MapPin` instance to add
-        :param title: The title to apply to the pin.
-        :param subtitle: The subtitle to apply to the pin.
+        :param pin: The :any:`toga.MapPin` instance to add.
         """
+        pin.interface = self.interface
         self._pins.add(pin)
         self.interface._impl.add_pin(pin)
 
     def remove(self, pin):
         """Remove a pin from the map.
 
-        :param pin: The pin to remove.
+        :param pin: The  :any:`toga.MapPin` instance to remove.
         """
         self.interface._impl.remove_pin(pin)
         self._pins.remove(pin)
+        pin.interface = None
 
     def clear(self):
         """Remove all pins from the map."""
