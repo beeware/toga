@@ -1,21 +1,20 @@
 from math import ceil
 
-from rubicon.objc import objc_method, objc_property
+from rubicon.objc import CGPoint, CGRect, CGSize, objc_method, objc_property
 from travertino.size import at_least
 
 from toga.colors import BLACK, TRANSPARENT, color
 from toga.widgets.canvas import Baseline, FillRule
 from toga_cocoa.colors import native_color
-from toga_cocoa.images import nsdata_to_bytes
 from toga_cocoa.libs import (
     CGFloat,
     CGPathDrawingMode,
     CGRectMake,
     NSAttributedString,
-    NSBitmapImageFileType,
     NSFontAttributeName,
     NSForegroundColorAttributeName,
     NSGraphicsContext,
+    NSImage,
     NSMutableDictionary,
     NSPoint,
     NSRect,
@@ -24,6 +23,7 @@ from toga_cocoa.libs import (
     NSStrokeWidthAttributeName,
     NSView,
     core_graphics,
+    kCGImageAlphaPremultipliedLast,
     kCGPathEOFill,
     kCGPathFill,
     kCGPathStroke,
@@ -321,22 +321,41 @@ class Canvas(Widget):
             )
 
     def get_image_data(self):
-        # Convert to native backing scale bounds.
-        native_bounds_backing = self.native.window.screen.convertRectToBacking(
-            self.native.bounds
-        )
-        bitmap = self.native.bitmapImageRepForCachingDisplayInRect(
-            native_bounds_backing
-        )
-        bitmap.setSize(native_bounds_backing.size)
-        self.native.cacheDisplayInRect(native_bounds_backing, toBitmapImageRep=bitmap)
 
-        return nsdata_to_bytes(
-            bitmap.representationUsingType(
-                NSBitmapImageFileType.PNG,
-                properties=None,
-            )
+        bitmap = self.native.bitmapImageRepForCachingDisplayInRect(self.native.bounds)
+        bitmap.setSize(self.native.bounds.size)
+        self.native.cacheDisplayInRect(self.native.bounds, toBitmapImageRep=bitmap)
+
+        # Create a CGImage from the bitmap
+        cg_image = bitmap.CGImage
+
+        backing_scale = self.interface.window.screen._impl.native.backingScaleFactor
+        target_size = CGSize(
+            core_graphics.CGImageGetWidth(cg_image) * backing_scale,
+            core_graphics.CGImageGetHeight(cg_image) * backing_scale,
         )
+        target_frame = CGRect(CGPoint(0, 0), target_size)
+
+        color_space = core_graphics.CGColorSpaceCreateDeviceRGB()
+        context = core_graphics.CGBitmapContextCreate(
+            None,
+            int(target_size.width),
+            int(target_size.height),
+            8,
+            0,
+            color_space,
+            kCGImageAlphaPremultipliedLast,
+        )
+        core_graphics.CGColorSpaceRelease(color_space)
+        core_graphics.CGContextScaleCTM(context, backing_scale, backing_scale)
+
+        context.draw(cg_image, target_frame)
+
+        new_cg_image = context.makeImage()
+
+        # Create an NSImage from the CGImage
+        ns_image = NSImage.alloc().initWithCGImage(new_cg_image, size=target_size)
+        return ns_image
 
     # Rehint
     def rehint(self):

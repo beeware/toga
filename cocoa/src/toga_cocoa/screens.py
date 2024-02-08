@@ -1,7 +1,5 @@
 from toga.screens import Screen as ScreenInterface
 from toga_cocoa.libs import (
-    CGImageGetHeight,
-    CGImageGetWidth,
     NSImage,
     core_graphics,
 )
@@ -38,13 +36,15 @@ class Screen:
         cg_direct_display_id = device_description.objectForKey_(
             "NSScreenNumber"
         ).unsignedIntValue
-
-        cg_image = core_graphics.CGDisplayCreateImage(
+        cg_image = core_graphics.CGDisplayCreateImageForRect(
             cg_direct_display_id,
             self.native.frame,
         )
         # Get the size of the CGImage
-        size = CGImageGetWidth(cg_image), CGImageGetHeight(cg_image)
+        size = (
+            core_graphics.CGImageGetWidth(cg_image),
+            core_graphics.CGImageGetHeight(cg_image),
+        )
         # Create an NSImage from the CGImage
         ns_image = NSImage.alloc().initWithCGImage(cg_image, size=size)
 
