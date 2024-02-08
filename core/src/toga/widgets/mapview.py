@@ -1,23 +1,10 @@
 from __future__ import annotations
 
-import sys
-from typing import TYPE_CHECKING, overload
+from typing import Any, Protocol
+
+from toga.handlers import wrapped_handler
 
 from .base import Widget
-
-if TYPE_CHECKING:
-    if sys.version_info < (3, 10):
-        from typing_extensions import TypeAlias
-    else:
-        from typing import TypeAlias
-
-    import toga
-
-    MapPinContent: TypeAlias = (
-        tuple[tuple[float, float], str | None]
-        | tuple[tuple[float, float], str | None, str | None]
-        | toga.MapPin
-    )
 
 
 class MapPin:
@@ -34,7 +21,7 @@ class MapPin:
         else:
             label = ""
 
-        return f"<Map Pin @ ({self.location}); {label}"
+        return f"<Map Pin @ {self.location}{label}>"
 
 
 class MapPinSet:
@@ -44,13 +31,7 @@ class MapPinSet:
 
         if pins:
             for item in pins:
-                if isinstance(item, tuple):
-                    location, title, subtitle = item
-                    pin = MapPin(location, title=title, subtitle=subtitle)
-
-                    self.add(pin)
-                else:
-                    self.add(item)
+                self.add(item)
 
     def __repr__(self):
         return f"<MapPinSet: ({len(self)} pins)>"
@@ -63,67 +44,43 @@ class MapPinSet:
         """Return the number of pins being displayed."""
         return len(self._pins)
 
-    @overload
-    def add(
-        self,
-        location_or_pin: MapPin,
-    ): ...
-
-    @overload
-    def add(
-        self,
-        location_or_pin: tuple[float, float],
-        *,
-        title: str | None = None,
-        subtitle: str | None = None,
-    ): ...
-
-    def add(
-        self,
-        location_or_pin: MapPin | tuple[float, float],
-        *,
-        title: str | None = None,
-        subtitle: str | None = None,
-    ) -> MapPin:
+    def add(self, pin):
         """Add a new pin to the map.
 
-        The new pin can be specified as an existing :any:`MapPin` instance, or by
-        specifying the full details of the new pin. If a :any:`MapPin` is provided,
-        specifying ``title`` or ``subtitle`` will raise an error.
-
-        :param location_or_pin: The location of the pin as a (latitude, longitude)
-            tuple, or a :any:`toga.MapPin` instance.
+        :param pin: The :any:`toga.MapPin` instance to add
         :param title: The title to apply to the pin.
         :param subtitle: The subtitle to apply to the pin.
-        :return
         """
-        if isinstance(location_or_pin, MapPin):
-            if title is not None:
-                raise ValueError("Cannot specify title if using a MapPin instance.")
-            if subtitle is not None:
-                raise ValueError("Cannot specify subtitle if using a MapPin instance.")
-
-            pin = location_or_pin
-        else:
-            pin = MapPin(location_or_pin, title=title, subtitle=subtitle)
-
         self._pins.add(pin)
         self.interface._impl.add_pin(pin)
-        return pin
 
     def remove(self, pin):
         """Remove a pin from the map.
 
         :param pin: The pin to remove.
         """
-        self._pins.remove(pin)
         self.interface._impl.remove_pin(pin)
+        self._pins.remove(pin)
 
     def clear(self):
         """Remove all pins from the map."""
         for pin in self._pins:
             self._impl.interface.remove_pin(pin)
         self._pins = set()
+
+
+class OnSelectHandler(Protocol):
+    def __call__(self, widget: MapView, *, pin: MapPin, **kwargs: Any) -> None:
+        """A handler that will be invoked when the user selects a map pin.
+
+        .. note::
+            ``**kwargs`` ensures compatibility with additional arguments
+            introduced in future versions.
+
+        :param widget: The button that was pressed.
+        :param pin: The pin that was selected.
+        """
+        ...
 
 
 class MapView(Widget):
@@ -133,7 +90,8 @@ class MapView(Widget):
         style=None,
         location: tuple[float, float] | None = None,
         zoom: int | None = 2,
-        pins: list[MapPinContent] | None = None,
+        pins: list[MapPin] | None = None,
+        on_select: OnSelectHandler | None = None,
     ):
         """Create a new MapView widget.
 
@@ -144,6 +102,7 @@ class MapView(Widget):
             centered. If not provided, the initial location for the map is undefined.
         :param zoom: The initial zoom level for the map.
         :param pins: The initial pins to display on the map.
+        :param on_select: A handler that will be invoked when the user selects a map pin.
         """
         super().__init__(id=id, style=style)
 
@@ -155,6 +114,7 @@ class MapView(Widget):
             self.location = location
 
         self.zoom = zoom
+        self.on_select = on_select
 
     @property
     def location(self) -> tuple[float, float]:
@@ -198,3 +158,12 @@ class MapView(Widget):
     def pins(self) -> MapPinSet:
         """The set of pins currently being displayed on the map"""
         return self._pins
+
+    @property
+    def on_select(self) -> OnSelectHandler:
+        """The handler to invoke when the user selects a pin on a map."""
+        return self._on_select
+
+    @on_select.setter
+    def on_select(self, handler: OnSelectHandler | None):
+        self._on_select = wrapped_handler(self, handler)

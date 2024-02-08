@@ -1,3 +1,4 @@
+from rubicon.objc import objc_method, objc_property
 from travertino.size import at_least
 
 from ..libs import (
@@ -10,9 +11,25 @@ from ..libs import (
 from .base import Widget
 
 
+class TogaMapView(MKMapView):
+    interface = objc_property(object, weak=True)
+    impl = objc_property(object, weak=True)
+
+    @objc_method
+    def mapView_didSelectAnnotationView_(self, mapView, view) -> None:
+        pin = self.impl.pins[view.annotation]
+        self.interface.on_select(pin=pin)
+
+
 class MapView(Widget):
     def create(self):
-        self.native = MKMapView.alloc().init()
+        self.native = TogaMapView.alloc().init()
+        self.native.interface = self.interface
+        self.native.impl = self
+        self.native.delegate = self.native
+
+        # Reverse lookup of map annotations to pins
+        self.pins = {}
 
         # Add the layout constraints
         self.add_constraints()
@@ -50,12 +67,15 @@ class MapView(Widget):
             title=pin.title,
             subtitle=pin.subtitle,
         )
-
         pin._native = annotation
+        self.pins[annotation] = pin
+
         self.native.addAnnotation(annotation)
 
     def remove_pin(self, pin):
         self.native.removeAnnotation(pin._native)
+        del self.pins[pin._native]
+        del pin._native
 
     def rehint(self):
         self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)

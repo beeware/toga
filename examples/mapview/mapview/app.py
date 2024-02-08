@@ -27,6 +27,9 @@ class ExampleMapViewApp(toga.App):
     def where_am_i(self, widget, **kwargs):
         self.label.text = self.map_view.location
 
+    def pin_selected(self, widget, pin, **kwargs):
+        self.label.text = f"Pin selected: {pin}"
+
     def startup(self):
         # Set up main window
         self.main_window = toga.MainWindow()
@@ -34,18 +37,26 @@ class ExampleMapViewApp(toga.App):
         self.map_view = toga.MapView(
             style=Pack(flex=1),
             pins=[
-                ((-41.2784, 174.7767), "The Bee Hive", "NZ Parliament building"),
-                ((36.47032, -86.65138), "The White House", "The have beehives!"),
+                toga.MapPin(
+                    (-41.2784, 174.7767),
+                    title="The Bee Hive",
+                    subtitle="NZ Parliament building",
+                ),
+                toga.MapPin(
+                    (36.47032, -86.65138),
+                    title="The White House",
+                    subtitle="They have beehives!",
+                ),
             ],
+            on_select=self.pin_selected,
         )
 
         # Add a pin at runtime.
         self.map_view.pins.add(
-            (
-                random.uniform(-70, 70),
-                random.uniform(-180, 180),
-            ),
-            title="Carmen Sandiego",
+            toga.MapPin(
+                (random.uniform(-70, 70), random.uniform(-180, 180)),
+                title="Carmen Sandiego",
+            )
         )
 
         btn_style = Pack(flex=1)
