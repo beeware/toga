@@ -1,21 +1,21 @@
 from __future__ import annotations
 
+import importlib
 import sys
 import warnings
-from io import BytesIO
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 from warnings import warn
 
-try:
-    import PIL.Image
-
-    PIL_imported = True
-except ImportError:  # pragma: no cover
-    PIL_imported = False
-
 import toga
 from toga.platform import get_platform_factory
+
+if sys.version_info >= (3, 10):
+    from importlib.metadata import entry_points
+else:
+    # Before Python 3.10, entry_points did not support the group argument;
+    # so, the backport package must be used on older versions.
+    from importlib_metadata import entry_points
 
 # Make sure deprecation warnings are shown by default
 warnings.filterwarnings("default", category=DeprecationWarning)
@@ -37,6 +37,13 @@ if TYPE_CHECKING:
 
 
 NOT_PROVIDED = object()
+
+
+image_converters = []
+
+for image_format in entry_points(group="toga.image_formats"):
+    converter = importlib.import_module(f"{image_format.value}.converter")
+    image_converters.append(converter)
 
 
 class Image:
@@ -87,6 +94,12 @@ class Image:
         self.factory = get_platform_factory()
         self._path = None
 
+        for converter in image_converters:
+            if isinstance(src, converter.image_class):
+                data = converter.convert_from_format(src)
+                self._impl = self.factory.Image(interface=self, data=data)
+                return
+
         # Any "lump of bytes" should be valid here.
         if isinstance(src, (bytes, bytearray, memoryview)):
             self._impl = self.factory.Image(interface=self, data=src)
@@ -99,11 +112,6 @@ class Image:
 
         elif isinstance(src, Image):
             self._impl = self.factory.Image(interface=self, data=src.data)
-
-        elif PIL_imported and isinstance(src, PIL.Image.Image):
-            buffer = BytesIO()
-            src.save(buffer, format="png", compress_level=0)
-            self._impl = self.factory.Image(interface=self, data=buffer.getvalue())
 
         elif isinstance(src, self.factory.Image.RAW_TYPE):
             self._impl = self.factory.Image(interface=self, raw=src)
@@ -157,10 +165,8 @@ class Image:
         if isinstance(format, type) and issubclass(format, Image):
             return format(self.data)
 
-        if PIL_imported and format is PIL.Image.Image:
-            buffer = BytesIO(self.data)
-            with PIL.Image.open(buffer) as pil_image:
-                pil_image.load()
-            return pil_image
+        for converter in image_converters:
+            if format is converter.image_class:
+                return converter.convert_to_format(self.data)
 
         raise TypeError(f"Unknown conversion format for Image: {format}")
