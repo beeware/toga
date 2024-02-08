@@ -270,6 +270,10 @@ register_preferred_encoding(b"^{CGImage=}", CGImageRef)
 core_graphics.CGDisplayCreateImageForRect.restype = CGImageRef
 core_graphics.CGDisplayCreateImageForRect.argtypes = [CGDirectDisplayID, CGRect]
 
+# void CGContextDrawImage(CGContextRef c, CGRect rect, CGImageRef image);
+core_graphics.CGContextDrawImage.restype = None
+core_graphics.CGContextDrawImage.argtypes = [CGContextRef, CGRect, CGImageRef]
+
 # size_t CGImageGetWidth(CGImageRef image);
 core_graphics.CGImageGetWidth.argtypes = [c_void_p]
 core_graphics.CGImageGetWidth.restype = c_size_t

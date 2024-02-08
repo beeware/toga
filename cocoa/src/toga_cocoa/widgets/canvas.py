@@ -348,13 +348,10 @@ class Canvas(Widget):
         )
         core_graphics.CGColorSpaceRelease(color_space)
         core_graphics.CGContextScaleCTM(context, backing_scale, backing_scale)
-
-        context.draw(cg_image, target_frame)
-
-        new_cg_image = context.makeImage()
+        core_graphics.CGContextDrawImage(context, target_frame, cg_image)
 
         # Create an NSImage from the CGImage
-        ns_image = NSImage.alloc().initWithCGImage(new_cg_image, size=target_size)
+        ns_image = NSImage.alloc().initWithCGImage(cg_image, size=target_size)
         return ns_image
 
     # Rehint
