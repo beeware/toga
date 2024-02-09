@@ -1,1 +1,0 @@
-The internal Android method ``intent_result`` has been deprecated. This was an internal API, and not formally documented, but it was the easiest mechanism for invoking Intents on the Android backend. It has been replaced by the synchronous ``start_activity`` method that allows you to register a callback when the intent completes.

@@ -1,1 +1,0 @@
-The padding around DetailedList on Android has been reduced.

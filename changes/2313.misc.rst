@@ -1,1 +1,0 @@
-Updated coverage[toml] from 7.3.4 to 7.4.0 in /core.
