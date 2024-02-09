@@ -1453,7 +1453,9 @@ class Canvas(Widget):
         """Render the canvas as an image.
 
         :param format: Format to provide. Defaults to :class:`~toga.images.Image`; also
-            supports :class:`PIL.Image.Image` if Pillow is installed
+             supports :any:`PIL.Image.Image` if Pillow is installed, as well as any image
+             types defined by installed :doc:`image format plugins
+             </reference/image_plugins>`.
         :returns: The canvas as an image of the specified type.
         """
         return toga.Image(self._impl.get_image_data()).as_format(format)

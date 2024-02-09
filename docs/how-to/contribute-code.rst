@@ -157,21 +157,21 @@ source packages, so we have to manually install each package:
     .. code-block:: console
 
       (venv) $ cd toga
-      (venv) $ pip install -e "./core[dev]" -e ./dummy -e ./cocoa
+      (venv) $ pip install -e "./core[dev]" -e ./dummy -e ./pil -e ./cocoa
 
   .. group-tab:: Linux
 
     .. code-block:: console
 
       (venv) $ cd toga
-      (venv) $ pip install -e ./core[dev] -e ./dummy -e ./gtk
+      (venv) $ pip install -e ./core[dev] -e ./dummy  -e ./pil -e ./gtk
 
   .. group-tab:: Windows
 
     .. code-block:: doscon
 
       (venv) C:\...>cd toga
-      (venv) C:\...>pip install -e ./core[dev] -e ./dummy -e ./winforms
+      (venv) C:\...>pip install -e ./core[dev] -e ./dummy -e ./pil -e ./winforms
 
 Toga uses a tool called `Pre-Commit <https://pre-commit.com>`__ to identify
 simple issues and standardize code formatting. It does this by installing a git

@@ -390,7 +390,9 @@ class Window:
         """Render the current contents of the window as an image.
 
         :param format: Format to provide. Defaults to :class:`~toga.images.Image`; also
-            supports :any:`PIL.Image.Image` if Pillow is installed
+             supports :any:`PIL.Image.Image` if Pillow is installed, as well as any image
+             types defined by installed :doc:`image format plugins
+             </reference/image_plugins>`.
         :returns: An image containing the window content, in the format requested.
         """
         return Image(self._impl.get_image_data()).as_format(format)
