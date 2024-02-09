@@ -81,7 +81,7 @@ jobs:
       run: |
         # We don't actually want to install toga-core;
         # we just want the dev extras so we have a known version of tox and coverage
-        python -m pip install ./core[dev] ./pil
+        python -m pip install ./core[dev]
     - name: Get packages
       uses: actions/download-artifact@v4.1.1
       with:
@@ -92,7 +92,7 @@ jobs:
         # The $(ls ...) shell expansion is done in the Github environment;
         # the value of TOGA_INSTALL_COMMAND will be a literal string,
         # without any shell expansions to perform
-        TOGA_INSTALL_COMMAND="python -m pip install ../$(ls core/dist/toga_core-*.whl)[dev] ../$(ls dummy/dist/toga_dummy-*.whl)" tox -e py
+        TOGA_INSTALL_COMMAND="python -m pip install ../$(ls core/dist/toga_core-*.whl)[dev] ../$(ls dummy/dist/toga_dummy-*.whl) ../$(ls pil/dist/toga_dummy-*.whl)" tox -e py
         mv core/.coverage core/.coverage.${{ matrix.platform }}.${{ matrix.python-version }}
     - name: Store coverage data
       uses: actions/upload-artifact@v4.3.0
