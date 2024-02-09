@@ -81,7 +81,7 @@ jobs:
       run: |
         # We don't actually want to install toga-core;
         # we just want the dev extras so we have a known version of tox and coverage
-        python -m pip install ./core[dev]
+        python -m pip install ./core[dev] ./pil
     - name: Get packages
       uses: actions/download-artifact@v4.1.1
       with:
