@@ -169,7 +169,7 @@ class MapView(Widget):
             self.location = location
         else:
             # Default location is Perth, Australia. Because why not?
-            self.location = (-31.9513, 115.8553)
+            self.location = (-31.9559, 115.8606)
 
         self.on_select = on_select
 

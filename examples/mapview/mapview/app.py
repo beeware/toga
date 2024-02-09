@@ -13,16 +13,16 @@ class ExampleMapViewApp(toga.App):
         return _zoom
 
     def goto_perth(self, widget, **kwargs):
-        self.map_view.location = (-31.9513, 115.8553)
+        self.map_view.location = (-31.9559, 115.8606)
 
     def goto_london(self, widget, **kwargs):
-        self.map_view.location = (51.5098, -0.1181)
+        self.map_view.location = (51.507222, -0.1275)
 
     def goto_austin(self, widget, **kwargs):
-        self.map_view.location = (30.2666, -97.7333)
+        self.map_view.location = (30.267222, -97.743056)
 
     def goto_rio(self, widget, **kwargs):
-        self.map_view.location = (-22.9028, -43.2075)
+        self.map_view.location = (-22.911111, -43.205556)
 
     def where_am_i(self, widget, **kwargs):
         self.label.text = self.map_view.location
@@ -52,7 +52,7 @@ class ExampleMapViewApp(toga.App):
             subtitle="NZ Parliament building",
         )
         self.pin_2 = toga.MapPin(
-            (36.47032, -86.65138),
+            (38.897778, -77.036389),
             title="The White House",
             subtitle="They have beehives!",
         )
