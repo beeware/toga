@@ -54,6 +54,7 @@ jobs:
         - "dummy"
         - "gtk"
         - "iOS"
+        - "pil"
         - "toga"
         - "textual"
         - "web"
