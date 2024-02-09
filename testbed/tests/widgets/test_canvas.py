@@ -242,7 +242,7 @@ def assert_reference(probe, reference, threshold=0.0):
     """Assert that the canvas currently matches a reference image, within an RMS threshold"""
     # Get the canvas image.
     image = probe.get_image()
-    scaled_image = image.resize((200, 200), Image.Resampling.LANCZOS)
+    scaled_image = image.resize((200, 200))
 
     # Look for a platform-specific reference variant.
     reference_variant = probe.reference_variant(reference)
