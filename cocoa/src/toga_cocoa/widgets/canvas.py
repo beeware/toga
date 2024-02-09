@@ -326,7 +326,7 @@ class Canvas(Widget):
         bitmap.setSize(self.native.bounds.size)
         self.native.cacheDisplayInRect(self.native.bounds, toBitmapImageRep=bitmap)
 
-        # Create a CGImage from the bitmap
+        # Get a reference to the CGImage from the bitmap
         cg_image = bitmap.CGImage
 
         backing_scale = self.interface.window.screen._impl.native.backingScaleFactor
@@ -347,11 +347,18 @@ class Canvas(Widget):
             kCGImageAlphaPremultipliedLast,
         )
         core_graphics.CGColorSpaceRelease(color_space)
-        core_graphics.CGContextScaleCTM(context, backing_scale, backing_scale)
         core_graphics.CGContextDrawImage(context, target_frame, cg_image)
-
+        new_cg_image = core_graphics.CGBitmapContextCreateImage(context)
+        # ------------------------------For Debugging----------------------------
+        new_cg_image_size = (
+            core_graphics.CGImageGetWidth(new_cg_image),
+            core_graphics.CGImageGetHeight(new_cg_image),
+        )
+        print(f"New CGImage size:{new_cg_image_size[0]}x{new_cg_image_size[1]}")
+        # ----------------------------------------------------------------------
         # Create an NSImage from the CGImage
-        ns_image = NSImage.alloc().initWithCGImage(cg_image, size=target_size)
+        ns_image = NSImage.alloc().initWithCGImage(new_cg_image, size=target_size)
+        core_graphics.CGImageRelease(new_cg_image)
         return ns_image
 
     # Rehint

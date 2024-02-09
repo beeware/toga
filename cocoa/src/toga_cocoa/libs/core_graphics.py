@@ -201,6 +201,14 @@ core_graphics.CGBitmapContextCreate.argtypes = [
     CGColorSpaceRef,
     c_uint32,
 ]
+
+
+CGImageRef = c_void_p
+register_preferred_encoding(b"^{CGImage=}", CGImageRef)
+
+
+core_graphics.CGBitmapContextCreateImage.restype = CGImageRef
+core_graphics.CGBitmapContextCreateImage.argtypes = [CGContextRef]
 ######################################################################
 # CGEvent.h
 
@@ -251,6 +259,18 @@ kCGBitmapByteOrder32Little = 2 << 12
 kCGBitmapByteOrder16Big = 3 << 12
 kCGBitmapByteOrder32Big = 4 << 12
 
+# size_t CGImageGetWidth(CGImageRef image);
+core_graphics.CGImageGetWidth.restype = c_size_t
+core_graphics.CGImageGetWidth.argtypes = [CGImageRef]
+
+# size_t CGImageGetHeight(CGImageRef image);
+core_graphics.CGImageGetHeight.restype = c_size_t
+core_graphics.CGImageGetHeight.argtypes = [CGImageRef]
+
+# void CGImageRelease(CGImageRef image);
+core_graphics.CGImageRelease.restype = None
+core_graphics.CGImageRelease.argtypes = [CGImageRef]
+
 ######################################################################
 # CoreGraphics.h
 
@@ -261,11 +281,6 @@ core_graphics.CGMainDisplayID.restype = CGDirectDisplayID
 core_graphics.CGMainDisplayID.argtypes = None
 
 
-CGImageRef = c_void_p
-
-
-register_preferred_encoding(b"^{CGImage=}", CGImageRef)
-
 # CGImageRef CGDisplayCreateImageForRect(CGDirectDisplayID displayID, CGRect rect);
 core_graphics.CGDisplayCreateImageForRect.restype = CGImageRef
 core_graphics.CGDisplayCreateImageForRect.argtypes = [CGDirectDisplayID, CGRect]
@@ -273,11 +288,3 @@ core_graphics.CGDisplayCreateImageForRect.argtypes = [CGDirectDisplayID, CGRect]
 # void CGContextDrawImage(CGContextRef c, CGRect rect, CGImageRef image);
 core_graphics.CGContextDrawImage.restype = None
 core_graphics.CGContextDrawImage.argtypes = [CGContextRef, CGRect, CGImageRef]
-
-# size_t CGImageGetWidth(CGImageRef image);
-core_graphics.CGImageGetWidth.argtypes = [c_void_p]
-core_graphics.CGImageGetWidth.restype = c_size_t
-
-# size_t CGImageGetHeight(CGImageRef image);
-core_graphics.CGImageGetHeight.argtypes = [c_void_p]
-core_graphics.CGImageGetHeight.restype = c_size_t
