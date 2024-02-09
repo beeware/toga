@@ -1,1 +1,0 @@
-The error returned when an Image is created with no source has been clarified.

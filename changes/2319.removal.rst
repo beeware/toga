@@ -1,1 +1,0 @@
-If the label for a Selection contains newlines, only the text up to the first newline will be displayed.

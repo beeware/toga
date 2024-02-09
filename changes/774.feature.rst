@@ -1,1 +1,0 @@
-Buttons can now be created with an icon, instead of a text label.

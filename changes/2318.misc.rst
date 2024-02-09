@@ -1,1 +1,0 @@
-The ``upload-artifact`` and ``download-artifact`` CI actions were upgraded to v4.
