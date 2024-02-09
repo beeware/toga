@@ -40,7 +40,7 @@ NOT_PROVIDED = object()
 
 
 class Image:
-    converters = {}
+    _converters = {}
 
     def __init__(
         self,
@@ -107,16 +107,16 @@ class Image:
 
         else:
             # If it's a registered format, convert as necessary.
-            if converter := self.converters.get(src.__class__):
+            if converter := self._converters.get(src.__class__):
                 data = converter.convert_from_format(src)
                 self._impl = self.factory.Image(interface=self, data=data)
                 return
 
             # If it's a subclass of a registered format, convert and also save it so it
             # doesn't have to be searched for next time.
-            for image_class, converter in self.converters.items():
+            for image_class, converter in self._converters.items():
                 if isinstance(src, image_class):
-                    self.converters[src.__class__] = converter
+                    self._converters[src.__class__] = converter
                     data = converter.convert_from_format(src)
                     self._impl = self.factory.Image(interface=self, data=data)
                     return
@@ -124,10 +124,11 @@ class Image:
             raise TypeError("Unsupported source type for Image")
 
     @classmethod
-    def load_converters(cls):
+    def _load_converters(cls):
+        """Load image format converters from any plugins present."""
         for image_format in entry_points(group="toga.image_formats"):
             converter = importlib.import_module(f"{image_format.value}.converter")
-            cls.converters[converter.image_class] = converter
+            cls._converters[converter.image_class] = converter
 
     @property
     def size(self) -> (int, int):
@@ -177,14 +178,14 @@ class Image:
                 return format(self.data)
 
             # If it's a registered format, convert as necessary.
-            if converter := self.converters.get(format):
+            if converter := self._converters.get(format):
                 return converter.convert_to_format(self.data, format)
 
             # If it's a subclass of a registered format, convert and also save it so it
             # doesn't have to be searched for next time.
-            for image_class, converter in self.converters.items():
+            for image_class, converter in self._converters.items():
                 if issubclass(format, image_class):
-                    self.converters[format] = converter
+                    self._converters[format] = converter
                     return converter.convert_to_format(self.data, format)
 
         raise TypeError(f"Unknown conversion format for Image: {format}")

@@ -42,12 +42,12 @@ This top-level function should accept an image of the relevant image class, and 
 bytes-like object representing the image in PNG format.
 
 
-``convert_to_format(data, image_format=None)``
+``convert_to_format(data, image_class=None)``
 ----------------------------------------------
 
 This top-level function should accept a bytes-like object representing the image in PNG
 format, and return an instance of the image class in question. Assuming your image
-class meaningfully supports subclassing, if a subclass is provided as ``image_format``,
+class meaningfully supports subclassing, if a subclass is provided as ``image_class``,
 you should return an instance of that subclass instead. (This assumes the subclass's
 initializer has a compatible signature.)
 

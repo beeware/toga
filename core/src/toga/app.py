@@ -496,7 +496,7 @@ class App:
 
         # This has to be done after everything's imported, to avoid a circular import
         # from the PIL plugin's dynamic version declaration.
-        Image.load_converters()
+        Image._load_converters()
 
     def _create_impl(self):
         self.factory.App(interface=self)

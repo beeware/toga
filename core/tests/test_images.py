@@ -267,6 +267,55 @@ def test_as_format_pil(app):
     assert pil_image.size == (144, 72)
 
 
+class CustomImage:
+    pass
+
+
+class CustomImageSubclass(CustomImage):
+    pass
+
+
+class Converter:
+    image_class = CustomImage
+
+    @staticmethod
+    def convert_from_format(image_in_format):
+        return ABSOLUTE_FILE_PATH.read_bytes()
+
+    @staticmethod
+    def convert_to_format(data, image_class):
+        image = image_class()
+        image.size = toga.Image(data).size
+        return image
+
+
+@pytest.fixture
+def registered_image_format():
+    """Register custom image type, then remove it and its subclass as cleanup"""
+    toga.Image._converters[CustomImage] = Converter
+    yield
+    toga.Image._converters.pop(CustomImage, None)
+    toga.Image._converters.pop(CustomImageSubclass, None)
+
+
+@pytest.mark.parametrize("ImageClass", [CustomImage, CustomImageSubclass])
+def test_create_from_custom_class(registered_image_format, ImageClass):
+    """toga.Image can be created from custom type"""
+    custom_image = ImageClass()
+    toga_image = toga.Image(custom_image)
+    assert isinstance(toga_image, toga.Image)
+    assert toga_image.size == (144, 72)
+
+
+@pytest.mark.parametrize("ImageClass", [CustomImage, CustomImageSubclass])
+def test_as_format_custom_class(registered_image_format, ImageClass):
+    """as_format can successfully return a registered custom image type"""
+    toga_image = toga.Image(ABSOLUTE_FILE_PATH)
+    custom_image = toga_image.as_format(ImageClass)
+    assert isinstance(custom_image, ImageClass)
+    assert custom_image.size == (144, 72)
+
+
 # None is same as supplying nothing; also test a random unrecognized class
 @pytest.mark.parametrize("arg", [None, toga.Button])
 def test_as_format_invalid_input(app, arg):
