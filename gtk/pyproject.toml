@@ -66,6 +66,7 @@ dependencies = [
     "pycairo >= 1.17.0",
     "pygobject >= 3.46.0",
     "toga-core == {version}",
+    "toga-pil == {version}",
 ]
 
 [tool.coverage.run]
