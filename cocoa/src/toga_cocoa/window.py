@@ -1,10 +1,11 @@
+from rubicon.objc import CGSize
+
 from toga.command import Command, Separator
 from toga_cocoa.container import Container
-from toga_cocoa.images import nsdata_to_bytes
 from toga_cocoa.libs import (
     SEL,
     NSBackingStoreBuffered,
-    NSBitmapImageFileType,
+    NSImage,
     NSMakeRect,
     NSMutableArray,
     NSPoint,
@@ -14,6 +15,7 @@ from toga_cocoa.libs import (
     NSToolbarItem,
     NSWindow,
     NSWindowStyleMask,
+    core_graphics,
     objc_method,
     objc_property,
 )
@@ -311,20 +313,23 @@ class Window:
         return ScreenImpl(self.native.screen)
 
     def get_image_data(self):
-        # Convert to native backing scale bounds.
-        native_bounds_backing = self.native.screen.convertRectToBacking(
+        bitmap = self.container.native.bitmapImageRepForCachingDisplayInRect(
             self.container.native.bounds
         )
-
-        bitmap = self.container.native.bitmapImageRepForCachingDisplayInRect(
-            native_bounds_backing
-        )
-        bitmap.setSize(native_bounds_backing.size)
         self.container.native.cacheDisplayInRect(
-            native_bounds_backing, toBitmapImageRep=bitmap
+            self.container.native.bounds, toBitmapImageRep=bitmap
         )
-        data = bitmap.representationUsingType(
-            NSBitmapImageFileType.PNG,
-            properties=None,
+
+        # Get a reference to the CGImage from the bitmap
+        cg_image = bitmap.CGImage
+
+        target_size = CGSize(
+            core_graphics.CGImageGetWidth(cg_image),
+            core_graphics.CGImageGetHeight(cg_image),
         )
-        return nsdata_to_bytes(data)
+
+        # ------------------------------For Debugging----------------------------
+        print(f"Window CGImage size: {target_size.width} x {target_size.height}")
+        # -----------------------------------------------------------------------
+        ns_image = NSImage.alloc().initWithCGImage(cg_image, size=target_size)
+        return ns_image

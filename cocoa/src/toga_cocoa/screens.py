@@ -1,3 +1,5 @@
+from rubicon.objc import CGSize
+
 from toga.screens import Screen as ScreenInterface
 from toga_cocoa.libs import (
     NSImage,
@@ -36,16 +38,16 @@ class Screen:
         cg_direct_display_id = device_description.objectForKey_(
             "NSScreenNumber"
         ).unsignedIntValue
-        cg_image = core_graphics.CGDisplayCreateImageForRect(
+
+        cg_image = core_graphics.CGDisplayCreateImage(
             cg_direct_display_id,
             self.native.frame,
         )
         # Get the size of the CGImage
-        size = (
+        target_size = CGSize(
             core_graphics.CGImageGetWidth(cg_image),
             core_graphics.CGImageGetHeight(cg_image),
         )
         # Create an NSImage from the CGImage
-        ns_image = NSImage.alloc().initWithCGImage(cg_image, size=size)
-
+        ns_image = NSImage.alloc().initWithCGImage(cg_image, size=target_size)
         return ns_image

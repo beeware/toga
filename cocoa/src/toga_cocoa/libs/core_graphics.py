@@ -171,44 +171,6 @@ core_graphics.CGContextShowTextAtPoint.argtypes = [
 core_graphics.CGContextTranslateCTM.restype = c_void_p
 core_graphics.CGContextTranslateCTM.argtypes = [CGContextRef, CGFloat, CGFloat]
 
-CGColorSpaceRef = c_void_p
-register_preferred_encoding(b"^{CGColorSpaceRef=}", CGColorSpaceRef)
-
-# CGColorSpaceRef CGColorSpaceCreateDeviceRGB(void);
-core_graphics.CGColorSpaceCreateDeviceRGB.restype = CGColorSpaceRef
-core_graphics.CGColorSpaceCreateDeviceRGB.argtypes = None
-
-# void CGColorSpaceRelease(CGColorSpaceRef space);
-core_graphics.CGColorSpaceRelease.restype = None
-core_graphics.CGColorSpaceRelease.argtypes = [CGColorSpaceRef]
-
-# CGContextRef CGBitmapContextCreate(
-#                                       void *data,
-#                                       size_t width,
-#                                       size_t height,
-#                                       size_t bitsPerComponent,
-#                                       size_t bytesPerRow,
-#                                       CGColorSpaceRef space,
-#                                       uint32_t bitmapInfo
-#                                   );
-core_graphics.CGBitmapContextCreate.restype = CGContextRef
-core_graphics.CGBitmapContextCreate.argtypes = [
-    c_void_p,
-    c_size_t,
-    c_size_t,
-    c_size_t,
-    c_size_t,
-    CGColorSpaceRef,
-    c_uint32,
-]
-
-
-CGImageRef = c_void_p
-register_preferred_encoding(b"^{CGImage=}", CGImageRef)
-
-
-core_graphics.CGBitmapContextCreateImage.restype = CGImageRef
-core_graphics.CGBitmapContextCreateImage.argtypes = [CGContextRef]
 ######################################################################
 # CGEvent.h
 
@@ -259,18 +221,6 @@ kCGBitmapByteOrder32Little = 2 << 12
 kCGBitmapByteOrder16Big = 3 << 12
 kCGBitmapByteOrder32Big = 4 << 12
 
-# size_t CGImageGetWidth(CGImageRef image);
-core_graphics.CGImageGetWidth.restype = c_size_t
-core_graphics.CGImageGetWidth.argtypes = [CGImageRef]
-
-# size_t CGImageGetHeight(CGImageRef image);
-core_graphics.CGImageGetHeight.restype = c_size_t
-core_graphics.CGImageGetHeight.argtypes = [CGImageRef]
-
-# void CGImageRelease(CGImageRef image);
-core_graphics.CGImageRelease.restype = None
-core_graphics.CGImageRelease.argtypes = [CGImageRef]
-
 ######################################################################
 # CoreGraphics.h
 
@@ -281,10 +231,17 @@ core_graphics.CGMainDisplayID.restype = CGDirectDisplayID
 core_graphics.CGMainDisplayID.argtypes = None
 
 
-# CGImageRef CGDisplayCreateImageForRect(CGDirectDisplayID displayID, CGRect rect);
-core_graphics.CGDisplayCreateImageForRect.restype = CGImageRef
-core_graphics.CGDisplayCreateImageForRect.argtypes = [CGDirectDisplayID, CGRect]
+CGImageRef = c_void_p
 
-# void CGContextDrawImage(CGContextRef c, CGRect rect, CGImageRef image);
-core_graphics.CGContextDrawImage.restype = None
-core_graphics.CGContextDrawImage.argtypes = [CGContextRef, CGRect, CGImageRef]
+
+register_preferred_encoding(b"^{CGImage=}", CGImageRef)
+
+# CGImageRef CGDisplayCreateImage(CGDirectDisplayID displayID, CGRect rect);
+core_graphics.CGDisplayCreateImage.restype = CGImageRef
+core_graphics.CGDisplayCreateImage.argtypes = [CGDirectDisplayID, CGRect]
+
+core_graphics.CGImageGetWidth.argtypes = [CGImageRef]
+core_graphics.CGImageGetWidth.restype = c_size_t
+
+core_graphics.CGImageGetHeight.argtypes = [CGImageRef]
+core_graphics.CGImageGetHeight.restype = c_size_t

@@ -1,6 +1,6 @@
 from math import ceil
 
-from rubicon.objc import CGPoint, CGRect, CGSize, objc_method, objc_property
+from rubicon.objc import CGSize, objc_method, objc_property
 from travertino.size import at_least
 
 from toga.colors import BLACK, TRANSPARENT, color
@@ -23,7 +23,6 @@ from toga_cocoa.libs import (
     NSStrokeWidthAttributeName,
     NSView,
     core_graphics,
-    kCGImageAlphaPremultipliedLast,
     kCGPathEOFill,
     kCGPathFill,
     kCGPathStroke,
@@ -323,42 +322,19 @@ class Canvas(Widget):
     def get_image_data(self):
 
         bitmap = self.native.bitmapImageRepForCachingDisplayInRect(self.native.bounds)
-        bitmap.setSize(self.native.bounds.size)
         self.native.cacheDisplayInRect(self.native.bounds, toBitmapImageRep=bitmap)
 
         # Get a reference to the CGImage from the bitmap
         cg_image = bitmap.CGImage
 
-        backing_scale = self.interface.window.screen._impl.native.backingScaleFactor
         target_size = CGSize(
-            core_graphics.CGImageGetWidth(cg_image) * backing_scale,
-            core_graphics.CGImageGetHeight(cg_image) * backing_scale,
+            core_graphics.CGImageGetWidth(cg_image),
+            core_graphics.CGImageGetHeight(cg_image),
         )
-        target_frame = CGRect(CGPoint(0, 0), target_size)
-
-        color_space = core_graphics.CGColorSpaceCreateDeviceRGB()
-        context = core_graphics.CGBitmapContextCreate(
-            None,
-            int(target_size.width),
-            int(target_size.height),
-            8,
-            0,
-            color_space,
-            kCGImageAlphaPremultipliedLast,
-        )
-        core_graphics.CGColorSpaceRelease(color_space)
-        core_graphics.CGContextDrawImage(context, target_frame, cg_image)
-        new_cg_image = core_graphics.CGBitmapContextCreateImage(context)
         # ------------------------------For Debugging----------------------------
-        new_cg_image_size = (
-            core_graphics.CGImageGetWidth(new_cg_image),
-            core_graphics.CGImageGetHeight(new_cg_image),
-        )
-        print(f"New CGImage size:{new_cg_image_size[0]}x{new_cg_image_size[1]}")
-        # ----------------------------------------------------------------------
-        # Create an NSImage from the CGImage
-        ns_image = NSImage.alloc().initWithCGImage(new_cg_image, size=target_size)
-        core_graphics.CGImageRelease(new_cg_image)
+        print(f"Canvas CGImage size: {target_size.width} x {target_size.height}")
+        # -----------------------------------------------------------------------
+        ns_image = NSImage.alloc().initWithCGImage(cg_image, size=target_size)
         return ns_image
 
     # Rehint
