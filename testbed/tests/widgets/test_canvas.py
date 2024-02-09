@@ -275,7 +275,6 @@ def assert_reference(probe, reference, threshold=0.0):
         if rmse > threshold:
             save()
             pytest.fail(f"Rendered image doesn't match reference (RMSE=={rmse})")
-        save()
     else:
         save()
         pytest.fail(f"Couldn't find {reference_variant!r} reference image")
