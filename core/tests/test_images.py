@@ -278,7 +278,7 @@ def test_create_from_custom_class(app, ImageClass):
 
 
 @pytest.mark.parametrize("ImageClass", [CustomImage, CustomImageSubclass])
-def test_as_format_custom_class(ImageClass):
+def test_as_format_custom_class(app, ImageClass):
     """as_format can successfully return a registered custom image type"""
     toga_image = toga.Image(ABSOLUTE_FILE_PATH)
     custom_image = toga_image.as_format(ImageClass)

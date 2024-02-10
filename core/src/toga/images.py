@@ -130,6 +130,9 @@ class Image:
             converter = importlib.import_module(f"{image_plugin.value}")
             if converter.image_class is not None:
                 cls._converters[converter.image_class] = converter
+            else:  # pragma: no cover
+                # PIL will always be installed in dev environment.
+                pass
 
     @property
     def size(self) -> (int, int):
