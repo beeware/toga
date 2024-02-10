@@ -94,15 +94,15 @@ class Window(Container, Scalable):
     # This method is called when the dpi scaling changes
     def update_window_dpi_changed(self):
         self.update_scale()
-
         if self.toolbar_native is not None:
             self.update_toolbar_font_scale()
         if isinstance(self.interface, MainWindow):
             self.update_menubar_font_scale()
         for widget in self.interface.widgets:
             widget.refresh()
-        self.refreshed()
         self.resize_content()
+        # self.interface.content.refresh()
+        self.refreshed()
 
     def winforms_LocationChanged(self, sender, event):  # pragma: no cover
         # Check if the window has moved from one screen to another and if the new
