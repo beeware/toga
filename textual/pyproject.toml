@@ -65,7 +65,6 @@ root = ".."
 dependencies = [
     "textual >= 0.44.0",
     "toga-core == {version}",
-    "toga-pil == {version}",
 ]
 
 [tool.coverage.run]

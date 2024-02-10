@@ -60,7 +60,6 @@ root = ".."
 [tool.setuptools_dynamic_dependencies]
 dependencies = [
     "toga-core == {version}",
-    "toga-pil == {version}",
 ]
 
 [tool.coverage.run]

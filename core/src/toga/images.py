@@ -126,9 +126,10 @@ class Image:
     @classmethod
     def _load_converters(cls):
         """Load image format converters from any plugins present."""
-        for image_format in entry_points(group="toga.image_formats"):
-            converter = importlib.import_module(f"{image_format.value}.converter")
-            cls._converters[converter.image_class] = converter
+        for image_plugin in entry_points(group="toga.image_formats"):
+            converter = importlib.import_module(f"{image_plugin.value}")
+            if converter.image_class is not None:
+                cls._converters[converter.image_class] = converter
 
     @property
     def size(self) -> (int, int):

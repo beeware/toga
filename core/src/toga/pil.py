@@ -2,15 +2,14 @@ from io import BytesIO
 
 # Presumably, other converter plugins will be included with, or only installed
 # alongside, the packages they're for. But since this is provided in Toga, we need to
-# check if Pillow is actually installed.
+# check if Pillow is actually installed, and disable this plugin otherwise.
 try:
     import PIL.Image
 
     image_class = PIL.Image.Image
 
 except ImportError:  # pragma: no cover
-    # Ensures no image will match this converter
-    image_class = object()
+    image_class = None
 
 
 def convert_from_format(image_in_format):
