@@ -271,19 +271,29 @@ def test_as_format_pil(app):
 @pytest.mark.parametrize("ImageClass", [CustomImage, CustomImageSubclass])
 def test_create_from_custom_class(app, ImageClass):
     """toga.Image can be created from custom type"""
-    custom_image = ImageClass()
-    toga_image = toga.Image(custom_image)
-    assert isinstance(toga_image, toga.Image)
-    assert toga_image.size == (144, 72)
+    try:
+        custom_image = ImageClass()
+        toga_image = toga.Image(custom_image)
+        assert isinstance(toga_image, toga.Image)
+        assert toga_image.size == (144, 72)
+    finally:
+        # Tear down: if we supplied the subclass, we caused it to be added to the
+        # registry. Remove it if it's in there.
+        toga.Image._converters.pop(CustomImageSubclass, None)
 
 
 @pytest.mark.parametrize("ImageClass", [CustomImage, CustomImageSubclass])
 def test_as_format_custom_class(app, ImageClass):
     """as_format can successfully return a registered custom image type"""
-    toga_image = toga.Image(ABSOLUTE_FILE_PATH)
-    custom_image = toga_image.as_format(ImageClass)
-    assert isinstance(custom_image, ImageClass)
-    assert custom_image.size == (144, 72)
+    try:
+        toga_image = toga.Image(ABSOLUTE_FILE_PATH)
+        custom_image = toga_image.as_format(ImageClass)
+        assert isinstance(custom_image, ImageClass)
+        assert custom_image.size == (144, 72)
+    finally:
+        # Tear down: if we supplied the subclass, we caused it to be added to the
+        # registry. Remove it if it's in there.
+        toga.Image._converters.pop(CustomImageSubclass, None)
 
 
 # None is same as supplying nothing; also test a random unrecognized class
