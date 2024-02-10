@@ -32,7 +32,7 @@ ABSOLUTE_FILE_PATH = Path(__file__).parent / "resources/sample.png"
         ((), {"path": f"{RELATIVE_FILE_PATH}"}),
     ],
 )
-def test_create_from_file(args, kwargs):
+def test_create_from_file(app, args, kwargs):
     """An image can be constructed from a file"""
     image = toga.Image(*args, **kwargs)
 
@@ -158,7 +158,7 @@ def test_invalid_input_format():
         toga.Image(42)
 
 
-def test_create_from_pil():
+def test_create_from_pil(app):
     """An image can be created from a PIL image"""
     with PIL.Image.open(ABSOLUTE_FILE_PATH) as pil_image:
         pil_image.load()
@@ -168,7 +168,7 @@ def test_create_from_pil():
     assert toga_image.size == (144, 72)
 
 
-def test_create_from_toga_image():
+def test_create_from_toga_image(app):
     """An image can be create from another Toga image"""
     toga_image = toga.Image(ABSOLUTE_FILE_PATH)
     toga_image_2 = toga.Image(toga_image)
@@ -205,7 +205,7 @@ def test_too_many_arguments(args, kwargs):
         toga.Image(*args, **kwargs)
 
 
-def test_dimensions():
+def test_dimensions(app):
     """The dimensions of the image can be retrieved"""
     image = toga.Image(RELATIVE_FILE_PATH)
 
@@ -214,7 +214,7 @@ def test_dimensions():
     assert image.height == 72
 
 
-def test_data():
+def test_data(app):
     """The raw data of the image can be retrieved."""
     image = toga.Image(ABSOLUTE_FILE_PATH)
 
@@ -250,7 +250,7 @@ class ImageSubclass(toga.Image):
         (ImageSubclass, ImageSubclass),
     ],
 )
-def test_as_format_toga(Class_1, Class_2):
+def test_as_format_toga(app, Class_1, Class_2):
     """as_format can successfully return a "copy" Image, with support for subclassing"""
     image_1 = Class_1(ABSOLUTE_FILE_PATH)
     image_2 = image_1.as_format(Class_2)
@@ -259,7 +259,7 @@ def test_as_format_toga(Class_1, Class_2):
     assert image_2.size == (144, 72)
 
 
-def test_as_format_pil():
+def test_as_format_pil(app):
     """as_format can successfully return a PIL image"""
     toga_image = toga.Image(ABSOLUTE_FILE_PATH)
     pil_image = toga_image.as_format(PIL.Image.Image)
@@ -299,7 +299,7 @@ def registered_image_format():
 
 
 @pytest.mark.parametrize("ImageClass", [CustomImage, CustomImageSubclass])
-def test_create_from_custom_class(registered_image_format, ImageClass):
+def test_create_from_custom_class(app, registered_image_format, ImageClass):
     """toga.Image can be created from custom type"""
     custom_image = ImageClass()
     toga_image = toga.Image(custom_image)
