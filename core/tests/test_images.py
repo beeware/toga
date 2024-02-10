@@ -4,6 +4,7 @@ import PIL.Image
 import pytest
 
 import toga
+from toga_dummy.image_converter import CustomImage, CustomImageSubclass
 from toga_dummy.utils import assert_action_performed_with
 
 RELATIVE_FILE_PATH = Path("resources/sample.png")
@@ -267,39 +268,8 @@ def test_as_format_pil(app):
     assert pil_image.size == (144, 72)
 
 
-class CustomImage:
-    pass
-
-
-class CustomImageSubclass(CustomImage):
-    pass
-
-
-class Converter:
-    image_class = CustomImage
-
-    @staticmethod
-    def convert_from_format(image_in_format):
-        return ABSOLUTE_FILE_PATH.read_bytes()
-
-    @staticmethod
-    def convert_to_format(data, image_class):
-        image = image_class()
-        image.size = toga.Image(data).size
-        return image
-
-
-@pytest.fixture
-def registered_image_format():
-    """Register custom image type, then remove it and its subclass as cleanup"""
-    toga.Image._converters[CustomImage] = Converter
-    yield
-    toga.Image._converters.pop(CustomImage, None)
-    toga.Image._converters.pop(CustomImageSubclass, None)
-
-
 @pytest.mark.parametrize("ImageClass", [CustomImage, CustomImageSubclass])
-def test_create_from_custom_class(app, registered_image_format, ImageClass):
+def test_create_from_custom_class(app, ImageClass):
     """toga.Image can be created from custom type"""
     custom_image = ImageClass()
     toga_image = toga.Image(custom_image)
@@ -308,7 +278,7 @@ def test_create_from_custom_class(app, registered_image_format, ImageClass):
 
 
 @pytest.mark.parametrize("ImageClass", [CustomImage, CustomImageSubclass])
-def test_as_format_custom_class(registered_image_format, ImageClass):
+def test_as_format_custom_class(ImageClass):
     """as_format can successfully return a registered custom image type"""
     toga_image = toga.Image(ABSOLUTE_FILE_PATH)
     custom_image = toga_image.as_format(ImageClass)
