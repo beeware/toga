@@ -1,7 +1,9 @@
 from toga.screens import Screen as ScreenInterface
 
+from .widgets.base import Scalable
 
-class Screen:
+
+class Screen(Scalable):
     _instances = {}
 
     def __new__(cls, native):
@@ -21,7 +23,10 @@ class Screen:
         return (0, 0)
 
     def get_size(self):
-        return (self.native.size.width, self.native.size.height)
+        return (
+            self.scale_out_horizontal(self.native.size.width),
+            self.scale_out_vertical(self.native.size.height),
+        )
 
     def get_image_data(self):
         self.interface.factory.not_implemented("Screen.get_image_data()")
