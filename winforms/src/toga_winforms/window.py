@@ -102,7 +102,6 @@ class Window(Container, Scalable):
         for widget in self.interface.widgets:
             widget.refresh()
         self.resize_content()
-        # self.interface.content.refresh()
         self.refreshed()
 
     def winforms_LocationChanged(self, sender, event):  # pragma: no cover

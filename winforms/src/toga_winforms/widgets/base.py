@@ -19,12 +19,12 @@ from toga_winforms.colors import native_color
 class Scalable:
     SCALE_DEFAULT_ROUNDING = ROUND_HALF_EVEN
 
-    def get_dpi_scale(self, screen):
+    def get_dpi_scale(self, native_screen):
         screen_rect = wintypes.RECT(
-            screen.Bounds.Left,
-            screen.Bounds.Top,
-            screen.Bounds.Right,
-            screen.Bounds.Bottom,
+            native_screen.Bounds.Left,
+            native_screen.Bounds.Top,
+            native_screen.Bounds.Right,
+            native_screen.Bounds.Bottom,
         )
         windll.user32.MonitorFromRect.restype = c_void_p
         windll.user32.MonitorFromRect.argtypes = [wintypes.RECT, wintypes.DWORD]
@@ -49,7 +49,7 @@ class Scalable:
         else:
             if isinstance(self.native, Screen):
                 # For Screen
-                _dpi_scale = self.get_dpi_scale(self.native)
+                return self.get_dpi_scale(self.native)
             else:
                 # For Windows and others
                 _dpi_scale = self.get_dpi_scale(Screen.FromControl(self.native))
