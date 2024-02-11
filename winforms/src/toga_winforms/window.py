@@ -7,6 +7,7 @@ from toga.command import Separator
 
 from .container import Container
 from .libs.wrapper import WeakrefCallable
+from .screens import Screen as ScreenImpl
 from .widgets.base import Scalable
 
 
@@ -188,6 +189,9 @@ class Window(Container, Scalable):
             self.native.ClientSize.Width,
             self.native.ClientSize.Height - vertical_shift,
         )
+
+    def get_current_screen(self):
+        return ScreenImpl(WinForms.Screen.FromControl(self.native))
 
     def get_image_data(self):
         size = Size(self.native_content.Size.Width, self.native_content.Size.Height)

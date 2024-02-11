@@ -2,6 +2,7 @@ import asyncio
 
 from textual.app import App as TextualApp
 
+from .screens import Screen as ScreenImpl
 from .window import Window
 
 
@@ -68,6 +69,9 @@ class App:
 
     def hide_cursor(self):
         pass
+
+    def get_screens(self):
+        return [ScreenImpl(window._impl.native) for window in self.interface.windows]
 
 
 class DocumentApp(App):

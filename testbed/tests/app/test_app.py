@@ -6,7 +6,7 @@ import toga
 from toga.colors import CORNFLOWERBLUE, FIREBRICK, REBECCAPURPLE
 from toga.style.pack import Pack
 
-from .test_window import window_probe
+from ..test_window import window_probe
 
 
 @pytest.fixture
@@ -550,3 +550,19 @@ async def test_beep(app):
     # can be invoked without raising an error, but there's no way to verify that the app
     # actually made a noise.
     app.beep()
+
+
+async def test_screens(app, app_probe):
+    """Screens must have unique origins and names, with the primary screen at (0,0)."""
+
+    # Get the origin of screen 0
+    assert app.screens[0].origin == (0, 0)
+
+    # Check for unique names
+    screen_names = [s.name for s in app.screens]
+    unique_names = set(screen_names)
+    assert len(screen_names) == len(unique_names)
+
+    # Check that the origin of every other screen is not "0,0"
+    origins_not_zero = all(screen.origin != (0, 0) for screen in app.screens[1:])
+    assert origins_not_zero is True

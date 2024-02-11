@@ -1,6 +1,10 @@
 import asyncio
 
+from System import IntPtr
+from System.Drawing import Graphics
 from System.Windows.Forms import SendKeys
+
+import toga
 
 KEY_CODES = {
     f"<{name}>": f"{{{name.upper()}}}"
@@ -19,7 +23,7 @@ class BaseProbe:
         # Winforms style changes always take effect immediately.
 
         # If we're running slow, wait for a second
-        if self.app.run_slow:
+        if toga.App.app.run_slow:
             delay = 1
 
         if delay:
@@ -28,7 +32,8 @@ class BaseProbe:
 
     @property
     def scale_factor(self):
-        return self.native.CreateGraphics().DpiX / 96
+        # Does the same thing as `return self.native.CreateGraphics().DpiX / 96`
+        return Graphics.FromHdc(Graphics.FromHwnd(IntPtr.Zero).GetHdc()).DpiX / 96
 
     async def type_character(self, char, *, shift=False, ctrl=False, alt=False):
         try:
@@ -49,5 +54,5 @@ class BaseProbe:
         # background.
         SendKeys.SendWait(key_code)
 
-    def assert_image_size(self, image_size, size):
+    def assert_image_size(self, image_size, size, screen):
         assert image_size == (size[0] * self.scale_factor, size[1] * self.scale_factor)
