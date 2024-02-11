@@ -69,7 +69,7 @@ dev = [
     "Pillow == 10.2.0",
     # Pre-commit 3.6.0 deprecated support for Python 3.8
     "pre-commit == 3.5.0 ; python_version < '3.9'",
-    "pre-commit == 3.6.0 ; python_version >= '3.9'",
+    "pre-commit == 3.6.1 ; python_version >= '3.9'",
     "pytest == 7.4.4",
     "pytest-asyncio == 0.23.4",
     "pytest-freezer == 0.4.8",
