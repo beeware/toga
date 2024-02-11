@@ -2,6 +2,7 @@ import asyncio
 import sys
 import warnings
 
+from android.content import Context
 from android.graphics.drawable import BitmapDrawable
 from android.media import RingtoneManager
 from android.view import Menu, MenuItem
@@ -11,6 +12,7 @@ from org.beeware.android import IPythonApp, MainActivity
 from toga.command import Command, Group, Separator
 
 from .libs import events
+from .screens import Screen as ScreenImpl
 from .window import Window
 
 
@@ -325,3 +327,9 @@ class App:
 
     def show_cursor(self):
         pass
+
+    def get_screens(self):
+        context = self.native.getApplicationContext()
+        display_manager = context.getSystemService(Context.DISPLAY_SERVICE)
+        screen_list = display_manager.getDisplays()
+        return [ScreenImpl(self, screen) for screen in screen_list]

@@ -74,7 +74,8 @@ class Camera:
             ):
                 self.native = iOS.UIImagePickerController.new()
                 self.native.sourceType = UIImagePickerControllerSourceTypeCamera
-                self.native.delegate = TogaImagePickerDelegate.new()
+                self.delegate_link = TogaImagePickerDelegate.new()
+                self.native.delegate = self.delegate_link
             else:
                 self.native = None
         else:  # pragma: no cover

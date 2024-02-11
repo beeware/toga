@@ -20,6 +20,7 @@ from toga.command import Separator
 from .keys import toga_to_winforms_key
 from .libs.proactor import WinformsProactorEventLoop
 from .libs.wrapper import WeakrefCallable
+from .screens import Screen as ScreenImpl
 from .widgets.base import Scalable
 from .window import Window
 
@@ -329,6 +330,15 @@ class App(Scalable):
     def exit(self):  # pragma: no cover
         self._is_exiting = True
         self.native.Exit()
+
+    def get_screens(self):
+        primary_screen = ScreenImpl(WinForms.Screen.PrimaryScreen)
+        screen_list = [primary_screen] + [
+            ScreenImpl(native=screen)
+            for screen in WinForms.Screen.AllScreens
+            if screen != primary_screen.native
+        ]
+        return screen_list
 
     def set_main_window(self, window):
         self.app_context.MainForm = window._impl.native

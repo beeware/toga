@@ -2,6 +2,7 @@ from toga.command import Separator
 
 from .container import TogaContainer
 from .libs import Gdk, Gtk
+from .screens import Screen as ScreenImpl
 
 
 class Window:
@@ -162,6 +163,11 @@ class Window:
             self.native.fullscreen()
         else:
             self.native.unfullscreen()
+
+    def get_current_screen(self):
+        display = Gdk.Display.get_default()
+        monitor_native = display.get_monitor_at_window(self.native.get_window())
+        return ScreenImpl(monitor_native)
 
     def get_image_data(self):
         display = self.native.get_display()
