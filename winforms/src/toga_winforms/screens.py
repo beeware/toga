@@ -9,8 +9,10 @@ from System.IO import MemoryStream
 
 from toga.screens import Screen as ScreenInterface
 
+from .widgets.base import Scalable
 
-class Screen:
+
+class Screen(Scalable):
     _instances = {}
 
     def __new__(cls, native):
@@ -30,17 +32,23 @@ class Screen:
         return name.split("\\")[-1]
 
     def get_origin(self):
-        return self.native.Bounds.X, self.native.Bounds.Y
+        return (
+            self.scale_out(self.native.Bounds.X),
+            self.scale_out(self.native.Bounds.Y),
+        )
 
     def get_size(self):
-        return self.native.Bounds.Width, self.native.Bounds.Height
+        return (
+            self.scale_out(self.native.Bounds.Width),
+            self.scale_out(self.native.Bounds.Height),
+        )
 
     def get_image_data(self):
-        bitmap = Bitmap(*self.get_size())
+        bitmap = Bitmap(*map(self.scale_in, self.get_size()))
         graphics = Graphics.FromImage(bitmap)
-        source_point = Point(*self.get_origin())
+        source_point = Point(*map(self.scale_in, self.get_origin()))
         destination_point = Point(0, 0)
-        copy_size = Size(*self.get_size())
+        copy_size = Size(*map(self.scale_in, self.get_size()))
         graphics.CopyFromScreen(source_point, destination_point, copy_size)
         stream = MemoryStream()
         bitmap.Save(stream, Imaging.ImageFormat.Png)

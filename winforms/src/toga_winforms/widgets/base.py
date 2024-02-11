@@ -47,8 +47,12 @@ class Scalable:
         if hasattr(self, "native_content"):
             _dpi_scale = self.get_dpi_scale(Screen.FromControl(self.native_content))
         else:
-            # For Windows and others
-            _dpi_scale = self.get_dpi_scale(Screen.FromControl(self.native))
+            if isinstance(self.native, Screen):
+                # For Screen
+                _dpi_scale = self.get_dpi_scale(self.native)
+            else:
+                # For Windows and others
+                _dpi_scale = self.get_dpi_scale(Screen.FromControl(self.native))
         if not hasattr(self, "_original_dpi_scale"):
             self._original_dpi_scale = _dpi_scale
         return _dpi_scale
