@@ -30,8 +30,9 @@ class Screen(Scalable):
         return (0, 0)
 
     def get_size(self):
-        return tuple(
-            map(self.scale_out, (self.native.getWidth(), self.native.getHeight()))
+        return (
+            self.scale_out(self.native.getWidth()),
+            self.scale_out(self.native.getHeight()),
         )
 
     def get_image_data(self):
