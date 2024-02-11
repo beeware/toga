@@ -24,7 +24,10 @@ class Screen:
             return instance
 
     def get_name(self):
-        return self.native.DeviceName
+        name = self.native.DeviceName
+        # WinForms Display naming convention is "\\.\DISPLAY1". Remove the
+        # non-text part to prevent any errors due to non-escaped characters.
+        return name.split("\\")[-1]
 
     def get_origin(self):
         return self.native.Bounds.X, self.native.Bounds.Y
