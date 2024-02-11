@@ -327,9 +327,5 @@ class Window:
             core_graphics.CGImageGetWidth(cg_image),
             core_graphics.CGImageGetHeight(cg_image),
         )
-
-        # ------------------------------For Debugging----------------------------
-        print(f"Window CGImage size: {target_size.width} x {target_size.height}")
-        # -----------------------------------------------------------------------
         ns_image = NSImage.alloc().initWithCGImage(cg_image, size=target_size)
         return ns_image
