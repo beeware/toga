@@ -152,7 +152,6 @@ if toga.platform.current_platform in {"iOS", "android"}:
         main_window.full_screen = False
         await main_window_probe.wait_for_window("Full screen is a no-op")
 
-    # Test the `origin`, `position` and `screen_position`.
     async def test_screen(main_window, main_window_probe):
         """The window can be relocated to another screen, using both absolute and relative screen positions."""
         assert main_window.screen.origin == (0, 0)
@@ -490,7 +489,6 @@ else:
         assert not second_window_probe.is_full_screen
         assert second_window_probe.content_size == initial_content_size
 
-    # Test the `position`, `screen_position` and `screen`.
     @pytest.mark.parametrize(
         "second_window_kwargs",
         [dict(title="Secondary Window", position=(200, 150))],

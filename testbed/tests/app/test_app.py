@@ -552,7 +552,6 @@ async def test_beep(app):
     app.beep()
 
 
-# Test primary screen `origin` and `name` & `origin` uniqueness of other screens.
 async def test_screens(app, app_probe):
     """Screens must have unique origins and names, with the primary screen at (0,0)."""
 
