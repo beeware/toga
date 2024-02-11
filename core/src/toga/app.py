@@ -34,7 +34,6 @@ from toga.window import Window
 if TYPE_CHECKING:
     from toga.icons import IconContent
 
-
 # Make sure deprecation warnings are shown by default
 warnings.filterwarnings("default", category=DeprecationWarning)
 
