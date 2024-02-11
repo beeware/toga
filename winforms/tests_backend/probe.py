@@ -76,4 +76,7 @@ class BaseProbe:
 
     def assert_image_size(self, image_size, size, screen):
         scale_factor = self.get_scale_factor(native_screen=screen._impl.native)
-        assert image_size == (size[0] * scale_factor, size[1] * scale_factor)
+        assert image_size == (
+            round(size[0] * scale_factor),
+            round(size[1] * scale_factor),
+        )
