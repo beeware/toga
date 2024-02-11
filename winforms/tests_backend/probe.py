@@ -1,7 +1,7 @@
 import asyncio
 from ctypes import byref, c_void_p, windll, wintypes
 
-from System.Windows.Forms import SendKeys
+from System.Windows.Forms import Screen, SendKeys
 
 import toga
 
@@ -28,6 +28,17 @@ class BaseProbe:
         if delay:
             print("Waiting for redraw" if message is None else message)
             await asyncio.sleep(delay)
+
+    @property
+    def scale_factor(self):
+        # For ScrollContainer
+        if hasattr(self, "native_content"):
+            return self.get_scale_factor(
+                native_screen=Screen.FromControl(self.native_content)
+            )
+        # For Windows and others
+        else:
+            return self.get_scale_factor(native_screen=Screen.FromControl(self.native))
 
     def get_scale_factor(self, native_screen):
         screen_rect = wintypes.RECT(
