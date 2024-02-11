@@ -1,7 +1,6 @@
 import asyncio
+from ctypes import byref, c_void_p, windll, wintypes
 
-from System import IntPtr
-from System.Drawing import Graphics
 from System.Windows.Forms import SendKeys
 
 import toga
@@ -30,10 +29,20 @@ class BaseProbe:
             print("Waiting for redraw" if message is None else message)
             await asyncio.sleep(delay)
 
-    @property
-    def scale_factor(self):
-        # Does the same thing as `return self.native.CreateGraphics().DpiX / 96`
-        return Graphics.FromHdc(Graphics.FromHwnd(IntPtr.Zero).GetHdc()).DpiX / 96
+    def get_scale_factor(self, native_screen):
+        screen_rect = wintypes.RECT(
+            native_screen.Bounds.Left,
+            native_screen.Bounds.Top,
+            native_screen.Bounds.Right,
+            native_screen.Bounds.Bottom,
+        )
+        windll.user32.MonitorFromRect.restype = c_void_p
+        windll.user32.MonitorFromRect.argtypes = [wintypes.RECT, wintypes.DWORD]
+        # MONITOR_DEFAULTTONEAREST = 2
+        hMonitor = windll.user32.MonitorFromRect(screen_rect, 2)
+        pScale = wintypes.UINT()
+        windll.shcore.GetScaleFactorForMonitor(c_void_p(hMonitor), byref(pScale))
+        return pScale.value / 100
 
     async def type_character(self, char, *, shift=False, ctrl=False, alt=False):
         try:
@@ -55,4 +64,5 @@ class BaseProbe:
         SendKeys.SendWait(key_code)
 
     def assert_image_size(self, image_size, size, screen):
-        assert image_size == (size[0] * self.scale_factor, size[1] * self.scale_factor)
+        scale_factor = self.get_scale_factor(native_screen=screen._impl.native)
+        assert image_size == (size[0] * scale_factor, size[1] * scale_factor)
