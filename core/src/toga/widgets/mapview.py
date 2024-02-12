@@ -12,7 +12,7 @@ class MapPin:
         self,
         location: tuple[float, float],
         *,
-        title: str | None = None,
+        title: str,
         subtitle: str | None = None,
     ):
         """Create a new map pin.
@@ -30,12 +30,10 @@ class MapPin:
         self._native = None
 
     def __repr__(self):
-        if self.title and self.subtitle:
+        if self.subtitle:
             label = f"; {self.title} - {self.subtitle}"
-        elif self.title:
-            label = f"; {self.title}"
         else:
-            label = ""
+            label = f"; {self.title}"
 
         return f"<Map Pin @ {self.location}{label}>"
 

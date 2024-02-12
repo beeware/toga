@@ -67,15 +67,11 @@ def latlng(pin):
 
 
 def popup(pin):
-    "Rendering utility; output the content of the pip popup"
-    if pin.title and pin.subtitle:
+    "Rendering utility; output the content of the pin popup"
+    if pin.subtitle:
         return f"<b>{pin.title}</b><br>{pin.subtitle}"
-    elif pin.title:
-        return f"<b>{pin.title}</b>"
-    elif pin.subtitle:
-        return f"{pin.subtitle}"
     else:
-        return "???"
+        return f"<b>{pin.title}</b>"
 
 
 class MapView(Widget):
