@@ -8,7 +8,9 @@ from org.osmdroid.config import Configuration
 from org.osmdroid.tileprovider.tilesource import TileSourceFactory
 from org.osmdroid.util import GeoPoint
 from org.osmdroid.views import MapView as OSMMapView
-from org.osmdroid.views.overlay import Marker
+from org.osmdroid.views.overlay import CopyrightOverlay, Marker
+
+import toga
 
 from .base import Widget
 
@@ -29,14 +31,21 @@ class MapView(Widget):
     _configured = False
 
     def create(self):
+        app_context = self._native_activity.getApplicationContext()
         if not self._configured:
-            app_context = self._native_activity.getApplicationContext()
-            Configuration.getInstance().load(
+            configuration = Configuration.getInstance()
+            configuration.load(
                 app_context,
                 PreferenceManager.getDefaultSharedPreferences(app_context),
             )
+            # Required by the terms of the OSM license.
+            configuration.setUserAgentValue(toga.App.app.app_id)
 
         self.native = OSMMapView(self._native_activity)
+
+        # Add a copyright overlay, required by OSM license.
+        copyright_overlay = CopyrightOverlay(app_context)
+        self.native.getOverlays().add(copyright_overlay)
 
         self.native.setTileSource(TileSourceFactory.MAPNIK)
         self.native.setBuiltInZoomControls(True)
@@ -64,9 +73,9 @@ class MapView(Widget):
             0: 5,
             1: 7,
             2: 11,
-            3: 15,
+            3: 14,
             4: 17,
-            5: 18,
+            5: 19,
         }[zoom]
 
         self.native.getController().zoomTo(osm_zoom, None)
