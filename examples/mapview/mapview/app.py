@@ -65,7 +65,7 @@ class ExampleMapViewApp(toga.App):
 
         # Add a pin at runtime.
         self.pin_3 = toga.MapPin(
-            (random.uniform(-70, 70), random.uniform(-180, 180)),
+            (32.726, -117.07714),
             title="Carmen Sandiego",
         )
         self.map_view.pins.add(self.pin_3)
