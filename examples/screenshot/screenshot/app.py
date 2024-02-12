@@ -103,6 +103,13 @@ class ScreenshotGeneratorApp(toga.App):
             style=Pack(width=300),
         )
 
+    def create_mapview(self):
+        return toga.MapView(
+            zoom=3,
+            pins=[toga.MapPin((-31.95064, 115.85889), title="Yagan Square")],
+            style=Pack(padding=10, width=self.MAX_WIDTH, height=300),
+        )
+
     def create_multilinetextinput(self):
         return toga.MultilineTextInput(
             value="\n".join(
@@ -347,6 +354,7 @@ class ScreenshotGeneratorApp(toga.App):
             "detailedlist",
             "divider",
             "label",
+            "mapview",
             "multilinetextinput",
             "numberinput",
             "passwordinput",
@@ -398,14 +406,14 @@ class ScreenshotGeneratorApp(toga.App):
                         content.close()
 
                     elif (
-                        content_type == "webview"
+                        content_type in {"webview", "mapview"}
                         and toga.platform.current_platform == "macOS"
                     ):
-                        # Manual screenshot required on macOS because webviews aren't
-                        # rendered directly on the Window.
+                        # Manual screenshot required on macOS because screenshots don't contain
+                        # all the rendered content.
                         await self.main_window.info_dialog(
                             "Manual intervention",
-                            "Screenshot the web widget content, then press Done.",
+                            "Screenshot the widget content, then press Done.",
                         )
                         await self.manual_screenshot(content)
                         cropped = None
@@ -416,8 +424,10 @@ class ScreenshotGeneratorApp(toga.App):
                         )
 
                         await asyncio.sleep(
+                            # Some widgets need a little longer to load content
                             {
                                 "webview": 4,
+                                "mapview": 4,
                             }.get(content_type, 2)
                         )
                         image = Image.open(BytesIO(self.main_window.as_image().data))
