@@ -120,6 +120,7 @@ class Image:
         converters = []
 
         for image_plugin in entry_points(group="toga.image_formats"):
+            print(image_plugin)
             converter = importlib.import_module(f"{image_plugin.value}")
             if converter.image_class is not None:
                 converters.append(converter)
