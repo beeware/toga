@@ -84,18 +84,18 @@ Reference
 
     When specifying content for an :any:`Image`, you can provide:
 
-    * A string specifying an absolute or relative path to a file in a :ref:`known image
+    * a string specifying an absolute or relative path to a file in a :ref:`known image
       format <known-image-formats>`;
-    * An absolute or relative :any:`pathlib.Path` object describing a file in a
+    * an absolute or relative :any:`pathlib.Path` object describing a file in a
       :ref:`known image format <known-image-formats>`;
-    * A "blob of bytes" data type (:any:`bytes`, :any:`bytearray`, or :any:`memoryview`)
+    * a "blob of bytes" data type (:any:`bytes`, :any:`bytearray`, or :any:`memoryview`)
       containing raw image data in a :ref:`known image format <known-image-formats>`;
-    * An instance of :any:`toga.Image`;
-    * If `Pillow <https://pillow.readthedocs.io/>`_ is installed, an instance of
+    * an instance of :any:`toga.Image`;
+    * if `Pillow <https://pillow.readthedocs.io/>`_ is installed, an instance of
       :any:`PIL.Image.Image`;
-    * An image of a class registered via an :doc:`image format plugin
+    * an image of a class registered via an :doc:`image format plugin
       </reference/plugins/image_plugins>` (or a subclass of such a class); or
-    * An instance of the :ref:`native platform image representation <native-image-rep>`.
+    * an instance of the :ref:`native platform image representation <native-image-rep>`.
 
     If a relative path is provided, it will be anchored relative to the module that
     defines your Toga application class.
