@@ -3,6 +3,7 @@ from __future__ import annotations
 import importlib
 import sys
 import warnings
+from functools import cache
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 from warnings import warn
@@ -40,8 +41,6 @@ NOT_PROVIDED = object()
 
 
 class Image:
-    _converters = {}
-
     def __init__(
         self,
         src: ImageContent = NOT_PROVIDED,
@@ -106,17 +105,8 @@ class Image:
             self._impl = self.factory.Image(interface=self, raw=src)
 
         else:
-            # If it's a registered format, convert as necessary.
-            if converter := self._converters.get(src.__class__):
-                data = converter.convert_from_format(src)
-                self._impl = self.factory.Image(interface=self, data=data)
-                return
-
-            # If it's a subclass of a registered format, convert and also save it so it
-            # doesn't have to be searched for next time.
-            for image_class, converter in self._converters.items():
-                if isinstance(src, image_class):
-                    self._converters[src.__class__] = converter
+            for converter in self._converters():
+                if isinstance(src, converter.image_class):
                     data = converter.convert_from_format(src)
                     self._impl = self.factory.Image(interface=self, data=data)
                     return
@@ -124,15 +114,17 @@ class Image:
             raise TypeError("Unsupported source type for Image")
 
     @classmethod
-    def _load_converters(cls):
-        """Load image format converters from any plugins present."""
+    @cache
+    def _converters(cls):
+        """Return list of registered image plugin converters. Only loaded once."""
+        converters = []
+
         for image_plugin in entry_points(group="toga.image_formats"):
             converter = importlib.import_module(f"{image_plugin.value}")
             if converter.image_class is not None:
-                cls._converters[converter.image_class] = converter
-            else:  # pragma: no cover
-                # PIL will always be installed in dev environment.
-                pass
+                converters.append(converter)
+
+        return converters
 
     @property
     def size(self) -> (int, int):
@@ -181,15 +173,8 @@ class Image:
             if issubclass(format, Image):
                 return format(self.data)
 
-            # If it's a registered format, convert as necessary.
-            if converter := self._converters.get(format):
-                return converter.convert_to_format(self.data, format)
-
-            # If it's a subclass of a registered format, convert and also save it so it
-            # doesn't have to be searched for next time.
-            for image_class, converter in self._converters.items():
-                if issubclass(format, image_class):
-                    self._converters[format] = converter
+            for converter in self._converters():
+                if issubclass(format, converter.image_class):
                     return converter.convert_to_format(self.data, format)
 
         raise TypeError(f"Unknown conversion format for Image: {format}")
