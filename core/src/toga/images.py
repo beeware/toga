@@ -3,7 +3,7 @@ from __future__ import annotations
 import importlib
 import sys
 import warnings
-from functools import cache
+from functools import lru_cache
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 from warnings import warn
@@ -114,7 +114,7 @@ class Image:
             raise TypeError("Unsupported source type for Image")
 
     @classmethod
-    @cache
+    @lru_cache(maxsize=None)
     def _converters(cls):
         """Return list of registered image plugin converters. Only loaded once."""
         converters = []
