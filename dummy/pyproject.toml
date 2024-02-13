@@ -62,4 +62,4 @@ dependencies = [
 ]
 
 [project.entry-points."toga.image_formats"]
-dummy = "toga_dummy.image_converter"
+dummy = "toga_dummy.plugins.image_converter"

@@ -15,7 +15,7 @@ image_class = CustomImage
 
 
 def convert_from_format(image_in_format):
-    return (Path(__file__).parent / "resources/sample.png").read_bytes()
+    return (Path(__file__).parent.parent / "resources/sample.png").read_bytes()
 
 
 def convert_to_format(data, image_class):

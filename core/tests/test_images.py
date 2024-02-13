@@ -4,7 +4,7 @@ import PIL.Image
 import pytest
 
 import toga
-from toga_dummy.image_converter import CustomImage, CustomImageSubclass
+from toga_dummy.plugins.image_converter import CustomImage, CustomImageSubclass
 from toga_dummy.utils import assert_action_performed_with
 
 RELATIVE_FILE_PATH = Path("resources/sample.png")

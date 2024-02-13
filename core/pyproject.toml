@@ -123,4 +123,4 @@ source = [
 asyncio_mode = "auto"
 
 [project.entry-points."toga.image_formats"]
-pil = "toga.pil"
+pil = "toga.plugins.pil"
