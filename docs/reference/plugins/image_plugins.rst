@@ -1,21 +1,21 @@
-============================================
-Registering external image types via plugins
-============================================
+====================
+Image Format Plugins
+====================
 
 
 Usage
 ~~~~~
 
 Toga can be extended, via plugins, to understand externally defined image types, gaining
-the ability to convert them to and from its own :any:`toga.Image` class.
+the ability to convert them to and from its own :any:`toga.Image` class. Toga's own
+`Pillow`_ support, in fact, is implemented as a plugin that's included as part of the
+core Toga package.
 
 A plugin defining how to handle an image format must define three things:
 
 * ``image_class``
 
-  The class representing an image that we want to tell Toga about. For our example, it
-  would be assigned ``MyImage``. (You will, of course, have to import the relevant
-  class in order to refer to it.)
+  The class representing an image that we want to tell Toga about.
 
 * ``convert_from_format(image_in_format)``
 
@@ -24,11 +24,12 @@ A plugin defining how to handle an image format must define three things:
 
 * ``convert_to_format(data, image_class=None)``
 
-  This top-level function should accept a bytes-like object representing the image in PNG
-  format, and return an instance of the image class in question. Assuming your image
-  class meaningfully supports subclassing, if a subclass is provided as ``image_class``,
-  you should return an instance of that subclass instead. (This assumes the subclass's
-  initializer has a compatible signature.)
+  This top-level function should accept a bytes-like object representing the image in
+  a :ref:`known image format <known-image-formats>`, and return an instance of the
+  image class in question. Assuming your image class meaningfully supports subclassing,
+  if a subclass is provided as ``image_class``, you should return an instance of that
+  subclass instead. (This assumes the subclass's initializer has a compatible
+  signature.)
 
 
 These can be accessible from directly importing your package, or in a
@@ -51,9 +52,11 @@ Then in your ``pyproject.toml`` you would include the following:
     [project.entry-points."toga.image_formats"]
     myimage = "togax_myimage.converter"
 
-The name of the value doesn't matter in this case, only its *value*, which should be
-string representing whatever module or package name Toga can import to get the
-necessary definitions.
+The variable name being assigned to (``myimage`` in this case) can be whatever you like.
+The import thing is the string assigned to it, which should represent whatever module
+or package name Toga can import to get the necessary definitions.
 
 
 .. _entry point: https://packaging.python.org/en/latest/guides/creating-and-discovering-plugins/#using-package-metadata
+
+.. _Pillow: https://pillow.readthedocs.io/en/stable/index.html

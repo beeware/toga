@@ -10,5 +10,5 @@ Reference
    platforms/index
    widgets_by_platform
    api/index
-   image_plugins
    style/index
+   plugins/index
