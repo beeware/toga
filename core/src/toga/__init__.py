@@ -10,9 +10,12 @@ from .fonts import Font
 from .icons import Icon
 from .images import Image
 from .keys import Key
-from .widgets.activityindicator import ActivityIndicator
+
+# Types
+from .types import LatLng
 
 # Widgets
+from .widgets.activityindicator import ActivityIndicator
 from .widgets.base import Widget
 from .widgets.box import Box
 from .widgets.button import Button
@@ -69,10 +72,12 @@ __all__ = [
     "hsl",
     "hsla",
     "rgb",
-    "rgba",  # Colors
+    "rgba",
     "Font",
     "Icon",
     "Image",
+    # Types
+    "LatLng",
     # Widgets
     "ActivityIndicator",
     "Box",

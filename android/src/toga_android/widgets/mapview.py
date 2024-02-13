@@ -11,6 +11,7 @@ from org.osmdroid.views import MapView as OSMMapView
 from org.osmdroid.views.overlay import CopyrightOverlay, Marker
 
 import toga
+from toga.types import LatLng
 
 from .base import Widget
 
@@ -63,7 +64,7 @@ class MapView(Widget):
 
     def get_location(self):
         location = self.native.getMapCenter()
-        return (location.getLatitude(), location.getLongitude())
+        return LatLng(location.getLatitude(), location.getLongitude())
 
     def set_location(self, position):
         self.native.getController().animateTo(GeoPoint(*position))

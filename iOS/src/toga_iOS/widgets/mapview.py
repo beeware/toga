@@ -1,6 +1,8 @@
 from rubicon.objc import objc_method, objc_property
 from travertino.size import at_least
 
+from toga.types import LatLng
+
 from ..libs import (
     CLLocationCoordinate2D,
     MKCoordinateRegion,
@@ -39,7 +41,7 @@ class MapView(Widget):
 
     def get_location(self):
         location = self.native.centerCoordinate
-        return (location.latitude, location.longitude)
+        return LatLng(location.latitude, location.longitude)
 
     def set_location(self, position):
         self.native.setCenterCoordinate(

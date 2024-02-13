@@ -2,6 +2,8 @@ from concurrent.futures import Future
 
 from travertino.size import at_least
 
+from toga.types import LatLng
+
 from ..libs import Gtk, WebKit2
 from .base import Widget
 
@@ -49,9 +51,9 @@ def pin_id(pin):
     return hex(id(pin))
 
 
-def latlng(pin):
-    "Rendering utility; output the lat/lng of the pin"
-    return f"[{pin.location[0]}, {pin.location[1]}]"
+def latlng(location):
+    "Rendering utility; output a lat/lng coordinate"
+    return f"[{location.lat}, {location.lng}]"
 
 
 def popup(pin):
@@ -63,7 +65,7 @@ def popup(pin):
 
 
 class MapView(Widget):
-    """GTK MapView implementation."""
+    SUPPORTS_ON_SELECT = False
 
     def create(self):
         if WebKit2 is None:  # pragma: no cover
@@ -115,7 +117,7 @@ class MapView(Widget):
                 value = webview.evaluate_javascript_finish(result)
                 value = value.to_string()
                 if value.startswith("LatLng("):
-                    value = tuple(float(v) for v in value[7:-1].split(","))
+                    value = LatLng(*tuple(float(v) for v in value[7:-1].split(",")))
 
                 future.set_result(value)
             except Exception as e:
@@ -160,10 +162,10 @@ class MapView(Widget):
                 "MapView isn't fully initialized. "
                 "MapView.location result will be unreliable"
             )
-            return (0.0, 0.0)
+            return LatLng(0.0, 0.0)
 
     def set_location(self, position):
-        self._invoke(f"map.panTo([{position[0]}, {position[1]}]);")
+        self._invoke(f"map.panTo({latlng(position)});")
 
     def set_zoom(self, zoom):
         osm_zoom = {
@@ -179,13 +181,13 @@ class MapView(Widget):
 
     def add_pin(self, pin):
         self._invoke(
-            f'pins["{pin_id(pin)}"] = L.marker({latlng(pin)}).addTo(map)'
+            f'pins["{pin_id(pin)}"] = L.marker({latlng(pin.location)}).addTo(map)'
             f'.bindPopup("{popup(pin)}");'
         )
 
     def update_pin(self, pin):
         self._invoke(
-            f'pins["{pin_id(pin)}"].setLatLng({latlng(pin)})'
+            f'pins["{pin_id(pin)}"].setLatLng({latlng(pin.location)})'
             f'.setPopupContent("{popup(pin)}");'
         )
 

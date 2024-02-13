@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import Any, Protocol
 
+import toga
 from toga.handlers import wrapped_handler
 
 from .base import Widget
@@ -10,7 +11,7 @@ from .base import Widget
 class MapPin:
     def __init__(
         self,
-        location: tuple[float, float],
+        location: toga.LatLng,
         *,
         title: str,
         subtitle: str | None = None,
@@ -21,7 +22,7 @@ class MapPin:
         :param title: The title to apply to the pin.
         :param subtitle: A subtitle label to apply to the pin.
         """
-        self._location = location
+        self._location = toga.LatLng(*location)
         self._title = title
         self._subtitle = subtitle
 
@@ -38,34 +39,34 @@ class MapPin:
         return f"<Map Pin @ {self.location}{label}>"
 
     @property
-    def location(self) -> tuple[float, float]:
+    def location(self) -> toga.LatLng:
         "The (latitude, longitude) where the pin is located."
         return self._location
 
     @location.setter
-    def location(self, coord: tuple[float, float]) -> None:
-        self._location = coord
+    def location(self, coord: toga.LatLng) -> None:
+        self._location = toga.LatLng(*coord)
         if self.interface:
             self.interface._impl.update_pin(self)
 
     @property
-    def title(self) -> tuple[float, float]:
+    def title(self) -> str:
         "The title of the pin."
         return self._title
 
     @title.setter
-    def title(self, coord: tuple[float, float]) -> None:
+    def title(self, coord: str) -> None:
         self._title = coord
         if self.interface:
             self.interface._impl.update_pin(self)
 
     @property
-    def subtitle(self) -> tuple[float, float]:
+    def subtitle(self) -> str | None:
         "The subtitle of the pin."
         return self._subtitle
 
     @subtitle.setter
-    def subtitle(self, coord: tuple[float, float]) -> None:
+    def subtitle(self, coord: str | None) -> None:
         self._subtitle = coord
         if self.interface:
             self.interface._impl.update_pin(self)
@@ -135,10 +136,10 @@ class MapView(Widget):
         self,
         id=None,
         style=None,
-        location: tuple[float, float] | None = None,
+        location: toga.LatLng | None = None,
         zoom: int | None = 2,
         pins: list[MapPin] | None = None,
-        on_select: OnSelectHandler | None = None,
+        on_select: toga.widgets.mapview.OnSelectHandler | None = None,
     ):
         """Create a new MapView widget.
 
@@ -164,20 +165,20 @@ class MapView(Widget):
         self.zoom = zoom
 
         if location:
-            self.location = location
+            self.location = toga.LatLng(*location)
         else:
             # Default location is Perth, Australia. Because why not?
-            self.location = (-31.9559, 115.8606)
+            self.location = toga.LatLng(-31.9559, 115.8606)
 
         self.on_select = on_select
 
     @property
-    def location(self) -> tuple[float, float]:
+    def location(self) -> toga.LatLng:
         "The latitude/longitude where the map is centered."
         return self._impl.get_location()
 
     @location.setter
-    def location(self, coordinates: tuple[float, float]):
+    def location(self, coordinates: toga.LatLng):
         self._impl.set_location(coordinates)
 
     @property
@@ -215,10 +216,16 @@ class MapView(Widget):
         return self._pins
 
     @property
-    def on_select(self) -> OnSelectHandler:
-        """The handler to invoke when the user selects a pin on a map."""
+    def on_select(self) -> toga.widgets.mapview.OnSelectHandler:
+        """The handler to invoke when the user selects a pin on a map.
+
+        **Note:** This is not currently supported on GTK or Windows.
+        """
         return self._on_select
 
     @on_select.setter
-    def on_select(self, handler: OnSelectHandler | None):
+    def on_select(self, handler: toga.widgets.mapview.OnSelectHandler | None):
+        if not getattr(self._impl, "SUPPORTS_ON_SELECT", True):
+            self.factory.not_implemented("MapView.on_select")
+
         self._on_select = wrapped_handler(self, handler)

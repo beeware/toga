@@ -8,6 +8,7 @@ from System.Drawing import Color
 from System.Threading.Tasks import Task, TaskScheduler
 
 import toga
+from toga.types import LatLng
 from toga_winforms.libs.extensions import (
     CoreWebView2CreationProperties,
     WebView2,
@@ -61,9 +62,9 @@ def pin_id(pin):
     return hex(id(pin))
 
 
-def latlng(pin):
-    "Rendering utility; output the lat/lng of the pin"
-    return f"[{pin.location[0]}, {pin.location[1]}]"
+def latlng(location):
+    "Rendering utility; output a lat/lng coordinate"
+    return f"[{location.lat}, {location.lng}]"
 
 
 def popup(pin):
@@ -75,6 +76,8 @@ def popup(pin):
 
 
 class MapView(Widget):
+    SUPPORTS_ON_SELECT = False
+
     def create(self):
         self.native = WebView2()
         # WebView has a 2 phase startup; the widget needs to be initialized,
@@ -181,7 +184,7 @@ class MapView(Widget):
     def get_location(self):
         if self.backlog is None:
             result = self._invoke("map.getCenter();")
-            return (result["lat"], result["lng"])
+            return LatLng(result["lat"], result["lng"])
         else:
             print(
                 "MapView isn't fully initialized. "
@@ -190,7 +193,7 @@ class MapView(Widget):
             return (0.0, 0.0)
 
     def set_location(self, position):
-        self._invoke(f"map.panTo([{position[0]}, {position[1]}]);")
+        self._invoke(f"map.panTo({latlng(position)});")
 
     def set_zoom(self, zoom):
         osm_zoom = {
@@ -206,13 +209,13 @@ class MapView(Widget):
 
     def add_pin(self, pin):
         self._invoke(
-            f'pins["{pin_id(pin)}"] = L.marker({latlng(pin)}).addTo(map)'
+            f'pins["{pin_id(pin)}"] = L.marker({latlng(pin.location)}).addTo(map)'
             f'.bindPopup("{popup(pin)}");'
         )
 
     def update_pin(self, pin):
         self._invoke(
-            f'pins["{pin_id(pin)}"].setLatLng({latlng(pin)})'
+            f'pins["{pin_id(pin)}"].setLatLng({latlng(pin.location)})'
             f'.setPopupContent("{popup(pin)}");'
         )
 
