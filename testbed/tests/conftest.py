@@ -40,7 +40,7 @@ def app():
 @fixture
 async def app_probe(app):
     module = import_module("tests_backend.app")
-    probe = getattr(module, "AppProbe")(app)
+    probe = module.AppProbe(app)
 
     if app.run_slow:
         print("\nConstructing app probe")
@@ -62,7 +62,7 @@ async def main_window_probe(app, main_window):
     module = import_module("tests_backend.window")
     if app.run_slow:
         print("\nConstructing Window probe")
-    yield getattr(module, "WindowProbe")(app, main_window)
+    yield module.WindowProbe(app, main_window)
 
     main_window.content = old_content
 
