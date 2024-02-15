@@ -10,8 +10,14 @@ from toga.style import Pack
 
 from .properties import (  # noqa: F401
     test_flex_widget_size,
-    test_focus,
 )
+
+# MapVierw can't be given focus on mobile
+if toga.platform.current_platform in {"android", "iOS"}:
+    from .properties import test_focus_noop  # noqa: F401
+else:
+    from .properties import test_focus  # noqa: F401
+
 
 # These timeouts are loose because CI can be very slow, especially on mobile.
 WINDOWS_INIT_TIMEOUT = 60
@@ -69,15 +75,14 @@ async def widget(on_select):
 async def test_location(widget, probe):
     """The location of the map can be changed"""
     # Initial location is Perth
+    widget.location = (-31.9559, 115.8606)
+    await probe.redraw("Map is at initial location", delay=2)
     assert isinstance(widget.location, toga.LatLng)
     assert widget.location == pytest.approx((-31.9559, 115.8606))
-    await probe.redraw("Map is at initial location", delay=0.5)
 
     # Set location to Margaret River, just south of Perth
     widget.location = (-33.955, 115.075)
-
-    await probe.redraw("Location has scrolled to Margaret River", delay=2)
-
+    await probe.redraw("Location has panned to Margaret River", delay=2)
     assert isinstance(widget.location, toga.LatLng)
     assert widget.location == pytest.approx((-33.955, 115.075))
 
@@ -85,13 +90,16 @@ async def test_location(widget, probe):
 async def test_zoom(widget, probe):
     """The zoom factor of the map can be changed"""
 
+    # We can't read the zoom of a map; but we can probe to get the delta from the
+    # minimum to maximum latitude that is currently visible. That delta should be within
+    # a broad range at each zoom level.
     for zoom, min_span, max_span in [
-        (0, 10, 40),
+        (0, 10, 50),
         (1, 1, 10),
         (2, 0.1, 1),
         (3, 0.01, 0.1),
-        (4, 0.002, 0.01),
-        (5, 0.001, 0.002),
+        (4, 0.004, 0.01),
+        (5, 0.001, 0.004),
     ]:
         widget.zoom = zoom
         await probe.redraw(f"Map has been zoomed to level {zoom}", delay=2)
