@@ -36,7 +36,7 @@ class MapPin:
         else:
             label = f"; {self.title}"
 
-        return f"<Map Pin @ {self.location}{label}>"
+        return f"<MapPin @ {self.location}{label}>"
 
     @property
     def location(self) -> toga.LatLng:
@@ -44,19 +44,19 @@ class MapPin:
         return self._location
 
     @location.setter
-    def location(self, coord: toga.LatLng) -> None:
+    def location(self, coord: toga.LatLng | tuple[float, float]) -> None:
         self._location = toga.LatLng(*coord)
         if self.interface:
             self.interface._impl.update_pin(self)
 
     @property
     def title(self) -> str:
-        "The title of the pin."
+        """The title of the pin."""
         return self._title
 
     @title.setter
-    def title(self, coord: str) -> None:
-        self._title = coord
+    def title(self, title: str) -> None:
+        self._title = str(title)
         if self.interface:
             self.interface._impl.update_pin(self)
 
@@ -66,8 +66,10 @@ class MapPin:
         return self._subtitle
 
     @subtitle.setter
-    def subtitle(self, coord: str | None) -> None:
-        self._subtitle = coord
+    def subtitle(self, subtitle: str | None) -> None:
+        if subtitle is not None:
+            subtitle = str(subtitle)
+        self._subtitle = subtitle
         if self.interface:
             self.interface._impl.update_pin(self)
 
@@ -82,7 +84,7 @@ class MapPinSet:
                 self.add(item)
 
     def __repr__(self):
-        return f"<MapPinSet: ({len(self)} pins)>"
+        return f"<MapPinSet ({len(self)} pins)>"
 
     def __iter__(self):
         """Return an iterator over the pins on the map."""
@@ -113,7 +115,7 @@ class MapPinSet:
     def clear(self):
         """Remove all pins from the map."""
         for pin in self._pins:
-            self._impl.interface.remove_pin(pin)
+            self.interface._impl.remove_pin(pin)
         self._pins = set()
 
 
@@ -178,8 +180,8 @@ class MapView(Widget):
         return self._impl.get_location()
 
     @location.setter
-    def location(self, coordinates: toga.LatLng):
-        self._impl.set_location(coordinates)
+    def location(self, coordinates: toga.LatLng | tuple[float, float]):
+        self._impl.set_location(toga.LatLng(*coordinates))
 
     @property
     def zoom(self) -> int:
@@ -203,12 +205,13 @@ class MapView(Widget):
 
     @zoom.setter
     def zoom(self, value: int):
+        value = int(value)
         if value < 0:
             value = 0
         elif value > 5:
             value = 5
 
-        self._impl.set_zoom(int(value))
+        self._impl.set_zoom(value)
 
     @property
     def pins(self) -> MapPinSet:
@@ -225,7 +228,7 @@ class MapView(Widget):
 
     @on_select.setter
     def on_select(self, handler: toga.widgets.mapview.OnSelectHandler | None):
-        if not getattr(self._impl, "SUPPORTS_ON_SELECT", True):
+        if handler and not getattr(self._impl, "SUPPORTS_ON_SELECT", True):
             self.factory.not_implemented("MapView.on_select")
 
         self._on_select = wrapped_handler(self, handler)
