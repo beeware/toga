@@ -97,7 +97,7 @@ class WebView(Widget):
     @on_webview_load.setter
     def on_webview_load(self, handler):
         if handler and not getattr(self._impl, "SUPPORTS_ON_WEBVIEW_LOAD", True):
-            self.factory.not_implemented("Webview.on_webview_load")
+            self.factory.not_implemented("WebView.on_webview_load")
 
         self._on_webview_load = wrapped_handler(self, handler)
 
