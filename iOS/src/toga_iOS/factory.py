@@ -38,7 +38,7 @@ from .window import Window
 
 
 def not_implemented(feature):
-    NotImplementedWarning.warn("iOS", feature)  # pragma: nocover
+    NotImplementedWarning.warn("iOS", feature)
 
 
 __all__ = [

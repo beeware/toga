@@ -33,7 +33,7 @@ from .window import Window
 
 
 def not_implemented(feature):
-    NotImplementedWarning.warn("Android", feature)  # pragma: nocover
+    NotImplementedWarning.warn("Android", feature)
 
 
 __all__ = [

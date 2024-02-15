@@ -34,7 +34,7 @@ from .window import Window
 
 
 def not_implemented(feature):
-    NotImplementedWarning.warn("GTK", feature)  # pragma: nocover
+    NotImplementedWarning.warn("GTK", feature)
 
 
 __all__ = [
