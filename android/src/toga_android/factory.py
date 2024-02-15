@@ -1,3 +1,5 @@
+from toga import NotImplementedWarning
+
 from . import dialogs
 from .app import App, MainWindow
 from .command import Command
@@ -31,7 +33,7 @@ from .window import Window
 
 
 def not_implemented(feature):
-    print(f"[Android] Not implemented: {feature}")  # pragma: nocover
+    NotImplementedWarning.warn("Android", feature)  # pragma: nocover
 
 
 __all__ = [

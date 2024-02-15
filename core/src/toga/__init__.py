@@ -1,3 +1,5 @@
+import warnings
+
 from .app import App, DocumentApp, DocumentMainWindow, MainWindow
 
 # Resources
@@ -37,7 +39,19 @@ from .widgets.tree import Tree
 from .widgets.webview import WebView
 from .window import Window
 
+
+class NotImplementedWarning(RuntimeWarning):
+    # pytest.warns() requires that Warning() subclasses are constructed by passing a
+    # single argument (the warning message). Use a factory method to avoid reproducing
+    # the message format and the warn invocation.
+    @classmethod
+    def warn(self, platform, feature):
+        """Raise a warning that a feature isn't implemented on a platform."""
+        warnings.warn(NotImplementedWarning(f"[{platform}] Not implemented: {feature}"))
+
+
 __all__ = [
+    "NotImplementedWarning",
     # Applications
     "App",
     "DocumentApp",

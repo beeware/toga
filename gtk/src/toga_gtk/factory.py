@@ -1,3 +1,5 @@
+from toga import NotImplementedWarning
+
 from . import dialogs
 from .app import App, DocumentApp, MainWindow
 from .command import Command
@@ -32,7 +34,7 @@ from .window import Window
 
 
 def not_implemented(feature):
-    print(f"[GTK+] Not implemented: {feature}")  # pragma: nocover
+    NotImplementedWarning.warn("GTK", feature)  # pragma: nocover
 
 
 __all__ = [
