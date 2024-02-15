@@ -167,10 +167,10 @@ class MapView(Widget):
         self.zoom = zoom
 
         if location:
-            self.location = toga.LatLng(*location)
+            self.location = location
         else:
             # Default location is Perth, Australia. Because why not?
-            self.location = toga.LatLng(-31.9559, 115.8606)
+            self.location = (-31.9559, 115.8606)
 
         self.on_select = on_select
 

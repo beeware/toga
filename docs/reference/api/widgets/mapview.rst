@@ -46,7 +46,7 @@ A zoomable map that can be annotated with location pins.
 Usage
 -----
 
-A MapView is a scrollable surface that can show a map at varying levels of detail, from
+A MapView is a scrollable area that can show a map at varying levels of detail, from
 nation-level to street level. The map can be centered at a given coordinate, and zoomed
 to the required level of detail using an integer from 0 (for nation level detail) to 5
 (for street level detail):
@@ -64,7 +64,7 @@ to the required level of detail using an integer from 0 (for nation level detail
     # Zoom to show city-block level detail
     mapview.zoom = 4
 
-A map can also display pins. A map pin must have a title, and can have an optional
+A map can also display pins. A map pin must have a title, and can optionally have a
 subtitle. Pins can be added at time of map construction, or can be dynamically added,
 updated and removed at runtime:
 

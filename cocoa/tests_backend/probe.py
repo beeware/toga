@@ -50,9 +50,12 @@ class BaseProbe:
     async def redraw(self, message=None, delay=None):
         """Request a redraw of the app, waiting until that redraw has completed."""
         if toga.App.app.run_slow:
-            # If we're running slow, wait for a second
+            # If we're running slow, wait for at least a second
             print("Waiting for redraw" if message is None else message)
-            delay = 1
+            if delay:
+                delay = max(1, delay)
+            else:
+                delay = 1
 
         if delay:
             await asyncio.sleep(delay)
