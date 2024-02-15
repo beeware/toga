@@ -60,8 +60,7 @@ def test_webview_load_disabled(monkeypatch):
         # Setting the handler raises a warning
         with pytest.warns(
             toga.NotImplementedWarning,
-            # match=r"\[Dummy\] Not implemented: Webview\.on_webview_load",
-            match=r"Not implemented",
+            match=r"\[Dummy\] Not implemented: Webview\.on_webview_load",
         ):
             widget.on_webview_load = handler
 

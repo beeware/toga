@@ -38,7 +38,7 @@ from .window import Window
 
 
 def not_implemented(feature):
-    NotImplementedWarning.warn("Dummy", feature)  # pragma: nocover
+    NotImplementedWarning.warn("Dummy", feature)
 
 
 __all__ = [

@@ -238,8 +238,13 @@ def test_deprecated_names():
 
     with pytest.warns(
         DeprecationWarning, match="TimePicker has been renamed TimeInput"
+    ), pytest.warns(
+        DeprecationWarning, match="TimePicker.min_time has been renamed TimeInput.min"
+    ), pytest.warns(
+        DeprecationWarning, match="TimePicker.max_time has been renamed TimeInput.max"
     ):
         widget = toga.TimePicker(min_time=MIN, max_time=MAX)
+
     assert widget.min == MIN
     assert widget.max == MAX
     widget.min = widget.max = None
