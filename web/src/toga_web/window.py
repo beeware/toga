@@ -1,5 +1,7 @@
 from toga_web.libs import create_element, js
 
+from .screens import Screen as ScreenImpl
+
 
 class Window:
     def __init__(self, interface, title, position, size):
@@ -77,3 +79,6 @@ class Window:
 
     def set_full_screen(self, is_full_screen):
         self.interface.factory.not_implemented("Window.set_full_screen()")
+
+    def get_current_screen(self):
+        return ScreenImpl(js.document.documentElement)

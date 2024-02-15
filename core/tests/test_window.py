@@ -354,6 +354,33 @@ def test_as_image(window):
     assert image.size == (318, 346)
 
 
+def test_screen(window, app):
+    """A window can be moved to a different screen"""
+    # Cannot actually change window.screen, so just check
+    # the window positions as a substitute for moving the
+    # window between the screens.
+    # `window.screen` will return `Secondary Screen`
+    assert window.screen == app.screens[1]
+    assert window.position == (100, 100)
+    window.screen = app.screens[0]
+    assert window.position == (1466, 868)
+
+
+def test_screen_position(window, app):
+    """The window can be relocated using absolute and relative screen positions."""
+    # Details about screen layout are in toga_dummy=>app.py=>get_screens()
+    initial_position = window.position
+    window.position = (-100, -100)
+    assert window.position != initial_position
+    assert window.position == (-100, -100)
+    assert window.screen_position == (1266, 668)
+
+    # Move the window to a new position.
+    window.screen_position = (100, 100)
+    assert window.position == (-1266, -668)
+    assert window.screen_position == (100, 100)
+
+
 def test_info_dialog(window, app):
     """An info dialog can be shown"""
     on_result_handler = Mock()

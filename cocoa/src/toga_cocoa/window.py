@@ -1,10 +1,11 @@
+from rubicon.objc import CGSize
+
 from toga.command import Command, Separator
 from toga_cocoa.container import Container
-from toga_cocoa.images import nsdata_to_bytes
 from toga_cocoa.libs import (
     SEL,
     NSBackingStoreBuffered,
-    NSBitmapImageFileType,
+    NSImage,
     NSMakeRect,
     NSMutableArray,
     NSPoint,
@@ -14,9 +15,12 @@ from toga_cocoa.libs import (
     NSToolbarItem,
     NSWindow,
     NSWindowStyleMask,
+    core_graphics,
     objc_method,
     objc_property,
 )
+
+from .screens import Screen as ScreenImpl
 
 
 def toolbar_identifier(cmd):
@@ -305,16 +309,23 @@ class Window:
     def close(self):
         self.native.close()
 
+    def get_current_screen(self):
+        return ScreenImpl(self.native.screen)
+
     def get_image_data(self):
         bitmap = self.container.native.bitmapImageRepForCachingDisplayInRect(
             self.container.native.bounds
         )
-        bitmap.setSize(self.container.native.bounds.size)
         self.container.native.cacheDisplayInRect(
             self.container.native.bounds, toBitmapImageRep=bitmap
         )
-        data = bitmap.representationUsingType(
-            NSBitmapImageFileType.PNG,
-            properties=None,
+
+        # Get a reference to the CGImage from the bitmap
+        cg_image = bitmap.CGImage
+
+        target_size = CGSize(
+            core_graphics.CGImageGetWidth(cg_image),
+            core_graphics.CGImageGetHeight(cg_image),
         )
-        return nsdata_to_bytes(data)
+        ns_image = NSImage.alloc().initWithCGImage(cg_image, size=target_size)
+        return ns_image

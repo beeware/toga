@@ -83,7 +83,7 @@ jobs:
         # we just want the dev extras so we have a known version of tox and coverage
         python -m pip install ./core[dev]
     - name: Get packages
-      uses: actions/download-artifact@v4.1.1
+      uses: actions/download-artifact@v4.1.2
       with:
         pattern: ${{ needs.package.outputs.artifact-name }}-*
         merge-multiple: true
@@ -95,7 +95,7 @@ jobs:
         TOGA_INSTALL_COMMAND="python -m pip install ../$(ls core/dist/toga_core-*.whl)[dev] ../$(ls dummy/dist/toga_dummy-*.whl)" tox -e py
         mv core/.coverage core/.coverage.${{ matrix.platform }}.${{ matrix.python-version }}
     - name: Store coverage data
-      uses: actions/upload-artifact@v4.3.0
+      uses: actions/upload-artifact@v4.3.1
       with:
         name: core-coverage-data-${{ matrix.platform }}-${{ matrix.python-version }}
         path: "core/.coverage.*"
@@ -119,7 +119,7 @@ jobs:
         # we just want the dev extras so we have a known version of coverage
         python -m pip install ./core[dev]
     - name: Retrieve coverage data
-      uses: actions/download-artifact@v4.1.1
+      uses: actions/download-artifact@v4.1.2
       with:
         pattern: core-coverage-data-*
         path: core
@@ -131,7 +131,7 @@ jobs:
         python -m coverage html --skip-covered --skip-empty
         python -m coverage report --rcfile ../pyproject.toml --fail-under=100
     - name: Upload HTML report if check failed.
-      uses: actions/upload-artifact@v4.3.0
+      uses: actions/upload-artifact@v4.3.1
       if: failure()
       with:
         name: html-coverage-report
@@ -232,7 +232,7 @@ jobs:
       run: ${{ matrix.briefcase-run-prefix }} briefcase run ${{ matrix.backend }} --test ${{ matrix.briefcase-run-args }}
 
     - name: Upload logs
-      uses: actions/upload-artifact@v4.3.0
+      uses: actions/upload-artifact@v4.3.1
       if: failure()
       with:
         name: testbed-failure-logs-${{ matrix.backend }}
@@ -245,7 +245,7 @@ jobs:
         cp -r "${{ matrix.app-user-data-path }}" testbed/app_data/testbed-app_data-${{ matrix.backend }}
 
     - name: Upload app data
-      uses: actions/upload-artifact@v4.3.0
+      uses: actions/upload-artifact@v4.3.1
       if: failure() && matrix.backend != 'android'
       with:
         name: testbed-failure-app-data-${{ matrix.backend }}

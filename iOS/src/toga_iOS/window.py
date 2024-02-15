@@ -19,6 +19,8 @@ from toga_iOS.libs import (
     uikit,
 )
 
+from .screens import Screen as ScreenImpl
+
 
 class Window:
     _is_main_window = False
@@ -114,6 +116,9 @@ class Window:
 
     def close(self):
         pass
+
+    def get_current_screen(self):
+        return ScreenImpl(UIScreen.mainScreen)
 
     def get_image_data(self):
         # This is... baroque.
