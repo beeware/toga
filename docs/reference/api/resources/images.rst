@@ -77,6 +77,20 @@ Notes
   - macOS: ``NSImage``
   - Windows: ``System.Drawing.Image``
 
+.. _toga_image_subclassing:
+
+* If you subclass :any:`Image`, you can supply that subclass as the requested
+  format to :any:`Image.as_format`. If you do, make sure that your subclass has a compatible
+  constructor signature, as Toga will attempt to create it the same way as it would a
+  base :any:`Image`.
+
+  The same consideration applies when providing such a subclass as the format argument to:
+
+  - :any:`Canvas.as_image`
+  - :any:`ImageView.as_image`
+  - :any:`Screen.as_image`
+  - :any:`Window.as_image`
+
 Reference
 ---------
 

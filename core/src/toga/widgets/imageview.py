@@ -129,7 +129,10 @@ class ImageView(Widget):
         """Return the image in the specified format.
 
         :param format: Format to provide. Defaults to :class:`~toga.images.Image`; also
-            supports :any:`PIL.Image.Image` if Pillow is installed.
+             supports :any:`PIL.Image.Image` if Pillow is installed, as well as any image
+             types defined by installed :doc:`image format plugins
+             </reference/plugins/image_plugins>`. If providing a subclass of :any:`Image`,
+             see note about :ref:`subclassing Image <toga_image_subclassing>`.
         :returns: The image in the specified format.
         """
         return self.image.as_format(format)

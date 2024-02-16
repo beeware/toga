@@ -125,4 +125,4 @@ source = [
 asyncio_mode = "auto"
 
 [project.entry-points."toga.image_formats"]
-pil = "toga.plugins.pil"
+pil = "toga.plugins.image_converters.PilConverter"

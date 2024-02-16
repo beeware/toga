@@ -5,7 +5,7 @@ import sys
 import warnings
 from functools import lru_cache
 from pathlib import Path
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Protocol
 from warnings import warn
 
 import toga
@@ -35,6 +35,48 @@ if TYPE_CHECKING:
     BytesLike: TypeAlias = bytes | bytearray | memoryview
     ImageLike: TypeAlias = Any
     ImageContent: TypeAlias = PathLike | BytesLike | ImageLike
+
+    # Define a type variable representing an image of an externally defined type.
+    ExternalImageT = TypeVar("ExternalImageT")
+
+
+class ImageConverter(Protocol):
+    """A class to convert between an externally defined image type and :any:`toga.Image`."""
+
+    image_class: type[ExternalImageT]
+    """The externally defined image class this plugin is designed to interpret."""
+
+    @staticmethod
+    def convert_from_format(image_in_format: ExternalImageT) -> BytesLike:
+        """Convert from :any:`image_class` to data in a :ref:`known image format <known-image-formats>`.
+
+        Will accept an instance of :any:`image_class`, or of a :ref:`subclass of it
+        <external_image_subclassing>`.
+
+        :param image_in_format: An instance of :any:`image_class` (or of a subclass).
+        :returns: The image data, in a :ref:`known image format <known-image-formats>`.
+        """
+        ...
+
+    @staticmethod
+    def convert_to_format(
+        data: BytesLike,
+        image_class: type[ExternalImageT],
+    ) -> ExternalImageT:
+        """Convert from data to :any:`image_class` or specified subclass.
+
+        Accepts a bytes-like object representing the image in a
+        :ref:`known image format <known-image-formats>`, and returns an instance of the
+        image class specified. This image class is guaranteed to be either the
+        :any:`image_class` registered by the plugin, or a subclass of that class. If a
+        subclass is requested, the subclass's initializer must have a
+        :ref:`compatible constructor signature <external_image_subclassing>`.
+
+        :param data: Image data in a :ref:`known image format <known-image-formats>`.
+        :param image_class: The class of image to return.
+        :returns: The image, as an instance of the image class specified.
+        """
+        ...
 
 
 NOT_PROVIDED = object()
@@ -120,7 +162,10 @@ class Image:
         converters = []
 
         for image_plugin in entry_points(group="toga.image_formats"):
-            converter = importlib.import_module(f"{image_plugin.value}")
+            module_name, class_name = image_plugin.value.rsplit(".", 1)
+            module = importlib.import_module(module_name)
+            converter = getattr(module, class_name)
+
             if converter.image_class is not None:
                 converters.append(converter)
 
@@ -164,8 +209,11 @@ class Image:
     def as_format(self, format: type[ImageT]) -> ImageT:
         """Return the image, converted to the image format specified.
 
-        :param format: The image class to return. Currently supports only :any:`Image`,
-            and :any:`PIL.Image.Image` if Pillow is installed.
+        :param format: Format to provide. Defaults to :class:`~toga.images.Image`; also
+             supports :any:`PIL.Image.Image` if Pillow is installed, as well as any image
+             types defined by installed :doc:`image format plugins
+             </reference/plugins/image_plugins>`. If providing a subclass of :any:`Image`,
+             see note about :ref:`subclassing Image <toga_image_subclassing>`.
         :returns: The image in the requested format
         :raises TypeError: If the format supplied is not recognized.
         """

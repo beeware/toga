@@ -440,7 +440,8 @@ class Window:
         :param format: Format to provide. Defaults to :class:`~toga.images.Image`; also
              supports :any:`PIL.Image.Image` if Pillow is installed, as well as any image
              types defined by installed :doc:`image format plugins
-             </reference/plugins/image_plugins>`.
+             </reference/plugins/image_plugins>`. If providing a subclass of :any:`Image`,
+             see note about :ref:`subclassing Image <toga_image_subclassing>`.
         :returns: An image containing the window content, in the format requested.
         """
         return Image(self._impl.get_image_data()).as_format(format)
