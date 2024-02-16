@@ -1,0 +1,1 @@
+The ``sphinx-autobuild`` tool can now be invoked via ``tox -e docs-live`` and ``tox -e docs-live-src``.
