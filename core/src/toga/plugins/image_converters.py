@@ -19,7 +19,7 @@ except ImportError:  # pragma: no cover
 
 
 class PilConverter:
-    image_class = PIL.Image.Image
+    image_class = PIL.Image.Image if PIL_imported else None
 
     @staticmethod
     def convert_from_format(image_in_format: PIL.Image.Image) -> bytes:

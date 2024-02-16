@@ -58,7 +58,7 @@ Notes
     myimage_subclass = "togax_myimage.MyImageSubclassConverter"
     myimage = "togax_myimage.MyImageConverter"
 
-  If the base class's converter is listed first, the subclass converter will never be
+  If the base class's converter is listed first, the subclass's converter will never be
   used.
 
 
