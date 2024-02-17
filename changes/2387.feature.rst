@@ -1,0 +1,1 @@
+Toga can now be extended, via plugins, to create Toga Images from external image classes (and vice-versa).
