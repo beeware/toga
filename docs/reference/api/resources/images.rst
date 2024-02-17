@@ -53,7 +53,7 @@ An image can be constructed from a :any:`wide range of sources <ImageContent>`:
     my_toga_image = toga.Image(my_pil_image)
 
 You can also tell Toga how to convert from (and to) other classes that represent images
-via :doc:`image format plugins </reference/plugins/image_plugins>`.
+via :doc:`image format plugins </reference/plugins/image_formats>`.
 
 Notes
 -----
@@ -79,17 +79,9 @@ Notes
 
 .. _toga_image_subclassing:
 
-* If you subclass :any:`Image`, you can supply that subclass as the requested
-  format to :any:`Image.as_format`. If you do, make sure that your subclass has a compatible
-  constructor signature, as Toga will attempt to create it the same way as it would a
-  base :any:`Image`.
-
-  The same consideration applies when providing such a subclass as the format argument to:
-
-  - :any:`Canvas.as_image`
-  - :any:`ImageView.as_image`
-  - :any:`Screen.as_image`
-  - :any:`Window.as_image`
+* If you subclass :any:`Image`, you can supply that subclass as the requested format to
+  any ``as_format()`` method in Toga, provided that your subclass has a constructor
+  signature compatible with the base :any:`Image` class.
 
 Reference
 ---------
@@ -108,7 +100,7 @@ Reference
     * if `Pillow <https://pillow.readthedocs.io/>`_ is installed, an instance of
       :any:`PIL.Image.Image`;
     * an image of a class registered via an :doc:`image format plugin
-      </reference/plugins/image_plugins>` (or a subclass of such a class); or
+      </reference/plugins/image_formats>` (or a subclass of such a class); or
     * an instance of the :ref:`native platform image representation <native-image-rep>`.
 
     If a relative path is provided, it will be anchored relative to the module that

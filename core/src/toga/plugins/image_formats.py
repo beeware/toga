@@ -18,7 +18,7 @@ except ImportError:  # pragma: no cover
     PIL_imported = False
 
 
-class PilConverter:
+class PILConverter:
     image_class = PIL.Image.Image if PIL_imported else None
 
     @staticmethod

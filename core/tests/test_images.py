@@ -4,8 +4,11 @@ import PIL.Image
 import pytest
 
 import toga
-from toga_dummy.plugins import disabled_converter
-from toga_dummy.plugins.image_converter import CustomImage, CustomImageSubclass
+from toga_dummy.plugins.image_formats import (
+    CustomImage,
+    CustomImageSubclass,
+    DisabledImageConverter,
+)
 from toga_dummy.utils import assert_action_performed_with
 
 RELATIVE_FILE_PATH = Path("resources/sample.png")
@@ -289,7 +292,7 @@ def test_as_format_custom_class(app, ImageClass):
 
 def test_disabled_image_plugin(app):
     """Disabled image plugin shouldn't be available."""
-    assert disabled_converter not in toga.Image._converters()
+    assert DisabledImageConverter not in toga.Image._converters()
 
 
 # None is same as supplying nothing; also test a random unrecognized class

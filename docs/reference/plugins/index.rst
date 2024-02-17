@@ -4,9 +4,7 @@
 Plugins
 =======
 
-
-
 .. toctree::
    :maxdepth: 1
 
-   image_plugins
+   image_formats
