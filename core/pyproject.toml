@@ -82,6 +82,7 @@ docs = [
     "furo == 2024.1.29",
     "Pillow == 10.2.0",
     "pyenchant == 3.2.2",
+    "readthedocs-sphinx-search == 0.3.2",
     # Sphinx 7.2 deprecated support for Python 3.8
     "sphinx == 7.1.2 ; python_version < '3.9'",
     "sphinx == 7.2.6 ; python_version >= '3.9'",

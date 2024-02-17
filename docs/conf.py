@@ -35,6 +35,7 @@ extensions = [
     "sphinx_copybutton",
     "sphinx_toolbox.more_autodoc.autoprotocol",
     "sphinx.ext.intersphinx",
+    "sphinx_search.extension",
 ]
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
