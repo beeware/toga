@@ -53,14 +53,40 @@ class Window:
     def create(self):
         self.native = Gtk.Window()
 
+    ######################################################################
+    # Native event handlers
+    ######################################################################
+
+    def gtk_delete_event(self, widget, data):
+        if self._is_closing:
+            should_close = True
+        else:
+            should_close = self.interface.on_close()
+
+        # Return value of the GTK on_close handler indicates
+        # whether the event has been fully handled. Returning
+        # False indicates the event handling is *not* complete,
+        # so further event processing (including actually
+        # closing the window) should be performed.
+        return not should_close
+
+    ######################################################################
+    # Window properties
+    ######################################################################
+
     def get_title(self):
         return self.native.get_title()
 
     def set_title(self, title):
         self.native.set_title(title)
 
-    def set_app(self, app):
-        app.native.add_window(self.native)
+    ######################################################################
+    # Window lifecycle
+    ######################################################################
+
+    def close(self):
+        self._is_closing = True
+        self.native.close()
 
     def create_toolbar(self):
         # If there's an existing toolbar, hide it until we know we need it.
@@ -114,42 +140,23 @@ class Window:
             self.native_toolbar.set_visible(True)
             self.native_toolbar.show_all()
 
-    def set_content(self, widget):
-        # Set the new widget to be the container's content
-        self.container.content = widget
+    def set_app(self, app):
+        app.native.add_window(self.native)
 
     def show(self):
         self.native.show_all()
 
-    def hide(self):
-        self.native.hide()
+    ######################################################################
+    # Window content and resources
+    ######################################################################
 
-    def get_visible(self):
-        return self.native.get_property("visible")
+    def set_content(self, widget):
+        # Set the new widget to be the container's content
+        self.container.content = widget
 
-    def gtk_delete_event(self, widget, data):
-        if self._is_closing:
-            should_close = True
-        else:
-            should_close = self.interface.on_close()
-
-        # Return value of the GTK on_close handler indicates
-        # whether the event has been fully handled. Returning
-        # False indicates the event handling is *not* complete,
-        # so further event processing (including actually
-        # closing the window) should be performed.
-        return not should_close
-
-    def close(self):
-        self._is_closing = True
-        self.native.close()
-
-    def get_position(self):
-        pos = self.native.get_position()
-        return pos.root_x, pos.root_y
-
-    def set_position(self, position):
-        self.native.move(position[0], position[1])
+    ######################################################################
+    # Window size
+    ######################################################################
 
     def get_size(self):
         size = self.native.get_size()
@@ -158,16 +165,45 @@ class Window:
     def set_size(self, size):
         self.native.resize(size[0], size[1])
 
+    ######################################################################
+    # Window position
+    ######################################################################
+
+    def get_current_screen(self):
+        display = Gdk.Display.get_default()
+        monitor_native = display.get_monitor_at_window(self.native.get_window())
+        return ScreenImpl(monitor_native)
+
+    def get_position(self):
+        pos = self.native.get_position()
+        return pos.root_x, pos.root_y
+
+    def set_position(self, position):
+        self.native.move(position[0], position[1])
+
+    ######################################################################
+    # Window visibility
+    ######################################################################
+
+    def get_visible(self):
+        return self.native.get_property("visible")
+
+    def hide(self):
+        self.native.hide()
+
+    ######################################################################
+    # Window state
+    ######################################################################
+
     def set_full_screen(self, is_full_screen):
         if is_full_screen:
             self.native.fullscreen()
         else:
             self.native.unfullscreen()
 
-    def get_current_screen(self):
-        display = Gdk.Display.get_default()
-        monitor_native = display.get_monitor_at_window(self.native.get_window())
-        return ScreenImpl(monitor_native)
+    ######################################################################
+    # Window capabilities
+    ######################################################################
 
     def get_image_data(self):
         display = self.native.get_display()

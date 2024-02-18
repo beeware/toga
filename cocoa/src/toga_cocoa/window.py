@@ -179,25 +179,33 @@ class Window:
         self.purge_toolbar()
         self.native.release()
 
-    def purge_toolbar(self):
-        while self._toolbar_items:
-            dead_items = []
-            _, cmd = self._toolbar_items.popitem()
-            # The command might have toolbar representations on multiple window
-            # toolbars, and may have other representations (at the very least, a menu
-            # item). Only clean up the representation pointing at *this* window. Do this
-            # in 2 passes so that we're not modifying the set of native objects while
-            # iterating over it.
-            for item_native in cmd._impl.native:
-                if (
-                    isinstance(item_native, NSToolbarItem)
-                    and item_native.target == self.native
-                ):
-                    dead_items.append(item_native)
+    ######################################################################
+    # Native event handlers
+    ######################################################################
 
-            for item_native in dead_items:
-                cmd._impl.native.remove(item_native)
-                item_native.release()
+    def cocoa_windowShouldClose(self):
+        # The on_close handler has a cleanup method that will enforce
+        # the close if the on_close handler requests it; this initial
+        # "should close" request can always return False.
+        self.interface.on_close()
+        return False
+
+    ######################################################################
+    # Window properties
+    ######################################################################
+
+    def get_title(self):
+        return str(self.native.title)
+
+    def set_title(self, title):
+        self.native.title = title
+
+    ######################################################################
+    # Window lifecycle
+    ######################################################################
+
+    def close(self):
+        self.native.close()
 
     def create_toolbar(self):
         # Purge any existing toolbar items
@@ -222,9 +230,35 @@ class Window:
         if self.interface.content:
             self.interface.content.refresh()
 
-    def set_content(self, widget):
-        # Set the content of the window's container
-        self.container.content = widget
+    def purge_toolbar(self):
+        while self._toolbar_items:
+            dead_items = []
+            _, cmd = self._toolbar_items.popitem()
+            # The command might have toolbar representations on multiple window
+            # toolbars, and may have other representations (at the very least, a menu
+            # item). Only clean up the representation pointing at *this* window. Do this
+            # in 2 passes so that we're not modifying the set of native objects while
+            # iterating over it.
+            for item_native in cmd._impl.native:
+                if (
+                    isinstance(item_native, NSToolbarItem)
+                    and item_native.target == self.native
+                ):
+                    dead_items.append(item_native)
+
+            for item_native in dead_items:
+                cmd._impl.native.remove(item_native)
+                item_native.release()
+
+    def set_app(self, app):
+        pass
+
+    def show(self):
+        self.native.makeKeyAndOrderFront(None)
+
+    ######################################################################
+    # Window content and resources
+    ######################################################################
 
     def content_refreshed(self, container):
         min_width = self.interface.content.layout.min_width
@@ -243,11 +277,29 @@ class Window:
         self.container.min_width = min_width
         self.container.min_height = min_height
 
-    def get_title(self):
-        return str(self.native.title)
+    def set_content(self, widget):
+        # Set the content of the window's container
+        self.container.content = widget
 
-    def set_title(self, title):
-        self.native.title = title
+    ######################################################################
+    # Window size
+    ######################################################################
+
+    def get_size(self):
+        frame = self.native.frame
+        return frame.size.width, frame.size.height
+
+    def set_size(self, size):
+        frame = self.native.frame
+        frame.size = NSSize(size[0], size[1])
+        self.native.setFrame(frame, display=True, animate=True)
+
+    ######################################################################
+    # Window position
+    ######################################################################
+
+    def get_current_screen(self):
+        return ScreenImpl(self.native.screen)
 
     def get_position(self):
         # The "primary" screen has index 0 and origin (0, 0).
@@ -273,20 +325,9 @@ class Window:
 
         self.native.setFrameTopLeftPoint(NSPoint(x, y))
 
-    def get_size(self):
-        frame = self.native.frame
-        return frame.size.width, frame.size.height
-
-    def set_size(self, size):
-        frame = self.native.frame
-        frame.size = NSSize(size[0], size[1])
-        self.native.setFrame(frame, display=True, animate=True)
-
-    def set_app(self, app):
-        pass
-
-    def show(self):
-        self.native.makeKeyAndOrderFront(None)
+    ######################################################################
+    # Window visibility
+    ######################################################################
 
     def hide(self):
         self.native.orderOut(self.native)
@@ -294,23 +335,18 @@ class Window:
     def get_visible(self):
         return bool(self.native.isVisible)
 
+    ######################################################################
+    # Window state
+    ######################################################################
+
     def set_full_screen(self, is_full_screen):
         current_state = bool(self.native.styleMask & NSWindowStyleMask.FullScreen)
         if is_full_screen != current_state:
             self.native.toggleFullScreen(self.native)
 
-    def cocoa_windowShouldClose(self):
-        # The on_close handler has a cleanup method that will enforce
-        # the close if the on_close handler requests it; this initial
-        # "should close" request can always return False.
-        self.interface.on_close()
-        return False
-
-    def close(self):
-        self.native.close()
-
-    def get_current_screen(self):
-        return ScreenImpl(self.native.screen)
+    ######################################################################
+    # Window capabilities
+    ######################################################################
 
     def get_image_data(self):
         bitmap = self.container.native.bitmapImageRepForCachingDisplayInRect(
