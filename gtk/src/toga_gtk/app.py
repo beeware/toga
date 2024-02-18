@@ -66,25 +66,12 @@ class App:
 
         self.actions = None
 
+    def gtk_activate(self, data=None):
+        pass
+
     def gtk_startup(self, data=None):
         # Set up the default commands for the interface.
-        self.interface.commands.add(
-            Command(
-                self._menu_about,
-                "About " + self.interface.formal_name,
-                group=toga.Group.HELP,
-            ),
-            Command(None, "Preferences", group=toga.Group.APP),
-            # Quit should always be the last item, in a section on its own
-            Command(
-                self._menu_quit,
-                "Quit " + self.interface.formal_name,
-                shortcut=toga.Key.MOD_1 + "q",
-                group=toga.Group.APP,
-                section=sys.maxsize,
-            ),
-        )
-        self._create_app_commands()
+        self.create_app_commands()
 
         self.interface._startup()
 
@@ -109,18 +96,54 @@ class App:
             Gdk.Screen.get_default(), css_provider, Gtk.STYLE_PROVIDER_PRIORITY_USER
         )
 
-    def _create_app_commands(self):
-        # No extra menus
-        pass
-
-    def gtk_activate(self, data=None):
-        pass
+    ######################################################################
+    # Commands and menus
+    ######################################################################
 
     def _menu_about(self, command, **kwargs):
         self.interface.about()
 
     def _menu_quit(self, command, **kwargs):
         self.interface.on_exit()
+
+    def create_app_commands(self):
+        self.interface.commands.add(
+            Command(
+                self._menu_about,
+                "About " + self.interface.formal_name,
+                group=toga.Group.HELP,
+            ),
+            Command(None, "Preferences", group=toga.Group.APP),
+            # Quit should always be the last item, in a section on its own
+            Command(
+                self._menu_quit,
+                "Quit " + self.interface.formal_name,
+                shortcut=toga.Key.MOD_1 + "q",
+                group=toga.Group.APP,
+                section=sys.maxsize,
+            ),
+        )
+
+    def _submenu(self, group, menubar):
+        try:
+            return self._menu_groups[group], False
+        except KeyError:
+            if group is None:
+                submenu = menubar
+            else:
+                parent_menu, _ = self._submenu(group.parent, menubar)
+                submenu = Gio.Menu()
+                self._menu_groups[group] = submenu
+
+                text = group.text
+                if text == "*":
+                    text = self.interface.formal_name
+                parent_menu.append_submenu(text, submenu)
+
+            # Install the item in the group cache.
+            self._menu_groups[group] = submenu
+
+            return submenu, True
 
     def create_menus(self):
         # Only create the menu if the menu item index has been created.
@@ -162,32 +185,26 @@ class App:
         # Set the menu for the app.
         self.native.set_menubar(menubar)
 
-    def _submenu(self, group, menubar):
-        try:
-            return self._menu_groups[group], False
-        except KeyError:
-            if group is None:
-                submenu = menubar
-            else:
-                parent_menu, _ = self._submenu(group.parent, menubar)
-                submenu = Gio.Menu()
-                self._menu_groups[group] = submenu
+    ######################################################################
+    # App lifecycle
+    ######################################################################
 
-                text = group.text
-                if text == "*":
-                    text = self.interface.formal_name
-                parent_menu.append_submenu(text, submenu)
-
-            # Install the item in the group cache.
-            self._menu_groups[group] = submenu
-
-            return submenu, True
+    # We can't call this under test conditions, because it would kill the test harness
+    def exit(self):  # pragma: no cover
+        self.native.quit()
 
     def main_loop(self):
         # Modify signal handlers to make sure Ctrl-C is caught and handled.
         signal.signal(signal.SIGINT, signal.SIG_DFL)
 
         self.loop.run_forever(application=self.native)
+
+    def set_main_window(self, window):
+        pass
+
+    ######################################################################
+    # App resources
+    ######################################################################
 
     def get_screens(self):
         display = Gdk.Display.get_default()
@@ -206,8 +223,16 @@ class App:
             ]
             return screen_list
 
-    def set_main_window(self, window):
-        pass
+    ######################################################################
+    # App capabilities
+    ######################################################################
+
+    def beep(self):
+        Gdk.beep()
+
+    def _close_about(self, dialog):
+        self.native_about_dialog.destroy()
+        self.native_about_dialog = None
 
     def show_about_dialog(self):
         self.native_about_dialog = Gtk.AboutDialog()
@@ -229,16 +254,19 @@ class App:
         self.native_about_dialog.show()
         self.native_about_dialog.connect("close", self._close_about)
 
-    def _close_about(self, dialog):
-        self.native_about_dialog.destroy()
-        self.native_about_dialog = None
+    ######################################################################
+    # Cursor control
+    ######################################################################
 
-    def beep(self):
-        Gdk.beep()
+    def hide_cursor(self):
+        self.interface.factory.not_implemented("App.hide_cursor()")
 
-    # We can't call this under test conditions, because it would kill the test harness
-    def exit(self):  # pragma: no cover
-        self.native.quit()
+    def show_cursor(self):
+        self.interface.factory.not_implemented("App.show_cursor()")
+
+    ######################################################################
+    # Window control
+    ######################################################################
 
     def get_current_window(self):
         current_window = self.native.get_active_window()._impl
@@ -246,6 +274,10 @@ class App:
 
     def set_current_window(self, window):
         window._impl.native.present()
+
+    ######################################################################
+    # Full screen control
+    ######################################################################
 
     def enter_full_screen(self, windows):
         for window in windows:
@@ -255,15 +287,10 @@ class App:
         for window in windows:
             window._impl.set_full_screen(False)
 
-    def show_cursor(self):
-        self.interface.factory.not_implemented("App.show_cursor()")
-
-    def hide_cursor(self):
-        self.interface.factory.not_implemented("App.hide_cursor()")
-
 
 class DocumentApp(App):  # pragma: no cover
-    def _create_app_commands(self):
+    def create_app_commands(self):
+        super().create_app_commands()
         self.interface.commands.add(
             toga.Command(
                 self.open_file,

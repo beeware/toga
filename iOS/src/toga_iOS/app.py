@@ -69,12 +69,20 @@ class App:
         """Calls the startup method on the interface."""
         self.interface._startup()
 
-    def open_document(self, fileURL):  # pragma: no cover
-        """Add a new document to this app."""
-        pass
+    ######################################################################
+    # Commands and menus
+    ######################################################################
 
     def create_menus(self):
         # No menus on an iOS app (for now)
+        pass
+
+    ######################################################################
+    # App lifecycle
+    ######################################################################
+
+    def exit(self):  # pragma: no cover
+        # Mobile apps can't be exited, but the entry point needs to exist
         pass
 
     def main_loop(self):
@@ -87,33 +95,32 @@ class App:
     def set_main_window(self, window):
         pass
 
-    def get_current_window(self):
-        # iOS only has a main window.
-        return self.interface.main_window._impl
+    ######################################################################
+    # App resources
+    ######################################################################
 
-    def set_current_window(self, window):
-        # iOS only has a main window, so this is a no-op
-        pass
+    def get_screens(self):
+        return [ScreenImpl(UIScreen.mainScreen)]
 
-    def show_about_dialog(self):
-        self.interface.factory.not_implemented("App.show_about_dialog()")
+    ######################################################################
+    # App capabilities
+    ######################################################################
 
     def beep(self):
         # 1013 is a magic constant that is the "SMS RECEIVED 5" sound,
         # sounding like a single strike of a bell.
         av_foundation.AudioServicesPlayAlertSound(1013)
 
-    def exit(self):  # pragma: no cover
-        # Mobile apps can't be exited, but the entry point needs to exist
+    def open_document(self, fileURL):  # pragma: no cover
+        """Add a new document to this app."""
         pass
 
-    def enter_full_screen(self, windows):
-        # No-op; mobile doesn't support full screen
-        pass
+    def show_about_dialog(self):
+        self.interface.factory.not_implemented("App.show_about_dialog()")
 
-    def exit_full_screen(self, windows):
-        # No-op; mobile doesn't support full screen
-        pass
+    ######################################################################
+    # Cursor control
+    ######################################################################
 
     def hide_cursor(self):
         # No-op; mobile doesn't support cursors
@@ -123,5 +130,26 @@ class App:
         # No-op; mobile doesn't support cursors
         pass
 
-    def get_screens(self):
-        return [ScreenImpl(UIScreen.mainScreen)]
+    ######################################################################
+    # Window control
+    ######################################################################
+
+    def get_current_window(self):
+        # iOS only has a main window.
+        return self.interface.main_window._impl
+
+    def set_current_window(self, window):
+        # iOS only has a main window, so this is a no-op
+        pass
+
+    ######################################################################
+    # Full screen control
+    ######################################################################
+
+    def enter_full_screen(self, windows):
+        # No-op; mobile doesn't support full screen
+        pass
+
+    def exit_full_screen(self, windows):
+        # No-op; mobile doesn't support full screen
+        pass

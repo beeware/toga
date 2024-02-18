@@ -34,6 +34,40 @@ class MainWindow(Window):
             event.Cancel = True
 
 
+def winforms_thread_exception(sender, winforms_exc):  # pragma: no cover
+    # The PythonException returned by Winforms doesn't give us
+    # easy access to the underlying Python stacktrace; so we
+    # reconstruct it from the string message.
+    # The Python message is helpfully included in square brackets,
+    # as the context for the first line in the .net stack trace.
+    # So, look for the closing bracket and the start of the Python.net
+    # stack trace. Then, reconstruct the line breaks internal to the
+    # remaining string.
+    print("Traceback (most recent call last):")
+    py_exc = winforms_exc.get_Exception()
+    full_stack_trace = py_exc.StackTrace
+    regex = re.compile(
+        r"^\[(?:'(.*?)', )*(?:'(.*?)')\]   (?:.*?) Python\.Runtime",
+        re.DOTALL | re.UNICODE,
+    )
+
+    def print_stack_trace(stack_trace_line):  # pragma: no cover
+        for level in stack_trace_line.split("', '"):
+            for line in level.split("\\n"):
+                if line:
+                    print(line)
+
+    stacktrace_relevant_lines = regex.findall(full_stack_trace)
+    if len(stacktrace_relevant_lines) == 0:
+        print_stack_trace(full_stack_trace)
+    else:
+        for lines in stacktrace_relevant_lines:
+            for line in lines:
+                print_stack_trace(line)
+
+    print(py_exc.Message)
+
+
 class App:
     _MAIN_WINDOW_CLASS = MainWindow
 
@@ -112,9 +146,63 @@ class App:
 
         # Call user code to populate the main window
         self.interface._startup()
-        self._create_app_commands()
+        self.create_app_commands()
         self.create_menus()
         self.interface.main_window._impl.set_app(self)
+
+    ######################################################################
+    # Commands and menus
+    ######################################################################
+
+    def create_app_commands(self):
+        self.interface.commands.add(
+            # About should be the last item in the Help menu, in a section on its own.
+            toga.Command(
+                lambda _: self.interface.about(),
+                f"About {self.interface.formal_name}",
+                group=toga.Group.HELP,
+                section=sys.maxsize,
+            ),
+            #
+            toga.Command(None, "Preferences", group=toga.Group.FILE),
+            #
+            # On Windows, the Exit command doesn't usually contain the app name. It
+            # should be the last item in the File menu, in a section on its own.
+            toga.Command(
+                lambda _: self.interface.on_exit(),
+                "Exit",
+                shortcut=Key.MOD_1 + "q",
+                group=toga.Group.FILE,
+                section=sys.maxsize,
+            ),
+            #
+            toga.Command(
+                lambda _: self.interface.visit_homepage(),
+                "Visit homepage",
+                enabled=self.interface.home_page is not None,
+                group=toga.Group.HELP,
+            ),
+        )
+
+    def _submenu(self, group, menubar):
+        try:
+            return self._menu_groups[group]
+        except KeyError:
+            if group is None:
+                submenu = menubar
+            else:
+                parent_menu = self._submenu(group.parent, menubar)
+
+                submenu = WinForms.ToolStripMenuItem(group.text)
+
+                # Top level menus are added in a different way to submenus
+                if group.parent is None:
+                    parent_menu.Items.Add(submenu)
+                else:
+                    parent_menu.DropDownItems.Add(submenu)
+
+            self._menu_groups[group] = submenu
+        return submenu
 
     def create_menus(self):
         if self.interface.main_window is None:  # pragma: no branch
@@ -165,90 +253,15 @@ class App:
 
         window.resize_content()
 
-    def _submenu(self, group, menubar):
-        try:
-            return self._menu_groups[group]
-        except KeyError:
-            if group is None:
-                submenu = menubar
-            else:
-                parent_menu = self._submenu(group.parent, menubar)
+    ######################################################################
+    # App lifecycle
+    ######################################################################
 
-                submenu = WinForms.ToolStripMenuItem(group.text)
+    def exit(self):  # pragma: no cover
+        self._is_exiting = True
+        self.native.Exit()
 
-                # Top level menus are added in a different way to submenus
-                if group.parent is None:
-                    parent_menu.Items.Add(submenu)
-                else:
-                    parent_menu.DropDownItems.Add(submenu)
-
-            self._menu_groups[group] = submenu
-        return submenu
-
-    def _create_app_commands(self):
-        self.interface.commands.add(
-            # About should be the last item in the Help menu, in a section on its own.
-            toga.Command(
-                lambda _: self.interface.about(),
-                f"About {self.interface.formal_name}",
-                group=toga.Group.HELP,
-                section=sys.maxsize,
-            ),
-            #
-            toga.Command(None, "Preferences", group=toga.Group.FILE),
-            #
-            # On Windows, the Exit command doesn't usually contain the app name. It
-            # should be the last item in the File menu, in a section on its own.
-            toga.Command(
-                lambda _: self.interface.on_exit(),
-                "Exit",
-                shortcut=Key.MOD_1 + "q",
-                group=toga.Group.FILE,
-                section=sys.maxsize,
-            ),
-            #
-            toga.Command(
-                lambda _: self.interface.visit_homepage(),
-                "Visit homepage",
-                enabled=self.interface.home_page is not None,
-                group=toga.Group.HELP,
-            ),
-        )
-
-    def winforms_thread_exception(self, sender, winforms_exc):  # pragma: no cover
-        # The PythonException returned by Winforms doesn't give us
-        # easy access to the underlying Python stacktrace; so we
-        # reconstruct it from the string message.
-        # The Python message is helpfully included in square brackets,
-        # as the context for the first line in the .net stack trace.
-        # So, look for the closing bracket and the start of the Python.net
-        # stack trace. Then, reconstruct the line breaks internal to the
-        # remaining string.
-        print("Traceback (most recent call last):")
-        py_exc = winforms_exc.get_Exception()
-        full_stack_trace = py_exc.StackTrace
-        regex = re.compile(
-            r"^\[(?:'(.*?)', )*(?:'(.*?)')\]   (?:.*?) Python\.Runtime",
-            re.DOTALL | re.UNICODE,
-        )
-
-        stacktrace_relevant_lines = regex.findall(full_stack_trace)
-        if len(stacktrace_relevant_lines) == 0:
-            self.print_stack_trace(full_stack_trace)
-        else:
-            for lines in stacktrace_relevant_lines:
-                for line in lines:
-                    self.print_stack_trace(line)
-        print(py_exc.Message)
-
-    @classmethod
-    def print_stack_trace(cls, stack_trace_line):  # pragma: no cover
-        for level in stack_trace_line.split("', '"):
-            for line in level.split("\\n"):
-                if line:
-                    print(line)
-
-    def run_app(self):  # pragma: no cover
+    def _run_app(self):  # pragma: no cover
         # Enable coverage tracing on this non-Python-created thread
         # (https://github.com/nedbat/coveragepy/issues/686).
         if threading._trace_hook:
@@ -272,7 +285,7 @@ class App:
             self._exception = None
 
     def main_loop(self):
-        thread = Threading.Thread(Threading.ThreadStart(self.run_app))
+        thread = Threading.Thread(Threading.ThreadStart(self._run_app))
         thread.SetApartmentState(Threading.ApartmentState.STA)
         thread.Start()
         thread.Join()
@@ -283,6 +296,29 @@ class App:
         # a thread boundary.
         if self._exception:  # pragma: no cover
             raise self._exception
+
+    def set_main_window(self, window):
+        self.app_context.MainForm = window._impl.native
+
+    ######################################################################
+    # App resources
+    ######################################################################
+
+    def get_screens(self):
+        primary_screen = ScreenImpl(WinForms.Screen.PrimaryScreen)
+        screen_list = [primary_screen] + [
+            ScreenImpl(native=screen)
+            for screen in WinForms.Screen.AllScreens
+            if screen != primary_screen.native
+        ]
+        return screen_list
+
+    ######################################################################
+    # App capabilities
+    ######################################################################
+
+    def beep(self):
+        SystemSounds.Beep.Play()
 
     def show_about_dialog(self):
         message_parts = []
@@ -301,24 +337,23 @@ class App:
             f"About {self.interface.formal_name}", "\n".join(message_parts)
         )
 
-    def beep(self):
-        SystemSounds.Beep.Play()
+    ######################################################################
+    # Cursor control
+    ######################################################################
 
-    def exit(self):  # pragma: no cover
-        self._is_exiting = True
-        self.native.Exit()
+    def hide_cursor(self):
+        if self._cursor_visible:
+            WinForms.Cursor.Hide()
+        self._cursor_visible = False
 
-    def get_screens(self):
-        primary_screen = ScreenImpl(WinForms.Screen.PrimaryScreen)
-        screen_list = [primary_screen] + [
-            ScreenImpl(native=screen)
-            for screen in WinForms.Screen.AllScreens
-            if screen != primary_screen.native
-        ]
-        return screen_list
+    def show_cursor(self):
+        if not self._cursor_visible:
+            WinForms.Cursor.Show()
+        self._cursor_visible = True
 
-    def set_main_window(self, window):
-        self.app_context.MainForm = window._impl.native
+    ######################################################################
+    # Window control
+    ######################################################################
 
     def get_current_window(self):
         for window in self.interface.windows:
@@ -329,6 +364,10 @@ class App:
     def set_current_window(self, window):
         window._impl.native.Activate()
 
+    ######################################################################
+    # Full screen control
+    ######################################################################
+
     def enter_full_screen(self, windows):
         for window in windows:
             window._impl.set_full_screen(True)
@@ -337,20 +376,10 @@ class App:
         for window in windows:
             window._impl.set_full_screen(False)
 
-    def show_cursor(self):
-        if not self._cursor_visible:
-            WinForms.Cursor.Show()
-        self._cursor_visible = True
-
-    def hide_cursor(self):
-        if self._cursor_visible:
-            WinForms.Cursor.Hide()
-        self._cursor_visible = False
-
 
 class DocumentApp(App):  # pragma: no cover
-    def _create_app_commands(self):
-        super()._create_app_commands()
+    def create_app_commands(self):
+        super().create_app_commands()
         self.interface.commands.add(
             toga.Command(
                 lambda w: self.open_file,
