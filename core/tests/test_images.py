@@ -4,6 +4,11 @@ import PIL.Image
 import pytest
 
 import toga
+from toga_dummy.plugins.image_formats import (
+    CustomImage,
+    CustomImageSubclass,
+    DisabledImageConverter,
+)
 from toga_dummy.utils import assert_action_performed_with
 
 RELATIVE_FILE_PATH = Path("resources/sample.png")
@@ -199,7 +204,7 @@ def test_deprecated_arguments(kwargs):
 def test_too_many_arguments(args, kwargs):
     """If multiple arguments are supplied, an error is raised"""
     with pytest.raises(
-        ValueError,
+        TypeError,
         match=r"Received multiple arguments to constructor.",
     ):
         toga.Image(*args, **kwargs)
@@ -265,6 +270,29 @@ def test_as_format_pil(app):
     pil_image = toga_image.as_format(PIL.Image.Image)
     assert isinstance(pil_image, PIL.Image.Image)
     assert pil_image.size == (144, 72)
+
+
+@pytest.mark.parametrize("ImageClass", [CustomImage, CustomImageSubclass])
+def test_create_from_custom_class(app, ImageClass):
+    """toga.Image can be created from custom type"""
+    custom_image = ImageClass()
+    toga_image = toga.Image(custom_image)
+    assert isinstance(toga_image, toga.Image)
+    assert toga_image.size == (144, 72)
+
+
+@pytest.mark.parametrize("ImageClass", [CustomImage, CustomImageSubclass])
+def test_as_format_custom_class(app, ImageClass):
+    """as_format can successfully return a registered custom image type"""
+    toga_image = toga.Image(ABSOLUTE_FILE_PATH)
+    custom_image = toga_image.as_format(ImageClass)
+    assert isinstance(custom_image, ImageClass)
+    assert custom_image.size == (144, 72)
+
+
+def test_disabled_image_plugin(app):
+    """Disabled image plugin shouldn't be available."""
+    assert DisabledImageConverter not in toga.Image._converters()
 
 
 # None is same as supplying nothing; also test a random unrecognized class

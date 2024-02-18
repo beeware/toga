@@ -11,3 +11,4 @@ Reference
    widgets_by_platform
    api/index
    style/index
+   plugins/index

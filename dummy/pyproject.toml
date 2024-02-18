@@ -60,3 +60,7 @@ root = ".."
 dependencies = [
     "toga-core == {version}",
 ]
+
+[project.entry-points."toga.image_formats"]
+dummy = "toga_dummy.plugins.image_formats.CustomImageConverter"
+disabled = "toga_dummy.plugins.image_formats.DisabledImageConverter"
