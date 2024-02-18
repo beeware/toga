@@ -161,27 +161,27 @@ jobs:
       matrix:
         backend: [ "macOS-x86_64", "macOS-arm64", "windows", "linux", "android", "iOS" ]
         include:
-          - platform: ${{ matrix.backend }}
-            pre-command:
+          - pre-command:
             briefcase-run-prefix:
             briefcase-run-args:
             setup-python: true
 
           - backend: "macOS-x86_64"
-            runs-on: "macos-12"
             platform: "macOS"
+            runs-on: "macos-12"
             app-user-data-path: $HOME/Library/Application Support/org.beeware.toga.testbed
 
           - backend: "macOS-arm64"
-            runs-on: "macos-14"
             platform: "macOS"
+            runs-on: "macos-14"
             app-user-data-path: $HOME/Library/Application Support/org.beeware.toga.testbed
 
           # We use a fixed Ubuntu version rather than `-latest` because at some point,
           # `-latest` will be updated, but it will be a soft changeover, which would cause
           # the system Python version to become inconsistent from run to run.
-          - backend: linux
-            runs-on: ubuntu-22.04
+          - backend: "linux"
+            platform: "linux"
+            runs-on: "ubuntu-22.04"
             # The package list should be the same as in tutorial-0.rst, and the BeeWare
             # tutorial, plus blackbox to provide a window manager. We need a window
             # manager that is reasonably lightweight, honors full screen mode, and
@@ -207,17 +207,20 @@ jobs:
             setup-python: false  # Use the system Python packages.
             app-user-data-path: $HOME/.local/share/testbed
 
-          - backend: windows
-            runs-on: windows-latest
+          - backend: "windows"
+            platform: "windows"
+            runs-on: "windows-latest"
             app-user-data-path: $HOME\AppData\Local\Tiberius Yak\Toga Testbed\Data
 
-          - backend: iOS
-            runs-on: macos-14
+          - backend: "iOS"
+            platform: "iOS"
+            runs-on: "macos-14"
             briefcase-run-args: ' -d "iPhone SE (3rd generation)"'
             app-user-data-path: $(xcrun simctl get_app_container booted org.beeware.toga.testbed data)/Documents
 
-          - backend: android
-            runs-on: ubuntu-latest
+          - backend: "android"
+            platform: "android"
+            runs-on: "ubuntu-latest"
             briefcase-run-args: " -d '{\"avd\":\"beePhone\",\"skin\":\"pixel_3a\"}' --Xemulator=-no-window --Xemulator=-no-snapshot --Xemulator=-no-audio --Xemulator=-no-boot-anim --shutdown-on-exit"
             pre-command: |
               # check if virtualization is supported...
@@ -252,7 +255,7 @@ jobs:
     - name: Test App
       working-directory: testbed
       timeout-minutes: 15
-      run: ${{ matrix.briefcase-run-prefix }} briefcase run ${{ matrix.backend }} --test ${{ matrix.briefcase-run-args }}
+      run: ${{ matrix.briefcase-run-prefix }} briefcase run ${{ matrix.platform }} --test ${{ matrix.briefcase-run-args }}
 
     - name: Upload logs
       uses: actions/upload-artifact@v4.3.1
