@@ -272,9 +272,7 @@ class App:
 
             # This catches errors in handlers, and prints them
             # in a usable form.
-            self.native.ThreadException += WeakrefCallable(
-                self.winforms_thread_exception
-            )
+            self.native.ThreadException += WeakrefCallable(winforms_thread_exception)
 
             self.loop.run_forever(self)
         except Exception as e:
