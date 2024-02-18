@@ -21,7 +21,7 @@ defaults:
 
 # Cancel active CI runs for a PR before starting another run
 concurrency:
-  group: ${{ github.ref }}
+  group: ${{ github.workflow}}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -60,17 +60,33 @@ jobs:
         - "winforms"
 
   core:
-    runs-on: ${{ matrix.platform }}-latest
+    runs-on: ${{ matrix.platform }}
     needs: [pre-commit, towncrier, package]
     continue-on-error: ${{ matrix.experimental }}
     strategy:
+      fail-fast: false
       matrix:
-        platform: [ "macos", "ubuntu", "windows" ]
-        python-version: [ "3.8", "3.9", "3.10", "3.11", "3.12" ]
+        platform: [ "macos-12", "macos-14", "ubuntu-latest", "windows-latest" ]
+        python-version: [ "3.8", "3.12", "3.13-dev" ]
         include:
           - experimental: false
-          # - python-version: "3.13-dev"
-          #   experimental: true
+          # Test Python 3.9-3.11 on Ubuntu only
+          - platform: "ubuntu-latest"
+            python-version: "3.9"
+            experimental: false
+          - platform: "ubuntu-latest"
+            python-version: "3.10"
+            experimental: false
+          - platform: "ubuntu-latest"
+            python-version: "3.11"
+            experimental: false
+          # Allow development Python to fail without failing entire job.
+          - python-version: "3.13-dev"
+            experimental: true
+        exclude:
+          # macos-14 (i.e. arm64) does not support Python 3.8
+          - platform: "macos-14"
+            python-version: "3.8"
     steps:
     - uses: actions/checkout@v4.1.1
     - name: Set up Python ${{ matrix.python-version }}
@@ -143,15 +159,22 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        backend: [ "macOS", "windows", "linux", "android", "iOS" ]
+        backend: [ "macOS-x86_64", "macOS-arm64", "windows", "linux", "android", "iOS" ]
         include:
-          - pre-command:
+          - platform: ${{ matrix.backend }}
+            pre-command:
             briefcase-run-prefix:
             briefcase-run-args:
             setup-python: true
 
-          - backend: macOS
-            runs-on: macos-12
+          - backend: "macOS-x86_64"
+            runs-on: "macos-12"
+            platform: "macOS"
+            app-user-data-path: $HOME/Library/Application Support/org.beeware.toga.testbed
+
+          - backend: "macOS-arm64"
+            runs-on: "macos-14"
+            platform: "macOS"
             app-user-data-path: $HOME/Library/Application Support/org.beeware.toga.testbed
 
           # We use a fixed Ubuntu version rather than `-latest` because at some point,
@@ -189,7 +212,7 @@ jobs:
             app-user-data-path: $HOME\AppData\Local\Tiberius Yak\Toga Testbed\Data
 
           - backend: iOS
-            runs-on: macos-12
+            runs-on: macos-14
             briefcase-run-args: ' -d "iPhone SE (3rd generation)"'
             app-user-data-path: $(xcrun simctl get_app_container booted org.beeware.toga.testbed data)/Documents
 
