@@ -87,6 +87,10 @@ jobs:
           # macos-14 (i.e. arm64) does not support Python 3.8
           - platform: "macos-14"
             python-version: "3.8"
+
+          # Pillow isn't available for Python 3.13 on Windows
+          - platform: "windows-latest"
+            python-version: "3.13-dev"
     steps:
     - uses: actions/checkout@v4.1.1
     - name: Set up Python ${{ matrix.python-version }}
