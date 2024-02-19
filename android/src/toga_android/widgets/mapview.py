@@ -29,18 +29,16 @@ class TogaOnMarkerClickListener(dynamic_proxy(Marker.OnMarkerClickListener)):
 
 
 class MapView(Widget):
-    _configured = False
 
     def create(self):
         app_context = self._native_activity.getApplicationContext()
-        if not self._configured:
-            configuration = Configuration.getInstance()
-            configuration.load(
-                app_context,
-                PreferenceManager.getDefaultSharedPreferences(app_context),
-            )
-            # Required by the terms of the OSM license.
-            configuration.setUserAgentValue(toga.App.app.app_id)
+        configuration = Configuration.getInstance()
+        configuration.load(
+            app_context,
+            PreferenceManager.getDefaultSharedPreferences(app_context),
+        )
+        # Required by the terms of the OSM license.
+        configuration.setUserAgentValue(toga.App.app.app_id)
 
         self.native = OSMMapView(self._native_activity)
 

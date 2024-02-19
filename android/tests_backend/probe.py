@@ -90,6 +90,7 @@ class BaseProbe:
 
         if self.app.run_slow:
             delay = max(delay, 1)
+
         if delay:
             print("Waiting for redraw" if message is None else message)
             await asyncio.sleep(delay)
