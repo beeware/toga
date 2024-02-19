@@ -305,7 +305,6 @@ class App:
     # Platform-specific APIs
     ######################################################################
 
-    # TODO #1798: document and test this somehow
     async def intent_result(self, intent):  # pragma: no cover
         warnings.warn(
             "intent_result has been deprecated; use start_activity",
