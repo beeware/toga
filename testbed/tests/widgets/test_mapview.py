@@ -93,6 +93,12 @@ async def test_zoom(widget, probe):
     # We can't read the zoom of a map; but we can probe to get the delta from the
     # minimum to maximum latitude that is currently visible. That delta should be within
     # a broad range at each zoom level.
+    for zoom in range(0, 6):
+        widget.zoom = zoom
+        await probe.redraw(f"Map has been zoomed to level {zoom}", delay=2)
+        map_span = await probe.latitude_span()
+        print(f"SPAN {zoom}: {map_span}")
+
     for zoom, min_span, max_span in [
         (0, 10, 50),
         (1, 1, 10),
@@ -105,7 +111,9 @@ async def test_zoom(widget, probe):
         await probe.redraw(f"Map has been zoomed to level {zoom}", delay=2)
 
         map_span = await probe.latitude_span()
-        assert min_span < map_span < max_span
+        assert (
+            min_span < map_span < max_span
+        ), f"Zoom level {zoom}: failed {min_span} < {map_span} < {max_span}"
 
 
 async def test_add_pins(widget, probe, on_select):
