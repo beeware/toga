@@ -129,6 +129,7 @@ class Window:
         on_close: OnCloseHandler | None = None,
         resizeable=None,  # DEPRECATED
         closeable=None,  # DEPRECATED
+        content: Widget | None = None,
     ) -> None:
         """Create a new Window.
 
@@ -171,7 +172,6 @@ class Window:
 
         self._id = str(id if id else identifier(self))
         self._impl = None
-        self._content = None
         self._is_full_screen = False
         self._closed = False
 
@@ -197,6 +197,8 @@ class Window:
         self._toolbar = CommandSet(on_change=self._impl.create_toolbar, app=self._app)
 
         self.on_close = on_close
+
+        self._content = content
 
     @property
     def screen(self) -> Screen:

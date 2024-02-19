@@ -1,0 +1,1 @@
+Allow setting content when instantiating MainWindow.

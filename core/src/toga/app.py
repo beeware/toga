@@ -210,6 +210,7 @@ class MainWindow(Window):
         minimizable: bool = True,
         resizeable=None,  # DEPRECATED
         closeable=None,  # DEPRECATED
+        content: Widget | None = None,
     ):
         """Create a new main window.
 
@@ -224,6 +225,7 @@ class MainWindow(Window):
         :param minimizable: Can the window be minimized by the user?
         :param resizeable: **DEPRECATED** - Use ``resizable``.
         :param closeable: **DEPRECATED** - Use ``closable``.
+        :param content: Window content
         """
         super().__init__(
             id=id,
@@ -233,6 +235,7 @@ class MainWindow(Window):
             resizable=resizable,
             closable=True,
             minimizable=minimizable,
+            content=content,
             # Deprecated arguments
             resizeable=resizeable,
             closeable=closeable,
