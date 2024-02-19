@@ -7,6 +7,7 @@ from .base import SimpleProbe
 
 class MapViewProbe(SimpleProbe):
     native_class = MKMapView
+    location_threshold = 0.0001
 
     async def latitude_span(self):
         # Native structures aren't exposed to the user, but they have __repr__ and

@@ -47,17 +47,14 @@ class BaseProbe:
             )
             await self.event_listener.event.wait()
 
-    async def redraw(self, message=None, delay=None):
+    async def redraw(self, message=None, delay=0):
         """Request a redraw of the app, waiting until that redraw has completed."""
         if toga.App.app.run_slow:
             # If we're running slow, wait for at least a second
-            print("Waiting for redraw" if message is None else message)
-            if delay:
-                delay = max(1, delay)
-            else:
-                delay = 1
+            delay = max(1, delay)
 
         if delay:
+            print("Waiting for redraw" if message is None else message)
             await asyncio.sleep(delay)
         else:
             # Running at "normal" speed, we need to release to the event loop

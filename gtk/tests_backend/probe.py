@@ -8,7 +8,7 @@ class BaseProbe:
     def repaint_needed(self):
         return Gtk.events_pending()
 
-    async def redraw(self, message=None, delay=None):
+    async def redraw(self, message=None, delay=0):
         """Request a redraw of the app, waiting until that redraw has completed."""
         # Force a repaint
         while self.repaint_needed():
@@ -16,10 +16,10 @@ class BaseProbe:
 
         # If we're running slow, wait for a second
         if toga.App.app.run_slow:
-            print("Waiting for redraw" if message is None else message)
-            delay = 1
+            delay = max(1, delay)
 
         if delay:
+            print("Waiting for redraw" if message is None else message)
             await asyncio.sleep(delay)
 
     def assert_image_size(self, image_size, size, screen):

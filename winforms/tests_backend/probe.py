@@ -18,13 +18,13 @@ KEY_CODES.update(
 
 
 class BaseProbe:
-    async def redraw(self, message=None, delay=None):
+    async def redraw(self, message=None, delay=0):
         """Request a redraw of the app, waiting until that redraw has completed."""
         # Winforms style changes always take effect immediately.
 
         # If we're running slow, wait for a second
         if toga.App.app.run_slow:
-            delay = 1
+            delay = max(1, delay)
 
         if delay:
             print("Waiting for redraw" if message is None else message)

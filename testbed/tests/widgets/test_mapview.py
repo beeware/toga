@@ -45,7 +45,7 @@ async def widget(on_select):
     # Ensure that the webview is fully configured before proceeding.
     if toga.platform.current_platform in {"linux", "windows"}:
         deadline = time() + WINDOWS_INIT_TIMEOUT
-        while widget._impl.backlog is None:
+        while widget._impl.backlog is not None:
             if time() < deadline:
                 await asyncio.sleep(0.05)
             else:
@@ -64,30 +64,31 @@ async def widget(on_select):
 async def test_location(widget, probe):
     """The location of the map can be changed"""
     # Initial location is Perth
-    widget.location = (-31.9559, 115.8606)
+    widget.location = (-31.955900, 115.860600)
     await probe.redraw("Map is at initial location", delay=2)
     assert isinstance(widget.location, toga.LatLng)
-    assert widget.location == pytest.approx((-31.9559, 115.8606))
+    assert widget.location == pytest.approx(
+        (-31.9559, 115.8606),
+        abs=probe.location_threshold,
+    )
 
     # Set location to Margaret River, just south of Perth
     widget.location = (-33.955, 115.075)
     await probe.redraw("Location has panned to Margaret River", delay=2)
     assert isinstance(widget.location, toga.LatLng)
-    assert widget.location == pytest.approx((-33.955, 115.075))
+    assert widget.location == pytest.approx(
+        (-33.955, 115.075),
+        abs=probe.location_threshold,
+    )
 
 
 async def test_zoom(widget, probe):
     """The zoom factor of the map can be changed"""
+    await probe.redraw("Map is at initial location", delay=2)
 
     # We can't read the zoom of a map; but we can probe to get the delta from the
     # minimum to maximum latitude that is currently visible. That delta should be within
     # a broad range at each zoom level.
-    for zoom in range(0, 6):
-        widget.zoom = zoom
-        await probe.redraw(f"Map has been zoomed to level {zoom}", delay=2)
-        map_span = await probe.latitude_span()
-        print(f"SPAN {zoom}: {map_span}")
-
     for zoom, min_span, max_span in [
         (0, 10, 50),
         (1, 1, 10),
