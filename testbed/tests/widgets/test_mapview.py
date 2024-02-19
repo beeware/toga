@@ -41,26 +41,15 @@ async def widget(on_select):
 
     widget = toga.MapView(style=Pack(flex=1), on_select=on_select)
 
-    # Some implementations are a WebView wearing a trenchcoat. Ensure that the webview
-    # is fully configured before proceeding.
+    # Some implementations of MapView are a WebView wearing a trenchcoat.
+    # Ensure that the webview is fully configured before proceeding.
     if toga.platform.current_platform in {"linux", "windows"}:
         deadline = time() + WINDOWS_INIT_TIMEOUT
-        while True:
-            try:
-                # Default user agents are a mess, but they all start with "Mozilla/5.0"
-                ua = widget.user_agent
-                assert ua.startswith("Mozilla/5.0 (")
-                break
-            except AssertionError:
-                # On Windows, user_agent will return an empty string during initialization.
-                if (
-                    toga.platform.current_platform == "windows"
-                    and ua == ""
-                    and time() < deadline
-                ):
-                    await asyncio.sleep(0.05)
-                else:
-                    raise
+        while widget._impl.backlog is None:
+            if time() < deadline:
+                await asyncio.sleep(0.05)
+            else:
+                raise RuntimeError("MapView web canvas didn't initialize")
 
     yield widget
 

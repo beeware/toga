@@ -125,7 +125,7 @@ class MapView(Widget):
                     # The object returned can't be parsed; it's probably a
                     # Javascript Object.
                     future.set_result(None)
-                else:
+                else:  # pragma: no cover
                     exc = RuntimeError(str(e))
                     future.set_exception(exc)
 
@@ -157,7 +157,7 @@ class MapView(Widget):
     def get_location(self):
         if self.backlog is None:
             return self._invoke("map.getCenter().toString();")
-        else:
+        else:  # pragma: no cover
             print(
                 "MapView isn't fully initialized. "
                 "MapView.location result will be unreliable"
@@ -174,7 +174,7 @@ class MapView(Widget):
             2: 10,
             3: 13,
             4: 16,
-            5: 17,
+            5: 18,
         }[zoom]
 
         self._invoke(f"map.setZoom({osm_zoom});")
