@@ -834,6 +834,9 @@ def test_deprecated_names_open_file_dialog(window, app):
     with pytest.warns(
         DeprecationWarning,
         match=r"open_file_dialog\(multiselect\) has been renamed multiple_select",
+    ), pytest.warns(
+        DeprecationWarning,
+        match=r"Synchronous `on_result` handlers have been deprecated; use `await` on the asynchronous result",
     ):
         dialog = window.open_file_dialog(
             "Title",
@@ -868,6 +871,9 @@ def test_deprecated_names_select_folder_dialog(window, app):
     with pytest.warns(
         DeprecationWarning,
         match=r"select_folder_dialog\(multiselect\) has been renamed multiple_select",
+    ), pytest.warns(
+        DeprecationWarning,
+        match=r"Synchronous `on_result` handlers have been deprecated; use `await` on the asynchronous result",
     ):
         dialog = window.select_folder_dialog(
             "Title",

@@ -123,6 +123,9 @@ source = [
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
+filterwarnings = [
+    "error",
+]
 
 [project.entry-points."toga.image_formats"]
 pil = "toga.plugins.image_formats.PILConverter"

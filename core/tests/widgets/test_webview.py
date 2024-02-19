@@ -10,6 +10,7 @@ from toga_dummy.utils import (
     assert_action_performed_with,
     attribute_value,
 )
+from toga_dummy.widgets.webview import WebView as DummyWebView
 
 
 @pytest.fixture
@@ -44,6 +45,30 @@ def test_create_with_values():
     assert widget.url == "https://beeware.org"
     assert widget.user_agent == "Custom agent"
     assert widget.on_webview_load._raw == on_webview_load
+
+
+def test_webview_load_disabled(monkeypatch):
+    """If the backend doesn't support on_webview_load, a warning is raised."""
+    try:
+        # Temporarily set the feature attribute on the backend
+        DummyWebView.SUPPORTS_ON_WEBVIEW_LOAD = False
+
+        # Instantiate a new widget with a hobbled backend.
+        widget = toga.WebView()
+        handler = Mock()
+
+        # Setting the handler raises a warning
+        with pytest.warns(
+            toga.NotImplementedWarning,
+            match=r"\[Dummy\] Not implemented: WebView\.on_webview_load",
+        ):
+            widget.on_webview_load = handler
+
+        # But the handler is still installed
+        assert widget.on_webview_load._raw == handler
+    finally:
+        # Clear the feature attribute.
+        del DummyWebView.SUPPORTS_ON_WEBVIEW_LOAD
 
 
 @pytest.mark.parametrize(

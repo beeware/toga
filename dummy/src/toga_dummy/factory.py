@@ -1,3 +1,5 @@
+from toga import NotImplementedWarning
+
 from . import dialogs
 from .app import App, DocumentApp, MainWindow
 from .command import Command
@@ -36,7 +38,7 @@ from .window import Window
 
 
 def not_implemented(feature):
-    raise NotImplementedError()
+    NotImplementedWarning.warn("Dummy", feature)
 
 
 __all__ = [

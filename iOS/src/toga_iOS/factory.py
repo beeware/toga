@@ -1,3 +1,5 @@
+from toga import NotImplementedWarning
+
 from . import dialogs
 from .app import App, MainWindow
 from .colors import native_color
@@ -36,7 +38,7 @@ from .window import Window
 
 
 def not_implemented(feature):
-    print(f"[iOS] Not implemented: {feature}")  # pragma: nocover
+    NotImplementedWarning.warn("iOS", feature)
 
 
 __all__ = [
