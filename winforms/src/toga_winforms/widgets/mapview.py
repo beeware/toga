@@ -185,7 +185,7 @@ class MapView(Widget):
         if self.backlog is None:
             result = self._invoke("map.getCenter();")
             return LatLng(result["lat"], result["lng"])
-        else:
+        else:  # pragma: no cover
             print(
                 "MapView isn't fully initialized. "
                 "Mapview.location result will be unreliable"
@@ -202,7 +202,7 @@ class MapView(Widget):
             2: 10,
             3: 13,
             4: 16,
-            5: 17,
+            5: 18,
         }[zoom]
 
         self._invoke(f"map.setZoom({osm_zoom});")
