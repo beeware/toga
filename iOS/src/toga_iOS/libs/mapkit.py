@@ -54,13 +54,6 @@ class MKCoordinateRegion(Structure):
         return f"{self.center}, span={self.span}"
 
 
-def MKCoordinateRegionMake(latitude, longitude, latitude_delta, longitude_delta):
-    return MKCoordinateRegion(
-        CLLocationCoordinate2D(latitude, longitude),
-        MKCoordinateSpan(latitude_delta, longitude_delta),
-    )
-
-
 ######################################################################
 # MKMapView.h
 MKMapView = ObjCClass("MKMapView")
