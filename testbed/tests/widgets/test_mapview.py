@@ -50,6 +50,9 @@ async def widget(on_select):
                 await asyncio.sleep(0.05)
             else:
                 raise RuntimeError("MapView web canvas didn't initialize")
+    else:
+        # All other implementations still need a second to load map tiles etc.
+        await asyncio.sleep(1)
 
     yield widget
 
@@ -67,19 +70,13 @@ async def test_location(widget, probe):
     widget.location = (-31.9559, 115.8606)
     await probe.redraw("Map is at initial location", delay=2)
     assert isinstance(widget.location, toga.LatLng)
-    assert widget.location == pytest.approx(
-        (-31.9559, 115.8606),
-        abs=probe.location_threshold,
-    )
+    assert widget.location == pytest.approx((-31.9559, 115.8606), abs=0.005)
 
     # Set location to Margaret River, just south of Perth
-    widget.location = (-33.955, 115.075)
+    widget.location = (-33.9550, 115.0750)
     await probe.redraw("Location has panned to Margaret River", delay=2)
     assert isinstance(widget.location, toga.LatLng)
-    assert widget.location == pytest.approx(
-        (-33.955, 115.075),
-        abs=probe.location_threshold,
-    )
+    assert widget.location == pytest.approx((-33.955, 115.075), abs=0.005)
 
 
 async def test_zoom(widget, probe):

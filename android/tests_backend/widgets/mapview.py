@@ -5,10 +5,6 @@ from .base import SimpleProbe
 
 class MapViewProbe(SimpleProbe):
     native_class = OSMMapView
-    # This is a little lower than ideal, but OSMDroid has something weird
-    # going on where the fidelity of the map center appears to be related
-    # to the map zoom level.
-    location_threshold = 0.001
 
     async def latitude_span(self):
         return self.native.getLatitudeSpanDouble()

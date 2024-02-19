@@ -6,7 +6,6 @@ from .base import SimpleProbe
 
 class MapViewProbe(SimpleProbe):
     native_class = WebView2
-    location_threshold = 0.0001
 
     async def latitude_span(self):
         northeast = self.impl._invoke("map.getBounds().getNorthEast()")
