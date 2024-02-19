@@ -64,7 +64,7 @@ async def widget(on_select):
 async def test_location(widget, probe):
     """The location of the map can be changed"""
     # Initial location is Perth
-    widget.location = (-31.955900, 115.860600)
+    widget.location = (-31.9559, 115.8606)
     await probe.redraw("Map is at initial location", delay=2)
     assert isinstance(widget.location, toga.LatLng)
     assert widget.location == pytest.approx(
