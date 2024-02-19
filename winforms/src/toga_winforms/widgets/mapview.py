@@ -190,7 +190,7 @@ class MapView(Widget):
                 "MapView isn't fully initialized. "
                 "Mapview.location result will be unreliable"
             )
-            return (0.0, 0.0)
+            return LatLng(0.0, 0.0)
 
     def set_location(self, position):
         self._invoke(f"map.panTo({latlng(position)});")
