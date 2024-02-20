@@ -307,7 +307,9 @@ class DocumentMainWindow(Window):
 
 
 class App:
-    app = None
+    #: The currently running :class:`~toga.App`. Since there can only be one running
+    #: Toga app in a process, this is available as a class property via ``toga.App.app``.
+    app: App = None
 
     def __init__(
         self,

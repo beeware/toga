@@ -1,0 +1,1 @@
+The class property ``toga.App.app`` was added as the currently running app to the reference API for ``App``.
