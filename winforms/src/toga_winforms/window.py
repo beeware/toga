@@ -41,6 +41,43 @@ class Window(Container, Scalable):
 
         self.set_full_screen(self.interface.full_screen)
 
+    ######################################################################
+    # Native event handlers
+    ######################################################################
+
+    def winforms_Resize(self, sender, event):
+        self.resize_content()
+
+    def winforms_FormClosing(self, sender, event):
+        # If the app is exiting, or a manual close has been requested, don't get
+        # confirmation; just close.
+        if not self.interface.app._impl._is_exiting and not self._is_closing:
+            if not self.interface.closable:
+                # Window isn't closable, so any request to close should be cancelled.
+                event.Cancel = True
+            else:
+                # See _is_closing comment in __init__.
+                self.interface.on_close()
+                event.Cancel = True
+
+    ######################################################################
+    # Window properties
+    ######################################################################
+
+    def get_title(self):
+        return self.native.Text
+
+    def set_title(self, title):
+        self.native.Text = title
+
+    ######################################################################
+    # Window lifecycle
+    ######################################################################
+
+    def close(self):
+        self._is_closing = True
+        self.native.Close()
+
     def create_toolbar(self):
         if self.interface.toolbar:
             if self.toolbar_native:
@@ -81,46 +118,9 @@ class Window(Container, Scalable):
 
         self.resize_content()
 
-    def get_position(self):
-        location = self.native.Location
-        return tuple(map(self.scale_out, (location.X, location.Y)))
-
-    def set_position(self, position):
-        self.native.Location = Point(*map(self.scale_in, position))
-
-    def get_size(self):
-        size = self.native.Size
-        return (
-            self.scale_out(size.Width - self.decor_width()),
-            self.scale_out(size.Height - self.decor_height()),
-        )
-
-    def set_size(self, size):
-        width, height = size
-        self.native.Size = Size(
-            self.scale_in(width) + self.decor_width(),
-            self.scale_in(height) + self.decor_height(),
-        )
-
     def set_app(self, app):
         icon_impl = app.interface.icon._impl
         self.native.Icon = icon_impl.native
-
-    def get_title(self):
-        return self.native.Text
-
-    def set_title(self, title):
-        self.native.Text = title
-
-    def refreshed(self):
-        super().refreshed()
-        layout = self.interface.content.layout
-        self.native.MinimumSize = Size(
-            self.scale_in(layout.min_width) + self.decor_width(),
-            self.scale_in(layout.min_height)
-            + self.top_bars_height()
-            + self.decor_height(),
-        )
 
     def show(self):
         if self.interface.content is not None:
@@ -129,26 +129,90 @@ class Window(Container, Scalable):
             self.native.Icon = self.interface.app.icon._impl.native
         self.native.Show()
 
-    def hide(self):
-        self.native.Hide()
+    ######################################################################
+    # Window content and resources
+    ######################################################################
+
+    # "Decor" includes the title bar and the (usually invisible) resize borders. It does
+    # not include the menu bar and toolbar, which are included in the ClientSize (see
+    # _top_bars_height).
+    def _decor_width(self):
+        return self.native.Size.Width - self.native.ClientSize.Width
+
+    def _decor_height(self):
+        return self.native.Size.Height - self.native.ClientSize.Height
+
+    def _top_bars_height(self):
+        vertical_shift = 0
+        if self.toolbar_native:
+            vertical_shift += self.toolbar_native.Height
+        if self.native.MainMenuStrip:
+            vertical_shift += self.native.MainMenuStrip.Height
+        return vertical_shift
+
+    def refreshed(self):
+        super().refreshed()
+        layout = self.interface.content.layout
+        self.native.MinimumSize = Size(
+            self.scale_in(layout.min_width) + self._decor_width(),
+            self.scale_in(layout.min_height)
+            + self._top_bars_height()
+            + self._decor_height(),
+        )
+
+    def resize_content(self):
+        vertical_shift = self._top_bars_height()
+        self.native_content.Location = Point(0, vertical_shift)
+        super().resize_content(
+            self.native.ClientSize.Width,
+            self.native.ClientSize.Height - vertical_shift,
+        )
+
+    ######################################################################
+    # Window size
+    ######################################################################
+
+    def get_size(self):
+        size = self.native.Size
+        return (
+            self.scale_out(size.Width - self._decor_width()),
+            self.scale_out(size.Height - self._decor_height()),
+        )
+
+    def set_size(self, size):
+        width, height = size
+        self.native.Size = Size(
+            self.scale_in(width) + self._decor_width(),
+            self.scale_in(height) + self._decor_height(),
+        )
+
+    ######################################################################
+    # Window position
+    ######################################################################
+
+    def get_current_screen(self):
+        return ScreenImpl(WinForms.Screen.FromControl(self.native))
+
+    def get_position(self):
+        location = self.native.Location
+        return tuple(map(self.scale_out, (location.X, location.Y)))
+
+    def set_position(self, position):
+        self.native.Location = Point(*map(self.scale_in, position))
+
+    ######################################################################
+    # Window visibility
+    ######################################################################
 
     def get_visible(self):
         return self.native.Visible
 
-    def winforms_Resize(self, sender, event):
-        self.resize_content()
+    def hide(self):
+        self.native.Hide()
 
-    def winforms_FormClosing(self, sender, event):
-        # If the app is exiting, or a manual close has been requested, don't get
-        # confirmation; just close.
-        if not self.interface.app._impl._is_exiting and not self._is_closing:
-            if not self.interface.closable:
-                # Window isn't closable, so any request to close should be cancelled.
-                event.Cancel = True
-            else:
-                # See _is_closing comment in __init__.
-                self.interface.on_close()
-                event.Cancel = True
+    ######################################################################
+    # Window state
+    ######################################################################
 
     def set_full_screen(self, is_full_screen):
         if is_full_screen:
@@ -161,37 +225,9 @@ class Window(Container, Scalable):
             )
             self.native.WindowState = WinForms.FormWindowState.Normal
 
-    def close(self):
-        self._is_closing = True
-        self.native.Close()
-
-    # "Decor" includes the title bar and the (usually invisible) resize borders. It does
-    # not include the menu bar and toolbar, which are included in the ClientSize (see
-    # top_bars_height).
-    def decor_width(self):
-        return self.native.Size.Width - self.native.ClientSize.Width
-
-    def decor_height(self):
-        return self.native.Size.Height - self.native.ClientSize.Height
-
-    def top_bars_height(self):
-        vertical_shift = 0
-        if self.toolbar_native:
-            vertical_shift += self.toolbar_native.Height
-        if self.native.MainMenuStrip:
-            vertical_shift += self.native.MainMenuStrip.Height
-        return vertical_shift
-
-    def resize_content(self):
-        vertical_shift = self.top_bars_height()
-        self.native_content.Location = Point(0, vertical_shift)
-        super().resize_content(
-            self.native.ClientSize.Width,
-            self.native.ClientSize.Height - vertical_shift,
-        )
-
-    def get_current_screen(self):
-        return ScreenImpl(WinForms.Screen.FromControl(self.native))
+    ######################################################################
+    # Window capabilities
+    ######################################################################
 
     def get_image_data(self):
         size = Size(self.native_content.Size.Width, self.native_content.Size.Height)

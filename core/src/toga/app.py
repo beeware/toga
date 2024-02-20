@@ -495,49 +495,11 @@ class App:
         self.commands.on_change = self._impl.create_menus
 
     def _create_impl(self):
-        self.factory.App(interface=self)
+        return self.factory.App(interface=self)
 
-    @property
-    def screens(self) -> list[Screen]:
-        """Returns a list of available screens."""
-        return [screen.interface for screen in self._impl.get_screens()]
-
-    @property
-    def paths(self) -> Paths:
-        """Paths for platform-appropriate locations on the user's file system.
-
-        Some platforms do not allow access to any file system location other than these
-        paths. Even when arbitrary file access is allowed, there are preferred locations
-        for each type of content.
-        """
-        return self._paths
-
-    @property
-    def camera(self) -> Camera:
-        """A representation of the device's camera (or cameras)."""
-        try:
-            return self._camera
-        except AttributeError:
-            # Instantiate the camera instance for this app on first access
-            # This will raise a exception if the platform doesn't implement
-            # the Camera API.
-            self._camera = Camera(self)
-        return self._camera
-
-    @property
-    def name(self) -> str:
-        """**DEPRECATED** – Use :any:`formal_name`."""
-        warn(
-            "App.name is deprecated. Use formal_name instead",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-        return self._formal_name
-
-    @property
-    def formal_name(self) -> str:
-        """The human-readable name of the app (read-only)."""
-        return self._formal_name
+    ######################################################################
+    # App properties
+    ######################################################################
 
     @property
     def app_name(self) -> str:
@@ -559,28 +521,20 @@ class App:
         return self._author
 
     @property
-    def version(self) -> str | None:
-        """The version number of the app (read-only)."""
-        return self._version
+    def description(self) -> str | None:
+        """A brief (one line) description of the app (read-only)."""
+        return self._description
+
+    @property
+    def formal_name(self) -> str:
+        """The human-readable name of the app (read-only)."""
+        return self._formal_name
 
     @property
     def home_page(self) -> str | None:
         """The URL of a web page for the app (read-only). Used in auto-generated help
         menu items."""
         return self._home_page
-
-    @property
-    def description(self) -> str | None:
-        """A brief (one line) description of the app (read-only)."""
-        return self._description
-
-    @property
-    def id(self) -> str:
-        """**DEPRECATED** – Use :any:`app_id`."""
-        warn(
-            "App.id is deprecated. Use app_id instead", DeprecationWarning, stacklevel=2
-        )
-        return self._app_id
 
     @property
     def icon(self) -> Icon:
@@ -599,6 +553,135 @@ class App:
             self._icon = icon_or_name
         else:
             self._icon = Icon(icon_or_name)
+
+    @property
+    def id(self) -> str:
+        """**DEPRECATED** – Use :any:`app_id`."""
+        warn(
+            "App.id is deprecated. Use app_id instead", DeprecationWarning, stacklevel=2
+        )
+        return self._app_id
+
+    @property
+    def version(self) -> str | None:
+        """The version number of the app (read-only)."""
+        return self._version
+
+    ######################################################################
+    # App lifecycle
+    ######################################################################
+
+    def add_background_task(self, handler: BackgroundTask) -> None:
+        """Schedule a task to run in the background.
+
+        Schedules a coroutine or a generator to run in the background. Control
+        will be returned to the event loop during await or yield statements,
+        respectively. Use this to run background tasks without blocking the
+        GUI. If a regular callable is passed, it will be called as is and will
+        block the GUI until the call returns.
+
+        :param handler: A coroutine, generator or callable.
+        """
+        self.loop.call_soon_threadsafe(wrapped_handler(self, handler))
+
+    def exit(self) -> None:
+        """Exit the application gracefully.
+
+        This *does not* invoke the ``on_exit`` handler; the app will be immediately
+        and unconditionally closed.
+        """
+        self._impl.exit()
+
+    @property
+    def loop(self) -> asyncio.AbstractEventLoop:
+        """The `event loop
+        <https://docs.python.org/3/library/asyncio-eventloop.html>`__ of the app's main
+        thread (read-only)."""
+        return self._impl.loop
+
+    def main_loop(self) -> None:
+        """Start the application.
+
+        On desktop platforms, this method will block until the application has exited.
+        On mobile and web platforms, it returns immediately.
+        """
+        # Modify signal handlers to make sure Ctrl-C is caught and handled.
+        signal.signal(signal.SIGINT, signal.SIG_DFL)
+
+        self._impl.main_loop()
+
+    @property
+    def main_window(self) -> MainWindow:
+        """The main window for the app."""
+        return self._main_window
+
+    @main_window.setter
+    def main_window(self, window: MainWindow) -> None:
+        self._main_window = window
+        self._impl.set_main_window(window)
+
+    def _verify_startup(self):
+        if not isinstance(self.main_window, MainWindow):
+            raise ValueError(
+                "Application does not have a main window. "
+                "Does your startup() method assign a value to self.main_window?"
+            )
+
+    def _startup(self):
+        # This is a wrapper around the user's startup method that performs any
+        # post-setup validation.
+        self.startup()
+        self._verify_startup()
+
+    def startup(self) -> None:
+        """Create and show the main window for the application.
+
+        Subclasses can override this method to define customized startup behavior;
+        however, any override *must* ensure the :any:`main_window` has been assigned
+        before it returns.
+        """
+        self.main_window = MainWindow(title=self.formal_name, id="main")
+
+        if self._startup_method:
+            self.main_window.content = self._startup_method(self)
+
+        self.main_window.show()
+
+    ######################################################################
+    # App resources
+    ######################################################################
+
+    @property
+    def camera(self) -> Camera:
+        """A representation of the device's camera (or cameras)."""
+        try:
+            return self._camera
+        except AttributeError:
+            # Instantiate the camera instance for this app on first access
+            # This will raise a exception if the platform doesn't implement
+            # the Camera API.
+            self._camera = Camera(self)
+        return self._camera
+
+    @property
+    def commands(self) -> MutableSet[Command]:
+        """The commands available in the app."""
+        return self._commands
+
+    @property
+    def paths(self) -> Paths:
+        """Paths for platform-appropriate locations on the user's file system.
+
+        Some platforms do not allow access to any file system location other than these
+        paths. Even when arbitrary file access is allowed, there are preferred locations
+        for each type of content.
+        """
+        return self._paths
+
+    @property
+    def screens(self) -> list[Screen]:
+        """Returns a list of available screens."""
+        return [screen.interface for screen in self._impl.get_screens()]
 
     @property
     def widgets(self) -> Mapping[str, Widget]:
@@ -620,33 +703,44 @@ class App:
         return self._windows
 
     ######################################################################
-    # 2023-10: Backwards compatibility
+    # App capabilities
     ######################################################################
 
-    # Support WindowSet __iadd__ and __isub__
-    @windows.setter
-    def windows(self, windows):
-        if windows is not self._windows:
-            raise AttributeError("can't set attribute 'windows'")
+    def about(self) -> None:
+        """Display the About dialog for the app.
+
+        Default implementation shows a platform-appropriate about dialog using app
+        metadata. Override if you want to display a custom About dialog.
+        """
+        self._impl.show_about_dialog()
+
+    def beep(self) -> None:
+        """Play the default system notification sound."""
+        self._impl.beep()
+
+    def visit_homepage(self) -> None:
+        """Open the application's :any:`home_page` in the default browser.
+
+        If the :any:`home_page` is ``None``, this is a no-op.
+        """
+        if self.home_page is not None:
+            webbrowser.open(self.home_page)
 
     ######################################################################
-    # End backwards compatibility
+    # Cursor control
     ######################################################################
 
-    @property
-    def commands(self) -> MutableSet[Command]:
-        """The commands available in the app."""
-        return self._commands
+    def hide_cursor(self) -> None:
+        """Hide cursor from view."""
+        self._impl.hide_cursor()
 
-    @property
-    def main_window(self) -> MainWindow:
-        """The main window for the app."""
-        return self._main_window
+    def show_cursor(self) -> None:
+        """Make the cursor visible."""
+        self._impl.show_cursor()
 
-    @main_window.setter
-    def main_window(self, window: MainWindow) -> None:
-        self._main_window = window
-        self._impl.set_main_window(window)
+    ######################################################################
+    # Window control
+    ######################################################################
 
     @property
     def current_window(self) -> Window | None:
@@ -660,6 +754,16 @@ class App:
     def current_window(self, window: Window):
         """Set a window into current active focus."""
         self._impl.set_current_window(window)
+
+    ######################################################################
+    # Full screen control
+    ######################################################################
+
+    def exit_full_screen(self) -> None:
+        """Exit full screen mode."""
+        if self.is_full_screen:
+            self._impl.exit_full_screen(self._full_screen_windows)
+            self._full_screen_windows = None
 
     @property
     def is_full_screen(self) -> bool:
@@ -682,85 +786,9 @@ class App:
             self._impl.enter_full_screen(windows)
             self._full_screen_windows = windows
 
-    def exit_full_screen(self) -> None:
-        """Exit full screen mode."""
-        if self.is_full_screen:
-            self._impl.exit_full_screen(self._full_screen_windows)
-            self._full_screen_windows = None
-
-    def show_cursor(self) -> None:
-        """Make the cursor visible."""
-        self._impl.show_cursor()
-
-    def hide_cursor(self) -> None:
-        """Hide cursor from view."""
-        self._impl.hide_cursor()
-
-    def startup(self) -> None:
-        """Create and show the main window for the application.
-
-        Subclasses can override this method to define customized startup behavior;
-        however, any override *must* ensure the :any:`main_window` has been assigned
-        before it returns.
-        """
-        self.main_window = MainWindow(title=self.formal_name, id="main")
-
-        if self._startup_method:
-            self.main_window.content = self._startup_method(self)
-
-        self.main_window.show()
-
-    def _startup(self):
-        # This is a wrapper around the user's startup method that performs any
-        # post-setup validation.
-        self.startup()
-        self._verify_startup()
-
-    def _verify_startup(self):
-        if not isinstance(self.main_window, MainWindow):
-            raise ValueError(
-                "Application does not have a main window. "
-                "Does your startup() method assign a value to self.main_window?"
-            )
-
-    def about(self) -> None:
-        """Display the About dialog for the app.
-
-        Default implementation shows a platform-appropriate about dialog using app
-        metadata. Override if you want to display a custom About dialog.
-        """
-        self._impl.show_about_dialog()
-
-    def visit_homepage(self) -> None:
-        """Open the application's :any:`home_page` in the default browser.
-
-        If the :any:`home_page` is ``None``, this is a no-op.
-        """
-        if self.home_page is not None:
-            webbrowser.open(self.home_page)
-
-    def beep(self) -> None:
-        """Play the default system notification sound."""
-        self._impl.beep()
-
-    def main_loop(self) -> None:
-        """Start the application.
-
-        On desktop platforms, this method will block until the application has exited.
-        On mobile and web platforms, it returns immediately.
-        """
-        # Modify signal handlers to make sure Ctrl-C is caught and handled.
-        signal.signal(signal.SIGINT, signal.SIG_DFL)
-
-        self._impl.main_loop()
-
-    def exit(self) -> None:
-        """Exit the application gracefully.
-
-        This *does not* invoke the ``on_exit`` handler; the app will be immediately
-        and unconditionally closed.
-        """
-        self._impl.exit()
+    ######################################################################
+    # App events
+    ######################################################################
 
     @property
     def on_exit(self) -> OnExitHandler:
@@ -775,25 +803,29 @@ class App:
 
         self._on_exit = wrapped_handler(self, handler, cleanup=cleanup)
 
+    ######################################################################
+    # 2023-10: Backwards compatibility
+    ######################################################################
+
     @property
-    def loop(self) -> asyncio.AbstractEventLoop:
-        """The `event loop
-        <https://docs.python.org/3/library/asyncio-eventloop.html>`__ of the app's main
-        thread (read-only)."""
-        return self._impl.loop
+    def name(self) -> str:
+        """**DEPRECATED** – Use :any:`formal_name`."""
+        warn(
+            "App.name is deprecated. Use formal_name instead",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self._formal_name
 
-    def add_background_task(self, handler: BackgroundTask) -> None:
-        """Schedule a task to run in the background.
+    # Support WindowSet __iadd__ and __isub__
+    @windows.setter
+    def windows(self, windows):
+        if windows is not self._windows:
+            raise AttributeError("can't set attribute 'windows'")
 
-        Schedules a coroutine or a generator to run in the background. Control
-        will be returned to the event loop during await or yield statements,
-        respectively. Use this to run background tasks without blocking the
-        GUI. If a regular callable is passed, it will be called as is and will
-        block the GUI until the call returns.
-
-        :param handler: A coroutine, generator or callable.
-        """
-        self.loop.call_soon_threadsafe(wrapped_handler(self, handler))
+    ######################################################################
+    # End backwards compatibility
+    ######################################################################
 
 
 class DocumentApp(App):
