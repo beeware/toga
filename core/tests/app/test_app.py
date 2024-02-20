@@ -201,6 +201,7 @@ APP_METADATA = {
 )
 def test_create(
     monkeypatch,
+    event_loop,
     kwargs,
     metadata,
     main_module,
@@ -259,7 +260,7 @@ def test_bad_app_creation(kwargs, exc_type, message):
         toga.App(**kwargs)
 
 
-def test_app_metadata(monkeypatch):
+def test_app_metadata(monkeypatch, event_loop):
     """An app can load metadata from the .dist-info file"""
     monkeypatch.setattr(
         importlib.metadata,
@@ -290,7 +291,7 @@ def test_app_metadata(monkeypatch):
     assert app.description == "A test app"
 
 
-def test_explicit_app_metadata(monkeypatch):
+def test_explicit_app_metadata(monkeypatch, event_loop):
     """App metadata can be provided explicitly, overriding module-level metadata"""
     monkeypatch.setattr(
         importlib.metadata,
@@ -329,7 +330,7 @@ def test_explicit_app_metadata(monkeypatch):
 
 
 @pytest.mark.parametrize("construct", [True, False])
-def test_icon_construction(construct):
+def test_icon_construction(construct, event_loop):
     """The app icon can be set during construction"""
     if construct:
         icon = toga.Icon("path/to/icon")
@@ -390,7 +391,7 @@ def test_no_current_window(app):
     assert app.current_window is None
 
 
-def test_full_screen():
+def test_full_screen(event_loop):
     """The app can be put into full screen mode."""
     window1 = toga.Window()
     window2 = toga.Window()
@@ -424,7 +425,7 @@ def test_full_screen():
     )
 
 
-def test_set_empty_full_screen_window_list():
+def test_set_empty_full_screen_window_list(event_loop):
     """Setting the full screen window list to [] is an explicit exit"""
     app = toga.App(formal_name="Test App", app_id="org.example.test")
     window1 = toga.Window()
@@ -452,7 +453,7 @@ def test_show_hide_cursor(app):
     assert_action_performed(app, "show_cursor")
 
 
-def test_startup_method():
+def test_startup_method(event_loop):
     """If an app provides a startup method, it will be invoked during startup"""
     startup = Mock()
     app = toga.App(
@@ -464,7 +465,7 @@ def test_startup_method():
     startup.assert_called_once_with(app)
 
 
-def test_startup_subclass():
+def test_startup_subclass(event_loop):
     """App can be subclassed"""
 
     class SubclassedApp(toga.App):
@@ -477,7 +478,7 @@ def test_startup_subclass():
     assert app.main_window.title == "Test App"
 
 
-def test_startup_subclass_no_main_window():
+def test_startup_subclass_no_main_window(event_loop):
     """If a subclassed app doesn't define a main window, an error is raised"""
 
     class SubclassedApp(toga.App):
@@ -494,7 +495,7 @@ def test_about(app):
     assert_action_performed(app, "show_about_dialog")
 
 
-def test_visit_homepage(monkeypatch):
+def test_visit_homepage(monkeypatch, event_loop):
     """The app's homepage can be opened"""
     app = toga.App(
         formal_name="Test App",
@@ -600,7 +601,7 @@ def test_background_task(app):
     canary.assert_called_once()
 
 
-def test_deprecated_id():
+def test_deprecated_id(event_loop):
     """The deprecated `id` constructor argument is ignored, and the property of the same
     name is redirected to `app_id`
     """
@@ -613,7 +614,7 @@ def test_deprecated_id():
         assert app.id == "org.example.test"
 
 
-def test_deprecated_name():
+def test_deprecated_name(event_loop):
     """The deprecated `name` property is redirected to `formal_name`"""
     name_warning = r"App.name is deprecated. Use formal_name instead"
     app = toga.App("Test App", "org.example.test")

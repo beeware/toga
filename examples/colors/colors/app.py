@@ -208,7 +208,7 @@ class ColorsApp(toga.App):
 
 
 def main():
-    return ColorsApp("Colors", "org.beeware.widgets.colors")
+    return ColorsApp("Colors", "org.beeware.toga.examples.colors")
 
 
 if __name__ == "__main__":

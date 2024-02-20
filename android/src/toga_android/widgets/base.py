@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from decimal import ROUND_HALF_EVEN, ROUND_UP, Decimal
+from decimal import ROUND_HALF_EVEN, Decimal
 
 from android.graphics import PorterDuff, PorterDuffColorFilter, Rect
 from android.graphics.drawable import ColorDrawable, InsetDrawable
@@ -68,8 +68,7 @@ class Widget(ABC, Scalable):
         self.interface.style.reapply()
 
     @abstractmethod
-    def create(self):
-        ...
+    def create(self): ...
 
     def set_app(self, app):
         pass
@@ -182,18 +181,13 @@ class Widget(ABC, Scalable):
     # TODO: consider calling requestLayout or forceLayout here
     # (https://github.com/beeware/toga/issues/1289#issuecomment-1453096034)
     def refresh(self):
-        intrinsic = self.interface.intrinsic
-        intrinsic.width = intrinsic.height = None
+        # Default values; may be overwritten by rehint().
+        self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
+        self.interface.intrinsic.height = at_least(self.interface._MIN_HEIGHT)
         self.rehint()
-        assert intrinsic.width is not None, self
-        assert intrinsic.height is not None, self
 
-        intrinsic.width = self.scale_out(intrinsic.width, ROUND_UP)
-        intrinsic.height = self.scale_out(intrinsic.height, ROUND_UP)
-
-    @abstractmethod
     def rehint(self):
-        ...
+        pass
 
 
 def align(value):

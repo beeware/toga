@@ -1,10 +1,13 @@
 import System.Windows.Forms as WinForms
-from System.Drawing import Point, Size
+from System.Drawing import Bitmap, Graphics, Point, Size
+from System.Drawing.Imaging import ImageFormat
+from System.IO import MemoryStream
 
-from toga.command import GROUP_BREAK, SECTION_BREAK
+from toga.command import Separator
 
 from .container import Container
 from .libs.wrapper import WeakrefCallable
+from .screens import Screen as ScreenImpl
 from .widgets.base import Scalable
 
 
@@ -49,19 +52,26 @@ class Window(Container, Scalable):
                 self.native.Controls.Add(self.toolbar_native)
                 self.toolbar_native.BringToFront()  # In a dock, "front" means "bottom".
 
+            prev_group = None
             for cmd in self.interface.toolbar:
-                if cmd == GROUP_BREAK:
+                if isinstance(cmd, Separator):
                     item = WinForms.ToolStripSeparator()
-                elif cmd == SECTION_BREAK:
-                    item = WinForms.ToolStripSeparator()
+                    prev_group = None
                 else:
+                    # A change in group requires adding a toolbar separator
+                    if prev_group is not None and prev_group != cmd.group:
+                        self.toolbar_native.Items.Add(WinForms.ToolStripSeparator())
+                        prev_group = None
+                    else:
+                        prev_group = cmd.group
+
                     item = WinForms.ToolStripMenuItem(cmd.text)
                     if cmd.tooltip is not None:
                         item.ToolTipText = cmd.tooltip
                     if cmd.icon is not None:
                         item.Image = cmd.icon._impl.native.ToBitmap()
                     item.Enabled = cmd.enabled
-                    item.Click += WeakrefCallable(cmd._impl.winforms_handler)
+                    item.Click += WeakrefCallable(cmd._impl.winforms_Click)
                     cmd._impl.native.append(item)
                 self.toolbar_native.Items.Add(item)
 
@@ -179,3 +189,21 @@ class Window(Container, Scalable):
             self.native.ClientSize.Width,
             self.native.ClientSize.Height - vertical_shift,
         )
+
+    def get_current_screen(self):
+        return ScreenImpl(WinForms.Screen.FromControl(self.native))
+
+    def get_image_data(self):
+        size = Size(self.native_content.Size.Width, self.native_content.Size.Height)
+        bitmap = Bitmap(size.Width, size.Height)
+        graphics = Graphics.FromImage(bitmap)
+
+        graphics.CopyFromScreen(
+            self.native_content.PointToScreen(Point.Empty),
+            Point(0, 0),
+            size,
+        )
+
+        stream = MemoryStream()
+        bitmap.Save(stream, ImageFormat.Png)
+        return bytes(stream.ToArray())

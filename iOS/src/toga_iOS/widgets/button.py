@@ -36,6 +36,8 @@ class Button(Widget):
             forControlEvents=UIControlEventTouchDown,
         )
 
+        self._icon = None
+
         # Add the layout constraints
         self.add_constraints()
 
@@ -44,6 +46,16 @@ class Button(Widget):
 
     def set_text(self, text):
         self.native.setTitle(text, forState=UIControlStateNormal)
+
+    def get_icon(self):
+        return self._icon
+
+    def set_icon(self, icon):
+        self._icon = icon
+        if icon:
+            self.native.setImage(icon._impl._as_size(48), forState=UIControlStateNormal)
+        else:
+            self.native.setImage(None, forState=UIControlStateNormal)
 
     def set_color(self, color):
         if color is None:

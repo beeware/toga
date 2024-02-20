@@ -1,1 +1,0 @@
-The use of ``pytest-freezegun`` was replaced with ``pytest-freezer``, due to lack of maintenance on the freezegun plugin.

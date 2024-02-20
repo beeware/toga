@@ -1,8 +1,7 @@
 from unittest.mock import Mock
 
-from rubicon.objc import send_message
+from rubicon.objc import objc_id, send_message
 from rubicon.objc.collections import ObjCListInstance
-from rubicon.objc.runtime import objc_id
 
 from toga_cocoa.libs import (
     NSURL,
@@ -241,7 +240,9 @@ class WindowProbe(BaseProbe):
 
     def assert_is_toolbar_separator(self, index, section=False):
         item = self.native.toolbar.items[index]
-        assert str(item.itemIdentifier).startswith("ToolbarSeparator-")
+        assert str(item.itemIdentifier).startswith(
+            f"Toolbar-{'Separator' if section else 'Group'}"
+        )
 
     def assert_toolbar_item(self, index, label, tooltip, has_icon, enabled):
         item = self.native.toolbar.items[index]

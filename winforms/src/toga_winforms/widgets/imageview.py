@@ -1,3 +1,5 @@
+from decimal import ROUND_UP
+
 import System.Windows.Forms as WinForms
 from System.Drawing import Bitmap
 
@@ -32,8 +34,8 @@ class ImageView(Widget):
         width, height, aspect_ratio = rehint_imageview(
             self.interface.image, self.interface.style, self.dpi_scale
         )
-        self.interface.intrinsic.width = width
-        self.interface.intrinsic.height = height
+        self.interface.intrinsic.width = self.scale_out(width, ROUND_UP)
+        self.interface.intrinsic.height = self.scale_out(height, ROUND_UP)
         if aspect_ratio is not None:
             self.native.SizeMode = WinForms.PictureBoxSizeMode.Zoom
         else:

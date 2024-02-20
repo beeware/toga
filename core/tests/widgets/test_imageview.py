@@ -1,6 +1,7 @@
 from pathlib import Path
 from unittest.mock import ANY
 
+import PIL.Image
 import pytest
 from travertino.size import at_least
 
@@ -19,9 +20,8 @@ def widget(app):
     return toga.ImageView()
 
 
-def test_widget_created(widget):
-    "A empty ImageView can be created"
-
+def test_create_empty(widget):
+    """A empty ImageView can be created"""
     # interface/impl round trips
     assert widget._impl.interface is widget
     assert_action_performed(widget, "create ImageView")
@@ -31,12 +31,15 @@ def test_widget_created(widget):
     assert widget.image is None
 
 
-def test_widget_created_with_args(app):
-    "An ImageView can be created with argumentgs"
-    image = toga.Image(Path("resources") / "toga.png")
+ABSOLUTE_FILE_PATH = Path(__file__).parent.parent / "resources/toga.png"
+
+
+def test_create_from_toga_image(app):
+    """An ImageView can be created from a Toga image"""
+    image = toga.Image(ABSOLUTE_FILE_PATH)
     widget = toga.ImageView(image=image)
 
-    # interface/impl round trips
+    # Interface/impl round trips
     assert widget._impl.interface is widget
     assert_action_performed(widget, "create ImageView")
     assert_action_performed_with(widget, "set image", image=image)
@@ -46,8 +49,18 @@ def test_widget_created_with_args(app):
     assert widget.image == image
 
 
+def test_create_from_pil():
+    """An ImageView can be created from a PIL image"""
+    with PIL.Image.open(ABSOLUTE_FILE_PATH) as pil_img:
+        pil_img.load()
+
+    imageview = toga.ImageView(pil_img)
+    assert isinstance(imageview.image, toga.Image)
+    assert imageview.image.size == (32, 32)
+
+
 def test_disable_no_op(widget):
-    "ImageView doesn't have a disabled state"
+    """ImageView doesn't have a disabled state"""
 
     # Enabled by default
     assert widget.enabled
@@ -60,36 +73,36 @@ def test_disable_no_op(widget):
 
 
 def test_focus_noop(widget):
-    "Focus is a no-op."
-
+    """Focus is a no-op."""
     widget.focus()
     assert_action_not_performed(widget, "focus")
 
 
 def test_set_image_str(widget):
-    "The image can be set with a string"
-    widget.image = "resources/toga.png"
+    """The image can be set with a string"""
+    widget.image = ABSOLUTE_FILE_PATH
+
     assert_action_performed_with(widget, "set image", image=ANY)
     assert_action_performed(widget, "refresh")
 
     assert isinstance(widget.image, toga.Image)
-    assert widget.image.path == Path(toga.__file__).parent / "resources" / "toga.png"
+    assert widget.image.path == ABSOLUTE_FILE_PATH
 
 
 def test_set_image_path(widget):
-    "The image can be set with a Path"
-    widget.image = Path("resources") / "toga.png"
+    """The image can be set with a Path"""
+    widget.image = Path(ABSOLUTE_FILE_PATH)
+
     assert_action_performed_with(widget, "set image", image=ANY)
     assert_action_performed(widget, "refresh")
 
     assert isinstance(widget.image, toga.Image)
-    assert widget.image.path == Path(toga.__file__).parent / "resources" / "toga.png"
+    assert widget.image.path == ABSOLUTE_FILE_PATH
 
 
 def test_set_image(widget):
     "The image can be set with an Image instance"
-    image = toga.Image(Path("resources") / "toga.png")
-
+    image = toga.Image(Path(ABSOLUTE_FILE_PATH))
     widget.image = image
     assert_action_performed_with(widget, "set image", image=image)
     assert_action_performed(widget, "refresh")
@@ -99,7 +112,7 @@ def test_set_image(widget):
 
 def test_set_image_none(app):
     "The image can be cleared"
-    widget = toga.ImageView(image="resources/toga.png")
+    widget = toga.ImageView(image=ABSOLUTE_FILE_PATH)
     assert widget.image is not None
 
     widget.image = None
@@ -113,26 +126,26 @@ def test_set_image_none(app):
     "params, expected_width, expected_height, expected_aspect_ratio",
     [
         # Intrinsic image size
-        (dict(style=Pack()), 60, 40, 1.5),
-        (dict(style=Pack(), scale=2), 120, 80, 1.5),
+        (dict(style=Pack()), 144, 72, 2),
+        (dict(style=Pack(), scale=2), 288, 144, 2),
         # Fixed width
-        (dict(style=Pack(width=150)), 150, 100, 1.5),
-        (dict(style=Pack(width=150), scale=2), 300, 200, 1.5),
+        (dict(style=Pack(width=150)), 150, 75, 2),
+        (dict(style=Pack(width=150), scale=2), 300, 150, 2),
         # Fixed height
-        (dict(style=Pack(height=80)), 120, 80, 1.5),
-        (dict(style=Pack(height=80), scale=2), 240, 160, 1.5),
+        (dict(style=Pack(height=80)), 160, 80, 2),
+        (dict(style=Pack(height=80), scale=2), 320, 160, 2),
         # Explicit image size
         (dict(style=Pack(width=37, height=42)), 37, 42, None),
         (dict(style=Pack(width=37, height=42), scale=2), 74, 84, None),
         # Intrinsic image size, flex widget
-        (dict(style=Pack(flex=1)), at_least(60), at_least(40), 1.5),
-        (dict(style=Pack(flex=1), scale=2), at_least(120), at_least(80), 1.5),
+        (dict(style=Pack(flex=1)), at_least(0), at_least(0), 2),
+        (dict(style=Pack(flex=1), scale=2), at_least(0), at_least(0), 2),
         # Fixed width, flex widget
-        (dict(style=Pack(width=150, flex=1)), 150, at_least(100), 1.5),
-        (dict(style=Pack(width=150, flex=1), scale=2), 300, at_least(200), 1.5),
+        (dict(style=Pack(width=150, flex=1)), 150, at_least(0), 2),
+        (dict(style=Pack(width=150, flex=1), scale=2), 300, at_least(0), 2),
         # Fixed height, flex widget
-        (dict(style=Pack(height=80, flex=1)), at_least(120), 80, 1.5),
-        (dict(style=Pack(height=80, flex=1), scale=2), at_least(240), 160, 1.5),
+        (dict(style=Pack(height=80, flex=1)), at_least(0), 80, 2),
+        (dict(style=Pack(height=80, flex=1), scale=2), at_least(0), 160, 2),
         # Explicit image size, flex widget
         (dict(style=Pack(width=37, height=42, flex=1)), 37, 42, None),
         (dict(style=Pack(width=37, height=42, flex=1), scale=2), 74, 84, None),
@@ -145,7 +158,8 @@ def test_rehint_image(
     expected_height,
     expected_aspect_ratio,
 ):
-    image = toga.Image(path="resources/toga.png")
+    path = Path(__file__).parent.parent / "resources/sample.png"
+    image = toga.Image(path)
 
     width, height, aspect_ratio = rehint_imageview(image=image, **params)
     assert width == expected_width
@@ -171,3 +185,18 @@ def test_rehint_empty_image(params):
     assert width == 0
     assert height == 0
     assert aspect_ratio is None
+
+
+def test_as_image_toga():
+    toga_img = toga.Image(ABSOLUTE_FILE_PATH)
+    imageview = toga.ImageView(toga_img)
+    toga_img_2 = imageview.as_image()
+    assert isinstance(toga_img_2, toga.Image)
+    assert toga_img_2.size == (32, 32)
+
+
+def test_as_image_pil():
+    imageview = toga.ImageView(ABSOLUTE_FILE_PATH)
+    pil_img = imageview.as_image(PIL.Image.Image)
+    assert isinstance(pil_img, PIL.Image.Image)
+    assert pil_img.size == (32, 32)

@@ -4,6 +4,7 @@ from PIL import Image, ImageCms
 from rubicon.objc import NSPoint
 
 from toga.colors import TRANSPARENT
+from toga.images import Image as TogaImage
 from toga_cocoa.libs import NSEventType, NSView
 
 from .base import SimpleProbe
@@ -27,7 +28,7 @@ class CanvasProbe(SimpleProbe):
         return reference
 
     def get_image(self):
-        image = Image.open(BytesIO(self.impl.get_image_data()))
+        image = Image.open(BytesIO(TogaImage(self.impl.get_image_data()).data))
 
         try:
             # If the image has an ICC profile, convert it into sRGB colorspace.
@@ -39,12 +40,6 @@ class CanvasProbe(SimpleProbe):
             return ImageCms.profileToProfile(image, src_profile, dst_profile)
         except KeyError:
             return image
-
-    def assert_image_size(self, image, width, height):
-        # Cocoa reports image sizing in the natural screen coordinates, not the size of
-        # the backing store.
-        assert image.width == width
-        assert image.height == height
 
     async def mouse_press(self, x, y):
         await self.mouse_event(

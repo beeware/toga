@@ -11,7 +11,7 @@ class ExampleTableApp(toga.App):
     lbl_fontsize = None
 
     def load_data(self):
-        yak = toga.Icon.TOGA_ICON
+        yak = toga.Icon.DEFAULT_ICON
         red = toga.Icon("icons/red")
         green = toga.Icon("icons/green")
 
@@ -234,7 +234,7 @@ class ExampleTableApp(toga.App):
 
 
 def main():
-    return ExampleTableApp("Table", "org.beeware.widgets.table")
+    return ExampleTableApp("Table", "org.beeware.toga.examples.table")
 
 
 if __name__ == "__main__":

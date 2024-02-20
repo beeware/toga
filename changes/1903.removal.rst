@@ -1,1 +1,0 @@
-The ``weight``, ``style`` and ``variant`` arguments for ``Font`` and ``Font.register`` are now keyword-only.

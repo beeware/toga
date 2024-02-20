@@ -8,7 +8,7 @@ import toga
 
 def icon_probe(app, image):
     module = import_module("tests_backend.icons")
-    return getattr(module, "IconProbe")(app, image)
+    return module.IconProbe(app, image)
 
 
 async def test_icon(app):
@@ -29,6 +29,12 @@ async def test_system_icon(app):
     "The default icon can be obtained"
     probe = icon_probe(app, toga.Icon.DEFAULT_ICON)
     probe.assert_default_icon_content()
+
+
+async def test_platform_icon(app):
+    "A platform-specific icon can be loaded"
+    probe = icon_probe(app, toga.Icon("resources/logo"))
+    probe.assert_platform_icon_content()
 
 
 async def test_bad_icon_file(app):

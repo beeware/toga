@@ -1,3 +1,5 @@
+from decimal import ROUND_UP
+
 import System.Windows.Forms as WinForms
 from travertino.size import at_least
 
@@ -12,6 +14,8 @@ class Button(Widget):
         self.native = WinForms.Button()
         self.native.AutoSizeMode = WinForms.AutoSizeMode.GrowAndShrink
         self.native.Click += WeakrefCallable(self.winforms_click)
+
+        self._icon = None
 
     def winforms_click(self, sender, event):
         self.interface.on_press()
@@ -30,8 +34,20 @@ class Button(Widget):
             text = "\u200B"
         self.native.Text = text
 
+    def get_icon(self):
+        return self._icon
+
+    def set_icon(self, icon):
+        self._icon = icon
+        if icon:
+            self.native.Image = icon._impl.native.ToBitmap()
+        else:
+            self.native.Image = None
+
     def rehint(self):
-        # self.native.Size = Size(0, 0)
-        # print("REHINT Button", self, self.native.PreferredSize)
-        self.interface.intrinsic.width = at_least(self.native.PreferredSize.Width)
-        self.interface.intrinsic.height = self.native.PreferredSize.Height
+        self.interface.intrinsic.width = self.scale_out(
+            at_least(self.native.PreferredSize.Width), ROUND_UP
+        )
+        self.interface.intrinsic.height = self.scale_out(
+            self.native.PreferredSize.Height, ROUND_UP
+        )

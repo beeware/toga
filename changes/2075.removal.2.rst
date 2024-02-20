@@ -1,1 +1,0 @@
-Documents must now provide a ``create()`` method to instantiate a ``main_window`` instance.

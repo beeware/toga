@@ -1,3 +1,8 @@
+from pathlib import Path
+
+import toga_dummy
+
+from .screens import Screen as ScreenImpl
 from .utils import LoggedObject
 
 
@@ -91,8 +96,17 @@ class Window(LoggedObject):
         self._action("close")
         self._set_value("visible", False)
 
+    def get_image_data(self):
+        self._action("get image data")
+        path = Path(toga_dummy.__file__).parent / "resources/screenshot.png"
+        return path.read_bytes()
+
     def set_full_screen(self, is_full_screen):
         self._action("set full screen", full_screen=is_full_screen)
 
     def simulate_close(self):
         self.interface.on_close()
+
+    def get_current_screen(self):
+        # `window.screen` will return `Secondary Screen`
+        return ScreenImpl(native=("Secondary Screen", (-1366, -768), (1366, 768)))

@@ -1,4 +1,5 @@
 import asyncio
+import os
 import signal
 import sys
 from pathlib import Path
@@ -7,20 +8,12 @@ import gbulb
 
 import toga
 from toga import App as toga_App
-from toga.command import GROUP_BREAK, SECTION_BREAK, Command
+from toga.command import Command, Separator
 
 from .keys import gtk_accel
 from .libs import TOGA_DEFAULT_STYLES, Gdk, Gio, GLib, Gtk
+from .screens import Screen as ScreenImpl
 from .window import Window
-
-
-def gtk_menu_item_activate(cmd):
-    """Convert a GTK menu item activation into a command invocation."""
-
-    def _handler(action, data):
-        cmd.action()
-
-    return _handler
 
 
 class MainWindow(Window):
@@ -123,10 +116,10 @@ class App:
     def gtk_activate(self, data=None):
         pass
 
-    def _menu_about(self, app, **kwargs):
+    def _menu_about(self, command, **kwargs):
         self.interface.about()
 
-    def _menu_quit(self, app, **kwargs):
+    def _menu_quit(self, command, **kwargs):
         self.interface.on_exit()
 
     def create_menus(self):
@@ -138,12 +131,12 @@ class App:
         menubar = Gio.Menu()
         section = None
         for cmd in self.interface.commands:
-            if cmd == GROUP_BREAK:
-                section = None
-            elif cmd == SECTION_BREAK:
+            if isinstance(cmd, Separator):
                 section = None
             else:
-                submenu = self._submenu(cmd.group, menubar)
+                submenu, created = self._submenu(cmd.group, menubar)
+                if created:
+                    section = None
 
                 if section is None:
                     section = Gio.Menu()
@@ -151,7 +144,7 @@ class App:
 
                 cmd_id = "command-%s" % id(cmd)
                 action = Gio.SimpleAction.new(cmd_id, None)
-                action.connect("activate", gtk_menu_item_activate(cmd))
+                action.connect("activate", cmd._impl.gtk_activate)
 
                 cmd._impl.native.append(action)
                 cmd._impl.set_enabled(cmd.enabled)
@@ -171,32 +164,47 @@ class App:
 
     def _submenu(self, group, menubar):
         try:
-            return self._menu_groups[group]
+            return self._menu_groups[group], False
         except KeyError:
             if group is None:
                 submenu = menubar
             else:
-                parent_menu = self._submenu(group.parent, menubar)
-
+                parent_menu, _ = self._submenu(group.parent, menubar)
                 submenu = Gio.Menu()
                 self._menu_groups[group] = submenu
 
                 text = group.text
                 if text == "*":
                     text = self.interface.formal_name
-
                 parent_menu.append_submenu(text, submenu)
 
             # Install the item in the group cache.
             self._menu_groups[group] = submenu
 
-            return submenu
+            return submenu, True
 
     def main_loop(self):
         # Modify signal handlers to make sure Ctrl-C is caught and handled.
         signal.signal(signal.SIGINT, signal.SIG_DFL)
 
         self.loop.run_forever(application=self.native)
+
+    def get_screens(self):
+        display = Gdk.Display.get_default()
+        if "WAYLAND_DISPLAY" in os.environ:  # pragma: no cover
+            # `get_primary_monitor()` doesn't work on wayland, so return as it is.
+            return [
+                ScreenImpl(native=display.get_monitor(i))
+                for i in range(display.get_n_monitors())
+            ]
+        else:
+            primary_screen = ScreenImpl(display.get_primary_monitor())
+            screen_list = [primary_screen] + [
+                ScreenImpl(native=display.get_monitor(i))
+                for i in range(display.get_n_monitors())
+                if display.get_monitor(i) != primary_screen.native
+            ]
+            return screen_list
 
     def set_main_window(self, window):
         pass
@@ -233,7 +241,8 @@ class App:
         self.native.quit()
 
     def get_current_window(self):
-        return self.native.get_active_window()._impl
+        current_window = self.native.get_active_window()._impl
+        return current_window if current_window.interface.visible else None
 
     def set_current_window(self, window):
         window._impl.native.present()
@@ -278,9 +287,9 @@ class DocumentApp(App):  # pragma: no cover
             m.open_file_dialog(
                 self.interface.formal_name,
                 file_types=self.interface.document_types.keys(),
-                on_result=lambda dialog, path: self.interface._open(path)
-                if path
-                else self.exit(),
+                on_result=lambda dialog, path: (
+                    self.interface._open(path) if path else self.exit()
+                ),
             )
 
     def open_file(self, widget, **kwargs):

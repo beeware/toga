@@ -160,7 +160,7 @@ class TextInputApp(toga.App):
 
 
 def main():
-    return TextInputApp("TextInput", "org.beeware.widgets.textinput")
+    return TextInputApp("TextInput", "org.beeware.toga.examples.textinput")
 
 
 if __name__ == "__main__":

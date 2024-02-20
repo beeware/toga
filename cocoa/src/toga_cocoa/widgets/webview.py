@@ -1,5 +1,4 @@
-from rubicon.objc import objc_method, objc_property, py_from_ns
-from rubicon.objc.runtime import objc_id
+from rubicon.objc import objc_id, objc_method, objc_property, py_from_ns
 from travertino.size import at_least
 
 from toga.widgets.webview import JavaScriptResult
@@ -8,19 +7,14 @@ from ..libs import NSURL, NSURLRequest, WKWebView
 from .base import Widget
 
 
-def js_completion_handler(future, on_result=None):
+def js_completion_handler(result):
     def _completion_handler(res: objc_id, error: objc_id) -> None:
         if error:
             error = py_from_ns(error)
             exc = RuntimeError(str(error))
-            future.set_exception(exc)
-            if on_result:
-                on_result(None, exception=exc)
+            result.set_exception(exc)
         else:
-            result = py_from_ns(res)
-            future.set_result(result)
-            if on_result:
-                on_result(result)
+            result.set_result(py_from_ns(res))
 
     return _completion_handler
 
@@ -85,13 +79,10 @@ class WebView(Widget):
         self.native.customUserAgent = value
 
     def evaluate_javascript(self, javascript: str, on_result=None) -> str:
-        result = JavaScriptResult()
+        result = JavaScriptResult(on_result=on_result)
         self.native.evaluateJavaScript(
             javascript,
-            completionHandler=js_completion_handler(
-                future=result.future,
-                on_result=on_result,
-            ),
+            completionHandler=js_completion_handler(result),
         )
 
         return result

@@ -8,7 +8,6 @@ from android.view import Gravity, View
 from android.widget import ImageView, LinearLayout, RelativeLayout, ScrollView, TextView
 from androidx.swiperefreshlayout.widget import SwipeRefreshLayout
 from java import dynamic_proxy
-from travertino.size import at_least
 
 from .base import Widget
 
@@ -123,7 +122,7 @@ class DetailedList(Widget):
         container.addView(row_view)
         row_view.setOnClickListener(DetailedListOnClickListener(self, i))
         row_view.setOnLongClickListener(DetailedListOnLongClickListener(self, i))
-        row_height = self.scale_in(80)
+        row_height = self.scale_in(64)
 
         title, subtitle, icon = (
             getattr(row, attr, None) for attr in self.interface.accessors
@@ -137,8 +136,8 @@ class DetailedList(Widget):
             RelativeLayout.LayoutParams.WRAP_CONTENT,
             RelativeLayout.LayoutParams.WRAP_CONTENT,
         )
-        icon_width = self.scale_in(50)
-        icon_margin = self.scale_in(10)
+        icon_width = self.scale_in(48)
+        icon_margin = self.scale_in(8)
         icon_layout_params.width = icon_width
         icon_layout_params.setMargins(icon_margin, 0, icon_margin, 0)
         icon_layout_params.height = row_height
@@ -243,7 +242,3 @@ class DetailedList(Widget):
             hit_rect,
             True,  # Immediate, not animated
         )
-
-    def rehint(self):
-        self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
-        self.interface.intrinsic.height = at_least(self.interface._MIN_HEIGHT)

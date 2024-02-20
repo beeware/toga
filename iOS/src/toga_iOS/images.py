@@ -1,3 +1,4 @@
+from ctypes import POINTER, c_char, cast
 from pathlib import Path
 
 from toga_iOS.libs import (
@@ -7,20 +8,34 @@ from toga_iOS.libs import (
 )
 
 
+def nsdata_to_bytes(data: NSData) -> bytes:
+    """Convert an NSData into a raw bytes representation"""
+    # data is an NSData object that has .bytes as a c_void_p, and a .length. Cast to
+    # POINTER(c_char) to get an addressable array of bytes, and slice that array to
+    # the known length. We don't use c_char_p because it has handling of NUL
+    # termination, and POINTER(c_char) allows array subscripting.
+    return cast(data.bytes, POINTER(c_char))[: data.length]
+
+
 class Image:
-    def __init__(self, interface, path=None, data=None):
+    RAW_TYPE = UIImage
+
+    def __init__(self, interface, path=None, data=None, raw=None):
         self.interface = interface
 
         if path:
             self.native = UIImage.imageWithContentsOfFile(str(path))
             if self.native is None:
                 raise ValueError(f"Unable to load image from {path}")
-        else:
+        elif data:
             self.native = UIImage.imageWithData(
                 NSData.dataWithBytes(data, length=len(data))
             )
             if self.native is None:
                 raise ValueError("Unable to load image from data")
+        else:
+            self.native = raw
+
         self.native.retain()
 
     def __del__(self):
@@ -32,6 +47,9 @@ class Image:
 
     def get_height(self):
         return self.native.size.height
+
+    def get_data(self):
+        return nsdata_to_bytes(NSData(uikit.UIImagePNGRepresentation(self.native)))
 
     def save(self, path):
         path = Path(path)

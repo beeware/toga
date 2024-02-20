@@ -1,0 +1,1 @@
+A crash observed on iOS devices when taking photographs has been resolved.

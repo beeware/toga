@@ -1,5 +1,8 @@
+from pathlib import Path
+
 import pytest
 
+import toga_iOS
 from toga_iOS.libs import UIImage
 
 from .probe import BaseProbe
@@ -18,15 +21,20 @@ class IconProbe(BaseProbe):
         if path == "resources/icons/green":
             assert (
                 self.icon._impl.path
-                == self.app.paths.app / "resources" / "icons" / "green.icns"
+                == self.app.paths.app / "resources/icons/green.icns"
             )
         elif path == "resources/icons/blue":
             assert (
-                self.icon._impl.path
-                == self.app.paths.app / "resources" / "icons" / "blue.png"
+                self.icon._impl.path == self.app.paths.app / "resources/icons/blue.png"
             )
         else:
             pytest.fail("Unknown icon resource")
 
     def assert_default_icon_content(self):
-        assert self.icon._impl.path == self.app.paths.toga / "resources" / "toga.icns"
+        assert (
+            self.icon._impl.path
+            == Path(toga_iOS.__file__).parent / "resources/toga.icns"
+        )
+
+    def assert_platform_icon_content(self):
+        assert self.icon._impl.path == self.app.paths.app / "resources/logo-iOS.icns"

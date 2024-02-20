@@ -18,7 +18,7 @@ Prerequisites
 
 If you are using Windows 10 and want to use a WebView to display web content, you will
 also need to install the `Edge WebView2 Evergreen Runtime.
-<https://developer.microsoft.com/en-us/microsoft-edge/webview2/#download-section>`__
+<https://developer.microsoft.com/en-us/microsoft-edge/webview2/#download>`__
 Windows 11 has this runtime installed by default.
 
 Installation

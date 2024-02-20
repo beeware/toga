@@ -10,7 +10,9 @@ from System.IO import MemoryStream
 
 
 class Image:
-    def __init__(self, interface, path=None, data=None):
+    RAW_TYPE = WinImage
+
+    def __init__(self, interface, path=None, data=None, raw=None):
         self.interface = interface
 
         if path:
@@ -20,18 +22,25 @@ class Image:
                 # OutOfMemoryException is what Winforms raises when a file
                 # isn't a valid image file.
                 raise ValueError(f"Unable to load image from {path}")
-        else:
+        elif data:
             try:
                 stream = MemoryStream(data)
                 self.native = WinImage.FromStream(stream)
             except ArgumentException:
                 raise ValueError("Unable to load image from data")
+        else:
+            self.native = raw
 
     def get_width(self):
         return self.native.Width
 
     def get_height(self):
         return self.native.Height
+
+    def get_data(self):
+        stream = MemoryStream()
+        self.native.Save(stream, ImageFormat.Png)
+        return bytes(stream.ToArray())
 
     def save(self, path):
         path = Path(path)

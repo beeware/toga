@@ -3,16 +3,45 @@ Selection
 
 A widget to select a single option from a list of alternatives.
 
-.. figure:: /reference/images/Selection.png
-    :align: center
+.. tabs::
 
-.. rst-class:: widget-support
-.. csv-filter:: Availability (:ref:`Key <api-status-key>`)
-   :header-rows: 1
-   :file: ../../data/widgets_by_platform.csv
-   :included_cols: 4,5,6,7,8,9,10
-   :exclude: {0: '(?!^(Selection|Component)$)'}
+  .. group-tab:: macOS
 
+    .. figure:: /reference/images/selection-cocoa.png
+       :align: center
+       :width: 300px
+
+  .. group-tab:: Linux
+
+    .. figure:: /reference/images/selection-gtk.png
+       :align: center
+       :width: 300px
+
+  .. group-tab:: Windows
+
+    .. figure:: /reference/images/selection-winforms.png
+       :align: center
+       :width: 300px
+
+  .. group-tab:: Android
+
+    .. figure:: /reference/images/selection-android.png
+       :align: center
+       :width: 300px
+
+  .. group-tab:: iOS
+
+    .. figure:: /reference/images/selection-iOS.png
+       :align: center
+       :width: 300px
+
+  .. group-tab:: Web |no|
+
+    Not supported
+
+  .. group-tab:: Textual |no|
+
+    Not supported
 
 Usage
 -----
@@ -21,10 +50,11 @@ The Selection uses a :class:`~toga.sources.ListSource` to manage the list of
 options. If ``items`` is not specified as a ListSource, it will be converted
 into a ListSource at runtime.
 
-The simplest instantiation of a Selection is to use a list of strings. If a list
-of non-string objects are provided, they will be converted into a string for
-display purposes, but the original data type will be retained when returning the
-current value.
+The simplest instantiation of a Selection is to use a list of strings. If a list of
+non-string objects are provided, they will be converted into a string for display
+purposes, but the original data type will be retained when returning the current value.
+If the string value contains newlines, only the substring up to the first newline will
+be displayed.
 
 .. code-block:: python
 

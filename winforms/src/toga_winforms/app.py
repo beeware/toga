@@ -6,17 +6,19 @@ from ctypes import windll
 
 import System.Windows.Forms as WinForms
 from System import Environment, Threading
+from System.ComponentModel import InvalidEnumArgumentException
 from System.Media import SystemSounds
 from System.Net import SecurityProtocolType, ServicePointManager
 from System.Windows.Threading import Dispatcher
 
 import toga
 from toga import Key
-from toga.command import GROUP_BREAK, SECTION_BREAK
+from toga.command import Separator
 
 from .keys import toga_to_winforms_key
 from .libs.proactor import WinformsProactorEventLoop
 from .libs.wrapper import WeakrefCallable
+from .screens import Screen as ScreenImpl
 from .window import Window
 
 
@@ -138,16 +140,24 @@ class App:
 
         submenu = None
         for cmd in self.interface.commands:
-            if cmd == GROUP_BREAK:
-                submenu = None
-            elif cmd == SECTION_BREAK:
+            submenu = self._submenu(cmd.group, menubar)
+            if isinstance(cmd, Separator):
                 submenu.DropDownItems.Add("-")
             else:
                 submenu = self._submenu(cmd.group, menubar)
                 item = WinForms.ToolStripMenuItem(cmd.text)
-                item.Click += WeakrefCallable(cmd._impl.winforms_handler)
+                item.Click += WeakrefCallable(cmd._impl.winforms_Click)
                 if cmd.shortcut is not None:
-                    item.ShortcutKeys = toga_to_winforms_key(cmd.shortcut)
+                    try:
+                        item.ShortcutKeys = toga_to_winforms_key(cmd.shortcut)
+                    except (
+                        ValueError,
+                        InvalidEnumArgumentException,
+                    ) as e:  # pragma: no cover
+                        # Make this a non-fatal warning, because different backends may
+                        # accept different shortcuts.
+                        print(f"WARNING: invalid shortcut {cmd.shortcut!r}: {e}")
+
                 item.Enabled = cmd.enabled
 
                 cmd._impl.native.append(item)
@@ -297,6 +307,15 @@ class App:
     def exit(self):  # pragma: no cover
         self._is_exiting = True
         self.native.Exit()
+
+    def get_screens(self):
+        primary_screen = ScreenImpl(WinForms.Screen.PrimaryScreen)
+        screen_list = [primary_screen] + [
+            ScreenImpl(native=screen)
+            for screen in WinForms.Screen.AllScreens
+            if screen != primary_screen.native
+        ]
+        return screen_list
 
     def set_main_window(self, window):
         self.app_context.MainForm = window._impl.native

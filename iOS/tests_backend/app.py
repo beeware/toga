@@ -13,6 +13,8 @@ from .probe import BaseProbe
 
 
 class AppProbe(BaseProbe):
+    supports_key = False
+
     def __init__(self, app):
         super().__init__()
         self.app = app
@@ -53,9 +55,6 @@ class AppProbe(BaseProbe):
 
     def assert_menu_item(self, path, enabled):
         pytest.skip("Menus not implemented on iOS")
-
-    def keystroke(self, combination):
-        pytest.skip("iOS doesn't use keyboard shortcuts")
 
     def enter_background(self):
         self.native.delegate.applicationWillResignActive(self.native)

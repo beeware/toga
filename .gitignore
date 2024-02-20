@@ -9,6 +9,7 @@
 coverage.xml
 dist
 build
+logs
 _build
 distribute-*
 docs/env

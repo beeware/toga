@@ -1,1 +1,0 @@
-The accessors used to populate a DetailedList can now be customised.

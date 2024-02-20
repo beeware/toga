@@ -18,20 +18,24 @@ class TogaDemo(toga.App):
             ],
         )
 
-        left_tree = toga.Tree(
-            headings=["Navigate"],
-            data={
-                ("root1",): {},
-                ("root2",): {
-                    ("root2.1",): None,
-                    ("root2.2",): {
-                        ("root2.2.1",): None,
-                        ("root2.2.2",): None,
-                        ("root2.2.3",): None,
+        try:
+            left_tree = toga.Tree(
+                headings=["Navigate"],
+                data={
+                    ("root1",): {},
+                    ("root2",): {
+                        ("root2.1",): None,
+                        ("root2.2",): {
+                            ("root2.2.1",): None,
+                            ("root2.2.2",): None,
+                            ("root2.2.3",): None,
+                        },
                     },
                 },
-            },
-        )
+            )
+        except NotImplementedError:
+            # For now, Winforms doesn't implement tree.
+            left_tree = toga.Box()
 
         left_container = toga.OptionContainer(
             content=[
@@ -68,7 +72,7 @@ class TogaDemo(toga.App):
             self.action2,
             "Action 2",
             tooltip="Perform action 2",
-            icon=toga.Icon.TOGA_ICON,
+            icon=toga.Icon.DEFAULT_ICON,
         )
 
         self.main_window.toolbar.add(cmd1, cmd2)

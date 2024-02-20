@@ -1,0 +1,57 @@
+[build-system]
+requires = ["briefcase"]
+
+[tool.briefcase]
+project_name = "Hardware"
+bundle = "org.beeware.examples"
+version = "0.0.1"
+url = "https://beeware.org"
+license = "BSD license"
+author = 'Tiberius Yak'
+author_email = "tiberius@beeware.org"
+
+[tool.briefcase.app.hardware]
+formal_name = "Hardware"
+description = "A testing app"
+sources = ['hardware']
+requires = [
+    '../../core',
+]
+
+permission.camera = "This app demonstrates camera capabilities"
+
+[tool.briefcase.app.hardware.macOS]
+requires = [
+    '../../cocoa',
+    'std-nslog>=1.0.0',
+]
+
+[tool.briefcase.app.hardware.linux]
+requires = [
+    '../../gtk',
+]
+
+[tool.briefcase.app.hardware.windows]
+requires = [
+    '../../winforms',
+]
+
+# Mobile deployments
+[tool.briefcase.app.hardware.iOS]
+requires = [
+    '../../iOS',
+    'std-nslog>=1.0.0',
+]
+
+[tool.briefcase.app.hardware.android]
+requires = [
+    '../../android',
+]
+
+base_theme = "Theme.MaterialComponents.Light.DarkActionBar"
+
+build_gradle_dependencies = [
+    "androidx.appcompat:appcompat:1.6.1",
+    "com.google.android.material:material:1.11.0",
+    "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0",
+]

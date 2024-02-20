@@ -2,7 +2,6 @@ import json
 
 from android.webkit import ValueCallback, WebView as A_WebView, WebViewClient
 from java import dynamic_proxy
-from travertino.size import at_least
 
 from toga.widgets.webview import JavaScriptResult
 
@@ -10,29 +9,22 @@ from .base import Widget
 
 
 class ReceiveString(dynamic_proxy(ValueCallback)):
-    def __init__(self, future, on_result):
+    def __init__(self, result):
         super().__init__()
-        self.future = future
-        self.on_result = on_result
+        self.result = result
 
     def onReceiveValue(self, value):
         # If the evaluation fails, a message is written to Logcat, but the value sent to
         # the callback will be "null", with no way to distinguish it from an actual null
         # return value.
-        result = json.loads(value)
+        res = json.loads(value)
 
-        # Because this method is called directly from the Android event loop, calling
-        # set_result on a timed-out future would crash the whole testbed with an
-        # InvalidStateError.
-        if self.future.cancelled():  # pragma: nocover
-            pass
-        else:
-            self.future.set_result(result)
-            if self.on_result:
-                self.on_result(result)
+        self.result.set_result(res)
 
 
 class WebView(Widget):
+    SUPPORTS_ON_WEBVIEW_LOAD = False
+
     def create(self):
         self.native = A_WebView(self._native_activity)
         # Set a WebViewClient so that new links open in this activity,
@@ -42,6 +34,9 @@ class WebView(Widget):
         self.settings = self.native.getSettings()
         self.default_user_agent = self.settings.getUserAgentString()
         self.settings.setJavaScriptEnabled(True)
+        # enable pinch-to-zoom without the deprecated on-screen controls
+        self.settings.setBuiltInZoomControls(True)
+        self.settings.setDisplayZoomControls(False)
 
     def get_url(self):
         url = self.native.getUrl()
@@ -75,13 +70,7 @@ class WebView(Widget):
         )
 
     def evaluate_javascript(self, javascript, on_result=None):
-        result = JavaScriptResult()
+        result = JavaScriptResult(on_result)
 
-        self.native.evaluateJavascript(
-            javascript, ReceiveString(result.future, on_result)
-        )
+        self.native.evaluateJavascript(javascript, ReceiveString(result))
         return result
-
-    def rehint(self):
-        self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
-        self.interface.intrinsic.height = at_least(self.interface._MIN_HEIGHT)

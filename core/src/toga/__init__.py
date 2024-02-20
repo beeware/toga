@@ -1,3 +1,5 @@
+import warnings
+
 from .app import App, DocumentApp, DocumentMainWindow, MainWindow
 
 # Resources
@@ -22,7 +24,7 @@ from .widgets.imageview import ImageView
 from .widgets.label import Label
 from .widgets.multilinetextinput import MultilineTextInput
 from .widgets.numberinput import NumberInput
-from .widgets.optioncontainer import OptionContainer
+from .widgets.optioncontainer import OptionContainer, OptionItem
 from .widgets.passwordinput import PasswordInput
 from .widgets.progressbar import ProgressBar
 from .widgets.scrollcontainer import ScrollContainer
@@ -37,7 +39,19 @@ from .widgets.tree import Tree
 from .widgets.webview import WebView
 from .window import Window
 
+
+class NotImplementedWarning(RuntimeWarning):
+    # pytest.warns() requires that Warning() subclasses are constructed by passing a
+    # single argument (the warning message). Use a factory method to avoid reproducing
+    # the message format and the warn invocation.
+    @classmethod
+    def warn(self, platform, feature):
+        """Raise a warning that a feature isn't implemented on a platform."""
+        warnings.warn(NotImplementedWarning(f"[{platform}] Not implemented: {feature}"))
+
+
 __all__ = [
+    "NotImplementedWarning",
     # Applications
     "App",
     "DocumentApp",
@@ -71,6 +85,7 @@ __all__ = [
     "MultilineTextInput",
     "NumberInput",
     "OptionContainer",
+    "OptionItem",
     "PasswordInput",
     "ProgressBar",
     "ScrollContainer",
@@ -105,11 +120,11 @@ def _package_version(file, name):
         # If it *is* in the environment, but the code isn't a git checkout (e.g.,
         # it's been pip installed non-editable) the call to get_version() will fail.
         # If either of these occurs, read version from the installer metadata.
-        from importlib import metadata as importlib_metadata
+        import importlib.metadata
 
         # The Toga package names as defined in setup.cfg all use dashes.
         package = "toga-core" if name == "toga" else name.replace("_", "-")
-        return importlib_metadata.version(package)
+        return importlib.metadata.version(package)
 
 
 __version__ = _package_version(__file__, __name__)

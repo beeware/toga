@@ -28,6 +28,8 @@ test_requires = [
     "pillow==9.2.0",
 ]
 
+permission.camera = "The testbed needs to exercise Camera APIs"
+
 [tool.briefcase.app.testbed.macOS]
 requires = [
     "../cocoa",
@@ -91,6 +93,15 @@ requires = [
 test_requires = [
     "fonttools==4.42.1",
 ]
+
+base_theme = "Theme.MaterialComponents.Light.DarkActionBar"
+
+build_gradle_dependencies = [
+    "androidx.appcompat:appcompat:1.6.1",
+    "com.google.android.material:material:1.11.0",
+    "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0",
+]
+
 build_gradle_extra_content = """\
 android.defaultConfig.python {
     // Coverage requires access to individual .py files.

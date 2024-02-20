@@ -3,8 +3,8 @@ from __future__ import annotations
 import warnings
 from abc import ABC, abstractmethod
 from contextlib import contextmanager
-from math import pi
-from typing import Protocol
+from math import cos, pi, sin, tan
+from typing import TYPE_CHECKING, Protocol
 
 from travertino.colors import Color
 
@@ -14,8 +14,10 @@ from toga.constants import Baseline, FillRule
 from toga.fonts import SYSTEM, SYSTEM_DEFAULT_FONT_SIZE, Font
 from toga.handlers import wrapped_handler
 
-from .. import Image
 from .base import Widget
+
+if TYPE_CHECKING:
+    from toga.images import ImageT
 
 #######################################################################################
 # Simple drawing objects
@@ -56,8 +58,7 @@ class DrawingObject(ABC):
         return f"{self.__class__.__name__}()"
 
     @abstractmethod
-    def _draw(self, impl, **kwargs):
-        ...
+    def _draw(self, impl, **kwargs): ...
 
 
 class BeginPath(DrawingObject):
@@ -1181,6 +1182,9 @@ class OnResizeHandler(Protocol):
 
 
 class Canvas(Widget):
+    _MIN_WIDTH = 0
+    _MIN_HEIGHT = 0
+
     def __init__(
         self,
         id=None,
@@ -1445,11 +1449,16 @@ class Canvas(Widget):
     # As image
     ###########################################################################
 
-    def as_image(self) -> toga.Image:
-        """Render the canvas as an Image.
+    def as_image(self, format: type[ImageT] = toga.Image) -> ImageT:
+        """Render the canvas as an image.
 
-        :returns: A :class:`toga.Image` containing the canvas content."""
-        return Image(data=self._impl.get_image_data())
+        :param format: Format to provide. Defaults to :class:`~toga.images.Image`; also
+            supports :any:`PIL.Image.Image` if Pillow is installed, as well as any image
+            types defined by installed :doc:`image format plugins
+            </reference/plugins/image_formats>`
+        :returns: The canvas as an image of the specified type.
+        """
+        return toga.Image(self._impl.get_image_data()).as_format(format)
 
     ###########################################################################
     # 2023-07 Backwards compatibility
@@ -1628,3 +1637,78 @@ class Canvas(Widget):
             DeprecationWarning,
         )
         return self.Stroke(color=color, line_width=line_width, line_dash=line_dash)
+
+
+def sweepangle(startangle, endangle, anticlockwise):
+    """Returns an arc length in the range [-2 * pi, 2 * pi], where positive numbers are
+    clockwise. Based on the "ellipse method steps" in the HTML spec."""
+
+    if anticlockwise:
+        if endangle - startangle <= -2 * pi:
+            return -2 * pi
+    else:
+        if endangle - startangle >= 2 * pi:
+            return 2 * pi
+
+    startangle %= 2 * pi
+    endangle %= 2 * pi
+    sweepangle = endangle - startangle
+    if anticlockwise:
+        if sweepangle > 0:
+            sweepangle -= 2 * pi
+    else:
+        if sweepangle < 0:
+            sweepangle += 2 * pi
+
+    return sweepangle
+
+
+# Based on https://stackoverflow.com/a/30279817
+def arc_to_bezier(sweepangle):
+    """Approximates an arc of a unit circle as a sequence of Bezier segments.
+
+    :param sweepangle: Length of the arc in radians, where positive numbers are
+        clockwise.
+    :returns: [(1, 0), (cp1x, cp1y), (cp2x, cp2y), (x, y), ...], where each group of 3
+        points has the same meaning as in the bezier_curve_to method, and there are
+        between 1 and 4 groups."""
+
+    matrices = [
+        [1, 0, 0, 1],  # 0 degrees
+        [0, -1, 1, 0],  # 90
+        [-1, 0, 0, -1],  # 180
+        [0, 1, -1, 0],  # 270
+    ]
+
+    if sweepangle < 0:  # Anticlockwise
+        sweepangle *= -1
+        for matrix in matrices:
+            matrix[2] *= -1
+            matrix[3] *= -1
+
+    result = [(1.0, 0.0)]
+    for matrix in matrices:
+        if sweepangle < 0:
+            break
+
+        phi = min(sweepangle, pi / 2)
+        k = 4 / 3 * tan(phi / 4)
+        result += [
+            transform(x, y, matrix)
+            for x, y in [
+                (1, k),
+                (cos(phi) + k * sin(phi), sin(phi) - k * cos(phi)),
+                (cos(phi), sin(phi)),
+            ]
+        ]
+
+        sweepangle -= pi / 2
+
+    return result
+
+
+def transform(x, y, matrix):
+    return (
+        x * matrix[0] + y * matrix[1],
+        x * matrix[2] + y * matrix[3],
+    )

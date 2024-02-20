@@ -3,21 +3,60 @@ Button
 
 A button that can be pressed or clicked.
 
-.. figure:: /reference/images/Button.jpeg
-    :align: center
-    :width: 300
+.. tabs::
 
-.. rst-class:: widget-support
-.. csv-filter:: Availability (:ref:`Key <api-status-key>`)
-   :header-rows: 1
-   :file: ../../data/widgets_by_platform.csv
-   :included_cols: 4,5,6,7,8,9,10
-   :exclude: {0: '(?!(Button|Component))'}
+  .. group-tab:: macOS
+
+    .. figure:: /reference/images/button-cocoa.png
+       :align: center
+       :width: 300px
+
+  .. group-tab:: Linux
+
+    .. figure:: /reference/images/button-gtk.png
+       :align: center
+       :width: 300px
+
+  .. group-tab:: Windows
+
+    .. figure:: /reference/images/button-winforms.png
+       :align: center
+       :width: 300px
+
+  .. group-tab:: Android
+
+    .. figure:: /reference/images/button-android.png
+       :align: center
+       :width: 300px
+
+  .. group-tab:: iOS
+
+    .. figure:: /reference/images/button-iOS.png
+       :align: center
+       :width: 300px
+
+  .. group-tab:: Web |beta|
+
+    .. .. figure:: /reference/images/button-web.png
+    ..    :align: center
+    ..    :width: 300px
+
+    Screenshot not available
+
+  .. group-tab:: Textual |beta|
+
+    .. .. figure:: /reference/images/button-textual.png
+    ..    :align: center
+    ..    :width: 300px
+
+    Screenshot not available
 
 Usage
 -----
 
-A button has a text label. A handler can be associated with button press events.
+A button has a text label, or an icon (but not both). If an icon is specified, it will
+be resized to a size appropriate for the platform. A handler can be associated with
+button press events.
 
 .. code-block:: python
 
@@ -28,6 +67,8 @@ A button has a text label. A handler can be associated with button press events.
         pass
 
     button = toga.Button("Click me", on_press=my_callback)
+
+    icon_button = toga.Button(icon=toga.Icon("resources/my_icon"), on_press=my_callback)
 
 Notes
 -----

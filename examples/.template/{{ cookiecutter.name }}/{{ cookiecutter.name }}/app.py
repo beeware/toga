@@ -16,14 +16,14 @@ class Example{{ cookiecutter.widget_name }}App(toga.App):
         self.main_window = toga.MainWindow()
 
         # Label to show responses.
-        self.label = toga.Label('Ready.')
+        self.label = toga.Label("Ready.")
 
         widget = toga.{{ cookiecutter.widget_name }}()
 
         # Buttons
         btn_style = Pack(flex=1)
-        btn_do_stuff = toga.Button('Do stuff', on_press=self.do_stuff, style=btn_style)
-        btn_clear = toga.Button('Clear', on_press=self.do_clear, style=btn_style)
+        btn_do_stuff = toga.Button("Do stuff", on_press=self.do_stuff, style=btn_style)
+        btn_clear = toga.Button("Clear", on_press=self.do_clear, style=btn_style)
         btn_box = toga.Box(
             children=[
                 btn_do_stuff,
@@ -52,9 +52,9 @@ class Example{{ cookiecutter.widget_name }}App(toga.App):
 
 
 def main():
-    return Example{{ cookiecutter.widget_name }}App('{{ cookiecutter.formal_name }}', 'org.beeware.widgets.{{ cookiecutter.name }}')
+    return Example{{ cookiecutter.widget_name }}App("{{ cookiecutter.formal_name }}", "org.beeware.toga.examples.{{ cookiecutter.name }}")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     app = main()
     app.main_loop()

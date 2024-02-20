@@ -130,7 +130,7 @@ class ExampleLayoutApp(toga.App):
 
 
 def main():
-    return ExampleLayoutApp("Layout", "org.beeware.widgets.layout")
+    return ExampleLayoutApp("Layout", "org.beeware.toga.examples.layout")
 
 
 if __name__ == "__main__":

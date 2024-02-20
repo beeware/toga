@@ -660,9 +660,11 @@ async def test_cell_widget(widget, probe):
                         "a": f"A{i}",
                         "b": f"B{i}",
                         # Toga widgets.
-                        "c": toga.Button(f"C{i}")
-                        if i % 2 == 0
-                        else toga.TextInput(value=f"edit C{i}"),
+                        "c": (
+                            toga.Button(f"C{i}")
+                            if i % 2 == 0
+                            else toga.TextInput(value=f"edit C{i}")
+                        ),
                     },
                     None,
                 )

@@ -7,6 +7,7 @@ from textual.widget import Widget as TextualWidget
 from textual.widgets import Button as TextualButton
 
 from .container import Container
+from .screens import Screen as ScreenImpl
 
 
 class WindowCloseButton(TextualButton):
@@ -161,10 +162,13 @@ class Window:
         return True
 
     def textual_close(self):
-        self.interface.on_close(self)
+        self.interface.on_close()
 
     def close(self):
         self.native.dismiss(None)
 
     def set_full_screen(self, is_full_screen):
         pass
+
+    def get_current_screen(self):
+        return ScreenImpl(self.native)

@@ -18,11 +18,9 @@ class MessageDialog(BaseDialog):
         message_type,
         buttons,
         success_result=None,
-        on_result=None,
         **kwargs,
     ):
         super().__init__(interface=interface)
-        self.on_result = on_result
         self.success_result = success_result
 
         self.native = Gtk.MessageDialog(
@@ -46,26 +44,24 @@ class MessageDialog(BaseDialog):
         else:
             result = None
 
-        self.on_result(result)
-        self.interface.future.set_result(result)
+        self.interface.set_result(result)
 
         self.native.destroy()
 
 
 class InfoDialog(MessageDialog):
-    def __init__(self, interface, title, message, on_result=None):
+    def __init__(self, interface, title, message):
         super().__init__(
             interface=interface,
             title=title,
             message=message,
             message_type=Gtk.MessageType.INFO,
             buttons=Gtk.ButtonsType.OK,
-            on_result=on_result,
         )
 
 
 class QuestionDialog(MessageDialog):
-    def __init__(self, interface, title, message, on_result=None):
+    def __init__(self, interface, title, message):
         super().__init__(
             interface=interface,
             title=title,
@@ -73,12 +69,11 @@ class QuestionDialog(MessageDialog):
             message_type=Gtk.MessageType.QUESTION,
             buttons=Gtk.ButtonsType.YES_NO,
             success_result=Gtk.ResponseType.YES,
-            on_result=on_result,
         )
 
 
 class ConfirmDialog(MessageDialog):
-    def __init__(self, interface, title, message, on_result=None):
+    def __init__(self, interface, title, message):
         super().__init__(
             interface=interface,
             title=title,
@@ -86,24 +81,22 @@ class ConfirmDialog(MessageDialog):
             message_type=Gtk.MessageType.WARNING,
             buttons=Gtk.ButtonsType.OK_CANCEL,
             success_result=Gtk.ResponseType.OK,
-            on_result=on_result,
         )
 
 
 class ErrorDialog(MessageDialog):
-    def __init__(self, interface, title, message, on_result=None):
+    def __init__(self, interface, title, message):
         super().__init__(
             interface=interface,
             title=title,
             message=message,
             message_type=Gtk.MessageType.ERROR,
             buttons=Gtk.ButtonsType.CANCEL,
-            on_result=on_result,
         )
 
 
 class StackTraceDialog(MessageDialog):
-    def __init__(self, interface, title, on_result=None, **kwargs):
+    def __init__(self, interface, title, **kwargs):
         super().__init__(
             interface=interface,
             title=title,
@@ -112,7 +105,6 @@ class StackTraceDialog(MessageDialog):
                 Gtk.ButtonsType.CANCEL if kwargs.get("retry") else Gtk.ButtonsType.OK
             ),
             success_result=Gtk.ResponseType.OK if kwargs.get("retry") else None,
-            on_result=on_result,
             **kwargs,
         )
 
@@ -168,10 +160,8 @@ class FileDialog(BaseDialog):
         multiple_select,
         action,
         ok_icon,
-        on_result=None,
     ):
         super().__init__(interface=interface)
-        self.on_result = on_result
 
         self.native = Gtk.FileChooserDialog(
             transient_for=interface.window._impl.native,
@@ -218,8 +208,7 @@ class FileDialog(BaseDialog):
         else:
             result = None
 
-        self.on_result(result)
-        self.interface.future.set_result(result)
+        self.interface.set_result(result)
 
         self.native.destroy()
 
@@ -232,7 +221,6 @@ class SaveFileDialog(FileDialog):
         filename,
         initial_directory,
         file_types=None,
-        on_result=None,
     ):
         super().__init__(
             interface=interface,
@@ -243,7 +231,6 @@ class SaveFileDialog(FileDialog):
             multiple_select=False,
             action=Gtk.FileChooserAction.SAVE,
             ok_icon=Gtk.STOCK_SAVE,
-            on_result=on_result,
         )
 
 
@@ -255,7 +242,6 @@ class OpenFileDialog(FileDialog):
         initial_directory,
         file_types,
         multiple_select,
-        on_result=None,
     ):
         super().__init__(
             interface=interface,
@@ -266,7 +252,6 @@ class OpenFileDialog(FileDialog):
             multiple_select=multiple_select,
             action=Gtk.FileChooserAction.OPEN,
             ok_icon=Gtk.STOCK_OPEN,
-            on_result=on_result,
         )
 
 
@@ -277,7 +262,6 @@ class SelectFolderDialog(FileDialog):
         title,
         initial_directory,
         multiple_select,
-        on_result=None,
     ):
         super().__init__(
             interface=interface,
@@ -288,5 +272,4 @@ class SelectFolderDialog(FileDialog):
             multiple_select=multiple_select,
             action=Gtk.FileChooserAction.SELECT_FOLDER,
             ok_icon=Gtk.STOCK_OPEN,
-            on_result=on_result,
         )

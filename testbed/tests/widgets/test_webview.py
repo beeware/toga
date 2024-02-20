@@ -223,10 +223,14 @@ async def test_evaluate_javascript(widget, probe):
         # reset the mock for each pass
         on_result_handler.reset_mock()
 
-        result = await wait_for(
-            widget.evaluate_javascript(expression, on_result=on_result_handler),
-            JS_TIMEOUT,
-        )
+        with pytest.warns(
+            DeprecationWarning,
+            match=r"Synchronous `on_result` handlers have been deprecated;",
+        ):
+            result = await wait_for(
+                widget.evaluate_javascript(expression, on_result=on_result_handler),
+                JS_TIMEOUT,
+            )
 
         # The resulting value has been converted into Python
         assert result == expected
@@ -257,10 +261,14 @@ async def test_evaluate_javascript_error(widget, probe):
     on_result_handler = Mock()
 
     with javascript_error_context(probe):
-        result = await wait_for(
-            widget.evaluate_javascript("not valid js", on_result=on_result_handler),
-            JS_TIMEOUT,
-        )
+        with pytest.warns(
+            DeprecationWarning,
+            match=r"Synchronous `on_result` handlers have been deprecated;",
+        ):
+            result = await wait_for(
+                widget.evaluate_javascript("not valid js", on_result=on_result_handler),
+                JS_TIMEOUT,
+            )
         # If the backend supports exceptions, the previous line should have raised one.
         assert not probe.javascript_supports_exception
         assert result is None

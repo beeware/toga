@@ -9,7 +9,6 @@ from System import (
 )
 from System.Drawing import Color
 from System.Threading.Tasks import Task, TaskScheduler
-from travertino.size import at_least
 
 import toga
 from toga.widgets.webview import JavaScriptResult
@@ -156,16 +155,14 @@ class WebView(Widget):
         )
 
     def evaluate_javascript(self, javascript, on_result=None):
-        result = JavaScriptResult()
+        result = JavaScriptResult(on_result)
         task_scheduler = TaskScheduler.FromCurrentSynchronizationContext()
 
         def callback(task):
             # If the evaluation fails, task.Result will be "null", with no way to
             # distinguish it from an actual null return value.
             value = json.loads(task.Result)
-            result.future.set_result(value)
-            if on_result:
-                on_result(value)
+            result.set_result(value)
 
         def execute():
             self.native.ExecuteScriptAsync(javascript).ContinueWith(
@@ -174,7 +171,3 @@ class WebView(Widget):
 
         self.run_after_initialization(execute)
         return result
-
-    def rehint(self):
-        self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
-        self.interface.intrinsic.height = at_least(self.interface._MIN_HEIGHT)

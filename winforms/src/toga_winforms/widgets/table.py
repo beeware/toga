@@ -1,7 +1,6 @@
 from warnings import warn
 
 import System.Windows.Forms as WinForms
-from travertino.size import at_least
 
 import toga
 
@@ -216,10 +215,6 @@ class Table(Widget):
 
     def scroll_to_row(self, index):
         self.native.EnsureVisible(index)
-
-    def rehint(self):
-        self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
-        self.interface.intrinsic.height = at_least(self.interface._MIN_HEIGHT)
 
     def remove_column(self, index):
         self.native.Columns.RemoveAt(index)

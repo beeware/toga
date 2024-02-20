@@ -61,6 +61,7 @@ class MultilineTextInput(TextInput):
             self._set_placeholder_visible(False)
             self.native.Text = value
 
+    # This method is necessary to override the TextInput base class.
     def rehint(self):
         self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
         self.interface.intrinsic.height = at_least(self.interface._MIN_HEIGHT)

@@ -1,0 +1,1 @@
+The macOS implementations of ``Window.as_image()`` and ``Canvas.as_image()`` APIs now return images in native device resolution, not CSS pixel resolution. This will result in images that are double the previous size on Retina displays.

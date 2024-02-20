@@ -5,6 +5,7 @@ from android.view import View, ViewTreeObserver, WindowManagerGlobal
 from android.widget import Button
 from java import dynamic_proxy
 from org.beeware.android import MainActivity
+from pytest import approx
 
 
 class LayoutListener(dynamic_proxy(ViewTreeObserver.OnGlobalLayoutListener)):
@@ -88,7 +89,14 @@ class BaseProbe:
             print("Redraw timed out")
 
         if self.app.run_slow:
-            delay = min(delay, 1)
+            delay = max(delay, 1)
         if delay:
             print("Waiting for redraw" if message is None else message)
             await asyncio.sleep(delay)
+
+    def assert_image_size(self, image_size, size, screen):
+        # Sizes are approximate because of scaling inconsistencies.
+        assert image_size == (
+            approx(size[0] * self.scale_factor, abs=2),
+            approx(size[1] * self.scale_factor, abs=2),
+        )

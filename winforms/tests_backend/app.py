@@ -7,11 +7,16 @@ from System import EventArgs
 from System.Drawing import Point
 from System.Windows.Forms import Application, Cursor
 
+from toga_winforms.keys import toga_to_winforms_key, winforms_to_toga_key
+
 from .probe import BaseProbe
 from .window import WindowProbe
 
 
 class AppProbe(BaseProbe):
+    supports_key = True
+    supports_key_mod3 = False
+
     def __init__(self, app):
         super().__init__()
         self.app = app
@@ -32,9 +37,7 @@ class AppProbe(BaseProbe):
 
     @property
     def data_path(self):
-        return (
-            Path.home() / "AppData" / "Local" / "Tiberius Yak" / "Toga Testbed" / "Data"
-        )
+        return Path.home() / "AppData/Local/Tiberius Yak/Toga Testbed/Data"
 
     @property
     def cache_path(self):
@@ -49,9 +52,7 @@ class AppProbe(BaseProbe):
 
     @property
     def logs_path(self):
-        return (
-            Path.home() / "AppData" / "Local" / "Tiberius Yak" / "Toga Testbed" / "Logs"
-        )
+        return Path.home() / "AppData/Local/Tiberius Yak/Toga Testbed/Logs"
 
     @property
     def is_cursor_visible(self):
@@ -152,4 +153,4 @@ class AppProbe(BaseProbe):
         pytest.xfail("This platform doesn't have a window management menu")
 
     def keystroke(self, combination):
-        pytest.xfail("Not applicable to this backend")
+        return winforms_to_toga_key(toga_to_winforms_key(combination))

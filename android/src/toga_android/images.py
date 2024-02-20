@@ -1,27 +1,36 @@
 from pathlib import Path
 
 from android.graphics import Bitmap, BitmapFactory
-from java.io import FileOutputStream
+from java.io import ByteArrayOutputStream, FileOutputStream
 
 
 class Image:
-    def __init__(self, interface, path=None, data=None):
+    RAW_TYPE = Bitmap
+
+    def __init__(self, interface, path=None, data=None, raw=None):
         self.interface = interface
 
         if path:
             self.native = BitmapFactory.decodeFile(str(path))
             if self.native is None:
                 raise ValueError(f"Unable to load image from {path}")
-        else:
+        elif data:
             self.native = BitmapFactory.decodeByteArray(data, 0, len(data))
             if self.native is None:
                 raise ValueError("Unable to load image from data")
+        else:
+            self.native = raw
 
     def get_width(self):
         return self.native.getWidth()
 
     def get_height(self):
         return self.native.getHeight()
+
+    def get_data(self):
+        stream = ByteArrayOutputStream()
+        self.native.compress(Bitmap.CompressFormat.PNG, 90, stream)
+        return bytes(stream.toByteArray())
 
     def save(self, path):
         path = Path(path)

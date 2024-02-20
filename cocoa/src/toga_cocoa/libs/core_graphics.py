@@ -202,6 +202,16 @@ kCGScrollEventUnitLine = 1
 
 ######################################################################
 # CGImage.h
+
+CGImageRef = c_void_p
+register_preferred_encoding(b"^{CGImage=}", CGImageRef)
+
+core_graphics.CGImageGetWidth.argtypes = [CGImageRef]
+core_graphics.CGImageGetWidth.restype = c_size_t
+
+core_graphics.CGImageGetHeight.argtypes = [CGImageRef]
+core_graphics.CGImageGetHeight.restype = c_size_t
+
 kCGImageAlphaNone = 0
 kCGImageAlphaPremultipliedLast = 1
 kCGImageAlphaPremultipliedFirst = 2
@@ -220,3 +230,16 @@ kCGBitmapByteOrder16Little = 1 << 12
 kCGBitmapByteOrder32Little = 2 << 12
 kCGBitmapByteOrder16Big = 3 << 12
 kCGBitmapByteOrder32Big = 4 << 12
+
+######################################################################
+# CGDirectDisplay.h
+
+CGDirectDisplayID = c_uint32
+
+# CGDirectDisplayID CGMainDisplayID(void);
+core_graphics.CGMainDisplayID.restype = CGDirectDisplayID
+core_graphics.CGMainDisplayID.argtypes = None
+
+# CGImageRef CGDisplayCreateImage(CGDirectDisplayID displayID, CGRect rect);
+core_graphics.CGDisplayCreateImage.restype = CGImageRef
+core_graphics.CGDisplayCreateImage.argtypes = [CGDirectDisplayID, CGRect]

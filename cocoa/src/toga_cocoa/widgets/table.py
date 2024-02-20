@@ -1,4 +1,4 @@
-from rubicon.objc import SEL, at, objc_method, objc_property
+from rubicon.objc import SEL, NSPoint, at, objc_method, objc_property
 from travertino.size import at_least
 
 import toga
@@ -20,6 +20,16 @@ from .internal.cells import TogaIconView
 class TogaTable(NSTableView):
     interface = objc_property(object, weak=True)
     impl = objc_property(object, weak=True)
+
+    # NSTableView methods
+    @objc_method
+    def canDragRowsWithIndexes_atPoint_(
+        self,
+        rowIndexes,
+        mouseDownPoint: NSPoint,
+    ) -> bool:
+        # Disable all drags
+        return False
 
     # TableDataSource methods
     @objc_method
@@ -140,6 +150,7 @@ class Table(Widget):
         )
         self.native_table.usesAlternatingRowBackgroundColors = True
         self.native_table.allowsMultipleSelection = self.interface.multiple_select
+        self.native_table.allowsColumnReordering = False
 
         # Create columns for the table
         self.columns = []

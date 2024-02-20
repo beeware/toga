@@ -1,1 +1,0 @@
-Widgets now have a `.clear()` method to remove all child widgets.

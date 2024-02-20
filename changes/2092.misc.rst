@@ -1,1 +1,0 @@
-Dialogs were added to the textual backend.

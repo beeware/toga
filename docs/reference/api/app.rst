@@ -70,6 +70,16 @@ details, along with many of the other constructor arguments, as packaging metada
 format compatible with :any:`importlib.metadata`. If you deploy your app with `Briefcase
 <https://briefcase.readthedocs.io/en/stable>`__, this will be done automatically.
 
+Notes
+-----
+
+* Apps executed under Wayland on Linux environment may not show the app's formal name
+  correctly. Wayland considers many aspects of app operation to be the domain of the
+  windowing environment, not the app; as a result, some API requests will be ignored
+  under a Wayland environment. Correctly displaying the app's formal name requires the
+  use of a desktop metadata that Wayland can read. Packaging your app with `Briefcase
+  <https://briefcase.readthedocs.io/en/stable>`__ is one way to produce this metadata.
+
 Reference
 ---------
 

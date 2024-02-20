@@ -1,8 +1,11 @@
-from toga.command import Command
+from rubicon.objc import CGSize
+
+from toga.command import Command, Separator
 from toga_cocoa.container import Container
 from toga_cocoa.libs import (
     SEL,
     NSBackingStoreBuffered,
+    NSImage,
     NSMakeRect,
     NSMutableArray,
     NSPoint,
@@ -12,16 +15,16 @@ from toga_cocoa.libs import (
     NSToolbarItem,
     NSWindow,
     NSWindowStyleMask,
+    core_graphics,
     objc_method,
     objc_property,
 )
 
+from .screens import Screen as ScreenImpl
+
 
 def toolbar_identifier(cmd):
-    if isinstance(cmd, Command):
-        return "ToolbarItem-%s" % id(cmd)
-    else:
-        return "ToolbarSeparator-%s" % id(cmd)
+    return f"Toolbar-{type(cmd).__name__}-{id(cmd)}"
 
 
 class TogaWindow(NSWindow):
@@ -57,8 +60,16 @@ class TogaWindow(NSWindow):
     def toolbarDefaultItemIdentifiers_(self, toolbar):
         """Determine the list of toolbar items that will display by default."""
         default = NSMutableArray.alloc().init()
+        prev_group = None
         for item in self.interface.toolbar:
+            # If there's been a group change, and this item isn't a separator,
+            # add a separator between groups.
+            if prev_group is not None:
+                if item.group != prev_group and not isinstance(item, Separator):
+                    default.addObject_(toolbar_identifier(prev_group))
             default.addObject_(toolbar_identifier(item))
+            prev_group = item.group
+
         return default
 
     @objc_method
@@ -155,6 +166,10 @@ class Window:
 
         self.container = Container(on_refresh=self.content_refreshed)
         self.native.contentView = self.container.native
+
+        # Ensure that the container renders it's background in the same color as the window.
+        self.native.wantsLayer = True
+        self.container.native.backgroundColor = self.native.backgroundColor
 
         # By default, no toolbar
         self._toolbar_items = {}
@@ -293,3 +308,24 @@ class Window:
 
     def close(self):
         self.native.close()
+
+    def get_current_screen(self):
+        return ScreenImpl(self.native.screen)
+
+    def get_image_data(self):
+        bitmap = self.container.native.bitmapImageRepForCachingDisplayInRect(
+            self.container.native.bounds
+        )
+        self.container.native.cacheDisplayInRect(
+            self.container.native.bounds, toBitmapImageRep=bitmap
+        )
+
+        # Get a reference to the CGImage from the bitmap
+        cg_image = bitmap.CGImage
+
+        target_size = CGSize(
+            core_graphics.CGImageGetWidth(cg_image),
+            core_graphics.CGImageGetHeight(cg_image),
+        )
+        ns_image = NSImage.alloc().initWithCGImage(cg_image, size=target_size)
+        return ns_image

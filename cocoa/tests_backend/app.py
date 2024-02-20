@@ -1,7 +1,6 @@
 from pathlib import Path
 
-from rubicon.objc import NSPoint, ObjCClass, send_message
-from rubicon.objc.runtime import objc_id
+from rubicon.objc import NSPoint, ObjCClass, objc_id, send_message
 
 from toga_cocoa.keys import cocoa_key, toga_key
 from toga_cocoa.libs import (
@@ -9,6 +8,7 @@ from toga_cocoa.libs import (
     NSEvent,
     NSEventModifierFlagShift,
     NSEventType,
+    NSWindow,
 )
 
 from .probe import BaseProbe
@@ -17,28 +17,31 @@ NSPanel = ObjCClass("NSPanel")
 
 
 class AppProbe(BaseProbe):
+    supports_key = True
+    supports_key_mod3 = True
+
     def __init__(self, app):
         super().__init__()
         self.app = app
+        # Prevents erroneous test fails from secondary windows opening as tabs
+        NSWindow.allowsAutomaticWindowTabbing = False
         assert isinstance(self.app._impl.native, NSApplication)
 
     @property
     def config_path(self):
-        return Path.home() / "Library" / "Preferences" / "org.beeware.toga.testbed"
+        return Path.home() / "Library/Preferences/org.beeware.toga.testbed"
 
     @property
     def data_path(self):
-        return (
-            Path.home() / "Library" / "Application Support" / "org.beeware.toga.testbed"
-        )
+        return Path.home() / "Library/Application Support/org.beeware.toga.testbed"
 
     @property
     def cache_path(self):
-        return Path.home() / "Library" / "Caches" / "org.beeware.toga.testbed"
+        return Path.home() / "Library/Caches/org.beeware.toga.testbed"
 
     @property
     def logs_path(self):
-        return Path.home() / "Library" / "Logs" / "org.beeware.toga.testbed"
+        return Path.home() / "Library/Logs/org.beeware.toga.testbed"
 
     @property
     def is_cursor_visible(self):
@@ -115,8 +118,8 @@ class AppProbe(BaseProbe):
         self.assert_menu_item(["*", "Show All"], enabled=True)
         self.assert_menu_item(["*", "Quit Toga Testbed"], enabled=True)
 
-        self.assert_menu_item(["File", "Close Window"], enabled=True)
-        self.assert_menu_item(["File", "Close All Windows"], enabled=True)
+        self.assert_menu_item(["File", "Close"], enabled=True)
+        self.assert_menu_item(["File", "Close All"], enabled=True)
 
         self.assert_menu_item(["Edit", "Undo"], enabled=True)
         self.assert_menu_item(["Edit", "Redo"], enabled=True)
@@ -132,10 +135,10 @@ class AppProbe(BaseProbe):
         self.assert_menu_item(["Help", "Visit homepage"], enabled=True)
 
     def activate_menu_close_window(self):
-        self._activate_menu_item(["File", "Close Window"])
+        self._activate_menu_item(["File", "Close"])
 
     def activate_menu_close_all_windows(self):
-        self._activate_menu_item(["File", "Close All Windows"])
+        self._activate_menu_item(["File", "Close All"])
 
     def activate_menu_minimize(self):
         self._activate_menu_item(["Window", "Minimize"])

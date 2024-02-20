@@ -14,7 +14,7 @@ class BeelizaApp(toga.App):
         input_text = self.text_input.value
         self.chat.data.append(
             {
-                # User's avatar is from http://avatars.adorable.io
+                # User's avatar is from https://avatars.adorable.io
                 # using user@beeware.org
                 "icon": toga.Icon("resources/user.png"),
                 "title": "You",
@@ -93,7 +93,7 @@ class BeelizaApp(toga.App):
 
 
 def main():
-    return BeelizaApp("Beeliza", "org.beeware.beeliza")
+    return BeelizaApp("Beeliza", "org.beeware.toga.examples.beeliza")
 
 
 if __name__ == "__main__":

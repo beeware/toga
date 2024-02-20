@@ -8,7 +8,7 @@ from urllib.parse import unquote, urlparse
 from rubicon.objc.eventloop import CocoaLifecycle, EventLoopPolicy
 
 import toga
-from toga.command import GROUP_BREAK, SECTION_BREAK
+from toga.command import Separator
 from toga.handlers import NativeHandler
 
 from .keys import cocoa_key
@@ -37,6 +37,7 @@ from .libs import (
     objc_method,
     objc_property,
 )
+from .screens import Screen as ScreenImpl
 from .window import Window
 
 
@@ -205,24 +206,23 @@ class App:
                 section=sys.maxsize,
             ),
             # ---- File menu ----------------------------------
-            # This is a bit of an oddity. Safari has 2 distinct "Close Window" and
-            # "Close All Windows" menu items (partially to differentiate from "Close
-            # Tab"). Most other Apple HIG apps have a "Close" item that becomes
-            # "Close All" when you press Option (MOD_2). That behavior isn't something
-            # we're currently set up to implement, so we live with a separate menu item
-            # for now.
+            # This is a bit of an oddity. Apple HIG apps that don't have tabs as
+            # part of their interface (so, Preview and Numbers, but not Safari)
+            # have a "Close" item that becomes "Close All" when you press Option
+            # (MOD_2). That behavior isn't something we're currently set up to
+            # implement, so we live with a separate menu item for now.
             toga.Command(
                 self._menu_close_window,
-                "Close Window",
-                shortcut=toga.Key.MOD_1 + "W",
+                "Close",
+                shortcut=toga.Key.MOD_1 + "w",
                 group=toga.Group.FILE,
                 order=1,
                 section=50,
             ),
             toga.Command(
                 self._menu_close_all_windows,
-                "Close All Windows",
-                shortcut=toga.Key.MOD_2 + toga.Key.MOD_1 + "W",
+                "Close All",
+                shortcut=toga.Key.MOD_2 + toga.Key.MOD_1 + "w",
                 group=toga.Group.FILE,
                 order=2,
                 section=50,
@@ -305,26 +305,26 @@ class App:
             ),
         )
 
-    def _menu_about(self, app, **kwargs):
+    def _menu_about(self, command, **kwargs):
         self.interface.about()
 
-    def _menu_quit(self, app, **kwargs):
+    def _menu_quit(self, command, **kwargs):
         self.interface.on_exit()
 
-    def _menu_close_window(self, app, **kwargs):
+    def _menu_close_window(self, command, **kwargs):
         if self.interface.current_window:
             self.interface.current_window._impl.native.performClose(None)
 
-    def _menu_close_all_windows(self, app, **kwargs):
+    def _menu_close_all_windows(self, command, **kwargs):
         # Convert to a list to so that we're not altering a set while iterating
         for window in list(self.interface.windows):
             window._impl.native.performClose(None)
 
-    def _menu_minimize(self, app, **kwargs):
+    def _menu_minimize(self, command, **kwargs):
         if self.interface.current_window:
             self.interface.current_window._impl.native.miniaturize(None)
 
-    def _menu_visit_homepage(self, app, **kwargs):
+    def _menu_visit_homepage(self, command, **kwargs):
         self.interface.visit_homepage()
 
     def create_menus(self):
@@ -340,13 +340,10 @@ class App:
         self._menu_items = {}
 
         for cmd in self.interface.commands:
-            if cmd == GROUP_BREAK:
-                submenu = None
-            elif cmd == SECTION_BREAK:
+            submenu = self._submenu(cmd.group, menubar)
+            if isinstance(cmd, Separator):
                 submenu.addItem(NSMenuItem.separatorItem())
             else:
-                submenu = self._submenu(cmd.group, menubar)
-
                 if cmd.shortcut:
                     key, modifier = cocoa_key(cmd.shortcut)
                 else:
@@ -411,6 +408,9 @@ class App:
 
     def main_loop(self):
         self.loop.run_forever(lifecycle=CocoaLifecycle(self.native))
+
+    def get_screens(self):
+        return [ScreenImpl(native=screen) for screen in NSScreen.screens]
 
     def set_main_window(self, window):
         pass

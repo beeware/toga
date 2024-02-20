@@ -2,12 +2,13 @@ import asyncio
 
 from textual.app import App as TextualApp
 
+from .screens import Screen as ScreenImpl
 from .window import Window
 
 
 class MainWindow(Window):
     def textual_close(self):
-        self.interface.app.on_exit(None)
+        self.interface.app.on_exit()
 
 
 class TogaApp(TextualApp):
@@ -23,6 +24,8 @@ class TogaApp(TextualApp):
 class App:
     def __init__(self, interface):
         self.interface = interface
+        self.interface._impl = self
+
         self.loop = asyncio.new_event_loop()
         self.native = TogaApp(self)
 
@@ -66,6 +69,9 @@ class App:
 
     def hide_cursor(self):
         pass
+
+    def get_screens(self):
+        return [ScreenImpl(window._impl.native) for window in self.interface.windows]
 
 
 class DocumentApp(App):

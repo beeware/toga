@@ -1,10 +1,11 @@
+from toga import NotImplementedWarning
+
 from . import dialogs
 from .app import App, DocumentApp, MainWindow
 from .command import Command
 from .documents import Document
-
-# Resources
 from .fonts import Font
+from .hardware.camera import Camera
 from .icons import Icon
 from .images import Image
 from .paths import Paths
@@ -36,7 +37,7 @@ from .window import Window
 
 
 def not_implemented(feature):
-    print(f"[Cocoa] Not implemented: {feature}")  # pragma: nocover
+    NotImplementedWarning.warn("Cocoa", feature)
 
 
 __all__ = [
@@ -52,6 +53,8 @@ __all__ = [
     "Image",
     "Paths",
     "dialogs",
+    # Hardware
+    "Camera",
     # Widgets
     "ActivityIndicator",
     "Box",

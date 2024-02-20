@@ -46,7 +46,7 @@ class ImageViewApp(toga.App):
         # image from pathlib.Path object
         # same as the above image, just with a different argument type
         image_from_pathlib_path = toga.Image(
-            self.paths.app / "resources" / "pride-brutus.png"
+            self.paths.app / "resources/pride-brutus.png"
         )
 
         # Scale BOTH of the width or height, and the aspect ratio should be overridden.
@@ -98,7 +98,7 @@ class ImageViewApp(toga.App):
 
 
 def main():
-    return ImageViewApp("ImageView", "org.beeware.widgets.imageview")
+    return ImageViewApp("ImageView", "org.beeware.toga.examples.imageview")
 
 
 if __name__ == "__main__":

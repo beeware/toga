@@ -1,1 +1,0 @@
-The minimum window size is now correctly recomputed and enforced if window content changes.

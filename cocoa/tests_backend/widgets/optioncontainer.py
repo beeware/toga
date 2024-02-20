@@ -7,6 +7,7 @@ from .base import SimpleProbe
 
 class OptionContainerProbe(SimpleProbe):
     native_class = NSTabView
+    max_tabs = None
     disabled_tab_selectable = False
 
     # 2023-06-20: This makes no sense, but here we are. If you render an NSTabView with
@@ -47,3 +48,7 @@ class OptionContainerProbe(SimpleProbe):
         # property lookup mechanism. Invoke it by passing the message directly.
         item = self.native.tabViewItemAtIndex(index)
         return send_message(item, SEL("_isTabEnabled"), restype=bool, argtypes=[])
+
+    def assert_tab_icon(self, index, expected):
+        # No tab icons, so if anything is returned, that's an error
+        assert self.widget.content[index].icon is None

@@ -1,7 +1,9 @@
 import toga
-from toga.command import GROUP_BREAK, SECTION_BREAK
+from toga.command import Separator
 from toga_web.libs import create_element, js
 from toga_web.window import Window
+
+from .screens import Screen as ScreenImpl
 
 
 class MainWindow(Window):
@@ -23,7 +25,7 @@ class App:
         self.interface.commands.add(
             # ---- Help menu ----------------------------------
             toga.Command(
-                lambda _: self.interface.about(),
+                self._menu_about,
                 "About " + formal_name,
                 group=toga.Group.HELP,
             ),
@@ -34,7 +36,9 @@ class App:
             ),
         )
 
-        # Create the menus.
+        # Create the menus. This is done before main window content to ensure
+        # the <header> for the menubar is inserted before the <main> for the
+        # main window.
         self.create_menus()
 
         # Call user code to populate the main window
@@ -64,9 +68,7 @@ class App:
         submenu = None
 
         for cmd in self.interface.commands:
-            if cmd == GROUP_BREAK:
-                submenu = None
-            elif cmd == SECTION_BREAK:
+            if isinstance(cmd, Separator):
                 # TODO - add a section break
                 pass
             else:
@@ -79,7 +81,7 @@ class App:
                     content=cmd.text,
                     disabled=not cmd.enabled,
                 )
-                menu_item.onclick = cmd.action
+                menu_item.onclick = cmd._impl.dom_click
 
                 submenu.append(menu_item)
 
@@ -103,8 +105,10 @@ class App:
             else:
                 help_menu_container.appendChild(submenu)
 
+        menubar_id = f"{self.interface.app_id}-header"
         self.menubar = create_element(
             "header",
+            id=menubar_id,
             classes=["toga"],
             children=[
                 create_element(
@@ -124,8 +128,15 @@ class App:
             ],
         )
 
-        # Menubar exists at the app level.
-        self.native.appendChild(self.menubar)
+        # If there's an existing menubar, replace it.
+        old_menubar = js.document.getElementById(menubar_id)
+        if old_menubar:
+            old_menubar.replaceWith(self.menubar)
+        else:
+            self.native.append(self.menubar)
+
+    def _menu_about(self, command, **kwargs):
+        self.interface.about()
 
     def main_loop(self):
         self.create()
@@ -200,3 +211,6 @@ class App:
 
     def hide_cursor(self):
         self.interface.factory.not_implemented("App.hide_cursor()")
+
+    def get_screens(self):
+        return [ScreenImpl(js.document.documentElement)]

@@ -1,7 +1,6 @@
-from ctypes import POINTER, c_char, cast
 from math import ceil
 
-from rubicon.objc import objc_method, objc_property
+from rubicon.objc import CGSize, objc_method, objc_property
 from travertino.size import at_least
 
 from toga.colors import BLACK, TRANSPARENT, color
@@ -12,10 +11,10 @@ from toga_cocoa.libs import (
     CGPathDrawingMode,
     CGRectMake,
     NSAttributedString,
-    NSBitmapImageFileType,
     NSFontAttributeName,
     NSForegroundColorAttributeName,
     NSGraphicsContext,
+    NSImage,
     NSMutableDictionary,
     NSPoint,
     NSRect,
@@ -321,19 +320,19 @@ class Canvas(Widget):
             )
 
     def get_image_data(self):
+
         bitmap = self.native.bitmapImageRepForCachingDisplayInRect(self.native.bounds)
-        bitmap.setSize(self.native.bounds.size)
         self.native.cacheDisplayInRect(self.native.bounds, toBitmapImageRep=bitmap)
 
-        data = bitmap.representationUsingType(
-            NSBitmapImageFileType.PNG,
-            properties=None,
+        # Get a reference to the CGImage from the bitmap
+        cg_image = bitmap.CGImage
+
+        target_size = CGSize(
+            core_graphics.CGImageGetWidth(cg_image),
+            core_graphics.CGImageGetHeight(cg_image),
         )
-        # data is an NSData object that has .bytes as a c_void_p, and a .length. Cast to
-        # POINTER(c_char) to get an addressable array of bytes, and slice that array to
-        # the known length. We don't use c_char_p because it has handling of NUL
-        # termination, and POINTER(c_char) allows array subscripting.
-        return cast(data.bytes, POINTER(c_char))[: data.length]
+        ns_image = NSImage.alloc().initWithCGImage(cg_image, size=target_size)
+        return ns_image
 
     # Rehint
     def rehint(self):

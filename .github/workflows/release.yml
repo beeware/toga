@@ -9,9 +9,17 @@ jobs:
   ci:
     uses: ./.github/workflows/ci.yml
 
+  docs:
+    name: Verify Docs Build
+    uses: beeware/.github/.github/workflows/docs-build-verify.yml@main
+    secrets: inherit
+    with:
+      project-name: "toga"
+      project-version: ${{ github.ref_name }}
+
   release:
     name: Create GitHub release
-    needs: ci
+    needs: [ ci, docs ]
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -21,12 +29,13 @@ jobs:
           echo "VERSION=${GITHUB_REF_NAME#v}" >> $GITHUB_ENV
 
       - name: Get packages
-        uses: actions/download-artifact@v3.0.2
+        uses: actions/download-artifact@v4.1.2
         with:
-          name: ${{ needs.ci.outputs.artifact-name }}
+          pattern: ${{ needs.ci.outputs.artifact-name }}-*
+          merge-multiple: true
 
       - name: Create release
-        uses: ncipollo/release-action@v1.13.0
+        uses: ncipollo/release-action@v1.14.0
         with:
           name: ${{ env.VERSION }}
           draft: true
@@ -56,9 +65,10 @@ jobs:
         - "toga_winforms"
     steps:
       - name: Get packages
-        uses: actions/download-artifact@v3.0.2
+        uses: actions/download-artifact@v4.1.2
         with:
-          name: ${{ needs.ci.outputs.artifact-name }}
+          pattern: ${{ needs.ci.outputs.artifact-name }}-*
+          merge-multiple: true
 
       - name: Extract ${{ matrix.package }}
         run: |
@@ -68,4 +78,4 @@ jobs:
       - name: Publish to TestPyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
-          repository_url: https://test.pypi.org/legacy/
+          repository-url: https://test.pypi.org/legacy/

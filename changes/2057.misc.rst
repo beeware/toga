@@ -1,1 +1,0 @@
-Codespell was added to the pre-commit configuration.

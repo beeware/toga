@@ -9,6 +9,9 @@ from .probe import BaseProbe
 
 
 class AppProbe(BaseProbe):
+    supports_key = True
+    supports_key_mod3 = True
+
     def __init__(self, app):
         super().__init__()
         self.app = app
@@ -16,19 +19,19 @@ class AppProbe(BaseProbe):
 
     @property
     def config_path(self):
-        return Path.home() / ".config" / "testbed"
+        return Path.home() / ".config/testbed"
 
     @property
     def data_path(self):
-        return Path.home() / ".local" / "share" / "testbed"
+        return Path.home() / ".local/share/testbed"
 
     @property
     def cache_path(self):
-        return Path.home() / ".cache" / "testbed"
+        return Path.home() / ".cache/testbed"
 
     @property
     def logs_path(self):
-        return Path.home() / ".local" / "state" / "testbed" / "log"
+        return Path.home() / ".local/state/testbed/log"
 
     @property
     def is_cursor_visible(self):
@@ -130,9 +133,6 @@ class AppProbe(BaseProbe):
         if "<Hyper>" in accel:
             state |= Gdk.ModifierType.HYPER_MASK
             accel = accel.replace("<Hyper>", "")
-        if "<CapsLock>" in accel:
-            state |= Gdk.ModifierType.LOCK_MASK
-            accel = accel.replace("<CapsLock>", "")
         if "<Shift>" in accel:
             state |= Gdk.ModifierType.SHIFT_MASK
             accel = accel.replace("<Shift>", "")

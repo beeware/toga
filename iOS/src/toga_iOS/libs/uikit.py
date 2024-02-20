@@ -270,6 +270,7 @@ UIControlStateReserved = 0xFF000000
 ######################################################################
 # UIFont.h
 UIFont = ObjCClass("UIFont")
+UIFont.declare_class_property("labelFontSize")
 UIFontDescriptorTraitItalic = 1 << 0
 UIFontDescriptorTraitBold = 1 << 1
 
@@ -280,10 +281,43 @@ uikit.UIGraphicsGetCurrentContext.restype = CGContextRef
 ######################################################################
 # UIGraphicsImageRenderer.h
 UIGraphicsImageRenderer = ObjCClass("UIGraphicsImageRenderer")
+UIGraphicsImageRendererContext = ObjCClass("UIGraphicsImageRendererContext")
 
 ######################################################################
 # UIImage.h
 UIImage = ObjCClass("UIImage")
+
+######################################################################
+# UIImagePicker.h
+
+# Camera
+UIImagePickerController = ObjCClass("UIImagePickerController")
+
+# PhotoLibrary and SavedPhotosAlbumn constants also exist, but they're marked as deprecated
+UIImagePickerControllerSourceTypeCamera = 1
+
+
+class UIImagePickerControllerQualityType(Enum):
+    High = 0
+    Medium = 1
+    Low = 2
+
+
+class UIImagePickerControllerCameraCaptureMode(Enum):
+    Photo = 0
+    Video = 1
+
+
+class UIImagePickerControllerCameraDevice(Enum):
+    Rear = 0
+    Front = 1
+
+
+class UIImagePickerControllerCameraFlashMode(Enum):
+    Off = -1
+    Auto = 0
+    On = 1
+
 
 ######################################################################
 # UIImageView.h
@@ -390,6 +424,15 @@ UITableViewCellEditingStyleInsert = 2
 
 UITableViewCellSeparatorStyleNone = 0
 UITableViewCellSeparatorStyleSingleLine = 1
+
+######################################################################
+# UITabBarController.h
+
+UITabBarController = ObjCClass("UITabBarController")
+
+######################################################################
+# UITabBarItem.h
+UITabBarItem = ObjCClass("UITabBarItem")
 
 ######################################################################
 # UITextField.h

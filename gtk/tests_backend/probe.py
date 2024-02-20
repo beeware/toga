@@ -1,5 +1,6 @@
 import asyncio
 
+import toga
 from toga_gtk.libs import Gtk
 
 
@@ -14,9 +15,12 @@ class BaseProbe:
             Gtk.main_iteration_do(blocking=False)
 
         # If we're running slow, wait for a second
-        if self.app.run_slow:
+        if toga.App.app.run_slow:
             print("Waiting for redraw" if message is None else message)
             delay = 1
 
         if delay:
             await asyncio.sleep(delay)
+
+    def assert_image_size(self, image_size, size, screen):
+        assert image_size == size

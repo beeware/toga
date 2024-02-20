@@ -1,3 +1,4 @@
+from ctypes import POINTER, c_char, cast
 from pathlib import Path
 
 from toga_cocoa.libs import (
@@ -8,8 +9,19 @@ from toga_cocoa.libs import (
 )
 
 
+def nsdata_to_bytes(data: NSData) -> bytes:
+    """Convert an NSData into a raw bytes representation"""
+    # data is an NSData object that has .bytes as a c_void_p, and a .length. Cast to
+    # POINTER(c_char) to get an addressable array of bytes, and slice that array to
+    # the known length. We don't use c_char_p because it has handling of NUL
+    # termination, and POINTER(c_char) allows array subscripting.
+    return cast(data.bytes, POINTER(c_char))[: data.length]
+
+
 class Image:
-    def __init__(self, interface, path=None, data=None):
+    RAW_TYPE = NSImage
+
+    def __init__(self, interface, path=None, data=None, raw=None):
         self.interface = interface
 
         try:
@@ -26,11 +38,13 @@ class Image:
                 self.native = image.initWithContentsOfFile(str(path))
                 if self.native is None:
                     raise ValueError(f"Unable to load image from {path}")
-            else:
+            elif data:
                 nsdata = NSData.dataWithBytes(data, length=len(data))
                 self.native = image.initWithData(nsdata)
                 if self.native is None:
                     raise ValueError("Unable to load image from data")
+            else:
+                self.native = raw
         finally:
             image.release()
 
@@ -39,6 +53,16 @@ class Image:
 
     def get_height(self):
         return self.native.size.height
+
+    def get_data(self):
+        # A file created from a data source won't necessarily have a pre-existing PNG
+        # representation. Create a TIFF representation, then convert to PNG.
+        bitmap_rep = NSBitmapImageRep.imageRepWithData(self.native.TIFFRepresentation)
+        image_data = bitmap_rep.representationUsingType(
+            NSBitmapImageFileType.PNG,
+            properties=None,
+        )
+        return nsdata_to_bytes(image_data)
 
     def save(self, path):
         path = Path(path)
