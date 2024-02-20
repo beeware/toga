@@ -393,6 +393,9 @@ def test_deprecated_args(widget):
 
     with pytest.warns(
         DeprecationWarning,
+        match=r"Canvas.fill\(\) has been renamed Canvas.Fill\(\)",
+    ), pytest.warns(
+        DeprecationWarning,
         match=r"The `preserve` argument on fill\(\) has been deprecated.",
     ):
         with widget.fill("rebeccapurple", FillRule.EVENODD, preserve=False) as fill:
