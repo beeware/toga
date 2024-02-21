@@ -134,7 +134,21 @@ class AppProbe(BaseProbe):
         self._activate_menu_item(["Help", "Visit homepage"])
 
     def assert_menu_item(self, path, *, enabled=True):
-        assert self._menu_item(path).Enabled == enabled
+        item = self._menu_item(path)
+        assert item.Enabled == enabled
+
+        # Check some special cases of menu shortcuts
+        try:
+            shortcut = {
+                ("Other", "Full command"): "Ctrl+1",
+                ("Other", "Submenu1", "Disabled"): None,
+                ("Commands", "No Tooltip"): "Ctrl+Down",
+                ("Commands", "Sectioned"): "Ctrl+Space",
+            }[tuple(path)]
+        except KeyError:
+            pass
+        else:
+            assert item.ShortcutKeyDisplayString == shortcut
 
     def assert_system_menus(self):
         self.assert_menu_item(["File", "Preferences"], enabled=False)

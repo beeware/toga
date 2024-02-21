@@ -154,12 +154,16 @@ class AppProbe(BaseProbe):
             "A": 0,
             "1": 18,
             "!": 18,
+            "'": 39,
+            ";": 41,
+            "|": 42,
+            " ": 49,
             chr(0xF708): 96,  # F5
             chr(0x2196): 115,  # Home
         }[key]
 
-        # Add the shift modifier to disambiguate 1 from !
-        if key in {"!"}:
+        # Add the shift modifier to disambiguate shifted keys from non-shifted
+        if key in {"!", "|"}:
             modifiers |= NSEventModifierFlagShift
 
         event = NSEvent.keyEventWithType(
