@@ -22,6 +22,11 @@ class TogaMapView(MKMapView):
         pin = self.impl.pins[view.annotation]
         self.interface.on_select(pin=pin)
 
+    @objc_method
+    def mapView_regionDidChangeAnimated_(self, mapView, animated: bool) -> None:
+        # Once an animation finishes, we know the future location has been reached.
+        self.impl.future_location = None
+
 
 class MapView(Widget):
     def create(self):
@@ -39,13 +44,22 @@ class MapView(Widget):
         # Add the layout constraints
         self.add_constraints()
 
+        # Setting the zoom level requires knowing the center of the map; but if you set
+        # the zoom immediately after changing the location, the map may not have
+        # finished animating to the new location yet. Whenever we change location, store
+        # the desired future location, so that any zoom changes that occur during
+        # animation can use the desired *future* location as the center of the zoom
+        # window, rather than wherever the window is mid-pan.
+        self.future_location = None
+
     def get_location(self):
         location = self.native.centerCoordinate
         return LatLng(location.latitude, location.longitude)
 
     def set_location(self, position):
+        self.future_location = CLLocationCoordinate2D(*position)
         self.native.setCenterCoordinate(
-            CLLocationCoordinate2D(*position),
+            self.future_location,
             animated=True,
         )
 
@@ -60,8 +74,15 @@ class MapView(Widget):
             5: 0.002,  # City block
         }[zoom]
 
+        # If we're currently panning to a new location, use the desired *future*
+        # location as the center of the zoom region. Otherwise use the current center
+        # coordinate.
         region = MKCoordinateRegion(
-            self.native.centerCoordinate,
+            (
+                self.future_location
+                if self.future_location is not None
+                else self.native.centerCoordinate
+            ),
             MKCoordinateSpan(delta, delta),
         )
         self.native.setRegion(region, animated=True)

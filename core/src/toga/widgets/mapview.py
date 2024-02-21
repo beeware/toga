@@ -162,15 +162,13 @@ class MapView(Widget):
 
         self._pins = MapPinSet(self, pins)
 
-        # Set zoom before location, because on some platforms changing the
-        # zoom requires reading (and therefore resetting) the location.
-        self.zoom = zoom
-
         if location:
             self.location = location
         else:
             # Default location is Perth, Australia. Because why not?
             self.location = (-31.9559, 115.8606)
+
+        self.zoom = zoom
 
         self.on_select = on_select
 
