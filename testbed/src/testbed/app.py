@@ -39,11 +39,13 @@ class Testbed(toga.App):
             tooltip="A command with no icon",
             shortcut=toga.Key.MOD_1 + "3",
         )
-        # A command in another section
+        # A command in another section.
+        # Also exercises the handling of space as a shortcut key.
         self.cmd4 = toga.Command(
             self.cmd_action,
             "Sectioned",
             icon=toga.Icon.DEFAULT_ICON,
+            shortcut=toga.Key.MOD_1 + " ",
             tooltip="I'm in another section",
             section=2,
         )

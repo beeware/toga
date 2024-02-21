@@ -98,7 +98,7 @@ def toga_to_winforms_shortcut(key):
         key = key.value
     except AttributeError:
         key = key
-    print(f"KEY {key} -> ", end="")
+
     # Replace modifiers with the Winforms text
     display = []
     for toga_keyval, winforms_keyval in [
@@ -113,11 +113,15 @@ def toga_to_winforms_shortcut(key):
     if key == " ":
         display.append("Space")
     else:
-        # All remaining text is displayed in upper case (Shift will be in the shortcut
-        # if it's an upper case letter)
-        display.append(key.upper())
+        # Convert non-printable characters to printable
+        if match := re.fullmatch(r"<(.+)>", key):
+            key = match[1]
 
-    print("+".join(display))
+        # All remaining text is displayed in title case. Shift will already be
+        # in the shortcut if it's an upper case letter; it's title() rather
+        # than upper() because we want both a->A and esc -> Esc
+        display.append(key.title())
+
     return "+".join(display)
 
 
