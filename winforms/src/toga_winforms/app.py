@@ -15,7 +15,7 @@ import toga
 from toga import Key
 from toga.command import Separator
 
-from .keys import toga_to_winforms_key
+from .keys import toga_to_winforms_key, toga_to_winforms_shortcut
 from .libs.proactor import WinformsProactorEventLoop
 from .libs.wrapper import WeakrefCallable
 from .screens import Screen as ScreenImpl
@@ -238,6 +238,12 @@ class App:
                 if cmd.shortcut is not None:
                     try:
                         item.ShortcutKeys = toga_to_winforms_key(cmd.shortcut)
+                        # The Winforms key enum is... daft. The "oem" key
+                        # values render as "Oem" or "Oemcomma", so we need to
+                        # *manually* set the display text for the key shortcut.
+                        item.ShortcutKeyDisplayString = toga_to_winforms_shortcut(
+                            cmd.shortcut
+                        )
                     except (
                         ValueError,
                         InvalidEnumArgumentException,
