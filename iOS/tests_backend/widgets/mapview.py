@@ -1,4 +1,7 @@
+import asyncio
 import re
+
+import pytest
 
 from toga_iOS.libs import MKMapView
 
@@ -55,3 +58,44 @@ class MapViewProbe(SimpleProbe):
     async def select_pin(self, pin):
         self.native.selectAnnotation(pin._native, animated=False)
         await self.redraw(f"{pin.title} pin has been selected")
+
+    async def wait_for_map(self, message, max_delay=0.5):
+
+        def region_eq(r1, r2):
+            return (
+                pytest.approx(r1.span.latitudeDelta)
+                == pytest.approx(r2.span.latitudeDelta)
+                and pytest.approx(r1.span.longitudeDelta)
+                == pytest.approx(r2.span.longitudeDelta)
+                and pytest.approx(r1.center.latitude)
+                == pytest.approx(r2.center.latitude)
+                and pytest.approx(r1.center.longitude)
+                == pytest.approx(r2.center.longitude)
+            )
+
+        initial = self.native.region
+        previous = initial
+        panning = True
+
+        # Iterate until 2 successive reads of the region, 0.1s apart, return the same
+        # value; or we've been waiting 2 seconds. If confirm_pan is True, also confirm
+        # that the value has actually changed from the initial value.
+        tick_count = 0
+        while panning and tick_count < (max_delay / 0.1):
+            await asyncio.sleep(0.1)
+            current = self.native.region
+
+            # If the region isn't stable, we're still panning.
+            panning = not region_eq(current, previous)
+
+            # If the region is the same as the original region,
+            # we're still waiting for panning to start. It's possible
+            # panning has finished, but it's better to timeout on the
+            # tick count to be sure
+            if region_eq(current, initial):
+                panning = True
+
+            previous = current
+            tick_count += 1
+
+        await self.redraw(message)

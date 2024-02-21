@@ -33,16 +33,8 @@ class MapView(Widget):
         self.native = TogaMapView.alloc().init()
         self.native.interface = self.interface
         self.native.impl = self
-        self.native.delegate = self.native
-
         self.native.zoomEnabled = True
         self.native.scrollEnabled = True
-
-        # Reverse lookup of map annotations to pins
-        self.pins = {}
-
-        # Add the layout constraints
-        self.add_constraints()
 
         # Setting the zoom level requires knowing the center of the map; but if you set
         # the zoom immediately after changing the location, the map may not have
@@ -51,6 +43,18 @@ class MapView(Widget):
         # animation can use the desired *future* location as the center of the zoom
         # window, rather than wherever the window is mid-pan.
         self.future_location = None
+
+        # Reverse lookup of map annotations to pins
+        self.pins = {}
+
+        # Only set the delegate once the properties on the impl are in place to support
+        # any events that might occur. We use a standalone delegate class because
+        # MKMapView seems to have issues being subclassed (and subclassing is explicitly
+        # called out in the docs.)
+        self.native.delegate = self.delegate
+
+        # Add the layout constraints
+        self.add_constraints()
 
     def get_location(self):
         location = self.native.centerCoordinate
