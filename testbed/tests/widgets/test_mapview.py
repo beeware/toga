@@ -65,69 +65,60 @@ async def widget(on_select):
         gc.collect()
 
 
+# The next two tests fail about 75% of the time in the macOS x86_64 CI configuration.
+# The failure mode appears to be that the widget *exists*, but doesn't respond to
+# changes in location or zoom. I've been unable to reproduce this in actual testing on
+# an actual macOS x86_64 machine, and the test is 100% reliable on every other platform,
+# including ARM64 macOS. Given that macOS x86_64 support is of waning significance, I've
+# take the practical measure of converting these test failures to an xfail. They'll
+# occasionally XPASS, but that won't fail the test; and we'll still get coverage
+# because all the necessary APIs have been invoked prior to the failure.
+@pytest.mark.xfail(
+    condition=platform.system() == "Darwin" and platform.machine() == "x86_64",
+    reason="Test is unreliable on macOS x86_64",
+)
 async def test_location(widget, probe):
     """The location of the map can be changed"""
-    try:
-        # Initial location is Perth
-        widget.location = (-31.9559, 115.8606)
-        await probe.wait_for_map("Map is centered on Perth", max_delay=2)
-        assert isinstance(widget.location, toga.LatLng)
-        assert widget.location == pytest.approx((-31.9559, 115.8606), abs=0.005)
+    # Initial location is Perth
+    widget.location = (-31.9559, 115.8606)
+    await probe.wait_for_map("Map is centered on Perth", max_delay=2)
+    assert isinstance(widget.location, toga.LatLng)
+    assert widget.location == pytest.approx((-31.9559, 115.8606), abs=0.005)
 
-        # Set location to Margaret River, just south of Perth
-        widget.location = (-33.9550, 115.0750)
-        await probe.wait_for_map("Location has panned to Margaret River", max_delay=2)
-        assert isinstance(widget.location, toga.LatLng)
-        assert widget.location == pytest.approx((-33.955, 115.075), abs=0.005)
-    except AssertionError:
-        # The macOS x86_64 CI configuration fails this test about 75% of the time.
-        # The failure mode appears to be that the widget *exists*, but doesn't respond
-        # to changes in location or zoom. However, I've been unable to reproduce this
-        # in actual testing on an actual macOS x86_64 machine. The test is 100% reliable
-        # on every other platform. Given that x86_64 support is of waning significance,
-        # I've take the practical measure of converting these test failures to an xfail.
-        if platform.system() == "Darwin" and platform.machine() == "x86_64":
-            pytest.xfail("Prone to failure on macOS x86_64")
-        else:
-            raise
+    # Set location to Margaret River, just south of Perth
+    widget.location = (-33.9550, 115.0750)
+    await probe.wait_for_map("Location has panned to Margaret River", max_delay=2)
+    assert isinstance(widget.location, toga.LatLng)
+    assert widget.location == pytest.approx((-33.955, 115.075), abs=0.005)
 
 
+# See test_location for an explanation of this xfail
+@pytest.mark.xfail(
+    condition=platform.system() == "Darwin" and platform.machine() == "x86_64",
+    reason="Test is unreliable on macOS x86_64",
+)
 async def test_zoom(widget, probe):
     """The zoom factor of the map can be changed"""
-    try:
-        await probe.wait_for_map("Map is at initial location", max_delay=2)
+    await probe.wait_for_map("Map is at initial location", max_delay=2)
 
-        # We can't read the zoom of a map; but we can probe to get the delta from the
-        # minimum to maximum latitude that is currently visible. That delta should be within
-        # a broad range at each zoom level.
-        for zoom, min_span, max_span in [
-            (0, 10, 50),
-            (1, 1, 10),
-            (2, 0.1, 1),
-            (3, 0.01, 0.1),
-            (4, 0.004, 0.01),
-            (5, 0.001, 0.004),
-        ]:
-            widget.zoom = zoom
-            await probe.wait_for_map(
-                f"Map has been zoomed to level {zoom}", max_delay=2
-            )
+    # We can't read the zoom of a map; but we can probe to get the delta from the
+    # minimum to maximum latitude that is currently visible. That delta should be within
+    # a broad range at each zoom level.
+    for zoom, min_span, max_span in [
+        (0, 10, 50),
+        (1, 1, 10),
+        (2, 0.1, 1),
+        (3, 0.01, 0.1),
+        (4, 0.004, 0.01),
+        (5, 0.001, 0.004),
+    ]:
+        widget.zoom = zoom
+        await probe.wait_for_map(f"Map has been zoomed to level {zoom}", max_delay=2)
 
-            map_span = await probe.latitude_span()
-            assert (
-                min_span < map_span < max_span
-            ), f"Zoom level {zoom}: failed {min_span} < {map_span} < {max_span}"
-    except AssertionError:
-        # The macOS x86_64 CI configuration fails this test about 75% of the time.
-        # The failure mode appears to be that the widget *exists*, but doesn't respond
-        # to changes in location or zoom. However, I've been unable to reproduce this
-        # in actual testing on an actual macOS x86_64 machine. The test is 100% reliable
-        # on every other platform. Given that x86_64 support is of waning significance,
-        # I've take the practical measure of converting these test failures to an xfail.
-        if platform.system() == "Darwin" and platform.machine() == "x86_64":
-            pytest.xfail("Prone to failure on macOS x86_64")
-        else:
-            raise
+        map_span = await probe.latitude_span()
+        assert (
+            min_span < map_span < max_span
+        ), f"Zoom level {zoom}: failed {min_span} < {map_span} < {max_span}"
 
 
 async def test_add_pins(widget, probe, on_select):
