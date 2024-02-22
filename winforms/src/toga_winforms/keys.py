@@ -47,12 +47,6 @@ WINFORMS_KEYS.update(
         for digit in range(10)
     }
 )
-WINFORMS_KEYS.update(
-    {
-        getattr(Key, f"F{digit}").value: getattr(WinForms.Keys, f"F{digit}")
-        for digit in range(1, 20)
-    }
-)
 
 SHIFTED_KEYS = {symbol: number for symbol, number in zip("!@#$%^&*()", "1234567890")}
 SHIFTED_KEYS.update(
