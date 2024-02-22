@@ -32,9 +32,26 @@ WINFORMS_KEYS = {
     Key.PAGE_DOWN.value: WinForms.Keys.PageDown,
     Key.HOME.value: WinForms.Keys.Home,
     Key.END.value: WinForms.Keys.End,
+    Key.UP.value: WinForms.Keys.Up,
+    Key.DOWN.value: WinForms.Keys.Down,
+    Key.LEFT.value: WinForms.Keys.Left,
+    Key.RIGHT.value: WinForms.Keys.Right,
+    Key.NUMPAD_DECIMAL_POINT: WinForms.Keys.Decimal,
 }
 WINFORMS_KEYS.update(
     {str(digit): getattr(WinForms.Keys, f"D{digit}") for digit in range(10)}
+)
+WINFORMS_KEYS.update(
+    {
+        getattr(Key, f"NUMPAD_{digit}"): getattr(WinForms.Keys, f"NumPad{digit}")
+        for digit in range(10)
+    }
+)
+WINFORMS_KEYS.update(
+    {
+        getattr(Key, f"F{digit}"): getattr(WinForms.Keys, f"F{digit}")
+        for digit in range(1, 20)
+    }
 )
 
 SHIFTED_KEYS = {symbol: number for symbol, number in zip("!@#$%^&*()", "1234567890")}
