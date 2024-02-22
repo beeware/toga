@@ -160,6 +160,8 @@ class AppProbe(BaseProbe):
             " ": 49,
             chr(0xF708): 96,  # F5
             chr(0x2196): 115,  # Home
+            # This only works because we're *not* testing the numeric 5
+            "5": 87,
         }[key]
 
         # Add the shift modifier to disambiguate shifted keys from non-shifted

@@ -36,20 +36,20 @@ WINFORMS_KEYS = {
     Key.DOWN.value: WinForms.Keys.Down,
     Key.LEFT.value: WinForms.Keys.Left,
     Key.RIGHT.value: WinForms.Keys.Right,
-    Key.NUMPAD_DECIMAL_POINT: WinForms.Keys.Decimal,
+    Key.NUMPAD_DECIMAL_POINT.value: WinForms.Keys.Decimal,
 }
 WINFORMS_KEYS.update(
     {str(digit): getattr(WinForms.Keys, f"D{digit}") for digit in range(10)}
 )
 WINFORMS_KEYS.update(
     {
-        getattr(Key, f"NUMPAD_{digit}"): getattr(WinForms.Keys, f"NumPad{digit}")
+        getattr(Key, f"NUMPAD_{digit}").value: getattr(WinForms.Keys, f"NumPad{digit}")
         for digit in range(10)
     }
 )
 WINFORMS_KEYS.update(
     {
-        getattr(Key, f"F{digit}"): getattr(WinForms.Keys, f"F{digit}")
+        getattr(Key, f"F{digit}").value: getattr(WinForms.Keys, f"F{digit}")
         for digit in range(1, 20)
     }
 )
