@@ -92,7 +92,7 @@ class Tutorial2App(toga.App):
             action2,
             text="Action 2",
             tooltip="Perform action 2",
-            icon=toga.Icon.TOGA_ICON,
+            icon=toga.Icon.DEFAULT_ICON,
             group=things,
         )
 
@@ -154,7 +154,7 @@ class Tutorial2App(toga.App):
 
 
 def main():
-    return Tutorial2App("Tutorial 2", "org.beeware.helloworld")
+    return Tutorial2App("Tutorial 2", "org.beeware.toga.tutorial")
 
 
 if __name__ == "__main__":

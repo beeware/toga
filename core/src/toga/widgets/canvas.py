@@ -4,7 +4,7 @@ import warnings
 from abc import ABC, abstractmethod
 from contextlib import contextmanager
 from math import cos, pi, sin, tan
-from typing import Protocol
+from typing import TYPE_CHECKING, Protocol
 
 from travertino.colors import Color
 
@@ -14,8 +14,10 @@ from toga.constants import Baseline, FillRule
 from toga.fonts import SYSTEM, SYSTEM_DEFAULT_FONT_SIZE, Font
 from toga.handlers import wrapped_handler
 
-from .. import Image
 from .base import Widget
+
+if TYPE_CHECKING:
+    from toga.images import ImageT
 
 #######################################################################################
 # Simple drawing objects
@@ -56,8 +58,7 @@ class DrawingObject(ABC):
         return f"{self.__class__.__name__}()"
 
     @abstractmethod
-    def _draw(self, impl, **kwargs):
-        ...
+    def _draw(self, impl, **kwargs): ...
 
 
 class BeginPath(DrawingObject):
@@ -1448,11 +1449,16 @@ class Canvas(Widget):
     # As image
     ###########################################################################
 
-    def as_image(self) -> toga.Image:
-        """Render the canvas as an Image.
+    def as_image(self, format: type[ImageT] = toga.Image) -> ImageT:
+        """Render the canvas as an image.
 
-        :returns: A :class:`toga.Image` containing the canvas content."""
-        return Image(data=self._impl.get_image_data())
+        :param format: Format to provide. Defaults to :class:`~toga.images.Image`; also
+            supports :any:`PIL.Image.Image` if Pillow is installed, as well as any image
+            types defined by installed :doc:`image format plugins
+            </reference/plugins/image_formats>`
+        :returns: The canvas as an image of the specified type.
+        """
+        return toga.Image(self._impl.get_image_data()).as_format(format)
 
     ###########################################################################
     # 2023-07 Backwards compatibility

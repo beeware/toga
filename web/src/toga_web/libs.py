@@ -1,18 +1,16 @@
 try:
-    # Try to import js from the PyScript namespace.
+    # Try to import js from the PyScript namespace
     import js
 except ModuleNotFoundError:
-    # To ensure the code can be imported, provide a js symbol
-    # as a fallback
+    # To ensure the code can be imported, provide a js symbol as a fallback
     js = None
 
 
 try:
-    # Try to import pyodide from the PyScript namespace.
+    # Try to import pyodide from the PyScript namespace
     import pyodide
 except ModuleNotFoundError:
-    # To ensure the code can be imported, provide a js symbol
-    # as a fallback
+    # To ensure the code can be imported, provide a pyodide symbol as a fallback
     pyodide = None
 
 

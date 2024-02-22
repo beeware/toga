@@ -1,10 +1,11 @@
-from toga.command import Command
+from rubicon.objc import CGSize
+
+from toga.command import Command, Separator
 from toga_cocoa.container import Container
-from toga_cocoa.images import nsdata_to_bytes
 from toga_cocoa.libs import (
     SEL,
     NSBackingStoreBuffered,
-    NSBitmapImageFileType,
+    NSImage,
     NSMakeRect,
     NSMutableArray,
     NSPoint,
@@ -14,16 +15,16 @@ from toga_cocoa.libs import (
     NSToolbarItem,
     NSWindow,
     NSWindowStyleMask,
+    core_graphics,
     objc_method,
     objc_property,
 )
 
+from .screens import Screen as ScreenImpl
+
 
 def toolbar_identifier(cmd):
-    if isinstance(cmd, Command):
-        return "ToolbarItem-%s" % id(cmd)
-    else:
-        return "ToolbarSeparator-%s" % id(cmd)
+    return f"Toolbar-{type(cmd).__name__}-{id(cmd)}"
 
 
 class TogaWindow(NSWindow):
@@ -59,8 +60,16 @@ class TogaWindow(NSWindow):
     def toolbarDefaultItemIdentifiers_(self, toolbar):
         """Determine the list of toolbar items that will display by default."""
         default = NSMutableArray.alloc().init()
+        prev_group = None
         for item in self.interface.toolbar:
+            # If there's been a group change, and this item isn't a separator,
+            # add a separator between groups.
+            if prev_group is not None:
+                if item.group != prev_group and not isinstance(item, Separator):
+                    default.addObject_(toolbar_identifier(prev_group))
             default.addObject_(toolbar_identifier(item))
+            prev_group = item.group
+
         return default
 
     @objc_method
@@ -170,25 +179,33 @@ class Window:
         self.purge_toolbar()
         self.native.release()
 
-    def purge_toolbar(self):
-        while self._toolbar_items:
-            dead_items = []
-            _, cmd = self._toolbar_items.popitem()
-            # The command might have toolbar representations on multiple window
-            # toolbars, and may have other representations (at the very least, a menu
-            # item). Only clean up the representation pointing at *this* window. Do this
-            # in 2 passes so that we're not modifying the set of native objects while
-            # iterating over it.
-            for item_native in cmd._impl.native:
-                if (
-                    isinstance(item_native, NSToolbarItem)
-                    and item_native.target == self.native
-                ):
-                    dead_items.append(item_native)
+    ######################################################################
+    # Native event handlers
+    ######################################################################
 
-            for item_native in dead_items:
-                cmd._impl.native.remove(item_native)
-                item_native.release()
+    def cocoa_windowShouldClose(self):
+        # The on_close handler has a cleanup method that will enforce
+        # the close if the on_close handler requests it; this initial
+        # "should close" request can always return False.
+        self.interface.on_close()
+        return False
+
+    ######################################################################
+    # Window properties
+    ######################################################################
+
+    def get_title(self):
+        return str(self.native.title)
+
+    def set_title(self, title):
+        self.native.title = title
+
+    ######################################################################
+    # Window lifecycle
+    ######################################################################
+
+    def close(self):
+        self.native.close()
 
     def create_toolbar(self):
         # Purge any existing toolbar items
@@ -213,9 +230,35 @@ class Window:
         if self.interface.content:
             self.interface.content.refresh()
 
-    def set_content(self, widget):
-        # Set the content of the window's container
-        self.container.content = widget
+    def purge_toolbar(self):
+        while self._toolbar_items:
+            dead_items = []
+            _, cmd = self._toolbar_items.popitem()
+            # The command might have toolbar representations on multiple window
+            # toolbars, and may have other representations (at the very least, a menu
+            # item). Only clean up the representation pointing at *this* window. Do this
+            # in 2 passes so that we're not modifying the set of native objects while
+            # iterating over it.
+            for item_native in cmd._impl.native:
+                if (
+                    isinstance(item_native, NSToolbarItem)
+                    and item_native.target == self.native
+                ):
+                    dead_items.append(item_native)
+
+            for item_native in dead_items:
+                cmd._impl.native.remove(item_native)
+                item_native.release()
+
+    def set_app(self, app):
+        pass
+
+    def show(self):
+        self.native.makeKeyAndOrderFront(None)
+
+    ######################################################################
+    # Window content and resources
+    ######################################################################
 
     def content_refreshed(self, container):
         min_width = self.interface.content.layout.min_width
@@ -234,11 +277,29 @@ class Window:
         self.container.min_width = min_width
         self.container.min_height = min_height
 
-    def get_title(self):
-        return str(self.native.title)
+    def set_content(self, widget):
+        # Set the content of the window's container
+        self.container.content = widget
 
-    def set_title(self, title):
-        self.native.title = title
+    ######################################################################
+    # Window size
+    ######################################################################
+
+    def get_size(self):
+        frame = self.native.frame
+        return frame.size.width, frame.size.height
+
+    def set_size(self, size):
+        frame = self.native.frame
+        frame.size = NSSize(size[0], size[1])
+        self.native.setFrame(frame, display=True, animate=True)
+
+    ######################################################################
+    # Window position
+    ######################################################################
+
+    def get_current_screen(self):
+        return ScreenImpl(self.native.screen)
 
     def get_position(self):
         # The "primary" screen has index 0 and origin (0, 0).
@@ -264,20 +325,9 @@ class Window:
 
         self.native.setFrameTopLeftPoint(NSPoint(x, y))
 
-    def get_size(self):
-        frame = self.native.frame
-        return frame.size.width, frame.size.height
-
-    def set_size(self, size):
-        frame = self.native.frame
-        frame.size = NSSize(size[0], size[1])
-        self.native.setFrame(frame, display=True, animate=True)
-
-    def set_app(self, app):
-        pass
-
-    def show(self):
-        self.native.makeKeyAndOrderFront(None)
+    ######################################################################
+    # Window visibility
+    ######################################################################
 
     def hide(self):
         self.native.orderOut(self.native)
@@ -285,31 +335,33 @@ class Window:
     def get_visible(self):
         return bool(self.native.isVisible)
 
+    ######################################################################
+    # Window state
+    ######################################################################
+
     def set_full_screen(self, is_full_screen):
         current_state = bool(self.native.styleMask & NSWindowStyleMask.FullScreen)
         if is_full_screen != current_state:
             self.native.toggleFullScreen(self.native)
 
-    def cocoa_windowShouldClose(self):
-        # The on_close handler has a cleanup method that will enforce
-        # the close if the on_close handler requests it; this initial
-        # "should close" request can always return False.
-        self.interface.on_close()
-        return False
-
-    def close(self):
-        self.native.close()
+    ######################################################################
+    # Window capabilities
+    ######################################################################
 
     def get_image_data(self):
         bitmap = self.container.native.bitmapImageRepForCachingDisplayInRect(
             self.container.native.bounds
         )
-        bitmap.setSize(self.container.native.bounds.size)
         self.container.native.cacheDisplayInRect(
             self.container.native.bounds, toBitmapImageRep=bitmap
         )
-        data = bitmap.representationUsingType(
-            NSBitmapImageFileType.PNG,
-            properties=None,
+
+        # Get a reference to the CGImage from the bitmap
+        cg_image = bitmap.CGImage
+
+        target_size = CGSize(
+            core_graphics.CGImageGetWidth(cg_image),
+            core_graphics.CGImageGetHeight(cg_image),
         )
-        return nsdata_to_bytes(data)
+        ns_image = NSImage.alloc().initWithCGImage(cg_image, size=target_size)
+        return ns_image

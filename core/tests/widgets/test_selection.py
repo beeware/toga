@@ -73,12 +73,12 @@ def test_create_with_value():
 
 
 @pytest.mark.parametrize(
-    "items, value",
+    "items, title, value",
     [
         # list of strings
-        (["first", "second", "third"], "second"),
+        (["first", "second", "third"], "second", "second"),
         # list of non-strings
-        ([111, 222, 333], 222),
+        ([111, 222, 333], "222", 222),
         # List of dictionaries; implied use of "value" key
         (
             [
@@ -86,6 +86,7 @@ def test_create_with_value():
                 {"key": "second", "value": 222},
                 {"key": "third", "value": 333},
             ],
+            "222",
             222,
         ),
         # List of tuples; only the first item is used.
@@ -96,10 +97,15 @@ def test_create_with_value():
                 ("third", 333),
             ],
             "second",
+            "second",
         ),
+        # List of strings with a newline in value
+        (["first", "second\nitem", "third"], "second", "second\nitem"),
+        # List of strings with a duplicate entry
+        (["first", "second", "third", "first", "second"], "second", "second"),
     ],
 )
-def test_value_no_accessor(items, value):
+def test_value_no_accessor(items, title, value):
     "If there's no accessor, the items can be set and values will be dereferenced"
     on_change_handler = Mock()
     widget = toga.Selection(on_change=on_change_handler)
@@ -124,17 +130,17 @@ def test_value_no_accessor(items, value):
     assert widget.value == value
 
     # The value renders as a string
-    assert widget._title_for_item(widget.items[1]) == str(value)
+    assert widget._title_for_item(widget.items[1]) == title
 
     # Change handler was invoked
     on_change_handler.assert_called_once_with(widget)
 
 
 @pytest.mark.parametrize(
-    "accessor, items, value",
+    "accessor, items, title, value",
     [
         # List of strings with a custom accessor name
-        ("key", ["first", "second", "third"], "second"),
+        ("key", ["first", "second", "third"], "second", "second"),
         # List of dictionaries selecting non-default key
         (
             "key",
@@ -143,6 +149,7 @@ def test_value_no_accessor(items, value):
                 {"key": "second", "value": 222},
                 {"key": "third", "value": 333},
             ],
+            "second",
             "second",
         ),
         # List of tuples; accessor name is altered.
@@ -153,6 +160,7 @@ def test_value_no_accessor(items, value):
                 ("second", 222),
                 ("third", 333),
             ],
+            "second",
             "second",
         ),
         (
@@ -166,10 +174,15 @@ def test_value_no_accessor(items, value):
                 ],
             ),
             "second",
+            "second",
         ),
+        # List of strings with a newline in a title
+        ("key", ["first", "second\nitem", "third"], "second", "second\nitem"),
+        # List of strings with a duplicate entry
+        ("key", ["first", "second", "third", "first", "second"], "second", "second"),
     ],
 )
-def test_value_with_accessor(accessor, items, value):
+def test_value_with_accessor(accessor, items, title, value):
     "If an accessor is used, item lookup semantics are different"
     on_change_handler = Mock()
     widget = toga.Selection(accessor=accessor, on_change=on_change_handler)
@@ -195,7 +208,7 @@ def test_value_with_accessor(accessor, items, value):
     assert getattr(widget.value, accessor) == value
 
     # The value renders as a string
-    assert widget._title_for_item(widget.items[1]) == str(value)
+    assert widget._title_for_item(widget.items[1]) == title
 
     # Change handler was invoked
     on_change_handler.assert_called_once_with(widget)

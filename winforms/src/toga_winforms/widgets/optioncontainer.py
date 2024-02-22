@@ -6,12 +6,14 @@ from .base import Widget
 
 
 class OptionContainer(Widget):
+    uses_icons = False
+
     def create(self):
         self.native = TabControl()
         self.native.Selected += WeakrefCallable(self.winforms_selected)
         self.panels = []
 
-    def add_content(self, index, text, widget):
+    def add_option(self, index, text, widget, icon):
         page = TabPage(text)
         self.native.TabPages.Insert(index, page)
 
@@ -27,7 +29,7 @@ class OptionContainer(Widget):
 
         page.ClientSizeChanged += WeakrefCallable(self.winforms_client_size_changed)
 
-    def remove_content(self, index):
+    def remove_option(self, index):
         panel = self.panels.pop(index)
         panel.clear_content()
 
@@ -49,6 +51,14 @@ class OptionContainer(Widget):
 
     def get_option_text(self, index):
         return self.native.TabPages[index].Text
+
+    def set_option_icon(self, index, value):  # pragma: nocover
+        # This shouldn't ever be invoked, but it's included for completeness.
+        pass
+
+    def get_option_icon(self, index):
+        # Icons aren't supported
+        return None
 
     def get_current_tab_index(self):
         return self.native.SelectedIndex

@@ -96,6 +96,9 @@ class WebView(Widget):
 
     @on_webview_load.setter
     def on_webview_load(self, handler):
+        if handler and not getattr(self._impl, "SUPPORTS_ON_WEBVIEW_LOAD", True):
+            self.factory.not_implemented("WebView.on_webview_load")
+
         self._on_webview_load = wrapped_handler(self, handler)
 
     @property
@@ -126,21 +129,15 @@ class WebView(Widget):
     def evaluate_javascript(self, javascript, on_result=None) -> JavaScriptResult:
         """Evaluate a JavaScript expression.
 
-        There is no guarantee that the JavaScript has finished evaluating when this
-        method returns. The object returned by this method can be awaited to obtain the
-        value of the expression, or you can provide an ``on_result`` callback.
+        **This is an asynchronous method**. There is no guarantee that the JavaScript
+        has finished evaluating when this method returns. The object returned by this
+        method can be awaited to obtain the value of the expression.
 
-        **Note:** On Android and Windows, *no exception handling is performed*.
-        If a JavaScript error occurs, a return value of None will be reported,
-        but no exception will be provided.
+        **Note:** On Android and Windows, *no exception handling is performed*. If a
+        JavaScript error occurs, a return value of None will be reported, but no
+        exception will be provided.
 
         :param javascript: The JavaScript expression to evaluate.
-        :param on_result: A callback that will be invoked when the JavaScript
-            completes. It should take one positional argument, which is the
-            value of the expression.
-
-            If evaluation fails, the positional argument will be ``None``, and a
-            keyword argument ``exception`` will be passed with an exception
-            object.
+        :param on_result: **DEPRECATED** ``await`` the return value of this method.
         """
         return self._impl.evaluate_javascript(javascript, on_result=on_result)

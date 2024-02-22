@@ -29,21 +29,19 @@ class AppProbe(BaseProbe):
 
     @property
     def config_path(self):
-        return Path.home() / "Library" / "Preferences" / "org.beeware.toga.testbed"
+        return Path.home() / "Library/Preferences/org.beeware.toga.testbed"
 
     @property
     def data_path(self):
-        return (
-            Path.home() / "Library" / "Application Support" / "org.beeware.toga.testbed"
-        )
+        return Path.home() / "Library/Application Support/org.beeware.toga.testbed"
 
     @property
     def cache_path(self):
-        return Path.home() / "Library" / "Caches" / "org.beeware.toga.testbed"
+        return Path.home() / "Library/Caches/org.beeware.toga.testbed"
 
     @property
     def logs_path(self):
-        return Path.home() / "Library" / "Logs" / "org.beeware.toga.testbed"
+        return Path.home() / "Library/Logs/org.beeware.toga.testbed"
 
     @property
     def is_cursor_visible(self):
@@ -156,12 +154,16 @@ class AppProbe(BaseProbe):
             "A": 0,
             "1": 18,
             "!": 18,
+            "'": 39,
+            ";": 41,
+            "|": 42,
+            " ": 49,
             chr(0xF708): 96,  # F5
             chr(0x2196): 115,  # Home
         }[key]
 
-        # Add the shift modifier to disambiguate 1 from !
-        if key in {"!"}:
+        # Add the shift modifier to disambiguate shifted keys from non-shifted
+        if key in {"!", "|"}:
             modifiers |= NSEventModifierFlagShift
 
         event = NSEvent.keyEventWithType(

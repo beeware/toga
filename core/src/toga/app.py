@@ -6,19 +6,33 @@ import signal
 import sys
 import warnings
 import webbrowser
-from collections.abc import Collection, Iterator, Mapping, MutableSet
+from collections.abc import (
+    Collection,
+    ItemsView,
+    Iterator,
+    KeysView,
+    Mapping,
+    MutableSet,
+    ValuesView,
+)
 from email.message import Message
-from typing import Any, Protocol
+from typing import TYPE_CHECKING, Any, Protocol
 from warnings import warn
+from weakref import WeakValueDictionary
 
 from toga.command import Command, CommandSet
 from toga.documents import Document
 from toga.handlers import wrapped_handler
+from toga.hardware.camera import Camera
 from toga.icons import Icon
 from toga.paths import Paths
 from toga.platform import get_platform_factory
-from toga.widgets.base import Widget, WidgetRegistry
+from toga.screens import Screen
+from toga.widgets.base import Widget
 from toga.window import Window
+
+if TYPE_CHECKING:
+    from toga.icons import IconContent
 
 # Make sure deprecation warnings are shown by default
 warnings.filterwarnings("default", category=DeprecationWarning)
@@ -126,6 +140,61 @@ class WindowSet(MutableSet):
 
     def __len__(self) -> int:
         return len(self.elements)
+
+
+class WidgetRegistry:
+    # WidgetRegistry is implemented as a wrapper around a WeakValueDictionary, because
+    # it provides a mapping from ID to widget. The mapping is weak so the registry
+    # doesn't retain a strong reference to the widget, preventing memory cleanup.
+    #
+    # The lookup methods (__getitem__(), __iter__(), __len()__, keys(), items(), and
+    # values()) are all proxied to to underlying data store. Private methods exist for
+    # internal use, but those methods shouldn't be used by end-users.
+
+    def __init__(self, *args, **kwargs):
+        self._registry = WeakValueDictionary(*args, **kwargs)
+
+    def __len__(self) -> int:
+        return len(self._registry)
+
+    def __getitem__(self, key: str) -> Widget:
+        return self._registry[key]
+
+    def __contains__(self, key: str) -> bool:
+        return key in self._registry
+
+    def __iter__(self) -> Iterator[Widget]:
+        return self.values()
+
+    def __repr__(self) -> str:
+        return (
+            "{"
+            + ", ".join(f"{k!r}: {v!r}" for k, v in sorted(self._registry.items()))
+            + "}"
+        )
+
+    def items(self) -> ItemsView:
+        return self._registry.items()
+
+    def keys(self) -> KeysView:
+        return self._registry.keys()
+
+    def values(self) -> ValuesView:
+        return self._registry.values()
+
+    # Private methods for internal use
+    def _update(self, widgets: list[Widget]) -> None:
+        for widget in widgets:
+            self._add(widget)
+
+    def _add(self, widget: Widget) -> None:
+        if widget.id in self._registry:
+            # Prevent adding the same widget twice or adding 2 widgets with the same id
+            raise KeyError(f"There is already a widget with the id {widget.id!r}")
+        self._registry[widget.id] = widget
+
+    def _remove(self, id: str) -> None:
+        del self._registry[id]
 
 
 class MainWindow(Window):
@@ -238,7 +307,9 @@ class DocumentMainWindow(Window):
 
 
 class App:
-    app = None
+    #: The currently running :class:`~toga.App`. Since there can only be one running
+    #: Toga app in a process, this is available as a class property via ``toga.App.app``.
+    app: App = None
 
     def __init__(
         self,
@@ -246,7 +317,7 @@ class App:
         app_id: str | None = None,
         app_name: str | None = None,
         *,
-        icon: Icon | str | None = None,
+        icon: IconContent | None = None,
         author: str | None = None,
         version: str | None = None,
         home_page: str | None = None,
@@ -262,8 +333,8 @@ class App:
         :meth:`~toga.App.main_loop()` method, which will start the event loop of your
         App.
 
-        :param formal_name: The human-readable name of the app. If not provided,
-            the metadata key ``Formal-Name`` must be present.
+        :param formal_name: The human-readable name of the app. If not provided, the
+            metadata key ``Formal-Name`` must be present.
         :param app_id: The unique application identifier. This will usually be a
             reversed domain name, e.g. ``org.beeware.myapp``. If not provided, the
             metadata key ``App-ID`` must be present.
@@ -277,10 +348,10 @@ class App:
                For example, an ``app_id`` of ``com.example.my-app`` would yield a
                distribution name of ``my-app``.
             #. As a last resort, the name ``toga``.
-        :param icon: The :any:`Icon` for the app. If not provided, Toga will attempt to
-            load an icon from ``resources/app_name``, where ``app_name`` is defined
-            above. If no resource matching this name can be found, a warning will be
-            printed, and the app will fall back to a default icon.
+        :param icon: The :any:`icon <IconContent>` for the app. If not provided, Toga
+            will attempt to load an icon from ``resources/app_name``, where ``app_name``
+            is defined above. If no resource matching this name can be found, a warning
+            will be printed, and the app will fall back to a default icon.
         :param author: The person or organization to be credited as the author of the
             app. If not provided, the metadata key ``Author`` will be used.
         :param version: The version number of the app.  If not provided, the metadata
@@ -426,32 +497,11 @@ class App:
         self.commands.on_change = self._impl.create_menus
 
     def _create_impl(self):
-        self.factory.App(interface=self)
+        return self.factory.App(interface=self)
 
-    @property
-    def paths(self) -> Paths:
-        """Paths for platform-appropriate locations on the user's file system.
-
-        Some platforms do not allow access to any file system location other than these
-        paths. Even when arbitrary file access is allowed, there are preferred locations
-        for each type of content.
-        """
-        return self._paths
-
-    @property
-    def name(self) -> str:
-        """**DEPRECATED** – Use :any:`formal_name`."""
-        warn(
-            "App.name is deprecated. Use formal_name instead",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-        return self._formal_name
-
-    @property
-    def formal_name(self) -> str:
-        """The human-readable name of the app (read-only)."""
-        return self._formal_name
+    ######################################################################
+    # App properties
+    ######################################################################
 
     @property
     def app_name(self) -> str:
@@ -473,9 +523,14 @@ class App:
         return self._author
 
     @property
-    def version(self) -> str | None:
-        """The version number of the app (read-only)."""
-        return self._version
+    def description(self) -> str | None:
+        """A brief (one line) description of the app (read-only)."""
+        return self._description
+
+    @property
+    def formal_name(self) -> str:
+        """The human-readable name of the app (read-only)."""
+        return self._formal_name
 
     @property
     def home_page(self) -> str | None:
@@ -484,9 +539,22 @@ class App:
         return self._home_page
 
     @property
-    def description(self) -> str | None:
-        """A brief (one line) description of the app (read-only)."""
-        return self._description
+    def icon(self) -> Icon:
+        """The Icon for the app.
+
+        Can be specified as any valid :any:`icon content <IconContent>`.
+
+        When setting the icon, you can provide either an :any:`Icon` instance, or a
+        path that will be passed to the ``Icon`` constructor.
+        """
+        return self._icon
+
+    @icon.setter
+    def icon(self, icon_or_name: IconContent | None) -> None:
+        if isinstance(icon_or_name, Icon):
+            self._icon = icon_or_name
+        else:
+            self._icon = Icon(icon_or_name)
 
     @property
     def id(self) -> str:
@@ -497,54 +565,52 @@ class App:
         return self._app_id
 
     @property
-    def icon(self) -> Icon:
-        """The Icon for the app.
+    def version(self) -> str | None:
+        """The version number of the app (read-only)."""
+        return self._version
 
-        When setting the icon, you can provide either an :any:`Icon` instance, or a
-        path that will be passed to the ``Icon`` constructor.
+    ######################################################################
+    # App lifecycle
+    ######################################################################
+
+    def add_background_task(self, handler: BackgroundTask) -> None:
+        """Schedule a task to run in the background.
+
+        Schedules a coroutine or a generator to run in the background. Control
+        will be returned to the event loop during await or yield statements,
+        respectively. Use this to run background tasks without blocking the
+        GUI. If a regular callable is passed, it will be called as is and will
+        block the GUI until the call returns.
+
+        :param handler: A coroutine, generator or callable.
         """
-        return self._icon
+        self.loop.call_soon_threadsafe(wrapped_handler(self, handler))
 
-    @icon.setter
-    def icon(self, icon_or_name: Icon | str) -> None:
-        if isinstance(icon_or_name, Icon):
-            self._icon = icon_or_name
-        else:
-            self._icon = Icon(icon_or_name)
+    def exit(self) -> None:
+        """Exit the application gracefully.
 
-    @property
-    def widgets(self) -> Mapping[str, Widget]:
-        """The widgets managed by the app, over all windows.
-
-        Can be used to look up widgets by ID over the entire app (e.g.,
-        ``app.widgets["my_id"]``).
+        This *does not* invoke the ``on_exit`` handler; the app will be immediately
+        and unconditionally closed.
         """
-        return self._widgets
+        self._impl.exit()
 
     @property
-    def windows(self) -> Collection[Window]:
-        """The windows managed by the app. Windows are automatically added to the app
-        when they are created, and removed when they are closed."""
-        return self._windows
+    def loop(self) -> asyncio.AbstractEventLoop:
+        """The `event loop
+        <https://docs.python.org/3/library/asyncio-eventloop.html>`__ of the app's main
+        thread (read-only)."""
+        return self._impl.loop
 
-    ######################################################################
-    # 2023-10: Backwards compatibility
-    ######################################################################
+    def main_loop(self) -> None:
+        """Start the application.
 
-    # Support WindowSet __iadd__ and __isub__
-    @windows.setter
-    def windows(self, windows):
-        if windows is not self._windows:
-            raise AttributeError("can't set attribute 'windows'")
+        On desktop platforms, this method will block until the application has exited.
+        On mobile and web platforms, it returns immediately.
+        """
+        # Modify signal handlers to make sure Ctrl-C is caught and handled.
+        signal.signal(signal.SIGINT, signal.SIG_DFL)
 
-    ######################################################################
-    # End backwards compatibility
-    ######################################################################
-
-    @property
-    def commands(self) -> MutableSet[Command]:
-        """The commands available in the app."""
-        return self._commands
+        self._impl.main_loop()
 
     @property
     def main_window(self) -> MainWindow:
@@ -555,6 +621,128 @@ class App:
     def main_window(self, window: MainWindow) -> None:
         self._main_window = window
         self._impl.set_main_window(window)
+
+    def _verify_startup(self):
+        if not isinstance(self.main_window, MainWindow):
+            raise ValueError(
+                "Application does not have a main window. "
+                "Does your startup() method assign a value to self.main_window?"
+            )
+
+    def _startup(self):
+        # This is a wrapper around the user's startup method that performs any
+        # post-setup validation.
+        self.startup()
+        self._verify_startup()
+
+    def startup(self) -> None:
+        """Create and show the main window for the application.
+
+        Subclasses can override this method to define customized startup behavior;
+        however, any override *must* ensure the :any:`main_window` has been assigned
+        before it returns.
+        """
+        self.main_window = MainWindow(title=self.formal_name, id="main")
+
+        if self._startup_method:
+            self.main_window.content = self._startup_method(self)
+
+        self.main_window.show()
+
+    ######################################################################
+    # App resources
+    ######################################################################
+
+    @property
+    def camera(self) -> Camera:
+        """A representation of the device's camera (or cameras)."""
+        try:
+            return self._camera
+        except AttributeError:
+            # Instantiate the camera instance for this app on first access
+            # This will raise a exception if the platform doesn't implement
+            # the Camera API.
+            self._camera = Camera(self)
+        return self._camera
+
+    @property
+    def commands(self) -> MutableSet[Command]:
+        """The commands available in the app."""
+        return self._commands
+
+    @property
+    def paths(self) -> Paths:
+        """Paths for platform-appropriate locations on the user's file system.
+
+        Some platforms do not allow access to any file system location other than these
+        paths. Even when arbitrary file access is allowed, there are preferred locations
+        for each type of content.
+        """
+        return self._paths
+
+    @property
+    def screens(self) -> list[Screen]:
+        """Returns a list of available screens."""
+        return [screen.interface for screen in self._impl.get_screens()]
+
+    @property
+    def widgets(self) -> Mapping[str, Widget]:
+        """The widgets managed by the app, over all windows.
+
+        Can be used to look up widgets by ID over the entire app (e.g.,
+        ``app.widgets["my_id"]``).
+
+        Only returns widgets that are currently part of a layout. A widget that has been
+        created, but not assigned as part of window content will not be returned by
+        widget lookup.
+        """
+        return self._widgets
+
+    @property
+    def windows(self) -> Collection[Window]:
+        """The windows managed by the app. Windows are automatically added to the app
+        when they are created, and removed when they are closed."""
+        return self._windows
+
+    ######################################################################
+    # App capabilities
+    ######################################################################
+
+    def about(self) -> None:
+        """Display the About dialog for the app.
+
+        Default implementation shows a platform-appropriate about dialog using app
+        metadata. Override if you want to display a custom About dialog.
+        """
+        self._impl.show_about_dialog()
+
+    def beep(self) -> None:
+        """Play the default system notification sound."""
+        self._impl.beep()
+
+    def visit_homepage(self) -> None:
+        """Open the application's :any:`home_page` in the default browser.
+
+        If the :any:`home_page` is ``None``, this is a no-op.
+        """
+        if self.home_page is not None:
+            webbrowser.open(self.home_page)
+
+    ######################################################################
+    # Cursor control
+    ######################################################################
+
+    def hide_cursor(self) -> None:
+        """Hide cursor from view."""
+        self._impl.hide_cursor()
+
+    def show_cursor(self) -> None:
+        """Make the cursor visible."""
+        self._impl.show_cursor()
+
+    ######################################################################
+    # Window control
+    ######################################################################
 
     @property
     def current_window(self) -> Window | None:
@@ -568,6 +756,16 @@ class App:
     def current_window(self, window: Window):
         """Set a window into current active focus."""
         self._impl.set_current_window(window)
+
+    ######################################################################
+    # Full screen control
+    ######################################################################
+
+    def exit_full_screen(self) -> None:
+        """Exit full screen mode."""
+        if self.is_full_screen:
+            self._impl.exit_full_screen(self._full_screen_windows)
+            self._full_screen_windows = None
 
     @property
     def is_full_screen(self) -> bool:
@@ -590,85 +788,9 @@ class App:
             self._impl.enter_full_screen(windows)
             self._full_screen_windows = windows
 
-    def exit_full_screen(self) -> None:
-        """Exit full screen mode."""
-        if self.is_full_screen:
-            self._impl.exit_full_screen(self._full_screen_windows)
-            self._full_screen_windows = None
-
-    def show_cursor(self) -> None:
-        """Make the cursor visible."""
-        self._impl.show_cursor()
-
-    def hide_cursor(self) -> None:
-        """Hide cursor from view."""
-        self._impl.hide_cursor()
-
-    def startup(self) -> None:
-        """Create and show the main window for the application.
-
-        Subclasses can override this method to define customized startup behavior;
-        however, any override *must* ensure the :any:`main_window` has been assigned
-        before it returns.
-        """
-        self.main_window = MainWindow(title=self.formal_name)
-
-        if self._startup_method:
-            self.main_window.content = self._startup_method(self)
-
-        self.main_window.show()
-
-    def _startup(self):
-        # This is a wrapper around the user's startup method that performs any
-        # post-setup validation.
-        self.startup()
-        self._verify_startup()
-
-    def _verify_startup(self):
-        if not isinstance(self.main_window, MainWindow):
-            raise ValueError(
-                "Application does not have a main window. "
-                "Does your startup() method assign a value to self.main_window?"
-            )
-
-    def about(self) -> None:
-        """Display the About dialog for the app.
-
-        Default implementation shows a platform-appropriate about dialog using app
-        metadata. Override if you want to display a custom About dialog.
-        """
-        self._impl.show_about_dialog()
-
-    def visit_homepage(self) -> None:
-        """Open the application's :any:`home_page` in the default browser.
-
-        If the :any:`home_page` is ``None``, this is a no-op.
-        """
-        if self.home_page is not None:
-            webbrowser.open(self.home_page)
-
-    def beep(self) -> None:
-        """Play the default system notification sound."""
-        self._impl.beep()
-
-    def main_loop(self) -> None:
-        """Start the application.
-
-        On desktop platforms, this method will block until the application has exited.
-        On mobile and web platforms, it returns immediately.
-        """
-        # Modify signal handlers to make sure Ctrl-C is caught and handled.
-        signal.signal(signal.SIGINT, signal.SIG_DFL)
-
-        self._impl.main_loop()
-
-    def exit(self) -> None:
-        """Exit the application gracefully.
-
-        This *does not* invoke the ``on_exit`` handler; the app will be immediately
-        and unconditionally closed.
-        """
-        self._impl.exit()
+    ######################################################################
+    # App events
+    ######################################################################
 
     @property
     def on_exit(self) -> OnExitHandler:
@@ -683,25 +805,29 @@ class App:
 
         self._on_exit = wrapped_handler(self, handler, cleanup=cleanup)
 
+    ######################################################################
+    # 2023-10: Backwards compatibility
+    ######################################################################
+
     @property
-    def loop(self) -> asyncio.AbstractEventLoop:
-        """The `event loop
-        <https://docs.python.org/3/library/asyncio-eventloop.html>`__ of the app's main
-        thread (read-only)."""
-        return self._impl.loop
+    def name(self) -> str:
+        """**DEPRECATED** – Use :any:`formal_name`."""
+        warn(
+            "App.name is deprecated. Use formal_name instead",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self._formal_name
 
-    def add_background_task(self, handler: BackgroundTask) -> None:
-        """Schedule a task to run in the background.
+    # Support WindowSet __iadd__ and __isub__
+    @windows.setter
+    def windows(self, windows):
+        if windows is not self._windows:
+            raise AttributeError("can't set attribute 'windows'")
 
-        Schedules a coroutine or a generator to run in the background. Control
-        will be returned to the event loop during await or yield statements,
-        respectively. Use this to run background tasks without blocking the
-        GUI. If a regular callable is passed, it will be called as is and will
-        block the GUI until the call returns.
-
-        :param handler: A coroutine, generator or callable.
-        """
-        self.loop.call_soon_threadsafe(wrapped_handler(self, handler))
+    ######################################################################
+    # End backwards compatibility
+    ######################################################################
 
 
 class DocumentApp(App):
@@ -711,7 +837,7 @@ class DocumentApp(App):
         app_id: str | None = None,
         app_name: str | None = None,
         *,
-        icon: str | None = None,
+        icon: IconContent | None = None,
         author: str | None = None,
         version: str | None = None,
         home_page: str | None = None,

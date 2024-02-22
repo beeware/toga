@@ -33,10 +33,16 @@ class Selection(Widget):
         )
 
     def insert(self, index, item):
+        # Issue 2319 - if item titles are not unique, macOS will move the existing item,
+        # rather than creating a duplicate item. To work around this, create an item
+        # with a temporary but unique name, then change the name. `_title_for_item()`
+        # can't return newlines, so the use of a newline guarantees the name for the
+        # initial item is unique.
         self.native.insertItemWithTitle(
-            self.interface._title_for_item(item),
+            "\n<temp>",
             atIndex=index,
         )
+        self.native.itemAtIndex(index).title = self.interface._title_for_item(item)
 
         # If this is the first time item in the list, it will be automatically
         # selected; trigger a change event.

@@ -1,3 +1,5 @@
+from rubicon.objc import NSSize
+
 from toga_cocoa.libs import NSImage
 
 
@@ -32,3 +34,8 @@ class Icon:
     def __del__(self):
         if self.native:
             self.native.release()
+
+    def _as_size(self, size):
+        image = self.native.copy()
+        image.setSize(NSSize(size, size))
+        return image

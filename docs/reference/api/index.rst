@@ -89,6 +89,16 @@ Resources
  :doc:`ValueSource </reference/api/resources/sources/value_source>`   A data source describing a single value.
 ==================================================================== ========================================================================
 
+Device and Hardware
+-------------------
+
+==================================================================== ========================================================================
+ Usage                                                                Description
+==================================================================== ========================================================================
+ :doc:`Camera </reference/api/hardware/camera>`                       A sensor that can capture photos and/or video.
+ :doc:`Screen </reference/api/screens>`                               A representation of a screen attached to a device.
+==================================================================== ========================================================================
+
 Other
 -----
 
@@ -107,7 +117,9 @@ Other
    window
    mainwindow
    containers/index
+   hardware/index
    resources/index
    widgets/index
    constants
    keys
+   screens

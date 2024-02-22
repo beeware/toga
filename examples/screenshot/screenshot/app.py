@@ -262,8 +262,9 @@ class ScreenshotGeneratorApp(toga.App):
                 (
                     "Blue",
                     toga.Box(style=Pack(background_color="cornflowerblue")),
+                    "resources/smile",
                 ),
-                ("Green", toga.Box()),
+                ("Green", toga.Box(), "resources/landmark"),
                 ("Red", toga.Box()),
             ],
             style=Pack(padding=10, width=self.MAX_WIDTH, height=300),
@@ -478,7 +479,9 @@ class ScreenshotGeneratorApp(toga.App):
 
 
 def main():
-    return ScreenshotGeneratorApp("My Application", "org.beeware.widgets.screenshot")
+    return ScreenshotGeneratorApp(
+        "My Application", "org.beeware.toga.examples.screenshot"
+    )
 
 
 if __name__ == "__main__":

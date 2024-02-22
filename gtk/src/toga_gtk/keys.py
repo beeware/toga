@@ -157,85 +157,9 @@ GDK_KEYS = {
     Gdk.KEY_KP_Delete: Key.DELETE,
 }
 
-# TODO: Confirm these codes are all correct - especially the special keys.
-GTK_KEY_CODES = {
-    Key.A: "A",
-    Key.B: "B",
-    Key.C: "C",
-    Key.D: "D",
-    Key.E: "E",
-    Key.F: "F",
-    Key.G: "G",
-    Key.H: "H",
-    Key.I: "I",
-    Key.J: "J",
-    Key.K: "K",
-    Key.L: "L",
-    Key.M: "M",
-    Key.N: "N",
-    Key.O: "O",
-    Key.P: "P",
-    Key.Q: "Q",
-    Key.R: "R",
-    Key.S: "S",
-    Key.T: "T",
-    Key.U: "U",
-    Key.V: "V",
-    Key.W: "W",
-    Key.X: "X",
-    Key.Y: "Y",
-    Key.Z: "Z",
-    Key.ESCAPE: "Escape",
-    Key.TAB: "Tab",
-    Key.BACKSPACE: "Backspace",
-    Key.ENTER: "Enter",
-    Key.F1: "F1",
-    Key.F2: "F2",
-    Key.F3: "F3",
-    Key.F4: "F4",
-    Key.F5: "F5",
-    Key.F6: "F6",
-    Key.F7: "F7",
-    Key.F8: "F8",
-    Key.F9: "F9",
-    Key.F10: "F10",
-    Key.F11: "F11",
-    Key.F12: "F12",
-    Key.F13: "F13",
-    Key.F14: "F14",
-    Key.F15: "F15",
-    Key.F16: "F16",
-    Key.F17: "F17",
-    Key.F18: "F18",
-    Key.F19: "F19",
-    # Key.EJECT: '',
-    Key.HOME: "Home",
-    Key.END: "End",
-    Key.DELETE: "Del",
-    Key.PAGE_UP: "PgUp",
-    Key.PAGE_DOWN: "PgDn",
-    Key.UP: "Up",
-    Key.DOWN: "Down",
-    Key.LEFT: "Left",
-    Key.RIGHT: "Right",
-    Key.NUMPAD_0: "0",
-    Key.NUMPAD_1: "1",
-    Key.NUMPAD_2: "2",
-    Key.NUMPAD_3: "3",
-    Key.NUMPAD_4: "4",
-    Key.NUMPAD_5: "5",
-    Key.NUMPAD_6: "6",
-    Key.NUMPAD_7: "7",
-    Key.NUMPAD_8: "8",
-    Key.NUMPAD_9: "9",
-    # Key.NUMPAD_CLEAR: '',
-    Key.NUMPAD_DECIMAL_POINT: ".",
-    Key.NUMPAD_DIVIDE: "/",
-    Key.NUMPAD_ENTER: "",
-    Key.NUMPAD_EQUAL: "=",
-    Key.NUMPAD_MINUS: "-",
-    Key.NUMPAD_MULTIPLY: "*",
-    Key.NUMPAD_PLUS: "+",
+GTK_KEY_NAMES = {
+    toga_keyval: Gdk.keyval_name(gdk_keyval)
+    for gdk_keyval, toga_keyval in GDK_KEYS.items()
 }
 
 GTK_MODIFIER_CODES = {
@@ -286,7 +210,7 @@ def gtk_accel(shortcut):
         modifiers.append("<Shift>")
 
     # Find the canonical definition of the remaining key.
-    for key, code in GTK_KEY_CODES.items():
+    for key, code in GTK_KEY_NAMES.items():
         if key.value == accel:
             accel = accel.replace(key.value, code)
 

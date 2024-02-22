@@ -1,7 +1,7 @@
 import asyncio
-import platform
+import os
 
-from rubicon.objc.api import Block
+from rubicon.objc.api import Block, ObjCClass
 
 from toga_iOS.libs import (
     NSIndexPath,
@@ -12,6 +12,8 @@ from toga_iOS.libs import (
 )
 
 from .base import SimpleProbe, UIControlEventValueChanged
+
+UIDevice = ObjCClass("UIDevice")
 
 
 class DetailedListProbe(SimpleProbe):
@@ -50,11 +52,17 @@ class DetailedListProbe(SimpleProbe):
     @property
     def max_scroll_position(self):
         max_value = int(self.native.contentSize.height - self.native.frame.size.height)
-        # The max value is a little higher on iOS 17.
-        # Not sure where the 34 extra pixels are coming from. It appears to be
-        # a constant, independent of the number of rows of data.
-        if int(platform.release().split(".")[0]) >= 17:
+        # The max value is a dependent on the device; devices that don't have a physical
+        # button report as being a little larger. A physical device will give you the
+        # model identifier as part of UIDevice.currentDevice.model; however, simulators
+        # return "iPhone" as the model, so we need to check the environment as well to
+        # reliably get the device identifier. "iPhone14,6" is an iPhone SE 3rd edition.
+        # As of Feb 2023, it's the only device currently sold that has a physical
+        # button.
+        model = os.getenv("SIMULATOR_MODEL_IDENTIFIER", UIDevice.currentDevice.model)
+        if model != "iPhone14,6":
             max_value += 34
+
         return max(0, max_value)
 
     @property

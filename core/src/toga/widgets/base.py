@@ -1,8 +1,7 @@
 from __future__ import annotations
 
 from builtins import id as identifier
-from typing import TYPE_CHECKING, Iterator, NoReturn
-from weakref import WeakValueDictionary
+from typing import TYPE_CHECKING
 
 from travertino.node import Node
 
@@ -12,42 +11,6 @@ from toga.style import Pack, TogaApplicator
 if TYPE_CHECKING:
     from toga.app import App
     from toga.window import Window
-
-
-class WidgetRegistry(WeakValueDictionary):
-    # WidgetRegistry is implemented as a subclass of WeakValueDictionary, because it
-    # provides a mapping from ID to widget. However, it exposes a set-like API; add()
-    # and update() take instances to be added, and iteration is over values. The
-    # mapping is weak so the registry doesn't retain a strong reference to the widget,
-    # preventing memory cleanup.
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-    def __setitem__(self, key: str, value: Widget) -> NoReturn:
-        # We do not want to allow setting items directly but to use the "add"
-        # method instead.
-        raise RuntimeError("Widgets cannot be directly added to a registry")
-
-    def update(self, widgets: list[Widget]) -> None:
-        for widget in widgets:
-            self.add(widget)
-
-    def add(self, widget: Widget) -> None:
-        if widget.id in self:
-            # Prevent from adding the same widget twice
-            # or adding 2 widgets with the same id
-            raise KeyError(f"There is already a widget with the id {widget.id!r}")
-        super().__setitem__(widget.id, widget)
-
-    def remove(self, id: str) -> None:
-        del self[id]
-
-    def __iter__(self) -> Iterator[Widget]:
-        return iter(self.values())
-
-    def __repr__(self) -> str:
-        return "{" + ", ".join(f"{k!r}: {v!r}" for k, v in self.items()) + "}"
 
 
 class Widget(Node):
@@ -81,6 +44,9 @@ class Widget(Node):
 
     def __repr__(self) -> str:
         return f"<{self.__class__.__name__}:0x{identifier(self):x}>"
+
+    def __lt__(self, other) -> bool:
+        return self.id < other.id
 
     @property
     def id(self) -> str:
@@ -126,12 +92,15 @@ class Widget(Node):
                 if child.parent:
                     child.parent.remove(child)
 
-                # add to new parent
-                super().add(child)
-
-                # set app and window
+                # Set app and window. This is done *before* changing any parenting
+                # relationships, so that the widget registry can verify the widget ID is
+                # unique. App must be set before window to ensure the widget registry
+                # can be found.
                 child.app = self.app
                 child.window = self.window
+
+                # add to new parent
+                super().add(child)
 
                 self._impl.add_child(child._impl)
 
@@ -156,12 +125,15 @@ class Widget(Node):
             if child.parent:
                 child.parent.remove(child)
 
-            # add to new parent
-            super().insert(index, child)
-
-            # set app and window
+            # Set app and window. This is done *before* changing any parenting
+            # relationships, so that the widget registry can verify the widget ID is
+            # unique. App must be set before window to ensure the widget registry
+            # can be found.
             child.app = self.app
             child.window = self.window
+
+            # add to new parent
+            super().insert(index, child)
 
             self._impl.insert_child(index, child._impl)
 
@@ -187,8 +159,10 @@ class Widget(Node):
                 removed = True
                 super().remove(child)
 
-                child.app = None
+                # Remove from the window before removing from the app
+                # so that the widget can be removed from the app-level registry.
                 child.window = None
+                child.app = None
 
                 self._impl.remove_child(child._impl)
 
@@ -225,17 +199,10 @@ class Widget(Node):
                 # If app is the same as the previous app, return
                 return
 
-            # Deregister the widget from the old app
-            self._app.widgets.remove(self.id)
-
         self._app = app
         self._impl.set_app(app)
         for child in self.children:
             child.app = app
-
-        if app is not None:
-            # Add this widget to the application widget registry
-            app.widgets.add(self)
 
     @property
     def window(self) -> Window | None:
@@ -243,24 +210,27 @@ class Widget(Node):
 
         When setting the window for a widget, all children of this widget will be
         recursively assigned to the same window.
+
+        If the widget has a value for :any:`window`, it *must* also have a value for
+        :any:`app`.
         """
         return self._window
 
     @window.setter
     def window(self, window: Window | None) -> None:
-        # Remove the widget from the widget registry it is currently a part of
-        if self.window is not None:
-            self.window.widgets.remove(self.id)
+        if self.window is not None and window is None:
+            # If the widget is currently in the registry, but is being removed from a
+            # window, remove the widget from the widget registry
+            self.window.app.widgets._remove(self.id)
+        elif self.window is None and window is not None:
+            # If the widget is being assigned to a window for the first time, add it to the widget registry
+            window.app.widgets._add(self)
 
         self._window = window
         self._impl.set_window(window)
 
         for child in self.children:
             child.window = window
-
-        if window is not None:
-            # Add this widget to the window's widget registry
-            window.widgets.add(self)
 
     @property
     def enabled(self) -> bool:

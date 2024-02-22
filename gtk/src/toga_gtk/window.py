@@ -1,7 +1,8 @@
-from toga.command import GROUP_BREAK, SECTION_BREAK
+from toga.command import Separator
 
 from .container import TogaContainer
 from .libs import Gdk, Gtk
+from .screens import Screen as ScreenImpl
 
 
 class Window:
@@ -39,6 +40,7 @@ class Window:
         self.native_toolbar.set_style(Gtk.ToolbarStyle.BOTH)
         self.native_toolbar.set_visible(False)
         self.toolbar_items = {}
+        self.toolbar_separators = set()
         self.layout.pack_start(self.native_toolbar, expand=False, fill=False, padding=0)
 
         # Because expand and fill are True, the container will fill the available
@@ -51,67 +53,9 @@ class Window:
     def create(self):
         self.native = Gtk.Window()
 
-    def get_title(self):
-        return self.native.get_title()
-
-    def set_title(self, title):
-        self.native.set_title(title)
-
-    def set_app(self, app):
-        app.native.add_window(self.native)
-
-    def create_toolbar(self):
-        # Remove any pre-existing toolbar content
-        if self.toolbar_items:
-            self.native_toolbar.set_visible(False)
-
-        for cmd, item_impl in self.toolbar_items.items():
-            self.native_toolbar.remove(item_impl)
-            try:
-                cmd._impl.native.remove(item_impl)
-            except AttributeError:
-                # Breaks don't have _impls, so there's no native to clean up
-                pass
-
-        # Create the new toolbar items
-        self.toolbar_items = {}
-        for cmd in self.interface.toolbar:
-            if cmd == GROUP_BREAK:
-                item_impl = Gtk.SeparatorToolItem()
-                item_impl.set_draw(True)
-            elif cmd == SECTION_BREAK:
-                item_impl = Gtk.SeparatorToolItem()
-                item_impl.set_draw(False)
-            else:
-                item_impl = Gtk.ToolButton()
-                if cmd.icon:
-                    item_impl.set_icon_widget(
-                        Gtk.Image.new_from_pixbuf(cmd.icon._impl.native_32)
-                    )
-                item_impl.set_label(cmd.text)
-                if cmd.tooltip:
-                    item_impl.set_tooltip_text(cmd.tooltip)
-                item_impl.connect("clicked", cmd._impl.gtk_clicked)
-                cmd._impl.native.append(item_impl)
-            self.toolbar_items[cmd] = item_impl
-            self.native_toolbar.insert(item_impl, -1)
-
-        if self.toolbar_items:
-            self.native_toolbar.set_visible(True)
-            self.native_toolbar.show_all()
-
-    def set_content(self, widget):
-        # Set the new widget to be the container's content
-        self.container.content = widget
-
-    def show(self):
-        self.native.show_all()
-
-    def hide(self):
-        self.native.hide()
-
-    def get_visible(self):
-        return self.native.get_property("visible")
+    ######################################################################
+    # Native event handlers
+    ######################################################################
 
     def gtk_delete_event(self, widget, data):
         if self._is_closing:
@@ -126,16 +70,93 @@ class Window:
         # closing the window) should be performed.
         return not should_close
 
+    ######################################################################
+    # Window properties
+    ######################################################################
+
+    def get_title(self):
+        return self.native.get_title()
+
+    def set_title(self, title):
+        self.native.set_title(title)
+
+    ######################################################################
+    # Window lifecycle
+    ######################################################################
+
     def close(self):
         self._is_closing = True
         self.native.close()
 
-    def get_position(self):
-        pos = self.native.get_position()
-        return pos.root_x, pos.root_y
+    def create_toolbar(self):
+        # If there's an existing toolbar, hide it until we know we need it.
+        if self.toolbar_items:
+            self.native_toolbar.set_visible(False)
 
-    def set_position(self, position):
-        self.native.move(position[0], position[1])
+        # Deregister any toolbar buttons from their commands, and remove them from the toolbar
+        for cmd, item_impl in self.toolbar_items.items():
+            self.native_toolbar.remove(item_impl)
+            cmd._impl.native.remove(item_impl)
+        # Remove any toolbar separators
+        for sep in self.toolbar_separators:
+            self.native_toolbar.remove(sep)
+
+        # Create the new toolbar items
+        self.toolbar_items = {}
+        self.toolbar_separators = set()
+        prev_group = None
+        for cmd in self.interface.toolbar:
+            if isinstance(cmd, Separator):
+                item_impl = Gtk.SeparatorToolItem()
+                item_impl.set_draw(False)
+                self.toolbar_separators.add(item_impl)
+                prev_group = None
+            else:
+                # A change in group requires adding a toolbar separator
+                if prev_group is not None and prev_group != cmd.group:
+                    group_sep = Gtk.SeparatorToolItem()
+                    group_sep.set_draw(True)
+                    self.toolbar_separators.add(group_sep)
+                    self.native_toolbar.insert(group_sep, -1)
+                    prev_group = None
+                else:
+                    prev_group = cmd.group
+
+                item_impl = Gtk.ToolButton()
+                if cmd.icon:
+                    item_impl.set_icon_widget(
+                        Gtk.Image.new_from_pixbuf(cmd.icon._impl.native_32)
+                    )
+                item_impl.set_label(cmd.text)
+                if cmd.tooltip:
+                    item_impl.set_tooltip_text(cmd.tooltip)
+                item_impl.connect("clicked", cmd._impl.gtk_clicked)
+                cmd._impl.native.append(item_impl)
+                self.toolbar_items[cmd] = item_impl
+
+            self.native_toolbar.insert(item_impl, -1)
+
+        if self.toolbar_items:
+            self.native_toolbar.set_visible(True)
+            self.native_toolbar.show_all()
+
+    def set_app(self, app):
+        app.native.add_window(self.native)
+
+    def show(self):
+        self.native.show_all()
+
+    ######################################################################
+    # Window content and resources
+    ######################################################################
+
+    def set_content(self, widget):
+        # Set the new widget to be the container's content
+        self.container.content = widget
+
+    ######################################################################
+    # Window size
+    ######################################################################
 
     def get_size(self):
         size = self.native.get_size()
@@ -144,11 +165,45 @@ class Window:
     def set_size(self, size):
         self.native.resize(size[0], size[1])
 
+    ######################################################################
+    # Window position
+    ######################################################################
+
+    def get_current_screen(self):
+        display = Gdk.Display.get_default()
+        monitor_native = display.get_monitor_at_window(self.native.get_window())
+        return ScreenImpl(monitor_native)
+
+    def get_position(self):
+        pos = self.native.get_position()
+        return pos.root_x, pos.root_y
+
+    def set_position(self, position):
+        self.native.move(position[0], position[1])
+
+    ######################################################################
+    # Window visibility
+    ######################################################################
+
+    def get_visible(self):
+        return self.native.get_property("visible")
+
+    def hide(self):
+        self.native.hide()
+
+    ######################################################################
+    # Window state
+    ######################################################################
+
     def set_full_screen(self, is_full_screen):
         if is_full_screen:
             self.native.fullscreen()
         else:
             self.native.unfullscreen()
+
+    ######################################################################
+    # Window capabilities
+    ######################################################################
 
     def get_image_data(self):
         display = self.native.get_display()

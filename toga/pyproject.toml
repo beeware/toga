@@ -1,3 +1,82 @@
 [build-system]
-requires = ["setuptools==66.1.1", "setuptools_scm[toml]==7.0.5"]
+requires = [
+    "setuptools==69.0.0",
+    "setuptools_scm==8.0.4",
+    "setuptools_dynamic_dependencies @ git+https://github.com/beeware/setuptools_dynamic_dependencies",
+]
 build-backend = "setuptools.build_meta"
+
+[project]
+dynamic = ["version", "dependencies"]
+name = "toga"
+description = "A Python native, OS native GUI toolkit."
+readme = "README.rst"
+requires-python = ">= 3.8"
+license.text = "New BSD"
+authors = [
+    {name="Russell Keith-Magee", email="russell@keith-magee.com"},
+]
+maintainers = [
+    {name="BeeWare Team", email="team@beeware.org"},
+]
+keywords = [
+    "gui",
+    "widget",
+    "cross-platform",
+    "toga",
+    "desktop",
+    "mobile",
+    "web",
+    "macOS",
+    "cocoa",
+    "iOS",
+    "android",
+    "windows",
+    "winforms",
+    "linux",
+    "freeBSD",
+    "gtk",
+    "console",
+    "web",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: BSD License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3 :: Only",
+    "Topic :: Software Development",
+    "Topic :: Software Development :: User Interfaces",
+    "Topic :: Software Development :: Widget Sets",
+]
+
+[project.urls]
+Homepage = "https://beeware.org/project/projects/libraries/toga/"
+Funding = "https://beeware.org/contributing/membership/"
+Documentation = "https://toga.readthedocs.io/en/latest/"
+Tracker = "https://github.com/beeware/toga/issues"
+Source = "https://github.com/beeware/toga"
+
+[tool.setuptools_scm]
+root = ".."
+
+[tool.setuptools_dynamic_dependencies]
+dependencies = [
+    # Desktop platforms
+    "toga-winforms == {version}; sys_platform=='win32'",
+    "toga-gtk == {version}; sys_platform=='linux'",
+    "toga-gtk == {version}; 'freebsd' in sys_platform",
+    "toga-cocoa == {version}; sys_platform=='darwin'",
+    # Mobile platforms
+    "toga-iOS == {version}; sys_platform=='ios'",
+    "toga-android == {version}; sys_platform=='android'",
+    # Web
+    "toga-web == {version}; sys_platform=='emscripten'",
+]

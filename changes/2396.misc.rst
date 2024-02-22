@@ -1,0 +1,1 @@
+getattr calls with string literals for attr have been collapsed to dot lookup.

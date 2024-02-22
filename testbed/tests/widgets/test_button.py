@@ -47,6 +47,39 @@ async def test_text(widget, probe):
         assert probe.height == initial_height
 
 
+async def test_icon(widget, probe):
+    """The button can be converted to an icon button and back"""
+    # Initial button is a text button.
+    assert probe.text == "Hello"
+    assert widget.icon is None
+    probe.assert_no_icon()
+    initial_height = probe.height
+
+    # Set an icon
+    widget.icon = "resources/icons/red"
+    await probe.redraw("Button is now an icon button")
+
+    # Text has been removed
+    assert probe.text == ""
+    # Icon now exists
+    assert widget.icon is not None
+    probe.assert_icon_size()
+    # Button is now taller.
+    assert probe.height > initial_height
+
+    # Move back to text
+    widget.text = "Goodbye"
+    await probe.redraw("Button is a text button again")
+
+    # Text has been added
+    assert probe.text == "Goodbye"
+    # Icon no longer exists
+    assert widget.icon is None
+    probe.assert_no_icon()
+    # Button is original size
+    assert probe.height == initial_height
+
+
 async def test_press(widget, probe):
     # Press the button before installing a handler
     await probe.press()

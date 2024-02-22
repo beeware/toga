@@ -12,7 +12,7 @@ class TogaButton(TextualButton):
         self.impl = impl
 
     def on_button_pressed(self, event: TextualButton.Pressed) -> None:
-        self.interface.on_press(None)
+        self.interface.on_press()
 
 
 class Button(Widget):
@@ -24,6 +24,13 @@ class Button(Widget):
 
     def set_text(self, text):
         self.native.label = text
+
+    def get_icon(self):
+        return None
+
+    def set_icon(self, icon):
+        # Icons aren't supported on Textual
+        pass
 
     def rehint(self):
         self.interface.intrinsic.width = at_least(len(self.native.label) + 8)

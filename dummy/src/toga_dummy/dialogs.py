@@ -1,17 +1,15 @@
 class BaseDialog:
-    def __init__(self, interface, on_result):
+    def __init__(self, interface):
         self.interface = interface
         self.interface._impl = self
-        self.on_result = on_result
 
     def simulate_result(self, result):
-        self.on_result(result)
-        self.interface.future.set_result(result)
+        self.interface.set_result(result)
 
 
 class InfoDialog(BaseDialog):
-    def __init__(self, interface, title, message, on_result=None):
-        super().__init__(interface, on_result=on_result)
+    def __init__(self, interface, title, message):
+        super().__init__(interface)
         interface.window._impl._action(
             "show info dialog",
             title=title,
@@ -20,8 +18,8 @@ class InfoDialog(BaseDialog):
 
 
 class QuestionDialog(BaseDialog):
-    def __init__(self, interface, title, message, on_result=None):
-        super().__init__(interface, on_result=on_result)
+    def __init__(self, interface, title, message):
+        super().__init__(interface)
         interface.window._impl._action(
             "show question dialog",
             title=title,
@@ -30,8 +28,8 @@ class QuestionDialog(BaseDialog):
 
 
 class ConfirmDialog(BaseDialog):
-    def __init__(self, interface, title, message, on_result=None):
-        super().__init__(interface, on_result=on_result)
+    def __init__(self, interface, title, message):
+        super().__init__(interface)
         interface.window._impl._action(
             "show confirm dialog",
             title=title,
@@ -40,8 +38,8 @@ class ConfirmDialog(BaseDialog):
 
 
 class ErrorDialog(BaseDialog):
-    def __init__(self, interface, title, message, on_result=None):
-        super().__init__(interface, on_result=on_result)
+    def __init__(self, interface, title, message):
+        super().__init__(interface)
         interface.window._impl._action(
             "show error dialog",
             title=title,
@@ -50,8 +48,8 @@ class ErrorDialog(BaseDialog):
 
 
 class StackTraceDialog(BaseDialog):
-    def __init__(self, interface, title, message, content, retry, on_result=None):
-        super().__init__(interface, on_result=on_result)
+    def __init__(self, interface, title, message, content, retry):
+        super().__init__(interface)
         interface.window._impl._action(
             "show stack trace dialog",
             title=title,
@@ -71,7 +69,7 @@ class SaveFileDialog(BaseDialog):
         file_types=None,
         on_result=None,
     ):
-        super().__init__(interface, on_result=on_result)
+        super().__init__(interface)
         interface.window._impl._action(
             "show save file dialog",
             title=title,
@@ -91,7 +89,7 @@ class OpenFileDialog(BaseDialog):
         multiple_select,
         on_result=None,
     ):
-        super().__init__(interface, on_result=on_result)
+        super().__init__(interface)
         interface.window._impl._action(
             "show open file dialog",
             title=title,
@@ -110,7 +108,7 @@ class SelectFolderDialog(BaseDialog):
         multiple_select,
         on_result=None,
     ):
-        super().__init__(interface, on_result=on_result)
+        super().__init__(interface)
         interface.window._impl._action(
             "show select folder dialog",
             title=title,

@@ -1,7 +1,9 @@
 import toga
-from toga.command import GROUP_BREAK, SECTION_BREAK
+from toga.command import Separator
 from toga_web.libs import create_element, js
 from toga_web.window import Window
+
+from .screens import Screen as ScreenImpl
 
 
 class MainWindow(Window):
@@ -42,6 +44,10 @@ class App:
         # Call user code to populate the main window
         self.interface._startup()
 
+    ######################################################################
+    # Commands and menus
+    ######################################################################
+
     def _create_submenu(self, group, items):
         submenu = create_element(
             "sl-dropdown",
@@ -61,14 +67,15 @@ class App:
         )
         return submenu
 
+    def _menu_about(self, command, **kwargs):
+        self.interface.about()
+
     def create_menus(self):
         self._menu_groups = {}
         submenu = None
 
         for cmd in self.interface.commands:
-            if cmd == GROUP_BREAK:
-                submenu = None
-            elif cmd == SECTION_BREAK:
+            if isinstance(cmd, Separator):
                 # TODO - add a section break
                 pass
             else:
@@ -135,14 +142,32 @@ class App:
         else:
             self.native.append(self.menubar)
 
-    def _menu_about(self, command, **kwargs):
-        self.interface.about()
+    ######################################################################
+    # App lifecycle
+    ######################################################################
+
+    def exit(self):
+        pass
 
     def main_loop(self):
         self.create()
 
     def set_main_window(self, window):
         pass
+
+    ######################################################################
+    # App resources
+    ######################################################################
+
+    def get_screens(self):
+        return [ScreenImpl(js.document.documentElement)]
+
+    ######################################################################
+    # App capabilities
+    ######################################################################
+
+    def beep(self):
+        self.interface.factory.not_implemented("App.beep()")
 
     def show_about_dialog(self):
         name_and_version = f"{self.interface.formal_name}"
@@ -188,11 +213,19 @@ class App:
 
         js.customElements.whenDefined("sl-dialog").then(show_dialog)
 
-    def beep(self):
-        self.interface.factory.not_implemented("App.beep()")
+    ######################################################################
+    # Cursor control
+    ######################################################################
 
-    def exit(self):
-        pass
+    def show_cursor(self):
+        self.interface.factory.not_implemented("App.show_cursor()")
+
+    def hide_cursor(self):
+        self.interface.factory.not_implemented("App.hide_cursor()")
+
+    ######################################################################
+    # Window control
+    ######################################################################
 
     def get_current_window(self):
         self.interface.factory.not_implemented("App.get_current_window()")
@@ -200,14 +233,12 @@ class App:
     def set_current_window(self):
         self.interface.factory.not_implemented("App.set_current_window()")
 
+    ######################################################################
+    # Full screen control
+    ######################################################################
+
     def enter_full_screen(self, windows):
         self.interface.factory.not_implemented("App.enter_full_screen()")
 
     def exit_full_screen(self, windows):
         self.interface.factory.not_implemented("App.exit_full_screen()")
-
-    def show_cursor(self):
-        self.interface.factory.not_implemented("App.show_cursor()")
-
-    def hide_cursor(self):
-        self.interface.factory.not_implemented("App.hide_cursor()")

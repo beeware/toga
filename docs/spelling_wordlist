@@ -28,6 +28,7 @@ Helvetica
 initializer
 instantiation
 iOS
+ImageT
 iterable
 KDE
 linters
@@ -65,8 +66,12 @@ Stimpy
 stylesheet
 subclasses
 Subclasses
+subclassing
+submodule
+subpackage
 substring
 substrings
+Sur
 testbed
 Todo
 toolbar
@@ -78,12 +83,14 @@ triaged
 Triaging
 tvOS
 Ubuntu
+unselectable
 validator
 validators
 Ventura
 verbing
 viewport
 watchOS
+Wayland
 WebKit
 whitespace
 Winforms

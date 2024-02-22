@@ -1,9 +1,0 @@
-include CONTRIBUTING.md
-include README.rst
-include AUTHORS
-include LICENSE
-include pyproject.toml
-recursive-include toga_demo *.py
-recursive-include toga_demo/resources *.ico
-recursive-include toga_demo/resources *.icns
-recursive-include toga_demo/resources *.png

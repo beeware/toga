@@ -81,8 +81,9 @@ class ScrollContainer(Widget):
     @content.setter
     def content(self, widget):
         if self._content:
-            self._content.app = None
+            # Clear the window before the app so that registry entries can be cleared
             self._content.window = None
+            self._content.app = None
 
         if widget:
             widget.app = self.app

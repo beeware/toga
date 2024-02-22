@@ -1,1 +1,0 @@
-The use of Caps Lock as a keyboard modifier for commands was removed.

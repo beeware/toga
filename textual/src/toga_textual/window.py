@@ -7,6 +7,7 @@ from textual.widget import Widget as TextualWidget
 from textual.widgets import Button as TextualButton
 
 from .container import Container
+from .screens import Screen as ScreenImpl
 
 
 class WindowCloseButton(TextualButton):
@@ -119,8 +120,42 @@ class Window:
         self.native = TogaWindow(self, title)
         self.container = Container(self.native)
 
+    ######################################################################
+    # Native event handlers
+    ######################################################################
+
+    def textual_close(self):
+        self.interface.on_close()
+
+    ######################################################################
+    # Window properties
+    ######################################################################
+
+    def get_title(self):
+        return self.native.titlebar.text
+
+    def set_title(self, title):
+        self.native.titlebar.text = title
+
+    ######################################################################
+    # Window lifecycle
+    ######################################################################
+
+    def close(self):
+        self.native.dismiss(None)
+
     def create_toolbar(self):
         pass
+
+    def set_app(self, app):
+        app.native.install_screen(self.native, name=self.interface.id)
+
+    def show(self):
+        pass
+
+    ######################################################################
+    # Window content and resources
+    ######################################################################
 
     def clear_content(self):
         pass
@@ -130,17 +165,9 @@ class Window:
 
         self.native.mount(widget.native)
 
-    def get_title(self):
-        return self.native.titlebar.text
-
-    def set_title(self, title):
-        self.native.titlebar.text = title
-
-    def get_position(self):
-        return (0, 0)
-
-    def set_position(self, position):
-        pass
+    ######################################################################
+    # Window size
+    ######################################################################
 
     def get_size(self):
         return (self.native.size.width, self.native.size.height)
@@ -148,23 +175,39 @@ class Window:
     def set_size(self, size):
         pass
 
-    def set_app(self, app):
-        app.native.install_screen(self.native, name=self.interface.id)
+    ######################################################################
+    # Window position
+    ######################################################################
 
-    def show(self):
+    def get_current_screen(self):
+        return ScreenImpl(self.native)
+
+    def get_position(self):
+        return (0, 0)
+
+    def set_position(self, position):
         pass
 
-    def hide(self):
-        pass
+    ######################################################################
+    # Window visibility
+    ######################################################################
 
     def get_visible(self):
         return True
 
-    def textual_close(self):
-        self.interface.on_close(self)
+    def hide(self):
+        pass
 
-    def close(self):
-        self.native.dismiss(None)
+    ######################################################################
+    # Window state
+    ######################################################################
 
     def set_full_screen(self, is_full_screen):
         pass
+
+    ######################################################################
+    # Window capabilities
+    ######################################################################
+
+    def get_image_data(self):
+        self.interface.factory.not_implemented("Window.get_image_data()")

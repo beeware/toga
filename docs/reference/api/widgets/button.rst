@@ -54,7 +54,9 @@ A button that can be pressed or clicked.
 Usage
 -----
 
-A button has a text label. A handler can be associated with button press events.
+A button has a text label, or an icon (but not both). If an icon is specified, it will
+be resized to a size appropriate for the platform. A handler can be associated with
+button press events.
 
 .. code-block:: python
 
@@ -65,6 +67,8 @@ A button has a text label. A handler can be associated with button press events.
         pass
 
     button = toga.Button("Click me", on_press=my_callback)
+
+    icon_button = toga.Button(icon=toga.Icon("resources/my_icon"), on_press=my_callback)
 
 Notes
 -----

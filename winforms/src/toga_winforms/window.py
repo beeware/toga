@@ -3,10 +3,11 @@ from System.Drawing import Bitmap, Graphics, Point, Size
 from System.Drawing.Imaging import ImageFormat
 from System.IO import MemoryStream
 
-from toga.command import GROUP_BREAK, SECTION_BREAK
+from toga.command import Separator
 
 from .container import Container
 from .libs.wrapper import WeakrefCallable
+from .screens import Screen as ScreenImpl
 from .widgets.base import Scalable
 
 
@@ -40,92 +41,9 @@ class Window(Container, Scalable):
 
         self.set_full_screen(self.interface.full_screen)
 
-    def create_toolbar(self):
-        if self.interface.toolbar:
-            if self.toolbar_native:
-                self.toolbar_native.Items.Clear()
-            else:
-                # The toolbar doesn't need to be positioned, because its `Dock` property
-                # defaults to `Top`.
-                self.toolbar_native = WinForms.ToolStrip()
-                self.native.Controls.Add(self.toolbar_native)
-                self.toolbar_native.BringToFront()  # In a dock, "front" means "bottom".
-
-            for cmd in self.interface.toolbar:
-                if cmd == GROUP_BREAK:
-                    item = WinForms.ToolStripSeparator()
-                elif cmd == SECTION_BREAK:
-                    item = WinForms.ToolStripSeparator()
-                else:
-                    item = WinForms.ToolStripMenuItem(cmd.text)
-                    if cmd.tooltip is not None:
-                        item.ToolTipText = cmd.tooltip
-                    if cmd.icon is not None:
-                        item.Image = cmd.icon._impl.native.ToBitmap()
-                    item.Enabled = cmd.enabled
-                    item.Click += WeakrefCallable(cmd._impl.winforms_Click)
-                    cmd._impl.native.append(item)
-                self.toolbar_native.Items.Add(item)
-
-        elif self.toolbar_native:
-            self.native.Controls.Remove(self.toolbar_native)
-            self.toolbar_native = None
-
-        self.resize_content()
-
-    def get_position(self):
-        location = self.native.Location
-        return tuple(map(self.scale_out, (location.X, location.Y)))
-
-    def set_position(self, position):
-        self.native.Location = Point(*map(self.scale_in, position))
-
-    def get_size(self):
-        size = self.native.Size
-        return (
-            self.scale_out(size.Width - self.decor_width()),
-            self.scale_out(size.Height - self.decor_height()),
-        )
-
-    def set_size(self, size):
-        width, height = size
-        self.native.Size = Size(
-            self.scale_in(width) + self.decor_width(),
-            self.scale_in(height) + self.decor_height(),
-        )
-
-    def set_app(self, app):
-        icon_impl = app.interface.icon._impl
-        self.native.Icon = icon_impl.native
-
-    def get_title(self):
-        return self.native.Text
-
-    def set_title(self, title):
-        self.native.Text = title
-
-    def refreshed(self):
-        super().refreshed()
-        layout = self.interface.content.layout
-        self.native.MinimumSize = Size(
-            self.scale_in(layout.min_width) + self.decor_width(),
-            self.scale_in(layout.min_height)
-            + self.top_bars_height()
-            + self.decor_height(),
-        )
-
-    def show(self):
-        if self.interface.content is not None:
-            self.interface.content.refresh()
-        if self.interface is not self.interface.app._main_window:
-            self.native.Icon = self.interface.app.icon._impl.native
-        self.native.Show()
-
-    def hide(self):
-        self.native.Hide()
-
-    def get_visible(self):
-        return self.native.Visible
+    ######################################################################
+    # Native event handlers
+    ######################################################################
 
     def winforms_Resize(self, sender, event):
         self.resize_content()
@@ -142,6 +60,160 @@ class Window(Container, Scalable):
                 self.interface.on_close()
                 event.Cancel = True
 
+    ######################################################################
+    # Window properties
+    ######################################################################
+
+    def get_title(self):
+        return self.native.Text
+
+    def set_title(self, title):
+        self.native.Text = title
+
+    ######################################################################
+    # Window lifecycle
+    ######################################################################
+
+    def close(self):
+        self._is_closing = True
+        self.native.Close()
+
+    def create_toolbar(self):
+        if self.interface.toolbar:
+            if self.toolbar_native:
+                self.toolbar_native.Items.Clear()
+            else:
+                # The toolbar doesn't need to be positioned, because its `Dock` property
+                # defaults to `Top`.
+                self.toolbar_native = WinForms.ToolStrip()
+                self.native.Controls.Add(self.toolbar_native)
+                self.toolbar_native.BringToFront()  # In a dock, "front" means "bottom".
+
+            prev_group = None
+            for cmd in self.interface.toolbar:
+                if isinstance(cmd, Separator):
+                    item = WinForms.ToolStripSeparator()
+                    prev_group = None
+                else:
+                    # A change in group requires adding a toolbar separator
+                    if prev_group is not None and prev_group != cmd.group:
+                        self.toolbar_native.Items.Add(WinForms.ToolStripSeparator())
+                        prev_group = None
+                    else:
+                        prev_group = cmd.group
+
+                    item = WinForms.ToolStripMenuItem(cmd.text)
+                    if cmd.tooltip is not None:
+                        item.ToolTipText = cmd.tooltip
+                    if cmd.icon is not None:
+                        item.Image = cmd.icon._impl.native.ToBitmap()
+                    item.Enabled = cmd.enabled
+                    item.Click += WeakrefCallable(cmd._impl.winforms_Click)
+                    cmd._impl.native.append(item)
+                self.toolbar_native.Items.Add(item)
+
+        elif self.toolbar_native:
+            self.native.Controls.Remove(self.toolbar_native)
+            self.toolbar_native = None
+
+        self.resize_content()
+
+    def set_app(self, app):
+        icon_impl = app.interface.icon._impl
+        self.native.Icon = icon_impl.native
+
+    def show(self):
+        if self.interface.content is not None:
+            self.interface.content.refresh()
+        if self.interface is not self.interface.app._main_window:
+            self.native.Icon = self.interface.app.icon._impl.native
+        self.native.Show()
+
+    ######################################################################
+    # Window content and resources
+    ######################################################################
+
+    # "Decor" includes the title bar and the (usually invisible) resize borders. It does
+    # not include the menu bar and toolbar, which are included in the ClientSize (see
+    # _top_bars_height).
+    def _decor_width(self):
+        return self.native.Size.Width - self.native.ClientSize.Width
+
+    def _decor_height(self):
+        return self.native.Size.Height - self.native.ClientSize.Height
+
+    def _top_bars_height(self):
+        vertical_shift = 0
+        if self.toolbar_native:
+            vertical_shift += self.toolbar_native.Height
+        if self.native.MainMenuStrip:
+            vertical_shift += self.native.MainMenuStrip.Height
+        return vertical_shift
+
+    def refreshed(self):
+        super().refreshed()
+        layout = self.interface.content.layout
+        self.native.MinimumSize = Size(
+            self.scale_in(layout.min_width) + self._decor_width(),
+            self.scale_in(layout.min_height)
+            + self._top_bars_height()
+            + self._decor_height(),
+        )
+
+    def resize_content(self):
+        vertical_shift = self._top_bars_height()
+        self.native_content.Location = Point(0, vertical_shift)
+        super().resize_content(
+            self.native.ClientSize.Width,
+            self.native.ClientSize.Height - vertical_shift,
+        )
+
+    ######################################################################
+    # Window size
+    ######################################################################
+
+    def get_size(self):
+        size = self.native.Size
+        return (
+            self.scale_out(size.Width - self._decor_width()),
+            self.scale_out(size.Height - self._decor_height()),
+        )
+
+    def set_size(self, size):
+        width, height = size
+        self.native.Size = Size(
+            self.scale_in(width) + self._decor_width(),
+            self.scale_in(height) + self._decor_height(),
+        )
+
+    ######################################################################
+    # Window position
+    ######################################################################
+
+    def get_current_screen(self):
+        return ScreenImpl(WinForms.Screen.FromControl(self.native))
+
+    def get_position(self):
+        location = self.native.Location
+        return tuple(map(self.scale_out, (location.X, location.Y)))
+
+    def set_position(self, position):
+        self.native.Location = Point(*map(self.scale_in, position))
+
+    ######################################################################
+    # Window visibility
+    ######################################################################
+
+    def get_visible(self):
+        return self.native.Visible
+
+    def hide(self):
+        self.native.Hide()
+
+    ######################################################################
+    # Window state
+    ######################################################################
+
     def set_full_screen(self, is_full_screen):
         if is_full_screen:
             self.native.FormBorderStyle = getattr(WinForms.FormBorderStyle, "None")
@@ -153,34 +225,9 @@ class Window(Container, Scalable):
             )
             self.native.WindowState = WinForms.FormWindowState.Normal
 
-    def close(self):
-        self._is_closing = True
-        self.native.Close()
-
-    # "Decor" includes the title bar and the (usually invisible) resize borders. It does
-    # not include the menu bar and toolbar, which are included in the ClientSize (see
-    # top_bars_height).
-    def decor_width(self):
-        return self.native.Size.Width - self.native.ClientSize.Width
-
-    def decor_height(self):
-        return self.native.Size.Height - self.native.ClientSize.Height
-
-    def top_bars_height(self):
-        vertical_shift = 0
-        if self.toolbar_native:
-            vertical_shift += self.toolbar_native.Height
-        if self.native.MainMenuStrip:
-            vertical_shift += self.native.MainMenuStrip.Height
-        return vertical_shift
-
-    def resize_content(self):
-        vertical_shift = self.top_bars_height()
-        self.native_content.Location = Point(0, vertical_shift)
-        super().resize_content(
-            self.native.ClientSize.Width,
-            self.native.ClientSize.Height - vertical_shift,
-        )
+    ######################################################################
+    # Window capabilities
+    ######################################################################
 
     def get_image_data(self):
         size = Size(self.native_content.Size.Width, self.native_content.Size.Height)
@@ -195,4 +242,4 @@ class Window(Container, Scalable):
 
         stream = MemoryStream()
         bitmap.Save(stream, ImageFormat.Png)
-        return stream.ToArray()
+        return bytes(stream.ToArray())
