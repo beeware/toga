@@ -17,6 +17,7 @@ from typing import (
     overload,
 )
 
+import toga
 from toga.command import Command, CommandSet
 from toga.documents import Document
 from toga.handlers import AsyncResult, wrapped_handler
@@ -972,7 +973,7 @@ class MainWindow(Window):
 
     @property
     def _default_title(self) -> str:
-        return App.app.formal_name
+        return toga.App.app.formal_name
 
     ######################################################################
     # Window content and resources
