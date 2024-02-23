@@ -1,6 +1,6 @@
 import warnings
 
-from .app import App, DocumentApp, DocumentMainWindow, MainWindow
+from .app import App, DocumentApp
 
 # Resources
 from .colors import hsl, hsla, rgb, rgba
@@ -41,7 +41,7 @@ from .widgets.textinput import TextInput
 from .widgets.timeinput import TimeInput, TimePicker
 from .widgets.tree import Tree
 from .widgets.webview import WebView
-from .window import Window
+from .window import DocumentMainWindow, MainWindow, Window
 
 
 class NotImplementedWarning(RuntimeWarning):
@@ -58,9 +58,6 @@ __all__ = [
     "NotImplementedWarning",
     # Applications
     "App",
-    "DocumentApp",
-    "MainWindow",
-    "DocumentMainWindow",
     # Commands
     "Command",
     "Group",
@@ -107,9 +104,13 @@ __all__ = [
     "Tree",
     "WebView",
     "Widget",
+    # Windows
+    "DocumentMainWindow",
+    "MainWindow",
     "Window",
-    # Deprecated widget names
+    # Deprecated
     "DatePicker",
+    "DocumentApp",
     "TimePicker",
 ]
 

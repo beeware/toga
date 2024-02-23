@@ -18,6 +18,7 @@ from typing import (
 )
 
 from toga.command import Command, CommandSet
+from toga.documents import Document
 from toga.handlers import AsyncResult, wrapped_handler
 from toga.images import Image
 from toga.platform import get_platform_factory
@@ -121,7 +122,7 @@ class Window:
         self,
         id: str | None = None,
         title: str | None = None,
-        position: tuple[int, int] = (100, 100),
+        position: tuple[int, int] | None = None,
         size: tuple[int, int] = (640, 480),
         resizable: bool = True,
         closable: bool = True,
@@ -132,11 +133,14 @@ class Window:
     ) -> None:
         """Create a new Window.
 
+        A base Window only contains content. It does not have a menu bar or toolbar.
+
         :param id: A unique identifier for the window. If not provided, one will be
             automatically generated.
         :param title: Title for the window. Defaults to "Toga".
         :param position: Position of the window, as a tuple of ``(x, y)`` coordinates,
-            in :ref:`CSS pixels <css-units>`.
+            in :ref:`CSS pixels <css-units>`. If omitted, the window will assume
+            whatever default position is appropriate for the platform.
         :param size: Size of the window, as a tuple of ``(width, height)``, in :ref:`CSS
             pixels <css-units>`.
         :param resizable: Can the window be resized by the user?
@@ -192,9 +196,6 @@ class Window:
         if App.app is None:
             raise RuntimeError("Cannot create a Window before creating an App")
         App.app.windows.add(self)
-
-        # Create a toolbar that is linked to the app
-        self._toolbar = CommandSet(on_change=self._impl.create_toolbar, app=self._app)
 
         self.on_close = on_close
 
@@ -316,11 +317,6 @@ class Window:
 
         # Update the geometry of the widget
         widget.refresh()
-
-    @property
-    def toolbar(self) -> MutableSet[Command]:
-        """Toolbar for the window."""
-        return self._toolbar
 
     @property
     def widgets(self) -> Mapping[str, Widget]:
@@ -477,7 +473,22 @@ class Window:
     def on_close(self, handler: OnCloseHandler | None) -> None:
         def cleanup(window: Window, should_close: bool) -> None:
             if should_close or handler is None:
-                window.close()
+                if self.app.main_window == self:
+                    # Closing the window marked as the main window exits the app
+                    self.app.on_exit()
+                elif self.app.main_window == self.app.BACKGROUND:
+                    # In a background app, closing a window has no special handling.
+                    window.close()
+                else:
+                    # Otherwise: closing the *last* window exits the app (if platform
+                    # appropriate); any other window is a normal close.
+                    if (
+                        len(self.app.windows) == 1
+                        and self.app._impl.CLOSE_ON_LAST_WINDOW
+                    ):
+                        self.app.on_exit()
+                    else:
+                        window.close()
 
         self._on_close = wrapped_handler(self, handler, cleanup=cleanup)
 
@@ -901,3 +912,118 @@ class Window:
             DeprecationWarning,
         )
         return self._closable
+
+
+class MainWindow(Window):
+    _WINDOW_CLASS = "MainWindow"
+
+    def __init__(
+        self,
+        id: str | None = None,
+        title: str | None = None,
+        position: tuple[int, int] | None = None,
+        size: tuple[int, int] = (640, 480),
+        resizable: bool = True,
+        closable: bool = True,
+        minimizable: bool = True,
+        on_close: OnCloseHandler | None = None,
+        resizeable=None,  # DEPRECATED
+        closeable=None,  # DEPRECATED
+    ):
+        """Create a new main window.
+
+        A MainWindow is a window that can have a toolbar, and depending on the platform
+        may also have a menu bar.
+
+        :param id: A unique identifier for the window. If not provided, one will be
+            automatically generated.
+        :param title: Title for the window. Defaults to the formal name of the app.
+        :param position: Position of the window, as a tuple of ``(x, y)`` coordinates,
+            in :ref:`CSS pixels <css-units>`.
+        :param size: Size of the window, as a tuple of ``(width, height)``, in :ref:`CSS
+            pixels <css-units>`.
+        :param resizable: Can the window be resized by the user?
+        :param closable: Can the window be closed by the user?
+        :param minimizable: Can the window be minimized by the user?
+        :param on_close: The initial :any:`on_close` handler.
+        :param resizeable: **DEPRECATED** - Use ``resizable``.
+        :param closeable: **DEPRECATED** - Use ``closable``.
+        """
+        super().__init__(
+            id=id,
+            title=title,
+            position=position,
+            size=size,
+            resizable=resizable,
+            closable=closable,
+            minimizable=minimizable,
+            on_close=on_close,
+            # Deprecated arguments
+            resizeable=resizeable,
+            closeable=closeable,
+        )
+
+        # Create a toolbar that is linked to the app
+        self._toolbar = CommandSet(on_change=self._impl.create_toolbar, app=self._app)
+
+    ######################################################################
+    # Window properties
+    ######################################################################
+
+    @property
+    def _default_title(self) -> str:
+        return App.app.formal_name
+
+    ######################################################################
+    # Window content and resources
+    ######################################################################
+
+    @property
+    def toolbar(self) -> MutableSet[Command]:
+        """Toolbar for the window."""
+        return self._toolbar
+
+
+class DocumentMainWindow(Window):
+    _WINDOW_CLASS = "DocumentMainWindow"
+
+    def __init__(
+        self,
+        doc: Document,
+        id: str | None = None,
+        title: str | None = None,
+        position: tuple[int, int] | None = None,
+        size: tuple[int, int] = (640, 480),
+        resizable: bool = True,
+        minimizable: bool = True,
+    ):
+        """Create a new document Main Window.
+
+        This installs a default on_close handler that honors platform-specific document
+        closing behavior. If you want to control whether a document is allowed to close
+        (e.g., due to having unsaved change), override
+        :meth:`toga.Document.can_close()`, rather than implementing an on_close handler.
+
+        :param document: The document being managed by this window
+        :param id: The ID of the window.
+        :param title: Title for the window. Defaults to the title of the document.
+        :param position: Position of the window, as a tuple of ``(x, y)`` coordinates.
+        :param size: Size of the window, as a tuple of ``(width, height)``, in pixels.
+        :param resizable: Can the window be manually resized by the user?
+        :param minimizable: Can the window be minimized by the user?
+        """
+        self.doc = doc
+        super().__init__(
+            id=id,
+            title=title,
+            position=position,
+            size=size,
+            resizable=resizable,
+            closable=True,
+            minimizable=minimizable,
+            on_close=doc.handle_close,
+        )
+
+    @property
+    def _default_title(self) -> str:
+        return self.doc.title

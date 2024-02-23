@@ -139,10 +139,10 @@ class Group:
     HELP = None  #: Help commands
 
 
-Group.APP = Group("*", order=0)
-Group.FILE = Group("File", order=1)
-Group.EDIT = Group("Edit", order=10)
-Group.VIEW = Group("View", order=20)
+Group.APP = Group("*", order=-100)
+Group.FILE = Group("File", order=-30)
+Group.EDIT = Group("Edit", order=-20)
+Group.VIEW = Group("View", order=-10)
 Group.COMMANDS = Group("Commands", order=30)
 Group.WINDOW = Group("Window", order=90)
 Group.HELP = Group("Help", order=100)
@@ -222,12 +222,18 @@ class Command:
     @property
     def enabled(self) -> bool:
         """Is the command currently enabled?"""
-        return self._enabled
+        if callable(self._enabled):
+            return self._enabled()
+        else:
+            return self._enabled
 
     @enabled.setter
     def enabled(self, value: bool):
-        self._enabled = value and getattr(self.action, "_raw", True) is not None
-        self._impl.set_enabled(value)
+        if callable(value):
+            self._enabled = value
+        else:
+            self._enabled = value and getattr(self.action, "_raw", True) is not None
+            self._impl.set_enabled(value)
 
     @property
     def icon(self) -> Icon | None:
@@ -265,7 +271,7 @@ class Command:
     def __gt__(self, other: Any) -> bool:
         if not isinstance(other, (Group, Command)):
             return False
-        return other < self
+        return other.key < self.key
 
     def __repr__(self) -> bool:
         return (

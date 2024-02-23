@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import asyncio
-import warnings
 from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -12,21 +11,17 @@ if TYPE_CHECKING:
 
 
 class Document(ABC):
-    def __init__(
-        self,
-        path: str | Path,
-        document_type: str,
-        app: App = None,
-    ):
+    # Subclasses should override these definitions
+    document_type = "Unknown Document"
+    default_extension = ".unknown"
+
+    def __init__(self, app: App):
         """Create a new Document.
 
-        :param path: The path where the document is stored.
-        :param document_type: A human-readable description of the document type.
         :param app: The application the document is associated with.
         """
-        self._path = Path(path)
-        self._document_type = document_type
         self._app = app
+        self._path = None
         self._main_window = None
 
         # Create the visual representation of the document
@@ -58,14 +53,12 @@ class Document(ABC):
         else:
             can_close = self.can_close()
 
+        # If the document is allowed to close, remove it from the list of documents,
+        # managed by the app.
         if can_close:
-            if self._impl.SINGLE_DOCUMENT_APP:
-                self.app.exit()
-                return False
-            else:
-                return True
-        else:
-            return False
+            self._app._documents.remove(self)
+
+        return can_close
 
     @property
     def path(self) -> Path:
@@ -73,23 +66,18 @@ class Document(ABC):
         return self._path
 
     @property
-    def filename(self) -> Path:
-        """**DEPRECATED** - Use :attr:`path`."""
-        warnings.warn(
-            "Document.filename has been renamed Document.path.",
-            DeprecationWarning,
-        )
-        return self._path
-
-    @property
-    def document_type(self) -> Path:
-        """A human-readable description of the document type (read-only)."""
-        return self._document_type
-
-    @property
     def app(self) -> App:
         """The app that this document is associated with (read-only)."""
         return self._app
+
+    @property
+    def title(self) -> str:
+        """The title of the document.
+
+        This will be used as the default title of a :any:`toga.DocumentMainWindow` that
+        contains the document.
+        """
+        return f"{self.document_type}: {self.path.name if self.path else 'Untitled'}"
 
     @property
     def main_window(self) -> Window:
@@ -104,6 +92,30 @@ class Document(ABC):
         """Show the :any:`main_window` for this document."""
         self.main_window.show()
 
+    def open(self, path: str | Path):
+        """Open a file as a document.
+
+        :param path: The file to open.
+        """
+        self._path = Path(path)
+        self._impl.open()
+
+        # Set the title of the document window to match the path
+        self._main_window.title = self._main_window._default_title
+
+    def save(self, path: str | Path | None = None):
+        """Save the document as a file.
+
+        If a path is provided, the path for the document will be updated.
+        Otherwise, the existing path will be used.
+        :param path: If provided, the new file name for the document.
+        """
+        if path:
+            self._path = Path(path)
+            # Re-set the title of the document with the new path
+            self._main_window.title = self._main_window._default_title
+        self.write()
+
     @abstractmethod
     def create(self) -> None:
         """Create the window (or windows) for the document.
@@ -116,3 +128,7 @@ class Document(ABC):
     def read(self) -> None:
         """Load a representation of the document into memory and populate the document
         window."""
+
+    @abstractmethod
+    def write(self) -> None:
+        """Persist a representation of the current state of the document."""
