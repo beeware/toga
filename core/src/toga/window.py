@@ -1013,7 +1013,7 @@ class DocumentMainWindow(Window):
         :param resizable: Can the window be manually resized by the user?
         :param minimizable: Can the window be minimized by the user?
         """
-        self.doc = doc
+        self._doc = doc
         super().__init__(
             id=id,
             title=title,
@@ -1024,6 +1024,11 @@ class DocumentMainWindow(Window):
             minimizable=minimizable,
             on_close=doc.handle_close,
         )
+
+    @property
+    def doc(self) -> Document:
+        """The document managed by this window"""
+        return self._doc
 
     @property
     def _default_title(self) -> str:

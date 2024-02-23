@@ -108,6 +108,7 @@ class Document(ABC):
 
         If a path is provided, the path for the document will be updated.
         Otherwise, the existing path will be used.
+
         :param path: If provided, the new file name for the document.
         """
         if path:
