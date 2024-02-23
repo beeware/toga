@@ -8,7 +8,7 @@ The abstract base class of all widgets. This class should not be be instantiated
    :header-rows: 1
    :file: ../../data/widgets_by_platform.csv
    :included_cols: 4,5,6,7,8,9,10
-   :exclude: {0: '(?!^(Widget|Component)$)'}
+   :exclude: {0: '(?!(Widget))', 1:'(?!(General Widget))'}
 
 
 Reference
