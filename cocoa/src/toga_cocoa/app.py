@@ -15,8 +15,9 @@ from rubicon.objc import (
 from rubicon.objc.eventloop import CocoaLifecycle, EventLoopPolicy
 
 import toga
+from toga.app import overridden
 from toga.command import Separator
-from toga.handlers import NativeHandler, wrapped_handler
+from toga.handlers import NativeHandler
 
 from .keys import cocoa_key
 from .libs import (
@@ -59,7 +60,19 @@ class AppDelegate(NSObject):
     @objc_method
     def applicationOpenUntitledFile_(self, sender) -> bool:
         if self.interface.document_types and self.interface.main_window is None:
-            self.impl._select_file()
+            # We can't use the normal "file open" logic here, because there's no
+            # current window to hang the dialog off.
+            panel = NSOpenPanel.openPanel()
+            fileTypes = NSMutableArray.alloc().init()
+            for filetype in self.interface.document_types:
+                fileTypes.addObject(filetype)
+
+            NSDocumentController.sharedDocumentController.runModalOpenPanel(
+                panel, forTypes=fileTypes
+            )
+
+            self.application(None, openFiles=panel.URLs)
+
             return True
         return False
 
@@ -97,9 +110,14 @@ class AppDelegate(NSObject):
 
             # Convert a Cocoa fileURL to a Python file path.
             path = Path(unquote(urlparse(str(fileURL.absoluteString)).path))
-            # If the user has provided an `open()` method on the app, use it.
-            # Otherwise, fall back to the default implementation.
-            getattr(self.interface, "open", self.interface._open)(path)
+
+            # Try to open the file.
+            try:
+                self.interface.open(path)
+            except ValueError as e:
+                print(e)
+            except FileNotFoundError:
+                print("Document {filename} not found")
 
     @objc_method
     def selectMenuItem_(self, sender) -> None:
@@ -143,9 +161,6 @@ class App:
     # Commands and menus
     ######################################################################
 
-    def _menu_about(self, command, **kwargs):
-        self.interface.about()
-
     def _menu_close_all_windows(self, command, **kwargs):
         # Convert to a list to so that we're not altering a set while iterating
         for window in list(self.interface.windows):
@@ -159,87 +174,18 @@ class App:
         if self.interface.current_window:
             self.interface.current_window._impl.native.miniaturize(None)
 
-    def _menu_new_document(self, document_class):
-        def new_file_handler(app, **kwargs):
-            self.interface._new(document_class)
-
-        return new_file_handler
-
-    def _menu_open_file(self, app, **kwargs):
-        self._select_file()
-
-    def _menu_quit(self, command, **kwargs):
-        self.interface.on_exit()
-
-    async def _menu_save(self, command, **kwargs):
-        try:
-            # If the user defined a save() method, use it
-            save = wrapped_handler(self.interface.save)
-        except AttributeError:
-            # If the document has a path, save it. If it doesn't, use the save-as
-            # implementation. We know  there is a current window with a document because
-            # the save menu item has a dynamic enabled handler that only enables if this
-            # condition is true.
-            if self.interface.current_window.doc.path:
-                self.interface.current_window.doc.save()
-            else:
-                # If the document hasn't got a path, it's untitled, so we need to use
-                # save as
-                await self._menu_save_as(command, **kwargs)
-        else:
-            save()
-
-    async def _menu_save_as(self, command, **kwargs):
-        try:
-            # If the user defined a save_as() method, use it
-            save_as = wrapped_handler(self.interface.save_as)
-        except AttributeError:
-            # Prompt the user for a new filename, and save the document at that path. We
-            # know there is a current window with a document because the save-as menu
-            # item has a dynamic enabled handler that only enables if this condition is
-            # true.
-            new_path = await self.interface.current_window.save_file_dialog(
-                "Save as", self.interface.current_window.doc.path
-            )
-            if new_path:
-                self.interface.current_window.doc.save(new_path)
-        else:
-            save_as()
-
-    async def _menu_save_all(self, command, **kwargs):
-        try:
-            # If the user defined a save_all() method, use it
-            save_all = wrapped_handler(self.interface.save_all)
-        except AttributeError:
-            # Iterate over every document managed by the app, and save it. If the
-            # document doesn't have a path, prompt the user to provide one.
-            for document in self.interface.documents:
-                if document.path:
-                    document.save()
-                else:
-                    new_path = await self.interface.current_window.save_file_dialog(
-                        "Save as", f"New Document.{document.default_extension}"
-                    )
-                    if new_path:
-                        document.save(new_path)
-        else:
-            save_all()
-
-    def _menu_visit_homepage(self, command, **kwargs):
-        self.interface.visit_homepage()
-
     def create_app_commands(self):
         # All macOS apps have some basic commands.
         self.interface.commands.add(
             # ---- App menu -----------------------------------
             toga.Command(
-                self._menu_about,
+                self.interface._menu_about,
                 f"About {self.interface.formal_name}",
                 group=toga.Group.APP,
             ),
             # Quit should always be the last item, in a section on its own
             toga.Command(
-                self._menu_quit,
+                self.interface._menu_exit,
                 f"Quit {self.interface.formal_name}",
                 shortcut=toga.Key.MOD_1 + "q",
                 group=toga.Group.APP,
@@ -247,7 +193,7 @@ class App:
             ),
             # ---- Help menu ----------------------------------
             toga.Command(
-                self._menu_visit_homepage,
+                self.interface._menu_visit_homepage,
                 "Visit homepage",
                 enabled=self.interface.home_page is not None,
                 group=toga.Group.HELP,
@@ -392,7 +338,7 @@ class App:
             for document_class in sorted(set(self.interface.document_types.values())):
                 self.interface.commands.add(
                     toga.Command(
-                        self._menu_new_document(document_class),
+                        self.interface._menu_new_document(document_class),
                         text=f"New {document_class.document_type}",
                         shortcut=(
                             toga.Key.MOD_1 + "n"
@@ -406,10 +352,10 @@ class App:
 
         # If there's a user-provided open() implementation, or there are registered
         # document types, add an Open menu item.
-        if hasattr(self.interface, "open") or self.interface.document_types:
+        if overridden(self.interface.open) or self.interface.document_types:
             self.interface.commands.add(
                 toga.Command(
-                    self._menu_open_file,
+                    self.interface._menu_open_file,
                     text="Open\u2026",
                     shortcut=toga.Key.MOD_1 + "o",
                     group=toga.Group.FILE,
@@ -419,10 +365,10 @@ class App:
 
         # If there is a user-provided save() implementation, or there are registered
         # document types, add a Save menu item.
-        if hasattr(self.interface, "save") or self.interface.document_types:
+        if overridden(self.interface.save) or self.interface.document_types:
             self.interface.commands.add(
                 toga.Command(
-                    self._menu_save,
+                    self.interface._menu_save,
                     text="Save",
                     shortcut=toga.Key.MOD_1 + "s",
                     group=toga.Group.FILE,
@@ -434,10 +380,10 @@ class App:
 
         # If there is a user-provided save_as() implementation, or there are registered
         # document types, add a Save As menu item.
-        if hasattr(self.interface, "save_as") or self.interface.document_types:
+        if overridden(self.interface.save_as) or self.interface.document_types:
             self.interface.commands.add(
                 toga.Command(
-                    self._menu_save_as,
+                    self.interface._menu_save_as,
                     text="Save As\u2026",
                     shortcut=toga.Key.MOD_1 + "S",
                     group=toga.Group.FILE,
@@ -449,15 +395,16 @@ class App:
 
         # If there is a user-provided save_all() implementation, or there are registered
         # document types, add a Save All menu item.
-        if hasattr(self.interface, "save_all") or self.interface.document_types:
+        if overridden(self.interface.save_all) or self.interface.document_types:
             self.interface.commands.add(
                 toga.Command(
-                    self._menu_save_all,
+                    self.interface._menu_save_all,
                     text="Save All",
                     shortcut=toga.Key.MOD_1 + toga.Key.MOD_2 + "s",
                     group=toga.Group.FILE,
                     section=20,
                     order=12,
+                    enabled=self.interface.can_save,
                 ),
             )
 
@@ -558,8 +505,10 @@ class App:
         # ensure that the main_window has been assigned, which informs which app
         # commands are needed.
         self.create_app_commands()
-
         self.create_menus()
+
+        # Cocoa *doesn't* invoke _create_initial_windows(); the NSApplication
+        # interface handles arguments as part of the persistent app interface.
 
     def main_loop(self):
         self.loop.run_forever(lifecycle=CocoaLifecycle(self.native))
@@ -581,26 +530,6 @@ class App:
     ######################################################################
     # App capabilities
     ######################################################################
-
-    def _select_file(self, **kwargs):
-        # FIXME This should be all we need; but for some reason, application types
-        # aren't being registered correctly..
-        # NSDocumentController.sharedDocumentController().openDocument_(None)
-
-        # ...so we do this instead.
-        panel = NSOpenPanel.openPanel()
-        # print("Open documents of type", NSDocumentController.sharedDocumentController().defaultType)
-
-        fileTypes = NSMutableArray.alloc().init()
-        for filetype in self.interface.document_types:
-            fileTypes.addObject(filetype)
-
-        NSDocumentController.sharedDocumentController.runModalOpenPanel(
-            panel, forTypes=fileTypes
-        )
-
-        # print("Untitled File opened?", panel.URLs)
-        self.appDelegate.application(None, openFiles=panel.URLs)
 
     def beep(self):
         NSBeep()
@@ -647,7 +576,14 @@ class App:
     ######################################################################
 
     def get_current_window(self):
-        return self.native.keyWindow
+        window = self.native.keyWindow
+        # When a menu is activated, the current window sometimes reports as being of
+        # type NSMenuWindowManagerWindow. This is an internal type; we ignore it, and
+        # assume there's no current window. Marked nocover because it's impossible to
+        # replicate in test conditions.
+        if not hasattr(window, "interface"):  # pragma: no cover
+            return None
+        return window
 
     def set_current_window(self, window):
         window._impl.native.makeKeyAndOrderFront(window._impl.native)

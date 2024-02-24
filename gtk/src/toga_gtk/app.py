@@ -2,46 +2,21 @@ import asyncio
 import os
 import signal
 import sys
-from pathlib import Path
 
 import gbulb
 
 import toga
-from toga import App as toga_App
+from toga.app import overridden
 from toga.command import Command, Separator
 
 from .keys import gtk_accel
 from .libs import TOGA_DEFAULT_STYLES, Gdk, Gio, GLib, Gtk
 from .screens import Screen as ScreenImpl
-from .window import Window
-
-
-class MainWindow(Window):
-    def create(self):
-        self.native = Gtk.ApplicationWindow()
-        self.native.set_role("MainWindow")
-        icon_impl = toga_App.app.icon._impl
-        self.native.set_icon(icon_impl.native_72)
-
-    def gtk_delete_event(self, *args):
-        # Return value of the GTK on_close handler indicates
-        # whether the event has been fully handled. Returning
-        # False indicates the event handling is *not* complete,
-        # so further event processing (including actually
-        # closing the window) should be performed; so
-        # "should_exit == True" must be converted to a return
-        # value of False.
-        self.interface.app.on_exit()
-        return True
 
 
 class App:
-    """
-    Todo:
-        * Creation of Menus is not working.
-        * Disabling of menu items is not working.
-        * App Icon is not showing up
-    """
+    # GTK apps exit when the last window is closed
+    CLOSE_ON_LAST_WINDOW = True
 
     def __init__(self, interface):
         self.interface = interface
@@ -50,9 +25,6 @@ class App:
         gbulb.install(gtk=True)
         self.loop = asyncio.new_event_loop()
 
-        self.create()
-
-    def create(self):
         # Stimulate the build of the app
         self.native = Gtk.Application(
             application_id=self.interface.app_id,
@@ -62,6 +34,7 @@ class App:
 
         # Connect the GTK signal that will cause app startup to occur
         self.native.connect("startup", self.gtk_startup)
+        # Activate is a no-op, but GTK complains if you don't implement it
         self.native.connect("activate", self.gtk_activate)
 
         self.actions = None
@@ -70,59 +43,115 @@ class App:
         pass
 
     def gtk_startup(self, data=None):
-        # Set up the default commands for the interface.
-        self.create_app_commands()
-
         self.interface._startup()
-
-        # Create the lookup table of menu items,
-        # then force the creation of the menus.
-        self.create_menus()
-
-        # Now that we have menus, make the app take responsibility for
-        # showing the menubar.
-        # This is required because of inconsistencies in how the Gnome
-        # shell operates on different windowing environments;
-        # see #872 for details.
-        settings = Gtk.Settings.get_default()
-        settings.set_property("gtk-shell-shows-menubar", False)
-
-        # Set any custom styles
-        css_provider = Gtk.CssProvider()
-        css_provider.load_from_data(TOGA_DEFAULT_STYLES)
-
-        context = Gtk.StyleContext()
-        context.add_provider_for_screen(
-            Gdk.Screen.get_default(), css_provider, Gtk.STYLE_PROVIDER_PRIORITY_USER
-        )
 
     ######################################################################
     # Commands and menus
     ######################################################################
 
-    def _menu_about(self, command, **kwargs):
-        self.interface.about()
-
-    def _menu_quit(self, command, **kwargs):
-        self.interface.on_exit()
-
     def create_app_commands(self):
-        self.interface.commands.add(
-            Command(
-                self._menu_about,
-                "About " + self.interface.formal_name,
-                group=toga.Group.HELP,
-            ),
-            Command(None, "Preferences", group=toga.Group.APP),
-            # Quit should always be the last item, in a section on its own
-            Command(
-                self._menu_quit,
-                "Quit " + self.interface.formal_name,
-                shortcut=toga.Key.MOD_1 + "q",
-                group=toga.Group.APP,
-                section=sys.maxsize,
-            ),
-        )
+        # Set up the default commands for the interface.
+        if (
+            isinstance(self.interface.main_window, toga.MainWindow)
+            or self.interface.main_window is None
+        ):
+            self.interface.commands.add(
+                Command(
+                    self.interface._menu_about,
+                    "About " + self.interface.formal_name,
+                    group=toga.Group.HELP,
+                ),
+                Command(
+                    self.interface._menu_visit_homepage,
+                    "Visit homepage",
+                    enabled=self.interface.home_page is not None,
+                    group=toga.Group.HELP,
+                ),
+                # Preferences should be the last section of the edit menu.
+                Command(
+                    None,
+                    "Preferences",
+                    group=toga.Group.EDIT,
+                    section=sys.maxsize,
+                ),
+                # Quit should always be the last item, in a section on its own
+                Command(
+                    self.interface._menu_exit,
+                    "Quit",
+                    shortcut=toga.Key.MOD_1 + "q",
+                    group=toga.Group.FILE,
+                    section=sys.maxsize,
+                ),
+            )
+
+        # Add a "New" menu item for each unique registered document type.
+        if self.interface.document_types:
+            for document_class in self.interface.document_types.values():
+                self.interface.commands.add(
+                    toga.Command(
+                        self.interface._menu_new_document(document_class),
+                        text=f"New {document_class.document_type}",
+                        shortcut=(
+                            toga.Key.MOD_1 + "n"
+                            if document_class == self.interface.main_window
+                            else None
+                        ),
+                        group=toga.Group.FILE,
+                        section=0,
+                    ),
+                )
+
+        # If there's a user-provided open() implementation, or there are registered
+        # document types, add an Open menu item.
+        if overridden(self.interface.open) or self.interface.document_types:
+            self.interface.commands.add(
+                toga.Command(
+                    self.interface._menu_open_file,
+                    text="Open\u2026",
+                    shortcut=toga.Key.MOD_1 + "o",
+                    group=toga.Group.FILE,
+                    section=10,
+                ),
+            )
+
+        # If there is a user-provided save() implementation, or there are registered
+        # document types, add a Save menu item.
+        if overridden(self.interface.save) or self.interface.document_types:
+            self.interface.commands.add(
+                toga.Command(
+                    self.interface._menu_save,
+                    text="Save",
+                    shortcut=toga.Key.MOD_1 + "s",
+                    group=toga.Group.FILE,
+                    section=20,
+                ),
+            )
+
+        # If there is a user-provided save_as() implementation, or there are registered
+        # document types, add a Save As menu item.
+        if overridden(self.interface.save_as) or self.interface.document_types:
+            self.interface.commands.add(
+                toga.Command(
+                    self.interface._menu_save_as,
+                    text="Save As\u2026",
+                    group=toga.Group.FILE,
+                    section=20,
+                    order=10,
+                ),
+            )
+
+        # If there is a user-provided save_all() implementation, or there are registered
+        # document types, add a Save All menu item.
+        if overridden(self.interface.save_all) or self.interface.document_types:
+            self.interface.commands.add(
+                toga.Command(
+                    self.interface._menu_save_all,
+                    text="Save All",
+                    group=toga.Group.FILE,
+                    section=20,
+                    order=20,
+                ),
+            )
 
     def _submenu(self, group, menubar):
         try:
@@ -183,6 +212,14 @@ class App:
         # Set the menu for the app.
         self.native.set_menubar(menubar)
 
+        # Now that we have menus, make the app take responsibility for
+        # showing the menubar.
+        # This is required because of inconsistencies in how the Gnome
+        # shell operates on different windowing environments;
+        # see #872 for details.
+        settings = Gtk.Settings.get_default()
+        settings.set_property("gtk-shell-shows-menubar", False)
+
     ######################################################################
     # App lifecycle
     ######################################################################
@@ -191,14 +228,38 @@ class App:
     def exit(self):  # pragma: no cover
         self.native.quit()
 
+    def finalize(self):
+        # Set any custom styles
+        css_provider = Gtk.CssProvider()
+        css_provider.load_from_data(TOGA_DEFAULT_STYLES)
+
+        context = Gtk.StyleContext()
+        context.add_provider_for_screen(
+            Gdk.Screen.get_default(), css_provider, Gtk.STYLE_PROVIDER_PRIORITY_USER
+        )
+
+        # Create the app commands and populate app menus.
+        self.create_app_commands()
+        self.create_menus()
+
+        # Process any command line arguments to open documents, etc
+        self.interface._create_initial_windows()
+
     def main_loop(self):
         # Modify signal handlers to make sure Ctrl-C is caught and handled.
         signal.signal(signal.SIGINT, signal.SIG_DFL)
 
+        # Retain a reference to the app so that no-window apps can exist
+        self.native.hold()
+
         self.loop.run_forever(application=self.native)
 
+        # Release the reference to the app
+        self.native.release()
+
     def set_main_window(self, window):
-        pass
+        if isinstance(window, toga.Window):
+            window._impl.native.set_role("MainWindow")
 
     ######################################################################
     # App resources
@@ -228,7 +289,7 @@ class App:
     def beep(self):
         Gdk.beep()
 
-    def _close_about(self, dialog):
+    def _close_about(self, dialog, *args):
         self.native_about_dialog.destroy()
         self.native_about_dialog = None
 
@@ -236,7 +297,7 @@ class App:
         self.native_about_dialog = Gtk.AboutDialog()
         self.native_about_dialog.set_modal(True)
 
-        icon_impl = toga_App.app.icon._impl
+        icon_impl = toga.App.app.icon._impl
         self.native_about_dialog.set_logo(icon_impl.native_72)
 
         self.native_about_dialog.set_program_name(self.interface.formal_name)
@@ -251,6 +312,7 @@ class App:
 
         self.native_about_dialog.show()
         self.native_about_dialog.connect("close", self._close_about)
+        self.native_about_dialog.connect("response", self._close_about)
 
     ######################################################################
     # Cursor control
@@ -284,44 +346,3 @@ class App:
     def exit_full_screen(self, windows):
         for window in windows:
             window._impl.set_full_screen(False)
-
-
-class DocumentApp(App):  # pragma: no cover
-    def create_app_commands(self):
-        super().create_app_commands()
-        self.interface.commands.add(
-            toga.Command(
-                self.open_file,
-                text="Open...",
-                shortcut=toga.Key.MOD_1 + "o",
-                group=toga.Group.FILE,
-                section=0,
-            ),
-        )
-
-    def gtk_startup(self, data=None):
-        super().gtk_startup(data=data)
-
-        try:
-            # Look for a filename specified on the command line
-            self.interface._open(Path(sys.argv[1]))
-        except IndexError:
-            # Nothing on the command line; open a file dialog instead.
-            # Create a temporary window so we have context for the dialog
-            m = toga.Window()
-            m.open_file_dialog(
-                self.interface.formal_name,
-                file_types=self.interface.document_types.keys(),
-                on_result=lambda dialog, path: (
-                    self.interface._open(path) if path else self.exit()
-                ),
-            )
-
-    def open_file(self, widget, **kwargs):
-        # Create a temporary window so we have context for the dialog
-        m = toga.Window()
-        m.open_file_dialog(
-            self.interface.formal_name,
-            file_types=self.interface.document_types.keys(),
-            on_result=lambda dialog, path: self.interface._open(path) if path else None,
-        )

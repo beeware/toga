@@ -202,7 +202,7 @@ class App:
         self.interface.commands.add(
             # About should be the last item in the menu, in a section on its own.
             Command(
-                lambda _: self.interface.about(),
+                self.interface._menu_about,
                 f"About {self.interface.formal_name}",
                 section=sys.maxsize,
             ),

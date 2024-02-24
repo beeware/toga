@@ -18,14 +18,16 @@ from .libs.wrapper import WeakrefCallable
 class BaseDialog(ABC):
     def __init__(self, interface):
         self.interface = interface
-        self.interface._impl = self
+        if self.interface is not None:
+            self.interface._impl = self
 
     # See libs/proactor.py
     def start_inner_loop(self, callback, *args):
         asyncio.get_event_loop().start_inner_loop(callback, *args)
 
     def set_result(self, result):
-        self.interface.set_result(result)
+        if self.interface is not None:
+            self.interface.set_result(result)
 
 
 class MessageDialog(BaseDialog):

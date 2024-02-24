@@ -23,14 +23,11 @@ class App:
     # Commands and menus
     ######################################################################
 
-    def _menu_about(self, command, **kwargs):
-        self.interface.about()
-
     def create_app_commands(self):
         self.interface.commands.add(
             # ---- Help menu ----------------------------------
             toga.Command(
-                self._menu_about,
+                self.interface._menu_about,
                 f"About {self.interface.formal_name}",
                 group=toga.Group.HELP,
             ),

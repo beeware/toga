@@ -198,6 +198,21 @@ class WidgetRegistry:
         del self._registry[id]
 
 
+def overridable(method):
+    """Decorate the method as being user-overridable"""
+    method.__default__ = True
+    return method
+
+
+def overridden(coroutine_or_method):
+    """Has the user overridden this method?
+
+    This is based on the method *not* having a ``__default__`` attribute. Overridable
+    default methods have this attribute; user-defined method will not.
+    """
+    return not hasattr(coroutine_or_method, "__default__")
+
+
 class App:
     #: The currently running :class:`~toga.App`. Since there can only be one running
     #: Toga app in a process, this is available as a class property via ``toga.App.app``.
@@ -546,6 +561,31 @@ class App:
         # Now that we have a finalized impl, set the on_change handler for commands
         self.commands.on_change = self._impl.create_menus
 
+    def _create_initial_windows(self):
+        """Internal utility method for creating initial windows based on command line
+        arguments.
+
+        If document types are defined, try to open every argument on the command line as
+        a document. If no arguments were provided, or no valid filenames were provided,
+        open a blank document of the default document type.
+
+        If no document types are defined, this method does nothing.
+        """
+        if self.document_types:
+            for filename in sys.argv[1:]:
+                try:
+                    self.open(Path(filename).absolute())
+                except ValueError as e:
+                    print(e)
+                except FileNotFoundError:
+                    print("Document {filename} not found")
+
+            if len(self.documents) == 0:
+                # The app has registered document types, but no open documents.
+                # Create a new document of the default document type.
+                default_document_type = next(iter(self.document_types.values()))
+                self.new(default_document_type)
+
     def startup(self) -> None:
         """Create and show the main window for the application.
 
@@ -631,43 +671,52 @@ class App:
         return self._windows
 
     ######################################################################
-    # App capabilities
+    # Commands and menus
     ######################################################################
 
-    def _new(self, document_type: type[Document]) -> Document:
-        """Create a new document, and show the document window.
+    def _menu_about(self, command, **kwargs):
+        self.about()
 
-        Users can define a ``new()`` method to override this method.
+    def _menu_exit(self, command, **kwargs):
+        self.on_exit()
 
-        :param document_type: The document type to create.
-        :returns: The newly created document
-        """
-        document = document_type(app=self)
-        self._documents.append(document)
-        document.show()
+    def _menu_new_document(self, document_class):
+        def new_document_handler(command, **kwargs):
+            self.new(document_class)
 
-        return document
+        return new_document_handler
 
-    def _open(self, path: Path) -> Document:
-        """Open a document in this app, and show the document window.
+    async def _menu_open_file(self, command, **kwargs):
+        # The dialog needs to be opened relative to a window; use the current window.
+        path = await self.current_window.open_file_dialog(
+            self.formal_name,
+            file_types=self.document_types.keys(),
+        )
 
-        :param path: The path to the document to be opened.
-        :returns: The document that has been opened
-        :raises ValueError: If the document is of a type that can't be opened. Backends can
-            suppress this exception if necessary to presere platform-native behavior.
-        """
-        try:
-            DocType = self.document_types[path.suffix[1:]]
-        except KeyError:
-            raise ValueError(f"Don't know how to open documents of type {path.suffix}")
-        else:
-            document = DocType(app=self)
-            document.open(path)
+        if path:
+            self.open(path)
 
-            self._documents.append(document)
-            document.show()
+    async def _menu_save(self, command, **kwargs):
+        result = self.save(self.current_window)
+        if asyncio.iscoroutine(result):
+            asyncio.ensure_future(result)
 
-        return document
+    async def _menu_save_as(self, command, **kwargs):
+        result = self.save_as(self.current_window)
+        if asyncio.iscoroutine(result):
+            asyncio.ensure_future(result)
+
+    async def _menu_save_all(self, command, **kwargs):
+        result = self.save_all()
+        if asyncio.iscoroutine(result):
+            asyncio.ensure_future(result)
+
+    def _menu_visit_homepage(self, command, **kwargs):
+        self.visit_homepage()
+
+    ######################################################################
+    # App capabilities
+    ######################################################################
 
     def about(self) -> None:
         """Display the About dialog for the app.
@@ -681,9 +730,6 @@ class App:
         """Play the default system notification sound."""
         self._impl.beep()
 
-    def _can_save(self) -> bool:
-        return self.current_window is not None and hasattr(self.current_window, "doc")
-
     def can_save(self) -> bool:
         """Can the application currently save?
 
@@ -694,7 +740,141 @@ class App:
         this method if they wish; this is strongly advised if the app provides a custom
         ``save()`` method.
         """
-        return self._can_save()
+        return self.current_window is not None and hasattr(self.current_window, "doc")
+
+    @overridable
+    def new(self, document_type: type[Document]) -> None:
+        """Create a new document of the given type, and show the document window.
+
+        Override this method to provide custom behavior for creating new document
+        windows.
+
+        :param document_type: The document type to create.
+        """
+        document = document_type(app=self)
+        self._documents.append(document)
+        document.show()
+
+    @overridable
+    def open(self, path: Path) -> None:
+        """Open a document in this app, and show the document window.
+
+        The default implementation uses registered document types to open the file. Apps
+        can overwrite this implementation if they wish to provide custom behavior for
+        opening a file path.
+
+        :param path: The path to the document to be opened.
+        :raises ValueError: If the path cannot be opened.
+        """
+        try:
+            DocType = self.document_types[path.suffix[1:]]
+        except KeyError:
+            raise ValueError(f"Don't know how to open documents of type {path.suffix}")
+        else:
+            document = DocType(app=self)
+            document.open(path)
+
+            self._documents.append(document)
+            document.show()
+
+    async def replacement_filename(self, suggested_name: Path) -> Path | None:
+        """Select a new filename for a file.
+
+        Displays a save file dialog to the user, allowing the user to select a file
+        name. If they provide a file name that already exists, a confirmation dialog
+        will be displayed. The user will be repeatedly prompted for a filename until:
+
+        1. They select a non-existent filename; or
+        2. They confirm that it's OK to overwrite an existing filename; or
+        3. They cancel the file selection dialog.
+
+        :param suggested name: The initial candidate filename
+        :returns: The path to use, or ``None`` if the user cancelled the request.
+        """
+        while True:
+            new_path = await self.current_window.save_file_dialog(
+                "Save as", suggested_name
+            )
+            if new_path:
+                if new_path.exists():
+                    save_ok = await self.current_window.confirm_dialog(
+                        "Are you sure?",
+                        f"File {new_path.name} already exists. Overwrite?",
+                    )
+                else:
+                    # Filename doesn't exist, so saving must be ok.
+                    save_ok = True
+
+                if save_ok:
+                    # Save the document and return
+                    return new_path
+            else:
+                # User chose to cancel the save
+                return None
+
+    @overridable
+    async def save(self, window):
+        """Save the contents of a window.
+
+        The default implementation will invoke ``save()`` on the document associated
+        with the window. If the window doesn't have a ``doc`` attribute, the save
+        request will be ignored. If the document associated with a window hasn't been
+        saved before, the user will be prompted to provide a filename.
+
+        If the user defines a ``save()`` method, a "Save" menu item will be included in
+        the app's menus, regardless of whether any document types are registered.
+
+        :param window: The window whose content is to be saved.
+        """
+        try:
+            doc = window.doc
+        except AttributeError:
+            pass
+        else:
+            if doc.path:
+                doc.save()
+            else:
+                suggested_name = f"Untitled{doc.default_extension}"
+                new_path = await self.replacement_filename(suggested_name)
+                doc.save(new_path)
+
+    @overridable
+    async def save_as(self, window):
+        """Save the contents of a window under a new filename.
+
+        The default implementation will prompt the user for a new filename, then invoke
+        ``save(new_path)`` on the document associated with the window. If the window
+        doesn't have a ``doc`` attribute, the save request will be ignored.
+
+        If the user defines a ``save_as()`` method, a "Save As..." menu item will be
+        included in the app's menus, regardless of whether document types are registered.
+
+        :param window: The window whose content is to be saved.
+        """
+        try:
+            doc = window.doc
+        except AttributeError:
+            pass
+        else:
+            suggested_path = (
+                doc.path if doc.path else f"Untitled{doc.default_extension}"
+            )
+            new_path = await self.replacement_filename(suggested_path)
+            doc.save(new_path)
+
+    @overridable
+    async def save_all(self):
+        """Save the state of all windows in the app.
+
+        The default implementation will call ``save()`` on each window in the app.
+        This may cause the user to be prompted to provide filenames for any windows
+        that haven't been saved previously.
+
+        If the user defines a ``save_all()`` method, a "Save All" menu item will be
+        included in the app's menus, regardless of whether document types are registered.
+        """
+        for window in self.windows:
+            await self.save(window)
 
     def visit_homepage(self) -> None:
         """Open the application's :any:`home_page` in the default browser.

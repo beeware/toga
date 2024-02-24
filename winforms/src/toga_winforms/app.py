@@ -6,32 +6,17 @@ from ctypes import windll
 
 import System.Windows.Forms as WinForms
 from System import Environment, Threading
-from System.ComponentModel import InvalidEnumArgumentException
 from System.Media import SystemSounds
 from System.Net import SecurityProtocolType, ServicePointManager
 from System.Windows.Threading import Dispatcher
 
 import toga
 from toga import Key
-from toga.command import Separator
+from toga.app import overridden
 
-from .keys import toga_to_winforms_key, toga_to_winforms_shortcut
 from .libs.proactor import WinformsProactorEventLoop
 from .libs.wrapper import WeakrefCallable
 from .screens import Screen as ScreenImpl
-from .window import Window
-
-
-class MainWindow(Window):
-    def winforms_FormClosing(self, sender, event):
-        # Differentiate between the handling that occurs when the user
-        # requests the app to exit, and the actual application exiting.
-        if not self.interface.app._impl._is_exiting:  # pragma: no branch
-            # If there's an event handler, process it. The decision to
-            # actually exit the app will be processed in the on_exit handler.
-            # If there's no exit handler, assume the close/exit can proceed.
-            self.interface.app.on_exit()
-            event.Cancel = True
 
 
 def winforms_thread_exception(sender, winforms_exc):  # pragma: no cover
@@ -69,19 +54,19 @@ def winforms_thread_exception(sender, winforms_exc):  # pragma: no cover
 
 
 class App:
-    _MAIN_WINDOW_CLASS = MainWindow
+    # Winforms apps exit when the last window is closed
+    CLOSE_ON_LAST_WINDOW = True
 
     def __init__(self, interface):
         self.interface = interface
         self.interface._impl = self
 
-        # Winforms app exit is tightly bound to the close of the MainWindow.
-        # The FormClosing message on MainWindow triggers the "on_exit" handler
-        # (which might abort the exit). However, on success, it will request the
-        # app (and thus the Main Window) to close, causing another close event.
-        # So - we have a flag that is only ever sent once a request has been
-        # made to exit the native app. This flag can be used to shortcut any
-        # window-level close handling.
+        # Winforms app exit is tightly bound to the close of the main window. The
+        # FormClosing message on the main window triggers the "on_exit" handler (which
+        # might abort the exit). However, on success, it will request the app (and thus
+        # the Main Window) to close, causing another close event. So - we have a flag
+        # that is only ever sent once a request has been made to exit the native app.
+        # This flag can be used to shortcut any window-level close handling.
         self._is_exiting = False
 
         # Winforms cursor visibility is a stack; If you call hide N times, you
@@ -93,6 +78,8 @@ class App:
         asyncio.set_event_loop(self.loop)
 
     def create(self):
+        # The winforms App impl's create() is deferred so that it can run inside the GUI
+        # thread. This means the app isn't created until the main loop is running.
         self.native = WinForms.Application
         self.app_context = WinForms.ApplicationContext()
         self.app_dispatcher = Dispatcher.CurrentDispatcher
@@ -146,118 +133,118 @@ class App:
 
         # Call user code to populate the main window
         self.interface._startup()
-        self.create_app_commands()
-        self.create_menus()
-        self.interface.main_window._impl.set_app(self)
 
     ######################################################################
     # Commands and menus
     ######################################################################
 
     def create_app_commands(self):
-        self.interface.commands.add(
-            # About should be the last item in the Help menu, in a section on its own.
-            toga.Command(
-                lambda _: self.interface.about(),
-                f"About {self.interface.formal_name}",
-                group=toga.Group.HELP,
-                section=sys.maxsize,
-            ),
-            #
-            toga.Command(None, "Preferences", group=toga.Group.FILE),
-            #
-            # On Windows, the Exit command doesn't usually contain the app name. It
-            # should be the last item in the File menu, in a section on its own.
-            toga.Command(
-                lambda _: self.interface.on_exit(),
-                "Exit",
-                shortcut=Key.MOD_1 + "q",
-                group=toga.Group.FILE,
-                section=sys.maxsize,
-            ),
-            #
-            toga.Command(
-                lambda _: self.interface.visit_homepage(),
-                "Visit homepage",
-                enabled=self.interface.home_page is not None,
-                group=toga.Group.HELP,
-            ),
-        )
+        # Set up the default commands for the interface.
+        if (
+            isinstance(self.interface.main_window, toga.MainWindow)
+            or self.interface.main_window is None
+        ):
+            self.interface.commands.add(
+                #
+                toga.Command(None, "Preferences", group=toga.Group.FILE),
+                #
+                # On Windows, the Exit command doesn't usually contain the app name. It
+                # should be the last item in the File menu, in a section on its own.
+                toga.Command(
+                    self.interface._menu_exit,
+                    "Exit",
+                    shortcut=Key.MOD_1 + "q",
+                    group=toga.Group.FILE,
+                    section=sys.maxsize,
+                ),
+                #
+                toga.Command(
+                    self.interface._menu_visit_homepage,
+                    "Visit homepage",
+                    enabled=self.interface.home_page is not None,
+                    group=toga.Group.HELP,
+                ),
+                # About should be the last item in the Help menu, in a section on its own.
+                toga.Command(
+                    self.interface._menu_about,
+                    f"About {self.interface.formal_name}",
+                    group=toga.Group.HELP,
+                    section=sys.maxsize,
+                ),
+            )
 
-    def _submenu(self, group, menubar):
-        try:
-            return self._menu_groups[group]
-        except KeyError:
-            if group is None:
-                submenu = menubar
-            else:
-                parent_menu = self._submenu(group.parent, menubar)
+        # Add a "New" menu item for each unique registered document type.
+        if self.interface.document_types:
+            for document_class in self.interface.document_types.values():
+                self.interface.commands.add(
+                    toga.Command(
+                        self.interface._menu_new_document(document_class),
+                        text=f"New {document_class.document_type}",
+                        shortcut=(
+                            toga.Key.MOD_1 + "n"
+                            if document_class == self.interface.main_window
+                            else None
+                        ),
+                        group=toga.Group.FILE,
+                        section=0,
+                    ),
+                )
 
-                submenu = WinForms.ToolStripMenuItem(group.text)
+        # If there's a user-provided open() implementation, or there are registered
+        # document types, add an Open menu item.
+        if overridden(self.interface.open) or self.interface.document_types:
+            self.interface.commands.add(
+                toga.Command(
+                    self.interface._menu_open_file,
+                    text="Open\u2026",
+                    shortcut=toga.Key.MOD_1 + "o",
+                    group=toga.Group.FILE,
+                    section=10,
+                ),
+            )
 
-                # Top level menus are added in a different way to submenus
-                if group.parent is None:
-                    parent_menu.Items.Add(submenu)
-                else:
-                    parent_menu.DropDownItems.Add(submenu)
+        # If there is a user-provided save() implementation, or there are registered
+        # document types, add a Save menu item.
+        if overridden(self.interface.save) or self.interface.document_types:
+            self.interface.commands.add(
+                toga.Command(
+                    self.interface._menu_save,
+                    text="Save",
+                    shortcut=toga.Key.MOD_1 + "s",
+                    group=toga.Group.FILE,
+                    section=20,
+                ),
+            )
 
-            self._menu_groups[group] = submenu
-        return submenu
+        # If there is a user-provided save_as() implementation, or there are registered
+        # document types, add a Save As menu item.
+        if overridden(self.interface.save_as) or self.interface.document_types:
+            self.interface.commands.add(
+                toga.Command(
+                    self.interface._menu_save_as,
+                    text="Save As\u2026",
+                    group=toga.Group.FILE,
+                    section=20,
+                    order=10,
+                ),
+            )
+
+        # If there is a user-provided save_all() implementation, or there are registered
+        # document types, add a Save All menu item.
+        if overridden(self.interface.save_all) or self.interface.document_types:
+            self.interface.commands.add(
+                toga.Command(
+                    self.interface._menu_save_all,
+                    text="Save All",
+                    group=toga.Group.FILE,
+                    section=20,
+                    order=20,
+                ),
+            )
 
     def create_menus(self):
-        if self.interface.main_window is None:  # pragma: no branch
-            # The startup method may create commands before creating the window, so
-            # we'll call create_menus again after it returns.
-            return
-
-        window = self.interface.main_window._impl
-        menubar = window.native.MainMenuStrip
-        if menubar:
-            menubar.Items.Clear()
-        else:
-            # The menu bar doesn't need to be positioned, because its `Dock` property
-            # defaults to `Top`.
-            menubar = WinForms.MenuStrip()
-            window.native.Controls.Add(menubar)
-            window.native.MainMenuStrip = menubar
-            menubar.SendToBack()  # In a dock, "back" means "top".
-
-        # The File menu should come before all user-created menus.
-        self._menu_groups = {}
-        toga.Group.FILE.order = -1
-
-        submenu = None
-        for cmd in self.interface.commands:
-            submenu = self._submenu(cmd.group, menubar)
-            if isinstance(cmd, Separator):
-                submenu.DropDownItems.Add("-")
-            else:
-                submenu = self._submenu(cmd.group, menubar)
-                item = WinForms.ToolStripMenuItem(cmd.text)
-                item.Click += WeakrefCallable(cmd._impl.winforms_Click)
-                if cmd.shortcut is not None:
-                    try:
-                        item.ShortcutKeys = toga_to_winforms_key(cmd.shortcut)
-                        # The Winforms key enum is... daft. The "oem" key
-                        # values render as "Oem" or "Oemcomma", so we need to
-                        # *manually* set the display text for the key shortcut.
-                        item.ShortcutKeyDisplayString = toga_to_winforms_shortcut(
-                            cmd.shortcut
-                        )
-                    except (
-                        ValueError,
-                        InvalidEnumArgumentException,
-                    ) as e:  # pragma: no cover
-                        # Make this a non-fatal warning, because different backends may
-                        # accept different shortcuts.
-                        print(f"WARNING: invalid shortcut {cmd.shortcut!r}: {e}")
-
-                item.Enabled = cmd.enabled
-
-                cmd._impl.native.append(item)
-                submenu.DropDownItems.Add(item)
-
-        window.resize_content()
+        for window in self.interface.windows:
+            window._impl.create_menus()
 
     ######################################################################
     # App lifecycle
@@ -266,6 +253,13 @@ class App:
     def exit(self):  # pragma: no cover
         self._is_exiting = True
         self.native.Exit()
+
+    def finalize(self):
+        self.create_app_commands()
+        self.create_menus()
+
+        # Process any command line arguments to open documents, etc
+        self.interface._create_initial_windows()
 
     def _run_app(self):  # pragma: no cover
         # Enable coverage tracing on this non-Python-created thread
@@ -302,7 +296,8 @@ class App:
             raise self._exception
 
     def set_main_window(self, window):
-        self.app_context.MainForm = window._impl.native
+        if isinstance(window, toga.Window):
+            self.app_context.MainForm = window._impl.native
 
     ######################################################################
     # App resources
