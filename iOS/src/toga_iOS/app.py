@@ -3,14 +3,10 @@ import asyncio
 from rubicon.objc import objc_method
 from rubicon.objc.eventloop import EventLoopPolicy, iOSLifecycle
 
+import toga
 from toga_iOS.libs import UIResponder, UIScreen, av_foundation
-from toga_iOS.window import Window
 
 from .screens import Screen as ScreenImpl
-
-
-class MainWindow(Window):
-    _is_main_window = True
 
 
 class PythonAppDelegate(UIResponder):
@@ -53,6 +49,9 @@ class PythonAppDelegate(UIResponder):
 
 
 class App:
+    # iOS apps exit when the last window is closed
+    CLOSE_ON_LAST_WINDOW = True
+
     def __init__(self, interface):
         self.interface = interface
         self.interface._impl = self
@@ -66,12 +65,16 @@ class App:
         self.loop = asyncio.new_event_loop()
 
     def create(self):
-        """Calls the startup method on the interface."""
+        # Call the app's startup method
         self.interface._startup()
 
     ######################################################################
     # Commands and menus
     ######################################################################
+
+    def create_app_commands(self):
+        # No commands on an iOS app (for now)
+        pass
 
     def create_menus(self):
         # No menus on an iOS app (for now)
@@ -85,6 +88,10 @@ class App:
         # Mobile apps can't be exited, but the entry point needs to exist
         pass
 
+    def finalize(self):
+        self.create_app_commands()
+        self.create_menus()
+
     def main_loop(self):
         # Main loop is non-blocking on iOS. The app loop is integrated with the
         # main iOS event loop, so this call will return; however, it will leave
@@ -93,7 +100,10 @@ class App:
         self.loop.run_forever_cooperatively(lifecycle=iOSLifecycle())
 
     def set_main_window(self, window):
-        pass
+        if window is None:
+            raise RuntimeError("Session-based apps are not supported on iOS")
+        elif window == toga.App.BACKGROUND:
+            raise RuntimeError("Background apps are not supported on iOS")
 
     ######################################################################
     # App resources
@@ -110,10 +120,6 @@ class App:
         # 1013 is a magic constant that is the "SMS RECEIVED 5" sound,
         # sounding like a single strike of a bell.
         av_foundation.AudioServicesPlayAlertSound(1013)
-
-    def open_document(self, fileURL):  # pragma: no cover
-        """Add a new document to this app."""
-        pass
 
     def show_about_dialog(self):
         self.interface.factory.not_implemented("App.show_about_dialog()")

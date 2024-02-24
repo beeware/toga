@@ -6,7 +6,7 @@ from rubicon.objc import (
     objc_id,
 )
 
-from toga_iOS.container import RootContainer
+from toga_iOS.container import NavigationContainer, RootContainer
 from toga_iOS.images import nsdata_to_bytes
 from toga_iOS.libs import (
     NSData,
@@ -23,22 +23,14 @@ from .screens import Screen as ScreenImpl
 
 
 class Window:
-    _is_main_window = False
-
     def __init__(self, interface, title, position, size):
         self.interface = interface
         self.interface._impl = self
 
-        if not self._is_main_window:
-            raise RuntimeError(
-                "Secondary windows cannot be created on mobile platforms"
-            )
-
         self.native = UIWindow.alloc().initWithFrame(UIScreen.mainScreen.bounds)
 
         # Set up a container for the window's content
-        # RootContainer provides a titlebar for the window.
-        self.container = RootContainer(on_refresh=self.content_refreshed)
+        self.create_container()
 
         # Set the size of the content to the size of the window
         self.container.native.frame = self.native.bounds
@@ -55,6 +47,10 @@ class Window:
             self.native.backgroundColor = UIColor.whiteColor
 
         self.set_title(title)
+
+    def create_container(self):
+        # RootContainer provides a container without a titlebar.
+        self.container = RootContainer(on_refresh=self.content_refreshed)
 
     ######################################################################
     # Window properties
@@ -73,11 +69,9 @@ class Window:
     def close(self):
         pass
 
-    def create_toolbar(self):
-        pass  # pragma: no cover
-
     def set_app(self, app):
-        pass
+        if len(app.interface.windows) > 1:
+            raise RuntimeError("Secondary windows cannot be created on iOS platform")
 
     def show(self):
         self.native.makeKeyAndVisible()
@@ -221,3 +215,12 @@ class Window:
         final_image = UIImage.imageWithCGImage(cropped_image)
         # Convert into PNG data.
         return nsdata_to_bytes(NSData(uikit.UIImagePNGRepresentation(final_image)))
+
+
+class MainWindow(Window):
+    def create_container(self):
+        # NavigationContainer provides a titlebar for the window.
+        self.container = NavigationContainer(on_refresh=self.content_refreshed)
+
+    def create_toolbar(self):
+        pass  # pragma: no cover

@@ -59,7 +59,7 @@ class AppDelegate(NSObject):
     @objc_method
     def applicationOpenUntitledFile_(self, sender) -> bool:
         if self.interface.document_types and self.interface.main_window is None:
-            self.impl.select_file()
+            self.impl._select_file()
             return True
         return False
 
@@ -166,7 +166,7 @@ class App:
         return new_file_handler
 
     def _menu_open_file(self, app, **kwargs):
-        self.select_file()
+        self._select_file()
 
     def _menu_quit(self, command, **kwargs):
         self.interface.on_exit()
@@ -582,10 +582,7 @@ class App:
     # App capabilities
     ######################################################################
 
-    def beep(self):
-        NSBeep()
-
-    def select_file(self, **kwargs):
+    def _select_file(self, **kwargs):
         # FIXME This should be all we need; but for some reason, application types
         # aren't being registered correctly..
         # NSDocumentController.sharedDocumentController().openDocument_(None)
@@ -604,6 +601,9 @@ class App:
 
         # print("Untitled File opened?", panel.URLs)
         self.appDelegate.application(None, openFiles=panel.URLs)
+
+    def beep(self):
+        NSBeep()
 
     def show_about_dialog(self):
         options = NSMutableDictionary.alloc().init()

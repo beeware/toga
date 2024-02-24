@@ -9,15 +9,11 @@ from android.view import Menu, MenuItem
 from java import dynamic_proxy
 from org.beeware.android import IPythonApp, MainActivity
 
+import toga
 from toga.command import Command, Group, Separator
 
 from .libs import events
 from .screens import Screen as ScreenImpl
-from .window import Window
-
-
-class MainWindow(Window):
-    _is_main_window = True
 
 
 class TogaApp(dynamic_proxy(IPythonApp)):
@@ -95,6 +91,11 @@ class TogaApp(dynamic_proxy(IPythonApp)):
             return True
 
     def onPrepareOptionsMenu(self, menu):
+        # If the main window doesn't have a toolbar, there's no preparation required;
+        # this is a simple main window, which can't have commands.
+        if not hasattr(self._impl.interface.main_window, "toolbar"):
+            return False
+
         menu.clear()
         itemid = 1  # 0 is the same as Menu.NONE.
         groupid = 1
@@ -179,6 +180,9 @@ class TogaApp(dynamic_proxy(IPythonApp)):
 
 
 class App:
+    # Android apps exit when the last window is closed
+    CLOSE_ON_LAST_WINDOW = True
+
     def __init__(self, interface):
         self.interface = interface
         self.interface._impl = self
@@ -189,14 +193,6 @@ class App:
     @property
     def native(self):
         return self._listener.native if self._listener else None
-
-    def create(self):
-        # The `_listener` listens for activity event callbacks. For simplicity,
-        # the app's `.native` is the listener's native Java class.
-        self._listener = TogaApp(self)
-        # Call user code to populate the main window
-        self.interface._startup()
-        self.create_app_commands()
 
     ######################################################################
     # Commands and menus
@@ -213,7 +209,8 @@ class App:
         )
 
     def create_menus(self):
-        self.native.invalidateOptionsMenu()  # Triggers onPrepareOptionsMenu
+        # On Android, menus and toolbars are populated using the same mechanism.
+        self.interface.main_window._impl.create_toolbar()
 
     ######################################################################
     # App lifecycle
@@ -222,16 +219,28 @@ class App:
     def exit(self):
         pass  # pragma: no cover
 
+    def finalize(self):
+        self.create_app_commands()
+        self.create_menus()
+
     def main_loop(self):
         # In order to support user asyncio code, start the Python/Android cooperative event loop.
         self.loop.run_forever_cooperatively()
 
-        # On Android, Toga UI integrates automatically into the main Android event loop by virtue
-        # of the Android Activity system.
-        self.create()
+        # On Android, Toga UI integrates automatically into the main Android event loop
+        # by virtue of the Android Activity system. The `_listener` listens for activity
+        # event callbacks. For simplicity, the app's `.native` is the listener's native
+        # Java class.
+        self._listener = TogaApp(self)
+
+        # Call user code to populate the main window
+        self.interface._startup()
 
     def set_main_window(self, window):
-        pass
+        if window is None:
+            raise RuntimeError("Session-based apps are not supported on Android")
+        elif window == toga.App.BACKGROUND:
+            raise RuntimeError("Background apps are not supported on Android")
 
     ######################################################################
     # App resources

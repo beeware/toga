@@ -29,18 +29,11 @@ class LayoutListener(dynamic_proxy(ViewTreeObserver.OnGlobalLayoutListener)):
 
 
 class Window(Container):
-    _is_main_window = False
-
     def __init__(self, interface, title, position, size):
         super().__init__()
         self.interface = interface
         self.interface._impl = self
         self._initial_title = title
-
-        if not self._is_main_window:
-            raise RuntimeError(
-                "Secondary windows cannot be created on mobile platforms"
-            )
 
     ######################################################################
     # Window properties
@@ -60,16 +53,26 @@ class Window(Container):
         pass
 
     def create_toolbar(self):
-        self.app.native.invalidateOptionsMenu()
+        # Simple windows don't have a titlebar
+        pass
+
+    def _configure_titlebar(self):
+        # Simple windows hide the titlebar.
+        self.app.native.getSupportActionBar().hide()
 
     def set_app(self, app):
+        if len(app.interface.windows) > 1:
+            raise RuntimeError("Secondary windows cannot be created on Android")
+
         self.app = app
-        native_parent = app.native.findViewById(R.id.content)
+        native_parent = self.app.native.findViewById(R.id.content)
         self.init_container(native_parent)
         native_parent.getViewTreeObserver().addOnGlobalLayoutListener(
             LayoutListener(self)
         )
         self.set_title(self._initial_title)
+
+        self._configure_titlebar()
 
     def show(self):
         pass
@@ -155,3 +158,12 @@ class Window(Container):
         stream = ByteArrayOutputStream()
         bitmap.compress(Bitmap.CompressFormat.PNG, 0, stream)
         return bytes(stream.toByteArray())
+
+
+class MainWindow(Window):
+    def _configure_titlebar(self):
+        # The titlebar will be visible by default.
+        pass
+
+    def create_toolbar(self):
+        self.app.native.invalidateOptionsMenu()
