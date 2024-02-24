@@ -126,24 +126,28 @@ class App:
 
     def _submenu(self, group, menubar):
         try:
-            return self._menu_groups[group], False
+            submenu, section = self._menu_groups[group]
         except KeyError:
+            # It's a new menu/group, so it must start a new section.
+            section = Gio.Menu()
             if group is None:
+                # Menu is a top-level menu; so it's a child of the menu bar
                 submenu = menubar
             else:
-                parent_menu, _ = self._submenu(group.parent, menubar)
+                _, parent_section = self._submenu(group.parent, menubar)
                 submenu = Gio.Menu()
-                self._menu_groups[group] = submenu
 
                 text = group.text
                 if text == "*":
                     text = self.interface.formal_name
-                parent_menu.append_submenu(text, submenu)
+                parent_section.append_submenu(text, submenu)
 
-            # Install the item in the group cache.
-            self._menu_groups[group] = submenu
+            # Add the initial section to the submenu,
+            # and install the menu item in the group cache.
+            submenu.append_section(None, section)
+            self._menu_groups[group] = submenu, section
 
-            return submenu, True
+        return submenu, section
 
     def create_menus(self):
         # Only create the menu if the menu item index has been created.
@@ -152,19 +156,13 @@ class App:
 
         # Create the menu for the top level menubar.
         menubar = Gio.Menu()
-        section = None
         for cmd in self.interface.commands:
+            submenu, section = self._submenu(cmd.group, menubar)
             if isinstance(cmd, Separator):
-                section = None
+                section = Gio.Menu()
+                submenu.append_section(None, section)
+                self._menu_groups[cmd.group] = (submenu, section)
             else:
-                submenu, created = self._submenu(cmd.group, menubar)
-                if created:
-                    section = None
-
-                if section is None:
-                    section = Gio.Menu()
-                    submenu.append_section(None, section)
-
                 cmd_id = "command-%s" % id(cmd)
                 action = Gio.SimpleAction.new(cmd_id, None)
                 action.connect("activate", cmd._impl.gtk_activate)
