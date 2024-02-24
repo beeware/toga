@@ -500,6 +500,10 @@ async def test_menu_items(app, app_probe):
         ["Other", "Submenu1", "Submenu1 menu1", "Deep"],
         enabled=True,
     )
+    app_probe.assert_menu_item(
+        ["Other", "Wiggle"],
+        enabled=True,
+    )
 
     app_probe.assert_menu_item(
         ["Commands", "No Tooltip"],
