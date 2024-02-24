@@ -10,105 +10,11 @@ from .container import Container
 from .screens import Screen as ScreenImpl
 
 
-class WindowCloseButton(TextualButton):
-    DEFAULT_CSS = """
-    WindowCloseButton {
-        dock: left;
-        border: none;
-        min-width: 3;
-        height: 1;
-        background: white 10%;
-        color: white;
-    }
-    WindowCloseButton:hover {
-        background: black;
-        border: none;
-    }
-    WindowCloseButton:focus {
-        text-style: bold;
-    }
-    WindowCloseButton.-active {
-        border: none;
-    }
-    """
-
-    def __init__(self):
-        super().__init__("✕")
-
-    def on_button_pressed(self, event):
-        self.screen.impl.textual_close()
-        event.stop()
-
-
-class TitleSpacer(TextualWidget):
-    DEFAULT_CSS = """
-    TitleSpacer {
-        dock: right;
-        padding: 0 1;
-        width: 3;
-        content-align: right middle;
-    }
-    """
-
-    def render(self) -> RenderResult:
-        return ""
-
-
-class TitleText(TextualWidget):
-    DEFAULT_CSS = """
-    TitleText {
-        content-align: center middle;
-        width: 100%;
-    }
-    """
-    text: Reactive[str] = Reactive("")
-
-    def __init__(self, text):
-        super().__init__()
-        self.text = text
-
-    def render(self) -> RenderResult:
-        return Text(self.text, no_wrap=True, overflow="ellipsis")
-
-
-class TitleBar(TextualWidget):
-    DEFAULT_CSS = """
-    TitleBar {
-        dock: top;
-        width: 100%;
-        background: $foreground 5%;
-        color: $text;
-        height: 1;
-    }
-    """
-
-    def __init__(self, title):
-        super().__init__()
-        self.title = TitleText(title)
-
-    @property
-    def text(self):
-        return self.title.text
-
-    @text.setter
-    def text(self, value):
-        self.title.text = value
-
-    def compose(self):
-        yield WindowCloseButton()
-        yield self.title
-        yield TitleSpacer()
-
-
 class TogaWindow(TextualScreen):
-    def __init__(self, impl, title):
+    def __init__(self, impl):
         super().__init__()
         self.interface = impl.interface
         self.impl = impl
-        self.titlebar = TitleBar(title)
-
-    def on_mount(self) -> None:
-        self.mount(self.titlebar)
 
     def on_resize(self, event) -> None:
         self.interface.content.refresh()
@@ -117,8 +23,12 @@ class TogaWindow(TextualScreen):
 class Window:
     def __init__(self, interface, title, position, size):
         self.interface = interface
-        self.native = TogaWindow(self, title)
+        self.create()
         self.container = Container(self.native)
+        self.set_title(title)
+
+    def create(self):
+        self.native = TogaWindow(self)
 
     ######################################################################
     # Native event handlers
@@ -132,10 +42,10 @@ class Window:
     ######################################################################
 
     def get_title(self):
-        return self.native.titlebar.text
+        return self.title
 
     def set_title(self, title):
-        self.native.titlebar.text = title
+        self.title = title
 
     ######################################################################
     # Window lifecycle
@@ -211,3 +121,117 @@ class Window:
 
     def get_image_data(self):
         self.interface.factory.not_implemented("Window.get_image_data()")
+
+
+class WindowCloseButton(TextualButton):
+    DEFAULT_CSS = """
+    WindowCloseButton {
+        dock: left;
+        border: none;
+        min-width: 3;
+        height: 1;
+        background: white 10%;
+        color: white;
+    }
+    WindowCloseButton:hover {
+        background: black;
+        border: none;
+    }
+    WindowCloseButton:focus {
+        text-style: bold;
+    }
+    WindowCloseButton.-active {
+        border: none;
+    }
+    """
+
+    def __init__(self):
+        super().__init__("✕")
+
+    def on_button_pressed(self, event):
+        self.screen.impl.textual_close()
+        event.stop()
+
+
+class TitleSpacer(TextualWidget):
+    DEFAULT_CSS = """
+    TitleSpacer {
+        dock: right;
+        padding: 0 1;
+        width: 3;
+        content-align: right middle;
+    }
+    """
+
+    def render(self) -> RenderResult:
+        return ""
+
+
+class TitleText(TextualWidget):
+    DEFAULT_CSS = """
+    TitleText {
+        content-align: center middle;
+        width: 100%;
+    }
+    """
+    text: Reactive[str] = Reactive("")
+
+    def __init__(self, text):
+        super().__init__()
+        self.text = text
+
+    def render(self) -> RenderResult:
+        return Text(self.text, no_wrap=True, overflow="ellipsis")
+
+
+class TitleBar(TextualWidget):
+    DEFAULT_CSS = """
+    TitleBar {
+        dock: top;
+        width: 100%;
+        background: $foreground 5%;
+        color: $text;
+        height: 1;
+    }
+    """
+
+    def __init__(self):
+        super().__init__()
+        self.title = TitleText("Toga")
+
+    @property
+    def text(self):
+        return self.title.text
+
+    @text.setter
+    def text(self, value):
+        self.title.text = value
+
+    def compose(self):
+        yield WindowCloseButton()
+        yield self.title
+        yield TitleSpacer()
+
+
+class TogaMainWindow(TogaWindow):
+    def __init__(self, impl):
+        super().__init__(impl)
+        self.titlebar = TitleBar()
+
+    def on_mount(self) -> None:
+        self.mount(self.titlebar)
+
+
+class MainWindow(Window):
+    def create(self):
+        self.native = TogaMainWindow(self)
+
+    ######################################################################
+    # Window properties
+    ######################################################################
+
+    def get_title(self):
+        return self.native.titlebar.text
+
+    def set_title(self, title):
+        self.native.titlebar.text = title

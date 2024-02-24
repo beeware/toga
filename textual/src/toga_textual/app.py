@@ -1,14 +1,9 @@
 import asyncio
 
+import toga
 from textual.app import App as TextualApp
 
 from .screens import Screen as ScreenImpl
-from .window import Window
-
-
-class MainWindow(Window):
-    def textual_close(self):
-        self.interface.app.on_exit()
 
 
 class TogaApp(TextualApp):
@@ -22,6 +17,9 @@ class TogaApp(TextualApp):
 
 
 class App:
+    # Textual apps exit when the last window is closed
+    CLOSE_ON_LAST_WINDOW = True
+
     def __init__(self, interface):
         self.interface = interface
         self.interface._impl = self
@@ -37,6 +35,9 @@ class App:
     # Commands and menus
     ######################################################################
 
+    def create_app_commands(self):
+        pass
+
     def create_menus(self):
         pass
 
@@ -47,10 +48,19 @@ class App:
     def exit(self):
         self.native.exit()
 
+    def finalize(self):
+        self.create_app_commands()
+        self.create_menus()
+
     def main_loop(self):
         self.native.run()
 
     def set_main_window(self, window):
+        if window is None:
+            raise RuntimeError("Session-based apps are not supported on Textual")
+        elif window == toga.App.BACKGROUND:
+            raise RuntimeError("Background apps are not supported on Textual")
+
         self.native.push_screen(self.interface.main_window.id)
 
     ######################################################################
