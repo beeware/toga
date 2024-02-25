@@ -11,6 +11,15 @@ class NativeHandler:
         self.native = handler
 
 
+class DynamicHandler:
+    def __init__(self, handler, enabled):
+        self.handler = handler
+        self.enabled = enabled
+
+    def __call__(self, *args, **kwargs):
+        self.handler(*args, **kwargs)
+
+
 async def long_running_task(interface, generator, cleanup):
     """Run a generator as an asynchronous coroutine."""
     try:
@@ -72,7 +81,7 @@ def wrapped_handler(interface, handler, cleanup=None):
 
         def _handler(*args, **kwargs):
             if asyncio.iscoroutinefunction(handler):
-                asyncio.ensure_future(
+                return asyncio.ensure_future(
                     handler_with_cleanup(handler, cleanup, interface, *args, **kwargs)
                 )
             else:
@@ -83,7 +92,7 @@ def wrapped_handler(interface, handler, cleanup=None):
                     traceback.print_exc()
                 else:
                     if inspect.isgenerator(result):
-                        asyncio.ensure_future(
+                        return asyncio.ensure_future(
                             long_running_task(interface, result, cleanup)
                         )
                     else:

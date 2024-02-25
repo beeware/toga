@@ -222,17 +222,18 @@ class Command:
     @property
     def enabled(self) -> bool:
         """Is the command currently enabled?"""
-        if callable(self._enabled):
-            return self._enabled()
-        else:
+        try:
+            # If the raw action has an enabled method, it's a dynamic action;
+            # use the return value of that method, not the underlying property
+            return self.action._raw.enabled()
+        except AttributeError:
             return self._enabled
 
     @enabled.setter
     def enabled(self, value: bool):
-        if callable(value):
-            self._enabled = value
-        else:
-            self._enabled = value and getattr(self.action, "_raw", True) is not None
+        raw_action = getattr(self.action, "_raw", True)
+        self._enabled = value and raw_action is not None
+        if not hasattr(raw_action, "enabled"):
             self._impl.set_enabled(value)
 
     @property

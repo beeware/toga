@@ -578,7 +578,7 @@ class App:
                 except ValueError as e:
                     print(e)
                 except FileNotFoundError:
-                    print("Document {filename} not found")
+                    print(f"Document {filename} not found")
 
             if len(self.documents) == 0:
                 # The app has registered document types, but no open documents.
@@ -681,8 +681,10 @@ class App:
         self.on_exit()
 
     def _menu_new_document(self, document_class):
-        def new_document_handler(command, **kwargs):
-            self.new(document_class)
+        async def new_document_handler(command, **kwargs):
+            result = self.new(document_class)
+            if asyncio.iscoroutine(result):
+                await result
 
         return new_document_handler
 
@@ -690,26 +692,45 @@ class App:
         # The dialog needs to be opened relative to a window; use the current window.
         path = await self.current_window.open_file_dialog(
             self.formal_name,
-            file_types=self.document_types.keys(),
+            file_types=self.document_types.keys() if self.document_types else None,
         )
 
         if path:
-            self.open(path)
+            result = self.open(path)
+            if asyncio.iscoroutine(result):
+                await result
+
+    async def _menu_preferences(self, command, **kwargs):
+        result = self.preferences()
+        if asyncio.iscoroutine(result):
+            await result
 
     async def _menu_save(self, command, **kwargs):
-        result = self.save(self.current_window)
-        if asyncio.iscoroutine(result):
-            asyncio.ensure_future(result)
+        # Ideally, this would be done by disabling the menu item. However, this is
+        # currently only easy to do on Cocoa; on GTK/Windows it requires a focus
+        # handler.
+        if self.can_save():
+            result = self.save(self.current_window)
+            if asyncio.iscoroutine(result):
+                await result
 
     async def _menu_save_as(self, command, **kwargs):
-        result = self.save_as(self.current_window)
-        if asyncio.iscoroutine(result):
-            asyncio.ensure_future(result)
+        # Ideally, this would be done by disabling the menu item. However, this is
+        # currently only easy to do on Cocoa; on GTK/Windows it requires a focus
+        # handler.
+        if self.can_save():
+            result = self.save_as(self.current_window)
+            if asyncio.iscoroutine(result):
+                await result
 
     async def _menu_save_all(self, command, **kwargs):
-        result = self.save_all()
-        if asyncio.iscoroutine(result):
-            asyncio.ensure_future(result)
+        # Ideally, this would be done by disabling the menu item. However, this is
+        # currently only easy to do on Cocoa; on GTK/Windows it requires a window focus
+        # handler.
+        if self.can_save_all():
+            result = self.save_all()
+            if asyncio.iscoroutine(result):
+                await result
 
     def _menu_visit_homepage(self, command, **kwargs):
         self.visit_homepage()
@@ -731,32 +752,48 @@ class App:
         self._impl.beep()
 
     def can_save(self) -> bool:
-        """Can the application currently save?
+        """Should the Save/Save As menu items be active?
 
-        This controls the activation status of the Save menu items, if present.
+        Depending on the capabilities of the platform, the menu item may not *appear*
+        disabled; on those platform, the menu option will appear active, but the save
+        operation itself will be a no-op.
 
-        By default, save is enabled if the current window has a ``doc`` attribute. The
-        object stored at this attribute must have a ``save()`` method. Apps can override
-        this method if they wish; this is strongly advised if the app provides a custom
-        ``save()`` method.
+        By default, Save/Save As is enabled if there is a currently active window, and
+        that window has a ``doc`` attribute. The ``doc`` object is expected to provide a
+        ``path`` attribute and a ``save()`` method.
         """
         return self.current_window is not None and hasattr(self.current_window, "doc")
 
+    def can_save_all(self) -> bool:
+        """Should the Save All menu item be active?
+
+        Depending on the capabilities of the platform, the menu item may not *appear*
+        disabled; on those platform, the menu option will appear active, but the save
+        operation itself will be a no-op.
+
+        By default, Save All is enabled if there is any window in the app with a ``doc``
+        attribute. The ``doc`` object on a window is expected to provide a ``path``
+        attribute and a ``save()`` method.
+        """
+        return any(hasattr(window, "doc") for window in self.windows)
+
     @overridable
-    def new(self, document_type: type[Document]) -> None:
+    def new(self, document_type: type[Document] | None) -> None:
         """Create a new document of the given type, and show the document window.
 
         Override this method to provide custom behavior for creating new document
-        windows.
+        windows. If the method is overridden, and there are no document types registered
+        with the app, a document type of ``None`` will be passed at runtime.
 
-        :param document_type: The document type to create.
+        :param document_type: The document type to create, or ``None`` if no document
+            type is registered.
         """
         document = document_type(app=self)
         self._documents.append(document)
         document.show()
 
     @overridable
-    def open(self, path: Path) -> None:
+    def open(self, path: Path | str) -> None:
         """Open a document in this app, and show the document window.
 
         The default implementation uses registered document types to open the file. Apps
@@ -767,6 +804,7 @@ class App:
         :raises ValueError: If the path cannot be opened.
         """
         try:
+            path = Path(path).absolute()
             DocType = self.document_types[path.suffix[1:]]
         except KeyError:
             raise ValueError(f"Don't know how to open documents of type {path.suffix}")
@@ -776,6 +814,19 @@ class App:
 
             self._documents.append(document)
             document.show()
+
+    @overridable
+    def preferences(self) -> None:
+        """Open a preferences panel for the app.
+
+        By default, this will do nothing, and the Preferences/Settings menu item
+        will be disabled. However, if you override this method in your App class,
+        the menu item will be enabled, and this method will be invoked when the
+        menu item is selected.
+        """
+        # Default implementation won't ever be invoked, because the menu item
+        # isn't enabled unless it's overridden.
+        pass  # pragma: no cover
 
     async def replacement_filename(self, suggested_name: Path) -> Path | None:
         """Select a new filename for a file.
@@ -787,6 +838,11 @@ class App:
         1. They select a non-existent filename; or
         2. They confirm that it's OK to overwrite an existing filename; or
         3. They cancel the file selection dialog.
+
+        This is the workflow that is used implement filename selection when changing the
+        name of a file with "Save As", or setting the initial name of an untitled file
+        with "Save". Custom implementations of `save()`/`save_as()` may find this
+        method useful.
 
         :param suggested name: The initial candidate filename
         :returns: The path to use, or ``None`` if the user cancelled the request.
@@ -836,7 +892,8 @@ class App:
             else:
                 suggested_name = f"Untitled{doc.default_extension}"
                 new_path = await self.replacement_filename(suggested_name)
-                doc.save(new_path)
+                if new_path:
+                    doc.save(new_path)
 
     @overridable
     async def save_as(self, window):
@@ -860,7 +917,8 @@ class App:
                 doc.path if doc.path else f"Untitled{doc.default_extension}"
             )
             new_path = await self.replacement_filename(suggested_path)
-            doc.save(new_path)
+            if new_path:
+                doc.save(new_path)
 
     @overridable
     async def save_all(self):

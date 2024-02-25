@@ -275,7 +275,21 @@ class Window:
         was closed.
         """
         self.app.windows.discard(self)
-        self._impl.close()
+        if self.app.main_window == self:
+            # Closing the window marked as the main window exits the app
+            self.app.on_exit()
+        elif self.app.main_window == self.app.BACKGROUND:
+            # In a background app, closing a window has no special handling; just close
+            # the window.
+            self._impl.close()
+        else:
+            # Otherwise: closing the *last* window exits the app (if platform
+            # appropriate); any other window is a normal close.
+            if len(self.app.windows) == 0 and self.app._impl.CLOSE_ON_LAST_WINDOW:
+                self.app.on_exit()
+            else:
+                self._impl.close()
+
         self._closed = True
 
     @property
@@ -472,24 +486,9 @@ class Window:
 
     @on_close.setter
     def on_close(self, handler: OnCloseHandler | None) -> None:
-        def cleanup(window: Window, should_close: bool) -> None:
+        def cleanup(window, should_close):
             if should_close or handler is None:
-                if self.app.main_window == self:
-                    # Closing the window marked as the main window exits the app
-                    self.app.on_exit()
-                elif self.app.main_window == self.app.BACKGROUND:
-                    # In a background app, closing a window has no special handling.
-                    window.close()
-                else:
-                    # Otherwise: closing the *last* window exits the app (if platform
-                    # appropriate); any other window is a normal close.
-                    if (
-                        len(self.app.windows) == 1
-                        and self.app._impl.CLOSE_ON_LAST_WINDOW
-                    ):
-                        self.app.on_exit()
-                    else:
-                        window.close()
+                window.close()
 
         self._on_close = wrapped_handler(self, handler, cleanup=cleanup)
 
@@ -997,6 +996,7 @@ class DocumentMainWindow(Window):
         size: tuple[int, int] = (640, 480),
         resizable: bool = True,
         minimizable: bool = True,
+        on_close: OnCloseHandler | None = None,
     ):
         """Create a new document Main Window.
 
@@ -1012,6 +1012,7 @@ class DocumentMainWindow(Window):
         :param size: Size of the window, as a tuple of ``(width, height)``, in pixels.
         :param resizable: Can the window be manually resized by the user?
         :param minimizable: Can the window be minimized by the user?
+        :param on_close: The initial :any:`on_close` handler.
         """
         self._doc = doc
         super().__init__(
@@ -1022,7 +1023,7 @@ class DocumentMainWindow(Window):
             resizable=resizable,
             closable=True,
             minimizable=minimizable,
-            on_close=doc.handle_close,
+            on_close=on_close,
         )
 
     @property
@@ -1033,3 +1034,9 @@ class DocumentMainWindow(Window):
     @property
     def _default_title(self) -> str:
         return self.doc.title
+
+    def close(self):
+        # When then window is closed, remove the document it is managing from the app's
+        # list of managed documents.
+        self._app._documents.remove(self.doc)
+        super().close()

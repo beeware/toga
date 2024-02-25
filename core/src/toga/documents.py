@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import asyncio
 from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -29,36 +28,6 @@ class Document(ABC):
 
         # Create a platform specific implementation of the Document
         self._impl = app.factory.Document(interface=self)
-
-    def can_close(self) -> bool:
-        """Is the main document window allowed to close?
-
-        The default implementation always returns ``True``; subclasses can override this
-        to prevent a window closing with unsaved changes, etc.
-
-        This default implementation is a function; however, subclasses can define it
-        as an asynchronous co-routine if necessary to allow for dialog confirmations.
-        """
-        return True
-
-    async def handle_close(self, window, **kwargs):
-        """An ``on-close`` handler for the main window of this document that implements
-        platform-specific document close behavior.
-
-        It interrogates the :meth:`~toga.Document.can_close()` method to determine if
-        the document is allowed to close.
-        """
-        if asyncio.iscoroutinefunction(self.can_close):
-            can_close = await self.can_close()
-        else:
-            can_close = self.can_close()
-
-        # If the document is allowed to close, remove it from the list of documents,
-        # managed by the app.
-        if can_close:
-            self._app._documents.remove(self)
-
-        return can_close
 
     @property
     def path(self) -> Path:
@@ -97,7 +66,7 @@ class Document(ABC):
 
         :param path: The file to open.
         """
-        self._path = Path(path)
+        self._path = Path(path).absolute()
         self._impl.open()
 
         # Set the title of the document window to match the path
@@ -112,7 +81,7 @@ class Document(ABC):
         :param path: If provided, the new file name for the document.
         """
         if path:
-            self._path = Path(path)
+            self._path = Path(path).absolute()
             # Re-set the title of the document with the new path
             self._main_window.title = self._main_window._default_title
         self.write()

@@ -5,7 +5,7 @@ class ExampleDocument(toga.Document):
     document_type = "Example Document"
     default_extension = ".exampledoc"
 
-    async def can_close(self):
+    async def can_close(self, window, **kwargs):
         return await self.main_window.question_dialog(
             "Are you sure?",
             "Do you want to close this document?",
@@ -13,7 +13,7 @@ class ExampleDocument(toga.Document):
 
     def create(self):
         # Create the main window for the document.
-        self.main_window = toga.DocumentMainWindow(doc=self)
+        self.main_window = toga.DocumentMainWindow(doc=self, on_close=self.can_close)
         self.main_window.content = toga.MultilineTextInput()
 
     def read(self):

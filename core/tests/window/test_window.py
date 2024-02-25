@@ -34,7 +34,6 @@ def test_window_created(app):
     assert window.resizable
     assert window.closable
     assert window.minimizable
-    assert len(window.toolbar) == 0
     assert window.on_close._raw is None
 
 
@@ -66,7 +65,6 @@ def test_window_created_explicit(app):
     assert not window.resizable
     assert not window.closable
     assert not window.minimizable
-    assert len(window.toolbar) == 0
     assert window.on_close._raw == on_close_handler
 
 
@@ -113,31 +111,6 @@ def test_title(window, value, expected):
     """The title of the window can be changed."""
     window.title = value
     assert window.title == expected
-
-
-def test_toolbar_implicit_add(window, app):
-    """Adding an item to a toolbar implicitly adds it to the app."""
-    cmd1 = toga.Command(None, "Command 1")
-    cmd2 = toga.Command(None, "Command 2")
-
-    toolbar = window.toolbar
-    assert list(toolbar) == []
-    assert list(app.commands) == []
-
-    # Adding a command to the toolbar automatically adds it to the app
-    toolbar.add(cmd1)
-    assert list(toolbar) == [cmd1]
-    assert list(app.commands) == [cmd1]
-
-    # But not vice versa
-    app.commands.add(cmd2)
-    assert list(toolbar) == [cmd1]
-    assert list(app.commands) == [cmd1, cmd2]
-
-    # Adding a command to both places does not cause a duplicate
-    app.commands.add(cmd1)
-    assert list(toolbar) == [cmd1]
-    assert list(app.commands) == [cmd1, cmd2]
 
 
 def test_change_content(window, app):
@@ -385,6 +358,9 @@ def test_info_dialog(window, app):
     """An info dialog can be shown."""
     on_result_handler = Mock()
 
+    # Prime the user's response
+    window._impl.dialog_responses["InfoDialog"] = [None]
+
     with pytest.warns(
         DeprecationWarning,
         match=r"Synchronous `on_result` handlers have been deprecated;",
@@ -401,11 +377,7 @@ def test_info_dialog(window, app):
         # Perform a synchronous comparison; this will raise a runtime error
         dialog == 1
 
-    async def run_dialog(dialog):
-        dialog._impl.simulate_result(None)
-        return await dialog
-
-    assert app._impl.loop.run_until_complete(run_dialog(dialog)) is None
+    assert app._impl.loop.run_until_complete(dialog) is None
 
     assert_action_performed_with(
         window,
@@ -419,6 +391,9 @@ def test_info_dialog(window, app):
 def test_question_dialog(window, app):
     """A question dialog can be shown."""
     on_result_handler = Mock()
+
+    # Prime the user's response
+    window._impl.dialog_responses["QuestionDialog"] = [True]
 
     with pytest.warns(
         DeprecationWarning,
@@ -436,11 +411,7 @@ def test_question_dialog(window, app):
         # Perform a synchronous comparison; this will raise a runtime error
         dialog == 1
 
-    async def run_dialog(dialog):
-        dialog._impl.simulate_result(True)
-        return await dialog
-
-    assert app._impl.loop.run_until_complete(run_dialog(dialog))
+    assert app._impl.loop.run_until_complete(dialog)
 
     assert_action_performed_with(
         window,
@@ -454,6 +425,9 @@ def test_question_dialog(window, app):
 def test_confirm_dialog(window, app):
     """A confirm dialog can be shown."""
     on_result_handler = Mock()
+
+    # Prime the user's response
+    window._impl.dialog_responses["ConfirmDialog"] = [True]
 
     with pytest.warns(
         DeprecationWarning,
@@ -471,11 +445,7 @@ def test_confirm_dialog(window, app):
         # Perform a synchronous comparison; this will raise a runtime error
         dialog == 1
 
-    async def run_dialog(dialog):
-        dialog._impl.simulate_result(True)
-        return await dialog
-
-    assert app._impl.loop.run_until_complete(run_dialog(dialog))
+    assert app._impl.loop.run_until_complete(dialog)
 
     assert_action_performed_with(
         window,
@@ -489,6 +459,9 @@ def test_confirm_dialog(window, app):
 def test_error_dialog(window, app):
     """An error dialog can be shown."""
     on_result_handler = Mock()
+
+    # Prime the user's response
+    window._impl.dialog_responses["ErrorDialog"] = [None]
 
     with pytest.warns(
         DeprecationWarning,
@@ -506,11 +479,7 @@ def test_error_dialog(window, app):
         # Perform a synchronous comparison; this will raise a runtime error
         dialog == 1
 
-    async def run_dialog(dialog):
-        dialog._impl.simulate_result(None)
-        return await dialog
-
-    assert app._impl.loop.run_until_complete(run_dialog(dialog)) is None
+    assert app._impl.loop.run_until_complete(dialog) is None
 
     assert_action_performed_with(
         window,
@@ -524,6 +493,9 @@ def test_error_dialog(window, app):
 def test_stack_trace_dialog(window, app):
     """A stack trace dialog can be shown."""
     on_result_handler = Mock()
+
+    # Prime the user's response
+    window._impl.dialog_responses["StackTraceDialog"] = [None]
 
     with pytest.warns(
         DeprecationWarning,
@@ -546,11 +518,7 @@ def test_stack_trace_dialog(window, app):
         # Perform a synchronous comparison; this will raise a runtime error
         dialog == 1
 
-    async def run_dialog(dialog):
-        dialog._impl.simulate_result(None)
-        return await dialog
-
-    assert app._impl.loop.run_until_complete(run_dialog(dialog)) is None
+    assert app._impl.loop.run_until_complete(dialog) is None
 
     assert_action_performed_with(
         window,
@@ -566,6 +534,10 @@ def test_stack_trace_dialog(window, app):
 def test_save_file_dialog(window, app):
     """A save file dialog can be shown."""
     on_result_handler = Mock()
+
+    # Prime the user's response
+    saved_file = Path("/saved/path/filename.txt")
+    window._impl.dialog_responses["SaveFileDialog"] = [saved_file]
 
     with pytest.warns(
         DeprecationWarning,
@@ -587,13 +559,7 @@ def test_save_file_dialog(window, app):
         # Perform a synchronous comparison; this will raise a runtime error
         dialog == 1
 
-    saved_file = Path("/saved/path/filename.txt")
-
-    async def run_dialog(dialog):
-        dialog._impl.simulate_result(saved_file)
-        return await dialog
-
-    assert app._impl.loop.run_until_complete(run_dialog(dialog)) is saved_file
+    assert app._impl.loop.run_until_complete(dialog) is saved_file
 
     assert_action_performed_with(
         window,
@@ -609,6 +575,10 @@ def test_save_file_dialog(window, app):
 def test_save_file_dialog_default_directory(window, app):
     """If no path is provided, a save file dialog will use the default directory."""
     on_result_handler = Mock()
+
+    # Prime the user's response
+    saved_file = Path("/saved/path/filename.txt")
+    window._impl.dialog_responses["SaveFileDialog"] = [saved_file]
 
     with pytest.warns(
         DeprecationWarning,
@@ -631,13 +601,7 @@ def test_save_file_dialog_default_directory(window, app):
         # Perform a synchronous comparison; this will raise a runtime error
         dialog == 1
 
-    saved_file = Path("/saved/path/filename.txt")
-
-    async def run_dialog(dialog):
-        dialog._impl.simulate_result(saved_file)
-        return await dialog
-
-    assert app._impl.loop.run_until_complete(run_dialog(dialog)) is saved_file
+    assert app._impl.loop.run_until_complete(dialog) is saved_file
 
     assert_action_performed_with(
         window,
@@ -653,6 +617,10 @@ def test_save_file_dialog_default_directory(window, app):
 def test_open_file_dialog(window, app):
     """A open file dialog can be shown."""
     on_result_handler = Mock()
+
+    # Prime the user's response
+    opened_file = Path("/opened/path/filename.txt")
+    window._impl.dialog_responses["OpenFileDialog"] = [opened_file]
 
     with pytest.warns(
         DeprecationWarning,
@@ -674,13 +642,7 @@ def test_open_file_dialog(window, app):
         # Perform a synchronous comparison; this will raise a runtime error
         dialog == 1
 
-    opened_file = Path("/opened/path/filename.txt")
-
-    async def run_dialog(dialog):
-        dialog._impl.simulate_result(opened_file)
-        return await dialog
-
-    assert app._impl.loop.run_until_complete(run_dialog(dialog)) is opened_file
+    assert app._impl.loop.run_until_complete(dialog) is opened_file
 
     assert_action_performed_with(
         window,
@@ -696,6 +658,13 @@ def test_open_file_dialog(window, app):
 def test_open_file_dialog_default_directory(window, app):
     """If no path is provided, a open file dialog will use the default directory."""
     on_result_handler = Mock()
+
+    # Prime the user's response
+    opened_files = [
+        Path("/opened/path/filename.txt"),
+        Path("/other/path/filename2.txt"),
+    ]
+    window._impl.dialog_responses["OpenFileDialog"] = [opened_files]
 
     with pytest.warns(
         DeprecationWarning,
@@ -718,16 +687,7 @@ def test_open_file_dialog_default_directory(window, app):
         # Perform a synchronous comparison; this will raise a runtime error
         dialog == 1
 
-    opened_files = [
-        Path("/opened/path/filename.txt"),
-        Path("/other/path/filename2.txt"),
-    ]
-
-    async def run_dialog(dialog):
-        dialog._impl.simulate_result(opened_files)
-        return await dialog
-
-    assert app._impl.loop.run_until_complete(run_dialog(dialog)) is opened_files
+    assert app._impl.loop.run_until_complete(dialog) is opened_files
 
     assert_action_performed_with(
         window,
@@ -743,6 +703,10 @@ def test_open_file_dialog_default_directory(window, app):
 def test_select_folder_dialog(window, app):
     """A select folder dialog can be shown."""
     on_result_handler = Mock()
+
+    # Prime the user's response
+    opened_file = Path("/opened/path/filename.txt")
+    window._impl.dialog_responses["SelectFolderDialog"] = [opened_file]
 
     with pytest.warns(
         DeprecationWarning,
@@ -764,13 +728,7 @@ def test_select_folder_dialog(window, app):
         # Perform a synchronous comparison; this will raise a runtime error
         dialog == 1
 
-    opened_file = Path("/opened/path/filename.txt")
-
-    async def run_dialog(dialog):
-        dialog._impl.simulate_result(opened_file)
-        return await dialog
-
-    assert app._impl.loop.run_until_complete(run_dialog(dialog)) is opened_file
+    assert app._impl.loop.run_until_complete(dialog) is opened_file
 
     assert_action_performed_with(
         window,
@@ -785,6 +743,13 @@ def test_select_folder_dialog(window, app):
 def test_select_folder_dialog_default_directory(window, app):
     """If no path is provided, a select folder dialog will use the default directory."""
     on_result_handler = Mock()
+
+    # Prime the user's response
+    opened_files = [
+        Path("/opened/path/filename.txt"),
+        Path("/other/path/filename2.txt"),
+    ]
+    window._impl.dialog_responses["SelectFolderDialog"] = [opened_files]
 
     with pytest.warns(
         DeprecationWarning,
@@ -806,16 +771,7 @@ def test_select_folder_dialog_default_directory(window, app):
         # Perform a synchronous comparison; this will raise a runtime error
         dialog == 1
 
-    opened_files = [
-        Path("/opened/path/filename.txt"),
-        Path("/other/path/filename2.txt"),
-    ]
-
-    async def run_dialog(dialog):
-        dialog._impl.simulate_result(opened_files)
-        return await dialog
-
-    assert app._impl.loop.run_until_complete(run_dialog(dialog)) is opened_files
+    assert app._impl.loop.run_until_complete(dialog) is opened_files
 
     assert_action_performed_with(
         window,
@@ -831,6 +787,10 @@ def test_deprecated_names_open_file_dialog(window, app):
     """Deprecated names still work on open file dialogs."""
     on_result_handler = Mock()
 
+    # Prime the user's response
+    opened_files = [Path("/opened/path/filename.txt")]
+    window._impl.dialog_responses["OpenFileDialog"] = [opened_files]
+
     with pytest.warns(
         DeprecationWarning,
         match=r"open_file_dialog\(multiselect\) has been renamed multiple_select",
@@ -845,13 +805,7 @@ def test_deprecated_names_open_file_dialog(window, app):
             on_result=on_result_handler,
         )
 
-    opened_files = [Path("/opened/path/filename.txt")]
-
-    async def run_dialog(dialog):
-        dialog._impl.simulate_result(opened_files)
-        return await dialog
-
-    assert app._impl.loop.run_until_complete(run_dialog(dialog)) is opened_files
+    assert app._impl.loop.run_until_complete(dialog) is opened_files
 
     assert_action_performed_with(
         window,
@@ -868,6 +822,10 @@ def test_deprecated_names_select_folder_dialog(window, app):
     """Deprecated names still work on open file dialogs."""
     on_result_handler = Mock()
 
+    # Prime the user's response
+    opened_files = [Path("/opened/path")]
+    window._impl.dialog_responses["SelectFolderDialog"] = [opened_files]
+
     with pytest.warns(
         DeprecationWarning,
         match=r"select_folder_dialog\(multiselect\) has been renamed multiple_select",
@@ -882,13 +840,7 @@ def test_deprecated_names_select_folder_dialog(window, app):
             on_result=on_result_handler,
         )
 
-    opened_files = [Path("/opened/path")]
-
-    async def run_dialog(dialog):
-        dialog._impl.simulate_result(opened_files)
-        return await dialog
-
-    assert app._impl.loop.run_until_complete(run_dialog(dialog)) is opened_files
+    assert app._impl.loop.run_until_complete(dialog) is opened_files
 
     assert_action_performed_with(
         window,

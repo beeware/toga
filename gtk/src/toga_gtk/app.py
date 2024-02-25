@@ -69,10 +69,12 @@ class App:
                 ),
                 # Preferences should be the last section of the edit menu.
                 Command(
-                    None,
+                    self.interface._menu_preferences,
                     "Preferences",
                     group=toga.Group.EDIT,
                     section=sys.maxsize,
+                    # For now, only enable preferences if the user defines an implementation
+                    enabled=overridden(self.interface.preferences),
                 ),
                 # Quit should always be the last item, in a section on its own
                 Command(

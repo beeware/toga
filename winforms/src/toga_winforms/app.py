@@ -146,7 +146,13 @@ class App:
         ):
             self.interface.commands.add(
                 #
-                toga.Command(None, "Preferences", group=toga.Group.FILE),
+                toga.Command(
+                    self.interface._menu_preferences,
+                    "Preferences",
+                    group=toga.Group.FILE,
+                    # For now, only enable preferences if the user defines an implementation
+                    enabled=overridden(self.interface.preferences),
+                ),
                 #
                 # On Windows, the Exit command doesn't usually contain the app name. It
                 # should be the last item in the File menu, in a section on its own.

@@ -1,3 +1,4 @@
+import asyncio
 from pathlib import Path
 
 import toga_dummy
@@ -44,21 +45,18 @@ class Container:
 class Window(LoggedObject):
     def __init__(self, interface, title, position, size):
         super().__init__()
-        self._action("create Window")
+        self._action(f"create {self.__class__.__name__}")
         self.interface = interface
         self.container = Container()
+        self.dialog_responses = {}
 
         self.set_title(title)
-        self.set_position(position)
+        self.set_position(position if position else (100, 100))
         self.set_size(size)
 
-    def create_toolbar(self):
-        self._action("create toolbar")
-
-    def set_content(self, widget):
-        self.container.content = widget
-        self._action("set content", widget=widget)
-        self._set_value("content", widget)
+    ######################################################################
+    # Window properties
+    ######################################################################
 
     def get_title(self):
         return self._get_value("title")
@@ -66,17 +64,13 @@ class Window(LoggedObject):
     def set_title(self, title):
         self._set_value("title", title)
 
-    def get_position(self):
-        return self._get_value("position")
+    ######################################################################
+    # Window lifecycle
+    ######################################################################
 
-    def set_position(self, position):
-        self._set_value("position", position)
-
-    def get_size(self):
-        return self._get_value("size", (640, 480))
-
-    def set_size(self, size):
-        self._set_value("size", size)
+    def close(self):
+        self._action("close")
+        self._set_value("visible", False)
 
     def set_app(self, app):
         self._set_value("app", app)
@@ -85,28 +79,83 @@ class Window(LoggedObject):
         self._action("show")
         self._set_value("visible", True)
 
-    def hide(self):
-        self._action("hide")
-        self._set_value("visible", False)
+    ######################################################################
+    # Window content and resources
+    ######################################################################
+
+    def set_content(self, widget):
+        self.container.content = widget
+        self._action("set content", widget=widget)
+        self._set_value("content", widget)
+
+    ######################################################################
+    # Window size
+    ######################################################################
+
+    def get_size(self):
+        return self._get_value("size", (640, 480))
+
+    def set_size(self, size):
+        self._set_value("size", size)
+
+    ######################################################################
+    # Window position
+    ######################################################################
+
+    def get_current_screen(self):
+        # `window.screen` will return `Secondary Screen`
+        return ScreenImpl(native=("Secondary Screen", (-1366, -768), (1366, 768)))
+
+    def get_position(self):
+        return self._get_value("position")
+
+    def set_position(self, position):
+        self._set_value("position", position)
+
+    ######################################################################
+    # Window visibility
+    ######################################################################
 
     def get_visible(self):
         return self._get_value("visible")
 
-    def close(self):
-        self._action("close")
+    def hide(self):
+        self._action("hide")
         self._set_value("visible", False)
+
+    ######################################################################
+    # Window state
+    ######################################################################
+
+    def set_full_screen(self, is_full_screen):
+        self._action("set full screen", full_screen=is_full_screen)
+
+    ######################################################################
+    # Window capabilities
+    ######################################################################
 
     def get_image_data(self):
         self._action("get image data")
         path = Path(toga_dummy.__file__).parent / "resources/screenshot.png"
         return path.read_bytes()
 
-    def set_full_screen(self, is_full_screen):
-        self._action("set full screen", full_screen=is_full_screen)
+    ######################################################################
+    # Simulation interface
+    ######################################################################
 
     def simulate_close(self):
-        self.interface.on_close()
+        result = self.interface.on_close()
 
-    def get_current_screen(self):
-        # `window.screen` will return `Secondary Screen`
-        return ScreenImpl(native=("Secondary Screen", (-1366, -768), (1366, 768)))
+        # If the handler is asynchronous, run the event loop util it's completed.
+        if asyncio.iscoroutine(result):
+            self.interface.app.loop.run_until_complete(result)
+
+
+class MainWindow(Window):
+
+    def create_toolbar(self):
+        self._action("create toolbar")
+
+
+class DocumentMainWindow(MainWindow):
+    pass

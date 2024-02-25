@@ -17,7 +17,7 @@ from rubicon.objc.eventloop import CocoaLifecycle, EventLoopPolicy
 import toga
 from toga.app import overridden
 from toga.command import Separator
-from toga.handlers import NativeHandler
+from toga.handlers import DynamicHandler, NativeHandler
 
 from .keys import cocoa_key
 from .libs import (
@@ -208,11 +208,13 @@ class App:
         ):
             self.interface.commands.add(
                 toga.Command(
-                    None,
+                    self.interface._menu_preferences,
                     "Settings\u2026",
                     shortcut=toga.Key.MOD_1 + ",",
                     group=toga.Group.APP,
                     section=20,
+                    # For now, only enable preferences if the user defines an implementation
+                    enabled=overridden(self.interface.preferences),
                 ),
                 toga.Command(
                     NativeHandler(SEL("hide:")),
@@ -244,22 +246,26 @@ class App:
                 # (MOD_2). That behavior isn't something we're currently set up to
                 # implement, so we live with a separate menu item for now.
                 toga.Command(
-                    self._menu_close_window,
+                    DynamicHandler(
+                        self._menu_close_window,
+                        enabled=lambda: self.interface.current_window is not None,
+                    ),
                     "Close",
                     shortcut=toga.Key.MOD_1 + "w",
                     group=toga.Group.FILE,
                     order=1,
                     section=50,
-                    enabled=lambda: self.interface.current_window is not None,
                 ),
                 toga.Command(
-                    self._menu_close_all_windows,
+                    DynamicHandler(
+                        self._menu_close_all_windows,
+                        enabled=lambda: self.interface.current_window is not None,
+                    ),
                     "Close All",
                     shortcut=toga.Key.MOD_2 + toga.Key.MOD_1 + "w",
                     group=toga.Group.FILE,
                     order=2,
                     section=50,
-                    enabled=lambda: self.interface.current_window is not None,
                 ),
                 # ---- Edit menu ----------------------------------
                 toga.Command(
@@ -335,16 +341,14 @@ class App:
 
         # Add a "New" menu item for each unique registered document type.
         if self.interface.document_types:
-            for document_class in sorted(set(self.interface.document_types.values())):
+            for i, document_class in enumerate(
+                sorted(set(self.interface.document_types.values()))
+            ):
                 self.interface.commands.add(
                     toga.Command(
                         self.interface._menu_new_document(document_class),
                         text=f"New {document_class.document_type}",
-                        shortcut=(
-                            toga.Key.MOD_1 + "n"
-                            if document_class == self.interface.main_window
-                            else None
-                        ),
+                        shortcut=(toga.Key.MOD_1 + "n" if i == 0 else None),
                         group=toga.Group.FILE,
                         section=0,
                     ),
@@ -368,13 +372,15 @@ class App:
         if overridden(self.interface.save) or self.interface.document_types:
             self.interface.commands.add(
                 toga.Command(
-                    self.interface._menu_save,
+                    DynamicHandler(
+                        self.interface._menu_save,
+                        enabled=self.interface.can_save,
+                    ),
                     text="Save",
                     shortcut=toga.Key.MOD_1 + "s",
                     group=toga.Group.FILE,
                     section=20,
                     order=10,
-                    enabled=self.interface.can_save,
                 ),
             )
 
@@ -383,13 +389,15 @@ class App:
         if overridden(self.interface.save_as) or self.interface.document_types:
             self.interface.commands.add(
                 toga.Command(
-                    self.interface._menu_save_as,
+                    DynamicHandler(
+                        self.interface._menu_save_as,
+                        enabled=self.interface.can_save,
+                    ),
                     text="Save As\u2026",
                     shortcut=toga.Key.MOD_1 + "S",
                     group=toga.Group.FILE,
                     section=20,
                     order=11,
-                    enabled=self.interface.can_save,
                 ),
             )
 
@@ -398,13 +406,15 @@ class App:
         if overridden(self.interface.save_all) or self.interface.document_types:
             self.interface.commands.add(
                 toga.Command(
-                    self.interface._menu_save_all,
+                    DynamicHandler(
+                        self.interface._menu_save_all,
+                        enabled=self.interface.can_save_all,
+                    ),
                     text="Save All",
                     shortcut=toga.Key.MOD_1 + toga.Key.MOD_2 + "s",
                     group=toga.Group.FILE,
                     section=20,
                     order=12,
-                    enabled=self.interface.can_save,
                 ),
             )
 
