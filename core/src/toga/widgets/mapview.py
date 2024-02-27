@@ -11,7 +11,7 @@ from .base import Widget
 class MapPin:
     def __init__(
         self,
-        location: toga.LatLng,
+        location: toga.LatLng | tuple[float, float],
         *,
         title: str,
         subtitle: str | None = None,
@@ -123,12 +123,9 @@ class OnSelectHandler(Protocol):
     def __call__(self, widget: MapView, *, pin: MapPin, **kwargs: Any) -> None:
         """A handler that will be invoked when the user selects a map pin.
 
-        .. note::
-            ``**kwargs`` ensures compatibility with additional arguments
-            introduced in future versions.
-
         :param widget: The button that was pressed.
         :param pin: The pin that was selected.
+        :param kwargs: Ensures compatibility with arguments added in future versions.
         """
         ...
 
@@ -138,8 +135,8 @@ class MapView(Widget):
         self,
         id=None,
         style=None,
-        location: toga.LatLng | None = None,
-        zoom: int | None = 2,
+        location: toga.LatLng | tuple[float, float] | None = None,
+        zoom: int = 2,
         pins: list[MapPin] | None = None,
         on_select: toga.widgets.mapview.OnSelectHandler | None = None,
     ):
@@ -174,7 +171,11 @@ class MapView(Widget):
 
     @property
     def location(self) -> toga.LatLng:
-        "The latitude/longitude where the map is centered."
+        """The latitude/longitude where the map is centered.
+
+        A tuple of ``(latitude, longitude)`` can be provided as input; this will be
+        converted into a :any:`toga.LatLng` object.
+        """
         return self._impl.get_location()
 
     @location.setter
