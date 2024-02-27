@@ -151,11 +151,11 @@ class AppProbe(BaseProbe):
         menu = self._menu_item(path).submenu
 
         assert menu.numberOfItems == len(expected)
-        for item, expected in zip(menu.itemArray, expected):
-            if expected == "---":
-                assert item.title == ""
+        for item, title in zip(menu.itemArray, expected):
+            if title == "---":
+                assert item.isSeparatorItem
             else:
-                assert item.title == expected
+                assert item.title == title
 
     def keystroke(self, combination):
         key, modifiers = cocoa_key(combination)

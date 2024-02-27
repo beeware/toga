@@ -5,7 +5,7 @@ from time import sleep
 import pytest
 from System import EventArgs
 from System.Drawing import Point
-from System.Windows.Forms import Application, Cursor
+from System.Windows.Forms import Application, Cursor, ToolStripSeparator
 
 from toga_winforms.keys import toga_to_winforms_key, winforms_to_toga_key
 
@@ -154,11 +154,11 @@ class AppProbe(BaseProbe):
         menu = self._menu_item(path)
 
         assert len(menu.DropDownItems) == len(expected)
-        for item, expected in zip(menu.DropDownItems, expected):
-            if expected == "---":
-                assert item.Text == ""
+        for item, title in zip(menu.DropDownItems, expected):
+            if title == "---":
+                assert isinstance(item, ToolStripSeparator)
             else:
-                assert item.Text == expected
+                assert item.Text == title
 
     def assert_system_menus(self):
         self.assert_menu_item(["File", "Preferences"], enabled=False)
