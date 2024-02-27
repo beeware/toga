@@ -147,6 +147,16 @@ class AppProbe(BaseProbe):
         item = self._menu_item(path)
         assert item.isEnabled() == enabled
 
+    def assert_menu_order(self, path, expected):
+        menu = self._menu_item(path).submenu
+
+        assert menu.numberOfItems == len(expected)
+        for item, title in zip(menu.itemArray, expected):
+            if title == "---":
+                assert item.isSeparatorItem
+            else:
+                assert item.title == title
+
     def keystroke(self, combination):
         key, modifiers = cocoa_key(combination)
         key_code = {

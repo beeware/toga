@@ -70,6 +70,9 @@ class Testbed(toga.App):
         # Items on submenu2
         self.cmd5 = toga.Command(self.cmd_action, "Jiggle", group=subgroup2)
 
+        # Items on the main group after a submenu
+        self.cmd6 = toga.Command(self.cmd_action, "Wiggle", group=group, section=2)
+
         # Add all the commands
         self.commands.add(
             self.cmd1,
@@ -80,6 +83,7 @@ class Testbed(toga.App):
             self.no_action_cmd,
             self.deep_cmd,
             self.cmd5,
+            self.cmd6,
         )
 
         self.main_window = toga.MainWindow(title=self.formal_name)
