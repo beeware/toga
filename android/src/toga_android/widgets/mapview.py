@@ -4,33 +4,47 @@ from android.graphics import BitmapFactory
 from android.graphics.drawable import BitmapDrawable
 from android.preference import PreferenceManager
 from java import dynamic_proxy
-from org.osmdroid.config import Configuration
-from org.osmdroid.tileprovider.tilesource import TileSourceFactory
-from org.osmdroid.util import GeoPoint
-from org.osmdroid.views import MapView as OSMMapView
-from org.osmdroid.views.overlay import CopyrightOverlay, Marker
+
+try:
+    from org.osmdroid.config import Configuration
+    from org.osmdroid.tileprovider.tilesource import TileSourceFactory
+    from org.osmdroid.util import GeoPoint
+    from org.osmdroid.views import MapView as OSMMapView
+    from org.osmdroid.views.overlay import CopyrightOverlay, Marker
+except ImportError:  # pragma: no cover
+    # If you've got an older project that doesn't include the OSM library,
+    # this import will fail. We can't validate that in CI, so it's marked no cover
+    OSMMapView = None
 
 import toga
 from toga.types import LatLng
 
 from .base import Widget
 
+if OSMMapView is not None:  # pragma: no branch
 
-class TogaOnMarkerClickListener(dynamic_proxy(Marker.OnMarkerClickListener)):
-    def __init__(self, map_impl):
-        super().__init__()
-        self.map_impl = map_impl
+    class TogaOnMarkerClickListener(dynamic_proxy(Marker.OnMarkerClickListener)):
+        def __init__(self, map_impl):
+            super().__init__()
+            self.map_impl = map_impl
 
-    def onMarkerClick(self, marker, map_view):
-        result = marker.onMarkerClickDefault(marker, map_view)
-        pin = self.map_impl.pins[marker]
-        self.map_impl.interface.on_select(pin=pin)
-        return result
+        def onMarkerClick(self, marker, map_view):
+            result = marker.onMarkerClickDefault(marker, map_view)
+            pin = self.map_impl.pins[marker]
+            self.map_impl.interface.on_select(pin=pin)
+            return result
 
 
 class MapView(Widget):
 
     def create(self):
+        if OSMMapView is None:  # pragma: no cover
+            raise RuntimeError(
+                "Unable to import MapView. Ensure that the OSMDroid Android "
+                "system package (org.osmdroid:osmdroid-android:6.1.0) "
+                "is listed in your app's dependencies."
+            )
+
         app_context = self._native_activity.getApplicationContext()
         configuration = Configuration.getInstance()
         configuration.load(
