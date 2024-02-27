@@ -112,7 +112,7 @@ Notes
   ``org.osmdroid:osmdroid-android:6.1.0`` or later.
 
 * Using MapView on Windows 10 requires that your users have installed the `Edge
-  mapview2 Evergreen Runtime
+  WebView2 Evergreen Runtime
   <https://developer.microsoft.com/en-us/microsoft-edge/webview2/#download>`__.
   This is installed by default on Windows 11.
 
