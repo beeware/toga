@@ -505,6 +505,23 @@ async def test_menu_items(app, app_probe):
         enabled=True,
     )
 
+    app_probe.assert_menu_order(
+        ["Other"],
+        ["Full command", "---", "Submenu1", "Submenu2", "Wiggle"],
+    )
+    app_probe.assert_menu_order(
+        ["Other", "Submenu1"],
+        ["Disabled", "No Action", "Submenu1 menu1"],
+    )
+    app_probe.assert_menu_order(
+        ["Other", "Submenu1", "Submenu1 menu1"],
+        ["Deep"],
+    )
+    app_probe.assert_menu_order(
+        ["Other", "Submenu2"],
+        ["Jiggle"],
+    )
+
     app_probe.assert_menu_item(
         ["Commands", "No Tooltip"],
         enabled=True,

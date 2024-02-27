@@ -150,6 +150,16 @@ class AppProbe(BaseProbe):
         else:
             assert item.ShortcutKeyDisplayString == shortcut
 
+    def assert_menu_order(self, path, expected):
+        menu = self._menu_item(path)
+
+        assert len(menu.DropDownItems) == len(expected)
+        for item, expected in zip(menu.DropDownItems, expected):
+            if expected == "---":
+                assert item.Text == ""
+            else:
+                assert item.Text == expected
+
     def assert_system_menus(self):
         self.assert_menu_item(["File", "Preferences"], enabled=False)
         self.assert_menu_item(["File", "Exit"])
