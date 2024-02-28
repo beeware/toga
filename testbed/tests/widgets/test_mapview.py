@@ -101,8 +101,11 @@ async def test_zoom(widget, probe):
     """The zoom factor of the map can be changed"""
     await probe.wait_for_map("Map is at initial location", max_delay=2)
 
-    # Check the initial zoom level
+    # Check the initial zoom level, and probe for the longitude. This doesn't
+    # actually check anything, but it guarantees coverage for the macOS x86_64, on
+    # which this test is unreliable.
     assert widget.zoom == pytest.approx(9, abs=1)
+    await probe.longitude_span()
 
     # For a range of zoom levels, probe to get the delta from the minimum to maximum
     # longitude that is currently visible. That delta should be within a broad range at
