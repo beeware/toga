@@ -81,17 +81,11 @@ class MapView(Widget):
     def set_location(self, position):
         self.native.getController().animateTo(GeoPoint(*position))
 
-    def set_zoom(self, zoom):
-        osm_zoom = {
-            0: 5,
-            1: 7,
-            2: 11,
-            3: 14,
-            4: 17,
-            5: 19,
-        }[zoom]
+    def get_zoom(self):
+        return self.native.getZoomLevelDouble()
 
-        self.native.getController().zoomTo(osm_zoom, None)
+    def set_zoom(self, zoom):
+        self.native.getController().zoomTo(zoom, None)
 
     def add_pin(self, pin):
         marker = Marker(self.native)

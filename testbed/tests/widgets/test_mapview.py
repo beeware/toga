@@ -105,20 +105,29 @@ async def test_zoom(widget, probe):
     # minimum to maximum latitude that is currently visible. That delta should be within
     # a broad range at each zoom level.
     for zoom, min_span, max_span in [
-        (0, 10, 50),
-        (1, 1, 10),
-        (2, 0.1, 1),
-        (3, 0.01, 0.1),
-        (4, 0.004, 0.01),
-        (5, 0.001, 0.004),
+        (0, 45, 180),
+        (3, 6, 45),
+        (6, 0.7, 6),
+        (9, 0.09, 0.7),
+        (12, 0.01, 0.09),
+        (15, 0.002, 0.01),
+        (18, 0.0, 0.002),
     ]:
         widget.zoom = zoom
         await probe.wait_for_map(f"Map has been zoomed to level {zoom}", max_delay=2)
 
-        map_span = await probe.latitude_span()
+        # Work out the span associated with a 256px vertical space.
+        scale_span = await probe.longitude_span() / (probe.height / 256)
         assert (
-            min_span < map_span < max_span
-        ), f"Zoom level {zoom}: failed {min_span} < {map_span} < {max_span}"
+            min_span < scale_span < max_span
+        ), f"Zoom level {zoom}: failed {min_span} < {scale_span} < {max_span}"
+
+        # Zoom level 0 can result in a map that needs to wrap content. Some implementations
+        # prevent zooming out that far, so the reported zoom level can be has high as 2.
+        if zoom == 0:
+            assert widget.zoom <= 2
+        else:
+            assert widget.zoom == zoom
 
 
 async def test_add_pins(widget, probe, on_select):

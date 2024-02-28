@@ -25,8 +25,8 @@ class MapViewProbe(SimpleProbe):
             self.native.getLongitudeSpanDouble(),
         )
 
-    async def latitude_span(self):
-        return self.native.getLatitudeSpanDouble()
+    async def longitude_span(self):
+        return self.native.getLongitudeSpanDouble()
 
     @property
     def pin_count(self):

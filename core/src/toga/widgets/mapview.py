@@ -136,7 +136,7 @@ class MapView(Widget):
         id=None,
         style=None,
         location: toga.LatLng | tuple[float, float] | None = None,
-        zoom: int = 2,
+        zoom: int = 9,
         pins: list[MapPin] | None = None,
         on_select: toga.widgets.mapview.OnSelectHandler | None = None,
     ):
@@ -186,29 +186,34 @@ class MapView(Widget):
     def zoom(self) -> int:
         """Set the zoom level for the map.
 
-        The zoom level is an integer in the range 0-5 (inclusive). The level of detail
-        visible at each zoom level is:
+        The zoom level is an integer in the range 0-18 (inclusive). It can be used to
+        set the number of degrees of longitude that will span a 256 CSS pixel region the
+        vertical axis of the map, following the relationship::
 
-        * 0: An entire country
-        * 1: The location of a city in relation to nearby cities.
-        * 2: The extents of a large city.
-        * 3: The relationship of the neighborhood to surrounding areas.
-        * 4: The relationship of a city block to nearby blocks
-        * 5: The names of individual roads and buildings
+            visible_longitude = 180 / (2**(zoom + 8))
 
-        The zoom level can be set, but not read.
+        In practical terms, this means a map will display:
 
-        If the provided zoom value is outside the 0-5 range, it will be clipped.
+        * 0: Whole world
+        * 1-3: Large countries
+        * 4-6: Small countries
+        * 7-9: The extents of a city.
+        * 10-13: Suburbs of a city, or small towns
+        * 14-15: Roads at the level useful for navigation
+        * 16-17: Individual Buildings
+        * 18: A single building
+
+        If the provided zoom value is outside the 0-18 range, it will be clipped.
         """
-        raise RuntimeError("zoom is not a readable property")
+        return round(self._impl.get_zoom())
 
     @zoom.setter
     def zoom(self, value: int):
         value = int(value)
         if value < 0:
             value = 0
-        elif value > 5:
-            value = 5
+        elif value > 20:
+            value = 20
 
         self._impl.set_zoom(value)
 

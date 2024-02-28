@@ -25,7 +25,7 @@ class ExampleMapViewApp(toga.App):
         self.map_view.location = (-22.911111, -43.205556)
 
     def where_am_i(self, widget, **kwargs):
-        self.label.text = self.map_view.location
+        self.label.text = f"{self.map_view.location}, zoom={self.map_view.zoom}"
 
     def goto_pin_1(self, widget, **kwargs):
         self.map_view.location = self.pin_1.location
@@ -86,7 +86,7 @@ class ExampleMapViewApp(toga.App):
         zoom_box = toga.Box(
             children=[
                 toga.Button(i, on_press=self.zoom(i), style=btn_style)
-                for i in range(0, 6)
+                for i in range(0, 20, 3)
             ],
             style=Pack(direction=ROW, padding=5),
         )

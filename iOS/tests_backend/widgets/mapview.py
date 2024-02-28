@@ -11,7 +11,7 @@ from .base import SimpleProbe
 class MapViewProbe(SimpleProbe):
     native_class = MKMapView
 
-    async def latitude_span(self):
+    async def longitude_span(self):
         # Native structures aren't exposed to the user, but they have __repr__ and
         # __str__ methods for debugging purposes. Invoke those methods to ensure that
         # they produce output in roughly the right shape.
@@ -49,7 +49,7 @@ class MapViewProbe(SimpleProbe):
             str(self.native.region.span),
         )
 
-        return self.native.region.span.latitudeDelta
+        return self.native.region.span.longitudeDelta
 
     @property
     def pin_count(self):

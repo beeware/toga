@@ -195,17 +195,11 @@ class MapView(Widget):
     def set_location(self, position):
         self._invoke(f"map.panTo({latlng(position)});")
 
-    def set_zoom(self, zoom):
-        osm_zoom = {
-            0: 4,
-            1: 6,
-            2: 10,
-            3: 13,
-            4: 16,
-            5: 18,
-        }[zoom]
+    def get_zoom(self):
+        return self._invoke("map.getZoom();")
 
-        self._invoke(f"map.setZoom({osm_zoom});")
+    def set_zoom(self, zoom):
+        self._invoke(f"map.setZoom({zoom});")
 
     def add_pin(self, pin):
         self._invoke(

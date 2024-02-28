@@ -1,3 +1,5 @@
+import math
+
 from rubicon.objc import objc_method, objc_property
 from travertino.size import at_least
 
@@ -44,6 +46,11 @@ class MapView(Widget):
         # window, rather than wherever the window is mid-pan.
         self.future_location = None
 
+        # Setting the zoom level also requires knowing the size of the rendered area.
+        # We won't know this until layout happens at least once, so retain a backlog
+        # of requests for location and zoom until layout has occurred.
+        self.backlog = {}
+
         # Reverse lookup of map annotations to pins
         self.pins = {}
 
@@ -56,40 +63,64 @@ class MapView(Widget):
         # Add the layout constraints
         self.add_constraints()
 
+    def set_bounds(self, x, y, width, height):
+        super().set_bounds(x, y, width, height)
+        if self.backlog is not None:
+            # This is the first layout pass; we now know the size of the window, so we
+            # can process outstanding requests.
+            backlog = self.backlog
+            self.backlog = None
+            try:
+                self.set_location(backlog["location"])
+            except KeyError:
+                pass
+            try:
+                self.set_zoom(backlog["zoom"])
+            except KeyError:
+                pass
+
     def get_location(self):
         location = self.native.centerCoordinate
         return LatLng(location.latitude, location.longitude)
 
     def set_location(self, position):
-        self.future_location = CLLocationCoordinate2D(*position)
-        self.native.setCenterCoordinate(
-            self.future_location,
-            animated=True,
+        if self.backlog is None:
+            self.future_location = CLLocationCoordinate2D(*position)
+            self.native.setCenterCoordinate(
+                self.future_location,
+                animated=True,
+            )
+        else:
+            self.backlog["location"] = position
+
+    def get_zoom(self):
+        # Reverse engineer zoom level based on a 256 pixel square
+        return math.log2(
+            (180 * self.interface.layout.height)
+            / (self.native.region.span.longitudeDelta * 256)
         )
 
     def set_zoom(self, zoom):
-        # MKMapView uses a delta of latitude/longitude as the indicator of zoom extent.
-        delta = {
-            0: 30,  # Whole country.
-            1: 5,  # See a city in relation to nearby cities.
-            2: 0.5,  # The extents of a large city
-            3: 0.05,  # Suburb/locality level.
-            4: 0.005,  # Multiple city blocks
-            5: 0.002,  # City block
-        }[zoom]
-
-        # If we're currently panning to a new location, use the desired *future*
-        # location as the center of the zoom region. Otherwise use the current center
-        # coordinate.
-        region = MKCoordinateRegion(
-            (
+        if self.backlog is None:
+            # The zoom level indicates how many degrees of longitude will be displayed in a
+            # 256 pixel vertical range. Determine how many degrees of longitude that is,
+            # and scale to the size of the visible vertical space.
+            delta = min(180.0, (self.interface.layout.height * 180) / (256 * 2**zoom))
+            # If we're currently panning to a new location, use the desired *future*
+            # location as the center of the zoom region. Otherwise use the current center
+            # coordinate.
+            center = (
                 self.future_location
                 if self.future_location is not None
                 else self.native.centerCoordinate
-            ),
-            MKCoordinateSpan(delta, delta),
-        )
-        self.native.setRegion(region, animated=True)
+            )
+            region = MKCoordinateRegion(
+                center,
+                MKCoordinateSpan(0.0, delta),
+            )
+            self.native.setRegion(region, animated=True)
+        else:
+            self.backlog["zoom"] = zoom
 
     def add_pin(self, pin):
         annotation = MKPointAnnotation.alloc().initWithCoordinate(

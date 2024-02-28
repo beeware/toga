@@ -115,9 +115,12 @@ class MapView(Widget):
             call back with the result."""
             try:
                 value = webview.evaluate_javascript_finish(result)
-                value = value.to_string()
-                if value.startswith("LatLng("):
-                    value = LatLng(*tuple(float(v) for v in value[7:-1].split(",")))
+                if value.is_number():
+                    value = value.to_double()
+                else:
+                    value = value.to_string()
+                    if value.startswith("LatLng("):
+                        value = LatLng(*tuple(float(v) for v in value[7:-1].split(",")))
 
                 future.set_result(value)
             except Exception as e:
@@ -167,17 +170,11 @@ class MapView(Widget):
     def set_location(self, position):
         self._invoke(f"map.panTo({latlng(position)});")
 
-    def set_zoom(self, zoom):
-        osm_zoom = {
-            0: 4,
-            1: 6,
-            2: 10,
-            3: 13,
-            4: 16,
-            5: 18,
-        }[zoom]
+    def get_zoom(self):
+        return self._invoke("map.getZoom();")
 
-        self._invoke(f"map.setZoom({osm_zoom});")
+    def set_zoom(self, zoom):
+        self._invoke(f"map.setZoom({zoom});")
 
     def add_pin(self, pin):
         self._invoke(
