@@ -67,16 +67,18 @@ class MapView(Widget):
         super().set_bounds(x, y, width, height)
         if self.backlog is not None:
             # This is the first layout pass; we now know the size of the window, so we
-            # can process outstanding requests.
+            # can process outstanding requests. Basic widget construction should
+            # *always* set location and zoom, so the keys *should* always exist; the
+            # exception is caught as a safety catch.
             backlog = self.backlog
             self.backlog = None
             try:
                 self.set_location(backlog["location"])
-            except KeyError:
+            except KeyError:  # pragma: no cover
                 pass
             try:
                 self.set_zoom(backlog["zoom"])
-            except KeyError:
+            except KeyError:  # pragma: no cover
                 pass
 
     def get_location(self):
