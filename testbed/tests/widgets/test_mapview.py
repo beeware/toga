@@ -105,13 +105,13 @@ async def test_zoom(widget, probe):
     # minimum to maximum latitude that is currently visible. That delta should be within
     # a broad range at each zoom level.
     for zoom, min_span, max_span in [
-        (0, 45, 180),
-        (3, 6, 45),
-        (6, 0.7, 6),
-        (9, 0.09, 0.7),
-        (12, 0.01, 0.09),
-        (15, 0.002, 0.01),
-        (18, 0.0, 0.002),
+        (0, 45, 1000),
+        (3, 12, 90),
+        (6, 1.5, 12),
+        (9, 0.2, 1.5),
+        (12, 0.02, 0.2),
+        (15, 0.003, 0.02),
+        (18, 0.0, 0.003),
     ]:
         widget.zoom = zoom
         await probe.wait_for_map(f"Map has been zoomed to level {zoom}", max_delay=2)
