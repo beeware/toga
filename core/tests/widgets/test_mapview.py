@@ -8,6 +8,7 @@ from toga_dummy.utils import (
     assert_action_not_performed,
     assert_action_performed,
     assert_action_performed_with,
+    attribute_value,
 )
 from toga_dummy.widgets.mapview import MapView as DummyMapView
 
@@ -36,9 +37,9 @@ def test_widget_created(widget):
 
     assert widget._impl.interface == widget
     assert_action_performed(widget, "create MapView")
-    assert_action_performed_with(widget, "set zoom", zoom=2)
 
     assert widget.location == toga.LatLng(-31.9559, 115.8606)
+    assert widget.zoom == 9
     assert set(widget.pins) == set()
     assert repr(widget.pins) == "<MapPinSet (0 pins)>"
     assert widget._on_select._raw is None
@@ -52,9 +53,9 @@ def test_create_with_values(pins):
 
     assert widget._impl.interface == widget
     assert_action_performed(widget, "create MapView")
-    assert_action_performed_with(widget, "set zoom", zoom=4)
 
     assert widget.location == toga.LatLng(37.0, 42.0)
+    assert widget.zoom == 4
     assert set(widget.pins) == set(pins)
     assert repr(widget.pins) == "<MapPinSet (2 pins)>"
     assert widget._on_select._raw == on_select
@@ -244,9 +245,9 @@ def test_map_location(widget):
     [
         (-5, 0),  # Clipped to minimum
         (0, 0),  # minimum value
-        (3, 3),  # mid range value
-        (5, 5),  # maximum value
-        (7, 5),  # clipped to maximum
+        (9, 9),  # mid range value
+        (18, 18),  # maximum value
+        (25, 18),  # clipped to maximum
         (3.14159, 3),  # converted to integer
         ("4", 4),  # converted to integer
     ],
@@ -256,14 +257,9 @@ def test_set_zoom(widget, value, effective):
     EventLog.reset()
 
     widget.zoom = value
-
-    assert_action_performed_with(widget, "set zoom", zoom=effective)
-
-    with pytest.raises(
-        RuntimeError,
-        match=r"zoom is not a readable property",
-    ):
-        widget.zoom
+    assert attribute_value(widget, "zoom") == effective
+    # round trip the value
+    assert widget.zoom == effective
 
 
 @pytest.mark.parametrize(

@@ -13,8 +13,11 @@ class MapView(Widget):
     def set_location(self, position):
         self._set_value("location", position)
 
+    def get_zoom(self):
+        return self._get_value("zoom")
+
     def set_zoom(self, zoom):
-        self._action("set zoom", zoom=zoom)
+        self._set_value("zoom", zoom)
 
     def add_pin(self, pin):
         self._action("add pin", pin=pin)

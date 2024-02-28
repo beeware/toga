@@ -212,8 +212,8 @@ class MapView(Widget):
         value = int(value)
         if value < 0:
             value = 0
-        elif value > 20:
-            value = 20
+        elif value > 18:
+            value = 18
 
         self._impl.set_zoom(value)
 
