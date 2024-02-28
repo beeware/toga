@@ -101,9 +101,12 @@ async def test_zoom(widget, probe):
     """The zoom factor of the map can be changed"""
     await probe.wait_for_map("Map is at initial location", max_delay=2)
 
-    # We can't read the zoom of a map; but we can probe to get the delta from the
-    # minimum to maximum latitude that is currently visible. That delta should be within
-    # a broad range at each zoom level.
+    # Check the initial zoom level
+    assert widget.zoom == pytest.approx(9, abs=1)
+
+    # For a range of zoom levels, probe to get the delta from the minimum to maximum
+    # longitude that is currently visible. That delta should be within a broad range at
+    # each zoom level.
     for zoom, min_span, max_span in [
         (0, 45, 1000),
         (3, 12, 90),
