@@ -1,0 +1,1 @@
+It's now easier to change the action for a Toga command to point to a different handler without having to jump through hoops to create the correct ActionHandler.
