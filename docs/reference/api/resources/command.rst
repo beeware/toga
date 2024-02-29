@@ -76,6 +76,7 @@ it wasn't explicitly added to the app commands.
 If you want to change the action that a command executes after it's been created, use:
 
 .. code-block:: python
+
     ...
 
     cmd1.action = changed_callback
