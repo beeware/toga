@@ -64,11 +64,10 @@ def test_create():
 
 
 def test_change_action():
-    def local():
-        assert False
-
     """A command's action can be changed to another handler"""
-    cmd = toga.Command(local, "Test command")
+    action1 = Mock()
+
+    cmd = toga.Command(action1, "Test command")
 
     assert cmd.text == "Test command"
     assert cmd.shortcut is None
@@ -76,14 +75,17 @@ def test_change_action():
     assert cmd.group == toga.Group.COMMANDS
     assert cmd.section == 0
     assert cmd.order == 0
-    assert cmd.action._raw is not None
+    assert cmd.action._raw == action1
+
+    # Change the action to a something new
+    action2 = Mock()
+    cmd.action = action2
+
+    assert cmd.action._raw == action2
+
+    # Clear the action
     cmd.action = None
     assert cmd.action._raw is None
-
-    assert (
-        repr(cmd)
-        == "<Command text='Test command' group=<Group text='Commands' order=30> section=0 order=0>"
-    )
 
 
 def test_create_explicit(app):
