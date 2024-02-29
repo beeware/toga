@@ -89,8 +89,7 @@ class Selection(Widget):
         return index
 
     def rehint(self):
-        width = self.native.get_preferred_width()
-        height = self.native.get_preferred_height()
+        width, height = self._get_preferred_size(self.native)
 
         # FIXME: 2023-05-31 This will always provide a size that is big enough,
         # but sometimes it will be *too* big. For example, if you set the font size

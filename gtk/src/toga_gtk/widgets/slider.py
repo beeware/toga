@@ -82,8 +82,7 @@ class Slider(Widget, toga.widgets.slider.SliderImpl):
         return self.tick_count
 
     def rehint(self):
-        # print("REHINT", self, self.native.get_preferred_width(), self.native.get_preferred_height())
-        height = self.native.get_preferred_height()
+        width, height = self._get_preferred_size(self.native)
 
         # Set intrinsic width to at least the minimum width
         self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)

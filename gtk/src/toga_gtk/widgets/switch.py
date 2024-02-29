@@ -52,12 +52,8 @@ class Switch(Widget):
         self.apply_css("font", get_font_css(font), native=self.native_label)
 
     def rehint(self):
-        # print("REHINT", self, self.native.get_preferred_width(), self.native.get_preferred_height())
-        label_width = self.native_label.get_preferred_width()
-        label_height = self.native_label.get_preferred_height()
-
-        switch_width = self.native_switch.get_preferred_width()
-        switch_height = self.native_switch.get_preferred_height()
+        label_width, label_height = self._get_preferred_size(native=self.native_label)
+        switch_width, switch_height = self._get_preferred_size(native=self.native_label)
 
         # Set intrinsic width to at least the minimum width
         self.interface.intrinsic.width = at_least(

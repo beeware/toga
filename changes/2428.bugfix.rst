@@ -1,0 +1,1 @@
+Issue with `visibility` on GTK and `display` on all platform.
