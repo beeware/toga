@@ -1,3 +1,12 @@
+from __future__ import annotations
+
+import sys
+from dataclasses import dataclass
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from travertino.colors import rgb, hsl
+
 from travertino.constants import (  # noqa: F401
     BOLD,
     BOTTOM,
@@ -25,7 +34,12 @@ from travertino.constants import (  # noqa: F401
     TRANSPARENT,
     VISIBLE,
 )
-from travertino.declaration import BaseStyle, Choices
+from travertino.declaration import (
+    BaseStyle,
+    Choices,
+    directional_property,
+    validated_property,
+)
 from travertino.layout import BaseBox
 from travertino.size import BaseIntrinsicSize
 
@@ -71,12 +85,60 @@ FONT_WEIGHT_CHOICES = Choices(*FONT_WEIGHTS)
 FONT_SIZE_CHOICES = Choices(integer=True)
 
 
+# In 3.10+, the dataclass will autogenerate its init and only accept keywords. In prior
+# versions, it won't generate init, so it uses BaseStyle.__init__ (which already only
+# accepts keywrds). The functionality is the same, as far as runtime is concerned.
+if sys.version_info < (3, 10):
+    _DATACLASS_KWARGS = {"init": False}
+else:
+    _DATACLASS_KWARGS = {"kw_only": True}
+
+
+@dataclass(**_DATACLASS_KWARGS)
 class Pack(BaseStyle):
     class Box(BaseBox):
         pass
 
     class IntrinsicSize(BaseIntrinsicSize):
         pass
+
+    display: str = validated_property(choices=DISPLAY_CHOICES, initial=PACK)
+    visibility: str = validated_property(choices=VISIBILITY_CHOICES, initial=VISIBLE)
+    direction: str = validated_property(choices=DIRECTION_CHOICES, initial=ROW)
+    alignment: str | None = validated_property(choices=ALIGNMENT_CHOICES)
+
+    width: str | int = validated_property(choices=SIZE_CHOICES, initial=NONE)
+    height: str | int = validated_property(choices=SIZE_CHOICES, initial=NONE)
+    flex: float = validated_property(choices=FLEX_CHOICES, initial=0)
+
+    padding: int | tuple[int] = directional_property("padding{}")
+    padding_top: int = validated_property(choices=PADDING_CHOICES, initial=0)
+    padding_right: int = validated_property(choices=PADDING_CHOICES, initial=0)
+    padding_bottom: int = validated_property(choices=PADDING_CHOICES, initial=0)
+    padding_left: int = validated_property(choices=PADDING_CHOICES, initial=0)
+
+    color: rgb | hsl | str | None = validated_property(choices=COLOR_CHOICES)
+    background_color: rgb | hsl | str | None = validated_property(
+        choices=BACKGROUND_COLOR_CHOICES
+    )
+
+    text_align: str | None = validated_property(choices=TEXT_ALIGN_CHOICES)
+    text_direction: str | None = validated_property(
+        choices=TEXT_DIRECTION_CHOICES, initial=LTR
+    )
+
+    font_family: str = validated_property(choices=FONT_FAMILY_CHOICES, initial=SYSTEM)
+    # Pack.list_property('font_family', choices=FONT_FAMILY_CHOICES)
+    font_style: str = validated_property(choices=FONT_STYLE_CHOICES, initial=NORMAL)
+    font_variant: str = validated_property(choices=FONT_VARIANT_CHOICES, initial=NORMAL)
+    font_weight: str = validated_property(choices=FONT_WEIGHT_CHOICES, initial=NORMAL)
+    font_size: int = validated_property(
+        choices=FONT_SIZE_CHOICES, initial=SYSTEM_DEFAULT_FONT_SIZE
+    )
+    # Pack.composite_property([
+    #     'font_family', 'font_style', 'font_variant', 'font_weight', 'font_size'
+    #     FONT_CHOICES
+    # ])
 
     _depth = -1
 
@@ -909,38 +971,3 @@ class Pack(BaseStyle):
             css.append(f"font-variant: {self.font_variant};")
 
         return " ".join(css)
-
-
-Pack.validated_property("display", choices=DISPLAY_CHOICES, initial=PACK)
-Pack.validated_property("visibility", choices=VISIBILITY_CHOICES, initial=VISIBLE)
-Pack.validated_property("direction", choices=DIRECTION_CHOICES, initial=ROW)
-Pack.validated_property("alignment", choices=ALIGNMENT_CHOICES)
-
-Pack.validated_property("width", choices=SIZE_CHOICES, initial=NONE)
-Pack.validated_property("height", choices=SIZE_CHOICES, initial=NONE)
-Pack.validated_property("flex", choices=FLEX_CHOICES, initial=0)
-
-Pack.validated_property("padding_top", choices=PADDING_CHOICES, initial=0)
-Pack.validated_property("padding_right", choices=PADDING_CHOICES, initial=0)
-Pack.validated_property("padding_bottom", choices=PADDING_CHOICES, initial=0)
-Pack.validated_property("padding_left", choices=PADDING_CHOICES, initial=0)
-Pack.directional_property("padding%s")
-
-Pack.validated_property("color", choices=COLOR_CHOICES)
-Pack.validated_property("background_color", choices=BACKGROUND_COLOR_CHOICES)
-
-Pack.validated_property("text_align", choices=TEXT_ALIGN_CHOICES)
-Pack.validated_property("text_direction", choices=TEXT_DIRECTION_CHOICES, initial=LTR)
-
-Pack.validated_property("font_family", choices=FONT_FAMILY_CHOICES, initial=SYSTEM)
-# Pack.list_property('font_family', choices=FONT_FAMILY_CHOICES)
-Pack.validated_property("font_style", choices=FONT_STYLE_CHOICES, initial=NORMAL)
-Pack.validated_property("font_variant", choices=FONT_VARIANT_CHOICES, initial=NORMAL)
-Pack.validated_property("font_weight", choices=FONT_WEIGHT_CHOICES, initial=NORMAL)
-Pack.validated_property(
-    "font_size", choices=FONT_SIZE_CHOICES, initial=SYSTEM_DEFAULT_FONT_SIZE
-)
-# Pack.composite_property([
-#     'font_family', 'font_style', 'font_variant', 'font_weight', 'font_size'
-#     FONT_CHOICES
-# ])
