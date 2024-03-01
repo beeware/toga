@@ -86,7 +86,7 @@ class Pack(BaseStyle):
     @property
     def _hidden(self):
         "Does this style declaration define a object that should be hidden"
-        return self.visibility == HIDDEN
+        return self.visibility == HIDDEN or self.display == NONE
 
     def apply(self, prop, value):
         if self._applicator:
@@ -104,8 +104,8 @@ class Pack(BaseStyle):
                 self._applicator.set_color(value)
             elif prop == "background_color":
                 self._applicator.set_background_color(value)
-            elif prop == "visibility":
-                self._applicator.set_hidden(value == HIDDEN)
+            elif prop == "visibility" or prop == "display":
+                self._applicator.set_hidden(self._hidden)
             elif prop in (
                 "font_family",
                 "font_size",
@@ -236,6 +236,11 @@ class Pack(BaseStyle):
         else:
             width = available_width
             height = available_height
+            if hasattr(node._impl, 'compute_size'):
+                # To support text wraping, when fixing the width, we need to recompute the height.
+                width, height = node._impl.compute_size(width, height)
+                min_height = height
+
             # self._debug(f"NO CHILDREN {min_width=} {width=} {min_height=} {height=}")
 
         # If an explicit width/height was given, that specification
@@ -275,6 +280,9 @@ class Pack(BaseStyle):
         min_width = 0
         remaining_width = available_width
         for child in node.children:
+            # Skip calculation if widget is not displayed
+            if child.style.display == NONE:
+                continue
             # self._debug(f"PASS 1 {child}")
             if child.style.width != NONE:
                 # self._debug(f"- fixed width {child.style.width}")
@@ -404,6 +412,9 @@ class Pack(BaseStyle):
         # Pass 2: Lay out children with an intrinsic flexible width,
         # or no width specification at all.
         for child in node.children:
+            # Skip calculation if widget is not displayed
+            if child.style.display == NONE:
+                continue
             # self._debug(f"PASS 2 {child}")
             if child.style.width != NONE:
                 # self._debug("- already laid out (explicit width)")
@@ -489,6 +500,9 @@ class Pack(BaseStyle):
         height = 0
         min_height = 0
         for child in node.children:
+            # Skip calculation if widget is not displayed
+            if child.style.display == NONE:
+                continue
             # self._debug(f"PASS 3: {child} AT HORIZONTAL {offset=}")
             if node.style.text_direction is RTL:
                 # self._debug("- RTL")
@@ -522,6 +536,9 @@ class Pack(BaseStyle):
 
         # Pass 4: set vertical position of each child.
         for child in node.children:
+            # Skip calculation if widget is not displayed
+            if child.style.display == NONE:
+                continue
             # self._debug(f"PASS 4: {child}")
             extra = height - (
                 child.layout.content_height
@@ -559,6 +576,9 @@ class Pack(BaseStyle):
         min_height = 0
         remaining_height = available_height
         for child in node.children:
+            # Skip calculation if widget is not displayed
+            if child.style.display == NONE:
+                continue
             # self._debug(f"PASS 1 {child}")
             if child.style.height != NONE:
                 # self._debug(f"- fixed height {child.style.height}")
@@ -689,6 +709,9 @@ class Pack(BaseStyle):
         # Pass 2: Lay out children with an intrinsic flexible height,
         # or no height specification at all.
         for child in node.children:
+            # Skip calculation if widget is not displayed
+            if child.style.display == NONE:
+                continue
             # self._debug(f"PASS 2 {child}")
             if child.style.height != NONE:
                 # self._debug("- already laid out (explicit height)")
@@ -775,6 +798,9 @@ class Pack(BaseStyle):
         width = 0
         min_width = 0
         for child in node.children:
+            # Skip calculation if widget is not displayed
+            if child.style.display == NONE:
+                continue
             # self._debug(f"PASS 3: {child} AT VERTICAL OFFSET {offset}")
             offset += child.style.padding_top
             child.layout.content_top = offset
@@ -800,6 +826,9 @@ class Pack(BaseStyle):
 
         # Pass 4: set horizontal position of each child.
         for child in node.children:
+            # Skip calculation if widget is not displayed
+            if child.style.display == NONE:
+                continue
             # self._debug(f"PASS 4: {child}")
             extra = width - (
                 child.layout.content_width

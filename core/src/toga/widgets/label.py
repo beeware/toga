@@ -9,6 +9,7 @@ class Label(Widget):
         text: str,
         id=None,
         style=None,
+        wrap=False,
     ):
         """Create a new text label.
 
@@ -23,6 +24,7 @@ class Label(Widget):
         self._impl = self.factory.Label(interface=self)
 
         self.text = text
+        self.wrap = wrap
 
     def focus(self):
         "No-op; Label cannot accept input focus"
@@ -46,4 +48,13 @@ class Label(Widget):
             text = str(value)
 
         self._impl.set_text(text)
+        self.refresh()
+
+    @property
+    def wrap(self) -> str:
+        return self._impl.get_wrap()
+
+    @text.setter
+    def wrap(self, value):
+        self._impl.set_wrap(bool(value))
         self.refresh()
