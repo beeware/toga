@@ -63,6 +63,31 @@ def test_create():
     )
 
 
+def test_change_action():
+    """A command's action can be changed to another handler"""
+    action1 = Mock()
+
+    cmd = toga.Command(action1, "Test command")
+
+    assert cmd.text == "Test command"
+    assert cmd.shortcut is None
+    assert cmd.tooltip is None
+    assert cmd.group == toga.Group.COMMANDS
+    assert cmd.section == 0
+    assert cmd.order == 0
+    assert cmd.action._raw == action1
+
+    # Change the action to a something new
+    action2 = Mock()
+    cmd.action = action2
+
+    assert cmd.action._raw == action2
+
+    # Clear the action
+    cmd.action = None
+    assert cmd.action._raw is None
+
+
 def test_create_explicit(app):
     """A command can be created with explicit arguments"""
     grp = toga.Group("Test group", order=10)

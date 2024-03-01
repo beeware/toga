@@ -203,7 +203,7 @@ class Command:
         self.section = section
         self.order = order
 
-        self.action = wrapped_handler(self, action)
+        self.action = action
 
         self.factory = get_platform_factory()
         self._impl = self.factory.Command(interface=self)
@@ -243,6 +243,19 @@ class Command:
             self._icon = icon_or_name
         else:
             self._icon = Icon(icon_or_name)
+
+    @property
+    def action(self) -> ActionHandler | None:
+        """The Action attached to the command."""
+        return self._action
+
+    @action.setter
+    def action(self, action: ActionHandler | None):
+        """Set the action attached to the command
+
+        Needs to be a valid ActionHandler or ``None``
+        """
+        self._action = wrapped_handler(self, action)
 
     def __lt__(self, other: Any) -> bool:
         if not isinstance(other, (Group, Command)):
