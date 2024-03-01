@@ -22,8 +22,26 @@ class Label(Widget):
 
     def set_text(self, value):
         self.native.set_text(value)
+    
+    def get_wrap(self):
+        self.native.get_line_wrap()
+    
+    def set_wrap(self, wrap):
+        self.native.set_line_wrap(wrap)
 
     def rehint(self):
         width, height = self._get_preferred_size(self.native)
         self.interface.intrinsic.width = at_least(width[0])
         self.interface.intrinsic.height = height[1]
+
+    def compute_size(self, width, height):
+
+        if width and self.native.get_line_wrap():
+            # If wrapping is enabled, calculate prefered height with fixed width
+            req_width, req_height = self.native.get_size_request()
+            self.native.set_size_request(width, -1)
+            _unused, height = self._get_preferred_size(self.native)
+            self.native.set_size_request(req_width, req_height)
+            return width, height[0]
+
+        return width, height

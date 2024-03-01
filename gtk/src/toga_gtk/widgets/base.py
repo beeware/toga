@@ -89,11 +89,10 @@ class Widget:
         if not visible:
             native.set_visible(True)
         # print("REHINT", self, native.get_preferred_width(), native.get_preferred_height())
-        width = native.get_preferred_width()
-        height = native.get_preferred_height()
+        min_size, nat_size = native.get_preferred_size()
         if not visible:
             native.set_visible(visible)
-        return width, height
+        return (min_size.width, nat_size.width),(min_size.height, nat_size.height)
 
     ######################################################################
     # CSS tools

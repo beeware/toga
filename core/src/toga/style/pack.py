@@ -236,6 +236,11 @@ class Pack(BaseStyle):
         else:
             width = available_width
             height = available_height
+            if hasattr(node._impl, 'compute_size'):
+                # To support text wraping, when fixing the width, we need to recompute the height.
+                width, height = node._impl.compute_size(width, height)
+                min_height = height
+
             # self._debug(f"NO CHILDREN {min_width=} {width=} {min_height=} {height=}")
 
         # If an explicit width/height was given, that specification
