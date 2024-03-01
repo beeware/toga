@@ -144,7 +144,10 @@ class Window:
         app.native.add_window(self.native)
 
     def show(self):
-        self.native.show_all()
+        # Avoid calling show_all() as it change the visibility of all children.
+        self.native.show()
+        self.layout.show()
+        self.container.show()
 
     ######################################################################
     # Window content and resources

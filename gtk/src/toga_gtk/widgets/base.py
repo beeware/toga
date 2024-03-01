@@ -57,7 +57,6 @@ class Widget:
             # setting container, adding self to container.native
             self._container = container
             self._container.add(self.native)
-            self.native.show_all()
 
         for child in self.interface.children:
             child._impl.container = container
@@ -83,6 +82,18 @@ class Widget:
 
     def set_tab_index(self, tab_index):
         self.interface.factory.not_implemented("Widget.set_tab_index()")
+
+    def _get_preferred_size(self, native):
+        # Utility function to get the preferred size of widget regardless of it's visibility.
+        visible = native.get_visible()
+        if not visible:
+            native.set_visible(True)
+        # print("REHINT", self, native.get_preferred_width(), native.get_preferred_height())
+        width = native.get_preferred_width()
+        height = native.get_preferred_height()
+        if not visible:
+            native.set_visible(visible)
+        return width, height
 
     ######################################################################
     # CSS tools
@@ -185,9 +196,6 @@ class Widget:
 
     def rehint(self):
         # Perform the actual GTK rehint.
-        # print("REHINT", self, self.native.get_preferred_width(), self.native.get_preferred_height())
-        width = self.native.get_preferred_width()
-        height = self.native.get_preferred_height()
-
+        width, height = self._get_preferred_size(self.native)
         self.interface.intrinsic.width = at_least(width[0])
         self.interface.intrinsic.height = at_least(height[0])

@@ -55,13 +55,7 @@ class TextInput(Widget):
         self.native.set_text(value)
 
     def rehint(self):
-        # print("REHINT", self,
-        #     self._impl.get_preferred_width(), self._impl.get_preferred_height(),
-        #     getattr(self, '_fixed_height', False), getattr(self, '_fixed_width', False)
-        # )
-        width = self.native.get_preferred_width()
-        height = self.native.get_preferred_height()
-
+        width, height = self._get_preferred_size(self.native)
         self.interface.intrinsic.width = at_least(
             max(self.interface._MIN_WIDTH, width[1])
         )
