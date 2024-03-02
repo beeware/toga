@@ -203,7 +203,7 @@ class Command:
         self.section = section
         self.order = order
 
-        self._action = wrapped_handler(self, action)
+        self.action = action
 
         self.factory = get_platform_factory()
         self._impl = self.factory.Command(interface=self)
