@@ -29,7 +29,7 @@ jobs:
           echo "VERSION=${GITHUB_REF_NAME#v}" >> $GITHUB_ENV
 
       - name: Get packages
-        uses: actions/download-artifact@v4.1.2
+        uses: actions/download-artifact@v4.1.4
         with:
           pattern: ${{ needs.ci.outputs.artifact-name }}-*
           merge-multiple: true
@@ -65,7 +65,7 @@ jobs:
         - "toga_winforms"
     steps:
       - name: Get packages
-        uses: actions/download-artifact@v4.1.2
+        uses: actions/download-artifact@v4.1.4
         with:
           pattern: ${{ needs.ci.outputs.artifact-name }}-*
           merge-multiple: true
