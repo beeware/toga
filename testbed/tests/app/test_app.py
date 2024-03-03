@@ -17,7 +17,7 @@ def mock_app_exit(monkeypatch, app):
     return app_exit
 
 
-# Mobile platforms have different windowing characterics, so they have different tests.
+# Mobile platforms have different windowing characteristics, so they have different tests.
 if toga.platform.current_platform in {"iOS", "android"}:
     ####################################################################################
     # Mobile platform tests
