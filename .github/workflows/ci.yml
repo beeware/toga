@@ -103,7 +103,7 @@ jobs:
         # we just want the dev extras so we have a known version of tox and coverage
         python -m pip install ./core[dev]
     - name: Get packages
-      uses: actions/download-artifact@v4.1.2
+      uses: actions/download-artifact@v4.1.4
       with:
         pattern: ${{ needs.package.outputs.artifact-name }}-*
         merge-multiple: true
@@ -139,7 +139,7 @@ jobs:
         # we just want the dev extras so we have a known version of coverage
         python -m pip install ./core[dev]
     - name: Retrieve coverage data
-      uses: actions/download-artifact@v4.1.2
+      uses: actions/download-artifact@v4.1.4
       with:
         pattern: core-coverage-data-*
         path: core
