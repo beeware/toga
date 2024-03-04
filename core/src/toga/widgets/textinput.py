@@ -29,7 +29,7 @@ class TextInput(Widget):
         :param readonly: Can the value of the widget be modified by the user?
         :param placeholder: The content to display as a placeholder when there
             is no user content to display.
-        :param on_change: A handler that will be invoked when the the value of
+        :param on_change: A handler that will be invoked when the value of
             the widget changes.
         :param on_confirm: A handler that will be invoked when the user accepts
             the value of the input (usually by pressing Return on the keyboard).
@@ -119,7 +119,7 @@ class TextInput(Widget):
 
     @property
     def is_valid(self) -> bool:
-        "Does the value of the widget currently pass all validators without error?"
+        """Does the value of the widget currently pass all validators without error?"""
         return self._impl.is_valid()
 
     @property

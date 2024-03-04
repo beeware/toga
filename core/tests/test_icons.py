@@ -92,7 +92,7 @@ def app():
     ],
 )
 def test_create(monkeypatch, app, path, system, sizes, extensions, final_paths):
-    "Icons can be created"
+    """Icons can be created."""
     # Patch the dummy Icon class to evaluated different lookup strategies.
     monkeypatch.setattr(DummyIcon, "SIZES", sizes)
     monkeypatch.setattr(DummyIcon, "EXTENSIONS", extensions)
@@ -112,7 +112,7 @@ def test_create(monkeypatch, app, path, system, sizes, extensions, final_paths):
 
 
 def test_create_fallback(app):
-    "If a resource doesn't exist, a fallback icon is used."
+    """If a resource doesn't exist, a fallback icon is used."""
     icon = toga.Icon("resources/missing")
 
     assert icon._impl is not None
@@ -127,7 +127,7 @@ def test_create_fallback(app):
     ],
 )
 def test_cached_icons(app, name, path):
-    "Default icons exist, and are cached"
+    """Default icons exist, and are cached."""
 
     icon = getattr(toga.Icon, name)
     assert icon.path == Path(path)
@@ -137,7 +137,7 @@ def test_cached_icons(app, name, path):
 
 
 def test_deprecated_icons(app):
-    """Deprecated icons are still available"""
+    """Deprecated icons are still available."""
     with pytest.warns(DeprecationWarning):
         icon = toga.Icon.TOGA_ICON
     assert icon.path == Path("toga")

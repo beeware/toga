@@ -14,14 +14,14 @@ def activity_indicator():
 
 
 def test_widget_created(activity_indicator):
-    "An activity indicator can be created."
+    """An activity indicator can be created."""
     # Round trip the impl/interface
     assert activity_indicator._impl.interface == activity_indicator
     assert_action_performed(activity_indicator, "create ActivityIndicator")
 
 
 def test_disable_no_op(activity_indicator):
-    "ActivityIndicator doesn't have a disabled state"
+    """ActivityIndicator doesn't have a disabled state."""
     # Enabled by default
     assert activity_indicator.enabled
 
@@ -33,7 +33,7 @@ def test_disable_no_op(activity_indicator):
 
 
 def test_start(activity_indicator):
-    "An activity indicator can be started"
+    """An activity indicator can be started."""
     # Not running initially
     assert not activity_indicator.is_running
 
@@ -51,7 +51,7 @@ def test_start(activity_indicator):
 
 
 def test_already_started(activity_indicator):
-    "If an activity indicator is already started, starting again is a no-op"
+    """If an activity indicator is already started, starting again is a no-op."""
     # Start the activity indicator
     activity_indicator.start()
 
@@ -69,7 +69,7 @@ def test_already_started(activity_indicator):
 
 
 def test_stop(activity_indicator):
-    "An indicator can be stopped"
+    """An indicator can be stopped."""
     # Start spinning
     activity_indicator.start()
 
@@ -87,7 +87,7 @@ def test_stop(activity_indicator):
 
 
 def test_already_stopped(activity_indicator):
-    "If an indicator is already stopped, stopping again is a no-op"
+    """If an indicator is already stopped, stopping again is a no-op."""
     # The indicator is not running initially
     assert not activity_indicator.is_running
 
@@ -102,7 +102,7 @@ def test_already_stopped(activity_indicator):
 
 
 def test_initially_running():
-    "An activity indicator can be created in a started state"
+    """An activity indicator can be created in a started state."""
     # Creating a new progress bar with running=True so it is already running
     activity_indicator = toga.ActivityIndicator(running=True)
 
@@ -114,7 +114,7 @@ def test_initially_running():
 
 
 def test_focus_noop(activity_indicator):
-    "Focus is a no-op."
+    """Focus is a no-op."""
 
     activity_indicator.focus()
     assert_action_not_performed(activity_indicator, "focus")

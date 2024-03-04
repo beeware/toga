@@ -22,7 +22,7 @@ class Group:
         order: int = 0,
     ):
         """
-        An collection of commands to display together.
+        A collection of commands to display together.
 
         :param text: A label for the group.
         :param parent: The parent of this group; use ``None`` to make a root group.

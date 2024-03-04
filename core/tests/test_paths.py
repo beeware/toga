@@ -7,7 +7,8 @@ import toga
 
 
 def run_app(args, cwd):
-    """Run a Toga app as a subprocess with coverage enabled and the Toga Dummy backend."""
+    """Run a Toga app as a subprocess with coverage enabled and the Toga Dummy
+    backend."""
     # We need to do a full copy of the environment, then add our extra bits;
     # if we don't the Windows interpreter won't inherit SYSTEMROOT
     env = os.environ.copy()

@@ -23,7 +23,7 @@ def widget(validator):
 
 
 def test_widget_created():
-    "A text input can be created"
+    """A text input can be created."""
     widget = toga.TextInput()
     assert widget._impl.interface == widget
     assert_action_performed(widget, "create TextInput")
@@ -39,7 +39,7 @@ def test_widget_created():
 
 
 def test_create_with_values():
-    "A multiline text input can be created with initial values"
+    """A multiline text input can be created with initial values."""
     on_change = Mock()
     on_confirm = Mock()
     on_gain_focus = Mock()
@@ -125,7 +125,7 @@ def test_value(widget, value, expected, validator):
     ],
 )
 def test_readonly(widget, value, expected):
-    "The readonly status of the widget can be changed."
+    """The readonly status of the widget can be changed."""
     # Widget is initially not readonly by default.
     assert not widget.readonly
 
@@ -243,7 +243,7 @@ def test_on_lose_focus(widget):
 
 
 def test_change_validators(widget, validator):
-    "If the validator list is changed, the new validators are invoked"
+    """If the validator list is changed, the new validators are invoked."""
     new_validator1 = Mock(return_value=None)
     new_validator2 = Mock(return_value=None)
 
@@ -263,7 +263,7 @@ def test_change_validators(widget, validator):
 
 
 def test_remove_validators(widget, validator):
-    "The validator list can be cleared"
+    """The validator list can be cleared."""
     widget.value = "Some text"
 
     # Clear the event log and validator mock
@@ -278,7 +278,7 @@ def test_remove_validators(widget, validator):
 
 
 def test_is_valid(widget):
-    "Widget validity can be evaluated"
+    """Widget validity can be evaluated."""
     validator1 = Mock(return_value=None)
     validator2 = Mock(return_value=None)
 

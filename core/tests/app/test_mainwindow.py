@@ -7,7 +7,7 @@ from toga_dummy.utils import assert_action_performed
 
 
 def test_create(app):
-    "A MainWindow can be created with minimal arguments"
+    """A MainWindow can be created with minimal arguments."""
     window = toga.MainWindow()
 
     assert window.app == app
@@ -31,7 +31,7 @@ def test_create(app):
 
 
 def test_no_close():
-    "An on_close handler cannot be set on MainWindow"
+    """An on_close handler cannot be set on MainWindow."""
     window = toga.MainWindow()
 
     with pytest.raises(

@@ -17,7 +17,7 @@ def progressbar():
 
 
 def test_progressbar_created(progressbar):
-    "A progressbar can be created."
+    """A progressbar can be created."""
     # Round trip the impl/interface
     assert progressbar._impl.interface == progressbar
     assert_action_performed(progressbar, "create ProgressBar")
@@ -41,7 +41,7 @@ def test_progressbar_created(progressbar):
     ],
 )
 def test_set_value_determinate(progressbar, value, actual):
-    "The value of a determinite progressbar can be set"
+    """The value of a determinate progressbar can be set."""
     # Set the max value
     progressbar.max = 10
 
@@ -56,7 +56,7 @@ def test_set_value_determinate(progressbar, value, actual):
 
 
 def test_set_value_indeterminate(progressbar):
-    "Setting the value of an indeterminate progressbar is a no-op"
+    """Setting the value of an indeterminate progressbar is a no-op."""
 
     # Make the progressbar indeterminate
     progressbar.max = None
@@ -84,7 +84,7 @@ def test_set_value_indeterminate(progressbar):
     ],
 )
 def test_set_max(progressbar, value, actual, determinate):
-    "The max value can be set."
+    """The max value can be set."""
     progressbar.max = value
 
     # The maximum value has been applied, and has altered the determinate state.
@@ -132,13 +132,13 @@ def test_set_max(progressbar, value, actual, determinate):
     ],
 )
 def test_invalid_max(progressbar, value, error, msg):
-    "A max value that isn't positive raises an error"
+    """A max value that isn't positive raises an error."""
     with pytest.raises(error, match=msg):
         progressbar.max = value
 
 
 def test_start(progressbar):
-    "An activity indicator can be started"
+    """An activity indicator can be started."""
     # Not running initially
     assert not progressbar.is_running
 
@@ -156,7 +156,7 @@ def test_start(progressbar):
 
 
 def test_already_started(progressbar):
-    "If an activity indicator is already started, starting again is a no-op"
+    """If an activity indicator is already started, starting again is a no-op."""
     # Start the activity indicator
     progressbar.start()
 
@@ -174,7 +174,7 @@ def test_already_started(progressbar):
 
 
 def test_stop(progressbar):
-    "An indicator can be stopped"
+    """An indicator can be stopped."""
     # Start running
     progressbar.start()
 
@@ -192,7 +192,7 @@ def test_stop(progressbar):
 
 
 def test_already_stopped(progressbar):
-    "If an indicator is already stopped, stopping again is a no-op"
+    """If an indicator is already stopped, stopping again is a no-op."""
     # The indicator is not running initially
     assert not progressbar.is_running
 
@@ -207,7 +207,7 @@ def test_already_stopped(progressbar):
 
 
 def test_initially_running():
-    "An activity indicator can be created in a started state"
+    """An activity indicator can be created in a started state."""
     # Creating a new progress bar with running=True so it is already running
     progressbar = toga.ProgressBar(running=True)
 
@@ -219,7 +219,7 @@ def test_initially_running():
 
 
 def test_determinate_switch(progressbar):
-    "A progressbar can switch between determinate and indeterminate"
+    """A progressbar can switch between determinate and indeterminate."""
     # Set initial max and value
     progressbar.max = 10
     progressbar.value = 5

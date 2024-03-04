@@ -418,7 +418,7 @@ class Window:
 
     @property
     def visible(self) -> bool:
-        "Is the window visible?"
+        """Is the window visible?"""
         return self._impl.get_visible()
 
     @visible.setter
@@ -575,7 +575,7 @@ class Window:
     ) -> Dialog:
         """Ask the user to acknowledge an error state.
 
-        Presents as an error dialog with a "OK" button to close the dialog.
+        Presents as an error dialog with an "OK" button to close the dialog.
 
         **This is an asynchronous method**. If you invoke this method in synchronous
         context, it will show the dialog, but will return *immediately*. The object

@@ -9,7 +9,7 @@ from toga_dummy.utils import (
 
 
 def test_divider_created():
-    "A divider can be created."
+    """A divider can be created."""
     divider = toga.Divider()
 
     # Round trip the impl/interface
@@ -22,7 +22,7 @@ def test_divider_created():
 
 @pytest.mark.parametrize("direction", [toga.Divider.HORIZONTAL, toga.Divider.VERTICAL])
 def test_divider_created_explicit(direction):
-    "A divider can be created."
+    """A divider can be created."""
     divider = toga.Divider(direction=direction)
 
     # Round trip the impl/interface
@@ -34,7 +34,7 @@ def test_divider_created_explicit(direction):
 
 
 def test_disable_no_op():
-    "Divider doesn't have a disabled state"
+    """Divider doesn't have a disabled state."""
     divider = toga.Divider()
 
     # Enabled by default
@@ -48,7 +48,7 @@ def test_disable_no_op():
 
 
 def test_update_direction():
-    "The direction of the divider can be altered."
+    """The direction of the divider can be altered."""
     divider = toga.Divider(direction=toga.Divider.HORIZONTAL)
 
     # Initial direction is as expected
@@ -66,7 +66,7 @@ def test_update_direction():
 
 
 def test_focus_noop():
-    "Focus is a no-op."
+    """Focus is a no-op."""
     divider = toga.Divider(direction=toga.Divider.HORIZONTAL)
 
     divider.focus()

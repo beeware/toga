@@ -148,7 +148,7 @@ class WidgetRegistry:
     # doesn't retain a strong reference to the widget, preventing memory cleanup.
     #
     # The lookup methods (__getitem__(), __iter__(), __len()__, keys(), items(), and
-    # values()) are all proxied to to underlying data store. Private methods exist for
+    # values()) are all proxied to underlying data store. Private methods exist for
     # internal use, but those methods shouldn't be used by end-users.
 
     def __init__(self, *args, **kwargs):
@@ -660,7 +660,7 @@ class App:
             return self._camera
         except AttributeError:
             # Instantiate the camera instance for this app on first access
-            # This will raise a exception if the platform doesn't implement
+            # This will raise an exception if the platform doesn't implement
             # the Camera API.
             self._camera = Camera(self)
         return self._camera
@@ -851,7 +851,7 @@ class DocumentApp(App):
 
         A document-based application is the same as a normal application, with the
         exception that there is no main window. Instead, each document managed by the
-        app will create and manage it's own window (or windows).
+        app will create and manage its own window (or windows).
 
         :param document_types: Initial :any:`document_types` mapping.
         """
@@ -909,7 +909,7 @@ class DocumentApp(App):
 
         :param path: The path to the document to be opened.
         :raises ValueError: If the document is of a type that can't be opened. Backends can
-            suppress this exception if necessary to presere platform-native behavior.
+            suppress this exception if necessary to preserve platform-native behavior.
         """
         try:
             DocType = self.document_types[path.suffix[1:]]
