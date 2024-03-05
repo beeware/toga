@@ -565,7 +565,7 @@ async def _row_change_test(widget, probe):
     # Change content on the partial row
     widget.data[0][2].a = "ANEW"
     widget.data[0][2].b = "BNEW"
-    await probe.redraw("Partial row has been updated")
+    await probe.redraw("Partial non-visible row has been updated")
 
     assert probe.child_count((0,)) == 7
     probe.assert_cell_content((0, 2), 0, "ANEW")
