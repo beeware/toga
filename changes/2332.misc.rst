@@ -1,0 +1,1 @@
+Pack's class definition now uses Travertino BaseStyle's updated dataclass-based API.
