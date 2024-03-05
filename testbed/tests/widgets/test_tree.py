@@ -270,7 +270,7 @@ async def test_expand_collapse(widget, probe, source):
 
     # Attempt to expand a leaf node
     widget.expand(source[1][2][1])
-    await probe.redraw("Leaf node collapse is a no-op")
+    await probe.redraw("Leaf node expansion is a no-op")
     assert not probe.is_expanded(source[0])
     assert not probe.is_expanded(source[0][2])
     assert probe.is_expanded(source[1])
@@ -541,9 +541,9 @@ async def _row_change_test(widget, probe):
     probe.assert_cell_content((0, 4), 2, "<data 4>")
 
     # Test append/insert/modify/remove prior to tree expansion
-    # Append a row to the table
+    # Append a child to a non-expanded root
     widget.data[0].append({"a": "AX", "b": "BX", "c": "CX"})
-    await probe.redraw("Full row has been appended")
+    await probe.redraw("Full row has been appended to a non-expanded root")
 
     assert probe.child_count((0,)) == 6
     probe.assert_cell_content((0, 4), 0, "A4")
@@ -552,7 +552,7 @@ async def _row_change_test(widget, probe):
     # Insert a row into the middle of the table;
     # Row is missing a B accessor
     widget.data[0].insert(2, {"a": "AY", "c": "CY"})
-    await probe.redraw("Partial row has been appended")
+    await probe.redraw("Partial row has been appended to a non-expanded root")
 
     assert probe.child_count((0,)) == 7
     probe.assert_cell_content((0, 2), 0, "AY")
@@ -565,7 +565,7 @@ async def _row_change_test(widget, probe):
     # Change content on the partial row
     widget.data[0][2].a = "ANEW"
     widget.data[0][2].b = "BNEW"
-    await probe.redraw("Partial row has been updated")
+    await probe.redraw("Partial non-visible row has been updated")
 
     assert probe.child_count((0,)) == 7
     probe.assert_cell_content((0, 2), 0, "ANEW")
@@ -577,7 +577,7 @@ async def _row_change_test(widget, probe):
 
     # Delete a row
     del widget.data[0][3]
-    await probe.redraw("Row has been removed")
+    await probe.redraw("Non-visible row has been removed")
     assert probe.child_count((0,)) == 6
     probe.assert_cell_content((0, 2), 0, "ANEW")
     probe.assert_cell_content((0, 4), 0, "A4")
