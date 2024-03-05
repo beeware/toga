@@ -99,7 +99,7 @@ class MapView(Widget):
         # Reverse engineer zoom level based on a 256 pixel square.
         # See set_zoom for the rationale behind the math.
         return math.log2(
-            (180 * self.interface.layout.height * self.native.window.backingScaleFactor)
+            (360 * self.interface.layout.height)
             / (self.native.region.span.latitudeDelta * 256)
         )
 
@@ -110,16 +110,11 @@ class MapView(Widget):
             # and scale to the size of the visible vertical space.
 
             # The vertical axis can't show more than 180 degrees of latitude, so clip
-            # the range to that value. The pixel size is computed using "real" pixels;
-            # retina displays have higher pixel density.
+            # the range to that value. The OSM zoom level is based on 360 degrees of
+            # latitude being split into 2**zoom sections.
             delta = min(
                 180.0,
-                (
-                    180
-                    * self.interface.layout.height
-                    * self.native.window.backingScaleFactor
-                )
-                / (256 * 2**zoom),
+                (360 * self.interface.layout.height) / (256 * 2**zoom),
             )
             # If we're currently panning to a new location, use the desired *future*
             # location as the center of the zoom region. Otherwise use the current center

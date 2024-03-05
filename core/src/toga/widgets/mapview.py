@@ -190,7 +190,7 @@ class MapView(Widget):
         set the number of degrees of latitude that will span a 256 CSS pixel region the
         vertical axis of the map, following the relationship::
 
-            latitude_per_256_pixels = 180 / (2**zoom)
+            latitude_per_256_pixels = 360 / (2**zoom)
 
         In practical terms, this means a map will display:
 
@@ -203,10 +203,12 @@ class MapView(Widget):
         * 18-19: Individual buildings
         * 20: A single building
 
-        At low zoom levels (< ~4) some backends may constrain the viewable range to
-        avoid repeating map tiles in the visible area.
-
         If the provided zoom value is outside the supported range, it will be clipped.
+
+        At very low zoom levels, some backends may constrain the viewable range to avoid
+        repeating map tiles in the visible area. This effectively sets a minimum bound
+        on the zoom level that can be requested. The value of this minimum varies
+        depending on the aspect ratio of the map view.
         """
         return round(self._impl.get_zoom())
 

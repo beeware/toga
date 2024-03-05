@@ -111,6 +111,7 @@ async def test_zoom(widget, probe):
     # zoom level. There's no point testing zoom levels < 4, as macOS/iOS scale clipping
     # won't reliably round-trip those zoom levels.
     for zoom, min_span, max_span in [
+        (4, 11.25, 45),
         (6, 2.81, 11.25),
         (9, 0.352, 1.406),
         (12, 0.044, 0.176),
@@ -122,7 +123,6 @@ async def test_zoom(widget, probe):
 
         # Get the latitude span associated with a 256px tile.
         tile_span = await probe.tile_latitude_span()
-
         assert (
             min_span < tile_span < max_span
         ), f"Zoom level {zoom}: failed {min_span} < {tile_span} < {max_span}"
