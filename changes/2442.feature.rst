@@ -1,0 +1,1 @@
+Pack's constructor and properties are now available in code completion in PyCharm (and potentially other IDEs).
