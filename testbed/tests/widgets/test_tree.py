@@ -552,7 +552,7 @@ async def _row_change_test(widget, probe):
     # Insert a row into the middle of the table;
     # Row is missing a B accessor
     widget.data[0].insert(2, {"a": "AY", "c": "CY"})
-    await probe.redraw("Partial row has been appended")
+    await probe.redraw("Partial row has been appended to a non-expanded root")
 
     assert probe.child_count((0,)) == 7
     probe.assert_cell_content((0, 2), 0, "AY")
