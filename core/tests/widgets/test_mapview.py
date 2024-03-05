@@ -39,7 +39,7 @@ def test_widget_created(widget):
     assert_action_performed(widget, "create MapView")
 
     assert widget.location == toga.LatLng(-31.9559, 115.8606)
-    assert widget.zoom == 9
+    assert widget.zoom == 11
     assert set(widget.pins) == set()
     assert repr(widget.pins) == "<MapPinSet (0 pins)>"
     assert widget._on_select._raw is None
@@ -246,8 +246,8 @@ def test_map_location(widget):
         (-5, 0),  # Clipped to minimum
         (0, 0),  # minimum value
         (9, 9),  # mid range value
-        (18, 18),  # maximum value
-        (25, 18),  # clipped to maximum
+        (20, 20),  # maximum value
+        (25, 20),  # clipped to maximum
         (3.14159, 3),  # converted to integer
         ("4", 4),  # converted to integer
     ],

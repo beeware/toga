@@ -48,7 +48,7 @@ Usage
 
 A MapView is a scrollable area that can show a map at varying levels of detail, from
 nation-level to street level. The map can be centered at a given coordinate, and zoomed
-to the required level of detail using an integer from 0 (for global detail) to 18
+to the required level of detail using an integer from 0 (for global detail) to 20
 (for building level detail):
 
 .. code-block:: python
@@ -61,7 +61,7 @@ to the required level of detail using an integer from 0 (for global detail) to 1
     # Center the map in Perth, Australia
     mapview.location = (-31.9559, 115.8606)
 
-    # Zoom to show city-block level detail
+    # Zoom to show the map to show street level detail
     mapview.zoom = 15
 
 A map can also display pins. A map pin must have a title, and can optionally have a
@@ -118,6 +118,10 @@ Notes
 
 * Using MapView on Linux requires that the user has installed the system packages
   for WebKit2, plus the GObject Introspection bindings for WebKit2.
+
+* On macOS and iOS, MapView will not repeat map tiles if the viewable area at the given
+  zoom level is bigger than the entire world. A zoom to a very low level will be clipped
+  to the lowest level that allows displaying the map without repeating tiles.
 
 Reference
 ---------

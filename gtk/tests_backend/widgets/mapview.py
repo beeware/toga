@@ -19,14 +19,18 @@ def region_eq(r1, r2):
 class MapViewProbe(SimpleProbe):
     native_class = WebKit2.WebView
 
+    @property
+    def scale_height(self):
+        return self.height
+
     async def _map_region(self):
         northeast = self.impl._invoke("map.getBounds().getNorthEast().toString();")
         southwest = self.impl._invoke("map.getBounds().getSouthWest().toString();")
         return northeast, southwest
 
-    async def longitude_span(self):
+    async def tile_latitude_span(self):
         northeast, southwest = await self._map_region()
-        return northeast.lng - southwest.lng
+        return 256 * (northeast.lat - southwest.lat) / self.height
 
     @property
     def pin_count(self):

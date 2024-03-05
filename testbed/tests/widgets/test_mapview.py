@@ -104,35 +104,30 @@ async def test_zoom(widget, probe):
     # Retrieve the initial zoom level, and probe for the longitude. This ensures
     # complete coverage for macOS x86_64, on which this test is unreliable.
     _ = widget.zoom
-    await probe.longitude_span()
+    await probe.tile_latitude_span()
 
     # For a range of zoom levels, probe to get the delta from the minimum to maximum
-    # longitude that is currently visible. That delta should be within a broad range at
-    # each zoom level.
+    # longitude that is currently visible. That delta should be within a range at each
+    # zoom level. There's no point testing zoom levels < 4, as macOS/iOS scale clipping
+    # won't reliably round-trip those zoom levels.
     for zoom, min_span, max_span in [
-        (0, 45, 1000),
-        (3, 12, 90),
-        (6, 1.5, 12),
-        (9, 0.2, 1.5),
-        (12, 0.02, 0.2),
-        (15, 0.003, 0.02),
-        (18, 0.0, 0.003),
+        (6, 2.81, 11.25),
+        (9, 0.352, 1.406),
+        (12, 0.044, 0.176),
+        (15, 0.005, 0.022),
+        (18, 0.0005, 0.003),
     ]:
         widget.zoom = zoom
         await probe.wait_for_map(f"Map has been zoomed to level {zoom}", max_delay=2)
 
-        # Work out the span associated with a 256px vertical space.
-        scale_span = await probe.longitude_span() / (probe.height / 256)
-        assert (
-            min_span < scale_span < max_span
-        ), f"Zoom level {zoom}: failed {min_span} < {scale_span} < {max_span}"
+        # Get the latitude span associated with a 256px tile.
+        tile_span = await probe.tile_latitude_span()
 
-        # Zoom level 0 can result in a map that needs to wrap content. Some implementations
-        # prevent zooming out that far, so the reported zoom level can be has high as 2.
-        if zoom == 0:
-            assert widget.zoom <= 2
-        else:
-            assert widget.zoom == zoom
+        assert (
+            min_span < tile_span < max_span
+        ), f"Zoom level {zoom}: failed {min_span} < {tile_span} < {max_span}"
+
+        assert widget.zoom == zoom
 
 
 async def test_add_pins(widget, probe, on_select):

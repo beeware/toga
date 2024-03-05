@@ -136,7 +136,7 @@ class MapView(Widget):
         id=None,
         style=None,
         location: toga.LatLng | tuple[float, float] | None = None,
-        zoom: int = 9,
+        zoom: int = 11,
         pins: list[MapPin] | None = None,
         on_select: toga.widgets.mapview.OnSelectHandler | None = None,
     ):
@@ -186,24 +186,27 @@ class MapView(Widget):
     def zoom(self) -> int:
         """Set the zoom level for the map.
 
-        The zoom level is an integer in the range 0-18 (inclusive). It can be used to
-        set the number of degrees of longitude that will span a 256 CSS pixel region the
+        The zoom level is an integer in the range 0-20 (inclusive). It can be used to
+        set the number of degrees of latitude that will span a 256 CSS pixel region the
         vertical axis of the map, following the relationship::
 
-            visible_longitude = 180 / (2**(zoom + 8))
+            latitude_per_256_pixels = 180 / (2**zoom)
 
         In practical terms, this means a map will display:
 
-        * 0: Whole world
-        * 1-3: Large countries
-        * 4-6: Small countries
-        * 7-9: The extents of a city.
-        * 10-13: Suburbs of a city, or small towns
-        * 14-15: Roads at the level useful for navigation
-        * 16-17: Individual Buildings
-        * 18: A single building
+        * 0-2: Whole world
+        * 3-6: Large countries
+        * 7-8: Small countries, or a state in a large country
+        * 9-11: The extent of a city
+        * 12-14: Suburbs of a city, or small towns
+        * 15-17: Roads at the level useful for navigation
+        * 18-19: Individual buildings
+        * 20: A single building
 
-        If the provided zoom value is outside the 0-18 range, it will be clipped.
+        At low zoom levels (< ~4) some backends may constrain the viewable range to
+        avoid repeating map tiles in the visible area.
+
+        If the provided zoom value is outside the supported range, it will be clipped.
         """
         return round(self._impl.get_zoom())
 
@@ -212,8 +215,8 @@ class MapView(Widget):
         value = int(value)
         if value < 0:
             value = 0
-        elif value > 18:
-            value = 18
+        elif value > 20:
+            value = 20
 
         self._impl.set_zoom(value)
 
