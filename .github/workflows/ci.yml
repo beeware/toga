@@ -107,7 +107,7 @@ jobs:
         python -m pip install ./core[dev]
 
     - name: Get Packages
-      uses: actions/download-artifact@v4.1.2
+      uses: actions/download-artifact@v4.1.4
       with:
         pattern: ${{ needs.package.outputs.artifact-name }}-*
         merge-multiple: true
@@ -152,7 +152,7 @@ jobs:
         python -m pip install ./core[dev]
 
     - name: Retrieve Coverage Data
-      uses: actions/download-artifact@v4.1.2
+      uses: actions/download-artifact@v4.1.4
       with:
         pattern: core-coverage-data-*
         path: core
