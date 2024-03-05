@@ -541,7 +541,7 @@ async def _row_change_test(widget, probe):
     probe.assert_cell_content((0, 4), 2, "<data 4>")
 
     # Test append/insert/modify/remove prior to tree expansion
-    # Append a row to the table
+    # Append a child to a non-expanded root
     widget.data[0].append({"a": "AX", "b": "BX", "c": "CX"})
     await probe.redraw("Full row has been appended")
 
