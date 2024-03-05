@@ -543,7 +543,7 @@ async def _row_change_test(widget, probe):
     # Test append/insert/modify/remove prior to tree expansion
     # Append a child to a non-expanded root
     widget.data[0].append({"a": "AX", "b": "BX", "c": "CX"})
-    await probe.redraw("Full row has been appended")
+    await probe.redraw("Full row has been appended to a non-expanded root")
 
     assert probe.child_count((0,)) == 6
     probe.assert_cell_content((0, 4), 0, "A4")
