@@ -88,7 +88,7 @@ class NumberInput(Widget):
             equal to this maximum.
         :param value: The initial value for the widget.
         :param readonly: Can the value of the widget be modified by the user?
-        :param on_change: A handler that will be invoked when the the value of the
+        :param on_change: A handler that will be invoked when the value of the
             widget changes.
         :param min_value: **DEPRECATED**; alias of ``min``.
         :param max_value: **DEPRECATED**; alias of ``max``.

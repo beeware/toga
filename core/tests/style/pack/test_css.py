@@ -475,5 +475,5 @@ from toga.style.pack import (
     ],
 )
 def test_rendering(style, expected_css):
-    """An empty style node can be rendered"""
+    """An empty style node can be rendered."""
     assert style.__css__() == expected_css

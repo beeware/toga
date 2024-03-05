@@ -86,7 +86,7 @@ class OptionItem:
 
     @property
     def enabled(self) -> bool:
-        "Is the panel of content available for selection?"
+        """Is the panel of content available for selection?"""
         try:
             return self._enabled
         except AttributeError:
@@ -108,7 +108,7 @@ class OptionItem:
 
     @property
     def text(self) -> str:
-        "The label for the tab of content."
+        """The label for the tab of content."""
         try:
             return self._text
         except AttributeError:
@@ -441,7 +441,7 @@ class OptionContainer(Widget):
         pass
 
     def focus(self):
-        "No-op; OptionContainer cannot accept input focus"
+        """No-op; OptionContainer cannot accept input focus"""
         pass
 
     @property

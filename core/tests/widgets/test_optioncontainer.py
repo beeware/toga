@@ -68,7 +68,7 @@ def optioncontainer(
 
 
 def test_widget_create():
-    "An option container can be created with no arguments"
+    """An option container can be created with no arguments."""
     optioncontainer = toga.OptionContainer()
     assert_action_performed(optioncontainer, "create OptionContainer")
 
@@ -86,7 +86,7 @@ def test_widget_create_with_args(
     on_select_handler,
     tab_icon,
 ):
-    "An option container can be created with arguments"
+    """An option container can be created with arguments."""
     assert optioncontainer._impl.interface == optioncontainer
     assert_action_performed(optioncontainer, "create OptionContainer")
 
@@ -121,7 +121,8 @@ def test_widget_create_with_args(
     ],
 )
 def test_widget_create_invalid_content(value):
-    """If the content provided at construction isn't 2- or 3-tuples, an error is raised."""
+    """If the content provided at construction isn't 2- or 3-tuples, an error is
+    raised."""
     with pytest.raises(
         ValueError,
         match=(
@@ -133,7 +134,7 @@ def test_widget_create_invalid_content(value):
 
 
 def test_item_create(content1):
-    """An OptionItem can be created"""
+    """An OptionItem can be created."""
     item = toga.OptionItem("label", content1)
 
     assert item.text == "label"
@@ -159,7 +160,7 @@ def test_item_create_invalid_item(
     content1,
     tab_icon,
 ):
-    """If item details are invalid, an exception is raised"""
+    """If item details are invalid, an exception is raised."""
 
     with pytest.raises(ValueError, match=message):
         toga.OptionItem(
@@ -171,7 +172,7 @@ def test_item_create_invalid_item(
 
 
 def test_assign_to_app(app, optioncontainer, content1, content2, content3):
-    """If the widget is assigned to an app, the content is also assigned"""
+    """If the widget is assigned to an app, the content is also assigned."""
     # Option container is initially unassigned
     assert optioncontainer.app is None
 
@@ -188,7 +189,8 @@ def test_assign_to_app(app, optioncontainer, content1, content2, content3):
 
 
 def test_assign_to_app_no_content(app):
-    """If the widget is assigned to an app, and there is no content, there's no error"""
+    """If the widget is assigned to an app, and there is no content, there's no
+    error."""
     optioncontainer = toga.OptionContainer()
 
     # Option container is initially unassigned
@@ -202,7 +204,7 @@ def test_assign_to_app_no_content(app):
 
 
 def test_assign_to_window(window, optioncontainer, content1, content2, content3):
-    """If the widget is assigned to a window, the content is also assigned"""
+    """If the widget is assigned to a window, the content is also assigned."""
     # Option container is initially unassigned
     assert optioncontainer.window is None
 
@@ -218,7 +220,8 @@ def test_assign_to_window(window, optioncontainer, content1, content2, content3)
 
 
 def test_assign_to_window_no_content(window):
-    """If the widget is assigned to a window, and there is no content, there's no error"""
+    """If the widget is assigned to a window, and there is no content, there's no
+    error."""
     optioncontainer = toga.OptionContainer()
 
     # Option container is initially unassigned
@@ -232,7 +235,7 @@ def test_assign_to_window_no_content(window):
 
 
 def test_disable_no_op(optioncontainer):
-    """OptionContainer doesn't have a disabled state"""
+    """OptionContainer doesn't have a disabled state."""
     # Enabled by default
     assert optioncontainer.enabled
 
@@ -286,7 +289,7 @@ def test_item_enabled(optioncontainer, value, expected, bare_item):
 
 
 def test_disable_current_item(optioncontainer):
-    """The currently selected item cannot be disabled"""
+    """The currently selected item cannot be disabled."""
     # Item 0 is selected by default
     item = optioncontainer.content[0]
     with pytest.raises(
@@ -342,7 +345,7 @@ def test_item_text(optioncontainer, value, expected, bare_item):
     ],
 )
 def test_invalid_item_text(optioncontainer, value, error, bare_item):
-    """Invalid item titles are prevented"""
+    """Invalid item titles are prevented."""
     if bare_item:
         item = toga.OptionItem("title", toga.Box())
     else:
@@ -438,7 +441,7 @@ def test_item_icon_disabled(monkeypatch, optioncontainer, bare_item):
 
 
 def test_optionlist_repr(optioncontainer):
-    """OptionContainer content has a helpful repr"""
+    """OptionContainer content has a helpful repr."""
     assert (
         repr(optioncontainer.content)
         == "<OptionList 'Item 1', 'Item 2', 'Item 3', 'Item 4'>"
@@ -446,7 +449,7 @@ def test_optionlist_repr(optioncontainer):
 
 
 def test_optionlist_iter(optioncontainer):
-    """OptionContainer content can be iterated"""
+    """OptionContainer content can be iterated."""
     assert [item.text for item in optioncontainer.content] == [
         "Item 1",
         "Item 2",
@@ -456,13 +459,13 @@ def test_optionlist_iter(optioncontainer):
 
 
 def test_optionlist_len(optioncontainer):
-    """OptionContainer content has length"""
+    """OptionContainer content has length."""
     assert len(optioncontainer.content) == 4
 
 
 @pytest.mark.parametrize("index", [1, "Item 2", None])
 def test_getitem(optioncontainer, content2, index):
-    """An item can be retrieved"""
+    """An item can be retrieved."""
     if index is None:
         index = optioncontainer.content[1]
 
@@ -502,7 +505,7 @@ def test_delitem(optioncontainer, index):
 
 @pytest.mark.parametrize("index", [0, "Item 1", None])
 def test_delitem_current(optioncontainer, index):
-    """The current item can't be deleted"""
+    """The current item can't be deleted."""
     if index is None:
         index = optioncontainer.content[0]
 
@@ -514,7 +517,7 @@ def test_delitem_current(optioncontainer, index):
 
 @pytest.mark.parametrize("index", [1, "Item 2", None])
 def test_item_remove(optioncontainer, index):
-    """An item can be removed with remove"""
+    """An item can be removed with remove."""
     if index is None:
         index = optioncontainer.content[1]
 
@@ -541,7 +544,7 @@ def test_item_remove(optioncontainer, index):
 
 @pytest.mark.parametrize("index", [0, "Item 1", None])
 def test_item_remove_current(optioncontainer, index):
-    """The current item can't be removed"""
+    """The current item can't be removed."""
     if index is None:
         index = optioncontainer.content[0]
 
@@ -552,7 +555,7 @@ def test_item_remove_current(optioncontainer, index):
 
 
 def test_item_insert_item(optioncontainer):
-    """The text of an inserted item can be set"""
+    """The text of an inserted item can be set."""
     new_content = toga.Box()
     item = toga.OptionItem("New Tab", new_content)
 
@@ -601,7 +604,7 @@ def test_item_insert_item(optioncontainer):
     ],
 )
 def test_item_insert_item_invalid(optioncontainer, args, kwargs, message):
-    """If both an item and specific details are provided, an error is raised"""
+    """If both an item and specific details are provided, an error is raised."""
     with pytest.raises(ValueError, match=message):
         optioncontainer.content.insert(1, *args, **kwargs)
 
@@ -615,7 +618,7 @@ def test_item_insert_item_invalid(optioncontainer, args, kwargs, message):
     ],
 )
 def test_item_insert_text(optioncontainer, value, expected):
-    """The text of an inserted item can be set"""
+    """The text of an inserted item can be set."""
     new_content = toga.Box()
 
     optioncontainer.content.insert(1, value, new_content, enabled=True)
@@ -646,7 +649,7 @@ def test_item_insert_text(optioncontainer, value, expected):
     ],
 )
 def test_item_insert_invalid_text(optioncontainer, value, error):
-    """The item text must be valid"""
+    """The item text must be valid."""
     new_content = toga.Box()
     with pytest.raises(ValueError, match=error):
         optioncontainer.content.insert(1, value, new_content, enabled=True)
@@ -654,7 +657,7 @@ def test_item_insert_invalid_text(optioncontainer, value, error):
 
 @pytest.mark.parametrize("enabled", [True, False])
 def test_item_insert_enabled(optioncontainer, enabled):
-    """The enabled status of content can be set on insert"""
+    """The enabled status of content can be set on insert."""
     new_content = toga.Box()
 
     optioncontainer.content.insert(1, "New content", new_content, enabled=enabled)
@@ -678,7 +681,7 @@ def test_item_insert_enabled(optioncontainer, enabled):
 
 @pytest.mark.parametrize("enabled", [True, False])
 def test_item_append(optioncontainer, enabled):
-    """An item can be appended to the content list"""
+    """An item can be appended to the content list."""
     # append is implemented using insert;
     # the bulk of the functionality is tested there.
     new_content = toga.Box()

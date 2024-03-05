@@ -85,7 +85,7 @@ class Pack(BaseStyle):
 
     @property
     def _hidden(self):
-        "Does this style declaration define a object that should be hidden"
+        """Does this style declaration define an object that should be hidden"""
         return self.visibility == HIDDEN
 
     def apply(self, prop, value):

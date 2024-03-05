@@ -15,7 +15,7 @@ REBECCA_PURPLE_COLOR = rgb(102, 51, 153)
 
 
 def test_subcontext(widget):
-    "A context can produce a subcontext"
+    """A context can produce a subcontext."""
     with widget.context.Context() as subcontext:
         subcontext.line_to(30, 40)
     # A fresh context has been created as a subcontext of the canvas.
@@ -67,7 +67,7 @@ def test_subcontext(widget):
     ],
 )
 def test_closed_path(widget, kwargs, args_repr, has_move, properties):
-    "A context can produce a ClosedPath subcontext"
+    """A context can produce a ClosedPath subcontext."""
     with widget.context.ClosedPath(**kwargs) as closed_path:
         closed_path.line_to(30, 40)
 
@@ -179,7 +179,7 @@ def test_closed_path(widget, kwargs, args_repr, has_move, properties):
     ],
 )
 def test_fill(widget, kwargs, args_repr, has_move, properties):
-    "A context can produce a Fill subcontext"
+    """A context can produce a Fill subcontext."""
     with widget.context.Fill(**kwargs) as fill:
         fill.line_to(30, 40)
 
@@ -343,7 +343,7 @@ def test_fill(widget, kwargs, args_repr, has_move, properties):
     ],
 )
 def test_stroke(widget, kwargs, args_repr, has_move, properties):
-    "A context can produce a Stroke subcontext"
+    """A context can produce a Stroke subcontext."""
     with widget.context.Stroke(**kwargs) as stroke:
         stroke.line_to(30, 40)
 
@@ -380,7 +380,7 @@ def test_stroke(widget, kwargs, args_repr, has_move, properties):
 
 
 def test_deprecated_drawing_operations(widget):
-    """Deprecated simple drawing operations raise a warning"""
+    """Deprecated simple drawing operations raise a warning."""
 
     with pytest.warns(
         DeprecationWarning,
@@ -426,7 +426,7 @@ def test_deprecated_drawing_operations(widget):
 
 
 def test_order_change(widget):
-    """The order of context objects can be changed"""
+    """The order of context objects can be changed."""
     # Initially nothing on the context.
     assert len(widget.context) == 0
 
@@ -625,7 +625,7 @@ def test_order_change(widget):
 
 
 def test_stacked_kwargs(widget):
-    "If contexts are stacked, kwargs for sub operations don't leak"
+    """If contexts are stacked, kwargs for sub operations don't leak."""
     widget.context.line_to(0, 0)
     with widget.Fill(color=rgb(255, 0, 0)) as fill1:
         fill1.line_to(10, 20)
@@ -834,7 +834,7 @@ def test_stacked_kwargs(widget):
 
 
 def test_deprecated_args(widget):
-    "Deprecated arguments to canvas functions raise warnings."
+    """Deprecated arguments to canvas functions raise warnings."""
 
     # fill() raises a warning about preserve being deprecated, then raises an error when
     # it's used as a context manager.

@@ -63,7 +63,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-# Extras used by developers *of* briefcase are pinned to specific versions to
+# Extras used by developers *of* Toga are pinned to specific versions to
 # ensure environment consistency.
 dev = [
     "coverage[toml] == 7.4.3",
@@ -104,6 +104,9 @@ Documentation = "https://toga.readthedocs.io/en/latest/"
 Tracker = "https://github.com/beeware/toga/issues"
 Source = "https://github.com/beeware/toga"
 
+[project.entry-points."toga.image_formats"]
+pil = "toga.plugins.image_formats.PILConverter"
+
 [tool.setuptools_scm]
 root = ".."
 
@@ -127,6 +130,3 @@ asyncio_mode = "auto"
 filterwarnings = [
     "error",
 ]
-
-[project.entry-points."toga.image_formats"]
-pil = "toga.plugins.image_formats.PILConverter"

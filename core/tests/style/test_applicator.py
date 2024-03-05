@@ -46,14 +46,14 @@ def widget(child):
 
 
 def test_refresh(widget):
-    "Refresh requests are passed to the widget"
+    """Refresh requests are passed to the widget."""
     widget.applicator.refresh()
 
     assert_action_performed_with(widget, "refresh")
 
 
 def test_set_bounds(widget, child, grandchild):
-    "Bounds changes are passed to all widgets in the tree"
+    """Bounds changes are passed to all widgets in the tree."""
     # Manually set location of the parent
     widget.layout._origin_left = 100
     widget.layout._origin_top = 200
@@ -72,7 +72,7 @@ def test_set_bounds(widget, child, grandchild):
     grandchild.layout.content_width = 3
     grandchild.layout.content_height = 4
 
-    # Propegate the boundsq
+    # Propagate the bounds
     widget.applicator.set_bounds()
 
     assert_action_performed_with(
@@ -83,7 +83,7 @@ def test_set_bounds(widget, child, grandchild):
 
 
 def test_text_alignment(widget):
-    "Text alignment can be set on a widget"
+    """Text alignment can be set on a widget."""
     widget.applicator.set_text_alignment(RIGHT)
 
     assert_action_performed_with(widget, "set alignment", alignment=RIGHT)
@@ -136,21 +136,21 @@ def test_set_hidden(
 
 
 def test_set_font(widget):
-    "A font change can be applied to a widget"
+    """A font change can be applied to a widget."""
     widget.applicator.set_font(FANTASY)
 
     assert_action_performed_with(widget, "set font", font=FANTASY)
 
 
 def test_set_color(widget):
-    "A color change can be applied to a widget"
+    """A color change can be applied to a widget."""
     widget.applicator.set_color(REBECCAPURPLE)
 
     assert_action_performed_with(widget, "set color", color=REBECCAPURPLE)
 
 
 def test_set_background_color(child, widget):
-    "A background color change can be applied to a widget"
+    """A background color change can be applied to a widget."""
     widget.applicator.set_background_color(REBECCAPURPLE)
 
     assert_action_performed_with(widget, "set background color", color=REBECCAPURPLE)

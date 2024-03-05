@@ -98,7 +98,7 @@ def app():
     ],
 )
 def test_builtin_font(family, size, weight, style, variant, as_str):
-    "A builtin font can be constructed"
+    """A builtin font can be constructed."""
     font = toga.Font(
         family=family,
         size=size,
@@ -133,7 +133,7 @@ def test_builtin_font(family, size, weight, style, variant, as_str):
     ],
 )
 def test_registered_font_key(app, family, style, weight, variant, key):
-    "Registered font keys can be generarted"
+    """Registered font keys can be generated."""
     assert (
         toga.Font._registered_font_key(
             family, style=style, weight=weight, variant=variant
@@ -160,7 +160,7 @@ def test_registered_font_key(app, family, style, weight, variant, key):
     ],
 )
 def test_register_font(app, path, registered):
-    "A custom font can be registered"
+    """A custom font can be registered."""
     toga.Font.register("Custom Font", path)
 
     # Test fixture has paths in Path format; fully resolve for test comparison. This
@@ -189,7 +189,7 @@ def test_register_font(app, path, registered):
     ],
 )
 def test_register_font_variant(app, path, registered):
-    "A custom font can be registered as a variant"
+    """A custom font can be registered as a variant."""
     toga.Font.register("Custom Font", path, weight=BOLD)
 
     # Test fixture has paths in Path format; fully resolve for test comparison. This

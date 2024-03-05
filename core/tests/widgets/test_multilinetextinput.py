@@ -12,7 +12,7 @@ def widget():
 
 
 def test_widget_created(widget):
-    "A multiline text input"
+    """A multiline text input."""
     assert widget._impl.interface == widget
     assert_action_performed(widget, "create MultilineTextInput")
 
@@ -23,7 +23,7 @@ def test_widget_created(widget):
 
 
 def test_create_with_values():
-    "A multiline text input can be created with initial values"
+    """A multiline text input can be created with initial values."""
     on_change = Mock()
     widget = toga.MultilineTextInput(
         value="Some text",
@@ -87,7 +87,7 @@ def test_value(widget, value, expected):
     ],
 )
 def test_readonly(widget, value, expected):
-    "The readonly status of the widget can be changed."
+    """The readonly status of the widget can be changed."""
     # Widget is initially not readonly by default.
     assert not widget.readonly
 

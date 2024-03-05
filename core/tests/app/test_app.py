@@ -209,7 +209,7 @@ def test_create(
     expected_app_id,
     expected_app_name,
 ):
-    """A simple app can be created"""
+    """A simple app can be created."""
     # Monkeypatch the metadata retrieval function
     if metadata:
         metadata_mock = Mock(return_value=metadata)
@@ -255,13 +255,13 @@ def test_create(
     ],
 )
 def test_bad_app_creation(kwargs, exc_type, message):
-    """Errors are raised"""
+    """Errors are raised."""
     with pytest.raises(exc_type, match=message):
         toga.App(**kwargs)
 
 
 def test_app_metadata(monkeypatch, event_loop):
-    """An app can load metadata from the .dist-info file"""
+    """An app can load metadata from the .dist-info file."""
     monkeypatch.setattr(
         importlib.metadata,
         "metadata",
@@ -292,7 +292,7 @@ def test_app_metadata(monkeypatch, event_loop):
 
 
 def test_explicit_app_metadata(monkeypatch, event_loop):
-    """App metadata can be provided explicitly, overriding module-level metadata"""
+    """App metadata can be provided explicitly, overriding module-level metadata."""
     monkeypatch.setattr(
         importlib.metadata,
         "metadata",
@@ -331,7 +331,7 @@ def test_explicit_app_metadata(monkeypatch, event_loop):
 
 @pytest.mark.parametrize("construct", [True, False])
 def test_icon_construction(construct, event_loop):
-    """The app icon can be set during construction"""
+    """The app icon can be set during construction."""
     if construct:
         icon = toga.Icon("path/to/icon")
     else:
@@ -348,7 +348,7 @@ def test_icon_construction(construct, event_loop):
 
 @pytest.mark.parametrize("construct", [True, False])
 def test_icon(app, construct):
-    """The app icon can be changed"""
+    """The app icon can be changed."""
     if construct:
         icon = toga.Icon("path/to/icon")
     else:
@@ -382,7 +382,7 @@ def test_current_window(app):
 
 
 def test_no_current_window(app):
-    """If there's no current window, current_window reflects this"""
+    """If there's no current window, current_window reflects this."""
     # If all the windows are deleted, and there's no main window (e.g., if it's a document app)
     # there might be no current window.
     app._main_window = None
@@ -426,7 +426,7 @@ def test_full_screen(event_loop):
 
 
 def test_set_empty_full_screen_window_list(event_loop):
-    """Setting the full screen window list to [] is an explicit exit"""
+    """Setting the full screen window list to [] is an explicit exit."""
     app = toga.App(formal_name="Test App", app_id="org.example.test")
     window1 = toga.Window()
     window2 = toga.Window()
@@ -445,7 +445,7 @@ def test_set_empty_full_screen_window_list(event_loop):
 
 
 def test_show_hide_cursor(app):
-    """The app cursor can be shown and hidden"""
+    """The app cursor can be shown and hidden."""
     app.hide_cursor()
     assert_action_performed(app, "hide_cursor")
 
@@ -454,7 +454,7 @@ def test_show_hide_cursor(app):
 
 
 def test_startup_method(event_loop):
-    """If an app provides a startup method, it will be invoked during startup"""
+    """If an app provides a startup method, it will be invoked during startup."""
     startup = Mock()
     app = toga.App(
         formal_name="Test App",
@@ -466,7 +466,7 @@ def test_startup_method(event_loop):
 
 
 def test_startup_subclass(event_loop):
-    """App can be subclassed"""
+    """App can be subclassed."""
 
     class SubclassedApp(toga.App):
         def startup(self):
@@ -479,7 +479,7 @@ def test_startup_subclass(event_loop):
 
 
 def test_startup_subclass_no_main_window(event_loop):
-    """If a subclassed app doesn't define a main window, an error is raised"""
+    """If a subclassed app doesn't define a main window, an error is raised."""
 
     class SubclassedApp(toga.App):
         def startup(self):
@@ -490,13 +490,13 @@ def test_startup_subclass_no_main_window(event_loop):
 
 
 def test_about(app):
-    """The about dialog for the app can be shown"""
+    """The about dialog for the app can be shown."""
     app.about()
     assert_action_performed(app, "show_about_dialog")
 
 
 def test_visit_homepage(monkeypatch, event_loop):
-    """The app's homepage can be opened"""
+    """The app's homepage can be opened."""
     app = toga.App(
         formal_name="Test App",
         app_id="org.example.test",
@@ -512,7 +512,7 @@ def test_visit_homepage(monkeypatch, event_loop):
 
 
 def test_no_homepage(monkeypatch, app):
-    """If the app doesn't have a home page, visit_homepage is a no-op"""
+    """If the app doesn't have a home page, visit_homepage is a no-op."""
     open_webbrowser = Mock()
     monkeypatch.setattr(webbrowser, "open", open_webbrowser)
 
@@ -529,7 +529,7 @@ def test_beep(app):
 
 
 def test_exit_direct(app):
-    """An app can be exited directly"""
+    """An app can be exited directly."""
     on_exit_handler = Mock(return_value=True)
     app.on_exit = on_exit_handler
 
@@ -542,16 +542,16 @@ def test_exit_direct(app):
 
 
 def test_exit_no_handler(app):
-    """A app without a exit handler can be exited"""
+    """An app without an exit handler can be exited."""
     # Exit the app
     app._impl.simulate_exit()
 
-    # Window has been exitd, and is no longer in the app's list of windows.
+    # Window has been exited, and is no longer in the app's list of windows.
     assert_action_performed(app, "exit")
 
 
-def test_exit_sucessful_handler(app):
-    """An app with a successful exit handler can be exited"""
+def test_exit_successful_handler(app):
+    """An app with a successful exit handler can be exited."""
     on_exit_handler = Mock(return_value=True)
     app.on_exit = on_exit_handler
 
@@ -564,7 +564,7 @@ def test_exit_sucessful_handler(app):
 
 
 def test_exit_rejected_handler(app):
-    """An app can have a exit handler that rejects the exit"""
+    """An app can have a exit handler that rejects the exit."""
     on_exit_handler = Mock(return_value=False)
     app.on_exit = on_exit_handler
 
@@ -577,13 +577,13 @@ def test_exit_rejected_handler(app):
 
 
 def test_loop(app, event_loop):
-    """The main thread's event loop can be accessed"""
+    """The main thread's event loop can be accessed."""
     assert isinstance(app.loop, asyncio.AbstractEventLoop)
     assert app.loop is event_loop
 
 
 def test_background_task(app):
-    """A background task can be queued"""
+    """A background task can be queued."""
     canary = Mock()
 
     async def background(app, **kwargs):
@@ -603,8 +603,7 @@ def test_background_task(app):
 
 def test_deprecated_id(event_loop):
     """The deprecated `id` constructor argument is ignored, and the property of the same
-    name is redirected to `app_id`
-    """
+    name is redirected to `app_id`"""
     id_warning = r"App.id is deprecated.* Use app_id instead"
     with pytest.warns(DeprecationWarning, match=id_warning):
         app = toga.App("Test App", "org.example.test", id="test_app_id")

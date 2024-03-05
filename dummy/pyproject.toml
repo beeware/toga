@@ -54,6 +54,10 @@ Source = "https://github.com/beeware/toga"
 [project.entry-points."toga.backends"]
 dummy = "toga_dummy"
 
+[project.entry-points."toga.image_formats"]
+dummy = "toga_dummy.plugins.image_formats.CustomImageConverter"
+disabled = "toga_dummy.plugins.image_formats.DisabledImageConverter"
+
 [tool.setuptools_scm]
 root = ".."
 
@@ -61,7 +65,3 @@ root = ".."
 dependencies = [
     "toga-core == {version}",
 ]
-
-[project.entry-points."toga.image_formats"]
-dummy = "toga_dummy.plugins.image_formats.CustomImageConverter"
-disabled = "toga_dummy.plugins.image_formats.DisabledImageConverter"

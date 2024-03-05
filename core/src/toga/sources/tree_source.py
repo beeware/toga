@@ -54,7 +54,7 @@ class Node(Row):
         child = self._children[index]
         del self._children[index]
 
-        # Child isn't part of this source, or a child of this node any more.
+        # Child isn't part of this source, or a child of this node anymore.
         child._parent = None
         child._source = None
 

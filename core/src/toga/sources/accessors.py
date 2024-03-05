@@ -54,7 +54,7 @@ def build_accessors(
     :param headings: The list of headings.
     :param accessors: The list of accessor overrides. Can be specified as:
 
-        * A list the same length as headings. Each entry in the list is a a string that
+        * A list the same length as headings. Each entry in the list is a string that
           is the override name for the accessor, or :any:`None` if the default accessor
           for the heading at that index should be used.
         * A dictionary mapping heading names to accessor names. If a heading name isn't

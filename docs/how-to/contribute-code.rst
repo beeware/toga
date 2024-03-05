@@ -41,6 +41,9 @@ First, ensure that you have Python 3 and pip installed. To do this, run:
       C:\...>python3 --version
       C:\...>pip3 --version
 
+Create a virtual environment
+----------------------------
+
 The recommended way of setting up your development environment for Toga
 is to install a virtual environment, install the required dependencies and
 start coding. To set up a virtual environment, run:
@@ -69,6 +72,9 @@ start coding. To set up a virtual environment, run:
       C:\...>venv\Scripts\activate
 
 Your prompt should now have a ``(venv)`` prefix in front of it.
+
+Install system dependencies
+---------------------------
 
 Next, install any additional dependencies for your operating system:
 
@@ -110,6 +116,9 @@ Next, install any additional dependencies for your operating system:
 
     No additional dependencies
 
+Clone the Toga repository
+-------------------------
+
 Next, go to `the Toga page on GitHub <https://github.com/beeware/toga>`__, fork
 the repository into your own account, and then clone a copy of that repository
 onto your computer by clicking on "Clone or Download". If you have the GitHub
@@ -145,6 +154,9 @@ command line:
 
     (substituting your GitHub username)
 
+Install Toga
+------------
+
 Now that you have the source code, you can install Toga into your development
 environment. The Toga source repository contains multiple packages. Since we're
 installing from source, we can't rely on pip to resolve the dependencies to
@@ -172,6 +184,9 @@ source packages, so we have to manually install each package:
 
       (venv) C:\...>cd toga
       (venv) C:\...>pip install -e ./core[dev] -e ./dummy -e ./winforms
+
+Pre-commit automatically runs during the commit
+-----------------------------------------------
 
 Toga uses a tool called `Pre-Commit <https://pre-commit.com>`__ to identify
 simple issues and standardize code formatting. It does this by installing a git
@@ -510,19 +525,19 @@ To run the core test suite:
 
     .. code-block:: console
 
-      (venv) $ tox -e py
+      (venv) $ tox -m test
 
   .. group-tab:: Linux
 
     .. code-block:: console
 
-      (venv) $ tox -e py
+      (venv) $ tox -m test
 
   .. group-tab:: Windows
 
     .. code-block:: doscon
 
-      (venv) C:\...>tox -e py
+      (venv) C:\...>tox -m test
 
 You should get some output indicating that tests have been run. You may see
 ``SKIPPED`` tests, but shouldn't ever get any ``FAIL`` or ``ERROR`` test
@@ -557,6 +572,9 @@ This tells us that line 211, and lines 238-240 are not being executed by the tes
 suite. You'll need to add new tests (or modify an existing test) to restore this
 coverage.
 
+Run a subset of tests
+---------------------
+
 When you're developing your new test, it may be helpful to run *just* that one
 test. To do this, you can pass in the name of a specific test file (or a
 specific test, using `pytest specifiers
@@ -586,6 +604,58 @@ These test paths are relative to the ``core`` directory. You'll still get a
 coverage report when running a part of the test suite - but the coverage results
 will only report the lines of code that were executed by the specific tests you
 ran.
+
+Running the test suite for multiple Python versions
+---------------------------------------------------
+
+Tox can also run the test suite for all supported version of Python. This
+requires that each version of Python is available from ``Path``.
+
+.. tabs::
+
+  .. group-tab:: macOS
+
+    .. code-block:: console
+
+      (venv) $ tox
+
+  .. group-tab:: Linux
+
+    .. code-block:: console
+
+      (venv) $ tox
+
+  .. group-tab:: Windows
+
+    .. code-block:: doscon
+
+      (venv) C:\...>tox
+
+Running CI checks
+-----------------
+
+Tox can also be used to run many of the same checks that run in CI; this is
+most useful prior to committing and pushing your changes.
+
+.. tabs::
+
+  .. group-tab:: macOS
+
+    .. code-block:: console
+
+      (venv) $ tox -m ci
+
+  .. group-tab:: Linux
+
+    .. code-block:: console
+
+      (venv) $ tox -m ci
+
+  .. group-tab:: Windows
+
+    .. code-block:: doscon
+
+      (venv) C:\...>tox -m ci
 
 .. _run-testbed:
 
