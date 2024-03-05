@@ -577,7 +577,7 @@ async def _row_change_test(widget, probe):
 
     # Delete a row
     del widget.data[0][3]
-    await probe.redraw("Row has been removed")
+    await probe.redraw("Non-visible row has been removed")
     assert probe.child_count((0,)) == 6
     probe.assert_cell_content((0, 2), 0, "ANEW")
     probe.assert_cell_content((0, 4), 0, "A4")
