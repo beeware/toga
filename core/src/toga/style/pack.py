@@ -87,7 +87,7 @@ FONT_SIZE_CHOICES = Choices(integer=True)
 
 # In 3.10+, the dataclass will autogenerate its init and only accept keywords. In prior
 # versions, it won't generate init, so it uses BaseStyle.__init__ (which already only
-# accepts keywrds). The functionality is the same, as far as runtime is concerned.
+# accepts keywords). The functionality is the same, as far as runtime is concerned.
 if sys.version_info < (3, 10):
     _DATACLASS_KWARGS = {"init": False}
 else:
