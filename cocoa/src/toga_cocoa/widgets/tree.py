@@ -41,9 +41,8 @@ class TogaTree(NSOutlineView):
         # Get the Cocoa implementation for the row. If an _impl
         # doesn't exist, create a data object for it, and
         # populate it with initial values for each column.
-        node_implementation = node_impl(node)
 
-        return node_implementation
+        return node_impl(node)
 
     @objc_method
     def outlineView_isItemExpandable_(self, tree, item) -> bool:
