@@ -549,6 +549,15 @@ async def _row_change_test(widget, probe):
     probe.assert_cell_content((0, 4), 0, "A4")
     probe.assert_cell_content((0, 5), 0, "AX")
 
+    # Append a child to a non-expanded child
+    widget.data[0][5].append({"a": "AXX", "b": "BXX", "c": "CXX"})
+    await probe.redraw("Full row has been appended to a non-expanded child")
+
+    assert probe.child_count((0, 5)) == 1
+    probe.assert_cell_content((0, 5, 0), 0, "AXX")
+    probe.assert_cell_content((0, 5, 0), 1, "BXX")
+    probe.assert_cell_content((0, 5, 0), 2, "CXX")
+
     # Insert a row into the middle of the table;
     # Row is missing a B accessor
     widget.data[0].insert(2, {"a": "AY", "c": "CY"})
@@ -599,6 +608,16 @@ async def _row_change_test(widget, probe):
     assert probe.child_count((0,)) == 0
     probe.assert_cell_content((0,), 0, "A!")
 
+    # Expand tree and check contents still correct
+    await probe.expand_tree()
+    await probe.redraw("Tree expanded")
+
+    assert probe.child_count() == 1
+    assert probe.child_count((0,)) == 0
+    probe.assert_cell_content((0,), 0, "A!")
+    probe.assert_cell_content((0,), 1, "B!")
+    probe.assert_cell_content((0,), 2, "C!")
+
     # Clear the table
     widget.data.clear()
     await probe.redraw("Data has been cleared")
@@ -606,8 +625,6 @@ async def _row_change_test(widget, probe):
 
     # Test append/insert/modify/remove after tree expansion
     widget.data = small_data
-
-    await probe.expand_tree()
     await probe.redraw("Data source has been changed")
 
     # Append a row to the table
