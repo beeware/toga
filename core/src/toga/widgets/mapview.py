@@ -187,10 +187,10 @@ class MapView(Widget):
         """Set the zoom level for the map.
 
         The zoom level is an integer in the range 0-20 (inclusive). It can be used to
-        set the number of degrees of latitude that will span a 256 CSS pixel region the
-        vertical axis of the map, following the relationship::
+        set the number of degrees of longitude that will span a 256 CSS pixel region the
+        horizontal axis of the map, following the relationship::
 
-            latitude_per_256_pixels = 360 / (2**zoom)
+            longitude_per_256_pixels = 360 / (2**zoom)
 
         In practical terms, this means a 256px square will cover:
 
@@ -203,7 +203,7 @@ class MapView(Widget):
         * 18-19: Individual buildings
         * 20: A single building
 
-        These zoom levels use the same basis as the OpenStreetMap API. See
+        These zoom levels use the same mathematical basis as the OpenStreetMap API. See
         `OpenStreetMap's documentation on zoom levels
         <https://wiki.openstreetmap.org/wiki/Zoom_levels>`__ for more details.
 

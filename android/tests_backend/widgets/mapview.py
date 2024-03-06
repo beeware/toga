@@ -25,8 +25,8 @@ class MapViewProbe(SimpleProbe):
             self.native.getLongitudeSpanDouble(),
         )
 
-    async def tile_latitude_span(self):
-        return 256 * self.native.getLatitudeSpanDouble() / self.height
+    async def tile_longitude_span(self):
+        return 256 * self.native.getLongitudeSpanDouble() / self.width
 
     @property
     def pin_count(self):

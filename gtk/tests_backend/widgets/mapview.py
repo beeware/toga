@@ -28,9 +28,9 @@ class MapViewProbe(SimpleProbe):
         southwest = self.impl._invoke("map.getBounds().getSouthWest().toString();")
         return northeast, southwest
 
-    async def tile_latitude_span(self):
+    async def tile_longitude_span(self):
         northeast, southwest = await self._map_region()
-        return 256 * (northeast.lat - southwest.lat) / self.height
+        return 256 * (northeast.lng - southwest.lng) / self.width
 
     @property
     def pin_count(self):

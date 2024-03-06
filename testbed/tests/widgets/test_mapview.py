@@ -104,7 +104,7 @@ async def test_zoom(widget, probe):
     # Retrieve the initial zoom level, and probe for the longitude. This ensures
     # complete coverage for macOS x86_64, on which this test is unreliable.
     _ = widget.zoom
-    await probe.tile_latitude_span()
+    await probe.tile_longitude_span()
 
     # For a range of zoom levels, probe to get the delta from the minimum to maximum
     # longitude that is currently visible. That delta should be within a range at each
@@ -121,8 +121,8 @@ async def test_zoom(widget, probe):
         widget.zoom = zoom
         await probe.wait_for_map(f"Map has been zoomed to level {zoom}", max_delay=2)
 
-        # Get the latitude span associated with a 256px tile.
-        tile_span = await probe.tile_latitude_span()
+        # Get the longitude span associated with a 256px tile.
+        tile_span = await probe.tile_longitude_span()
         assert (
             min_span < tile_span < max_span
         ), f"Zoom level {zoom}: failed {min_span} < {tile_span} < {max_span}"

@@ -99,20 +99,20 @@ class MapView(Widget):
         # Reverse engineer zoom level based on a 256 pixel square.
         # See set_zoom for the rationale behind the math.
         return math.log2(
-            (360 * self.interface.layout.height)
-            / (self.native.region.span.latitudeDelta * 256)
+            (360 * self.interface.layout.width)
+            / (self.native.region.span.longitudeDelta * 256)
         )
 
     def set_zoom(self, zoom):
         if self.backlog is None:
-            # The zoom level indicates how many degrees of latitude will be displayed in a
-            # 256 pixel vertical range. Determine how many degrees of latitude that is,
-            # and scale to the size of the visible vertical space.
+            # The zoom level indicates how many degrees of longitude will be displayed in a
+            # 256 pixel horizontal range. Determine how many degrees of longitude that is,
+            # and scale to the size of the visible horizontal space.
 
-            # The vertical axis can't show more than 180 degrees of latitude, so clip
+            # The horizontal axis can't show more than 360 degrees of longitude, so clip
             # the range to that value. The OSM zoom level is based on 360 degrees of
-            # latitude being split into 2**zoom sections.
-            delta = min(180.0, (360 * self.interface.layout.height) / (256 * 2**zoom))
+            # longitude being split into 2**zoom sections.
+            delta = min(360.0, (360 * self.interface.layout.width) / (256 * 2**zoom))
 
             # If we're currently panning to a new location, use the desired *future*
             # location as the center of the zoom region. Otherwise use the current center
@@ -124,7 +124,7 @@ class MapView(Widget):
             )
             region = MKCoordinateRegion(
                 center,
-                MKCoordinateSpan(delta, 0),
+                MKCoordinateSpan(0, delta),
             )
             self.native.setRegion(region, animated=True)
         else:
