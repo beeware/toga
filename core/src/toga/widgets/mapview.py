@@ -192,7 +192,7 @@ class MapView(Widget):
 
             latitude_per_256_pixels = 360 / (2**zoom)
 
-        In practical terms, this means a map will display:
+        In practical terms, this means a 256px square will cover:
 
         * 0-2: Whole world
         * 3-6: Large countries
@@ -203,12 +203,16 @@ class MapView(Widget):
         * 18-19: Individual buildings
         * 20: A single building
 
+        These zoom levels use the same basis as the OpenStreetMap API. See
+        `OpenStreetMap's documentation on zoom levels
+        <https://wiki.openstreetmap.org/wiki/Zoom_levels>`__ for more details.
+
         If the provided zoom value is outside the supported range, it will be clipped.
 
         At very low zoom levels, some backends may constrain the viewable range to avoid
         repeating map tiles in the visible area. This effectively sets a minimum bound
         on the zoom level that can be requested. The value of this minimum varies
-        depending on the aspect ratio of the map view.
+        depending on the size and aspect ratio of the map view.
         """
         return round(self._impl.get_zoom())
 
