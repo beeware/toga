@@ -2,50 +2,49 @@
 requires = ["briefcase"]
 
 [tool.briefcase]
-project_name = "Screenshot Generator"
+project_name = "Map View"
 bundle = "org.beeware.toga.examples"
 version = "0.0.1"
 url = "https://beeware.org"
 license = "BSD license"
-author = "Tiberius Yak"
+author = 'Tiberius Yak'
 author_email = "tiberius@beeware.org"
 
-[tool.briefcase.app.screenshot]
-formal_name = "Screenshot Generator"
+[tool.briefcase.app.mapview]
+formal_name = "Map View"
 description = "A testing app"
-sources = ["screenshot"]
+sources = ['mapview']
 requires = [
-    "../../core",
-    "pillow",
+    '../../core',
 ]
 
 
-[tool.briefcase.app.screenshot.macOS]
+[tool.briefcase.app.mapview.macOS]
 requires = [
-    "../../cocoa",
-    "std-nslog>=1.0.0",
+    '../../cocoa',
+    'std-nslog>=1.0.0',
 ]
 
-[tool.briefcase.app.screenshot.linux]
+[tool.briefcase.app.mapview.linux]
 requires = [
-    "../../gtk",
+    '../../gtk',
 ]
 
-[tool.briefcase.app.screenshot.windows]
+[tool.briefcase.app.mapview.windows]
 requires = [
-    "../../winforms",
+    '../../winforms',
 ]
 
 # Mobile deployments
-[tool.briefcase.app.screenshot.iOS]
+[tool.briefcase.app.mapview.iOS]
 requires = [
-    "../../iOS",
-    "std-nslog>=1.0.0",
+    '../../iOS',
+    'std-nslog>=1.0.0',
 ]
 
-[tool.briefcase.app.screenshot.android]
+[tool.briefcase.app.mapview.android]
 requires = [
-    "../../android",
+    '../../android',
 ]
 
 base_theme = "Theme.MaterialComponents.Light.DarkActionBar"
@@ -56,3 +55,10 @@ build_gradle_dependencies = [
     "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0",
     "org.osmdroid:osmdroid-android:6.1.0",
 ]
+
+# Web deployment
+[tool.briefcase.app.mapview.web]
+requires = [
+    "../../web",
+]
+style_framework = "Shoelace v2.3"

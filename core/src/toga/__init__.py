@@ -10,9 +10,12 @@ from .fonts import Font
 from .icons import Icon
 from .images import Image
 from .keys import Key
-from .widgets.activityindicator import ActivityIndicator
+
+# Types
+from .types import LatLng
 
 # Widgets
+from .widgets.activityindicator import ActivityIndicator
 from .widgets.base import Widget
 from .widgets.box import Box
 from .widgets.button import Button
@@ -22,6 +25,7 @@ from .widgets.detailedlist import DetailedList
 from .widgets.divider import Divider
 from .widgets.imageview import ImageView
 from .widgets.label import Label
+from .widgets.mapview import MapPin, MapView
 from .widgets.multilinetextinput import MultilineTextInput
 from .widgets.numberinput import NumberInput
 from .widgets.optioncontainer import OptionContainer, OptionItem
@@ -68,10 +72,12 @@ __all__ = [
     "hsl",
     "hsla",
     "rgb",
-    "rgba",  # Colors
+    "rgba",
     "Font",
     "Icon",
     "Image",
+    # Types
+    "LatLng",
     # Widgets
     "ActivityIndicator",
     "Box",
@@ -82,6 +88,8 @@ __all__ = [
     "Divider",
     "ImageView",
     "Label",
+    "MapPin",
+    "MapView",
     "MultilineTextInput",
     "NumberInput",
     "OptionContainer",

@@ -29,11 +29,8 @@ class OnSelectHandler(Protocol):
     def __call__(self, widget: OptionContainer, **kwargs: Any) -> None:
         """A handler that will be invoked when a new tab is selected in the OptionContainer.
 
-        .. note::
-            ``**kwargs`` ensures compatibility with additional arguments
-            introduced in future versions.
-
         :param widget: The OptionContainer that had a selection change.
+        :param kwargs: Ensures compatibility with arguments added in future versions.
         """
         ...
 
@@ -385,7 +382,7 @@ class OptionContainer(Widget):
         id=None,
         style=None,
         content: list[OptionContainerContent] | None = None,
-        on_select: OnSelectHandler | None = None,
+        on_select: toga.widgets.optioncontainer.OnSelectHandler | None = None,
     ):
         """Create a new OptionContainer.
 
@@ -488,7 +485,7 @@ class OptionContainer(Widget):
             item._content.window = window
 
     @property
-    def on_select(self) -> OnSelectHandler:
+    def on_select(self) -> toga.widgets.optioncontainer.OnSelectHandler:
         """The callback to invoke when a new tab of content is selected."""
         return self._on_select
 

@@ -22,6 +22,7 @@ draggable
 Flexbox
 GMail
 GObject
+Gradle
 GStreamer
 GTK
 Helvetica
@@ -95,3 +96,4 @@ Wayland
 WebKit
 whitespace
 Winforms
+zoomable

@@ -17,6 +17,7 @@ from .widgets.canvas import Canvas
 from .widgets.detailedlist import DetailedList
 from .widgets.imageview import ImageView
 from .widgets.label import Label
+from .widgets.mapview import MapView
 from .widgets.multilinetextinput import MultilineTextInput
 from .widgets.numberinput import NumberInput
 from .widgets.optioncontainer import OptionContainer
@@ -62,6 +63,7 @@ __all__ = [
     "DetailedList",
     "ImageView",
     "Label",
+    "MapView",
     "MultilineTextInput",
     "NumberInput",
     "OptionContainer",
