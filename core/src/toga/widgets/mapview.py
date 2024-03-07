@@ -187,8 +187,9 @@ class MapView(Widget):
         """Set the zoom level for the map.
 
         The zoom level is an integer in the range 0-20 (inclusive). It can be used to
-        set the number of degrees of longitude that will span a 256 CSS pixel region the
-        horizontal axis of the map, following the relationship::
+        set the number of degrees of longitude that will span a 256 :ref:`CSS pixel
+        <css-units>` region in the horizontal axis of the map, following the
+        relationship::
 
             longitude_per_256_pixels = 360 / (2**zoom)
 
