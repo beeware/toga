@@ -1,6 +1,6 @@
 [build-system]
 requires = [
-    "setuptools==69.0.0",
+    "setuptools==69.1.1",
     "setuptools_scm==8.0.4",
     "setuptools_dynamic_dependencies @ git+https://github.com/beeware/setuptools_dynamic_dependencies",
 ]
