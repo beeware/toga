@@ -29,31 +29,7 @@ single-page web apps.
        :align: center
        :width: 450px
 
-
 .. rst-class::  row
-
-Table of contents
-=================
-
-:ref:`Tutorial <tutorial>`
---------------------------
-
-Get started with a hands-on introduction to Toga for beginners.
-
-:ref:`How-to guides <how-to>`
------------------------------
-
-Guides and recipes for common problems and tasks.
-
-:ref:`Background <background>`
-------------------------------
-
-Explanation and discussion of key topics and concepts.
-
-:ref:`Reference <reference>`
-----------------------------
-
-Technical reference - commands, modules, classes, methods.
 
 Community
 =========
@@ -78,7 +54,9 @@ We foster a welcoming and respectful community as described in our
    :hidden:
    :titlesonly:
    :caption: Tutorials
+   :name: tutorial/index
 
+   tutorial/index
    tutorial/tutorial-0
    tutorial/tutorial-1
    tutorial/tutorial-2
@@ -90,6 +68,7 @@ We foster a welcoming and respectful community as described in our
    :hidden:
    :titlesonly:
    :caption: How-to Guides
+   :name: how-to
 
    how-to/get-started
    how-to/contribute-code
@@ -102,6 +81,7 @@ We foster a welcoming and respectful community as described in our
    :hidden:
    :titlesonly:
    :caption: Reference
+   :name: reference
 
    reference/platforms/index
    reference/widgets_by_platform
@@ -114,6 +94,7 @@ We foster a welcoming and respectful community as described in our
    :hidden:
    :titlesonly:
    :caption: Background
+   :name: background
 
    background/project/index
    background/topics/index
