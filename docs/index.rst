@@ -73,14 +73,48 @@ We foster a welcoming and respectful community as described in our
 .. _Github Discussions forum: https://github.com/beeware/toga/discussions
 .. _BeeWare Community Code of Conduct: https://beeware.org/community/behavior/
 
+.. toctree::
+   :maxdepth: 2
+   :hidden:
+   :titlesonly:
+   :caption: Tutorials
+
+   tutorial/tutorial-0
+   tutorial/tutorial-1
+   tutorial/tutorial-2
+   tutorial/tutorial-3
+   tutorial/tutorial-4
 
 .. toctree::
    :maxdepth: 2
    :hidden:
    :titlesonly:
+   :caption: How-to Guides
 
+   how-to/get-started
+   how-to/contribute-code
+   how-to/contribute-docs
+   how-to/backends/index
+   how-to/internal/index
 
-   tutorial/index
-   how-to/index
-   reference/index
-   background/index
+.. toctree::
+   :maxdepth: 2
+   :hidden:
+   :titlesonly:
+   :caption: Reference
+
+   reference/platforms/index
+   reference/widgets_by_platform
+   reference/api/index
+   reference/style/index
+   reference/plugins/index
+
+.. toctree::
+   :maxdepth: 2
+   :hidden:
+   :titlesonly:
+   :caption: Background
+
+   background/project/index
+   background/topics/index
+   background/internals/index

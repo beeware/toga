@@ -1,0 +1,1 @@
+The navigation for the documentation was updated to include an additional layer of headings.
