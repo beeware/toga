@@ -112,9 +112,9 @@ class CameraProbe(AppProbe):
         )
 
     def cleanup(self):
-        # Ensure there are no open camrea preview windows at the end of a test.
+        # Ensure there are no open camera preview windows at the end of a test.
         for window in self.app.camera._impl.preview_windows:
-            window.cocoa_windowShouldClose()
+            window.interface.on_close()
 
     def known_cameras(self):
         return {
@@ -200,8 +200,8 @@ class CameraProbe(AppProbe):
     async def cancel_photo(self, photo):
         window = self.app.camera._impl.preview_windows[0]
 
-        # Close the camera window.
-        window._impl.cocoa_windowShouldClose()
+        # Trigger the close of the camera window.
+        window.on_close()
         await self.redraw("Photo cancelled")
 
         # The window has been closed and the session ended

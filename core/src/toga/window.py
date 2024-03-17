@@ -274,23 +274,24 @@ class Window:
         undefined, except for :attr:`closed` which can be used to check if the window
         was closed.
         """
-        self.app.windows.discard(self)
+        # If closing the window could trigger the app exit, don't actually
+        # close the window.
+        close_window = True
         if self.app.main_window == self:
             # Closing the window marked as the main window exits the app
             self.app.on_exit()
-        elif self.app.main_window == self.app.BACKGROUND:
-            # In a background app, closing a window has no special handling; just close
-            # the window.
-            self._impl.close()
-        else:
-            # Otherwise: closing the *last* window exits the app (if platform
-            # appropriate); any other window is a normal close.
-            if len(self.app.windows) == 0 and self.app._impl.CLOSE_ON_LAST_WINDOW:
+            close_window = False
+        elif self.app.main_window is None:
+            # If this is a session-based app, this is the last window in the app,
+            # and the platform exits on last window close, trigger an exit.
+            if len(self.app.windows) == 1 and self.app._impl.CLOSE_ON_LAST_WINDOW:
                 self.app.on_exit()
-            else:
-                self._impl.close()
+                close_window = False
 
-        self._closed = True
+        if close_window:
+            self.app.windows.discard(self)
+            self._impl.close()
+            self._closed = True
 
     @property
     def closed(self) -> bool:
