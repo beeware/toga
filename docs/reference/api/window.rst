@@ -23,13 +23,17 @@ An operating system-managed container of widgets.
        :align: center
        :width: 300px
 
-  .. group-tab:: Android |no|
+  .. group-tab:: Android
 
-    Not supported
+    .. figure:: /reference/images/window-android.png
+       :align: center
+       :width: 300px
 
-  .. group-tab:: iOS |no|
+  .. group-tab:: iOS
 
-    Not supported
+    .. figure:: /reference/images/window-iOS.png
+       :align: center
+       :width: 300px
 
   .. group-tab:: Web |no|
 
@@ -43,7 +47,7 @@ Usage
 -----
 
 A window is the top-level container that the operating system uses to display widgets. A
-window may also have other decorations, such as a title bar or toolbar.
+window does not contain a menu bar or toolbar.
 
 When first created, a window is not visible. To display it, call the
 :meth:`~toga.Window.show` method.
@@ -85,11 +89,11 @@ Notes
   avoid making UI design decisions that are dependent on specific size and
   placement of windows.
 
-* A mobile application can only have a single window (the :class:`~toga.MainWindow`),
-  and that window cannot be moved, resized, hidden, or made full screen. Toga will raise
-  an exception if you attempt to create a secondary window on a mobile platform. If you
-  try to modify the size, position, or visibility of the main window, the request will
-  be ignored.
+* A mobile application can only have a single window (the ``main_window``), and that
+  window cannot be moved, resized, hidden, or made full screen. Toga will raise an
+  exception if you attempt to create a secondary window on a mobile platform. If you try
+  to modify the size, position, or visibility of the main window, the request will be
+  ignored.
 
 Reference
 ---------

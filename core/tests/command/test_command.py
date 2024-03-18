@@ -5,7 +5,8 @@ import pytest
 
 import toga
 from toga.command import Separator
-from toga_dummy.utils import assert_action_performed_with
+from toga.handlers import DynamicHandler
+from toga_dummy.utils import assert_action_not_performed, assert_action_performed_with
 
 
 def assert_order(*items):
@@ -155,13 +156,14 @@ def test_icon(app, construct):
 @pytest.mark.parametrize(
     "action, enabled, initial_state",
     [
-        (Mock(), True, True),
-        (Mock(), False, False),
+        (lambda cmd, **kwargs: None, True, True),
+        (lambda cmd, **kwargs: None, False, False),
         (None, True, False),
         (None, False, False),
     ],
 )
 def test_enable(action, enabled, initial_state):
+    """Enabled can be set to a literal value"""
     cmd = toga.Command(action, text="Test command", enabled=enabled)
 
     assert cmd.enabled is initial_state
@@ -181,6 +183,30 @@ def test_enable(action, enabled, initial_state):
     # Set enabled; triggers an implementation response
     cmd.enabled = True
     assert_action_performed_with(cmd, "set enabled", value=True)
+
+
+def test_dynamic_action():
+    """Enabled status can be dynamic based on the handler."""
+    is_enabled = Mock(side_effect=[True, False])
+    handler = Mock()
+
+    cmd = toga.Command(DynamicHandler(handler, enabled=is_enabled), text="Test command")
+
+    # As the action is dynamic, the underlying impl property won't have been triggered
+    assert_action_not_performed(cmd, "set enabled")
+
+    # Setting the property has no effect either
+    cmd.enabled = True
+    assert_action_not_performed(cmd, "set enabled")
+
+    # Evaluating enabled status twice in a row returns a different value
+    # because the side effect of the enabled method is different.
+    assert cmd.enabled
+    assert not cmd.enabled
+
+    # The action callable is proxied through the DynamicAction object.
+    cmd.action("first", "second", third=3)
+    handler.assert_called_once_with(cmd, "first", "second", third=3)
 
 
 def test_order_by_text():

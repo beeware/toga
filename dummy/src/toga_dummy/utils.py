@@ -173,7 +173,7 @@ class LogEntry:
         self.context = context
 
     def __repr__(self):
-        return f"<LogEntry: {self.logtype} on {self.instance}"
+        return f"<LogEntry: {self.logtype} on {self.instance}: {self.context}"
 
 
 # A constant that can be used to differentiate between a value not being

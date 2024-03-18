@@ -27,11 +27,12 @@ def test_create_with_values():
 @pytest.mark.parametrize("change_handler", [(None), (Mock())])
 def test_add_clear(app, change_handler):
     """Commands can be added and removed from a commandset."""
-    # Put some commands into the app
+    # Put some commands into the app. The base app has 3 commands before, 1 after any
+    # user commands.
     cmd_a = toga.Command(None, text="App command a")
     cmd_b = toga.Command(None, text="App command b", order=10)
     app.commands.add(cmd_a, cmd_b)
-    assert list(app.commands) == [cmd_a, cmd_b]
+    assert list(app.commands)[3:-1] == [cmd_a, cmd_b]
 
     # Create a standalone command set and add some commands
     cs = CommandSet(on_change=change_handler)
@@ -48,7 +49,7 @@ def test_add_clear(app, change_handler):
     assert list(cs) == [cmd1b, cmd1a]
 
     # New Commands aren't known to the app
-    assert list(app.commands) == [cmd_a, cmd_b]
+    assert list(app.commands)[3:-1] == [cmd_a, cmd_b]
 
     # Clear the command set
     cs.clear()
@@ -62,17 +63,18 @@ def test_add_clear(app, change_handler):
     assert list(cs) == []
 
     # App command set hasn't changed.
-    assert list(app.commands) == [cmd_a, cmd_b]
+    assert list(app.commands)[3:-1] == [cmd_a, cmd_b]
 
 
 @pytest.mark.parametrize("change_handler", [(None), (Mock())])
 def test_add_clear_with_app(app, change_handler):
     """Commands can be added and removed from a commandset that is linked to an app."""
-    # Put some commands into the app
+    # Put some commands into the app. The base app has 3 commands before, 1 after any
+    # user commands.
     cmd_a = toga.Command(None, text="App command a")
     cmd_b = toga.Command(None, text="App command b", order=10)
     app.commands.add(cmd_a, cmd_b)
-    assert list(app.commands) == [cmd_a, cmd_b]
+    assert list(app.commands)[3:-1] == [cmd_a, cmd_b]
 
     # Create a command set that is linked to the app and add some commands
     cs = CommandSet(on_change=change_handler, app=app)
@@ -89,7 +91,7 @@ def test_add_clear_with_app(app, change_handler):
     assert list(cs) == [cmd1b, cmd1a]
 
     # New Commands are known to the app
-    assert list(app.commands) == [cmd_a, cmd1b, cmd1a, cmd_b]
+    assert list(app.commands)[3:-1] == [cmd_a, cmd1b, cmd1a, cmd_b]
 
     # Add another command to the commandset
     cmd2 = toga.Command(None, text="Test command 2", order=2)
@@ -104,7 +106,7 @@ def test_add_clear_with_app(app, change_handler):
     assert list(cs) == [cmd1b, cmd2, cmd1a]
 
     # App also knows about the command
-    assert list(app.commands) == [cmd_a, cmd1b, cmd2, cmd1a, cmd_b]
+    assert list(app.commands)[3:-1] == [cmd_a, cmd1b, cmd2, cmd1a, cmd_b]
 
     # Clear the command set
     cs.clear()
@@ -118,7 +120,7 @@ def test_add_clear_with_app(app, change_handler):
     assert list(cs) == []
 
     # App command set hasn't changed.
-    assert list(app.commands) == [cmd_a, cmd1b, cmd2, cmd1a, cmd_b]
+    assert list(app.commands)[3:-1] == [cmd_a, cmd1b, cmd2, cmd1a, cmd_b]
 
 
 def test_ordering(

@@ -9,7 +9,7 @@ class Command:
         self.interface = interface
         self.native = []
 
-    def gtk_activate(self, action, data):
+    def gtk_activate(self, action, data=None):
         self.interface.action()
 
     def gtk_clicked(self, action):

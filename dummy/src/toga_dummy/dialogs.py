@@ -3,6 +3,20 @@ class BaseDialog:
         self.interface = interface
         self.interface._impl = self
 
+        try:
+            result = interface.window._impl.dialog_responses[
+                self.__class__.__name__
+            ].pop(0)
+            self.simulate_result(result)
+        except KeyError:
+            raise RuntimeError(
+                f"Was not expecting responses for {self.__class__.__name__}"
+            )
+        except IndexError:
+            raise RuntimeError(
+                f"Ran out of prepared responses for {self.__class__.__name__}"
+            )
+
     def simulate_result(self, result):
         self.interface.set_result(result)
 

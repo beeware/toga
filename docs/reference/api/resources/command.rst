@@ -8,7 +8,7 @@ A representation of app functionality that the user can invoke from menus or too
    :header-rows: 1
    :file: ../../data/widgets_by_platform.csv
    :included_cols: 4,5,6,7,8,9,10
-   :exclude: {0: '(?!(Command|Component))'}
+   :exclude: {0: '(?!(Command))', 1:'(?!(Resource))'}
 
 
 Usage
@@ -23,7 +23,7 @@ they invoke it. It doesn't matter if they select a menu item, press a button on 
 toolbar, or use a key combination - the functionality is wrapped up in a Command.
 
 Commands are added to an app using the properties :any:`toga.App.commands` and
-:any:`toga.Window.toolbar`. Toga then takes control of ensuring that the
+:any:`toga.MainWindow.toolbar`. Toga then takes control of ensuring that the
 command is exposed to the user in a way that they can access. On desktop platforms,
 this may result in a command being added to a menu.
 

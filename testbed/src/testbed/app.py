@@ -1,4 +1,4 @@
-from unittest.mock import Mock
+from unittest.mock import MagicMock
 
 import toga
 
@@ -14,7 +14,7 @@ class Testbed(toga.App):
         # with destroying commands, so we create all the commands up front for the app
         # to use.
 
-        self.cmd_action = Mock()
+        self.cmd_action = MagicMock(spec=[])
         # A command with everything, in a group
         group = toga.Group("Other")
         self.cmd1 = toga.Command(

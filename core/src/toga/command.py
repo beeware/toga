@@ -139,10 +139,10 @@ class Group:
     HELP = None  #: Help commands
 
 
-Group.APP = Group("*", order=0)
-Group.FILE = Group("File", order=1)
-Group.EDIT = Group("Edit", order=10)
-Group.VIEW = Group("View", order=20)
+Group.APP = Group("*", order=-100)
+Group.FILE = Group("File", order=-30)
+Group.EDIT = Group("Edit", order=-20)
+Group.VIEW = Group("View", order=-10)
 Group.COMMANDS = Group("Commands", order=30)
 Group.WINDOW = Group("Window", order=90)
 Group.HELP = Group("Help", order=100)
@@ -222,12 +222,19 @@ class Command:
     @property
     def enabled(self) -> bool:
         """Is the command currently enabled?"""
-        return self._enabled
+        try:
+            # If the raw action has an enabled method, it's a dynamic action;
+            # use the return value of that method, not the underlying property
+            return self.action._raw.enabled()
+        except AttributeError:
+            return self._enabled
 
     @enabled.setter
     def enabled(self, value: bool):
-        self._enabled = value and getattr(self.action, "_raw", True) is not None
-        self._impl.set_enabled(value)
+        raw_action = getattr(self.action, "_raw", True)
+        self._enabled = value and raw_action is not None
+        if not hasattr(raw_action, "enabled"):
+            self._impl.set_enabled(value)
 
     @property
     def icon(self) -> Icon | None:
@@ -265,7 +272,7 @@ class Command:
     def __gt__(self, other: Any) -> bool:
         if not isinstance(other, (Group, Command)):
             return False
-        return other < self
+        return other.key < self.key
 
     def __repr__(self) -> bool:
         return (

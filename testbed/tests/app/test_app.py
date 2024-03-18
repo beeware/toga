@@ -6,7 +6,7 @@ import toga
 from toga.colors import CORNFLOWERBLUE, FIREBRICK, REBECCAPURPLE
 from toga.style.pack import Pack
 
-from ..test_window import window_probe
+from ..window.test_window import window_probe
 
 
 @pytest.fixture

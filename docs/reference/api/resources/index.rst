@@ -4,8 +4,9 @@ Resources
 .. toctree::
 
    app_paths
-   fonts
    command
+   document
+   fonts
    icons
    images
    sources/source

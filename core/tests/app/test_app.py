@@ -1,5 +1,6 @@
 import asyncio
 import importlib.metadata
+import signal
 import sys
 import webbrowser
 from pathlib import Path
@@ -237,6 +238,17 @@ def test_create(
 
     metadata_mock.assert_called_once_with(expected_app_name)
 
+    # Preferences exist, but are disabled
+    assert hasattr(app._impl, "preferences_command")
+    assert not app._impl.preferences_command.enabled
+
+    # Document management commands don't exist
+    assert not hasattr(app._impl, "open_command")
+    assert not hasattr(app._impl, "new_command")
+    assert not hasattr(app._impl, "save_command")
+    assert not hasattr(app._impl, "save_as_command")
+    assert not hasattr(app._impl, "save_all_command")
+
 
 @pytest.mark.parametrize(
     "kwargs, exc_type, message",
@@ -364,6 +376,14 @@ def test_icon(app, construct):
     assert app.icon.path == Path("path/to/icon")
 
 
+def test_main_loop(app):
+    """The main loop installs signal handlers."""
+    app.main_loop()
+
+    # Assert the default signal handler has been installed
+    assert signal.getsignal(signal.SIGINT) == signal.SIG_DFL
+
+
 def test_current_window(app):
     """The current window can be set and changed."""
     other_window = toga.Window()
@@ -478,6 +498,33 @@ def test_startup_subclass(event_loop):
     assert app.main_window.title == "Test App"
 
 
+def test_startup_simple_window(event_loop):
+    """A simple window can be used as the main window"""
+
+    class SubclassedApp(toga.App):
+        def startup(self):
+            self.main_window = toga.Window()
+
+    app = SubclassedApp(formal_name="Test App", app_id="org.example.test")
+
+    # The main window will exist, and will have the default name for a window
+    assert app.main_window.title == "Toga"
+
+
+def test_startup_non_closeable_window(event_loop):
+    """The main window must be closeable"""
+
+    class SubclassedApp(toga.App):
+        def startup(self):
+            self.main_window = toga.MainWindow(closable=False)
+
+    with pytest.raises(
+        ValueError,
+        match=r"The window used as the main window must be closable.",
+    ):
+        SubclassedApp(formal_name="Test App", app_id="org.example.test")
+
+
 def test_startup_subclass_no_main_window(event_loop):
     """If a subclassed app doesn't define a main window, an error is raised."""
 
@@ -485,14 +532,48 @@ def test_startup_subclass_no_main_window(event_loop):
         def startup(self):
             pass
 
-    with pytest.raises(ValueError, match=r"Application does not have a main window."):
+    with pytest.raises(ValueError, match=r"Application has not set a main window."):
         SubclassedApp(formal_name="Test App", app_id="org.example.test")
+
+
+def test_startup_subclass_unknown_main_window(event_loop):
+    """If a subclassed app uses an unknown main window type, an error is raised"""
+
+    class SubclassedApp(toga.App):
+        def startup(self):
+            self.main_window = 42
+
+    with pytest.raises(ValueError, match=r"Don't know how to use 42 as a main window"):
+        SubclassedApp(formal_name="Test App", app_id="org.example.test")
+
+
+def test_about_menu(app):
+    """The about menu item can be activated."""
+    app._impl.about_command.action()
+
+    assert_action_performed(app, "show_about_dialog")
 
 
 def test_about(app):
     """The about dialog for the app can be shown."""
     app.about()
     assert_action_performed(app, "show_about_dialog")
+
+
+def test_visit_homepage_menu(monkeypatch, event_loop):
+    """The visit homepage menu item can be opened"""
+    app = toga.App(
+        formal_name="Test App",
+        app_id="org.example.test",
+        home_page="https://example.com/test-app",
+    )
+    open_webbrowser = Mock()
+    monkeypatch.setattr(webbrowser, "open", open_webbrowser)
+
+    # The app has a homepage, so it will be visited
+    app._impl.visit_homepage_command.action()
+
+    open_webbrowser.assert_called_once_with("https://example.com/test-app")
 
 
 def test_visit_homepage(monkeypatch, event_loop):
@@ -505,10 +586,21 @@ def test_visit_homepage(monkeypatch, event_loop):
     open_webbrowser = Mock()
     monkeypatch.setattr(webbrowser, "open", open_webbrowser)
 
-    # The app has no homepage by default, so visit is a no-op
+    # The app has a homepage, which will be opened
     app.visit_homepage()
 
     open_webbrowser.assert_called_once_with("https://example.com/test-app")
+
+
+def test_visit_homepage_menu_no_homepage(monkeypatch, app):
+    """The visit homepage menu item can be activated."""
+    open_webbrowser = Mock()
+    monkeypatch.setattr(webbrowser, "open", open_webbrowser)
+
+    app._impl.visit_homepage_command.action()
+
+    # As the app doesn't have a homepage, it's a no-op
+    open_webbrowser.assert_not_called()
 
 
 def test_no_homepage(monkeypatch, app):
@@ -528,6 +620,19 @@ def test_beep(app):
     assert_action_performed(app, "beep")
 
 
+def test_exit_menu(app):
+    """The exit menu can be activated"""
+    on_exit_handler = Mock(return_value=True)
+    app.on_exit = on_exit_handler
+
+    # Exit the app via the menu
+    app._impl.exit_command.action()
+
+    # The exit handler approved exit, so an exit has been performed.
+    on_exit_handler.assert_called_once_with(app)
+    assert_action_performed(app, "exit")
+
+
 def test_exit_direct(app):
     """An app can be exited directly."""
     on_exit_handler = Mock(return_value=True)
@@ -536,7 +641,7 @@ def test_exit_direct(app):
     # Exit the app directly
     app.exit()
 
-    # App has been exited, but the exit handler has *not* been invoked.
+    # Exit has been directly invoked.
     assert_action_performed(app, "exit")
     on_exit_handler.assert_not_called()
 
@@ -574,6 +679,36 @@ def test_exit_rejected_handler(app):
     # App has been *not* exited
     assert_action_not_performed(app, "exit")
     on_exit_handler.assert_called_once_with(app)
+
+
+def test_no_exit_last_window_close(app):
+    """Windows can be created and closed without closing the app."""
+    # App has 1 window initially
+    assert len(app.windows) == 1
+
+    # Create a second, non-main window
+    window1 = toga.Window()
+    window1.content = toga.Box()
+    window1.show()
+
+    window2 = toga.Window()
+    window2.content = toga.Box()
+    window2.show()
+
+    # App has 3 windows
+    assert len(app.windows) == 3
+
+    # Close one of the secondary windows
+    window1.close()
+
+    # Window has been closed, but the app hasn't exited.
+    assert len(app.windows) == 2
+    assert_action_performed(window1, "close")
+    assert_action_not_performed(app, "exit")
+
+    # Closing the MainWindow kills the app
+    app.main_window.close()
+    assert_action_performed(app, "exit")
 
 
 def test_loop(app, event_loop):
