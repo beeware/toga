@@ -152,6 +152,9 @@ class Window:
         self.native.interface = self.interface
         self.native.impl = self
 
+        # This causes windows to only tab together with others of the same class.
+        self.native.tabbingIdentifier = str(self.interface.__class__)
+
         # Cocoa releases windows when they are closed; this causes havoc with
         # Toga's widget cleanup because the ObjC runtime thinks there's no
         # references to the object left. Add a reference that can be released
@@ -167,7 +170,7 @@ class Window:
         self.container = Container(on_refresh=self.content_refreshed)
         self.native.contentView = self.container.native
 
-        # Ensure that the container renders it's background in the same color as the window.
+        # Ensure that the container renders its background in the same color as the window.
         self.native.wantsLayer = True
         self.container.native.backgroundColor = self.native.backgroundColor
 

@@ -24,7 +24,7 @@ class AppProbe(BaseProbe):
         super().__init__()
         self.app = app
         # Prevents erroneous test fails from secondary windows opening as tabs
-        NSWindow.allowsAutomaticWindowTabbing = False
+        self.tabbing_enabled = False
         assert isinstance(self.app._impl.native, NSApplication)
 
     @property
@@ -191,3 +191,11 @@ class AppProbe(BaseProbe):
             keyCode=key_code,
         )
         return toga_key(event)
+
+    @property
+    def tabbing_enabled(self):
+        return NSWindow.allowsAutomaticWindowTabbing
+
+    @tabbing_enabled.setter
+    def tabbing_enabled(self, value):
+        NSWindow.allowsAutomaticWindowTabbing = value

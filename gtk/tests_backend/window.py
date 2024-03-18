@@ -2,6 +2,8 @@ import asyncio
 from pathlib import Path
 from unittest.mock import Mock
 
+from pytest import xfail
+
 from toga_gtk.libs import Gdk, Gtk
 
 from .probe import BaseProbe
@@ -251,3 +253,7 @@ class WindowProbe(BaseProbe):
     def press_toolbar_button(self, index):
         item = self.impl.native_toolbar.get_nth_item(index)
         item.emit("clicked")
+
+    @property
+    def tabs(self):
+        xfail("Tabbed windows not implemented for this backend.")

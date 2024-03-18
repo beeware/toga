@@ -178,3 +178,11 @@ class AppProbe(BaseProbe):
 
     def keystroke(self, combination):
         return winforms_to_toga_key(toga_to_winforms_key(combination))
+
+    @property
+    def tabbing_enabled(self):
+        pytest.xfail("Tabbed windows not implemented for this backend.")
+
+    @tabbing_enabled.setter
+    def tabbing_enabled(self, value):
+        pytest.xfail("Tabbed windows not implemented for this backend.")

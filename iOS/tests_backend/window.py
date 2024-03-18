@@ -77,3 +77,7 @@ class WindowProbe(BaseProbe):
 
     def has_toolbar(self):
         pytest.skip("Toolbars not implemented on iOS")
+
+    @property
+    def tabs(self):
+        pytest.xfail("Tabbed windows not implemented for this backend.")

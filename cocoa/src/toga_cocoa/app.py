@@ -322,6 +322,12 @@ class App:
                 shortcut=toga.Key.MOD_1 + "m",
                 group=toga.Group.WINDOW,
             ),
+            toga.Command(
+                NativeHandler(SEL("mergeAllWindows:")),
+                "Merge All Windows",
+                group=toga.Group.WINDOW,
+                section=10,
+            ),
             # ---- Help menu ----------------------------------
             toga.Command(
                 self._menu_visit_homepage,

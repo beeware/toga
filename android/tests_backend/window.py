@@ -87,3 +87,7 @@ class WindowProbe(BaseProbe):
 
     def press_toolbar_button(self, index):
         self.native.onOptionsItemSelected(self._toolbar_items()[index])
+
+    @property
+    def tabs(self):
+        pytest.xfail("Tabbed windows not implemented for this backend.")
