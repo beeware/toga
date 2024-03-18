@@ -169,6 +169,42 @@ def test_change_content(window, app):
     assert content1.window is None
 
 
+def test_change_content_locked(window, app):
+    """The refresh of a window can be locked"""
+    with window.refresh_lock():
+        assert window.content is None
+        assert window.app == app
+
+        # Set the content of the window
+        content1 = toga.Box()
+        window.content = content1
+
+        # The content has been assigned and not (yet) refreshed
+        assert content1.app == app
+        assert content1.window == window
+        assert_action_performed_with(window, "set content", widget=content1._impl)
+        assert_action_not_performed(content1, "refresh")
+
+        # Set the content of the window to something new
+        content2 = toga.Box()
+        window.content = content2
+
+        # The content has been assigned and not (yet) refreshed
+        assert content2.app == app
+        assert content2.window == window
+        assert_action_performed_with(window, "set content", widget=content2._impl)
+        assert_action_not_performed(content2, "refresh")
+
+        # The original content has been removed
+        assert content1.window is None
+
+    # Action refresh must not have been performed on content1
+    assert_action_not_performed(content1, "refresh")
+
+    # Action refresh must have been performed on content2
+    assert_action_performed(content2, "refresh")
+
+
 def test_set_position(window):
     """The position of the window can be set."""
     window.position = (123, 456)
