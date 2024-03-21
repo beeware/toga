@@ -169,7 +169,7 @@ class ExampleTestCommandApp(toga.App):
 
 
 def main():
-    return ExampleTestCommandApp("Test Command", "org.beeware.widgets.command")
+    return ExampleTestCommandApp("Test Command", "org.beeware.toga.examples.command")
 
 
 if __name__ == "__main__":

@@ -10,6 +10,7 @@ Widgets
    divider
    imageview
    label
+   mapview
    multilinetextinput
    numberinput
    passwordinput

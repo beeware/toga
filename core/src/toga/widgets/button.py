@@ -15,11 +15,8 @@ class OnPressHandler(Protocol):
     def __call__(self, widget: Button, **kwargs: Any) -> None:
         """A handler that will be invoked when a button is pressed.
 
-        .. note::
-            ``**kwargs`` ensures compatibility with additional arguments
-            introduced in future versions.
-
         :param widget: The button that was pressed.
+        :param kwargs: Ensures compatibility with arguments added in future versions.
         """
         ...
 

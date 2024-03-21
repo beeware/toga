@@ -32,7 +32,7 @@ def scroll_container(content, on_scroll_handler):
 
 
 def test_widget_created():
-    "A scroll container can be created with no arguments"
+    """A scroll container can be created with no arguments."""
     scroll_container = toga.ScrollContainer()
     assert scroll_container._impl.interface == scroll_container
     assert_action_performed(scroll_container, "create ScrollContainer")
@@ -44,7 +44,7 @@ def test_widget_created():
 
 
 def test_widget_created_with_values(content, on_scroll_handler):
-    "A scroll container can be created with arguments"
+    """A scroll container can be created with arguments."""
     scroll_container = toga.ScrollContainer(
         content=content,
         on_scroll=on_scroll_handler,
@@ -74,7 +74,7 @@ def test_widget_created_with_values(content, on_scroll_handler):
 
 
 def test_assign_to_app(app, scroll_container, content):
-    """If the widget is assigned to an app, the content is also assigned"""
+    """If the widget is assigned to an app, the content is also assigned."""
     # Scroll container is initially unassigned
     assert scroll_container.app is None
 
@@ -88,7 +88,8 @@ def test_assign_to_app(app, scroll_container, content):
 
 
 def test_assign_to_app_no_content(app):
-    """If the widget is assigned to an app, and there is no content, there's no error"""
+    """If the widget is assigned to an app, and there is no content, there's no
+    error."""
     scroll_container = toga.ScrollContainer()
 
     # Scroll container is initially unassigned
@@ -102,7 +103,7 @@ def test_assign_to_app_no_content(app):
 
 
 def test_assign_to_window(window, scroll_container, content):
-    """If the widget is assigned to a window, the content is also assigned"""
+    """If the widget is assigned to a window, the content is also assigned."""
     # Scroll container is initially unassigned
     assert scroll_container.window is None
 
@@ -116,7 +117,8 @@ def test_assign_to_window(window, scroll_container, content):
 
 
 def test_assign_to_window_no_content(window):
-    """If the widget is assigned to an app, and there is no content, there's no error"""
+    """If the widget is assigned to an app, and there is no content, there's no
+    error."""
     scroll_container = toga.ScrollContainer()
 
     # Scroll container is initially unassigned
@@ -130,7 +132,7 @@ def test_assign_to_window_no_content(window):
 
 
 def test_disable_no_op(scroll_container):
-    "ScrollContainer doesn't have a disabled state"
+    """ScrollContainer doesn't have a disabled state."""
     # Enabled by default
     assert scroll_container.enabled
 
@@ -142,14 +144,14 @@ def test_disable_no_op(scroll_container):
 
 
 def test_focus_noop(scroll_container):
-    "Focus is a no-op."
+    """Focus is a no-op."""
 
     scroll_container.focus()
     assert_action_not_performed(scroll_container, "focus")
 
 
 def test_set_content(app, window, scroll_container, content):
-    """The content of the scroll container can be changed"""
+    """The content of the scroll container can be changed."""
     # Assign the scroll container to an app and window
     scroll_container.app = app
     scroll_container.window = window
@@ -188,7 +190,7 @@ def test_set_content(app, window, scroll_container, content):
 
 
 def test_clear_content(app, window, scroll_container, content):
-    """The content of the scroll container can be cleared"""
+    """The content of the scroll container can be cleared."""
     # Assign the scroll container to an app and window
     scroll_container.app = app
     scroll_container.window = window
@@ -209,7 +211,7 @@ def test_clear_content(app, window, scroll_container, content):
     # The content has been cleared
     assert scroll_container.content is None
 
-    # The old content isn't assigned any more
+    # The old content isn't assigned anymore
     assert content.app is None
     assert content.window is None
 
@@ -228,7 +230,7 @@ def test_clear_content(app, window, scroll_container, content):
     ],
 )
 def test_horizontal(scroll_container, on_scroll_handler, content, value, expected):
-    "Horizontal scrolling can be enabled/disabled."
+    """Horizontal scrolling can be enabled/disabled."""
     scroll_container.horizontal = value
     scroll_container.horizontal == expected
 
@@ -255,7 +257,7 @@ def test_horizontal(scroll_container, on_scroll_handler, content, value, expecte
     ],
 )
 def test_vertical(scroll_container, on_scroll_handler, content, value, expected):
-    "Vertical scrolling can be enabled/disabled."
+    """Vertical scrolling can be enabled/disabled."""
     scroll_container.vertical = value
     scroll_container.vertical == expected
 
@@ -279,7 +281,7 @@ def test_vertical(scroll_container, on_scroll_handler, content, value, expected)
     ],
 )
 def test_horizontal_position(scroll_container, on_scroll_handler, position, expected):
-    "The horizontal position can be set (clipped if necessary) and retrieved"
+    """The horizontal position can be set (clipped if necessary) and retrieved."""
     scroll_container.horizontal_position = position
 
     # scroll handler fired
@@ -290,7 +292,7 @@ def test_horizontal_position(scroll_container, on_scroll_handler, position, expe
 
 
 def test_disable_horizontal_scrolling(scroll_container, on_scroll_handler):
-    "When disabling horizontal scrolling, horizontal position resets"
+    """When disabling horizontal scrolling, horizontal position resets."""
     scroll_container.horizontal_position = 100
     on_scroll_handler.reset_mock()
 
@@ -313,7 +315,8 @@ def test_disable_horizontal_scrolling(scroll_container, on_scroll_handler):
 
 
 def test_horizontal_position_when_not_horizontal(scroll_container):
-    "If horizontal scrolling isn't enabled, setting the horizontal position raises an error"
+    """If horizontal scrolling isn't enabled, setting the horizontal position raises an
+    error."""
     scroll_container.horizontal = False
     with pytest.raises(
         ValueError,
@@ -339,7 +342,7 @@ def test_horizontal_position_when_not_horizontal(scroll_container):
     ],
 )
 def test_vertical_position(scroll_container, on_scroll_handler, position, expected):
-    "The vertical position can be set (clipped if necessary) and retrieved"
+    """The vertical position can be set (clipped if necessary) and retrieved."""
     scroll_container.vertical_position = position
 
     # scroll handler fired
@@ -350,7 +353,7 @@ def test_vertical_position(scroll_container, on_scroll_handler, position, expect
 
 
 def test_disable_vertical_scrolling(scroll_container, on_scroll_handler):
-    "When vertical scrolling is disabled, vertical position resets"
+    """When vertical scrolling is disabled, vertical position resets."""
     scroll_container.vertical_position = 100
 
     scroll_container.vertical = False
@@ -373,7 +376,8 @@ def test_disable_vertical_scrolling(scroll_container, on_scroll_handler):
 
 
 def test_set_vertical_position_when_not_vertical(scroll_container):
-    "If vertical scrolling isn't enabled, setting the vertical position raises an error"
+    """If vertical scrolling isn't enabled, setting the vertical position raises an
+    error."""
     scroll_container.vertical = False
     with pytest.raises(
         ValueError,
@@ -401,7 +405,7 @@ def test_set_vertical_position_when_not_vertical(scroll_container):
     ],
 )
 def test_position(scroll_container, on_scroll_handler, position, expected):
-    "The scroll position can be set (clipped if necessary) and retrieved"
+    """The scroll position can be set (clipped if necessary) and retrieved."""
     scroll_container.position = position
 
     assert scroll_container.position == expected

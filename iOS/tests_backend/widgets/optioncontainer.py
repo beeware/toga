@@ -7,6 +7,7 @@ class OptionContainerProbe(SimpleProbe):
     native_attr = "native_controller"
     native_class = UITabBarController
     disabled_tab_selectable = False
+    max_tabs = None
     more_option_is_stateful = True
 
     @property

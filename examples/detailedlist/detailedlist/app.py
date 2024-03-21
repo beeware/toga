@@ -142,7 +142,9 @@ class ExampleDetailedListApp(toga.App):
 
 
 def main():
-    return ExampleDetailedListApp("Detailed List", "org.beeware.widgets.detailedlist")
+    return ExampleDetailedListApp(
+        "Detailed List", "org.beeware.toga.examples.detailedlist"
+    )
 
 
 if __name__ == "__main__":

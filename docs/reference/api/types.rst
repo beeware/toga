@@ -1,0 +1,4 @@
+Types
+=====
+
+.. autonamedtuple:: toga.LatLng

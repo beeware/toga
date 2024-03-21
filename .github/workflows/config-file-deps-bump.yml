@@ -1,0 +1,14 @@
+name: Bump Config File Dependencies
+
+on:
+  schedule:
+    - cron: "0 20 * * SUN"  # Sunday @ 2000 UTC
+  workflow_dispatch:
+
+jobs:
+  dep-bump-versions:
+    name: Bump Config File Dependencies
+    uses: beeware/.github/.github/workflows/dep-version-bump.yml@main
+    secrets: inherit
+    with:
+      subdirectory: . core dummy android cocoa demo gtk iOS testbed textual toga web winforms

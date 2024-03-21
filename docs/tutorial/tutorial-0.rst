@@ -127,7 +127,7 @@ We can then define a button. When we create the button, we can set the button
 text, and we also set the behavior that we want to invoke when the button is
 pressed, referencing the handler that we defined earlier::
 
-        button = toga.Button('Hello world', on_press=button_handler)
+        button = toga.Button("Hello world", on_press=button_handler)
 
 Now we have to define how the button will appear in the window. By default,
 Toga uses a style algorithm called ``Pack``, which is a bit like "CSS-lite".
@@ -173,13 +173,13 @@ method defining the main window contents. We wrap this creation process into a
 method called ``main()``, which returns a new instance of our application::
 
     def main():
-        return toga.App('First App', 'org.beeware.helloworld', startup=build)
+        return toga.App("First App", "org.beeware.toga.tutorial", startup=build)
 
 The entry point for the project then needs to instantiate this entry point
 and start the main app loop. The call to ``main_loop()`` is a blocking call;
 it won't return until you quit the main app::
 
-    if __name__ == '__main__':
+    if __name__ == "__main__":
         main().main_loop()
 
 And that's it! Save this script as ``helloworld.py``, and you're ready to go.

@@ -292,7 +292,7 @@ class Table(Widget):
 
     @property
     def missing_value(self) -> str:
-        """The value that will be used when a data row doesn't provide an value for an
+        """The value that will be used when a data row doesn't provide a value for an
         attribute.
         """
         return self._missing_value

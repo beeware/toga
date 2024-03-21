@@ -23,7 +23,7 @@ class ExampleNode(Node):
         return f"<{self.name}>"
 
     def __html__(self, depth=0):
-        "Debugging helper - output the HTML interpretation of this layout"
+        """Debugging helper - output the HTML interpretation of this layout"""
         if depth:
             tag = "div"
         else:

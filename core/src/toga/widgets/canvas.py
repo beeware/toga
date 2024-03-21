@@ -58,8 +58,7 @@ class DrawingObject(ABC):
         return f"{self.__class__.__name__}()"
 
     @abstractmethod
-    def _draw(self, impl, **kwargs):
-        ...
+    def _draw(self, impl, **kwargs): ...
 
 
 class BeginPath(DrawingObject):
@@ -177,7 +176,7 @@ class Stroke(DrawingObject):
     # 2023-07 Backwards incompatibility
     ###########################################################################
 
-    # `context.stroke()` used to be a context managger, but is now a primitive.
+    # `context.stroke()` used to be a context manager, but is now a primitive.
     # If you try to use the Stroke drawing object as a context, raise an exception.
     def __enter__(self):
         raise RuntimeError("Context.stroke() has been renamed Context.Stroke().")
@@ -1454,7 +1453,9 @@ class Canvas(Widget):
         """Render the canvas as an image.
 
         :param format: Format to provide. Defaults to :class:`~toga.images.Image`; also
-            supports :class:`PIL.Image.Image` if Pillow is installed
+            supports :any:`PIL.Image.Image` if Pillow is installed, as well as any image
+            types defined by installed :doc:`image format plugins
+            </reference/plugins/image_formats>`
         :returns: The canvas as an image of the specified type.
         """
         return toga.Image(self._impl.get_image_data()).as_format(format)

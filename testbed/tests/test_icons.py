@@ -8,7 +8,7 @@ import toga
 
 def icon_probe(app, image):
     module = import_module("tests_backend.icons")
-    return getattr(module, "IconProbe")(app, image)
+    return module.IconProbe(app, image)
 
 
 async def test_icon(app):

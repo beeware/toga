@@ -17,7 +17,7 @@ def window(app):
 
 
 def test_window_created(app):
-    "A Window can be created with minimal arguments"
+    """A Window can be created with minimal arguments."""
     window = toga.Window()
 
     assert window.app == app
@@ -39,7 +39,7 @@ def test_window_created(app):
 
 
 def test_window_created_explicit(app):
-    "Explicit arguments at construction are stored"
+    """Explicit arguments at construction are stored."""
     on_close_handler = Mock()
 
     window = toga.Window(
@@ -71,7 +71,7 @@ def test_window_created_explicit(app):
 
 
 def test_window_created_without_app():
-    "A window cannot be created without an active app"
+    """A window cannot be created without an active app."""
     toga.App.app = None
     with pytest.raises(
         RuntimeError, match="Cannot create a Window before creating an App"
@@ -80,7 +80,7 @@ def test_window_created_without_app():
 
 
 def test_set_app(window, app):
-    """A window's app cannot be reassigned"""
+    """A window's app cannot be reassigned."""
     assert window.app == app
 
     app2 = toga.App("Test App 2", "org.beeware.toga.test-app-2")
@@ -89,7 +89,7 @@ def test_set_app(window, app):
 
 
 def test_set_app_with_content(window, app):
-    """If a window has content, the content is assigned to the app"""
+    """If a window has content, the content is assigned to the app."""
     assert window.app == app
 
     content = toga.Box()
@@ -110,13 +110,13 @@ def test_set_app_with_content(window, app):
     ],
 )
 def test_title(window, value, expected):
-    """The title of the window can be changed"""
+    """The title of the window can be changed."""
     window.title = value
     assert window.title == expected
 
 
 def test_toolbar_implicit_add(window, app):
-    """Adding an item to to a toolbar implicitly adds it to the app."""
+    """Adding an item to a toolbar implicitly adds it to the app."""
     cmd1 = toga.Command(None, "Command 1")
     cmd2 = toga.Command(None, "Command 2")
 
@@ -141,7 +141,7 @@ def test_toolbar_implicit_add(window, app):
 
 
 def test_change_content(window, app):
-    """The content of a window can be changed"""
+    """The content of a window can be changed."""
     assert window.content is None
     assert window.app == app
 
@@ -271,7 +271,7 @@ def test_full_screen(window, app):
 
 
 def test_close_direct(window, app):
-    """A window can be closed directly"""
+    """A window can be closed directly."""
     on_close_handler = Mock(return_value=True)
     window.on_close = on_close_handler
 
@@ -291,7 +291,7 @@ def test_close_direct(window, app):
 
 
 def test_close_no_handler(window, app):
-    """A window without a close handler can be closed"""
+    """A window without a close handler can be closed."""
     window.show()
     assert window.app == app
     assert window in app.windows
@@ -306,8 +306,8 @@ def test_close_no_handler(window, app):
     assert_action_performed(window, "close")
 
 
-def test_close_sucessful_handler(window, app):
-    """A window with a successful close handler can be closed"""
+def test_close_successful_handler(window, app):
+    """A window with a successful close handler can be closed."""
     on_close_handler = Mock(return_value=True)
     window.on_close = on_close_handler
 
@@ -327,7 +327,7 @@ def test_close_sucessful_handler(window, app):
 
 
 def test_close_rejected_handler(window, app):
-    """A window can have a close handler that rejects closing"""
+    """A window can have a close handler that rejects closing."""
     on_close_handler = Mock(return_value=False)
     window.on_close = on_close_handler
 
@@ -347,7 +347,7 @@ def test_close_rejected_handler(window, app):
 
 
 def test_as_image(window):
-    """A window can be captured as an image"""
+    """A window can be captured as an image."""
     image = window.as_image()
     assert_action_performed(window, "get image data")
     # Don't need to check the raw data; just check it's the right size.
@@ -366,9 +366,49 @@ def test_on_resize(window):
 
     on_resize_handler.assert_called_once_with(window)
 
+    
+def test_screen(window, app):
+    """A window can be moved to a different screen."""
+    # Cannot actually change window.screen, so just check
+    # the window positions as a substitute for moving the
+    # window between the screens.
+    # `window.screen` will return `Secondary Screen`
+    assert window.screen == app.screens[1]
+    assert window.position == (100, 100)
+    window.screen = app.screens[0]
+    assert window.position == (1466, 868)
+
+
+def test_screen_position(window, app):
+    """The window can be relocated using absolute and relative screen positions."""
+    # Details about screen layout are in toga_dummy=>app.py=>get_screens()
+    initial_position = window.position
+    window.position = (-100, -100)
+    assert window.position != initial_position
+    assert window.position == (-100, -100)
+    assert window.screen_position == (1266, 668)
+
+    # Move the window to a new position.
+    window.screen_position = (100, 100)
+    assert window.position == (-1266, -668)
+    assert window.screen_position == (100, 100)
+
+    
+def test_on_resize(window):
+    assert window.on_resize._raw is None
+
+    on_resize_handler = Mock()
+    window.on_resize = on_resize_handler
+
+    assert window.on_resize._raw == on_resize_handler
+
+    window._impl.simulate_on_resize()
+
+    on_resize_handler.assert_called_once_with(window)
+
 
 def test_info_dialog(window, app):
-    """An info dialog can be shown"""
+    """An info dialog can be shown."""
     on_result_handler = Mock()
 
     with pytest.warns(
@@ -403,7 +443,7 @@ def test_info_dialog(window, app):
 
 
 def test_question_dialog(window, app):
-    """A question dialog can be shown"""
+    """A question dialog can be shown."""
     on_result_handler = Mock()
 
     with pytest.warns(
@@ -438,7 +478,7 @@ def test_question_dialog(window, app):
 
 
 def test_confirm_dialog(window, app):
-    """A confirm dialog can be shown"""
+    """A confirm dialog can be shown."""
     on_result_handler = Mock()
 
     with pytest.warns(
@@ -473,7 +513,7 @@ def test_confirm_dialog(window, app):
 
 
 def test_error_dialog(window, app):
-    """An error dialog can be shown"""
+    """An error dialog can be shown."""
     on_result_handler = Mock()
 
     with pytest.warns(
@@ -508,7 +548,7 @@ def test_error_dialog(window, app):
 
 
 def test_stack_trace_dialog(window, app):
-    """A stack trace dialog can be shown"""
+    """A stack trace dialog can be shown."""
     on_result_handler = Mock()
 
     with pytest.warns(
@@ -550,7 +590,7 @@ def test_stack_trace_dialog(window, app):
 
 
 def test_save_file_dialog(window, app):
-    """A save file dialog can be shown"""
+    """A save file dialog can be shown."""
     on_result_handler = Mock()
 
     with pytest.warns(
@@ -593,7 +633,7 @@ def test_save_file_dialog(window, app):
 
 
 def test_save_file_dialog_default_directory(window, app):
-    """If no path is provided, a save file dialog will use the default directory"""
+    """If no path is provided, a save file dialog will use the default directory."""
     on_result_handler = Mock()
 
     with pytest.warns(
@@ -637,7 +677,7 @@ def test_save_file_dialog_default_directory(window, app):
 
 
 def test_open_file_dialog(window, app):
-    """A open file dialog can be shown"""
+    """A open file dialog can be shown."""
     on_result_handler = Mock()
 
     with pytest.warns(
@@ -680,7 +720,7 @@ def test_open_file_dialog(window, app):
 
 
 def test_open_file_dialog_default_directory(window, app):
-    """If no path is provided, a open file dialog will use the default directory"""
+    """If no path is provided, a open file dialog will use the default directory."""
     on_result_handler = Mock()
 
     with pytest.warns(
@@ -727,7 +767,7 @@ def test_open_file_dialog_default_directory(window, app):
 
 
 def test_select_folder_dialog(window, app):
-    """A select folder dialog can be shown"""
+    """A select folder dialog can be shown."""
     on_result_handler = Mock()
 
     with pytest.warns(
@@ -769,7 +809,7 @@ def test_select_folder_dialog(window, app):
 
 
 def test_select_folder_dialog_default_directory(window, app):
-    """If no path is provided, a select folder dialog will use the default directory"""
+    """If no path is provided, a select folder dialog will use the default directory."""
     on_result_handler = Mock()
 
     with pytest.warns(
@@ -820,6 +860,9 @@ def test_deprecated_names_open_file_dialog(window, app):
     with pytest.warns(
         DeprecationWarning,
         match=r"open_file_dialog\(multiselect\) has been renamed multiple_select",
+    ), pytest.warns(
+        DeprecationWarning,
+        match=r"Synchronous `on_result` handlers have been deprecated; use `await` on the asynchronous result",
     ):
         dialog = window.open_file_dialog(
             "Title",
@@ -854,6 +897,9 @@ def test_deprecated_names_select_folder_dialog(window, app):
     with pytest.warns(
         DeprecationWarning,
         match=r"select_folder_dialog\(multiselect\) has been renamed multiple_select",
+    ), pytest.warns(
+        DeprecationWarning,
+        match=r"Synchronous `on_result` handlers have been deprecated; use `await` on the asynchronous result",
     ):
         dialog = window.select_folder_dialog(
             "Title",
@@ -881,7 +927,7 @@ def test_deprecated_names_select_folder_dialog(window, app):
 
 
 def test_deprecated_names_resizeable():
-    """Deprecated spelling of resizable still works"""
+    """Deprecated spelling of resizable still works."""
     with pytest.warns(
         DeprecationWarning,
         match=r"Window.resizeable has been renamed Window.resizable",
@@ -896,7 +942,7 @@ def test_deprecated_names_resizeable():
 
 
 def test_deprecated_names_closeable():
-    """Deprecated spelling of closable still works"""
+    """Deprecated spelling of closable still works."""
     with pytest.warns(
         DeprecationWarning,
         match=r"Window.closeable has been renamed Window.closable",

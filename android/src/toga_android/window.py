@@ -1,6 +1,7 @@
 from decimal import ROUND_UP
 
 from android import R
+from android.content import Context
 from android.graphics import (
     Bitmap,
     Canvas as A_Canvas,
@@ -10,6 +11,7 @@ from java import dynamic_proxy
 from java.io import ByteArrayOutputStream
 
 from .container import Container
+from .screens import Screen as ScreenImpl
 
 
 class LayoutListener(dynamic_proxy(ViewTreeObserver.OnGlobalLayoutListener)):
@@ -41,6 +43,26 @@ class Window(Container):
                 "Secondary windows cannot be created on mobile platforms"
             )
 
+    ######################################################################
+    # Window properties
+    ######################################################################
+
+    def get_title(self):
+        return str(self.app.native.getTitle())
+
+    def set_title(self, title):
+        self.app.native.setTitle(title)
+
+    ######################################################################
+    # Window lifecycle
+    ######################################################################
+
+    def close(self):
+        pass
+
+    def create_toolbar(self):
+        self.app.native.invalidateOptionsMenu()
+
     def set_app(self, app):
         self.app = app
         native_parent = app.native.findViewById(R.id.content)
@@ -50,35 +72,12 @@ class Window(Container):
         )
         self.set_title(self._initial_title)
 
-    def get_title(self):
-        return str(self.app.native.getTitle())
-
-    def set_title(self, title):
-        self.app.native.setTitle(title)
-
-    def get_position(self):
-        return 0, 0
-
-    def set_position(self, position):
-        # Does nothing on mobile
-        pass
-
-    def get_size(self):
-        return (self.width, self.height)
-
-    def set_size(self, size):
-        # Does nothing on mobile
-        pass
-
-    def create_toolbar(self):
-        self.app.native.invalidateOptionsMenu()
-
     def show(self):
         pass
 
-    def hide(self):
-        # A no-op, as the window cannot be hidden.
-        pass
+    ######################################################################
+    # Window content and resources
+    ######################################################################
 
     def refreshed(self):
         if self.native_width and self.native_height:
@@ -94,15 +93,55 @@ class Window(Container):
 
         super().refreshed()
 
+    ######################################################################
+    # Window size
+    ######################################################################
+
+    def get_size(self):
+        return (self.width, self.height)
+
+    def set_size(self, size):
+        # Does nothing on mobile
+        pass
+
+    ######################################################################
+    # Window position
+    ######################################################################
+
+    def get_current_screen(self):
+        context = self.app.native.getApplicationContext()
+        window_manager = context.getSystemService(Context.WINDOW_SERVICE)
+        return ScreenImpl(self.app, window_manager.getDefaultDisplay())
+
+    def get_position(self):
+        return 0, 0
+
+    def set_position(self, position):
+        # Does nothing on mobile
+        pass
+
+    ######################################################################
+    # Window visibility
+    ######################################################################
+
+    def hide(self):
+        # A no-op, as the window cannot be hidden.
+        pass
+
     def get_visible(self):
         # The window is always visible
         return True
 
-    def close(self):
-        pass
+    ######################################################################
+    # Window state
+    ######################################################################
 
     def set_full_screen(self, is_full_screen):
         self.interface.factory.not_implemented("Window.set_full_screen()")
+
+    ######################################################################
+    # Window capabilities
+    ######################################################################
 
     def get_image_data(self):
         bitmap = Bitmap.createBitmap(

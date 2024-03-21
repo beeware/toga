@@ -152,7 +152,9 @@ class ScrollContainerApp(toga.App):
 
 
 def main():
-    return ScrollContainerApp("ScrollContainer", "org.beeware.widgets.scrollcontainer")
+    return ScrollContainerApp(
+        "ScrollContainer", "org.beeware.toga.examples.scrollcontainer"
+    )
 
 
 if __name__ == "__main__":

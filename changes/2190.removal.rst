@@ -1,1 +1,0 @@
-Widgets must now be added to a window to appear in widget ID lookups.

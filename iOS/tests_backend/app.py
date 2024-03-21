@@ -56,6 +56,9 @@ class AppProbe(BaseProbe):
     def assert_menu_item(self, path, enabled):
         pytest.skip("Menus not implemented on iOS")
 
+    def assert_menu_order(self, path, expected):
+        pytest.skip("Menus not implemented on iOS")
+
     def enter_background(self):
         self.native.delegate.applicationWillResignActive(self.native)
         self.native.delegate.applicationDidEnterBackground(self.native)

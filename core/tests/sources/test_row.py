@@ -4,7 +4,7 @@ from toga.sources import Row
 
 
 def test_row():
-    "A row can be created and modified"
+    """A row can be created and modified."""
     source = Mock()
     row = Row(val1="value 1", val2=42)
     # Set a source.
@@ -47,7 +47,7 @@ def test_row():
 
 
 def test_row_without_source():
-    "A row with no source can be created and modified"
+    """A row with no source can be created and modified."""
     row = Row(val1="value 1", val2=42)
 
     # initial values are as expected
@@ -62,7 +62,7 @@ def test_row_without_source():
     del row.val1
     assert not hasattr(row, "val1")
 
-    # Setting an attribute starting with with an underscore isn't a notifiable event
+    # Setting an attribute starting with an underscore isn't a notifiable event
     row._secret = "secret value"
     assert row._secret == "secret value"
 

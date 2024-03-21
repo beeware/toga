@@ -103,7 +103,7 @@ class ExampleWebView(toga.App):
 
 
 def main():
-    return ExampleWebView("Toga WebView Demo", "org.beeware.widgets.webview")
+    return ExampleWebView("Toga WebView Demo", "org.beeware.toga.examples.webview")
 
 
 if __name__ == "__main__":

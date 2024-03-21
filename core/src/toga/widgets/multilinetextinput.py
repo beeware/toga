@@ -24,7 +24,7 @@ class MultilineTextInput(Widget):
         :param readonly: Can the value of the widget be modified by the user?
         :param placeholder: The content to display as a placeholder when
             there is no user content to display.
-        :param on_change: A handler that will be invoked when the the value of
+        :param on_change: A handler that will be invoked when the value of
             the widget changes.
         """
 

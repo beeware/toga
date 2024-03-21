@@ -9,7 +9,7 @@ REBECCA_PURPLE_COLOR = rgb(102, 51, 153)
 
 
 def test_begin_path(widget):
-    """A begin path operation can be added"""
+    """A begin path operation can be added."""
     draw_op = widget.context.begin_path()
 
     assert_action_performed(widget, "redraw")
@@ -22,7 +22,7 @@ def test_begin_path(widget):
 
 
 def test_close_path(widget):
-    """A close path operation can be added"""
+    """A close path operation can be added."""
     draw_op = widget.context.close_path()
 
     assert_action_performed(widget, "redraw")
@@ -88,7 +88,7 @@ def test_close_path(widget):
     ],
 )
 def test_fill(widget, kwargs, args_repr, draw_kwargs):
-    """A primitive fill operation can be added"""
+    """A primitive fill operation can be added."""
     draw_op = widget.context.fill(**kwargs)
 
     assert_action_performed(widget, "redraw")
@@ -158,7 +158,7 @@ def test_fill(widget, kwargs, args_repr, draw_kwargs):
     ],
 )
 def test_stroke(widget, kwargs, args_repr, draw_kwargs):
-    """A primitive stroke operation can be added"""
+    """A primitive stroke operation can be added."""
     draw_op = widget.context.stroke(**kwargs)
 
     assert_action_performed(widget, "redraw")
@@ -175,7 +175,7 @@ def test_stroke(widget, kwargs, args_repr, draw_kwargs):
 
 
 def test_move_to(widget):
-    """A move to operation can be added"""
+    """A move to operation can be added."""
     draw_op = widget.context.move_to(10, 20)
 
     assert_action_performed(widget, "redraw")
@@ -192,7 +192,7 @@ def test_move_to(widget):
 
 
 def test_line_to(widget):
-    """A line to operation can be added"""
+    """A line to operation can be added."""
     draw_op = widget.context.line_to(10, 20)
 
     assert_action_performed(widget, "redraw")
@@ -209,7 +209,7 @@ def test_line_to(widget):
 
 
 def test_bezier_curve_to(widget):
-    """A Bézier curve to operation can be added"""
+    """A Bézier curve to operation can be added."""
     draw_op = widget.context.bezier_curve_to(10, 20, 30, 40, 50, 60)
 
     assert_action_performed(widget, "redraw")
@@ -235,7 +235,7 @@ def test_bezier_curve_to(widget):
 
 
 def test_quadratic_curve_to(widget):
-    """A Quadratic curve to operation can be added"""
+    """A Quadratic curve to operation can be added."""
     draw_op = widget.context.quadratic_curve_to(10, 20, 30, 40)
 
     assert_action_performed(widget, "redraw")
@@ -362,7 +362,7 @@ def test_quadratic_curve_to(widget):
     ],
 )
 def test_arc(widget, kwargs, args_repr, draw_kwargs):
-    """An arc operation can be added"""
+    """An arc operation can be added."""
     draw_op = widget.context.arc(**kwargs)
 
     assert_action_performed(widget, "redraw")
@@ -519,7 +519,7 @@ def test_arc(widget, kwargs, args_repr, draw_kwargs):
     ],
 )
 def test_ellipse(widget, kwargs, args_repr, draw_kwargs):
-    """An ellipse operation can be added"""
+    """An ellipse operation can be added."""
     draw_op = widget.context.ellipse(**kwargs)
 
     assert_action_performed(widget, "redraw")
@@ -536,7 +536,7 @@ def test_ellipse(widget, kwargs, args_repr, draw_kwargs):
 
 
 def test_rect(widget):
-    """A rect operation can be added"""
+    """A rect operation can be added."""
     draw_op = widget.context.rect(10, 20, 30, 40)
 
     assert_action_performed(widget, "redraw")
@@ -599,7 +599,7 @@ def test_rect(widget):
     ],
 )
 def test_write_text(widget, kwargs, args_repr, draw_kwargs):
-    """A write text operation can be added"""
+    """A write text operation can be added."""
     draw_op = widget.context.write_text(**kwargs)
 
     assert_action_performed(widget, "redraw")
@@ -619,7 +619,7 @@ def test_write_text(widget, kwargs, args_repr, draw_kwargs):
 
 
 def test_rotate(widget):
-    """A rotate operation can be added"""
+    """A rotate operation can be added."""
     draw_op = widget.context.rotate(1.234)
 
     assert_action_performed(widget, "redraw")
@@ -635,7 +635,7 @@ def test_rotate(widget):
 
 
 def test_scale(widget):
-    """A scale operation can be added"""
+    """A scale operation can be added."""
     draw_op = widget.context.scale(1.234, 2.345)
 
     assert_action_performed(widget, "redraw")
@@ -652,7 +652,7 @@ def test_scale(widget):
 
 
 def test_translate(widget):
-    """A translate operation can be added"""
+    """A translate operation can be added."""
     draw_op = widget.context.translate(10, 20)
 
     assert_action_performed(widget, "redraw")
@@ -669,7 +669,7 @@ def test_translate(widget):
 
 
 def test_reset_transform(widget):
-    """A reset transform operation can be added"""
+    """A reset transform operation can be added."""
     draw_op = widget.context.reset_transform()
 
     assert_action_performed(widget, "redraw")
@@ -682,7 +682,7 @@ def test_reset_transform(widget):
 
 
 def test_deprecated_usage(widget):
-    """Test that deprecated usage of operations raise errors"""
+    """Test that deprecated usage of operations raise errors."""
     with pytest.raises(
         RuntimeError,
         match=r"Context\.fill\(\) has been renamed Context\.Fill\(\)\.",

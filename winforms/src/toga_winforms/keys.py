@@ -14,16 +14,58 @@ WINFORMS_MODIFIERS = {
 }
 
 WINFORMS_KEYS = {
-    "+": WinForms.Keys.Oemplus,
-    "-": WinForms.Keys.OemMinus,
+    Key.ESCAPE.value: WinForms.Keys.Escape,
+    # Key.BACK_QUOTE.value: WinForms.Keys.Oemtilde,  # No idea what the code should be
+    Key.MINUS.value: WinForms.Keys.OemMinus,
+    Key.EQUAL.value: WinForms.Keys.Oemplus,
+    Key.TAB.value: WinForms.Keys.Tab,
+    Key.OPEN_BRACKET.value: WinForms.Keys.OemOpenBrackets,
+    Key.CLOSE_BRACKET.value: WinForms.Keys.OemCloseBrackets,
+    Key.BACKSLASH.value: WinForms.Keys.OemQuotes,  # NFI what is going on here
+    Key.SEMICOLON.value: WinForms.Keys.OemSemicolon,
+    Key.QUOTE.value: WinForms.Keys.Oemtilde,  # NFI what is going on here
+    Key.COMMA.value: WinForms.Keys.Oemcomma,
+    Key.FULL_STOP.value: WinForms.Keys.OemPeriod,
+    Key.SLASH.value: WinForms.Keys.OemQuestion,  # Key uses the shifted form
+    Key.SPACE.value: WinForms.Keys.Space,
+    Key.PAGE_UP.value: WinForms.Keys.PageUp,
+    Key.PAGE_DOWN.value: WinForms.Keys.PageDown,
+    Key.HOME.value: WinForms.Keys.Home,
+    Key.END.value: WinForms.Keys.End,
+    Key.UP.value: WinForms.Keys.Up,
+    Key.DOWN.value: WinForms.Keys.Down,
+    Key.LEFT.value: WinForms.Keys.Left,
+    Key.RIGHT.value: WinForms.Keys.Right,
+    Key.NUMPAD_DECIMAL_POINT.value: WinForms.Keys.Decimal,
 }
 WINFORMS_KEYS.update(
     {str(digit): getattr(WinForms.Keys, f"D{digit}") for digit in range(10)}
+)
+WINFORMS_KEYS.update(
+    {
+        getattr(Key, f"NUMPAD_{digit}").value: getattr(WinForms.Keys, f"NumPad{digit}")
+        for digit in range(10)
+    }
 )
 
 SHIFTED_KEYS = {symbol: number for symbol, number in zip("!@#$%^&*()", "1234567890")}
 SHIFTED_KEYS.update(
     {lower.upper(): lower for lower in ascii_lowercase},
+)
+SHIFTED_KEYS.update(
+    {
+        "~": "`",
+        "_": "-",
+        "+": "=",
+        "{": "[",
+        "}": "]",
+        "|": "\\",
+        ":": ";",
+        '"': "'",
+        "<": ",",
+        ">": ".",
+        "?": "/",
+    }
 )
 
 
@@ -55,6 +97,43 @@ def toga_to_winforms_key(key):
             raise ValueError(f"unknown key: {key!r}") from None
 
     return reduce(operator.or_, codes)
+
+
+def toga_to_winforms_shortcut(key):
+    # The Winforms key enum is... daft. The "oem" key values render as "Oem" or
+    # "Oemcomma", so we need to *manually* set the display text for the key
+    # shortcut.
+
+    # Convert a Key object into string form.
+    try:
+        key = key.value
+    except AttributeError:
+        key = key
+
+    # Replace modifiers with the Winforms text
+    display = []
+    for toga_keyval, winforms_keyval in [
+        (Key.MOD_1.value, "Ctrl"),
+        (Key.MOD_2.value, "Alt"),
+        (Key.SHIFT.value, "Shift"),
+    ]:
+        if toga_keyval in key:
+            display.append(winforms_keyval)
+            key = key.replace(toga_keyval, "")
+
+    if key == " ":
+        display.append("Space")
+    else:
+        # Convert non-printable characters to printable
+        if match := re.fullmatch(r"<(.+)>", key):
+            key = match[1]
+
+        # All remaining text is displayed in title case. Shift will already be
+        # in the shortcut if it's an upper case letter; it's title() rather
+        # than upper() because we want both a->A and esc -> Esc
+        display.append(key.title())
+
+    return "+".join(display)
 
 
 def winforms_to_toga_key(code):

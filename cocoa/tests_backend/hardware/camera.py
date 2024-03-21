@@ -14,6 +14,7 @@ from ..app import AppProbe
 
 class CameraProbe(AppProbe):
     allow_no_camera = True
+    request_permission_on_first_use = True
 
     def __init__(self, monkeypatch, app_probe):
         super().__init__(app_probe.app)
@@ -54,11 +55,11 @@ class CameraProbe(AppProbe):
         def _mock_request_access(media_type, completionHandler):
             # Fire completion handler
             try:
-                result = self._mock_permissions[str(media_type)]
+                result = bool(self._mock_permissions[str(media_type)])
             except KeyError:
-                # If there's no explicit permission, convert into a full grant
-                self._mock_permissions[str(media_type)] = True
-                result = True
+                # If there's no explicit permission, it's a denial
+                self._mock_permissions[str(media_type)] = 0
+                result = False
             completionHandler.func(result)
 
         self._mock_AVCaptureDevice.requestAccessForMediaType = _mock_request_access
@@ -132,11 +133,14 @@ class CameraProbe(AppProbe):
     def reset_permission(self):
         self._mock_permissions = {}
 
+    def grant_permission(self):
+        self._mock_permissions[str(AVMediaTypeVideo)] = -1
+
     def allow_permission(self):
-        self._mock_permissions[str(AVMediaTypeVideo)] = True
+        self._mock_permissions[str(AVMediaTypeVideo)] = 1
 
     def reject_permission(self):
-        self._mock_permissions[str(AVMediaTypeVideo)] = False
+        self._mock_permissions[str(AVMediaTypeVideo)] = 0
 
     async def wait_for_camera(self, device_count=2):
         # A short delay is needed to ensure that the window fully creates.

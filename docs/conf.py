@@ -33,6 +33,7 @@ extensions = [
     "sphinx_tabs.tabs",
     "crate.sphinx.csv",
     "sphinx_copybutton",
+    "sphinx_toolbox.more_autodoc.autonamedtuple",
     "sphinx_toolbox.more_autodoc.autoprotocol",
     "sphinx.ext.intersphinx",
 ]

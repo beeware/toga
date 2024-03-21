@@ -199,7 +199,9 @@ class ExampleTableSourceApp(toga.App):
 
 
 def main():
-    return ExampleTableSourceApp("Table Source", "org.beeware.widgets.table_source")
+    return ExampleTableSourceApp(
+        "Table Source", "org.beeware.toga.examples.table_source"
+    )
 
 
 if __name__ == "__main__":

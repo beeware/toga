@@ -129,7 +129,7 @@ def test_length_between(value, kwargs, error):
 
 
 def test_invalid_range():
-    "Minimum value must be less than maximum value"
+    """Minimum value must be less than maximum value."""
     with pytest.raises(
         ValueError,
         match=r"Minimum length cannot be less than maximum length",
@@ -640,7 +640,7 @@ def test_integer(value, kwargs, error):
         ("1.23e+4", dict(), None),
         # Negative Exponential
         ("-1.23e-4", dict(), None),
-        # Exponential (captialized)
+        # Exponential (capitalized)
         ("1.23E+4", dict(), None),
         # Negative (capitalized)
         ("-1.23E-4", dict(), None),

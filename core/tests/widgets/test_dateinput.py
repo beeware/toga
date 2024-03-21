@@ -33,7 +33,7 @@ def test_widget_created():
 
 
 def test_widget_created_with_values(on_change_handler):
-    """A DateInput can be created with initial values"""
+    """A DateInput can be created with initial values."""
     # Round trip the impl/interface
     widget = toga.DateInput(
         value=date(2015, 6, 15),
@@ -64,7 +64,7 @@ def test_widget_created_with_values(on_change_handler):
     ],
 )
 def test_value(widget, value, expected, on_change_handler):
-    "The value of the datepicker can be set"
+    """The value of the datepicker can be set."""
     widget.value = value
 
     assert widget.value == expected
@@ -82,7 +82,7 @@ INVALID_VALUES = [
 
 @pytest.mark.parametrize("value, exc, message", INVALID_VALUES)
 def test_invalid_value(widget, value, exc, message):
-    "Invalid date values raise an exception"
+    """Invalid date values raise an exception."""
     with pytest.raises(exc, match=message):
         widget.value = value
 
@@ -104,7 +104,7 @@ def test_invalid_value(widget, value, exc, message):
     ],
 )
 def test_value_clipping(widget, value, clipped, on_change_handler):
-    "It the value is inconsistent with min/max, it is clipped."
+    """It the value is inconsistent with min/max, it is clipped."""
     # Set min/max dates, and clear the on_change mock
     widget.min = date(2010, 1, 1)
     widget.max = date(2020, 1, 1)
@@ -130,7 +130,7 @@ def test_value_clipping(widget, value, clipped, on_change_handler):
     ],
 )
 def test_min(widget, value, expected):
-    "The min of the datepicker can be set"
+    """The min of the datepicker can be set."""
     widget.min = value
 
     assert widget.min == expected
@@ -144,7 +144,7 @@ INVALID_LIMITS = INVALID_VALUES + [
 
 @pytest.mark.parametrize("value, exc, message", INVALID_LIMITS)
 def test_invalid_min(widget, value, exc, message):
-    "Invalid min values raise an exception"
+    """Invalid min values raise an exception."""
     widget.max = date(2025, 6, 12)
 
     with pytest.raises(exc, match=message):
@@ -164,7 +164,7 @@ def test_invalid_min(widget, value, exc, message):
     ],
 )
 def test_min_clip(widget, on_change_handler, min, clip_value, clip_max):
-    "If the current value or max is before a new min date, it is clipped"
+    """If the current value or max is before a new min date, it is clipped."""
     widget.value = date(2005, 6, 25)
     widget.max = date(2005, 12, 31)
     on_change_handler.reset_mock()
@@ -195,7 +195,7 @@ def test_min_clip(widget, on_change_handler, min, clip_value, clip_max):
     ],
 )
 def test_max(widget, value, expected):
-    "The max of the datepicker can be set"
+    """The max of the datepicker can be set."""
     widget.max = value
 
     assert widget.max == expected
@@ -203,7 +203,7 @@ def test_max(widget, value, expected):
 
 @pytest.mark.parametrize("value, exc, message", INVALID_LIMITS)
 def test_invalid_max(widget, value, exc, message):
-    "Invalid max values raise an exception"
+    """Invalid max values raise an exception."""
     widget.min = date(2015, 6, 12)
 
     with pytest.raises(exc, match=message):
@@ -223,7 +223,7 @@ def test_invalid_max(widget, value, exc, message):
     ],
 )
 def test_max_clip(widget, on_change_handler, max, clip_value, clip_min):
-    "If the current value or min is after a new max date, it is clipped"
+    """If the current value or min is after a new max date, it is clipped."""
     widget.min = date(2005, 6, 25)
     widget.value = date(2005, 12, 31)
     on_change_handler.reset_mock()
@@ -250,8 +250,13 @@ def test_deprecated_names():
 
     with pytest.warns(
         DeprecationWarning, match="DatePicker has been renamed DateInput"
+    ), pytest.warns(
+        DeprecationWarning, match="DatePicker.min_date has been renamed DateInput.min"
+    ), pytest.warns(
+        DeprecationWarning, match="DatePicker.max_date has been renamed DateInput.max"
     ):
         widget = toga.DatePicker(min_date=MIN, max_date=MAX)
+
     assert widget.min == MIN
     assert widget.max == MAX
     widget.min = widget.max = None

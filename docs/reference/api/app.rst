@@ -84,7 +84,6 @@ Reference
 ---------
 
 .. autoclass:: toga.App
-    :exclude-members: app
 
 .. autoprotocol:: toga.app.AppStartupMethod
 .. autoprotocol:: toga.app.BackgroundTask

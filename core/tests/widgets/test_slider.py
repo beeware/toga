@@ -78,13 +78,13 @@ def test_set_value_to_be_max(slider, on_change):
 
 
 def test_set_value_to_be_too_small(slider, on_change):
-    "Setting the value below the minimum results in clipping"
+    """Setting the value below the minimum results in clipping."""
     slider.value = INITIAL_MIN - 1
     assert_value(slider, on_change, tick_value=1, value=INITIAL_MIN, change_count=1)
 
 
 def test_set_value_to_be_too_big(slider, on_change):
-    "Setting the value above the maximum results in clipping"
+    """Setting the value above the maximum results in clipping."""
     slider.value = INITIAL_MAX + 1
     assert_value(slider, on_change, tick_value=11, value=INITIAL_MAX, change_count=1)
 
@@ -113,13 +113,13 @@ def test_set_tick_value_to_be_max(slider, on_change):
 
 
 def test_set_tick_value_to_be_too_small(slider, on_change):
-    "Setting the tick value to less than the min results in clipping"
+    """Setting the tick value to less than the min results in clipping."""
     slider.tick_value = 0
     assert_value(slider, on_change, tick_value=1, value=INITIAL_MIN, change_count=1)
 
 
 def test_set_tick_value_to_be_too_big(slider, on_change):
-    "Setting the tick value to greater than the max results in clipping"
+    """Setting the tick value to greater than the max results in clipping."""
     slider.tick_value = INITIAL_TICK_COUNT + 1
     assert_value(slider, on_change, tick_value=11, value=INITIAL_MAX, change_count=1)
 
@@ -547,7 +547,7 @@ def test_int_impl_on_change(tick_count, data):
 
 
 def test_deprecated():
-    "Check the deprecated min/max naming"
+    """Check the deprecated min/max naming."""
     # Can't specify min and range
     with pytest.raises(
         ValueError,

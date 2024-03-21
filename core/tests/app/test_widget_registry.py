@@ -26,7 +26,7 @@ def test_empty_registry(widget_registry):
 
 
 def test_add_widget(widget_registry):
-    "Widgets can be added to the registry"
+    """Widgets can be added to the registry."""
     # Add a widget to the registry
     widget1 = ExampleWidget(id="widget-1")
     widget_registry._add(widget1)
@@ -46,7 +46,7 @@ def test_add_widget(widget_registry):
 
 
 def test_update_widgets(widget_registry):
-    "The registry can be bulk updated"
+    """The registry can be bulk updated."""
     # Add a widget to the registry
     widget1 = ExampleWidget(id="widget-1")
     widget_registry._add(widget1)
@@ -64,7 +64,7 @@ def test_update_widgets(widget_registry):
 
 
 def test_remove_widget(widget_registry):
-    "A widget can be removed from the repository"
+    """A widget can be removed from the repository."""
     "Widgets can be added to the registry"
     # Add a widget to the registry
     widget1 = ExampleWidget(id="widget-1")
@@ -80,7 +80,7 @@ def test_remove_widget(widget_registry):
 
 
 def test_add_same_widget_twice(widget_registry):
-    "A widget cannot be added to the same registry twice"
+    """A widget cannot be added to the same registry twice."""
     # Add a widget to the registry
     widget1 = ExampleWidget(id="widget-1")
     widget_registry._add(widget1)
@@ -100,7 +100,7 @@ def test_add_same_widget_twice(widget_registry):
 
 
 def test_add_duplicate_id(widget_registry):
-    "A widget cannot be added to the same registry twice"
+    """A widget cannot be added to the same registry twice."""
     # Add a widget to the registry
     widget1 = ExampleWidget(id="widget-1")
     widget_registry._add(widget1)
@@ -122,7 +122,7 @@ def test_add_duplicate_id(widget_registry):
 
 
 def test_setitem(widget_registry):
-    "Widgets cannot be directly assigned to the registry"
+    """Widgets cannot be directly assigned to the registry."""
     widget1 = ExampleWidget(id="widget-1")
 
     with pytest.raises(

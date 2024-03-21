@@ -147,6 +147,16 @@ class AppProbe(BaseProbe):
         item = self._menu_item(path)
         assert item.isEnabled() == enabled
 
+    def assert_menu_order(self, path, expected):
+        menu = self._menu_item(path).submenu
+
+        assert menu.numberOfItems == len(expected)
+        for item, title in zip(menu.itemArray, expected):
+            if title == "---":
+                assert item.isSeparatorItem
+            else:
+                assert item.title == title
+
     def keystroke(self, combination):
         key, modifiers = cocoa_key(combination)
         key_code = {
@@ -154,12 +164,18 @@ class AppProbe(BaseProbe):
             "A": 0,
             "1": 18,
             "!": 18,
+            "'": 39,
+            ";": 41,
+            "|": 42,
+            " ": 49,
             chr(0xF708): 96,  # F5
             chr(0x2196): 115,  # Home
+            # This only works because we're *not* testing the numeric 5
+            "5": 87,
         }[key]
 
-        # Add the shift modifier to disambiguate 1 from !
-        if key in {"!"}:
+        # Add the shift modifier to disambiguate shifted keys from non-shifted
+        if key in {"!", "|"}:
             modifiers |= NSEventModifierFlagShift
 
         event = NSEvent.keyEventWithType(

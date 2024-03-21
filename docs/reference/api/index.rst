@@ -33,6 +33,7 @@ General widgets
                                                                          layout.
  :doc:`ImageView </reference/api/widgets/imageview>`                     Image Viewer
  :doc:`Label </reference/api/widgets/label>`                             A text label for annotating forms or interfaces.
+ :doc:`MapView </reference/api/widgets/mapview>`                         A zoomable map that can be annotated with location pins.
  :doc:`MultilineTextInput </reference/api/widgets/multilinetextinput>`   A scrollable panel that allows for the display and editing of multiple
                                                                          lines of text.
  :doc:`NumberInput </reference/api/widgets/numberinput>`                 A text input that is limited to numeric input.
@@ -82,11 +83,11 @@ Resources
  :doc:`Font </reference/api/resources/fonts>`                         Fonts
  :doc:`Icon </reference/api/resources/icons>`                         An icon for buttons, menus, etc
  :doc:`Image </reference/api/resources/images>`                       An image
- :doc:`ListSource </reference/api/resources/sources/list_source>`     A data source describing an ordered list of data.
  :doc:`Source </reference/api/resources/sources/source>`              A base class for data source implementations.
+ :doc:`ListSource </reference/api/resources/sources/list_source>`     A data source describing an ordered list of data.
  :doc:`TreeSource </reference/api/resources/sources/tree_source>`     A data source describing an ordered hierarchical tree of data.
- :doc:`Validators </reference/api/resources/validators>`              A mechanism for validating that input meets a given set of criteria.
  :doc:`ValueSource </reference/api/resources/sources/value_source>`   A data source describing a single value.
+ :doc:`Validators </reference/api/resources/validators>`              A mechanism for validating that input meets a given set of criteria.
 ==================================================================== ========================================================================
 
 Device and Hardware
@@ -96,6 +97,7 @@ Device and Hardware
  Usage                                                                Description
 ==================================================================== ========================================================================
  :doc:`Camera </reference/api/hardware/camera>`                       A sensor that can capture photos and/or video.
+ :doc:`Screen </reference/api/screens>`                               A representation of a screen attached to a device.
 ==================================================================== ========================================================================
 
 Other
@@ -106,6 +108,7 @@ Other
 ============================================== ========================================================================
  :doc:`Constants </reference/api/constants>`    Symbolic constants used by various APIs.
  :doc:`Keys </reference/api/keys>`              Symbolic representation of keys used for keyboard shortcuts.
+ :doc:`Types </reference/api/types>`            Utility data structures used by Toga APIs.
 ============================================== ========================================================================
 
 .. toctree::
@@ -121,3 +124,5 @@ Other
    widgets/index
    constants
    keys
+   screens
+   types
