@@ -39,7 +39,7 @@ class MultilineTextInputProbe(TextInputProbe):
             assert height > 0
             height *= line_count / (line_count - 1)
 
-        return height / self.scale_factor
+        return round(height / self.scale_factor)
 
     @property
     def document_width(self):
@@ -47,7 +47,7 @@ class MultilineTextInputProbe(TextInputProbe):
 
     @property
     def vertical_scroll_position(self):
-        return -(self._char_pos(0).Y) / self.scale_factor
+        return -round((self._char_pos(0).Y) / self.scale_factor)
 
     async def wait_for_scroll_completion(self):
         pass

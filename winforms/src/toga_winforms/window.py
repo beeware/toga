@@ -1,8 +1,9 @@
 import System.Windows.Forms as WinForms
-from System.Drawing import Bitmap, Graphics, Point, Size
+from System.Drawing import Bitmap, Font as WinFont, Graphics, Point, Size
 from System.Drawing.Imaging import ImageFormat
 from System.IO import MemoryStream
 
+from toga import MainWindow
 from toga.command import Separator
 
 from .container import Container
@@ -25,7 +26,10 @@ class Window(Container, Scalable):
         self.native = WinForms.Form()
         self.native.FormClosing += WeakrefCallable(self.winforms_FormClosing)
         super().__init__(self.native)
-        self.init_scale(self.native)
+
+        self.update_scale()
+        # Required for detecting window moving to other screens with different dpi
+        self.native.LocationChanged += WeakrefCallable(self.winforms_LocationChanged)
 
         self.native.MinimizeBox = self.interface.minimizable
         self.native.MaximizeBox = self.interface.resizable
@@ -59,6 +63,17 @@ class Window(Container, Scalable):
                 # See _is_closing comment in __init__.
                 self.interface.on_close()
                 event.Cancel = True
+
+    def winforms_LocationChanged(self, sender, event):  # pragma: no cover
+        # Check if the window has moved from one screen to another and if the new
+        # screen has a different dpi scale than the previous screen then rescale
+        current_screen = WinForms.Screen.FromControl(self.native)
+        if not hasattr(self, "_previous_screen"):
+            self._previous_screen = current_screen
+        if current_screen != self._previous_screen:
+            if self._dpi_scale != self.get_dpi_scale(current_screen):
+                self.update_window_dpi_changed()
+            self._previous_screen = current_screen
 
     ######################################################################
     # Window properties
@@ -111,7 +126,7 @@ class Window(Container, Scalable):
                     item.Click += WeakrefCallable(cmd._impl.winforms_Click)
                     cmd._impl.native.append(item)
                 self.toolbar_native.Items.Add(item)
-
+            self.original_toolbar_font = self.toolbar_native.Font
         elif self.toolbar_native:
             self.native.Controls.Remove(self.toolbar_native)
             self.toolbar_native = None
@@ -167,6 +182,25 @@ class Window(Container, Scalable):
             self.native.ClientSize.Width,
             self.native.ClientSize.Height - vertical_shift,
         )
+
+    def update_toolbar_font_scale(self):
+        self.toolbar_native.Font = WinFont(
+            self.original_toolbar_font.FontFamily,
+            self.scale_font(self.original_toolbar_font.Size),
+            self.original_toolbar_font.Style,
+        )
+
+    # This method is called when the dpi scaling changes
+    def update_window_dpi_changed(self):
+        self.update_scale()
+        if self.toolbar_native is not None:
+            self.update_toolbar_font_scale()
+        if isinstance(self.interface, MainWindow):
+            self.update_menubar_font_scale()
+        for widget in self.interface.widgets:
+            widget.refresh()
+        self.resize_content()
+        self.refreshed()
 
     ######################################################################
     # Window size

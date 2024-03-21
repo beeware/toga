@@ -2,11 +2,13 @@ import asyncio
 import re
 import sys
 import threading
-from ctypes import windll
+from ctypes import c_void_p, windll, wintypes
 
 import System.Windows.Forms as WinForms
+from Microsoft.Win32 import SystemEvents
 from System import Environment, Threading
 from System.ComponentModel import InvalidEnumArgumentException
+from System.Drawing import Font as WinFont
 from System.Media import SystemSounds
 from System.Net import SecurityProtocolType, ServicePointManager
 from System.Windows.Threading import Dispatcher
@@ -19,10 +21,20 @@ from .keys import toga_to_winforms_key, toga_to_winforms_shortcut
 from .libs.proactor import WinformsProactorEventLoop
 from .libs.wrapper import WeakrefCallable
 from .screens import Screen as ScreenImpl
+from .widgets.base import Scalable
 from .window import Window
 
 
 class MainWindow(Window):
+    def update_menubar_font_scale(self):
+        # Directly using self.native.MainMenuStrip.Font instead of
+        # original_menubar_font makes the menubar font to not scale down.
+        self.native.MainMenuStrip.Font = WinFont(
+            self.original_menubar_font.FontFamily,
+            self.scale_font(self.original_menubar_font.Size),
+            self.original_menubar_font.Style,
+        )
+
     def winforms_FormClosing(self, sender, event):
         # Differentiate between the handling that occurs when the user
         # requests the app to exit, and the actual application exiting.
@@ -68,8 +80,39 @@ def winforms_thread_exception(sender, winforms_exc):  # pragma: no cover
     print(py_exc.Message)
 
 
-class App:
+class App(Scalable):
     _MAIN_WINDOW_CLASS = MainWindow
+
+    # These are required for properly setting up DPI mode
+    WinForms.Application.EnableVisualStyles()
+    WinForms.Application.SetCompatibleTextRenderingDefault(False)
+
+    # ------------------- Set the DPI Awareness mode for the process -------------------
+    # This needs to be done at the earliest and doing this in __init__() or
+    # in create() doesn't work
+    #
+    # Check the version of windows and make sure we are setting the DPI mode
+    # with the most up to date API
+    # Windows Versioning Check Sources : https://www.lifewire.com/windows-version-numbers-2625171
+    # and https://docs.microsoft.com/en-us/windows/release-information/
+    win_version = Environment.OSVersion.Version
+    # Represents Windows 10 Build 1703 and beyond which should use
+    # SetProcessDpiAwarenessContext(-4) for DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2
+    # Valid values: https://learn.microsoft.com/en-us/windows/win32/hidpi/dpi-awareness-context
+    if (win_version.Major > 10) or (
+        win_version.Major == 10 and win_version.Build >= 15063
+    ):
+        windll.user32.SetProcessDpiAwarenessContext.restype = wintypes.BOOL
+        windll.user32.SetProcessDpiAwarenessContext.argtypes = [c_void_p]
+        # SetProcessDpiAwarenessContext returns False(0) on Failure
+        if windll.user32.SetProcessDpiAwarenessContext(-4) == 0:  # pragma: no cover
+            print("WARNING: Failed to set the DPI Awareness mode for the app.")
+    else:  # pragma: no cover
+        print(
+            "WARNING: Your Windows version doesn't support DPI Awareness setting.  "
+            "We recommend you upgrade to at least Windows 10 Build 1703."
+        )
+    # ----------------------------------------------------------------------------------
 
     def __init__(self, interface):
         self.interface = interface
@@ -97,32 +140,10 @@ class App:
         self.app_context = WinForms.ApplicationContext()
         self.app_dispatcher = Dispatcher.CurrentDispatcher
 
-        # Check the version of windows and make sure we are setting the DPI mode
-        # with the most up to date API
-        # Windows Versioning Check Sources : https://www.lifewire.com/windows-version-numbers-2625171
-        # and https://docs.microsoft.com/en-us/windows/release-information/
-        win_version = Environment.OSVersion.Version
-        if win_version.Major >= 6:  # Checks for Windows Vista or later
-            # Represents Windows 8.1 up to Windows 10 before Build 1703 which should use
-            # SetProcessDpiAwareness(True)
-            if (win_version.Major == 6 and win_version.Minor == 3) or (
-                win_version.Major == 10 and win_version.Build < 15063
-            ):  # pragma: no cover
-                windll.shcore.SetProcessDpiAwareness(True)
-                print(
-                    "WARNING: Your Windows version doesn't support DPI-independent rendering.  "
-                    "We recommend you upgrade to at least Windows 10 Build 1703."
-                )
-            # Represents Windows 10 Build 1703 and beyond which should use
-            # SetProcessDpiAwarenessContext(-2)
-            elif win_version.Major == 10 and win_version.Build >= 15063:
-                windll.user32.SetProcessDpiAwarenessContext(-2)
-            # Any other version of windows should use SetProcessDPIAware()
-            else:  # pragma: no cover
-                windll.user32.SetProcessDPIAware()
-
-        self.native.EnableVisualStyles()
-        self.native.SetCompatibleTextRenderingDefault(False)
+        # Register the DisplaySettingsChanged event handler
+        SystemEvents.DisplaySettingsChanged += WeakrefCallable(
+            self.winforms_DisplaySettingsChanged
+        )
 
         # Ensure that TLS1.2 and TLS1.3 are enabled for HTTPS connections.
         # For some reason, some Windows installs have these protocols
@@ -149,6 +170,14 @@ class App:
         self.create_app_commands()
         self.create_menus()
         self.interface.main_window._impl.set_app(self)
+
+    ######################################################################
+    # Native event handlers
+    ######################################################################
+
+    def winforms_DisplaySettingsChanged(self, sender, event):
+        for window in self.interface.windows:
+            window._impl.update_window_dpi_changed()
 
     ######################################################################
     # Commands and menus
@@ -257,6 +286,8 @@ class App:
                 cmd._impl.native.append(item)
                 submenu.DropDownItems.Add(item)
 
+        # Required for font scaling on DPI changes
+        window.original_menubar_font = menubar.Font
         window.resize_content()
 
     ######################################################################

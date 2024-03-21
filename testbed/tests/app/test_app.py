@@ -587,3 +587,127 @@ async def test_screens(app, app_probe):
     # Check that the origin of every other screen is not "0,0"
     origins_not_zero = all(screen.origin != (0, 0) for screen in app.screens[1:])
     assert origins_not_zero is True
+
+
+# This test is windows specific
+if toga.platform.current_platform == "windows":
+
+    async def test_system_dpi_change(
+        monkeypatch, app, app_probe, main_window, main_window_probe
+    ):
+        # For restoring original behavior after completion of test.
+        original_values = dict()
+        # --------------------------------- Set up for testing ---------------------------------
+        # For toolbar
+        main_window.toolbar.add(app.cmd1, app.cmd2)
+
+        # ----------------------- Setup Mock values for testing -----------------------
+        # For main_window
+        original_values["main_window_update_scale"] = main_window._impl.update_scale
+        main_window_update_scale_mock = Mock()
+        monkeypatch.setattr(
+            main_window._impl, "update_scale", main_window_update_scale_mock
+        )
+        original_values["main_window_resize_content"] = main_window._impl.resize_content
+        main_window_resize_content_mock = Mock()
+        monkeypatch.setattr(
+            main_window._impl, "resize_content", main_window_resize_content_mock
+        )
+
+        window1 = toga.Window("Test Window 1")
+        window1.content = toga.Box()
+        window1_probe = window_probe(app, window1)
+        window1.show()
+        await window1_probe.wait_for_window("Extra windows added")
+
+        # For window1
+        original_values["window1_update_scale"] = window1._impl.update_scale
+        window1_update_scale_mock = Mock()
+        monkeypatch.setattr(window1._impl, "update_scale", window1_update_scale_mock)
+        original_values["window1_resize_content"] = window1._impl.resize_content
+        window1_resize_content_mock = Mock()
+        monkeypatch.setattr(
+            window1._impl, "resize_content", window1_resize_content_mock
+        )
+        original_values["window1_update_toolbar_font_scale"] = (
+            window1._impl.update_toolbar_font_scale
+        )
+        window1_update_toolbar_font_scale_mock = Mock()
+        monkeypatch.setattr(
+            window1._impl,
+            "update_toolbar_font_scale",
+            window1_update_toolbar_font_scale_mock,
+        )
+        # -----------------------------------------------------------------------------
+        # Explicitly set the dpi_scale for testing
+        for window in app.windows:
+            window._impl._dpi_scale = 1.5
+        # --------------------------------------------------------------------------------------
+        await main_window_probe.redraw(
+            "Triggering DPI change event for testing property changes"
+        )
+        app_probe.trigger_dpi_change_event()
+
+        # Test out properties which should change on dpi change
+        main_window._impl.update_scale.assert_called_once()
+        window1._impl.update_scale.assert_called_once()
+        assert main_window_probe.has_toolbar()
+        app_probe.assert_main_window_toolbar_font_scale_updated()
+        assert not window1_probe.has_toolbar()
+        window1._impl.update_toolbar_font_scale.assert_not_called()
+        app_probe.assert_main_window_menubar_font_scale_updated()
+        assert not hasattr(window1._impl, "update_menubar_font_scale")
+        app_probe.assert_main_window_widgets_font_scale_updated()
+        main_window._impl.resize_content.assert_called_once()
+        window1._impl.resize_content.assert_called_once()
+
+        # Test if widget.refresh is called once on each widget
+        for window in app.windows:
+            for widget in window.widgets:
+                original_values[id(widget)] = widget.refresh
+                monkeypatch.setattr(widget, "refresh", Mock())
+
+        await main_window_probe.redraw(
+            "Triggering DPI change event for testing widget refresh calls"
+        )
+        app_probe.trigger_dpi_change_event()
+
+        for window in app.windows:
+            for widget in main_window.widgets:
+                widget.refresh.assert_called_once()
+
+        # Restore original state
+        for window in app.windows:
+            for widget in window.widgets:
+                monkeypatch.setattr(widget, "refresh", original_values[id(widget)])
+        monkeypatch.setattr(
+            window1._impl,
+            "update_toolbar_font_scale",
+            original_values["window1_update_toolbar_font_scale"],
+        )
+        monkeypatch.setattr(
+            window1._impl, "resize_content", original_values["window1_resize_content"]
+        )
+        monkeypatch.setattr(
+            window1._impl, "update_scale", original_values["window1_update_scale"]
+        )
+        monkeypatch.setattr(
+            main_window._impl,
+            "resize_content",
+            original_values["main_window_resize_content"],
+        )
+        monkeypatch.setattr(
+            main_window._impl,
+            "update_scale",
+            original_values["main_window_update_scale"],
+        )
+
+        # Restore original state
+        for window in app.windows:
+            window._impl._dpi_scale = 1.0
+        await main_window_probe.redraw(
+            "Triggering DPI change event for restoring original state"
+        )
+        app_probe.trigger_dpi_change_event()
+        main_window.toolbar.clear()
+        window1.close()
