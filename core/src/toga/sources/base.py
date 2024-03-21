@@ -29,11 +29,7 @@ class Listener(Protocol):
         """
 
     def clear(self):
-        """All items have been removed from the data source.
-
-        :param index: The 0-index position in the data.
-        :param item: The data object that was added.
-        """
+        """All items have been removed from the data source."""
 
 
 class Source:

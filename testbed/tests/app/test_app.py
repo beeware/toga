@@ -17,7 +17,7 @@ def mock_app_exit(monkeypatch, app):
     return app_exit
 
 
-# Mobile platforms have different windowing characterics, so they have different tests.
+# Mobile platforms have different windowing characteristics, so they have different tests.
 if toga.platform.current_platform in {"iOS", "android"}:
     ####################################################################################
     # Mobile platform tests
@@ -499,6 +499,27 @@ async def test_menu_items(app, app_probe):
     app_probe.assert_menu_item(
         ["Other", "Submenu1", "Submenu1 menu1", "Deep"],
         enabled=True,
+    )
+    app_probe.assert_menu_item(
+        ["Other", "Wiggle"],
+        enabled=True,
+    )
+
+    app_probe.assert_menu_order(
+        ["Other"],
+        ["Full command", "---", "Submenu1", "Submenu2", "Wiggle"],
+    )
+    app_probe.assert_menu_order(
+        ["Other", "Submenu1"],
+        ["Disabled", "No Action", "Submenu1 menu1"],
+    )
+    app_probe.assert_menu_order(
+        ["Other", "Submenu1", "Submenu1 menu1"],
+        ["Deep"],
+    )
+    app_probe.assert_menu_order(
+        ["Other", "Submenu2"],
+        ["Jiggle"],
     )
 
     app_probe.assert_menu_item(

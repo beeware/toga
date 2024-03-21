@@ -41,9 +41,9 @@ class WindowProbe(BaseProbe):
     @property
     def content_size(self):
         return (
-            round(self.native.ClientSize.Width / self.scale_factor),
-            round(
-                (self.native.ClientSize.Height - self.impl.top_bars_height())
+            (self.native.ClientSize.Width) / self.scale_factor,
+            (
+                (self.native.ClientSize.Height - self.impl._top_bars_height())
                 / self.scale_factor
             ),
         )

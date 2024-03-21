@@ -62,7 +62,7 @@ def detailedlist(
 
 
 def test_detailedlist_created():
-    "An minimal DetailedList can be created"
+    """A minimal DetailedList can be created."""
     detailedlist = toga.DetailedList()
     assert detailedlist._impl.interface == detailedlist
     assert_action_performed(detailedlist, "create DetailedList")
@@ -91,7 +91,7 @@ def test_create_with_values(
     on_primary_action_handler,
     on_secondary_action_handler,
 ):
-    "A DetailedList can be created with initial values"
+    """A DetailedList can be created with initial values."""
     detailedlist = toga.DetailedList(
         data=source,
         accessors=("key", "value", "icon"),
@@ -122,7 +122,7 @@ def test_create_with_values(
 
 
 def test_disable_no_op(detailedlist):
-    "DetailedList doesn't have a disabled state"
+    """DetailedList doesn't have a disabled state."""
     # Enabled by default
     assert detailedlist.enabled
 
@@ -134,7 +134,7 @@ def test_disable_no_op(detailedlist):
 
 
 def test_focus_noop(detailedlist):
-    "Focus is a no-op."
+    """Focus is a no-op."""
 
     detailedlist.focus()
     assert_action_not_performed(detailedlist, "focus")
@@ -192,7 +192,7 @@ def test_set_data(
     all_attributes,
     extra_attributes,
 ):
-    "Data can be set from a variety of sources"
+    """Data can be set from a variety of sources."""
 
     # The selection hasn't changed yet.
     on_select_handler.assert_not_called()
@@ -231,7 +231,7 @@ def test_set_data(
 
 
 def test_selection(detailedlist, on_select_handler):
-    "The current selection can be retrieved"
+    """The current selection can be retrieved."""
     # Selection is initially empty
     assert detailedlist.selection is None
     on_select_handler.assert_not_called()
@@ -247,7 +247,7 @@ def test_selection(detailedlist, on_select_handler):
 
 
 def test_refresh(detailedlist, on_refresh_handler):
-    "Completion of a refresh event triggers the cleanup handler"
+    """Completion of a refresh event triggers the cleanup handler."""
     # Stimulate a refresh.
     detailedlist._impl.stimulate_refresh()
 
@@ -264,7 +264,7 @@ def test_refresh(detailedlist, on_refresh_handler):
 
 
 def test_scroll_to_top(detailedlist):
-    "A DetailedList can be scrolled to the top"
+    """A DetailedList can be scrolled to the top."""
     detailedlist.scroll_to_top()
 
     assert_action_performed_with(detailedlist, "scroll to row", row=0)
@@ -286,14 +286,14 @@ def test_scroll_to_top(detailedlist):
     ],
 )
 def test_scroll_to_row(detailedlist, row, effective):
-    "A DetailedList can be scrolled to a specific row"
+    """A DetailedList can be scrolled to a specific row."""
     detailedlist.scroll_to_row(row)
 
     assert_action_performed_with(detailedlist, "scroll to row", row=effective)
 
 
 def test_scroll_to_row_no_data(detailedlist):
-    "If there's no data, scrolling is a no-op"
+    """If there's no data, scrolling is a no-op."""
     detailedlist.data.clear()
 
     detailedlist.scroll_to_row(5)
@@ -302,7 +302,7 @@ def test_scroll_to_row_no_data(detailedlist):
 
 
 def test_scroll_to_bottom(detailedlist):
-    "A DetailedList can be scrolled to the top"
+    """A DetailedList can be scrolled to the top."""
     detailedlist.scroll_to_bottom()
 
     assert_action_performed_with(detailedlist, "scroll to row", row=2)
@@ -312,7 +312,7 @@ def test_scroll_to_bottom(detailedlist):
 # 2023-07: Backwards compatibility
 ######################################################################
 def test_deprecated_names(on_primary_action_handler):
-    "Deprecated names still work"
+    """Deprecated names still work."""
 
     # Can't specify both on_delete and on_primary_action
     with pytest.raises(

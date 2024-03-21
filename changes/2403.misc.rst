@@ -1,0 +1,1 @@
+A consistent definition order was applied to App and Window APIs.

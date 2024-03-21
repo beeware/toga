@@ -79,14 +79,18 @@ class AppProbe(BaseProbe):
         except AttributeError:
             raise AssertionError(f"Menu {' > '.join(orig_path)} not found")
 
-        action_name = item[0].get_item_attribute_value(item[1], "action").get_string()
-        cmd_id = action_name.split(".")[1]
-        action = self.app._impl.native.lookup_action(cmd_id)
-        return action
+        action = item[0].get_item_attribute_value(item[1], "action")
+        if action:
+            action_name = (
+                item[0].get_item_attribute_value(item[1], "action").get_string()
+            )
+            cmd_id = action_name.split(".")[1]
+            action = self.app._impl.native.lookup_action(cmd_id)
+        return item, action
 
     def _activate_menu_item(self, path):
-        item = self._menu_item(path)
-        item.emit("activate", None)
+        _, action = self._menu_item(path)
+        action.emit("activate", None)
 
     def activate_menu_exit(self):
         self._activate_menu_item(["*", "Quit Toga Testbed"])
@@ -117,8 +121,33 @@ class AppProbe(BaseProbe):
         pytest.xfail("GTK doesn't have a window management menu items")
 
     def assert_menu_item(self, path, enabled):
-        item = self._menu_item(path)
-        assert item.get_enabled() == enabled
+        _, action = self._menu_item(path)
+        assert action.get_enabled() == enabled
+
+    def assert_menu_order(self, path, expected):
+        item, action = self._menu_item(path)
+        menu = item[0].get_item_link(item[1], "submenu")
+
+        # Loop over the sections
+        actual = []
+        for index in range(menu.get_n_items()):
+            section = menu.get_item_link(index, "section")
+            if section:
+                if actual:
+                    actual.append("---")
+
+                for section_index in range(section.get_n_items()):
+                    actual.append(
+                        section.get_item_attribute_value(
+                            section_index, "label"
+                        ).get_string()
+                    )
+            else:
+                actual.append(
+                    section.get_item_attribute_value(index, "label").get_string()
+                )
+
+        assert actual == expected
 
     def keystroke(self, combination):
         accel = gtk_accel(combination)

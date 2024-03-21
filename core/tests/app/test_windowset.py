@@ -23,7 +23,7 @@ def test_create(app):
 
 
 def test_add_discard(app, window1, window2):
-    """An item can be added to a windowset"""
+    """An item can be added to a windowset."""
     # The windowset has 3 windows - the main window, plus 2 extras
     assert len(app.windows) == 3
 
@@ -61,7 +61,7 @@ def test_add_discard(app, window1, window2):
 
 
 def test_iadd_isub(app, window1, window2):
-    """The deprecated += and -= operators are no-ops"""
+    """The deprecated += and -= operators are no-ops."""
     # The windowset has 3 windows - the main window, plus 2 extras
     assert window2 in app.windows
     assert len(app.windows) == 3

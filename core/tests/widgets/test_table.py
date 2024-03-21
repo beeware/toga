@@ -45,7 +45,7 @@ def table(source, on_select_handler, on_activate_handler):
 
 
 def test_table_created():
-    "An minimal Table can be created"
+    """A minimal Table can be created."""
     table = toga.Table(["First", "Second"])
     assert table._impl.interface == table
     assert_action_performed(table, "create Table")
@@ -60,7 +60,7 @@ def test_table_created():
 
 
 def test_create_with_values(source, on_select_handler, on_activate_handler):
-    "A Table can be created with initial values"
+    """A Table can be created with initial values."""
     table = toga.Table(
         ["First", "Second"],
         data=source,
@@ -83,7 +83,7 @@ def test_create_with_values(source, on_select_handler, on_activate_handler):
 
 
 def test_create_with_accessor_overrides():
-    "A Table can partially override accessors"
+    """A Table can partially override accessors."""
     table = toga.Table(
         ["First", "Second"],
         accessors={"First": "override"},
@@ -97,7 +97,7 @@ def test_create_with_accessor_overrides():
 
 
 def test_create_no_headings():
-    "A Table can be created with no headings"
+    """A Table can be created with no headings."""
     table = toga.Table(
         headings=None,
         accessors=["primus", "secondus"],
@@ -111,7 +111,7 @@ def test_create_no_headings():
 
 
 def test_create_headings_required():
-    "A Table requires either headingscan be created with no headings"
+    """A Table requires either headings can be created with no headings."""
     with pytest.raises(
         ValueError,
         match=r"Cannot create a table without either headings or accessors",
@@ -120,7 +120,7 @@ def test_create_headings_required():
 
 
 def test_disable_no_op(table):
-    "Table doesn't have a disabled state"
+    """Table doesn't have a disabled state."""
     # Enabled by default
     assert table.enabled
 
@@ -132,7 +132,7 @@ def test_disable_no_op(table):
 
 
 def test_focus_noop(table):
-    "Focus is a no-op."
+    """Focus is a no-op."""
 
     table.focus()
     assert_action_not_performed(table, "focus")
@@ -184,7 +184,7 @@ def test_focus_noop(table):
     ],
 )
 def test_set_data(table, on_select_handler, data, all_attributes, extra_attributes):
-    "Data can be set from a variety of sources"
+    """Data can be set from a variety of sources."""
 
     # The selection hasn't changed yet.
     on_select_handler.assert_not_called()
@@ -218,7 +218,7 @@ def test_set_data(table, on_select_handler, data, all_attributes, extra_attribut
 
 
 def test_single_selection(table, on_select_handler):
-    "The current selection can be retrieved"
+    """The current selection can be retrieved."""
     # Selection is initially empty
     assert table.selection is None
     on_select_handler.assert_not_called()
@@ -234,7 +234,7 @@ def test_single_selection(table, on_select_handler):
 
 
 def test_multiple_selection(source, on_select_handler):
-    "A multi-select table can have the selection retrieved"
+    """A multi-select table can have the selection retrieved."""
     table = toga.Table(
         ["Title", "Value"],
         data=source,
@@ -256,7 +256,7 @@ def test_multiple_selection(source, on_select_handler):
 
 
 def test_activation(table, on_activate_handler):
-    "A row can be activated"
+    """A row can be activated."""
 
     # Activate an item
     table._impl.simulate_activate(1)
@@ -266,7 +266,7 @@ def test_activation(table, on_activate_handler):
 
 
 def test_scroll_to_top(table):
-    "A table can be scrolled to the top"
+    """A table can be scrolled to the top."""
     table.scroll_to_top()
 
     assert_action_performed_with(table, "scroll to row", row=0)
@@ -288,14 +288,14 @@ def test_scroll_to_top(table):
     ],
 )
 def test_scroll_to_row(table, row, effective):
-    "A table can be scrolled to a specific row"
+    """A table can be scrolled to a specific row."""
     table.scroll_to_row(row)
 
     assert_action_performed_with(table, "scroll to row", row=effective)
 
 
 def test_scroll_to_row_no_data(table):
-    "If there's no data, scrolling is a no-op"
+    """If there's no data, scrolling is a no-op."""
     table.data.clear()
 
     table.scroll_to_row(5)
@@ -304,14 +304,14 @@ def test_scroll_to_row_no_data(table):
 
 
 def test_scroll_to_bottom(table):
-    "A table can be scrolled to the top"
+    """A table can be scrolled to the top."""
     table.scroll_to_bottom()
 
     assert_action_performed_with(table, "scroll to row", row=2)
 
 
 def test_insert_column_accessor(table):
-    """A column can be inserted at an accessor"""
+    """A column can be inserted at an accessor."""
     table.insert_column("value", "New Column", accessor="extra")
 
     # The column was added
@@ -327,13 +327,13 @@ def test_insert_column_accessor(table):
 
 
 def test_insert_column_unknown_accessor(table):
-    """If the insertion index accessor is unknown, an error is raised"""
+    """If the insertion index accessor is unknown, an error is raised."""
     with pytest.raises(ValueError, match=r"'unknown' is not in list"):
         table.insert_column("unknown", "New Column", accessor="extra")
 
 
 def test_insert_column_index(table):
-    """A column can be inserted"""
+    """A column can be inserted."""
 
     table.insert_column(1, "New Column", accessor="extra")
 
@@ -350,7 +350,7 @@ def test_insert_column_index(table):
 
 
 def test_insert_column_big_index(table):
-    """A column can be inserted at an index bigger than the number of columns"""
+    """A column can be inserted at an index bigger than the number of columns."""
 
     table.insert_column(100, "New Column", accessor="extra")
 
@@ -367,7 +367,7 @@ def test_insert_column_big_index(table):
 
 
 def test_insert_column_negative_index(table):
-    """A column can be inserted at a negative index"""
+    """A column can be inserted at a negative index."""
 
     table.insert_column(-2, "New Column", accessor="extra")
 
@@ -384,7 +384,8 @@ def test_insert_column_negative_index(table):
 
 
 def test_insert_column_big_negative_index(table):
-    """A column can be inserted at a negative index larger than the number of columns"""
+    """A column can be inserted at a negative index larger than the number of
+    columns."""
 
     table.insert_column(-100, "New Column", accessor="extra")
 
@@ -401,7 +402,7 @@ def test_insert_column_big_negative_index(table):
 
 
 def test_insert_column_no_accessor(table):
-    """A column can be inserted with a default accessor"""
+    """A column can be inserted with a default accessor."""
 
     table.insert_column(1, "New Column")
 
@@ -418,7 +419,7 @@ def test_insert_column_no_accessor(table):
 
 
 def test_insert_column_no_headings(source):
-    """A column can be inserted into a table with no headings"""
+    """A column can be inserted into a table with no headings."""
     table = toga.Table(headings=None, accessors=["key", "value"], data=source)
 
     table.insert_column(1, "New Column", accessor="extra")
@@ -436,7 +437,7 @@ def test_insert_column_no_headings(source):
 
 
 def test_insert_column_no_headings_missing_accessor(source):
-    """An accessor is mandatory when adding a column to a table with no headings"""
+    """An accessor is mandatory when adding a column to a table with no headings."""
     table = toga.Table(headings=None, accessors=["key", "value"], data=source)
 
     with pytest.raises(
@@ -447,7 +448,7 @@ def test_insert_column_no_headings_missing_accessor(source):
 
 
 def test_append_column(table):
-    """A column can be appended"""
+    """A column can be appended."""
     table.append_column("New Column", accessor="extra")
 
     # The column was added
@@ -463,7 +464,7 @@ def test_append_column(table):
 
 
 def test_remove_column_accessor(table):
-    "A column can be removed by accessor"
+    """A column can be removed by accessor."""
 
     table.remove_column("value")
 
@@ -478,19 +479,19 @@ def test_remove_column_accessor(table):
 
 
 def test_remove_column_unknown_accessor(table):
-    "If the column named for removal doesn't exist, an error is raised"
+    """If the column named for removal doesn't exist, an error is raised."""
     with pytest.raises(ValueError, match=r"'unknown' is not in list"):
         table.remove_column("unknown")
 
 
 def test_remove_column_invalid_index(table):
-    "If the index specified doesn't exist, an error is raised"
+    """If the index specified doesn't exist, an error is raised."""
     with pytest.raises(IndexError, match=r"list assignment index out of range"):
         table.remove_column(100)
 
 
 def test_remove_column_index(table):
-    "A column can be removed by index"
+    """A column can be removed by index."""
 
     table.remove_column(1)
 
@@ -505,7 +506,7 @@ def test_remove_column_index(table):
 
 
 def test_remove_column_negative_index(table):
-    "A column can be removed by index"
+    """A column can be removed by index."""
 
     table.remove_column(-2)
 
@@ -520,7 +521,7 @@ def test_remove_column_negative_index(table):
 
 
 def test_remove_column_no_headings(table):
-    "A column can be removed when there are no headings"
+    """A column can be removed when there are no headings."""
     table = toga.Table(
         headings=None,
         accessors=["primus", "secondus"],
@@ -539,7 +540,7 @@ def test_remove_column_no_headings(table):
 
 
 def test_deprecated_names(on_activate_handler):
-    "Deprecated names still work"
+    """Deprecated names still work."""
 
     # Can't specify both on_double_click and on_activate
     with pytest.raises(

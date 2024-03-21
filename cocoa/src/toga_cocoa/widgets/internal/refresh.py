@@ -99,7 +99,12 @@ class RefreshableClipView(NSClipView):
             argtypes=[NSPoint],
         )
 
-        if self.superview and self.superview.is_refreshing:
+        # FIXME: This has been marked no-cover so that ARM64 testing can be enabled;
+        # ARM64 CI can only run on Sonoma, and it looks like Sonoma has turned off
+        # scroll elasticity by default, which prevents pull-to-refresh from working.
+        # See Toga#2412 for details. If that ticket is closed, it should be possible
+        # to remove this this no-cover.
+        if self.superview and self.superview.is_refreshing:  # pragma: no cover
             return NSMakePoint(
                 constrained.x,
                 max(

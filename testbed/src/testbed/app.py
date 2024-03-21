@@ -39,11 +39,13 @@ class Testbed(toga.App):
             tooltip="A command with no icon",
             shortcut=toga.Key.MOD_1 + "3",
         )
-        # A command in another section
+        # A command in another section.
+        # Also exercises the handling of space as a shortcut key.
         self.cmd4 = toga.Command(
             self.cmd_action,
             "Sectioned",
             icon=toga.Icon.DEFAULT_ICON,
+            shortcut=toga.Key.MOD_1 + " ",
             tooltip="I'm in another section",
             section=2,
         )
@@ -68,6 +70,9 @@ class Testbed(toga.App):
         # Items on submenu2
         self.cmd5 = toga.Command(self.cmd_action, "Jiggle", group=subgroup2)
 
+        # Items on the main group after a submenu
+        self.cmd6 = toga.Command(self.cmd_action, "Wiggle", group=group, section=2)
+
         # Add all the commands
         self.commands.add(
             self.cmd1,
@@ -78,6 +83,7 @@ class Testbed(toga.App):
             self.no_action_cmd,
             self.deep_cmd,
             self.cmd5,
+            self.cmd6,
         )
 
         self.main_window = toga.MainWindow(title=self.formal_name)

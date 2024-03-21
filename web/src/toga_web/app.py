@@ -44,6 +44,10 @@ class App:
         # Call user code to populate the main window
         self.interface._startup()
 
+    ######################################################################
+    # Commands and menus
+    ######################################################################
+
     def _create_submenu(self, group, items):
         submenu = create_element(
             "sl-dropdown",
@@ -62,6 +66,9 @@ class App:
             ],
         )
         return submenu
+
+    def _menu_about(self, command, **kwargs):
+        self.interface.about()
 
     def create_menus(self):
         self._menu_groups = {}
@@ -135,14 +142,32 @@ class App:
         else:
             self.native.append(self.menubar)
 
-    def _menu_about(self, command, **kwargs):
-        self.interface.about()
+    ######################################################################
+    # App lifecycle
+    ######################################################################
+
+    def exit(self):
+        pass
 
     def main_loop(self):
         self.create()
 
     def set_main_window(self, window):
         pass
+
+    ######################################################################
+    # App resources
+    ######################################################################
+
+    def get_screens(self):
+        return [ScreenImpl(js.document.documentElement)]
+
+    ######################################################################
+    # App capabilities
+    ######################################################################
+
+    def beep(self):
+        self.interface.factory.not_implemented("App.beep()")
 
     def show_about_dialog(self):
         name_and_version = f"{self.interface.formal_name}"
@@ -188,23 +213,9 @@ class App:
 
         js.customElements.whenDefined("sl-dialog").then(show_dialog)
 
-    def beep(self):
-        self.interface.factory.not_implemented("App.beep()")
-
-    def exit(self):
-        pass
-
-    def get_current_window(self):
-        self.interface.factory.not_implemented("App.get_current_window()")
-
-    def set_current_window(self):
-        self.interface.factory.not_implemented("App.set_current_window()")
-
-    def enter_full_screen(self, windows):
-        self.interface.factory.not_implemented("App.enter_full_screen()")
-
-    def exit_full_screen(self, windows):
-        self.interface.factory.not_implemented("App.exit_full_screen()")
+    ######################################################################
+    # Cursor control
+    ######################################################################
 
     def show_cursor(self):
         self.interface.factory.not_implemented("App.show_cursor()")
@@ -212,5 +223,22 @@ class App:
     def hide_cursor(self):
         self.interface.factory.not_implemented("App.hide_cursor()")
 
-    def get_screens(self):
-        return [ScreenImpl(js.document.documentElement)]
+    ######################################################################
+    # Window control
+    ######################################################################
+
+    def get_current_window(self):
+        self.interface.factory.not_implemented("App.get_current_window()")
+
+    def set_current_window(self):
+        self.interface.factory.not_implemented("App.set_current_window()")
+
+    ######################################################################
+    # Full screen control
+    ######################################################################
+
+    def enter_full_screen(self, windows):
+        self.interface.factory.not_implemented("App.enter_full_screen()")
+
+    def exit_full_screen(self, windows):
+        self.interface.factory.not_implemented("App.exit_full_screen()")

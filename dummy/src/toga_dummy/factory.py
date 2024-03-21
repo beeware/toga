@@ -1,3 +1,5 @@
+from toga import NotImplementedWarning
+
 from . import dialogs
 from .app import App, DocumentApp, MainWindow
 from .command import Command
@@ -17,6 +19,7 @@ from .widgets.detailedlist import DetailedList
 from .widgets.divider import Divider
 from .widgets.imageview import ImageView
 from .widgets.label import Label
+from .widgets.mapview import MapView
 from .widgets.multilinetextinput import MultilineTextInput
 from .widgets.numberinput import NumberInput
 from .widgets.optioncontainer import OptionContainer
@@ -36,7 +39,7 @@ from .window import Window
 
 
 def not_implemented(feature):
-    raise NotImplementedError()
+    NotImplementedWarning.warn("Dummy", feature)
 
 
 __all__ = [
@@ -63,6 +66,7 @@ __all__ = [
     "Divider",
     "ImageView",
     "Label",
+    "MapView",
     "MultilineTextInput",
     "NumberInput",
     "OptionContainer",

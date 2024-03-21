@@ -6,7 +6,8 @@ from ..utils import ExampleNode, ExampleViewport, assert_layout
 
 
 def test_row_expanding_intrinsic():
-    "Children in a row layout with fixed size don't expand, even if their hints allow it"
+    """Children in a row layout with fixed size don't expand, even if their hints allow
+    it."""
     root = ExampleNode(
         "app",
         style=Pack(direction=ROW),
@@ -66,7 +67,8 @@ def test_row_expanding_intrinsic():
 
 
 def test_row_fixed_intrinsic():
-    "Children in a row layout without an explicit size, but a fixed intrinsic width, don't expand"
+    """Children in a row layout without an explicit size, but a fixed intrinsic width,
+    don't expand."""
     root = ExampleNode(
         "app",
         style=Pack(direction=ROW),
@@ -125,7 +127,8 @@ def test_row_fixed_intrinsic():
 
 
 def test_column_expanding_intrinsic():
-    "Children in a column layout with fixed size don't expand, even if their hints allow it"
+    """Children in a column layout with fixed size don't expand, even if their hints
+    allow it."""
     root = ExampleNode(
         "app",
         style=Pack(direction=COLUMN),
@@ -183,7 +186,8 @@ def test_column_expanding_intrinsic():
 
 
 def test_column_fixed_intrinsic():
-    "Children in a column layout without an explicit size, but a fixed intrinsic width, don't expand"
+    """Children in a column layout without an explicit size, but a fixed intrinsic
+    width, don't expand."""
     root = ExampleNode(
         "app",
         style=Pack(direction=COLUMN),

@@ -179,9 +179,10 @@ class DetailedListProbe(SimpleProbe):
             while self.scroll_position < 0:
                 await asyncio.sleep(0.01)
 
-    async def _perform_action(self, row, offset):
+    async def _perform_action(self, row, index):
         point = self.row_position(row)
-        # First click to show menu
+
+        # Click to show menu
         await self.mouse_event(
             NSEventType.RightMouseDown,
             point,
@@ -189,29 +190,17 @@ class DetailedListProbe(SimpleProbe):
         )
         await self.redraw("Action menu has been displayed")
 
-        # Pick a point a little to the right of the point where the menu was displayed,
-        # and slightly lower (in reversed y coordinates) to select a menu item.
-        point2 = NSPoint(point.x + 10, point.y - offset)
-        await self.mouse_event(
-            NSEventType.LeftMouseDown,
-            point2,
-            delay=0.1,
-        )
-        await self.mouse_event(
-            NSEventType.LeftMouseUp,
-            point2,
-            delay=0.1,
-        )
+        popup = self.impl._popup
+        if popup:
+            popup.performActionForItemAtIndex(index)
+            popup.cancelTracking()
+
+            # Wait until the popup menu is fully disposed.
+            while self.impl._popup is not None:
+                await self.redraw("Action has been selected", delay=0.1)
 
     async def perform_primary_action(self, row, active=True):
-        # 10px is enough to select the first menu item. It doesn't matter whether the
-        # action is active or not; if the action is inactive, it will either press the
-        # wrong action, or press empty space.
-        await self._perform_action(row, 10)
+        await self._perform_action(row, 0)
 
     async def perform_secondary_action(self, row, active=True):
-        # 30px is enough to select the second menu item. However the secondary action
-        # will be in position 1 on the menu if the primary action is disabled. It
-        # doesn't matter whether the action is active or not; if the action is inactive,
-        # it will either press the wrong action, or press empty space.
-        await self._perform_action(row, 30 if self.impl.primary_action_enabled else 10)
+        await self._perform_action(row, 1 if self.impl.primary_action_enabled else 0)

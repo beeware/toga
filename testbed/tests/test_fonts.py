@@ -28,7 +28,7 @@ async def font_probe(main_window, widget):
     main_window.content = box
 
     module = import_module("tests_backend.widgets.label")
-    probe = getattr(module, "LabelProbe")(widget)
+    probe = module.LabelProbe(widget)
     await probe.redraw("\nConstructing Font probe")
     probe.assert_container(box)
 

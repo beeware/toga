@@ -12,7 +12,7 @@ import toga
 
 def image_probe(app, image):
     module = import_module("tests_backend.images")
-    return getattr(module, "ImageProbe")(app, image)
+    return module.ImageProbe(app, image)
 
 
 async def test_local_image(app):

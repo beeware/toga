@@ -1,3 +1,5 @@
+from toga import NotImplementedWarning
+
 from . import dialogs
 from .app import App, MainWindow  # DocumentApp
 from .command import Command
@@ -39,7 +41,7 @@ from .widgets.textinput import TextInput
 
 
 def not_implemented(feature):
-    print(f"[Web] Not implemented: {feature}")  # pragma: nocover
+    NotImplementedWarning.warn("Web", feature)  # pragma: nocover
 
 
 __all__ = [

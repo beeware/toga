@@ -66,7 +66,7 @@ def test_get_current_platform_desktop():
 
 
 def test_get_current_platform_android_inferred(monkeypatch):
-    "Android platform can be inferred from existence of sys.getandroidapilevel"
+    """Android platform can be inferred from existence of sys.getandroidapilevel."""
     monkeypatch.setattr(sys, "platform", "linux")
     try:
         # since there isn't an existing attribute of this name, it can't be patched.
@@ -77,7 +77,7 @@ def test_get_current_platform_android_inferred(monkeypatch):
 
 
 def test_get_current_platform_android(monkeypatch):
-    "Android platform can be obtained directly from sys.platform"
+    """Android platform can be obtained directly from sys.platform."""
     monkeypatch.setattr(sys, "platform", "android")
     try:
         # since there isn't an existing attribute of this name, it can't be patched.
@@ -88,20 +88,20 @@ def test_get_current_platform_android(monkeypatch):
 
 
 def test_get_current_platform_iOS(monkeypatch):
-    "iOS platform can be obtained directly from sys.platform"
+    """IOS platform can be obtained directly from sys.platform."""
     monkeypatch.setattr(sys, "platform", "ios")
     assert get_current_platform() == "iOS"
 
 
 def test_get_current_platform_web(monkeypatch):
-    "Web platform can be obtained directly from sys.platform"
+    """Web platform can be obtained directly from sys.platform."""
     monkeypatch.setattr(sys, "platform", "emscripten")
     assert get_current_platform() == "web"
 
 
 @pytest.mark.parametrize("value", ["freebsd12", "freebsd13", "freebsd14"])
 def test_get_current_platform_freebsd(monkeypatch, value):
-    "FreeBSD platform can be obtained directly from sys.platform"
+    """FreeBSD platform can be obtained directly from sys.platform."""
     monkeypatch.setattr(sys, "platform", value)
     assert get_current_platform() == "freeBSD"
 

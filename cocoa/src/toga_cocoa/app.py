@@ -61,6 +61,12 @@ class AppDelegate(NSObject):
         self.native.activateIgnoringOtherApps(True)
 
     @objc_method
+    def applicationSupportsSecureRestorableState_(
+        self, app
+    ) -> bool:  # pragma: no cover
+        return True
+
+    @objc_method
     def applicationOpenUntitledFile_(self, sender) -> bool:  # pragma: no cover
         self.impl.select_file()
         return True
@@ -141,7 +147,7 @@ class App:
         self.appDelegate.native = self.native
         self.native.setDelegate_(self.appDelegate)
 
-        self._create_app_commands()
+        self.create_app_commands()
 
         # Call user code to populate the main window
         self.interface._startup()
@@ -152,7 +158,33 @@ class App:
         self._menu_items = {}
         self.create_menus()
 
-    def _create_app_commands(self):
+    ######################################################################
+    # Commands and menus
+    ######################################################################
+
+    def _menu_about(self, command, **kwargs):
+        self.interface.about()
+
+    def _menu_close_all_windows(self, command, **kwargs):
+        # Convert to a list to so that we're not altering a set while iterating
+        for window in list(self.interface.windows):
+            window._impl.native.performClose(None)
+
+    def _menu_close_window(self, command, **kwargs):
+        if self.interface.current_window:
+            self.interface.current_window._impl.native.performClose(None)
+
+    def _menu_minimize(self, command, **kwargs):
+        if self.interface.current_window:
+            self.interface.current_window._impl.native.miniaturize(None)
+
+    def _menu_quit(self, command, **kwargs):
+        self.interface.on_exit()
+
+    def _menu_visit_homepage(self, command, **kwargs):
+        self.interface.visit_homepage()
+
+    def create_app_commands(self):
         formal_name = self.interface.formal_name
         self.interface.commands.add(
             # ---- App menu -----------------------------------
@@ -299,27 +331,31 @@ class App:
             ),
         )
 
-    def _menu_about(self, command, **kwargs):
-        self.interface.about()
+    def _submenu(self, group, menubar):
+        """Obtain the submenu representing the command group.
 
-    def _menu_quit(self, command, **kwargs):
-        self.interface.on_exit()
+        This will create the submenu if it doesn't exist. It will call itself
+        recursively to build the full path to menus inside submenus, returning the
+        "leaf" node in the submenu path. Once created, it caches the menu that has been
+        created for future lookup.
+        """
+        try:
+            return self._menu_groups[group]
+        except KeyError:
+            if group is None:
+                submenu = menubar
+            else:
+                parent_menu = self._submenu(group.parent, menubar)
 
-    def _menu_close_window(self, command, **kwargs):
-        if self.interface.current_window:
-            self.interface.current_window._impl.native.performClose(None)
+                menu_item = parent_menu.addItemWithTitle(
+                    group.text, action=None, keyEquivalent=""
+                )
+                submenu = NSMenu.alloc().initWithTitle(group.text)
+                parent_menu.setSubmenu(submenu, forItem=menu_item)
 
-    def _menu_close_all_windows(self, command, **kwargs):
-        # Convert to a list to so that we're not altering a set while iterating
-        for window in list(self.interface.windows):
-            window._impl.native.performClose(None)
-
-    def _menu_minimize(self, command, **kwargs):
-        if self.interface.current_window:
-            self.interface.current_window._impl.native.miniaturize(None)
-
-    def _menu_visit_homepage(self, command, **kwargs):
-        self.interface.visit_homepage()
+            # Install the item in the group cache.
+            self._menu_groups[group] = submenu
+            return submenu
 
     def create_menus(self):
         # Recreate the menu.
@@ -374,40 +410,39 @@ class App:
         # Set the menu for the app.
         self.native.mainMenu = menubar
 
-    def _submenu(self, group, menubar):
-        """Obtain the submenu representing the command group.
+    ######################################################################
+    # App lifecycle
+    ######################################################################
 
-        This will create the submenu if it doesn't exist. It will call itself
-        recursively to build the full path to menus inside submenus, returning the
-        "leaf" node in the submenu path. Once created, it caches the menu that has been
-        created for future lookup.
-        """
-        try:
-            return self._menu_groups[group]
-        except KeyError:
-            if group is None:
-                submenu = menubar
-            else:
-                parent_menu = self._submenu(group.parent, menubar)
-
-                menu_item = parent_menu.addItemWithTitle(
-                    group.text, action=None, keyEquivalent=""
-                )
-                submenu = NSMenu.alloc().initWithTitle(group.text)
-                parent_menu.setSubmenu(submenu, forItem=menu_item)
-
-            # Install the item in the group cache.
-            self._menu_groups[group] = submenu
-            return submenu
+    # We can't call this under test conditions, because it would kill the test harness
+    def exit(self):  # pragma: no cover
+        self.loop.stop()
 
     def main_loop(self):
         self.loop.run_forever(lifecycle=CocoaLifecycle(self.native))
 
+    def set_main_window(self, window):
+        pass
+
+    ######################################################################
+    # App resources
+    ######################################################################
+
     def get_screens(self):
         return [ScreenImpl(native=screen) for screen in NSScreen.screens]
 
-    def set_main_window(self, window):
-        pass
+    ######################################################################
+    # App capabilities
+    ######################################################################
+
+    def beep(self):
+        NSBeep()
+
+    def open_document(self, fileURL):
+        """No-op when the app is not a ``DocumentApp``."""
+
+    def select_file(self, **kwargs):
+        """No-op when the app is not a ``DocumentApp``."""
 
     def show_about_dialog(self):
         options = NSMutableDictionary.alloc().init()
@@ -430,18 +465,35 @@ class App:
 
         self.native.orderFrontStandardAboutPanelWithOptions(options)
 
-    def beep(self):
-        NSBeep()
+    ######################################################################
+    # Cursor control
+    ######################################################################
 
-    # We can't call this under test conditions, because it would kill the test harness
-    def exit(self):  # pragma: no cover
-        self.loop.stop()
+    def hide_cursor(self):
+        if self._cursor_visible:
+            NSCursor.hide()
+
+        self._cursor_visible = False
+
+    def show_cursor(self):
+        if not self._cursor_visible:
+            NSCursor.unhide()
+
+        self._cursor_visible = True
+
+    ######################################################################
+    # Window control
+    ######################################################################
 
     def get_current_window(self):
         return self.native.keyWindow
 
     def set_current_window(self, window):
         window._impl.native.makeKeyAndOrderFront(window._impl.native)
+
+    ######################################################################
+    # Full screen control
+    ######################################################################
 
     def enter_full_screen(self, windows):
         opts = NSMutableDictionary.alloc().init()
@@ -468,28 +520,10 @@ class App:
             window.content._impl.native.exitFullScreenModeWithOptions(opts)
             window.content.refresh()
 
-    def show_cursor(self):
-        if not self._cursor_visible:
-            NSCursor.unhide()
-
-        self._cursor_visible = True
-
-    def hide_cursor(self):
-        if self._cursor_visible:
-            NSCursor.hide()
-
-        self._cursor_visible = False
-
-    def open_document(self, fileURL):
-        """No-op when the app is not a ``DocumentApp``."""
-
-    def select_file(self, **kwargs):
-        """No-op when the app is not a ``DocumentApp``."""
-
 
 class DocumentApp(App):  # pragma: no cover
-    def _create_app_commands(self):
-        super()._create_app_commands()
+    def create_app_commands(self):
+        super().create_app_commands()
         self.interface.commands.add(
             toga.Command(
                 self._menu_open_file,

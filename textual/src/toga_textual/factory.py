@@ -1,3 +1,5 @@
+from toga import NotImplementedWarning
+
 from . import dialogs
 from .app import App, DocumentApp, MainWindow
 
@@ -41,7 +43,7 @@ from .window import Window
 
 
 def not_implemented(feature):
-    print(f"[Textual] Not implemented: {feature}")  # pragma: nocover
+    NotImplementedWarning.warn("Textual", feature)  # pragma: nocover
 
 
 __all__ = [

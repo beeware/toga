@@ -67,7 +67,8 @@ def test_create_with_cmdline(monkeypatch):
 
 
 def test_create_with_unknown_document_type(monkeypatch):
-    """If the document specified at the command line is an unknown type, an exception is raised"""
+    """If the document specified at the command line is an unknown type, an exception is
+    raised."""
     monkeypatch.setattr(sys, "argv", ["app-exe", "/path/to/filename.unknown"])
 
     with pytest.raises(
@@ -91,7 +92,7 @@ def test_create_no_document_type():
 
 
 def test_close_single_document_app():
-    """An app in single document mode closes the app when the window is closed"""
+    """An app in single document mode closes the app when the window is closed."""
     # Monkeypatch the dummy impl to use single document mode
     DummyDocument.SINGLE_DOCUMENT_APP = True
 
@@ -111,7 +112,7 @@ def test_close_single_document_app():
 
 
 def test_close_multiple_document_app():
-    """An app in multiple document mode doesn't close when the window is closed"""
+    """An app in multiple document mode doesn't close when the window is closed."""
     # Monkeypatch the dummy impl to use single document mode
     DummyDocument.SINGLE_DOCUMENT_APP = False
 

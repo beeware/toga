@@ -63,7 +63,7 @@ class Widget(Node):
         .. note::
 
             This is a beta feature. The ``tab_index`` API may change in
-            future.
+            the future.
         """
         return self._impl.get_tab_index()
 

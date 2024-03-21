@@ -20,17 +20,45 @@ class Window:
 
         self.set_title(title)
 
+    ######################################################################
+    # Native event handlers
+    ######################################################################
+
+    def on_close(self, *args):
+        pass
+
+    def on_size_allocate(self, widget, allocation):
+        pass
+
+    ######################################################################
+    # Window properties
+    ######################################################################
+
     def get_title(self):
         return js.document.title
 
     def set_title(self, title):
         js.document.title = title
 
-    def set_app(self, app):
-        pass
+    ######################################################################
+    # Window lifecycle
+    ######################################################################
+
+    def close(self):
+        self.interface.factory.not_implemented("Window.close()")
 
     def create_toolbar(self):
         self.interface.factory.not_implemented("Window.create_toolbar()")
+
+    def set_app(self, app):
+        pass
+
+    def show(self):
+        self.native.style = "visibility: visible;"
+
+    ######################################################################
+    # Window content and resources
+    ######################################################################
 
     def clear_content(self):
         if self.interface.content:
@@ -45,30 +73,9 @@ class Window:
         # Add all children to the content widget.
         self.native.appendChild(widget.native)
 
-    def show(self):
-        self.native.style = "visibility: visible;"
-
-    def hide(self):
-        self.native.style = "visibility: hidden;"
-
-    def get_visible(self):
-        self.interface.not_implemented("Window.get_visible()")
-
-    def on_close(self, *args):
-        pass
-
-    def on_size_allocate(self, widget, allocation):
-        pass
-
-    def close(self):
-        self.interface.factory.not_implemented("Window.close()")
-
-    def get_position(self):
-        return 0, 0
-
-    def set_position(self, position):
-        # Does nothing on web
-        pass
+    ######################################################################
+    # Window size
+    ######################################################################
 
     def get_size(self):
         return self.native.offsetWidth, self.native.offsetHeight
@@ -77,8 +84,40 @@ class Window:
         # Does nothing on web
         pass
 
-    def set_full_screen(self, is_full_screen):
-        self.interface.factory.not_implemented("Window.set_full_screen()")
+    ######################################################################
+    # Window position
+    ######################################################################
 
     def get_current_screen(self):
         return ScreenImpl(js.document.documentElement)
+
+    def get_position(self):
+        return 0, 0
+
+    def set_position(self, position):
+        # Does nothing on web
+        pass
+
+    ######################################################################
+    # Window visibility
+    ######################################################################
+
+    def get_visible(self):
+        self.interface.not_implemented("Window.get_visible()")
+
+    def hide(self):
+        self.native.style = "visibility: hidden;"
+
+    ######################################################################
+    # Window state
+    ######################################################################
+
+    def set_full_screen(self, is_full_screen):
+        self.interface.factory.not_implemented("Window.set_full_screen()")
+
+    ######################################################################
+    # Window capabilities
+    ######################################################################
+
+    def get_image_data(self):
+        self.interface.factory.not_implemented("Window.get_image_data()")

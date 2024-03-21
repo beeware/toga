@@ -26,7 +26,7 @@ def source():
     ],
 )
 def test_invalid_accessors(value):
-    "Accessors for a list source must be a list of attribute names"
+    """Accessors for a list source must be a list of attribute names."""
     with pytest.raises(
         ValueError,
         match=r"accessors should be a list of attribute names",
@@ -35,7 +35,7 @@ def test_invalid_accessors(value):
 
 
 def test_accessors_required():
-    "A list source must specify *some* accessors"
+    """A list source must specify *some* accessors."""
     with pytest.raises(
         ValueError,
         match=r"ListSource must be provided a list of accessors",
@@ -44,7 +44,7 @@ def test_accessors_required():
 
 
 def test_accessors_copied():
-    "A list source must specify *some* accessors"
+    """A list source must specify *some* accessors."""
     accessors = ["foo", "bar"]
     source = ListSource(accessors)
 
@@ -56,14 +56,14 @@ def test_accessors_copied():
 
 
 def test_empty_source():
-    "A list source can be constructed with no data"
+    """A list source can be constructed with no data."""
     source = ListSource(accessors=["foo", "bar"])
 
     assert len(source) == 0
 
 
 def test_tuples():
-    "A ListSource can be instantiated with tuples"
+    """A ListSource can be instantiated with tuples."""
     source = ListSource(
         data=[
             ("first", 111),
@@ -96,7 +96,7 @@ def test_tuples():
 
 
 def test_list():
-    "A ListSource can be instantiated with lists"
+    """A ListSource can be instantiated with lists."""
     source = ListSource(
         data=[
             ["first", 111],
@@ -129,7 +129,7 @@ def test_list():
 
 
 def test_dict():
-    "A ListSource can be instantiated with dictionaries"
+    """A ListSource can be instantiated with dictionaries."""
     source = ListSource(
         data=[
             {"val1": "first", "val2": 111},
@@ -162,7 +162,7 @@ def test_dict():
 
 
 def test_flat_list():
-    "A list source can be created from a flat list of objects"
+    """A list source can be created from a flat list of objects."""
 
     class MyObject:
         def __init__(self, info):
@@ -187,7 +187,7 @@ def test_flat_list():
 
 
 def test_flat_list_numbers():
-    "A list source can be created from a flat list of numbers"
+    """A list source can be created from a flat list of numbers."""
 
     data = [
         100,
@@ -205,7 +205,7 @@ def test_flat_list_numbers():
 
 
 def test_flat_list_strings():
-    "A list source can be created from a flat list of numbers"
+    """A list source can be created from a flat list of numbers."""
 
     data = [
         "xxx",
@@ -223,7 +223,7 @@ def test_flat_list_strings():
 
 
 def test_iter(source):
-    "A list source can be iterated over"
+    """A list source can be iterated over."""
     result = 0
     for row in source:
         result += row.val2
@@ -232,7 +232,7 @@ def test_iter(source):
 
 
 def test_clear(source):
-    "A list source can be cleared"
+    """A list source can be cleared."""
 
     assert len(source) == 3
 
@@ -250,7 +250,7 @@ def test_clear(source):
 
 
 def test_insert_kwarg(source):
-    "You can insert into a list source using kwargs"
+    """You can insert into a list source using kwargs."""
 
     listener = Mock()
     source.add_listener(listener)
@@ -267,7 +267,7 @@ def test_insert_kwarg(source):
 
 
 def test_insert_positional(source):
-    "You can insert into a list source using positional args"
+    """You can insert into a list source using positional args."""
     listener = Mock()
     source.add_listener(listener)
 
@@ -284,7 +284,7 @@ def test_insert_positional(source):
 
 
 def test_append_dict(source):
-    "You can append onto a list source using a dictionary"
+    """You can append onto a list source using a dictionary."""
 
     listener = Mock()
     source.add_listener(listener)
@@ -301,7 +301,7 @@ def test_append_dict(source):
 
 
 def test_append_positional(source):
-    "You can append onto a list source using positional args"
+    """You can append onto a list source using positional args."""
     listener = Mock()
     source.add_listener(listener)
 
@@ -318,7 +318,7 @@ def test_append_positional(source):
 
 
 def test_del(source):
-    "You can delete an item from a list source by index"
+    """You can delete an item from a list source by index."""
     listener = Mock()
     source.add_listener(listener)
 
@@ -337,7 +337,7 @@ def test_del(source):
 
 
 def test_remove(source):
-    "You can remove an item from a list source"
+    """You can remove an item from a list source."""
     listener = Mock()
     source.add_listener(listener)
 
@@ -356,7 +356,7 @@ def test_remove(source):
 
 
 def test_index(source):
-    "You can get the index of any row within a list source"
+    """You can get the index of any row within a list source."""
     for i, row in enumerate(source):
         assert i == source.index(row)
 
@@ -382,7 +382,7 @@ def test_index(source):
 
 
 def test_find(source):
-    "You can find the index of any matching row within a list source"
+    """You can find the index of any matching row within a list source."""
 
     # Duplicate row 1 of the data.
     source.append(dict(val1="second", val2=222))

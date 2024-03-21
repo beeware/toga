@@ -153,7 +153,7 @@ def test_reuse_id(app):
     assert "magic" not in win_1.widgets
     assert "magic" not in win_2.widgets
 
-    # Create a widget with the magic ID. The wiget still isn't in the registry, because
+    # Create a widget with the magic ID. The widget still isn't in the registry, because
     # it's not part of a window
     first = ExampleWidget(id="magic")
 

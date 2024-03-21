@@ -1,6 +1,6 @@
 [build-system]
 requires = [
-    "setuptools==69.0.0",
+    "setuptools==69.2.0",
     "setuptools_scm==8.0.4",
     "setuptools_dynamic_dependencies @ git+https://github.com/beeware/setuptools_dynamic_dependencies",
 ]
@@ -37,6 +37,7 @@ classifiers = [
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: 3 :: Only",
     "Topic :: Software Development",
     "Topic :: Software Development :: User Interfaces",
@@ -52,6 +53,10 @@ Source = "https://github.com/beeware/toga"
 
 [project.entry-points."toga.backends"]
 dummy = "toga_dummy"
+
+[project.entry-points."toga.image_formats"]
+dummy = "toga_dummy.plugins.image_formats.CustomImageConverter"
+disabled = "toga_dummy.plugins.image_formats.DisabledImageConverter"
 
 [tool.setuptools_scm]
 root = ".."

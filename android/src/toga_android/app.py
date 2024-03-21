@@ -196,12 +196,13 @@ class App:
         self._listener = TogaApp(self)
         # Call user code to populate the main window
         self.interface._startup()
-        self._create_app_commands()
+        self.create_app_commands()
 
-    def create_menus(self):
-        self.native.invalidateOptionsMenu()  # Triggers onPrepareOptionsMenu
+    ######################################################################
+    # Commands and menus
+    ######################################################################
 
-    def _create_app_commands(self):
+    def create_app_commands(self):
         self.interface.commands.add(
             # About should be the last item in the menu, in a section on its own.
             Command(
@@ -210,6 +211,16 @@ class App:
                 section=sys.maxsize,
             ),
         )
+
+    def create_menus(self):
+        self.native.invalidateOptionsMenu()  # Triggers onPrepareOptionsMenu
+
+    ######################################################################
+    # App lifecycle
+    ######################################################################
+
+    def exit(self):
+        pass  # pragma: no cover
 
     def main_loop(self):
         # In order to support user asyncio code, start the Python/Android cooperative event loop.
@@ -221,6 +232,27 @@ class App:
 
     def set_main_window(self, window):
         pass
+
+    ######################################################################
+    # App resources
+    ######################################################################
+
+    def get_screens(self):
+        context = self.native.getApplicationContext()
+        display_manager = context.getSystemService(Context.DISPLAY_SERVICE)
+        screen_list = display_manager.getDisplays()
+        return [ScreenImpl(self, screen) for screen in screen_list]
+
+    ######################################################################
+    # App capabilities
+    ######################################################################
+
+    def beep(self):
+        uri = RingtoneManager.getActualDefaultRingtoneUri(
+            self.native.getApplicationContext(), RingtoneManager.TYPE_NOTIFICATION
+        )
+        ringtone = RingtoneManager.getRingtone(self.native.getApplicationContext(), uri)
+        ringtone.play()
 
     def show_about_dialog(self):
         message_parts = []
@@ -239,15 +271,19 @@ class App:
             f"About {self.interface.formal_name}", "\n".join(message_parts)
         )
 
-    def beep(self):
-        uri = RingtoneManager.getActualDefaultRingtoneUri(
-            self.native.getApplicationContext(), RingtoneManager.TYPE_NOTIFICATION
-        )
-        ringtone = RingtoneManager.getRingtone(self.native.getApplicationContext(), uri)
-        ringtone.play()
+    ######################################################################
+    # Cursor control
+    ######################################################################
 
-    def exit(self):
-        pass  # pragma: no cover
+    def hide_cursor(self):
+        pass
+
+    def show_cursor(self):
+        pass
+
+    ######################################################################
+    # Window control
+    ######################################################################
 
     def get_current_window(self):
         return self.interface.main_window._impl
@@ -255,7 +291,20 @@ class App:
     def set_current_window(self, window):
         pass
 
-    # TODO #1798: document and test this somehow
+    ######################################################################
+    # Full screen control
+    ######################################################################
+
+    def enter_full_screen(self, windows):
+        pass
+
+    def exit_full_screen(self, windows):
+        pass
+
+    ######################################################################
+    # Platform-specific APIs
+    ######################################################################
+
     async def intent_result(self, intent):  # pragma: no cover
         warnings.warn(
             "intent_result has been deprecated; use start_activity",
@@ -315,21 +364,3 @@ class App:
 
         self._listener.permission_requests[code] = on_complete
         self._native_requestPermissions(permissions, code)
-
-    def enter_full_screen(self, windows):
-        pass
-
-    def exit_full_screen(self, windows):
-        pass
-
-    def hide_cursor(self):
-        pass
-
-    def show_cursor(self):
-        pass
-
-    def get_screens(self):
-        context = self.native.getApplicationContext()
-        display_manager = context.getSystemService(Context.DISPLAY_SERVICE)
-        screen_list = display_manager.getDisplays()
-        return [ScreenImpl(self, screen) for screen in screen_list]

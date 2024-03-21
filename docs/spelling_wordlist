@@ -22,6 +22,7 @@ draggable
 Flexbox
 GMail
 GObject
+Gradle
 GStreamer
 GTK
 Helvetica
@@ -66,11 +67,15 @@ Stimpy
 stylesheet
 subclasses
 Subclasses
+subclassing
+submodule
+subpackage
 substring
 substrings
 Sur
 testbed
 Todo
+Tox
 toolbar
 toolbars
 Toolbars
@@ -91,3 +96,4 @@ Wayland
 WebKit
 whitespace
 Winforms
+zoomable

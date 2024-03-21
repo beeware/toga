@@ -17,7 +17,7 @@ from toga.style.pack import COLUMN, Pack
 
 def window_probe(app, window):
     module = import_module("tests_backend.window")
-    return getattr(module, "WindowProbe")(app, window)
+    return module.WindowProbe(app, window)
 
 
 @pytest.fixture

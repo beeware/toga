@@ -1,0 +1,64 @@
+[build-system]
+requires = ["briefcase"]
+
+[tool.briefcase]
+project_name = "Map View"
+bundle = "org.beeware.toga.examples"
+version = "0.0.1"
+url = "https://beeware.org"
+license = "BSD license"
+author = 'Tiberius Yak'
+author_email = "tiberius@beeware.org"
+
+[tool.briefcase.app.mapview]
+formal_name = "Map View"
+description = "A testing app"
+sources = ['mapview']
+requires = [
+    '../../core',
+]
+
+
+[tool.briefcase.app.mapview.macOS]
+requires = [
+    '../../cocoa',
+    'std-nslog>=1.0.0',
+]
+
+[tool.briefcase.app.mapview.linux]
+requires = [
+    '../../gtk',
+]
+
+[tool.briefcase.app.mapview.windows]
+requires = [
+    '../../winforms',
+]
+
+# Mobile deployments
+[tool.briefcase.app.mapview.iOS]
+requires = [
+    '../../iOS',
+    'std-nslog>=1.0.0',
+]
+
+[tool.briefcase.app.mapview.android]
+requires = [
+    '../../android',
+]
+
+base_theme = "Theme.MaterialComponents.Light.DarkActionBar"
+
+build_gradle_dependencies = [
+    "androidx.appcompat:appcompat:1.6.1",
+    "com.google.android.material:material:1.11.0",
+    "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0",
+    "org.osmdroid:osmdroid-android:6.1.0",
+]
+
+# Web deployment
+[tool.briefcase.app.mapview.web]
+requires = [
+    "../../web",
+]
+style_framework = "Shoelace v2.3"

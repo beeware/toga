@@ -11,7 +11,7 @@ REBECCA_PURPLE_COLOR = rgb(102, 51, 153)
 
 
 def test_widget_created():
-    "An empty canvas can be created"
+    """An empty canvas can be created."""
     widget = toga.Canvas()
     assert widget._impl.interface == widget
     assert_action_performed(widget, "create Canvas")
@@ -40,7 +40,7 @@ def test_create_with_value(
     on_alt_release_handler,
     on_alt_drag_handler,
 ):
-    "A Canvas can be created with initial values"
+    """A Canvas can be created with initial values."""
     assert widget._impl.interface == widget
     assert_action_performed(widget, "create Canvas")
 
@@ -58,7 +58,7 @@ def test_create_with_value(
 
 
 def test_disable_no_op(widget):
-    """Canvas doesn't have a disabled state"""
+    """Canvas doesn't have a disabled state."""
     # Enabled by default
     assert widget.enabled
 
@@ -77,7 +77,7 @@ def test_focus_noop(widget):
 
 
 def test_redraw(widget):
-    """The canvas can be redrawn"""
+    """The canvas can be redrawn."""
     widget.redraw()
 
     assert_action_performed(widget, "redraw")
@@ -90,7 +90,7 @@ def test_redraw(widget):
 
 
 def test_subcontext(widget):
-    "A canvas can produce a subcontext"
+    """A canvas can produce a subcontext."""
     with widget.Context() as subcontext:
         # A fresh context has been created as a subcontext of the canvas.
         assert isinstance(subcontext, Context)
@@ -98,7 +98,7 @@ def test_subcontext(widget):
 
 
 def test_closed_path(widget):
-    "A canvas can produce a ClosedPath subcontext"
+    """A canvas can produce a ClosedPath subcontext."""
     with widget.ClosedPath(x=10, y=20) as closed_path:
         # A fresh context has been created as a subcontext of the canvas.
         assert isinstance(closed_path, ClosedPathContext)
@@ -108,7 +108,7 @@ def test_closed_path(widget):
 
 
 def test_fill(widget):
-    "A canvas can produce a Fill subcontext"
+    """A canvas can produce a Fill subcontext."""
     with widget.Fill(
         x=10, y=20, color="rebeccapurple", fill_rule=FillRule.EVENODD
     ) as fill:
@@ -123,7 +123,7 @@ def test_fill(widget):
 
 
 def test_stroke(widget):
-    "A canvas can produce a Stroke subcontext"
+    """A canvas can produce a Stroke subcontext."""
     with widget.Stroke(
         x=10, y=20, color="rebeccapurple", line_width=5, line_dash=[2, 7]
     ) as stroke:
@@ -149,19 +149,19 @@ def test_stroke(widget):
     ],
 )
 def test_measure_text(widget, font, expected):
-    "Canvas can measure rendered text size"
+    """Canvas can measure rendered text size."""
     assert widget.measure_text("Hello world", font=font) == expected
 
 
 def test_as_image(widget):
-    """A rendered canvas can be retrieved as an image"""
+    """A rendered canvas can be retrieved as an image."""
     image = widget.as_image()
     assert image is not None
     assert_action_performed(widget, "get image data")
 
 
 def test_deprecated_drawing_operations(widget):
-    """Deprecated simple drawing operations raise a warning"""
+    """Deprecated simple drawing operations raise a warning."""
 
     with pytest.warns(
         DeprecationWarning,
@@ -382,7 +382,7 @@ def test_deprecated_drawing_operations(widget):
 
 
 def test_deprecated_args(widget):
-    "Deprecated arguments to canvas functions raise warnings."
+    """Deprecated arguments to canvas functions raise warnings."""
     with pytest.warns(
         DeprecationWarning,
         match=r"The `tight` argument on Canvas.measure_text\(\) has been deprecated.",
@@ -392,6 +392,9 @@ def test_deprecated_args(widget):
         ) == (693, 63)
 
     with pytest.warns(
+        DeprecationWarning,
+        match=r"Canvas.fill\(\) has been renamed Canvas.Fill\(\)",
+    ), pytest.warns(
         DeprecationWarning,
         match=r"The `preserve` argument on fill\(\) has been deprecated.",
     ):

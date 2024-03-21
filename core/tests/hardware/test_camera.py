@@ -21,7 +21,8 @@ def photo(app):
 
 
 def test_no_camera(monkeypatch, app):
-    """If there's no camera, and no factory implementation, accessing camera raises an exception"""
+    """If there's no camera, and no factory implementation, accessing camera raises an
+    exception."""
     try:
         monkeypatch.delattr(app, "_camera")
     except AttributeError:
@@ -42,7 +43,7 @@ def test_no_camera(monkeypatch, app):
     ],
 )
 def test_request_permission(app, initial, should_request, has_permission):
-    """An app can request permission to use the camera"""
+    """An app can request permission to use the camera."""
     # The camera instance round-trips the app instance
     assert app.camera.app == app
 
@@ -63,7 +64,7 @@ def test_request_permission(app, initial, should_request, has_permission):
 
 
 def test_request_permission_sync(app):
-    """An app can synchronously request permission to use the camera"""
+    """An app can synchronously request permission to use the camera."""
     # Set initial permission
     app.camera._impl._has_permission = -1
 
@@ -79,7 +80,7 @@ def test_request_permission_sync(app):
 
 
 def test_device_properties(app):
-    """Device properties can be checked"""
+    """Device properties can be checked."""
 
     assert [
         {
@@ -130,7 +131,8 @@ def test_device_properties(app):
     [FlashMode.AUTO, FlashMode.ON, FlashMode.OFF],
 )
 def test_take_photo_with_permission(app, device, flash, photo):
-    """If permission has not been previously requested, it is requested before a photo is taken."""
+    """If permission has not been previously requested, it is requested before a photo
+    is taken."""
     # Set permission to potentially allowed
     app.camera._impl._has_permission = -1
 
@@ -177,7 +179,7 @@ def test_take_photo_prior_permission(app, photo):
 
 
 def test_take_photo_no_permission(app, photo):
-    """If permission has been denied, an exception is raised"""
+    """If permission has been denied, an exception is raised."""
     # Deny permission
     app.camera._impl._has_permission = 0
 

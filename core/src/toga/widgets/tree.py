@@ -124,7 +124,7 @@ class Tree(Widget):
 
         * A value of None is turned into an empty TreeSource.
 
-        * Otherwise, the value must be an dictionary or an iterable, which is copied
+        * Otherwise, the value must be a dictionary or an iterable, which is copied
           into a new TreeSource as shown :ref:`here <treesource-item>`.
         """
         return self._data
@@ -272,7 +272,7 @@ class Tree(Widget):
 
     @property
     def missing_value(self) -> str:
-        """The value that will be used when a data row doesn't provide an value for an
+        """The value that will be used when a data row doesn't provide a value for an
         attribute.
         """
         return self._missing_value

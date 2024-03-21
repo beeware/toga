@@ -5,7 +5,7 @@ from time import sleep
 import pytest
 from System import EventArgs
 from System.Drawing import Point
-from System.Windows.Forms import Application, Cursor
+from System.Windows.Forms import Application, Cursor, ToolStripSeparator
 
 from toga_winforms.keys import toga_to_winforms_key, winforms_to_toga_key
 
@@ -134,7 +134,31 @@ class AppProbe(BaseProbe):
         self._activate_menu_item(["Help", "Visit homepage"])
 
     def assert_menu_item(self, path, *, enabled=True):
-        assert self._menu_item(path).Enabled == enabled
+        item = self._menu_item(path)
+        assert item.Enabled == enabled
+
+        # Check some special cases of menu shortcuts
+        try:
+            shortcut = {
+                ("Other", "Full command"): "Ctrl+1",
+                ("Other", "Submenu1", "Disabled"): None,
+                ("Commands", "No Tooltip"): "Ctrl+Down",
+                ("Commands", "Sectioned"): "Ctrl+Space",
+            }[tuple(path)]
+        except KeyError:
+            pass
+        else:
+            assert item.ShortcutKeyDisplayString == shortcut
+
+    def assert_menu_order(self, path, expected):
+        menu = self._menu_item(path)
+
+        assert len(menu.DropDownItems) == len(expected)
+        for item, title in zip(menu.DropDownItems, expected):
+            if title == "---":
+                assert isinstance(item, ToolStripSeparator)
+            else:
+                assert item.Text == title
 
     def assert_system_menus(self):
         self.assert_menu_item(["File", "Preferences"], enabled=False)
