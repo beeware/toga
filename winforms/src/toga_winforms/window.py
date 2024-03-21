@@ -249,11 +249,11 @@ class Window(Container, Scalable):
                 "Sizable" if self.interface.resizable else "FixedSingle",
             )
             if state == WindowState.NORMAL:
-                self.native.WindowState = WinForms.WindowState.Normal
+                self.native.WindowState = WinForms.FormWindowState.Normal
             elif state == WindowState.MAXIMIZED:
-                self.native.WindowState = WinForms.WindowState.Maximized
+                self.native.WindowState = WinForms.FormWindowState.Maximized
             elif state == WindowState.MINIMIZED:
-                self.native.WindowState = WinForms.WindowState.Minimized
+                self.native.WindowState = WinForms.FormWindowState.Minimized
 
     ######################################################################
     # Window capabilities
