@@ -207,10 +207,10 @@ class Window(Container, Scalable):
 
     def get_visible(self):
         return self.native.Visible
-      
+
     def hide(self):
         self.native.Hide()
-        
+
     ######################################################################
     # Window state
     ######################################################################

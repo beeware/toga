@@ -57,7 +57,7 @@ class Window:
     ######################################################################
     # Native event handlers
     ######################################################################
-    
+
     def gtk_configure_event(self, widget, data):
         self.interface.on_resize()
 
@@ -157,7 +157,7 @@ class Window:
     def set_content(self, widget):
         # Set the new widget to be the container's content
         self.container.content = widget
-        
+
     ######################################################################
     # Window size
     ######################################################################

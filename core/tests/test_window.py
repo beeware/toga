@@ -366,7 +366,7 @@ def test_on_resize(window):
 
     on_resize_handler.assert_called_once_with(window)
 
-    
+
 def test_screen(window, app):
     """A window can be moved to a different screen."""
     # Cannot actually change window.screen, so just check
@@ -392,19 +392,6 @@ def test_screen_position(window, app):
     window.screen_position = (100, 100)
     assert window.position == (-1266, -668)
     assert window.screen_position == (100, 100)
-
-    
-def test_on_resize(window):
-    assert window.on_resize._raw is None
-
-    on_resize_handler = Mock()
-    window.on_resize = on_resize_handler
-
-    assert window.on_resize._raw == on_resize_handler
-
-    window._impl.simulate_on_resize()
-
-    on_resize_handler.assert_called_once_with(window)
 
 
 def test_info_dialog(window, app):
