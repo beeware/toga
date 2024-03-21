@@ -228,9 +228,8 @@ class Window(Container, Scalable):
 
     def get_window_state(self):
         window_state = self.native.WindowState
-        window_border_style = self.native.FormBorderStyle
 
-        if window_border_style != getattr(WinForms.FormBorderStyle, "None"):
+        if self.native.FormBorderStyle != getattr(WinForms.FormBorderStyle, "None"):
             if window_state == WinForms.FormWindowState.Normal:
                 return WindowState.NORMAL
             elif window_state == WinForms.FormWindowState.Maximized:
