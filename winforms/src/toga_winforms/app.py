@@ -172,6 +172,14 @@ class App(Scalable):
         self.interface.main_window._impl.set_app(self)
 
     ######################################################################
+    # Native event handlers
+    ######################################################################
+
+    def winforms_DisplaySettingsChanged(self, sender, event):
+        for window in self.interface.windows:
+            window._impl.update_window_dpi_changed()
+
+    ######################################################################
     # Commands and menus
     ######################################################################
 
