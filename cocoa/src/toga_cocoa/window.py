@@ -1,6 +1,7 @@
 from rubicon.objc import CGSize
 
 from toga.command import Command, Separator
+from toga.constants import WindowState
 from toga_cocoa.container import Container
 from toga_cocoa.libs import (
     SEL,
@@ -343,6 +344,38 @@ class Window:
         current_state = bool(self.native.styleMask & NSWindowStyleMask.FullScreen)
         if is_full_screen != current_state:
             self.native.toggleFullScreen(self.native)
+
+    def get_window_state(self):
+        if self.native.styleMask() & NSWindow.NSWindowZoomed:
+            return WindowState.MAXIMIZED
+        elif self.native.isMiniaturized():
+            return WindowState.MINIMIZED
+        elif self.native.styleMask() & NSWindow.NSFullScreenWindowMask:
+            return WindowState.FULLSCREEN
+        else:
+            return WindowState.NORMAL
+
+    def set_window_state(self, state):
+        if state == WindowState.NORMAL:
+            current_state = self.get_window_state()
+            # If the window is maximized, restore it to its normal size
+            if current_state == WindowState.MAXIMIZED:
+                self.native.zoom(None)
+            # Deminiaturize the window to restore it to its previous state
+            elif current_state == WindowState.MINIMIZED:
+                self.native.deminiaturize()
+            # If the window is in full-screen mode, exit full-screen mode
+            elif current_state == WindowState.FULLSCREEN:
+                self.native.toggleFullScreen(None)
+
+        elif state == WindowState.MAXIMIZED:
+            self.native.zoom()
+
+        elif state == WindowState.MINIMIZED:
+            self.native.miniaturize()
+
+        elif state == WindowState.FULLSCREEN:
+            self.interface.app.set_full_screen(self.interface)
 
     ######################################################################
     # Window capabilities
