@@ -374,7 +374,9 @@ class Window:
         elif state == WindowState.MINIMIZED and current_state != WindowState.MINIMIZED:
             self.native.setIsMiniaturized(True)
 
-        elif state == WindowState.FULLSCREEN and current_state != WindowState.FULLSCREEN:
+        elif (
+            state == WindowState.FULLSCREEN and current_state != WindowState.FULLSCREEN
+        ):
             self.interface.app.set_full_screen(self.interface)
 
     ######################################################################
