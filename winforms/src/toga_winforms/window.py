@@ -63,7 +63,7 @@ class Window(Container, Scalable):
                 # See _is_closing comment in __init__.
                 self.interface.on_close()
                 event.Cancel = True
-                
+
     def winforms_LocationChanged(self, sender, event):  # pragma: no cover
         # Check if the window has moved from one screen to another and if the new
         # screen has a different dpi scale than the previous screen then rescale
@@ -132,7 +132,7 @@ class Window(Container, Scalable):
             self.toolbar_native = None
 
         self.resize_content()
-        
+
     def set_app(self, app):
         icon_impl = app.interface.icon._impl
         self.native.Icon = icon_impl.native
@@ -201,7 +201,6 @@ class Window(Container, Scalable):
             widget.refresh()
         self.resize_content()
         self.refreshed()
-
 
     ######################################################################
     # Window size
