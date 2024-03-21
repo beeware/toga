@@ -346,35 +346,35 @@ class Window:
             self.native.toggleFullScreen(self.native)
 
     def get_window_state(self):
-        if self.native.styleMask() & NSWindow.NSWindowZoomed:
+        if bool(self.native.isZoomed):
             return WindowState.MAXIMIZED
-        elif self.native.isMiniaturized():
+        elif bool(self.native.isMiniaturized):
             return WindowState.MINIMIZED
-        elif self.native.styleMask() & NSWindow.NSFullScreenWindowMask:
+        elif bool(self.native.styleMask & NSWindowStyleMask.FullScreen):
             return WindowState.FULLSCREEN
         else:
             return WindowState.NORMAL
 
     def set_window_state(self, state):
-        if state == WindowState.NORMAL:
-            current_state = self.get_window_state()
+        current_state = self.get_window_state()
+        if state == WindowState.NORMAL and current_state != WindowState.NORMAL:
             # If the window is maximized, restore it to its normal size
             if current_state == WindowState.MAXIMIZED:
-                self.native.zoom(None)
+                self.native.setIsZoomed(False)
             # Deminiaturize the window to restore it to its previous state
             elif current_state == WindowState.MINIMIZED:
-                self.native.deminiaturize()
+                self.native.setIsMiniaturized(False)
             # If the window is in full-screen mode, exit full-screen mode
             elif current_state == WindowState.FULLSCREEN:
                 self.native.toggleFullScreen(None)
 
-        elif state == WindowState.MAXIMIZED:
-            self.native.zoom()
+        elif state == WindowState.MAXIMIZED and current_state != WindowState.MAXIMIZED:
+            self.native.setIsZoomed(True)
 
-        elif state == WindowState.MINIMIZED:
-            self.native.miniaturize()
+        elif state == WindowState.MINIMIZED and current_state != WindowState.MINIMIZED:
+            self.native.setIsMiniaturized(True)
 
-        elif state == WindowState.FULLSCREEN:
+        elif state == WindowState.FULLSCREEN and current_state != WindowState.FULLSCREEN:
             self.interface.app.set_full_screen(self.interface)
 
     ######################################################################
