@@ -3,7 +3,7 @@ from datetime import datetime
 from functools import partial
 
 import toga
-from toga.constants import COLUMN, RIGHT
+from toga.constants import COLUMN, RIGHT, WindowState
 from toga.style import Pack
 
 
@@ -29,6 +29,15 @@ class WindowDemoApp(toga.App):
 
     def do_large(self, widget, **kwargs):
         self.main_window.size = (1500, 1000)
+
+    def do_normal(self, widget, **kwargs):
+        self.main_window.state = WindowState.NORMAL
+
+    def do_maximize(self, widget, **kwargs):
+        self.main_window.state = WindowState.MAXIMIZED
+
+    def do_minimize(self, widget, **kwargs):
+        self.main_window.state = WindowState.MINIMIZED
 
     def do_app_full_screen(self, widget, **kwargs):
         if self.is_full_screen:
@@ -177,6 +186,15 @@ class WindowDemoApp(toga.App):
         btn_do_large = toga.Button(
             "Become large", on_press=self.do_large, style=btn_style
         )
+        btn_do_normal = toga.Button(
+            "Become normal", on_press=self.do_normal, style=btn_style
+        )
+        btn_do_maximize = toga.Button(
+            "Become maximize", on_press=self.do_maximize, style=btn_style
+        )
+        btn_do_minimize = toga.Button(
+            "Become minimize", on_press=self.do_minimize, style=btn_style
+        )
         btn_do_app_full_screen = toga.Button(
             "Make app full screen", on_press=self.do_app_full_screen, style=btn_style
         )
@@ -253,6 +271,9 @@ class WindowDemoApp(toga.App):
                 btn_do_right_current_screen,
                 btn_do_small,
                 btn_do_large,
+                btn_do_normal,
+                btn_do_maximize,
+                btn_do_minimize,
                 btn_do_app_full_screen,
                 btn_do_window_full_screen,
                 btn_do_title,
