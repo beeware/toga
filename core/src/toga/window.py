@@ -18,6 +18,7 @@ from typing import (
 )
 
 from toga.command import Command, CommandSet
+from toga.constants import WindowState
 from toga.handlers import AsyncResult, wrapped_handler
 from toga.images import Image
 from toga.platform import get_platform_factory
@@ -448,6 +449,15 @@ class Window:
     def full_screen(self, is_full_screen: bool) -> None:
         self._is_full_screen = is_full_screen
         self._impl.set_full_screen(is_full_screen)
+
+    @property
+    def state(self) -> WindowState:
+        """The current state of the window."""
+        return self._impl.get_window_state()
+
+    @state.setter
+    def state(self, state: WindowState) -> None:
+        self._impl.set_window_state(state)
 
     ######################################################################
     # Window capabilities

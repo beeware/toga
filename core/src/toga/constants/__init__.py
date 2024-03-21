@@ -1,4 +1,4 @@
-from enum import Enum, auto
+from enum import Enum, auto, unique
 
 from travertino.constants import *  # noqa: F401, F403  pragma: no cover
 
@@ -61,3 +61,17 @@ class FlashMode(Enum):
 #     CELLULAR = 0
 #     WIFI = 1
 #     HIGHEST = 2
+
+##########################################################################
+# Window States
+##########################################################################
+
+
+@unique
+class WindowState(Enum):
+    """The possible window states of an app."""
+
+    NORMAL = auto()
+    MAXIMIZED = auto()
+    MINIMIZED = auto()
+    FULLSCREEN = auto()

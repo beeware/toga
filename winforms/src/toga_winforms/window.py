@@ -4,6 +4,7 @@ from System.Drawing.Imaging import ImageFormat
 from System.IO import MemoryStream
 
 from toga.command import Separator
+from toga.constants import WindowState
 
 from .container import Container
 from .libs.wrapper import WeakrefCallable
@@ -224,6 +225,36 @@ class Window(Container, Scalable):
                 "Sizable" if self.interface.resizable else "FixedSingle",
             )
             self.native.WindowState = WinForms.FormWindowState.Normal
+
+    def get_window_state(self):
+        window_state = self.native.WindowState
+        window_border_style = self.native.FormBorderStyle
+
+        if window_border_style != getattr(WinForms.FormBorderStyle, "None"):
+            if window_state == WinForms.FormWindowState.Normal:
+                return WindowState.NORMAL
+            elif window_state == WinForms.FormWindowState.Maximized:
+                return WindowState.MAXIMIZED
+            elif window_state == WinForms.FormWindowState.Minimized:
+                return WindowState.MINIMIZED
+        else:
+            if window_state == WinForms.FormWindowState.Maximized:
+                return WindowState.FULLSCREEN
+
+    def set_window_state(self, state):
+        if state == WindowState.FULLSCREEN:
+            self.interface.app.set_full_screen(self.interface)
+        else:
+            self.native.FormBorderStyle = getattr(
+                WinForms.FormBorderStyle,
+                "Sizable" if self.interface.resizable else "FixedSingle",
+            )
+            if state == WindowState.NORMAL:
+                self.native.WindowState = WinForms.WindowState.Normal
+            elif state == WindowState.MAXIMIZED:
+                self.native.WindowState = WinForms.WindowState.Maximized
+            elif state == WindowState.MINIMIZED:
+                self.native.WindowState = WinForms.WindowState.Minimized
 
     ######################################################################
     # Window capabilities
