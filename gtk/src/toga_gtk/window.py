@@ -1,4 +1,5 @@
 from toga.command import Separator
+from toga.constants import WindowState
 
 from .container import TogaContainer
 from .libs import Gdk, Gtk
@@ -11,6 +12,7 @@ class Window:
         self.interface._impl = self
 
         self._is_closing = False
+        self._window_state = WindowState.NORMAL
 
         self.layout = None
 
@@ -18,6 +20,7 @@ class Window:
         self.native._impl = self
 
         self.native.connect("delete-event", self.gtk_delete_event)
+        self.native.connect("window-state-event", self.gtk_window_state_event)
 
         self.native.set_default_size(size[0], size[1])
 
@@ -56,6 +59,19 @@ class Window:
     ######################################################################
     # Native event handlers
     ######################################################################
+
+    def gtk_window_state_event(self, widget, event):
+        # Get the window state
+        instantaneous_state = event.new_window_state
+
+        if instantaneous_state & Gdk.WindowState.MAXIMIZED:
+            self._window_state = WindowState.MAXIMIZED
+        elif instantaneous_state & Gdk.WindowState.ICONIFIED:
+            self._window_state = WindowState.MINIMIZED
+        elif instantaneous_state & Gdk.WindowState.FULLSCREEN:
+            self._window_state = WindowState.FULLSCREEN
+        else:
+            self._window_state = WindowState.NORMAL
 
     def gtk_delete_event(self, widget, data):
         if self._is_closing:
@@ -200,6 +216,28 @@ class Window:
             self.native.fullscreen()
         else:
             self.native.unfullscreen()
+
+    def get_window_state(self):
+        return self._window_state
+
+    def set_window_state(self, state):
+        if state == WindowState.NORMAL:
+            current_state = self.get_window_state()
+            if current_state == WindowState.MAXIMIZED:
+                self.native.unmaximize()
+            elif current_state == WindowState.MINIMIZED:
+                self.native.deiconify()
+            elif current_state == WindowState.FULLSCREEN:
+                self.native.unfullscreen()
+
+        elif state == WindowState.MAXIMIZED:
+            self.native.maximize()
+
+        elif state == WindowState.MINIMIZED:
+            self.native.iconify()
+
+        elif state == WindowState.FULLSCREEN:
+            self.interface.app.set_full_screen(self.interface)
 
     ######################################################################
     # Window capabilities
