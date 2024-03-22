@@ -341,16 +341,16 @@ class Window:
     ######################################################################
 
     def set_full_screen(self, is_full_screen):
-        current_state = bool(self.native.styleMask & NSWindowStyleMask.FullScreen)
-        if is_full_screen != current_state:
-            self.native.toggleFullScreen(self.native)
+        self.set_window_state(WindowState.FULLSCREEN)
 
     def get_window_state(self):
         if bool(self.native.isZoomed):
             return WindowState.MAXIMIZED
         elif bool(self.native.isMiniaturized):
             return WindowState.MINIMIZED
-        elif bool(self.native.styleMask & NSWindowStyleMask.FullScreen):
+        elif bool(self.native.styleMask & NSWindowStyleMask.FullScreen) or bool(
+            self.interface.content._impl.native.isInFullScreenMode()
+        ):
             return WindowState.FULLSCREEN
         else:
             return WindowState.NORMAL
@@ -364,9 +364,12 @@ class Window:
             # Deminiaturize the window to restore it to its previous state
             elif current_state == WindowState.MINIMIZED:
                 self.native.setIsMiniaturized(False)
-            # If the window is in full-screen mode, exit full-screen mode
-            elif current_state == WindowState.FULLSCREEN:
+            # If the window is in window full-screen mode, exit full-screen mode
+            elif bool(self.native.styleMask & NSWindowStyleMask.FullScreen):
                 self.native.toggleFullScreen(None)
+            # If the window is in app full-screen mode, exit full-screen mode
+            elif bool(self.interface.content._impl.native.isInFullScreenMode()):
+                self.interface.app._impl.exit_full_screen()
 
         elif state == WindowState.MAXIMIZED and current_state != WindowState.MAXIMIZED:
             self.native.setIsZoomed(True)
@@ -377,7 +380,7 @@ class Window:
         elif (
             state == WindowState.FULLSCREEN and current_state != WindowState.FULLSCREEN
         ):
-            self.interface.app.set_full_screen(self.interface)
+            self.native.toggleFullScreen(self.native)
 
     ######################################################################
     # Window capabilities

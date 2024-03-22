@@ -21,6 +21,7 @@ from warnings import warn
 from weakref import WeakValueDictionary
 
 from toga.command import Command, CommandSet
+from toga.constants import WindowState
 from toga.documents import Document
 from toga.handlers import wrapped_handler
 from toga.hardware.camera import Camera
@@ -764,15 +765,34 @@ class App:
     def exit_full_screen(self) -> None:
         """Exit full screen mode."""
         if self.is_full_screen:
-            self._impl.exit_full_screen(self._full_screen_windows)
-            self._full_screen_windows = None
+            self._impl.exit_full_screen()
 
     @property
     def is_full_screen(self) -> bool:
         """Is the app currently in full screen mode?"""
-        return self._full_screen_windows is not None
+        return any(window.state == WindowState.FULLSCREEN for window in self.windows)
 
-    def set_full_screen(self, *windows: Window) -> None:
+        # def set_full_screen(self, *windows: Window) -> None:
+        #     """Make one or more windows full screen.
+
+        #     Full screen is not the same as "maximized"; full screen mode is when all window
+        #     borders and other window decorations are no longer visible.
+
+        #     :param windows: The list of windows to go full screen, in order of allocation to
+        #         screens. If the number of windows exceeds the number of available displays,
+        #         those windows will not be visible. If no windows are specified, the app will
+        #         exit full screen mode.
+        #     """
+        #     self.exit_full_screen()
+        #     if windows:
+        #         self._impl.enter_full_screen(windows)
+        #         self._full_screen_windows = windows
+
+    def set_full_screen(
+        self,
+        window_or_list_or_dict: Window | list[Window] | dict[Screen, Window] | None,
+        *additional_windows: Window | None,
+    ) -> None:
         """Make one or more windows full screen.
 
         Full screen is not the same as "maximized"; full screen mode is when all window
@@ -784,9 +804,31 @@ class App:
             exit full screen mode.
         """
         self.exit_full_screen()
-        if windows:
-            self._impl.enter_full_screen(windows)
-            self._full_screen_windows = windows
+        if self.windows is not None:
+            screen_window_dict = dict()
+            if isinstance(window_or_list_or_dict, Window):
+                screen_window_dict[self.screens[0]] = window_or_list_or_dict
+                if additional_windows is not None:
+                    for index, (window, screen) in enumerate(
+                        zip(additional_windows, self.screens[1:])
+                    ):
+                        if index < len(self.screens) - 1:
+                            screen_window_dict[screen] = window
+                        else:
+                            break
+            elif additional_windows is None:
+                if isinstance(window_or_list_or_dict, list):
+                    for index, (window, screen) in enumerate(
+                        zip(additional_windows, self.screens)
+                    ):
+                        if index < len(self.screens) - 1:
+                            screen_window_dict[screen] = window
+                        else:
+                            break
+                elif isinstance(window_or_list_or_dict, dict):
+                    screen_window_dict = window_or_list_or_dict
+
+            self._impl.enter_full_screen(screen_window_dict)
 
     ######################################################################
     # App events

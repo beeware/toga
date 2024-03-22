@@ -495,14 +495,16 @@ class App:
     # Full screen control
     ######################################################################
 
-    def enter_full_screen(self, windows):
+    def enter_full_screen(self, screen_window_dict):
         opts = NSMutableDictionary.alloc().init()
         opts.setObject(
             NSNumber.numberWithBool(True), forKey="NSFullScreenModeAllScreens"
         )
 
-        for window, screen in zip(windows, NSScreen.screens):
-            window.content._impl.native.enterFullScreenMode(screen, withOptions=opts)
+        for screen, window in screen_window_dict.items():
+            window.content._impl.native.enterFullScreenMode(
+                screen._impl.native, withOptions=opts
+            )
             # Going full screen causes the window content to be re-homed
             # in a NSFullScreenWindow; teach the new parent window
             # about its Toga representations.
@@ -510,15 +512,16 @@ class App:
             window.content._impl.native.window.interface = window
             window.content.refresh()
 
-    def exit_full_screen(self, windows):
+    def exit_full_screen(self):
         opts = NSMutableDictionary.alloc().init()
         opts.setObject(
             NSNumber.numberWithBool(True), forKey="NSFullScreenModeAllScreens"
         )
 
-        for window in windows:
-            window.content._impl.native.exitFullScreenModeWithOptions(opts)
-            window.content.refresh()
+        for window in self.interface.windows:
+            if bool(window.content._impl.native.isInFullScreenMode()):
+                window.content._impl.native.exitFullScreenModeWithOptions(opts)
+                window.content.refresh()
 
 
 class DocumentApp(App):  # pragma: no cover
