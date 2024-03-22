@@ -3,15 +3,11 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from toga.constants import FlashMode
-from toga.handlers import AsyncResult
+from toga.handlers import AsyncResult, PermissionResult
 from toga.platform import get_platform_factory
 
 if TYPE_CHECKING:
     from toga.app import App
-
-
-class PermissionResult(AsyncResult):
-    RESULT_TYPE = "permission"
 
 
 class PhotoResult(AsyncResult):
