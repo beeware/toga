@@ -34,6 +34,7 @@ from .libs import (
     NSOpenPanel,
     NSScreen,
     NSString,
+    NSWindowStyleMask,
     objc_method,
     objc_property,
 )
@@ -522,6 +523,8 @@ class App:
             if bool(window.content._impl.native.isInFullScreenMode()):
                 window.content._impl.native.exitFullScreenModeWithOptions(opts)
                 window.content.refresh()
+            elif bool(self.native.styleMask & NSWindowStyleMask.FullScreen):
+                self.native.toggleFullScreen(None)
 
 
 class DocumentApp(App):  # pragma: no cover

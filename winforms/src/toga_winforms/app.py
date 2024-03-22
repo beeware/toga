@@ -14,6 +14,7 @@ from System.Windows.Threading import Dispatcher
 import toga
 from toga import Key
 from toga.command import Separator
+from toga.constants import WindowState
 
 from .keys import toga_to_winforms_key, toga_to_winforms_shortcut
 from .libs.proactor import WinformsProactorEventLoop
@@ -372,13 +373,15 @@ class App:
     # Full screen control
     ######################################################################
 
-    def enter_full_screen(self, windows):
-        for window in windows:
+    def enter_full_screen(self, screen_window_dict):
+        for screen, window in screen_window_dict.items():
+            window.screen = screen
             window._impl.set_full_screen(True)
 
-    def exit_full_screen(self, windows):
-        for window in windows:
-            window._impl.set_full_screen(False)
+    def exit_full_screen(self):
+        for window in self.interface.windows:
+            if window.state == WindowState.FULLSCREEN:
+                window._impl.set_full_screen(False)
 
 
 class DocumentApp(App):  # pragma: no cover

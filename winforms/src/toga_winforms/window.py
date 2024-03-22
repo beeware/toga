@@ -228,31 +228,40 @@ class Window(Container, Scalable):
 
     def get_window_state(self):
         window_state = self.native.WindowState
-
-        if self.native.FormBorderStyle != getattr(WinForms.FormBorderStyle, "None"):
+        if (
+            self.native.FormBorderStyle == getattr(WinForms.FormBorderStyle, "None")
+            and window_state == WinForms.FormWindowState.Maximized
+        ):
+            return WindowState.FULLSCREEN
+        else:
             if window_state == WinForms.FormWindowState.Normal:
                 return WindowState.NORMAL
             elif window_state == WinForms.FormWindowState.Maximized:
                 return WindowState.MAXIMIZED
             elif window_state == WinForms.FormWindowState.Minimized:
                 return WindowState.MINIMIZED
-        else:
-            if window_state == WinForms.FormWindowState.Maximized:
-                return WindowState.FULLSCREEN
 
     def set_window_state(self, state):
-        if state == WindowState.FULLSCREEN:
-            self.interface.app.set_full_screen(self.interface)
+        current_state = self.get_window_state()
+        if state == WindowState.FULLSCREEN and current_state != WindowState.FULLSCREEN:
+            self.native.FormBorderStyle = getattr(WinForms.FormBorderStyle, "None")
+            self.native.WindowState = WinForms.FormWindowState.Maximized
         else:
             self.native.FormBorderStyle = getattr(
                 WinForms.FormBorderStyle,
                 "Sizable" if self.interface.resizable else "FixedSingle",
             )
-            if state == WindowState.NORMAL:
+            if state == WindowState.NORMAL and current_state != WindowState.NORMAL:
                 self.native.WindowState = WinForms.FormWindowState.Normal
-            elif state == WindowState.MAXIMIZED:
+            elif (
+                state == WindowState.MAXIMIZED
+                and current_state != WindowState.MAXIMIZED
+            ):
                 self.native.WindowState = WinForms.FormWindowState.Maximized
-            elif state == WindowState.MINIMIZED:
+            elif (
+                state == WindowState.MINIMIZED
+                and current_state != WindowState.MINIMIZED
+            ):
                 self.native.WindowState = WinForms.FormWindowState.Minimized
 
     ######################################################################

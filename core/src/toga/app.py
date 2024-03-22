@@ -827,7 +827,6 @@ class App:
                             break
                 elif isinstance(window_or_list_or_dict, dict):
                     screen_window_dict = window_or_list_or_dict
-
             self._impl.enter_full_screen(screen_window_dict)
 
     ######################################################################
