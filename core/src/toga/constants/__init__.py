@@ -75,3 +75,4 @@ class WindowState(Enum):
     MAXIMIZED = auto()
     MINIMIZED = auto()
     FULLSCREEN = auto()
+    PRESENTATION = auto()

@@ -762,37 +762,46 @@ class App:
     # Full screen control
     ######################################################################
 
+    # ----------------------Future Deprecated methods----------------------
     def exit_full_screen(self) -> None:
-        """Exit full screen mode."""
+        """Exit full screen mode.
+
+        .. warning::
+           `App.exit_full_screen()` method is deprecated and will be
+           removed in the future. Consider using `App.enter_presentation_mode()`
+           and `App.exit_presentation_mode()` methods instead.
+        """
+        warnings.warn(
+            "`App.exit_full_screen()` method is deprecated and will be"
+            " removed in the future. Consider using `App.enter_presentation_mode()`"
+            " and `App.exit_presentation_mode()` methods instead.",
+            FutureWarning,
+        )
         if self.is_full_screen:
             self._impl.exit_full_screen()
 
     @property
     def is_full_screen(self) -> bool:
-        """Is the app currently in full screen mode?"""
-        return any(window.state == WindowState.FULLSCREEN for window in self.windows)
+        """Is the app currently in full screen mode?
 
-        # def set_full_screen(self, *windows: Window) -> None:
-        #     """Make one or more windows full screen.
+        .. warning::
+            `App.is_full_screen` property is deprecated and will be removed in the
+            future. Consider using `App.is_in_presentation_mode` property instead.
+        """
+        warnings.warn(
+            "`App.is_full_screen` property is deprecated and will be removed in the"
+            " future. Consider using `App.is_in_presentation_mode` property instead.",
+            FutureWarning,
+        )
+        return any(
+            (
+                window.state == WindowState.FULLSCREEN
+                or window.state == WindowState.PRESENTATION
+            )
+            for window in self.windows
+        )
 
-        #     Full screen is not the same as "maximized"; full screen mode is when all window
-        #     borders and other window decorations are no longer visible.
-
-        #     :param windows: The list of windows to go full screen, in order of allocation to
-        #         screens. If the number of windows exceeds the number of available displays,
-        #         those windows will not be visible. If no windows are specified, the app will
-        #         exit full screen mode.
-        #     """
-        #     self.exit_full_screen()
-        #     if windows:
-        #         self._impl.enter_full_screen(windows)
-        #         self._full_screen_windows = windows
-
-    def set_full_screen(
-        self,
-        window_or_list_or_dict: Window | list[Window] | dict[Screen, Window] | None,
-        *additional_windows: Window | None,
-    ) -> None:
+    def set_full_screen(self, *windows: Window) -> None:
         """Make one or more windows full screen.
 
         Full screen is not the same as "maximized"; full screen mode is when all window
@@ -802,32 +811,60 @@ class App:
             screens. If the number of windows exceeds the number of available displays,
             those windows will not be visible. If no windows are specified, the app will
             exit full screen mode.
+
+        .. warning::
+            `App.set_full_screen()` method is deprecated and will be
+            removed in the future. Consider using `App.enter_presentation_mode()`
+            and `App.exit_presentation_mode()` methods instead.
         """
-        self.exit_full_screen()
+        warnings.warn(
+            "`App.set_full_screen()` method is deprecated and will be"
+            " removed in the future. Consider using `App.enter_presentation_mode()`"
+            " and `App.exit_presentation_mode()` methods instead.",
+            FutureWarning,
+        )
         if self.windows is not None:
+            self.exit_full_screen()
             screen_window_dict = dict()
-            if isinstance(window_or_list_or_dict, Window):
-                screen_window_dict[self.screens[0]] = window_or_list_or_dict
-                if additional_windows is not None:
-                    for index, (window, screen) in enumerate(
-                        zip(additional_windows, self.screens[1:])
-                    ):
-                        if index < len(self.screens) - 1:
-                            screen_window_dict[screen] = window
-                        else:
-                            break
-            elif additional_windows is None:
-                if isinstance(window_or_list_or_dict, list):
-                    for index, (window, screen) in enumerate(
-                        zip(additional_windows, self.screens)
-                    ):
-                        if index < len(self.screens) - 1:
-                            screen_window_dict[screen] = window
-                        else:
-                            break
-                elif isinstance(window_or_list_or_dict, dict):
-                    screen_window_dict = window_or_list_or_dict
-            self._impl.enter_full_screen(screen_window_dict)
+            for window, screen in zip(windows, self.screens):
+                screen_window_dict[screen] = window
+            self.enter_presentation_mode(screen_window_dict)
+        else:
+            warnings.warn("App doesn't have any windows")
+
+    # ---------------------------------------------------------------------
+
+    @property
+    def is_in_presentation_mode(self) -> bool:
+        """Is the app currently in presentation mode?"""
+        return any(window.state == WindowState.PRESENTATION for window in self.windows)
+
+    def enter_presentation_mode(self, window_or_list_or_dict):
+        """Enter into presentation mode with one or more windows on different screens.
+
+        Presentation mode is not the same as Full Screen mode; full screen mode is when all window
+        borders and other window decorations are no longer visible.
+
+        :param window_or_list_or_dict: A single window, a list of windows, a dictionary
+            mapping screens to windows, to go into full screen, in order of allocation to
+            screens. If the number of windows exceeds the number of available displays,
+            those windows will not be visible.
+        """
+        screen_window_dict = dict()
+        if isinstance(window_or_list_or_dict, Window):
+            screen_window_dict[self.screens[0]] = window_or_list_or_dict
+        elif isinstance(window_or_list_or_dict, list):
+            for window, screen in zip(window_or_list_or_dict, self.screens):
+                screen_window_dict[screen] = window
+        elif isinstance(window_or_list_or_dict, dict):
+            screen_window_dict = window_or_list_or_dict
+
+        self._impl.enter_full_screen(screen_window_dict)
+
+    def exit_presentation_mode(self):
+        for window in self.windows:
+            if window.state == WindowState.PRESENTATION:
+                window.state = WindowState.NORMAL
 
     ######################################################################
     # App events

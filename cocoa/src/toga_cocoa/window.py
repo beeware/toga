@@ -9,6 +9,8 @@ from toga_cocoa.libs import (
     NSImage,
     NSMakeRect,
     NSMutableArray,
+    NSMutableDictionary,
+    NSNumber,
     NSPoint,
     NSScreen,
     NSSize,
@@ -340,18 +342,24 @@ class Window:
     # Window state
     ######################################################################
 
+    # ----------------------Future Deprecated method----------------------
     def set_full_screen(self, is_full_screen):
-        self.set_window_state(WindowState.FULLSCREEN)
+        if is_full_screen and (self.get_window_state() != WindowState.FULLSCREEN):
+            self.set_window_state(WindowState.FULLSCREEN)
+        elif not is_full_screen and (self.get_window_state() == WindowState.FULLSCREEN):
+            self.set_window_state(WindowState.NORMAL)
+
+    # ---------------------------------------------------------------------
 
     def get_window_state(self):
         if bool(self.native.isZoomed):
             return WindowState.MAXIMIZED
         elif bool(self.native.isMiniaturized):
             return WindowState.MINIMIZED
-        elif bool(self.native.styleMask & NSWindowStyleMask.FullScreen) or bool(
-            self.interface.content._impl.native.isInFullScreenMode()
-        ):
+        elif bool(self.native.styleMask & NSWindowStyleMask.FullScreen):
             return WindowState.FULLSCREEN
+        elif bool(self.interface.content._impl.native.isInFullScreenMode()):
+            return WindowState.PRESENTATION
         else:
             return WindowState.NORMAL
 
@@ -364,23 +372,53 @@ class Window:
             # Deminiaturize the window to restore it to its previous state
             elif current_state == WindowState.MINIMIZED:
                 self.native.setIsMiniaturized(False)
-            # If the window is in window full-screen mode, exit full-screen mode
-            elif bool(self.native.styleMask & NSWindowStyleMask.FullScreen):
+            # If the window is in full-screen mode, exit full-screen mode
+            elif current_state == WindowState.FULLSCREEN:
                 self.native.toggleFullScreen(None)
-            # If the window is in app full-screen mode, exit full-screen mode
-            elif bool(self.interface.content._impl.native.isInFullScreenMode()):
-                self.interface.app._impl.exit_full_screen()
-
+            # If the window is in presentation mode, exit presentation mode
+            elif current_state == WindowState.PRESENTATION:
+                opts = NSMutableDictionary.alloc().init()
+                opts.setObject(
+                    NSNumber.numberWithBool(True), forKey="NSFullScreenModeAllScreens"
+                )
+                self.interface.content._impl.native.exitFullScreenModeWithOptions(opts)
+                self.interface.content.refresh()
+                self.interface.screen = (
+                    self.interface._impl._before_presentation_mode_screen
+                )
+        # Set Window state to NORMAL before changing to other states as some states
+        # block changing window state without first exiting them.
         elif state == WindowState.MAXIMIZED and current_state != WindowState.MAXIMIZED:
+            self.set_window_state(WindowState.NORMAL)
             self.native.setIsZoomed(True)
 
         elif state == WindowState.MINIMIZED and current_state != WindowState.MINIMIZED:
+            self.set_window_state(WindowState.NORMAL)
             self.native.setIsMiniaturized(True)
 
         elif (
             state == WindowState.FULLSCREEN and current_state != WindowState.FULLSCREEN
         ):
+            self.set_window_state(WindowState.NORMAL)
             self.native.toggleFullScreen(self.native)
+        elif (
+            state == WindowState.PRESENTATION
+            and current_state != WindowState.PRESENTATION
+        ):
+            self.set_window_state(WindowState.NORMAL)
+            opts = NSMutableDictionary.alloc().init()
+            opts.setObject(
+                NSNumber.numberWithBool(True), forKey="NSFullScreenModeAllScreens"
+            )
+            self.interface.content._impl.native.enterFullScreenMode(
+                self.interface.screen._impl.native, withOptions=opts
+            )
+            # Going presentation mode(full screen) causes the window content to be
+            # re-homed in a NSFullScreenWindow; teach the new parent window
+            # about its Toga representations.
+            self.interface.content._impl.native.window._impl = self
+            self.interface.content._impl.native.window.interface = self.interface
+            self.interface.content.refresh()
 
     ######################################################################
     # Window capabilities

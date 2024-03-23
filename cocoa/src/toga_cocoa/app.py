@@ -9,6 +9,7 @@ from rubicon.objc.eventloop import CocoaLifecycle, EventLoopPolicy
 
 import toga
 from toga.command import Separator
+from toga.constants import WindowState
 from toga.handlers import NativeHandler
 
 from .keys import cocoa_key
@@ -29,12 +30,10 @@ from .libs import (
     NSMenuItem,
     NSMutableArray,
     NSMutableDictionary,
-    NSNumber,
     NSObject,
     NSOpenPanel,
     NSScreen,
     NSString,
-    NSWindowStyleMask,
     objc_method,
     objc_property,
 )
@@ -493,38 +492,33 @@ class App:
         window._impl.native.makeKeyAndOrderFront(window._impl.native)
 
     ######################################################################
-    # Full screen control
+    # Full screen/Presentation mode controls
     ######################################################################
 
+    # ----------------------Future Deprecated methods----------------------
     def enter_full_screen(self, screen_window_dict):
-        opts = NSMutableDictionary.alloc().init()
-        opts.setObject(
-            NSNumber.numberWithBool(True), forKey="NSFullScreenModeAllScreens"
-        )
-
-        for screen, window in screen_window_dict.items():
-            window.content._impl.native.enterFullScreenMode(
-                screen._impl.native, withOptions=opts
-            )
-            # Going full screen causes the window content to be re-homed
-            # in a NSFullScreenWindow; teach the new parent window
-            # about its Toga representations.
-            window.content._impl.native.window._impl = window._impl
-            window.content._impl.native.window.interface = window
-            window.content.refresh()
+        self.enter_presentation_mode(screen_window_dict)
 
     def exit_full_screen(self):
-        opts = NSMutableDictionary.alloc().init()
-        opts.setObject(
-            NSNumber.numberWithBool(True), forKey="NSFullScreenModeAllScreens"
-        )
-
         for window in self.interface.windows:
-            if bool(window.content._impl.native.isInFullScreenMode()):
-                window.content._impl.native.exitFullScreenModeWithOptions(opts)
-                window.content.refresh()
-            elif bool(self.native.styleMask & NSWindowStyleMask.FullScreen):
-                self.native.toggleFullScreen(None)
+            if (
+                window.state == WindowState.FULLSCREEN
+                or window.state == WindowState.PRESENTATION
+            ):
+                window.state = WindowState.NORMAL
+
+    # ---------------------------------------------------------------------
+
+    def enter_presentation_mode(self, screen_window_dict):
+        for screen, window in screen_window_dict.items():
+            window._impl._before_presentation_mode_screen = window.screen
+            window.screen = screen
+            window.state = WindowState.PRESENTATION
+
+    def exit_presentation_mode(self):
+        for window in self.interface.windows:
+            if window.state == WindowState.PRESENTATION:
+                window.state = WindowState.NORMAL
 
 
 class DocumentApp(App):  # pragma: no cover

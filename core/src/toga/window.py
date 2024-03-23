@@ -443,11 +443,20 @@ class Window:
         mode is a slideshow app in presentation mode - the only visible content is
         the slide.
         """
-        return self._is_full_screen
+        warnings.warn(
+            "`Window.full_screen` property is deprecated and will be removed in"
+            " the future. Consider using the `Window.state` property instead.",
+            FutureWarning,
+        )
+        return bool(self.state == WindowState.FULLSCREEN)
 
     @full_screen.setter
     def full_screen(self, is_full_screen: bool) -> None:
-        self._is_full_screen = is_full_screen
+        warnings.warn(
+            "`Window.full_screen` property is deprecated and will be removed in"
+            " the future. Consider using the `Window.state` property instead.",
+            FutureWarning,
+        )
         self._impl.set_full_screen(is_full_screen)
 
     @property
