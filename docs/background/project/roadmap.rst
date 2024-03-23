@@ -1,6 +1,6 @@
-========
-Road Map
-========
+===============
+Toga's Road Map
+===============
 
 Toga is a new project - we have lots of things that we'd like to do. If
 you'd like to contribute, you can provide a patch for one of these features.
@@ -33,8 +33,6 @@ Inputs are mechanisms for displaying and editing input provided by the user.
     - Cocoa: ``NSDatePicker``
     - GTK: `Gtk.Calendar` + ?
     - iOS: ``UIDatePicker``
-    - Winforms: ``DateTimePicker``
-    - Android: ?
 
 * ``ColorInput`` - A widget for selecting a color
 
@@ -74,27 +72,10 @@ usually in a read-only manner.
     - Winforms: ?
     - Android: ?
 
-* ``MapView`` - Display a map
-
-    - Cocoa: ``MKMapView``
-    - GTK: Probably a ``Webkit.WebView`` pointing at Google Maps/OpenStreetMap
-    - iOS: ``MKMapView``
-    - Winforms: ?
-    - Android: ?
-
-
 Container widgets
 ~~~~~~~~~~~~~~~~~
 
 Containers are widgets that can contain other widgets.
-
-* ``ButtonContainer`` - A layout for a group of radio/checkbox options
-
-    - Cocoa: ``NSMatrix``, or ``NSView`` with pre-set constraints.
-    - GTK: ``Gtk.ListBox``
-    - iOS: ?
-    - Winforms: ?
-    - Android: ?
 
 * ``FormContainer`` - A layout for a "key/value" or "label/widget" form
 
@@ -136,4 +117,4 @@ Platforms
 
 Toga currently has good support for Cocoa on macOS, GTK on Linux, Winforms on
 Windows, iOS and Android. Proof-of-concept support exists for single page web
-apps. Support for a more modern Windows API would be desirable.
+apps and consoles. Support for a more modern Windows API would be desirable.

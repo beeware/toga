@@ -8,5 +8,6 @@ Background
    :maxdepth: 2
 
    project/index
-   topics/index
+   community
+   backends/index
    internals/index
