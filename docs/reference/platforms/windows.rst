@@ -34,4 +34,7 @@ Installation
 Implementation details
 ----------------------
 
-``toga-winforms`` uses `Python.net <https://pythonnet.github.io>`__.
+The ``toga-winforms`` backend uses the `Windows Forms API
+<https://learn.microsoft.com/en-us/dotnet/desktop/winforms/?view=netdesktop-8.0>`__.
+
+The native .NET APIs are accessed using `Python.NET <http://pythonnet.github.io>`__.
