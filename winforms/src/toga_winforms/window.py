@@ -228,41 +228,44 @@ class Window(Container, Scalable):
 
     def get_window_state(self):
         window_state = self.native.WindowState
-        if (
-            self.native.FormBorderStyle == getattr(WinForms.FormBorderStyle, "None")
-            and window_state == WinForms.FormWindowState.Maximized
-        ):
-            return WindowState.FULLSCREEN
-        else:
-            if window_state == WinForms.FormWindowState.Normal:
-                return WindowState.NORMAL
-            elif window_state == WinForms.FormWindowState.Maximized:
+        if window_state == WinForms.FormWindowState.Maximized:
+            if self.native.FormBorderStyle == getattr(WinForms.FormBorderStyle, "None"):
+                return WindowState.FULLSCREEN
+            else:
                 return WindowState.MAXIMIZED
-            elif window_state == WinForms.FormWindowState.Minimized:
-                return WindowState.MINIMIZED
+        elif window_state == WinForms.FormWindowState.Minimized:
+            return WindowState.MINIMIZED
+        elif window_state == WinForms.FormWindowState.Normal:
+            if getattr(self, "_presentation_window", None) is not None:
+                return WindowState.PRESENTATION
+            else:
+                return WindowState.NORMAL
 
     def set_window_state(self, state):
         current_state = self.get_window_state()
-        if state == WindowState.FULLSCREEN and current_state != WindowState.FULLSCREEN:
+        if state == WindowState.NORMAL and current_state != WindowState.NORMAL:
+            if current_state == WindowState.FULLSCREEN:
+                self.native.FormBorderStyle = getattr(
+                    WinForms.FormBorderStyle,
+                    "Sizable" if self.interface.resizable else "FixedSingle",
+                )
+            elif current_state == WindowState.PRESENTATION:
+                pass
+            self.native.WindowState = WinForms.FormWindowState.Normal
+        elif state == WindowState.MAXIMIZED and current_state != WindowState.MAXIMIZED:
+            self.native.WindowState = WinForms.FormWindowState.Maximized
+        elif state == WindowState.MINIMIZED and current_state != WindowState.MINIMIZED:
+            self.native.WindowState = WinForms.FormWindowState.Minimized
+        elif (
+            state == WindowState.FULLSCREEN and current_state != WindowState.FULLSCREEN
+        ):
             self.native.FormBorderStyle = getattr(WinForms.FormBorderStyle, "None")
             self.native.WindowState = WinForms.FormWindowState.Maximized
-        else:
-            self.native.FormBorderStyle = getattr(
-                WinForms.FormBorderStyle,
-                "Sizable" if self.interface.resizable else "FixedSingle",
-            )
-            if state == WindowState.NORMAL and current_state != WindowState.NORMAL:
-                self.native.WindowState = WinForms.FormWindowState.Normal
-            elif (
-                state == WindowState.MAXIMIZED
-                and current_state != WindowState.MAXIMIZED
-            ):
-                self.native.WindowState = WinForms.FormWindowState.Maximized
-            elif (
-                state == WindowState.MINIMIZED
-                and current_state != WindowState.MINIMIZED
-            ):
-                self.native.WindowState = WinForms.FormWindowState.Minimized
+        elif (
+            state == WindowState.PRESENTATION
+            and current_state != WindowState.PRESENTATION
+        ):
+            pass
 
     ######################################################################
     # Window capabilities

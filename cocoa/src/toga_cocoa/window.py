@@ -342,15 +342,6 @@ class Window:
     # Window state
     ######################################################################
 
-    # ----------------------Future Deprecated method----------------------
-    def set_full_screen(self, is_full_screen):
-        if is_full_screen and (self.get_window_state() != WindowState.FULLSCREEN):
-            self.set_window_state(WindowState.FULLSCREEN)
-        elif not is_full_screen and (self.get_window_state() == WindowState.FULLSCREEN):
-            self.set_window_state(WindowState.NORMAL)
-
-    # ---------------------------------------------------------------------
-
     def get_window_state(self):
         if bool(self.native.isZoomed):
             return WindowState.MAXIMIZED

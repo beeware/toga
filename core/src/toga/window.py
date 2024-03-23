@@ -442,10 +442,14 @@ class Window:
         items may be visible on a maximized window. A good example of "full screen"
         mode is a slideshow app in presentation mode - the only visible content is
         the slide.
+
+         .. warning::
+            `Window.full_screen` property is deprecated and will be removed in the
+            future. Consider using `Window.state` property instead.
         """
         warnings.warn(
             "`Window.full_screen` property is deprecated and will be removed in"
-            " the future. Consider using the `Window.state` property instead.",
+            " the future. Consider using `Window.state` property instead.",
             FutureWarning,
         )
         return bool(self.state == WindowState.FULLSCREEN)
@@ -454,10 +458,13 @@ class Window:
     def full_screen(self, is_full_screen: bool) -> None:
         warnings.warn(
             "`Window.full_screen` property is deprecated and will be removed in"
-            " the future. Consider using the `Window.state` property instead.",
+            " the future. Consider using `Window.state` property instead.",
             FutureWarning,
         )
-        self._impl.set_full_screen(is_full_screen)
+        if is_full_screen and (self.state != WindowState.FULLSCREEN):
+            self.set_window_state(WindowState.FULLSCREEN)
+        elif not is_full_screen and (self.state == WindowState.FULLSCREEN):
+            self.set_window_state(WindowState.NORMAL)
 
     @property
     def state(self) -> WindowState:
