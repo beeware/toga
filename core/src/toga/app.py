@@ -861,7 +861,8 @@ class App:
 
         self._impl.enter_full_screen(screen_window_dict)
 
-    def exit_presentation_mode(self):
+    def exit_presentation_mode(self) -> None:
+        """Exit full screen mode."""
         for window in self.windows:
             if window.state == WindowState.PRESENTATION:
                 window.state = WindowState.NORMAL
