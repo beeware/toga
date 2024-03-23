@@ -9,5 +9,4 @@ Background
 
    project/index
    community
-   backends/index
    internals/index
