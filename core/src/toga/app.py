@@ -778,7 +778,12 @@ class App:
             FutureWarning,
         )
         if self.is_full_screen:
-            self._impl.exit_full_screen()
+            for window in self.interface.windows:
+                if (
+                    window.state == WindowState.FULLSCREEN
+                    or window.state == WindowState.PRESENTATION
+                ):
+                    window.state = WindowState.NORMAL
 
     @property
     def is_full_screen(self) -> bool:
@@ -859,7 +864,7 @@ class App:
         elif isinstance(window_or_list_or_dict, dict):
             screen_window_dict = window_or_list_or_dict
 
-        self._impl.enter_full_screen(screen_window_dict)
+        self._impl.enter_presentation_mode(screen_window_dict)
 
     def exit_presentation_mode(self) -> None:
         """Exit full screen mode."""

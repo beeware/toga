@@ -492,22 +492,8 @@ class App:
         window._impl.native.makeKeyAndOrderFront(window._impl.native)
 
     ######################################################################
-    # Full screen/Presentation mode controls
+    # Presentation mode controls
     ######################################################################
-
-    # ----------------------Future Deprecated methods----------------------
-    def enter_full_screen(self, screen_window_dict):
-        self.enter_presentation_mode(screen_window_dict)
-
-    def exit_full_screen(self):
-        for window in self.interface.windows:
-            if (
-                window.state == WindowState.FULLSCREEN
-                or window.state == WindowState.PRESENTATION
-            ):
-                window.state = WindowState.NORMAL
-
-    # ---------------------------------------------------------------------
 
     def enter_presentation_mode(self, screen_window_dict):
         for screen, window in screen_window_dict.items():
