@@ -5,23 +5,20 @@ Android
 The Toga backend for Android is `toga-android
 <https://github.com/beeware/toga/tree/main/android>`__.
 
-Platform details
-================
-
 Prerequisites
--------------
+=============
 
 ``toga-android`` requires Android SDK 24 (Android 7 / Nougat) or newer.
 
 Installation
-------------
+============
 
 ``toga-android`` must be manually installed into an Android project; The recommended
 approach for deploying ``toga-android`` is to use `Briefcase
 <https://briefcase.readthedocs.org>`__ to package your app.
 
 Implementation details
-----------------------
+======================
 
 The ``toga-android`` backend uses the `Android Java API
 <https://developer.android.com/reference>`__, with `Material3 widgets
