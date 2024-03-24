@@ -433,6 +433,7 @@ class Window:
     # Window state
     ######################################################################
 
+    # ----------------------Future Deprecated methods----------------------
     @property
     def full_screen(self) -> bool:
         """Is the window in full screen mode?
@@ -462,9 +463,11 @@ class Window:
             FutureWarning,
         )
         if is_full_screen and (self.state != WindowState.FULLSCREEN):
-            self.set_window_state(WindowState.FULLSCREEN)
+            self._impl.set_window_state(WindowState.FULLSCREEN)
         elif not is_full_screen and (self.state == WindowState.FULLSCREEN):
-            self.set_window_state(WindowState.NORMAL)
+            self._impl.set_window_state(WindowState.NORMAL)
+
+    # ---------------------------------------------------------------------
 
     @property
     def state(self) -> WindowState:

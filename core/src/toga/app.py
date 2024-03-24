@@ -778,7 +778,7 @@ class App:
             FutureWarning,
         )
         if self.is_full_screen:
-            for window in self.interface.windows:
+            for window in self.windows:
                 if (
                     window.state == WindowState.FULLSCREEN
                     or window.state == WindowState.PRESENTATION
