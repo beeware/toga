@@ -40,7 +40,7 @@ class Window(Container, Scalable):
         self.native.Resize += WeakrefCallable(self.winforms_Resize)
         self.resize_content()  # Store initial size
 
-        self.set_full_screen(self.interface.full_screen)
+        # self.set_full_screen(self.interface.full_screen)
 
     ######################################################################
     # Native event handlers
@@ -215,30 +215,45 @@ class Window(Container, Scalable):
     # Window state
     ######################################################################
 
-    def set_full_screen(self, is_full_screen):
-        if is_full_screen:
+    class _PresentationWindow:
+        def __init__(self, window_impl):
+            self.window_impl = window_impl
+            self.native = WinForms.Form()
+            self.original_window_size = self.window_impl.native.Size
+            window_screen = self.window_impl.interface.screen
+            self.native.Location = Point(*window_screen.origin)
             self.native.FormBorderStyle = getattr(WinForms.FormBorderStyle, "None")
             self.native.WindowState = WinForms.FormWindowState.Maximized
-        else:
-            self.native.FormBorderStyle = getattr(
-                WinForms.FormBorderStyle,
-                "Sizable" if self.interface.resizable else "FixedSingle",
-            )
-            self.native.WindowState = WinForms.FormWindowState.Normal
+            self.native.Controls.Add(self.window_impl.interface.content._impl.native)
+            self.window_impl.native.Size = Size(*window_screen.size)
+            self.window_impl.interface.content.refresh()
+
+        def show(self):
+            self.native.Show()
+
+        def close(self):
+            self.native.Controls.Remove(self.window_impl.interface.content._impl.native)
+            self.window_impl.native.Size = self.original_window_size
+            self.window_impl.interface.content = self.window_impl.interface.content
+            self.window_impl.resize_content()
+            self.window_impl.interface.content.refresh()
+            self.native.Close()
 
     def get_window_state(self):
-        window_state = self.native.WindowState
-        if window_state == WinForms.FormWindowState.Maximized:
-            if self.native.FormBorderStyle == getattr(WinForms.FormBorderStyle, "None"):
-                return WindowState.FULLSCREEN
-            else:
-                return WindowState.MAXIMIZED
-        elif window_state == WinForms.FormWindowState.Minimized:
-            return WindowState.MINIMIZED
-        elif window_state == WinForms.FormWindowState.Normal:
-            if getattr(self, "_presentation_window", None) is not None:
-                return WindowState.PRESENTATION
-            else:
+        if getattr(self, "_presentation_window", None) is not None:
+            return WindowState.PRESENTATION
+        else:
+            window_state = self.native.WindowState
+            if window_state == WinForms.FormWindowState.Maximized:
+                if self.native.FormBorderStyle == getattr(
+                    WinForms.FormBorderStyle, "None"
+                ):
+                    return WindowState.FULLSCREEN
+                else:
+                    return WindowState.MAXIMIZED
+            elif window_state == WinForms.FormWindowState.Minimized:
+                return WindowState.MINIMIZED
+            elif window_state == WinForms.FormWindowState.Normal:
                 return WindowState.NORMAL
 
     def set_window_state(self, state):
@@ -250,22 +265,32 @@ class Window(Container, Scalable):
                     "Sizable" if self.interface.resizable else "FixedSingle",
                 )
             elif current_state == WindowState.PRESENTATION:
-                pass
+                self._presentation_window.close()
+                self._presentation_window = None
+                self.interface.screen = (
+                    self.interface._impl._before_presentation_mode_screen
+                )
+
             self.native.WindowState = WinForms.FormWindowState.Normal
         elif state == WindowState.MAXIMIZED and current_state != WindowState.MAXIMIZED:
+            self.set_window_state(WindowState.NORMAL)
             self.native.WindowState = WinForms.FormWindowState.Maximized
         elif state == WindowState.MINIMIZED and current_state != WindowState.MINIMIZED:
+            self.set_window_state(WindowState.NORMAL)
             self.native.WindowState = WinForms.FormWindowState.Minimized
         elif (
             state == WindowState.FULLSCREEN and current_state != WindowState.FULLSCREEN
         ):
+            self.set_window_state(WindowState.NORMAL)
             self.native.FormBorderStyle = getattr(WinForms.FormBorderStyle, "None")
             self.native.WindowState = WinForms.FormWindowState.Maximized
         elif (
             state == WindowState.PRESENTATION
             and current_state != WindowState.PRESENTATION
         ):
-            pass
+            self.set_window_state(WindowState.NORMAL)
+            self._presentation_window = self._PresentationWindow(self)
+            self._presentation_window.show()
 
     ######################################################################
     # Window capabilities
