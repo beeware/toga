@@ -370,18 +370,8 @@ class App:
         window._impl.native.Activate()
 
     ######################################################################
-    # Full screen control
+    # Presentation mode controls
     ######################################################################
-
-    def enter_full_screen(self, screen_window_dict):
-        for screen, window in screen_window_dict.items():
-            window.screen = screen
-            window._impl.set_full_screen(True)
-
-    def exit_full_screen(self):
-        for window in self.interface.windows:
-            if window.state == WindowState.FULLSCREEN:
-                window._impl.set_full_screen(False)
 
     def enter_presentation_mode(self, screen_window_dict):
         for screen, window in screen_window_dict.items():
