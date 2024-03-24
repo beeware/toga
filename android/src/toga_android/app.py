@@ -292,13 +292,15 @@ class App:
         pass
 
     ######################################################################
-    # Full screen control
+    # Presentation mode controls
     ######################################################################
 
-    def enter_full_screen(self, windows):
+    def enter_presentation_mode(self, screen_window_dict):
+        # No-op; mobile doesn't support full screen
         pass
 
-    def exit_full_screen(self, windows):
+    def exit_presentation_mode(self):
+        # No-op; mobile doesn't support full screen
         pass
 
     ######################################################################

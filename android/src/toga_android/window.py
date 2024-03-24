@@ -135,8 +135,13 @@ class Window(Container):
     # Window state
     ######################################################################
 
-    def set_full_screen(self, is_full_screen):
-        self.interface.factory.not_implemented("Window.set_full_screen()")
+    def get_window_state(self):
+        # Windows are always full screen
+        pass
+
+    def set_window_state(self, state):
+        # Windows are always full screen
+        pass
 
     ######################################################################
     # Window capabilities
