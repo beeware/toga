@@ -43,7 +43,7 @@ Partially implemented widgets
 * ``DateTimeInput`` - A widget for selecting a date and a time.
 
   - Cocoa: ``NSDatePicker``
-  - GTK: `Gtk.Calendar` + ?
+  - GTK: ``Gtk.Calendar`` + ?
   - iOS: ``UIDatePicker``
 
 New widgets

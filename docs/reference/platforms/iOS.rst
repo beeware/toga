@@ -21,7 +21,7 @@ Implementation details
 ----------------------
 
 The ``toga-iOS`` backend uses the `UIKit Objective C
-API<https://developer.apple.com/documentation/uikit>`.
+API <https://developer.apple.com/documentation/uikit>`__.
 
 The native APIs are accessed using `Rubicon Objective C
 <https://rubicon-objc.readthedocs.io/>`__.
