@@ -12,7 +12,6 @@ class Window:
         self.interface._impl = self
 
         self._is_closing = False
-        self._window_state = WindowState.NORMAL
 
         self.layout = None
 
@@ -21,6 +20,8 @@ class Window:
 
         self.native.connect("delete-event", self.gtk_delete_event)
         self.native.connect("window-state-event", self.gtk_window_state_event)
+
+        self._window_state_flags = None
 
         self.native.set_default_size(size[0], size[1])
 
@@ -61,17 +62,8 @@ class Window:
     ######################################################################
 
     def gtk_window_state_event(self, widget, event):
-        # Get the window state
-        instantaneous_state = event.new_window_state
-
-        if instantaneous_state & Gdk.WindowState.MAXIMIZED:
-            self._window_state = WindowState.MAXIMIZED
-        elif instantaneous_state & Gdk.WindowState.ICONIFIED:
-            self._window_state = WindowState.MINIMIZED
-        elif instantaneous_state & Gdk.WindowState.FULLSCREEN:
-            self._window_state = WindowState.FULLSCREEN
-        else:
-            self._window_state = WindowState.NORMAL
+        # Get the window state flags
+        self._window_state_flags = event.new_window_state
 
     def gtk_delete_event(self, widget, data):
         if self._is_closing:
@@ -211,33 +203,74 @@ class Window:
     # Window state
     ######################################################################
 
-    def set_full_screen(self, is_full_screen):
-        if is_full_screen:
+    class _PresentationWindow:
+        def __init__(self, window_impl):
+            self.window_impl = window_impl
+            self.native = Gtk.Window()
+            self.window_impl.container.remove(
+                self.window_impl.interface.content._impl.native
+            )
+            self.native.add(self.window_impl.interface.content._impl.native)
             self.native.fullscreen()
-        else:
+
+        def show(self):
+            self.native.show()
+
+        def close(self):
             self.native.unfullscreen()
+            self.native.remove(self.window_impl.interface.content._impl.native)
+            self.window_impl.container.add(
+                self.window_impl.interface.content._impl.native
+            )
+            self.native.close()
 
     def get_window_state(self):
-        return self._window_state
+        if getattr(self, "_presentation_window", None) is not None:
+            return WindowState.PRESENTATION
+        else:
+            window_state = self._window_state_flags
+            if window_state & Gdk.WindowState.MAXIMIZED:
+                return WindowState.MAXIMIZED
+            elif window_state & Gdk.WindowState.ICONIFIED:
+                return WindowState.MINIMIZED
+            elif window_state & Gdk.WindowState.FULLSCREEN:
+                return WindowState.FULLSCREEN
+            else:
+                return WindowState.NORMAL
 
     def set_window_state(self, state):
-        if state == WindowState.NORMAL:
-            current_state = self.get_window_state()
+        current_state = self.get_window_state()
+        if state == WindowState.NORMAL and current_state != WindowState.NORMAL:
             if current_state == WindowState.MAXIMIZED:
                 self.native.unmaximize()
             elif current_state == WindowState.MINIMIZED:
                 self.native.deiconify()
             elif current_state == WindowState.FULLSCREEN:
                 self.native.unfullscreen()
-
-        elif state == WindowState.MAXIMIZED:
+            elif current_state == WindowState.PRESENTATION:
+                self._presentation_window.close()
+                self._presentation_window = None
+                self.interface.screen = (
+                    self.interface._impl._before_presentation_mode_screen
+                )
+        elif state == WindowState.MAXIMIZED and current_state != WindowState.MAXIMIZED:
+            self.set_window_state(WindowState.NORMAL)
             self.native.maximize()
-
-        elif state == WindowState.MINIMIZED:
+        elif state == WindowState.MINIMIZED and current_state != WindowState.MINIMIZED:
+            self.set_window_state(WindowState.NORMAL)
             self.native.iconify()
-
-        elif state == WindowState.FULLSCREEN:
-            self.interface.app.set_full_screen(self.interface)
+        elif (
+            state == WindowState.FULLSCREEN and current_state != WindowState.FULLSCREEN
+        ):
+            self.set_window_state(WindowState.NORMAL)
+            self.native.fullscreen()
+        elif (
+            state == WindowState.PRESENTATION
+            and current_state != WindowState.PRESENTATION
+        ):
+            self.set_window_state(WindowState.NORMAL)
+            self._presentation_window = self._PresentationWindow(self)
+            self._presentation_window.show()
 
     ######################################################################
     # Window capabilities
