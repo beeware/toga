@@ -92,13 +92,15 @@ class App:
         self.native.title = window.get_title()
 
     ######################################################################
-    # Full screen control
+    # Presentation mode controls
     ######################################################################
 
-    def enter_full_screen(self, windows):
+    def enter_presentation_mode(self, screen_window_dict):
+        # Not implemented
         pass
 
-    def exit_full_screen(self, windows):
+    def exit_presentation_mode(self):
+        # Not implemented
         pass
 
 
