@@ -1,3 +1,14 @@
+div.table {
+    clear: both;
+    display: flex;
+    flex-wrap: wrap;
+    column-gap: 2rem;
+}
+
+div.table > * {
+    width: 20rem;
+}
+
 /* Draw lines around table edges. */
 table.docutils {
     border: 1px solid var(--color-background-border);

@@ -1,12 +1,12 @@
-=================
-About the project
-=================
+==========
+About Toga
+==========
 
 .. toctree::
    :maxdepth: 1
 
-   philosophy
-   faq
+   Project philosophy <philosophy>
+   FAQ <faq>
    success
    releases
    roadmap
