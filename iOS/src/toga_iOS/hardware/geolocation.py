@@ -5,8 +5,11 @@ from rubicon.objc import NSObject, objc_method, objc_property
 from toga import LatLng
 
 # for classes that need to be monkeypatched for testing
-from toga_cocoa import libs as cocoa
-from toga_cocoa.libs import CLAuthorizationStatus
+from toga_iOS import libs as iOS
+from toga_iOS.libs import (
+    CLAuthorizationStatus,
+    NSBundle,
+)
 
 
 class TogaLocationDelegate(NSObject):
@@ -26,21 +29,47 @@ class TogaLocationDelegate(NSObject):
         self.impl._location_error(error)
 
 
+def requires_permission(method):
+    def _method(self, *args, **kwargs):
+        if self.native.authorizationStatus == CLAuthorizationStatus.NotDetermined.value:
+            self.backlog.append((method, args, kwargs))
+            self.request_permission()
+        else:
+            method(self, *args, **kwargs)
+
+    return _method
+
+
 class Geolocation:
     def __init__(self, interface):
         self.interface = interface
-        self.native = cocoa.CLLocationManager.alloc().init()
-        self.delegate = TogaLocationDelegate.alloc().init()
-        self.native.delegate = self.delegate
-        self.delegate.interface = interface
-        self.delegate.impl = self
+        if NSBundle.mainBundle.objectForInfoDictionaryKey(
+            "NSLocationWhenInUseUsageDescription"
+        ):
+            self.native = iOS.CLLocationManager.alloc().init()
+            self.delegate = TogaLocationDelegate.alloc().init()
+            self.native.delegate = self.delegate
+            self.delegate.interface = interface
+            self.delegate.impl = self
+        else:
+            raise RuntimeError(
+                "Application metadata does not declare that the app will use the camera."
+            )
+
+        # Tracking of API calls that must be postponed until permission has been granted
+        self.backlog = []
+        # Tracking of futures associated with specific requests.
         self.permission_requests = []
-        self.location_requests = []
+        self.current_location_requests = []
 
     def _authorization_change(self):
         while self.permission_requests:
             future = self.permission_requests.pop()
             future.set_result(self.has_permission())
+
+        while self.backlog:
+            method, args, kwargs = self.backlog.pop()
+            method(self, *args, **kwargs)
 
     def _location_change(self, location):
         latlng = LatLng(
@@ -55,8 +84,8 @@ class Geolocation:
             altitude = None
 
         # Set all outstanding location requests with the most last location reported
-        while self.location_requests:
-            future = self.location_requests.pop()
+        while self.current_location_requests:
+            future = self.current_location_requests.pop()
             future.set_result(latlng)
 
         # Notify the change listener of the last location reported
@@ -67,39 +96,47 @@ class Geolocation:
 
     def _location_error(self, error):
         # Cancel all outstanding location requests.
-        while self.location_requests:
-            future = self.location_requests.pop()
+        while self.current_location_requests:
+            future = self.current_location_requests.pop()
             future.set_exception(RuntimeError(f"Unable to obtain a location ({error})"))
 
-    def has_permission(self, allow_unknown=False):
-        valid_values = {
+    def has_permission(self):
+        return self.native.authorizationStatus in {
             CLAuthorizationStatus.AuthorizedAlways.value,
             CLAuthorizationStatus.AuthorizedWhenInUse.value,
         }
-        if allow_unknown:
-            valid_values.add(CLAuthorizationStatus.NotDetermined.value)
-
-        return self.native.authorizationStatus in valid_values
 
     def has_background_permission(self):
-        return (
-            self.native.authorizationStatus
-            == CLAuthorizationStatus.AuthorizedAlways.value
-        )
+        return self.native.authorizationStatus in {
+            CLAuthorizationStatus.AuthorizedAlways.value,
+        }
 
-    def request_permission(self, future):
-        self.permission_requests.append(future)
-        self.native.requestAlwaysAuthorization()
+    def request_permission(self, future=None):
+        if future:
+            self.permission_requests.append(future)
+
+        self.native.requestWhenInUseAuthorization()
 
     def request_background_permission(self, future):
-        self.permission_requests.append(future)
-        self.native.requestAlwaysAuthorization()
+        if NSBundle.mainBundle.objectForInfoDictionaryKey(
+            "NSLocationAlwaysAndWhenInUseUsageDescription"
+        ):
+            self.permission_requests.append(future)
 
+            self.native.requestAlwaysAuthorization()
+        else:
+            future.set_exception(
+                RuntimeError(
+                    "Application metadata does not declare that the app will use the camera."
+                )
+            )
+
+    @requires_permission
     def current_location(self, result):
-        if self.has_permission(allow_unknown=True):
+        if self.has_permission():
             location = self.native.location
             if location is None:
-                self.location_requests.append(result)
+                self.current_location_requests.append(result)
                 self.native.requestLocation()
             else:
                 result.set_result(
@@ -109,20 +146,28 @@ class Geolocation:
                     )
                 )
         else:
-            raise PermissionError(
-                "App does not have permission to use geolocation services"
+            result.set_exception(
+                PermissionError(
+                    "App does not have permission to use geolocation services"
+                )
             )
 
+    @requires_permission
     def start(self):
-        if self.has_permission(allow_unknown=True):
+        if self.has_permission():
+            # Ensure that background processing will occur
+            self.native.allowsBackgroundLocationUpdates = True
+            self.native.pausesLocationUpdatesAutomatically = False
+
             self.native.startUpdatingLocation()
         else:
             raise PermissionError(
                 "App does not have permission to use geolocation services"
             )
 
+    @requires_permission
     def stop(self):
-        if self.has_permission(allow_unknown=True):
+        if self.has_permission():
             self.native.stopUpdatingLocation()
         else:
             raise PermissionError(

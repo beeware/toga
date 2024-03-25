@@ -12,13 +12,6 @@ class ExampleHardwareApp(toga.App):
         except NotImplementedError:
             print("The Camera API is not implemented on this platform")
 
-        try:
-            # This will provide a prompt for geolocation permissions at startup.
-            # If permission is denied, the app will continue.
-            self.geolocation.request_permission()
-        except NotImplementedError:
-            print("The Geolocation API is not implemented on this platform")
-
         #############################################################
         # Camera
         #############################################################
@@ -81,6 +74,11 @@ class ExampleHardwareApp(toga.App):
                             on_press=self.stop_location_updates,
                             style=Pack(flex=1),
                         ),
+                        toga.Button(
+                            "Background",
+                            on_press=self.request_background_location,
+                            style=Pack(flex=1),
+                        ),
                     ],
                     style=Pack(padding=5),
                 ),
@@ -114,7 +112,6 @@ class ExampleHardwareApp(toga.App):
             )
 
     def location_changed(self, geo, location, altitude, **kwargs):
-        print("APPLY LOCATION CHANGE")
         self.map_view.zoom = 16
         self.map_view.location = location
 
@@ -125,18 +122,39 @@ class ExampleHardwareApp(toga.App):
             self.pin.location = location
 
     async def update_location(self, widget, **kwargs):
-        print("Request location update")
-        location = await self.geolocation.current_location
-        print("GOT LOCATION", location)
-        self.location_changed(None, location, None)
+        try:
+            location = await self.geolocation.current_location
+            self.location_changed(None, location, None)
+        except PermissionError:
+            await self.main_window.info_dialog(
+                "Oh no!",
+                "You have not granted permission to track location",
+            )
 
-    def start_location_updates(self, widget, **kwargs):
-        print("START LOCATION UPDATES")
-        self.geolocation.start()
+    async def start_location_updates(self, widget, **kwargs):
+        try:
+            self.geolocation.start()
+        except PermissionError:
+            await self.main_window.info_dialog(
+                "Oh no!",
+                "You have not granted permission to track location",
+            )
 
-    def stop_location_updates(self, widget, **kwargs):
-        print("STOP LOCATION UPDATES")
-        self.geolocation.stop()
+    async def stop_location_updates(self, widget, **kwargs):
+        try:
+            self.geolocation.stop()
+        except PermissionError:
+            await self.main_window.info_dialog(
+                "Oh no!",
+                "You have not granted permission to track location",
+            )
+
+    async def request_background_location(self, widget, **kwargs):
+        if not await self.geolocation.request_background_permission():
+            await self.main_window.info_dialog(
+                "Oh no!",
+                "You have not granted permission for background location tracking",
+            )
 
 
 def main():

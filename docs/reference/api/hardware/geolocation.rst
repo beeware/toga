@@ -19,10 +19,10 @@ check if you have have permission to access geolocation services; and if permiss
 capture the current location of the device, and set a handler to be notified when position
 changes occur.
 
-The Camera API is *asynchronous*. This means the methods that have long-running behavior
-(such as requesting permissions and requesting a position) must be ``await``-ed, rather
-than being invoked directly. This means they must be invoked from inside an asynchronous
-handler:
+The Geolocation API is *asynchronous*. This means the methods that have long-running
+behavior (such as requesting permissions and requesting a location) must be
+``await``-ed, rather than being invoked directly. This means they must be invoked from
+inside an asynchronous handler:
 
 .. code-block:: python
 
@@ -33,22 +33,47 @@ handler:
         async def determine_location(self, widget, **kwargs):
             location = await self.geolocation.current_location
 
-Most platforms will require some form of device permission to access the geolocation
-service. To confirm if you have permission to use the geolocation service, you can call
-:any:`Geolocation.has_permission`; you can request to permission using
-:any:`Geolocation.request_permission()`.
+All platforms require some form of device permission to access the geolocation service.
+To confirm if you have permission to use the geolocation service while the app is
+running, you can call :any:`Geolocation.has_permission`; you can request to permission
+using :any:`Geolocation.request_permission()`. To confirm if you have permission to use
+geolocation while the app is in the background, you can call
+:any:`Geolocation.has_background_permission`; you can request to permission using
+:any:`Geolocation.request_background_permission()`
 
-The calls to request permissions *can* be invoked from a synchronous context (i.e., a
-non ``async`` method); however, they are non-blocking when used in this way. Invoking a
-method like :any:`Geolocation.request_permission()` will start the process of requesting
-permission, but will return *immediately*, without waiting for the user's response. This
-allows an app to *request* permissions as part of the startup process, prior to using
-the geolocation APIs, without blocking the rest of app startup.
+The calls to request either permission *can* be invoked from a synchronous context
+(i.e., a non ``async`` method); however, they are non-blocking when used in this way.
+Invoking a method like :any:`Geolocation.request_permission()` will start the process of
+requesting permission, but will return *immediately*, without waiting for the user's
+response. This allows an app to *request* permissions as part of the startup process,
+prior to using the geolocation APIs, without blocking the rest of app startup.
 
 Toga will confirm whether the app has been granted permission to use geolocation
 services before invoking any geolocation API. If permission has not yet been granted,
 the platform *may* request access at the time of the first geolocation request; however,
 this is not guaranteed to be the behavior on all platforms.
+
+To continuously track location, add an ``on_change`` handler to the geolocation service,
+then call :any:`Geolocation.start()`. The handler will be invoked whenever a new
+geolocation position is obtained:
+
+.. code-block:: python
+
+    class MyApp(toga.App):
+        ...
+        async def location_update(self, location, altitude, **kwargs):
+            print(f"You are now at {location}, with altitude {altitude}")
+
+        def startup(self):
+            ...
+
+            # Install a geolocation handler
+            self.geolocation.on_change = self.location_update
+            # Start location updates. This will ask for permissions if they
+            # haven't already been requested.
+            self.geolocation.start()
+
+If you no longer wish to receive geolocation updates, call :any:`Geolocation.stop()`.
 
 Notes
 -----
@@ -58,7 +83,8 @@ Notes
 
   * iOS: ``NSLocationWhenInUseUsageDescription`` must be defined in the app's
     ``Info.plist`` file. If you want to track location while the app is in the
-    background, you must also define  ``NSLocationAlwaysAndWhenInUseUsageDescription``.
+    background, you must also define  ``NSLocationAlwaysAndWhenInUseUsageDescription``,
+    and add the ``location`` and ``processing`` values to ``UIBackgroundModes``.
   * macOS: The ``com.apple.security.personal-information.location`` entitlement must be
     enabled, and ``NSLocationUsageDescription`` must be defined in the app's
     ``Info.plist`` file.
@@ -67,6 +93,21 @@ Notes
     declared, this will impact on the precision available in geolocation results. If you
     want to track location while the app is in the background, you must also define the
     permission ``android.permission.ACCESS_BACKGROUND_LOCATION``.
+
+* On macOS, there is no distinction between "background" permissions and "while-running"
+  permissions.
+
+* On iOS, requesting permission to track location in the background will always require
+  2 interactions from the user - an initial request to use geolocation while the app is
+  running, then a second request to use location in the background. If you call
+  :meth:`~toga.hardware.Geolocation.request_background_permission()` before any
+  permissions have been confirmed, the user will be asked immediately for geolocation
+  permissions while the app is running; the request for background tracking will be
+  deferred until the first attempt to use location in the background, or a second call
+  to :meth:`~toga.hardware.Geolocation.request_background_permission()`. Background
+  location tracking will not be permitted unless the user allows geolocation "always"
+  while the app is running. If they only allow "once off" permission, requests for
+  background processing will be ignored.
 
 Reference
 ---------

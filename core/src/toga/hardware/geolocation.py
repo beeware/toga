@@ -79,6 +79,40 @@ class Geolocation:
         return result
 
     @property
+    def has_background_permission(self) -> bool:
+        """Does the app have permission to use geolocation services in the background?
+
+        If the platform requires the user to explicitly confirm permission, and the user
+        has not yet given permission, this will return ``False``.
+        """
+        return self._impl.has_background_permission()
+
+    def request_background_permission(self) -> PermissionResult:
+        """Request sufficient permissions to capture the user's location in the
+        background.
+
+        If permission has already been granted, this will return without prompting the
+        user.
+
+        **This is an asynchronous method**. If you invoke this method in synchronous
+        context, it will start the process of requesting permissions, but will return
+        *immediately*. The return value can be awaited in an asynchronous context, but
+        cannot be compared directly.
+
+        :returns: An asynchronous result; when awaited, returns True if the app has
+            permission to capture the user's a geolocation while running in the
+            background; False otherwise.
+        """
+        result = PermissionResult(None)
+
+        if has_background_permission := self.has_background_permission:
+            result.set_result(has_background_permission)
+        else:
+            self._impl.request_background_permission(result)
+
+        return result
+
+    @property
     def on_change(self) -> OnLocationChangeHandler:
         """The handler to invoke when the user's location changes."""
         return self._on_change
