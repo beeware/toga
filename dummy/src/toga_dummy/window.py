@@ -102,9 +102,6 @@ class Window(LoggedObject):
         path = Path(toga_dummy.__file__).parent / "resources/screenshot.png"
         return path.read_bytes()
 
-    def set_full_screen(self, is_full_screen):
-        self._action("set full screen", full_screen=is_full_screen)
-
     def simulate_close(self):
         self.interface.on_close()
 

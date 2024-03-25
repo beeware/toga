@@ -8,6 +8,7 @@ from unittest.mock import Mock
 import pytest
 
 import toga
+from toga.constants import WindowState
 from toga_dummy.utils import (
     assert_action_not_performed,
     assert_action_performed,
@@ -393,48 +394,62 @@ def test_no_current_window(app):
 
 def test_full_screen(event_loop):
     """The app can be put into full screen mode."""
+    app = toga.App(formal_name="Test App", app_id="org.example.test")
     window1 = toga.Window()
     window2 = toga.Window()
-    app = toga.App(formal_name="Test App", app_id="org.example.test")
 
     assert not app.is_full_screen
 
     # If we're not full screen, exiting full screen is a no-op
     app.exit_full_screen()
-    assert_action_not_performed(app, "exit_full_screen")
+    for window in app.windows:
+        assert_action_not_performed(window, "set window state to WindowState.NORMAL")
+
+    # TODO: Check and keep track of the window assignment to screens
+    # This seems to be difficult currently, as the interface api: `App.enter_presentation_mode`
+    # both assigns screens to windows and also sets the state.
 
     # Enter full screen with 2 windows
     app.set_full_screen(window2, app.main_window)
     assert app.is_full_screen
     assert_action_performed_with(
-        app, "enter_full_screen", windows=(window2, app.main_window)
+        window2,
+        "set window state to WindowState.PRESENTATION",
+        state=WindowState.PRESENTATION,
+    )
+    assert_action_performed_with(
+        app.main_window,
+        "set window state to WindowState.PRESENTATION",
+        state=WindowState.PRESENTATION,
     )
 
     # Change the screens that are full screen
     app.set_full_screen(app.main_window, window1)
     assert app.is_full_screen
     assert_action_performed_with(
-        app, "enter_full_screen", windows=(app.main_window, window1)
+        app.main_window,
+        "set window state to WindowState.PRESENTATION",
+        state=WindowState.PRESENTATION,
+    )
+    assert_action_performed_with(
+        window1,
+        "set window state to WindowState.PRESENTATION",
+        state=WindowState.PRESENTATION,
     )
 
     # Exit full screen mode
     app.exit_full_screen()
     assert not app.is_full_screen
     assert_action_performed_with(
-        app, "exit_full_screen", windows=(app.main_window, window1)
+        app.main_window,
+        "set window state to WindowState.NORMAL",
+        state=WindowState.NORMAL,
     )
-
-
-def test_presentation_mode(event_loop):
-    """The app can be put into presentation mode."""
-    # window1 = toga.Window()
-    # window2 = toga.Window()
-    app = toga.App(formal_name="Test App", app_id="org.example.test")
-
-    assert not app.is_in_presentation_mode
-
-    # If we're not in presentation mode, exiting presentation mode is a no-op
-    app.exit_presentation_mode()
+    assert_action_performed_with(
+        window1,
+        "set window state to WindowState.NORMAL",
+        state=WindowState.NORMAL,
+    )
 
 
 def test_set_empty_full_screen_window_list(event_loop):
@@ -448,12 +463,90 @@ def test_set_empty_full_screen_window_list(event_loop):
     # Change the screens that are full screen
     app.set_full_screen(window1, window2)
     assert app.is_full_screen
-    assert_action_performed_with(app, "enter_full_screen", windows=(window1, window2))
-
+    assert_action_performed_with(
+        window1,
+        "set window state to WindowState.PRESENTATION",
+        state=WindowState.PRESENTATION,
+    )
+    assert_action_performed_with(
+        window2,
+        "set window state to WindowState.PRESENTATION",
+        state=WindowState.PRESENTATION,
+    )
     # Exit full screen mode by setting no windows full screen
     app.set_full_screen()
     assert not app.is_full_screen
-    assert_action_performed_with(app, "exit_full_screen", windows=(window1, window2))
+    assert_action_performed_with(
+        window1,
+        "set window state to WindowState.NORMAL",
+        state=WindowState.NORMAL,
+    )
+    assert_action_performed_with(
+        window2,
+        "set window state to WindowState.NORMAL",
+        state=WindowState.NORMAL,
+    )
+
+
+def test_presentation_mode(event_loop):
+    """The app can be put into presentation mode."""
+    app = toga.App(formal_name="Test App", app_id="org.example.test")
+    window1 = toga.Window()
+    window2 = toga.Window()
+
+    assert not app.is_in_presentation_mode
+
+    # If we're not in presentation mode, exiting presentation mode is a no-op
+    app.exit_presentation_mode()
+    for window in app.windows:
+        assert_action_not_performed(window, "set window state to WindowState.NORMAL")
+
+    # TODO: Check and keep track of the window assignment to screens
+    # This seems to be difficult currently, as the interface api: `App.enter_presentation_mode`
+    # both assigns screens to windows and also sets the state.
+
+    # Enter presentation mode with 1 window:
+    app.enter_presentation_mode([window1])
+    window1.state = WindowState.PRESENTATION
+    assert app.is_in_presentation_mode
+    assert_action_performed_with(
+        window1,
+        "set window state to WindowState.PRESENTATION",
+        state=WindowState.PRESENTATION,
+    )
+    # Exit presentation mode:
+    app.exit_presentation_mode()
+    assert_action_performed_with(
+        window1,
+        "set window state to WindowState.NORMAL",
+        state=WindowState.NORMAL,
+    )
+
+    # Enter presentation mode with 2 window:
+    app.enter_presentation_mode({app.screens[1]: window1, app.screens[0]: window2})
+    assert app.is_in_presentation_mode
+    assert_action_performed_with(
+        window1,
+        "set window state to WindowState.PRESENTATION",
+        state=WindowState.PRESENTATION,
+    )
+    assert_action_performed_with(
+        window2,
+        "set window state to WindowState.PRESENTATION",
+        state=WindowState.PRESENTATION,
+    )
+    # Exit presentation mode:
+    app.exit_presentation_mode()
+    assert_action_performed_with(
+        window1,
+        "set window state to WindowState.NORMAL",
+        state=WindowState.NORMAL,
+    )
+    assert_action_performed_with(
+        window2,
+        "set window state to WindowState.NORMAL",
+        state=WindowState.NORMAL,
+    )
 
 
 def test_show_hide_cursor(app):

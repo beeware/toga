@@ -771,12 +771,12 @@ class App:
            removed in the future. Consider using `App.enter_presentation_mode()`
            and `App.exit_presentation_mode()` methods instead.
         """
-        warnings.warn(
-            "`App.exit_full_screen()` method is deprecated and will be"
-            " removed in the future. Consider using `App.enter_presentation_mode()`"
-            " and `App.exit_presentation_mode()` methods instead.",
-            FutureWarning,
-        )
+        # warnings.warn(
+        #     "`App.exit_full_screen()` method is deprecated and will be"
+        #     " removed in the future. Consider using `App.enter_presentation_mode()`"
+        #     " and `App.exit_presentation_mode()` methods instead.",
+        #     FutureWarning,
+        # )
         if self.is_full_screen:
             for window in self.windows:
                 if (
@@ -793,18 +793,12 @@ class App:
             `App.is_full_screen` property is deprecated and will be removed in the
             future. Consider using `App.is_in_presentation_mode` property instead.
         """
-        warnings.warn(
-            "`App.is_full_screen` property is deprecated and will be removed in the"
-            " future. Consider using `App.is_in_presentation_mode` property instead.",
-            FutureWarning,
-        )
-        return any(
-            (
-                window.state == WindowState.FULLSCREEN
-                or window.state == WindowState.PRESENTATION
-            )
-            for window in self.windows
-        )
+        # warnings.warn(
+        #     "`App.is_full_screen` property is deprecated and will be removed in the"
+        #     " future. Consider using `App.is_in_presentation_mode` property instead.",
+        #     FutureWarning,
+        # )
+        return any(window.state == WindowState.PRESENTATION for window in self.windows)
 
     def set_full_screen(self, *windows: Window) -> None:
         """Make one or more windows full screen.
@@ -822,12 +816,12 @@ class App:
             removed in the future. Consider using `App.enter_presentation_mode()`
             and `App.exit_presentation_mode()` methods instead.
         """
-        warnings.warn(
-            "`App.set_full_screen()` method is deprecated and will be"
-            " removed in the future. Consider using `App.enter_presentation_mode()`"
-            " and `App.exit_presentation_mode()` methods instead.",
-            FutureWarning,
-        )
+        # warnings.warn(
+        #     "`App.set_full_screen()` method is deprecated and will be"
+        #     " removed in the future. Consider using `App.enter_presentation_mode()`"
+        #     " and `App.exit_presentation_mode()` methods instead.",
+        #     FutureWarning,
+        # )
         if self.windows is not None:
             self.exit_full_screen()
             screen_window_dict = dict()
@@ -844,25 +838,23 @@ class App:
         """Is the app currently in presentation mode?"""
         return any(window.state == WindowState.PRESENTATION for window in self.windows)
 
-    def enter_presentation_mode(self, window_or_list_or_dict):
+    def enter_presentation_mode(self, window_list_or_screen_window_dict):
         """Enter into presentation mode with one or more windows on different screens.
 
         Presentation mode is not the same as Full Screen mode; full screen mode is when all window
         borders and other window decorations are no longer visible.
 
-        :param window_or_list_or_dict: A single window, a list of windows, a dictionary
+        :param window_list_or_screen_window_dict: A list of windows, a dictionary
             mapping screens to windows, to go into full screen, in order of allocation to
             screens. If the number of windows exceeds the number of available displays,
             those windows will not be visible.
         """
         screen_window_dict = dict()
-        if isinstance(window_or_list_or_dict, Window):
-            screen_window_dict[self.screens[0]] = window_or_list_or_dict
-        elif isinstance(window_or_list_or_dict, list):
-            for window, screen in zip(window_or_list_or_dict, self.screens):
+        if isinstance(window_list_or_screen_window_dict, list):
+            for window, screen in zip(window_list_or_screen_window_dict, self.screens):
                 screen_window_dict[screen] = window
-        elif isinstance(window_or_list_or_dict, dict):
-            screen_window_dict = window_or_list_or_dict
+        elif isinstance(window_list_or_screen_window_dict, dict):
+            screen_window_dict = window_list_or_screen_window_dict
 
         for screen, window in screen_window_dict.items():
             window._impl._before_presentation_mode_screen = window.screen

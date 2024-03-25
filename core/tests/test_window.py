@@ -264,11 +264,19 @@ def test_full_screen(window, app):
 
     window.full_screen = True
     assert window.full_screen
-    assert_action_performed_with(window, "set full screen", full_screen=True)
+    assert_action_performed_with(
+        window,
+        "set window state to WindowState.FULLSCREEN",
+        state=WindowState.FULLSCREEN,
+    )
 
     window.full_screen = False
     assert not window.full_screen
-    assert_action_performed_with(window, "set full screen", full_screen=False)
+    assert_action_performed_with(
+        window,
+        "set window state to WindowState.NORMAL",
+        state=WindowState.NORMAL,
+    )
 
 
 def test_window_state(window):
@@ -278,7 +286,9 @@ def test_window_state(window):
     window.state = WindowState.MAXIMIZED
     assert window.state == WindowState.MAXIMIZED
     assert_action_performed_with(
-        window, "set window state", state=WindowState.MAXIMIZED
+        window,
+        "set window state to WindowState.MAXIMIZED",
+        state=WindowState.MAXIMIZED,
     )
 
     window.state = WindowState.FULLSCREEN
@@ -287,6 +297,12 @@ def test_window_state(window):
         window,
         "set window state to WindowState.FULLSCREEN",
         state=WindowState.FULLSCREEN,
+    )
+
+    window.state = WindowState.NORMAL
+    assert window.state == WindowState.NORMAL
+    assert_action_performed_with(
+        window, "set window state to WindowState.NORMAL", state=WindowState.NORMAL
     )
 
 

@@ -48,6 +48,9 @@ class WindowDemoApp(toga.App):
     def do_window_full_screen(self, widget, **kwargs):
         self.main_window.full_screen = not self.main_window.full_screen
 
+    def do_enter_presentation_mode(self, widget, **kwargs):
+        self.enter_presentation_mode([self.main_window])
+
     def do_title(self, widget, **kwargs):
         self.main_window.title = f"Time is {datetime.now()}"
 
@@ -203,6 +206,11 @@ class WindowDemoApp(toga.App):
             on_press=self.do_window_full_screen,
             style=btn_style,
         )
+        btn_do_enter_presentation_mode = toga.Button(
+            "Enter into presentation mode",
+            on_press=self.do_enter_presentation_mode,
+            style=btn_style,
+        )
         btn_do_title = toga.Button(
             "Change title", on_press=self.do_title, style=btn_style
         )
@@ -276,6 +284,7 @@ class WindowDemoApp(toga.App):
                 btn_do_minimize,
                 btn_do_app_full_screen,
                 btn_do_window_full_screen,
+                btn_do_enter_presentation_mode,
                 btn_do_title,
                 btn_do_new_windows,
                 btn_do_current_window_cycling,
