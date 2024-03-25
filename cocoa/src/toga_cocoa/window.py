@@ -355,8 +355,8 @@ class Window:
             return WindowState.NORMAL
 
     def set_window_state(self, state):
-        current_state = self.get_window_state()
-        if state == WindowState.NORMAL and current_state != WindowState.NORMAL:
+        if state == WindowState.NORMAL:
+            current_state = self.get_window_state()
             # If the window is maximized, restore it to its normal size
             if current_state == WindowState.MAXIMIZED:
                 self.native.setIsZoomed(False)
@@ -377,25 +377,23 @@ class Window:
                 self.interface.screen = (
                     self.interface._impl._before_presentation_mode_screen
                 )
-        # Set Window state to NORMAL before changing to other states as some states
-        # block changing window state without first exiting them.
-        elif state == WindowState.MAXIMIZED and current_state != WindowState.MAXIMIZED:
+
+        # Changing window states without reverting back to the NORMAL state will
+        # cause glitches, so revert to NORMAL state before switching to other states.
+        # Setting window state to NORMAL from the interface side also causes the same glitches.
+        elif state == WindowState.MAXIMIZED:
             self.set_window_state(WindowState.NORMAL)
             self.native.setIsZoomed(True)
 
-        elif state == WindowState.MINIMIZED and current_state != WindowState.MINIMIZED:
+        elif state == WindowState.MINIMIZED:
             self.set_window_state(WindowState.NORMAL)
             self.native.setIsMiniaturized(True)
 
-        elif (
-            state == WindowState.FULLSCREEN and current_state != WindowState.FULLSCREEN
-        ):
+        elif state == WindowState.FULLSCREEN:
             self.set_window_state(WindowState.NORMAL)
             self.native.toggleFullScreen(self.native)
-        elif (
-            state == WindowState.PRESENTATION
-            and current_state != WindowState.PRESENTATION
-        ):
+
+        elif state == WindowState.PRESENTATION:
             self.set_window_state(WindowState.NORMAL)
             opts = NSMutableDictionary.alloc().init()
             opts.setObject(

@@ -864,7 +864,10 @@ class App:
         elif isinstance(window_or_list_or_dict, dict):
             screen_window_dict = window_or_list_or_dict
 
-        self._impl.enter_presentation_mode(screen_window_dict)
+        for screen, window in screen_window_dict.items():
+            window._impl._before_presentation_mode_screen = window.screen
+            window.screen = screen
+            window.state = WindowState.PRESENTATION
 
     def exit_presentation_mode(self) -> None:
         """Exit full screen mode."""

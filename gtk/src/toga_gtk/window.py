@@ -239,35 +239,41 @@ class Window:
                 return WindowState.NORMAL
 
     def set_window_state(self, state):
-        current_state = self.get_window_state()
-        if state == WindowState.NORMAL and current_state != WindowState.NORMAL:
+        if state == WindowState.NORMAL:
+            current_state = self.get_window_state()
+            # If the window is maximized, restore it to its normal size
             if current_state == WindowState.MAXIMIZED:
                 self.native.unmaximize()
+            # Deminiaturize the window to restore it to its previous state
             elif current_state == WindowState.MINIMIZED:
                 self.native.deiconify()
+            # If the window is in full-screen mode, exit full-screen mode
             elif current_state == WindowState.FULLSCREEN:
                 self.native.unfullscreen()
+            # If the window is in presentation mode, exit presentation mode
             elif current_state == WindowState.PRESENTATION:
                 self._presentation_window.close()
                 self._presentation_window = None
                 self.interface.screen = (
                     self.interface._impl._before_presentation_mode_screen
                 )
-        elif state == WindowState.MAXIMIZED and current_state != WindowState.MAXIMIZED:
+
+        # Changing window states without reverting back to the NORMAL state will
+        # cause glitches, so revert to NORMAL state before switching to other states.
+        # Setting window state to NORMAL from the interface side also causes the same glitches.
+        elif state == WindowState.MAXIMIZED:
             self.set_window_state(WindowState.NORMAL)
             self.native.maximize()
-        elif state == WindowState.MINIMIZED and current_state != WindowState.MINIMIZED:
+
+        elif state == WindowState.MINIMIZED:
             self.set_window_state(WindowState.NORMAL)
             self.native.iconify()
-        elif (
-            state == WindowState.FULLSCREEN and current_state != WindowState.FULLSCREEN
-        ):
+
+        elif state == WindowState.FULLSCREEN:
             self.set_window_state(WindowState.NORMAL)
             self.native.fullscreen()
-        elif (
-            state == WindowState.PRESENTATION
-            and current_state != WindowState.PRESENTATION
-        ):
+
+        elif state == WindowState.PRESENTATION:
             self.set_window_state(WindowState.NORMAL)
             self._presentation_window = self._PresentationWindow(self)
             self._presentation_window.show()

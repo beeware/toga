@@ -425,6 +425,18 @@ def test_full_screen(event_loop):
     )
 
 
+def test_presentation_mode(event_loop):
+    """The app can be put into presentation mode."""
+    # window1 = toga.Window()
+    # window2 = toga.Window()
+    app = toga.App(formal_name="Test App", app_id="org.example.test")
+
+    assert not app.is_in_presentation_mode
+
+    # If we're not in presentation mode, exiting presentation mode is a no-op
+    app.exit_presentation_mode()
+
+
 def test_set_empty_full_screen_window_list(event_loop):
     """Setting the full screen window list to [] is an explicit exit."""
     app = toga.App(formal_name="Test App", app_id="org.example.test")

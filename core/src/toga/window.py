@@ -476,7 +476,17 @@ class Window:
 
     @state.setter
     def state(self, state: WindowState) -> None:
-        self._impl.set_window_state(state)
+        if state != self.state:
+            if state == WindowState.NORMAL:
+                self._impl.set_window_state(WindowState.NORMAL)
+            if state == WindowState.MAXIMIZED:
+                self._impl.set_window_state(WindowState.MAXIMIZED)
+            elif state == WindowState.MINIMIZED:
+                self._impl.set_window_state(WindowState.MINIMIZED)
+            elif state == WindowState.FULLSCREEN:
+                self._impl.set_window_state(WindowState.FULLSCREEN)
+            elif state == WindowState.PRESENTATION:
+                self._impl.set_window_state(WindowState.PRESENTATION)
 
     ######################################################################
     # Window capabilities

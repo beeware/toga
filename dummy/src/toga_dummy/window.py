@@ -1,6 +1,7 @@
 from pathlib import Path
 
 import toga_dummy
+from toga.constants import WindowState
 
 from .screens import Screen as ScreenImpl
 from .utils import LoggedObject
@@ -110,3 +111,10 @@ class Window(LoggedObject):
     def get_current_screen(self):
         # `window.screen` will return `Secondary Screen`
         return ScreenImpl(native=("Secondary Screen", (-1366, -768), (1366, 768)))
+
+    def get_window_state(self):
+        return self._get_value("state", WindowState.NORMAL)
+
+    def set_window_state(self, state):
+        self._action(f"set window state to {state}", state=state)
+        self._set_value("state", state)

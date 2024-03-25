@@ -4,6 +4,7 @@ from unittest.mock import Mock
 import pytest
 
 import toga
+from toga.constants import WindowState
 from toga_dummy.utils import (
     assert_action_not_performed,
     assert_action_performed,
@@ -268,6 +269,25 @@ def test_full_screen(window, app):
     window.full_screen = False
     assert not window.full_screen
     assert_action_performed_with(window, "set full screen", full_screen=False)
+
+
+def test_window_state(window):
+    """A window can have different states."""
+    assert window.state == WindowState.NORMAL
+
+    window.state = WindowState.MAXIMIZED
+    assert window.state == WindowState.MAXIMIZED
+    assert_action_performed_with(
+        window, "set window state", state=WindowState.MAXIMIZED
+    )
+
+    window.state = WindowState.FULLSCREEN
+    assert window.state == WindowState.FULLSCREEN
+    assert_action_performed_with(
+        window,
+        "set window state to WindowState.FULLSCREEN",
+        state=WindowState.FULLSCREEN,
+    )
 
 
 def test_close_direct(window, app):

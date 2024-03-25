@@ -257,8 +257,8 @@ class Window(Container, Scalable):
                 return WindowState.NORMAL
 
     def set_window_state(self, state):
-        current_state = self.get_window_state()
-        if state == WindowState.NORMAL and current_state != WindowState.NORMAL:
+        if state == WindowState.NORMAL:
+            current_state = self.get_window_state()
             if current_state == WindowState.FULLSCREEN:
                 self.native.FormBorderStyle = getattr(
                     WinForms.FormBorderStyle,
@@ -272,22 +272,21 @@ class Window(Container, Scalable):
                 )
 
             self.native.WindowState = WinForms.FormWindowState.Normal
-        elif state == WindowState.MAXIMIZED and current_state != WindowState.MAXIMIZED:
+
+        # Changing window states without reverting back to the NORMAL state will
+        # cause glitches, so revert to NORMAL state before switching to other states.
+        # Setting window state to NORMAL from the interface side also causes the same glitches.
+        elif state == WindowState.MAXIMIZED:
             self.set_window_state(WindowState.NORMAL)
             self.native.WindowState = WinForms.FormWindowState.Maximized
-        elif state == WindowState.MINIMIZED and current_state != WindowState.MINIMIZED:
+        elif state == WindowState.MINIMIZED:
             self.set_window_state(WindowState.NORMAL)
             self.native.WindowState = WinForms.FormWindowState.Minimized
-        elif (
-            state == WindowState.FULLSCREEN and current_state != WindowState.FULLSCREEN
-        ):
+        elif state == WindowState.FULLSCREEN:
             self.set_window_state(WindowState.NORMAL)
             self.native.FormBorderStyle = getattr(WinForms.FormBorderStyle, "None")
             self.native.WindowState = WinForms.FormWindowState.Maximized
-        elif (
-            state == WindowState.PRESENTATION
-            and current_state != WindowState.PRESENTATION
-        ):
+        elif state == WindowState.PRESENTATION:
             self.set_window_state(WindowState.NORMAL)
             self._presentation_window = self._PresentationWindow(self)
             self._presentation_window.show()
