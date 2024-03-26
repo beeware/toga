@@ -12,6 +12,13 @@ class ExampleHardwareApp(toga.App):
         except NotImplementedError:
             print("The Camera API is not implemented on this platform")
 
+        try:
+            # This will provide a prompt for camera permissions at startup.
+            # If permission is denied, the app will continue.
+            self.geolocation.request_background_permission()
+        except NotImplementedError:
+            print("The Geolocation API is not implemented on this platform")
+
         #############################################################
         # Camera
         #############################################################
@@ -112,12 +119,12 @@ class ExampleHardwareApp(toga.App):
             )
 
     def location_changed(self, geo, location, altitude, **kwargs):
-        self.map_view.zoom = 16
         self.map_view.location = location
 
         if self.pin is None:
             self.pin = toga.MapPin(location, title="Here!")
             self.map_view.pins.add(self.pin)
+            self.map_view.zoom = 16
         else:
             self.pin.location = location
 
