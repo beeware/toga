@@ -18,7 +18,7 @@ def toga_location(location):
 
     # A vertical accuracy that non-positive indicates altitude is invalid.
     if location.verticalAccuracy > 0.0:
-        altitude = location.ellipsoidalAltitude
+        altitude = location.altitude
     else:
         altitude = None
 
@@ -34,15 +34,30 @@ class TogaLocationDelegate(NSObject):
 
     @objc_method
     def locationManagerDidChangeAuthorization_(self, manager) -> None:
-        self.impl._authorization_change()
+        while self.impl.permission_requests:
+            future = self.impl.permission_requests.pop()
+            future.set_result(self.impl.has_permission())
 
     @objc_method
     def locationManager_didUpdateLocations_(self, manager, locations) -> None:
-        self.impl._location_change(locations[-1])
+        # The API *can* send multiple locations in a single update; they should be
+        # sorted chronologically; only propegate the most recent one
+        toga_loc = toga_location(locations[-1])
+
+        # Set all outstanding location requests with location reported
+        while self.impl.current_location_requests:
+            future = self.impl.current_location_requests.pop()
+            future.set_result(toga_loc["location"])
+
+        # Notify the change listener of the last location reported
+        self.interface.on_change(**toga_loc)
 
     @objc_method
     def locationManager_didFailWithError_(self, manager, error) -> None:
-        self.impl._location_error(error)
+        # Cancel all outstanding location requests.
+        while self.impl.current_location_requests:
+            future = self.impl.current_location_requests.pop()
+            future.set_exception(RuntimeError(f"Unable to obtain a location ({error})"))
 
 
 class Geolocation:
@@ -55,28 +70,6 @@ class Geolocation:
         self.delegate.impl = self
         self.permission_requests = []
         self.current_location_requests = []
-
-    def _authorization_change(self):
-        while self.permission_requests:
-            future = self.permission_requests.pop()
-            future.set_result(self.has_permission())
-
-    def _location_change(self, location):
-        toga_loc = toga_location(location)
-
-        # Set all outstanding location requests with location reported
-        while self.current_location_requests:
-            future = self.current_location_requests.pop()
-            future.set_result(toga_loc["location"])
-
-        # Notify the change listener of the last location reported
-        self.interface.on_change(**toga_loc)
-
-    def _location_error(self, error):
-        # Cancel all outstanding location requests.
-        while self.current_location_requests:
-            future = self.current_location_requests.pop()
-            future.set_exception(RuntimeError(f"Unable to obtain a location ({error})"))
 
     def has_permission(self, allow_unknown=False):
         valid_values = {

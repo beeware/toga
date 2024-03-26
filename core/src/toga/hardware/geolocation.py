@@ -26,8 +26,8 @@ class OnLocationChangeHandler(Protocol):
 
         :param geolocation: the Geolocation service that generated the update.
         :param location: The user's location as (latitude, longitude).
-        :param altitude: The user's altitude in meters above WGS84 reference ellipsoid.
-            Returns None if the altitude could not be determined.
+        :param altitude: The user's altitude in meters above mean sea level. Returns
+            None if the altitude could not be determined.
         :param kwargs: Ensures compatibility with arguments added in future versions.
         """
         ...

@@ -61,7 +61,7 @@ geolocation position is obtained:
     class MyApp(toga.App):
         ...
         async def location_update(self, location, altitude, **kwargs):
-            print(f"You are now at {location}, with altitude {altitude}")
+            print(f"You are now at {location}, with altitude {altitude} meters")
 
         def start_geolocation(self):
             # Install a geolocation handler
