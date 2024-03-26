@@ -40,7 +40,11 @@ class Window(Container, Scalable):
         self.native.Resize += WeakrefCallable(self.winforms_Resize)
         self.resize_content()  # Store initial size
 
-        # self.set_full_screen(self.interface.full_screen)
+        # Set window border style based on whether window resizability is enabled or not.
+        self.native.FormBorderStyle = getattr(
+            WinForms.FormBorderStyle,
+            "Sizable" if self.interface.resizable else "FixedSingle",
+        )
 
     ######################################################################
     # Native event handlers

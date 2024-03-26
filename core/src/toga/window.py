@@ -448,20 +448,20 @@ class Window:
             `Window.full_screen` property is deprecated and will be removed in the
             future. Consider using `Window.state` property instead.
         #"""
-        # warnings.warn(
-        #     "`Window.full_screen` property is deprecated and will be removed in"
-        #     " the future. Consider using `Window.state` property instead.",
-        #     FutureWarning,
-        # )
+        warnings.warn(
+            "`Window.full_screen` property is deprecated and will be removed in"
+            " the future. Consider using `Window.state` property instead.",
+            DeprecationWarning,
+        )
         return bool(self.state == WindowState.FULLSCREEN)
 
     @full_screen.setter
     def full_screen(self, is_full_screen: bool) -> None:
-        # warnings.warn(
-        #     "`Window.full_screen` property is deprecated and will be removed in"
-        #     " the future. Consider using `Window.state` property instead.",
-        #     FutureWarning,
-        # )
+        warnings.warn(
+            "`Window.full_screen` property is deprecated and will be removed in"
+            " the future. Consider using `Window.state` property instead.",
+            DeprecationWarning,
+        )
         if is_full_screen and (self.state != WindowState.FULLSCREEN):
             self._impl.set_window_state(WindowState.FULLSCREEN)
         elif not is_full_screen and (self.state == WindowState.FULLSCREEN):
@@ -472,7 +472,10 @@ class Window:
     @property
     def state(self) -> WindowState:
         """The current state of the window."""
-        return self._impl.get_window_state()
+        if getattr(self, "_impl", None) is None:
+            return WindowState.NORMAL
+        else:
+            return self._impl.get_window_state()
 
     @state.setter
     def state(self, state: WindowState) -> None:
