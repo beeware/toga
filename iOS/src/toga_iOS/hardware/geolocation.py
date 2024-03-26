@@ -12,6 +12,25 @@ from toga_iOS.libs import (
 )
 
 
+def toga_location(location):
+    """Convert a Cocoa location into a Toga LatLng and altitude."""
+    latlng = LatLng(
+        location.coordinate.latitude,
+        location.coordinate.longitude,
+    )
+
+    # A vertical accuracy that non-positive indicates altitude is invalid.
+    if location.verticalAccuracy > 0.0:
+        altitude = location.ellipsoidalAltitude
+    else:
+        altitude = None
+
+    return {
+        "location": latlng,
+        "altitude": altitude,
+    }
+
+
 class TogaLocationDelegate(NSObject):
     interface = objc_property(object, weak=True)
     impl = objc_property(object, weak=True)
@@ -55,27 +74,15 @@ class Geolocation:
             future.set_result(self.has_permission())
 
     def _location_change(self, location):
-        latlng = LatLng(
-            location.coordinate.latitude,
-            location.coordinate.longitude,
-        )
+        toga_loc = toga_location(location)
 
-        # A vertical accuracy that non-positive indicates altitude is invalid.
-        if location.verticalAccuracy > 0.0:
-            altitude = location.ellipsoidalAltitude
-        else:
-            altitude = None
-
-        # Set all outstanding location requests with the most last location reported
+        # Set all outstanding location requests with location reported
         while self.current_location_requests:
             future = self.current_location_requests.pop()
-            future.set_result(latlng)
+            future.set_result(toga_loc["location"])
 
         # Notify the change listener of the last location reported
-        self.interface.on_change(
-            location=latlng,
-            altitude=altitude,
-        )
+        self.interface.on_change(**toga_loc)
 
     def _location_error(self, error):
         # Cancel all outstanding location requests.
@@ -90,9 +97,10 @@ class Geolocation:
         }
 
     def has_background_permission(self):
-        return self.native.authorizationStatus in {
-            CLAuthorizationStatus.AuthorizedAlways.value,
-        }
+        return (
+            self.native.authorizationStatus
+            == CLAuthorizationStatus.AuthorizedAlways.value
+        )
 
     def request_permission(self, future):
         self.permission_requests.append(future)
@@ -119,12 +127,9 @@ class Geolocation:
                 self.current_location_requests.append(result)
                 self.native.requestLocation()
             else:
-                result.set_result(
-                    LatLng(
-                        location.coordinate.latitude,
-                        location.coordinate.longitude,
-                    )
-                )
+                toga_loc = toga_location(location)
+                result.set_result(toga_loc["location"])
+                self.interface.on_change(**toga_loc)
         else:
             result.set_exception(
                 PermissionError(

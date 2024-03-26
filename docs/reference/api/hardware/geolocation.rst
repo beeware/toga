@@ -31,12 +31,12 @@ inside an asynchronous handler:
     class MyApp(toga.App):
         ...
         async def determine_location(self, widget, **kwargs):
-            location = await self.geolocation.current_location
+            location = await self.geolocation.current_location()
 
-All platforms require some form of device permission to access the geolocation service.
-To confirm if you have permission to use the geolocation service while the app is
-running, you can call :any:`Geolocation.has_permission`; you can request to permission
-using :any:`Geolocation.request_permission()`. To confirm if you have permission to use
+All platforms require some form of permission to access the geolocation service. To
+confirm if you have permission to use the geolocation service while the app is running,
+you can call :any:`Geolocation.has_permission`; you can request to permission using
+:any:`Geolocation.request_permission()`. To confirm if you have permission to use
 geolocation while the app is in the background, you can call
 :any:`Geolocation.has_background_permission`; you can request to permission using
 :any:`Geolocation.request_background_permission()`

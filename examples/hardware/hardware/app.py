@@ -130,7 +130,7 @@ class ExampleHardwareApp(toga.App):
 
     async def update_location(self, widget, **kwargs):
         try:
-            location = await self.geolocation.current_location
+            location = await self.geolocation.current_location()
             self.location_changed(None, location, None)
         except PermissionError:
             await self.main_window.info_dialog(

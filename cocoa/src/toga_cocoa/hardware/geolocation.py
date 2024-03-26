@@ -9,6 +9,25 @@ from toga_cocoa import libs as cocoa
 from toga_cocoa.libs import CLAuthorizationStatus
 
 
+def toga_location(location):
+    """Convert a Cocoa location into a Toga LatLng and altitude."""
+    latlng = LatLng(
+        location.coordinate.latitude,
+        location.coordinate.longitude,
+    )
+
+    # A vertical accuracy that non-positive indicates altitude is invalid.
+    if location.verticalAccuracy > 0.0:
+        altitude = location.ellipsoidalAltitude
+    else:
+        altitude = None
+
+    return {
+        "location": latlng,
+        "altitude": altitude,
+    }
+
+
 class TogaLocationDelegate(NSObject):
     interface = objc_property(object, weak=True)
     impl = objc_property(object, weak=True)
@@ -35,7 +54,7 @@ class Geolocation:
         self.delegate.interface = interface
         self.delegate.impl = self
         self.permission_requests = []
-        self.location_requests = []
+        self.current_location_requests = []
 
     def _authorization_change(self):
         while self.permission_requests:
@@ -43,32 +62,20 @@ class Geolocation:
             future.set_result(self.has_permission())
 
     def _location_change(self, location):
-        latlng = LatLng(
-            location.coordinate.latitude,
-            location.coordinate.longitude,
-        )
+        toga_loc = toga_location(location)
 
-        # A vertical accuracy that non-positive indicates altitude is invalid.
-        if location.verticalAccuracy > 0.0:
-            altitude = location.ellipsoidalAltitude
-        else:
-            altitude = None
-
-        # Set all outstanding location requests with the most last location reported
-        while self.location_requests:
-            future = self.location_requests.pop()
-            future.set_result(latlng)
+        # Set all outstanding location requests with location reported
+        while self.current_location_requests:
+            future = self.current_location_requests.pop()
+            future.set_result(toga_loc["location"])
 
         # Notify the change listener of the last location reported
-        self.interface.on_change(
-            location=latlng,
-            altitude=altitude,
-        )
+        self.interface.on_change(**toga_loc)
 
     def _location_error(self, error):
         # Cancel all outstanding location requests.
-        while self.location_requests:
-            future = self.location_requests.pop()
+        while self.current_location_requests:
+            future = self.current_location_requests.pop()
             future.set_exception(RuntimeError(f"Unable to obtain a location ({error})"))
 
     def has_permission(self, allow_unknown=False):
@@ -89,7 +96,7 @@ class Geolocation:
 
     def request_permission(self, future):
         self.permission_requests.append(future)
-        self.native.requestAlwaysAuthorization()
+        self.native.requestWhenInUseAuthorization()
 
     def request_background_permission(self, future):
         self.permission_requests.append(future)
@@ -99,22 +106,25 @@ class Geolocation:
         if self.has_permission(allow_unknown=True):
             location = self.native.location
             if location is None:
-                self.location_requests.append(result)
+                self.current_location_requests.append(result)
                 self.native.requestLocation()
             else:
-                result.set_result(
-                    LatLng(
-                        location.coordinate.latitude,
-                        location.coordinate.longitude,
-                    )
-                )
+                toga_loc = toga_location(location)
+                result.set_result(toga_loc["location"])
+                self.interface.on_change(**toga_loc)
         else:
-            raise PermissionError(
-                "App does not have permission to use geolocation services"
+            result.set_exception(
+                PermissionError(
+                    "App does not have permission to use geolocation services"
+                )
             )
 
     def start(self):
         if self.has_permission(allow_unknown=True):
+            # Ensure that background processing will occur
+            self.native.allowsBackgroundLocationUpdates = True
+            self.native.pausesLocationUpdatesAutomatically = False
+
             self.native.startUpdatingLocation()
         else:
             raise PermissionError(

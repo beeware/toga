@@ -114,7 +114,7 @@ class Geolocation:
 
     @property
     def on_change(self) -> OnLocationChangeHandler:
-        """The handler to invoke when the user's location changes."""
+        """The handler to invoke when an update to the user's location is available."""
         return self._on_change
 
     @on_change.setter
@@ -133,7 +133,6 @@ class Geolocation:
         """Stop monitoring the user's location."""
         self._impl.stop()
 
-    @property
     def current_location(self) -> LocationResult:
         """Obtain the user's current location using the geolocation service.
 
@@ -141,10 +140,13 @@ class Geolocation:
         user hasn't previously provided that permission, this will cause permission to
         be requested.
 
-        **This is an asynchronous property**. If you request this property in
-        synchronous context, it will start the process of requesting the user's
-        location, but will return *immediately*. The return value can be awaited in an
-        asynchronous context, but cannot be compared directly.
+        **This is an asynchronous method**. If you call this method in a synchronous
+        context, it will start the process of requesting the user's location, but will
+        return *immediately*. The return value can be awaited in an asynchronous
+        context, but cannot be compared directly.
+
+        If an :any:`on_change` handler is installed, requesting the current location
+        will also cause that handler to be invoked.
 
         :returns: An asynchronous result; when awaited, returns the :any:`toga.Image`
             captured by the camera, or ``None`` if the photo was  cancelled.
