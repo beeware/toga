@@ -482,14 +482,20 @@ class Window:
         if state != self.state:
             if state == WindowState.NORMAL:
                 self._impl.set_window_state(WindowState.NORMAL)
-            if state == WindowState.MAXIMIZED:
-                self._impl.set_window_state(WindowState.MAXIMIZED)
             elif state == WindowState.MINIMIZED:
                 self._impl.set_window_state(WindowState.MINIMIZED)
-            elif state == WindowState.FULLSCREEN:
-                self._impl.set_window_state(WindowState.FULLSCREEN)
-            elif state == WindowState.PRESENTATION:
-                self._impl.set_window_state(WindowState.PRESENTATION)
+            else:
+                if not self.resizable:
+                    warnings.warn(
+                        f"Cannot set window state to {state} of a non-resizable window. "
+                    )
+                else:
+                    if state == WindowState.MAXIMIZED:
+                        self._impl.set_window_state(WindowState.MAXIMIZED)
+                    elif state == WindowState.FULLSCREEN:
+                        self._impl.set_window_state(WindowState.FULLSCREEN)
+                    elif state == WindowState.PRESENTATION:
+                        self._impl.set_window_state(WindowState.PRESENTATION)
 
     ######################################################################
     # Window capabilities
