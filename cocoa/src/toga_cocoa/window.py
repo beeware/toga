@@ -344,11 +344,12 @@ class Window:
 
     def get_window_state(self):
         if bool(self.native.isZoomed):
-            return WindowState.MAXIMIZED
+            if bool(self.native.styleMask & NSWindowStyleMask.FullScreen):
+                return WindowState.FULLSCREEN
+            else:
+                return WindowState.MAXIMIZED
         elif bool(self.native.isMiniaturized):
             return WindowState.MINIMIZED
-        elif bool(self.native.styleMask & NSWindowStyleMask.FullScreen):
-            return WindowState.FULLSCREEN
         elif bool(self.interface.content._impl.native.isInFullScreenMode()):
             return WindowState.PRESENTATION
         else:
@@ -365,7 +366,7 @@ class Window:
                 self.native.setIsMiniaturized(False)
             # If the window is in full-screen mode, exit full-screen mode
             elif current_state == WindowState.FULLSCREEN:
-                self.native.toggleFullScreen(None)
+                self.native.toggleFullScreen(self.native)
             # If the window is in presentation mode, exit presentation mode
             elif current_state == WindowState.PRESENTATION:
                 opts = NSMutableDictionary.alloc().init()
@@ -380,7 +381,8 @@ class Window:
 
         # Changing window states without reverting back to the NORMAL state will
         # cause glitches, so revert to NORMAL state before switching to other states.
-        # Setting window state to NORMAL from the interface side also causes the same glitches.
+        # Setting window state to NORMAL from the interface side also causes the
+        # same glitches. Might be a race condition.
         elif state == WindowState.MAXIMIZED:
             self.set_window_state(WindowState.NORMAL)
             self.native.setIsZoomed(True)

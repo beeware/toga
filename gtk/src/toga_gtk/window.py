@@ -260,7 +260,8 @@ class Window:
 
         # Changing window states without reverting back to the NORMAL state will
         # cause glitches, so revert to NORMAL state before switching to other states.
-        # Setting window state to NORMAL from the interface side also causes the same glitches.
+        # Setting window state to NORMAL from the interface side also causes the
+        # same glitches. Might be a race condition.
         elif state == WindowState.MAXIMIZED:
             self.set_window_state(WindowState.NORMAL)
             self.native.maximize()
