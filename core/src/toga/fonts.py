@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from pathlib import Path
+
 # Use the Travertino font definitions as-is
 from travertino import constants
 from travertino.constants import (
@@ -27,7 +29,7 @@ FONT_WEIGHTS = {NORMAL, BOLD}
 FONT_STYLES = {NORMAL, ITALIC, OBLIQUE}
 FONT_VARIANTS = {NORMAL, SMALL_CAPS}
 
-_REGISTERED_FONT_CACHE = {}
+_REGISTERED_FONT_CACHE: dict[tuple[str, str, str, str], str] = {}
 
 
 class Font(BaseFont):
@@ -68,7 +70,14 @@ class Font(BaseFont):
         return f"{self.family} {size}{weight}{variant}{style}"
 
     @staticmethod
-    def register(family, path, *, weight=NORMAL, style=NORMAL, variant=NORMAL):
+    def register(
+        family: str,
+        path: str | Path,
+        *,
+        weight: str = NORMAL,
+        style: str = NORMAL,
+        variant: str = NORMAL,
+    ) -> None:
         """Registers a file-based font.
 
         **Note:** This is not currently supported on macOS or iOS.
@@ -84,7 +93,12 @@ class Font(BaseFont):
         _REGISTERED_FONT_CACHE[font_key] = str(toga.App.app.paths.app / path)
 
     @staticmethod
-    def _registered_font_key(family, weight, style, variant):
+    def _registered_font_key(
+        family: str,
+        weight: str,
+        style: str,
+        variant: str,
+    ) -> tuple[str, str, str, str]:
         if weight not in constants.FONT_WEIGHTS:
             weight = NORMAL
         if style not in constants.FONT_STYLES:

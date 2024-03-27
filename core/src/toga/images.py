@@ -5,11 +5,12 @@ import sys
 import warnings
 from functools import lru_cache
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Protocol
+from typing import TYPE_CHECKING, Any, Protocol, Union
 from warnings import warn
 
 import toga
 from toga.platform import get_platform_factory
+from toga.types import TypeAlias, TypeVar
 
 if sys.version_info >= (3, 10):
     from importlib.metadata import entry_points
@@ -22,22 +23,17 @@ else:
 warnings.filterwarnings("default", category=DeprecationWarning)
 
 if TYPE_CHECKING:
-    if sys.version_info < (3, 10):
-        from typing_extensions import TypeAlias, TypeVar
-    else:
-        from typing import TypeAlias, TypeVar
-
     # Define a type variable for generics where an Image type is required.
     ImageT = TypeVar("ImageT")
 
     # Define the types that can be used as Image content
-    PathLike: TypeAlias = str | Path
-    BytesLike: TypeAlias = bytes | bytearray | memoryview
+    PathLike: TypeAlias = Union[str, Path]
+    BytesLike: TypeAlias = Union[bytes, bytearray, memoryview]
     ImageLike: TypeAlias = Any
-    ImageContent: TypeAlias = PathLike | BytesLike | ImageLike
+    ImageContent: TypeAlias = Union[PathLike, BytesLike, ImageLike]
 
     # Define a type variable representing an image of an externally defined type.
-    ExternalImageT = TypeVar("ExternalImageT")
+    ExternalImageT = TypeVar("ExternalImageT", bound=object)
 
 
 class ImageConverter(Protocol):
@@ -45,8 +41,9 @@ class ImageConverter(Protocol):
     :any:`toga.Image`.
     """
 
+    # TODO:PR: figure out how to resolve mypy issues
     #: The base image class this plugin can interpret.
-    image_class: type[ExternalImageT]
+    image_class: type[ExternalImageT]  # type:ignore[valid-type]
 
     @staticmethod
     def convert_from_format(image_in_format: ExternalImageT) -> BytesLike:
@@ -58,7 +55,6 @@ class ImageConverter(Protocol):
         :param image_in_format: An instance of :any:`image_class` (or a subclass).
         :returns: The image data, in a :ref:`known image format <known-image-formats>`.
         """
-        ...
 
     @staticmethod
     def convert_to_format(
@@ -76,7 +72,6 @@ class ImageConverter(Protocol):
         :param image_class: The class of image to return.
         :returns: The image, as an instance of the image class specified.
         """
-        ...
 
 
 NOT_PROVIDED = object()
@@ -87,8 +82,8 @@ class Image:
         self,
         src: ImageContent = NOT_PROVIDED,
         *,
-        path=NOT_PROVIDED,  # DEPRECATED
-        data=NOT_PROVIDED,  # DEPRECATED
+        path: object = NOT_PROVIDED,  # DEPRECATED
+        data: object = NOT_PROVIDED,  # DEPRECATED
     ):
         """Create a new image.
 
@@ -157,7 +152,7 @@ class Image:
 
     @classmethod
     @lru_cache(maxsize=None)
-    def _converters(cls):
+    def _converters(cls) -> list[ImageConverter]:
         """Return list of registered image plugin converters. Only loaded once."""
         converters = []
 
@@ -172,9 +167,9 @@ class Image:
         return converters
 
     @property
-    def size(self) -> (int, int):
+    def size(self) -> tuple[int, int]:
         """The size of the image, as a (width, height) tuple."""
-        return (self._impl.get_width(), self._impl.get_height())
+        return self._impl.get_width(), self._impl.get_height()
 
     @property
     def width(self) -> int:
@@ -218,7 +213,7 @@ class Image:
         """
         if isinstance(format, type):
             if issubclass(format, Image):
-                return format(self.data)
+                return format(self.data)  # type:ignore[return-value]
 
             for converter in self._converters():
                 if issubclass(format, converter.image_class):

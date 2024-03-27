@@ -60,3 +60,7 @@ Reference
 ---------
 
 .. autoclass:: toga.DateInput
+
+.. autoprotocol:: toga.widgets.dateinput.OnChangeHandlerSync
+.. autoprotocol:: toga.widgets.dateinput.OnChangeHandlerAsync
+.. autoprotocol:: toga.widgets.dateinput.OnChangeHandlerGenerator

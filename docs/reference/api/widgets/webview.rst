@@ -95,3 +95,7 @@ Reference
 ---------
 
 .. autoclass:: toga.WebView
+
+.. autoprotocol:: toga.widgets.webview.OnWebViewLoadHandlerSync
+.. autoprotocol:: toga.widgets.webview.OnWebViewLoadHandlerAsync
+.. autoprotocol:: toga.widgets.webview.OnWebViewLoadHandlerGenerator

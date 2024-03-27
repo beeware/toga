@@ -30,7 +30,7 @@ class PILConverter:
     @staticmethod
     def convert_to_format(
         data: BytesLike,
-        image_class: type(PIL.Image.Image),
+        image_class: type[PIL.Image.Image],
     ) -> PIL.Image.Image:
         # PIL Images aren't designed to be subclassed, so no implementation is necessary
         # for a supplied format.

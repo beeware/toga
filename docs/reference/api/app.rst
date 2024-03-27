@@ -86,5 +86,9 @@ Reference
 .. autoclass:: toga.App
 
 .. autoprotocol:: toga.app.AppStartupMethod
-.. autoprotocol:: toga.app.BackgroundTask
-.. autoprotocol:: toga.app.OnExitHandler
+.. autoprotocol:: toga.app.BackgroundTaskSync
+.. autoprotocol:: toga.app.BackgroundTaskAsync
+.. autoprotocol:: toga.app.BackgroundTaskGenerator
+.. autoprotocol:: toga.app.OnExitHandlerSync
+.. autoprotocol:: toga.app.OnExitHandlerAsync
+.. autoprotocol:: toga.app.OnExitHandlerGenerator

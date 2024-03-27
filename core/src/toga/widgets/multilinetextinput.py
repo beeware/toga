@@ -1,19 +1,43 @@
 from __future__ import annotations
 
-from toga.handlers import wrapped_handler
+from typing import Protocol, Union
+
+from toga.handlers import HandlerGeneratorReturnT, WrappedHandlerT, wrapped_handler
+from toga.style import Pack
+from toga.types import TypeAlias
 
 from .base import Widget
+
+
+class OnChangeHandlerSync(Protocol):
+    def __call__(self, /) -> object:
+        """A handler to invoke when the value is changed."""
+
+
+class OnChangeHandlerAsync(Protocol):
+    async def __call__(self, /) -> object:
+        """Async definition of :any:`OnChangeHandlerSync`."""
+
+
+class OnChangeHandlerGenerator(Protocol):
+    def __call__(self, /) -> HandlerGeneratorReturnT[object]:
+        """Generator definition of :any:`OnChangeHandlerSync`."""
+
+
+OnChangeHandlerT: TypeAlias = Union[
+    OnChangeHandlerSync, OnChangeHandlerAsync, OnChangeHandlerGenerator
+]
 
 
 class MultilineTextInput(Widget):
     def __init__(
         self,
-        id=None,
-        style=None,
+        id: str | None = None,
+        style: Pack | None = None,
         value: str | None = None,
         readonly: bool = False,
         placeholder: str | None = None,
-        on_change: callable | None = None,
+        on_change: OnChangeHandlerT | None = None,
     ):
         """Create a new multi-line text input widget.
 
@@ -35,13 +59,13 @@ class MultilineTextInput(Widget):
 
         # Set a dummy handler before installing the actual on_change, because we do not want
         # on_change triggered by the initial value being set
-        self.on_change = None
-        self.value = value
+        self.on_change = None  # type: ignore[assignment]
+        self.value = value  # type: ignore[assignment]
 
         # Set all the properties
         self.readonly = readonly
-        self.placeholder = placeholder
-        self.on_change = on_change
+        self.placeholder = placeholder  # type: ignore[assignment]
+        self.on_change = on_change  # type: ignore[assignment]
 
     @property
     def placeholder(self) -> str:
@@ -53,7 +77,7 @@ class MultilineTextInput(Widget):
         return self._impl.get_placeholder()
 
     @placeholder.setter
-    def placeholder(self, value):
+    def placeholder(self, value: object) -> None:
         self._impl.set_placeholder("" if value is None else str(value))
         self.refresh()
 
@@ -68,7 +92,7 @@ class MultilineTextInput(Widget):
         return self._impl.get_readonly()
 
     @readonly.setter
-    def readonly(self, value):
+    def readonly(self, value: object) -> None:
         self._impl.set_readonly(bool(value))
 
     @property
@@ -81,23 +105,23 @@ class MultilineTextInput(Widget):
         return self._impl.get_value()
 
     @value.setter
-    def value(self, value):
+    def value(self, value: object) -> None:
         self._impl.set_value("" if value is None else str(value))
         self.refresh()
 
-    def scroll_to_bottom(self):
+    def scroll_to_bottom(self) -> None:
         """Scroll the view to make the bottom of the text field visible."""
         self._impl.scroll_to_bottom()
 
-    def scroll_to_top(self):
+    def scroll_to_top(self) -> None:
         """Scroll the view to make the top of the text field visible."""
         self._impl.scroll_to_top()
 
     @property
-    def on_change(self) -> callable:
+    def on_change(self) -> WrappedHandlerT:
         """The handler to invoke when the value of the widget changes."""
         return self._on_change
 
     @on_change.setter
-    def on_change(self, handler):
+    def on_change(self, handler: OnChangeHandlerT) -> None:
         self._on_change = wrapped_handler(self, handler)

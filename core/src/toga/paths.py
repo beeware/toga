@@ -1,4 +1,4 @@
-import importlib
+import importlib.util
 import sys
 from pathlib import Path
 
@@ -7,7 +7,7 @@ from toga.platform import get_platform_factory
 
 
 class Paths:
-    def __init__(self):
+    def __init__(self) -> None:
         self.factory = get_platform_factory()
         self._impl = self.factory.Paths(self)
 
@@ -28,7 +28,7 @@ class Paths:
         files into this path.
         """
         try:
-            return Path(importlib.util.find_spec(toga.App.app.__module__).origin).parent
+            return Path(importlib.util.find_spec(toga.App.app.__module__).origin).parent  # type: ignore
         except ValueError:
             # When running a single file `python path/to/myapp.py`, the app
             # won't have a module because it's the mainline. Default to the
