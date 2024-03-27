@@ -107,16 +107,16 @@ class GeolocationProbe(AppProbe):
         self._mock_permissions = None
 
     def grant_permission(self):
-        self._mock_permission = -1
-
-    def grant_background_permission(self):
-        self._mock_background_permission = -1
-
-    def allow_permission(self):
         self._mock_permission = 1
 
-    def allow_background_permission(self):
+    def grant_background_permission(self):
         self._mock_background_permission = 1
+
+    def allow_permission(self):
+        self._mock_permission = -1
+
+    def allow_background_permission(self):
+        self._mock_background_permission = -1
 
     def reject_permission(self):
         self._mock_permission = 0

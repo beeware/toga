@@ -19,7 +19,7 @@ async def geolocation_probe(monkeypatch, app_probe):
 async def test_grant_permission(app, geolocation_probe):
     """A user can grant permission to use geolocation."""
     # Prime the permission system to approve permission requests
-    geolocation_probe.grant_permission()
+    geolocation_probe.allow_permission()
 
     # Initiate the permission request. As permissions are primed, they will be approved.
     assert await app.geolocation.request_permission()
@@ -56,7 +56,7 @@ async def test_deny_permission(app, geolocation_probe):
 async def test_grant_background_permission(app, geolocation_probe):
     """A user can grant background permission to use geolocation."""
     # Prime the permission system to approve permission requests
-    geolocation_probe.grant_background_permission()
+    geolocation_probe.allow_background_permission()
 
     # Foreground permissions haven't been approved, so requesting background permissions
     # will raise an error
@@ -70,7 +70,7 @@ async def test_grant_background_permission(app, geolocation_probe):
         await app.geolocation.request_background_permission()
 
     # Pre-approve foreground permissions
-    geolocation_probe.allow_permission()
+    geolocation_probe.grant_permission()
 
     # Initiate the permission request. As permissions are primed, they will be approved.
     assert await app.geolocation.request_background_permission()
@@ -105,7 +105,7 @@ async def test_deny_background_permission(app, geolocation_probe):
     assert not app.geolocation.has_background_permission
 
     # Pre-approve foreground permissions
-    geolocation_probe.allow_permission()
+    geolocation_probe.grant_permission()
 
     # Initiate the permission request. As background permissions are not primed, they
     # will be denied.
@@ -126,7 +126,7 @@ async def test_deny_background_permission(app, geolocation_probe):
 async def test_current_location(app, geolocation_probe):
     """A user can take a photo with the all the available geolocations."""
     # Ensure geolocation has permissions
-    geolocation_probe.allow_permission()
+    geolocation_probe.grant_permission()
 
     # Install a change handler
     handler = Mock()
@@ -178,7 +178,7 @@ async def test_current_location(app, geolocation_probe):
 async def test_track_location(app, geolocation_probe):
     """If the geolocation service raises an error, location requests raise an error."""
     # Ensure geolocation has permissions
-    geolocation_probe.allow_permission()
+    geolocation_probe.grant_permission()
 
     # Install a change handler
     handler = Mock()
@@ -213,7 +213,7 @@ async def test_track_location(app, geolocation_probe):
 async def test_geolocation_error(app, geolocation_probe):
     """If the geolocation service raises an error, location requests raise an error."""
     # Ensure geolocation has permissions
-    geolocation_probe.allow_permission()
+    geolocation_probe.grant_permission()
 
     # Set the value that will be returned by the next location request
     geolocation_probe.set_location(LatLng(37, 42), 5)

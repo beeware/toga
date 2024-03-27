@@ -41,7 +41,7 @@ class TogaLocationDelegate(NSObject):
     @objc_method
     def locationManager_didUpdateLocations_(self, manager, locations) -> None:
         # The API *can* send multiple locations in a single update; they should be
-        # sorted chronologically; only propegate the most recent one
+        # sorted chronologically; only propagate the most recent one
         toga_loc = toga_location(locations[-1])
 
         # Set all outstanding location requests with location reported
