@@ -277,10 +277,8 @@ class Window(Container, Scalable):
 
             self.native.WindowState = WinForms.FormWindowState.Normal
 
-        # Changing window states without reverting back to the NORMAL state will
-        # cause glitches, so revert to NORMAL state before switching to other states.
-        # Setting window state to NORMAL from the interface side also causes the
-        # same glitches. Might be a race condition.
+        # Set Window state to NORMAL before changing to other states as
+        # some states block changing window state without first exiting them.
         elif state == WindowState.MAXIMIZED:
             self.set_window_state(WindowState.NORMAL)
             self.native.WindowState = WinForms.FormWindowState.Maximized

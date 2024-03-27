@@ -9,6 +9,7 @@ import gbulb
 import toga
 from toga import App as toga_App
 from toga.command import Command, Separator
+from toga.constants import WindowState
 
 from .keys import gtk_accel
 from .libs import TOGA_DEFAULT_STYLES, Gdk, Gio, GLib, Gtk
@@ -272,6 +273,21 @@ class App:
 
     def set_current_window(self, window):
         window._impl.native.present()
+
+    ######################################################################
+    # Presentation mode controls
+    ######################################################################
+
+    def enter_presentation_mode(self, screen_window_dict):
+        for screen, window in screen_window_dict.items():
+            window._impl._before_presentation_mode_screen = window.screen
+            window.screen = screen
+            window.state = WindowState.PRESENTATION
+
+    def exit_presentation_mode(self):
+        for window in self.interface.windows:
+            if window.state == WindowState.PRESENTATION:
+                window.state = WindowState.NORMAL
 
 
 class DocumentApp(App):  # pragma: no cover
