@@ -9,6 +9,7 @@ from rubicon.objc.eventloop import CocoaLifecycle, EventLoopPolicy
 
 import toga
 from toga.command import Separator
+from toga.constants import WindowState
 from toga.handlers import NativeHandler
 
 from .keys import cocoa_key
@@ -517,7 +518,7 @@ class App:
             NSNumber.numberWithBool(True), forKey="NSFullScreenModeAllScreens"
         )
         for window in self.interface.windows:
-            if bool(window.content._impl.native.isInFullScreenMode()):
+            if window.state == WindowState.PRESENTATION:
                 window.content._impl.native.exitFullScreenModeWithOptions(opts)
                 window.content.refresh()
 
