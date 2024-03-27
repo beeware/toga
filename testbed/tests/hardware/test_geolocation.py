@@ -10,7 +10,7 @@ from .probe import get_probe
 
 @pytest.fixture
 async def geolocation_probe(monkeypatch, app_probe):
-    skip_on_platforms("linux", "windows", "android", "ios")
+    skip_on_platforms("linux", "windows", "android")
     probe = get_probe(monkeypatch, app_probe, "Geolocation")
     yield probe
     probe.cleanup()
@@ -93,7 +93,7 @@ async def test_deny_background_permission(app, geolocation_probe):
 async def test_current_location(app, geolocation_probe):
     """A user can take a photo with the all the available geolocations."""
     # Ensure geolocation has permissions
-    geolocation_probe.grant_permission()
+    geolocation_probe.allow_permission()
 
     # Install a change handler
     handler = Mock()
@@ -145,7 +145,7 @@ async def test_current_location(app, geolocation_probe):
 async def test_track_location(app, geolocation_probe):
     """If the geolocation service raises an error, location requests raise an error."""
     # Ensure geolocation has permissions
-    geolocation_probe.grant_permission()
+    geolocation_probe.allow_permission()
 
     # Install a change handler
     handler = Mock()
@@ -180,7 +180,7 @@ async def test_track_location(app, geolocation_probe):
 async def test_geolocation_error(app, geolocation_probe):
     """If the geolocation service raises an error, location requests raise an error."""
     # Ensure geolocation has permissions
-    geolocation_probe.grant_permission()
+    geolocation_probe.allow_permission()
 
     # Set the value that will be returned by the next location request
     geolocation_probe.set_location(LatLng(37, 42), 5)

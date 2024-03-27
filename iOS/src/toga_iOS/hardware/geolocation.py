@@ -21,7 +21,7 @@ def toga_location(location):
 
     # A vertical accuracy that non-positive indicates altitude is invalid.
     if location.verticalAccuracy > 0.0:
-        altitude = location.ellipsoidalAltitude
+        altitude = location.altitude
     else:
         altitude = None
 
@@ -37,15 +37,28 @@ class TogaLocationDelegate(NSObject):
 
     @objc_method
     def locationManagerDidChangeAuthorization_(self, manager) -> None:
-        self.impl._authorization_change()
+        while self.impl.permission_requests:
+            future = self.impl.permission_requests.pop()
+            future.set_result(self.impl.has_permission())
 
     @objc_method
     def locationManager_didUpdateLocations_(self, manager, locations) -> None:
-        self.impl._location_change(locations[-1])
+        toga_loc = toga_location(locations[-1])
+
+        # Set all outstanding location requests with location reported
+        while self.impl.current_location_requests:
+            future = self.impl.current_location_requests.pop()
+            future.set_result(toga_loc["location"])
+
+        # Notify the change listener of the last location reported
+        self.interface.on_change(**toga_loc)
 
     @objc_method
     def locationManager_didFailWithError_(self, manager, error) -> None:
-        self.impl._location_error(error)
+        # Cancel all outstanding location requests.
+        while self.impl.current_location_requests:
+            future = self.impl.current_location_requests.pop()
+            future.set_exception(RuntimeError(f"Unable to obtain a location ({error})"))
 
 
 class Geolocation:
@@ -59,7 +72,10 @@ class Geolocation:
             self.native.delegate = self.delegate
             self.delegate.interface = interface
             self.delegate.impl = self
-        else:
+        else:  # pragma: no cover
+            # The app doesn't have the NSLocationWhenInUseUsageDescription key (e.g.,
+            # via `permission.*_location` in Briefcase). No-cover because we can't
+            # manufacture this condition in testing.
             raise RuntimeError(
                 "Application metadata does not declare that the app will use the camera."
             )
@@ -67,28 +83,6 @@ class Geolocation:
         # Tracking of futures associated with specific requests.
         self.permission_requests = []
         self.current_location_requests = []
-
-    def _authorization_change(self):
-        while self.permission_requests:
-            future = self.permission_requests.pop()
-            future.set_result(self.has_permission())
-
-    def _location_change(self, location):
-        toga_loc = toga_location(location)
-
-        # Set all outstanding location requests with location reported
-        while self.current_location_requests:
-            future = self.current_location_requests.pop()
-            future.set_result(toga_loc["location"])
-
-        # Notify the change listener of the last location reported
-        self.interface.on_change(**toga_loc)
-
-    def _location_error(self, error):
-        # Cancel all outstanding location requests.
-        while self.current_location_requests:
-            future = self.current_location_requests.pop()
-            future.set_exception(RuntimeError(f"Unable to obtain a location ({error})"))
 
     def has_permission(self):
         return self.native.authorizationStatus in {
@@ -113,7 +107,10 @@ class Geolocation:
             self.permission_requests.append(future)
 
             self.native.requestAlwaysAuthorization()
-        else:
+        else:  # pragma: no cover
+            # The app doesn't have the NSLocationAlwaysAndWhenInUseUsageDescription key
+            # (e.g., via `permission.background_location` in Briefcase). No-cover
+            # because we can't manufacture this condition in testing.
             future.set_exception(
                 RuntimeError(
                     "Application metadata does not declare that the app will use the camera."

@@ -2,8 +2,8 @@ from unittest.mock import Mock, PropertyMock
 
 from rubicon.objc import ObjCClass
 
-from toga_cocoa import libs as cocoa
-from toga_cocoa.libs import (
+from toga_iOS import libs as iOS
+from toga_iOS.libs import (
     CLAuthorizationStatus,
     CLLocationCoordinate2D,
 )
@@ -16,6 +16,8 @@ NSError = ObjCClass("NSError")
 
 
 class GeolocationProbe(AppProbe):
+    request_permission_on_first_use = False
+
     def __init__(self, monkeypatch, app_probe):
         super().__init__(app_probe.app)
 
@@ -87,7 +89,7 @@ class GeolocationProbe(AppProbe):
         cl_alloc = Mock()
         cl_alloc.init = Mock(return_value=self._mock_location_manager)
         self._mock_CLLocationManager.alloc = Mock(return_value=cl_alloc)
-        monkeypatch.setattr(cocoa, "CLLocationManager", self._mock_CLLocationManager)
+        monkeypatch.setattr(iOS, "CLLocationManager", self._mock_CLLocationManager)
 
     def cleanup(self):
         # Delete the geolocation service instance. This ensures that a freshly mocked
