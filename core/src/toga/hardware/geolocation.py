@@ -61,6 +61,12 @@ class Geolocation:
         If permission has already been granted, this will return without prompting the
         user.
 
+        This method will only grant permission to access geolocation services while the
+        app is in the foreground. If you want your application to have permission to
+        track location while the app is in the background, you must call this method,
+        then make an *additional* permission request for background permissions using
+        :any:`GeoLocation.request_background_permission()`.
+
         **This is an asynchronous method**. If you invoke this method in synchronous
         context, it will start the process of requesting permissions, but will return
         *immediately*. The return value can be awaited in an asynchronous context, but
@@ -94,6 +100,11 @@ class Geolocation:
         If permission has already been granted, this will return without prompting the
         user.
 
+        Before requesting background permission, you must first request and receive
+        foreground geolocation permission using :any:`Geolocation.request_permission`.
+        If you ask for background permission before receiving foreground geolocation
+        permission, a :any:`PermissionError` will be raised.
+
         **This is an asynchronous method**. If you invoke this method in synchronous
         context, it will start the process of requesting permissions, but will return
         *immediately*. The return value can be awaited in an asynchronous context, but
@@ -102,10 +113,18 @@ class Geolocation:
         :returns: An asynchronous result; when awaited, returns True if the app has
             permission to capture the user's a geolocation while running in the
             background; False otherwise.
+        :raises PermissionError: If the app has not already requested and received
+            permission to use geolocation services.
         """
         result = PermissionResult(None)
-
-        if has_background_permission := self.has_background_permission:
+        if not self.has_permission:
+            result.set_exception(
+                PermissionError(
+                    "Cannot ask for background geolocation permission "
+                    "before confirming foreground geolocation permission."
+                )
+            )
+        elif has_background_permission := self.has_background_permission:
             result.set_result(has_background_permission)
         else:
             self._impl.request_background_permission(result)

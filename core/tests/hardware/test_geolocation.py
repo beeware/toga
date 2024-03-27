@@ -1,3 +1,4 @@
+import contextlib
 from unittest.mock import Mock
 
 import pytest
@@ -77,27 +78,46 @@ def test_request_permission_sync(app):
 
 
 @pytest.mark.parametrize(
-    "initial, should_request, has_permission",
+    "foreground, initial, raise_error, should_request, has_background_permission",
     [
-        (-2, True, True),
-        (-1, True, False),
-        (0, True, False),
-        (1, True, False),
-        (2, False, True),
+        (-1, -1, True, False, False),
+        (0, -1, True, False, False),
+        (1, -1, False, True, True),
+        (-1, 0, True, False, False),
+        (0, 0, True, False, False),
+        (1, 0, False, True, False),
+        # -1, 1 can't happen; background can't be approved if foreground isn't confirmed
+        # 0, 1 can't happen; background can't be approved if foreground was rejected
+        (1, 1, False, False, True),
     ],
 )
-def test_request_background_permission(app, initial, should_request, has_permission):
+def test_request_background_permission(
+    app, foreground, initial, raise_error, should_request, has_background_permission
+):
     """An app can request background permission to use geolocation."""
     # The geolocation instance round-trips the app instance
     assert app.geolocation.app == app
 
-    # Set initial permission
-    app.geolocation._impl._has_permission = initial
+    # Set initial permissions
+    app.geolocation._impl._has_permission = foreground
+    app.geolocation._impl._has_background_permission = initial
 
-    assert (
-        app.loop.run_until_complete(app.geolocation.request_background_permission())
-        == has_permission
-    )
+    if raise_error:
+        error_context = pytest.raises(
+            PermissionError,
+            match=(
+                r"Cannot ask for background geolocation permission "
+                r"before confirming foreground geolocation permission\."
+            ),
+        )
+    else:
+        error_context = contextlib.nullcontext()
+
+    with error_context:
+        assert (
+            app.loop.run_until_complete(app.geolocation.request_background_permission())
+            == has_background_permission
+        )
 
     if should_request:
         assert_action_not_performed(app.geolocation, "request permission")
@@ -107,13 +127,14 @@ def test_request_background_permission(app, initial, should_request, has_permiss
         assert_action_not_performed(app.geolocation, "request background permission")
 
     # As a result of requesting, geolocation permission is as expected
-    assert app.geolocation.has_background_permission == has_permission
+    assert app.geolocation.has_background_permission == has_background_permission
 
 
 def test_request_background_permission_sync(app):
     """An app can synchronously request background permission to use geolocation."""
     # Set initial permission
-    app.geolocation._impl._has_permission = -2
+    app.geolocation._impl._has_permission = 1
+    app.geolocation._impl._has_background_permission = -1
 
     result = app.geolocation.request_background_permission()
 

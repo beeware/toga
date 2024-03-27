@@ -5,20 +5,6 @@ from toga.style import Pack
 
 class ExampleHardwareApp(toga.App):
     def startup(self):
-        try:
-            # This will provide a prompt for camera permissions at startup.
-            # If permission is denied, the app will continue.
-            self.camera.request_permission()
-        except NotImplementedError:
-            print("The Camera API is not implemented on this platform")
-
-        try:
-            # This will provide a prompt for camera permissions at startup.
-            # If permission is denied, the app will continue.
-            self.geolocation.request_background_permission()
-        except NotImplementedError:
-            print("The Geolocation API is not implemented on this platform")
-
         #############################################################
         # Camera
         #############################################################
@@ -108,14 +94,23 @@ class ExampleHardwareApp(toga.App):
 
     async def take_photo(self, widget, **kwargs):
         try:
+            if not self.camera.has_permission:
+                await self.camera.request_permission()
+
             image = await self.camera.take_photo()
             if image is None:
                 self.photo.image = "resources/default.png"
             else:
                 self.photo.image = image
+        except NotImplementedError:
+            await self.main_window.info_dialog(
+                "Oh no!",
+                "The Camera API is not implemented on this platform",
+            )
         except PermissionError:
             await self.main_window.info_dialog(
-                "Oh no!", "You have not granted permission to take photos"
+                "Oh no!",
+                "You have not granted permission to take photos",
             )
 
     def location_changed(self, geo, location, altitude, **kwargs):
@@ -130,8 +125,15 @@ class ExampleHardwareApp(toga.App):
 
     async def update_location(self, widget, **kwargs):
         try:
+            await self.geolocation.request_permission()
+
             location = await self.geolocation.current_location()
             self.location_changed(None, location, None)
+        except NotImplementedError:
+            await self.main_window.info_dialog(
+                "Oh no!",
+                "The Geolocation API is not implemented on this platform",
+            )
         except PermissionError:
             await self.main_window.info_dialog(
                 "Oh no!",
@@ -140,7 +142,14 @@ class ExampleHardwareApp(toga.App):
 
     async def start_location_updates(self, widget, **kwargs):
         try:
+            await self.geolocation.request_permission()
+
             self.geolocation.start()
+        except NotImplementedError:
+            await self.main_window.info_dialog(
+                "Oh no!",
+                "The Geolocation API is not implemented on this platform",
+            )
         except PermissionError:
             await self.main_window.info_dialog(
                 "Oh no!",
@@ -149,7 +158,14 @@ class ExampleHardwareApp(toga.App):
 
     async def stop_location_updates(self, widget, **kwargs):
         try:
+            await self.geolocation.request_permission()
+
             self.geolocation.stop()
+        except NotImplementedError:
+            await self.main_window.info_dialog(
+                "Oh no!",
+                "The Geolocation API is not implemented on this platform",
+            )
         except PermissionError:
             await self.main_window.info_dialog(
                 "Oh no!",
@@ -157,10 +173,29 @@ class ExampleHardwareApp(toga.App):
             )
 
     async def request_background_location(self, widget, **kwargs):
-        if not await self.geolocation.request_background_permission():
+        try:
+            if self.geolocation.has_background_permission:
+                await self.main_window.info_dialog(
+                    "All good!",
+                    "Application has permission to perform background geolocation",
+                )
+            else:
+                if not await self.geolocation.request_permission():
+                    await self.main_window.info_dialog(
+                        "Oh no!",
+                        "You have not granted permission for location tracking",
+                    )
+                    return
+
+                if not await self.geolocation.request_background_permission():
+                    await self.main_window.info_dialog(
+                        "Oh no!",
+                        "You have not granted permission for background location tracking",
+                    )
+        except NotImplementedError:
             await self.main_window.info_dialog(
                 "Oh no!",
-                "You have not granted permission for background location tracking",
+                "The Geolocation API is not implemented on this platform",
             )
 
 

@@ -36,17 +36,14 @@ inside an asynchronous handler:
 All platforms require some form of permission to access the geolocation service. To
 confirm if you have permission to use the geolocation service while the app is running,
 you can call :any:`Geolocation.has_permission`; you can request to permission using
-:any:`Geolocation.request_permission()`. To confirm if you have permission to use
-geolocation while the app is in the background, you can call
-:any:`Geolocation.has_background_permission`; you can request to permission using
-:any:`Geolocation.request_background_permission()`
+:any:`Geolocation.request_permission()`.
 
-The calls to request permissions *can* be invoked from a synchronous context (i.e., a
-non ``async`` method); however, they are non-blocking when used in this way. Invoking a
-method like :any:`Geolocation.request_permission()` will start the process of requesting
-permission, but will return *immediately*, without waiting for the user's response. This
-allows an app to *request* permissions as part of the startup process, prior to using
-the geolocation APIs, without blocking the rest of app startup.
+If you wish to track the location of the user while the app is in the background, you
+must make a separate request for background location permissions using
+:meth:`~toga.hardware.Geolocation.request_background_permission()` . This request must
+be made *after* foreground permissions have been requested and confirmed. To confirm if
+you have permission to use geolocation while the app is in the background, you can call
+:any:`Geolocation.has_background_permission`.
 
 Toga will confirm whether the app has been granted permission to use geolocation
 services before invoking any geolocation API. If permission has not yet been granted, or
@@ -97,17 +94,9 @@ Notes
 * On macOS, there is no distinction between "background" permissions and "while-running"
   permissions.
 
-* On iOS, requesting permission to track location in the background will always require
-  2 interactions from the user - an initial request to use geolocation while the app is
-  running, then a second request to use location in the background. If you call
-  :meth:`~toga.hardware.Geolocation.request_background_permission()` before *any*
-  permissions have been confirmed, the user will be asked immediately for geolocation
-  permissions while the app is running; the request for background tracking will be
-  deferred until the first attempt to use location in the background, or a second call
-  to :meth:`~toga.hardware.Geolocation.request_background_permission()`. Background
-  location tracking will not be permitted unless the user allows geolocation "always"
-  while the app is running. If they only allow "once off" permission while the app is
-  running, requests for background processing will be ignored.
+* On iOS, if the user has provided "once off" permission for foreground location
+  tracking, requests for background location permission will be rejected.
+
 
 Reference
 ---------

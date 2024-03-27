@@ -38,11 +38,13 @@ class TogaLocationDelegate(NSObject):
     @objc_method
     def locationManagerDidChangeAuthorization_(self, manager) -> None:
         while self.impl.permission_requests:
-            future = self.impl.permission_requests.pop()
-            future.set_result(self.impl.has_permission())
+            future, permission = self.impl.permission_requests.pop()
+            future.set_result(permission())
 
     @objc_method
     def locationManager_didUpdateLocations_(self, manager, locations) -> None:
+        # The API *can* send multiple locations in a single update; they should be
+        # sorted chronologically; only propagate the most recent one
         toga_loc = toga_location(locations[-1])
 
         # Set all outstanding location requests with location reported
@@ -86,8 +88,8 @@ class Geolocation:
 
     def has_permission(self):
         return self.native.authorizationStatus in {
-            CLAuthorizationStatus.AuthorizedAlways.value,
             CLAuthorizationStatus.AuthorizedWhenInUse.value,
+            CLAuthorizationStatus.AuthorizedAlways.value,
         }
 
     def has_background_permission(self):
@@ -97,14 +99,14 @@ class Geolocation:
         )
 
     def request_permission(self, future):
-        self.permission_requests.append(future)
+        self.permission_requests.append((future, self.has_permission))
         self.native.requestWhenInUseAuthorization()
 
     def request_background_permission(self, future):
         if NSBundle.mainBundle.objectForInfoDictionaryKey(
             "NSLocationAlwaysAndWhenInUseUsageDescription"
         ):
-            self.permission_requests.append(future)
+            self.permission_requests.append((future, self.has_background_permission))
 
             self.native.requestAlwaysAuthorization()
         else:  # pragma: no cover

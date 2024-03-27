@@ -19,7 +19,7 @@ async def geolocation_probe(monkeypatch, app_probe):
 async def test_grant_permission(app, geolocation_probe):
     """A user can grant permission to use geolocation."""
     # Prime the permission system to approve permission requests
-    geolocation_probe.allow_permission()
+    geolocation_probe.grant_permission()
 
     # Initiate the permission request. As permissions are primed, they will be approved.
     assert await app.geolocation.request_permission()
@@ -56,7 +56,21 @@ async def test_deny_permission(app, geolocation_probe):
 async def test_grant_background_permission(app, geolocation_probe):
     """A user can grant background permission to use geolocation."""
     # Prime the permission system to approve permission requests
-    geolocation_probe.allow_background_permission()
+    geolocation_probe.grant_background_permission()
+
+    # Foreground permissions haven't been approved, so requesting background permissions
+    # will raise an error
+    with pytest.raises(
+        PermissionError,
+        match=(
+            r"Cannot ask for background geolocation permission "
+            r"before confirming foreground geolocation permission\."
+        ),
+    ):
+        await app.geolocation.request_background_permission()
+
+    # Pre-approve foreground permissions
+    geolocation_probe.allow_permission()
 
     # Initiate the permission request. As permissions are primed, they will be approved.
     assert await app.geolocation.request_background_permission()
@@ -75,18 +89,37 @@ async def test_grant_background_permission(app, geolocation_probe):
 
 async def test_deny_background_permission(app, geolocation_probe):
     """A user can deny background permission to use geolocation."""
-    # Initiate the permission request. As permissions are not primed, they will be denied.
+    # Foreground permissions haven't been approved, so requesting background permissions
+    # will raise an error.
+    with pytest.raises(
+        PermissionError,
+        match=(
+            r"Cannot ask for background geolocation permission "
+            r"before confirming foreground geolocation permission\."
+        ),
+    ):
+        await app.geolocation.request_background_permission()
+
+    # Neither permission does not exist yet
+    assert not app.geolocation.has_permission
+    assert not app.geolocation.has_background_permission
+
+    # Pre-approve foreground permissions
+    geolocation_probe.allow_permission()
+
+    # Initiate the permission request. As background permissions are not primed, they
+    # will be denied.
     assert not await app.geolocation.request_background_permission()
 
-    # Permission has been denied
-    assert not app.geolocation.has_permission
+    # Background permission has been denied, but foreground permission must exist
+    assert app.geolocation.has_permission
     assert not app.geolocation.has_background_permission
 
     # A second request to request permissions is a no-op
     assert not await app.geolocation.request_background_permission()
 
-    # Permission is still denied
-    assert not app.geolocation.has_permission
+    # Background permission is still denied, but foreground permission must exist
+    assert app.geolocation.has_permission
     assert not app.geolocation.has_background_permission
 
 

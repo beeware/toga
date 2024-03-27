@@ -16,8 +16,6 @@ NSError = ObjCClass("NSError")
 
 
 class GeolocationProbe(AppProbe):
-    request_permission_on_first_use = False
-
     def __init__(self, monkeypatch, app_probe):
         super().__init__(app_probe.app)
 
@@ -27,17 +25,21 @@ class GeolocationProbe(AppProbe):
         # be granted if requested but, has not been granted *yet*. Unless primed,
         # permissions will be denied.
         self._mock_permission = None
+        self._mock_background_permission = None
 
         # Mock CLLocationManager
         self._mock_location_manager = Mock()
 
         # Mock the CLLocationManager.authorizationStatus property
         def _mock_auth_status():
-            return {
-                2: CLAuthorizationStatus.AuthorizedAlways.value,
-                1: CLAuthorizationStatus.AuthorizedWhenInUse.value,
-                0: CLAuthorizationStatus.Denied.value,
-            }.get(self._mock_permission, CLAuthorizationStatus.NotDetermined.value)
+            if self._mock_background_permission == 1:
+                return CLAuthorizationStatus.AuthorizedAlways.value
+            elif self._mock_permission == 1:
+                return CLAuthorizationStatus.AuthorizedWhenInUse.value
+            elif self._mock_permission == 0:
+                return CLAuthorizationStatus.Denied.value
+            else:
+                return CLAuthorizationStatus.NotDetermined.value
 
         type(self._mock_location_manager).authorizationStatus = PropertyMock(
             side_effect=_mock_auth_status
@@ -56,8 +58,10 @@ class GeolocationProbe(AppProbe):
             )
 
         def _mock_request_always():
-            if self._mock_permission == -2:
-                self._mock_permission = abs(self._mock_permission)
+            if self._mock_background_permission is None:
+                self._mock_background_permission = 0
+            else:
+                self._mock_background_permission = abs(self._mock_background_permission)
 
             # Trigger delegate handling for permission change
             self.app.geolocation._impl.delegate.locationManagerDidChangeAuthorization(
@@ -106,13 +110,13 @@ class GeolocationProbe(AppProbe):
         self._mock_permission = -1
 
     def grant_background_permission(self):
-        self._mock_permission = -2
+        self._mock_background_permission = -1
 
     def allow_permission(self):
         self._mock_permission = 1
 
     def allow_background_permission(self):
-        self._mock_permission = 2
+        self._mock_background_permission = 1
 
     def reject_permission(self):
         self._mock_permission = 0

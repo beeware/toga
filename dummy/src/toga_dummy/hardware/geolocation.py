@@ -9,12 +9,11 @@ class Geolocation(LoggedObject):
     def __init__(self, interface):
         self.interface = interface
 
-        # -2: background permission *could* be granted, but hasn't been
         # -1: permission *could* be granted, but hasn't been
         # 0: permission has been denied, or can't be granted
         # 1: permission has been granted
-        # 2: background permission has been granted
         self._has_permission = -1
+        self._has_background_permission = -1
         self._location = LatLng(10.0, 20.0)
         self._altitude = 0
 
@@ -31,7 +30,7 @@ class Geolocation(LoggedObject):
 
     def has_background_permission(self):
         self._action("has background permission")
-        return self._has_permission > 1
+        return self._has_background_permission > 0
 
     def request_permission(self, future):
         self._action("request permission")
@@ -40,8 +39,8 @@ class Geolocation(LoggedObject):
 
     def request_background_permission(self, future):
         self._action("request background permission")
-        self._has_permission = abs(self._has_permission)
-        future.set_result(self._has_permission > 1)
+        self._has_background_permission = abs(self._has_background_permission)
+        future.set_result(self._has_background_permission > 0)
 
     def current_location(self, result):
         location, altitude = self._next_location()
