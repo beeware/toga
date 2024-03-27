@@ -118,38 +118,21 @@ class Geolocation:
             )
 
     def current_location(self, result):
-        if self.has_permission():
-            location = self.native.location
-            if location is None:
-                self.current_location_requests.append(result)
-                self.native.requestLocation()
-            else:
-                toga_loc = toga_location(location)
-                result.set_result(toga_loc["location"])
-                self.interface.on_change(**toga_loc)
+        location = self.native.location
+        if location is None:
+            self.current_location_requests.append(result)
+            self.native.requestLocation()
         else:
-            result.set_exception(
-                PermissionError(
-                    "App does not have permission to use geolocation services"
-                )
-            )
+            toga_loc = toga_location(location)
+            result.set_result(toga_loc["location"])
+            self.interface.on_change(**toga_loc)
 
     def start(self):
-        if self.has_permission():
-            # Ensure that background processing will occur
-            self.native.allowsBackgroundLocationUpdates = True
-            self.native.pausesLocationUpdatesAutomatically = False
+        # Ensure that background processing will occur
+        self.native.allowsBackgroundLocationUpdates = True
+        self.native.pausesLocationUpdatesAutomatically = False
 
-            self.native.startUpdatingLocation()
-        else:
-            raise PermissionError(
-                "App does not have permission to use geolocation services"
-            )
+        self.native.startUpdatingLocation()
 
     def stop(self):
-        if self.has_permission():
-            self.native.stopUpdatingLocation()
-        else:
-            raise PermissionError(
-                "App does not have permission to use geolocation services"
-            )
+        self.native.stopUpdatingLocation()

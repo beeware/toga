@@ -126,19 +126,35 @@ class Geolocation:
 
         An :any:`on_change` callback will be generated then when the user's location
         changes.
+
+        :raises PermissionError: If the app has not requested and received permission to
+            use geolocation services.
         """
-        self._impl.start()
+        if self.has_permission:
+            self._impl.start()
+        else:
+            raise PermissionError(
+                "App does not have permission to use geolocation services"
+            )
 
     def stop(self):
-        """Stop monitoring the user's location."""
-        self._impl.stop()
+        """Stop monitoring the user's location.
+
+        :raises PermissionError: If the app has not requested and received permission to
+            use geolocation services.
+        """
+        if self.has_permission:
+            self._impl.stop()
+        else:
+            raise PermissionError(
+                "App does not have permission to use geolocation services"
+            )
 
     def current_location(self) -> LocationResult:
         """Obtain the user's current location using the geolocation service.
 
-        If the platform requires permission to access the geolocation service, and the
-        user hasn't previously provided that permission, this will cause permission to
-        be requested.
+        If the app hasn't requested and received permission to use geolocation, a
+        :any:`PermissionError` will be raised.
 
         **This is an asynchronous method**. If you call this method in a synchronous
         context, it will start the process of requesting the user's location, but will
@@ -150,7 +166,16 @@ class Geolocation:
 
         :returns: An asynchronous result; when awaited, returns the :any:`toga.Image`
             captured by the camera, or ``None`` if the photo was  cancelled.
+        :raises PermissionError: If the app has not requested and received permission to
+            use geolocation services.
         """
         location = LocationResult(None)
-        self._impl.current_location(location)
+        if self.has_permission:
+            self._impl.current_location(location)
+        else:
+            location.set_exception(
+                PermissionError(
+                    "App does not have permission to use geolocation services"
+                )
+            )
         return location

@@ -113,6 +113,7 @@ class Camera:
             the hardware available, this may be modified by the user at runtime.
         :returns: An asynchronous result; when awaited, returns the :any:`toga.Image`
             captured by the camera, or ``None`` if the photo was  cancelled.
+        :raises PermissionError: if the app does not have permission to use the camera.
         """
         photo = PhotoResult(None)
         self._impl.take_photo(photo, device=device, flash=flash)

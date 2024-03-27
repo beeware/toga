@@ -71,15 +71,11 @@ class Geolocation:
         self.permission_requests = []
         self.current_location_requests = []
 
-    def has_permission(self, allow_unknown=False):
-        valid_values = {
+    def has_permission(self):
+        return self.native.authorizationStatus in {
             CLAuthorizationStatus.AuthorizedAlways.value,
             CLAuthorizationStatus.AuthorizedWhenInUse.value,
         }
-        if allow_unknown:
-            valid_values.add(CLAuthorizationStatus.NotDetermined.value)
-
-        return self.native.authorizationStatus in valid_values
 
     def has_background_permission(self):
         return (
@@ -96,38 +92,21 @@ class Geolocation:
         self.native.requestAlwaysAuthorization()
 
     def current_location(self, result):
-        if self.has_permission(allow_unknown=True):
-            location = self.native.location
-            if location is None:
-                self.current_location_requests.append(result)
-                self.native.requestLocation()
-            else:
-                toga_loc = toga_location(location)
-                result.set_result(toga_loc["location"])
-                self.interface.on_change(**toga_loc)
+        location = self.native.location
+        if location is None:
+            self.current_location_requests.append(result)
+            self.native.requestLocation()
         else:
-            result.set_exception(
-                PermissionError(
-                    "App does not have permission to use geolocation services"
-                )
-            )
+            toga_loc = toga_location(location)
+            result.set_result(toga_loc["location"])
+            self.interface.on_change(**toga_loc)
 
     def start(self):
-        if self.has_permission(allow_unknown=True):
-            # Ensure that background processing will occur
-            self.native.allowsBackgroundLocationUpdates = True
-            self.native.pausesLocationUpdatesAutomatically = False
+        # Ensure that background processing will occur
+        self.native.allowsBackgroundLocationUpdates = True
+        self.native.pausesLocationUpdatesAutomatically = False
 
-            self.native.startUpdatingLocation()
-        else:
-            raise PermissionError(
-                "App does not have permission to use geolocation services"
-            )
+        self.native.startUpdatingLocation()
 
     def stop(self):
-        if self.has_permission(allow_unknown=True):
-            self.native.stopUpdatingLocation()
-        else:
-            raise PermissionError(
-                "App does not have permission to use geolocation services"
-            )
+        self.native.stopUpdatingLocation()

@@ -44,30 +44,15 @@ class Geolocation(LoggedObject):
         future.set_result(self._has_permission > 1)
 
     def current_location(self, result):
-        if self.has_permission():
-            location, altitude = self._next_location()
-            result.set_result(location)
-            self.interface.on_change(location=location, altitude=altitude)
-        else:
-            raise PermissionError(
-                "App does not have permission to use geolocation services"
-            )
+        location, altitude = self._next_location()
+        result.set_result(location)
+        self.interface.on_change(location=location, altitude=altitude)
 
     def start(self):
-        if self.has_permission():
-            self._action("start geolocation updates")
-        else:
-            raise PermissionError(
-                "App does not have permission to use geolocation services"
-            )
+        self._action("start geolocation updates")
 
     def stop(self):
-        if self.has_permission():
-            self._action("stop geolocation updates")
-        else:
-            raise PermissionError(
-                "App does not have permission to use geolocation services"
-            )
+        self._action("stop geolocation updates")
 
     def simulate_update(self):
         location, altitude = self._next_location()
