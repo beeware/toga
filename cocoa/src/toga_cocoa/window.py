@@ -9,8 +9,6 @@ from toga_cocoa.libs import (
     NSImage,
     NSMakeRect,
     NSMutableArray,
-    NSMutableDictionary,
-    NSNumber,
     NSPoint,
     NSScreen,
     NSSize,
@@ -346,8 +344,7 @@ class Window:
         if bool(self.native.isZoomed):
             if bool(self.native.styleMask & NSWindowStyleMask.FullScreen):
                 return WindowState.FULLSCREEN
-            else:
-                return WindowState.MAXIMIZED
+            return WindowState.MAXIMIZED
         elif bool(self.native.isMiniaturized):
             return WindowState.MINIMIZED
         elif bool(self.interface.content._impl.native.isInFullScreenMode()):
@@ -369,20 +366,10 @@ class Window:
                 self.native.toggleFullScreen(self.native)
             # If the window is in presentation mode, exit presentation mode
             elif current_state == WindowState.PRESENTATION:
-                opts = NSMutableDictionary.alloc().init()
-                opts.setObject(
-                    NSNumber.numberWithBool(True), forKey="NSFullScreenModeAllScreens"
-                )
-                self.interface.content._impl.native.exitFullScreenModeWithOptions(opts)
-                self.interface.content.refresh()
-                self.interface.screen = (
-                    self.interface._impl._before_presentation_mode_screen
-                )
+                self.interface.app.exit_presentation_mode()
 
-        # Changing window states without reverting back to the NORMAL state will
-        # cause glitches, so revert to NORMAL state before switching to other states.
-        # Setting window state to NORMAL from the interface side also causes the
-        # same glitches. Might be a race condition.
+        # Set Window state to NORMAL before changing to other states as some states
+        # block changing window state without first exiting them.
         elif state == WindowState.MAXIMIZED:
             self.set_window_state(WindowState.NORMAL)
             self.native.setIsZoomed(True)
@@ -397,19 +384,9 @@ class Window:
 
         elif state == WindowState.PRESENTATION:
             self.set_window_state(WindowState.NORMAL)
-            opts = NSMutableDictionary.alloc().init()
-            opts.setObject(
-                NSNumber.numberWithBool(True), forKey="NSFullScreenModeAllScreens"
+            self.interface.app.enter_presentation_mode(
+                {self.interface.screen: self.interface}
             )
-            self.interface.content._impl.native.enterFullScreenMode(
-                self.interface.screen._impl.native, withOptions=opts
-            )
-            # Going presentation mode(full screen) causes the window content to be
-            # re-homed in a NSFullScreenWindow; teach the new parent window
-            # about its Toga representations.
-            self.interface.content._impl.native.window._impl = self
-            self.interface.content._impl.native.window.interface = self.interface
-            self.interface.content.refresh()
 
     ######################################################################
     # Window capabilities
