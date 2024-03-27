@@ -11,6 +11,8 @@ from System.Windows.Forms import (
     ToolStripSeparator,
 )
 
+from toga.constants import WindowState
+
 from .probe import BaseProbe
 
 
@@ -47,6 +49,22 @@ class WindowProbe(BaseProbe):
                 / self.scale_factor
             ),
         )
+
+    def is_window_state(self, state):
+        if getattr(self.impl, "_presentation_window", None) is not None:
+            current_state = WindowState.PRESENTATION
+        else:
+            window_state = self.native.WindowState
+            if window_state == FormWindowState.Maximized:
+                if self.native.FormBorderStyle == getattr(FormBorderStyle, "None"):
+                    current_state = WindowState.FULLSCREEN
+                else:
+                    current_state = WindowState.MAXIMIZED
+            elif window_state == FormWindowState.Minimized:
+                current_state = WindowState.MINIMIZED
+            elif window_state == FormWindowState.Normal:
+                current_state = WindowState.NORMAL
+        return bool(current_state == state)
 
     @property
     def is_full_screen(self):

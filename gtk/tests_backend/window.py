@@ -2,6 +2,7 @@ import asyncio
 from pathlib import Path
 from unittest.mock import Mock
 
+from toga.constants import WindowState
 from toga_gtk.libs import Gdk, Gtk
 
 from .probe import BaseProbe
@@ -35,6 +36,21 @@ class WindowProbe(BaseProbe):
     def content_size(self):
         content_allocation = self.impl.container.get_allocation()
         return (content_allocation.width, content_allocation.height)
+
+    def is_window_state(self, state):
+        if getattr(self.impl, "_presentation_window", None) is not None:
+            current_state = WindowState.PRESENTATION
+        else:
+            window_state_flags = self._window_state_flags
+            if window_state_flags & Gdk.WindowState.MAXIMIZED:
+                current_state = WindowState.MAXIMIZED
+            elif window_state_flags & Gdk.WindowState.ICONIFIED:
+                current_state = WindowState.MINIMIZED
+            elif window_state_flags & Gdk.WindowState.FULLSCREEN:
+                current_state = WindowState.FULLSCREEN
+            else:
+                current_state = WindowState.NORMAL
+        return bool(current_state == state)
 
     @property
     def is_full_screen(self):

@@ -12,6 +12,7 @@ import pytest
 
 import toga
 from toga.colors import CORNFLOWERBLUE, GOLDENROD, REBECCAPURPLE
+from toga.constants import WindowState
 from toga.style.pack import COLUMN, Pack
 
 
@@ -487,6 +488,167 @@ else:
             "Secondary window is still not full screen"
         )
         assert not second_window_probe.is_full_screen
+        assert second_window_probe.content_size == initial_content_size
+
+    @pytest.mark.parametrize(
+        "second_window_kwargs",
+        [dict(title="Secondary Window", position=(200, 150))],
+    )
+    async def test_window_state_minimized(second_window, second_window_probe):
+        """Window can have minimized window state"""
+        assert not second_window_probe.is_window_state(WindowState.MINIMIZED)
+        assert second_window_probe.is_minimizable
+
+        second_window.state = WindowState.MINIMIZED
+        # A longer delay to allow for genie animations
+        await second_window_probe.wait_for_window(
+            "Secondary window is minimized",
+        )
+        assert second_window_probe.is_window_state(WindowState.MINIMIZED)
+
+        second_window.state = WindowState.MINIMIZED
+        await second_window_probe.wait_for_window("Secondary window is still minimized")
+        assert second_window_probe.is_window_state(WindowState.MINIMIZED)
+
+        second_window.state = WindowState.NORMAL
+        # A longer delay to allow for genie animations
+        await second_window_probe.wait_for_window(
+            "Secondary window is not minimized",
+        )
+        assert not second_window_probe.is_window_state(WindowState.MINIMIZED)
+        assert second_window_probe.is_minimizable
+
+        second_window.state = WindowState.NORMAL
+        await second_window_probe.wait_for_window(
+            "Secondary window is still not minimized"
+        )
+        assert not second_window_probe.is_window_state(WindowState.MINIMIZED)
+
+    @pytest.mark.parametrize(
+        "second_window_kwargs",
+        [dict(title="Secondary Window", position=(200, 150))],
+    )
+    async def test_window_state_maximized(second_window, second_window_probe):
+        """Window can have maximized window state"""
+        assert not second_window_probe.is_window_state(WindowState.MAXIMIZED)
+        assert second_window_probe.is_resizable
+        initial_content_size = second_window_probe.content_size
+
+        second_window.state = WindowState.MAXIMIZED
+        # A longer delay to allow for genie animations
+        await second_window_probe.wait_for_window(
+            "Secondary window is maximized",
+        )
+        assert second_window_probe.is_window_state(WindowState.MAXIMIZED)
+        assert second_window_probe.content_size[0] > initial_content_size[0]
+        assert second_window_probe.content_size[1] > initial_content_size[1]
+
+        second_window.state = WindowState.MAXIMIZED
+        await second_window_probe.wait_for_window("Secondary window is still maximized")
+        assert second_window_probe.is_window_state(WindowState.MAXIMIZED)
+        assert second_window_probe.content_size[0] > initial_content_size[0]
+        assert second_window_probe.content_size[1] > initial_content_size[1]
+
+        second_window.state = WindowState.NORMAL
+        # A longer delay to allow for genie animations
+        await second_window_probe.wait_for_window(
+            "Secondary window is not maximized",
+        )
+        assert not second_window_probe.is_window_state(WindowState.MAXIMIZED)
+        assert second_window_probe.is_resizable
+        assert second_window_probe.content_size == initial_content_size
+
+        second_window.state = WindowState.NORMAL
+        await second_window_probe.wait_for_window(
+            "Secondary window is still not maximized"
+        )
+        assert not second_window_probe.is_window_state(WindowState.MAXIMIZED)
+        assert second_window_probe.content_size == initial_content_size
+
+    @pytest.mark.parametrize(
+        "second_window_kwargs",
+        [dict(title="Secondary Window", position=(200, 150))],
+    )
+    async def test_window_state_full_screen(second_window, second_window_probe):
+        """Window can have full screen window state"""
+        assert not second_window_probe.is_window_state(WindowState.FULLSCREEN)
+        assert second_window_probe.is_resizable
+        initial_content_size = second_window_probe.content_size
+
+        second_window.state = WindowState.FULLSCREEN
+        # A longer delay to allow for genie animations
+        await second_window_probe.wait_for_window(
+            "Secondary window is full screen",
+        )
+        assert second_window_probe.is_window_state(WindowState.FULLSCREEN)
+        assert second_window_probe.content_size[0] > initial_content_size[0]
+        assert second_window_probe.content_size[1] > initial_content_size[1]
+
+        second_window.state = WindowState.FULLSCREEN
+        await second_window_probe.wait_for_window(
+            "Secondary window is still full screen"
+        )
+        assert second_window_probe.is_window_state(WindowState.FULLSCREEN)
+        assert second_window_probe.content_size[0] > initial_content_size[0]
+        assert second_window_probe.content_size[1] > initial_content_size[1]
+
+        second_window.state = WindowState.NORMAL
+        # A longer delay to allow for genie animations
+        await second_window_probe.wait_for_window(
+            "Secondary window is not full screen",
+        )
+        assert not second_window_probe.is_window_state(WindowState.FULLSCREEN)
+        assert second_window_probe.is_resizable
+        assert second_window_probe.content_size == initial_content_size
+
+        second_window.state = WindowState.NORMAL
+        await second_window_probe.wait_for_window(
+            "Secondary window is still not full screen"
+        )
+        assert not second_window_probe.is_window_state(WindowState.FULLSCREEN)
+        assert second_window_probe.content_size == initial_content_size
+
+    @pytest.mark.parametrize(
+        "second_window_kwargs",
+        [dict(title="Secondary Window", position=(200, 150))],
+    )
+    async def test_window_state_presentation(second_window, second_window_probe):
+        """Window can have presentation window state"""
+        assert not second_window_probe.is_window_state(WindowState.PRESENTATION)
+        assert second_window_probe.is_resizable
+        initial_content_size = second_window_probe.content_size
+
+        second_window.state = WindowState.PRESENTATION
+        # A longer delay to allow for genie animations
+        await second_window_probe.wait_for_window(
+            "Secondary window is in presentation mode",
+        )
+        assert second_window_probe.is_window_state(WindowState.PRESENTATION)
+        assert second_window_probe.content_size[0] > initial_content_size[0]
+        assert second_window_probe.content_size[1] > initial_content_size[1]
+
+        second_window.state = WindowState.PRESENTATION
+        await second_window_probe.wait_for_window(
+            "Secondary window is still in presentation mode"
+        )
+        assert second_window_probe.is_window_state(WindowState.PRESENTATION)
+        assert second_window_probe.content_size[0] > initial_content_size[0]
+        assert second_window_probe.content_size[1] > initial_content_size[1]
+
+        second_window.state = WindowState.NORMAL
+        # A longer delay to allow for genie animations
+        await second_window_probe.wait_for_window(
+            "Secondary window is not in presentation mode",
+        )
+        assert not second_window_probe.is_window_state(WindowState.PRESENTATION)
+        assert second_window_probe.is_resizable
+        assert second_window_probe.content_size == initial_content_size
+
+        second_window.state = WindowState.NORMAL
+        await second_window_probe.wait_for_window(
+            "Secondary window is still not in presentation mode"
+        )
+        assert not second_window_probe.is_window_state(WindowState.PRESENTATION)
         assert second_window_probe.content_size == initial_content_size
 
     @pytest.mark.parametrize(

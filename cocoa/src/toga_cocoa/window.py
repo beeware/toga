@@ -344,7 +344,8 @@ class Window:
         if bool(self.native.isZoomed):
             if bool(self.native.styleMask & NSWindowStyleMask.FullScreen):
                 return WindowState.FULLSCREEN
-            return WindowState.MAXIMIZED
+            else:
+                return WindowState.MAXIMIZED
         elif bool(self.native.isMiniaturized):
             return WindowState.MINIMIZED
         elif bool(self.interface.content._impl.native.isInFullScreenMode()):

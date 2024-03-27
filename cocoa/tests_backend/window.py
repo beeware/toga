@@ -3,6 +3,7 @@ from unittest.mock import Mock
 from rubicon.objc import objc_id, send_message
 from rubicon.objc.collections import ObjCListInstance
 
+from toga.constants import WindowState
 from toga_cocoa.libs import (
     NSURL,
     NSAlertFirstButtonReturn,
@@ -48,6 +49,20 @@ class WindowProbe(BaseProbe):
             self.native.contentView.frame.size.width,
             self.native.contentView.frame.size.height,
         )
+
+    def is_window_state(self, state):
+        if bool(self.native.isZoomed):
+            if bool(self.native.styleMask & NSWindowStyleMask.FullScreen):
+                current_state = WindowState.FULLSCREEN
+            else:
+                current_state = WindowState.MAXIMIZED
+        elif bool(self.native.isMiniaturized):
+            current_state = WindowState.MINIMIZED
+        elif bool(self.interface.content._impl.native.isInFullScreenMode()):
+            current_state = WindowState.PRESENTATION
+        else:
+            current_state = WindowState.NORMAL
+        return bool(current_state == state)
 
     @property
     def is_full_screen(self):

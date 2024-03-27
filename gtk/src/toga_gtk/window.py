@@ -228,12 +228,12 @@ class Window:
         if getattr(self, "_presentation_window", None) is not None:
             return WindowState.PRESENTATION
         else:
-            window_state = self._window_state_flags
-            if window_state & Gdk.WindowState.MAXIMIZED:
+            window_state_flags = self._window_state_flags
+            if window_state_flags & Gdk.WindowState.MAXIMIZED:
                 return WindowState.MAXIMIZED
-            elif window_state & Gdk.WindowState.ICONIFIED:
+            elif window_state_flags & Gdk.WindowState.ICONIFIED:
                 return WindowState.MINIMIZED
-            elif window_state & Gdk.WindowState.FULLSCREEN:
+            elif window_state_flags & Gdk.WindowState.FULLSCREEN:
                 return WindowState.FULLSCREEN
             else:
                 return WindowState.NORMAL

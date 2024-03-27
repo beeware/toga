@@ -4,6 +4,7 @@ import pytest
 
 import toga
 from toga.colors import CORNFLOWERBLUE, FIREBRICK, REBECCAPURPLE
+from toga.constants import WindowState
 from toga.style.pack import Pack
 
 from ..test_window import window_probe
@@ -282,6 +283,72 @@ else:
 
             assert not app_probe.is_full_screen(window2)
             assert app_probe.content_size(window2) == initial_content2_size
+
+        finally:
+            window1.close()
+            window2.close()
+
+    async def test_presentation_mode(app, app_probe):
+        """The app can enter into presentation mode"""
+        try:
+            window1 = toga.Window("Test Window 1", position=(150, 150), size=(200, 200))
+            window1.content = toga.Box(style=Pack(background_color=REBECCAPURPLE))
+            window2 = toga.Window("Test Window 2", position=(400, 150), size=(200, 200))
+            window2.content = toga.Box(style=Pack(background_color=CORNFLOWERBLUE))
+            window1_probe = window_probe(app, window1)
+            window2_probe = window_probe(app, window2)
+
+            window1.show()
+            window2.show()
+            await app_probe.redraw("Extra windows are visible")
+
+            assert not app.is_in_presentation_mode
+            assert not window1_probe.is_window_state(WindowState.PRESENTATION)
+            assert not window2_probe.is_window_state(WindowState.PRESENTATION)
+            initial_content1_size = window1_probe.content_size
+            initial_content2_size = window2_probe.content_size
+
+            # Enter presentation mode with window 2 via the app
+            app.enter_presentation_mode(window2)
+            await window2_probe.wait_for_window(
+                "Second extra window is in presentation mode"
+            )
+            assert app.is_in_presentation_mode
+
+            assert not window1_probe.is_window_state(WindowState.PRESENTATION)
+            assert window1_probe.content_size == initial_content1_size
+
+            assert window2_probe.is_window_state(WindowState.PRESENTATION)
+            assert window2_probe.content_size[0] > 1000
+            assert window2_probe.content_size[1] > 700
+            # Exit presentation mode
+            app.exit_presentation_mode()
+            await window2_probe.wait_for_window(
+                "Second extra window is no longer in presentation mode"
+            )
+            assert not app.is_in_presentation_mode
+            assert window2_probe.content_size == initial_content2_size
+
+            # Enter presentation mode with window 1 via the app
+            app.enter_presentation_mode(window1)
+            await window1_probe.wait_for_window(
+                "First extra window is in presentation mode"
+            )
+            assert app.is_in_presentation_mode
+
+            assert not window2_probe.is_window_state(WindowState.PRESENTATION)
+            assert window2_probe.content_size == initial_content2_size
+
+            assert window1_probe.is_window_state(WindowState.PRESENTATION)
+            assert window1_probe.content_size[0] > 1000
+            assert window1_probe.content_size[1] > 700
+            # Exit presentation mode
+            app.exit_presentation_mode()
+            await window1_probe.wait_for_window(
+                "First extra window is no longer in presentation mode"
+            )
+            assert not app.is_in_presentation_mode
+            assert window1_probe.content_size == initial_content1_size
 
         finally:
             window1.close()
