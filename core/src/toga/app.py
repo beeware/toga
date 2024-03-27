@@ -771,19 +771,14 @@ class App:
            removed in the future. Consider using `App.enter_presentation_mode()`
            and `App.exit_presentation_mode()` methods instead.
         """
-        warnings.warn(
-            "`App.exit_full_screen()` method is deprecated and will be"
-            " removed in the future. Consider using `App.enter_presentation_mode()`"
-            " and `App.exit_presentation_mode()` methods instead.",
-            DeprecationWarning,
-        )
+        # warnings.warn(
+        #     "`App.exit_full_screen()` method is deprecated and will be"
+        #     " removed in the future. Consider using `App.enter_presentation_mode()`"
+        #     " and `App.exit_presentation_mode()` methods instead.",
+        #     DeprecationWarning,
+        # )
         if self.is_full_screen:
-            for window in self.windows:
-                if (
-                    window.state == WindowState.FULLSCREEN
-                    or window.state == WindowState.PRESENTATION
-                ):
-                    window.state = WindowState.NORMAL
+            self._impl.exit_presentation_mode()
 
     @property
     def is_full_screen(self) -> bool:
@@ -792,12 +787,12 @@ class App:
         .. warning::
             `App.is_full_screen` property is deprecated and will be removed in the
             future. Consider using `App.is_in_presentation_mode` property instead.
-        """
-        warnings.warn(
-            "`App.is_full_screen` property is deprecated and will be removed in the"
-            " future. Consider using `App.is_in_presentation_mode` property instead.",
-            DeprecationWarning,
-        )
+        #"""
+        # warnings.warn(
+        #     "`App.is_full_screen` property is deprecated and will be removed in the"
+        #     " future. Consider using `App.is_in_presentation_mode` property instead.",
+        #     DeprecationWarning,
+        # )
         return any(window.state == WindowState.PRESENTATION for window in self.windows)
 
     def set_full_screen(self, *windows: Window) -> None:
@@ -816,12 +811,12 @@ class App:
             removed in the future. Consider using `App.enter_presentation_mode()`
             and `App.exit_presentation_mode()` methods instead.
         """
-        warnings.warn(
-            "`App.set_full_screen()` method is deprecated and will be"
-            " removed in the future. Consider using `App.enter_presentation_mode()`"
-            " and `App.exit_presentation_mode()` methods instead.",
-            DeprecationWarning,
-        )
+        # warnings.warn(
+        #     "`App.set_full_screen()` method is deprecated and will be"
+        #     " removed in the future. Consider using `App.enter_presentation_mode()`"
+        #     " and `App.exit_presentation_mode()` methods instead.",
+        #     DeprecationWarning,
+        # )
         if self.windows is not None:
             self.exit_full_screen()
             screen_window_dict = dict()
@@ -860,7 +855,8 @@ class App:
 
     def exit_presentation_mode(self) -> None:
         """Exit full screen mode."""
-        self._impl.exit_presentation_mode()
+        if self.is_in_presentation_mode:
+            self._impl.exit_presentation_mode()
 
     ######################################################################
     # App events

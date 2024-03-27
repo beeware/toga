@@ -2,6 +2,8 @@ import asyncio
 import sys
 from pathlib import Path
 
+from toga.constants import WindowState
+
 from .screens import Screen as ScreenImpl
 from .utils import LoggedObject
 from .window import Window
@@ -88,6 +90,17 @@ class App(LoggedObject):
             ScreenImpl(native=("Primary Screen", (0, 0), (1920, 1080))),
             ScreenImpl(native=("Secondary Screen", (-1366, -768), (1366, 768))),
         ]
+
+    def enter_presentation_mode(self, screen_window_dict):
+        self._action("enter presentation mode", screen_window_dict=screen_window_dict)
+        for screen, window in screen_window_dict.items():
+            window.state = WindowState.PRESENTATION
+
+    def exit_presentation_mode(self):
+        self._action("exit presentation mode")
+        for window in self.interface.windows:
+            if window.state == WindowState.PRESENTATION:
+                window.state = WindowState.NORMAL
 
 
 class DocumentApp(App):

@@ -402,53 +402,33 @@ def test_full_screen(event_loop):
 
     # If we're not full screen, exiting full screen is a no-op
     app.exit_full_screen()
-    for window in app.windows:
-        assert_action_not_performed(window, "set window state to WindowState.NORMAL")
-
-    # TODO: Check and keep track of the window assignment to screens
-    # This seems to be difficult currently, as the interface api: `App.enter_presentation_mode`
-    # both assigns screens to windows and also sets the state.
+    assert not app.is_full_screen
+    assert_action_not_performed(app, "exit presentation mode")
 
     # Enter full screen with 2 windows
     app.set_full_screen(window2, app.main_window)
     assert app.is_full_screen
     assert_action_performed_with(
-        window2,
-        "set window state to WindowState.PRESENTATION",
-        state=WindowState.PRESENTATION,
-    )
-    assert_action_performed_with(
-        app.main_window,
-        "set window state to WindowState.PRESENTATION",
-        state=WindowState.PRESENTATION,
+        app,
+        "enter presentation mode",
+        screen_window_dict={app.screens[0]: window2, app.screens[1]: app.main_window},
     )
 
     # Change the screens that are full screen
     app.set_full_screen(app.main_window, window1)
     assert app.is_full_screen
     assert_action_performed_with(
-        app.main_window,
-        "set window state to WindowState.PRESENTATION",
-        state=WindowState.PRESENTATION,
-    )
-    assert_action_performed_with(
-        window1,
-        "set window state to WindowState.PRESENTATION",
-        state=WindowState.PRESENTATION,
+        app,
+        "enter presentation mode",
+        screen_window_dict={app.screens[0]: window2, app.screens[1]: app.main_window},
     )
 
     # Exit full screen mode
     app.exit_full_screen()
     assert not app.is_full_screen
-    assert_action_performed_with(
-        app.main_window,
-        "set window state to WindowState.NORMAL",
-        state=WindowState.NORMAL,
-    )
-    assert_action_performed_with(
-        window1,
-        "set window state to WindowState.NORMAL",
-        state=WindowState.NORMAL,
+    assert_action_performed(
+        app,
+        "exit presentation mode",
     )
 
 
@@ -464,27 +444,16 @@ def test_set_empty_full_screen_window_list(event_loop):
     app.set_full_screen(window1, window2)
     assert app.is_full_screen
     assert_action_performed_with(
-        window1,
-        "set window state to WindowState.PRESENTATION",
-        state=WindowState.PRESENTATION,
-    )
-    assert_action_performed_with(
-        window2,
-        "set window state to WindowState.PRESENTATION",
-        state=WindowState.PRESENTATION,
+        app,
+        "enter presentation mode",
+        screen_window_dict={app.screens[0]: window1, app.screens[1]: window2},
     )
     # Exit full screen mode by setting no windows full screen
     app.set_full_screen()
     assert not app.is_full_screen
-    assert_action_performed_with(
-        window1,
-        "set window state to WindowState.NORMAL",
-        state=WindowState.NORMAL,
-    )
-    assert_action_performed_with(
-        window2,
-        "set window state to WindowState.NORMAL",
-        state=WindowState.NORMAL,
+    assert_action_performed(
+        app,
+        "exit presentation mode",
     )
 
 
@@ -498,54 +467,53 @@ def test_presentation_mode(event_loop):
 
     # If we're not in presentation mode, exiting presentation mode is a no-op
     app.exit_presentation_mode()
-    for window in app.windows:
-        assert_action_not_performed(window, "set window state to WindowState.NORMAL")
-
-    # TODO: Check and keep track of the window assignment to screens
-    # This seems to be difficult currently, as the interface api: `App.enter_presentation_mode`
-    # both assigns screens to windows and also sets the state.
+    assert_action_not_performed(app, "exit presentation mode")
 
     # Enter presentation mode with 1 window:
-    app.enter_presentation_mode([window1])
+    app.enter_presentation_mode({app.screens[0]: window1})
     window1.state = WindowState.PRESENTATION
     assert app.is_in_presentation_mode
     assert_action_performed_with(
-        window1,
-        "set window state to WindowState.PRESENTATION",
-        state=WindowState.PRESENTATION,
+        app,
+        "enter presentation mode",
+        screen_window_dict={app.screens[0]: window1},
     )
     # Exit presentation mode:
     app.exit_presentation_mode()
-    assert_action_performed_with(
-        window1,
-        "set window state to WindowState.NORMAL",
-        state=WindowState.NORMAL,
+    assert_action_performed(
+        app,
+        "exit presentation mode",
     )
 
-    # Enter presentation mode with 2 window:
-    app.enter_presentation_mode({app.screens[1]: window1, app.screens[0]: window2})
+    # Enter presentation mode with 2 windows:
+    app.enter_presentation_mode([window1, window2])
     assert app.is_in_presentation_mode
     assert_action_performed_with(
-        window1,
-        "set window state to WindowState.PRESENTATION",
-        state=WindowState.PRESENTATION,
-    )
-    assert_action_performed_with(
-        window2,
-        "set window state to WindowState.PRESENTATION",
-        state=WindowState.PRESENTATION,
+        app,
+        "enter presentation mode",
+        screen_window_dict={app.screens[0]: window1, app.screens[1]: window2},
     )
     # Exit presentation mode:
     app.exit_presentation_mode()
-    assert_action_performed_with(
-        window1,
-        "set window state to WindowState.NORMAL",
-        state=WindowState.NORMAL,
+    assert_action_performed(
+        app,
+        "exit presentation mode",
     )
+
+    # Entering presentation mode with 3 windows should drop the last window,
+    # as the app has only 2 screens:
+    app.enter_presentation_mode([app.main_window, window2, window1])
+    assert app.is_in_presentation_mode
     assert_action_performed_with(
-        window2,
-        "set window state to WindowState.NORMAL",
-        state=WindowState.NORMAL,
+        app,
+        "enter presentation mode",
+        screen_window_dict={app.screens[0]: app.main_window, app.screens[1]: window2},
+    )
+    # Exit presentation mode:
+    app.exit_presentation_mode()
+    assert_action_performed(
+        app,
+        "exit presentation mode",
     )
 
 
