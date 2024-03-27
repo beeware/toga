@@ -13,8 +13,6 @@ stand alone.
    :maxdepth: 2
    :glob:
 
-   Get started <get-started>
-   Contribute code to Toga <contribute-code>
-   Contribute documentation to Toga <contribute-docs>
-   backends/index
+   topics/index
+   contribute/index
    internal/index
