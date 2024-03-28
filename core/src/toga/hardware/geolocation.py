@@ -65,7 +65,7 @@ class Geolocation:
         app is in the foreground. If you want your application to have permission to
         track location while the app is in the background, you must call this method,
         then make an *additional* permission request for background permissions using
-        :any:`GeoLocation.request_background_permission()`.
+        :any:`Geolocation.request_background_permission()`.
 
         **This is an asynchronous method**. If you invoke this method in synchronous
         context, it will start the process of requesting permissions, but will return
