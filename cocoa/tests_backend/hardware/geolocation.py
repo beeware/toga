@@ -73,16 +73,10 @@ class GeolocationProbe(AppProbe):
         )
         self._mock_location_manager.requestAlwaysAuthorization = _mock_request_always
 
-        # Mock the CLLocationManager.location shortcut; depends on this probe having
-        # `._location` being set by the `set_location()` method.
+        # Mock the CLLocationManager.location shortcut; controlled through the use of
+        # `add_location()` to prime location responses.
         def _mock_location():
-            try:
-                loc, cached = self._location
-                if cached:
-                    return loc
-                return None
-            except AttributeError:
-                raise Exception("current location hasn't been primed")
+            return self._cached_location
 
         type(self._mock_location_manager).location = PropertyMock(
             side_effect=_mock_location
@@ -95,6 +89,10 @@ class GeolocationProbe(AppProbe):
         self._mock_CLLocationManager.alloc = Mock(return_value=cl_alloc)
         monkeypatch.setattr(cocoa, "CLLocationManager", self._mock_CLLocationManager)
 
+        # The list of locations (and the cached location) that will be returned on the
+        # next location request.
+        self.reset_locations()
+
     def cleanup(self):
         # Delete the geolocation service instance. This ensures that a freshly mocked
         # CLLocationManager is installed for each test.
@@ -102,9 +100,6 @@ class GeolocationProbe(AppProbe):
             del self.app._geolocation
         except AttributeError:
             pass
-
-    def reset_permission(self):
-        self._mock_permissions = None
 
     def grant_permission(self):
         self._mock_permission = 1
@@ -121,47 +116,51 @@ class GeolocationProbe(AppProbe):
     def reject_permission(self):
         self._mock_permission = 0
 
-    def set_location(self, location, altitude, cached=False):
-        self._location = (
-            CLLocation.alloc().initWithCoordinate(
-                CLLocationCoordinate2D(location.lat, location.lng),
-                altitude=0.0 if altitude is None else altitude,
-                horizontalAccuracy=10.0,
-                verticalAccuracy=-1.0 if altitude is None else 2.0,
-                timestamp=NSDate.now(),
-            ),
-            cached,
+    def add_location(self, location, altitude, cached=False):
+        native_location = CLLocation.alloc().initWithCoordinate(
+            CLLocationCoordinate2D(location.lat, location.lng),
+            altitude=0.0 if altitude is None else altitude,
+            horizontalAccuracy=10.0,
+            verticalAccuracy=-1.0 if altitude is None else 2.0,
+            timestamp=NSDate.now(),
         )
 
-    async def simulate_location_update(self, location):
-        await self.redraw("Wait for geolocation update")
-
-        next_loc, cached = self._location
+        self._locations.append(native_location)
         if cached:
-            # If we can use the cached update, a request won't be issued
+            self._cached_location = native_location
+
+    def reset_locations(self):
+        self._cached_location = None
+        self._locations = []
+
+    async def simulate_current_location(self, location):
+        await self.redraw("Wait for current geolocation")
+        if self._cached_location:
             self.app.geolocation._impl.native.requestLocation.assert_not_called()
         else:
             # A location request was issued
             self.app.geolocation._impl.native.requestLocation.assert_called_once_with()
             self.app.geolocation._impl.native.requestLocation.reset_mock()
 
-            # Trigger the callback, providing 2 locations; only the second one will be
-            # used.
+            # Trigger the callback
             self.app.geolocation._impl.delegate.locationManager(
                 None,
-                didUpdateLocations=[
-                    CLLocation.alloc().initWithCoordinate(
-                        CLLocationCoordinate2D(0.0, 0.0),
-                        altitude=0.0,
-                        horizontalAccuracy=10.0,
-                        verticalAccuracy=-1.0,
-                        timestamp=NSDate.now(),
-                    ),
-                    next_loc,
-                ],
+                didUpdateLocations=self._locations,
             )
 
+        self.reset_locations()
+
         return await location
+
+    async def simulate_location_update(self):
+        await self.redraw("Wait for geolocation update")
+
+        # Trigger the callback, providing 2 locations; only the second one will be
+        # used.
+        self.app.geolocation._impl.delegate.locationManager(
+            None,
+            didUpdateLocations=self._locations,
+        )
 
     async def simulate_location_error(self, location):
         await self.redraw("Wait for geolocation error")

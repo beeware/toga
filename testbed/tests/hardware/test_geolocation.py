@@ -10,7 +10,7 @@ from .probe import get_probe
 
 @pytest.fixture
 async def geolocation_probe(monkeypatch, app_probe):
-    skip_on_platforms("linux", "windows", "android")
+    skip_on_platforms("linux", "windows")
     probe = get_probe(monkeypatch, app_probe, "Geolocation")
     yield probe
     probe.cleanup()
@@ -136,13 +136,13 @@ async def test_current_location(app, geolocation_probe):
     expected_loc = LatLng(37, 42)
     expected_alt = 5
 
-    geolocation_probe.set_location(expected_loc, expected_alt)
+    geolocation_probe.add_location(expected_loc, expected_alt)
 
     # Request the current location
     location = app.geolocation.current_location()
 
     # Simulate a location update
-    assert await geolocation_probe.simulate_location_update(location) == expected_loc
+    assert await geolocation_probe.simulate_current_location(location) == expected_loc
 
     # The on_change handler has been invoked
     handler.assert_called_once_with(
@@ -159,13 +159,13 @@ async def test_current_location(app, geolocation_probe):
     expected_loc = LatLng(42, 37)
     expected_alt = None
 
-    geolocation_probe.set_location(expected_loc, expected_alt, cached=True)
+    geolocation_probe.add_location(expected_loc, expected_alt, cached=True)
 
     # Make another request for the location
     location = app.geolocation.current_location()
 
     # Simulate another location update
-    assert await geolocation_probe.simulate_location_update(location) == expected_loc
+    assert await geolocation_probe.simulate_current_location(location) == expected_loc
 
     # The on_change handler has been invoked
     handler.assert_called_once_with(
@@ -187,19 +187,36 @@ async def test_track_location(app, geolocation_probe):
     # Start geolocation tracking
     app.geolocation.start()
 
-    # Set the value that will be returned by the next location request
+    # Set a single location
     expected_loc = LatLng(37, 42)
     expected_alt = 5
 
-    geolocation_probe.set_location(expected_loc, expected_alt)
+    geolocation_probe.add_location(expected_loc, expected_alt)
 
-    # Request the current location
-    location = app.geolocation.current_location()
-
-    # Simulate a location update
-    assert await geolocation_probe.simulate_location_update(location) == expected_loc
+    # Simulate a background location update
+    await geolocation_probe.simulate_location_update()
 
     # The on_change handler has been invoked
+    handler.assert_called_once_with(
+        app.geolocation,
+        location=expected_loc,
+        altitude=expected_alt,
+    )
+
+    # Reset the mock
+    handler.reset_mock()
+
+    # Run the next update; this time, include 2 locations in the update.
+    expected_loc = LatLng(42, 37)
+    expected_alt = 5
+
+    geolocation_probe.add_location(LatLng(0, 0), 0)
+    geolocation_probe.add_location(expected_loc, expected_alt)
+
+    # Simulate a background location update
+    await geolocation_probe.simulate_location_update()
+
+    # The on_change handler has been invoked once, with the most recent location
     handler.assert_called_once_with(
         app.geolocation,
         location=expected_loc,
@@ -216,7 +233,7 @@ async def test_geolocation_error(app, geolocation_probe):
     geolocation_probe.grant_permission()
 
     # Set the value that will be returned by the next location request
-    geolocation_probe.set_location(LatLng(37, 42), 5)
+    geolocation_probe.add_location(LatLng(37, 42), 5)
 
     # Request the current location
     location = app.geolocation.current_location()

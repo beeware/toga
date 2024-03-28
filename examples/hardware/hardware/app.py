@@ -127,8 +127,9 @@ class ExampleHardwareApp(toga.App):
         try:
             await self.geolocation.request_permission()
 
-            location = await self.geolocation.current_location()
-            self.location_changed(None, location, None)
+            # Getting the current location will trigger the on_change handler
+            await self.geolocation.current_location()
+
         except NotImplementedError:
             await self.main_window.info_dialog(
                 "Oh no!",

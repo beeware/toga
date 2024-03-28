@@ -97,6 +97,8 @@ Notes
 * On iOS, if the user has provided "once off" permission for foreground location
   tracking, requests for background location permission will be rejected.
 
+* On Android prior to API 34, altitude is reported as the distance above the WGS84
+  ellipsoid datum, rather than Mean Sea Level altitude.
 
 Reference
 ---------
