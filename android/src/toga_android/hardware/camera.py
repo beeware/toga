@@ -5,7 +5,7 @@ from android.content import Context, Intent
 from android.content.pm import PackageManager
 from android.hardware.camera2 import CameraCharacteristics
 from android.provider import MediaStore
-from androidx.core.content import ContextCompat, FileProvider
+from androidx.core.content import FileProvider
 from java.io import File
 
 import toga
@@ -39,13 +39,9 @@ class Camera:
             PackageManager.FEATURE_CAMERA
         )
 
-    def _native_checkSelfPermission(self, context, permission):  # pragma: no cover
-        # A wrapper around the native call so it can be mocked.
-        return ContextCompat.checkSelfPermission(context, Camera.CAMERA_PERMISSION)
-
     def has_permission(self):
-        result = self._native_checkSelfPermission(
-            self.context, Camera.CAMERA_PERMISSION
+        result = self.interface.app._impl._native_checkSelfPermission(
+            Camera.CAMERA_PERMISSION
         )
         return result == PackageManager.PERMISSION_GRANTED
 

@@ -2,68 +2,16 @@ import shutil
 from unittest.mock import Mock
 
 import pytest
-from android.content.pm import PackageManager
 from android.provider import MediaStore
 
-from toga_android.app import App
 from toga_android.hardware.camera import Camera
 
-from ..app import AppProbe
+from .hardware import HardwareProbe
 
 
-class CameraProbe(AppProbe):
+class CameraProbe(HardwareProbe):
     allow_no_camera = False
     request_permission_on_first_use = False
-
-    def __init__(self, monkeypatch, app_probe):
-        super().__init__(app_probe.app)
-
-        self.monkeypatch = monkeypatch
-
-        # A mocked permissions table. The key is the media type; the value is True
-        # if permission has been granted, False if it has be denied. A missing value
-        # will be turned into a grant if permission is requested.
-        self._mock_permissions = {}
-
-        # Mock App.startActivityForResult
-        self._mock_startActivityForResult = Mock()
-        monkeypatch.setattr(
-            App, "_native_startActivityForResult", self._mock_startActivityForResult
-        )
-
-        # Mock App.requestPermissions
-        def request_permissions(permissions, code):
-            grants = []
-            for permission in permissions:
-                status = self._mock_permissions.get(permission, 0)
-                self._mock_permissions[permission] = abs(status)
-                grants.append(
-                    PackageManager.PERMISSION_GRANTED
-                    if status
-                    else PackageManager.PERMISSION_DENIED
-                )
-
-            app_probe.app._impl._listener.onRequestPermissionsResult(
-                code, permissions, grants
-            )
-
-        self._mock_requestPermissions = Mock(side_effect=request_permissions)
-        monkeypatch.setattr(
-            App, "_native_requestPermissions", self._mock_requestPermissions
-        )
-
-        # Mock ContextCompat.checkSelfPermission
-        def has_permission(context, permission):
-            return (
-                PackageManager.PERMISSION_GRANTED
-                if self._mock_permissions.get(permission, 0) == 1
-                else PackageManager.PERMISSION_DENIED
-            )
-
-        self._mock_checkSelfPermission = Mock(side_effect=has_permission)
-        monkeypatch.setattr(
-            Camera, "_native_checkSelfPermission", self._mock_checkSelfPermission
-        )
 
     def cleanup(self):
         # Ensure that after a test runs, there's no shared files.

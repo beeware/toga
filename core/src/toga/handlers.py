@@ -163,3 +163,7 @@ class AsyncResult(ABC):
     __ne__ = __bool__
     __gt__ = __bool__
     __ge__ = __bool__
+
+
+class PermissionResult(AsyncResult):
+    RESULT_TYPE = "permission"

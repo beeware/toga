@@ -24,6 +24,7 @@ from toga.command import Command, CommandSet
 from toga.documents import Document
 from toga.handlers import wrapped_handler
 from toga.hardware.camera import Camera
+from toga.hardware.geolocation import Geolocation
 from toga.icons import Icon
 from toga.paths import Paths
 from toga.platform import get_platform_factory
@@ -669,6 +670,18 @@ class App:
     def commands(self) -> MutableSet[Command]:
         """The commands available in the app."""
         return self._commands
+
+    @property
+    def geolocation(self) -> Geolocation:
+        """A representation of the device's geolocation service."""
+        try:
+            return self._geolocation
+        except AttributeError:
+            # Instantiate the geolocation service for this app on first access
+            # This will raise an exception if the platform doesn't implement
+            # the Geolocation API.
+            self._geolocation = Geolocation(self)
+        return self._geolocation
 
     @property
     def paths(self) -> Paths:

@@ -6,6 +6,7 @@ from android.content import Context
 from android.graphics.drawable import BitmapDrawable
 from android.media import RingtoneManager
 from android.view import Menu, MenuItem
+from androidx.core.content import ContextCompat
 from java import dynamic_proxy
 from org.beeware.android import IPythonApp, MainActivity
 
@@ -345,6 +346,12 @@ class App:
         self._listener.running_intents[code] = on_complete
 
         self._native_startActivityForResult(activity, code, *options)
+
+    def _native_checkSelfPermission(self, permission):  # pragma: no cover
+        # A wrapper around the native method so that it can be mocked during testing.
+        return ContextCompat.checkSelfPermission(
+            self.native.getApplicationContext(), permission
+        )
 
     def _native_requestPermissions(self, permissions, code):  # pragma: no cover
         # A wrapper around the native method so that it can be mocked during testing.

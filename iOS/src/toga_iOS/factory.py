@@ -6,6 +6,7 @@ from .colors import native_color
 from .command import Command
 from .fonts import Font
 from .hardware.camera import Camera
+from .hardware.geolocation import Geolocation
 from .icons import Icon
 from .images import Image
 from .paths import Paths
@@ -56,6 +57,7 @@ __all__ = [
     "dialogs",
     # Hardware
     "Camera",
+    "Geolocation",
     # Widgets
     "Box",
     "Button",
