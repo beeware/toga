@@ -451,6 +451,8 @@ else:
     )
     async def test_full_screen(second_window, second_window_probe):
         """Window can be made full screen"""
+        second_window.content = toga.Box(style=Pack(background_color=CORNFLOWERBLUE))
+
         assert not second_window_probe.is_full_screen
         assert second_window_probe.is_resizable
         initial_content_size = second_window_probe.content_size
@@ -496,6 +498,9 @@ else:
     )
     async def test_window_state_minimized(second_window, second_window_probe):
         """Window can have minimized window state"""
+        second_window.content = toga.Box(style=Pack(background_color=CORNFLOWERBLUE))
+
+        assert second_window_probe.is_window_state(WindowState.NORMAL)
         assert not second_window_probe.is_window_state(WindowState.MINIMIZED)
         assert second_window_probe.is_minimizable
 
@@ -530,6 +535,9 @@ else:
     )
     async def test_window_state_maximized(second_window, second_window_probe):
         """Window can have maximized window state"""
+        second_window.content = toga.Box(style=Pack(background_color=CORNFLOWERBLUE))
+
+        assert second_window_probe.is_window_state(WindowState.NORMAL)
         assert not second_window_probe.is_window_state(WindowState.MAXIMIZED)
         assert second_window_probe.is_resizable
         initial_content_size = second_window_probe.content_size
@@ -571,6 +579,9 @@ else:
     )
     async def test_window_state_full_screen(second_window, second_window_probe):
         """Window can have full screen window state"""
+        second_window.content = toga.Box(style=Pack(background_color=CORNFLOWERBLUE))
+
+        assert second_window_probe.is_window_state(WindowState.NORMAL)
         assert not second_window_probe.is_window_state(WindowState.FULLSCREEN)
         assert second_window_probe.is_resizable
         initial_content_size = second_window_probe.content_size
@@ -614,6 +625,9 @@ else:
     )
     async def test_window_state_presentation(second_window, second_window_probe):
         """Window can have presentation window state"""
+        second_window.content = toga.Box(style=Pack(background_color=CORNFLOWERBLUE))
+
+        assert second_window_probe.is_window_state(WindowState.NORMAL)
         assert not second_window_probe.is_window_state(WindowState.PRESENTATION)
         assert second_window_probe.is_resizable
         initial_content_size = second_window_probe.content_size

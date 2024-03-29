@@ -2,10 +2,12 @@ from pathlib import Path
 
 import pytest
 
+from toga.constants import WindowState
 from toga_gtk.keys import gtk_accel, toga_key
 from toga_gtk.libs import Gdk, Gtk
 
 from .probe import BaseProbe
+from .window import WindowProbe
 
 
 class AppProbe(BaseProbe):
@@ -38,9 +40,7 @@ class AppProbe(BaseProbe):
         pytest.skip("Cursor visibility not implemented on GTK")
 
     def is_full_screen(self, window):
-        return bool(
-            window._impl.native.get_window().get_state() & Gdk.WindowState.FULLSCREEN
-        )
+        return WindowProbe(self.app, window).is_window_state(WindowState.PRESENTATION)
 
     def content_size(self, window):
         content_allocation = window._impl.container.get_allocation()

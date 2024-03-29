@@ -7,6 +7,7 @@ from System import EventArgs
 from System.Drawing import Point
 from System.Windows.Forms import Application, Cursor, ToolStripSeparator
 
+from toga.constants import WindowState
 from toga_winforms.keys import toga_to_winforms_key, winforms_to_toga_key
 
 from .probe import BaseProbe
@@ -98,7 +99,7 @@ class AppProbe(BaseProbe):
         return info.hCursor is not None
 
     def is_full_screen(self, window):
-        return WindowProbe(self.app, window).is_full_screen
+        return WindowProbe(self.app, window).is_window_state(WindowState.PRESENTATION)
 
     def content_size(self, window):
         return WindowProbe(self.app, window).content_size

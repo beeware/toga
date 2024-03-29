@@ -54,7 +54,7 @@ class WindowProbe(BaseProbe):
 
     @property
     def is_full_screen(self):
-        return bool(self.native.get_window().get_state() & Gdk.WindowState.FULLSCREEN)
+        return self.is_window_state(WindowState.FULLSCREEN)
 
     @property
     def is_resizable(self):

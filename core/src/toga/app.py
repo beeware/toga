@@ -833,7 +833,10 @@ class App:
         """Is the app currently in presentation mode?"""
         return any(window.state == WindowState.PRESENTATION for window in self.windows)
 
-    def enter_presentation_mode(self, window_list_or_screen_window_dict):
+    def enter_presentation_mode(
+        self,
+        window_list_or_screen_window_dict: list[Window] | dict[Screen, Window],
+    ):
         """Enter into presentation mode with one or more windows on different screens.
 
         Presentation mode is not the same as Full Screen mode; full screen mode is when all window
@@ -850,7 +853,6 @@ class App:
                 screen_window_dict[screen] = window
         elif isinstance(window_list_or_screen_window_dict, dict):
             screen_window_dict = window_list_or_screen_window_dict
-
         self._impl.enter_presentation_mode(screen_window_dict)
 
     def exit_presentation_mode(self) -> None:

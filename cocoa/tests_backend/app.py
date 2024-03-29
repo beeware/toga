@@ -2,6 +2,7 @@ from pathlib import Path
 
 from rubicon.objc import NSPoint, ObjCClass, objc_id, send_message
 
+from toga.constants import WindowState
 from toga_cocoa.keys import cocoa_key, toga_key
 from toga_cocoa.libs import (
     NSApplication,
@@ -12,6 +13,7 @@ from toga_cocoa.libs import (
 )
 
 from .probe import BaseProbe
+from .window import WindowProbe
 
 NSPanel = ObjCClass("NSPanel")
 
@@ -50,7 +52,7 @@ class AppProbe(BaseProbe):
         return self.app._impl._cursor_visible
 
     def is_full_screen(self, window):
-        return window.content._impl.native.isInFullScreenMode()
+        return WindowProbe(self.app, window).is_window_state(WindowState.PRESENTATION)
 
     def content_size(self, window):
         return (

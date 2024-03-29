@@ -51,27 +51,24 @@ class WindowProbe(BaseProbe):
         )
 
     def is_window_state(self, state):
-        if getattr(self.impl, "_presentation_window", None) is not None:
-            current_state = WindowState.PRESENTATION
-        else:
-            window_state = self.native.WindowState
-            if window_state == FormWindowState.Maximized:
-                if self.native.FormBorderStyle == getattr(FormBorderStyle, "None"):
-                    current_state = WindowState.FULLSCREEN
+        window_state = self.native.WindowState
+        if window_state == FormWindowState.Maximized:
+            if self.native.FormBorderStyle == getattr(FormBorderStyle, "None"):
+                if getattr(self.impl, "_is_in_presentation_mode", False) is True:
+                    current_state = WindowState.PRESENTATION
                 else:
-                    current_state = WindowState.MAXIMIZED
-            elif window_state == FormWindowState.Minimized:
-                current_state = WindowState.MINIMIZED
-            elif window_state == FormWindowState.Normal:
-                current_state = WindowState.NORMAL
+                    current_state = WindowState.FULLSCREEN
+            else:
+                current_state = WindowState.MAXIMIZED
+        elif window_state == FormWindowState.Minimized:
+            current_state = WindowState.MINIMIZED
+        elif window_state == FormWindowState.Normal:
+            current_state = WindowState.NORMAL
         return bool(current_state == state)
 
     @property
     def is_full_screen(self):
-        return (
-            self.native.FormBorderStyle == getattr(FormBorderStyle, "None")
-            and self.native.WindowState == FormWindowState.Maximized
-        )
+        return self.is_window_state(WindowState.FULLSCREEN)
 
     @property
     def is_resizable(self):

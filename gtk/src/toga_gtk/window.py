@@ -207,13 +207,16 @@ class Window:
         def __init__(self, window_impl):
             self.window_impl = window_impl
             self.native = Gtk.Window()
+            self.native.fullscreen()
+
+        def update_content(self):
             self.window_impl.container.remove(
                 self.window_impl.interface.content._impl.native
             )
             self.native.add(self.window_impl.interface.content._impl.native)
-            self.native.fullscreen()
 
         def show(self):
+            self.update_content()
             self.native.show()
 
         def close(self):
@@ -254,10 +257,10 @@ class Window:
             elif current_state == WindowState.PRESENTATION:
                 self._presentation_window.close()
                 self._presentation_window = None
-                self.interface.screen = (
-                    self.interface._impl._before_presentation_mode_screen
-                )
 
+                self.interface.screen = self._before_presentation_mode_screen
+                self._before_presentation_mode_screen = None
+                self._is_in_presentation_mode = False
         # Set Window state to NORMAL before changing to other states as
         # some states block changing window state without first exiting them.
         elif state == WindowState.MAXIMIZED:
@@ -274,8 +277,13 @@ class Window:
 
         elif state == WindowState.PRESENTATION:
             self.set_window_state(WindowState.NORMAL)
+            if getattr(self, "_before_presentation_mode_screen", None) is None:
+                self._before_presentation_mode_screen = self.interface.screen
             self._presentation_window = self._PresentationWindow(self)
             self._presentation_window.show()
+            self._is_in_presentation_mode = True
+        else:  # pragma: no cover
+            pass
 
     ######################################################################
     # Window capabilities
