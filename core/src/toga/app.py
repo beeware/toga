@@ -793,7 +793,7 @@ class App:
         #     " future. Consider using `App.is_in_presentation_mode` property instead.",
         #     DeprecationWarning,
         # )
-        return any(window.state == WindowState.PRESENTATION for window in self.windows)
+        return self.is_in_presentation_mode
 
     def set_full_screen(self, *windows: Window) -> None:
         """Make one or more windows full screen.
@@ -819,6 +819,8 @@ class App:
         # )
         if self.windows is not None:
             self.exit_full_screen()
+            if windows is None:
+                return
             screen_window_dict = dict()
             for window, screen in zip(windows, self.screens):
                 screen_window_dict[screen] = window

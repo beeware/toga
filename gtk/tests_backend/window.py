@@ -38,18 +38,20 @@ class WindowProbe(BaseProbe):
         return (content_allocation.width, content_allocation.height)
 
     def is_window_state(self, state):
-        if getattr(self.impl, "_presentation_window", None) is not None:
-            current_state = WindowState.PRESENTATION
-        else:
-            window_state_flags = self._window_state_flags
-            if window_state_flags & Gdk.WindowState.MAXIMIZED:
-                current_state = WindowState.MAXIMIZED
-            elif window_state_flags & Gdk.WindowState.ICONIFIED:
-                current_state = WindowState.MINIMIZED
-            elif window_state_flags & Gdk.WindowState.FULLSCREEN:
-                current_state = WindowState.FULLSCREEN
+        window_state_flags = self.impl._window_state_flags
+        if window_state_flags & Gdk.WindowState.MAXIMIZED:
+            current_state = WindowState.MAXIMIZED
+        elif window_state_flags & Gdk.WindowState.ICONIFIED:
+            current_state = WindowState.MINIMIZED
+        elif window_state_flags & Gdk.WindowState.FULLSCREEN:
+            # Use a shadow variable since a window without any app menu and toolbar
+            # in presentation mode would be indistinguishable from full screen mode.
+            if getattr(self.impl, "_is_in_presentation_mode", False) is True:
+                current_state = WindowState.PRESENTATION
             else:
-                current_state = WindowState.NORMAL
+                current_state = WindowState.FULLSCREEN
+        else:
+            current_state = WindowState.NORMAL
         return bool(current_state == state)
 
     @property

@@ -203,87 +203,70 @@ class Window:
     # Window state
     ######################################################################
 
-    class _PresentationWindow:
-        def __init__(self, window_impl):
-            self.window_impl = window_impl
-            self.native = Gtk.Window()
-            self.native.fullscreen()
-
-        def update_content(self):
-            self.window_impl.container.remove(
-                self.window_impl.interface.content._impl.native
-            )
-            self.native.add(self.window_impl.interface.content._impl.native)
-
-        def show(self):
-            self.update_content()
-            self.native.show()
-
-        def close(self):
-            self.native.unfullscreen()
-            self.native.remove(self.window_impl.interface.content._impl.native)
-            self.window_impl.container.add(
-                self.window_impl.interface.content._impl.native
-            )
-            self.native.close()
-
     def get_window_state(self):
-        if getattr(self, "_presentation_window", None) is not None:
-            return WindowState.PRESENTATION
-        else:
-            window_state_flags = self._window_state_flags
-            if window_state_flags & Gdk.WindowState.MAXIMIZED:
-                return WindowState.MAXIMIZED
-            elif window_state_flags & Gdk.WindowState.ICONIFIED:
-                return WindowState.MINIMIZED
-            elif window_state_flags & Gdk.WindowState.FULLSCREEN:
-                return WindowState.FULLSCREEN
+        window_state_flags = self._window_state_flags
+        if window_state_flags & Gdk.WindowState.MAXIMIZED:
+            return WindowState.MAXIMIZED
+        elif window_state_flags & Gdk.WindowState.ICONIFIED:
+            return WindowState.MINIMIZED
+        elif window_state_flags & Gdk.WindowState.FULLSCREEN:
+            # Use a shadow variable since a window without any app menu and toolbar
+            # in presentation mode would be indistinguishable from full screen mode.
+            if getattr(self, "_is_in_presentation_mode", False) is True:
+                return WindowState.PRESENTATION
             else:
-                return WindowState.NORMAL
+                return WindowState.FULLSCREEN
+        else:
+            return WindowState.NORMAL
 
     def set_window_state(self, state):
+        current_state = self.get_window_state()
         if state == WindowState.NORMAL:
-            current_state = self.get_window_state()
             # If the window is maximized, restore it to its normal size
             if current_state == WindowState.MAXIMIZED:
                 self.native.unmaximize()
             # Deminiaturize the window to restore it to its previous state
             elif current_state == WindowState.MINIMIZED:
-                self.native.deiconify()
+                # deconify() doesn't work
+                self.native.present()
             # If the window is in full-screen mode, exit full-screen mode
             elif current_state == WindowState.FULLSCREEN:
                 self.native.unfullscreen()
             # If the window is in presentation mode, exit presentation mode
             elif current_state == WindowState.PRESENTATION:
-                self._presentation_window.close()
-                self._presentation_window = None
+                if isinstance(self.native, Gtk.ApplicationWindow):
+                    self.native.set_show_menubar(True)
+                if self.native_toolbar:
+                    self.native_toolbar.set_visible(True)
+                self.native.unfullscreen()
 
                 self.interface.screen = self._before_presentation_mode_screen
                 self._before_presentation_mode_screen = None
                 self._is_in_presentation_mode = False
-        # Set Window state to NORMAL before changing to other states as
-        # some states block changing window state without first exiting them.
-        elif state == WindowState.MAXIMIZED:
+        else:
+            # Set Window state to NORMAL before changing to other states as
+            # some states block changing window state without first exiting them.
             self.set_window_state(WindowState.NORMAL)
-            self.native.maximize()
+            if state == WindowState.MAXIMIZED:
+                self.native.maximize()
 
-        elif state == WindowState.MINIMIZED:
-            self.set_window_state(WindowState.NORMAL)
-            self.native.iconify()
+            elif state == WindowState.MINIMIZED:
+                self.native.iconify()
 
-        elif state == WindowState.FULLSCREEN:
-            self.set_window_state(WindowState.NORMAL)
-            self.native.fullscreen()
+            elif state == WindowState.FULLSCREEN:
+                self.native.fullscreen()
 
-        elif state == WindowState.PRESENTATION:
-            self.set_window_state(WindowState.NORMAL)
-            if getattr(self, "_before_presentation_mode_screen", None) is None:
-                self._before_presentation_mode_screen = self.interface.screen
-            self._presentation_window = self._PresentationWindow(self)
-            self._presentation_window.show()
-            self._is_in_presentation_mode = True
-        else:  # pragma: no cover
-            pass
+            elif state == WindowState.PRESENTATION:
+                if getattr(self, "_before_presentation_mode_screen", None) is None:
+                    self._before_presentation_mode_screen = self.interface.screen
+                if isinstance(self.native, Gtk.ApplicationWindow):
+                    self.native.set_show_menubar(False)
+                if self.native_toolbar:
+                    self.native_toolbar.set_visible(False)
+                self.native.fullscreen()
+                self._is_in_presentation_mode = True
+            else:  # pragma: no cover
+                pass
 
     ######################################################################
     # Window capabilities

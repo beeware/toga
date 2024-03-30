@@ -479,23 +479,24 @@ class Window:
 
     @state.setter
     def state(self, state: WindowState) -> None:
-        if state != self.state:
-            if state == WindowState.NORMAL:
-                self._impl.set_window_state(WindowState.NORMAL)
-            elif state == WindowState.MINIMIZED:
-                self._impl.set_window_state(WindowState.MINIMIZED)
+        if isinstance(state, WindowState):
+            current_state = self._impl.get_window_state()
+            if current_state == state:
+                return
+            elif not self.resizable and state in [
+                WindowState.MAXIMIZED,
+                WindowState.FULLSCREEN,
+                WindowState.PRESENTATION,
+            ]:
+                warnings.warn(
+                    f"Cannot set window state to {state} of a non-resizable window. "
+                )
             else:
-                if not self.resizable:
-                    warnings.warn(
-                        f"Cannot set window state to {state} of a non-resizable window. "
-                    )
-                else:
-                    if state == WindowState.MAXIMIZED:
-                        self._impl.set_window_state(WindowState.MAXIMIZED)
-                    elif state == WindowState.FULLSCREEN:
-                        self._impl.set_window_state(WindowState.FULLSCREEN)
-                    elif state == WindowState.PRESENTATION:
-                        self._impl.set_window_state(WindowState.PRESENTATION)
+                self._impl.set_window_state(state)
+        else:
+            raise ValueError(
+                "Invalid type for state parameter. Expected WindowState type."
+            )
 
     ######################################################################
     # Window capabilities

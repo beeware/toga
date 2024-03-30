@@ -502,7 +502,8 @@ else:
 
         assert second_window_probe.is_window_state(WindowState.NORMAL)
         assert not second_window_probe.is_window_state(WindowState.MINIMIZED)
-        assert second_window_probe.is_minimizable
+        if second_window_probe.supports_minimizable:
+            assert second_window_probe.is_minimizable
 
         second_window.state = WindowState.MINIMIZED
         # A longer delay to allow for genie animations
@@ -521,7 +522,8 @@ else:
             "Secondary window is not minimized",
         )
         assert not second_window_probe.is_window_state(WindowState.MINIMIZED)
-        assert second_window_probe.is_minimizable
+        if second_window_probe.supports_minimizable:
+            assert second_window_probe.is_minimizable
 
         second_window.state = WindowState.NORMAL
         await second_window_probe.wait_for_window(

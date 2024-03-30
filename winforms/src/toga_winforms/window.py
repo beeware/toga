@@ -224,7 +224,7 @@ class Window(Container, Scalable):
         if window_state == WinForms.FormWindowState.Maximized:
             if self.native.FormBorderStyle == getattr(WinForms.FormBorderStyle, "None"):
                 # Use a shadow variable since a window without any app menu and toolbar
-                # would be indistinguishable from full screen mode.
+                # in presentation mode would be indistinguishable from full screen mode.
                 if getattr(self, "_is_in_presentation_mode", False) is True:
                     return WindowState.PRESENTATION
                 else:
