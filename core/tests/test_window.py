@@ -283,27 +283,23 @@ def test_window_state(window):
     """A window can have different states."""
     assert window.state == WindowState.NORMAL
 
-    window.state = WindowState.MAXIMIZED
-    assert window.state == WindowState.MAXIMIZED
-    assert_action_performed_with(
-        window,
-        "set window state to WindowState.MAXIMIZED",
-        state=WindowState.MAXIMIZED,
-    )
+    for state in WindowState:
+        if state != WindowState.NORMAL:
+            window.state = state
+            assert window.state == state
+            assert_action_performed_with(
+                window,
+                f"set window state to {state}",
+                state=state,
+            )
 
-    window.state = WindowState.FULLSCREEN
-    assert window.state == WindowState.FULLSCREEN
-    assert_action_performed_with(
-        window,
-        "set window state to WindowState.FULLSCREEN",
-        state=WindowState.FULLSCREEN,
-    )
-
-    window.state = WindowState.NORMAL
-    assert window.state == WindowState.NORMAL
-    assert_action_performed_with(
-        window, "set window state to WindowState.NORMAL", state=WindowState.NORMAL
-    )
+            window.state = WindowState.NORMAL
+            assert window.state == WindowState.NORMAL
+            assert_action_performed_with(
+                window,
+                "set window state to WindowState.NORMAL",
+                state=WindowState.NORMAL,
+            )
 
 
 def test_close_direct(window, app):
