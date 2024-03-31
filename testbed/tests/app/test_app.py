@@ -200,7 +200,8 @@ else:
 
             window1.show()
             window2.show()
-            await app_probe.redraw("Extra windows are visible")
+            # Add delay for gtk to show the windows
+            await app_probe.redraw("Extra windows are visible", delay=0.1)
 
             assert not app.is_full_screen
             assert not app_probe.is_full_screen(window1)
@@ -301,7 +302,9 @@ else:
 
             window1.show()
             window2.show()
-            await app_probe.redraw("Extra windows are visible")
+
+            # Add delay for gtk to show the windows
+            await app_probe.redraw("Extra windows are visible", delay=0.1)
 
             assert not app.is_in_presentation_mode
             assert not main_window_probe.is_window_state(WindowState.PRESENTATION)
