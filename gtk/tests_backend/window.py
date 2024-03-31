@@ -37,6 +37,10 @@ class WindowProbe(BaseProbe):
         content_allocation = self.impl.container.get_allocation()
         return (content_allocation.width, content_allocation.height)
 
+    @property
+    def presentation_content_size(self):
+        return self.content_size
+
     def is_window_state(self, state):
         window_state_flags = self.impl._window_state_flags
         if window_state_flags & Gdk.WindowState.MAXIMIZED:
@@ -68,7 +72,7 @@ class WindowProbe(BaseProbe):
 
     @property
     def is_minimized(self):
-        return bool(self.native.get_window().get_state() & Gdk.WindowState.ICONIFIED)
+        return self.is_window_state(WindowState.MINIMIZED)
 
     def minimize(self):
         self.native.iconify()

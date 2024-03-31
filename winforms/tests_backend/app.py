@@ -102,7 +102,7 @@ class AppProbe(BaseProbe):
         return WindowProbe(self.app, window).is_window_state(WindowState.PRESENTATION)
 
     def content_size(self, window):
-        return WindowProbe(self.app, window).content_size
+        return WindowProbe(self.app, window).presentation_content_size
 
     def _menu_item(self, path):
         item = self.main_window._impl.native.MainMenuStrip

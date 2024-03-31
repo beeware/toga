@@ -50,6 +50,10 @@ class WindowProbe(BaseProbe):
             ),
         )
 
+    @property
+    def presentation_content_size(self):
+        return self.content_size
+
     def is_window_state(self, state):
         window_state = self.native.WindowState
         if window_state == FormWindowState.Maximized:
@@ -80,7 +84,7 @@ class WindowProbe(BaseProbe):
 
     @property
     def is_minimized(self):
-        return self.native.WindowState == FormWindowState.Minimized
+        return self.is_window_state(WindowState.MINIMIZED)
 
     def minimize(self):
         if self.native.MinimizeBox:

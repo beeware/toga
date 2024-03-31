@@ -58,7 +58,9 @@ class WindowProbe(BaseProbe):
         )
 
     def is_window_state(self, state):
-        if bool(self.window.content._impl.native.isInFullScreenMode()):
+        if self.window.content and bool(
+            self.window.content._impl.native.isInFullScreenMode()
+        ):
             current_state = WindowState.PRESENTATION
         elif bool(self.native.styleMask & NSWindowStyleMask.FullScreen):
             current_state = WindowState.FULLSCREEN
@@ -72,7 +74,7 @@ class WindowProbe(BaseProbe):
 
     @property
     def is_full_screen(self):
-        return bool(self.native.styleMask & NSWindowStyleMask.FullScreen)
+        return self.is_window_state(WindowState.FULLSCREEN)
 
     @property
     def is_resizable(self):
@@ -88,7 +90,7 @@ class WindowProbe(BaseProbe):
 
     @property
     def is_minimized(self):
-        return bool(self.native.isMiniaturized)
+        return self.is_window_state(WindowState.MINIMIZED)
 
     def minimize(self):
         self.native.performMiniaturize(None)

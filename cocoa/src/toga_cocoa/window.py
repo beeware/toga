@@ -345,7 +345,9 @@ class Window:
     ######################################################################
 
     def get_window_state(self):
-        if bool(self.interface.content._impl.native.isInFullScreenMode()):
+        if self.interface.content and bool(
+            self.interface.content._impl.native.isInFullScreenMode()
+        ):
             return WindowState.PRESENTATION
         elif bool(self.native.styleMask & NSWindowStyleMask.FullScreen):
             return WindowState.FULLSCREEN

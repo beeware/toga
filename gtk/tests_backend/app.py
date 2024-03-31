@@ -43,8 +43,7 @@ class AppProbe(BaseProbe):
         return WindowProbe(self.app, window).is_window_state(WindowState.PRESENTATION)
 
     def content_size(self, window):
-        content_allocation = window._impl.container.get_allocation()
-        return (content_allocation.width, content_allocation.height)
+        return WindowProbe(self.app, window).presentation_content_size
 
     def _menu_item(self, path):
         main_menu = self.app._impl.native.get_menubar()
