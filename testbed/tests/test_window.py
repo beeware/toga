@@ -509,6 +509,7 @@ else:
         # A longer delay to allow for genie animations
         await second_window_probe.wait_for_window(
             "Secondary window is minimized",
+            minimize=True,
         )
         assert second_window_probe.is_window_state(WindowState.MINIMIZED)
 
@@ -520,6 +521,7 @@ else:
         # A longer delay to allow for genie animations
         await second_window_probe.wait_for_window(
             "Secondary window is not minimized",
+            minimize=True,
         )
         assert not second_window_probe.is_window_state(WindowState.MINIMIZED)
         if second_window_probe.supports_minimizable:
@@ -527,7 +529,8 @@ else:
 
         second_window.state = WindowState.NORMAL
         await second_window_probe.wait_for_window(
-            "Secondary window is still not minimized"
+            "Secondary window is still not minimized",
+            minimize=True,
         )
         assert not second_window_probe.is_window_state(WindowState.MINIMIZED)
 
@@ -592,6 +595,7 @@ else:
         # A longer delay to allow for genie animations
         await second_window_probe.wait_for_window(
             "Secondary window is full screen",
+            full_screen=True,
         )
         assert second_window_probe.is_window_state(WindowState.FULLSCREEN)
         assert second_window_probe.content_size[0] > initial_content_size[0]
@@ -599,7 +603,8 @@ else:
 
         second_window.state = WindowState.FULLSCREEN
         await second_window_probe.wait_for_window(
-            "Secondary window is still full screen"
+            "Secondary window is still full screen",
+            full_screen=True,
         )
         assert second_window_probe.is_window_state(WindowState.FULLSCREEN)
         assert second_window_probe.content_size[0] > initial_content_size[0]
@@ -609,6 +614,7 @@ else:
         # A longer delay to allow for genie animations
         await second_window_probe.wait_for_window(
             "Secondary window is not full screen",
+            full_screen=True,
         )
         assert not second_window_probe.is_window_state(WindowState.FULLSCREEN)
         assert second_window_probe.is_resizable
@@ -616,7 +622,8 @@ else:
 
         second_window.state = WindowState.NORMAL
         await second_window_probe.wait_for_window(
-            "Secondary window is still not full screen"
+            "Secondary window is still not full screen",
+            full_screen=True,
         )
         assert not second_window_probe.is_window_state(WindowState.FULLSCREEN)
         assert second_window_probe.content_size == initial_content_size
@@ -632,40 +639,52 @@ else:
         assert second_window_probe.is_window_state(WindowState.NORMAL)
         assert not second_window_probe.is_window_state(WindowState.PRESENTATION)
         assert second_window_probe.is_resizable
-        initial_content_size = second_window_probe.content_size
+        initial_content_size = second_window_probe.presentation_content_size
 
         second_window.state = WindowState.PRESENTATION
         # A longer delay to allow for genie animations
         await second_window_probe.wait_for_window(
             "Secondary window is in presentation mode",
+            full_screen=True,
         )
         assert second_window_probe.is_window_state(WindowState.PRESENTATION)
-        assert second_window_probe.content_size[0] > initial_content_size[0]
-        assert second_window_probe.content_size[1] > initial_content_size[1]
+        assert (
+            second_window_probe.presentation_content_size[0] > initial_content_size[0]
+        )
+        assert (
+            second_window_probe.presentation_content_size[1] > initial_content_size[1]
+        )
 
         second_window.state = WindowState.PRESENTATION
         await second_window_probe.wait_for_window(
-            "Secondary window is still in presentation mode"
+            "Secondary window is still in presentation mode",
+            full_screen=True,
         )
         assert second_window_probe.is_window_state(WindowState.PRESENTATION)
-        assert second_window_probe.content_size[0] > initial_content_size[0]
-        assert second_window_probe.content_size[1] > initial_content_size[1]
+        assert (
+            second_window_probe.presentation_content_size[0] > initial_content_size[0]
+        )
+        assert (
+            second_window_probe.presentation_content_size[1] > initial_content_size[1]
+        )
 
         second_window.state = WindowState.NORMAL
         # A longer delay to allow for genie animations
         await second_window_probe.wait_for_window(
             "Secondary window is not in presentation mode",
+            full_screen=True,
         )
         assert not second_window_probe.is_window_state(WindowState.PRESENTATION)
         assert second_window_probe.is_resizable
-        assert second_window_probe.content_size == initial_content_size
+        assert second_window_probe.presentation_content_size == initial_content_size
 
         second_window.state = WindowState.NORMAL
         await second_window_probe.wait_for_window(
-            "Secondary window is still not in presentation mode"
+            "Secondary window is still not in presentation mode",
+            full_screen=True,
         )
         assert not second_window_probe.is_window_state(WindowState.PRESENTATION)
-        assert second_window_probe.content_size == initial_content_size
+        assert second_window_probe.presentation_content_size == initial_content_size
 
     @pytest.mark.parametrize(
         "second_window_kwargs",

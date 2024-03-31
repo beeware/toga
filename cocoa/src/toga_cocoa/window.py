@@ -42,6 +42,10 @@ class TogaWindow(NSWindow):
             # Set the window to the new size
             self.interface.content.refresh()
 
+    @objc_method
+    def windowDidExitFullScreen_(self, notification) -> None:
+        pass
+
     ######################################################################
     # Toolbar delegate methods
     ######################################################################
@@ -341,21 +345,20 @@ class Window:
     ######################################################################
 
     def get_window_state(self):
-        if bool(self.native.isZoomed):
-            if bool(self.native.styleMask & NSWindowStyleMask.FullScreen):
-                return WindowState.FULLSCREEN
-            else:
-                return WindowState.MAXIMIZED
+        if bool(self.interface.content._impl.native.isInFullScreenMode()):
+            return WindowState.PRESENTATION
+        elif bool(self.native.styleMask & NSWindowStyleMask.FullScreen):
+            return WindowState.FULLSCREEN
+        elif bool(self.native.isZoomed):
+            return WindowState.MAXIMIZED
         elif bool(self.native.isMiniaturized):
             return WindowState.MINIMIZED
-        elif bool(self.interface.content._impl.native.isInFullScreenMode()):
-            return WindowState.PRESENTATION
         else:
             return WindowState.NORMAL
 
     def set_window_state(self, state):
+        current_state = self.get_window_state()
         if state == WindowState.NORMAL:
-            current_state = self.get_window_state()
             # If the window is maximized, restore it to its normal size
             if current_state == WindowState.MAXIMIZED:
                 self.native.setIsZoomed(False)
@@ -385,6 +388,8 @@ class Window:
                 self.interface.app.enter_presentation_mode(
                     {self.interface.screen: self.interface}
                 )
+            else:  # pragma: no cover
+                return
 
     ######################################################################
     # Window capabilities

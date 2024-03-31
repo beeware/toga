@@ -30,14 +30,33 @@ class WindowDemoApp(toga.App):
     def do_large(self, widget, **kwargs):
         self.main_window.size = (1500, 1000)
 
-    def do_normal(self, widget, **kwargs):
+    def do_current_window_state(self, widget, **kwargs):
+        self.label.text = f"Current state: {self.main_window.state}"
+
+    def do_window_state_normal(self, widget, **kwargs):
         self.main_window.state = WindowState.NORMAL
 
-    def do_maximize(self, widget, **kwargs):
+    def do_window_state_maximize(self, widget, **kwargs):
         self.main_window.state = WindowState.MAXIMIZED
 
-    def do_minimize(self, widget, **kwargs):
+    def do_window_state_minimize(self, widget, **kwargs):
         self.main_window.state = WindowState.MINIMIZED
+        for i in range(5, 0, -1):
+            print(f"Back in {i}...")
+            yield 1
+        self.main_window.state = WindowState.NORMAL
+
+    def do_window_state_full_screen(self, widget, **kwargs):
+        self.main_window.state = WindowState.FULLSCREEN
+
+    def do_window_state_presentation(self, widget, **kwargs):
+        self.main_window.state = WindowState.PRESENTATION
+
+    def do_app_presentation_mode(self, widget, **kwargs):
+        if self.is_in_presentation_mode:
+            self.exit_presentation_mode()
+        else:
+            self.enter_presentation_mode([self.main_window])
 
     def do_app_full_screen(self, widget, **kwargs):
         if self.is_full_screen:
@@ -47,9 +66,6 @@ class WindowDemoApp(toga.App):
 
     def do_window_full_screen(self, widget, **kwargs):
         self.main_window.full_screen = not self.main_window.full_screen
-
-    def do_enter_presentation_mode(self, widget, **kwargs):
-        self.enter_presentation_mode([self.main_window])
 
     def do_title(self, widget, **kwargs):
         self.main_window.title = f"Time is {datetime.now()}"
@@ -189,26 +205,49 @@ class WindowDemoApp(toga.App):
         btn_do_large = toga.Button(
             "Become large", on_press=self.do_large, style=btn_style
         )
-        btn_do_normal = toga.Button(
-            "Become normal", on_press=self.do_normal, style=btn_style
-        )
-        btn_do_maximize = toga.Button(
-            "Become maximize", on_press=self.do_maximize, style=btn_style
-        )
-        btn_do_minimize = toga.Button(
-            "Become minimize", on_press=self.do_minimize, style=btn_style
-        )
-        btn_do_app_full_screen = toga.Button(
-            "Make app full screen", on_press=self.do_app_full_screen, style=btn_style
-        )
-        btn_do_window_full_screen = toga.Button(
-            "Make window full screen",
-            on_press=self.do_window_full_screen,
+        btn_do_current_window_state = toga.Button(
+            "Get current window state",
+            on_press=self.do_current_window_state,
             style=btn_style,
         )
-        btn_do_enter_presentation_mode = toga.Button(
-            "Enter into presentation mode",
-            on_press=self.do_enter_presentation_mode,
+        btn_do_window_state_normal = toga.Button(
+            "Make window state normal",
+            on_press=self.do_window_state_normal,
+            style=btn_style,
+        )
+        btn_do_window_state_maximize = toga.Button(
+            "Make window state maximized",
+            on_press=self.do_window_state_maximize,
+            style=btn_style,
+        )
+        btn_do_window_state_minimize = toga.Button(
+            "Make window state minimized",
+            on_press=self.do_window_state_minimize,
+            style=btn_style,
+        )
+        btn_do_window_state_full_screen = toga.Button(
+            "Make window state full screen",
+            on_press=self.do_window_state_full_screen,
+            style=btn_style,
+        )
+        btn_do_window_state_presentation = toga.Button(
+            "Make window state presentation",
+            on_press=self.do_window_state_presentation,
+            style=btn_style,
+        )
+        btn_do_app_presentation_mode = toga.Button(
+            "Toggle app presentation mode",
+            on_press=self.do_app_presentation_mode,
+            style=btn_style,
+        )
+        btn_do_app_full_screen = toga.Button(
+            "Make app full screen(legacy)",
+            on_press=self.do_app_full_screen,
+            style=btn_style,
+        )
+        btn_do_window_full_screen = toga.Button(
+            "Make window full screen(legacy)",
+            on_press=self.do_window_full_screen,
             style=btn_style,
         )
         btn_do_title = toga.Button(
@@ -279,12 +318,15 @@ class WindowDemoApp(toga.App):
                 btn_do_right_current_screen,
                 btn_do_small,
                 btn_do_large,
-                btn_do_normal,
-                btn_do_maximize,
-                btn_do_minimize,
+                btn_do_current_window_state,
+                btn_do_window_state_normal,
+                btn_do_window_state_maximize,
+                btn_do_window_state_minimize,
+                btn_do_window_state_full_screen,
+                btn_do_window_state_presentation,
+                btn_do_app_presentation_mode,
                 btn_do_app_full_screen,
                 btn_do_window_full_screen,
-                btn_do_enter_presentation_mode,
                 btn_do_title,
                 btn_do_new_windows,
                 btn_do_current_window_cycling,

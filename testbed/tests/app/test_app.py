@@ -308,97 +308,110 @@ else:
             assert not window1_probe.is_window_state(WindowState.PRESENTATION)
             assert window2_probe.has_toolbar()
             assert not window2_probe.is_window_state(WindowState.PRESENTATION)
-            initial_content_main_window_size = main_window_probe.content_size
-            initial_content1_size = window1_probe.content_size
-            initial_content2_size = window2_probe.content_size
+            initial_content_main_window_size = (
+                main_window_probe.presentation_content_size
+            )
+            initial_content1_size = window1_probe.presentation_content_size
+            initial_content2_size = window2_probe.presentation_content_size
 
             # Enter presentation mode with main window via the app
             app.enter_presentation_mode([main_window])
             await main_window_probe.wait_for_window(
-                "Main window is in presentation mode"
+                "Main window is in presentation mode",
+                full_screen=True,
             )
             assert app.is_in_presentation_mode
 
             assert not window1_probe.is_window_state(WindowState.PRESENTATION)
-            assert window1_probe.content_size == initial_content1_size
+            assert window1_probe.presentation_content_size == initial_content1_size
             assert not window2_probe.is_window_state(WindowState.PRESENTATION)
-            assert window2_probe.content_size == initial_content2_size
+            assert window2_probe.presentation_content_size == initial_content2_size
 
             assert main_window_probe.is_window_state(WindowState.PRESENTATION)
-            assert main_window_probe.content_size[0] > 1000
-            assert main_window_probe.content_size[1] > 700
+            assert main_window_probe.presentation_content_size[0] > 1000
+            assert main_window_probe.presentation_content_size[1] > 700
             # Exit presentation mode
             app.exit_presentation_mode()
             await main_window_probe.wait_for_window(
-                "Main window is no longer in presentation mode"
+                "Main window is no longer in presentation mode",
+                full_screen=True,
             )
             assert not app.is_in_presentation_mode
-            assert main_window_probe.content_size == initial_content_main_window_size
+            assert (
+                main_window_probe.presentation_content_size
+                == initial_content_main_window_size
+            )
 
             # Enter presentation mode with window 2 via the app
             app.enter_presentation_mode([window2])
             await window2_probe.wait_for_window(
-                "Second extra window is in presentation mode"
+                "Second extra window is in presentation mode",
+                full_screen=True,
             )
             assert app.is_in_presentation_mode
 
             assert not window1_probe.is_window_state(WindowState.PRESENTATION)
-            assert window1_probe.content_size == initial_content1_size
+            assert window1_probe.presentation_content_size == initial_content1_size
 
             assert window2_probe.is_window_state(WindowState.PRESENTATION)
-            assert window2_probe.content_size[0] > 1000
-            assert window2_probe.content_size[1] > 700
+            assert window2_probe.presentation_content_size[0] > 1000
+            assert window2_probe.presentation_content_size[1] > 700
             # Exit presentation mode
             app.exit_presentation_mode()
             await window2_probe.wait_for_window(
-                "Second extra window is no longer in presentation mode"
+                "Second extra window is no longer in presentation mode",
+                full_screen=True,
             )
             assert not app.is_in_presentation_mode
-            assert window2_probe.content_size == initial_content2_size
+            assert window2_probe.presentation_content_size == initial_content2_size
 
             # Enter presentation mode with window 1 via the app
             app.enter_presentation_mode([window1])
             await window1_probe.wait_for_window(
-                "First extra window is in presentation mode"
+                "First extra window is in presentation mode",
+                full_screen=True,
             )
             assert app.is_in_presentation_mode
 
             assert not window2_probe.is_window_state(WindowState.PRESENTATION)
-            assert window2_probe.content_size == initial_content2_size
+            assert window2_probe.presentation_content_size == initial_content2_size
 
             assert window1_probe.is_window_state(WindowState.PRESENTATION)
-            assert window1_probe.content_size[0] > 1000
-            assert window1_probe.content_size[1] > 700
+            assert window1_probe.presentation_content_size[0] > 1000
+            assert window1_probe.presentation_content_size[1] > 700
             # Exit presentation mode
             app.exit_presentation_mode()
             await window1_probe.wait_for_window(
-                "First extra window is no longer in presentation mode"
+                "First extra window is no longer in presentation mode",
+                full_screen=True,
             )
             assert not app.is_in_presentation_mode
-            assert window1_probe.content_size == initial_content1_size
+            assert window1_probe.presentation_content_size == initial_content1_size
 
             if len(app.screens) < 2:
                 # Enter presentation mode with 2 windows via the app,
                 # but the second window should be dropped.
                 app.enter_presentation_mode([window1, window2])
                 await window1_probe.wait_for_window(
-                    "First extra window is in presentation mode"
+                    "First extra window is in presentation mode",
+                    full_screen=True,
                 )
                 assert app.is_in_presentation_mode
 
                 assert not window2_probe.is_window_state(WindowState.PRESENTATION)
-                assert window2_probe.content_size == initial_content2_size
+                assert window2_probe.presentation_content_size == initial_content2_size
 
                 assert window1_probe.is_window_state(WindowState.PRESENTATION)
-                assert window1_probe.content_size[0] > 1000
-                assert window1_probe.content_size[1] > 700
+                assert window1_probe.presentation_content_size[0] > 1000
+                assert window1_probe.presentation_content_size[1] > 700
                 # Exit presentation mode
                 app.exit_presentation_mode()
                 await window1_probe.wait_for_window(
-                    "First extra window is no longer in presentation mode"
+                    "First extra window is no longer in presentation mode",
+                    full_screen=True,
                 )
                 assert not app.is_in_presentation_mode
-                assert window1_probe.content_size == initial_content1_size
+                assert window1_probe.presentation_content_size == initial_content1_size
         finally:
             window1.close()
             window2.close()
