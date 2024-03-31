@@ -368,26 +368,23 @@ class Window:
             # If the window is in presentation mode, exit presentation mode
             elif current_state == WindowState.PRESENTATION:
                 self.interface.app.exit_presentation_mode()
-
-        # Set Window state to NORMAL before changing to other states as
-        # some states block changing window state without first exiting them.
-        elif state == WindowState.MAXIMIZED:
+        else:
+            # Set Window state to NORMAL before changing to other states as
+            # some states block changing window state without first exiting them.
             self.set_window_state(WindowState.NORMAL)
-            self.native.setIsZoomed(True)
+            if state == WindowState.MAXIMIZED:
+                self.native.setIsZoomed(True)
 
-        elif state == WindowState.MINIMIZED:
-            self.set_window_state(WindowState.NORMAL)
-            self.native.setIsMiniaturized(True)
+            elif state == WindowState.MINIMIZED:
+                self.native.setIsMiniaturized(True)
 
-        elif state == WindowState.FULLSCREEN:
-            self.set_window_state(WindowState.NORMAL)
-            self.native.toggleFullScreen(self.native)
+            elif state == WindowState.FULLSCREEN:
+                self.native.toggleFullScreen(self.native)
 
-        elif state == WindowState.PRESENTATION:
-            self.set_window_state(WindowState.NORMAL)
-            self.interface.app.enter_presentation_mode(
-                {self.interface.screen: self.interface}
-            )
+            elif state == WindowState.PRESENTATION:
+                self.interface.app.enter_presentation_mode(
+                    {self.interface.screen: self.interface}
+                )
 
     ######################################################################
     # Window capabilities
