@@ -159,11 +159,11 @@ class Window(Container):
         current_state = self.get_window_state()
         decor_view = self.app.native.getWindow().getDecorView()
         # On Android Maximized state is same as the Normal state
-        if state in [WindowState.NORMAL, WindowState.MAXIMIZED]:
-            if current_state in [
+        if state in {WindowState.NORMAL, WindowState.MAXIMIZED}:
+            if current_state in {
                 WindowState.FULLSCREEN,
                 WindowState.PRESENTATION,
-            ]:
+            }:
                 decor_view.setSystemUiVisibility(0)
                 if current_state == WindowState.PRESENTATION:
                     self.app.native.getSupportActionBar().show()
@@ -195,7 +195,7 @@ class Window(Container):
             # Restore to normal state before switching states to avoid mixing states
             # and prevent glitches.
             self.set_window_state(WindowState.NORMAL)
-            if state in [WindowState.FULLSCREEN, WindowState.PRESENTATION]:
+            if state in {WindowState.FULLSCREEN, WindowState.PRESENTATION}:
                 decor_view.setSystemUiVisibility(
                     decor_view.SYSTEM_UI_FLAG_FULLSCREEN
                     | decor_view.SYSTEM_UI_FLAG_HIDE_NAVIGATION
