@@ -10,6 +10,8 @@ from android.view import ViewTreeObserver
 from java import dynamic_proxy
 from java.io import ByteArrayOutputStream
 
+from toga.constants import WindowState
+
 from .container import Container
 from .screens import Screen as ScreenImpl
 
@@ -137,11 +139,72 @@ class Window(Container):
 
     def get_window_state(self):
         # Windows are always full screen
-        pass
+        decor_view = self.app.native.getWindow().getDecorView()
+        system_ui_flags = decor_view.getSystemUiVisibility()
+        if (
+            system_ui_flags
+            & (
+                decor_view.SYSTEM_UI_FLAG_FULLSCREEN
+                | decor_view.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                | decor_view.SYSTEM_UI_FLAG_IMMERSIVE
+            )
+        ) != 0:
+            if not self.app.native.getSupportActionBar().isShowing():
+                return WindowState.PRESENTATION
+            else:
+                return WindowState.FULLSCREEN
+        return WindowState.NORMAL
 
     def set_window_state(self, state):
-        # Windows are always full screen
-        pass
+        current_state = self.get_window_state()
+        decor_view = self.app.native.getWindow().getDecorView()
+        # On Android Maximized state is same as the Normal state
+        if state in [WindowState.NORMAL, WindowState.MAXIMIZED]:
+            if current_state in [
+                WindowState.FULLSCREEN,
+                WindowState.PRESENTATION,
+            ]:
+                decor_view.setSystemUiVisibility(0)
+                if current_state == WindowState.PRESENTATION:
+                    self.app.native.getSupportActionBar().show()
+                    self.interface.screen = self._before_presentation_mode_screen
+                    self._before_presentation_mode_screen = None
+
+            # Doesn't work consistently
+            # elif current_state == WindowState.MINIMIZED:
+            #     # Get the context
+            #     context = self.app.native.getApplicationContext()
+            #     # Create the intent to bring the activity to the foreground
+            #     new_intent = Intent(context, self.app.native.getClass())
+            #     # These 2 options work properly by resuming existing MainActivity instead of creating
+            #     # a new instance of MainActivity, but they work only once:
+            #     new_intent.addFlags(
+            #         Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP
+            #     )
+            #     new_intent.setFlags(
+            #         Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP
+            #     )
+            #     # This works every time but starts new instance of MainActivity
+            #     new_intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+            #     self.app.native.startActivity(new_intent)
+        else:
+            # # This works but the issue lies in restoring to normal state
+            # if state == WindowState.MINIMIZED:
+            #     self.app.native.moveTaskToBack(True)
+
+            # Restore to normal state before switching states to avoid mixing states
+            # and prevent glitches.
+            self.set_window_state(WindowState.NORMAL)
+            if state in [WindowState.FULLSCREEN, WindowState.PRESENTATION]:
+                decor_view.setSystemUiVisibility(
+                    decor_view.SYSTEM_UI_FLAG_FULLSCREEN
+                    | decor_view.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                    | decor_view.SYSTEM_UI_FLAG_IMMERSIVE
+                )
+                if state == WindowState.PRESENTATION:
+                    self.app.native.getSupportActionBar().hide()
+                    if getattr(self, "_before_presentation_mode_screen", None) is None:
+                        self._before_presentation_mode_screen = self.interface.screen
 
     ######################################################################
     # Window capabilities

@@ -10,6 +10,7 @@ from java import dynamic_proxy
 from org.beeware.android import IPythonApp, MainActivity
 
 from toga.command import Command, Group, Separator
+from toga.constants import WindowState
 
 from .libs import events
 from .screens import Screen as ScreenImpl
@@ -296,12 +297,15 @@ class App:
     ######################################################################
 
     def enter_presentation_mode(self, screen_window_dict):
-        # No-op; mobile doesn't support full screen
-        pass
+        for screen, window in screen_window_dict.items():
+            window._impl._before_presentation_mode_screen = window.screen
+            window.screen = screen
+            window.state = WindowState.PRESENTATION
 
     def exit_presentation_mode(self):
-        # No-op; mobile doesn't support full screen
-        pass
+        for window in self.interface.windows:
+            if window.state == WindowState.PRESENTATION:
+                window.state = WindowState.NORMAL
 
     ######################################################################
     # Platform-specific APIs
