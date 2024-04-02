@@ -52,11 +52,12 @@ class Image:
             else:
                 self.native = raw
         finally:
+            # Calling `release` here disabled Rubicon's "release on delete" automation.
+            # We therefore add an explicit `release` call in __del__ if the NSImage was
+            # initialized successfully.
             image.release()
 
     def __del__(self):
-        # Calling `release` during init disabled Rubicon's "release on delete"
-        # automation. We therefore need to release manually here.
         if self._needs_release:
             self.native.release()
 

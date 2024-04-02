@@ -26,11 +26,12 @@ class Icon:
             if self.native is None:
                 raise ValueError(f"Unable to load icon from {path}")
         finally:
+            # Calling `release` here disabled Rubicon's "release on delete" automation.
+            # We therefore add an explicit `release` call in __del__ if the NSImage was
+            # initialized successfully.
             image.release()
 
     def __del__(self):
-        # Calling `release` during init disabled Rubicon's "release on delete"
-        # automation. We therefore need to release manually here.
         if self.native:
             self.native.release()
 
