@@ -31,12 +31,70 @@ if toga.platform.current_platform in {"iOS", "android"}:
         app.show_cursor()
         app.hide_cursor()
 
-    async def test_full_screen(app):
+    async def test_full_screen(app, app_probe, main_window):
         """Window can be made full screen"""
-        # Invoke the methods to verify the endpoints exist. However, they're no-ops,
-        # so there's nothing to test.
-        app.set_full_screen(app.current_window)
+        # This test fails when run normally with:
+        # `briefcase run android -ur --test`
+        # But passes when run singly with:
+        # `briefcase run android -ur --test -- tests/app/test_app.py::test_full_screen`
+        app.set_full_screen(app.main_window)
+        await app_probe.redraw("App is in presentation mode")
+        assert app.is_full_screen
+
         app.exit_full_screen()
+        await app_probe.redraw("App is not in presentation mode")
+        assert not app.is_full_screen
+
+    async def test_presentation_mode(app, app_probe, main_window, main_window_probe):
+        """The app can enter into presentation mode"""
+        # This test fails when run normally with:
+        # `briefcase run android -ur --test`
+        # But passes when run singly with:
+        # `briefcase run android -ur --test -- tests/app/test_app.py::test_full_screen`
+        assert not app.is_in_presentation_mode
+        assert not main_window_probe.is_window_state(WindowState.PRESENTATION)
+
+        # Enter presentation mode with main window via the app
+        app.enter_presentation_mode([main_window])
+        await main_window_probe.wait_for_window(
+            "Main window is in presentation mode", full_screen=True
+        )
+
+        assert app.is_in_presentation_mode
+        assert not main_window_probe.is_window_state(WindowState.NORMAL)
+        assert main_window_probe.is_window_state(WindowState.PRESENTATION)
+
+        # Exit presentation mode
+        app.exit_presentation_mode()
+        await main_window_probe.wait_for_window(
+            "Main window is no longer in presentation mode",
+            full_screen=True,
+        )
+
+        assert not app.is_in_presentation_mode
+        assert not main_window_probe.is_window_state(WindowState.PRESENTATION)
+        assert main_window_probe.is_window_state(WindowState.NORMAL)
+
+        # Enter presentation mode with a screen-window dict via the app
+        app.enter_presentation_mode({app.screens[0]: main_window})
+        await main_window_probe.wait_for_window(
+            "Main window is in presentation mode", full_screen=True
+        )
+
+        assert app.is_in_presentation_mode
+        assert not main_window_probe.is_window_state(WindowState.NORMAL)
+        assert main_window_probe.is_window_state(WindowState.PRESENTATION)
+
+        # Exit presentation mode
+        app.exit_presentation_mode()
+        await main_window_probe.wait_for_window(
+            "Main window is no longer in presentation mode",
+            full_screen=True,
+        )
+
+        assert not app.is_in_presentation_mode
+        assert not main_window_probe.is_window_state(WindowState.PRESENTATION)
+        assert main_window_probe.is_window_state(WindowState.NORMAL)
 
     async def test_current_window(app, main_window, main_window_probe):
         """The current window can be retrieved"""
@@ -368,8 +426,8 @@ else:
             assert not app.is_in_presentation_mode
             assert window2_probe.presentation_content_size == initial_content2_size
 
-            # Enter presentation mode with window 1 via the app
-            app.enter_presentation_mode([window1])
+            # Enter presentation mode with a screen-window1 dict via the app
+            app.enter_presentation_mode({app.screens[0]: window1})
             await window1_probe.wait_for_window(
                 "First extra window is in presentation mode",
                 full_screen=True,
@@ -392,8 +450,8 @@ else:
             assert window1_probe.presentation_content_size == initial_content1_size
 
             if len(app.screens) < 2:
-                # Enter presentation mode with 2 windows via the app,
-                # but the second window should be dropped.
+                # Enter presentation mode with 2 windows via the app, but the
+                # second window should be dropped as there is only 1 screen.
                 app.enter_presentation_mode([window1, window2])
                 await window1_probe.wait_for_window(
                     "First extra window is in presentation mode",

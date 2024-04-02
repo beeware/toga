@@ -297,15 +297,10 @@ class App:
     ######################################################################
 
     def enter_presentation_mode(self, screen_window_dict):
-        for screen, window in screen_window_dict.items():
-            window._impl._before_presentation_mode_screen = window.screen
-            window.screen = screen
-            window.state = WindowState.PRESENTATION
+        self.interface.main_window.state = WindowState.PRESENTATION
 
     def exit_presentation_mode(self):
-        for window in self.interface.windows:
-            if window.state == WindowState.PRESENTATION:
-                window.state = WindowState.NORMAL
+        self.interface.main_window.state = WindowState.NORMAL
 
     ######################################################################
     # Platform-specific APIs

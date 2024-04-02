@@ -167,8 +167,6 @@ class Window(Container):
                 decor_view.setSystemUiVisibility(0)
                 if current_state == WindowState.PRESENTATION:
                     self.app.native.getSupportActionBar().show()
-                    self.interface.screen = self._before_presentation_mode_screen
-                    self._before_presentation_mode_screen = None
 
             # Doesn't work consistently
             # elif current_state == WindowState.MINIMIZED:
@@ -203,8 +201,6 @@ class Window(Container):
                 )
                 if state == WindowState.PRESENTATION:
                     self.app.native.getSupportActionBar().hide()
-                    if getattr(self, "_before_presentation_mode_screen", None) is None:
-                        self._before_presentation_mode_screen = self.interface.screen
 
     ######################################################################
     # Window capabilities

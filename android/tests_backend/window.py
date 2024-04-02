@@ -1,6 +1,8 @@
 import pytest
 from androidx.appcompat import R as appcompat_R
 
+from toga.constants import WindowState
+
 from .probe import BaseProbe
 
 
@@ -18,6 +20,26 @@ class WindowProbe(BaseProbe):
             self.root_view.getWidth() / self.scale_factor,
             self.root_view.getHeight() / self.scale_factor,
         )
+
+    def is_window_state(self, state):
+        # Windows are always full screen
+        decor_view = self.native.getWindow().getDecorView()
+        system_ui_flags = decor_view.getSystemUiVisibility()
+        if (
+            system_ui_flags
+            & (
+                decor_view.SYSTEM_UI_FLAG_FULLSCREEN
+                | decor_view.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                | decor_view.SYSTEM_UI_FLAG_IMMERSIVE
+            )
+        ) != 0:
+            if not self.native.getSupportActionBar().isShowing():
+                current_state = WindowState.PRESENTATION
+            else:
+                current_state = WindowState.FULLSCREEN
+        else:
+            current_state = WindowState.NORMAL
+        return bool(current_state == state)
 
     async def close_info_dialog(self, dialog):
         dialog_view = self.get_dialog_view()

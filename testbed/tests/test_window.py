@@ -148,10 +148,89 @@ if toga.platform.current_platform in {"iOS", "android"}:
     async def test_full_screen(main_window, main_window_probe):
         """Window can be made full screen"""
         main_window.full_screen = True
-        await main_window_probe.wait_for_window("Full screen is a no-op")
+        await main_window_probe.wait_for_window("Main window is in full screen")
 
         main_window.full_screen = False
-        await main_window_probe.wait_for_window("Full screen is a no-op")
+        await main_window_probe.wait_for_window(
+            "Main window is no longer in full screen"
+        )
+
+    async def test_window_state_minimized(main_window, main_window_probe):
+        """Window can have minimized window state"""
+        # WindowState.MINIMIZED is unimplemented on both Android and iOS.
+        assert main_window_probe.is_window_state(WindowState.NORMAL)
+        assert not main_window_probe.is_window_state(WindowState.MINIMIZED)
+        main_window.state = WindowState.MINIMIZED
+        await main_window_probe.wait_for_window("WindowState.MINIMIZED is a no-op")
+        assert not main_window_probe.is_window_state(WindowState.MINIMIZED)
+        assert main_window_probe.is_window_state(WindowState.NORMAL)
+
+    async def test_window_state_maximized(main_window, main_window_probe):
+        """Window can have maximized window state"""
+        # WindowState.MAXIMIZED is unimplemented on both Android and iOS.
+        assert main_window_probe.is_window_state(WindowState.NORMAL)
+        assert not main_window_probe.is_window_state(WindowState.MAXIMIZED)
+        main_window.state = WindowState.MAXIMIZED
+        await main_window_probe.wait_for_window("WindowState.MAXIMIZED is a no-op")
+        assert not main_window_probe.is_window_state(WindowState.MAXIMIZED)
+        assert main_window_probe.is_window_state(WindowState.NORMAL)
+
+    async def test_window_state_full_screen(main_window, main_window_probe):
+        """Window can have full screen window state"""
+        # WindowState.FULLSCREEN is implemented on Android but not on iOS.
+        assert main_window_probe.is_window_state(WindowState.NORMAL)
+        assert not main_window_probe.is_window_state(WindowState.FULLSCREEN)
+        # Make main window full screen
+        main_window.state = WindowState.FULLSCREEN
+        await main_window_probe.wait_for_window("Main window is full screen")
+        assert main_window_probe.is_window_state(WindowState.FULLSCREEN)
+        assert not main_window_probe.is_window_state(WindowState.NORMAL)
+
+        main_window.state = WindowState.FULLSCREEN
+        await main_window_probe.wait_for_window("Main window is still full screen")
+        assert main_window_probe.is_window_state(WindowState.FULLSCREEN)
+        assert not main_window_probe.is_window_state(WindowState.NORMAL)
+        # Exit full screen
+        main_window.state = WindowState.NORMAL
+        await main_window_probe.wait_for_window("Main window is not full screen")
+        assert not main_window_probe.is_window_state(WindowState.FULLSCREEN)
+        assert main_window_probe.is_window_state(WindowState.NORMAL)
+
+        main_window.state = WindowState.NORMAL
+        await main_window_probe.wait_for_window("Main window is still not full screen")
+        assert not main_window_probe.is_window_state(WindowState.FULLSCREEN)
+        assert main_window_probe.is_window_state(WindowState.NORMAL)
+
+    async def test_window_state_presentation(main_window, main_window_probe):
+        # WindowState.PRESENTATION is implemented on Android but not on iOS.
+        assert main_window_probe.is_window_state(WindowState.NORMAL)
+        assert not main_window_probe.is_window_state(WindowState.PRESENTATION)
+        # Enter presentation mode with main window
+        main_window.state = WindowState.PRESENTATION
+        await main_window_probe.wait_for_window("Main window is in presentation mode")
+        assert main_window_probe.is_window_state(WindowState.PRESENTATION)
+        assert not main_window_probe.is_window_state(WindowState.NORMAL)
+
+        main_window.state = WindowState.PRESENTATION
+        await main_window_probe.wait_for_window(
+            "Main window is still in presentation mode"
+        )
+        assert main_window_probe.is_window_state(WindowState.PRESENTATION)
+        assert not main_window_probe.is_window_state(WindowState.NORMAL)
+        # Exit presentation mode
+        main_window.state = WindowState.NORMAL
+        await main_window_probe.wait_for_window(
+            "Main window is not in presentation mode"
+        )
+        assert not main_window_probe.is_window_state(WindowState.PRESENTATION)
+        assert main_window_probe.is_window_state(WindowState.NORMAL)
+
+        main_window.state = WindowState.NORMAL
+        await main_window_probe.wait_for_window(
+            "Main window is still not in presentation mode"
+        )
+        assert not main_window_probe.is_window_state(WindowState.PRESENTATION)
+        assert main_window_probe.is_window_state(WindowState.NORMAL)
 
     async def test_screen(main_window, main_window_probe):
         """The window can be relocated to another screen, using both absolute and relative screen positions."""

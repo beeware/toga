@@ -29,6 +29,9 @@ class WindowProbe(BaseProbe):
             ),
         )
 
+    def is_window_state(self, state):
+        pytest.skip("Window states are not implemented on iOS")
+
     async def close_info_dialog(self, dialog):
         self.native.rootViewController.dismissViewControllerAnimated(
             False, completion=None
