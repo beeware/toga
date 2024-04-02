@@ -1,8 +1,8 @@
 .. _contribute:
 
-==============================
-How to contribute code to Toga
-==============================
+=========================
+Contributing code to Toga
+=========================
 
 If you experience problems with Toga, `log them on GitHub`_. If you want to
 contribute code, please `fork the code`_ and `submit a pull request`_.
@@ -429,10 +429,9 @@ does nothing but reproduce the problem) can be a huge help.
 Contribute improvements to documentation
 ----------------------------------------
 
-We've got a :doc:`separate contribution guide <./contribute-docs>` for
-documentation contributions. This covers how to set up your development
-environment to build Toga's documentation, and separate ideas for what to work
-on.
+We've got a :doc:`separate contribution guide <./docs>` for documentation contributions.
+This covers how to set up your development environment to build Toga's documentation,
+and separate ideas for what to work on.
 
 Implement a platform native widget
 ----------------------------------

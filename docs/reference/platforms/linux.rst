@@ -21,7 +21,8 @@ The Toga backend for Linux (and other Unix-like operating systems) is `toga-gtk
 
     Although GTK *can* be installed on Windows and macOS, and the ``toga-gtk`` backend
     *may* work on those platforms, this is not officially supported by Toga. We
-    recommend using ``toga-winforms`` on Windows, and ``toga-cocoa`` on macOS.
+    recommend using ``toga-winforms`` on :doc:`./windows`, and ``toga-cocoa``
+    on :doc:`macOS`.
 
 Prerequisites
 -------------
@@ -52,4 +53,7 @@ Installation
 Implementation details
 ----------------------
 
-``toga-gtk`` uses the native GObject Python bindings.
+The ``toga-gtk`` backend uses the `GTK3 API <https://docs.gtk.org/gtk3/>`__.
+
+The native APIs are accessed using the `PyGObject binding
+<https://pygobject.readthedocs.io>`__.
