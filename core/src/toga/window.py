@@ -434,6 +434,7 @@ class Window:
     ######################################################################
 
     # ----------------------Future Deprecated methods----------------------
+    # Warnings are disabled as old API tests are still in testbed and warnings will cause error.
     @property
     def full_screen(self) -> bool:
         """**DEPRECATED** – Use :any:`Window.state`.

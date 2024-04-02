@@ -1,0 +1,1 @@
+The older full screen APIs on `toga.App` and `toga.Window` are now deprecated and are instead replaced by their suitable newer API counterparts.

@@ -759,10 +759,11 @@ class App:
         self._impl.set_current_window(window)
 
     ######################################################################
-    # Full screen control
+    # Presentation mode controls
     ######################################################################
 
     # ----------------------Future Deprecated methods----------------------
+    # Warnings are disabled as old API tests are still in testbed and warnings will cause error.
     def exit_full_screen(self) -> None:
         """**DEPRECATED** – Use :any:`App.exit_presentation_mode()`.
 
@@ -771,8 +772,7 @@ class App:
         """
         # warn(
         #     (
-        #         "`App.exit_full_screen()` is deprecated. Use "
-        #         "`App.exit_presentation_mode()` instead."
+        #         "`App.exit_full_screen()` is deprecated. Use `App.exit_presentation_mode()` instead."
         #     ),
         #     DeprecationWarning,
         #     stacklevel=2,
@@ -789,8 +789,7 @@ class App:
         """
         # warn(
         #     (
-        #         "`App.is_full_screen` is deprecated. Use "
-        #         "`App.is_in_presentation_mode` instead."
+        #         "`App.is_full_screen` is deprecated. Use `App.is_in_presentation_mode` instead."
         #     ),
         #     DeprecationWarning,
         #     stacklevel=2,
@@ -812,8 +811,7 @@ class App:
         """
         # warn(
         #     (
-        #         "`App.set_full_screen()` is deprecated. Use "
-        #         "`App.enter_presentation_mode()` and "
+        #         "`App.set_full_screen()` is deprecated. Use `App.enter_presentation_mode()` and "
         #         "`App.exit_presentation_mode()` instead."
         #     ),
         #     DeprecationWarning,
@@ -840,7 +838,7 @@ class App:
     def enter_presentation_mode(
         self,
         window_list_or_screen_window_dict: list[Window] | dict[Screen, Window],
-    ):
+    ) -> None:
         """Enter into presentation mode with one or more windows on different screens.
 
         Presentation mode is not the same as Full Screen mode; full screen mode is when all window

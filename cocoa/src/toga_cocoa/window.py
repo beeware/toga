@@ -44,6 +44,7 @@ class TogaWindow(NSWindow):
 
     @objc_method
     def windowDidExitFullScreen_(self, notification) -> None:
+        # This can be used to ensure that the window has completed exiting full screen.
         pass
 
     ######################################################################
@@ -369,6 +370,10 @@ class Window:
                 self.native.setIsMiniaturized(False)
             # If the window is in full-screen mode, exit full-screen mode
             elif current_state == WindowState.FULLSCREEN:
+                # This doesn't wait for completely exiting full screen mode. Hence,
+                # this will cause problems when rapid window state switching is done.
+                # We should wait until `windowDidExitFullScreen_` is notified and then
+                # return to user.
                 self.native.toggleFullScreen(self.native)
             # If the window is in presentation mode, exit presentation mode
             elif current_state == WindowState.PRESENTATION:
