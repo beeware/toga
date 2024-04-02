@@ -5,6 +5,7 @@ from textual.reactive import Reactive
 from textual.screen import Screen as TextualScreen
 from textual.widget import Widget as TextualWidget
 from textual.widgets import Button as TextualButton
+from toga.constants import WindowState
 
 from .container import Container
 from .screens import Screen as ScreenImpl
@@ -203,12 +204,11 @@ class Window:
     ######################################################################
 
     def get_window_state(self):
-        # Not implemented
-        pass
+        # Windows are always normal
+        return WindowState.NORMAL
 
     def set_window_state(self, state):
-        # Not implemented
-        pass
+        self.interface.factory.not_implemented("Window.set_window_state()")
 
     ######################################################################
     # Window capabilities

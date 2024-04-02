@@ -1,3 +1,4 @@
+from toga.constants import WindowState
 from toga_web.libs import create_element, js
 
 from .screens import Screen as ScreenImpl
@@ -113,12 +114,11 @@ class Window:
     ######################################################################
 
     def get_window_state(self):
-        # Not implemented
-        pass
+        # Windows are always normal
+        return WindowState.NORMAL
 
     def set_window_state(self, state):
-        # Not implemented
-        pass
+        self.interface.factory.not_implemented("Window.set_window_state()")
 
     ######################################################################
     # Window capabilities

@@ -147,9 +147,7 @@ class App:
     ######################################################################
 
     def enter_presentation_mode(self, screen_window_dict):
-        # No-op; mobile doesn't support full screen
-        pass
+        self.interface.factory.not_implemented("App.enter_presentation_mode()")
 
     def exit_presentation_mode(self):
-        # No-op; mobile doesn't support full screen
-        pass
+        self.interface.factory.not_implemented("App.exit_presentation_mode()")

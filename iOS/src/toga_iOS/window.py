@@ -6,6 +6,7 @@ from rubicon.objc import (
     objc_id,
 )
 
+from toga.constants import WindowState
 from toga_iOS.container import RootContainer
 from toga_iOS.images import nsdata_to_bytes
 from toga_iOS.libs import (
@@ -145,12 +146,11 @@ class Window:
     ######################################################################
 
     def get_window_state(self):
-        # Windows are always full screen
-        pass
+        # Windows are always normal
+        return WindowState.NORMAL
 
     def set_window_state(self, state):
-        # Windows are always full screen
-        pass
+        self.interface.factory.not_implemented("Window.set_window_state()")
 
     ######################################################################
     # Window capabilities

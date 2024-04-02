@@ -96,12 +96,10 @@ class App:
     ######################################################################
 
     def enter_presentation_mode(self, screen_window_dict):
-        # Not implemented
-        pass
+        self.interface.factory.not_implemented("App.enter_presentation_mode()")
 
     def exit_presentation_mode(self):
-        # Not implemented
-        pass
+        self.interface.factory.not_implemented("App.exit_presentation_mode()")
 
 
 class DocumentApp(App):
