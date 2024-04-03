@@ -231,7 +231,7 @@ jobs:
 
         - backend: "iOS"
           platform: "iOS"
-          runs-on: "macos-14"
+          runs-on: "macos-14-large"
           briefcase-run-args: "--device 'iPhone SE (3rd generation)' -- -s"
           app-user-data-path: "$(xcrun simctl get_app_container booted org.beeware.toga.testbed data)/Documents"
 
