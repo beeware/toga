@@ -2,11 +2,10 @@ import asyncio
 import re
 import sys
 import threading
-from ctypes import c_void_p, windll, wintypes
 
 import System.Windows.Forms as WinForms
 from Microsoft.Win32 import SystemEvents
-from System import Environment, Threading
+from System import Threading
 from System.ComponentModel import InvalidEnumArgumentException
 from System.Drawing import Font as WinFont
 from System.Media import SystemSounds
@@ -82,37 +81,6 @@ def winforms_thread_exception(sender, winforms_exc):  # pragma: no cover
 
 class App(Scalable):
     _MAIN_WINDOW_CLASS = MainWindow
-
-    # These are required for properly setting up DPI mode
-    WinForms.Application.EnableVisualStyles()
-    WinForms.Application.SetCompatibleTextRenderingDefault(False)
-
-    # ------------------- Set the DPI Awareness mode for the process -------------------
-    # This needs to be done at the earliest and doing this in __init__() or
-    # in create() doesn't work
-    #
-    # Check the version of windows and make sure we are setting the DPI mode
-    # with the most up to date API
-    # Windows Versioning Check Sources : https://www.lifewire.com/windows-version-numbers-2625171
-    # and https://docs.microsoft.com/en-us/windows/release-information/
-    win_version = Environment.OSVersion.Version
-    # Represents Windows 10 Build 1703 and beyond which should use
-    # SetProcessDpiAwarenessContext(-4) for DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2
-    # Valid values: https://learn.microsoft.com/en-us/windows/win32/hidpi/dpi-awareness-context
-    if (win_version.Major > 10) or (
-        win_version.Major == 10 and win_version.Build >= 15063
-    ):
-        windll.user32.SetProcessDpiAwarenessContext.restype = wintypes.BOOL
-        windll.user32.SetProcessDpiAwarenessContext.argtypes = [c_void_p]
-        # SetProcessDpiAwarenessContext returns False(0) on Failure
-        if windll.user32.SetProcessDpiAwarenessContext(-4) == 0:  # pragma: no cover
-            print("WARNING: Failed to set the DPI Awareness mode for the app.")
-    else:  # pragma: no cover
-        print(
-            "WARNING: Your Windows version doesn't support DPI Awareness setting.  "
-            "We recommend you upgrade to at least Windows 10 Build 1703."
-        )
-    # ----------------------------------------------------------------------------------
 
     def __init__(self, interface):
         self.interface = interface

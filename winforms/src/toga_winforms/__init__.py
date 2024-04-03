@@ -2,6 +2,11 @@ import clr
 
 import toga
 
+from .libs.user32 import (
+    DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2,
+    SetProcessDpiAwarenessContext,
+)
+
 # Add a reference to the Winforms assembly
 clr.AddReference("System.Windows.Forms")
 
@@ -15,5 +20,20 @@ clr.AddReference("System.Windows.Forms")
 clr.AddReference(
     "WindowsBase, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35"
 )
+
+
+# Enable DPI awareness. This must be done before calling any other UI-related code
+# (https://learn.microsoft.com/en-us/dotnet/desktop/winforms/high-dpi-support-in-windows-forms).
+import System.Windows.Forms as WinForms  # noqa: E402
+
+WinForms.Application.EnableVisualStyles()
+WinForms.Application.SetCompatibleTextRenderingDefault(False)
+
+if SetProcessDpiAwarenessContext is not None:
+    if not SetProcessDpiAwarenessContext(
+        DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2
+    ):  # pragma: no cover
+        print("WARNING: Failed to set the DPI Awareness mode for the app.")
+
 
 __version__ = toga._package_version(__file__, __name__)
