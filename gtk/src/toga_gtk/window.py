@@ -238,6 +238,8 @@ class Window:
                     self.native.set_show_menubar(True)
                 if self.native_toolbar:
                     self.native_toolbar.set_visible(True)
+                else:  # pragma: no cover
+                    pass
                 self.native.unfullscreen()
 
                 self.interface.screen = self._before_presentation_mode_screen
@@ -263,6 +265,8 @@ class Window:
                     self.native.set_show_menubar(False)
                 if self.native_toolbar:
                     self.native_toolbar.set_visible(False)
+                else:  # pragma: no cover
+                    pass
                 self.native.fullscreen()
                 self._is_in_presentation_mode = True
             else:  # pragma: no cover
