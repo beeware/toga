@@ -22,7 +22,6 @@ class Image:
 
     def __init__(self, interface, path=None, data=None, raw=None):
         self.interface = interface
-
         if path:
             self.native = UIImage.imageWithContentsOfFile(str(path))
             if self.native is None:
@@ -35,6 +34,12 @@ class Image:
                 raise ValueError("Unable to load image from data")
         else:
             self.native = raw
+
+        self.native.retain()
+
+    def __del__(self):
+        if self.native:
+            self.native.release()
 
     def get_width(self):
         return self.native.size.width

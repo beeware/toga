@@ -139,12 +139,18 @@ class CameraProbe(AppProbe):
 
     async def press_shutter_button(self, photo):
         # The camera picker was correctly configured
+        print("PRESS SHUTTER")
         picker = self.app.camera._impl.native
+        print(1)
         assert picker.sourceType == UIImagePickerControllerSourceTypeCamera
+        print(2)
         assert (
             picker.cameraCaptureMode == UIImagePickerControllerCameraCaptureMode.Photo
         )
-
+        print(3)
+        print("sample image", self.sample_image)
+        print("sample image impl", self.sample_image._impl)
+        print("sample image native", self.sample_image._impl.native)
         # Fake the result of a successful photo being taken
         picker.delegate.imagePickerController(
             picker,
@@ -153,8 +159,10 @@ class CameraProbe(AppProbe):
             },
         )
 
+        print(4)
         await self.redraw("Photo taken", delay=0.5)
 
+        print(5)
         return await photo, picker.cameraDevice, picker.cameraFlashMode
 
     async def cancel_photo(self, photo):

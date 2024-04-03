@@ -18,6 +18,14 @@ class Icon:
         if self.native is None:
             raise ValueError(f"Unable to load icon from {path}")
 
+        # Multiple icon interface instances can end up referencing the same native
+        # instance, so make sure we retain a reference count at the impl level.
+        self.native.retain()
+
+    def __del__(self):
+        if self.native:
+            self.native.release()
+
     def _as_size(self, size):
         renderer = UIGraphicsImageRenderer.alloc().initWithSize(NSSize(size, size))
 

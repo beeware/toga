@@ -161,10 +161,11 @@ class Camera:
 
             # Attach the result to the delegate
             self.native.delegate.result = result
-
+            print("SHOW CAMERA VIEW")
             # Show the pane
             toga.App.app.current_window._impl.native.rootViewController.presentViewController(
                 self.native, animated=True, completion=None
             )
+            print("CAMERA VIEW DISPLAYED")
         else:
             raise PermissionError("App does not have permission to take photos")
