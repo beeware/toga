@@ -151,6 +151,9 @@ class CameraProbe(AppProbe):
         print("sample image", self.sample_image)
         print("sample image impl", self.sample_image._impl)
         print("sample image native", self.sample_image._impl.native)
+        print("picker", self.sample_image._impl.native)
+        print("impl delegate", self.app.camera._impl.delegate)
+        print("picker delegate", picker.delegate)
         # Fake the result of a successful photo being taken
         picker.delegate.imagePickerController(
             picker,
@@ -167,16 +170,25 @@ class CameraProbe(AppProbe):
 
     async def cancel_photo(self, photo):
         # The camera picker was correctly configured
+        print("CANCEL PHOTO")
         picker = self.app.camera._impl.native
+        print("1")
         assert picker.sourceType == UIImagePickerControllerSourceTypeCamera
+        print("2")
         assert (
             picker.cameraCaptureMode == UIImagePickerControllerCameraCaptureMode.Photo
         )
+        print("3")
+        print("picker", picker)
+        print("impl delegate", self.app.camera._impl.delegate)
+        print("picker delegate", picker.delegate)
 
         # Fake the result of a cancelling the photo
         picker.delegate.imagePickerControllerDidCancel(picker)
+        print("4")
 
         await self.redraw("Photo cancelled", delay=0.5)
+        print("5")
 
         return await photo
 

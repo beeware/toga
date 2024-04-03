@@ -63,8 +63,11 @@ class TogaImagePickerDelegate(NSObject):
 
     @objc_method
     def imagePickerControllerDidCancel_(self, picker) -> None:
+        print("CANCEL PICKING")
         picker.dismissViewControllerAnimated(True, completion=None)
+        print("SET RESULT")
         self.result.set_result(None)
+        print("RESULT SET")
 
 
 class Camera:
@@ -77,8 +80,8 @@ class Camera:
             ):
                 self.native = iOS.UIImagePickerController.new()
                 self.native.sourceType = UIImagePickerControllerSourceTypeCamera
-                self.delegate_link = TogaImagePickerDelegate.new()
-                self.native.delegate = self.delegate_link
+                self.delegate = TogaImagePickerDelegate.new()
+                self.native.delegate = self.delegate
             else:
                 self.native = None
         else:  # pragma: no cover
