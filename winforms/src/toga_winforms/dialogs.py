@@ -165,7 +165,10 @@ class StackTraceDialog(BaseDialog):
 
             self.native.Controls.Add(accept)
 
-        self.start_inner_loop(self.native.ShowDialog)
+        def show():
+            self.native.ShowDialog()
+
+        self.start_inner_loop(show)
 
     def winforms_FormClosing(self, sender, event):
         # If the close button is pressed, there won't be a future yet.
