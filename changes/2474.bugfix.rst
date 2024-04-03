@@ -1,0 +1,1 @@
+The stack trace dialog no longer raises an async timeout error when displayed.
