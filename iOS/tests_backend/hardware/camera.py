@@ -89,6 +89,9 @@ class CameraProbe(AppProbe):
             iOS, "UIImagePickerController", self._mock_UIImagePickerController
         )
 
+        # Load a sample image
+        self.sample_image = toga.Image("resources/photo.png")
+
     def cleanup(self):
         try:
             picker = self.app.camera._impl.native
@@ -143,11 +146,10 @@ class CameraProbe(AppProbe):
         )
 
         # Fake the result of a successful photo being taken
-        image = toga.Image("resources/photo.png")
         picker.delegate.imagePickerController(
             picker,
             didFinishPickingMediaWithInfo={
-                "UIImagePickerControllerOriginalImage": image._impl.native
+                "UIImagePickerControllerOriginalImage": self.sample_image._impl.native
             },
         )
 

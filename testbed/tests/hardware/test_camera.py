@@ -72,6 +72,8 @@ async def test_take_photo(app, camera_probe):
         assert image.size == (512, 512)
         assert camera_probe.same_device(camera, device_used)
 
+        await camera_probe.redraw("Image compared")
+
 
 async def test_flash_mode(app, camera_probe):
     """A user can take a photo with all the flash modes"""
