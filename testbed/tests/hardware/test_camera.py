@@ -61,6 +61,7 @@ async def test_take_photo(app, camera_probe):
     camera_probe.grant_permission()
 
     for camera in [None] + app.camera.devices:
+        print("CAMERA", camera)
         # Trigger taking a photo
         photo = app.camera.take_photo(device=camera)
         await camera_probe.wait_for_camera()

@@ -53,10 +53,13 @@ class TogaImagePickerDelegate(NSObject):
     def imagePickerController_didFinishPickingMediaWithInfo_(
         self, picker, info
     ) -> None:
+        print("FINISHED PICKING")
+        print("INFO", info)
         picker.dismissViewControllerAnimated(True, completion=None)
-
+        print("SET RESULT")
         image = toga.Image(info["UIImagePickerControllerOriginalImage"])
         self.result.set_result(image)
+        print("RESULT SET")
 
     @objc_method
     def imagePickerControllerDidCancel_(self, picker) -> None:
