@@ -242,7 +242,7 @@ class Canvas(Widget):
         )
         canvas = A_Canvas(bitmap)
         background = self.native.getBackground()
-        if background:
+        if background:  # pragma: no branch
             background.draw(canvas)
         self.native.draw(canvas)
 
