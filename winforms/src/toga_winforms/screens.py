@@ -1,3 +1,5 @@
+from ctypes import byref, c_void_p, windll, wintypes
+
 from System.Drawing import (
     Bitmap,
     Graphics,
@@ -24,6 +26,22 @@ class Screen(Scalable):
             instance.native = native
             cls._instances[native] = instance
             return instance
+
+    @property
+    def dpi_scale(self):
+        screen_rect = wintypes.RECT(
+            self.native.Bounds.Left,
+            self.native.Bounds.Top,
+            self.native.Bounds.Right,
+            self.native.Bounds.Bottom,
+        )
+        windll.user32.MonitorFromRect.restype = c_void_p
+        windll.user32.MonitorFromRect.argtypes = [wintypes.RECT, wintypes.DWORD]
+        # MONITOR_DEFAULTTONEAREST = 2
+        hMonitor = windll.user32.MonitorFromRect(screen_rect, 2)
+        pScale = wintypes.UINT()
+        windll.shcore.GetScaleFactorForMonitor(c_void_p(hMonitor), byref(pScale))
+        return pScale.value / 100
 
     def get_name(self):
         name = self.native.DeviceName

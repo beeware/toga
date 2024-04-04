@@ -104,7 +104,7 @@ class StackTraceDialog(BaseDialog):
         # as the DPI awareness of the calling thread at that time."
         # (https://learn.microsoft.com/en-us/windows/win32/hidpi/high-dpi-improvements-for-desktop-applications).
         self.prev_dpi_context = None
-        if SetThreadDpiAwarenessContext is not None:
+        if SetThreadDpiAwarenessContext is not None:  # pragma: no branch
             self.prev_dpi_context = SetThreadDpiAwarenessContext(
                 DPI_AWARENESS_CONTEXT_UNAWARE
             )
@@ -206,7 +206,7 @@ class StackTraceDialog(BaseDialog):
             # button], the thread is automatically switched to the DPI awareness context
             # that was in use when the window was created." However, other apps may do
             # things outside of the context of a window event.
-            if self.prev_dpi_context:
+            if self.prev_dpi_context:  # pragma: no branch
                 SetThreadDpiAwarenessContext(self.prev_dpi_context)
 
     def set_result(self, result):

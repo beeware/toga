@@ -1,66 +1,25 @@
 from abc import ABC, abstractmethod
-from ctypes import byref, c_void_p, windll, wintypes
 from decimal import ROUND_HALF_EVEN, Decimal
 
 from System.Drawing import (
     Color,
-    Font as WinFont,
     Point,
     Size,
     SystemColors,
 )
-from System.Windows.Forms import Screen
 from travertino.size import at_least
 
 from toga.colors import TRANSPARENT
 from toga_winforms.colors import native_color
 
 
-class Scalable:
+class Scalable(ABC):
     SCALE_DEFAULT_ROUNDING = ROUND_HALF_EVEN
 
-    def get_dpi_scale(self, native_screen):
-        screen_rect = wintypes.RECT(
-            native_screen.Bounds.Left,
-            native_screen.Bounds.Top,
-            native_screen.Bounds.Right,
-            native_screen.Bounds.Bottom,
-        )
-        windll.user32.MonitorFromRect.restype = c_void_p
-        windll.user32.MonitorFromRect.argtypes = [wintypes.RECT, wintypes.DWORD]
-        # MONITOR_DEFAULTTONEAREST = 2
-        hMonitor = windll.user32.MonitorFromRect(screen_rect, 2)
-        pScale = wintypes.UINT()
-        windll.shcore.GetScaleFactorForMonitor(c_void_p(hMonitor), byref(pScale))
-        return pScale.value / 100
-
     @property
+    @abstractmethod
     def dpi_scale(self):
-        # For Widgets which have an assigned window
-        if (
-            getattr(self, "interface", None) is not None
-            and getattr(self.interface, "window", None) is not None
-        ):
-            self._original_dpi_scale = self.interface.window._impl._original_dpi_scale
-            return self.interface.window._impl._dpi_scale
-        # For Container Widgets when not assigned to a window
-        if hasattr(self, "native_content"):
-            _dpi_scale = self.get_dpi_scale(Screen.FromControl(self.native_content))
-        else:
-            if isinstance(self.native, Screen):
-                # For Screen
-                return self.get_dpi_scale(self.native)
-            else:
-                # For Windows and others
-                _dpi_scale = self.get_dpi_scale(Screen.FromControl(self.native))
-        if not hasattr(self, "_original_dpi_scale"):
-            self._original_dpi_scale = _dpi_scale
-        return _dpi_scale
-
-    def update_scale(self):
-        # Should be called only from Window class as Widgets use the dpi scale
-        # of the Window on which they are present.
-        self._dpi_scale = self.get_dpi_scale(Screen.FromControl(self.native))
+        raise NotImplementedError()
 
     # Convert CSS pixels to native pixels
     def scale_in(self, value, rounding=SCALE_DEFAULT_ROUNDING):
@@ -78,13 +37,8 @@ class Scalable:
             return value
         return int(Decimal(value).to_integral(rounding))
 
-    def scale_font(self, value, rounding=SCALE_DEFAULT_ROUNDING):
-        return self.scale_round(
-            value * (self.dpi_scale / self._original_dpi_scale), rounding
-        )
 
-
-class Widget(ABC, Scalable):
+class Widget(Scalable, ABC):
     # In some widgets, attempting to set a background color with any alpha value other
     # than 1 raises "System.ArgumentException: Control does not support transparent
     # background colors". Those widgets should set this attribute to False.
@@ -108,8 +62,7 @@ class Widget(ABC, Scalable):
         pass
 
     def set_window(self, window):
-        # No special handling required
-        pass
+        self.scale_font()
 
     @property
     def container(self):
@@ -128,6 +81,14 @@ class Widget(ABC, Scalable):
             child._impl.container = container
 
         self.refresh()
+
+    @property
+    def dpi_scale(self):
+        window = self.interface.window
+        if window:
+            return window._impl.dpi_scale
+        else:
+            return 1
 
     def get_tab_index(self):
         return self.native.TabIndex
@@ -158,9 +119,15 @@ class Widget(ABC, Scalable):
         self.native.Visible = not hidden
 
     def set_font(self, font):
-        self.native.Font = font._impl.native
-        # Required for font scaling on DPI changes
         self.original_font = font._impl.native
+        self.scale_font()
+
+    def scale_font(self):
+        font = self.original_font
+        window = self.interface.window
+        if window:
+            font = window._impl.scale_font(self.original_font)
+        self.native.Font = font
 
     def set_color(self, color):
         if color is None:
@@ -193,14 +160,6 @@ class Widget(ABC, Scalable):
         child.container = None
 
     def refresh(self):
-        # Update the scaling of the font
-        if hasattr(self, "original_font"):  # pragma: no branch
-            self.native.Font = WinFont(
-                self.original_font.FontFamily,
-                self.scale_font(self.original_font.Size),
-                self.original_font.Style,
-            )
-
         # Default values; may be overwritten by rehint().
         self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
         self.interface.intrinsic.height = at_least(self.interface._MIN_HEIGHT)

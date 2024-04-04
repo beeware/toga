@@ -7,7 +7,6 @@ import System.Windows.Forms as WinForms
 from Microsoft.Win32 import SystemEvents
 from System import Threading
 from System.ComponentModel import InvalidEnumArgumentException
-from System.Drawing import Font as WinFont
 from System.Media import SystemSounds
 from System.Net import SecurityProtocolType, ServicePointManager
 from System.Windows.Threading import Dispatcher
@@ -19,21 +18,11 @@ from toga.command import Separator
 from .keys import toga_to_winforms_key, toga_to_winforms_shortcut
 from .libs.proactor import WinformsProactorEventLoop
 from .libs.wrapper import WeakrefCallable
-from .screens import Screen as ScreenImpl
-from .widgets.base import Scalable
+from .screens import Screen
 from .window import Window
 
 
 class MainWindow(Window):
-    def update_menubar_font_scale(self):
-        # Directly using self.native.MainMenuStrip.Font instead of
-        # original_menubar_font makes the menubar font to not scale down.
-        self.native.MainMenuStrip.Font = WinFont(
-            self.original_menubar_font.FontFamily,
-            self.scale_font(self.original_menubar_font.Size),
-            self.original_menubar_font.Style,
-        )
-
     def winforms_FormClosing(self, sender, event):
         # Differentiate between the handling that occurs when the user
         # requests the app to exit, and the actual application exiting.
@@ -43,6 +32,10 @@ class MainWindow(Window):
             # If there's no exit handler, assume the close/exit can proceed.
             self.interface.app.on_exit()
             event.Cancel = True
+
+    def update_dpi(self):
+        super().update_dpi()
+        self.native.MainMenuStrip.Font = self.scale_font(self.original_menubar_font)
 
 
 def winforms_thread_exception(sender, winforms_exc):  # pragma: no cover
@@ -79,7 +72,7 @@ def winforms_thread_exception(sender, winforms_exc):  # pragma: no cover
     print(py_exc.Message)
 
 
-class App(Scalable):
+class App:
     _MAIN_WINDOW_CLASS = MainWindow
 
     def __init__(self, interface):
@@ -145,7 +138,7 @@ class App(Scalable):
 
     def winforms_DisplaySettingsChanged(self, sender, event):
         for window in self.interface.windows:
-            window._impl.update_window_dpi_changed()
+            window._impl.update_dpi()
 
     ######################################################################
     # Commands and menus
@@ -308,9 +301,9 @@ class App(Scalable):
     ######################################################################
 
     def get_screens(self):
-        primary_screen = ScreenImpl(WinForms.Screen.PrimaryScreen)
+        primary_screen = Screen(WinForms.Screen.PrimaryScreen)
         screen_list = [primary_screen] + [
-            ScreenImpl(native=screen)
+            Screen(native=screen)
             for screen in WinForms.Screen.AllScreens
             if screen != primary_screen.native
         ]
