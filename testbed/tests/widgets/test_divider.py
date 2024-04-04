@@ -5,6 +5,9 @@ from toga.constants import Direction
 from toga.style.pack import COLUMN, ROW
 
 from .properties import (  # noqa: F401
+    test_background_color,
+    test_background_color_reset,
+    test_background_color_transparent,
     test_enable_noop,
     test_focus_noop,
 )

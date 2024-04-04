@@ -11,8 +11,8 @@ class Divider(Widget):
         self.native.impl = self
 
         # Background color needs to be set or else divider will not be visible.
-        system_gray_color = UIColor.systemGrayColor()
-        self.native.backgroundColor = system_gray_color
+        self.system_gray_color = UIColor.systemGrayColor()
+        self.native.backgroundColor = self.system_gray_color
 
         # Add the layout constraints
         self.add_constraints()
@@ -23,6 +23,8 @@ class Divider(Widget):
     def set_background_color(self, value):
         if value is not None:
             self.set_background_color_simple(value)
+        else:
+            self.native.backgroundColor = self.system_gray_color
 
     def rehint(self):
         content_size = self.native.intrinsicContentSize()
