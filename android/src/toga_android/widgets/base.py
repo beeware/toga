@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from decimal import ROUND_HALF_EVEN, Decimal
 
-from android.graphics import PorterDuff, PorterDuffColorFilter, Rect
+from android.graphics import Color, PorterDuff, PorterDuffColorFilter, Rect
 from android.graphics.drawable import ColorDrawable, InsetDrawable
 from android.view import Gravity, View
 from android.widget import RelativeLayout
@@ -138,8 +138,12 @@ class Widget(ABC, Scalable):
         if not hasattr(self, "_default_background"):
             self._default_background = self.native.getBackground()
 
-        if value in (None, TRANSPARENT):
+        # if value in (None, TRANSPARENT):
+        #     self.native.setBackground(self._default_background)
+        if value is None:
             self.native.setBackground(self._default_background)
+        elif value is TRANSPARENT:
+            self.native.setBackgroundColor(Color.TRANSPARENT)
         else:
             background = ColorDrawable(native_color(value))
             if isinstance(self._default_background, InsetDrawable):

@@ -393,14 +393,12 @@ async def test_background_color_reset(widget, probe):
 
     # Set the background color to something different
     widget.style.background_color = RED
-    await probe.redraw("Widget background background color should be RED")
+    await probe.redraw("Widget background color should be RED")
     assert_color(probe.background_color, named_color(RED))
 
     # Reset the background color, and check that it has been restored to the original
     del widget.style.background_color
-    await probe.redraw(
-        message="Widget background background color should be restored to original"
-    )
+    await probe.redraw(message="Widget background color should be restored to original")
     assert_color(probe.background_color, original)
 
 
@@ -409,9 +407,20 @@ async def test_background_color_transparent(widget, probe):
     original = probe.background_color
     supports_alpha = getattr(probe, "background_supports_alpha", True)
 
+    # Set the background color to something different
+    widget.style.background_color = RED
+    await probe.redraw("Widget background color should be RED")
+    assert_color(probe.background_color, named_color(RED))
+
+    # Change the background color to transparent
     widget.style.background_color = TRANSPARENT
-    await probe.redraw("Widget background background color should be TRANSPARENT")
+    await probe.redraw("Widget background color should be TRANSPARENT")
     assert_color(probe.background_color, TRANSPARENT if supports_alpha else original)
+
+    # Restore original background color
+    widget.style.background_color = original
+    await probe.redraw("Widget background color should be restored to original")
+    assert_color(probe.background_color, original)
 
 
 async def test_alignment(widget, probe, verify_vertical_alignment):

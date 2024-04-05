@@ -96,3 +96,6 @@ class ProgressBar(Widget):
         self.interface.intrinsic.height = self.scale_out(
             self.native.getMeasuredHeight(), ROUND_UP
         )
+
+    def set_background_color(self, value):
+        self.set_background_simple(value)
