@@ -138,8 +138,6 @@ class Widget(ABC, Scalable):
         if not hasattr(self, "_default_background"):
             self._default_background = self.native.getBackground()
 
-        # if value in (None, TRANSPARENT):
-        #     self.native.setBackground(self._default_background)
         if value is None:
             self.native.setBackground(self._default_background)
         elif value is TRANSPARENT:
