@@ -102,8 +102,7 @@ class Document(ABC):
 
     def show(self) -> None:
         """Show the :any:`main_window` for this document."""
-        # TODO:PR: does this need a None check for main_window?
-        self.main_window.show()  # type: ignore[union-attr]
+        self.main_window.show()
 
     @abstractmethod
     def create(self) -> None:

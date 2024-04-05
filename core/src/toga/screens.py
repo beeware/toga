@@ -29,7 +29,7 @@ class Screen:
         """The size of the screen, as a ``(width, height)`` tuple."""
         return self._impl.get_size()
 
-    def as_image(self, format: type[ImageT] = Image) -> ImageT:  # type: ignore[assignment]
+    def as_image(self, format: type[ImageT] = Image) -> ImageT:
         """Render the current contents of the screen as an image.
 
         :param format: Format to provide. Defaults to :class:`~toga.images.Image`; also

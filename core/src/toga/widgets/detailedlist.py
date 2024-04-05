@@ -1,10 +1,10 @@
 from __future__ import annotations
 
 import warnings
+from collections.abc import Iterable
 from typing import (
     Any,
     Generic,
-    Iterable,
     Literal,
     Protocol,
     TypeVar,
@@ -152,7 +152,7 @@ class DetailedList(Widget, Generic[T]):
         # 2023-06: Backwards compatibility
         ######################################################################
         if on_delete:
-            if on_primary_action:  # type: ignore[unreachable]
+            if on_primary_action:
                 raise ValueError("Cannot specify both on_delete and on_primary_action")
             else:
                 warnings.warn(
@@ -169,20 +169,20 @@ class DetailedList(Widget, Generic[T]):
         self._missing_value = missing_value
         self._primary_action = primary_action
         self._secondary_action = secondary_action
-        self.on_select = None  # type: ignore[assignment]
+        self.on_select = None
 
         # TODO:PR: in reality, _data needs to be Sized and SupportsIndex...
-        self._data: SourceT | ListSource[T] = None  # type: ignore[assignment]
+        self._data: SourceT | ListSource[T] = None
 
         self._impl = self.factory.DetailedList(interface=self)
 
-        self.data = data  # type: ignore[assignment]
-        self.on_primary_action = on_primary_action  # type: ignore[assignment]
-        self.on_secondary_action = on_secondary_action  # type: ignore[assignment]
-        self.on_refresh = on_refresh  # type: ignore[assignment]
-        self.on_select = on_select  # type: ignore[assignment]
+        self.data = data
+        self.on_primary_action = on_primary_action
+        self.on_secondary_action = on_secondary_action
+        self.on_refresh = on_refresh
+        self.on_select = on_select
 
-    @property  # type: ignore[override]
+    @property
     def enabled(self) -> Literal[True]:
         """Is the widget currently enabled? i.e., can the user interact with the widget?
         DetailedList widgets cannot be disabled; this property will always return True; any
@@ -219,7 +219,7 @@ class DetailedList(Widget, Generic[T]):
         if data is None:
             self._data = ListSource(data=[], accessors=self.accessors)
         elif isinstance(data, Source):
-            self._data = data  # type: ignore[assignment]
+            self._data = data
         else:
             self._data = ListSource(data=data, accessors=self.accessors)
 
@@ -236,11 +236,11 @@ class DetailedList(Widget, Generic[T]):
         :param row: The index of the row to make visible. Negative values refer to the
             nth last row (-1 is the last row, -2 second last, and so on).
         """
-        if len(self.data) > 1:  # type: ignore[arg-type]
+        if len(self.data) > 1:
             if row >= 0:
-                self._impl.scroll_to_row(min(row, len(self.data)))  # type: ignore[arg-type]
+                self._impl.scroll_to_row(min(row, len(self.data)))
             else:
-                self._impl.scroll_to_row(max(len(self.data) + row, 0))  # type: ignore[arg-type]
+                self._impl.scroll_to_row(max(len(self.data) + row, 0))
 
     def scroll_to_bottom(self) -> None:
         """Scroll the view so that the bottom of the list (last row) is visible."""
@@ -265,7 +265,7 @@ class DetailedList(Widget, Generic[T]):
         Returns the selected Row object, or :any:`None` if no row is currently selected.
         """
         try:
-            return self.data[self._impl.get_selection()]  # type: ignore[index]
+            return self.data[self._impl.get_selection()]
         except TypeError:
             return None
 

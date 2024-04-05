@@ -29,7 +29,6 @@ pyvenv.cfg
 .envrc
 bin/
 lib/
-.dmypy.json
 
 # Exclude briefcase packages from the examples dir.
 examples/*/macOS/

@@ -5,7 +5,7 @@ import sys
 import warnings
 from functools import lru_cache
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Protocol, Union
+from typing import TYPE_CHECKING, Any, Protocol
 from warnings import warn
 
 import toga
@@ -27,10 +27,10 @@ if TYPE_CHECKING:
     ImageT = TypeVar("ImageT")
 
     # Define the types that can be used as Image content
-    PathLike: TypeAlias = Union[str, Path]
-    BytesLike: TypeAlias = Union[bytes, bytearray, memoryview]
+    PathLike: TypeAlias = str | Path
+    BytesLike: TypeAlias = bytes | bytearray | memoryview
     ImageLike: TypeAlias = Any
-    ImageContent: TypeAlias = Union[PathLike, BytesLike, ImageLike]
+    ImageContent: TypeAlias = PathLike | BytesLike | ImageLike
 
     # Define a type variable representing an image of an externally defined type.
     ExternalImageT = TypeVar("ExternalImageT", bound=object)
@@ -41,9 +41,8 @@ class ImageConverter(Protocol):
     :any:`toga.Image`.
     """
 
-    # TODO:PR: figure out how to resolve mypy issues
     #: The base image class this plugin can interpret.
-    image_class: type[ExternalImageT]  # type:ignore[valid-type]
+    image_class: type[ExternalImageT]
 
     @staticmethod
     def convert_from_format(image_in_format: ExternalImageT) -> BytesLike:
@@ -213,7 +212,7 @@ class Image:
         """
         if isinstance(format, type):
             if issubclass(format, Image):
-                return format(self.data)  # type:ignore[return-value]
+                return format(self.data)
 
             for converter in self._converters():
                 if issubclass(format, converter.image_class):

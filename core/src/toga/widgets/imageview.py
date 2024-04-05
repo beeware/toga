@@ -89,9 +89,9 @@ class ImageView(Widget):
         # Prime the image attribute
         self._image = None
         self._impl = self.factory.ImageView(interface=self)
-        self.image = image  # type: ignore[assignment]
+        self.image = image
 
-    @property  # type: ignore[override]
+    @property
     def enabled(self) -> Literal[True]:
         """Is the widget currently enabled? i.e., can the user interact with the widget?
 
@@ -129,7 +129,7 @@ class ImageView(Widget):
         self._impl.set_image(self._image)
         self.refresh()
 
-    def as_image(self, format: type[ImageT] = toga.Image) -> ImageT:  # type: ignore[assignment]
+    def as_image(self, format: type[ImageT] = toga.Image) -> ImageT:
         """Return the image in the specified format.
 
         :param format: Format to provide. Defaults to :class:`~toga.images.Image`; also
@@ -138,5 +138,4 @@ class ImageView(Widget):
             </reference/plugins/image_formats>`.
         :returns: The image in the specified format.
         """
-        # TODO:PR: what's the use-case for initializing with image=None? cause this won't work then...
-        return self.image.as_format(format)  # type: ignore[union-attr]
+        return self.image.as_format(format)

@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 import warnings
-from typing import Any, Generic, Iterable, Protocol, TypeVar, Union
+from collections.abc import Iterable
+from typing import Any, Generic, Protocol, TypeVar, Union
 
 from toga.handlers import HandlerGeneratorReturnT, WrappedHandlerT, wrapped_handler
 from toga.sources import ListSource, Source
@@ -66,7 +67,7 @@ class Selection(Widget, Generic[T]):
         # 2023-05: Backwards compatibility
         ######################################################################
         if on_select:  # pragma: no cover
-            if on_change:  # type: ignore[unreachable]
+            if on_change:
                 raise ValueError("Cannot specify both on_select and on_change")
             else:
                 warnings.warn(
@@ -81,15 +82,15 @@ class Selection(Widget, Generic[T]):
         self._items: SourceT | ListSource[T]
         self._on_change: WrappedHandlerT
 
-        self.on_change = None  # type: ignore[assignment]  # needed for _impl initialization
+        self.on_change = None  # needed for _impl initialization
         self._impl = self.factory.Selection(interface=self)
 
         self._accessor = accessor
-        self.items = items  # type: ignore[assignment]
+        self.items = items
         if value:
             self.value = value
 
-        self.on_change = on_change  # type: ignore[assignment]
+        self.on_change = on_change
         self.enabled = enabled
 
     @property
@@ -121,7 +122,7 @@ class Selection(Widget, Generic[T]):
         elif isinstance(items, Source):
             if self._accessor is None:
                 raise ValueError("Must specify an accessor to use a data source")
-            self._items = items  # type: ignore[assignment]
+            self._items = items
         else:
             self._items = ListSource(accessors=accessors, data=items)
 
@@ -129,11 +130,11 @@ class Selection(Widget, Generic[T]):
 
         # Temporarily halt notifications
         orig_on_change = self._on_change
-        self.on_change = None  # type: ignore[assignment]
+        self.on_change = None
 
         # Clear the widget, and insert all the data rows
         self._impl.clear()
-        for index, item in enumerate(self.items):  # type: ignore[arg-type,var-annotated]
+        for index, item in enumerate(self.items):
             self._impl.insert(index, item)
 
         # Restore the original change handler and trigger it.
@@ -172,22 +173,22 @@ class Selection(Widget, Generic[T]):
         if index is None:
             return None
 
-        item = self._items[index]  # type: ignore[index]
+        item = self._items[index]
         # If there was no accessor specified, the data values are literals.
         # Dereference the value out of the Row object.
         if item and self._accessor is None:
-            return item.value  # type: ignore[union-attr]
-        return item  # type: ignore[return-value]
+            return item.value
+        return item
 
     @value.setter
     def value(self, value: T) -> None:
         try:
             if self._accessor is None:
-                item = self._items.find(dict(value=value))  # type: ignore[union-attr]
+                item = self._items.find(dict(value=value))
             else:
                 item = value
 
-            index = self._items.index(item)  # type: ignore[union-attr]
+            index = self._items.index(item)
             self._impl.select_item(index=index, item=item)
         except ValueError:
             raise ValueError(f"{value!r} is not a current item in the selection")

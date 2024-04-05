@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from typing import Any, Iterator, Protocol, Union
+from collections.abc import Iterator
+from typing import Any, Protocol, Union
 
 import toga
 from toga.handlers import HandlerGeneratorReturnT, WrappedHandlerT, wrapped_handler
@@ -29,7 +30,7 @@ class MapPin:
         self._subtitle = subtitle
 
         # A pin isn't tied to a map at time of creation.
-        self.interface: MapView = None  # type:ignore[assignment]
+        self.interface: MapView = None
         self._native = None
 
     def __repr__(self) -> str:
@@ -112,7 +113,7 @@ class MapPinSet:
         """
         self.interface._impl.remove_pin(pin)
         self._pins.remove(pin)
-        pin.interface = None  # type:ignore[assignment]
+        pin.interface = None
 
     def clear(self) -> None:
         """Remove all pins from the map."""
@@ -177,14 +178,14 @@ class MapView(Widget):
         self._pins = MapPinSet(self, pins)
 
         if location:
-            self.location = location  # type:ignore[assignment]
+            self.location = location
         else:
             # Default location is Perth, Australia. Because why not?
-            self.location = (-31.9559, 115.8606)  # type:ignore[assignment]
+            self.location = (-31.9559, 115.8606)
 
         self.zoom = zoom
 
-        self.on_select = on_select  # type:ignore[assignment]
+        self.on_select = on_select
 
     @property
     def location(self) -> toga.LatLng:

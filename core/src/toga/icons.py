@@ -1,15 +1,16 @@
 from __future__ import annotations
 
 import warnings
+from collections.abc import Callable, Iterable
 from pathlib import Path
-from typing import TYPE_CHECKING, Callable, Iterable, Union
+from typing import TYPE_CHECKING
 
 import toga
 from toga.platform import get_platform_factory
 from toga.types import TypeAlias
 
 if TYPE_CHECKING:
-    IconContent: TypeAlias = Union[str, Path, toga.Icon]
+    IconContent: TypeAlias = str | Path | toga.Icon
 
 
 class cachedicon:
@@ -99,10 +100,7 @@ class Icon:
 
             self.system = system
             if self.system:
-                resource_path = (
-                    Path(self.factory.__file__).parent  # type:ignore[arg-type]
-                    / "resources"
-                )
+                resource_path = Path(self.factory.__file__).parent / "resources"
             else:
                 resource_path = toga.App.app.paths.app
 

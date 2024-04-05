@@ -67,18 +67,18 @@ class Button(Widget):
 
         # Set a dummy handler before installing the actual on_press, because we do not want
         # on_press triggered by the initial value being set
-        self.on_press = None  # type: ignore[assignment]
+        self.on_press = None
 
         # Set the content of the button - either an icon, or text, but not both.
         if icon:
             if text is not None:
                 raise ValueError("Cannot specify both text and an icon")
             else:
-                self.icon = icon  # type:ignore[assignment]
+                self.icon = icon
         else:
-            self.text = text  # type:ignore[assignment]
+            self.text = text
 
-        self.on_press = on_press  # type: ignore[assignment]
+        self.on_press = on_press
         self.enabled = enabled
 
     @property

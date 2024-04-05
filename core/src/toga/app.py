@@ -261,7 +261,7 @@ class MainWindow(Window):
     def _default_title(self) -> str:
         return App.app.formal_name
 
-    @property  # type: ignore[override]
+    @property
     def on_close(self) -> None:
         """The handler to invoke before the window is closed in response to a user
         action.
@@ -329,8 +329,6 @@ class App:
     #: The currently running :class:`~toga.App`. Since there can only be one running
     #: Toga app in a process, this is available as a class property via ``toga.App.app``.
     app: App
-    _impl: Any
-    _camera: Camera
 
     def __init__(
         self,
@@ -390,7 +388,7 @@ class App:
         # 2023-10: Backwards compatibility
         ######################################################################
         if id is not None:
-            warn(  # type: ignore[unreachable]
+            warn(
                 "App.id is deprecated and will be ignored. Use app_id instead",
                 DeprecationWarning,
                 stacklevel=2,
@@ -450,7 +448,7 @@ class App:
         if formal_name:
             self._formal_name = formal_name
         else:
-            self._formal_name = self.metadata.get("Formal-Name")  # type: ignore[assignment]
+            self._formal_name = self.metadata.get("Formal-Name")
         if self._formal_name is None:
             raise RuntimeError("Toga application must have a formal name")
 
@@ -459,26 +457,30 @@ class App:
         if app_id:
             self._app_id = app_id
         else:
-            self._app_id = self.metadata.get("App-ID")  # type: ignore[assignment]
+            self._app_id = self.metadata.get("App-ID")
         if self._app_id is None:
             raise RuntimeError("Toga application must have an app ID")
 
         # Other metadata may be passed to the constructor, or loaded with importlib.
-        self._author = author
-        if not self._author:
-            self._author = self.metadata.get("Author")
+        if author:
+            self._author = author
+        else:
+            self._author = self.metadata.get("Author", None)
 
-        self._version = version
-        if not self._version:
-            self._version = self.metadata.get("Version")
+        if version:
+            self._version = version
+        else:
+            self._version = self.metadata.get("Version", None)
 
-        self._home_page = home_page
-        if not self._home_page:
-            self._home_page = self.metadata.get("Home-page")
+        if home_page:
+            self._home_page = home_page
+        else:
+            self._home_page = self.metadata.get("Home-page", None)
 
-        self._description = description
-        if not self._description:
-            self._description = self.metadata.get("Summary")
+        if description:
+            self._description = description
+        else:
+            self._description = self.metadata.get("Summary", None)
 
         # Get a platform factory.
         self.factory = get_platform_factory()
@@ -491,7 +493,7 @@ class App:
         else:
             self.icon = icon
 
-        self.on_exit = on_exit  # type: ignore[assignment]
+        self.on_exit = on_exit
 
         # We need the command set to exist so that startup et al. can add commands;
         # but we don't have an impl yet, so we can't set the on_change handler
@@ -564,8 +566,7 @@ class App:
         if isinstance(icon_or_name, Icon):
             self._icon = icon_or_name
         else:
-            # TODO:PR: not valid for icon_or_name to be None
-            self._icon = Icon(icon_or_name)  # type:ignore[arg-type]
+            self._icon = Icon(icon_or_name)
 
         try:
             self._impl.set_icon(self._icon)
@@ -859,7 +860,7 @@ class App:
         return self._formal_name
 
     # Support WindowSet __iadd__ and __isub__
-    @windows.setter  # type:ignore[no-redef,attr-defined,misc]
+    @windows.setter
     def windows(self, windows: WindowSet) -> None:
         if windows is not self._windows:
             raise AttributeError("can't set attribute 'windows'")
@@ -955,8 +956,6 @@ class DocumentApp(App):
         except KeyError:
             raise ValueError(f"Don't know how to open documents of type {path.suffix}")
         else:
-            # TODO:PR: does this need `document_type`? or is `Document` not the right type?
-            # TODO:PR: revisit this once #2244 is merged
-            document = DocType(path, app=self)  # type: ignore[call-arg]
+            document = DocType(path, app=self)
             self._documents.append(document)
             document.show()

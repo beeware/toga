@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from typing import Callable, Protocol, Union
+from collections.abc import Callable
+from typing import Protocol, Union
 
 from toga.handlers import HandlerGeneratorReturnT, WrappedHandlerT, wrapped_handler
 from toga.style import Pack
@@ -128,24 +129,24 @@ class TextInput(Widget):
         # Create a platform specific implementation of the widget
         self._create()
 
-        self.placeholder = placeholder  # type: ignore[assignment]
+        self.placeholder = placeholder
         self.readonly = readonly
 
         # Set the actual value before on_change, because we do not want
         # on_change triggered by it However, we need to prime the handler
         # property in case it is accessed.
-        self.on_change = None  # type: ignore[assignment]
-        self.on_confirm = None  # type: ignore[assignment]
+        self.on_change = None
+        self.on_confirm = None
 
         # Set the list of validators before we set the initial value so that
         # validation is performed on the initial value
-        self.validators = validators  # type: ignore[assignment]
-        self.value = value  # type: ignore[assignment]
+        self.validators = validators
+        self.value = value
 
-        self.on_change = on_change  # type: ignore[assignment]
-        self.on_confirm = on_confirm  # type: ignore[assignment]
-        self.on_lose_focus = on_lose_focus  # type: ignore[assignment]
-        self.on_gain_focus = on_gain_focus  # type: ignore[assignment]
+        self.on_change = on_change
+        self.on_confirm = on_confirm
+        self.on_lose_focus = on_lose_focus
+        self.on_gain_focus = on_gain_focus
 
     def _create(self) -> None:
         self._impl = self.factory.TextInput(interface=self)

@@ -68,12 +68,12 @@ class DateInput(Widget):
         # Create a platform specific implementation of a DateInput
         self._impl = self.factory.DateInput(interface=self)
 
-        self.on_change = None  # type: ignore[assignment]
-        self.min = min  # type: ignore[assignment]
-        self.max = max  # type: ignore[assignment]
+        self.on_change = None
+        self.min = min
+        self.max = max
 
-        self.value = value  # type: ignore[assignment]
-        self.on_change = on_change  # type: ignore[assignment]
+        self.value = value
+        self.on_change = on_change
 
     @property
     def value(self) -> datetime.date:
@@ -212,7 +212,7 @@ class DatePicker(DateInput):
         warnings.warn(
             "DatePicker.min_date has been renamed DateInput.min", DeprecationWarning
         )
-        self.min = value  # type: ignore[assignment]
+        self.min = value
 
     @property
     def max_date(self) -> datetime.date:
@@ -226,4 +226,4 @@ class DatePicker(DateInput):
         warnings.warn(
             "DatePicker.max_date has been renamed DateInput.max", DeprecationWarning
         )
-        self.max = value  # type: ignore[assignment]
+        self.max = value

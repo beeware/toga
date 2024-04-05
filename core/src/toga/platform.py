@@ -62,8 +62,7 @@ def get_platform_factory() -> ModuleType:
 
     :returns: The factory for the host platform.
     """
-    backend_value = os.environ.get("TOGA_BACKEND")
-    if backend_value:
+    if backend_value := os.environ.get("TOGA_BACKEND"):
         try:
             factory = importlib.import_module(f"{backend_value}.factory")
         except ModuleNotFoundError as e:

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Literal, Protocol, SupportsInt, Union, no_type_check
+from typing import Literal, Protocol, SupportsInt, Union
 
 from toga.handlers import HandlerGeneratorReturnT, WrappedHandlerT, wrapped_handler
 from toga.style import Pack
@@ -52,7 +52,7 @@ class ScrollContainer(Widget):
         super().__init__(id=id, style=style)
 
         self._content: Widget | None = None
-        self.on_scroll = None  # type: ignore[assignment]
+        self.on_scroll = None
 
         # Create a platform specific implementation of a Scroll Container
         self._impl = self.factory.ScrollContainer(interface=self)
@@ -61,10 +61,9 @@ class ScrollContainer(Widget):
         self.vertical = vertical
         self.horizontal = horizontal
         self.content = content
-        self.on_scroll = on_scroll  # type: ignore[assignment]
+        self.on_scroll = on_scroll
 
     @Widget.app.setter
-    @no_type_check
     def app(self, app) -> None:
         # Invoke the superclass property setter
         Widget.app.fset(self, app)
@@ -74,7 +73,6 @@ class ScrollContainer(Widget):
             self._content.app = app
 
     @Widget.window.setter
-    @no_type_check
     def window(self, window) -> None:
         # Invoke the superclass property setter
         Widget.window.fset(self, window)
@@ -83,7 +81,7 @@ class ScrollContainer(Widget):
         if self._content:
             self._content.window = window
 
-    @property  # type: ignore[override]
+    @property
     def enabled(self) -> Literal[True]:
         """Is the widget currently enabled? i.e., can the user interact with the widget?
 
@@ -182,7 +180,7 @@ class ScrollContainer(Widget):
                 "Cannot set horizontal position when horizontal scrolling is not enabled."
             )
 
-        self.position = (horizontal_position, self._impl.get_vertical_position())  # type: ignore[assignment]
+        self.position = (horizontal_position, self._impl.get_vertical_position())
 
     @property
     def max_vertical_position(self) -> int:
@@ -212,7 +210,7 @@ class ScrollContainer(Widget):
                 "Cannot set vertical position when vertical scrolling is not enabled."
             )
 
-        self.position = (self._impl.get_horizontal_position(), vertical_position)  # type: ignore[assignment]
+        self.position = (self._impl.get_horizontal_position(), vertical_position)
 
     # This combined property is necessary because on some platforms (e.g. iOS), setting
     # the horizontal and vertical position separately would cause the horizontal and

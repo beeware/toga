@@ -8,6 +8,7 @@ from toga.platform import get_platform_factory
 
 if TYPE_CHECKING:
     from toga.app import App
+    from toga.widgets.base import Widget
 
 
 class PhotoResult(AsyncResult):
@@ -33,8 +34,8 @@ class CameraDevice:
         """Does the device have a flash?"""
         return self._impl.has_flash()
 
-    def __eq__(self, other: object) -> bool:
-        return self.id == other.id  # type:ignore[attr-defined]
+    def __eq__(self, other: Widget) -> bool:
+        return self.id == other.id
 
     def __repr__(self) -> str:
         return f"<CameraDevice id={self.id} {self.name!r}>"

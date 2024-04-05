@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Tuple, Union, no_type_check
+from typing import Tuple, Union
 
 from toga.constants import Direction
 from toga.style import Pack
@@ -119,11 +119,10 @@ class SplitContainer(Widget):
             tuple(w._impl if w is not None else None for w in _content),
             flex,
         )
-        self._content = tuple(_content)  # type: ignore[assignment]
+        self._content = tuple(_content)
         self.refresh()
 
     @Widget.app.setter
-    @no_type_check
     def app(self, app):
         # Invoke the superclass property setter
         Widget.app.fset(self, app)
@@ -134,7 +133,6 @@ class SplitContainer(Widget):
                 content.app = app
 
     @Widget.window.setter
-    @no_type_check
     def window(self, window):
         # Invoke the superclass property setter
         Widget.window.fset(self, window)

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from typing import Generic, Iterable, Iterator, Mapping, Tuple, TypeVar, Union
+from collections.abc import Iterator
+from typing import Generic, Iterable, Mapping, Tuple, TypeVar, Union
 
 from toga.types import TypeAlias
 
@@ -62,8 +63,7 @@ class Node(Row[T]):
 
         # Child isn't part of this source, or a child of this node anymore.
         child._parent = None
-        # TODO:PR: consider del?
-        child._source = None  # type: ignore[assignment]
+        child._source = None
 
         self._source.notify("remove", parent=self, index=index, item=child)
 
@@ -101,8 +101,7 @@ class Node(Row[T]):
 
         old_node = self._children[index]
         old_node._parent = None
-        # TODO:PR: consider del?
-        old_node._source = None  # type: ignore[assignment]
+        old_node._source = None
 
         node = self._source._create_node(parent=self, data=data)
         self._children[index] = node
@@ -237,8 +236,7 @@ class TreeSource(Source, Generic[T]):
     def __delitem__(self, index: int) -> None:
         node = self._roots[index]
         del self._roots[index]
-        # TODO:PR: consider del?
-        node._source = None  # type: ignore[assignment]
+        node._source = None
         self.notify("remove", parent=None, index=index, item=node)
 
     ######################################################################
@@ -297,8 +295,7 @@ class TreeSource(Source, Generic[T]):
         """
         old_root = self._roots[index]
         old_root._parent = None
-        # TODO:PR: consider del?
-        old_root._source = None  # type: ignore[assignment]
+        old_root._source = None
 
         root = self._create_node(parent=None, data=data)
         self._roots[index] = root

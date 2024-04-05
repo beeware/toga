@@ -59,13 +59,13 @@ class MultilineTextInput(Widget):
 
         # Set a dummy handler before installing the actual on_change, because we do not want
         # on_change triggered by the initial value being set
-        self.on_change = None  # type: ignore[assignment]
-        self.value = value  # type: ignore[assignment]
+        self.on_change = None
+        self.value = value
 
         # Set all the properties
         self.readonly = readonly
-        self.placeholder = placeholder  # type: ignore[assignment]
-        self.on_change = on_change  # type: ignore[assignment]
+        self.placeholder = placeholder
+        self.on_change = on_change
 
     @property
     def placeholder(self) -> str:

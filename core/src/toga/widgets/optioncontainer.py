@@ -1,13 +1,11 @@
 from __future__ import annotations
 
+from collections.abc import Iterable
 from typing import (
     TYPE_CHECKING,
     Any,
-    Iterable,
     Protocol,
-    Tuple,
     Union,
-    no_type_check,
     overload,
 )
 
@@ -22,12 +20,12 @@ from .base import Widget
 if TYPE_CHECKING:
     from toga.icons import IconContent
 
-    OptionContainerContent: TypeAlias = Union[
-        Tuple[str, Widget],
-        Tuple[str, Widget, Union[IconContent, None]],
-        Tuple[str, Widget, Union[IconContent, None], bool],
-        toga.OptionItem,
-    ]
+    OptionContainerContent: TypeAlias = (
+        tuple[str, Widget]
+        | tuple[str, Widget, IconContent | None]
+        | tuple[str, Widget, IconContent | None, bool]
+        | toga.OptionItem
+    )
 
 
 class OnSelectHandlerSync(Protocol):
@@ -75,18 +73,18 @@ class OptionItem:
         # will become the source of truth. Initially prime the attributes with None (so
         # that the attribute exists), then use the setter to enforce validation on the
         # provided values.
-        self._text: str = None  # type:ignore[assignment]
-        self._icon: toga.Icon = None  # type:ignore[assignment]
-        self._enabled: bool = None  # type:ignore[assignment]
+        self._text: str = None
+        self._icon: toga.Icon = None
+        self._enabled: bool = None
 
         self.text = text
-        self.icon = icon  # type:ignore[assignment]
+        self.icon = icon
         self.enabled = enabled
 
         # Prime the attributes for properties that will be set when the OptionItem is
         # set as content.
-        self._interface: OptionContainer = None  # type:ignore[assignment]
-        self._index: int = None  # type:ignore[assignment]
+        self._interface: OptionContainer = None
+        self._index: int = None
 
     @property
     def interface(self) -> OptionContainer:
@@ -165,7 +163,7 @@ class OptionItem:
                 icon = toga.Icon(icon_or_name)
 
             if hasattr(self, "_icon"):
-                self._icon = icon  # type:ignore[assignment]
+                self._icon = icon
             else:
                 self._interface._impl.set_option_icon(self.index, icon)
 
@@ -189,8 +187,8 @@ class OptionItem:
         self._enabled = self.enabled
 
         # Clear
-        self._index = None  # type:ignore[assignment]
-        self._interface = None  # type:ignore[assignment]
+        self._index = None
+        self._interface = None
 
     def _add_as_option(self, index: int, interface: OptionContainer) -> None:
         text = self._text
@@ -218,7 +216,7 @@ class OptionList:
         self._options: list[OptionItem] = []
 
     def __repr__(self) -> str:
-        items = ", ".join(repr(option.text) for option in self)  # type: ignore[attr-defined]
+        items = ", ".join(repr(option.text) for option in self)
         return f"<OptionList {items}>"
 
     def __getitem__(self, index: int | str | OptionItem) -> OptionItem:
@@ -271,10 +269,10 @@ class OptionList:
         if isinstance(value, int):
             return value
         elif isinstance(value, OptionItem):
-            return value.index  # type:ignore[return-value]
+            return value.index
         else:
             try:
-                return next(filter(lambda item: item.text == str(value), self)).index  # type: ignore
+                return next(filter(lambda item: item.text == str(value), self)).index
             except StopIteration:
                 raise ValueError(f"No tab named {value!r}")
 
@@ -314,13 +312,7 @@ class OptionList:
         :param icon: The :any:`icon content <IconContent>` to use to represent the tab.
         :param enabled: Should the new tab be enabled? (Default: ``True``)
         """
-        self.insert(  # type:ignore[misc]
-            len(self),
-            text_or_item,  # type:ignore[arg-type]
-            content,  # type:ignore[arg-type]
-            icon=icon,
-            enabled=enabled,
-        )
+        self.insert(len(self), text_or_item, content, icon=icon, enabled=enabled)
 
     @overload
     def insert(
@@ -378,7 +370,7 @@ class OptionList:
             # Create an interface wrapper for the option.
             item = OptionItem(
                 text_or_item,
-                content,  # type:ignore[arg-type]
+                content,
                 icon=icon,
                 enabled=enabled if enabled is not None else True,
             )
@@ -416,22 +408,20 @@ class OptionContainer(Widget):
         """
         super().__init__(id=id, style=style)
         self._content = OptionList(self)
-        self.on_select = None  # type: ignore[assignment]
+        self.on_select = None
 
         self._impl = self.factory.OptionContainer(interface=self)
 
         if content:
             for item in content:
-                # TODO:PR: OptionItem is not a widget...but iterating content returns widgets...
                 if isinstance(item, OptionItem):
-                    self.content.append(item)  # type:ignore[unreachable]
+                    self.content.append(item)
                 else:
                     if len(item) == 2:
                         text, widget = item
                         icon = None
                         enabled = True
-                    # TODO:PR: type of content is Iterable of tuples soooo....
-                    elif len(item) == 3:  # type:ignore[unreachable]
+                    elif len(item) == 3:
                         text, widget, icon = item
                         enabled = True
                     elif len(item) == 4:
@@ -445,7 +435,7 @@ class OptionContainer(Widget):
 
                     self.content.append(text, widget, enabled=enabled, icon=icon)
 
-        self.on_select = on_select  # type: ignore[assignment]
+        self.on_select = on_select
 
     @property
     def enabled(self) -> bool:
@@ -489,7 +479,6 @@ class OptionContainer(Widget):
         self._impl.set_current_tab_index(index)
 
     @Widget.app.setter
-    @no_type_check
     def app(self, app) -> None:
         # Invoke the superclass property setter
         Widget.app.fset(self, app)
@@ -499,7 +488,6 @@ class OptionContainer(Widget):
             item._content.app = app
 
     @Widget.window.setter
-    @no_type_check
     def window(self, window) -> None:
         # Invoke the superclass property setter
         Widget.window.fset(self, window)

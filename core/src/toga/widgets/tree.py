@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 import warnings
-from typing import Collection, Generic, Iterable, Literal, Protocol, TypeVar, Union
+from collections.abc import Collection, Iterable
+from typing import Generic, Literal, Protocol, TypeVar, Union
 
 from toga.handlers import HandlerGeneratorReturnT, WrappedHandlerT, wrapped_handler
 from toga.sources import Node, Source, TreeSource
@@ -107,7 +108,7 @@ class Tree(Widget, Generic[T]):
         # 2023-06: Backwards compatibility
         ######################################################################
         if on_double_click:
-            if on_activate:  # type: ignore[unreachable]
+            if on_activate:
                 raise ValueError("Cannot specify both on_double_click and on_activate")
             else:
                 warnings.warn(
@@ -136,17 +137,17 @@ class Tree(Widget, Generic[T]):
         self._missing_value = missing_value or ""
 
         # Prime some properties that need to exist before the tree is created.
-        self.on_select = None  # type: ignore[assignment]
-        self.on_activate = None  # type: ignore[assignment]
-        self._data = None  # type: ignore[assignment]
+        self.on_select = None
+        self.on_activate = None
+        self._data = None
 
         self._impl = self.factory.Tree(interface=self)
-        self.data = data  # type: ignore[assignment]
+        self.data = data
 
-        self.on_select = on_select  # type: ignore[assignment]
-        self.on_activate = on_activate  # type: ignore[assignment]
+        self.on_select = on_select
+        self.on_activate = on_activate
 
-    @property  # type: ignore[override]
+    @property
     def enabled(self) -> Literal[True]:
         """Is the widget currently enabled? i.e., can the user interact with the widget?
         Tree widgets cannot be disabled; this property will always return True; any
@@ -176,14 +177,14 @@ class Tree(Widget, Generic[T]):
         * Otherwise, the value must be a dictionary or an iterable, which is copied
           into a new TreeSource as shown :ref:`here <treesource-item>`.
         """
-        return self._data  # type: ignore[return-value]
+        return self._data
 
     @data.setter
     def data(self, data: SourceT | TreeSourceDataT[T] | None) -> None:
         if data is None:
             self._data = TreeSource(accessors=self._accessors, data=[])
         elif isinstance(data, Source):
-            self._data = data  # type: ignore[assignment]
+            self._data = data
         else:
             self._data = TreeSource(accessors=self._accessors, data=data)
 
@@ -269,7 +270,7 @@ class Tree(Widget, Generic[T]):
         if self._headings is None:
             if accessor is None:
                 raise ValueError("Must specify an accessor on a tree without headings")
-            heading = None  # type: ignore[assignment]
+            heading = None
         elif not accessor:
             accessor = to_accessor(heading)
 

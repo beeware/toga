@@ -36,13 +36,13 @@ class ProgressBar(Widget):
 
         self._impl = self.factory.ProgressBar(interface=self)
 
-        self.max = max  # type: ignore[assignment]
-        self.value = value  # type: ignore[assignment]
+        self.max = max
+        self.value = value
 
         if running:
             self.start()
 
-    @property  # type: ignore[override]
+    @property
     def enabled(self) -> Literal[True]:
         """Is the widget currently enabled? i.e., can the user interact with the widget?
 

@@ -57,12 +57,12 @@ class TimeInput(Widget):
         # Create a platform specific implementation of a TimeInput
         self._impl = self.factory.TimeInput(interface=self)
 
-        self.on_change = None  # type: ignore[assignment]
-        self.min = min  # type: ignore[assignment]
-        self.max = max  # type: ignore[assignment]
+        self.on_change = None
+        self.min = min
+        self.max = max
 
-        self.value = value  # type: ignore[assignment]
-        self.on_change = on_change  # type: ignore[assignment]
+        self.value = value
+        self.on_change = on_change
 
     @property
     def value(self) -> datetime.time:
@@ -189,7 +189,7 @@ class TimePicker(TimeInput):
         warnings.warn(
             "TimePicker.min_time has been renamed TimeInput.min", DeprecationWarning
         )
-        self.min = value  # type: ignore[assignment]
+        self.min = value
 
     @property
     def max_time(self) -> datetime.time:
@@ -203,4 +203,4 @@ class TimePicker(TimeInput):
         warnings.warn(
             "TimePicker.max_time has been renamed TimeInput.max", DeprecationWarning
         )
-        self.max = value  # type: ignore[assignment]
+        self.max = value

@@ -2,11 +2,11 @@ from __future__ import annotations
 
 import warnings
 from builtins import id as identifier
+from collections.abc import Iterator
 from pathlib import Path
 from typing import (
     TYPE_CHECKING,
     Any,
-    Iterator,
     Literal,
     Protocol,
     TypeVar,
@@ -140,7 +140,7 @@ class Dialog(AsyncResult):
 
     def __init__(self, window: Window, on_result: DialogResultHandlerT[Any]):
         # TODO:PR: should DialogResultHandlerT include the "exception" arg...
-        super().__init__(on_result=on_result)  # type:ignore[arg-type]
+        super().__init__(on_result=on_result)
         self.window = window
         self.app = window.app
 
@@ -183,14 +183,14 @@ class Window:
         # 2023-08: Backwards compatibility
         ######################################################################
         if resizeable is not None:
-            warnings.warn(  # type: ignore[unreachable]
+            warnings.warn(
                 "Window.resizeable has been renamed Window.resizable",
                 DeprecationWarning,
             )
             resizable = resizeable
 
         if closeable is not None:
-            warnings.warn(  # type: ignore[unreachable]
+            warnings.warn(
                 "Window.closeable has been renamed Window.closable",
                 DeprecationWarning,
             )
@@ -222,7 +222,7 @@ class Window:
 
         # Add the window to the app
         # _app will only be None until the window is added to the app below
-        self._app: App = None  # type: ignore[assignment]
+        self._app: App = None
         if App.app is None:
             raise RuntimeError("Cannot create a Window before creating an App")
         App.app.windows.add(self)
@@ -493,9 +493,7 @@ class Window:
     # Window capabilities
     ######################################################################
 
-    def as_image(
-        self, format: type[ImageT] = Image  # type:ignore[assignment]
-    ) -> ImageT:
+    def as_image(self, format: type[ImageT] = Image) -> ImageT:
         """Render the current contents of the window as an image.
 
         :param format: Format to provide. Defaults to :class:`~toga.images.Image`; also
@@ -549,11 +547,7 @@ class Window:
         """
         dialog = Dialog(
             self,
-            on_result=(
-                wrapped_handler(self, on_result)
-                if on_result
-                else None  # type:ignore[arg-type]  # TODO:PR:revisit
-            ),
+            on_result=wrapped_handler(self, on_result) if on_result else None,
         )
         self.factory.dialogs.InfoDialog(dialog, title, message)
         return dialog
@@ -580,11 +574,7 @@ class Window:
         """
         dialog = Dialog(
             self,
-            on_result=(
-                wrapped_handler(self, on_result)
-                if on_result
-                else None  # type:ignore[arg-type]  # TODO:PR:revisit
-            ),
+            on_result=wrapped_handler(self, on_result) if on_result else None,
         )
         self.factory.dialogs.QuestionDialog(dialog, title, message)
         return dialog
@@ -612,11 +602,7 @@ class Window:
         """
         dialog = Dialog(
             self,
-            on_result=(
-                wrapped_handler(self, on_result)
-                if on_result
-                else None  # type:ignore[arg-type]  # TODO:PR:revisit
-            ),
+            on_result=wrapped_handler(self, on_result) if on_result else None,
         )
         self.factory.dialogs.ConfirmDialog(dialog, title, message)
         return dialog
@@ -643,11 +629,7 @@ class Window:
         """
         dialog = Dialog(
             self,
-            on_result=(
-                wrapped_handler(self, on_result)
-                if on_result
-                else None  # type:ignore[arg-type]  # TODO:PR:revisit
-            ),
+            on_result=wrapped_handler(self, on_result) if on_result else None,
         )
         self.factory.dialogs.ErrorDialog(dialog, title, message)
         return dialog
@@ -712,11 +694,7 @@ class Window:
         """
         dialog = Dialog(
             self,
-            on_result=(
-                wrapped_handler(self, on_result)
-                if on_result
-                else None  # type:ignore[arg-type]  # TODO:PR:revisit
-            ),
+            on_result=wrapped_handler(self, on_result) if on_result else None,
         )
         self.factory.dialogs.StackTraceDialog(
             dialog,
@@ -753,11 +731,7 @@ class Window:
         """
         dialog = Dialog(
             self,
-            on_result=(
-                wrapped_handler(self, on_result)
-                if on_result
-                else None  # type:ignore[arg-type]  # TODO:PR:revisit
-            ),
+            on_result=wrapped_handler(self, on_result) if on_result else None,
         )
         # Convert suggested filename to a path (if it isn't already),
         # and break it into a filename and a directory
@@ -858,7 +832,7 @@ class Window:
         # 2023-08: Backwards compatibility
         ######################################################################
         if multiselect is not None:
-            warnings.warn(  # type: ignore[unreachable]
+            warnings.warn(
                 "open_file_dialog(multiselect) has been renamed multiple_select",
                 DeprecationWarning,
             )
@@ -869,11 +843,7 @@ class Window:
 
         dialog = Dialog(
             self,
-            on_result=(
-                wrapped_handler(self, on_result)
-                if on_result
-                else None  # type:ignore[arg-type]  # TODO:PR:revisit
-            ),
+            on_result=wrapped_handler(self, on_result) if on_result else None,
         )
         self.factory.dialogs.OpenFileDialog(
             dialog,
@@ -961,7 +931,7 @@ class Window:
         # 2023-08: Backwards compatibility
         ######################################################################
         if multiselect is not None:
-            warnings.warn(  # type: ignore[unreachable]
+            warnings.warn(
                 "select_folder_dialog(multiselect) has been renamed multiple_select",
                 DeprecationWarning,
             )
@@ -972,11 +942,7 @@ class Window:
 
         dialog = Dialog(
             self,
-            on_result=(
-                wrapped_handler(self, on_result)
-                if on_result
-                else None  # type:ignore[arg-type]  # TODO:PR:revisit
-            ),
+            on_result=wrapped_handler(self, on_result) if on_result else None,
         )
         self.factory.dialogs.SelectFolderDialog(
             dialog,

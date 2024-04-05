@@ -2,8 +2,9 @@ from __future__ import annotations
 
 import warnings
 from abc import ABC, abstractmethod
+from collections.abc import Iterator
 from contextlib import contextmanager
-from typing import Any, Iterator, Protocol, SupportsFloat, Union
+from typing import Any, Protocol, SupportsFloat, Union
 
 from toga.handlers import HandlerGeneratorReturnT, WrappedHandlerT, wrapped_handler
 from toga.style import Pack
@@ -112,7 +113,7 @@ class Slider(Widget):
         # 2023-06: Backwards compatibility
         ######################################################################
         if range is not None:
-            if min is not None or max is not None:  # type: ignore[unreachable]
+            if min is not None or max is not None:
                 raise ValueError(
                     "range cannot be specified if min and max are specified"
                 )
@@ -136,7 +137,7 @@ class Slider(Widget):
 
         # Set a dummy handler before installing the actual on_change, because we do not want
         # on_change triggered by the initial value being set
-        self.on_change = None  # type: ignore[assignment]
+        self.on_change = None
         self.min = min
         self.max = max
         self.tick_count = tick_count
@@ -144,9 +145,9 @@ class Slider(Widget):
             value = (min + max) / 2
         self.value = value
 
-        self.on_change = on_change  # type: ignore[assignment]
-        self.on_press = on_press  # type: ignore[assignment]
-        self.on_release = on_release  # type: ignore[assignment]
+        self.on_change = on_change
+        self.on_press = on_press
+        self.on_release = on_release
 
         self.enabled = enabled
 
@@ -158,7 +159,7 @@ class Slider(Widget):
     def _programmatic_change(self) -> Iterator[float]:
         old_value = self.value
         on_change = self._on_change
-        self.on_change = None  # type: ignore[assignment]
+        self.on_change = None
         yield old_value
 
         self._on_change = on_change

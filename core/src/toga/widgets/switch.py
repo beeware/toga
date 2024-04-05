@@ -59,10 +59,10 @@ class Switch(Widget):
 
         # Set a dummy handler before installing the actual on_change, because we do not want
         # on_change triggered by the initial value being set
-        self.on_change = None  # type: ignore[assignment]
+        self.on_change = None
         self.value = value
 
-        self.on_change = on_change  # type: ignore[assignment]
+        self.on_change = on_change
 
         self.enabled = enabled
 

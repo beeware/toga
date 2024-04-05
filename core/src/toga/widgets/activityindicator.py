@@ -29,7 +29,7 @@ class ActivityIndicator(Widget):
         if running:
             self.start()
 
-    @property  # type: ignore[override]
+    @property
     def enabled(self) -> Literal[True]:
         """Is the widget currently enabled? i.e., can the user interact with the widget?
 

@@ -171,7 +171,7 @@ class Key(Enum):
         """
         try:
             # Try Key + Key
-            return self.value + other.value  # type: ignore[union-attr]
+            return self.value + other.value
         except AttributeError:
             return self.value + other
 

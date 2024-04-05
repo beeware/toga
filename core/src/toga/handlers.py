@@ -135,7 +135,7 @@ def wrapped_handler(
                             traceback.print_exc()
             return None
 
-        _handler._raw = handler  # type: ignore[attr-defined]
+        _handler._raw = handler
 
     else:
         # A dummy no-op handler
@@ -148,7 +148,7 @@ def wrapped_handler(
                 traceback.print_exc()
             return None
 
-        _handler._raw = None  # type: ignore[attr-defined]
+        _handler._raw = None
 
     return _handler
 

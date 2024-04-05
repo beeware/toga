@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Iterator, Protocol, Union, no_type_check
+from collections.abc import Iterator
+from typing import TYPE_CHECKING, Protocol, Union
 
 from toga.handlers import HandlerGeneratorReturnT, WrappedHandlerT, wrapped_handler
 from toga.icons import Icon
@@ -212,7 +213,7 @@ class Command:
 
         self.shortcut = shortcut
         self.tooltip = tooltip
-        self.icon = icon  # type: ignore[assignment]
+        self.icon = icon
 
         self.group = group
         self.section = section
@@ -380,7 +381,6 @@ class CommandSet:
         # can't `peek` at the top element of an iterator, `push` an item back on after
         # it has been consumed, or pass the consumed item as a return value in addition
         # to the generator result.
-        @no_type_check
         def _iter_group(parent):
             nonlocal command
             nonlocal finished

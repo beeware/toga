@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import re
-from typing import Collection, Mapping
+from collections.abc import Collection, Mapping
 
 NON_ACCESSOR_CHARS = re.compile(r"[^\w ]")
 WHITESPACE = re.compile(r"\s+")

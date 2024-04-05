@@ -2,13 +2,13 @@ from __future__ import annotations
 
 import warnings
 from abc import ABC, abstractmethod
+from collections.abc import Iterator
 from contextlib import contextmanager
 from math import cos, pi, sin, tan
 from typing import (
     TYPE_CHECKING,
     Any,
     ContextManager,
-    Iterator,
     Literal,
     NoReturn,
     Protocol,
@@ -17,9 +17,9 @@ from typing import (
 from travertino.colors import Color
 
 import toga
-from toga.colors import BLACK, color as parse_color  # type: ignore[attr-defined]
+from toga.colors import BLACK, color as parse_color
 from toga.constants import Baseline, FillRule
-from toga.fonts import (  # type: ignore[attr-defined]
+from toga.fonts import (
     SYSTEM,
     SYSTEM_DEFAULT_FONT_SIZE,
     Font,
@@ -370,7 +370,7 @@ class WriteText(DrawingObject):
         self.text = text
         self.x = x
         self.y = y
-        self.font = font  # type: ignore[assignment]
+        self.font = font
         self.baseline = baseline
 
     def __repr__(self) -> str:
@@ -722,7 +722,7 @@ class Context(DrawingObject):
         :returns: The ``Fill`` :any:`DrawingObject` for the operation.
         """
         if preserve is not None:
-            warnings.warn(  # type: ignore[unreachable]
+            warnings.warn(
                 "The `preserve` argument on fill() has been deprecated.",
                 DeprecationWarning,
             )
@@ -955,14 +955,14 @@ class Context(DrawingObject):
         )
         return self.begin_path()
 
-    def context(self):  # type: ignore
+    def context(self):
         """**DEPRECATED** - use :meth:`~toga.widgets.canvas.Context.Context`"""
         warnings.warn(
             "Context.context() has been renamed Context.Context()", DeprecationWarning
         )
         return self.Context()
 
-    def closed_path(self, x: float, y: float):  # type: ignore
+    def closed_path(self, x: float, y: float):
         """**DEPRECATED** - use :meth:`~toga.widgets.canvas.Context.ClosedPath`"""
         warnings.warn(
             "Context.closed_path() has been renamed Context.ClosedPath()",
@@ -1244,16 +1244,16 @@ class Canvas(Widget):
         self._impl = self.factory.Canvas(interface=self)
 
         # Set all the properties
-        self.on_resize = on_resize  # type: ignore[assignment]
-        self.on_press = on_press  # type: ignore[assignment]
-        self.on_activate = on_activate  # type: ignore[assignment]
-        self.on_release = on_release  # type: ignore[assignment]
-        self.on_drag = on_drag  # type: ignore[assignment]
-        self.on_alt_press = on_alt_press  # type: ignore[assignment]
-        self.on_alt_release = on_alt_release  # type: ignore[assignment]
-        self.on_alt_drag = on_alt_drag  # type: ignore[assignment]
+        self.on_resize = on_resize
+        self.on_press = on_press
+        self.on_activate = on_activate
+        self.on_release = on_release
+        self.on_drag = on_drag
+        self.on_alt_press = on_alt_press
+        self.on_alt_release = on_alt_release
+        self.on_alt_drag = on_alt_drag
 
-    @property  # type: ignore[override]
+    @property
     def enabled(self) -> Literal[True]:
         """Is the widget currently enabled? i.e., can the user interact with the widget?
         ScrollContainer widgets cannot be disabled; this property will always return
@@ -1328,7 +1328,7 @@ class Canvas(Widget):
         :param color: The fill color.
         :yields: The new :class:`~toga.widgets.canvas.FillContext` context object.
         """
-        return self.context.Fill(x, y, color, fill_rule)  # type: ignore[arg-type]
+        return self.context.Fill(x, y, color, fill_rule)
 
     def Stroke(
         self,
@@ -1352,7 +1352,7 @@ class Canvas(Widget):
             solid line.
         :yields: The new :class:`~toga.widgets.canvas.StrokeContext` context object.
         """
-        return self.context.Stroke(x, y, color, line_width, line_dash)  # type: ignore[arg-type]
+        return self.context.Stroke(x, y, color, line_width, line_dash)
 
     @property
     def on_resize(self) -> WrappedHandlerT:
@@ -1461,7 +1461,7 @@ class Canvas(Widget):
         :returns: A tuple of ``(width, height)``.
         """
         if tight is not None:
-            warnings.warn(  # type: ignore[unreachable]
+            warnings.warn(
                 "The `tight` argument on Canvas.measure_text() has been deprecated.",
                 DeprecationWarning,
             )
@@ -1474,7 +1474,7 @@ class Canvas(Widget):
     # As image
     ###########################################################################
 
-    def as_image(self, format: type[ImageT] = toga.Image) -> ImageT:  # type: ignore[assignment]
+    def as_image(self, format: type[ImageT] = toga.Image) -> ImageT:
         """Render the canvas as an image.
 
         :param format: Format to provide. Defaults to :class:`~toga.images.Image`; also
@@ -1489,7 +1489,7 @@ class Canvas(Widget):
     # 2023-07 Backwards compatibility
     ###########################################################################
 
-    def new_path(self):  # type: ignore
+    def new_path(self):
         """**DEPRECATED** - Use :meth:`~toga.widgets.canvas.Context.begin_path` on
         :attr:`context`"""
         warnings.warn(
@@ -1498,7 +1498,7 @@ class Canvas(Widget):
         )
         return self.context.begin_path()
 
-    def move_to(self, x, y):  # type: ignore
+    def move_to(self, x, y):
         """**DEPRECATED** - Use :meth:`~toga.widgets.canvas.Context.move_to` on
         :attr:`context`"""
         warnings.warn(
@@ -1507,7 +1507,7 @@ class Canvas(Widget):
         )
         return self.context.move_to(x, y)
 
-    def line_to(self, x, y):  # type: ignore
+    def line_to(self, x, y):
         """**DEPRECATED** - Use :meth:`~toga.widgets.canvas.Context.line_to` on
         :attr:`context`"""
         warnings.warn(
@@ -1516,7 +1516,7 @@ class Canvas(Widget):
         )
         return self.context.line_to(x, y)
 
-    def bezier_curve_to(self, cp1x, cp1y, cp2x, cp2y, x, y):  # type: ignore
+    def bezier_curve_to(self, cp1x, cp1y, cp2x, cp2y, x, y):
         """**DEPRECATED** - Use :meth:`~toga.widgets.canvas.Context.bezier_curve_to` on
         :attr:`context`"""
         warnings.warn(
@@ -1525,7 +1525,7 @@ class Canvas(Widget):
         )
         return self.context.bezier_curve_to(cp1x, cp1y, cp2x, cp2y, x, y)
 
-    def quadratic_curve_to(self, cpx: float, cpy: float, x: float, y: float):  # type: ignore
+    def quadratic_curve_to(self, cpx: float, cpy: float, x: float, y: float):
         """**DEPRECATED** - Use :meth:`~toga.widgets.canvas.Context.quadratic_curve_to`
         on :attr:`context`"""
         warnings.warn(
@@ -1534,7 +1534,7 @@ class Canvas(Widget):
         )
         return self.context.quadratic_curve_to(cpx, cpy, x, y)
 
-    def arc(self, x, y, radius, startangle=0.0, endangle=2 * pi, anticlockwise=False):  # type: ignore
+    def arc(self, x, y, radius, startangle=0.0, endangle=2 * pi, anticlockwise=False):
         """**DEPRECATED** - Use :meth:`~toga.widgets.canvas.Context.arc` on
         :attr:`context`"""
         warnings.warn(
@@ -1543,7 +1543,7 @@ class Canvas(Widget):
         )
         return self.context.arc(x, y, radius, startangle, endangle, anticlockwise)
 
-    def ellipse(  # type: ignore
+    def ellipse(
         self,
         x: float,
         y: float,
@@ -1571,7 +1571,7 @@ class Canvas(Widget):
             anticlockwise,
         )
 
-    def rect(self, x: float, y: float, width: float, height: float):  # type: ignore
+    def rect(self, x: float, y: float, width: float, height: float):
         """**DEPRECATED** - Use :meth:`~toga.widgets.canvas.Context.rect` on
         :attr:`context`"""
         warnings.warn(
@@ -1580,7 +1580,7 @@ class Canvas(Widget):
         )
         return self.context.rect(x, y, width, height)
 
-    def write_text(self, text: str, x=0, y=0, font=None):  # type: ignore
+    def write_text(self, text: str, x=0, y=0, font=None):
         """**DEPRECATED** - Use :meth:`~toga.widgets.canvas.Context.write_text` on
         :attr:`context`"""
         warnings.warn(
@@ -1589,7 +1589,7 @@ class Canvas(Widget):
         )
         return self.context.write_text(text, x, y, font)
 
-    def rotate(self, radians: float):  # type: ignore
+    def rotate(self, radians: float):
         """**DEPRECATED** - Use :meth:`~toga.widgets.canvas.Context.rotate` on
         :attr:`context`"""
         warnings.warn(
@@ -1598,7 +1598,7 @@ class Canvas(Widget):
         )
         return self.context.rotate(radians)
 
-    def scale(self, sx: float, sy: float):  # type: ignore
+    def scale(self, sx: float, sy: float):
         """**DEPRECATED** - Use :meth:`~toga.widgets.canvas.Context.scale` on :attr:`context`"""
         warnings.warn(
             "Direct canvas operations have been deprecated; use context.scale()",
@@ -1606,7 +1606,7 @@ class Canvas(Widget):
         )
         return self.context.scale(sx, sy)
 
-    def translate(self, tx: float, ty: float):  # type: ignore
+    def translate(self, tx: float, ty: float):
         """**DEPRECATED** - Use :meth:`~toga.widgets.canvas.Context.translate` on
         :attr:`context`"""
         warnings.warn(
@@ -1615,7 +1615,7 @@ class Canvas(Widget):
         )
         return self.context.translate(tx, ty)
 
-    def reset_transform(self):  # type: ignore
+    def reset_transform(self):
         """**DEPRECATED** - Use :meth:`~toga.widgets.canvas.Context.reset_transform` on
         :attr:`context`"""
         warnings.warn(
@@ -1624,7 +1624,7 @@ class Canvas(Widget):
         )
         return self.context.reset_transform()
 
-    def closed_path(self, x, y):  # type: ignore
+    def closed_path(self, x, y):
         """**DEPRECATED** - use :meth:`~toga.Canvas.ClosedPath`"""
         warnings.warn(
             "Canvas.closed_path() has been renamed Canvas.ClosedPath()",
@@ -1632,7 +1632,7 @@ class Canvas(Widget):
         )
         return self.ClosedPath(x, y)
 
-    def fill(  # type: ignore
+    def fill(
         self,
         color: Color | str | None = BLACK,
         fill_rule: FillRule = FillRule.NONZERO,
@@ -1650,7 +1650,7 @@ class Canvas(Widget):
             )
         return self.Fill(color=color, fill_rule=fill_rule)
 
-    def stroke(  # type: ignore
+    def stroke(
         self,
         color: Color | str | None = BLACK,
         line_width: float = 2.0,

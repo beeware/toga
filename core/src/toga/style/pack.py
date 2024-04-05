@@ -15,7 +15,7 @@ from travertino.constants import (  # noqa: F401
     LEFT,
     LTR,
     MONOSPACE,
-    NONE as NONE,
+    NONE,
     NORMAL,
     OBLIQUE,
     RIGHT,

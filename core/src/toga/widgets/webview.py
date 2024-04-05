@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 import asyncio
-from typing import Callable, Protocol, Union
+from collections.abc import Callable
+from typing import Protocol, Union
 
 from toga.handlers import (
     AsyncResult,
@@ -63,13 +64,13 @@ class WebView(Widget):
         super().__init__(id=id, style=style)
 
         self._impl = self.factory.WebView(interface=self)
-        self.user_agent = user_agent  # type: ignore[assignment]
+        self.user_agent = user_agent
 
         # Set the load handler before loading the first URL.
-        self.on_webview_load = on_webview_load  # type: ignore[assignment]
+        self.on_webview_load = on_webview_load
         self.url = url
 
-    def _set_url(self, url: str | None, future: asyncio.Future | None) -> None:  # type: ignore[type-arg]
+    def _set_url(self, url: str | None, future: asyncio.Future | None) -> None:
         # Utility method for validating and setting the URL with a future.
         if (url is not None) and not url.startswith(("https://", "http://")):
             raise ValueError("WebView can only display http:// and https:// URLs")
@@ -90,7 +91,7 @@ class WebView(Widget):
     def url(self, value: str | None) -> None:
         self._set_url(value, future=None)
 
-    async def load_url(self, url: str) -> asyncio.Future:  # type: ignore[type-arg]
+    async def load_url(self, url: str) -> asyncio.Future:
         """Load a URL, and wait until the next :any:`on_webview_load` event.
 
         **Note:** On Android, this method will return immediately.

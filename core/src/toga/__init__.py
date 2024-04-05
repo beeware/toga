@@ -6,7 +6,7 @@ from pathlib import Path
 from .app import App, DocumentApp, DocumentMainWindow, MainWindow
 
 # Resources
-from .colors import hsl, hsla, rgb, rgba  # type: ignore[attr-defined]
+from .colors import hsl, hsla, rgb, rgba
 from .command import Command, Group
 from .documents import Document
 from .fonts import Font

@@ -34,7 +34,7 @@ class Divider(Widget):
         self._impl = self.factory.Divider(interface=self)
         self.direction = direction
 
-    @property  # type: ignore[override]
+    @property
     def enabled(self) -> Literal[True]:
         """Is the widget currently enabled? i.e., can the user interact with the widget?
 
