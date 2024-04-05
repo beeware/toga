@@ -232,7 +232,7 @@ jobs:
         - backend: "iOS"
           platform: "iOS"
           runs-on: "macos-14"
-          briefcase-run-args: "--device 'iPhone SE (3rd generation)::iOS 17.2' -- -s"
+          briefcase-run-args: "--device 'iPhone SE (3rd generation)::iOS 16.4' -- -s"
           app-user-data-path: "$(xcrun simctl get_app_container booted org.beeware.toga.testbed data)/Documents"
 
         # - backend: "android"
@@ -279,7 +279,6 @@ jobs:
       working-directory: testbed
       timeout-minutes: 15
       run: |
-        sudo xcode-select -s /Applications/Xcode_15.2.app
         ${{ matrix.briefcase-run-prefix }} \
           briefcase run ${{ matrix.platform }} --test ${{ matrix.briefcase-run-args }}
 
