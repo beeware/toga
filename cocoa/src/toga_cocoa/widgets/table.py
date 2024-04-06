@@ -2,6 +2,7 @@ from rubicon.objc import SEL, NSPoint, at, objc_method, objc_property
 from travertino.size import at_least
 
 import toga
+from toga.colors import TRANSPARENT
 from toga_cocoa.libs import (
     NSBezelBorder,
     NSIndexSet,
@@ -257,3 +258,9 @@ class Table(Widget):
         # delete column and identifier
         self.columns.remove(column)
         self.native_table.sizeToFit()
+
+    def set_background_color(self, color):
+        if color in {None, TRANSPARENT}:
+            super().set_background_color(TRANSPARENT)
+        else:
+            super().set_background_color(color)

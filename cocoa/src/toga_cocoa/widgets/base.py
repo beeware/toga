@@ -75,6 +75,7 @@ class Widget:
 
     def set_background_color(self, color):
         if color is TRANSPARENT:
+            self.native.backgroundColor = None
             self.native.drawsBackground = False
         else:
             self.native.backgroundColor = native_color(color)
