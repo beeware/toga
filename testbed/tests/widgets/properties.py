@@ -418,7 +418,7 @@ async def test_background_color_transparent(widget, probe):
     assert_color(probe.background_color, TRANSPARENT if supports_alpha else original)
 
     # Restore original background color
-    widget.style.background_color = original
+    del widget.style.background_color
     await probe.redraw("Widget background color should be restored to original")
     assert_color(probe.background_color, original)
 
