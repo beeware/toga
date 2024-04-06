@@ -1,0 +1,1 @@
+Bugs related to transparent background color are fixed.
