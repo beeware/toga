@@ -105,6 +105,9 @@ class ProgressBar(Widget):
             self._max = value
             self._stop_indeterminate()
 
+    def set_background_color(self, color):
+        self.set_background_color_simple(color)
+
     def rehint(self):
         fitting_size = self.native.systemLayoutSizeFittingSize(CGSize(0, 0))
         self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
