@@ -212,7 +212,7 @@ async def test_alt_drag(
     on_alt_release_handler.assert_called_once_with(canvas, 70, 90)
 
 
-async def test_image_data(canvas, probe):
+async def test_image_data(monkeypatch, canvas, probe):
     "The canvas can be saved as an image"
     with canvas.Stroke(x=0, y=0, color=RED) as stroke:
         stroke.line_to(x=200, y=200)
@@ -236,6 +236,10 @@ async def test_image_data(canvas, probe):
         (200, 200),
         screen=canvas.window.screen,
     )
+
+    # The internal method to patch for testing are platform specific
+    # hence the test is on the probe.
+    probe.test_get_image_data_internal_fail(monkeypatch)
 
 
 def assert_reference(probe, reference, threshold=0.0):

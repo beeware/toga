@@ -1,4 +1,5 @@
 import itertools
+import warnings
 from math import degrees
 
 from android.graphics import (
@@ -236,14 +237,20 @@ class Canvas(Widget):
         paint.setTextSize(self.scale_out(font.size()))
         return paint
 
+    # This has been separated out, so that it can be mocked during testing.
+    def _native_get_background(self):
+        return self.native.getBackground()
+
     def get_image_data(self):
         bitmap = Bitmap.createBitmap(
             self.native.getWidth(), self.native.getHeight(), Bitmap.Config.ARGB_8888
         )
         canvas = A_Canvas(bitmap)
-        background = self.native.getBackground()
+        background = self._native_get_background()
         if background:
             background.draw(canvas)
+        else:
+            warnings.warn("Failed to get canvas background")
         self.native.draw(canvas)
 
         stream = ByteArrayOutputStream()
