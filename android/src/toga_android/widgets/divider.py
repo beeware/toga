@@ -10,13 +10,14 @@ class Divider(Widget):
     def create(self):
         self.native = View(self._native_activity)
 
-        # Background color needs to be set or else divider will not be visible.
-        self.native.setBackgroundColor(Color.LTGRAY)
-
         self._direction = self.interface.HORIZONTAL
 
     def set_background_color(self, value):
-        self.set_background_simple(value)
+        if value is None:
+            # Background color needs to be set or else divider will not be visible.
+            self.native.setBackgroundColor(Color.LTGRAY)
+        else:
+            self.set_background_simple(value)
 
     def get_direction(self):
         return self._direction
