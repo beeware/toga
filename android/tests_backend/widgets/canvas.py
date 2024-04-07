@@ -1,5 +1,4 @@
 from io import BytesIO
-from unittest.mock import Mock
 
 import pytest
 from android.os import SystemClock
@@ -22,16 +21,11 @@ class CanvasProbe(SimpleProbe):
         return Image.open(BytesIO(self.impl.get_image_data()))
 
     def test_get_image_data_internal_fail(self, monkeypatch):
-        original_native_get_background = self.impl._native_get_background
-        mock_native_get_background = Mock(return_value=None)
-        monkeypatch.setattr(
-            self.impl, "_native_get_background", mock_native_get_background
-        )
+        original_background = self.native.getBackground()
+        self.native.setBackground(None)
         with pytest.warns(match="Failed to get canvas background"):
             self.impl.get_image_data()
-        monkeypatch.setattr(
-            self.impl, "_native_get_background", original_native_get_background
-        )
+        self.native.setBackground(original_background)
 
     def motion_event(self, action, x, y):
         time = SystemClock.uptimeMillis()
