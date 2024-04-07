@@ -237,8 +237,8 @@ async def test_image_data(monkeypatch, canvas, probe):
         screen=canvas.window.screen,
     )
 
-    # The internal method to patch for testing are platform specific
-    # hence the test is on the probe.
+    # The internal methods to test are platform and
+    # implementation specific, hence the test is on the probe.
     probe.test_get_image_data_internal_fail(monkeypatch)
 
 
