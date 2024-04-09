@@ -147,6 +147,12 @@ class Widget(ABC, Scalable):
         self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
         self.interface.intrinsic.height = at_least(self.interface._MIN_HEIGHT)
         self.rehint()
+        # Background color needs to be reapplied on widget refresh as WinForms
+        # doesn't actually support transparency. It just copies the parent's
+        # BackColor to the widget. So, if a widget's parent changes then we need
+        # to reapply background_color to copy the new parent's BackColor.
+        if self.interface.style.background_color in {None, TRANSPARENT}:
+            self.set_background_color(self.interface.style.background_color)
 
     def rehint(self):
         pass
