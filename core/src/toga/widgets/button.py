@@ -30,6 +30,7 @@ class Button(Widget):
         style=None,
         on_press: OnPressHandler | None = None,
         enabled: bool = True,
+        purpose="FIXME",
     ):
         """Create a new button widget.
 
@@ -44,6 +45,7 @@ class Button(Widget):
             default, buttons are created in an enabled state.
         """
         super().__init__(id=id, style=style)
+        self.purpose = purpose
 
         # Create a platform specific implementation of a Button
         self._impl = self.factory.Button(interface=self)

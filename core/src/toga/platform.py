@@ -40,6 +40,14 @@ def get_current_platform():
 current_platform = get_current_platform()
 
 
+def find_backends():
+    # As of Setuptools 65.5, entry points are returned duplicated if the
+    # package is installed editable. Use a set to ensure that each entry point
+    # is only returned once.
+    # See https://github.com/pypa/setuptools/issues/3649
+    return sorted(set(entry_points(group="toga.backends")))
+
+
 @lru_cache(maxsize=1)
 def get_platform_factory():
     """Determine the current host platform and import the platform factory.
@@ -51,17 +59,13 @@ def get_platform_factory():
 
     :returns: The factory for the host platform.
     """
-    toga_backends = entry_points(group="toga.backends")
-    if not toga_backends:
-        raise RuntimeError("No Toga backend could be loaded.")
-
     backend_value = os.environ.get("TOGA_BACKEND")
     if backend_value:
         try:
             factory = importlib.import_module(f"{backend_value}.factory")
         except ModuleNotFoundError as e:
             toga_backends_values = ", ".join(
-                [f"{backend.value!r}" for backend in toga_backends]
+                [f"{backend.value!r}" for backend in find_backends()]
             )
             # Android doesn't report Python exception chains in crashes
             # (https://github.com/chaquo/chaquopy/issues/890), so include the original
@@ -72,13 +76,11 @@ def get_platform_factory():
                 f"not be loaded ({e}). It should be one of: {toga_backends_values}."
             )
     else:
-        # As of Setuptools 65.5, entry points are returned duplicated if the
-        # package is installed editable. Use a set to ensure that each entry point
-        # is only returned once.
-        # See https://github.com/pypa/setuptools/issues/3649
-        toga_backends = sorted(set(toga_backends))
+        toga_backends = find_backends()
 
-        if len(toga_backends) == 1:
+        if len(toga_backends) == 0:
+            raise RuntimeError("No Toga backend could be loaded.")
+        elif len(toga_backends) == 1:
             backend = toga_backends[0]
         else:
             # multiple backends are installed: choose the one that matches the host platform
