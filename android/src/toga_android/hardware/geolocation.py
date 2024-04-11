@@ -6,6 +6,7 @@ from android.content.pm import PackageManager
 from android.location import LocationListener, LocationManager
 from android.os import Build
 from java import dynamic_proxy
+from java.util import List
 from java.util.function import Consumer
 
 from toga import LatLng
@@ -49,8 +50,8 @@ class TogaLocationListener(dynamic_proxy(LocationListener)):
         self.interface = impl.interface
 
     def onLocationChanged(self, location):
-        if isinstance(location, list):
-            location = location[-1]
+        if isinstance(location, List):
+            location = location.get(location.size() - 1)
 
         self.interface.on_change(**toga_location(location))
 
