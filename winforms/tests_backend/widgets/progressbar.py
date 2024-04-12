@@ -5,6 +5,7 @@ from .base import SimpleProbe
 
 class ProgressBarProbe(SimpleProbe):
     native_class = System.Windows.Forms.ProgressBar
+    background_supports_alpha = False
 
     @property
     def is_determinate(self):
