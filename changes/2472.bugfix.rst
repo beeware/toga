@@ -1,0 +1,1 @@
+Fix memory leaks for toga.Icon and toga.Image in the Cocoa backend.

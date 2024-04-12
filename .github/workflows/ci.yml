@@ -96,7 +96,7 @@ jobs:
       uses: actions/checkout@v4.1.2
 
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v5.0.0
+      uses: actions/setup-python@v5.1.0
       with:
         python-version: ${{ matrix.python-version }}
 
@@ -139,7 +139,7 @@ jobs:
         fetch-depth: 0
 
     - name: Set up Python ${{ env.min_python_version }}
-      uses: actions/setup-python@v5.0.0
+      uses: actions/setup-python@v5.1.0
       with:
         # Use minimum version of python for coverage to avoid phantom branches
         # https://github.com/nedbat/coveragepy/issues/1572#issuecomment-1522546425
@@ -231,7 +231,14 @@ jobs:
         - backend: "iOS"
           platform: "iOS"
           runs-on: "macos-14"
-          briefcase-run-args: "--device 'iPhone SE (3rd generation)'"
+          # As of early April 2024, the XCode 15/iOS 17 simulator had a performance
+          # issue that rendered Github Actions testing impossible. The issue didn't
+          # impact iOS 16.4, but that required the use of Xcode 14.3.1.
+          #
+          # Refs #2476, actions/runner-images#9591.
+          pre-command: "sudo xcode-select -s /Applications/Xcode_14.3.1.app"
+          briefcase-run-args: "--device 'iPhone SE (3rd generation)::iOS 16.4'"
+          # briefcase-run-args: "--device 'iPhone SE (3rd generation)'"
           app-user-data-path: "$(xcrun simctl get_app_container booted org.beeware.toga.testbed data)/Documents"
 
         - backend: "android"
@@ -258,7 +265,7 @@ jobs:
         fetch-depth: 0
 
     - name: Set up Python
-      uses: actions/setup-python@v5.0.0
+      uses: actions/setup-python@v5.1.0
       if: matrix.setup-python
       with:
         # We're not using Python 3.11 yet, because:
