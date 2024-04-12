@@ -40,7 +40,6 @@ class TogaLocationConsumer(dynamic_proxy(Consumer)):
     def accept(self, location):
         loc = toga_location(location)
         self.result.set_result(loc["location"])
-        self.interface.on_change(**loc)
 
 
 class TogaLocationListener(dynamic_proxy(LocationListener)):
@@ -56,7 +55,7 @@ class TogaLocationListener(dynamic_proxy(LocationListener)):
         self.interface.on_change(**toga_location(location))
 
 
-class Geolocation:
+class Location:
     def __init__(self, interface):
         self.interface = interface
         self.context = self.interface.app._impl.native.getApplicationContext()
@@ -68,9 +67,9 @@ class Geolocation:
                 PackageManager.FEATURE_LOCATION_NETWORK,
             ]
         ):  # pragma: no cover
-            # The app doesn't have a feature supporting geolocation. No-cover because we
-            # can't manufacture this condition in testing.
-            raise RuntimeError("Geolocation features are not available on this device.")
+            # The app doesn't have a feature supporting location services. No-cover
+            # because we can't manufacture this condition in testing.
+            raise RuntimeError("Location services are not available on this device.")
 
         self.native = self.context.getSystemService(Context.LOCATION_SERVICE)
         self.listener = TogaLocationListener(self)
@@ -110,9 +109,8 @@ class Geolocation:
                 )
             except KeyError:  # pragma: no cover
                 # This shouldn't ever happen - we shouldn't get a completion of a
-                # geolocation permission request that doesn't include geolocation
-                # permissions - but just in case, we'll assume if it's not there, it
-                # failed.
+                # location permission request that doesn't include location permissions
+                # - but just in case, we'll assume if it's not there, it failed.
                 result = False
             future.set_result(result)
 
@@ -135,9 +133,8 @@ class Geolocation:
                 )
             except KeyError:  # pragma: no cover
                 # This shouldn't ever happen - we shouldn't get a completion of a
-                # geolocation permission request that doesn't include geolocation
-                # permissions - but just in case, we'll assume if it's not there, it
-                # failed.
+                # location permission request that doesn't include location permissions
+                # - but just in case, we'll assume if it's not there, it failed.
                 result = False
             future.set_result(result)
 
@@ -157,7 +154,7 @@ class Geolocation:
             consumer,
         )
 
-    def start(self):
+    def start_tracking(self):
         # Start updates, with pings no more often than every 5 seconds, or 10 meters.
         self.native.requestLocationUpdates(
             LocationManager.FUSED_PROVIDER,
@@ -166,5 +163,5 @@ class Geolocation:
             self.listener,
         )
 
-    def stop(self):
+    def stop_tracking(self):
         self.native.removeUpdates(self.listener)

@@ -42,12 +42,12 @@ class ExampleHardwareApp(toga.App):
         )
 
         #############################################################
-        # Geolocation
+        # Location services
         #############################################################
 
         self.map_view = toga.MapView(style=Pack(flex=1))
         self.pin = None
-        self.geolocation.on_change = self.location_changed
+        self.location.on_change = self.location_changed
 
         geo_box = toga.Box(
             children=[
@@ -125,15 +125,15 @@ class ExampleHardwareApp(toga.App):
 
     async def update_location(self, widget, **kwargs):
         try:
-            await self.geolocation.request_permission()
+            await self.location.request_permission()
 
             # Getting the current location will trigger the on_change handler
-            await self.geolocation.current_location()
+            await self.location.current_location()
 
         except NotImplementedError:
             await self.main_window.info_dialog(
                 "Oh no!",
-                "The Geolocation API is not implemented on this platform",
+                "The Location API is not implemented on this platform",
             )
         except PermissionError:
             await self.main_window.info_dialog(
@@ -143,13 +143,13 @@ class ExampleHardwareApp(toga.App):
 
     async def start_location_updates(self, widget, **kwargs):
         try:
-            await self.geolocation.request_permission()
+            await self.location.request_permission()
 
-            self.geolocation.start()
+            self.location.start_tracking()
         except NotImplementedError:
             await self.main_window.info_dialog(
                 "Oh no!",
-                "The Geolocation API is not implemented on this platform",
+                "The Location API is not implemented on this platform",
             )
         except PermissionError:
             await self.main_window.info_dialog(
@@ -159,13 +159,13 @@ class ExampleHardwareApp(toga.App):
 
     async def stop_location_updates(self, widget, **kwargs):
         try:
-            await self.geolocation.request_permission()
+            await self.location.request_permission()
 
-            self.geolocation.stop()
+            self.location.stop_tracking()
         except NotImplementedError:
             await self.main_window.info_dialog(
                 "Oh no!",
-                "The Geolocation API is not implemented on this platform",
+                "The Location API is not implemented on this platform",
             )
         except PermissionError:
             await self.main_window.info_dialog(
@@ -175,20 +175,20 @@ class ExampleHardwareApp(toga.App):
 
     async def request_background_location(self, widget, **kwargs):
         try:
-            if self.geolocation.has_background_permission:
+            if self.location.has_background_permission:
                 await self.main_window.info_dialog(
                     "All good!",
-                    "Application has permission to perform background geolocation",
+                    "Application has permission to perform background location tracking",
                 )
             else:
-                if not await self.geolocation.request_permission():
+                if not await self.location.request_permission():
                     await self.main_window.info_dialog(
                         "Oh no!",
                         "You have not granted permission for location tracking",
                     )
                     return
 
-                if not await self.geolocation.request_background_permission():
+                if not await self.location.request_background_permission():
                     await self.main_window.info_dialog(
                         "Oh no!",
                         "You have not granted permission for background location tracking",
@@ -196,7 +196,7 @@ class ExampleHardwareApp(toga.App):
         except NotImplementedError:
             await self.main_window.info_dialog(
                 "Oh no!",
-                "The Geolocation API is not implemented on this platform",
+                "The Location API is not implemented on this platform",
             )
 
 

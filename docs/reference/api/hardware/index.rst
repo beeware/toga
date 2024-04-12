@@ -1,7 +1,8 @@
-Device and Hardware
-===================
+Hardware
+========
 
 .. toctree::
 
    camera
-   geolocation
+   location
+   screens

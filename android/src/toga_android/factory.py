@@ -5,7 +5,7 @@ from .app import App, MainWindow
 from .command import Command
 from .fonts import Font
 from .hardware.camera import Camera
-from .hardware.geolocation import Geolocation
+from .hardware.location import Location
 from .icons import Icon
 from .images import Image
 from .paths import Paths
@@ -51,7 +51,7 @@ __all__ = [
     "Paths",
     # Hardware
     "Camera",
-    "Geolocation",
+    "Location",
     # Widgets
     # ActivityIndicator
     "Box",

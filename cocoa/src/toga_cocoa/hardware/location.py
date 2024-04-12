@@ -5,11 +5,8 @@ from rubicon.objc import NSObject, objc_method, objc_property
 from toga import LatLng
 
 # for classes that need to be monkeypatched for testing
-from toga_iOS import libs as iOS
-from toga_iOS.libs import (
-    CLAuthorizationStatus,
-    NSBundle,
-)
+from toga_cocoa import libs as cocoa
+from toga_cocoa.libs import CLAuthorizationStatus
 
 
 def toga_location(location):
@@ -52,8 +49,9 @@ class TogaLocationDelegate(NSObject):
             future = self.impl.current_location_requests.pop()
             future.set_result(toga_loc["location"])
 
-        # Notify the change listener of the last location reported
-        self.interface.on_change(**toga_loc)
+        # If we're tracking, notify the change listener of the last location reported
+        if self.impl._is_tracking:
+            self.interface.on_change(**toga_loc)
 
     @objc_method
     def locationManager_didFailWithError_(self, manager, error) -> None:
@@ -63,26 +61,16 @@ class TogaLocationDelegate(NSObject):
             future.set_exception(RuntimeError(f"Unable to obtain a location ({error})"))
 
 
-class Geolocation:
+class Location:
     def __init__(self, interface):
         self.interface = interface
-        if NSBundle.mainBundle.objectForInfoDictionaryKey(
-            "NSLocationWhenInUseUsageDescription"
-        ):
-            self.native = iOS.CLLocationManager.alloc().init()
-            self.delegate = TogaLocationDelegate.alloc().init()
-            self.native.delegate = self.delegate
-            self.delegate.interface = interface
-            self.delegate.impl = self
-        else:  # pragma: no cover
-            # The app doesn't have the NSLocationWhenInUseUsageDescription key (e.g.,
-            # via `permission.*_location` in Briefcase). No-cover because we can't
-            # manufacture this condition in testing.
-            raise RuntimeError(
-                "Application metadata does not declare that the app will use the camera."
-            )
+        self.native = cocoa.CLLocationManager.alloc().init()
+        self.delegate = TogaLocationDelegate.alloc().init()
+        self.native.delegate = self.delegate
+        self.delegate.interface = interface
+        self.delegate.impl = self
 
-        # Tracking of futures associated with specific requests.
+        self._is_tracking = False
         self.permission_requests = []
         self.current_location_requests = []
 
@@ -103,21 +91,8 @@ class Geolocation:
         self.native.requestWhenInUseAuthorization()
 
     def request_background_permission(self, future):
-        if NSBundle.mainBundle.objectForInfoDictionaryKey(
-            "NSLocationAlwaysAndWhenInUseUsageDescription"
-        ):
-            self.permission_requests.append((future, self.has_background_permission))
-
-            self.native.requestAlwaysAuthorization()
-        else:  # pragma: no cover
-            # The app doesn't have the NSLocationAlwaysAndWhenInUseUsageDescription key
-            # (e.g., via `permission.background_location` in Briefcase). No-cover
-            # because we can't manufacture this condition in testing.
-            future.set_exception(
-                RuntimeError(
-                    "Application metadata does not declare that the app will use the camera."
-                )
-            )
+        self.permission_requests.append((future, self.has_background_permission))
+        self.native.requestAlwaysAuthorization()
 
     def current_location(self, result):
         location = self.native.location
@@ -127,14 +102,15 @@ class Geolocation:
         else:
             toga_loc = toga_location(location)
             result.set_result(toga_loc["location"])
-            self.interface.on_change(**toga_loc)
 
-    def start(self):
+    def start_tracking(self):
         # Ensure that background processing will occur
         self.native.allowsBackgroundLocationUpdates = True
         self.native.pausesLocationUpdatesAutomatically = False
 
+        self._is_tracking = True
         self.native.startUpdatingLocation()
 
-    def stop(self):
+    def stop_tracking(self):
         self.native.stopUpdatingLocation()
+        self._is_tracking = False

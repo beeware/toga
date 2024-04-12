@@ -5,7 +5,7 @@ from toga import LatLng
 from ..utils import LoggedObject
 
 
-class Geolocation(LoggedObject):
+class Location(LoggedObject):
     def __init__(self, interface):
         self.interface = interface
 
@@ -45,13 +45,12 @@ class Geolocation(LoggedObject):
     def current_location(self, result):
         location, altitude = self._next_location()
         result.set_result(location)
-        self.interface.on_change(location=location, altitude=altitude)
 
-    def start(self):
-        self._action("start geolocation updates")
+    def start_tracking(self):
+        self._action("start location updates")
 
-    def stop(self):
-        self._action("stop geolocation updates")
+    def stop_tracking(self):
+        self._action("stop location updates")
 
     def simulate_update(self):
         location, altitude = self._next_location()

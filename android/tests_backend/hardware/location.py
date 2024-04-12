@@ -3,29 +3,30 @@ from unittest.mock import Mock
 import pytest
 from android import Manifest
 from android.location import Location, LocationManager
+from java.util import ArrayList
 
-from toga_android.hardware.geolocation import TogaLocationConsumer
+from toga_android.hardware.location import TogaLocationConsumer
 
 from .hardware import HardwareProbe
 
 
-class GeolocationProbe(HardwareProbe):
+class LocationProbe(HardwareProbe):
     def __init__(self, monkeypatch, app_probe):
         super().__init__(monkeypatch, app_probe.app)
 
         self._mock_LocationService = Mock()
         monkeypatch.setattr(
-            app_probe.app.geolocation._impl, "native", self._mock_LocationService
+            app_probe.app.location._impl, "native", self._mock_LocationService
         )
 
         # The list of locations that will be in the next update
         self._locations = []
 
     def cleanup(self):
-        # Delete the geolocation service instance. This ensures that a freshly mocked
+        # Delete the location service instance. This ensures that a freshly mocked
         # LocationManager is installed for each test.
         try:
-            del self.app._geolocation
+            del self.app._location
         except AttributeError:
             pass
 
@@ -57,7 +58,7 @@ class GeolocationProbe(HardwareProbe):
         self._locations.append(native_location)
 
     async def simulate_current_location(self, location):
-        await self.redraw("Wait for current geolocation")
+        await self.redraw("Wait for current location")
 
         # There has been exactly 1 request to get the current location
         assert self._mock_LocationService.getCurrentLocation.call_count == 1
@@ -80,18 +81,22 @@ class GeolocationProbe(HardwareProbe):
         return await location
 
     async def simulate_location_update(self):
-        await self.redraw("Wait for geolocation update")
+        await self.redraw("Wait for location update")
 
         # Trigger the listener. If there's only one known location, use it directly;
-        # otherwise, pass them all in.
-        self.app.geolocation._impl.listener.onLocationChanged(
-            self._locations[0] if len(self._locations) == 1 else self._locations
-        )
+        # otherwise, pass them all in as a java List.
+        if len(self._locations) == 1:
+            locations = self._locations[0]
+        else:
+            locations = ArrayList()
+            for location in self._locations:
+                locations.add(location)
+        self.app.location._impl.listener.onLocationChanged(locations)
 
         # Reset the locations list.
         self._locations = []
 
     async def simulate_location_error(self, location):
-        await self.redraw("Wait for geolocation error")
+        await self.redraw("Wait for location error")
 
-        pytest.xfail("Android's geolocation service doesn't raise errors on failure")
+        pytest.xfail("Android's location service doesn't raise errors on failure")

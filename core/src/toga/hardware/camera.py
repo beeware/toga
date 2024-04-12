@@ -72,7 +72,7 @@ class Camera:
         **This is an asynchronous method**. If you invoke this method in synchronous
         context, it will start the process of requesting permissions, but will return
         *immediately*. The return value can be awaited in an asynchronous context, but
-        cannot be compared directly.
+        cannot be used directly.
 
         :returns: An asynchronous result; when awaited, returns True if the app has
             permission to take a photo; False otherwise.
@@ -104,7 +104,7 @@ class Camera:
         **This is an asynchronous method**. If you invoke this method in synchronous
         context, it will start the process of taking a photo, but will return
         *immediately*. The return value can be awaited in an asynchronous context, but
-        cannot be compared directly.
+        cannot be used directly.
 
         :param device: The initial camera device to use. If a device is *not* specified,
             a default camera will be used. Depending on the hardware available, the user

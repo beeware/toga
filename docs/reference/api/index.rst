@@ -90,14 +90,15 @@ Resources
  :doc:`Validators </reference/api/resources/validators>`              A mechanism for validating that input meets a given set of criteria.
 ==================================================================== ========================================================================
 
-Device and Hardware
--------------------
+Hardware
+--------
 
 ==================================================================== ========================================================================
  Usage                                                                Description
 ==================================================================== ========================================================================
  :doc:`Camera </reference/api/hardware/camera>`                       A sensor that can capture photos and/or video.
- :doc:`Screen </reference/api/screens>`                               A representation of a screen attached to a device.
+ :doc:`Location </reference/api/hardware/location>`                   A sensor that can capture the geographical location of the device.
+ :doc:`Screen </reference/api/hardware/screens>`                      A representation of a screen attached to a device.
 ==================================================================== ========================================================================
 
 Other
@@ -124,5 +125,4 @@ Other
    widgets/index
    constants
    keys
-   screens
    types

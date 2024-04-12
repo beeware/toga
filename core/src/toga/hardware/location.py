@@ -17,14 +17,14 @@ class LocationResult(AsyncResult):
 class OnLocationChangeHandler(Protocol):
     def __call__(
         self,
-        geolocation: Geolocation,
+        service: Location,
         location: toga.LatLng,
         altitude: float | None,
         **kwargs: Any,
     ) -> None:
         """A handler that will be invoked when the user's location changes.
 
-        :param geolocation: the Geolocation service that generated the update.
+        :param service: the location service that generated the update.
         :param location: The user's location as (latitude, longitude).
         :param altitude: The user's altitude in meters above mean sea level. Returns
             None if the altitude could not be determined.
@@ -33,22 +33,22 @@ class OnLocationChangeHandler(Protocol):
         ...
 
 
-class Geolocation:
+class Location:
     def __init__(self, app: App):
         self.factory = get_platform_factory()
         self._app = app
-        self._impl = self.factory.Geolocation(self)
+        self._impl = self.factory.Location(self)
 
         self.on_change = None
 
     @property
     def app(self) -> App:
-        """The app with which the geolocation service is associated"""
+        """The app with which the location service is associated"""
         return self._app
 
     @property
     def has_permission(self) -> bool:
-        """Does the app have permission to use geolocation services?
+        """Does the app have permission to use location services?
 
         If the platform requires the user to explicitly confirm permission, and
         the user has not yet given permission, this will return ``False``.
@@ -61,19 +61,19 @@ class Geolocation:
         If permission has already been granted, this will return without prompting the
         user.
 
-        This method will only grant permission to access geolocation services while the
+        This method will only grant permission to access location services while the
         app is in the foreground. If you want your application to have permission to
         track location while the app is in the background, you must call this method,
         then make an *additional* permission request for background permissions using
-        :any:`Geolocation.request_background_permission()`.
+        :any:`Location.request_background_permission()`.
 
         **This is an asynchronous method**. If you invoke this method in synchronous
         context, it will start the process of requesting permissions, but will return
         *immediately*. The return value can be awaited in an asynchronous context, but
-        cannot be compared directly.
+        cannot be used directly.
 
         :returns: An asynchronous result; when awaited, returns True if the app has
-            permission to capture the user's a geolocation; False otherwise.
+            permission to capture the user's a location; False otherwise.
         """
         result = PermissionResult(None)
 
@@ -86,7 +86,7 @@ class Geolocation:
 
     @property
     def has_background_permission(self) -> bool:
-        """Does the app have permission to use geolocation services in the background?
+        """Does the app have permission to use location services in the background?
 
         If the platform requires the user to explicitly confirm permission, and the user
         has not yet given permission, this will return ``False``.
@@ -101,27 +101,27 @@ class Geolocation:
         user.
 
         Before requesting background permission, you must first request and receive
-        foreground geolocation permission using :any:`Geolocation.request_permission`.
-        If you ask for background permission before receiving foreground geolocation
+        foreground location permission using :any:`Location.request_permission`.
+        If you ask for background permission before receiving foreground location
         permission, a :any:`PermissionError` will be raised.
 
         **This is an asynchronous method**. If you invoke this method in synchronous
         context, it will start the process of requesting permissions, but will return
         *immediately*. The return value can be awaited in an asynchronous context, but
-        cannot be compared directly.
+        cannot be used directly.
 
         :returns: An asynchronous result; when awaited, returns True if the app has
-            permission to capture the user's a geolocation while running in the
+            permission to capture the user's a location while running in the
             background; False otherwise.
         :raises PermissionError: If the app has not already requested and received
-            permission to use geolocation services.
+            permission to use location services.
         """
         result = PermissionResult(None)
         if not self.has_permission:
             result.set_exception(
                 PermissionError(
-                    "Cannot ask for background geolocation permission "
-                    "before confirming foreground geolocation permission."
+                    "Cannot ask for background location permission "
+                    "before confirming foreground location permission."
                 )
             )
         elif has_background_permission := self.has_background_permission:
@@ -140,39 +140,39 @@ class Geolocation:
     def on_change(self, handler):
         self._on_change = wrapped_handler(self, handler)
 
-    def start(self):
+    def start_tracking(self):
         """Start monitoring the user's location for changes.
 
         An :any:`on_change` callback will be generated when the user's location
         changes.
 
         :raises PermissionError: If the app has not requested and received permission to
-            use geolocation services.
+            use location services.
         """
         if self.has_permission:
-            self._impl.start()
+            self._impl.start_tracking()
         else:
             raise PermissionError(
-                "App does not have permission to use geolocation services"
+                "App does not have permission to use location services"
             )
 
-    def stop(self):
+    def stop_tracking(self):
         """Stop monitoring the user's location.
 
         :raises PermissionError: If the app has not requested and received permission to
-            use geolocation services.
+            use location services.
         """
         if self.has_permission:
-            self._impl.stop()
+            self._impl.stop_tracking()
         else:
             raise PermissionError(
-                "App does not have permission to use geolocation services"
+                "App does not have permission to use location services"
             )
 
     def current_location(self) -> LocationResult:
-        """Obtain the user's current location using the geolocation service.
+        """Obtain the user's current location using the location service.
 
-        If the app hasn't requested and received permission to use geolocation, a
+        If the app hasn't requested and received permission to use location services, a
         :any:`PermissionError` will be raised.
 
         **This is an asynchronous method**. If you call this method in a synchronous
@@ -180,21 +180,19 @@ class Geolocation:
         return *immediately*. The return value can be awaited in an asynchronous
         context, but cannot be used directly.
 
-        If an :any:`on_change` handler is installed, requesting the current location
-        will also cause that handler to be invoked.
+        If location tracking is enabled, and an :any:`on_change` handler is installed,
+        requesting the current location may also cause that handler to be invoked.
 
-        :returns: An asynchronous result; when awaited, returns the :any:`toga.Image`
-            captured by the camera, or ``None`` if the photo was  cancelled.
+        :returns: An asynchronous result; when awaited, returns the current
+            :any:`toga.LatLng` of the device.
         :raises PermissionError: If the app has not requested and received permission to
-            use geolocation services.
+            use location services.
         """
         location = LocationResult(None)
         if self.has_permission:
             self._impl.current_location(location)
         else:
             location.set_exception(
-                PermissionError(
-                    "App does not have permission to use geolocation services"
-                )
+                PermissionError("App does not have permission to use location services")
             )
         return location

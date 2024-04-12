@@ -15,7 +15,7 @@ NSDate = ObjCClass("NSDate")
 NSError = ObjCClass("NSError")
 
 
-class GeolocationProbe(AppProbe):
+class LocationProbe(AppProbe):
     def __init__(self, monkeypatch, app_probe):
         super().__init__(app_probe.app)
 
@@ -53,9 +53,7 @@ class GeolocationProbe(AppProbe):
             else:
                 self._mock_permission = abs(self._mock_permission)
             # Trigger delegate handling for permission change
-            self.app.geolocation._impl.delegate.locationManagerDidChangeAuthorization(
-                None
-            )
+            self.app.location._impl.delegate.locationManagerDidChangeAuthorization(None)
 
         def _mock_request_always():
             if self._mock_background_permission is None:
@@ -64,9 +62,7 @@ class GeolocationProbe(AppProbe):
                 self._mock_background_permission = abs(self._mock_background_permission)
 
             # Trigger delegate handling for permission change
-            self.app.geolocation._impl.delegate.locationManagerDidChangeAuthorization(
-                None
-            )
+            self.app.location._impl.delegate.locationManagerDidChangeAuthorization(None)
 
         self._mock_location_manager.requestWhenInUseAuthorization = (
             _mock_request_when_in_use
@@ -94,10 +90,10 @@ class GeolocationProbe(AppProbe):
         self.reset_locations()
 
     def cleanup(self):
-        # Delete the geolocation service instance. This ensures that a freshly mocked
+        # Delete the location service instance. This ensures that a freshly mocked
         # CLLocationManager is installed for each test.
         try:
-            del self.app._geolocation
+            del self.app._location
         except AttributeError:
             pass
 
@@ -134,16 +130,16 @@ class GeolocationProbe(AppProbe):
         self._locations = []
 
     async def simulate_current_location(self, location):
-        await self.redraw("Wait for current geolocation")
+        await self.redraw("Wait for current location")
         if self._cached_location:
-            self.app.geolocation._impl.native.requestLocation.assert_not_called()
+            self.app.location._impl.native.requestLocation.assert_not_called()
         else:
             # A location request was issued
-            self.app.geolocation._impl.native.requestLocation.assert_called_once_with()
-            self.app.geolocation._impl.native.requestLocation.reset_mock()
+            self.app.location._impl.native.requestLocation.assert_called_once_with()
+            self.app.location._impl.native.requestLocation.reset_mock()
 
             # Trigger the callback
-            self.app.geolocation._impl.delegate.locationManager(
+            self.app.location._impl.delegate.locationManager(
                 None,
                 didUpdateLocations=self._locations,
             )
@@ -153,26 +149,26 @@ class GeolocationProbe(AppProbe):
         return await location
 
     async def simulate_location_update(self):
-        await self.redraw("Wait for geolocation update")
+        await self.redraw("Wait for location update")
 
         # Trigger the callback, providing 2 locations; only the second one will be
         # used.
-        self.app.geolocation._impl.delegate.locationManager(
+        self.app.location._impl.delegate.locationManager(
             None,
             didUpdateLocations=self._locations,
         )
 
     async def simulate_location_error(self, location):
-        await self.redraw("Wait for geolocation error")
+        await self.redraw("Wait for location error")
 
-        self.app.geolocation._impl.native.requestLocation.assert_called_once_with()
-        self.app.geolocation._impl.native.requestLocation.reset_mock()
+        self.app.location._impl.native.requestLocation.assert_called_once_with()
+        self.app.location._impl.native.requestLocation.reset_mock()
 
         # Trigger the error handler
-        self.app.geolocation._impl.delegate.locationManager(
+        self.app.location._impl.delegate.locationManager(
             None,
             didFailWithError=NSError.errorWithDomain(
-                "Geolocation", code=42, userInfo=None
+                "Location", code=42, userInfo=None
             ),
         )
 
