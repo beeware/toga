@@ -1,1 +1,1 @@
-iOS CI testing was reverted to use XCode 14.3.1 and iOS 16.4, due to a performance issue with Github Actions.
+Use of current Xcode was restored.
