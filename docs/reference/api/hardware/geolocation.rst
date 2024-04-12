@@ -14,7 +14,7 @@ Usage
 -----
 
 The Geolocation services of a device can be accessed using the
-:attr:`~toga.App.geolocation` attribute. This attribute exposes an API that allows you
+:attr:`toga.App.geolocation` attribute. This attribute exposes an API that allows you
 to check if you have have permission to access geolocation services; if permission
 exists, you can capture the current location of the device, and/or set a handler to be
 notified when position changes occur.
@@ -35,7 +35,7 @@ inside an asynchronous handler:
 
 All platforms require some form of permission to access the geolocation service. To
 confirm if you have permission to use the geolocation service while the app is running,
-you can call :any:`Geolocation.has_permission`; you can request to permission using
+you can call :any:`Geolocation.has_permission`; you can request permission using
 :any:`Geolocation.request_permission()`.
 
 If you wish to track the location of the user while the app is in the background, you
@@ -94,7 +94,7 @@ Notes
 * On macOS, there is no distinction between "background" permissions and "while-running"
   permissions.
 
-* On iOS, if the user has provided "once off" permission for foreground location
+* On iOS, if the user has provided "allow once" permission for foreground location
   tracking, requests for background location permission will be rejected.
 
 * On Android prior to API 34, altitude is reported as the distance above the WGS84

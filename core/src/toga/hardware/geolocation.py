@@ -143,7 +143,7 @@ class Geolocation:
     def start(self):
         """Start monitoring the user's location for changes.
 
-        An :any:`on_change` callback will be generated then when the user's location
+        An :any:`on_change` callback will be generated when the user's location
         changes.
 
         :raises PermissionError: If the app has not requested and received permission to
@@ -178,7 +178,7 @@ class Geolocation:
         **This is an asynchronous method**. If you call this method in a synchronous
         context, it will start the process of requesting the user's location, but will
         return *immediately*. The return value can be awaited in an asynchronous
-        context, but cannot be compared directly.
+        context, but cannot be used directly.
 
         If an :any:`on_change` handler is installed, requesting the current location
         will also cause that handler to be invoked.
