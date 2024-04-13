@@ -12,7 +12,6 @@ from .base import Widget
 
 
 class TextInput(Widget):
-    _background_supports_alpha = False
 
     def create(self):
         self.native = WinForms.TextBox()

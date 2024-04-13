@@ -381,8 +381,6 @@ async def test_background_color(widget, probe):
     for color in COLORS:
         widget.style.background_color = color
         await probe.redraw("Widget background color should be %s" % color)
-        if not getattr(probe, "background_supports_alpha", True):
-            color.a = 1
         assert_color(probe.background_color, color)
 
 
@@ -405,12 +403,11 @@ async def test_background_color_reset(widget, probe):
 async def test_background_color_transparent(widget, probe):
     "Background transparency is supported"
     original = probe.background_color
-    supports_alpha = getattr(probe, "background_supports_alpha", True)
 
     # Change the background color to transparent
     widget.style.background_color = TRANSPARENT
     await probe.redraw("Widget background color should be TRANSPARENT")
-    assert_color(probe.background_color, TRANSPARENT if supports_alpha else original)
+    assert_color(probe.background_color, TRANSPARENT)
 
     # Restore original background color
     del widget.style.background_color

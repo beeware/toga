@@ -17,7 +17,6 @@ def native_date(py_date):
 
 
 class DateInput(Widget):
-    _background_supports_alpha = False
 
     def create(self):
         self.native = WinForms.DateTimePicker()

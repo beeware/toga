@@ -1,15 +1,16 @@
 import pytest
 from pytest import approx
 from System import EventArgs, Object
-from System.Drawing import Color, SystemColors
+from System.Drawing import SystemColors
 from System.Windows.Forms import MouseButtons, MouseEventArgs
 
 from toga.colors import TRANSPARENT
 from toga.style.pack import JUSTIFY, LEFT
+from toga_winforms.colors import alpha_blending_over_operation
 
 from ..fonts import FontMixin
 from ..probe import BaseProbe
-from .properties import toga_color
+from .properties import reverse_alpha_blending_over_operation, toga_color
 
 
 class SimpleProbe(BaseProbe, FontMixin):
@@ -56,10 +57,30 @@ class SimpleProbe(BaseProbe, FontMixin):
 
     @property
     def background_color(self):
-        if self.native.BackColor == Color.Transparent:
+        if (
+            self.widget.style.background_color is None
+            and self.native.BackColor.ToArgb() == SystemColors.Control.ToArgb()
+        ):
+            return None
+
+        if self.widget.style.background_color is TRANSPARENT and (
+            self.native.BackColor.ToArgb()
+            == self.widget.parent._impl.native.BackColor.ToArgb()
+        ):
             return TRANSPARENT
         else:
-            return toga_color(self.native.BackColor)
+            parent_color = toga_color(self.widget.parent._impl.native.BackColor)
+            blended_color = alpha_blending_over_operation(
+                self.widget.style.background_color, parent_color
+            )
+            if blended_color == parent_color:
+                return self.widget.style.background_color
+            else:
+                return reverse_alpha_blending_over_operation(
+                    blended_color,
+                    parent_color,
+                    child_alpha=self.widget.style.background_color.rgba.a,
+                )
 
     @property
     def font(self):

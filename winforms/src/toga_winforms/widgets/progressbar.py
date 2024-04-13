@@ -20,7 +20,6 @@ from .base import Widget
 
 
 class ProgressBar(Widget):
-    _background_supports_alpha = False
 
     TOGA_SCALE = 1000
 

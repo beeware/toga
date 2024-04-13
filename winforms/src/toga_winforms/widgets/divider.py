@@ -1,7 +1,7 @@
 from decimal import ROUND_UP
 
 import System.Windows.Forms as WinForms
-from System.Drawing import Color
+from System.Drawing import SystemColors
 from travertino.size import at_least
 
 from .base import Widget
@@ -29,7 +29,7 @@ class Divider(Widget):
     def set_background_color(self, color):
         if color is None:
             # Background color needs to be set or else divider will not be visible.
-            self.native.BackColor = Color.Gray
+            self.native.BackColor = SystemColors.ControlDark
         else:
             super().set_background_color(color)
 

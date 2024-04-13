@@ -2,13 +2,13 @@ import pytest
 import System.Windows.Forms
 from System.Drawing import SystemColors
 
+from toga.colors import TRANSPARENT
+
 from .base import SimpleProbe
-from .properties import toga_color
 
 
 class ButtonProbe(SimpleProbe):
     native_class = System.Windows.Forms.Button
-    background_supports_alpha = False
 
     @property
     def text(self):
@@ -29,7 +29,9 @@ class ButtonProbe(SimpleProbe):
 
     @property
     def background_color(self):
-        if self.native.BackColor == SystemColors.Control:
+        if (
+            self.native.BackColor.ToArgb() == SystemColors.Control.ToArgb()
+        ) and self.widget.style.background_color in {None, TRANSPARENT}:
             return None
         else:
-            return toga_color(self.native.BackColor)
+            return super().background_color
