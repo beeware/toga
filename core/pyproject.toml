@@ -67,7 +67,7 @@ dependencies = [
 # ensure environment consistency.
 dev = [
     "coverage[toml] == 7.4.4",
-    "Pillow == 10.2.0",
+    "Pillow == 10.3.0",
     # Pre-commit 3.6.0 deprecated support for Python 3.8
     "pre-commit == 3.5.0 ; python_version < '3.9'",
     "pre-commit == 3.7.0 ; python_version >= '3.9'",
@@ -77,11 +77,13 @@ dev = [
     "setuptools-scm == 8.0.4",
     "tox == 4.14.2",
     # typing-extensions needed for TypeAlias added in Py 3.10
-    "typing-extensions == 4.9.0 ; python_version < '3.10'"
+    "typing-extensions == 4.9.0 ; python_version < '3.10'",
+    # FIXME: Freezegun 1.4.0 is incompatible with Python 3.13.0a6; use a pre-release
+    "freezegun @ git+https://github.com/spulec/freezegun#c65f4db6ef4824538061978be30954c1c739d380b ; python_version >= '3.13'",
 ]
 docs = [
     "furo == 2024.1.29",
-    "Pillow == 10.2.0",
+    "Pillow == 10.3.0",
     "pyenchant == 3.2.2",
     # Sphinx 7.2 deprecated support for Python 3.8
     "sphinx == 7.1.2 ; python_version < '3.9'",
