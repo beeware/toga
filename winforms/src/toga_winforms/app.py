@@ -35,7 +35,8 @@ class MainWindow(Window):
 
     def update_dpi(self):
         super().update_dpi()
-        self.native.MainMenuStrip.Font = self.scale_font(self.original_menubar_font)
+        if getattr(self, "original_menubar_font", None) is not None:
+            self.native.MainMenuStrip.Font = self.scale_font(self.original_menubar_font)
 
 
 def winforms_thread_exception(sender, winforms_exc):  # pragma: no cover

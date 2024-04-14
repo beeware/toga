@@ -60,7 +60,6 @@ class Window(Container, Scalable):
     ######################################################################
 
     def winforms_Resize(self, sender, event):
-        self.update_dpi()
         self.resize_content()
 
     def winforms_FormClosing(self, sender, event):
@@ -76,7 +75,15 @@ class Window(Container, Scalable):
                 event.Cancel = True
 
     def winforms_LocationChanged(self, sender, event):
-        self.update_dpi()
+        # Check if the window has moved from one screen to another and if the new
+        # screen has a different dpi scale than the previous screen then rescale
+        current_screen = self.get_current_screen()
+        if not hasattr(self, "_previous_screen"):
+            self._previous_screen = current_screen
+        if current_screen != self._previous_screen:
+            if self._dpi_scale != current_screen.dpi_scale:
+                self.update_dpi()
+            self._previous_screen = current_screen
 
     ######################################################################
     # Window properties
@@ -145,6 +152,7 @@ class Window(Container, Scalable):
             self.interface.content.refresh()
         if self.interface is not self.interface.app._main_window:
             self.native.Icon = self.interface.app.icon._impl.native
+        self.update_dpi()
         self.native.Show()
 
     ######################################################################
@@ -187,15 +195,15 @@ class Window(Container, Scalable):
         )
 
     def update_dpi(self):
-        new_scale = self.get_current_screen().dpi_scale
-        if new_scale == self._dpi_scale:
-            return
-
-        self._dpi_scale = new_scale
-        if self.toolbar_native is not None:
+        self._dpi_scale = self.get_current_screen().dpi_scale
+        if (self.toolbar_native is not None) and (
+            getattr(self, "original_toolbar_font", None) is not None
+        ):
             self.toolbar_native.Font = self.scale_font(self.original_toolbar_font)
         for widget in self.interface.widgets:
             widget._impl.scale_font()
+            widget.refresh()
+        self.resize_content()
 
     ######################################################################
     # Window size
