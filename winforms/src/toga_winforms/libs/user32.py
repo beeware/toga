@@ -26,3 +26,11 @@ else:  # pragma: no cover
         "We recommend you upgrade to at least Windows 10 version 1703."
     )
     SetProcessDpiAwarenessContext = SetThreadDpiAwarenessContext = None
+
+
+# https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-monitorfromrect
+MONITOR_DEFAULTTONEAREST = 2
+
+MonitorFromRect = user32.MonitorFromRect
+MonitorFromRect.restype = wintypes.HMONITOR
+MonitorFromRect.argtypes = [wintypes.LPRECT, wintypes.DWORD]

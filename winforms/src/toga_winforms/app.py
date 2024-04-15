@@ -35,7 +35,9 @@ class MainWindow(Window):
 
     def update_dpi(self):
         super().update_dpi()
-        if getattr(self, "original_menubar_font", None) is not None:
+        if (
+            getattr(self, "original_menubar_font", None) is not None
+        ):  # pragma: no branch
             self.native.MainMenuStrip.Font = self.scale_font(self.original_menubar_font)
 
 

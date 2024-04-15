@@ -1,4 +1,4 @@
-from ctypes import byref, c_void_p, windll, wintypes
+from ctypes import wintypes
 
 from System.Drawing import (
     Bitmap,
@@ -11,6 +11,7 @@ from System.IO import MemoryStream
 
 from toga.screens import Screen as ScreenInterface
 
+from .libs import user32, shcore
 from .widgets.base import Scalable
 
 
@@ -35,12 +36,9 @@ class Screen(Scalable):
             self.native.Bounds.Right,
             self.native.Bounds.Bottom,
         )
-        windll.user32.MonitorFromRect.restype = c_void_p
-        windll.user32.MonitorFromRect.argtypes = [wintypes.RECT, wintypes.DWORD]
-        # MONITOR_DEFAULTTONEAREST = 2
-        hMonitor = windll.user32.MonitorFromRect(screen_rect, 2)
+        hMonitor = user32.MonitorFromRect(screen_rect, user32.MONITOR_DEFAULTTONEAREST)
         pScale = wintypes.UINT()
-        windll.shcore.GetScaleFactorForMonitor(c_void_p(hMonitor), byref(pScale))
+        shcore.GetScaleFactorForMonitor(hMonitor, pScale)
         return pScale.value / 100
 
     def get_name(self):

@@ -19,10 +19,16 @@ class WindowDemoApp(toga.App):
         self.main_window.position = (2000, 500)
 
     def do_left_current_screen(self, widget, **kwargs):
-        self.main_window.screen_position = (0, 100)
+        self.main_window.screen_position = (
+            self.main_window.screen.origin[0],
+            self.main_window.screen_position[1],
+        )
 
     def do_right_current_screen(self, widget, **kwargs):
-        self.main_window.screen_position = (1080, 100)
+        self.main_window.screen_position = (
+            self.main_window.screen.size[0] - self.main_window.size[0],
+            self.main_window.screen_position[1],
+        )
 
     def do_small(self, widget, **kwargs):
         self.main_window.size = (400, 300)

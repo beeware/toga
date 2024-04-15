@@ -61,6 +61,10 @@ class Window(Container, Scalable):
 
     def winforms_Resize(self, sender, event):
         self.resize_content()
+        if self.get_current_screen().dpi_scale == self._dpi_scale:
+            return
+        else:
+            self.update_dpi()
 
     def winforms_FormClosing(self, sender, event):
         # If the app is exiting, or a manual close has been requested, don't get
@@ -75,15 +79,10 @@ class Window(Container, Scalable):
                 event.Cancel = True
 
     def winforms_LocationChanged(self, sender, event):
-        # Check if the window has moved from one screen to another and if the new
-        # screen has a different dpi scale than the previous screen then rescale
-        current_screen = self.get_current_screen()
-        if not hasattr(self, "_previous_screen"):
-            self._previous_screen = current_screen
-        if current_screen != self._previous_screen:
-            if self._dpi_scale != current_screen.dpi_scale:
-                self.update_dpi()
-            self._previous_screen = current_screen
+        if self.get_current_screen().dpi_scale == self._dpi_scale:
+            return
+        else:
+            self.update_dpi()
 
     ######################################################################
     # Window properties
@@ -196,7 +195,7 @@ class Window(Container, Scalable):
 
     def update_dpi(self):
         self._dpi_scale = self.get_current_screen().dpi_scale
-        if (self.toolbar_native is not None) and (
+        if (self.toolbar_native is not None) and (  # pragma: no branch
             getattr(self, "original_toolbar_font", None) is not None
         ):
             self.toolbar_native.Font = self.scale_font(self.original_toolbar_font)
