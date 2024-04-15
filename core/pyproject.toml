@@ -1,6 +1,6 @@
 [build-system]
 requires = [
-    "setuptools==69.2.0",
+    "setuptools==69.5.1",
     "setuptools_scm==8.0.4",
     "setuptools_dynamic_dependencies @ git+https://github.com/beeware/setuptools_dynamic_dependencies",
 ]
@@ -77,7 +77,9 @@ dev = [
     "setuptools-scm == 8.0.4",
     "tox == 4.14.2",
     # typing-extensions needed for TypeAlias added in Py 3.10
-    "typing-extensions == 4.9.0 ; python_version < '3.10'"
+    "typing-extensions == 4.9.0 ; python_version < '3.10'",
+    # FIXME: Freezegun 1.4.0 is incompatible with Python 3.13.0a6; use a pre-release
+    "freezegun @ git+https://github.com/spulec/freezegun#c65f4db6ef4824538061978be30954c1c739d380b ; python_version >= '3.13'",
 ]
 docs = [
     "furo == 2024.1.29",
@@ -89,8 +91,8 @@ docs = [
     "sphinx_tabs == 3.4.5",
     # Sphinx 2024.2.4 deprecated support for Python 3.8
     "sphinx-autobuild == 2021.3.14 ; python_version < '3.9'",
-    "sphinx-autobuild == 2024.2.4 ; python_version >= '3.9'",
-    "sphinx-autodoc-typehints == 2.0.0",
+    "sphinx-autobuild == 2024.4.13 ; python_version >= '3.9'",
+    "sphinx-autodoc-typehints == 2.0.1",
     "sphinx-csv-filter == 0.4.1",
     "sphinx-copybutton == 0.5.2",
     "sphinx-toolbox == 3.5.0",
