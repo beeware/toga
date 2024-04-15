@@ -11,7 +11,7 @@ from System.IO import MemoryStream
 
 from toga.screens import Screen as ScreenInterface
 
-from .libs import user32, shcore
+from .libs import shcore, user32
 from .widgets.base import Scalable
 
 

@@ -1,4 +1,4 @@
-from ctypes import windll, wintypes, HRESULT, POINTER
+from ctypes import HRESULT, POINTER, windll, wintypes
 
 GetScaleFactorForMonitor = windll.shcore.GetScaleFactorForMonitor
 GetScaleFactorForMonitor.restype = HRESULT

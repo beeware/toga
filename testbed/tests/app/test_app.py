@@ -5,9 +5,9 @@ import pytest
 import toga
 from toga.colors import CORNFLOWERBLUE, FIREBRICK, REBECCAPURPLE
 from toga.style.pack import Pack
+from toga_winforms.libs import shcore
 
 from ..test_window import window_probe
-from toga_winforms.libs import shcore
 
 
 @pytest.fixture
