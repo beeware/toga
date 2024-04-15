@@ -5,7 +5,6 @@ import pytest
 import toga
 from toga.colors import CORNFLOWERBLUE, FIREBRICK, REBECCAPURPLE
 from toga.style.pack import Pack
-from toga_winforms.libs import shcore
 
 from ..test_window import window_probe
 
@@ -600,6 +599,9 @@ if toga.platform.current_platform == "windows":
         main_window.content.add(
             toga.Button(text="Testing for system DPI change response")
         )
+
+        from toga_winforms.libs import shcore
+
         GetScaleFactorForMonitor_original = getattr(shcore, "GetScaleFactorForMonitor")
 
         for dpi_change_event in {
