@@ -49,12 +49,6 @@ class AndroidEventLoop(asyncio.SelectorEventLoop):
         # Create placeholders for lazily-created objects.
         self.android_interop = AndroidInterop()
 
-    # Override parent `run_in_executor()` to run all code synchronously. This disables the
-    # `executor` thread that typically exists in event loops. The event loop itself relies
-    # on `run_in_executor()` for DNS lookups. In the future, we can restore `run_in_executor()`.
-    async def run_in_executor(self, executor, func, *args):
-        return func(*args)  # pragma: no cover
-
     # Override parent `_call_soon()` to ensure Android wakes us up to do the delayed task.
     def _call_soon(self, callback, args, context):
         ret = super()._call_soon(callback, args, context)
