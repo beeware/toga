@@ -272,6 +272,9 @@ class Window:
         undefined, except for :attr:`closed` which can be used to check if the window
         was closed.
         """
+        if getattr(self, "content", None) is not None:
+            self.content.clear()
+            self.content.window = None
         self.app.windows.discard(self)
         self._impl.close()
         self._closed = True
