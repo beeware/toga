@@ -91,7 +91,7 @@ docs = [
     "sphinx_tabs == 3.4.5",
     # Sphinx 2024.2.4 deprecated support for Python 3.8
     "sphinx-autobuild == 2021.3.14 ; python_version < '3.9'",
-    "sphinx-autobuild == 2024.4.13 ; python_version >= '3.9'",
+    "sphinx-autobuild == 2024.4.16 ; python_version >= '3.9'",
     "sphinx-autodoc-typehints == 2.0.1",
     "sphinx-csv-filter == 0.4.1",
     "sphinx-copybutton == 0.5.2",
