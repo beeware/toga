@@ -73,7 +73,7 @@ class Location:
         cannot be used directly.
 
         :returns: An asynchronous result; when awaited, returns True if the app has
-            permission to capture the user's a location; False otherwise.
+            permission to capture the user's location; False otherwise.
         """
         result = PermissionResult(None)
 
@@ -111,7 +111,7 @@ class Location:
         cannot be used directly.
 
         :returns: An asynchronous result; when awaited, returns True if the app has
-            permission to capture the user's a location while running in the
+            permission to capture the user's location while running in the
             background; False otherwise.
         :raises PermissionError: If the app has not already requested and received
             permission to use location services.
