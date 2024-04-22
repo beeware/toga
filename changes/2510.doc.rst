@@ -1,0 +1,1 @@
+The links to ReadTheDocs were updated to better arbitrate between linking to the stable version or the latest version.

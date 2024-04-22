@@ -1,0 +1,1 @@
+The version of Freezegun used on Python 3.13 has been pinned to a prerelease to avoid an incompatibility with Python 3.13.0a6.

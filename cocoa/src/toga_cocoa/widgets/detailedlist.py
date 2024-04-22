@@ -83,7 +83,6 @@ class TogaList(NSTableView):
             data = value._impl
         except AttributeError:
             data = TogaData.alloc().init()
-            data.retain()
             value._impl = data
 
         try:
