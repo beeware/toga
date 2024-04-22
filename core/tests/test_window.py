@@ -385,43 +385,40 @@ def test_widget_id_reusable_after_window_closes(window, app):
     """Widget IDs can be reused after the associated widget's window is closed."""
 
     # Common widget IDs
-    common_widget_ids = {"content": "window_content", "label": "sample_label"}
+    CONTENT_WIDGET_ID = "window_content"
+    LABEL_WIDGET_ID = "sample_label"
 
     # Create a second window and create its content and children & specify their IDs.
     second_window = toga.Window()
     second_window.content = toga.Box(
-        id=common_widget_ids["content"],
-        children=[toga.Label(text="Sample Label", id=common_widget_ids["label"])],
+        id=CONTENT_WIDGET_ID,
+        children=[toga.Label(text="Sample Label", id=LABEL_WIDGET_ID)],
     )
-    # Show the second window and check that it is in the app's windows registry.
+    # Show the second window and check that the widgets are in the app's widget registry.
     second_window.show()
-    assert second_window.app == app
-    assert second_window in app.windows
-    assert_action_performed(second_window, "show")
+    assert CONTENT_WIDGET_ID in app.widgets
+    assert LABEL_WIDGET_ID in app.widgets
 
-    # Close the second window and check that it is *not* in the app's windows registry.
+    # Close the second window and check that the widgets are *not* in the app's widget registry.
     second_window.close()
-    assert second_window.closed
-    assert second_window not in app.windows
-    assert_action_performed(second_window, "close")
+    assert CONTENT_WIDGET_ID not in app.widgets
+    assert LABEL_WIDGET_ID not in app.widgets
 
     # Again create a third window and create its content and children using the same IDs.
     third_window = toga.Window()
     third_window.content = toga.Box(
-        id=common_widget_ids["content"],
-        children=[toga.Label(text="sample_label", id=common_widget_ids["label"])],
+        id=CONTENT_WIDGET_ID,
+        children=[toga.Label(text="sample_label", id=LABEL_WIDGET_ID)],
     )
-    # Show the third window and check that it is in the app's windows registry.
+    # Show the third window and check that the widgets are in the app's widget registry.
     third_window.show()
-    assert third_window.app == app
-    assert third_window in app.windows
-    assert_action_performed(third_window, "show")
+    assert CONTENT_WIDGET_ID in app.widgets
+    assert LABEL_WIDGET_ID in app.widgets
 
-    # Close the third window and check that it is *not* in the app's windows registry.
+    # Close the third window and check that the widgets are *not* in the app's widget registry.
     third_window.close()
-    assert third_window.closed
-    assert third_window not in app.windows
-    assert_action_performed(third_window, "close")
+    assert CONTENT_WIDGET_ID not in app.widgets
+    assert LABEL_WIDGET_ID not in app.widgets
 
 
 def test_info_dialog(window, app):
