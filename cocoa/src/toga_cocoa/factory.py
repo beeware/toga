@@ -6,6 +6,7 @@ from .command import Command
 from .documents import Document
 from .fonts import Font
 from .hardware.camera import Camera
+from .hardware.location import Location
 from .icons import Icon
 from .images import Image
 from .paths import Paths
@@ -56,6 +57,7 @@ __all__ = [
     "dialogs",
     # Hardware
     "Camera",
+    "Location",
     # Widgets
     "ActivityIndicator",
     "Box",

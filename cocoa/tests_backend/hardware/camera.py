@@ -55,6 +55,9 @@ class CameraProbe(AppProbe):
         def _mock_request_access(media_type, completionHandler):
             # Fire completion handler
             try:
+                self._mock_permissions[str(media_type)] = abs(
+                    self._mock_permissions[str(media_type)]
+                )
                 result = bool(self._mock_permissions[str(media_type)])
             except KeyError:
                 # If there's no explicit permission, it's a denial
@@ -134,10 +137,10 @@ class CameraProbe(AppProbe):
         self._mock_permissions = {}
 
     def grant_permission(self):
-        self._mock_permissions[str(AVMediaTypeVideo)] = -1
+        self._mock_permissions[str(AVMediaTypeVideo)] = 1
 
     def allow_permission(self):
-        self._mock_permissions[str(AVMediaTypeVideo)] = 1
+        self._mock_permissions[str(AVMediaTypeVideo)] = -1
 
     def reject_permission(self):
         self._mock_permissions[str(AVMediaTypeVideo)] = 0
