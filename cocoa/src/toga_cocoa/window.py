@@ -40,6 +40,7 @@ class TogaWindow(NSWindow):
         if self.interface.content:
             # Set the window to the new size
             self.interface.content.refresh()
+            self.impl.interface.on_resize()
 
     ######################################################################
     # Toolbar delegate methods
