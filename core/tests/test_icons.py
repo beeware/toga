@@ -1,3 +1,4 @@
+import sys
 from pathlib import Path
 
 import pytest
@@ -111,12 +112,62 @@ def test_create(monkeypatch, app, path, system, sizes, extensions, final_paths):
     assert icon._impl.path == final_paths
 
 
-def test_create_fallback(app):
+def test_create_fallback(app, capsys):
     """If a resource doesn't exist, a fallback icon is used."""
     icon = toga.Icon("resources/missing")
 
     assert icon._impl is not None
     assert icon._impl.interface == toga.Icon.DEFAULT_ICON
+
+    # A warning was printed
+    assert "WARNING: Can't find icon resources/missing" in capsys.readouterr().out
+
+
+def test_create_default_icon_script_fallback(app, capsys):
+    """If the app is running as a script, but no icon is provided, the default icon is used"""
+    # When running under pytest, code will identify as running as a script
+    # Load the app default icon.
+    icon = toga.Icon(None)
+
+    # The impl is the default icon.
+    assert icon._impl is not None
+    assert icon._impl.interface == toga.Icon.DEFAULT_ICON
+
+    # No warning is printed
+    assert capsys.readouterr().out == ""
+
+
+def test_create_default_icon_script(app, capsys):
+    """If the app is running as a script, and an icon is provided, it is used"""
+    # When running under pytest, code will identify as running as a script
+    # Set the app name to something that will result in finding an icon
+    app._app_name = "sample"
+
+    # Load the app default icon
+    icon = toga.Icon(None)
+
+    assert icon._impl is not None
+
+    # The icon *isn't* the Toga default; it's sample.png
+    assert icon._impl.interface != toga.Icon.DEFAULT_ICON
+    assert icon._impl.path == APP_RESOURCES / "sample.png"
+
+    # No warning is printed
+    assert capsys.readouterr().out == ""
+
+
+def test_create_default_icon(monkeypatch, app):
+    """If the app is running as a script, but no icon is provided, the default icon is used"""
+    # Patch sys.executable so the test looks like it's running as a packaged binary
+    monkeypatch.setattr(sys, "executable", "/path/to/App")
+
+    icon = toga.Icon(None)
+
+    assert icon._impl is not None
+
+    # In the dummy backend, the default icon app icon has a path of None.
+    assert icon._impl.interface != toga.Icon.DEFAULT_ICON
+    assert icon._impl.path is None
 
 
 @pytest.mark.parametrize(

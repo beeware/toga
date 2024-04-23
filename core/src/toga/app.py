@@ -349,9 +349,8 @@ class App:
                distribution name of ``my-app``.
             #. As a last resort, the name ``toga``.
         :param icon: The :any:`icon <IconContent>` for the app. If not provided, Toga
-            will attempt to load an icon from ``resources/app_name``, where ``app_name``
-            is defined above. If no resource matching this name can be found, a warning
-            will be printed, and the app will fall back to a default icon.
+            will use a default icon. See the definition of :class:`~toga.Icon` for how
+            misconfigured and default icons are handled.
         :param author: The person or organization to be credited as the author of the
             app. If not provided, the metadata key ``Author`` will be used.
         :param version: The version number of the app.  If not provided, the metadata
@@ -471,12 +470,7 @@ class App:
         # Instantiate the paths instance for this app.
         self._paths = Paths()
 
-        # If an icon (or icon name) has been explicitly provided, use it;
-        # otherwise, the icon will be based on the distribution name.
-        if icon:
-            self.icon = icon
-        else:
-            self.icon = f"resources/{app_name}"
+        self.icon = icon
 
         self.on_exit = on_exit
 
@@ -542,10 +536,9 @@ class App:
     def icon(self) -> Icon:
         """The Icon for the app.
 
-        Can be specified as any valid :any:`icon content <IconContent>`.
-
-        When setting the icon, you can provide either an :any:`Icon` instance, or a
-        path that will be passed to the ``Icon`` constructor.
+        Can be specified as any valid :any:`icon content <IconContent>`, or :any:`None`
+        to use a default icon. See the definition of :class:`~toga.Icon` for how
+        misconfigured and default icons are handled.
         """
         return self._icon
 
