@@ -3,7 +3,7 @@ from pathlib import Path
 import pytest
 
 import toga_cocoa
-from toga_cocoa.libs import NSImage
+from toga_cocoa.libs import NSApplication, NSImage
 
 from .probe import BaseProbe
 
@@ -38,3 +38,10 @@ class IconProbe(BaseProbe):
 
     def assert_platform_icon_content(self):
         assert self.icon._impl.path == self.app.paths.app / "resources/logo-macOS.icns"
+
+    def assert_app_icon_content(self):
+        assert (
+            self.icon._impl.native
+            == NSApplication.sharedApplication.applicationIconImage
+        )
+        assert self.icon._impl.path is None
