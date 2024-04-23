@@ -11,7 +11,7 @@ author_email = "tiberius@beeware.org"
 [tool.briefcase.app.testbed]
 formal_name = "Toga Testbed"
 description = "A testbed for Toga visual tests"
-icon = "src/testbed/resources/testbed"
+icon = "icons/testbed"
 sources = [
     "src/testbed",
 ]

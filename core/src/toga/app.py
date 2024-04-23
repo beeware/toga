@@ -549,6 +549,13 @@ class App:
         else:
             self._icon = Icon(icon_or_name)
 
+        try:
+            self._impl.set_icon(self._icon)
+        except AttributeError:
+            # The first time the icon is set, it is *before* the impl has been created,
+            # so that the app instance can be instantiated with the correct icon.
+            pass
+
     @property
     def id(self) -> str:
         """**DEPRECATED** – Use :any:`app_id`."""

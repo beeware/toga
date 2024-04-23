@@ -357,11 +357,20 @@ def test_icon(app, construct):
     # Default icon matches distribution name
     assert isinstance(app.icon, toga.Icon)
     assert app.icon.path == Path("resources/test-app")
+    # During initial setup, the icon isn't explicitly set.
+    assert_action_not_performed(app, "set_icon")
 
     # Change icon
     app.icon = icon
     assert isinstance(app.icon, toga.Icon)
     assert app.icon.path == Path("path/to/icon")
+    assert_action_performed_with(app, "set_icon", icon=toga.Icon("path/to/icon"))
+
+    # Revert to default icon``
+    app.icon = None
+    assert isinstance(app.icon, toga.Icon)
+    assert app.icon.path == Path("resources/test-app")
+    assert_action_performed_with(app, "set_icon", icon=toga.Icon(None))
 
 
 def test_current_window(app):

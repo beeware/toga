@@ -163,3 +163,6 @@ class Icon:
                     return icon_path
 
         raise FileNotFoundError(f"Can't find icon {self.path}")
+
+    def __eq__(self, other):
+        return isinstance(other, Icon) and other.path == self.path

@@ -33,7 +33,8 @@ async def test_icon(app):
 )
 async def test_app_icon(app):
     """The app icon can be obtained."""
-    probe = icon_probe(app, app.icon)
+    icon = toga.Icon(None)
+    probe = icon_probe(app, icon)
     probe.assert_app_icon_content()
 
 
