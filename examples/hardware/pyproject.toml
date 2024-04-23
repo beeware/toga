@@ -19,6 +19,9 @@ requires = [
 ]
 
 permission.camera = "This app demonstrates camera capabilities"
+permission.fine_location = "This app demonstrates fine-grained geolocation services."
+permission.coarse_location = "This app demonstrates coarse-grained geolocation services."
+permission.background_location = "This app demonstrates capturing your location while in the background"
 
 [tool.briefcase.app.hardware.macOS]
 requires = [
@@ -54,4 +57,5 @@ build_gradle_dependencies = [
     "androidx.appcompat:appcompat:1.6.1",
     "com.google.android.material:material:1.11.0",
     "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0",
+    "org.osmdroid:osmdroid-android:6.1.0",
 ]

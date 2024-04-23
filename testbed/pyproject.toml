@@ -29,6 +29,9 @@ test_requires = [
 ]
 
 permission.camera = "The testbed needs to exercise Camera APIs"
+permission.fine_location = "The testbed needs to exercise fine-grained geolocation services."
+permission.coarse_location = "The testbed needs to exercise coarse-grained geolocation services."
+permission.background_location = "The testbed needs to exercise capturing your location while in the background"
 
 [tool.briefcase.app.testbed.macOS]
 requires = [
