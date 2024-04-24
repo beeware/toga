@@ -123,6 +123,19 @@ def test_create_fallback(app, capsys):
     assert "WARNING: Can't find icon resources/missing" in capsys.readouterr().out
 
 
+def test_create_fallback_variants(monkeypatch, app, capsys):
+    """If a resource with size variants doesn't exist, a fallback icon is used."""
+    monkeypatch.setattr(DummyIcon, "SIZES", [32, 72])
+
+    icon = toga.Icon("resources/missing")
+
+    assert icon._impl is not None
+    assert icon._impl.interface == toga.Icon.DEFAULT_ICON
+
+    # A warning was printed
+    assert "WARNING: Can't find icon resources/missing" in capsys.readouterr().out
+
+
 def test_create_default_icon_script_fallback(app, capsys):
     """If the app is running as a script, but no icon is provided, the default icon is used"""
     # When running under pytest, code will identify as running as a script

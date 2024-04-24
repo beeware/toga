@@ -121,14 +121,17 @@ class Icon:
                     resource_path = toga.App.app.paths.app
 
                 if self.factory.Icon.SIZES:
-                    full_path = {
-                        size: self._full_path(
-                            size=size,
-                            extensions=self.factory.Icon.EXTENSIONS,
-                            resource_path=resource_path,
-                        )
-                        for size in self.factory.Icon.SIZES
-                    }
+                    full_path = {}
+                    for size in self.factory.Icon.SIZES:
+                        try:
+                            full_path[size] = self._full_path(
+                                size=size,
+                                extensions=self.factory.Icon.EXTENSIONS,
+                                resource_path=resource_path,
+                            )
+                        except FileNotFoundError:
+                            # This size variant wasn't found; we can skip it
+                            pass
                 else:
                     full_path = self._full_path(
                         size=None,

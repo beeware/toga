@@ -38,7 +38,7 @@ The following formats are supported (in order of preference):
 * **Android** - PNG
 * **iOS** - ICNS, PNG, BMP, ICO
 * **macOS** - ICNS, PNG, PDF
-* **GTK** - PNG, ICO, ICNS. 32px and 72px variants of each icon can be provided;
+* **GTK** - PNG, ICO, ICNS; 512, 256, 128, 72, 64, 32, and 16px variants of each icon can be provided;
 * **Windows** - ICO, PNG, BMP
 
 The first matching icon of the most specific platform, with the most specific
@@ -52,17 +52,21 @@ will cause Toga to look for (in order):
 * ``myicon-windows.bmp``
 * ``myicon.bmp``
 
-On GTK, Toga will look for (in order):
+On GTK, Toga will perform this lookup for each variant size, falling back to an
+"unsized" name if a size-specific variant has not been provided. For example, when
+resolving the 32px variant, Toga will look for (in order):
 
-* ``myicon-linux-72.png``
-* ``myicon-72.png``
 * ``myicon-linux-32.png``
 * ``myicon-32.png``
-* ``myicon-linux.png``
 * ``myicon.png``
-* ``myicon-linux-72.ico``
-* ``myicon-72.ico``
-* ``myicon-linux-32.ico``, and so on.
+* ``myicon-linux-32.ico``
+* ``myicon-32.ico``
+* ``myicon.ico``, and so on.
+
+Any icon that is found will be resized to the required size. Toga will backfill any GTK
+variants that are not available from the highest resolution provided (e.g., if no 128px
+variant can be found, one will be created by scaling the highest resolution variant that
+*is* available).
 
 An icon is **guaranteed** to have an implementation, regardless of the path
 specified. If you specify a path and no matching icon can be found, Toga will

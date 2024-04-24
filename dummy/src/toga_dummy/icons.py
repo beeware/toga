@@ -9,3 +9,5 @@ class Icon(LoggedObject):
         super().__init__()
         self.interface = interface
         self.path = path
+        if path == {}:
+            raise FileNotFoundError("No image variants found")
