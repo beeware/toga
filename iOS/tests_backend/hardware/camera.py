@@ -48,6 +48,9 @@ class CameraProbe(AppProbe):
         def _mock_request_access(media_type, completionHandler):
             # Fire completion handler
             try:
+                self._mock_permissions[str(media_type)] = abs(
+                    self._mock_permissions[str(media_type)]
+                )
                 result = bool(self._mock_permissions[str(media_type)])
             except KeyError:
                 # If there's no explicit permission, it's a denial
@@ -89,6 +92,9 @@ class CameraProbe(AppProbe):
             iOS, "UIImagePickerController", self._mock_UIImagePickerController
         )
 
+        # Load an image that can be used as a sample photo
+        self.camera_image = toga.Image("resources/photo.png")
+
     def cleanup(self):
         try:
             picker = self.app.camera._impl.native
@@ -118,10 +124,10 @@ class CameraProbe(AppProbe):
         self._mock_permissions = {}
 
     def grant_permission(self):
-        self._mock_permissions[str(AVMediaTypeVideo)] = -1
+        self._mock_permissions[str(AVMediaTypeVideo)] = 1
 
     def allow_permission(self):
-        self._mock_permissions[str(AVMediaTypeVideo)] = 1
+        self._mock_permissions[str(AVMediaTypeVideo)] = -1
 
     def reject_permission(self):
         self._mock_permissions[str(AVMediaTypeVideo)] = 0
@@ -143,11 +149,10 @@ class CameraProbe(AppProbe):
         )
 
         # Fake the result of a successful photo being taken
-        image = toga.Image("resources/photo.png")
         picker.delegate.imagePickerController(
             picker,
             didFinishPickingMediaWithInfo={
-                "UIImagePickerControllerOriginalImage": image._impl.native
+                "UIImagePickerControllerOriginalImage": self.camera_image._impl.native
             },
         )
 

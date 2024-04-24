@@ -53,8 +53,8 @@ Layout Widgets
    :stub-columns: 1
    :widths: 3 1 1 1 1 1 1 1
 
-Device and Hardware
-===================
+Hardware
+========
 
 .. rst-class:: widget-descriptions
 .. csv-filter::
