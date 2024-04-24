@@ -119,8 +119,11 @@ def test_create_fallback(app, capsys):
     assert icon._impl is not None
     assert icon._impl.interface == toga.Icon.DEFAULT_ICON
 
-    # A warning was printed
-    assert "WARNING: Can't find icon resources/missing" in capsys.readouterr().out
+    # A warning was printed; allow for windows separators
+    assert (
+        "WARNING: Can't find icon resources/missing"
+        in capsys.readouterr().out.replace("\\", "/")
+    )
 
 
 def test_create_fallback_variants(monkeypatch, app, capsys):
@@ -132,8 +135,11 @@ def test_create_fallback_variants(monkeypatch, app, capsys):
     assert icon._impl is not None
     assert icon._impl.interface == toga.Icon.DEFAULT_ICON
 
-    # A warning was printed
-    assert "WARNING: Can't find icon resources/missing" in capsys.readouterr().out
+    # A warning was printed; allow for windows separators
+    assert (
+        "WARNING: Can't find icon resources/missing"
+        in capsys.readouterr().out.replace("\\", "/")
+    )
 
 
 def test_create_default_icon_script_fallback(app, capsys):

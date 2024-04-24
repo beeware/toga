@@ -52,9 +52,9 @@ will cause Toga to look for (in order):
 * ``myicon-windows.bmp``
 * ``myicon.bmp``
 
-On GTK, Toga will perform this lookup for each variant size, falling back to an
-"unsized" name if a size-specific variant has not been provided. For example, when
-resolving the 32px variant, Toga will look for (in order):
+On GTK, Toga will perform this lookup for each variant size, falling back to an name
+without a size specifier if a size-specific variant has not been provided. For example,
+when resolving the 32px variant, Toga will look for (in order):
 
 * ``myicon-linux-32.png``
 * ``myicon-32.png``
@@ -63,10 +63,10 @@ resolving the 32px variant, Toga will look for (in order):
 * ``myicon-32.ico``
 * ``myicon.ico``, and so on.
 
-Any icon that is found will be resized to the required size. Toga will backfill any GTK
-variants that are not available from the highest resolution provided (e.g., if no 128px
-variant can be found, one will be created by scaling the highest resolution variant that
-*is* available).
+Any icon that is found will be resized to the required size. Toga will generate any GTK
+icon variants that are not available from the highest resolution provided (e.g., if no
+128px variant can be found, one will be created by scaling the highest resolution
+variant that *is* available).
 
 An icon is **guaranteed** to have an implementation, regardless of the path
 specified. If you specify a path and no matching icon can be found, Toga will
