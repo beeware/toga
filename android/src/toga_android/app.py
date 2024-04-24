@@ -231,7 +231,8 @@ class App:
         self.create()
 
     def set_icon(self, icon):
-        pass
+        # Android apps don't have runtime icons, so this can't be invoked
+        pass  # pragma: no cover
 
     def set_main_window(self, window):
         pass
