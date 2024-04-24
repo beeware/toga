@@ -93,28 +93,31 @@ class Icon:
         self.factory = get_platform_factory()
         silent_fallback = False
 
-        if path is None and Path(sys.executable).stem in {
-            "python",
-            f"python{sys.version_info.major}",
-            f"python{sys.version_info.major}.{sys.version_info.minor}",
-        }:
-            # If there's no explicit icon specified, and app is running as a python
-            # script, use a default icon name. If this icon name doesn't exist, we don't
-            # need to warn about a missing icon, as it's a value by convention, rather
-            # than an explicit setting.
-            path = f"resources/{toga.App.app.app_name}"
+        if path is None:
+            # Don't ever report an app icon failing to load.
             silent_fallback = True
 
-        if path is None:
-            # If path is still None, load the application binary's icon
-            self.path = None
-            self._impl = self.factory.Icon(interface=self, path=None)
-        else:
-            # Try to load the icon with the given path snippet
-            self.path = Path(path)
-            self.system = system
+            if Path(sys.executable).stem in {
+                "python",
+                f"python{sys.version_info.major}",
+                f"python{sys.version_info.major}.{sys.version_info.minor}",
+            }:
+                # If there's no explicit icon specified, and app is running as a python
+                # script, use a default icon name. If this icon name doesn't exist, we
+                # don't need to warn about a missing icon, as it's a value by
+                # convention, rather than an explicit setting.
+                path = f"resources/{toga.App.app.app_name}"
 
-            try:
+        try:
+            if path is None:
+                # If path is still None, load the application binary's icon
+                self.path = None
+                self._impl = self.factory.Icon(interface=self, path=None)
+            else:
+                # Try to load the icon with the given path snippet
+                self.path = Path(path)
+                self.system = system
+
                 if self.system:
                     resource_path = Path(self.factory.__file__).parent / "resources"
                 else:
@@ -140,12 +143,12 @@ class Icon:
                     )
 
                 self._impl = self.factory.Icon(interface=self, path=full_path)
-            except FileNotFoundError:
-                if not silent_fallback:
-                    print(
-                        f"WARNING: Can't find icon {self.path}; falling back to default icon"
-                    )
-                self._impl = self.DEFAULT_ICON._impl
+        except FileNotFoundError:
+            if not silent_fallback:
+                print(
+                    f"WARNING: Can't find icon {self.path}; falling back to default icon"
+                )
+            self._impl = self.DEFAULT_ICON._impl
 
     def _full_path(self, size, extensions, resource_path):
         platform = toga.platform.current_platform

@@ -92,6 +92,9 @@ class App:
         # iOS event loop.
         self.loop.run_forever_cooperatively(lifecycle=iOSLifecycle())
 
+    def set_icon(self, icon):
+        pass
+
     def set_main_window(self, window):
         pass
 

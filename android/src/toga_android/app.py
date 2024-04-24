@@ -230,6 +230,9 @@ class App:
         # of the Android Activity system.
         self.create()
 
+    def set_icon(self, icon):
+        pass
+
     def set_main_window(self, window):
         pass
 
