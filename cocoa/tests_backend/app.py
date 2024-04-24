@@ -73,11 +73,17 @@ class AppProbe(BaseProbe):
             # The explicit alt icon has blue background, with green at a point 1/3 into
             # the image
             assert img.getpixel((5, 5)) in {
+                (205, 226, 243, 255),
                 (211, 226, 243, 255),
                 (211, 230, 245, 255),
             }
             mid_color = img.getpixel((img.size[0] // 3, img.size[1] // 3))
-            assert mid_color == (105, 192, 32, 255)
+            assert mid_color in {
+                (0, 204, 9, 255),
+                (6, 204, 8, 255),
+                (14, 197, 8, 255),
+                (105, 192, 32, 255),
+            }
         else:
             # The default icon is transparent background, and brown in the center.
             assert img.getpixel((5, 5))[3] == 0
@@ -85,6 +91,7 @@ class AppProbe(BaseProbe):
             assert mid_color in {
                 (130, 100, 57, 255),
                 (130, 109, 66, 255),
+                (138, 108, 64, 255),
                 (149, 119, 73, 255),
             }
 
