@@ -74,12 +74,17 @@ class AppProbe(BaseProbe):
             mid_color = img.getpixel((img.size[0] // 3, img.size[1] // 3))
             assert mid_color == (105, 192, 32, 255)
         else:
-            # The default icon is transparent background, and brown in the center.
-            # Due to icon resizing, the exact pixel color is inconsistent, depending
-            # on whether it's the default or the value after a reset.
+            # The default icon is transparent background, and brown in the center. Due
+            # to icon resizing and colorspace issues, the exact pixel color is
+            # inconsistent, depending on whether it is the default or the value after a
+            # reset.
             assert img.getpixel((5, 5))[3] == 0
             mid_color = img.getpixel((img.size[0] // 2, img.size[1] // 2))
-            assert mid_color in {(130, 100, 57, 255), (130, 109, 66, 255)}
+            assert mid_color in {
+                (130, 100, 57, 255),
+                (130, 109, 66, 255),
+                (149, 119, 73, 255),
+            }
 
     def _menu_item(self, path):
         main_menu = self.app._impl.native.mainMenu
