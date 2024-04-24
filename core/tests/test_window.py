@@ -381,44 +381,70 @@ def test_screen_position(window, app):
     assert window.screen_position == (100, 100)
 
 
-def test_widget_id_reusable_after_window_closes(window, app):
+def test_widget_id_reusablity(window, app):
     """Widget IDs can be reused after the associated widget's window is closed."""
 
-    # Common widget IDs
-    CONTENT_WIDGET_ID = "window_content"
+    # Common IDs
+    CONTENT_WIDGET_ID = "sample_window_content"
     LABEL_WIDGET_ID = "sample_label"
 
-    # Create a second window and create its content and children & specify their IDs.
+    label_widget = toga.Label(text="Sample Label", id=LABEL_WIDGET_ID)
+    second_window_content = toga.Box(id=CONTENT_WIDGET_ID, children=[label_widget])
+    # Creating widgets with same ID is allowed but it should
+    # raise KeyError only when assigned to a window.
+    try:
+        third_window_content = toga.Box(id=CONTENT_WIDGET_ID)
+    except KeyError:
+        raise AssertionError(
+            "Reusing same ID to create another widget when not assigned to a window"
+            "should not have raised KeyError."
+        )
+
+    # Create extra windows and show them
     second_window = toga.Window()
-    second_window.content = toga.Box(
-        id=CONTENT_WIDGET_ID,
-        children=[toga.Label(text="Sample Label", id=LABEL_WIDGET_ID)],
-    )
-    # Show the second window and check that the widgets are in the app's widget registry.
     second_window.show()
+    third_window = toga.Window()
+    third_window.show()
+
+    # Assign the window content widget to the second window
+    second_window.content = second_window_content
     assert CONTENT_WIDGET_ID in app.widgets
     assert LABEL_WIDGET_ID in app.widgets
+    # Assigning widget with same widget ID to be a window's content should raise a KeyError
+    try:
+        third_window.content = third_window_content
+    except KeyError:
+        assert True
+    else:
+        raise AssertionError(
+            "Assigning a widget with same ID to be a window's content should have raised KeyError."
+        )
+    assert CONTENT_WIDGET_ID not in third_window.widgets
 
-    # Close the second window and check that the widgets are *not* in the app's widget registry.
+    # Creating a new widget with same widget ID should not raise KeyError
+    try:
+        new_label_widget = toga.Label(text="Sample Label", id=LABEL_WIDGET_ID)
+    except KeyError:
+        raise AssertionError(
+            "Reusing same ID to create another widget when not assigned to a window "
+            "should not have raised KeyError."
+        )
+    # But adding the widget to another window's content should raise KeyError
+    try:
+        third_window.content = toga.Box(children=[new_label_widget])
+    except KeyError:
+        assert True
+    else:
+        raise AssertionError(
+            "Adding a widget with same ID to a window's content should have raised KeyError."
+        )
+    assert CONTENT_WIDGET_ID not in third_window.widgets
+
+    # Close the windows
     second_window.close()
     assert CONTENT_WIDGET_ID not in app.widgets
     assert LABEL_WIDGET_ID not in app.widgets
-
-    # Again create a third window and create its content and children using the same IDs.
-    third_window = toga.Window()
-    third_window.content = toga.Box(
-        id=CONTENT_WIDGET_ID,
-        children=[toga.Label(text="sample_label", id=LABEL_WIDGET_ID)],
-    )
-    # Show the third window and check that the widgets are in the app's widget registry.
-    third_window.show()
-    assert CONTENT_WIDGET_ID in app.widgets
-    assert LABEL_WIDGET_ID in app.widgets
-
-    # Close the third window and check that the widgets are *not* in the app's widget registry.
     third_window.close()
-    assert CONTENT_WIDGET_ID not in app.widgets
-    assert LABEL_WIDGET_ID not in app.widgets
 
 
 def test_info_dialog(window, app):
