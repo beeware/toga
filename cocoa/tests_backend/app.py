@@ -67,17 +67,19 @@ class AppProbe(BaseProbe):
             NSApplication.sharedApplication.applicationIconImage
         ).as_format(PIL.Image.Image)
 
+        # Due to icon resizing and colorspace issues, the exact pixel colors are
+        # inconsistent, so multiple values must be provided for test purposes.
         if icon:
             # The explicit alt icon has blue background, with green at a point 1/3 into
             # the image
-            assert img.getpixel((5, 5)) == (211, 226, 243, 255)
+            assert img.getpixel((5, 5)) in {
+                (211, 226, 243, 255),
+                (211, 230, 245, 255),
+            }
             mid_color = img.getpixel((img.size[0] // 3, img.size[1] // 3))
             assert mid_color == (105, 192, 32, 255)
         else:
-            # The default icon is transparent background, and brown in the center. Due
-            # to icon resizing and colorspace issues, the exact pixel color is
-            # inconsistent, depending on whether it is the default or the value after a
-            # reset.
+            # The default icon is transparent background, and brown in the center.
             assert img.getpixel((5, 5))[3] == 0
             mid_color = img.getpixel((img.size[0] // 2, img.size[1] // 2))
             assert mid_color in {
