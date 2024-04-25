@@ -49,9 +49,11 @@ class Icon:
         try:
             return self._native[size]
         except KeyError:
-            for src_size in self._native:
-                native = self._native[src_size].scale_simple(
-                    size, size, GdkPixbuf.InterpType.BILINEAR
-                )
-                self._native[size] = native
-                return native
+            # self._native will have at least one entry, and it will have been populated
+            # in reverse size order, so the first value returned will be the largest
+            # size discovered.
+            native = self._native[next(iter(self._native))].scale_simple(
+                size, size, GdkPixbuf.InterpType.BILINEAR
+            )
+            self._native[size] = native
+            return native
