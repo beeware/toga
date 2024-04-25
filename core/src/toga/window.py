@@ -28,6 +28,8 @@ if TYPE_CHECKING:
     from toga.screens import Screen
     from toga.widgets.base import Widget
 
+from contextlib import contextmanager
+
 
 class FilteredWidgetRegistry:
     # A class that exposes a mapping lookup interface, filtered to widgets from a single
@@ -174,6 +176,7 @@ class Window:
         self._content = None
         self._is_full_screen = False
         self._closed = False
+        self._locked = False
 
         self._resizable = resizable
         self._closable = closable
@@ -345,6 +348,29 @@ class Window:
         self._impl.set_size(size)
         if self.content:
             self.content.refresh()
+
+    @property
+    def locked(self) -> bool:
+        """Is the window locked from refreshes?"""
+        return self._locked
+
+    @locked.setter
+    def locked(self, locked: bool) -> None:
+        """Lock or unlock window refresh.
+        When window is unlocked, refresh the content
+        """
+        self._locked = locked
+        if not locked:
+            self.content.refresh()
+
+    @contextmanager
+    def refresh_lock(self, *args, **kwargs):
+        """Obtain a refresh lock on the window. Unlocks
+        automatically when context manager leaves scope.
+        """
+        self.locked = True
+        yield
+        self.locked = False
 
     ######################################################################
     # Window position
