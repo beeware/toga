@@ -3,6 +3,7 @@ import System.Windows.Forms
 from System.Drawing import SystemColors
 
 from toga.colors import TRANSPARENT
+from toga_winforms.colors import toga_color_from_native_color
 
 from .base import SimpleProbe
 
@@ -27,11 +28,10 @@ class ButtonProbe(SimpleProbe):
         else:
             pytest.fail("Icon does not exist")
 
-    @property
-    def background_color(self):
-        if (
-            self.native.BackColor.ToArgb() == SystemColors.Control.ToArgb()
-        ) and self.widget.style.background_color in {None, TRANSPARENT}:
-            return None
+    def assert_background_color(self, color):
+        if color in {None, TRANSPARENT}:
+            assert toga_color_from_native_color(
+                self.impl.native.BackColor
+            ) == toga_color_from_native_color(SystemColors.Control)
         else:
-            return super().background_color
+            super().assert_background_color(color)

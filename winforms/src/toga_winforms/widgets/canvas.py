@@ -22,8 +22,9 @@ from System.Drawing.Drawing2D import (
 from System.Drawing.Imaging import ImageFormat
 from System.IO import MemoryStream
 
+from toga.colors import TRANSPARENT
 from toga.widgets.canvas import Baseline, FillRule, arc_to_bezier, sweepangle
-from toga_winforms.colors import native_color
+from toga_winforms.colors import native_color_from_toga_color
 
 from ..libs.wrapper import WeakrefCallable
 from .box import Box
@@ -261,7 +262,7 @@ class Canvas(Box):
     # Drawing Paths
 
     def fill(self, color, fill_rule, draw_context, **kwargs):
-        brush = SolidBrush(native_color(color))
+        brush = SolidBrush(native_color_from_toga_color(color))
         for path in draw_context.paths:
             if fill_rule == FillRule.EVENODD:
                 path.FillMode = FillMode.Alternate
@@ -272,7 +273,10 @@ class Canvas(Box):
         draw_context.clear_paths()
 
     def stroke(self, color, line_width, line_dash, draw_context, **kwargs):
-        pen = Pen(native_color(color), self.scale_in(line_width, rounding=None))
+        pen = Pen(
+            native_color_from_toga_color(color),
+            self.scale_in(line_width, rounding=None),
+        )
         if line_dash is not None:
             pen.DashPattern = [ld / line_width for ld in line_dash]
 
@@ -350,3 +354,11 @@ class Canvas(Box):
         stream = MemoryStream()
         bitmap.Save(stream, ImageFormat.Png)
         return bytes(stream.ToArray())
+
+    def set_background_color(self, color):
+        # BackColor needs to be set to Color.Transparent or else the
+        # image captured by get_image_data() won't have transparency.
+        if color == TRANSPARENT:
+            self.native.BackColor = native_color_from_toga_color(TRANSPARENT)
+        else:
+            super().set_background_color(color)

@@ -4,7 +4,7 @@ from decimal import ROUND_UP
 
 import System.Windows.Forms as WinForms
 
-from toga_winforms.colors import native_color
+from toga_winforms.colors import native_color_from_toga_color
 from toga_winforms.libs.fonts import HorizontalTextAlignment
 
 from ..libs.wrapper import WeakrefCallable
@@ -65,7 +65,7 @@ class TextInput(Widget):
 
     def set_color(self, color):
         if color:
-            self.native.ForeColor = native_color(color)
+            self.native.ForeColor = native_color_from_toga_color(color)
         else:
             self.native.ForeColor = self.native.DefaultForeColor
 

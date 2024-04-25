@@ -3,6 +3,7 @@ from threading import Event
 
 import pytest
 
+from toga.colors import TRANSPARENT
 from toga_gtk.libs import Gdk, Gtk
 
 from ..fonts import FontMixin
@@ -97,6 +98,26 @@ class SimpleProbe(BaseProbe, FontMixin):
     def background_color(self):
         sc = self.native.get_style_context()
         return toga_color(sc.get_property("background-color", sc.get_state()))
+
+    # -----------------Temporary Fix-----------------
+    def assert_color(actual, expected):
+        if expected in {None, TRANSPARENT}:
+            assert expected == actual
+        else:
+            if actual in {None, TRANSPARENT}:
+                assert expected == actual
+            else:
+                assert (actual.r, actual.g, actual.b, actual.a) == (
+                    expected.r,
+                    expected.g,
+                    expected.b,
+                    pytest.approx(expected.a, abs=(1 / 255)),
+                )
+
+    def assert_background_color(self, color):
+        self.assert_color(self.background_color, color)
+
+    # -----------------------------------------------
 
     @property
     def font(self):

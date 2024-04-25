@@ -1,3 +1,4 @@
+from pytest import approx
 from rubicon.objc import NSPoint
 
 from toga.colors import TRANSPARENT
@@ -92,6 +93,26 @@ class SimpleProbe(BaseProbe, FontMixin):
                 return None
         else:
             return TRANSPARENT
+
+    # -----------------Temporary Fix-----------------
+    def assert_color(actual, expected):
+        if expected in {None, TRANSPARENT}:
+            assert expected == actual
+        else:
+            if actual in {None, TRANSPARENT}:
+                assert expected == actual
+            else:
+                assert (actual.r, actual.g, actual.b, actual.a) == (
+                    expected.r,
+                    expected.g,
+                    expected.b,
+                    approx(expected.a, abs=(1 / 255)),
+                )
+
+    def assert_background_color(self, color):
+        self.assert_color(self.background_color, color)
+
+    # -----------------------------------------------
 
     @property
     def font(self):

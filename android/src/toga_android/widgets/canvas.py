@@ -1,5 +1,4 @@
 import itertools
-import warnings
 from math import degrees
 
 from android.graphics import (
@@ -243,10 +242,7 @@ class Canvas(Widget):
         )
         canvas = A_Canvas(bitmap)
         background = self.native.getBackground()
-        if background:
-            background.draw(canvas)
-        else:
-            warnings.warn("Failed to get canvas background")
+        background.draw(canvas)
         self.native.draw(canvas)
 
         stream = ByteArrayOutputStream()

@@ -20,13 +20,6 @@ class CanvasProbe(SimpleProbe):
     def get_image(self):
         return Image.open(BytesIO(self.impl.get_image_data()))
 
-    def test_get_image_data_internal_fail(self, monkeypatch):
-        original_background = self.native.getBackground()
-        self.native.setBackground(None)
-        with pytest.warns(match="Failed to get canvas background"):
-            self.impl.get_image_data()
-        self.native.setBackground(original_background)
-
     def motion_event(self, action, x, y):
         time = SystemClock.uptimeMillis()
         super().motion_event(

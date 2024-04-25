@@ -19,9 +19,6 @@ class CanvasProbe(SimpleProbe):
     def get_image(self):
         return Image.open(BytesIO(self.impl.get_image_data()))
 
-    def test_get_image_data_internal_fail(self, monkeypatch):
-        pass
-
     async def mouse_press(self, x, y):
         event = Gdk.Event.new(Gdk.EventType.BUTTON_PRESS)
         event.button = 1

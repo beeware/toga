@@ -237,10 +237,6 @@ async def test_image_data(monkeypatch, canvas, probe):
         screen=canvas.window.screen,
     )
 
-    # The internal methods to test are platform and
-    # implementation specific, hence the test is on the probe.
-    probe.test_get_image_data_internal_fail(monkeypatch)
-
 
 def assert_reference(probe, reference, threshold=0.0):
     """Assert that the canvas currently matches a reference image, within an RMS threshold"""

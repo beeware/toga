@@ -2,7 +2,7 @@ import System.Windows.Forms as WinForms
 from System.Drawing import SystemColors
 from travertino.size import at_least
 
-from toga_winforms.colors import native_color
+from toga_winforms.colors import native_color_from_toga_color
 from toga_winforms.libs.fonts import HorizontalTextAlignment
 
 from ..libs.wrapper import WeakrefCallable
@@ -84,7 +84,9 @@ class MultilineTextInput(TextInput):
 
     def set_color(self, color):
         self._color = (
-            SystemColors.WindowText if (color is None) else native_color(color)
+            SystemColors.WindowText
+            if (color is None)
+            else native_color_from_toga_color(color)
         )
         if not self._placeholder_visible:
             self.native.ForeColor = self._color

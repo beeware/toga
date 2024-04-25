@@ -8,9 +8,12 @@ from System.Drawing import (
 )
 from travertino.size import at_least
 
-import toga
 from toga.colors import TRANSPARENT, rgba
-from toga_winforms.colors import alpha_blending_over_operation, native_color, toga_color
+from toga_winforms.colors import (
+    alpha_blending_over_operation,
+    native_color_from_toga_color,
+    toga_color_from_native_color,
+)
 
 
 class Scalable:
@@ -112,28 +115,28 @@ class Widget(ABC, Scalable):
         if color is None:
             self.native.ForeColor = SystemColors.WindowText
         else:
-            self.native.ForeColor = native_color(color)
+            self.native.ForeColor = native_color_from_toga_color(color)
 
     def set_background_color(self, color):
         if color is None or (color == TRANSPARENT and (not self.interface.parent)):
             self.native.BackColor = SystemColors.Control
         else:
             if self.interface.parent:
-                parent_color = toga_color(
+                parent_color = toga_color_from_native_color(
                     self.interface.parent._impl.native.BackColor
                 ).rgba
-                if color is TRANSPARENT:
-                    requested_color = rgba(0, 0, 0, 0)
-                else:
-                    requested_color = color.rgba
-                blended_color = alpha_blending_over_operation(
-                    requested_color, parent_color
-                )
-                self.native.BackColor = native_color(blended_color)
             else:
-                self.native.BackColor = native_color(color)
+                parent_color = toga_color_from_native_color(SystemColors.Control).rgba
 
-        if isinstance(self.interface, toga.Box):
+            if color is TRANSPARENT:
+                requested_color = rgba(0, 0, 0, 0)
+            else:
+                requested_color = color.rgba
+
+            blended_color = alpha_blending_over_operation(requested_color, parent_color)
+            self.native.BackColor = native_color_from_toga_color(blended_color)
+
+        if getattr(self.interface, "children", None) is not None:
             for child in self.interface.children:
                 child._impl.set_background_color(child.style.background_color)
 

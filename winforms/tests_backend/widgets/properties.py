@@ -10,8 +10,8 @@ def toga_color(color):
 
 
 def reverse_alpha_blending_over_operation(blended_color, parent_color, child_alpha):
-    # This is the reverse of the "over" operation. I have derived
-    # this formula from the "over" operation formula, see:
+    # This is the reverse of the "over" operation. This formula
+    # has been derived from the "over" operation formula, see:
     # https://en.wikipedia.org/wiki/Alpha_compositing#Description
 
     child_color = rgba(

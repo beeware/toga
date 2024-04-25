@@ -4,7 +4,7 @@ from travertino.colors import TRANSPARENT, rgb, rgba
 CACHE = {TRANSPARENT: Color.Transparent}
 
 
-def native_color(toga_color):
+def native_color_from_toga_color(toga_color):
     try:
         color = CACHE[toga_color]
     except KeyError:
@@ -19,46 +19,66 @@ def native_color(toga_color):
     return color
 
 
-def toga_color(native_color):
+def toga_color_from_native_color(native_color):
     return rgba(native_color.R, native_color.G, native_color.B, native_color.A / 255)
 
 
-def alpha_blending_over_operation(child_color, parent_color):
-    # The blending operation I have implemented here is the "over" operation and
+def alpha_blending_over_operation(front_color, back_color):
+    # The blending operation implemented here is the "over" operation and
     # replicates CSS's rgba mechanism. For the formula used here, see:
     # https://en.wikipedia.org/wiki/Alpha_compositing#Description
 
-    blended_alpha = child_color.a + ((1 - child_color.a) * parent_color.a)
+    blended_alpha = min(
+        1, max(0, (front_color.a + ((1 - front_color.a) * back_color.a)))
+    )
 
     # Check if the blended alpha is zero, indicating no blending
     if blended_alpha == 0:
         # If both child and parent alphas are 0, no blending occurs, so return child color.
-        return child_color
+        return front_color
 
     blended_color = rgb(
         # Red Component
-        (
-            (
-                (child_color.r * child_color.a)
-                + (parent_color.r * parent_color.a * (1 - child_color.a))
-            )
-            / blended_alpha
+        min(
+            255,
+            max(
+                0,
+                round(
+                    (
+                        (front_color.r * front_color.a)
+                        + (back_color.r * back_color.a * (1 - front_color.a))
+                    )
+                    / blended_alpha
+                ),
+            ),
         ),
         # Green Component
-        (
-            (
-                (child_color.g * child_color.a)
-                + (parent_color.g * parent_color.a * (1 - child_color.a))
-            )
-            / blended_alpha
+        min(
+            255,
+            max(
+                0,
+                round(
+                    (
+                        (front_color.g * front_color.a)
+                        + (back_color.g * back_color.a * (1 - front_color.a))
+                    )
+                    / blended_alpha
+                ),
+            ),
         ),
         # Blue Component
-        (
-            (
-                (child_color.b * child_color.a)
-                + (parent_color.b * parent_color.a * (1 - child_color.a))
-            )
-            / blended_alpha
+        min(
+            255,
+            max(
+                0,
+                round(
+                    (
+                        (front_color.b * front_color.a)
+                        + (back_color.b * back_color.a * (1 - front_color.a))
+                    )
+                    / blended_alpha
+                ),
+            ),
         ),
     )
     return blended_color

@@ -114,7 +114,7 @@ class SimpleProbe(BaseProbe, FontMixin):
                 break
 
         if background is None:
-            return TRANSPARENT
+            return None
         filter = background.getColorFilter()
         if filter:
             # PorterDuffColorFilter.getColor is undocumented, but continues to work for
@@ -122,7 +122,27 @@ class SimpleProbe(BaseProbe, FontMixin):
             # filter to draw something and see what color comes out.
             return toga_color(filter.getColor())
         else:
-            return TRANSPARENT
+            return None
+
+    # -----------------Temporary Fix-----------------
+    def assert_color(self, actual, expected):
+        if expected in {None, TRANSPARENT}:
+            assert expected == actual
+        else:
+            if actual in {None, TRANSPARENT}:
+                assert expected == actual
+            else:
+                assert (actual.r, actual.g, actual.b, actual.a) == (
+                    expected.r,
+                    expected.g,
+                    expected.b,
+                    pytest.approx(expected.a, abs=(1 / 255)),
+                )
+
+    def assert_background_color(self, color):
+        self.assert_color(self.background_color, color)
+
+    # -----------------------------------------------
 
     async def press(self):
         self.native.performClick()

@@ -41,9 +41,6 @@ class CanvasProbe(SimpleProbe):
         except KeyError:
             return image
 
-    def test_get_image_data_internal_fail(self, monkeypatch):
-        pass
-
     async def mouse_press(self, x, y):
         await self.mouse_event(
             NSEventType.LeftMouseDown,

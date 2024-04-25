@@ -5,7 +5,6 @@ from pytest import fixture
 import toga
 from toga.colors import TRANSPARENT
 
-from ..assertions import assert_color
 from ..data import TEXTS
 from .properties import (  # noqa: F401
     test_background_color,
@@ -96,4 +95,4 @@ async def test_background_color_transparent(widget, probe):
     "Buttons treat background transparency as a color reset."
     widget.style.background_color = TRANSPARENT
     await probe.redraw("Button background color should be transparent")
-    assert_color(probe.background_color, None)
+    probe.assert_background_color(None)
