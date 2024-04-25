@@ -1,9 +1,10 @@
 from decimal import ROUND_UP
 
 import System.Windows.Forms as WinForms
+from System.Drawing import SystemColors
 from travertino.size import at_least
 
-from toga.colors import TRANSPARENT
+from toga_winforms.colors import toga_color_from_native_color
 
 from ..libs.wrapper import WeakrefCallable
 from .base import Widget
@@ -46,8 +47,10 @@ class Button(Widget):
             self.native.Image = None
 
     def set_background_color(self, color):
-        if color in {None, TRANSPARENT}:
-            super().set_background_color(None)
+        if color is None:
+            super().set_background_color(
+                toga_color_from_native_color(SystemColors.Control)
+            )
         else:
             super().set_background_color(color)
 

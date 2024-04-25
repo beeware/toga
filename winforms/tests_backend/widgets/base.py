@@ -13,7 +13,7 @@ from toga_winforms.colors import (
 
 from ..fonts import FontMixin
 from ..probe import BaseProbe
-from .properties import reverse_alpha_blending_over_operation, toga_color
+from .properties import toga_color
 
 
 class SimpleProbe(BaseProbe, FontMixin):
@@ -60,55 +60,27 @@ class SimpleProbe(BaseProbe, FontMixin):
 
     @property
     def background_color(self):
-        if (
-            self.widget.style.background_color is None
-            and self.native.BackColor.ToArgb() == SystemColors.Control.ToArgb()
-        ):
-            return None
-
-        if self.widget.style.background_color is TRANSPARENT and (
-            self.native.BackColor.ToArgb()
-            == self.widget.parent._impl.native.BackColor.ToArgb()
-        ):
-            return TRANSPARENT
-        else:
-            parent_color = toga_color(self.widget.parent._impl.native.BackColor)
-            blended_color = alpha_blending_over_operation(
-                self.widget.style.background_color, parent_color
-            )
-            if blended_color == parent_color:
-                return self.widget.style.background_color
-            else:
-                return reverse_alpha_blending_over_operation(
-                    blended_color,
-                    parent_color,
-                    child_alpha=self.widget.style.background_color.rgba.a,
-                )
+        return toga_color_from_native_color(self.native.BackColor).rgba
 
     def assert_background_color(self, color):
-        if color is None or (color == TRANSPARENT and (not self.widget.parent)):
-            assert toga_color_from_native_color(
-                self.impl.native.BackColor
-            ) == toga_color_from_native_color(SystemColors.Control)
-        else:
-            if self.widget.parent:
-                parent_color = toga_color_from_native_color(
-                    self.widget.parent._impl.native.BackColor
-                ).rgba
-            else:
-                parent_color = toga_color_from_native_color(SystemColors.Control).rgba
-
-            if color is TRANSPARENT:
-                requested_color = rgba(0, 0, 0, 0)
-            else:
-                requested_color = color.rgba
-
-            blended_color = alpha_blending_over_operation(
-                requested_color, parent_color
+        if self.widget.parent:
+            parent_color = toga_color_from_native_color(
+                self.widget.parent._impl.native.BackColor
             ).rgba
-            widget_back_color = toga_color_from_native_color(self.native.BackColor).rgba
-            # Both of them should also have an alpha value of 1.
-            assert widget_back_color == blended_color
+        else:
+            parent_color = toga_color_from_native_color(SystemColors.Control).rgba
+
+        if color is TRANSPARENT:
+            requested_color = rgba(0, 0, 0, 0)
+        else:
+            requested_color = color.rgba
+
+        blended_color = alpha_blending_over_operation(
+            requested_color, parent_color
+        ).rgba
+        widget_back_color = toga_color_from_native_color(self.native.BackColor).rgba
+        # Both of them should also have an alpha value of 1.
+        assert widget_back_color == blended_color
 
     @property
     def font(self):

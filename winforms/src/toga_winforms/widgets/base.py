@@ -118,23 +118,29 @@ class Widget(ABC, Scalable):
             self.native.ForeColor = native_color_from_toga_color(color)
 
     def set_background_color(self, color):
-        if color is None or (color == TRANSPARENT and (not self.interface.parent)):
-            self.native.BackColor = SystemColors.Control
+        # Widgets that need to set a different default background_color should
+        # override this method and set a background color for the None case.
+        if color is None:
+            # Set default background_color as transparent for all widgets.
+            self.set_background_color_simple(TRANSPARENT)
         else:
-            if self.interface.parent:
-                parent_color = toga_color_from_native_color(
-                    self.interface.parent._impl.native.BackColor
-                ).rgba
-            else:
-                parent_color = toga_color_from_native_color(SystemColors.Control).rgba
+            self.set_background_color_simple(color)
 
-            if color is TRANSPARENT:
-                requested_color = rgba(0, 0, 0, 0)
-            else:
-                requested_color = color.rgba
+    def set_background_color_simple(self, color):
+        if self.interface.parent:
+            parent_color = toga_color_from_native_color(
+                self.interface.parent._impl.native.BackColor
+            ).rgba
+        else:
+            parent_color = toga_color_from_native_color(SystemColors.Control).rgba
 
-            blended_color = alpha_blending_over_operation(requested_color, parent_color)
-            self.native.BackColor = native_color_from_toga_color(blended_color)
+        if color is TRANSPARENT:
+            requested_color = rgba(0, 0, 0, 0)
+        else:
+            requested_color = color.rgba
+
+        blended_color = alpha_blending_over_operation(requested_color, parent_color)
+        self.native.BackColor = native_color_from_toga_color(blended_color)
 
         if getattr(self.interface, "children", None) is not None:
             for child in self.interface.children:

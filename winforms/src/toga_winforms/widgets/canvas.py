@@ -11,6 +11,7 @@ from System.Drawing import (
     RectangleF,
     SolidBrush,
     StringFormat,
+    SystemColors,
 )
 from System.Drawing.Drawing2D import (
     FillMode,
@@ -24,7 +25,10 @@ from System.IO import MemoryStream
 
 from toga.colors import TRANSPARENT
 from toga.widgets.canvas import Baseline, FillRule, arc_to_bezier, sweepangle
-from toga_winforms.colors import native_color_from_toga_color
+from toga_winforms.colors import (
+    native_color_from_toga_color,
+    toga_color_from_native_color,
+)
 
 from ..libs.wrapper import WeakrefCallable
 from .box import Box
@@ -356,9 +360,13 @@ class Canvas(Box):
         return bytes(stream.ToArray())
 
     def set_background_color(self, color):
-        # BackColor needs to be set to Color.Transparent or else the
-        # image captured by get_image_data() won't have transparency.
-        if color == TRANSPARENT:
+        if color is None:
+            super().set_background_color(
+                toga_color_from_native_color(SystemColors.Control)
+            )
+        elif color is TRANSPARENT:
+            # BackColor needs to be set to Color.Transparent or else the
+            # image captured by get_image_data() won't have transparency.
             self.native.BackColor = native_color_from_toga_color(TRANSPARENT)
         else:
             super().set_background_color(color)

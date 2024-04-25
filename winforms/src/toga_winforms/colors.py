@@ -32,11 +32,6 @@ def alpha_blending_over_operation(front_color, back_color):
         1, max(0, (front_color.a + ((1 - front_color.a) * back_color.a)))
     )
 
-    # Check if the blended alpha is zero, indicating no blending
-    if blended_alpha == 0:
-        # If both child and parent alphas are 0, no blending occurs, so return child color.
-        return front_color
-
     blended_color = rgb(
         # Red Component
         min(
