@@ -142,7 +142,7 @@ class Widget(ABC, Scalable):
         blended_color = alpha_blending_over_operation(requested_color, parent_color)
         self.native.BackColor = native_color_from_toga_color(blended_color)
 
-        if getattr(self.interface, "children", None) is not None:
+        if getattr(self.interface, "children", None) is not None:  # pragma: no branch
             for child in self.interface.children:
                 child._impl.set_background_color(child.style.background_color)
 
