@@ -95,7 +95,7 @@ class SimpleProbe(BaseProbe, FontMixin):
             return TRANSPARENT
 
     # -----------------Temporary Fix-----------------
-    def assert_color(actual, expected):
+    def assert_color(self, actual, expected):
         if expected in {None, TRANSPARENT}:
             assert expected == actual
         else:

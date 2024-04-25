@@ -100,7 +100,7 @@ class SimpleProbe(BaseProbe, FontMixin):
         return toga_color(sc.get_property("background-color", sc.get_state()))
 
     # -----------------Temporary Fix-----------------
-    def assert_color(actual, expected):
+    def assert_color(self, actual, expected):
         if expected in {None, TRANSPARENT}:
             assert expected == actual
         else:
