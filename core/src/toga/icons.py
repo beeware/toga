@@ -132,15 +132,19 @@ class Icon:
 
     def _full_path(self, size, extensions, resource_path):
         platform = toga.platform.current_platform
-        for extension in extensions:
-            for filename in (
-                [
+        if size:
+            for extension in extensions:
+                for filename in [
                     f"{self.path.stem}-{platform}-{size}{extension}",
                     f"{self.path.stem}-{size}{extension}",
-                ]
-                if size
-                else []
-            ) + [
+                ]:
+                    icon_path = resource_path / self.path.parent / filename
+                    if icon_path.exists():
+                        return icon_path
+
+        # Look for size-less alternatives
+        for extension in extensions:
+            for filename in [
                 f"{self.path.stem}-{platform}{extension}",
                 f"{self.path.stem}{extension}",
             ]:
