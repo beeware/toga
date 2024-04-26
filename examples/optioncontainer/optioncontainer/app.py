@@ -69,11 +69,15 @@ class ExampleOptionContainerApp(toga.App):
             self.optioncontainer.current_tab.index
             < len(self.optioncontainer.content) - 1
         ):
-            self.optioncontainer.current_tab += 1
+            self.optioncontainer.current_tab = (
+                self.optioncontainer.current_tab.index + 1
+            )
 
     def set_previous_tab(self, widget):
         if self.optioncontainer.current_tab.index > 0:
-            self.optioncontainer.current_tab -= 1
+            self.optioncontainer.current_tab = (
+                self.optioncontainer.current_tab.index - 1
+            )
 
     def on_select_tab(self, widget, **kwargs):
         self.selected_label.text = (
