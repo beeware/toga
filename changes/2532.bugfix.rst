@@ -1,0 +1,1 @@
+The error raised by the OptionContainer example app when the current tab is changed from commands has been resolved.
