@@ -52,6 +52,19 @@ class Widget(Scalable, ABC):
         self.native = None
         self.create()
 
+        # Required to prevent Hwnd Related Bugs.
+        # Obtain a Graphics object and immediately dispose of it. This is
+        # done to trigger the control's Paint event and force it to redraw.
+        # Since in toga, Hwnds could be created at inappropriate times.
+        # As an example, without this fix, running the OptionContainer
+        # example app should give an error, like:
+        # ```
+        # System.ArgumentOutOfRangeException: InvalidArgument=Value of '0' is not valid for 'index'.
+        # Parameter name: index
+        #    at System.Windows.Forms.TabControl.GetTabPage(Int32 index)
+        # ```
+        self.native.CreateGraphics().Dispose()
+
         self.interface.style.reapply()
 
     @abstractmethod

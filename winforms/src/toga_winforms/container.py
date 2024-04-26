@@ -14,6 +14,14 @@ class Container(Scalable):
         native_parent.Controls.Add(self.native_content)
 
     @property
+    def dpi_scale(self):
+        window = self.content.interface.window
+        if window:
+            return window._impl.dpi_scale
+        else:
+            return 1
+
+    @property
     def width(self):
         return self.scale_out(self.native_width)
 
