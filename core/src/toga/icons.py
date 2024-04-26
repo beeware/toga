@@ -65,52 +65,25 @@ class Icon:
         path: str | Path | None,
         *,
         system: bool = False,  # Deliberately undocumented; for internal use only
+        default: (
+            toga.Icon | None
+        ) = None,  # Deliberately undocumented; for internal use only
     ):
         """Create a new icon.
 
-        :param path: A specifier for the icon to load.
-
-            If the icon is specified as a string or path, the value is used as a base
-            filename. This base filename can be an absolute file system path, or a path
-            relative to the module that defines your Toga application class. This base
-            filename should *not* contain an extension; if an extension is specified, it
-            will be ignored. If a path is provided, but an appropriate icon matching
-            that base name cannot be found, a warning will be displayed, and the default
-            Toga icon will be used.
-
-            If the icon is specified as:any:`None`, a default icon will be used.
-
-            If the app is being run as a bare Python script, the default icon will be
-            loaded as the app-relative base filename ``resources/<app_name>``. If a
-            platform-appropriate icon file matching this resource doesn't exist, the
-            default Toga icon will be used, but no warning will be printed.
-
-            Otherwise, the default icon is the icon that is used for the application
-            binary.
-
+        :param path: Base filename for the icon. The path can be an absolute file system
+            path, or a path relative to the module that defines your Toga application
+            class. This base filename should *not* contain an extension. If an extension
+            is specified, it will be ignored. If :any:`None`, the application binary will
+            be used as the source of the icon.
         :param system: **For internal use only**
+        :param default: **For internal use only**
         """
         self.factory = get_platform_factory()
-        silent_fallback = False
-
-        if path is None:
-            # Don't ever report an app icon failing to load.
-            silent_fallback = True
-
-            if Path(sys.executable).stem in {
-                "python",
-                f"python{sys.version_info.major}",
-                f"python{sys.version_info.major}.{sys.version_info.minor}",
-            }:
-                # If there's no explicit icon specified, and app is running as a python
-                # script, use a default icon name. If this icon name doesn't exist, we
-                # don't need to warn about a missing icon, as it's a value by
-                # convention, rather than an explicit setting.
-                path = f"resources/{toga.App.app.app_name}"
 
         try:
             if path is None:
-                # If path is still None, load the application binary's icon
+                # If path is None, load the application binary's icon
                 self.path = None
                 self._impl = self.factory.Icon(interface=self, path=None)
             else:
@@ -144,11 +117,18 @@ class Icon:
 
                 self._impl = self.factory.Icon(interface=self, path=full_path)
         except FileNotFoundError:
-            if not silent_fallback:
-                print(
-                    f"WARNING: Can't find icon {self.path}; falling back to default icon"
-                )
-            self._impl = self.DEFAULT_ICON._impl
+            # If an explicit default has been provided, use it without generating a
+            # warning. Otherwise, warn about the missing resource.
+            if default is None:
+                if self.path:
+                    msg = f"icon {self.path}"
+                else:
+                    msg = "app icon"
+
+                print(f"WARNING: Can't find {msg}; falling back to default icon")
+                self._impl = self.DEFAULT_ICON._impl
+            else:
+                self._impl = default._impl
 
     def _full_path(self, size, extensions, resource_path):
         platform = toga.platform.current_platform
@@ -171,4 +151,4 @@ class Icon:
         raise FileNotFoundError(f"Can't find icon {self.path}")
 
     def __eq__(self, other):
-        return isinstance(other, Icon) and other.path == self.path
+        return isinstance(other, Icon) and other._impl.path == self._impl.path

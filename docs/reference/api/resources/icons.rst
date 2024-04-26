@@ -38,7 +38,8 @@ The following formats are supported (in order of preference):
 * **Android** - PNG
 * **iOS** - ICNS, PNG, BMP, ICO
 * **macOS** - ICNS, PNG, PDF
-* **GTK** - PNG, ICO, ICNS; 512, 256, 128, 72, 64, 32, and 16px variants of each icon can be provided;
+* **GTK** - PNG, ICO, ICNS; 512, 256, 128, 72, 64, 32, and 16px variants of each icon
+  can be provided;
 * **Windows** - ICO, PNG, BMP
 
 The first matching icon of the most specific platform, with the most specific

@@ -1,4 +1,3 @@
-import sys
 from pathlib import Path
 
 import pytest
@@ -142,51 +141,60 @@ def test_create_fallback_variants(monkeypatch, app, capsys):
     )
 
 
-def test_create_default_icon_script_fallback(app, capsys):
-    """If the app is running as a script, but no icon is provided, the default icon is used"""
+def test_create_app_icon(app, capsys):
+    """The app icon can be constructed"""
     # When running under pytest, code will identify as running as a script
     # Load the app default icon.
     icon = toga.Icon(None)
 
-    # The impl is the default icon.
+    # The impl is the app icon.
+    assert icon._impl is not None
+    assert icon._impl.interface != toga.Icon.DEFAULT_ICON
+    assert icon._impl.path == "<APP ICON>"
+
+    # No warning was printed, as the app icon exists.
+    assert capsys.readouterr().out == ""
+
+
+def test_create_app_icon_missing(monkeypatch, app, capsys):
+    """The app icon can be constructed"""
+    # Prime the dummy so the it has no app icon
+    monkeypatch.setattr(DummyIcon, "ICON_EXISTS", False)
+
+    # When running under pytest, code will identify as running as a script
+    # Load the app default icon.
+    icon = toga.Icon(None)
+
+    # The impl is the app icon.
     assert icon._impl is not None
     assert icon._impl.interface == toga.Icon.DEFAULT_ICON
 
-    # No warning is printed
-    assert capsys.readouterr().out == ""
+    # A warning was printed; allow for windows separators
+    assert "WARNING: Can't find app icon" in capsys.readouterr().out.replace("\\", "/")
 
 
-def test_create_default_icon_script(app, capsys):
-    """If the app is running as a script, and an icon is provided, it is used"""
-    # When running under pytest, code will identify as running as a script
-    # Set the app name to something that will result in finding an icon
-    app._app_name = "sample"
+@pytest.mark.parametrize(
+    "icon_name",
+    [
+        None,
+        "resources/missing",
+    ],
+)
+def test_create_icon_explicit_fallback(monkeypatch, app, icon_name, capsys):
+    """If an explicit default is provided, and the icon can't be found there's no fallback warning."""
+    # Specify a non-default icon that we know exists
+    default = toga.Icon("resources/red")
 
-    # Load the app default icon
-    icon = toga.Icon(None)
+    # Now set the dummy so that it has no app icon
+    monkeypatch.setattr(DummyIcon, "ICON_EXISTS", False)
 
-    assert icon._impl is not None
-
-    # The icon *isn't* the Toga default; it's sample.png
-    assert icon._impl.interface != toga.Icon.DEFAULT_ICON
-    assert icon._impl.path == APP_RESOURCES / "sample.png"
-
-    # No warning is printed
-    assert capsys.readouterr().out == ""
-
-
-def test_create_default_icon(monkeypatch, app):
-    """If the app is running as a script, but no icon is provided, the default icon is used"""
-    # Patch sys.executable so the test looks like it's running as a packaged binary
-    monkeypatch.setattr(sys, "executable", "/path/to/App")
-
-    icon = toga.Icon(None)
+    icon = toga.Icon(icon_name, default=default)
 
     assert icon._impl is not None
+    assert icon._impl.interface == default
 
-    # In the dummy backend, the default icon app icon has a path of None.
-    assert icon._impl.interface != toga.Icon.DEFAULT_ICON
-    assert icon._impl.path is None
+    # No warning was printed
+    assert capsys.readouterr().out == ""
 
 
 @pytest.mark.parametrize(

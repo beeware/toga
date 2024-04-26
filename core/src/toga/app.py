@@ -16,6 +16,7 @@ from collections.abc import (
     ValuesView,
 )
 from email.message import Message
+from pathlib import Path
 from typing import TYPE_CHECKING, Any, Protocol
 from warnings import warn
 from weakref import WeakValueDictionary
@@ -350,8 +351,12 @@ class App:
                distribution name of ``my-app``.
             #. As a last resort, the name ``toga``.
         :param icon: The :any:`icon <IconContent>` for the app. If not provided, Toga
-            will use a default icon. See the definition of :class:`~toga.Icon` for how
-            misconfigured and default icons are handled.
+            will attempt to load an icon from the following sources, in order:
+
+            * ``resources/<app_name>``, where ``app_name`` is as defined above
+            * If the Python interpreter is embedded in an app, the icon of the
+              application binary
+            * Otherwise, the Toga logo.
         :param author: The person or organization to be credited as the author of the
             app. If not provided, the metadata key ``Author`` will be used.
         :param version: The version number of the app.  If not provided, the metadata
@@ -540,6 +545,14 @@ class App:
         Can be specified as any valid :any:`icon content <IconContent>`, or :any:`None`
         to use a default icon. See the definition of :class:`~toga.Icon` for how
         misconfigured and default icons are handled.
+
+        If :any:`None`, Toga will attempt to load an icon from the following sources, in
+        order:
+
+        * ``resources/<app_name>``, where ``app_name`` is as defined above
+        * If the Python interpreter is embedded in an app, the icon of the application
+          binary
+        * Otherwise, the Toga logo.
         """
         return self._icon
 
@@ -547,6 +560,21 @@ class App:
     def icon(self, icon_or_name: IconContent | None) -> None:
         if isinstance(icon_or_name, Icon):
             self._icon = icon_or_name
+        elif icon_or_name is None:
+            if Path(sys.executable).stem in {
+                "python",
+                f"python{sys.version_info.major}",
+                f"python{sys.version_info.major}.{sys.version_info.minor}",
+            }:
+                # We're running as a script, so we can't use the application binary as
+                # an icon source. Fall back directly to the Toga default icon
+                default = Icon.DEFAULT_ICON
+            else:
+                # Use the application binary's icon as an initial default; if that can't
+                # be loaded, fall back to Toga icon as a final default.
+                default = Icon(None, default=Icon.DEFAULT_ICON)
+
+            self._icon = Icon(f"resources/{self.app_name}", default=default)
         else:
             self._icon = Icon(icon_or_name)
 

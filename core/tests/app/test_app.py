@@ -366,7 +366,20 @@ def test_icon(app, construct):
     assert app.icon.path == Path("path/to/icon")
     assert_action_performed_with(app, "set_icon", icon=toga.Icon("path/to/icon"))
 
-    # Revert to default icon``
+
+def test_default_icon(app):
+    """The app icon can be reset to the default"""
+    app.icon = None
+    assert isinstance(app.icon, toga.Icon)
+    assert app.icon.path == Path("resources/test-app")
+    assert_action_performed_with(app, "set_icon", icon=toga.Icon.DEFAULT_ICON)
+
+
+def test_default_icon_non_script(monkeypatch, app):
+    """The app icon can be reset to the default"""
+    # Patch sys.executable so the test looks like it's running as a packaged binary
+    monkeypatch.setattr(sys, "executable", "/path/to/App")
+
     app.icon = None
     assert isinstance(app.icon, toga.Icon)
     assert app.icon.path == Path("resources/test-app")
