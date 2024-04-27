@@ -395,7 +395,7 @@ def test_widget_id_reusablity(window, app):
     try:
         third_window_content = toga.Box(id=CONTENT_WIDGET_ID)
     except KeyError:
-        raise AssertionError(
+        pytest.fail(
             "Reusing same ID to create another widget when not assigned to a window"
             "should not have raised KeyError."
         )
@@ -411,33 +411,21 @@ def test_widget_id_reusablity(window, app):
     assert CONTENT_WIDGET_ID in app.widgets
     assert LABEL_WIDGET_ID in app.widgets
     # Assigning widget with same widget ID to be a window's content should raise a KeyError
-    try:
+    with pytest.raises(KeyError):
         third_window.content = third_window_content
-    except KeyError:
-        assert True
-    else:
-        raise AssertionError(
-            "Assigning a widget with same ID to be a window's content should have raised KeyError."
-        )
     assert CONTENT_WIDGET_ID not in third_window.widgets
 
     # Creating a new widget with same widget ID should not raise KeyError
     try:
         new_label_widget = toga.Label(text="Sample Label", id=LABEL_WIDGET_ID)
     except KeyError:
-        raise AssertionError(
+        pytest.fail(
             "Reusing same ID to create another widget when not assigned to a window "
             "should not have raised KeyError."
         )
     # But adding the widget to another window's content should raise KeyError
-    try:
+    with pytest.raises(KeyError):
         third_window.content = toga.Box(children=[new_label_widget])
-    except KeyError:
-        assert True
-    else:
-        raise AssertionError(
-            "Adding a widget with same ID to a window's content should have raised KeyError."
-        )
     assert CONTENT_WIDGET_ID not in third_window.widgets
 
     # Close the windows
