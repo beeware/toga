@@ -13,6 +13,8 @@ class Container(Scalable):
         self.native_content = WinForms.Panel()
         native_parent.Controls.Add(self.native_content)
 
+        self.native_content.CreateGraphics().Dispose()
+
     @property
     def dpi_scale(self):
         window = self.content.interface.window

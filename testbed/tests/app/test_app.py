@@ -599,6 +599,28 @@ if toga.platform.current_platform == "windows":
         main_window.content.add(
             toga.Button(text="Testing for system DPI change response")
         )
+        await main_window_probe.redraw(
+            "Main Window is ready for testing system DPI change response"
+        )
+        # Store original values
+        original_sizes = dict()
+        original_sizes[main_window._impl.native.MainMenuStrip] = (
+            main_window._impl.scale_out(
+                main_window._impl.native.MainMenuStrip.Size.Width
+            ),
+            main_window._impl.scale_out(
+                main_window._impl.native.MainMenuStrip.Size.Height
+            ),
+        )
+        original_sizes[main_window._impl.toolbar_native] = (
+            main_window._impl.scale_out(main_window._impl.toolbar_native.Size.Width),
+            main_window._impl.scale_out(main_window._impl.toolbar_native.Size.Height),
+        )
+        for widget in app.widgets:
+            original_sizes[widget] = (
+                widget.window._impl.scale_out(widget._impl.native.Size.Width),
+                widget.window._impl.scale_out(widget._impl.native.Size.Height),
+            )
 
         from toga_winforms.libs import shcore
 
@@ -609,31 +631,22 @@ if toga.platform.current_platform == "windows":
             main_window._impl.winforms_LocationChanged,
             main_window._impl.winforms_Resize,
         }:
-            for pScale_value_mock in {125, 150, 175, 200}:
-
-                original_sizes = dict()
-                original_sizes[main_window._impl.native.MainMenuStrip] = (
-                    main_window._impl.native.MainMenuStrip.Size
-                )
-                original_sizes[main_window._impl.toolbar_native] = (
-                    main_window._impl.toolbar_native.Size
-                )
-                for widget in app.widgets:
-                    original_sizes[widget] = widget._impl.native.Size
+            for pScale_value_mock in [1.0, 1.25, 1.5, 1.75, 2.0]:
 
                 def GetScaleFactorForMonitor_mock(hMonitor, pScale):
-                    pScale.value = pScale_value_mock
+                    pScale.value = int(pScale_value_mock * 100)
 
                 monkeypatch.setattr(
                     "toga_winforms.libs.shcore.GetScaleFactorForMonitor",
                     GetScaleFactorForMonitor_mock,
                 )
-                assert app.screens[0]._impl.dpi_scale == pScale_value_mock / 100
-
+                # Trigger DPI change event
+                dpi_change_event(None, None)
                 await main_window_probe.redraw(
                     "Triggering DPI change event for testing property changes"
                 )
-                dpi_change_event(None, None)
+                # Check that the screen dpi scale returns the mocked value
+                assert app.screens[0]._impl.dpi_scale == pScale_value_mock
 
                 # Check MenuBar Font Scaling
                 assert (
@@ -645,9 +658,13 @@ if toga.platform.current_platform == "windows":
                 assert (
                     main_window._impl.native.MainMenuStrip.Size.Width,
                     main_window._impl.native.MainMenuStrip.Size.Height,
-                ) != (
-                    original_sizes[main_window._impl.native.MainMenuStrip].Width,
-                    original_sizes[main_window._impl.native.MainMenuStrip].Height,
+                ) == (
+                    main_window._impl.scale_in(
+                        original_sizes[main_window._impl.native.MainMenuStrip][0]
+                    ),
+                    main_window._impl.scale_in(
+                        original_sizes[main_window._impl.native.MainMenuStrip][1]
+                    ),
                 )
                 # Check ToolBar Font Scaling and Size
                 assert (
@@ -659,9 +676,13 @@ if toga.platform.current_platform == "windows":
                 assert (
                     main_window._impl.toolbar_native.Size.Width,
                     main_window._impl.toolbar_native.Size.Height,
-                ) != (
-                    original_sizes[main_window._impl.toolbar_native].Width,
-                    original_sizes[main_window._impl.toolbar_native].Height,
+                ) == (
+                    main_window._impl.scale_in(
+                        original_sizes[main_window._impl.toolbar_native][0]
+                    ),
+                    main_window._impl.scale_in(
+                        original_sizes[main_window._impl.toolbar_native][1]
+                    ),
                 )
 
                 # Check Widget Font Scaling and Size
@@ -675,9 +696,9 @@ if toga.platform.current_platform == "windows":
                     assert (
                         widget._impl.native.Size.Width,
                         widget._impl.native.Size.Height,
-                    ) != (
-                        original_sizes[widget].Width,
-                        original_sizes[widget].Height,
+                    ) == (
+                        main_window._impl.scale_in(original_sizes[widget][0]),
+                        main_window._impl.scale_in(original_sizes[widget][1]),
                     )
 
         monkeypatch.setattr(
