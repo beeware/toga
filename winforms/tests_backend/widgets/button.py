@@ -1,9 +1,5 @@
 import pytest
 import System.Windows.Forms
-from System.Drawing import SystemColors
-
-from toga.colors import TRANSPARENT
-from toga_winforms.colors import toga_color_from_native_color
 
 from .base import SimpleProbe
 
@@ -27,11 +23,3 @@ class ButtonProbe(SimpleProbe):
             assert (icon.Size.Width, icon.Size.Height) == (32, 32)
         else:
             pytest.fail("Icon does not exist")
-
-    def assert_background_color(self, color):
-        if color in {None, TRANSPARENT}:
-            assert toga_color_from_native_color(
-                self.impl.native.BackColor
-            ) == toga_color_from_native_color(SystemColors.Control)
-        else:
-            super().assert_background_color(color)

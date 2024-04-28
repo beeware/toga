@@ -121,30 +121,28 @@ class Widget(ABC, Scalable):
         # Widgets that need to set a different default background_color should
         # override this method and set a background color for the None case.
         if color is None:
-            # Set default background_color as transparent for all widgets.
-            self.set_background_color_simple(TRANSPARENT)
+            self.native.BackColor = SystemColors.Control
         else:
-            self.set_background_color_simple(color)
+            if self.interface.parent:
+                parent_color = toga_color_from_native_color(
+                    self.interface.parent._impl.native.BackColor
+                ).rgba
+            else:
+                parent_color = toga_color_from_native_color(SystemColors.Control).rgba
 
-    def set_background_color_simple(self, color):
-        if self.interface.parent:
-            parent_color = toga_color_from_native_color(
-                self.interface.parent._impl.native.BackColor
-            ).rgba
-        else:
-            parent_color = toga_color_from_native_color(SystemColors.Control).rgba
+            if color is TRANSPARENT:
+                requested_color = rgba(0, 0, 0, 0)
+            else:
+                requested_color = color.rgba
 
-        if color is TRANSPARENT:
-            requested_color = rgba(0, 0, 0, 0)
-        else:
-            requested_color = color.rgba
+            blended_color = alpha_blending_over_operation(requested_color, parent_color)
+            self.native.BackColor = native_color_from_toga_color(blended_color)
 
-        blended_color = alpha_blending_over_operation(requested_color, parent_color)
-        self.native.BackColor = native_color_from_toga_color(blended_color)
-
-        if getattr(self.interface, "children", None) is not None:  # pragma: no branch
-            for child in self.interface.children:
-                child._impl.set_background_color(child.style.background_color)
+            if (  # pragma: no branch
+                getattr(self.interface, "children", None) is not None
+            ):
+                for child in self.interface.children:
+                    child._impl.set_background_color(child.style.background_color)
 
     # INTERFACE
 

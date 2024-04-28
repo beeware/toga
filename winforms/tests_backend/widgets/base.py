@@ -63,24 +63,29 @@ class SimpleProbe(BaseProbe, FontMixin):
         return toga_color_from_native_color(self.native.BackColor).rgba
 
     def assert_background_color(self, color):
-        if self.widget.parent:
-            parent_color = toga_color_from_native_color(
-                self.widget.parent._impl.native.BackColor
+        if color is None:
+            widget_back_color = toga_color_from_native_color(self.native.BackColor).rgba
+            default_back_color = toga_color_from_native_color(SystemColors.Control).rgba
+            assert widget_back_color == default_back_color
+        else:
+            if self.widget.parent:
+                parent_color = toga_color_from_native_color(
+                    self.widget.parent._impl.native.BackColor
+                ).rgba
+            else:
+                parent_color = toga_color_from_native_color(SystemColors.Control).rgba
+
+            if color is TRANSPARENT:
+                requested_color = rgba(0, 0, 0, 0)
+            else:
+                requested_color = color.rgba
+
+            blended_color = alpha_blending_over_operation(
+                requested_color, parent_color
             ).rgba
-        else:
-            parent_color = toga_color_from_native_color(SystemColors.Control).rgba
-
-        if color is TRANSPARENT:
-            requested_color = rgba(0, 0, 0, 0)
-        else:
-            requested_color = color.rgba
-
-        blended_color = alpha_blending_over_operation(
-            requested_color, parent_color
-        ).rgba
-        widget_back_color = toga_color_from_native_color(self.native.BackColor).rgba
-        # Both of them should also have an alpha value of 1.
-        assert widget_back_color == blended_color
+            widget_back_color = toga_color_from_native_color(self.native.BackColor).rgba
+            # Both of them should also have an alpha value of 1.
+            assert widget_back_color == blended_color
 
     @property
     def font(self):

@@ -3,6 +3,7 @@ from decimal import ROUND_UP
 import System.Windows.Forms as WinForms
 from travertino.size import at_least
 
+from toga.colors import TRANSPARENT
 from toga_winforms.libs.fonts import TextAlignment
 
 from .base import Widget
@@ -12,6 +13,12 @@ class Label(Widget):
     def create(self):
         self.native = WinForms.Label()
         self.native.AutoSizeMode = WinForms.AutoSizeMode.GrowAndShrink
+
+    def set_background_color(self, color):
+        if color is None:
+            super().set_background_color(TRANSPARENT)
+        else:
+            super().set_background_color(color)
 
     def set_alignment(self, value):
         self.native.TextAlign = TextAlignment(value)

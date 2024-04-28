@@ -1,10 +1,10 @@
 from io import BytesIO
 
 from PIL import Image
+from System.Drawing import Color
 from System.Windows.Forms import MouseButtons, Panel
 
 from toga.colors import TRANSPARENT
-from toga_winforms.colors import native_color_from_toga_color
 
 from .base import SimpleProbe
 
@@ -47,8 +47,6 @@ class CanvasProbe(SimpleProbe):
 
     def assert_background_color(self, color):
         if color == TRANSPARENT:
-            assert self.impl.native.BackColor == native_color_from_toga_color(
-                TRANSPARENT
-            )
+            assert self.impl.native.BackColor == Color.Transparent
         else:
             super().assert_background_color(color)
