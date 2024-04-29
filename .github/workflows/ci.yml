@@ -122,7 +122,7 @@ jobs:
         mv core/.coverage core/.coverage.${{ matrix.platform }}.${{ matrix.python-version }}
 
     - name: Store Coverage Data
-      uses: actions/upload-artifact@v4.3.2
+      uses: actions/upload-artifact@v4.3.3
       with:
         name: core-coverage-data-${{ matrix.platform }}-${{ matrix.python-version }}
         path: "core/.coverage.*"
@@ -162,7 +162,7 @@ jobs:
       run: tox -e coverage-html-fail
 
     - name: Upload HTML Coverage Report
-      uses: actions/upload-artifact@v4.3.2
+      uses: actions/upload-artifact@v4.3.3
       if: failure()
       with:
         name: html-coverage-report
@@ -289,7 +289,7 @@ jobs:
           briefcase run ${{ matrix.platform }} --test ${{ matrix.briefcase-run-args }}
 
     - name: Upload Logs
-      uses: actions/upload-artifact@v4.3.2
+      uses: actions/upload-artifact@v4.3.3
       if: failure()
       with:
         name: testbed-failure-logs-${{ matrix.backend }}
@@ -302,7 +302,7 @@ jobs:
         cp -r "${{ matrix.app-user-data-path }}" testbed/app_data/testbed-app_data-${{ matrix.backend }}
 
     - name: Upload App Data
-      uses: actions/upload-artifact@v4.3.2
+      uses: actions/upload-artifact@v4.3.3
       if: failure() && matrix.backend != 'android'
       with:
         name: testbed-failure-app-data-${{ matrix.backend }}
