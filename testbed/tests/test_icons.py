@@ -1,7 +1,5 @@
 import re
-import sys
 from importlib import import_module
-from pathlib import Path
 
 import pytest
 
@@ -27,14 +25,9 @@ async def test_icon(app):
     probe.assert_icon_content(probe.alternate_resource)
 
 
-@pytest.mark.skipif(
-    Path(sys.executable).stem.startswith("python"),
-    reason="Can't test app icon in a dev mode test",
-)
 async def test_app_icon(app):
     """The app icon can be obtained."""
-    icon = toga.Icon(None)
-    probe = icon_probe(app, icon)
+    probe = icon_probe(app, toga.Icon.APP_ICON)
     probe.assert_app_icon_content()
 
 

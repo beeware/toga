@@ -600,6 +600,6 @@ async def test_app_icon(app, app_probe):
     app_probe.assert_app_icon("resources/alt-icon")
 
     # Reset the icon to the default
-    app.icon = None
+    app.icon = toga.Icon.APP_ICON
     await app_probe.redraw("Revert app icon to default")
     app_probe.assert_app_icon(None)
