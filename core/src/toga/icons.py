@@ -52,7 +52,7 @@ class Icon:
 
     @cachedicon
     def DEFAULT_ICON(cls) -> Icon:
-        """The default icon used as a fallback."""
+        """The default icon used as a fallback - Toga's "Tiberius the yak" icon."""
         return Icon("toga", system=True)
 
     @cachedicon

@@ -73,7 +73,7 @@ variant that *is* available).
 
 An icon is **guaranteed** to have an implementation, regardless of the path
 specified. If you specify a path and no matching icon can be found, Toga will
-output a warning to the console, and load a default "Tiberius the yak" icon.
+output a warning to the console, and return :attr:`~toga.Icon.DEFAULT_ICON`.
 
 Reference
 ---------

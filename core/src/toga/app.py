@@ -350,13 +350,9 @@ class App:
                For example, an ``app_id`` of ``com.example.my-app`` would yield a
                distribution name of ``my-app``.
             #. As a last resort, the name ``toga``.
-        :param icon: The :any:`icon <IconContent>` for the app. If not provided, Toga
-            will attempt to load an icon from the following sources, in order:
-
-            * ``resources/<app_name>``, where ``app_name`` is as defined above
-            * If the Python interpreter is embedded in an app, the icon of the
-              application binary
-            * Otherwise, the Toga logo.
+        :param icon: The :any:`icon <IconContent>` for the app. See the
+            :attr:`~toga.App.icon` property for details on how values for this property
+            are handled.
         :param author: The person or organization to be credited as the author of the
             app. If not provided, the metadata key ``Author`` will be used.
         :param version: The version number of the app.  If not provided, the metadata
