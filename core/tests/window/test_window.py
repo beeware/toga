@@ -381,6 +381,90 @@ def test_screen_position(window, app):
     assert window.screen_position == (100, 100)
 
 
+def test_widget_id_reusablity(window, app):
+    """Widget IDs can be reused after the associated widget's window is closed."""
+    # Common IDs
+    CONTENT_WIDGET_ID = "sample_window_content"
+    LABEL_WIDGET_ID = "sample_label"
+
+    label_widget = toga.Label(text="Sample Label", id=LABEL_WIDGET_ID)
+    second_window_content = toga.Box(id=CONTENT_WIDGET_ID, children=[label_widget])
+
+    third_window_content = toga.Box(children=[])
+
+    # A widget ID is only "used" when it is part of a visible layout;
+    # creating a widget and *not* putting it in a layout isn't an problem.
+    try:
+        new_label_widget = toga.Label(text="New Label", id=LABEL_WIDGET_ID)
+    except KeyError:
+        pytest.fail("Widget IDs that aren't part of a layout can be re-used.")
+
+    # Create 2 new visible windows
+    second_window = toga.Window()
+    second_window.show()
+
+    third_window = toga.Window()
+    third_window.show()
+
+    # Assign the window content widget to the second window
+    second_window.content = second_window_content
+    assert CONTENT_WIDGET_ID in app.widgets
+    assert LABEL_WIDGET_ID in app.widgets
+
+    # CONTENT_WIDGET_ID is in use, so a widget with that ID can't be assigned to a window.
+    with pytest.raises(
+        KeyError,
+        match=r"There is already a widget with the id 'sample_label'",
+    ):
+        third_window.content = new_label_widget
+    assert CONTENT_WIDGET_ID not in third_window.widgets
+    assert LABEL_WIDGET_ID not in third_window.widgets
+
+    # Adding content that has a child with a re-used ID should raise an error
+    with pytest.raises(
+        KeyError,
+        match=r"There is already a widget with the id 'sample_label'",
+    ):
+        third_window.content = toga.Box(children=[new_label_widget])
+    assert CONTENT_WIDGET_ID not in third_window.widgets
+    assert LABEL_WIDGET_ID not in third_window.widgets
+
+    # Adding a child with a re-used ID should raise an error.
+    third_window.content = third_window_content
+    with pytest.raises(
+        KeyError,
+        match=r"There is already a widget with the id 'sample_label'",
+    ):
+        third_window_content.add(new_label_widget)
+    assert CONTENT_WIDGET_ID not in third_window.widgets
+    assert LABEL_WIDGET_ID not in third_window.widgets
+
+    # Creating a new widget with same widget ID should not raise KeyError
+    try:
+        another_label_widget = toga.Label(text="Another Label", id=LABEL_WIDGET_ID)
+    except KeyError:
+        pytest.fail("Widget IDs that aren't part of a layout can be re-used.")
+
+    # If a widget using an ID is being *replaced*, the ID can be re-used.
+    try:
+        second_window.content = another_label_widget
+    except KeyError:
+        pytest.fail("Widget IDs that are replaced can be re-used.")
+
+    # Close Window 2
+    second_window.close()
+    assert CONTENT_WIDGET_ID not in app.widgets
+    assert LABEL_WIDGET_ID not in app.widgets
+
+    # Now that second_window has been closed, the duplicate ID can be used
+    try:
+        third_window_content.add(new_label_widget)
+    except KeyError:
+        pytest.fail("Widget IDs that are replaced can be re-used.")
+
+    third_window.close()
+
+
 def test_info_dialog(window, app):
     """An info dialog can be shown."""
     on_result_handler = Mock()
