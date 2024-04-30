@@ -3,6 +3,7 @@ from pathlib import Path
 
 import pytest
 
+import toga
 import toga_gtk
 from toga_gtk.libs import GdkPixbuf
 
@@ -58,29 +59,33 @@ class IconProbe(BaseProbe):
         }
 
     def assert_app_icon_content(self):
-        assert self.icon._impl.paths == {
-            16: (
-                Path(sys.executable).parent.parent
-                / "share/icons/hicolor/16x16/apps/org.beeware.toga.testbed.png"
-            ),
-            32: (
-                Path(sys.executable).parent.parent
-                / "share/icons/hicolor/32x32/apps/org.beeware.toga.testbed.png"
-            ),
-            64: (
-                Path(sys.executable).parent.parent
-                / "share/icons/hicolor/64x64/apps/org.beeware.toga.testbed.png"
-            ),
-            128: (
-                Path(sys.executable).parent.parent
-                / "share/icons/hicolor/128x128/apps/org.beeware.toga.testbed.png"
-            ),
-            256: (
-                Path(sys.executable).parent.parent
-                / "share/icons/hicolor/256x256/apps/org.beeware.toga.testbed.png"
-            ),
-            512: (
-                Path(sys.executable).parent.parent
-                / "share/icons/hicolor/512x512/apps/org.beeware.toga.testbed.png"
-            ),
-        }
+        if Path(sys.executable).stem.startswith("python"):
+            # When running in dev mode, the icon will fall back to the app default.
+            assert self.icon._impl == toga.Icon.DEFAULT_ICON._impl
+        else:
+            assert self.icon._impl.paths == {
+                16: (
+                    Path(sys.executable).parent.parent
+                    / "share/icons/hicolor/16x16/apps/org.beeware.toga.testbed.png"
+                ),
+                32: (
+                    Path(sys.executable).parent.parent
+                    / "share/icons/hicolor/32x32/apps/org.beeware.toga.testbed.png"
+                ),
+                64: (
+                    Path(sys.executable).parent.parent
+                    / "share/icons/hicolor/64x64/apps/org.beeware.toga.testbed.png"
+                ),
+                128: (
+                    Path(sys.executable).parent.parent
+                    / "share/icons/hicolor/128x128/apps/org.beeware.toga.testbed.png"
+                ),
+                256: (
+                    Path(sys.executable).parent.parent
+                    / "share/icons/hicolor/256x256/apps/org.beeware.toga.testbed.png"
+                ),
+                512: (
+                    Path(sys.executable).parent.parent
+                    / "share/icons/hicolor/512x512/apps/org.beeware.toga.testbed.png"
+                ),
+            }
