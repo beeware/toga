@@ -231,6 +231,10 @@ class App:
         # of the Android Activity system.
         self.create()
 
+    def set_icon(self, icon):
+        # Android apps don't have runtime icons, so this can't be invoked
+        pass  # pragma: no cover
+
     def set_main_window(self, window):
         pass
 

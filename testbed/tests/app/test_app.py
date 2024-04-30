@@ -587,3 +587,19 @@ async def test_screens(app, app_probe):
     # Check that the origin of every other screen is not "0,0"
     origins_not_zero = all(screen.origin != (0, 0) for screen in app.screens[1:])
     assert origins_not_zero is True
+
+
+async def test_app_icon(app, app_probe):
+    """The app icon can be changed."""
+    # Icon is initially the default
+    app_probe.assert_app_icon(None)
+
+    # Change the icon to an alternate
+    app.icon = "resources/alt-icon"
+    await app_probe.redraw("Set app icon to alternate")
+    app_probe.assert_app_icon("resources/alt-icon")
+
+    # Reset the icon to the default
+    app.icon = toga.Icon.APP_ICON
+    await app_probe.redraw("Revert app icon to default")
+    app_probe.assert_app_icon(None)

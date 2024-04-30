@@ -81,7 +81,7 @@ class DetailedListRow(Gtk.ListBoxRow):
             self.content.remove(self.icon)
 
         try:
-            pixbuf = getattr(self.row, dl.accessors[2])._impl.native_32
+            pixbuf = getattr(self.row, dl.accessors[2])._impl.native(32)
         except AttributeError:
             pixbuf = None
 
