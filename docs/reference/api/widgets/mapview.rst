@@ -95,6 +95,8 @@ updated and removed at runtime:
 Pins can respond to being pressed. When a pin is pressed, the map generates an
 ``on_select`` event, which receives the pin as an argument.
 
+.. _mapview-system-requires:
+
 System requirements
 -------------------
 
@@ -111,6 +113,7 @@ System requirements
   - Ubuntu 22.04+; Debian 11+: ``gir1.2-webkit2-4.1``
   - Fedora: ``webkit2gtk3``
   - Arch/Manjaro: ``webkit2gtk-4.1``
+  - FreeBSD: ``webkit2-gtk3``
 
 * Using MapView on Android requires the OSMDroid package in your project's Gradle
   dependencies. Ensure your app declares a dependency on

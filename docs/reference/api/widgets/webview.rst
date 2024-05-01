@@ -61,6 +61,9 @@ Usage
     # Load static HTML content into the wevbiew.
     webview.set_content("https://example.com", "<html>...</html>")
 
+
+.. _webview-system-requires:
+
 System requirements
 -------------------
 
@@ -77,6 +80,7 @@ System requirements
   - Ubuntu 22.04+; Debian 11+: ``gir1.2-webkit2-4.1``
   - Fedora: ``webkit2gtk3``
   - Arch/Manjaro: ``webkit2gtk-4.1``
+  - FreeBSD: ``webkit2-gtk3``
 
 Notes
 -----
