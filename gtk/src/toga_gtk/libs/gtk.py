@@ -16,8 +16,8 @@ if Gdk.Screen.get_default() is None:  # pragma: no cover
 try:
     try:
         gi.require_version("WebKit2", "4.1")
-    except ValueError:
-        gi.require_version("WebKit2", "4.0")  # pragma: no cover
+    except ValueError:  # pragma: no cover
+        gi.require_version("WebKit2", "4.0")
     from gi.repository import WebKit2  # noqa: F401
 except (ImportError, ValueError):  # pragma: no cover
     WebKit2 = None
