@@ -61,12 +61,8 @@ Usage
     # Load static HTML content into the wevbiew.
     webview.set_content("https://example.com", "<html>...</html>")
 
-Notes
------
-
-* Due to app security restrictions, WebView can only display ``http://`` and
-  ``https://`` URLs, not ``file://`` URLs. To serve local file content, run a
-  web server on ``localhost`` using a background thread.
+System requirements
+-------------------
 
 * Using WebView on Windows 10 requires that your users have installed the `Edge
   WebView2 Evergreen Runtime
@@ -74,7 +70,20 @@ Notes
   This is installed by default on Windows 11.
 
 * Using WebView on Linux requires that the user has installed the system packages
-  for WebKit2, plus the GObject Introspection bindings for WebKit2.
+  for WebKit2, plus the GObject Introspection bindings for WebKit2. The name of
+  the system package required is distribution dependent:
+
+  - Ubuntu 18.04, 20.04; Debian 10: ``gir1.2-webkit2-4.0``
+  - Ubuntu 22.04+; Debian 11+: ``gir1.2-webkit2-4.1``
+  - Fedora: ``webkit2gtk3``
+  - Arch/Manjaro: ``webkit2gtk-4.1``
+
+Notes
+-----
+
+* Due to app security restrictions, WebView can only display ``http://`` and
+  ``https://`` URLs, not ``file://`` URLs. To serve local file content, run a
+  web server on ``localhost`` using a background thread.
 
 * On macOS 13.3 (Ventura) and later, the content inspector for your app can be opened by
   running Safari, `enabling the developer tools
