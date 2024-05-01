@@ -132,6 +132,13 @@ item, you can specify an item using:
       # Delete the pasta tab
       del container.content[pasta_tab]
 
+System requirements
+-------------------
+
+* Using OptionContainer on Android requires the Material package in your project's
+  Gradle dependencies. Ensure your app declares a dependency on
+  ``com.google.android.material:material:1.11.0`` or later.
+
 Notes
 -----
 
