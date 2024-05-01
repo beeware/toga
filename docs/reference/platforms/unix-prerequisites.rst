@@ -5,14 +5,7 @@ some of the common alternatives:
     The package list should be the same as in ci.yml, and the BeeWare tutorial
     (CI will also have WebView requirements)
 
-**Ubuntu 18.04, 20.04 / Debian 10**
-
-.. code-block:: console
-
-    (venv) $ sudo apt update
-    (venv) $ sudo apt install pkg-config python3-dev libgirepository1.0-dev libcairo2-dev libcanberra-gtk3-module
-
-**Ubuntu 22.04+ / Debian 11+**
+**Ubuntu 18.04+ / Debian 11+**
 
 .. code-block:: console
 
