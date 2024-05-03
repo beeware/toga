@@ -4,8 +4,6 @@ import signal
 import sys
 from pathlib import Path
 
-import gbulb
-
 import toga
 from toga import App as toga_App
 from toga.command import Command, Separator
@@ -38,7 +36,6 @@ class App:
         self.interface = interface
         self.interface._impl = self
 
-        gbulb.install(gtk=True)
         self.loop = asyncio.new_event_loop()
 
         self.create()
@@ -53,14 +50,15 @@ class App:
 
         # Connect the GTK signal that will cause app startup to occur
         self.native.connect("startup", self.gtk_startup)
+        self.native.connect("shutdown", self.gtk_shutdown)
         self.native.connect("activate", self.gtk_activate)
 
         self.actions = None
 
-    def gtk_activate(self, data=None):
+    def gtk_activate(self, app):
         pass
 
-    def gtk_startup(self, data=None):
+    def gtk_startup(self, app):
         # Set up the default commands for the interface.
         self.create_app_commands()
 
@@ -86,6 +84,10 @@ class App:
         context.add_provider_for_screen(
             Gdk.Screen.get_default(), css_provider, Gtk.STYLE_PROVIDER_PRIORITY_USER
         )
+
+    def gtk_shutdown(self, app):
+        # Gtk Application has exited; stop the asyncio loop.
+        self.loop.stop()
 
     ######################################################################
     # Commands and menus
@@ -180,13 +182,32 @@ class App:
 
     # We can't call this under test conditions, because it would kill the test harness
     def exit(self):  # pragma: no cover
-        self.native.quit()
+        self.native.emit("shutdown")
+
+    async def _gtk_app_run(self):
+        # An co-operative implementation of `GtkApplication.run()`
+        self.native.register()
+        self.native.activate()
+
+        context = GLib.MainContext.default()
+        while True:
+            # If there are any events pending, process them.
+            if context.pending():
+                handled = context.iteration(False)
+            else:
+                handled = False
+
+            # If we handled any events, schedule another iterate again as soon
+            # as possible. If we didn't, it's ok to wait a little bit before
+            # trying to process GTK events again.
+            await asyncio.sleep(0.0 if handled else 0.05)
 
     def main_loop(self):
         # Modify signal handlers to make sure Ctrl-C is caught and handled.
         signal.signal(signal.SIGINT, signal.SIG_DFL)
 
-        self.loop.run_forever(application=self.native)
+        self.loop.create_task(self._gtk_app_run())
+        self.loop.run_forever()
 
     def set_icon(self, icon):
         for window in self.interface.windows:
