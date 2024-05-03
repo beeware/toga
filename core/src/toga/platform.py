@@ -77,7 +77,6 @@ def get_platform_factory():
             )
     else:
         toga_backends = find_backends()
-
         if len(toga_backends) == 0:
             raise RuntimeError("No Toga backend could be loaded.")
         elif len(toga_backends) == 1:

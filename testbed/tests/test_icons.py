@@ -25,6 +25,12 @@ async def test_icon(app):
     probe.assert_icon_content(probe.alternate_resource)
 
 
+async def test_app_icon(app):
+    """The app icon can be obtained."""
+    probe = icon_probe(app, toga.Icon.APP_ICON)
+    probe.assert_app_icon_content()
+
+
 async def test_system_icon(app):
     "The default icon can be obtained"
     probe = icon_probe(app, toga.Icon.DEFAULT_ICON)

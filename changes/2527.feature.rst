@@ -1,0 +1,1 @@
+When a Toga apps is packaged as a redistributable binary, and no icon is explicitly configured, Toga will now use the binary's icon as the app icon. This means it is no longer necessary to include the app icon as data in a ``resources`` folder if you are packaging your app for distribution.

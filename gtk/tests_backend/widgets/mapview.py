@@ -44,11 +44,11 @@ class MapViewProbe(SimpleProbe):
         previous = initial
         panning = True
 
-        # Iterate until 2 successive reads of the region, 0.1s apart, return the same
+        # Iterate until 2 successive reads of the region, 0.2s apart, return the same
         # value; or we've been waiting max_delay seconds. If confirm_pan is True, also
         # confirm that the value has actually changed from the initial value.
         tick_count = 0
-        delta = 0.1
+        delta = 0.2
         while panning and tick_count < (max_delay / delta):
             await asyncio.sleep(delta)
             current = await self._map_region()

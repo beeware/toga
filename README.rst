@@ -1,33 +1,37 @@
-.. image:: https://beeware.org/project/projects/libraries/toga/toga.png
+.. |logo| image:: https://beeware.org/project/projects/libraries/toga/toga.png
     :width: 72px
     :target: https://beeware.org/toga
+
+.. |pyversions| image:: https://img.shields.io/pypi/pyversions/toga.svg
+    :target: https://pypi.python.org/pypi/toga
+    :alt: Python Versions
+
+.. |version| image:: https://img.shields.io/pypi/v/toga.svg
+    :target: https://pypi.python.org/pypi/toga
+    :alt: Project version
+
+.. |maturity| image:: https://img.shields.io/pypi/status/toga.svg
+    :target: https://pypi.python.org/pypi/toga
+    :alt: Project status
+
+.. |license| image:: https://img.shields.io/pypi/l/toga.svg
+    :target: https://github.com/beeware/toga/blob/main/LICENSE
+    :alt: BSD License
+
+.. |ci| image:: https://github.com/beeware/toga/workflows/CI/badge.svg?branch=main
+   :target: https://github.com/beeware/toga/actions
+   :alt: Build Status
+
+.. |social| image:: https://img.shields.io/discord/836455665257021440?label=Discord%20Chat&logo=discord&style=plastic
+   :target: https://beeware.org/bee/chat/
+   :alt: Discord server
+
+|logo|
 
 Toga
 ====
 
-.. image:: https://img.shields.io/pypi/pyversions/toga.svg
-    :target: https://pypi.python.org/pypi/toga
-    :alt: Python Versions
-
-.. image:: https://img.shields.io/pypi/v/toga.svg
-    :target: https://pypi.python.org/pypi/toga
-    :alt: Project version
-
-.. image:: https://img.shields.io/pypi/status/toga.svg
-    :target: https://pypi.python.org/pypi/toga
-    :alt: Project status
-
-.. image:: https://img.shields.io/pypi/l/toga.svg
-    :target: https://github.com/beeware/toga/blob/main/LICENSE
-    :alt: BSD License
-
-.. image:: https://github.com/beeware/toga/workflows/CI/badge.svg?branch=main
-   :target: https://github.com/beeware/toga/actions
-   :alt: Build Status
-
-.. image:: https://img.shields.io/discord/836455665257021440?label=Discord%20Chat&logo=discord&style=plastic
-   :target: https://beeware.org/bee/chat/
-   :alt: Discord server
+|pyversions| |version| |maturity| |license| |ci| |social|
 
 A Python native, OS native GUI toolkit.
 
