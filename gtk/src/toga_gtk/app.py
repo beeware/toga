@@ -10,6 +10,7 @@ from toga.command import Command, Separator
 
 from .keys import gtk_accel
 from .libs import TOGA_DEFAULT_STYLES, Gdk, Gio, GLib, Gtk
+from .libs.events import GtkEventLoopPolicy
 from .screens import Screen as ScreenImpl
 from .window import Window
 
@@ -36,6 +37,8 @@ class App:
         self.interface = interface
         self.interface._impl = self
 
+        self.policy = GtkEventLoopPolicy()
+        asyncio.set_event_loop_policy(self.policy)
         self.loop = asyncio.new_event_loop()
 
         self.create()
@@ -185,22 +188,10 @@ class App:
         self.native.emit("shutdown")
 
     async def _gtk_app_run(self):
-        # An co-operative implementation of `GtkApplication.run()`
+        # A co-operative implementation of the startup portions of
+        # GtkApplication.run()
         self.native.register()
         self.native.activate()
-
-        context = GLib.MainContext.default()
-        while True:
-            # If there are any events pending, process them.
-            if context.pending():
-                handled = context.iteration(False)
-            else:
-                handled = False
-
-            # If we handled any events, schedule another iterate again as soon
-            # as possible. If we didn't, it's ok to wait a little bit before
-            # trying to process GTK events again.
-            await asyncio.sleep(0.0 if handled else 0.05)
 
     def main_loop(self):
         # Modify signal handlers to make sure Ctrl-C is caught and handled.
