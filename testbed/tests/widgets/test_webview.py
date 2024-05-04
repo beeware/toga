@@ -84,6 +84,8 @@ async def widget(on_load):
         # This prevents a segfault at GC time likely coming from the test suite running
         # in a thread and Gtk WebViews sharing resources between instances. We perform
         # the GC run here since pytest fixtures make earlier cleanup difficult.
+        # Do 2 GC passes to ensure loops are resolved.
+        gc.collect()
         gc.collect()
 
     widget = toga.WebView(style=Pack(flex=1), on_webview_load=on_load)
@@ -117,7 +119,9 @@ async def widget(on_load):
         # On Gtk, ensure that the WebView is garbage collection before the next test
         # case. This prevents a segfault at GC time likely coming from the test suite
         # running in a thread and Gtk WebViews sharing resources between instances.
+        # Do 2 GC passes to ensure loops are resolved.
         del widget
+        gc.collect()
         gc.collect()
 
 
