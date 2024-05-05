@@ -64,9 +64,9 @@ root = ".."
 
 [tool.setuptools_dynamic_dependencies]
 dependencies = [
-    "gbulb >= 0.5.3",
     "pycairo >= 1.17.0",
-    "pygobject >= 3.46.0",
+    # Use the in-development !189 benzea/gio-asyncio branch
+    "pygobject @ git+https://gitlab.gnome.com/GNOME/pygojbect.git@benzea/gio-asyncio",
     "toga-core == {version}",
 ]
 
