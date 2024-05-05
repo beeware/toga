@@ -18,6 +18,7 @@ WINFORMS_KEYS = {
     # Key.BACK_QUOTE.value: WinForms.Keys.Oemtilde,  # No idea what the code should be
     Key.MINUS.value: WinForms.Keys.OemMinus,
     Key.EQUAL.value: WinForms.Keys.Oemplus,
+    Key.CAPSLOCK.value: WinForms.Keys.CapsLock,
     Key.TAB.value: WinForms.Keys.Tab,
     Key.OPEN_BRACKET.value: WinForms.Keys.OemOpenBrackets,
     Key.CLOSE_BRACKET.value: WinForms.Keys.OemCloseBrackets,
@@ -30,12 +31,15 @@ WINFORMS_KEYS = {
     Key.SPACE.value: WinForms.Keys.Space,
     Key.PAGE_UP.value: WinForms.Keys.PageUp,
     Key.PAGE_DOWN.value: WinForms.Keys.PageDown,
+    Key.INSERT.value: WinForms.Keys.Insert,
+    Key.DELETE.value: WinForms.Keys.Delete,
     Key.HOME.value: WinForms.Keys.Home,
     Key.END.value: WinForms.Keys.End,
     Key.UP.value: WinForms.Keys.Up,
     Key.DOWN.value: WinForms.Keys.Down,
     Key.LEFT.value: WinForms.Keys.Left,
     Key.RIGHT.value: WinForms.Keys.Right,
+    Key.NUMLOCK.value: WinForms.Keys.NumLock,
     Key.NUMPAD_DECIMAL_POINT.value: WinForms.Keys.Decimal,
 }
 WINFORMS_KEYS.update(

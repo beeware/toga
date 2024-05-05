@@ -121,6 +121,7 @@ GDK_KEYS = {
     Gdk.KEY_less: Key.LESS_THAN,
     Gdk.KEY_greater: Key.GREATER_THAN,
     Gdk.KEY_question: Key.QUESTION,
+    Gdk.KEY_Insert: Key.INSERT,
     Gdk.KEY_Delete: Key.DELETE,
     Gdk.KEY_Home: Key.HOME,
     Gdk.KEY_End: Key.END,
@@ -130,6 +131,7 @@ GDK_KEYS = {
     Gdk.KEY_Right: Key.RIGHT,
     Gdk.KEY_Up: Key.UP,
     Gdk.KEY_Down: Key.DOWN,
+    Gdk.KEY_Num_Lock: Key.NUMLOCK,
     Gdk.KEY_KP_Enter: Key.NUMPAD_ENTER,
     Gdk.KEY_KP_0: Key.NUMPAD_0,
     Gdk.KEY_KP_1: Key.NUMPAD_1,
@@ -155,6 +157,9 @@ GDK_KEYS = {
     Gdk.KEY_KP_Multiply: Key.NUMPAD_MULTIPLY,
     Gdk.KEY_KP_Divide: Key.NUMPAD_DIVIDE,
     Gdk.KEY_KP_Delete: Key.DELETE,
+    Gdk.KEY_ISO_Left_Tab: Key.TAB,
+    Gdk.KEY_Shift_L: Key.SHIFT,
+    Gdk.KEY_Shift_R: Key.SHIFT,
 }
 
 GTK_KEY_NAMES = {

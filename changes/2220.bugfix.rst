@@ -1,0 +1,1 @@
+Key handling for Insert, Delete, Num Lock, and some uses of Shift was added for GTK and Winforms.
