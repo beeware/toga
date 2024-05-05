@@ -1,0 +1,1 @@
+On Android, DetailedList widget now correctly unsets the highlight color from an unselected item.

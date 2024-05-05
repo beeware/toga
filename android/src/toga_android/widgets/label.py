@@ -7,8 +7,9 @@ from android.view import Gravity, View
 from android.widget import TextView
 from travertino.size import at_least
 
+from toga.colors import TRANSPARENT
 from toga.constants import JUSTIFY
-from toga_android.colors import native_color
+from toga_android.colors import native_color_from_toga_color
 
 from .base import Widget, align
 
@@ -29,17 +30,11 @@ class TextViewWidget(Widget):
             self.native, font._impl, self._default_typeface, self._default_text_size
         )
 
-    def set_background_color(self, value):
-        # In the case of EditText, this causes any custom color to hide the bottom border
-        # line, but it's better than set_background_filter, which affects *only* the
-        # bottom border line.
-        self.set_background_simple(value)
-
     def set_color(self, value):
         if value is None:
             self.native.setTextColor(self._default_text_color)
         else:
-            self.native.setTextColor(native_color(value))
+            self.native.setTextColor(native_color_from_toga_color(value))
 
     def set_textview_alignment(self, value, vertical_gravity):
         # Justified text wasn't added until API level 26.
@@ -82,3 +77,9 @@ class Label(TextViewWidget):
 
     def set_alignment(self, value):
         self.set_textview_alignment(value, Gravity.TOP)
+
+    def set_background_color(self, value):
+        if value is None:
+            self.set_background_simple(TRANSPARENT)
+        else:
+            self.set_background_simple(value)

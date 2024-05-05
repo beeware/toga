@@ -1,6 +1,7 @@
 import asyncio
 
 import pytest
+from android import R
 from android.graphics.drawable import (
     ColorDrawable,
     DrawableContainer,
@@ -12,10 +13,11 @@ from android.view import MotionEvent, View, ViewGroup
 
 from toga.colors import TRANSPARENT
 from toga.style.pack import JUSTIFY, LEFT
+from toga_android.widgets.base import ContainedWidget
 
 from ..fonts import FontMixin
 from ..probe import BaseProbe
-from .properties import toga_color, toga_vertical_alignment
+from .properties import assert_color, toga_color, toga_vertical_alignment
 
 
 class SimpleProbe(BaseProbe, FontMixin):
@@ -31,11 +33,20 @@ class SimpleProbe(BaseProbe, FontMixin):
 
     def assert_container(self, container):
         assert self.widget._impl.container is container._impl.container
-        assert self.native.getParent() is container._impl.container.native_content
+        if isinstance(self.impl, ContainedWidget):
+            assert (
+                self.impl.native_widget_container.getParent()
+                is container._impl.container.native_content
+            )
+        else:
+            assert self.native.getParent() is container._impl.container.native_content
 
     def assert_not_contained(self):
         assert self.widget._impl.container is None
-        assert self.native.getParent() is None
+        if isinstance(self.impl, ContainedWidget):
+            assert self.impl.native_widget_container.getParent() is None
+        else:
+            assert self.native.getParent() is None
 
     def assert_alignment(self, expected):
         actual = self.alignment
@@ -80,7 +91,10 @@ class SimpleProbe(BaseProbe, FontMixin):
     def assert_layout(self, size, position):
         # Widget is contained
         assert self.widget._impl.container is not None
-        assert self.native.getParent() is not None
+        if isinstance(self.impl, ContainedWidget):
+            assert self.impl.native_widget_container.getParent() is not None
+        else:
+            assert self.native.getParent() is not None
 
         # Size and position is as expected. Values must be scaled from DP, and
         # compared inexactly due to pixel scaling
@@ -95,54 +109,60 @@ class SimpleProbe(BaseProbe, FontMixin):
 
     @property
     def background_color(self):
-        background = self.native.getBackground()
-        while True:
-            if isinstance(background, ColorDrawable):
-                return toga_color(background.getColor())
-
-            # The following complex Drawables all apply color filters to their children,
-            # but they don't implement getColorFilter, at least not in our current
-            # minimum API level.
-            elif isinstance(background, LayerDrawable):
-                background = background.getDrawable(0)
-            elif isinstance(background, DrawableContainer):
-                background = background.getCurrent()
-            elif isinstance(background, DrawableWrapper):
-                background = background.getDrawable()
-
-            else:
-                break
-
-        if background is None:
-            return None
-        filter = background.getColorFilter()
-        if filter:
-            # PorterDuffColorFilter.getColor is undocumented, but continues to work for
-            # now. If this method is blocked in the future, another option is to use the
-            # filter to draw something and see what color comes out.
-            return toga_color(filter.getColor())
+        if isinstance(self.impl, ContainedWidget):
+            return toga_color(
+                self.impl.native_widget_container.getBackground().getColor()
+            )
         else:
-            return None
+            background = self.native.getBackground()
+            while True:
+                if isinstance(background, ColorDrawable):
+                    return toga_color(background.getColor())
 
-    # -----------------Temporary Fix-----------------
-    def assert_color(self, actual, expected):
-        if expected in {None, TRANSPARENT}:
-            assert expected == actual
-        else:
-            if actual in {None, TRANSPARENT}:
-                assert expected == actual
+                # The following complex Drawables all apply color filters to their children,
+                # but they don't implement getColorFilter, at least not in our current
+                # minimum API level.
+                elif isinstance(background, LayerDrawable):
+                    background = background.getDrawable(0)
+                elif isinstance(background, DrawableContainer):
+                    background = background.getCurrent()
+                elif isinstance(background, DrawableWrapper):
+                    background = background.getDrawable()
+
+                else:
+                    break
+
+            if background is None:
+                return None
+            filter = background.getColorFilter()
+            if filter:
+                # PorterDuffColorFilter.getColor is undocumented, but continues to work for
+                # now. If this method is blocked in the future, another option is to use the
+                # filter to draw something and see what color comes out.
+                return toga_color(filter.getColor())
             else:
-                assert (actual.r, actual.g, actual.b, actual.a) == (
-                    expected.r,
-                    expected.g,
-                    expected.b,
-                    pytest.approx(expected.a, abs=(1 / 255)),
-                )
+                return None
 
     def assert_background_color(self, color):
-        self.assert_color(self.background_color, color)
+        actual_background_color = self.background_color
+        if isinstance(self.impl, ContainedWidget):
+            if color is None:
+                typed_array = (
+                    self.widget.window.app._impl.native.obtainStyledAttributes(
+                        [R.attr.colorBackground]
+                    )
+                )
+                default_native_background_color = toga_color(typed_array.getColor(0, 0))
+                typed_array.recycle()
 
-    # -----------------------------------------------
+                assert_color(actual_background_color, default_native_background_color)
+            else:
+                assert_color(actual_background_color, color)
+        else:
+            if color in {None, TRANSPARENT}:
+                assert_color(actual_background_color, TRANSPARENT)
+            else:
+                assert_color(actual_background_color, color)
 
     async def press(self):
         self.native.performClick()

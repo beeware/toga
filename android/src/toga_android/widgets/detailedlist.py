@@ -3,13 +3,13 @@ from dataclasses import dataclass
 from android import R
 from android.app import AlertDialog
 from android.content import DialogInterface
-from android.graphics import Rect
+from android.graphics import Color, Rect
 from android.view import Gravity, View
 from android.widget import ImageView, LinearLayout, RelativeLayout, ScrollView, TextView
 from androidx.swiperefreshlayout.widget import SwipeRefreshLayout
 from java import dynamic_proxy
 
-from .base import Widget
+from .base import ContainedWidget
 
 
 class DetailedListOnClickListener(dynamic_proxy(View.OnClickListener)):
@@ -87,13 +87,12 @@ class OnRefreshListener(dynamic_proxy(SwipeRefreshLayout.OnRefreshListener)):
         self._interface.on_refresh()
 
 
-class DetailedList(Widget):
+class DetailedList(ContainedWidget):
     def create(self):
         # get the selection color from the current theme
-        attrs = [R.attr.colorBackground, R.attr.colorControlHighlight]
+        attrs = [R.attr.colorControlHighlight]
         typed_array = self._native_activity.obtainStyledAttributes(attrs)
-        self.color_unselected = typed_array.getColor(0, 0)
-        self.color_selected = typed_array.getColor(1, 0)
+        self.color_selected = typed_array.getColor(0, 0)
         typed_array.recycle()
 
         self.native = self._refresh_layout = SwipeRefreshLayout(self._native_activity)
@@ -213,7 +212,7 @@ class DetailedList(Widget):
 
     def _clear_selection(self):
         if self._selection is not None:
-            self._get_row(self._selection).setBackgroundColor(self.color_unselected)
+            self._get_row(self._selection).setBackgroundColor(Color.TRANSPARENT)
             self._selection = None
 
     def _set_selection(self, index):

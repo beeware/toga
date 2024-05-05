@@ -4,7 +4,7 @@ from android import R
 from android.view import View
 from android.widget import ProgressBar as A_ProgressBar
 
-from .base import Widget
+from .base import ContainedWidget
 
 # Implementation notes
 # ====================
@@ -30,7 +30,7 @@ from .base import Widget
 #   functional progress fidelity.
 
 
-class ProgressBar(Widget):
+class ProgressBar(ContainedWidget):
     TOGA_SCALE = 1000
 
     def create(self):
@@ -96,6 +96,3 @@ class ProgressBar(Widget):
         self.interface.intrinsic.height = self.scale_out(
             self.native.getMeasuredHeight(), ROUND_UP
         )
-
-    def set_background_color(self, value):
-        self.set_background_simple(value)

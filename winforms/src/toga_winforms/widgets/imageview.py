@@ -3,6 +3,7 @@ from decimal import ROUND_UP
 import System.Windows.Forms as WinForms
 from System.Drawing import Bitmap
 
+from toga.colors import TRANSPARENT
 from toga.widgets.imageview import rehint_imageview
 
 from .base import Widget
@@ -40,3 +41,9 @@ class ImageView(Widget):
             self.native.SizeMode = WinForms.PictureBoxSizeMode.Zoom
         else:
             self.native.SizeMode = WinForms.PictureBoxSizeMode.StretchImage
+
+    def set_background_color(self, color):
+        if color is None:
+            super().set_background_color(TRANSPARENT)
+        else:
+            super().set_background_color(color)

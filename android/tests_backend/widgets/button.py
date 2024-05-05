@@ -4,6 +4,7 @@ from java import jclass
 from toga.colors import TRANSPARENT
 
 from .label import LabelProbe
+from .properties import assert_color
 
 
 # On Android, a Button is just a TextView with a state-dependent background image.
@@ -24,7 +25,11 @@ class ButtonProbe(LabelProbe):
         else:
             pytest.fail("Icon does not exist")
 
-    @property
-    def background_color(self):
-        color = super().background_color
-        return None if color == TRANSPARENT else color
+    def assert_background_color(self, color):
+        actual_background_color = super().background_color
+        # ---------------Temporary Fix-------------------
+        if color in {None, TRANSPARENT}:
+            assert_color(None, color)
+        # -----------------------------------------------
+        else:
+            assert_color(actual_background_color, color)

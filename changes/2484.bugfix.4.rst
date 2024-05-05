@@ -1,0 +1,1 @@
+On WinForms, the Box, Label & ImageView widgets now have TRANSPARENT as their default background.

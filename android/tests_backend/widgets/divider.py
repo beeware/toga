@@ -1,19 +1,16 @@
 from android.graphics import Color
-from android.graphics.drawable import ColorDrawable
 from java import jclass
 
 from .base import SimpleProbe
+from .properties import assert_color, toga_color
 
 
 class DividerProbe(SimpleProbe):
     native_class = jclass("android.view.View")
 
-    @property
-    def background_color(self):
-        background = self.native.getBackground()
-        if isinstance(background, ColorDrawable) and (
-            background.getColor() == Color.LTGRAY
-        ):
-            return None
+    def assert_background_color(self, color):
+        actual_background_color = toga_color(self.native.getBackground().getColor())
+        if color is None:
+            assert_color(actual_background_color, toga_color(Color.LTGRAY))
         else:
-            return super().background_color
+            assert_color(actual_background_color, color)
