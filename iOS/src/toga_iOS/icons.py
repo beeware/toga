@@ -13,6 +13,11 @@ class Icon:
 
     def __init__(self, interface, path):
         self.interface = interface
+
+        if path is None:
+            self.native = None
+            raise FileNotFoundError("No runtime app icon")
+
         self.path = path
         self.native = UIImage.imageWithContentsOfFile(str(path))
         if self.native is None:

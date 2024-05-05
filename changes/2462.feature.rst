@@ -1,0 +1,1 @@
+A geolocation service was added for Android, iOS and macOS.

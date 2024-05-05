@@ -1,6 +1,8 @@
-Device and Hardware
-===================
+Hardware
+========
 
 .. toctree::
 
    camera
+   location
+   screens

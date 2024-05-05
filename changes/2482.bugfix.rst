@@ -1,0 +1,1 @@
+Some memory leaks associated with the macOS Table, Tree and DetailedList widgets were resolved.

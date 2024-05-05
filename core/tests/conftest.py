@@ -28,4 +28,10 @@ class TestApp(toga.App):
 
 @pytest.fixture
 def app(event_loop):
+    # The app icon is cached; purge the app icon cache if it exists
+    try:
+        del toga.Icon.__APP_ICON
+    except AttributeError:
+        pass
+
     return TestApp(formal_name="Test App", app_id="org.beeware.toga.test-app")

@@ -1,0 +1,1 @@
+:class:`~toga.WebView` is now compatible with Linux GTK environments only providing WebKit2 version 4.1 without version 4.0.

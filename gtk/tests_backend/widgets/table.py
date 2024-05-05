@@ -47,7 +47,7 @@ class TableProbe(SimpleProbe):
             assert gtk_row[col * 2 + 2]
 
             if icon:
-                assert gtk_row[col * 2 + 1] == icon._impl.native_16
+                assert gtk_row[col * 2 + 1] == icon._impl.native(16)
             else:
                 assert gtk_row[col * 2 + 1] is None
 

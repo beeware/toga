@@ -38,6 +38,9 @@ class AppProbe(BaseProbe):
     def logs_path(self):
         return Path(self.get_app_context().getFilesDir().getPath()) / "log"
 
+    def assert_app_icon(self, icon):
+        xfail("Android apps don't have app icons at runtime")
+
     def _menu_item(self, path):
         menu = self.main_window_probe._native_menu()
         for i_path, label in enumerate(path):
