@@ -66,7 +66,7 @@ root = ".."
 dependencies = [
     "pycairo >= 1.17.0",
     # Use the in-development !189 benzea/gio-asyncio branch
-    "pygobject @ git+https://gitlab.gnome.com/GNOME/pygojbect.git@benzea/gio-asyncio",
+    "pygobject @ git+https://gitlab.gnome.org/GNOME/pygobject.git@benzea/gio-asyncio",
     "toga-core == {version}",
 ]
 
