@@ -166,6 +166,12 @@ GDK_KEYS = {
     Gdk.KEY_Scroll_Lock: Key.SCROLLLOCK,
     Gdk.KEY_Shift_L: Key.SHIFT,
     Gdk.KEY_Shift_R: Key.SHIFT,
+    Gdk.KEY_Control_L: Key.MOD_1,
+    Gdk.KEY_Control_R: Key.MOD_1,
+    Gdk.KEY_Alt_L: Key.MOD_2,
+    Gdk.KEY_Alt_R: Key.MOD_2,
+    Gdk.KEY_Hyper_L: Key.MOD_3,
+    Gdk.KEY_Hyper_R: Key.MOD_3,
 }
 
 GTK_KEY_NAMES = {
