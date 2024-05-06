@@ -149,6 +149,11 @@ class Key(Enum):
     NUMPAD_MULTIPLY = "numpad:*"
     NUMPAD_PLUS = "numpad:+"
 
+    SCROLLLOCK = "<scroll lock>"
+    BEGIN = "<begin>"
+    MENU = "<menu>"
+    PAUSE = "<pause>"
+
     def is_printable(self) -> bool:
         """Does pressing the key result in a printable character?"""
         return not (self.value.startswith("<") and self.value.endswith(">"))

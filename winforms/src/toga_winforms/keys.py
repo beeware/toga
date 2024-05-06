@@ -41,6 +41,8 @@ WINFORMS_KEYS = {
     Key.RIGHT.value: WinForms.Keys.Right,
     Key.NUMLOCK.value: WinForms.Keys.NumLock,
     Key.NUMPAD_DECIMAL_POINT.value: WinForms.Keys.Decimal,
+    Key.SCROLLLOCK.value: WinForms.Keys.Scroll,
+    Key.MENU.value: WinForms.Keys.Menu,
 }
 WINFORMS_KEYS.update(
     {str(digit): getattr(WinForms.Keys, f"D{digit}") for digit in range(10)}
