@@ -1,1 +1,0 @@
-The system requirements were updated to be more explicit and now include details for OpenSUSE Tumbleweed.

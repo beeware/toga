@@ -1,1 +1,0 @@
-Key handling for Insert, Delete, Num Lock, Scroll Lock, and some other esoteric keys was added for GTK and Winforms. Some uses of bare Shift on GTK were also improved.

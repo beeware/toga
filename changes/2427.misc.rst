@@ -1,1 +1,0 @@
-Removed use of no-op `default` argument from `Choices` declarations.

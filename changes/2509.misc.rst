@@ -1,1 +1,0 @@
-The delay used when waiting for web-backed map rendering to complete was increased, to accommodate server-side slowdowns.
