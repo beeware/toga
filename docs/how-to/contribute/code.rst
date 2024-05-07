@@ -895,15 +895,28 @@ The corresponding change note would read something like:
 
     Date widgets can now accept US-style MM-DD-YYYY format.
 
-See `News Fragments
-<https://towncrier.readthedocs.io/en/stable/tutorial.html#creating-news-fragments>`__
-for more details on the types of news fragments you can add. You can also see
-existing examples of news fragments in the ``changes/`` folder. Name the file
-using the number of the issue that your pull request is addressing. When there
+The filename has to follow this format:
+
+    [ID].[fragmet_type].rst
+
+The ID can be either the issue number or the pull request number. When there
 isn't an existing issue, you can create the pull request in two passes: First
 submit it without a change note - this will fail, but will also assign a pull
 request number. You can then push an update to the pull request, adding the
 change note with the assigned number.
+
+The five default fragment types are:
+
+- ``feature``: Signifying a new feature.
+- ``bugfix``: Signifying a bug fix.
+- ``doc``: Signifying a documentation improvement.
+- ``removal``: Signifying a deprecation or removal of public API.
+- ``misc``: A ticket has been closed, but it is not of interest to users.
+
+For more informatin see `News Fragments
+<https://towncrier.readthedocs.io/en/stable/tutorial.html#creating-news-fragments>`__,
+
+You can also see existing examples of news fragments in the ``changes/`` folder.  
 
 It's not just about coverage!
 -----------------------------
