@@ -91,7 +91,9 @@ class Icon:
             path, or a path relative to the module that defines your Toga application
             class. This base filename should *not* contain an extension. If an extension
             is specified, it will be ignored. If the icon cannot be found, the default
-            icon will be :attr:`~toga.Icon.DEFAULT_ICON`.
+            icon will be :attr:`~toga.Icon.DEFAULT_ICON`. If an icon file is found, but
+            it cannot be loaded (due to a file format or permission error), an exception
+            will be raised.
         :param system: **For internal use only**
         """
         self.factory = get_platform_factory()
