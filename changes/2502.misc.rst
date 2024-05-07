@@ -1,1 +1,0 @@
-Updated sphinx-autobuild from 2024.2.4 to 2024.4.13 in /core.

@@ -40,7 +40,7 @@ You'll also need to install the Enchant spell checking library.
 
     Enchant can be installed as a system package:
 
-    **Ubuntu 20.04+ / Debian 10+**
+    **Ubuntu / Debian**
 
     .. code-block:: console
 
@@ -53,11 +53,17 @@ You'll also need to install the Enchant spell checking library.
 
       $ sudo dnf install enchant
 
-    **Arch, Manjaro**
+    **Arch / Manjaro**
 
     .. code-block:: console
 
       $ sudo pacman -Syu enchant
+
+    **OpenSUSE Tumbleweed**
+
+    .. code-block:: console
+
+      $ sudo zypper install enchant
 
   .. group-tab:: Windows
 

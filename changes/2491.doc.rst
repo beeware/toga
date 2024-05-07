@@ -1,1 +1,0 @@
-The README badges were updated to display correctly on GitHub.

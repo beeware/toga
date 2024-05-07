@@ -76,10 +76,11 @@ System requirements
   for WebKit2, plus the GObject Introspection bindings for WebKit2. The name of
   the system package required is distribution dependent:
 
-  - Ubuntu 18.04, 20.04; Debian 11: ``gir1.2-webkit2-4.0``
+  - Ubuntu 20.04; Debian 11: ``gir1.2-webkit2-4.0``
   - Ubuntu 22.04+; Debian 12+: ``gir1.2-webkit2-4.1``
   - Fedora: ``webkit2gtk4.1``
   - Arch/Manjaro: ``webkit2gtk-4.1``
+  - OpenSUSE Tumbleweed: ``libwebkit2gtk3 typelib(WebKit2)``
   - FreeBSD: ``webkit2-gtk3``
 
 Notes

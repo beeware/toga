@@ -1,1 +1,0 @@
-The integration of the ``asyncio`` event loop was simplified on Android. As a result, ``asyncio.loop.run_in_executor()`` now works as expected.
