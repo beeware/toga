@@ -10,10 +10,9 @@ jobs:
     permissions:
       # This permission is required for trusted publishing.
       id-token: write
-    # Let all the publication steps run to completion. This prevents one bad publish
-    # due to a transient error from stalling the publication of other packages.
-    continue-on-error: true
     strategy:
+      # One element of this matrix failing should not terminate the others mid-run.
+      # This prevents one bad platform from stalling the publication of others.
       fail-fast: false
       matrix:
         package:
