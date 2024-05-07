@@ -895,9 +895,7 @@ The corresponding change note would read something like:
 
     Date widgets can now accept US-style MM-DD-YYYY format.
 
-The filename has to follow this format:
-
-    [ID].[fragmet_type].rst
+The filename has to follow this format: ``[ID].[fragmet_type].rst``
 
 The ID can be either the issue number or the pull request number. When there
 isn't an existing issue, you can create the pull request in two passes: First
@@ -913,7 +911,7 @@ The five default fragment types are:
 - ``removal``: Signifying a deprecation or removal of public API.
 - ``misc``: A ticket has been closed, but it is not of interest to users.
 
-For more informatin see `News Fragments
+For more information about fragment types see `News Fragments
 <https://towncrier.readthedocs.io/en/stable/tutorial.html#creating-news-fragments>`__,
 
 You can also see existing examples of news fragments in the ``changes/`` folder.  
