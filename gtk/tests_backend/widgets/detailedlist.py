@@ -30,7 +30,7 @@ class DetailedListProbe(SimpleProbe):
         )
 
         if icon:
-            assert row.icon.get_pixbuf() == icon._impl.native_32
+            assert row.icon.get_pixbuf() == icon._impl.native(32)
         else:
             assert row.icon is None
 
