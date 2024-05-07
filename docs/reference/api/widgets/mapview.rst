@@ -95,6 +95,31 @@ updated and removed at runtime:
 Pins can respond to being pressed. When a pin is pressed, the map generates an
 ``on_select`` event, which receives the pin as an argument.
 
+.. _mapview-system-requires:
+
+System requirements
+-------------------
+
+* Using MapView on Windows 10 requires that your users have installed the `Edge
+  WebView2 Evergreen Runtime
+  <https://developer.microsoft.com/en-us/microsoft-edge/webview2/#download>`__.
+  This is installed by default on Windows 11.
+
+* Using MapView on Linux requires that the user has installed the system packages
+  for WebKit2, plus the GObject Introspection bindings for WebKit2. The name of
+  the system package required is distribution dependent:
+
+  - Ubuntu 20.04; Debian 11: ``gir1.2-webkit2-4.0``
+  - Ubuntu 22.04+; Debian 12+: ``gir1.2-webkit2-4.1``
+  - Fedora: ``webkit2gtk4.1``
+  - Arch/Manjaro: ``webkit2gtk-4.1``
+  - OpenSUSE Tumbleweed: ``libwebkit2gtk3 typelib(WebKit2)``
+  - FreeBSD: ``webkit2-gtk3``
+
+* Using MapView on Android requires the OSMDroid package in your project's Gradle
+  dependencies. Ensure your app declares a dependency on
+  ``org.osmdroid:osmdroid-android:6.1.0`` or later.
+
 Notes
 -----
 
@@ -106,18 +131,6 @@ Notes
   terms. In addition, we strongly encourage you to financially support the
   `OpenStreetMap Foundation <https://osmfoundation.org>`__, as their work is what allows
   Toga to provide map content on these platforms.
-
-* Using MapView on Android requires the OSMDroid package to be added your project's
-  Gradle dependencies. Ensure your app declares a dependency on
-  ``org.osmdroid:osmdroid-android:6.1.0`` or later.
-
-* Using MapView on Windows 10 requires that your users have installed the `Edge
-  WebView2 Evergreen Runtime
-  <https://developer.microsoft.com/en-us/microsoft-edge/webview2/#download>`__.
-  This is installed by default on Windows 11.
-
-* Using MapView on Linux requires that the user has installed the system packages
-  for WebKit2, plus the GObject Introspection bindings for WebKit2.
 
 * On macOS and iOS, MapView will not repeat map tiles if the viewable area at the given
   zoom level is bigger than the entire world. A zoom to a very low level will be clipped

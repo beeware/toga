@@ -1,1 +1,0 @@
-The pinned dependencies in pyproject.toml and tox.ini were updated to their latest versions.

@@ -1,1 +1,0 @@
-Updated sphinx-autodoc-typehints from 1.25.3 to 2.0.0 in /core.

@@ -50,6 +50,9 @@ class App:
     def main_loop(self):
         self.native.run()
 
+    def set_icon(self, icon):
+        pass
+
     def set_main_window(self, window):
         self.native.push_screen(self.interface.main_window.id)
 

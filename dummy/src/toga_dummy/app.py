@@ -31,6 +31,9 @@ class App(LoggedObject):
         print("Starting app using Dummy backend.")
         self._action("main loop")
 
+    def set_icon(self, icon):
+        self._action("set_icon", icon=icon)
+
     def set_main_window(self, window):
         self._action("set_main_window", window=window)
 

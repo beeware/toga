@@ -27,11 +27,9 @@ The Toga backend for Linux (and other Unix-like operating systems) is `toga-gtk
 Prerequisites
 -------------
 
-``toga-gtk`` requires GTK 3.22 or newer. This requirement can be met with with all
-versions of Ubuntu since 18.04, and all versions of Fedora since Fedora 26.
-
-Toga receives the most testing with GTK 3.24. This is the version that has shipped with
-all versions of Ubuntu since Ubuntu 20.04, and all versions of Fedora since Fedora 29.
+``toga-gtk`` requires GTK 3.22 or newer. Most testing occurs with GTK 3.24 as this is
+the version that has shipped with all versions of Ubuntu since Ubuntu 20.04, and all
+versions of Fedora since Fedora 29.
 
 The system packages that provide GTK must be installed manually:
 

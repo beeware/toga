@@ -125,7 +125,7 @@ class Window:
                 item_impl = Gtk.ToolButton()
                 if cmd.icon:
                     item_impl.set_icon_widget(
-                        Gtk.Image.new_from_pixbuf(cmd.icon._impl.native_32)
+                        Gtk.Image.new_from_pixbuf(cmd.icon._impl.native(32))
                     )
                 item_impl.set_label(cmd.text)
                 if cmd.tooltip:
@@ -142,6 +142,7 @@ class Window:
 
     def set_app(self, app):
         app.native.add_window(self.native)
+        self.native.set_icon(app.interface.icon._impl.native(72))
 
     def show(self):
         self.native.show_all()

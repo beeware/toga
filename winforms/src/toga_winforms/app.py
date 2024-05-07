@@ -296,6 +296,10 @@ class App:
         if self._exception:  # pragma: no cover
             raise self._exception
 
+    def set_icon(self, icon):
+        for window in self.interface.windows:
+            window._impl.native.Icon = icon._impl.native
+
     def set_main_window(self, window):
         self.app_context.MainForm = window._impl.native
 

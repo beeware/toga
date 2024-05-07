@@ -1,3 +1,5 @@
+import sys
+
 from System import ArgumentException
 from System.Drawing import Bitmap, Icon as WinIcon
 
@@ -11,7 +13,10 @@ class Icon:
         self.path = path
 
         try:
-            if path.suffix == ".ico":
+            if path is None:
+                self.native = WinIcon.ExtractAssociatedIcon(sys.executable)
+                self.bitmap = Bitmap.FromHicon(self.native.Handle)
+            elif path.suffix == ".ico":
                 self.native = WinIcon(str(path))
                 self.bitmap = Bitmap.FromHicon(self.native.Handle)
             else:

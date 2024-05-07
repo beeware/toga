@@ -1,4 +1,4 @@
-exclude: "^(attic|examples/.template|nursery)/"
+exclude: "^(examples/.template)/"
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.6.0
@@ -19,7 +19,7 @@ repos:
     hooks:
       - id: isort
   - repo: https://github.com/psf/black-pre-commit-mirror
-    rev: 24.3.0
+    rev: 24.4.2
     hooks:
       - id: black
         language_version: python3

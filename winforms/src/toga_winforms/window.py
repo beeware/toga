@@ -149,8 +149,6 @@ class Window(Container, Scalable):
     def show(self):
         if self.interface.content is not None:
             self.interface.content.refresh()
-        if self.interface is not self.interface.app._main_window:
-            self.native.Icon = self.interface.app.icon._impl.native
         self.update_dpi()
         self.native.Show()
 

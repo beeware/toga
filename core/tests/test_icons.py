@@ -1,9 +1,11 @@
+import sys
 from pathlib import Path
 
 import pytest
 
 import toga
 import toga_dummy
+from toga.icons import _APP_ICON
 from toga_dummy.icons import Icon as DummyIcon
 
 APP_RESOURCES = Path(__file__).parent / "resources"
@@ -111,12 +113,106 @@ def test_create(monkeypatch, app, path, system, sizes, extensions, final_paths):
     assert icon._impl.path == final_paths
 
 
-def test_create_fallback(app):
+def test_create_fallback(app, capsys):
     """If a resource doesn't exist, a fallback icon is used."""
     icon = toga.Icon("resources/missing")
 
     assert icon._impl is not None
     assert icon._impl.interface == toga.Icon.DEFAULT_ICON
+
+    # A warning was printed; allow for windows separators
+    assert (
+        "WARNING: Can't find icon resources/missing"
+        in capsys.readouterr().out.replace("\\", "/")
+    )
+
+
+def test_create_fallback_variants(monkeypatch, app, capsys):
+    """If a resource with size variants doesn't exist, a fallback icon is used."""
+    monkeypatch.setattr(DummyIcon, "SIZES", [32, 72])
+
+    icon = toga.Icon("resources/missing")
+
+    assert icon._impl is not None
+    assert icon._impl.interface == toga.Icon.DEFAULT_ICON
+
+    # A warning was printed; allow for windows separators
+    assert (
+        "WARNING: Can't find icon resources/missing"
+        in capsys.readouterr().out.replace("\\", "/")
+    )
+
+
+def test_create_app_icon(monkeypatch, app, capsys):
+    """The app icon can be constructed"""
+    # Patch the app name to a name that will exist
+    monkeypatch.setattr(app, "_app_name", "sample")
+
+    # When running under pytest, code will identify as running as a script
+
+    # Load the app default icon.
+    icon = toga.Icon(_APP_ICON)
+
+    # The impl is the app icon.
+    assert icon._impl is not None
+    assert icon._impl.interface != toga.Icon.DEFAULT_ICON
+    assert icon.path == Path("resources/sample")
+    assert icon._impl.path == Path(APP_RESOURCES / "sample.png")
+
+    # No warning was printed, as the app icon exists.
+    assert capsys.readouterr().out == ""
+
+
+def test_create_app_icon_missing(monkeypatch, app, capsys):
+    """The app icon can be constructed"""
+    # When running under pytest, code will identify as running as a script
+
+    # Load the app default icon.
+    icon = toga.Icon(_APP_ICON)
+
+    # The impl is the app icon.
+    assert icon._impl is not None
+    assert icon._impl.interface == toga.Icon.DEFAULT_ICON
+
+    # No warning was printed, as we're running as a script.
+    assert capsys.readouterr().out == ""
+
+
+def test_create_app_icon_non_script(monkeypatch, app, capsys):
+    """The icon from the binary is used when running as a packaged binary"""
+    # Patch sys.executable so the test looks like it's running as a packaged binary
+    monkeypatch.setattr(sys, "executable", "/path/to/App")
+
+    # Load the app default icon
+    icon = toga.Icon(_APP_ICON)
+
+    assert isinstance(icon, toga.Icon)
+    # App icon path reports as `resources/<app_name>`; impl is the app icon
+    assert icon.path == Path("resources/icons")
+    assert icon._impl.path == "<APP ICON>"
+
+    # No warning was printed, as we're running as a script.
+    assert capsys.readouterr().out == ""
+
+
+def test_create_app_icon_missing_non_script(monkeypatch, app, capsys):
+    """The binary executableThe app icon can be reset to the default"""
+    # Prime the dummy so the app icon cannot be loaded
+    monkeypatch.setattr(DummyIcon, "ICON_EXISTS", False)
+
+    # Patch sys.executable so the test looks like it's running as a packaged binary
+    monkeypatch.setattr(sys, "executable", "/path/to/App")
+
+    # Load the app default icon
+    icon = toga.Icon(_APP_ICON)
+
+    assert isinstance(icon, toga.Icon)
+    # App icon path reports as `resources/<app_name>`; impl is the default toga icon
+    assert icon.path == Path("resources/icons")
+    assert icon._impl.path == Path(TOGA_RESOURCES / "toga.png")
+
+    # A warning was printed; allow for windows separators
+    assert "WARNING: Can't find app icon" in capsys.readouterr().out.replace("\\", "/")
 
 
 @pytest.mark.parametrize(

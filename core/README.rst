@@ -19,7 +19,7 @@ Minimum requirements
 Toga requires **Python 3.8** or newer. Python 2 is not supported.
 
 Each backend also has specific requirements and pre-requisites. See the `platform
-documentation <https://toga.readthedocs.io/en/stable/reference/platforms.html>`__ for
+documentation <https://toga.readthedocs.io/en/latest/reference/platforms.html>`__ for
 details.
 
 Quickstart
