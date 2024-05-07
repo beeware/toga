@@ -95,7 +95,6 @@ class Icon:
         :param system: **For internal use only**
         """
         self.factory = get_platform_factory()
-
         try:
             # Try to load the icon with the given path snippet. If the request is for the
             # app icon, use ``resources/<app name>`` as the path.
@@ -130,7 +129,7 @@ class Icon:
                 )
 
             self._impl = self.factory.Icon(interface=self, path=full_path)
-        except FileNotFoundError:
+        except (FileNotFoundError, ValueError):
             # Icon path couldn't be loaded. If the path is the sentinel for the app
             # icon, and this isn't running as a script, fall back to the application
             # binary
@@ -143,7 +142,7 @@ class Icon:
                     try:
                         # Use the application binary's icon
                         self._impl = self.factory.Icon(interface=self, path=None)
-                    except FileNotFoundError:
+                    except (FileNotFoundError, ValueError):
                         # Can't find the application binary's icon.
                         print(
                             "WARNING: Can't find app icon; falling back to default icon"

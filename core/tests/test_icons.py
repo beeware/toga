@@ -113,8 +113,15 @@ def test_create(monkeypatch, app, path, system, sizes, extensions, final_paths):
     assert icon._impl.path == final_paths
 
 
-def test_create_fallback(app, capsys):
+def test_create_fallback_missing(monkeypatch, app, capsys):
     """If a resource doesn't exist, a fallback icon is used."""
+    # Prime the dummy so the app icon cannot be loaded
+    monkeypatch.setattr(
+        DummyIcon,
+        "ICON_FAILURE",
+        FileNotFoundError(),
+    )
+
     icon = toga.Icon("resources/missing")
 
     assert icon._impl is not None
@@ -123,6 +130,27 @@ def test_create_fallback(app, capsys):
     # A warning was printed; allow for windows separators
     assert (
         "WARNING: Can't find icon resources/missing"
+        in capsys.readouterr().out.replace("\\", "/")
+    )
+
+
+def test_create_fallback_unloadable(monkeypatch, app, capsys):
+    """If a resource exists, but can't be loaded, a fallback icon is used."""
+    # Prime the dummy so the app icon cannot be loaded
+    monkeypatch.setattr(
+        DummyIcon,
+        "ICON_FAILURE",
+        ValueError("Icon could not be loaded"),
+    )
+
+    icon = toga.Icon("resources/sample")
+
+    assert icon._impl is not None
+    assert icon._impl.interface == toga.Icon.DEFAULT_ICON
+
+    # A warning was printed; allow for windows separators
+    assert (
+        "WARNING: Can't find icon resources/sample"
         in capsys.readouterr().out.replace("\\", "/")
     )
 
@@ -164,7 +192,7 @@ def test_create_app_icon(monkeypatch, app, capsys):
 
 
 def test_create_app_icon_missing(monkeypatch, app, capsys):
-    """The app icon can be constructed"""
+    """If the app icon is missing, a fallback is used"""
     # When running under pytest, code will identify as running as a script
 
     # Load the app default icon.
@@ -195,10 +223,38 @@ def test_create_app_icon_non_script(monkeypatch, app, capsys):
     assert capsys.readouterr().out == ""
 
 
-def test_create_app_icon_missing_non_script(monkeypatch, app, capsys):
-    """The binary executableThe app icon can be reset to the default"""
+def test_create_app_icon_unloadable_non_script(monkeypatch, app, capsys):
+    """If the icon from binary executable cannot be loaded, the app icon is reset to the default"""
     # Prime the dummy so the app icon cannot be loaded
-    monkeypatch.setattr(DummyIcon, "ICON_EXISTS", False)
+    monkeypatch.setattr(
+        DummyIcon,
+        "ICON_FAILURE",
+        ValueError("Icon could not be loaded"),
+    )
+
+    # Patch sys.executable so the test looks like it's running as a packaged binary
+    monkeypatch.setattr(sys, "executable", "/path/to/App")
+
+    # Load the app default icon
+    icon = toga.Icon(_APP_ICON)
+
+    assert isinstance(icon, toga.Icon)
+    # App icon path reports as `resources/<app_name>`; impl is the default toga icon
+    assert icon.path == Path("resources/icons")
+    assert icon._impl.path == Path(TOGA_RESOURCES / "toga.png")
+
+    # A warning was printed; allow for windows separators
+    assert "WARNING: Can't find app icon" in capsys.readouterr().out.replace("\\", "/")
+
+
+def test_create_app_icon_missing_non_script(monkeypatch, app, capsys):
+    """If the icon from binary executable cannot be found, the app icon is reset to the default"""
+    # Prime the dummy so the app icon cannot be found
+    monkeypatch.setattr(
+        DummyIcon,
+        "ICON_FAILURE",
+        FileNotFoundError(),
+    )
 
     # Patch sys.executable so the test looks like it's running as a packaged binary
     monkeypatch.setattr(sys, "executable", "/path/to/App")
