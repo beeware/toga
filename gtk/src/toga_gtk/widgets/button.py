@@ -1,7 +1,5 @@
 from travertino.size import at_least
 
-from toga.colors import TRANSPARENT
-
 from ..libs import Gtk
 from .base import Widget
 
@@ -33,12 +31,6 @@ class Button(Widget):
 
     def set_enabled(self, value):
         self.native.set_sensitive(value)
-
-    def set_background_color(self, color):
-        # Buttons interpret TRANSPARENT backgrounds as a reset
-        if color == TRANSPARENT:
-            color = None
-        super().set_background_color(color)
 
     def rehint(self):
         # print("REHINT", self, self.native.get_preferred_width(), self.native.get_preferred_height())
