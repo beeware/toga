@@ -3,12 +3,12 @@ from unittest.mock import Mock
 from pytest import fixture
 
 import toga
-from toga.colors import TRANSPARENT
 
 from ..data import TEXTS
 from .properties import (  # noqa: F401
     test_background_color,
     test_background_color_reset,
+    test_background_color_transparent,
     test_color,
     test_color_reset,
     test_enabled,
@@ -89,10 +89,3 @@ async def test_press(widget, probe):
     await probe.press()
     await probe.redraw("Button should be pressed")
     handler.assert_called_once_with(widget)
-
-
-async def test_background_color_transparent(widget, probe):
-    "Buttons treat background transparency as a color reset."
-    widget.style.background_color = TRANSPARENT
-    await probe.redraw("Button background color should be transparent")
-    probe.assert_background_color(None)

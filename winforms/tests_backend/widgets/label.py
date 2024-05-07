@@ -1,19 +1,11 @@
 import System.Windows.Forms
 
-from toga.colors import TRANSPARENT
-
 from .base import SimpleProbe
 from .properties import toga_xalignment, toga_yalignment
 
 
 class LabelProbe(SimpleProbe):
     native_class = System.Windows.Forms.Label
-
-    def assert_background_color(self, color):
-        if color is None:
-            super().assert_background_color(TRANSPARENT)
-        else:
-            super().assert_background_color(color)
 
     @property
     def text(self):

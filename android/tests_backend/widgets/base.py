@@ -1,7 +1,6 @@
 import asyncio
 
 import pytest
-from android import R
 from android.graphics.drawable import (
     ColorDrawable,
     DrawableContainer,
@@ -11,7 +10,6 @@ from android.graphics.drawable import (
 from android.os import Build, SystemClock
 from android.view import MotionEvent, View, ViewGroup
 
-from toga.colors import TRANSPARENT
 from toga.style.pack import JUSTIFY, LEFT
 from toga_android.widgets.base import ContainedWidget
 
@@ -144,25 +142,7 @@ class SimpleProbe(BaseProbe, FontMixin):
                 return None
 
     def assert_background_color(self, color):
-        actual_background_color = self.background_color
-        if isinstance(self.impl, ContainedWidget):
-            if color is None:
-                typed_array = (
-                    self.widget.window.app._impl.native.obtainStyledAttributes(
-                        [R.attr.colorBackground]
-                    )
-                )
-                default_native_background_color = toga_color(typed_array.getColor(0, 0))
-                typed_array.recycle()
-
-                assert_color(actual_background_color, default_native_background_color)
-            else:
-                assert_color(actual_background_color, color)
-        else:
-            if color in {None, TRANSPARENT}:
-                assert_color(actual_background_color, TRANSPARENT)
-            else:
-                assert_color(actual_background_color, color)
+        assert_color(self.background_color, color)
 
     async def press(self):
         self.native.performClick()

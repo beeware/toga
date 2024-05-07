@@ -1,10 +1,7 @@
 from io import BytesIO
 
 from PIL import Image
-from System.Drawing import Color
 from System.Windows.Forms import MouseButtons, Panel
-
-from toga.colors import TRANSPARENT
 
 from .base import SimpleProbe
 
@@ -44,9 +41,3 @@ class CanvasProbe(SimpleProbe):
 
     async def alt_mouse_drag(self, x1, y1, x2, y2):
         await self.mouse_drag(x1, y1, x2, y2, button=MouseButtons.Right)
-
-    def assert_background_color(self, color):
-        if color == TRANSPARENT:
-            assert self.impl.native.BackColor == Color.Transparent
-        else:
-            super().assert_background_color(color)

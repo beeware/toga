@@ -20,7 +20,12 @@ def native_color_from_toga_color(toga_color):
 
 
 def toga_color_from_native_color(native_color):
-    return rgba(native_color.R, native_color.G, native_color.B, native_color.A / 255)
+    if native_color == Color.Transparent:
+        return TRANSPARENT
+    else:
+        return rgba(
+            native_color.R, native_color.G, native_color.B, native_color.A / 255
+        )
 
 
 def alpha_blending_over_operation(front_color, back_color):

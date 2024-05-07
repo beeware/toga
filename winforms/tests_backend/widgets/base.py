@@ -1,10 +1,10 @@
 import pytest
 from pytest import approx
 from System import EventArgs, Object
-from System.Drawing import SystemColors
+from System.Drawing import Color, SystemColors
 from System.Windows.Forms import MouseButtons, MouseEventArgs
 
-from toga.colors import TRANSPARENT, rgba
+from toga.colors import TRANSPARENT
 from toga.style.pack import JUSTIFY, LEFT
 from toga_winforms.colors import (
     alpha_blending_over_operation,
@@ -13,7 +13,7 @@ from toga_winforms.colors import (
 
 from ..fonts import FontMixin
 from ..probe import BaseProbe
-from .properties import toga_color
+from .properties import assert_color, toga_color
 
 
 class SimpleProbe(BaseProbe, FontMixin):
@@ -60,32 +60,29 @@ class SimpleProbe(BaseProbe, FontMixin):
 
     @property
     def background_color(self):
-        return toga_color_from_native_color(self.native.BackColor).rgba
+        return toga_color_from_native_color(self.native.BackColor)
 
     def assert_background_color(self, color):
-        if color is None:
-            widget_back_color = toga_color_from_native_color(self.native.BackColor).rgba
-            default_back_color = toga_color_from_native_color(SystemColors.Control).rgba
-            assert widget_back_color == default_back_color
+        widget_back_color = self.background_color
+        if self.widget.parent:
+            parent_back_color = toga_color_from_native_color(
+                self.widget.parent._impl.native.BackColor
+            ).rgba
         else:
-            if self.widget.parent:
-                parent_color = toga_color_from_native_color(
-                    self.widget.parent._impl.native.BackColor
-                ).rgba
-            else:
-                parent_color = toga_color_from_native_color(SystemColors.Control).rgba
+            parent_back_color = toga_color_from_native_color(SystemColors.Control).rgba
 
-            if color is TRANSPARENT:
-                requested_color = rgba(0, 0, 0, 0)
-            else:
-                requested_color = color.rgba
+        if (color is TRANSPARENT) and (self.native.BackColor != Color.Transparent):
+            assert_color(widget_back_color, parent_back_color)
+        elif (color is TRANSPARENT) or (color.a == 1):
+            assert_color(widget_back_color, color)
+        else:
+            requested_color = color.rgba
 
             blended_color = alpha_blending_over_operation(
-                requested_color, parent_color
+                requested_color, parent_back_color
             ).rgba
-            widget_back_color = toga_color_from_native_color(self.native.BackColor).rgba
             # Both of them should also have an alpha value of 1.
-            assert widget_back_color == blended_color
+            assert_color(widget_back_color, blended_color)
 
     @property
     def font(self):

@@ -28,10 +28,6 @@ class SelectionProbe(SimpleProbe):
         xfail("Can't change the font of Selection on this backend")
 
     @property
-    def background_color(self):
-        xfail("Can't change the background color of Selection on this backend")
-
-    @property
     def titles(self):
         return [self.native.getItemAtPosition(i) for i in range(self.native.getCount())]
 
