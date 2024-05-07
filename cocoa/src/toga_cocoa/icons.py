@@ -16,16 +16,19 @@ class Icon:
         if path is None:
             # Look to the app bundle, and get the icon. Set self.path as None
             # as an indicator that this is the app's default icon.
+            # This bundle icon file definition might not contain an extension,
+            # even thought the actual file will; so force the .icns extension.
             bundle_icon = Path(
                 NSBundle.mainBundle.objectForInfoDictionaryKey("CFBundleIconFile")
             )
             path = NSBundle.mainBundle.pathForResource(
                 bundle_icon.stem,
-                ofType=bundle_icon.suffix,
+                ofType=".icns",
             )
             # If the icon file doesn't exist, raise the problem as FileNotFoundError
+            # This can't be tested, as the app will always have an icon.
             if not Path(path).is_file():
-                raise FileNotFoundError()
+                raise FileNotFoundError()  # pragma: no cover
 
             self.path = None
         else:
