@@ -135,7 +135,7 @@ def test_create_fallback_missing(monkeypatch, app, capsys):
 
 
 def test_create_fallback_unloadable(monkeypatch, app, capsys):
-    """If a resource exists, but can't be loaded, a fallback icon is used."""
+    """If a resource exists, but can't be loaded, an error is raised."""
     # Prime the dummy so the app icon cannot be loaded
     monkeypatch.setattr(
         DummyIcon,
@@ -143,16 +143,8 @@ def test_create_fallback_unloadable(monkeypatch, app, capsys):
         ValueError("Icon could not be loaded"),
     )
 
-    icon = toga.Icon("resources/sample")
-
-    assert icon._impl is not None
-    assert icon._impl.interface == toga.Icon.DEFAULT_ICON
-
-    # A warning was printed; allow for windows separators
-    assert (
-        "WARNING: Can't find icon resources/sample"
-        in capsys.readouterr().out.replace("\\", "/")
-    )
+    with pytest.raises(ValueError):
+        toga.Icon("resources/sample")
 
 
 def test_create_fallback_variants(monkeypatch, app, capsys):
@@ -221,30 +213,6 @@ def test_create_app_icon_non_script(monkeypatch, app, capsys):
 
     # No warning was printed, as we're running as a script.
     assert capsys.readouterr().out == ""
-
-
-def test_create_app_icon_unloadable_non_script(monkeypatch, app, capsys):
-    """If the icon from binary executable cannot be loaded, the app icon is reset to the default"""
-    # Prime the dummy so the app icon cannot be loaded
-    monkeypatch.setattr(
-        DummyIcon,
-        "ICON_FAILURE",
-        ValueError("Icon could not be loaded"),
-    )
-
-    # Patch sys.executable so the test looks like it's running as a packaged binary
-    monkeypatch.setattr(sys, "executable", "/path/to/App")
-
-    # Load the app default icon
-    icon = toga.Icon(_APP_ICON)
-
-    assert isinstance(icon, toga.Icon)
-    # App icon path reports as `resources/<app_name>`; impl is the default toga icon
-    assert icon.path == Path("resources/icons")
-    assert icon._impl.path == Path(TOGA_RESOURCES / "toga.png")
-
-    # A warning was printed; allow for windows separators
-    assert "WARNING: Can't find app icon" in capsys.readouterr().out.replace("\\", "/")
 
 
 def test_create_app_icon_missing_non_script(monkeypatch, app, capsys):

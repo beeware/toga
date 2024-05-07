@@ -23,6 +23,10 @@ class Icon:
                 bundle_icon.stem,
                 ofType=bundle_icon.suffix,
             )
+            # If the icon file doesn't exist, raise the problem as FileNotFoundError
+            if not Path(path).is_file():
+                raise FileNotFoundError()
+
             self.path = None
         else:
             self.path = path

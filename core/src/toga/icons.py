@@ -129,8 +129,8 @@ class Icon:
                 )
 
             self._impl = self.factory.Icon(interface=self, path=full_path)
-        except (FileNotFoundError, ValueError):
-            # Icon path couldn't be loaded. If the path is the sentinel for the app
+        except FileNotFoundError:
+            # Icon path couldn't be found. If the path is the sentinel for the app
             # icon, and this isn't running as a script, fall back to the application
             # binary
             if path is _APP_ICON:
@@ -142,7 +142,7 @@ class Icon:
                     try:
                         # Use the application binary's icon
                         self._impl = self.factory.Icon(interface=self, path=None)
-                    except (FileNotFoundError, ValueError):
+                    except FileNotFoundError:
                         # Can't find the application binary's icon.
                         print(
                             "WARNING: Can't find app icon; falling back to default icon"
