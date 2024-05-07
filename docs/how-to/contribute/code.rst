@@ -914,7 +914,9 @@ The five default fragment types are:
 For more information about fragment types see `News Fragments
 <https://towncrier.readthedocs.io/en/stable/tutorial.html#creating-news-fragments>`__,
 
-You can also see existing examples of news fragments in the ``changes/`` folder.  
+You can also see existing examples of news fragments in the ``changes/`` folder. 
+If the folder is empty, it's because it's cleaned up on every release. 
+Try some commit before the release itself.
 
 It's not just about coverage!
 -----------------------------
