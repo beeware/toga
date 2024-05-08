@@ -2,6 +2,8 @@ from decimal import ROUND_UP
 
 import System.Windows.Forms as WinForms
 
+from toga.colors import TRANSPARENT
+
 from .base import Widget
 
 # Implementation notes
@@ -83,3 +85,6 @@ class ProgressBar(Widget):
         self.interface.intrinsic.height = self.scale_out(
             self.native.PreferredSize.Height, ROUND_UP
         )
+
+    def set_background_color(self, color):
+        super().set_background_color(TRANSPARENT if color is None else color)

@@ -6,6 +6,7 @@ from android.widget import SeekBar
 from java import dynamic_proxy
 
 import toga
+from toga.colors import TRANSPARENT
 from toga_android.widgets.base import ContainedWidget
 
 # Implementation notes
@@ -70,3 +71,6 @@ class Slider(ContainedWidget, toga.widgets.slider.IntSliderImpl):
         self.interface.intrinsic.height = self.scale_out(
             self.native.getMeasuredHeight(), ROUND_UP
         )
+
+    def set_background_color(self, value):
+        self.set_background_simple(TRANSPARENT if value is None else value)
