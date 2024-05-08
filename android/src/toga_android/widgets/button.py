@@ -5,6 +5,8 @@ from android.widget import Button as A_Button
 from java import dynamic_proxy
 from travertino.size import at_least
 
+from toga.colors import TRANSPARENT
+
 from .label import TextViewWidget
 
 
@@ -50,7 +52,7 @@ class Button(TextViewWidget):
         self.native.setEnabled(value)
 
     def set_background_color(self, value):
-        self.set_background_filter(value)
+        self.set_background_filter(None if value in {None, TRANSPARENT} else value)
 
     def rehint(self):
         if self._icon:

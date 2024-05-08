@@ -1,4 +1,6 @@
-from toga.colors import rgba
+import pytest
+
+from toga.colors import TRANSPARENT, rgba
 from toga.style.pack import CENTER, JUSTIFY, LEFT, RIGHT
 from toga_cocoa.libs.appkit import (
     NSCenterTextAlignment,
@@ -27,3 +29,18 @@ def toga_alignment(alignment):
         NSCenterTextAlignment: CENTER,
         NSJustifiedTextAlignment: JUSTIFY,
     }[alignment]
+
+
+def assert_color(actual, expected):
+    if expected in {None, TRANSPARENT}:
+        assert expected == actual
+    else:
+        if actual in {None, TRANSPARENT}:
+            assert expected == actual
+        else:
+            assert (actual.r, actual.g, actual.b, actual.a) == (
+                expected.r,
+                expected.g,
+                expected.b,
+                pytest.approx(expected.a, abs=(1 / 255)),
+            )

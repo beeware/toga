@@ -9,7 +9,7 @@ from org.beeware.android import MainActivity
 from travertino.size import at_least
 
 from toga.constants import CENTER, JUSTIFY, LEFT, RIGHT
-from toga_android.colors import DEFAULT, native_color_from_toga_color
+from toga_android.colors import DEFAULT_BACKGROUND_COLOR, native_color_from_toga_color
 
 
 class Scalable:
@@ -264,6 +264,8 @@ class ContainedWidget(Widget):
     def set_background_color(self, value):
         self.native_widget_container.setBackground(
             ColorDrawable(
-                native_color_from_toga_color(DEFAULT if value is None else value)
+                DEFAULT_BACKGROUND_COLOR
+                if value is None
+                else native_color_from_toga_color(value)
             )
         )

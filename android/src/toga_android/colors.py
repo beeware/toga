@@ -6,16 +6,14 @@ from travertino.colors import TRANSPARENT
 
 from toga.colors import rgba
 
-DEFAULT = "default"
 typed_array = MainActivity.singletonThis.getTheme().obtainStyledAttributes(
     [R.attr.colorBackground]
 )
-DEFAULT_VALUE = typed_array.getColor(0, 0)
+DEFAULT_BACKGROUND_COLOR = typed_array.getColor(0, 0)
 typed_array.recycle()
 
 COLOR_CACHE = {
     TRANSPARENT: Color.TRANSPARENT,
-    DEFAULT: DEFAULT_VALUE,
 }
 
 

@@ -1,12 +1,11 @@
 import pytest
 from rubicon.objc import ObjCClass
 
-from toga.colors import TRANSPARENT
 from toga_iOS.libs import UIApplication
 
 from ..fonts import FontMixin
 from ..probe import BaseProbe
-from .properties import toga_color
+from .properties import assert_color, toga_color
 
 # From UIControl.h
 UIControlEventTouchDown = 1 << 0
@@ -135,25 +134,8 @@ class SimpleProbe(BaseProbe, FontMixin):
     def background_color(self):
         return toga_color(self.native.backgroundColor)
 
-    # -----------------Temporary Fix-----------------
-    def assert_color(self, actual, expected):
-        if expected in {None, TRANSPARENT}:
-            assert expected == actual
-        else:
-            if actual in {None, TRANSPARENT}:
-                assert expected == actual
-            else:
-                assert (actual.r, actual.g, actual.b, actual.a) == (
-                    expected.r,
-                    expected.g,
-                    expected.b,
-                    pytest.approx(expected.a, abs=(1 / 255)),
-                )
-
     def assert_background_color(self, color):
-        self.assert_color(self.background_color, color)
-
-    # -----------------------------------------------
+        assert_color(self.background_color, color)
 
     @property
     def font(self):

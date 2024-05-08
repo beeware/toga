@@ -4,6 +4,7 @@ import System.Windows.Forms as WinForms
 from System.Drawing import SystemColors
 from travertino.size import at_least
 
+from toga.colors import TRANSPARENT
 from toga_winforms.colors import toga_color_from_native_color
 
 from ..libs.wrapper import WeakrefCallable
@@ -47,7 +48,7 @@ class Button(Widget):
             self.native.Image = None
 
     def set_background_color(self, color):
-        if color is None:
+        if color in {None, TRANSPARENT}:
             super().set_background_color(
                 toga_color_from_native_color(SystemColors.Control)
             )
