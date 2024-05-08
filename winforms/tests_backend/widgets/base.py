@@ -13,7 +13,7 @@ from toga_winforms.colors import (
 
 from ..fonts import FontMixin
 from ..probe import BaseProbe
-from .properties import assert_color, toga_color
+from .properties import toga_color
 
 
 class SimpleProbe(BaseProbe, FontMixin):
@@ -62,7 +62,7 @@ class SimpleProbe(BaseProbe, FontMixin):
     def background_color(self):
         return toga_color_from_native_color(self.native.BackColor)
 
-    def assert_background_color(self, color):
+    def assert_background_color(self, color, assert_color_function):
         widget_back_color = self.background_color
         if self.widget.parent:
             parent_back_color = toga_color_from_native_color(
@@ -72,9 +72,9 @@ class SimpleProbe(BaseProbe, FontMixin):
             parent_back_color = toga_color_from_native_color(SystemColors.Control).rgba
 
         if (color is TRANSPARENT) and (self.native.BackColor != Color.Transparent):
-            assert_color(widget_back_color, parent_back_color)
+            assert_color_function(widget_back_color, parent_back_color)
         elif (color is TRANSPARENT) or (color.a == 1):
-            assert_color(widget_back_color, color)
+            assert_color_function(widget_back_color, color)
         else:
             requested_color = color.rgba
 
@@ -82,7 +82,7 @@ class SimpleProbe(BaseProbe, FontMixin):
                 requested_color, parent_back_color
             ).rgba
             # Both of them should also have an alpha value of 1.
-            assert_color(widget_back_color, blended_color)
+            assert_color_function(widget_back_color, blended_color)
 
     @property
     def font(self):

@@ -1,8 +1,7 @@
-import pytest
 from System.Drawing import ContentAlignment
 from System.Windows.Forms import HorizontalAlignment
 
-from toga.colors import TRANSPARENT, rgba
+from toga.colors import rgba
 from toga.style.pack import BOTTOM, CENTER, LEFT, RIGHT, TOP
 
 
@@ -40,18 +39,3 @@ def toga_yalignment(alignment):
         ContentAlignment.BottomCenter: BOTTOM,
         ContentAlignment.BottomRight: BOTTOM,
     }[alignment]
-
-
-def assert_color(actual, expected):
-    if expected in {None, TRANSPARENT}:
-        assert expected == actual
-    else:
-        if actual in {None, TRANSPARENT}:
-            assert expected == actual
-        else:
-            assert (actual.r, actual.g, actual.b, actual.a) == (
-                expected.r,
-                expected.g,
-                expected.b,
-                pytest.approx(expected.a, abs=(1 / 255)),
-            )

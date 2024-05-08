@@ -381,7 +381,8 @@ async def test_background_color(widget, probe):
     for color in COLORS:
         widget.style.background_color = color
         await probe.redraw("Widget background color should be %s" % color)
-        probe.assert_background_color(color)
+        # Passing the assert_color function to prevent code duplication in each backend
+        probe.assert_background_color(color, assert_color_function=assert_color)
 
 
 async def test_background_color_reset(widget, probe):
@@ -392,12 +393,12 @@ async def test_background_color_reset(widget, probe):
     # Set the background color to something different
     widget.style.background_color = RED
     await probe.redraw("Widget background color should be RED")
-    probe.assert_background_color(named_color(RED))
+    probe.assert_background_color(named_color(RED), assert_color_function=assert_color)
 
     # Reset the background color, and check that it has been restored to the original
     del widget.style.background_color
     await probe.redraw(message="Widget background color should be restored to original")
-    probe.assert_background_color(original)
+    probe.assert_background_color(original, assert_color_function=assert_color)
 
 
 async def test_background_color_transparent(widget, probe):
@@ -407,12 +408,12 @@ async def test_background_color_transparent(widget, probe):
     # Change the background color to transparent
     widget.style.background_color = TRANSPARENT
     await probe.redraw("Widget background color should be TRANSPARENT")
-    probe.assert_background_color(TRANSPARENT)
+    probe.assert_background_color(TRANSPARENT, assert_color_function=assert_color)
 
     # Restore original background color
     del widget.style.background_color
     await probe.redraw("Widget background color should be restored to original")
-    probe.assert_background_color(original)
+    probe.assert_background_color(original, assert_color_function=assert_color)
 
 
 async def test_alignment(widget, probe, verify_vertical_alignment):

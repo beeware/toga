@@ -6,7 +6,7 @@ from toga_cocoa.libs import NSEvent, NSEventType
 
 from ..fonts import FontMixin
 from ..probe import BaseProbe
-from .properties import assert_color, toga_color
+from .properties import toga_color
 
 
 class SimpleProbe(BaseProbe, FontMixin):
@@ -93,8 +93,8 @@ class SimpleProbe(BaseProbe, FontMixin):
         else:
             return TRANSPARENT
 
-    def assert_background_color(self, color):
-        assert_color(self.background_color, color)
+    def assert_background_color(self, color, assert_color_function):
+        assert_color_function(self.background_color, color)
 
     @property
     def font(self):

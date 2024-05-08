@@ -15,7 +15,7 @@ from toga_android.widgets.base import ContainedWidget
 
 from ..fonts import FontMixin
 from ..probe import BaseProbe
-from .properties import assert_color, toga_color, toga_vertical_alignment
+from .properties import toga_color, toga_vertical_alignment
 
 
 class SimpleProbe(BaseProbe, FontMixin):
@@ -141,8 +141,8 @@ class SimpleProbe(BaseProbe, FontMixin):
             else:
                 return None
 
-    def assert_background_color(self, color):
-        assert_color(self.background_color, color)
+    def assert_background_color(self, color, assert_color_function):
+        assert_color_function(self.background_color, color)
 
     async def press(self):
         self.native.performClick()
