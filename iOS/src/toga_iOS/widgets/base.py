@@ -90,13 +90,8 @@ class Widget:
         pass
 
     def set_background_color(self, color):
-        # By default, background color can't be changed
-        pass
-
-    # TODO: check if it's safe to make this the default implementation.
-    def set_background_color_simple(self, value):
-        if value:
-            self.native.backgroundColor = native_color(value)
+        if color:
+            self.native.backgroundColor = native_color(color)
         else:
             try:
                 # systemBackgroundColor() was introduced in iOS 13

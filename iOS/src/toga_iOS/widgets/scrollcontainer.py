@@ -1,6 +1,7 @@
 from rubicon.objc import SEL, NSMakePoint, NSMakeSize, objc_method, objc_property
 from travertino.size import at_least
 
+from toga.colors import TRANSPARENT
 from toga_iOS.container import Container
 from toga_iOS.libs import UIScrollView
 from toga_iOS.widgets.base import Widget
@@ -66,8 +67,8 @@ class ScrollContainer(Widget):
 
         self.native.contentSize = NSMakeSize(width, height)
 
-    def set_background_color(self, value):
-        self.set_background_color_simple(value)
+    def set_background_color(self, color):
+        super().set_background_color(TRANSPARENT if color is None else color)
 
     def rehint(self):
         self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
