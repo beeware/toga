@@ -1,1 +1,0 @@
-A typo in a Table code example was corrected.

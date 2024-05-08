@@ -1,1 +1,0 @@
-If an application icon cannot be found, Toga will now fall back to a default icon.
