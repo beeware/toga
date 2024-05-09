@@ -9,7 +9,7 @@ def native_color_from_toga_color(toga_color):
         return None
 
     try:
-        toga_color = COLOR_CACHE[toga_color]
+        native_color = COLOR_CACHE[toga_color]
     except KeyError:
         # Color needs to be retained to be kept in the cache
         native_color = UIColor.colorWithRed(
