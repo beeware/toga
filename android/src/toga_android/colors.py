@@ -35,7 +35,7 @@ def native_color_from_toga_color(toga_color):
 def toga_color_from_native_color(native_color):
     # Select the `int` overloads rather than the `long` ones.
     color_int = jint(native_color)
-    if color_int == 0:
+    if color_int == 0:  # pragma: no cover
         return TRANSPARENT
     else:
         return rgba(
