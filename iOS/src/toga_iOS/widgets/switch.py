@@ -1,7 +1,7 @@
 from rubicon.objc import SEL, CGSize, objc_method, objc_property
 from travertino.size import at_least
 
-from toga_iOS.colors import native_color
+from toga_iOS.colors import native_color_from_toga_color
 from toga_iOS.libs import (
     UIControlEventValueChanged,
     UILabel,
@@ -76,7 +76,7 @@ class Switch(Widget):
         self.native_label.font = font._impl.native
 
     def set_color(self, value):
-        self.native_label.textColor = native_color(value)
+        self.native_label.textColor = native_color_from_toga_color(value)
 
     def rehint(self):
         label_size = self.native_label.systemLayoutSizeFittingSize(CGSize(0, 0))

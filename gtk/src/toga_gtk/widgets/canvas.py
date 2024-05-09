@@ -7,7 +7,7 @@ from travertino.size import at_least
 from toga import Font
 from toga.constants import Baseline, FillRule
 from toga.fonts import SYSTEM_DEFAULT_FONT_SIZE
-from toga_gtk.colors import native_color
+from toga_gtk.colors import native_color_from_toga_color
 from toga_gtk.libs import Gdk, Gtk, Pango, PangoCairo, cairo
 
 from .base import Widget
@@ -181,7 +181,7 @@ class Canvas(Widget):
     # Drawing Paths
 
     def fill(self, color, fill_rule, cairo_context, **kwargs):
-        cairo_context.set_source_rgba(*native_color(color))
+        cairo_context.set_source_rgba(*native_color_from_toga_color(color))
         if fill_rule == FillRule.EVENODD:
             cairo_context.set_fill_rule(cairo.FILL_RULE_EVEN_ODD)
         else:
@@ -190,7 +190,7 @@ class Canvas(Widget):
         cairo_context.fill()
 
     def stroke(self, color, line_width, line_dash, cairo_context, **kwargs):
-        cairo_context.set_source_rgba(*native_color(color))
+        cairo_context.set_source_rgba(*native_color_from_toga_color(color))
         cairo_context.set_line_width(line_width)
         if line_dash is not None:
             cairo_context.set_dash(line_dash)

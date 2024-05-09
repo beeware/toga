@@ -15,10 +15,7 @@ class Label(Widget):
         self.native.AutoSizeMode = WinForms.AutoSizeMode.GrowAndShrink
 
     def set_background_color(self, color):
-        if color is None:
-            super().set_background_color(TRANSPARENT)
-        else:
-            super().set_background_color(color)
+        super().set_background_color(TRANSPARENT if color is None else color)
 
     def set_alignment(self, value):
         self.native.TextAlign = TextAlignment(value)

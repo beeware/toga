@@ -19,17 +19,17 @@ COLOR_CACHE = {
 
 def native_color_from_toga_color(toga_color):
     try:
-        color = COLOR_CACHE[toga_color]
+        native_color = COLOR_CACHE[toga_color]
     except KeyError:
-        color = Color.argb(
+        native_color = Color.argb(
             int(toga_color.rgba.a * 255),
             int(toga_color.rgba.r),
             int(toga_color.rgba.g),
             int(toga_color.rgba.b),
         )
-        COLOR_CACHE[toga_color] = color
+        COLOR_CACHE[toga_color] = native_color
 
-    return color
+    return native_color
 
 
 def toga_color_from_native_color(native_color):

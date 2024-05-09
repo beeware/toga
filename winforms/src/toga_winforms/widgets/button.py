@@ -48,12 +48,11 @@ class Button(Widget):
             self.native.Image = None
 
     def set_background_color(self, color):
-        if color in {None, TRANSPARENT}:
-            super().set_background_color(
-                toga_color_from_native_color(SystemColors.Control)
-            )
-        else:
-            super().set_background_color(color)
+        super().set_background_color(
+            toga_color_from_native_color(SystemColors.Control)
+            if color in {None, TRANSPARENT}
+            else color
+        )
 
     def rehint(self):
         self.interface.intrinsic.width = self.scale_out(

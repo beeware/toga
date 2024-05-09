@@ -29,13 +29,11 @@ class Divider(Widget):
             self.native.Width = 1
 
     def set_background_color(self, color):
-        if color is None:
-            # Default Background color needs to be set or else divider will not be visible.
-            super().set_background_color(
-                toga_color_from_native_color(SystemColors.ControlDark)
-            )
-        else:
-            super().set_background_color(color)
+        super().set_background_color(
+            toga_color_from_native_color(SystemColors.ControlDark)
+            if color is None
+            else color
+        )
 
     def rehint(self):
         if self.get_direction() == self.interface.HORIZONTAL:

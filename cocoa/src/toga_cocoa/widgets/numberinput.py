@@ -6,7 +6,7 @@ from travertino.size import at_least
 
 from toga.colors import TRANSPARENT
 from toga.widgets.numberinput import _clean_decimal, _clean_decimal_str
-from toga_cocoa.colors import native_color
+from toga_cocoa.colors import native_color_from_toga_color
 from toga_cocoa.libs import (
     NSLayoutAttributeBottom,
     NSLayoutAttributeCenterY,
@@ -169,7 +169,7 @@ class NumberInput(Widget):
         self.add_constraints()
 
     def set_color(self, color):
-        self.native_input.textColor = native_color(color)
+        self.native_input.textColor = native_color_from_toga_color(color)
 
     def set_background_color(self, color):
         if color is TRANSPARENT:
@@ -179,7 +179,7 @@ class NumberInput(Widget):
         else:
             self.native_input.drawsBackground = True
             self.native_input.bezeled = True
-            self.native_input.backgroundColor = native_color(color)
+            self.native_input.backgroundColor = native_color_from_toga_color(color)
 
     def has_focus(self):
         # When the NSTextField gets focus, a field editor is created, and that editor

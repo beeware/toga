@@ -91,13 +91,13 @@ class Selection(ContainedWidget):
             self.native.getMeasuredHeight(), ROUND_UP
         )
 
-    def set_background_color(self, value):
-        super().set_background_color(value)
+    def set_background_color(self, color):
+        super().set_background_color(color)
         # Also set the background color of the dropdown popup.
         self.native.setPopupBackgroundDrawable(
             ColorDrawable(
                 DEFAULT_BACKGROUND_COLOR
-                if value is None
-                else native_color_from_toga_color(value)
+                if color is None
+                else native_color_from_toga_color(color)
             )
         )

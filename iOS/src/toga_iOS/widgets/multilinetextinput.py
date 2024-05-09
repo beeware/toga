@@ -3,7 +3,7 @@ from ctypes import c_void_p
 from rubicon.objc import CGPoint, NSRange, objc_method, objc_property, send_super
 from travertino.size import at_least
 
-from toga_iOS.colors import native_color
+from toga_iOS.colors import native_color_from_toga_color
 from toga_iOS.libs import (
     NSLayoutAttributeBottom,
     NSLayoutAttributeLeading,
@@ -137,7 +137,7 @@ class MultilineTextInput(Widget):
         self.interface.on_change()
 
     def set_color(self, value):
-        color = native_color(value)
+        color = native_color_from_toga_color(value)
         self.native.textColor = color
         self.placeholder_label.textColor = color
 

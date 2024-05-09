@@ -17,7 +17,7 @@ from travertino.size import at_least
 
 from toga.colors import BLACK, TRANSPARENT, color as named_color
 from toga.constants import Baseline, FillRule
-from toga_iOS.colors import native_color
+from toga_iOS.colors import native_color_from_toga_color
 from toga_iOS.images import nsdata_to_bytes
 from toga_iOS.libs import (
     CGPathDrawingMode,
@@ -227,7 +227,7 @@ class Canvas(Widget):
         textAttributes[NSFontAttributeName] = font.native
 
         if "stroke_color" in kwargs:
-            textAttributes[NSStrokeColorAttributeName] = native_color(
+            textAttributes[NSStrokeColorAttributeName] = native_color_from_toga_color(
                 kwargs["stroke_color"]
             )
 
@@ -238,8 +238,8 @@ class Canvas(Widget):
                 stroke_width *= -1
             textAttributes[NSStrokeWidthAttributeName] = stroke_width
         if "fill_color" in kwargs:
-            textAttributes[NSForegroundColorAttributeName] = native_color(
-                kwargs["fill_color"]
+            textAttributes[NSForegroundColorAttributeName] = (
+                native_color_from_toga_color(kwargs["fill_color"])
             )
 
         text_string = NSAttributedString.alloc().initWithString(

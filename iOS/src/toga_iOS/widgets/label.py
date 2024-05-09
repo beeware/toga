@@ -4,7 +4,7 @@ from rubicon.objc import CGRect, NSInteger, NSMakeRect, objc_method, send_super
 from travertino.size import at_least
 
 from toga.colors import TRANSPARENT
-from toga_iOS.colors import native_color
+from toga_iOS.colors import native_color_from_toga_color
 from toga_iOS.libs import (
     NSLineBreakByClipping,
     NSTextAlignment,
@@ -45,7 +45,7 @@ class Label(Widget):
         self.native.textAlignment = NSTextAlignment(value)
 
     def set_color(self, value):
-        self.native.textColor = native_color(value)
+        self.native.textColor = native_color_from_toga_color(value)
 
     def set_background_color(self, color):
         super().set_background_color(TRANSPARENT if color is None else color)
