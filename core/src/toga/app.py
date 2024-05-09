@@ -349,10 +349,8 @@ class App:
                For example, an ``app_id`` of ``com.example.my-app`` would yield a
                distribution name of ``my-app``.
             #. As a last resort, the name ``toga``.
-        :param icon: The :any:`icon <IconContent>` for the app. If not provided, Toga
-            will attempt to load an icon from ``resources/app_name``, where ``app_name``
-            is defined above. If no resource matching this name can be found, a warning
-            will be printed, and the app will fall back to a default icon.
+        :param icon: The :any:`icon <IconContent>` for the app. Defaults to
+            :attr:`toga.Icon.APP_ICON`.
         :param author: The person or organization to be credited as the author of the
             app. If not provided, the metadata key ``Author`` will be used.
         :param version: The version number of the app.  If not provided, the metadata
@@ -472,12 +470,10 @@ class App:
         # Instantiate the paths instance for this app.
         self._paths = Paths()
 
-        # If an icon (or icon name) has been explicitly provided, use it;
-        # otherwise, the icon will be based on the distribution name.
-        if icon:
-            self.icon = icon
+        if icon is None:
+            self.icon = Icon.APP_ICON
         else:
-            self.icon = f"resources/{app_name}"
+            self.icon = icon
 
         self.on_exit = on_exit
 
@@ -544,18 +540,22 @@ class App:
         """The Icon for the app.
 
         Can be specified as any valid :any:`icon content <IconContent>`.
-
-        When setting the icon, you can provide either an :any:`Icon` instance, or a
-        path that will be passed to the ``Icon`` constructor.
         """
         return self._icon
 
     @icon.setter
-    def icon(self, icon_or_name: IconContent | None) -> None:
+    def icon(self, icon_or_name: IconContent) -> None:
         if isinstance(icon_or_name, Icon):
             self._icon = icon_or_name
         else:
             self._icon = Icon(icon_or_name)
+
+        try:
+            self._impl.set_icon(self._icon)
+        except AttributeError:
+            # The first time the icon is set, it is *before* the impl has been created,
+            # so that the app instance can be instantiated with the correct icon.
+            pass
 
     @property
     def id(self) -> str:

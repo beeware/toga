@@ -29,7 +29,7 @@ jobs:
           echo "VERSION=${GITHUB_REF_NAME#v}" >> $GITHUB_ENV
 
       - name: Get packages
-        uses: actions/download-artifact@v4.1.5
+        uses: actions/download-artifact@v4.1.7
         with:
           pattern: ${{ needs.ci.outputs.artifact-name }}-*
           merge-multiple: true
@@ -49,7 +49,11 @@ jobs:
     permissions:
       # This permission is required for trusted publishing.
       id-token: write
+    continue-on-error: true
     strategy:
+      # One element of this matrix failing should not terminate the others mid-run.
+      # This prevents one bad platform from stalling the publication of others.
+      fail-fast: false
       matrix:
         package:
         - "toga"
@@ -65,7 +69,7 @@ jobs:
         - "toga_winforms"
     steps:
       - name: Get packages
-        uses: actions/download-artifact@v4.1.5
+        uses: actions/download-artifact@v4.1.7
         with:
           pattern: ${{ needs.ci.outputs.artifact-name }}-*
           merge-multiple: true

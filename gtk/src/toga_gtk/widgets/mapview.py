@@ -37,7 +37,7 @@ MAPVIEW_HTML_CONTENT = """<!DOCTYPE html>
         const map = L.map("map");
         const pins = {};
         const tiles = L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
-            maxZoom: 19,
+            maxZoom: 20,
             attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
         }).addTo(map);
     </script>
@@ -71,7 +71,9 @@ class MapView(Widget):
         if WebKit2 is None:  # pragma: no cover
             raise RuntimeError(
                 "Unable to import WebKit2. Ensure that the system package "
-                "providing Webkit2 and its GTK bindings have been installed."
+                "providing WebKit2 and its GTK bindings have been installed. "
+                "See https://toga.readthedocs.io/en/stable/reference/api/widgets/mapview.html#system-requirements "
+                "for details."
             )
 
         self.native = WebKit2.WebView()

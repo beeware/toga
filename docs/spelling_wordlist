@@ -36,6 +36,7 @@ KDE
 linters
 macOS
 Manjaro
+misconfigured
 Monetization
 namespace
 OpenStreetMap
@@ -64,6 +65,7 @@ scrollable
 scrollers
 Segoe
 selectable
+Sonoma
 Stimpy
 stylesheet
 subclasses
@@ -97,4 +99,5 @@ Wayland
 WebKit
 whitespace
 Winforms
+Xcode
 zoomable
