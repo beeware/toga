@@ -6,6 +6,19 @@ Release History
 
 .. towncrier release notes start
 
+0.4.4 (2024-05-08)
+==================
+
+Bugfixes
+--------
+
+* The mechanism for loading application icons on macOS was corrected to account for how Xcode populates ``Info.plist`` metadata. (`#2558 <https://github.com/beeware/toga/issues/2558>`__)
+
+Misc
+----
+
+* `#2555 <https://github.com/beeware/toga/issues/2555>`__, `#2557 <https://github.com/beeware/toga/issues/2557>`__, `#2560 <https://github.com/beeware/toga/issues/2560>`__
+
 0.4.3 (2024-05-06)
 ==================
 
@@ -23,7 +36,6 @@ Features
 * A geolocation service was added for Android, iOS and macOS. (`#2462 <https://github.com/beeware/toga/issues/2462>`__)
 * When a Toga app is packaged as a binary, and no icon is explicitly configured, Toga will now use the binary's icon as the app icon. This means it is no longer necessary to include the app icon as data in a ``resources`` folder if you are packaging your app for distribution. (`#2527 <https://github.com/beeware/toga/issues/2527>`__)
 
-
 Bugfixes
 --------
 
@@ -40,12 +52,10 @@ Bugfixes
 * Widget IDs can now be reused after the associated widget's window is closed. (`#2514 <https://github.com/beeware/toga/issues/2514>`__)
 * :class:`~toga.WebView` is now compatible with Linux GTK environments only providing WebKit2 version 4.1 without version 4.0. (`#2527 <https://github.com/beeware/toga/issues/2527>`__)
 
-
 Backward Incompatible Changes
 -----------------------------
 
 * The macOS implementations of ``Window.as_image()`` and ``Canvas.as_image()`` APIs now return images in native device resolution, not CSS pixel resolution. This will result in images that are double the previous size on Retina displays. (`#1930 <https://github.com/beeware/toga/issues/1930>`__)
-
 
 Documentation
 -------------
@@ -58,12 +68,10 @@ Documentation
 * An explicit system requirements section was added to the documentation for widgets that require the installation of additional system components. (`#2544 <https://github.com/beeware/toga/issues/2544>`__)
 * The system requirements were updated to be more explicit and now include details for OpenSUSE Tumbleweed. (`#2549 <https://github.com/beeware/toga/issues/2549>`__)
 
-
 Misc
 ----
 
 * `#2153 <https://github.com/beeware/toga/issues/2153>`__, `#2372 <https://github.com/beeware/toga/issues/2372>`__, `#2389 <https://github.com/beeware/toga/issues/2389>`__, `#2390 <https://github.com/beeware/toga/issues/2390>`__, `#2391 <https://github.com/beeware/toga/issues/2391>`__, `#2392 <https://github.com/beeware/toga/issues/2392>`__, `#2393 <https://github.com/beeware/toga/issues/2393>`__, `#2394 <https://github.com/beeware/toga/issues/2394>`__, `#2396 <https://github.com/beeware/toga/issues/2396>`__, `#2397 <https://github.com/beeware/toga/issues/2397>`__, `#2400 <https://github.com/beeware/toga/issues/2400>`__, `#2403 <https://github.com/beeware/toga/issues/2403>`__, `#2405 <https://github.com/beeware/toga/issues/2405>`__, `#2406 <https://github.com/beeware/toga/issues/2406>`__, `#2407 <https://github.com/beeware/toga/issues/2407>`__, `#2408 <https://github.com/beeware/toga/issues/2408>`__, `#2409 <https://github.com/beeware/toga/issues/2409>`__, `#2422 <https://github.com/beeware/toga/issues/2422>`__, `#2423 <https://github.com/beeware/toga/issues/2423>`__, `#2427 <https://github.com/beeware/toga/issues/2427>`__, `#2440 <https://github.com/beeware/toga/issues/2440>`__, `#2442 <https://github.com/beeware/toga/issues/2442>`__, `#2445 <https://github.com/beeware/toga/issues/2445>`__, `#2448 <https://github.com/beeware/toga/issues/2448>`__, `#2449 <https://github.com/beeware/toga/issues/2449>`__, `#2450 <https://github.com/beeware/toga/issues/2450>`__, `#2457 <https://github.com/beeware/toga/issues/2457>`__, `#2458 <https://github.com/beeware/toga/issues/2458>`__, `#2459 <https://github.com/beeware/toga/issues/2459>`__, `#2460 <https://github.com/beeware/toga/issues/2460>`__, `#2464 <https://github.com/beeware/toga/issues/2464>`__, `#2465 <https://github.com/beeware/toga/issues/2465>`__, `#2466 <https://github.com/beeware/toga/issues/2466>`__, `#2467 <https://github.com/beeware/toga/issues/2467>`__, `#2470 <https://github.com/beeware/toga/issues/2470>`__, `#2471 <https://github.com/beeware/toga/issues/2471>`__, `#2476 <https://github.com/beeware/toga/issues/2476>`__, `#2487 <https://github.com/beeware/toga/issues/2487>`__, `#2488 <https://github.com/beeware/toga/issues/2488>`__, `#2498 <https://github.com/beeware/toga/issues/2498>`__, `#2501 <https://github.com/beeware/toga/issues/2501>`__, `#2502 <https://github.com/beeware/toga/issues/2502>`__, `#2503 <https://github.com/beeware/toga/issues/2503>`__, `#2504 <https://github.com/beeware/toga/issues/2504>`__, `#2509 <https://github.com/beeware/toga/issues/2509>`__, `#2518 <https://github.com/beeware/toga/issues/2518>`__, `#2519 <https://github.com/beeware/toga/issues/2519>`__, `#2520 <https://github.com/beeware/toga/issues/2520>`__, `#2521 <https://github.com/beeware/toga/issues/2521>`__, `#2522 <https://github.com/beeware/toga/issues/2522>`__, `#2523 <https://github.com/beeware/toga/issues/2523>`__, `#2532 <https://github.com/beeware/toga/issues/2532>`__, `#2533 <https://github.com/beeware/toga/issues/2533>`__, `#2534 <https://github.com/beeware/toga/issues/2534>`__, `#2535 <https://github.com/beeware/toga/issues/2535>`__, `#2536 <https://github.com/beeware/toga/issues/2536>`__, `#2537 <https://github.com/beeware/toga/issues/2537>`__, `#2538 <https://github.com/beeware/toga/issues/2538>`__, `#2539 <https://github.com/beeware/toga/issues/2539>`__, `#2540 <https://github.com/beeware/toga/issues/2540>`__, `#2541 <https://github.com/beeware/toga/issues/2541>`__, `#2542 <https://github.com/beeware/toga/issues/2542>`__, `#2546 <https://github.com/beeware/toga/issues/2546>`__, `#2552 <https://github.com/beeware/toga/issues/2552>`__
-
 
 0.4.2 (2024-02-06)
 ==================
@@ -105,7 +113,6 @@ Misc
 ----
 
 * `#2298 <https://github.com/beeware/toga/issues/2298>`__, `#2299 <https://github.com/beeware/toga/issues/2299>`__, `#2302 <https://github.com/beeware/toga/issues/2302>`__, `#2312 <https://github.com/beeware/toga/issues/2312>`__, `#2313 <https://github.com/beeware/toga/issues/2313>`__, `#2318 <https://github.com/beeware/toga/issues/2318>`__, `#2331 <https://github.com/beeware/toga/issues/2331>`__, `#2332 <https://github.com/beeware/toga/issues/2332>`__, `#2333 <https://github.com/beeware/toga/issues/2333>`__, `#2336 <https://github.com/beeware/toga/issues/2336>`__, `#2337 <https://github.com/beeware/toga/issues/2337>`__, `#2339 <https://github.com/beeware/toga/issues/2339>`__, `#2340 <https://github.com/beeware/toga/issues/2340>`__, `#2357 <https://github.com/beeware/toga/issues/2357>`__, `#2358 <https://github.com/beeware/toga/issues/2358>`__, `#2359 <https://github.com/beeware/toga/issues/2359>`__, `#2363 <https://github.com/beeware/toga/issues/2363>`__, `#2367 <https://github.com/beeware/toga/issues/2367>`__, `#2368 <https://github.com/beeware/toga/issues/2368>`__, `#2369 <https://github.com/beeware/toga/issues/2369>`__, `#2370 <https://github.com/beeware/toga/issues/2370>`__, `#2371 <https://github.com/beeware/toga/issues/2371>`__, `#2375 <https://github.com/beeware/toga/issues/2375>`__, `#2376 <https://github.com/beeware/toga/issues/2376>`__
-
 
 0.4.1 (2023-12-21)
 ==================
@@ -319,7 +326,6 @@ Features
 * The Web backend now uses Shoelace to provide web components. (`#1838 <https://github.com/beeware/toga/pull/1838>`__)
 * Winforms apps can now go full screen. (`#1863 <https://github.com/beeware/toga/pull/1863>`__)
 
-
 Bugfixes
 --------
 
@@ -332,7 +338,6 @@ Bugfixes
 * The text alignment of MultilineTextInput on Android has been fixed to be TOP aligned. (`#1808 <https://github.com/beeware/toga/pull/1808>`__)
 * GTK widgets that involve animation (such as Switch or ProgressBar) are now redrawn correctly. (`#1826 <https://github.com/beeware/toga/issues/1826>`__)
 
-
 Improved Documentation
 ----------------------
 
@@ -340,12 +345,10 @@ Improved Documentation
 * Some missing settings and constant values were added to the documentation of Pack. (`#1786 <https://github.com/beeware/toga/pull/1786>`__)
 * Added documentation for ``toga.App.widgets``. (`#1852 <https://github.com/beeware/toga/pull/1852>`__)
 
-
 Misc
 ----
 
 * `#1750 <https://github.com/beeware/toga/issues/1750>`__, `#1764 <https://github.com/beeware/toga/pull/1764>`__, `#1765 <https://github.com/beeware/toga/pull/1765>`__, `#1766 <https://github.com/beeware/toga/pull/1766>`__, `#1770 <https://github.com/beeware/toga/pull/1770>`__, `#1771 <https://github.com/beeware/toga/pull/1771>`__, `#1777 <https://github.com/beeware/toga/pull/1777>`__, `#1797 <https://github.com/beeware/toga/pull/1797>`__, `#1802 <https://github.com/beeware/toga/pull/1802>`__, `#1813 <https://github.com/beeware/toga/pull/1813>`__, `#1818 <https://github.com/beeware/toga/pull/1818>`__, `#1822 <https://github.com/beeware/toga/pull/1822>`__, `#1829 <https://github.com/beeware/toga/pull/1829>`__, `#1830 <https://github.com/beeware/toga/pull/1830>`__, `#1835 <https://github.com/beeware/toga/pull/1835>`__, `#1839 <https://github.com/beeware/toga/pull/1839>`__, `#1854 <https://github.com/beeware/toga/pull/1854>`__, `#1861 <https://github.com/beeware/toga/pull/1861>`__
-
 
 0.3.0 (2023-01-30)
 ==================
