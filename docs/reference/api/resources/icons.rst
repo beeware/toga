@@ -71,9 +71,11 @@ icon variants that are not available from the highest resolution provided (e.g.,
 128px variant can be found, one will be created by scaling the highest resolution
 variant that *is* available).
 
-An icon is **guaranteed** to have an implementation, regardless of the path
-specified. If you specify a path and no matching icon can be found, Toga will
-output a warning to the console, and return :attr:`~toga.Icon.DEFAULT_ICON`.
+An icon is **guaranteed** to have an implementation, regardless of the path specified.
+If you specify a path and no matching icon can be found, Toga will output a warning to
+the console, and return :attr:`~toga.Icon.DEFAULT_ICON`. The only exception to this is
+if an icon file is *found*, but it cannot be loaded (e.g., due to a file format or
+permission error). In this case, an error will be raised.
 
 Reference
 ---------

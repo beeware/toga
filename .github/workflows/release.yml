@@ -49,7 +49,11 @@ jobs:
     permissions:
       # This permission is required for trusted publishing.
       id-token: write
+    continue-on-error: true
     strategy:
+      # One element of this matrix failing should not terminate the others mid-run.
+      # This prevents one bad platform from stalling the publication of others.
+      fail-fast: false
       matrix:
         package:
         - "toga"

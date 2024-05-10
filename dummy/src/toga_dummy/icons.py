@@ -2,18 +2,19 @@ from .utils import LoggedObject
 
 
 class Icon(LoggedObject):
-    ICON_EXISTS = True
+    ICON_FAILURE = None
     EXTENSIONS = [".png", ".ico"]
     SIZES = None
 
     def __init__(self, interface, path):
         super().__init__()
         self.interface = interface
-        if not self.ICON_EXISTS:
-            raise FileNotFoundError("Couldn't find icon")
-        elif path is None:
-            self.path = "<APP ICON>"
-        elif path == {}:
-            raise FileNotFoundError("No image variants found")
+        if self.ICON_FAILURE:
+            raise self.ICON_FAILURE
         else:
-            self.path = path
+            if path is None:
+                self.path = "<APP ICON>"
+            elif path == {}:
+                raise FileNotFoundError("No image variants found")
+            else:
+                self.path = path
