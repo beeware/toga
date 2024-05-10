@@ -101,7 +101,6 @@ class TogaTree(NSOutlineView):
 
             # Prevent tcv from being deallocated prematurely when no Python references
             # are left
-            tcv.retain()
             tcv.autorelease()
 
         tcv.setText(str(value))

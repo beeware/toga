@@ -152,6 +152,9 @@ class App:
     def main_loop(self):
         self.create()
 
+    def set_icon(self, icon):
+        pass
+
     def set_main_window(self, window):
         pass
 

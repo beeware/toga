@@ -3,15 +3,11 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from toga.constants import FlashMode
-from toga.handlers import AsyncResult
+from toga.handlers import AsyncResult, PermissionResult
 from toga.platform import get_platform_factory
 
 if TYPE_CHECKING:
     from toga.app import App
-
-
-class PermissionResult(AsyncResult):
-    RESULT_TYPE = "permission"
 
 
 class PhotoResult(AsyncResult):
@@ -76,7 +72,7 @@ class Camera:
         **This is an asynchronous method**. If you invoke this method in synchronous
         context, it will start the process of requesting permissions, but will return
         *immediately*. The return value can be awaited in an asynchronous context, but
-        cannot be compared directly.
+        cannot be used directly.
 
         :returns: An asynchronous result; when awaited, returns True if the app has
             permission to take a photo; False otherwise.
@@ -108,7 +104,7 @@ class Camera:
         **This is an asynchronous method**. If you invoke this method in synchronous
         context, it will start the process of taking a photo, but will return
         *immediately*. The return value can be awaited in an asynchronous context, but
-        cannot be compared directly.
+        cannot be used directly.
 
         :param device: The initial camera device to use. If a device is *not* specified,
             a default camera will be used. Depending on the hardware available, the user
@@ -117,6 +113,7 @@ class Camera:
             the hardware available, this may be modified by the user at runtime.
         :returns: An asynchronous result; when awaited, returns the :any:`toga.Image`
             captured by the camera, or ``None`` if the photo was  cancelled.
+        :raises PermissionError: if the app does not have permission to use the camera.
         """
         photo = PhotoResult(None)
         self._impl.take_photo(photo, device=device, flash=flash)

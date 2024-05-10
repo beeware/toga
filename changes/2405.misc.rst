@@ -1,1 +1,0 @@
-The ``pre-commit`` hook for ``pyupgrade`` was updated to its latest version.

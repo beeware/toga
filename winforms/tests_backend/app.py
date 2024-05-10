@@ -2,11 +2,13 @@ import ctypes
 from pathlib import Path
 from time import sleep
 
+import PIL.Image
 import pytest
 from System import EventArgs
-from System.Drawing import Point
+from System.Drawing import Bitmap, Point
 from System.Windows.Forms import Application, Cursor, ToolStripSeparator
 
+import toga
 from toga.constants import WindowState
 from toga_winforms.keys import toga_to_winforms_key, winforms_to_toga_key
 
@@ -103,6 +105,26 @@ class AppProbe(BaseProbe):
 
     def content_size(self, window):
         return WindowProbe(self.app, window).presentation_content_size
+
+    def assert_app_icon(self, icon):
+        for window in self.app.windows:
+            # We have no real way to check we've got the right icon; use pixel peeping as a
+            # guess. Construct a PIL image from the current icon.
+            img = toga.Image(
+                Bitmap.FromHicon(window._impl.native.Icon.Handle)
+            ).as_format(PIL.Image.Image)
+
+            if icon:
+                # The explicit alt icon has blue background, with green at a point 1/3 into
+                # the image
+                assert img.getpixel((5, 5)) == (211, 230, 245, 255)
+                mid_color = img.getpixel((img.size[0] // 3, img.size[1] // 3))
+                assert mid_color == (0, 204, 9, 255)
+            else:
+                # The default icon is transparent background, and brown in the center.
+                assert img.getpixel((5, 5))[3] == 0
+                mid_color = img.getpixel((img.size[0] // 2, img.size[1] // 2))
+                assert mid_color == (130, 100, 57, 255)
 
     def _menu_item(self, path):
         item = self.main_window._impl.native.MainMenuStrip

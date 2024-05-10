@@ -1,1 +1,0 @@
-Corrected sphinx-autobuild dependency for Python 3.8.

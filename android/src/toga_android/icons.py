@@ -9,6 +9,10 @@ class Icon:
     def __init__(self, interface, path):
         self.interface = interface
         self.interface._impl = self
+
+        if path is None:
+            raise FileNotFoundError("No runtime app icon")
+
         self.path = path
 
         self.native = BitmapFactory.decodeFile(str(path))

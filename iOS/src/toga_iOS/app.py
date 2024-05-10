@@ -92,6 +92,10 @@ class App:
         # iOS event loop.
         self.loop.run_forever_cooperatively(lifecycle=iOSLifecycle())
 
+    def set_icon(self, icon):
+        # iOS apps don't have runtime icons, so this can't be invoked
+        pass  # pragma: no cover
+
     def set_main_window(self, window):
         pass
 

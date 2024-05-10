@@ -21,8 +21,6 @@ class MainWindow(Window):
     def create(self):
         self.native = Gtk.ApplicationWindow()
         self.native.set_role("MainWindow")
-        icon_impl = toga_App.app.icon._impl
-        self.native.set_icon(icon_impl.native_72)
 
     def gtk_delete_event(self, *args):
         # Return value of the GTK on_close handler indicates
@@ -37,13 +35,6 @@ class MainWindow(Window):
 
 
 class App:
-    """
-    Todo:
-        * Creation of Menus is not working.
-        * Disabling of menu items is not working.
-        * App Icon is not showing up
-    """
-
     def __init__(self, interface):
         self.interface = interface
         self.interface._impl = self
@@ -198,6 +189,10 @@ class App:
 
         self.loop.run_forever(application=self.native)
 
+    def set_icon(self, icon):
+        for window in self.interface.windows:
+            window._impl.native.set_icon(icon._impl.native(72))
+
     def set_main_window(self, window):
         pass
 
@@ -238,7 +233,7 @@ class App:
         self.native_about_dialog.set_modal(True)
 
         icon_impl = toga_App.app.icon._impl
-        self.native_about_dialog.set_logo(icon_impl.native_72)
+        self.native_about_dialog.set_logo(icon_impl.native(72))
 
         self.native_about_dialog.set_program_name(self.interface.formal_name)
         if self.interface.version is not None:

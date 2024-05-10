@@ -1,1 +1,0 @@
-The tox environments for tests and coverage were revamped for easier and more effective use.

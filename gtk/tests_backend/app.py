@@ -1,7 +1,9 @@
 from pathlib import Path
 
+import PIL.Image
 import pytest
 
+import toga
 from toga.constants import WindowState
 from toga_gtk.keys import gtk_accel, toga_key
 from toga_gtk.libs import Gdk, Gtk
@@ -44,6 +46,24 @@ class AppProbe(BaseProbe):
 
     def content_size(self, window):
         return WindowProbe(self.app, window).presentation_content_size
+
+    def assert_app_icon(self, icon):
+        for window in self.app.windows:
+            # We have no real way to check we've got the right icon; use pixel peeping as a
+            # guess. Construct a PIL image from the current icon.
+            img = toga.Image(window._impl.native.get_icon()).as_format(PIL.Image.Image)
+
+            if icon:
+                # The explicit alt icon has blue background, with green at a point 1/3 into
+                # the image
+                assert img.getpixel((5, 5)) == (211, 230, 245)
+                mid_color = img.getpixel((img.size[0] // 3, img.size[1] // 3))
+                assert mid_color == (0, 204, 9)
+            else:
+                # The default icon is transparent background, and brown in the center.
+                assert img.getpixel((5, 5))[3] == 0
+                mid_color = img.getpixel((img.size[0] // 2, img.size[1] // 2))
+                assert mid_color == (149, 119, 73, 255)
 
     def _menu_item(self, path):
         main_menu = self.app._impl.native.get_menubar()

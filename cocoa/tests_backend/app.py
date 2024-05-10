@@ -1,7 +1,9 @@
 from pathlib import Path
 
+import PIL.Image
 from rubicon.objc import NSPoint, ObjCClass, objc_id, send_message
 
+import toga
 from toga.constants import WindowState
 from toga_cocoa.keys import cocoa_key, toga_key
 from toga_cocoa.libs import (
@@ -56,6 +58,42 @@ class AppProbe(BaseProbe):
 
     def content_size(self, window):
         return WindowProbe(self.app, window).presentation_content_size
+
+    def assert_app_icon(self, icon):
+        # We have no real way to check we've got the right icon; use pixel peeping as a
+        # guess. Construct a PIL image from the current icon.
+        img = toga.Image(
+            NSApplication.sharedApplication.applicationIconImage
+        ).as_format(PIL.Image.Image)
+
+        # Due to icon resizing and colorspace issues, the exact pixel colors are
+        # inconsistent, so multiple values must be provided for test purposes.
+        if icon:
+            # The explicit alt icon has blue background, with green at a point 1/3 into
+            # the image
+            assert img.getpixel((5, 5)) in {
+                (205, 226, 243, 255),
+                (211, 226, 243, 255),
+                (211, 230, 245, 255),
+            }
+            mid_color = img.getpixel((img.size[0] // 3, img.size[1] // 3))
+            assert mid_color in {
+                (0, 204, 9, 255),
+                (6, 204, 8, 255),
+                (14, 197, 8, 255),
+                (105, 192, 32, 255),
+            }
+        else:
+            # The default icon is transparent background, and brown in the center.
+            assert img.getpixel((5, 5))[3] == 0
+            mid_color = img.getpixel((img.size[0] // 2, img.size[1] // 2))
+            assert mid_color in {
+                (130, 100, 57, 255),
+                (130, 109, 66, 255),
+                (138, 107, 64, 255),
+                (138, 108, 64, 255),
+                (149, 119, 73, 255),
+            }
 
     def _menu_item(self, path):
         main_menu = self.app._impl.native.mainMenu
