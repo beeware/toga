@@ -1,0 +1,1 @@
+Expanded the text a little about files in the `changes/` directory so it's more explicit.
