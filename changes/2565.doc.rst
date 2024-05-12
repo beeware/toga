@@ -1,1 +1,1 @@
-Expanded the text a little about files in the `changes/` directory so it's more explicit.
+The instructions for adding a changenote to a pull request have been clarified.
