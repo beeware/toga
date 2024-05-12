@@ -29,7 +29,7 @@ Prerequisites
 
 ``toga-gtk`` requires GTK 3.22 or newer. Most testing occurs with GTK 3.24 as this is
 the version that has shipped with all versions of Ubuntu since Ubuntu 20.04, and all
-versions of Fedora since Fedora 29.
+versions of Fedora since Fedora 32.
 
 The system packages that provide GTK must be installed manually:
 

@@ -38,20 +38,20 @@ A Python native, OS native GUI toolkit.
 Minimum requirements
 --------------------
 
-* Toga requires **Python 3.8 or higher**. Python 2 is not supported.
+* Toga requires **Python 3.8 or higher**.
 
 * If you're on macOS, you need to be on 11 (Big Sur) or newer.
 
 * If you're on Windows, you'll need Windows 10 or newer. If you are using
   Windows 10 and want to use a WebView to display web content, you will also
-  need to install the `Edge WebView2 Evergreen
-  Runtime. <https://developer.microsoft.com/en-us/microsoft-edge/webview2/#download-section>`__
+  need to install the `Edge WebView2 Evergreen Runtime
+  <https://developer.microsoft.com/en-us/microsoft-edge/webview2/#download-section>`__.
   Windows 11 has this runtime installed by default.
 
 * If you're on Linux (or another Unix-based operating system), you need to have
-  GTK+ 3.10 or newer. This is the version that ships starting with Ubuntu 14.04
-  and Fedora 20. You also need to install the system packages listed
-  in `Tutorial 0 <docs/tutorial/tutorial-0.rst>`__.
+  GTK+ >= 3.24 and glib >= 2.64. These are available starting with Ubuntu 20.04 and
+  Fedora 32. You also need to install the system packages listed in `Linux platform
+  documentation <https://toga.readthedocs.io/en/latest/reference/platforms/linux.html#prerequisites>`__.
 
 Quickstart
 ----------
