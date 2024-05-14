@@ -37,6 +37,9 @@ class App:
     # Commands and menus
     ######################################################################
 
+    def create_app_commands(self):
+        pass
+
     def create_menus(self):
         pass
 

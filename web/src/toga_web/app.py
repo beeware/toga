@@ -20,6 +20,14 @@ class App:
         # self.resource_path = os.path.dirname(os.path.dirname(NSBundle.mainBundle.bundlePath))
         self.native = js.document.getElementById("app-placeholder")
 
+        # Call user code to populate the main window
+        self.interface._startup()
+
+    ######################################################################
+    # Commands and menus
+    ######################################################################
+
+    def create_app_commands(self):
         formal_name = self.interface.formal_name
 
         self.interface.commands.add(
@@ -35,18 +43,6 @@ class App:
                 group=toga.Group.HELP,
             ),
         )
-
-        # Create the menus. This is done before main window content to ensure
-        # the <header> for the menubar is inserted before the <main> for the
-        # main window.
-        self.create_menus()
-
-        # Call user code to populate the main window
-        self.interface._startup()
-
-    ######################################################################
-    # Commands and menus
-    ######################################################################
 
     def _create_submenu(self, group, items):
         submenu = create_element(
@@ -140,7 +136,7 @@ class App:
         if old_menubar:
             old_menubar.replaceWith(self.menubar)
         else:
-            self.native.append(self.menubar)
+            self.native.prepend(self.menubar)
 
     ######################################################################
     # App lifecycle
