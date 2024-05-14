@@ -2,7 +2,7 @@ name: Update pre-commit
 
 on:
   schedule:
-    - cron: "0 20 * * SUN" # Sunday @ 2000 UTC
+    - cron: "0 0 1 * *"  # first of the month @ 0000 UTC
   workflow_dispatch:
 
 jobs:

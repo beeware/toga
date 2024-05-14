@@ -1,0 +1,1 @@
+Automation to bump the version for dependencies only runs the first of the month now.
