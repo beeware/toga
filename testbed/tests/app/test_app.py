@@ -607,11 +607,14 @@ async def test_app_icon(app, app_probe):
 
 
 @pytest.mark.skipif(
-    toga.platform.current_platform != "windows", reason="This test is windows specific."
+    toga.platform.current_platform != "windows", reason="This test is Windows specific"
 )
 async def test_system_dpi_change(
     monkeypatch, app, app_probe, main_window, main_window_probe
 ):
+    # Store original window content
+    main_window_content_original = main_window.content
+
     from toga_winforms.libs import shcore
 
     GetScaleFactorForMonitor_original = getattr(shcore, "GetScaleFactorForMonitor")
@@ -693,7 +696,7 @@ async def test_system_dpi_change(
         GetScaleFactorForMonitor_original,
     )
     dpi_change_events[0](None, None)
-    await main_window_probe.redraw(
-        "\nTriggering DPI change event for restoring original state"
-    )
-    main_window.content.clear()
+    main_window.content.window = None
+    main_window.content = main_window_content_original
+    main_window.show()
+    await main_window_probe.redraw("\nRestoring original state of Main Window")
