@@ -113,8 +113,15 @@ def test_create(monkeypatch, app, path, system, sizes, extensions, final_paths):
     assert icon._impl.path == final_paths
 
 
-def test_create_fallback(app, capsys):
+def test_create_fallback_missing(monkeypatch, app, capsys):
     """If a resource doesn't exist, a fallback icon is used."""
+    # Prime the dummy so the app icon cannot be loaded
+    monkeypatch.setattr(
+        DummyIcon,
+        "ICON_FAILURE",
+        FileNotFoundError(),
+    )
+
     icon = toga.Icon("resources/missing")
 
     assert icon._impl is not None
@@ -125,6 +132,19 @@ def test_create_fallback(app, capsys):
         "WARNING: Can't find icon resources/missing"
         in capsys.readouterr().out.replace("\\", "/")
     )
+
+
+def test_create_fallback_unloadable(monkeypatch, app, capsys):
+    """If a resource exists, but can't be loaded, an error is raised."""
+    # Prime the dummy so the app icon cannot be loaded
+    monkeypatch.setattr(
+        DummyIcon,
+        "ICON_FAILURE",
+        ValueError("Icon could not be loaded"),
+    )
+
+    with pytest.raises(ValueError):
+        toga.Icon("resources/sample")
 
 
 def test_create_fallback_variants(monkeypatch, app, capsys):
@@ -164,7 +184,7 @@ def test_create_app_icon(monkeypatch, app, capsys):
 
 
 def test_create_app_icon_missing(monkeypatch, app, capsys):
-    """The app icon can be constructed"""
+    """If the app icon is missing, a fallback is used"""
     # When running under pytest, code will identify as running as a script
 
     # Load the app default icon.
@@ -196,9 +216,13 @@ def test_create_app_icon_non_script(monkeypatch, app, capsys):
 
 
 def test_create_app_icon_missing_non_script(monkeypatch, app, capsys):
-    """The binary executableThe app icon can be reset to the default"""
-    # Prime the dummy so the app icon cannot be loaded
-    monkeypatch.setattr(DummyIcon, "ICON_EXISTS", False)
+    """If the icon from binary executable cannot be found, the app icon is reset to the default"""
+    # Prime the dummy so the app icon cannot be found
+    monkeypatch.setattr(
+        DummyIcon,
+        "ICON_FAILURE",
+        FileNotFoundError(),
+    )
 
     # Patch sys.executable so the test looks like it's running as a packaged binary
     monkeypatch.setattr(sys, "executable", "/path/to/App")

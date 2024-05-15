@@ -1,0 +1,1 @@
+The minimum supported Linux release requirements were updated to Ubuntu 20.04 or Fedora 32.
