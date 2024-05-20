@@ -793,7 +793,10 @@ async def test_select_folder_dialog(
 
 
 async def test_instantiate_window_with_content(app):
-    content = toga.Box()
-    window = toga.Window(content=content)
+    window_no_content = toga.Window()
+    assert window_no_content.content is None
 
-    assert window.content == content
+    content = toga.Box()
+    window_with_content = toga.Window(content=content)
+
+    assert window_with_content.content == content
