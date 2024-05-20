@@ -101,13 +101,22 @@ def test_set_app_with_content(window, app):
 
 def test_set_app_with_content_at_instantiation(app):
     """A window can be created with content"""
-    window_no_content = toga.Window()
-    assert window_no_content.content is None
+    try:
+        window_no_content = toga.Window()
+        assert window_no_content.content is None
+    finally:
+        window_no_content.close()
+        window_no_content = None
 
-    content = toga.Box()
-    window_with_content = toga.Window(content=content)
-
-    assert window_with_content.content == content
+    # Setup the box with something inside it:
+    label1 = toga.Label('Hello World')
+    content = toga.Box(children=[label1])
+    try:
+        window_with_content = toga.Window(content=content)
+        assert window_with_content.content == content
+    finally:
+        window_with_content.close()
+        window_with_content = None
 
 
 @pytest.mark.parametrize(
