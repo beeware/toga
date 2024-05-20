@@ -1,41 +1,53 @@
 from toga import NotImplementedWarning
+import importlib
 
-from . import dialogs
-from .app import App, DocumentApp, MainWindow
-from .command import Command
-from .documents import Document
-from .fonts import Font
-from .hardware.camera import Camera
-from .hardware.location import Location
-from .icons import Icon
-from .images import Image
-from .paths import Paths
+toga_factory_imports = {
+    "toga.app": ["App", "DocumentApp", "MainWindow"],
+    "toga_cocoa": ["dialogs"],
+    "toga.command": ["Command"],
+    "toga.documents": ["Document"],
+    "toga.fonts": ["Font"],
+    "toga.hardware.camera": ["Camera"],
+    "toga.hardware.location": ["Location"],
+    "toga.icons": ["Icon"],
+    "toga.images": ["Image"],
+    "toga.paths": ["Paths"],
+    "toga.widgets.activityindicator": ["ActivityIndicator"],
+    "toga.widgets.box": ["Box"],
+    "toga.widgets.button": ["Button"],
+    "toga.widgets.canvas": ["Canvas"],
+    "toga.widgets.detailedlist": ["DetailedList"],
+    "toga.widgets.divider": ["Divider"],
+    "toga.widgets.imageview": ["ImageView"],
+    "toga.widgets.label": ["Label"],
+    "toga.widgets.mapview": ["MapView"],
+    "toga.widgets.multilinetextinput": ["MultilineTextInput"],
+    "toga.widgets.numberinput": ["NumberInput"],
+    "toga.widgets.optioncontainer": ["OptionContainer"],
+    "toga.widgets.passwordinput": ["PasswordInput"],
+    "toga.widgets.progressbar": ["ProgressBar"],
+    "toga.widgets.scrollcontainer": ["ScrollContainer"],
+    "toga.widgets.selection": ["Selection"],
+    "toga.widgets.slider": ["Slider"],
+    "toga.widgets.splitcontainer": ["SplitContainer"],
+    "toga.widgets.switch": ["Switch"],
+    "toga.widgets.table": ["Table"],
+    "toga.widgets.textinput": ["TextInput"],
+    "toga.widgets.tree": ["Tree"],
+    "toga.widgets.webview": ["WebView"],
+    "toga.window": ["Window"],
+}
 
-# Widgets
-from .widgets.activityindicator import ActivityIndicator
-from .widgets.box import Box
-from .widgets.button import Button
-from .widgets.canvas import Canvas
-from .widgets.detailedlist import DetailedList
-from .widgets.divider import Divider
-from .widgets.imageview import ImageView
-from .widgets.label import Label
-from .widgets.mapview import MapView
-from .widgets.multilinetextinput import MultilineTextInput
-from .widgets.numberinput import NumberInput
-from .widgets.optioncontainer import OptionContainer
-from .widgets.passwordinput import PasswordInput
-from .widgets.progressbar import ProgressBar
-from .widgets.scrollcontainer import ScrollContainer
-from .widgets.selection import Selection
-from .widgets.slider import Slider
-from .widgets.splitcontainer import SplitContainer
-from .widgets.switch import Switch
-from .widgets.table import Table
-from .widgets.textinput import TextInput
-from .widgets.tree import Tree
-from .widgets.webview import WebView
-from .window import Window
+
+def __getattr__(name):
+
+    for module, names in toga_factory_imports.items():
+        if name in names:
+            module = importlib.import_module(module)
+            globals()[name] = getattr(module, name)
+            return getattr(module, name)
+    else:
+        raise NotImplementedError(f"Toga's Cocoa backend doesn't implement {name}")
 
 
 def not_implemented(feature):
@@ -84,7 +96,3 @@ __all__ = [
     "WebView",
     "Window",
 ]
-
-
-def __getattr__(name):  # pragma: no cover
-    raise NotImplementedError(f"Toga's Cocoa backend doesn't implement {name}")

@@ -5,7 +5,7 @@ import importlib
 import importlib.util
 from types import ModuleType
 
-to_import = {
+toga_core_imports = {
     "toga.app": ["App", "DocumentApp", "DocumentMainWindow", "MainWindow"],
     "toga.colors": ["hsl", "hsla", "rgb", "rgba"],
     "toga.command": ["Command", "Group"],
@@ -48,11 +48,13 @@ to_import = {
 
 def __getattr__(name):
 
-    for module, names in to_import.items():
+    for module, names in toga_core_imports.items():
         if name in names:
             module = importlib.import_module(module)
             globals()[name] = getattr(module, name)
             return getattr(module, name)
+    else:
+        raise AttributeError(f"module {__name__} has no attribute {name}")
 
 
 class NotImplementedWarning(RuntimeWarning):
