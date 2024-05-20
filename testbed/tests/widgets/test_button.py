@@ -44,7 +44,7 @@ async def test_text(widget, probe):
         expected = str(text).split("\n")[0]
         assert widget.text == expected
         assert probe.text == expected
-        # approx: Fedora 40 is 1 pixel off for '你好, wørłd!'
+        # GTK rendering can result in a very minor change in button height
         assert probe.height == approx(initial_height, abs=1)
 
 
