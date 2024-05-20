@@ -144,6 +144,7 @@ class Window:
         :param closable: Can the window be closed by the user?
         :param minimizable: Can the window be minimized by the user?
         :param on_close: The initial :any:`on_close` handler.
+        :param content: Adds content to the window as it's initialized.
         :param resizeable: **DEPRECATED** - Use ``resizable``.
         :param closeable: **DEPRECATED** - Use ``closable``.
         """

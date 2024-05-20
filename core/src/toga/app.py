@@ -209,9 +209,9 @@ class MainWindow(Window):
         size: tuple[int, int] = (640, 480),
         resizable: bool = True,
         minimizable: bool = True,
+        content: Widget | None = None,
         resizeable=None,  # DEPRECATED
         closeable=None,  # DEPRECATED
-        content: Widget | None = None,
     ):
         """Create a new main window.
 
@@ -224,9 +224,9 @@ class MainWindow(Window):
             pixels <css-units>`.
         :param resizable: Can the window be resized by the user?
         :param minimizable: Can the window be minimized by the user?
+        :param content: Adds content to the window as it's initialized.
         :param resizeable: **DEPRECATED** - Use ``resizable``.
         :param closeable: **DEPRECATED** - Use ``closable``.
-        :param content: Window content
         """
         super().__init__(
             id=id,
