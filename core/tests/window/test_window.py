@@ -114,6 +114,9 @@ def test_set_app_with_content_at_instantiation(app):
     try:
         window_with_content = toga.Window(content=content)
         assert window_with_content.content == content
+        # Make sure it still has that internal content:
+        assert len(window_with_content.content.children) == 1
+        assert window_with_content.content.children[0] == label1
     finally:
         window_with_content.close()
         window_with_content = None

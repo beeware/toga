@@ -241,9 +241,13 @@ else:
         try:
             window_with_content = toga.Window(content=content)
             assert window_with_content.content == content
+            # Make sure it still has that internal content:
+            assert len(window_with_content.content.children) == 1
+            assert window_with_content.content.children[0] == label1
         finally:
             window_with_content.close()
             window_with_content = None
+
 
     async def test_secondary_window_cleanup(app_probe):
         """Memory for windows is cleaned up when windows are deleted."""
