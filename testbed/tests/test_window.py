@@ -226,6 +226,15 @@ else:
 
         assert second_window not in app.windows
 
+    async def test_instantiate_window_with_content(app):
+        window_no_content = toga.Window()
+        assert window_no_content.content is None
+
+        content = toga.Box()
+        window_with_content = toga.Window(content=content)
+
+        assert window_with_content.content == content
+
     async def test_secondary_window_cleanup(app_probe):
         """Memory for windows is cleaned up when windows are deleted."""
         # Create and show a window with content. We can't use the second_window fixture
@@ -790,13 +799,3 @@ async def test_select_folder_dialog(
     ):
         result = result[-1:]
     await assert_dialog_result(main_window, dialog_result, on_result_handler, result)
-
-
-async def test_instantiate_window_with_content(app):
-    window_no_content = toga.Window()
-    assert window_no_content.content is None
-
-    content = toga.Box()
-    window_with_content = toga.Window(content=content)
-
-    assert window_with_content.content == content
