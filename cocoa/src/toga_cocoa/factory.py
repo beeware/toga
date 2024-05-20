@@ -1,5 +1,6 @@
-from toga import NotImplementedWarning
 import importlib
+
+from toga import NotImplementedWarning
 
 toga_factory_imports = {
     "toga.app": ["App", "DocumentApp", "MainWindow"],
@@ -52,47 +53,3 @@ def __getattr__(name):
 
 def not_implemented(feature):
     NotImplementedWarning.warn("Cocoa", feature)
-
-
-__all__ = [
-    "not_implemented",
-    "App",
-    "DocumentApp",
-    "MainWindow",
-    "Command",
-    "Document",
-    # Resources
-    "Font",
-    "Icon",
-    "Image",
-    "Paths",
-    "dialogs",
-    # Hardware
-    "Camera",
-    "Location",
-    # Widgets
-    "ActivityIndicator",
-    "Box",
-    "Button",
-    "Canvas",
-    "DetailedList",
-    "Divider",
-    "ImageView",
-    "Label",
-    "MapView",
-    "MultilineTextInput",
-    "NumberInput",
-    "OptionContainer",
-    "PasswordInput",
-    "ProgressBar",
-    "ScrollContainer",
-    "Selection",
-    "Slider",
-    "SplitContainer",
-    "Switch",
-    "Table",
-    "TextInput",
-    "Tree",
-    "WebView",
-    "Window",
-]
