@@ -87,3 +87,6 @@ class WindowProbe(BaseProbe):
 
     def press_toolbar_button(self, index):
         self.native.onOptionsItemSelected(self._toolbar_items()[index])
+
+    def is_dialog_modal(self, dialog):
+        return True

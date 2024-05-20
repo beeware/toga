@@ -261,3 +261,6 @@ class WindowProbe(BaseProbe):
             restype=None,
             argtypes=[objc_id],
         )
+
+    def is_dialog_modal(self, dialog):
+        return True
