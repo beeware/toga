@@ -1,14 +1,20 @@
+from typing import TYPE_CHECKING
+
 import System.Windows.Forms as WinForms
 from System.Drawing import Bitmap, Graphics, Point, Size
 from System.Drawing.Imaging import ImageFormat
 from System.IO import MemoryStream
 
 from toga.command import Separator
+from toga.types import Position, Size as TogaSize
 
 from .container import Container
 from .libs.wrapper import WeakrefCallable
 from .screens import Screen as ScreenImpl
 from .widgets.base import Scalable
+
+if TYPE_CHECKING:
+    from toga.types import PositionT, SizeT
 
 
 class Window(Container, Scalable):
@@ -170,18 +176,17 @@ class Window(Container, Scalable):
     # Window size
     ######################################################################
 
-    def get_size(self):
+    def get_size(self) -> TogaSize:
         size = self.native.Size
-        return (
+        return TogaSize(
             self.scale_out(size.Width - self._decor_width()),
             self.scale_out(size.Height - self._decor_height()),
         )
 
-    def set_size(self, size):
-        width, height = size
-        self.native.Size = Size(
-            self.scale_in(width) + self._decor_width(),
-            self.scale_in(height) + self._decor_height(),
+    def set_size(self, size: SizeT):
+        self.native.Size = TogaSize(
+            self.scale_in(size.width) + self._decor_width(),
+            self.scale_in(size.height) + self._decor_height(),
         )
 
     ######################################################################
@@ -191,11 +196,11 @@ class Window(Container, Scalable):
     def get_current_screen(self):
         return ScreenImpl(WinForms.Screen.FromControl(self.native))
 
-    def get_position(self):
+    def get_position(self) -> Position:
         location = self.native.Location
-        return tuple(map(self.scale_out, (location.X, location.Y)))
+        return Position(map(self.scale_out, (location.X, location.Y)))
 
-    def set_position(self, position):
+    def set_position(self, position: PositionT):
         self.native.Location = Point(*map(self.scale_in, position))
 
     ######################################################################

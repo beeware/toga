@@ -1,0 +1,1 @@
+Methods to `get_size` and `get_position` of a container or window now return NamedTuples: `Size` and `Position`. Related setter methods, `set_size` and `set_position` accept NamedTuples but maintain backwards-compatibility with standard tuples.  `Position` objects also support basic addition and subtraction to simplify syntax when transforming relative locations.

@@ -29,11 +29,13 @@ from toga.icons import Icon
 from toga.paths import Paths
 from toga.platform import get_platform_factory
 from toga.screens import Screen
+from toga.types import Position, Size
 from toga.widgets.base import Widget
 from toga.window import Window
 
 if TYPE_CHECKING:
     from toga.icons import IconContent
+    from toga.types import PositionT, SizeT
 
 # Make sure deprecation warnings are shown by default
 warnings.filterwarnings("default", category=DeprecationWarning)
@@ -205,8 +207,8 @@ class MainWindow(Window):
         self,
         id: str | None = None,
         title: str | None = None,
-        position: tuple[int, int] = (100, 100),
-        size: tuple[int, int] = (640, 480),
+        position: PositionT = Position(100, 100),
+        size: SizeT = Size(640, 480),
         resizable: bool = True,
         minimizable: bool = True,
         resizeable=None,  # DEPRECATED
@@ -270,8 +272,8 @@ class DocumentMainWindow(Window):
         doc: Document,
         id: str | None = None,
         title: str | None = None,
-        position: tuple[int, int] = (100, 100),
-        size: tuple[int, int] = (640, 480),
+        position: PositionT = Position(100, 100),
+        size: SizeT = Size(640, 480),
         resizable: bool = True,
         minimizable: bool = True,
     ):
