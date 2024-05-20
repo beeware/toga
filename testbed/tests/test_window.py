@@ -560,6 +560,7 @@ async def test_info_dialog(main_window, main_window_probe):
             "Info", "Some info", on_result=on_result_handler
         )
     await main_window_probe.redraw("Info dialog displayed")
+    assert main_window_probe.is_modal_dialog(dialog_result._impl)
     await main_window_probe.close_info_dialog(dialog_result._impl)
     await assert_dialog_result(main_window, dialog_result, on_result_handler, None)
 
