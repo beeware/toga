@@ -560,7 +560,6 @@ async def assert_dialog_result(window, dialog, on_result, expected):
 
 async def test_info_dialog(main_window, main_window_probe):
     """An info dialog can be displayed and acknowledged."""
-    print("HITT")
     on_result_handler = Mock()
     with pytest.warns(
         DeprecationWarning,
