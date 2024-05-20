@@ -1,9 +1,8 @@
 from __future__ import annotations
 
-import warnings
 import importlib
 import importlib.util
-from types import ModuleType
+import warnings
 
 toga_core_imports = {
     "toga.app": ["App", "DocumentApp", "DocumentMainWindow", "MainWindow"],
@@ -45,6 +44,8 @@ toga_core_imports = {
     "toga.window": ["Window"],
 }
 
+__all__ = []
+
 
 def __getattr__(name):
 
@@ -52,6 +53,7 @@ def __getattr__(name):
         if name in names:
             module = importlib.import_module(module)
             globals()[name] = getattr(module, name)
+            __all__.append(name)
             return getattr(module, name)
     else:
         raise AttributeError(f"module {__name__} has no attribute {name}")
@@ -65,66 +67,6 @@ class NotImplementedWarning(RuntimeWarning):
     def warn(self, platform, feature):
         """Raise a warning that a feature isn't implemented on a platform."""
         warnings.warn(NotImplementedWarning(f"[{platform}] Not implemented: {feature}"))
-
-
-__all__ = [
-    "NotImplementedWarning",
-    # Applications
-    "App",
-    "DocumentApp",
-    "MainWindow",
-    "DocumentMainWindow",
-    # Commands
-    "Command",
-    "Group",
-    # Documents
-    "Document",
-    # Keys
-    "Key",
-    # Resources
-    "hsl",
-    "hsla",
-    "rgb",
-    "rgba",
-    "Font",
-    "Icon",
-    "Image",
-    # Types
-    "LatLng",
-    # Widgets
-    "ActivityIndicator",
-    "Box",
-    "Button",
-    "Canvas",
-    "DateInput",
-    "DetailedList",
-    "Divider",
-    "ImageView",
-    "Label",
-    "MapPin",
-    "MapView",
-    "MultilineTextInput",
-    "NumberInput",
-    "OptionContainer",
-    "OptionItem",
-    "PasswordInput",
-    "ProgressBar",
-    "ScrollContainer",
-    "Selection",
-    "Slider",
-    "SplitContainer",
-    "Switch",
-    "Table",
-    "TextInput",
-    "TimeInput",
-    "Tree",
-    "WebView",
-    "Widget",
-    "Window",
-    # Deprecated widget names
-    "DatePicker",
-    "TimePicker",
-]
 
 
 def _package_version(file, name):
