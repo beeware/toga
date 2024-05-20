@@ -1,7 +1,9 @@
 from pathlib import Path
 
+import PIL.Image
 import pytest
 
+import toga
 from toga_gtk.keys import gtk_accel, toga_key
 from toga_gtk.libs import Gdk, Gtk
 
@@ -46,6 +48,24 @@ class AppProbe(BaseProbe):
         content_allocation = window._impl.container.get_allocation()
         return (content_allocation.width, content_allocation.height)
 
+    def assert_app_icon(self, icon):
+        for window in self.app.windows:
+            # We have no real way to check we've got the right icon; use pixel peeping as a
+            # guess. Construct a PIL image from the current icon.
+            img = toga.Image(window._impl.native.get_icon()).as_format(PIL.Image.Image)
+
+            if icon:
+                # The explicit alt icon has blue background, with green at a point 1/3 into
+                # the image
+                assert img.getpixel((5, 5)) == (211, 230, 245)
+                mid_color = img.getpixel((img.size[0] // 3, img.size[1] // 3))
+                assert mid_color == (0, 204, 9)
+            else:
+                # The default icon is transparent background, and brown in the center.
+                assert img.getpixel((5, 5))[3] == 0
+                mid_color = img.getpixel((img.size[0] // 2, img.size[1] // 2))
+                assert mid_color == (149, 119, 73, 255)
+
     def _menu_item(self, path):
         main_menu = self.app._impl.native.get_menubar()
         menu = main_menu
@@ -79,14 +99,18 @@ class AppProbe(BaseProbe):
         except AttributeError:
             raise AssertionError(f"Menu {' > '.join(orig_path)} not found")
 
-        action_name = item[0].get_item_attribute_value(item[1], "action").get_string()
-        cmd_id = action_name.split(".")[1]
-        action = self.app._impl.native.lookup_action(cmd_id)
-        return action
+        action = item[0].get_item_attribute_value(item[1], "action")
+        if action:
+            action_name = (
+                item[0].get_item_attribute_value(item[1], "action").get_string()
+            )
+            cmd_id = action_name.split(".")[1]
+            action = self.app._impl.native.lookup_action(cmd_id)
+        return item, action
 
     def _activate_menu_item(self, path):
-        item = self._menu_item(path)
-        item.emit("activate", None)
+        _, action = self._menu_item(path)
+        action.emit("activate", None)
 
     def activate_menu_exit(self):
         self._activate_menu_item(["*", "Quit Toga Testbed"])
@@ -117,8 +141,33 @@ class AppProbe(BaseProbe):
         pytest.xfail("GTK doesn't have a window management menu items")
 
     def assert_menu_item(self, path, enabled):
-        item = self._menu_item(path)
-        assert item.get_enabled() == enabled
+        _, action = self._menu_item(path)
+        assert action.get_enabled() == enabled
+
+    def assert_menu_order(self, path, expected):
+        item, action = self._menu_item(path)
+        menu = item[0].get_item_link(item[1], "submenu")
+
+        # Loop over the sections
+        actual = []
+        for index in range(menu.get_n_items()):
+            section = menu.get_item_link(index, "section")
+            if section:
+                if actual:
+                    actual.append("---")
+
+                for section_index in range(section.get_n_items()):
+                    actual.append(
+                        section.get_item_attribute_value(
+                            section_index, "label"
+                        ).get_string()
+                    )
+            else:
+                actual.append(
+                    section.get_item_attribute_value(index, "label").get_string()
+                )
+
+        assert actual == expected
 
     def keystroke(self, combination):
         accel = gtk_accel(combination)

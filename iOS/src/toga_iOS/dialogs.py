@@ -33,8 +33,7 @@ class AlertDialog(BaseDialog):
         )
 
     @abstractmethod
-    def populate_dialog(self, native):
-        ...
+    def populate_dialog(self, native): ...
 
     def response(self, value):
         self.interface.set_result(value)

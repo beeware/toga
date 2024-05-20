@@ -19,6 +19,11 @@ class TogaList(NSTableView):
     impl = objc_property(object, weak=True)
 
     @objc_method
+    def didCloseMenu_withEvent_(self, menu, event) -> None:
+        # When the menu closes, drop the reference to the menu object.
+        self.impl._popup = None
+
+    @objc_method
     def menuForEvent_(self, event):
         if self.impl.primary_action_enabled or self.impl.secondary_action_enabled:
             # Find the row under the mouse click
@@ -49,9 +54,12 @@ class TogaList(NSTableView):
                 )
                 secondary_action_item.tag = row
 
-            return popup
         else:
-            return None
+            popup = None
+
+        # Preserve a Python reference to the popup for testing purposes.
+        self.impl._popup = popup
+        return popup
 
     @objc_method
     def primaryActionOnRow_(self, menuitem):
@@ -75,7 +83,6 @@ class TogaList(NSTableView):
             data = value._impl
         except AttributeError:
             data = TogaData.alloc().init()
-            data.retain()
             value._impl = data
 
         try:

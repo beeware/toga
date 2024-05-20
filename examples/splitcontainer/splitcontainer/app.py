@@ -96,7 +96,9 @@ class SplitContainerApp(toga.App):
 
 
 def main():
-    return SplitContainerApp("SplitContainer", "org.beeware.widgets.splitcontainer")
+    return SplitContainerApp(
+        "SplitContainer", "org.beeware.toga.examples.splitcontainer"
+    )
 
 
 if __name__ == "__main__":

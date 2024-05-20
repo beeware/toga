@@ -1,15 +1,19 @@
 import asyncio
 import sys
+import warnings
 
+from android.content import Context
 from android.graphics.drawable import BitmapDrawable
 from android.media import RingtoneManager
 from android.view import Menu, MenuItem
+from androidx.core.content import ContextCompat
 from java import dynamic_proxy
 from org.beeware.android import IPythonApp, MainActivity
 
 from toga.command import Command, Group, Separator
 
 from .libs import events
+from .screens import Screen as ScreenImpl
 from .window import Window
 
 
@@ -18,10 +22,9 @@ class MainWindow(Window):
 
 
 class TogaApp(dynamic_proxy(IPythonApp)):
-    last_intent_requestcode = (
-        -1
-    )  # always increment before using it for invoking new Intents
+    last_requestcode = -1  # A unique ID for native background requests
     running_intents = {}  # dictionary for currently running Intents
+    permission_requests = {}  # dictionary for outstanding permission requests
     menuitem_mapping = {}  # dictionary for mapping menuitems to commands
 
     def __init__(self, app):
@@ -52,28 +55,33 @@ class TogaApp(dynamic_proxy(IPythonApp)):
     def onRestart(self):
         print("Toga app: onRestart")  # pragma: no cover
 
-    # TODO #1798: document and test this somehow
-    def onActivityResult(self, requestCode, resultCode, resultData):  # pragma: no cover
-        """Callback method, called from MainActivity when an Intent ends.
+    def onActivityResult(self, requestCode, resultCode, resultData):
+        print(f"Toga app: onActivityResult {requestCode=} {resultCode=} {resultData=}")
+        try:
+            # Retrieve the completion callback; if non-none, invoke it.
+            callback = self.running_intents.pop(requestCode)
+            # In theory, the callback can be empty; however, we don't
+            # have any practical use for this at present, so the branch
+            # is marked no-cover
+            if callback:  # pragma: no branch
+                callback(resultCode, resultData)
+        except KeyError:  # pragma: no cover
+            # This shouldn't happen; we shouldn't get notified of an
+            # intent that we didn't start
+            print(f"No intent matching request code {requestCode}")
 
-        :param int requestCode: The integer request code originally supplied to startActivityForResult(),
-                                allowing you to identify who this result came from.
-        :param int resultCode: The integer result code returned by the child activity through its setResult().
-        :param Intent resultData: An Intent, which can return result data to the caller (various data can be attached
-                                  to Intent "extras").
-        """
+    def onRequestPermissionsResult(self, requestCode, permissions, grantResults):
         print(
-            f"Toga app: onActivityResult, requestCode={requestCode}, resultData={resultData}"
+            f"Toga app: onRequestPermissionsResult {requestCode=} {permissions=} {grantResults=}"
         )
         try:
-            # remove Intent from the list of running Intents,
-            # and set the result of the intent.
-            result_future = self.running_intents.pop(requestCode)
-            result_future.set_result(
-                {"resultCode": resultCode, "resultData": resultData}
-            )
-        except KeyError:
-            print("No intent matching request code {requestCode}")
+            # Retrieve the completion callback and invoke it.
+            callback = self.permission_requests.pop(requestCode)
+            callback(permissions, grantResults)
+        except KeyError:  # pragma: no cover
+            # This shouldn't happen; we shouldn't get notified of an
+            # permission that we didn't request.
+            print(f"No permission request matching request code {requestCode}")
 
     def onConfigurationChanged(self, new_config):
         pass  # pragma: no cover
@@ -189,12 +197,13 @@ class App:
         self._listener = TogaApp(self)
         # Call user code to populate the main window
         self.interface._startup()
-        self._create_app_commands()
+        self.create_app_commands()
 
-    def create_menus(self):
-        self.native.invalidateOptionsMenu()  # Triggers onPrepareOptionsMenu
+    ######################################################################
+    # Commands and menus
+    ######################################################################
 
-    def _create_app_commands(self):
+    def create_app_commands(self):
         self.interface.commands.add(
             # About should be the last item in the menu, in a section on its own.
             Command(
@@ -204,6 +213,16 @@ class App:
             ),
         )
 
+    def create_menus(self):
+        self.native.invalidateOptionsMenu()  # Triggers onPrepareOptionsMenu
+
+    ######################################################################
+    # App lifecycle
+    ######################################################################
+
+    def exit(self):
+        pass  # pragma: no cover
+
     def main_loop(self):
         # In order to support user asyncio code, start the Python/Android cooperative event loop.
         self.loop.run_forever_cooperatively()
@@ -212,8 +231,33 @@ class App:
         # of the Android Activity system.
         self.create()
 
+    def set_icon(self, icon):
+        # Android apps don't have runtime icons, so this can't be invoked
+        pass  # pragma: no cover
+
     def set_main_window(self, window):
         pass
+
+    ######################################################################
+    # App resources
+    ######################################################################
+
+    def get_screens(self):
+        context = self.native.getApplicationContext()
+        display_manager = context.getSystemService(Context.DISPLAY_SERVICE)
+        screen_list = display_manager.getDisplays()
+        return [ScreenImpl(self, screen) for screen in screen_list]
+
+    ######################################################################
+    # App capabilities
+    ######################################################################
+
+    def beep(self):
+        uri = RingtoneManager.getActualDefaultRingtoneUri(
+            self.native.getApplicationContext(), RingtoneManager.TYPE_NOTIFICATION
+        )
+        ringtone = RingtoneManager.getRingtone(self.native.getApplicationContext(), uri)
+        ringtone.play()
 
     def show_about_dialog(self):
         message_parts = []
@@ -232,15 +276,19 @@ class App:
             f"About {self.interface.formal_name}", "\n".join(message_parts)
         )
 
-    def beep(self):
-        uri = RingtoneManager.getActualDefaultRingtoneUri(
-            self.native.getApplicationContext(), RingtoneManager.TYPE_NOTIFICATION
-        )
-        ringtone = RingtoneManager.getRingtone(self.native.getApplicationContext(), uri)
-        ringtone.play()
+    ######################################################################
+    # Cursor control
+    ######################################################################
 
-    def exit(self):
-        pass  # pragma: no cover
+    def hide_cursor(self):
+        pass
+
+    def show_cursor(self):
+        pass
+
+    ######################################################################
+    # Window control
+    ######################################################################
 
     def get_current_window(self):
         return self.interface.main_window._impl
@@ -248,28 +296,9 @@ class App:
     def set_current_window(self, window):
         pass
 
-    # TODO #1798: document and test this somehow
-    async def intent_result(self, intent):  # pragma: no cover
-        """Calls an Intent and waits for its result.
-
-        A RuntimeError will be raised when the Intent cannot be invoked.
-
-        :param Intent intent: The Intent to call
-        :returns: A Dictionary containing "resultCode" (int) and "resultData" (Intent or None)
-        :rtype: dict
-        """
-        try:
-            self._listener.last_intent_requestcode += 1
-            code = self._listener.last_intent_requestcode
-
-            result_future = asyncio.Future()
-            self._listener.running_intents[code] = result_future
-
-            self.native.startActivityForResult(intent, code)
-            await result_future
-            return result_future.result()
-        except AttributeError:
-            raise RuntimeError("No appropriate Activity found to handle this intent.")
+    ######################################################################
+    # Full screen control
+    ######################################################################
 
     def enter_full_screen(self, windows):
         pass
@@ -277,8 +306,72 @@ class App:
     def exit_full_screen(self, windows):
         pass
 
-    def hide_cursor(self):
-        pass
+    ######################################################################
+    # Platform-specific APIs
+    ######################################################################
 
-    def show_cursor(self):
-        pass
+    async def intent_result(self, intent):  # pragma: no cover
+        warnings.warn(
+            "intent_result has been deprecated; use start_activity",
+            DeprecationWarning,
+        )
+        try:
+            result_future = asyncio.Future()
+
+            def complete_handler(code, data):
+                result_future.set_result({"resultCode": code, "resultData": data})
+
+            self.start_activity(intent, on_complete=complete_handler)
+
+            await result_future
+            return result_future.result()
+        except AttributeError:
+            raise RuntimeError("No appropriate Activity found to handle this intent.")
+
+    def _native_startActivityForResult(
+        self, activity, code, *options
+    ):  # pragma: no cover
+        # A wrapper around the native method so that it can be mocked during testing.
+        self.native.startActivityForResult(activity, code, *options)
+
+    def start_activity(self, activity, *options, on_complete=None):
+        """Start a native Android activity.
+
+        :param activity: The Intent/Activity to start
+        :param options: Any additional arguments to pass to the native
+            ``startActivityForResult`` call.
+        :param on_complete: The callback to invoke when the activity
+            completes. The callback will be invoked with 2 arguments:
+            the result code, and the result data.
+        """
+        self._listener.last_requestcode += 1
+        code = self._listener.last_requestcode
+
+        self._listener.running_intents[code] = on_complete
+
+        self._native_startActivityForResult(activity, code, *options)
+
+    def _native_checkSelfPermission(self, permission):  # pragma: no cover
+        # A wrapper around the native method so that it can be mocked during testing.
+        return ContextCompat.checkSelfPermission(
+            self.native.getApplicationContext(), permission
+        )
+
+    def _native_requestPermissions(self, permissions, code):  # pragma: no cover
+        # A wrapper around the native method so that it can be mocked during testing.
+        self.native.requestPermissions(permissions, code)
+
+    def request_permissions(self, permissions, on_complete):
+        """Request a set of permissions from the user.
+
+        :param permissions: The list of permissions to request.
+        :param on_complete: The callback to invoke when the permission request
+            completes. The callback will be invoked with 2 arguments: the list of
+            permissions that were processed, and a second list of the same size,
+            containing the grant status of each of those permissions.
+        """
+        self._listener.last_requestcode += 1
+        code = self._listener.last_requestcode
+
+        self._listener.permission_requests[code] = on_complete
+        self._native_requestPermissions(permissions, code)

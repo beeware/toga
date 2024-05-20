@@ -217,8 +217,7 @@ def test_row_flex_insufficient_space():
 def test_row_flex_insufficient_space_no_flex():
     """Children in a row layout with flexible containers, but insufficient_space for any
     of the flexible content, and an explicit intrinsic width, doesn't collapse row
-    height.
-    """
+    height."""
     root = ExampleNode(
         "app",
         style=Pack(direction=ROW),
@@ -277,7 +276,7 @@ def test_row_flex_insufficient_space_no_flex():
 
 
 def test_row_flex_grandchild_min_size():
-    """The minimum intrinsic sizes of grandchild of flex row containers are honored"""
+    """The minimum intrinsic sizes of grandchild of flex row containers are honored."""
     root = ExampleNode(
         "app",
         size=(at_least(0), at_least(0)),
@@ -329,8 +328,8 @@ def test_row_flex_grandchild_min_size():
 
 
 def test_column_flex_no_hints():
-    """Children in a column layout with flexible containers, but no flex hints,
-    doesn't collapse column width."""
+    """Children in a column layout with flexible containers, but no flex hints, doesn't
+    collapse column width."""
     root = ExampleNode(
         "app",
         style=Pack(direction=COLUMN),
@@ -459,8 +458,7 @@ def test_column_flex():
 
 def test_column_flex_insufficient_space():
     """Children in a column layout with flexible containers, but insufficient space to
-    accommodate them, and an explicit intrinsic width, doesn't collapse column width.
-    """
+    accommodate them, and an explicit intrinsic width, doesn't collapse column width."""
 
     root = ExampleNode(
         "app",
@@ -542,8 +540,7 @@ def test_column_flex_insufficient_space():
 def test_column_flex_insufficient_space_no_flex():
     """Children in a column layout with flexible containers, but insufficient space for
     any of the flexible content, and an explicit intrinsic width, doesn't collapse
-    column width.
-    """
+    column width."""
 
     root = ExampleNode(
         "app",
@@ -603,7 +600,8 @@ def test_column_flex_insufficient_space_no_flex():
 
 
 def test_column_flex_grandchild_min_size():
-    """The minimum intrinsic sizes of grandchild of flex column containers are honored"""
+    """The minimum intrinsic sizes of grandchild of flex column containers are
+    honored."""
     root = ExampleNode(
         "app",
         size=(at_least(0), at_least(0)),

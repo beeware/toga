@@ -21,7 +21,7 @@ def widget(app):
 
 
 def test_create_empty(widget):
-    """A empty ImageView can be created"""
+    """An empty ImageView can be created."""
     # interface/impl round trips
     assert widget._impl.interface is widget
     assert_action_performed(widget, "create ImageView")
@@ -35,7 +35,7 @@ ABSOLUTE_FILE_PATH = Path(__file__).parent.parent / "resources/toga.png"
 
 
 def test_create_from_toga_image(app):
-    """An ImageView can be created from a Toga image"""
+    """An ImageView can be created from a Toga image."""
     image = toga.Image(ABSOLUTE_FILE_PATH)
     widget = toga.ImageView(image=image)
 
@@ -50,7 +50,7 @@ def test_create_from_toga_image(app):
 
 
 def test_create_from_pil():
-    """An ImageView can be created from a PIL image"""
+    """An ImageView can be created from a PIL image."""
     with PIL.Image.open(ABSOLUTE_FILE_PATH) as pil_img:
         pil_img.load()
 
@@ -60,7 +60,7 @@ def test_create_from_pil():
 
 
 def test_disable_no_op(widget):
-    """ImageView doesn't have a disabled state"""
+    """ImageView doesn't have a disabled state."""
 
     # Enabled by default
     assert widget.enabled
@@ -79,7 +79,7 @@ def test_focus_noop(widget):
 
 
 def test_set_image_str(widget):
-    """The image can be set with a string"""
+    """The image can be set with a string."""
     widget.image = ABSOLUTE_FILE_PATH
 
     assert_action_performed_with(widget, "set image", image=ANY)
@@ -90,7 +90,7 @@ def test_set_image_str(widget):
 
 
 def test_set_image_path(widget):
-    """The image can be set with a Path"""
+    """The image can be set with a Path."""
     widget.image = Path(ABSOLUTE_FILE_PATH)
 
     assert_action_performed_with(widget, "set image", image=ANY)
@@ -101,7 +101,7 @@ def test_set_image_path(widget):
 
 
 def test_set_image(widget):
-    "The image can be set with an Image instance"
+    """The image can be set with an Image instance."""
     image = toga.Image(Path(ABSOLUTE_FILE_PATH))
     widget.image = image
     assert_action_performed_with(widget, "set image", image=image)
@@ -111,7 +111,7 @@ def test_set_image(widget):
 
 
 def test_set_image_none(app):
-    "The image can be cleared"
+    """The image can be cleared."""
     widget = toga.ImageView(image=ABSOLUTE_FILE_PATH)
     assert widget.image is not None
 

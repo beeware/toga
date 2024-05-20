@@ -20,6 +20,8 @@ to package your app.
 Implementation details
 ----------------------
 
-``toga-iOS`` uses the iOS UIKit Objective-C APIs to build apps. It uses `Rubicon
-Objective-C <https://rubicon-objc.readthedocs.org>`__ to provide a bridge to the native
-UIKit libraries from Python.
+The ``toga-iOS`` backend uses the `UIKit Objective C
+API <https://developer.apple.com/documentation/uikit>`__.
+
+The native APIs are accessed using `Rubicon Objective C
+<https://rubicon-objc.readthedocs.io/>`__.

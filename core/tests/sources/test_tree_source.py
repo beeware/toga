@@ -65,7 +65,7 @@ def source(listener):
     ],
 )
 def test_invalid_accessors(value):
-    "Accessors for a list source must be a list of attribute names"
+    """Accessors for a list source must be a list of attribute names."""
     with pytest.raises(
         ValueError,
         match=r"accessors should be a list of attribute names",
@@ -74,7 +74,7 @@ def test_invalid_accessors(value):
 
 
 def test_accessors_required():
-    "A list source must specify *some* accessors"
+    """A list source must specify *some* accessors."""
     with pytest.raises(
         ValueError,
         match=r"TreeSource must be provided a list of accessors",
@@ -83,7 +83,7 @@ def test_accessors_required():
 
 
 def test_accessors_copied():
-    "A list source must specify *some* accessors"
+    """A list source must specify *some* accessors."""
     accessors = ["foo", "bar"]
     source = TreeSource(accessors)
 
@@ -102,7 +102,7 @@ def test_accessors_copied():
     ],
 )
 def test_create_empty(data):
-    """An empty TreeSource can be created"""
+    """An empty TreeSource can be created."""
     source = TreeSource(data=data, accessors=["val1", "val2"])
 
     assert len(source) == 0
@@ -270,7 +270,7 @@ def test_create_empty(data):
     ],
 )
 def test_create(data, all_accessor_levels):
-    """A tree source can be created from data in different formats"""
+    """A tree source can be created from data in different formats."""
     source = TreeSource(data=data, accessors=["val1", "val2"])
 
     # Source has 2 roots
@@ -355,7 +355,7 @@ def test_create(data, all_accessor_levels):
 
 
 def test_source_single_object():
-    """A single object can be passed as root data"""
+    """A single object can be passed as root data."""
     source = TreeSource(accessors=["val1", "val2"], data="A string")
 
     assert len(source) == 1
@@ -363,7 +363,7 @@ def test_source_single_object():
 
 
 def test_single_object_child():
-    """A single object can be passed as child data"""
+    """A single object can be passed as child data."""
     source = TreeSource(
         accessors=["val1", "val2"],
         data={("root1", 1): "A string"},
@@ -419,12 +419,12 @@ def test_modify_roots(source, listener):
 
 
 def test_iter_root(source):
-    """The roots of a source can be iterated over"""
+    """The roots of a source can be iterated over."""
     assert "|".join(root.val1 for root in source) == "group1|group2"
 
 
 def test_clear(source, listener):
-    """A TreeSource can be cleared"""
+    """A TreeSource can be cleared."""
     source.clear()
 
     assert len(source) == 0
@@ -443,7 +443,7 @@ def test_clear(source, listener):
     ],
 )
 def test_insert(source, listener, index, actual_index):
-    """A new root node can be inserted"""
+    """A new root node can be inserted."""
     new_child = source.insert(index, {"val1": "new"})
 
     # Source has one more root.
@@ -462,7 +462,7 @@ def test_insert(source, listener, index, actual_index):
 
 
 def test_insert_with_children(source, listener):
-    """A new root node can be inserted with children"""
+    """A new root node can be inserted with children."""
     new_child = source.insert(
         1,
         {"val1": "new"},
@@ -495,7 +495,7 @@ def test_insert_with_children(source, listener):
 
 
 def test_append(source, listener):
-    """A new root node can be appended"""
+    """A new root node can be appended."""
     new_child = source.append({"val1": "new"})
 
     # Source has one more root.
@@ -514,7 +514,7 @@ def test_append(source, listener):
 
 
 def test_append_with_children(source, listener):
-    """A new root node can be inserted with children"""
+    """A new root node can be inserted with children."""
     new_child = source.append(
         {"val1": "new"},
         children=[
@@ -546,7 +546,7 @@ def test_append_with_children(source, listener):
 
 
 def test_remove_root(source, listener):
-    """A root node can be removed"""
+    """A root node can be removed."""
     root = source[1]
     source.remove(root)
 
@@ -561,7 +561,7 @@ def test_remove_root(source, listener):
 
 
 def test_remove_child(source, listener):
-    """A child node can be removed from a source"""
+    """A child node can be removed from a source."""
     node = source[1][1]
     source.remove(node)
 
@@ -571,7 +571,7 @@ def test_remove_child(source, listener):
     assert len(source[1]) == 2
 
     # The child is no longer associated with the source,
-    # and the child isn't associated with it's parent.
+    # and the child isn't associated with its parent.
     assert node._source is None
     assert node._parent is None
 
@@ -580,7 +580,7 @@ def test_remove_child(source, listener):
 
 
 def test_remove_non_root(source, listener):
-    """If a node isn't associated with this source, remove raises an error"""
+    """If a node isn't associated with this source, remove raises an error."""
     other = Node(val="other")
 
     with pytest.raises(
@@ -591,13 +591,13 @@ def test_remove_non_root(source, listener):
 
 
 def test_index(source):
-    """A root can be found in a TreeSource"""
+    """A root can be found in a TreeSource."""
     root = source[1]
     assert source.index(root) == 1
 
 
 def test_find(source):
-    """A node can be found by value"""
+    """A node can be found by value."""
     root1 = source[1]
 
     # Append some additional roots

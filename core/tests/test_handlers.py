@@ -11,7 +11,7 @@ class ExampleAsyncResult(AsyncResult):
 
 
 def test_noop_handler():
-    """None can be wrapped as a valid handler"""
+    """None can be wrapped as a valid handler."""
     obj = Mock()
 
     wrapped = wrapped_handler(obj, None)
@@ -23,7 +23,7 @@ def test_noop_handler():
 
 
 def test_noop_handler_with_cleanup():
-    """cleanup is still performed when a no-op handler is used"""
+    """Cleanup is still performed when a no-op handler is used."""
     obj = Mock()
     cleanup = Mock()
 
@@ -39,7 +39,7 @@ def test_noop_handler_with_cleanup():
 
 
 def test_noop_handler_with_cleanup_error(capsys):
-    """If cleanup on a no-op handler raises an error, it is logged"""
+    """If cleanup on a no-op handler raises an error, it is logged."""
     obj = Mock()
     cleanup = Mock(side_effect=Exception("Problem in cleanup"))
 
@@ -61,7 +61,7 @@ def test_noop_handler_with_cleanup_error(capsys):
 
 
 def test_function_handler():
-    """A function can be used as a handler"""
+    """A function can be used as a handler."""
     obj = Mock()
     handler_call = {}
 
@@ -85,7 +85,7 @@ def test_function_handler():
 
 
 def test_function_handler_error(capsys):
-    """A function handler can raise an error"""
+    """A function handler can raise an error."""
     obj = Mock()
     handler_call = {}
 
@@ -115,7 +115,7 @@ def test_function_handler_error(capsys):
 
 
 def test_function_handler_with_cleanup():
-    """A function handler can have a cleanup method"""
+    """A function handler can have a cleanup method."""
     obj = Mock()
     cleanup = Mock()
     handler_call = {}
@@ -179,7 +179,7 @@ def test_function_handler_with_cleanup_error(capsys):
 
 
 def test_generator_handler(event_loop):
-    """A generator can be used as a handler"""
+    """A generator can be used as a handler."""
     obj = Mock()
     handler_call = {}
 
@@ -216,7 +216,7 @@ def test_generator_handler(event_loop):
 
 
 def test_generator_handler_error(event_loop, capsys):
-    """A generator can raise an error"""
+    """A generator can raise an error."""
     obj = Mock()
     handler_call = {}
 
@@ -255,7 +255,7 @@ def test_generator_handler_error(event_loop, capsys):
 
 
 def test_generator_handler_with_cleanup(event_loop):
-    """A generator can have cleanup"""
+    """A generator can have cleanup."""
     obj = Mock()
     cleanup = Mock()
     handler_call = {}
@@ -297,7 +297,7 @@ def test_generator_handler_with_cleanup(event_loop):
 
 
 def test_generator_handler_with_cleanup_error(event_loop, capsys):
-    """A generator can raise an error during cleanup"""
+    """A generator can raise an error during cleanup."""
     obj = Mock()
     cleanup = Mock(side_effect=Exception("Problem in cleanup"))
     handler_call = {}
@@ -345,7 +345,7 @@ def test_generator_handler_with_cleanup_error(event_loop, capsys):
 
 
 def test_coroutine_handler(event_loop):
-    """A coroutine can be used as a handler"""
+    """A coroutine can be used as a handler."""
     obj = Mock()
     handler_call = {}
 
@@ -379,7 +379,7 @@ def test_coroutine_handler(event_loop):
 
 
 def test_coroutine_handler_error(event_loop, capsys):
-    """A coroutine can raise an error"""
+    """A coroutine can raise an error."""
     obj = Mock()
     handler_call = {}
 
@@ -418,7 +418,7 @@ def test_coroutine_handler_error(event_loop, capsys):
 
 
 def test_coroutine_handler_with_cleanup(event_loop):
-    """A coroutine can have cleanup"""
+    """A coroutine can have cleanup."""
     obj = Mock()
     cleanup = Mock()
     handler_call = {}
@@ -457,7 +457,7 @@ def test_coroutine_handler_with_cleanup(event_loop):
 
 
 def test_coroutine_handler_with_cleanup_error(event_loop, capsys):
-    """A coroutine can raise an error during cleanup"""
+    """A coroutine can raise an error during cleanup."""
     obj = Mock()
     cleanup = Mock(side_effect=Exception("Problem in cleanup"))
     handler_call = {}
@@ -502,7 +502,7 @@ def test_coroutine_handler_with_cleanup_error(event_loop, capsys):
 
 
 def test_native_handler():
-    """A native function can be used as a handler"""
+    """A native function can be used as a handler."""
     obj = Mock()
     native_method = Mock()
 
@@ -515,7 +515,7 @@ def test_native_handler():
 
 
 def test_async_result_non_comparable(event_loop):
-    """An async result can't be compared or evaluated"""
+    """An async result can't be compared or evaluated."""
     result = ExampleAsyncResult(None)
 
     # repr for the result is useful
@@ -561,7 +561,7 @@ def test_async_result_non_comparable(event_loop):
 
 
 def test_async_result(event_loop):
-    """An async result can be set"""
+    """An async result can be set."""
     result = ExampleAsyncResult()
 
     result.set_result(42)
@@ -574,7 +574,7 @@ def test_async_result(event_loop):
 
 
 def test_async_result_cancelled(event_loop):
-    """An async result can be set even if the future is cancelled"""
+    """An async result can be set even if the future is cancelled."""
     result = ExampleAsyncResult()
 
     # cancel the future.
@@ -588,7 +588,7 @@ def test_async_result_cancelled(event_loop):
 
 
 def test_async_exception(event_loop):
-    """An async result can raise an exception"""
+    """An async result can raise an exception."""
     result = ExampleAsyncResult()
 
     result.set_exception(ValueError("Bad stuff"))
@@ -599,7 +599,7 @@ def test_async_exception(event_loop):
 
 
 def test_async_exception_cancelled(event_loop):
-    """An async result can raise an exception even if the future is cancelled"""
+    """An async result can raise an exception even if the future is cancelled."""
     result = ExampleAsyncResult()
 
     # Cancel the future
@@ -618,7 +618,7 @@ def test_async_exception_cancelled(event_loop):
 
 
 def test_async_result_sync(event_loop):
-    """The deprecated behavior of using a synchronous result handler is supported"""
+    """The deprecated behavior of using a synchronous result handler is supported."""
     on_result = Mock()
 
     with pytest.warns(
@@ -638,7 +638,7 @@ def test_async_result_sync(event_loop):
 
 
 def test_async_result_cancelled_sync(event_loop):
-    """A deprecated on_result handler won't be fired on a cancelled future"""
+    """A deprecated on_result handler won't be fired on a cancelled future."""
     on_result = Mock()
 
     with pytest.warns(
@@ -661,7 +661,7 @@ def test_async_result_cancelled_sync(event_loop):
 
 
 def test_async_exception_sync(event_loop):
-    """A deprecated on_result handler can raise an exception"""
+    """A deprecated on_result handler can raise an exception."""
     on_result = Mock()
 
     with pytest.warns(
@@ -683,7 +683,7 @@ def test_async_exception_sync(event_loop):
 
 
 def test_async_exception_cancelled_sync(event_loop):
-    """An async result can raise an exception even if the future is cancelled"""
+    """An async result can raise an exception even if the future is cancelled."""
     on_result = Mock()
 
     with pytest.warns(

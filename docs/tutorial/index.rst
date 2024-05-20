@@ -14,14 +14,21 @@ Tutorials
 
 .. toctree::
    :maxdepth: 1
+   :hidden:
    :titlesonly:
 
+   Get started <get-started>
    tutorial-0
    tutorial-1
    tutorial-2
    tutorial-3
    tutorial-4
 
+A quick test drive
+==================
+
+Before you run through the tutorial, :doc:`install a Toga app <get-started>` to see what
+Toga looks like.
 
 Tutorial 0 - your first Toga app
 ================================

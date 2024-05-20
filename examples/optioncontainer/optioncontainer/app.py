@@ -39,9 +39,9 @@ class ExampleOptionContainerApp(toga.App):
     def on_enable_option(self, button):
         index = int(self.select_option.value)
         try:
-            self.optioncontainer.content[
-                index
-            ].enabled = not self.optioncontainer.content[index].enabled
+            self.optioncontainer.content[index].enabled = (
+                not self.optioncontainer.content[index].enabled
+            )
         except ValueError as e:
             self.main_window.info_dialog("Oops", str(e))
 
@@ -69,11 +69,15 @@ class ExampleOptionContainerApp(toga.App):
             self.optioncontainer.current_tab.index
             < len(self.optioncontainer.content) - 1
         ):
-            self.optioncontainer.current_tab += 1
+            self.optioncontainer.current_tab = (
+                self.optioncontainer.current_tab.index + 1
+            )
 
     def set_previous_tab(self, widget):
         if self.optioncontainer.current_tab.index > 0:
-            self.optioncontainer.current_tab -= 1
+            self.optioncontainer.current_tab = (
+                self.optioncontainer.current_tab.index - 1
+            )
 
     def on_select_tab(self, widget, **kwargs):
         self.selected_label.text = (
@@ -180,7 +184,7 @@ class ExampleOptionContainerApp(toga.App):
 
 def main():
     return ExampleOptionContainerApp(
-        "Option Container Example", "org.beeware.widgets.optioncontainer"
+        "Option Container Example", "org.beeware.toga.examples.optioncontainer"
     )
 
 

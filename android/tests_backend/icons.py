@@ -37,3 +37,6 @@ class IconProbe(BaseProbe):
 
     def assert_platform_icon_content(self):
         assert self.icon._impl.path == self.app.paths.app / "resources/logo-android.png"
+
+    def assert_app_icon_content(self):
+        pytest.xfail("Android apps don't have app icons at runtime")

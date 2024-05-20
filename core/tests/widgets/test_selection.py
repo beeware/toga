@@ -40,7 +40,7 @@ def widget(source, on_change_handler):
 
 
 def test_widget_created():
-    "An empty selection can be created"
+    """An empty selection can be created."""
     widget = toga.Selection()
     assert widget._impl.interface == widget
     assert_action_performed(widget, "create Selection")
@@ -53,7 +53,7 @@ def test_widget_created():
 
 
 def test_create_with_value():
-    "A Selection can be created with initial values"
+    """A Selection can be created with initial values."""
     on_change = Mock()
 
     widget = toga.Selection(
@@ -73,12 +73,12 @@ def test_create_with_value():
 
 
 @pytest.mark.parametrize(
-    "items, value",
+    "items, title, value",
     [
         # list of strings
-        (["first", "second", "third"], "second"),
+        (["first", "second", "third"], "second", "second"),
         # list of non-strings
-        ([111, 222, 333], 222),
+        ([111, 222, 333], "222", 222),
         # List of dictionaries; implied use of "value" key
         (
             [
@@ -86,6 +86,7 @@ def test_create_with_value():
                 {"key": "second", "value": 222},
                 {"key": "third", "value": 333},
             ],
+            "222",
             222,
         ),
         # List of tuples; only the first item is used.
@@ -96,11 +97,16 @@ def test_create_with_value():
                 ("third", 333),
             ],
             "second",
+            "second",
         ),
+        # List of strings with a newline in value
+        (["first", "second\nitem", "third"], "second", "second\nitem"),
+        # List of strings with a duplicate entry
+        (["first", "second", "third", "first", "second"], "second", "second"),
     ],
 )
-def test_value_no_accessor(items, value):
-    "If there's no accessor, the items can be set and values will be dereferenced"
+def test_value_no_accessor(items, title, value):
+    """If there's no accessor, the items can be set and values will be dereferenced."""
     on_change_handler = Mock()
     widget = toga.Selection(on_change=on_change_handler)
 
@@ -124,17 +130,17 @@ def test_value_no_accessor(items, value):
     assert widget.value == value
 
     # The value renders as a string
-    assert widget._title_for_item(widget.items[1]) == str(value)
+    assert widget._title_for_item(widget.items[1]) == title
 
     # Change handler was invoked
     on_change_handler.assert_called_once_with(widget)
 
 
 @pytest.mark.parametrize(
-    "accessor, items, value",
+    "accessor, items, title, value",
     [
         # List of strings with a custom accessor name
-        ("key", ["first", "second", "third"], "second"),
+        ("key", ["first", "second", "third"], "second", "second"),
         # List of dictionaries selecting non-default key
         (
             "key",
@@ -143,6 +149,7 @@ def test_value_no_accessor(items, value):
                 {"key": "second", "value": 222},
                 {"key": "third", "value": 333},
             ],
+            "second",
             "second",
         ),
         # List of tuples; accessor name is altered.
@@ -153,6 +160,7 @@ def test_value_no_accessor(items, value):
                 ("second", 222),
                 ("third", 333),
             ],
+            "second",
             "second",
         ),
         (
@@ -166,11 +174,16 @@ def test_value_no_accessor(items, value):
                 ],
             ),
             "second",
+            "second",
         ),
+        # List of strings with a newline in a title
+        ("key", ["first", "second\nitem", "third"], "second", "second\nitem"),
+        # List of strings with a duplicate entry
+        ("key", ["first", "second", "third", "first", "second"], "second", "second"),
     ],
 )
-def test_value_with_accessor(accessor, items, value):
-    "If an accessor is used, item lookup semantics are different"
+def test_value_with_accessor(accessor, items, title, value):
+    """If an accessor is used, item lookup semantics are different."""
     on_change_handler = Mock()
     widget = toga.Selection(accessor=accessor, on_change=on_change_handler)
 
@@ -195,7 +208,7 @@ def test_value_with_accessor(accessor, items, value):
     assert getattr(widget.value, accessor) == value
 
     # The value renders as a string
-    assert widget._title_for_item(widget.items[1]) == str(value)
+    assert widget._title_for_item(widget.items[1]) == title
 
     # Change handler was invoked
     on_change_handler.assert_called_once_with(widget)
@@ -211,7 +224,7 @@ def test_source_no_accessor():
 
 
 def test_bad_item_no_accessor():
-    """The value for the selection must exist in accessor-less data"""
+    """The value for the selection must exist in accessor-less data."""
     selection = toga.Selection(items=["first", "second", "third"])
 
     with pytest.raises(
@@ -222,7 +235,7 @@ def test_bad_item_no_accessor():
 
 
 def test_bad_item_with_accessor():
-    """The value for the selection must exist in accessor-based data"""
+    """The value for the selection must exist in accessor-based data."""
     # Create a selection with an extra item and an explicit accessor
     selection = toga.Selection(
         accessor="value", items=["first", "bad", "second", "third"]
@@ -258,7 +271,7 @@ def test_add_item(widget, source, on_change_handler):
 
 
 def test_insert_item(widget, source, on_change_handler):
-    """A row can be inserted into the source"""
+    """A row can be inserted into the source."""
     # Store the original selection
     selection = widget.value
 
@@ -273,7 +286,7 @@ def test_insert_item(widget, source, on_change_handler):
 
 
 def test_remove(widget, source, on_change_handler):
-    """If you remove an item that isn't selected, no change is generated"""
+    """If you remove an item that isn't selected, no change is generated."""
     # Store the original selection
     selection = widget.value
 
@@ -290,7 +303,7 @@ def test_remove(widget, source, on_change_handler):
 
 
 def test_remove_selected(widget, source, on_change_handler):
-    """If you remove the currently selected item, a change is generated"""
+    """If you remove the currently selected item, a change is generated."""
     # Store the original selection
     selection = widget.value
 
@@ -305,20 +318,20 @@ def test_remove_selected(widget, source, on_change_handler):
 
 
 def test_clear_source(widget, source, on_change_handler):
-    "If the source is cleared, the selection is cleared"
+    """If the source is cleared, the selection is cleared."""
     # Clear the source
     source.clear()
 
     # The widget has been cleared
     assert_action_performed(widget, "clear")
 
-    # The widget must have cleared it's selection
+    # The widget must have cleared its selection
     on_change_handler.assert_called_with(widget)
     assert widget.value is None
 
 
 def test_change_source_empty(widget, on_change_handler):
-    """If the source is changed to an empty source, the selection is reset"""
+    """If the source is changed to an empty source, the selection is reset."""
     # Clear the event history
     EventLog.reset()
 
@@ -329,13 +342,13 @@ def test_change_source_empty(widget, on_change_handler):
     assert_action_not_performed(widget, "insert item")
     assert_action_performed(widget, "refresh")
 
-    # The widget must have cleared it's selection
+    # The widget must have cleared its selection
     on_change_handler.assert_called_once_with(widget)
     assert widget.value is None
 
 
 def test_change_source(widget, on_change_handler):
-    """If the source is changed, the selection is set to the first item"""
+    """If the source is changed, the selection is set to the first item."""
     # Clear the event history
     EventLog.reset()
 
@@ -348,7 +361,7 @@ def test_change_source(widget, on_change_handler):
     assert_action_performed_with(widget, "insert item", item=widget.items[1])
     assert_action_performed(widget, "refresh")
 
-    # The widget must have cleared it's selection
+    # The widget must have cleared its selection
     on_change_handler.assert_called_once_with(widget)
     assert widget.value.key == "new 1"
 
@@ -359,7 +372,7 @@ def test_change_source(widget, on_change_handler):
 
 
 def test_deprecated_names(on_change_handler):
-    "Deprecated names still work"
+    """Deprecated names still work."""
 
     # Can't specify both on_select and on_change
     with pytest.raises(

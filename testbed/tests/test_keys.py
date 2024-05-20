@@ -34,6 +34,13 @@ from toga.keys import Key
         (Key.F5, {"key": Key.F5, "modifiers": set()}),
         (Key.HOME, {"key": Key.HOME, "modifiers": set()}),
         (Key.HOME + Key.MOD_1, {"key": Key.HOME, "modifiers": {Key.MOD_1}}),
+        # Numpad keys
+        (Key.NUMPAD_5 + Key.MOD_1, {"key": Key.NUMPAD_5, "modifiers": {Key.MOD_1}}),
+        # Key where platforms have odd representations
+        (Key.MOD_1 + Key.SEMICOLON, {"key": Key.SEMICOLON, "modifiers": {Key.MOD_1}}),
+        (Key.MOD_1 + Key.SPACE, {"key": Key.SPACE, "modifiers": {Key.MOD_1}}),
+        (Key.MOD_1 + Key.QUOTE, {"key": Key.QUOTE, "modifiers": {Key.MOD_1}}),
+        (Key.MOD_1 + Key.PIPE, {"key": Key.PIPE, "modifiers": {Key.MOD_1}}),
     ],
 )
 def test_key_combinations(app_probe, key_combo, key_data):

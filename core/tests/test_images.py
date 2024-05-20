@@ -4,6 +4,11 @@ import PIL.Image
 import pytest
 
 import toga
+from toga_dummy.plugins.image_formats import (
+    CustomImage,
+    CustomImageSubclass,
+    DisabledImageConverter,
+)
 from toga_dummy.utils import assert_action_performed_with
 
 RELATIVE_FILE_PATH = Path("resources/sample.png")
@@ -33,7 +38,7 @@ ABSOLUTE_FILE_PATH = Path(__file__).parent / "resources/sample.png"
     ],
 )
 def test_create_from_file(app, args, kwargs):
-    """An image can be constructed from a file"""
+    """An image can be constructed from a file."""
     image = toga.Image(*args, **kwargs)
 
     # Image is bound
@@ -75,7 +80,7 @@ MISSING_RELATIVE_PATH = Path("does/not/exist/image.jpg")
     ],
 )
 def test_create_with_nonexistent_file(app, args, kwargs):
-    """If a file image source doesn't exist, an error is raised"""
+    """If a file image source doesn't exist, an error is raised."""
     with pytest.raises(FileNotFoundError):
         toga.Image(*args, **kwargs)
 
@@ -96,7 +101,7 @@ BYTES = ABSOLUTE_FILE_PATH.read_bytes()
     ],
 )
 def test_create_from_bytes(args, kwargs):
-    """An image can be constructed from data"""
+    """An image can be constructed from data."""
     image = toga.Image(*args, **kwargs)
 
     # Image is bound
@@ -109,7 +114,7 @@ def test_create_from_bytes(args, kwargs):
 
 
 def test_create_from_raw():
-    """An image can be created from a raw data source"""
+    """An image can be created from a raw data source."""
     orig = toga.Image(BYTES)
 
     copy = toga.Image(orig._impl.native)
@@ -122,16 +127,35 @@ def test_create_from_raw():
     assert_action_performed_with(copy, "load image from raw")
 
 
-def test_not_enough_arguments():
+def test_no_source():
+    """If no source is provided, an error is raised."""
     with pytest.raises(
         TypeError,
         match=r"Image.__init__\(\) missing 1 required positional argument: 'src'",
     ):
+        toga.Image()
+
+
+def test_empty_image():
+    """If the image source is provided as None, an error is raised."""
+    with pytest.raises(
+        TypeError,
+        match=r"Unsupported source type for Image",
+    ):
         toga.Image(None)
 
 
+def test_empty_image_explicit():
+    """If src is explicitly provided as None, an error is raised."""
+    with pytest.raises(
+        TypeError,
+        match=r"Unsupported source type for Image",
+    ):
+        toga.Image(src=None)
+
+
 def test_invalid_input_format():
-    """Trying to create an image with an invalid input should raise an error"""
+    """Trying to create an image with an invalid input should raise an error."""
     with pytest.raises(
         TypeError,
         match=r"Unsupported source type for Image",
@@ -140,7 +164,7 @@ def test_invalid_input_format():
 
 
 def test_create_from_pil(app):
-    """An image can be created from a PIL image"""
+    """An image can be created from a PIL image."""
     with PIL.Image.open(ABSOLUTE_FILE_PATH) as pil_image:
         pil_image.load()
     toga_image = toga.Image(pil_image)
@@ -150,7 +174,7 @@ def test_create_from_pil(app):
 
 
 def test_create_from_toga_image(app):
-    """An image can be create from another Toga image"""
+    """An image can be created from another Toga image."""
     toga_image = toga.Image(ABSOLUTE_FILE_PATH)
     toga_image_2 = toga.Image(toga_image)
 
@@ -178,16 +202,16 @@ def test_deprecated_arguments(kwargs):
     ],
 )
 def test_too_many_arguments(args, kwargs):
-    """If multiple arguments are supplied, an error is raised"""
+    """If multiple arguments are supplied, an error is raised."""
     with pytest.raises(
-        ValueError,
+        TypeError,
         match=r"Received multiple arguments to constructor.",
     ):
         toga.Image(*args, **kwargs)
 
 
 def test_dimensions(app):
-    """The dimensions of the image can be retrieved"""
+    """The dimensions of the image can be retrieved."""
     image = toga.Image(RELATIVE_FILE_PATH)
 
     assert image.size == (144, 72)
@@ -210,7 +234,7 @@ def test_data(app):
 
 
 def test_image_save(tmp_path):
-    """An image can be saved"""
+    """An image can be saved."""
     save_path = tmp_path / "save.png"
     image = toga.Image(BYTES)
     image.save(save_path)
@@ -232,7 +256,8 @@ class ImageSubclass(toga.Image):
     ],
 )
 def test_as_format_toga(app, Class_1, Class_2):
-    """as_format can successfully return a "copy" Image, with support for subclassing"""
+    """as_format can successfully return a "copy" Image, with support for
+    subclassing."""
     image_1 = Class_1(ABSOLUTE_FILE_PATH)
     image_2 = image_1.as_format(Class_2)
 
@@ -241,17 +266,40 @@ def test_as_format_toga(app, Class_1, Class_2):
 
 
 def test_as_format_pil(app):
-    """as_format can successfully return a PIL image"""
+    """as_format can successfully return a PIL image."""
     toga_image = toga.Image(ABSOLUTE_FILE_PATH)
     pil_image = toga_image.as_format(PIL.Image.Image)
     assert isinstance(pil_image, PIL.Image.Image)
     assert pil_image.size == (144, 72)
 
 
+@pytest.mark.parametrize("ImageClass", [CustomImage, CustomImageSubclass])
+def test_create_from_custom_class(app, ImageClass):
+    """toga.Image can be created from custom type."""
+    custom_image = ImageClass()
+    toga_image = toga.Image(custom_image)
+    assert isinstance(toga_image, toga.Image)
+    assert toga_image.size == (144, 72)
+
+
+@pytest.mark.parametrize("ImageClass", [CustomImage, CustomImageSubclass])
+def test_as_format_custom_class(app, ImageClass):
+    """as_format can successfully return a registered custom image type."""
+    toga_image = toga.Image(ABSOLUTE_FILE_PATH)
+    custom_image = toga_image.as_format(ImageClass)
+    assert isinstance(custom_image, ImageClass)
+    assert custom_image.size == (144, 72)
+
+
+def test_disabled_image_plugin(app):
+    """Disabled image plugin shouldn't be available."""
+    assert DisabledImageConverter not in toga.Image._converters()
+
+
 # None is same as supplying nothing; also test a random unrecognized class
 @pytest.mark.parametrize("arg", [None, toga.Button])
 def test_as_format_invalid_input(app, arg):
-    """An unsupported format raises an error"""
+    """An unsupported format raises an error."""
     toga_image = toga.Image(ABSOLUTE_FILE_PATH)
 
     with pytest.raises(TypeError, match=r"Unknown conversion format for Image:"):

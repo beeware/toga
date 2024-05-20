@@ -47,9 +47,11 @@ class ScrollContainer(Widget):
     def set_horizontal(self, value):
         self.native.set_policy(
             Gtk.PolicyType.AUTOMATIC if value else Gtk.PolicyType.NEVER,
-            Gtk.PolicyType.AUTOMATIC
-            if self.interface.vertical
-            else Gtk.PolicyType.NEVER,
+            (
+                Gtk.PolicyType.AUTOMATIC
+                if self.interface.vertical
+                else Gtk.PolicyType.NEVER
+            ),
         )
         # Disabling scrolling implies a position reset; that's a scroll event.
         if not value:
@@ -61,9 +63,11 @@ class ScrollContainer(Widget):
 
     def set_vertical(self, value):
         self.native.set_policy(
-            Gtk.PolicyType.AUTOMATIC
-            if self.interface.horizontal
-            else Gtk.PolicyType.NEVER,
+            (
+                Gtk.PolicyType.AUTOMATIC
+                if self.interface.horizontal
+                else Gtk.PolicyType.NEVER
+            ),
             Gtk.PolicyType.AUTOMATIC if value else Gtk.PolicyType.NEVER,
         )
         # Disabling scrolling implies a position reset; that's a scroll event.

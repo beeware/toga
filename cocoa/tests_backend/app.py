@@ -1,7 +1,9 @@
 from pathlib import Path
 
+import PIL.Image
 from rubicon.objc import NSPoint, ObjCClass, objc_id, send_message
 
+import toga
 from toga_cocoa.keys import cocoa_key, toga_key
 from toga_cocoa.libs import (
     NSApplication,
@@ -57,6 +59,42 @@ class AppProbe(BaseProbe):
             window.content._impl.native.frame.size.width,
             window.content._impl.native.frame.size.height,
         )
+
+    def assert_app_icon(self, icon):
+        # We have no real way to check we've got the right icon; use pixel peeping as a
+        # guess. Construct a PIL image from the current icon.
+        img = toga.Image(
+            NSApplication.sharedApplication.applicationIconImage
+        ).as_format(PIL.Image.Image)
+
+        # Due to icon resizing and colorspace issues, the exact pixel colors are
+        # inconsistent, so multiple values must be provided for test purposes.
+        if icon:
+            # The explicit alt icon has blue background, with green at a point 1/3 into
+            # the image
+            assert img.getpixel((5, 5)) in {
+                (205, 226, 243, 255),
+                (211, 226, 243, 255),
+                (211, 230, 245, 255),
+            }
+            mid_color = img.getpixel((img.size[0] // 3, img.size[1] // 3))
+            assert mid_color in {
+                (0, 204, 9, 255),
+                (6, 204, 8, 255),
+                (14, 197, 8, 255),
+                (105, 192, 32, 255),
+            }
+        else:
+            # The default icon is transparent background, and brown in the center.
+            assert img.getpixel((5, 5))[3] == 0
+            mid_color = img.getpixel((img.size[0] // 2, img.size[1] // 2))
+            assert mid_color in {
+                (130, 100, 57, 255),
+                (130, 109, 66, 255),
+                (138, 107, 64, 255),
+                (138, 108, 64, 255),
+                (149, 119, 73, 255),
+            }
 
     def _menu_item(self, path):
         main_menu = self.app._impl.native.mainMenu
@@ -147,6 +185,16 @@ class AppProbe(BaseProbe):
         item = self._menu_item(path)
         assert item.isEnabled() == enabled
 
+    def assert_menu_order(self, path, expected):
+        menu = self._menu_item(path).submenu
+
+        assert menu.numberOfItems == len(expected)
+        for item, title in zip(menu.itemArray, expected):
+            if title == "---":
+                assert item.isSeparatorItem
+            else:
+                assert item.title == title
+
     def keystroke(self, combination):
         key, modifiers = cocoa_key(combination)
         key_code = {
@@ -154,12 +202,18 @@ class AppProbe(BaseProbe):
             "A": 0,
             "1": 18,
             "!": 18,
+            "'": 39,
+            ";": 41,
+            "|": 42,
+            " ": 49,
             chr(0xF708): 96,  # F5
             chr(0x2196): 115,  # Home
+            # This only works because we're *not* testing the numeric 5
+            "5": 87,
         }[key]
 
-        # Add the shift modifier to disambiguate 1 from !
-        if key in {"!"}:
+        # Add the shift modifier to disambiguate shifted keys from non-shifted
+        if key in {"!", "|"}:
             modifiers |= NSEventModifierFlagShift
 
         event = NSEvent.keyEventWithType(

@@ -2,6 +2,7 @@ from pathlib import Path
 
 import toga_dummy
 
+from .screens import Screen as ScreenImpl
 from .utils import LoggedObject
 
 
@@ -105,3 +106,7 @@ class Window(LoggedObject):
 
     def simulate_close(self):
         self.interface.on_close()
+
+    def get_current_screen(self):
+        # `window.screen` will return `Secondary Screen`
+        return ScreenImpl(native=("Secondary Screen", (-1366, -768), (1366, 768)))

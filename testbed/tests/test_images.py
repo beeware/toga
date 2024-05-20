@@ -12,7 +12,7 @@ import toga
 
 def image_probe(app, image):
     module = import_module("tests_backend.images")
-    return getattr(module, "ImageProbe")(app, image)
+    return module.ImageProbe(app, image)
 
 
 async def test_local_image(app):
@@ -41,8 +41,8 @@ async def test_bad_image_file(app):
         toga.Image(__file__)
 
 
-async def test_data_image(app):
-    "An image can be constructed from data"
+async def test_buffer_image(app):
+    "An image can be constructed from buffer data"
     # Generate an image using pillow
     pil_image = PIL_Image.new("RGBA", size=(110, 30))
     draw_context = PIL_ImageDraw.Draw(pil_image)
@@ -51,17 +51,37 @@ async def test_data_image(app):
     buffer = io.BytesIO()
     pil_image.save(buffer, format="png", compress_level=0)
 
-    # Construct a Toga image.
+    # Construct a Toga image from buffer data.
     image = toga.Image(buffer.getvalue())
 
     assert image.width == 110
     assert image.height == 30
 
-    # Construct a second image from the first image's data
-    image2 = toga.Image(image.data)
 
-    assert image2.width == 110
-    assert image2.height == 30
+async def test_pil_raw_and_data_image(app):
+    "An image can be created from PIL, platform's raw representation and `toga.Image` data"
+    # Generate an image using pillow
+    pil_image = PIL_Image.new("RGBA", size=(110, 30))
+    draw_context = PIL_ImageDraw.Draw(pil_image)
+    draw_context.text((20, 10), "Hello World", fill="green")
+
+    # Construct a Toga image from PIL image
+    image_from_pil = toga.Image(pil_image)
+
+    assert image_from_pil.width == 110
+    assert image_from_pil.height == 30
+
+    # Construct a Toga image using the native image type
+    image_from_native = toga.Image(image_from_pil._impl.native)
+
+    assert image_from_native.width == 110
+    assert image_from_native.height == 30
+
+    # Construct an image from `image_from_native`'s data
+    image_from_data = toga.Image(image_from_native.data)
+
+    assert image_from_data.width == 110
+    assert image_from_data.height == 30
 
 
 async def test_bad_image_data(app):

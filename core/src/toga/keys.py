@@ -119,6 +119,7 @@ class Key(Enum):
 
     HOME = "<home>"
     END = "<end>"
+    INSERT = "<insert>"
     DELETE = "<delete>"
     PAGE_UP = "<pg up>"
     PAGE_DOWN = "<pg dn>"
@@ -128,6 +129,7 @@ class Key(Enum):
     LEFT = "<left>"
     RIGHT = "<right>"
 
+    NUMLOCK = "<num lock>"
     NUMPAD_0 = "numpad:0"
     NUMPAD_1 = "numpad:1"
     NUMPAD_2 = "numpad:2"
@@ -146,6 +148,11 @@ class Key(Enum):
     NUMPAD_MINUS = "numpad:-"
     NUMPAD_MULTIPLY = "numpad:*"
     NUMPAD_PLUS = "numpad:+"
+
+    SCROLLLOCK = "<scroll lock>"
+    BEGIN = "<begin>"
+    MENU = "<menu>"
+    PAUSE = "<pause>"
 
     def is_printable(self) -> bool:
         """Does pressing the key result in a printable character?"""

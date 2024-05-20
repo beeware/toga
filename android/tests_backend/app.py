@@ -38,6 +38,9 @@ class AppProbe(BaseProbe):
     def logs_path(self):
         return Path(self.get_app_context().getFilesDir().getPath()) / "log"
 
+    def assert_app_icon(self, icon):
+        xfail("Android apps don't have app icons at runtime")
+
     def _menu_item(self, path):
         menu = self.main_window_probe._native_menu()
         for i_path, label in enumerate(path):
@@ -77,6 +80,20 @@ class AppProbe(BaseProbe):
 
     def assert_menu_item(self, path, *, enabled=True):
         assert self._menu_item(path).isEnabled() == enabled
+
+    def assert_menu_order(self, path, expected):
+        item = self._menu_item(path)
+        menu = item.getSubMenu()
+
+        # Android doesn't include separators, so we need to exclude separators from the
+        # length check, and add an offset when a separator is expected.
+        separator_offset = 0
+        assert menu.size() == len([item for item in expected if item != "---"])
+        for i, title in enumerate(expected):
+            if title == "---":
+                separator_offset += 1
+            else:
+                assert menu.getItem(i - separator_offset).getTitle() == title
 
     def assert_system_menus(self):
         self.assert_menu_item(["About Toga Testbed"])

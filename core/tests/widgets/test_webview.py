@@ -10,6 +10,7 @@ from toga_dummy.utils import (
     assert_action_performed_with,
     attribute_value,
 )
+from toga_dummy.widgets.webview import WebView as DummyWebView
 
 
 @pytest.fixture
@@ -18,7 +19,7 @@ def widget():
 
 
 def test_widget_created():
-    "A WebView can be created with minimal arguments"
+    """A WebView can be created with minimal arguments."""
     widget = toga.WebView()
 
     assert widget._impl.interface == widget
@@ -30,7 +31,7 @@ def test_widget_created():
 
 
 def test_create_with_values():
-    "A WebView can be created with initial values"
+    """A WebView can be created with initial values."""
     on_webview_load = Mock()
 
     widget = toga.WebView(
@@ -46,6 +47,30 @@ def test_create_with_values():
     assert widget.on_webview_load._raw == on_webview_load
 
 
+def test_webview_load_disabled(monkeypatch):
+    """If the backend doesn't support on_webview_load, a warning is raised."""
+    try:
+        # Temporarily set the feature attribute on the backend
+        DummyWebView.SUPPORTS_ON_WEBVIEW_LOAD = False
+
+        # Instantiate a new widget with a hobbled backend.
+        widget = toga.WebView()
+        handler = Mock()
+
+        # Setting the handler raises a warning
+        with pytest.warns(
+            toga.NotImplementedWarning,
+            match=r"\[Dummy\] Not implemented: WebView\.on_webview_load",
+        ):
+            widget.on_webview_load = handler
+
+        # But the handler is still installed
+        assert widget.on_webview_load._raw == handler
+    finally:
+        # Clear the feature attribute.
+        del DummyWebView.SUPPORTS_ON_WEBVIEW_LOAD
+
+
 @pytest.mark.parametrize(
     "url",
     [
@@ -55,7 +80,7 @@ def test_create_with_values():
     ],
 )
 def test_url(widget, url):
-    "The URL of a webview can be set"
+    """The URL of a webview can be set."""
     # Set up a load handler
     on_webview_load_handler = Mock()
     widget.on_webview_load = on_webview_load_handler
@@ -85,7 +110,7 @@ def test_url(widget, url):
     ],
 )
 async def test_load_url(widget, url):
-    "The URL of a webview can be loaded asynchronously"
+    """The URL of a webview can be loaded asynchronously."""
     # Set up a load handler
     on_webview_load_handler = Mock()
     widget.on_webview_load = on_webview_load_handler
@@ -127,7 +152,7 @@ async def test_load_url(widget, url):
     ],
 )
 async def test_invalid_url(widget, url):
-    "URLs must start with https:// or http://"
+    """URLs must start with https:// or http://"""
     with pytest.raises(
         ValueError,
         match=r"WebView can only display http:// and https:// URLs",
@@ -142,7 +167,7 @@ async def test_invalid_url(widget, url):
 
 
 def test_set_content(widget):
-    "Static HTML content can be loaded into the page"
+    """Static HTML content can be loaded into the page."""
     widget.set_content("https://example.com", "<h1>Fancy page</h1>")
     assert_action_performed_with(
         widget,
@@ -153,13 +178,13 @@ def test_set_content(widget):
 
 
 def test_user_agent(widget):
-    "The user agent can be customized"
+    """The user agent can be customized."""
     widget.user_agent = "New user agent"
     assert widget.user_agent == "New user agent"
 
 
 def test_evaluate_javascript(widget):
-    "Javascript can be evaluated"
+    """Javascript can be evaluated."""
     result = widget.evaluate_javascript("test(1);")
     assert_action_performed(widget, "evaluate_javascript")
 
@@ -174,7 +199,8 @@ def test_evaluate_javascript(widget):
 
 
 async def test_evaluate_javascript_async(widget):
-    "Javascript can be evaluated asynchronously, and an asynchronous result returned"
+    """Javascript can be evaluated asynchronously, and an asynchronous result
+    returned."""
 
     # An async task that simulates evaluation of Javascript after a delay
     async def delayed_page_load():
@@ -192,7 +218,7 @@ async def test_evaluate_javascript_async(widget):
 
 
 async def test_evaluate_javascript_sync(widget):
-    """Deprecated sync handlers can be used for Javascript evaluation"""
+    """Deprecated sync handlers can be used for Javascript evaluation."""
 
     # An async task that simulates evaluation of Javascript after a delay
     async def delayed_page_load():

@@ -22,7 +22,7 @@ class Group:
         order: int = 0,
     ):
         """
-        An collection of commands to display together.
+        A collection of commands to display together.
 
         :param text: A label for the group.
         :param parent: The parent of this group; use ``None`` to make a root group.
@@ -167,7 +167,7 @@ class Command:
         *,
         shortcut: str | Key | None = None,
         tooltip: str | None = None,
-        icon: IconContent = None,
+        icon: IconContent | None = None,
         group: Group = Group.COMMANDS,
         section: int = 0,
         order: int = 0,
@@ -203,7 +203,7 @@ class Command:
         self.section = section
         self.order = order
 
-        self.action = wrapped_handler(self, action)
+        self.action = action
 
         self.factory = get_platform_factory()
         self._impl = self.factory.Command(interface=self)
@@ -238,11 +238,24 @@ class Command:
         return self._icon
 
     @icon.setter
-    def icon(self, icon_or_name: str | Icon):
+    def icon(self, icon_or_name: IconContent | None):
         if isinstance(icon_or_name, Icon) or icon_or_name is None:
             self._icon = icon_or_name
         else:
             self._icon = Icon(icon_or_name)
+
+    @property
+    def action(self) -> ActionHandler | None:
+        """The Action attached to the command."""
+        return self._action
+
+    @action.setter
+    def action(self, action: ActionHandler | None):
+        """Set the action attached to the command
+
+        Needs to be a valid ActionHandler or ``None``
+        """
+        self._action = wrapped_handler(self, action)
 
     def __lt__(self, other: Any) -> bool:
         if not isinstance(other, (Group, Command)):
@@ -282,14 +295,7 @@ class Separator:
 
 class CommandSetChangeHandler(Protocol):
     def __call__(self) -> None:
-        """A handler that will be invoked when a Command or Group is added to the CommandSet.
-
-        .. note::
-            ``**kwargs`` ensures compatibility with additional arguments
-            introduced in future versions.
-
-        :return: Nothing
-        """
+        """A handler that will be invoked when a Command or Group is added to the CommandSet."""
         ...
 
 

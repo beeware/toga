@@ -8,7 +8,7 @@ from toga.command import CommandSet, Separator
 
 
 def test_create():
-    """A CommandSet can be created with defaults"""
+    """A CommandSet can be created with defaults."""
     cs = CommandSet()
 
     assert list(cs) == []
@@ -16,7 +16,7 @@ def test_create():
 
 
 def test_create_with_values():
-    """A CommandSet can be created with values"""
+    """A CommandSet can be created with values."""
     change_handler = Mock()
     cs = CommandSet(on_change=change_handler)
 
@@ -26,7 +26,7 @@ def test_create_with_values():
 
 @pytest.mark.parametrize("change_handler", [(None), (Mock())])
 def test_add_clear(app, change_handler):
-    """Commands can be added and removed from a commandset"""
+    """Commands can be added and removed from a commandset."""
     # Put some commands into the app
     cmd_a = toga.Command(None, text="App command a")
     cmd_b = toga.Command(None, text="App command b", order=10)
@@ -67,7 +67,7 @@ def test_add_clear(app, change_handler):
 
 @pytest.mark.parametrize("change_handler", [(None), (Mock())])
 def test_add_clear_with_app(app, change_handler):
-    """Commands can be added and removed from a commandset that is linked to an app"""
+    """Commands can be added and removed from a commandset that is linked to an app."""
     # Put some commands into the app
     cmd_a = toga.Command(None, text="App command a")
     cmd_b = toga.Command(None, text="App command b", order=10)
@@ -130,7 +130,7 @@ def test_ordering(
     child_group_4,
     child_group_5,
 ):
-    """Ordering of groups, separators and commands is preserved"""
+    """Ordering of groups, separators and commands is preserved."""
 
     # Menu structure is:
     # - parent group 1

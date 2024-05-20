@@ -30,7 +30,8 @@ class ExampleLeafWidget(toga.Widget):
 
 
 @pytest.fixture
-def widget():
+def widget(app):
+    # App fixture is needed to ensure a fresh widget registry is created
     return ExampleWidget(id="widget_id", style=Pack(padding=666))
 
 
@@ -62,7 +63,7 @@ def test_widget_created(widget):
 
 
 def test_add_child_to_leaf():
-    "A child cannot be added to a leaf node"
+    """A child cannot be added to a leaf node."""
     leaf = ExampleLeafWidget()
 
     # Widget doesn't have an app or window
@@ -81,7 +82,7 @@ def test_add_child_to_leaf():
 
 
 def test_add_child_without_app(widget):
-    "A child can be added to a node when there's no underlying app"
+    """A child can be added to a node when there's no underlying app."""
     # Widget doesn't have an app or window
     assert widget.app is None
     assert widget.window is None
@@ -111,7 +112,7 @@ def test_add_child_without_app(widget):
 
 
 def test_add_child(app, widget):
-    "A child can be added to a node when there's an app & window"
+    """A child can be added to a node when there's an app & window."""
     # Set the app and window for the widget.
     window = toga.Window()
     window.content = widget
@@ -163,7 +164,7 @@ def test_add_child(app, widget):
 
 
 def test_add_multiple_children(app, widget):
-    "Multiple children can be added in one call"
+    """Multiple children can be added in one call."""
     # Set the app and window for the widget.
     window = toga.Window()
     window.content = widget
@@ -183,7 +184,7 @@ def test_add_multiple_children(app, widget):
     child3 = ExampleLeafWidget(id="child3_id")
 
     # App's widget index only contains the parent
-    assert app.widgets == {"widget_id": widget}
+    assert dict(app.widgets) == {"widget_id": widget}
 
     # Add the children.
     widget.add(child1, child2, child3)
@@ -217,7 +218,7 @@ def test_add_multiple_children(app, widget):
     assert_action_performed_with(window.content, "refresh")
 
     # App's widget index has been updated
-    assert app.widgets == {
+    assert dict(app.widgets) == {
         "widget_id": widget,
         "child1_id": child1,
         "child2_id": child2,
@@ -225,7 +226,7 @@ def test_add_multiple_children(app, widget):
     }
 
     # Window's widget index has been updated
-    assert window.widgets == {
+    assert dict(window.widgets) == {
         "widget_id": widget,
         "child1_id": child1,
         "child2_id": child2,
@@ -234,7 +235,7 @@ def test_add_multiple_children(app, widget):
 
 
 def test_reparent_child(widget):
-    "A widget can be reparented"
+    """A widget can be reparented."""
     # Create a second parent widget, and add a child to it
     other = ExampleWidget(id="other")
     child = ExampleLeafWidget(id="child_id")
@@ -264,7 +265,7 @@ def test_reparent_child(widget):
 
 
 def test_reparent_child_to_self(widget):
-    "Reparenting a widget to the same parent is a no-op"
+    """Reparenting a widget to the same parent is a no-op."""
     # Add a child to the widget
     child = ExampleLeafWidget(id="child_id")
     widget.add(child)
@@ -291,7 +292,7 @@ def test_reparent_child_to_self(widget):
 
 
 def test_insert_child_into_leaf():
-    "A child cannot be inserted into a leaf node"
+    """A child cannot be inserted into a leaf node."""
     leaf = ExampleLeafWidget()
 
     # Widget doesn't have an app or window
@@ -310,7 +311,7 @@ def test_insert_child_into_leaf():
 
 
 def test_insert_child_without_app(widget):
-    "A child can be inserted into a node when there's no underlying app"
+    """A child can be inserted into a node when there's no underlying app."""
     # Widget doesn't have an app or window
     assert widget.app is None
     assert widget.window is None
@@ -340,7 +341,7 @@ def test_insert_child_without_app(widget):
 
 
 def test_insert_child(app, widget):
-    "A child can be inserted into a node when there's an app & window"
+    """A child can be inserted into a node when there's an app & window."""
     # Set the app and window for the widget.
     window = toga.Window()
     window.content = widget
@@ -382,20 +383,20 @@ def test_insert_child(app, widget):
     assert_action_performed_with(window.content, "refresh")
 
     # App's widget index has been updated
-    assert app.widgets == {
+    assert dict(app.widgets) == {
         "widget_id": widget,
         "child_id": child,
     }
 
     # Window's widget index has been updated
-    assert window.widgets == {
+    assert dict(window.widgets) == {
         "widget_id": widget,
         "child_id": child,
     }
 
 
 def test_insert_position(app, widget):
-    "Insert can put a child into a specific position"
+    """Insert can put a child into a specific position."""
     # Set the app and window for the widget.
     window = toga.Window()
     window.content = widget
@@ -415,10 +416,10 @@ def test_insert_position(app, widget):
     child3 = ExampleLeafWidget(id="child3_id")
 
     # App's widget index only contains the parent
-    assert app.widgets == {"widget_id": widget}
+    assert dict(app.widgets) == {"widget_id": widget}
 
     # Windows's widget index only contains the parent
-    assert window.widgets == {"widget_id": widget}
+    assert dict(window.widgets) == {"widget_id": widget}
 
     # insert the children.
     widget.insert(0, child1)
@@ -453,7 +454,7 @@ def test_insert_position(app, widget):
     assert_action_performed_with(window.content, "refresh")
 
     # App's widget index has been updated
-    assert app.widgets == {
+    assert dict(app.widgets) == {
         "widget_id": widget,
         "child1_id": child1,
         "child2_id": child2,
@@ -461,7 +462,7 @@ def test_insert_position(app, widget):
     }
 
     # Window's widget index has been updated
-    assert window.widgets == {
+    assert dict(window.widgets) == {
         "widget_id": widget,
         "child1_id": child1,
         "child2_id": child2,
@@ -470,7 +471,7 @@ def test_insert_position(app, widget):
 
 
 def test_insert_bad_position(app, widget):
-    "If the position is invalid, an error is raised"
+    """If the position is invalid, an error is raised."""
     # Set the app and window for the widget.
     window = toga.Window()
     window.content = widget
@@ -488,10 +489,10 @@ def test_insert_bad_position(app, widget):
     child = ExampleLeafWidget(id="child_id")
 
     # App's widget index only contains the parent
-    assert app.widgets == {"widget_id": widget}
+    assert dict(app.widgets) == {"widget_id": widget}
 
     # Window's widget index only contains the parent
-    assert window.widgets == {"widget_id": widget}
+    assert dict(window.widgets) == {"widget_id": widget}
 
     # Insert the child at a position greater than the length of the list.
     # Widget will be added to the end of the list.
@@ -515,20 +516,20 @@ def test_insert_bad_position(app, widget):
     assert_action_performed_with(window.content, "refresh")
 
     # App's widget index has been updated
-    assert app.widgets == {
+    assert dict(app.widgets) == {
         "widget_id": widget,
         "child_id": child,
     }
 
     # Window's widget index has been updated
-    assert window.widgets == {
+    assert dict(window.widgets) == {
         "widget_id": widget,
         "child_id": child,
     }
 
 
 def test_insert_reparent_child(widget):
-    "A widget can be reparented by insertion"
+    """A widget can be reparented by insertion."""
     # Create a second parent widget, and add a child to it
     other = ExampleWidget(id="other")
     child = ExampleLeafWidget(id="child_id")
@@ -558,7 +559,7 @@ def test_insert_reparent_child(widget):
 
 
 def test_insert_reparent_child_to_self(widget):
-    "Reparenting a widget to the same parent by insertion is a no-op"
+    """Reparenting a widget to the same parent by insertion is a no-op."""
     # Add a child to the widget
     child = ExampleLeafWidget(id="child_id")
     widget.add(child)
@@ -585,7 +586,7 @@ def test_insert_reparent_child_to_self(widget):
 
 
 def test_remove_child_from_leaf():
-    "A child cannot be removed from a leaf node"
+    """A child cannot be removed from a leaf node."""
     leaf = ExampleLeafWidget()
 
     # Widget doesn't have an app or window
@@ -604,7 +605,7 @@ def test_remove_child_from_leaf():
 
 
 def test_remove_child_without_app(widget):
-    "A child without an app or window can be removed from a widget"
+    """A child without an app or window can be removed from a widget."""
     # Add a child to the widget
     child = ExampleLeafWidget(id="child_id")
     widget.add(child)
@@ -633,7 +634,7 @@ def test_remove_child_without_app(widget):
 
 
 def test_remove_child(app, widget):
-    "A child associated with an app & window can be removed from a widget"
+    """A child associated with an app & window can be removed from a widget."""
     # Add a child to the widget
     child = ExampleLeafWidget(id="child_id")
     widget.add(child)
@@ -647,8 +648,8 @@ def test_remove_child(app, widget):
     assert child.parent == widget
     assert child.app == app
     assert child.window == window
-    assert app.widgets == {"widget_id": widget, "child_id": child}
-    assert window.widgets == {"widget_id": widget, "child_id": child}
+    assert dict(app.widgets) == {"widget_id": widget, "child_id": child}
+    assert dict(window.widgets) == {"widget_id": widget, "child_id": child}
 
     # Remove the child
     widget.remove(child)
@@ -662,8 +663,8 @@ def test_remove_child(app, widget):
     assert child.window is None
 
     # child widget no longer exists in the app or widgets registries.
-    assert app.widgets == {"widget_id": widget}
-    assert window.widgets == {"widget_id": widget}
+    assert dict(app.widgets) == {"widget_id": widget}
+    assert dict(window.widgets) == {"widget_id": widget}
 
     # The impl's remove_child has been invoked
     assert_action_performed_with(widget, "remove child", child=child._impl)
@@ -679,7 +680,7 @@ def test_remove_child(app, widget):
 
 
 def test_remove_multiple_children(app, widget):
-    "Multiple children can be removed from a widget"
+    """Multiple children can be removed from a widget."""
     # Add children to the widget
     child1 = ExampleLeafWidget(id="child1_id")
     child2 = ExampleLeafWidget(id="child2_id")
@@ -738,7 +739,7 @@ def test_remove_multiple_children(app, widget):
 
 
 def test_clear_all_children(app, widget):
-    "All children can be simultaneously removed from a widget"
+    """All children can be simultaneously removed from a widget."""
     # Add children to the widget
     child1 = ExampleLeafWidget(id="child1_id")
     child2 = ExampleLeafWidget(id="child2_id")
@@ -800,7 +801,7 @@ def test_clear_all_children(app, widget):
 
 
 def test_clear_no_children(app, widget):
-    "No changes are made (no-op) if widget has no children"
+    """No changes are made (no-op) if widget has no children."""
     window = toga.Window()
     window.content = widget
     # Clear the event log
@@ -822,7 +823,7 @@ def test_clear_no_children(app, widget):
 
 
 def test_clear_leaf(app):
-    "`clear` cannot be called on a leaf node"
+    """`clear` cannot be called on a leaf node."""
     leaf = ExampleLeafWidget()
     window = toga.Window()
     window.content = leaf
@@ -846,7 +847,7 @@ def test_clear_leaf(app):
 
 
 def test_remove_from_non_parent(widget):
-    "Trying to remove a child from a widget other than it's parent is a no-op"
+    """Trying to remove a child from a widget other than it's parent is a no-op."""
     # Create a second parent widget, and add a child to it
     other = ExampleWidget(id="other")
     child = ExampleLeafWidget(id="child_id")
@@ -872,7 +873,7 @@ def test_remove_from_non_parent(widget):
 
 
 def test_set_app(app, widget):
-    "A widget can be assigned to an app"
+    """A widget can be assigned to an app."""
     assert len(app.widgets) == 0
 
     # Assign the widget to an app
@@ -881,16 +882,24 @@ def test_set_app(app, widget):
     # The app has been assigned
     assert widget.app == app
 
-    # The widget index has been updated
-    assert len(app.widgets) == 1
-    assert app.widgets["widget_id"] == widget
+    # The widget doesn't appear in the index, as it's not on a window
+    assert len(app.widgets) == 0
+    assert "widget_id" not in app.widgets
 
     # The impl has had its app property set.
     assert attribute_value(widget, "app") == app
 
+    # Assign the widget to a window
+    window = toga.Window()
+    window.content = widget
+
+    # The widget is now in the app index.
+    assert len(app.widgets) == 1
+    assert app.widgets["widget_id"] == widget
+
 
 def test_set_app_with_children(app, widget):
-    "If a widget has children, the children get the app assignment"
+    """If a widget has children, the children get the app assignment."""
     # Add children to the widget
     child1 = ExampleLeafWidget(id="child1_id")
     child2 = ExampleLeafWidget(id="child2_id")
@@ -899,8 +908,9 @@ def test_set_app_with_children(app, widget):
 
     assert len(app.widgets) == 0
 
-    # Assign the widget to an app
-    widget.app = app
+    # Assign the widget as window content
+    window = toga.Window()
+    window.content = widget
 
     # The app has been assigned
     assert widget.app == app
@@ -925,7 +935,7 @@ def test_set_app_with_children(app, widget):
 
 
 def test_set_same_app(app, widget):
-    "A widget can be re-assigned to the same app"
+    """A widget can be re-assigned to the same app."""
     assert len(app.widgets) == 0
 
     # Assign the widget to an app
@@ -937,12 +947,12 @@ def test_set_same_app(app, widget):
     # Assign the widget to the same app
     widget.app = app
 
-    # The impl has not had it's app property set as a result of the update
+    # The impl has not had its app property set as a result of the update
     assert_attribute_not_set(widget, "app")
 
 
 def test_reset_app(app, widget):
-    "A widget can be re-assigned to no app"
+    """A widget can be re-assigned to no app."""
     assert len(app.widgets) == 0
 
     # Assign the widget to an app
@@ -960,15 +970,16 @@ def test_reset_app(app, widget):
     # The widget index has been updated
     assert len(app.widgets) == 0
 
-    # The impl has had it's app property set.
+    # The impl has had its app property set.
     assert attribute_value(widget, "app") is None
 
 
 def test_set_new_app(app, widget):
-    "A widget can be assigned to a different app"
-    # Assign the widget to an app
+    """A widget can be assigned to a different app."""
+    # Assign the widget to an app. It won't appear in the registry, as
+    # it hasn't been assigned to a window
     widget.app = app
-    assert len(app.widgets) == 1
+    assert len(app.widgets) == 0
 
     # Reset the event log so we know the new events
     EventLog.reset()
@@ -983,17 +994,18 @@ def test_set_new_app(app, widget):
     # The widget has been assigned to the new app
     assert widget.app == new_app
 
-    # The widget indices has been updated
+    # The widget still doesn't appear in a widget index.
     assert len(app.widgets) == 0
-    assert len(new_app.widgets) == 1
-    assert new_app.widgets["widget_id"] == widget
+    assert "widget_id" not in app.widgets
+    assert len(new_app.widgets) == 0
+    assert "widget_id" not in new_app.widgets
 
-    # The impl has had it's app property set.
+    # The impl has had its app property set.
     assert attribute_value(widget, "app") == new_app
 
 
 def test_set_window(widget):
-    "A widget can be assigned to a window."
+    """A widget can be assigned to a window."""
     window = toga.Window()
     assert len(window.widgets) == 0
     assert widget.window is None
@@ -1009,8 +1021,8 @@ def test_set_window(widget):
     assert window.widgets["widget_id"] == widget
 
 
-def test_set_window_with_children(widget):
-    "A widget can be assigned to a window."
+def test_set_window_with_children(app, widget):
+    """A widget can be assigned to a window."""
     # Add children to the widget
     child1 = ExampleLeafWidget(id="child1_id")
     child2 = ExampleLeafWidget(id="child2_id")
@@ -1018,6 +1030,7 @@ def test_set_window_with_children(widget):
     widget.add(child1, child2, child3)
 
     window = toga.Window()
+    assert len(app.widgets) == 0
     assert len(window.widgets) == 0
     assert widget.window is None
     assert child1.window is None
@@ -1033,7 +1046,8 @@ def test_set_window_with_children(widget):
     assert child2.window == window
     assert child3.window == window
 
-    # Window Widget registry has been updated
+    # Widget registry has been updated
+    assert len(app.widgets) == 4
     assert len(window.widgets) == 4
     assert window.widgets["widget_id"] == widget
     assert window.widgets["child1_id"] == child1
@@ -1042,7 +1056,7 @@ def test_set_window_with_children(widget):
 
 
 def test_reset_window(widget):
-    "A widget can be assigned to a different window."
+    """A widget can be assigned to a different window."""
     window = toga.Window()
     assert len(window.widgets) == 0
     assert widget.window is None
@@ -1067,7 +1081,7 @@ def test_reset_window(widget):
 
 
 def test_unset_window(widget):
-    "A widget can be assigned to no window."
+    """A widget can be assigned to no window."""
     window = toga.Window()
     assert len(window.widgets) == 0
     assert widget.window is None
@@ -1098,7 +1112,7 @@ def test_unset_window(widget):
     ],
 )
 def test_enabled(widget, value, expected):
-    "The enabled status of the widget can be changed."
+    """The enabled status of the widget can be changed."""
     # Widget is initially enabled by default.
     assert widget.enabled
 
@@ -1116,7 +1130,7 @@ def test_enabled(widget, value, expected):
 
 
 def test_refresh_root(widget):
-    "Refresh can be invoked on the root node"
+    """Refresh can be invoked on the root node."""
     # Add children to the widget
     child1 = ExampleLeafWidget(id="child1_id")
     child2 = ExampleLeafWidget(id="child2_id")
@@ -1131,7 +1145,7 @@ def test_refresh_root(widget):
 
 
 def test_refresh_child(widget):
-    "Refresh can be invoked on child"
+    """Refresh can be invoked on child."""
     # Add children to the widget
     child1 = ExampleLeafWidget(id="child1_id")
     child2 = ExampleLeafWidget(id="child2_id")
@@ -1149,13 +1163,13 @@ def test_refresh_child(widget):
 
 
 def test_focus(widget):
-    "A widget can be given focus"
+    """A widget can be given focus."""
     widget.focus()
     assert_action_performed(widget, "focus")
 
 
 def test_tab_index(widget):
-    "The tab index of a widget can be set and retrieved"
+    """The tab index of a widget can be set and retrieved."""
     # The initial tab index is None
     assert widget.tab_index is None
 

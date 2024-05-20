@@ -70,7 +70,14 @@ class SelectionApp(toga.App):
                         ),
                         toga.Selection(
                             on_change=self.my_on_change,
-                            items=["Dubnium", "Holmium", "Zirconium"],
+                            items=[
+                                "Dubnium",
+                                "Holmium",
+                                "Zirconium",
+                                "Dubnium",
+                                "Holmium",
+                                "Zirconium",
+                            ],
                         ),
                     ],
                 ),
@@ -139,7 +146,7 @@ class SelectionApp(toga.App):
 
 def main():
     # App name and namespace
-    return SelectionApp("Selection", "org.beeware.selection")
+    return SelectionApp("Selection", "org.beeware.toga.examples.selection")
 
 
 if __name__ == "__main__":

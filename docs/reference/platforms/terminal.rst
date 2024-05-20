@@ -33,7 +33,7 @@ the backend.
 Implementation details
 ----------------------
 
-``toga-textual`` uses the `Textual <https://textual.textualize.io>`__ UI toolkit.
+The ``toga-textual`` backend uses the `Textual API <https://textual.textualize.io>`__.
 
 macOS Terminal.app limitations
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

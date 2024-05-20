@@ -19,6 +19,8 @@ from toga_iOS.libs import (
     uikit,
 )
 
+from .screens import Screen as ScreenImpl
+
 
 class Window:
     _is_main_window = False
@@ -54,8 +56,35 @@ class Window:
 
         self.set_title(title)
 
-    def set_content(self, widget):
-        self.container.content = widget
+    ######################################################################
+    # Window properties
+    ######################################################################
+
+    def get_title(self):
+        return str(self.container.title)
+
+    def set_title(self, title):
+        self.container.title = title
+
+    ######################################################################
+    # Window lifecycle
+    ######################################################################
+
+    def close(self):
+        pass
+
+    def create_toolbar(self):
+        pass  # pragma: no cover
+
+    def set_app(self, app):
+        pass
+
+    def show(self):
+        self.native.makeKeyAndVisible()
+
+    ######################################################################
+    # Window content and resources
+    ######################################################################
 
     def content_refreshed(self, container):
         min_width = self.interface.content.layout.min_width
@@ -68,18 +97,12 @@ class Window:
                 f"exceeds available space {(self.container.width, self.container.height)}"
             )
 
-    def get_title(self):
-        return str(self.container.title)
+    def set_content(self, widget):
+        self.container.content = widget
 
-    def set_title(self, title):
-        self.container.title = title
-
-    def get_position(self):
-        return 0, 0
-
-    def set_position(self, position):
-        # Does nothing on mobile
-        pass
+    ######################################################################
+    # Window size
+    ######################################################################
 
     def get_size(self):
         return (
@@ -91,29 +114,43 @@ class Window:
         # Does nothing on mobile
         pass
 
-    def set_app(self, app):
+    ######################################################################
+    # Window position
+    ######################################################################
+
+    def get_current_screen(self):
+        return ScreenImpl(UIScreen.mainScreen)
+
+    def get_position(self):
+        return 0, 0
+
+    def set_position(self, position):
+        # Does nothing on mobile
         pass
 
-    def create_toolbar(self):
-        pass  # pragma: no cover
-
-    def show(self):
-        self.native.makeKeyAndVisible()
-
-    def hide(self):
-        # A no-op, as the window cannot be hidden.
-        pass
+    ######################################################################
+    # Window visibility
+    ######################################################################
 
     def get_visible(self):
         # The window is always visible
         return True
 
+    def hide(self):
+        # A no-op, as the window cannot be hidden.
+        pass
+
+    ######################################################################
+    # Window state
+    ######################################################################
+
     def set_full_screen(self, is_full_screen):
         # Windows are always full screen
         pass
 
-    def close(self):
-        pass
+    ######################################################################
+    # Window capabilities
+    ######################################################################
 
     def get_image_data(self):
         # This is... baroque.

@@ -44,6 +44,9 @@ class AppProbe(BaseProbe):
     def logs_path(self):
         return self.get_path(NSSearchPathDirectory.ApplicationSupport) / "Logs"
 
+    def assert_app_icon(self, icon):
+        pytest.xfail("iOS apps don't have app icons at runtime")
+
     def assert_system_menus(self):
         pytest.skip("Menus not implemented on iOS")
 
@@ -54,6 +57,9 @@ class AppProbe(BaseProbe):
         pytest.skip("Menus not implemented on iOS")
 
     def assert_menu_item(self, path, enabled):
+        pytest.skip("Menus not implemented on iOS")
+
+    def assert_menu_order(self, path, expected):
         pytest.skip("Menus not implemented on iOS")
 
     def enter_background(self):

@@ -1,3 +1,5 @@
+import warnings
+
 from .app import App, DocumentApp, DocumentMainWindow, MainWindow
 
 # Resources
@@ -8,9 +10,12 @@ from .fonts import Font
 from .icons import Icon
 from .images import Image
 from .keys import Key
-from .widgets.activityindicator import ActivityIndicator
+
+# Types
+from .types import LatLng
 
 # Widgets
+from .widgets.activityindicator import ActivityIndicator
 from .widgets.base import Widget
 from .widgets.box import Box
 from .widgets.button import Button
@@ -20,6 +25,7 @@ from .widgets.detailedlist import DetailedList
 from .widgets.divider import Divider
 from .widgets.imageview import ImageView
 from .widgets.label import Label
+from .widgets.mapview import MapPin, MapView
 from .widgets.multilinetextinput import MultilineTextInput
 from .widgets.numberinput import NumberInput
 from .widgets.optioncontainer import OptionContainer, OptionItem
@@ -37,7 +43,19 @@ from .widgets.tree import Tree
 from .widgets.webview import WebView
 from .window import Window
 
+
+class NotImplementedWarning(RuntimeWarning):
+    # pytest.warns() requires that Warning() subclasses are constructed by passing a
+    # single argument (the warning message). Use a factory method to avoid reproducing
+    # the message format and the warn invocation.
+    @classmethod
+    def warn(self, platform, feature):
+        """Raise a warning that a feature isn't implemented on a platform."""
+        warnings.warn(NotImplementedWarning(f"[{platform}] Not implemented: {feature}"))
+
+
 __all__ = [
+    "NotImplementedWarning",
     # Applications
     "App",
     "DocumentApp",
@@ -54,10 +72,12 @@ __all__ = [
     "hsl",
     "hsla",
     "rgb",
-    "rgba",  # Colors
+    "rgba",
     "Font",
     "Icon",
     "Image",
+    # Types
+    "LatLng",
     # Widgets
     "ActivityIndicator",
     "Box",
@@ -68,6 +88,8 @@ __all__ = [
     "Divider",
     "ImageView",
     "Label",
+    "MapPin",
+    "MapView",
     "MultilineTextInput",
     "NumberInput",
     "OptionContainer",

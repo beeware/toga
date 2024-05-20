@@ -142,11 +142,11 @@ class TimePicker(TimeInput):
             ("max_time", "max"),
         ]:
             try:
+                value = kwargs.pop(old_name)
                 warnings.warn(
                     f"TimePicker.{old_name} has been renamed TimeInput.{new_name}",
                     DeprecationWarning,
                 )
-                value = kwargs.pop(old_name)
             except KeyError:
                 pass
             else:

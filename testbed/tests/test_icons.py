@@ -8,7 +8,7 @@ import toga
 
 def icon_probe(app, image):
     module = import_module("tests_backend.icons")
-    return getattr(module, "IconProbe")(app, image)
+    return module.IconProbe(app, image)
 
 
 async def test_icon(app):
@@ -23,6 +23,12 @@ async def test_icon(app):
 
     probe = icon_probe(app, icon)
     probe.assert_icon_content(probe.alternate_resource)
+
+
+async def test_app_icon(app):
+    """The app icon can be obtained."""
+    probe = icon_probe(app, toga.Icon.APP_ICON)
+    probe.assert_app_icon_content()
 
 
 async def test_system_icon(app):

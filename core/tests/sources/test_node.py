@@ -7,7 +7,7 @@ from toga.sources import Node
 
 
 def _create_node(source, parent, data, children=None):
-    "A very simplified _create_node for mock purposes"
+    """A very simplified _create_node for mock purposes."""
     node = Node(**data)
     node._source = source
     node._parent = parent
@@ -68,7 +68,7 @@ def node(leaf_node, child_a, child_b):
 
 
 def test_node_properties(node):
-    "An node with children can be created and modified"
+    """A node with children can be created and modified."""
     assert node.val1 == "value 1"
     assert node.val2 == 42
     assert node.can_have_children()
@@ -80,7 +80,7 @@ def test_node_properties(node):
 
 
 def test_empty_node_properties(empty_node):
-    "An empty Node can be created"
+    """An empty Node can be created."""
     assert empty_node.can_have_children()
     assert len(empty_node) == 0
     assert (
@@ -90,7 +90,7 @@ def test_empty_node_properties(empty_node):
 
 
 def test_leaf_node_properties(leaf_node):
-    "A Leaf Node can be created"
+    """A Leaf Node can be created."""
     assert leaf_node.val1 == "value 1"
     assert leaf_node.val2 == 42
     assert not leaf_node.can_have_children()
@@ -101,7 +101,7 @@ def test_leaf_node_properties(leaf_node):
 
 
 def test_modify_attributes(source, node):
-    """If node attributes are modified, a change notification is sent"""
+    """If node attributes are modified, a change notification is sent."""
     node.val1 = "new value"
     assert node.val1 == "new value"
     source.notify.assert_called_once_with("change", item=node)
@@ -139,7 +139,7 @@ def test_modify_attributes(source, node):
 
 
 def test_modify_attributes_no_source(node):
-    """Node attributes can be modified on a node with no source"""
+    """Node attributes can be modified on a node with no source."""
     node.source = None
 
     node.val1 = "new value"
@@ -169,7 +169,7 @@ def test_modify_attributes_no_source(node):
 
 
 def test_modify_children(source, node):
-    """Node children can be retrieved and modified"""
+    """Node children can be retrieved and modified."""
     child = node[1]
     assert node[1].val1 == "value b"
 
@@ -210,7 +210,7 @@ def test_modify_children(source, node):
 
 
 def test_modify_leaf_children(leaf_node):
-    """Attempts to modifying Leaf Node children raise an error"""
+    """Attempts to modifying Leaf Node children raise an error."""
     with pytest.raises(
         ValueError,
         match=r"<Leaf Node .*> is a leaf node",
@@ -231,12 +231,12 @@ def test_modify_leaf_children(leaf_node):
 
 
 def test_iterate(node):
-    """Node can be iterated"""
+    """Node can be iterated."""
     assert "|".join(child.val1 for child in node) == "value a|value b"
 
 
 def test_iterate_leaf(leaf_node):
-    """Node can be iterated"""
+    """Node can be iterated."""
     assert "|".join(child.val1 for child in leaf_node) == ""
 
 
@@ -250,7 +250,7 @@ def test_iterate_leaf(leaf_node):
     ],
 )
 def test_insert(source, node, index, actual_index):
-    """A child can be inserted into a node"""
+    """A child can be inserted into a node."""
     new_child = node.insert(index, {"val1": "new"})
 
     # Node has one more child.
@@ -272,7 +272,7 @@ def test_insert(source, node, index, actual_index):
 
 
 def test_insert_with_children(source, node):
-    """A child with children can be inserted into a node"""
+    """A child with children can be inserted into a node."""
     new_child = node.insert(
         1,
         {"val1": "new"},
@@ -312,7 +312,7 @@ def test_insert_with_children(source, node):
 
 
 def test_insert_leaf(leaf_node, source):
-    """Inserting a child into a leaf makes the node not a leaf any more"""
+    """Inserting a child into a leaf makes the node not a leaf any more."""
     new_child = leaf_node.insert(0, {"val1": "new"})
 
     # Leaf node isn't a leaf any more
@@ -332,7 +332,7 @@ def test_insert_leaf(leaf_node, source):
 
 
 def test_append(source, node):
-    """A child can be appended onto a node"""
+    """A child can be appended onto a node."""
     new_child = node.append({"val1": "new"})
 
     # Node has one more child.
@@ -354,7 +354,7 @@ def test_append(source, node):
 
 
 def test_append_with_children(source, node):
-    """A child with children can be appended onto a node"""
+    """A child with children can be appended onto a node."""
     new_child = node.append(
         {"val1": "new"},
         children=[
@@ -388,7 +388,7 @@ def test_append_with_children(source, node):
 
 
 def test_append_leaf(leaf_node, source):
-    """Appending to a leaf makes the node not a leaf any more"""
+    """Appending to a leaf makes the node not a leaf any more."""
     new_child = leaf_node.append({"val1": "new"})
 
     # Leaf node isn't a leaf any more
@@ -408,12 +408,12 @@ def test_append_leaf(leaf_node, source):
 
 
 def test_index(node, child_b):
-    """A child can be found it it's parent"""
+    """A child can be found it it's parent."""
     assert node.index(child_b) == 1
 
 
 def test_index_not_child(node):
-    """If a node isn't a child of this node, it can't be found by index"""
+    """If a node isn't a child of this node, it can't be found by index."""
     other = Node(val1="other")
 
     with pytest.raises(
@@ -424,7 +424,7 @@ def test_index_not_child(node):
 
 
 def test_index_leaf(leaf_node, child_b):
-    """A child cannot be found in a leaf node"""
+    """A child cannot be found in a leaf node."""
     with pytest.raises(
         ValueError,
         match=r"<Leaf Node .* val1='value 1' val2=42> is a leaf node",
@@ -433,7 +433,7 @@ def test_index_leaf(leaf_node, child_b):
 
 
 def test_remove(source, node, child_b):
-    """A node can be removed from it's parent"""
+    """A node can be removed from it's parent."""
     # Child is initially associated with the node
     assert child_b._parent == node
     assert child_b._source == node._source
@@ -453,7 +453,7 @@ def test_remove(source, node, child_b):
 
 
 def test_remove_leaf(leaf_node, child_b):
-    """A child cannot be removed from a leaf node"""
+    """A child cannot be removed from a leaf node."""
     with pytest.raises(
         ValueError,
         match=r"<Leaf Node .* val1='value 1' val2=42> is a leaf node",
@@ -462,7 +462,7 @@ def test_remove_leaf(leaf_node, child_b):
 
 
 def test_find(node, child_b):
-    """A node can be found by value in it's parent's list of children"""
+    """A node can be found by value in it's parent's list of children."""
     # Append some additional children
     child_c = node.append({"val1": "value a", "val2": 333})
     child_d = node.append({"val1": "value b", "val2": 444})
@@ -478,7 +478,7 @@ def test_find(node, child_b):
 
 
 def test_found_leaf(leaf_node):
-    """A child cannot be foundd from a leaf node"""
+    """A child cannot be found from a leaf node."""
     with pytest.raises(
         ValueError,
         match=r"<Leaf Node .* val1='value 1' val2=42> is a leaf node",

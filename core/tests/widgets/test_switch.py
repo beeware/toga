@@ -57,7 +57,7 @@ def test_widget_created_explicit(switch):
     ],
 )
 def test_label_text(switch, value, expected):
-    "The switch's label can be modified."
+    """The switch's label can be modified."""
     assert switch.text == "Test Switch"
 
     # Clear the event log
@@ -85,13 +85,13 @@ def test_label_text(switch, value, expected):
     ],
 )
 def test_value_change(switch, value, expected):
-    "The value of the switch can be set from almost any value."
+    """The value of the switch can be set from almost any value."""
     switch.value = value
     assert switch.value == expected
 
 
 def test_toggle(switch):
-    "Toggle can be used to change the value"
+    """Toggle can be used to change the value."""
     assert not switch.value
 
     switch.toggle()
@@ -102,7 +102,7 @@ def test_toggle(switch):
 
 
 def test_on_change(switch):
-    "The on_change handler is invoked whenever the value is changed."
+    """The on_change handler is invoked whenever the value is changed."""
     handler = MagicMock()
     switch.on_change = handler
 

@@ -13,8 +13,9 @@ Toga is able to deploy apps as a single-page web app using the `toga-web
 Prerequisites
 -------------
 
-``toga-web`` will run in any modern browser. It requires `PyScript`_ 2023.05.01 or
-newer, and `Shoelace v2.3 <https://shoelace.style>`__.
+``toga-web`` will run in any modern browser. It requires `PyScript
+<https://pyscript.net>`__ 2023.05.01 or newer, and `Shoelace v2.3
+<https://shoelace.style>`__.
 
 Installation
 ------------
@@ -28,6 +29,7 @@ configuration file.
 Implementation details
 ----------------------
 
-``toga-web`` uses `PyScript`_ to run Python code in the browser.
+The ``toga-web`` backend is implemented using `Shoelace web components
+<https://shoelace.style>`__.
 
-.. _PyScript: https://pyscript.net
+The DOM is accessed using `PyScript <https://pyscript.net>`__.

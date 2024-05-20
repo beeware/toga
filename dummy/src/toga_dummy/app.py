@@ -2,6 +2,7 @@ import asyncio
 import sys
 from pathlib import Path
 
+from .screens import Screen as ScreenImpl
 from .utils import LoggedObject
 from .window import Window
 
@@ -29,6 +30,9 @@ class App(LoggedObject):
     def main_loop(self):
         print("Starting app using Dummy backend.")
         self._action("main loop")
+
+    def set_icon(self, icon):
+        self._action("set_icon", icon=icon)
 
     def set_main_window(self, window):
         self._action("set_main_window", window=window)
@@ -66,6 +70,33 @@ class App(LoggedObject):
 
     def simulate_exit(self):
         self.interface.on_exit()
+
+    def get_screens(self):
+        # _________________________________________________
+        # Display Setup:                                  |
+        # ________________________________________________|
+        #              |--1366--|                         |
+        # (-1366,-768) _________                          |
+        #          |  |         |                         |
+        #         768 |Secondary|                         |
+        #          |  | Screen  |                         |
+        #          |  |_________|(0,0)                    |
+        #                          _________              |
+        #                      |  |         |             |
+        #                    1080 | Primary |             |
+        #                      |  | Screen  |             |
+        #                      |  |_________|(1920,1080)  |
+        #                         |---1920--|             |
+        # ________________________________________________|
+        #  `window.screen` will return `Secondary Screen` |
+        #   as window is on secondary screen to better    |
+        #   test out the differences between              |
+        #   `window.position` & `window.screen_position`. |
+        # ________________________________________________|
+        return [
+            ScreenImpl(native=("Primary Screen", (0, 0), (1920, 1080))),
+            ScreenImpl(native=("Secondary Screen", (-1366, -768), (1366, 768))),
+        ]
 
 
 class DocumentApp(App):

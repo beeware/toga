@@ -102,6 +102,7 @@ GDK_KEYS = {
     Gdk.KEY_X: Key.X,
     Gdk.KEY_Y: Key.Y,
     Gdk.KEY_Z: Key.Z,
+    Gdk.KEY_Caps_Lock: Key.CAPSLOCK,
     Gdk.KEY_Tab: Key.TAB,
     Gdk.KEY_bracketleft: Key.OPEN_BRACKET,
     Gdk.KEY_bracketright: Key.CLOSE_BRACKET,
@@ -121,7 +122,10 @@ GDK_KEYS = {
     Gdk.KEY_less: Key.LESS_THAN,
     Gdk.KEY_greater: Key.GREATER_THAN,
     Gdk.KEY_question: Key.QUESTION,
+    Gdk.KEY_Insert: Key.INSERT,
     Gdk.KEY_Delete: Key.DELETE,
+    Gdk.KEY_Begin: Key.BEGIN,
+    Gdk.KEY_Menu: Key.MENU,
     Gdk.KEY_Home: Key.HOME,
     Gdk.KEY_End: Key.END,
     Gdk.KEY_Page_Up: Key.PAGE_UP,
@@ -130,88 +134,49 @@ GDK_KEYS = {
     Gdk.KEY_Right: Key.RIGHT,
     Gdk.KEY_Up: Key.UP,
     Gdk.KEY_Down: Key.DOWN,
+    Gdk.KEY_Num_Lock: Key.NUMLOCK,
     Gdk.KEY_KP_Enter: Key.NUMPAD_ENTER,
+    Gdk.KEY_KP_0: Key.NUMPAD_0,
+    Gdk.KEY_KP_1: Key.NUMPAD_1,
+    Gdk.KEY_KP_2: Key.NUMPAD_2,
+    Gdk.KEY_KP_3: Key.NUMPAD_3,
+    Gdk.KEY_KP_4: Key.NUMPAD_4,
+    Gdk.KEY_KP_5: Key.NUMPAD_5,
+    Gdk.KEY_KP_6: Key.NUMPAD_6,
+    Gdk.KEY_KP_7: Key.NUMPAD_7,
+    Gdk.KEY_KP_8: Key.NUMPAD_8,
+    Gdk.KEY_KP_9: Key.NUMPAD_9,
+    Gdk.KEY_KP_Home: Key.HOME,
+    Gdk.KEY_KP_End: Key.END,
+    Gdk.KEY_KP_Page_Down: Key.PAGE_DOWN,
+    Gdk.KEY_KP_Page_Up: Key.PAGE_UP,
+    Gdk.KEY_KP_Left: Key.LEFT,
+    Gdk.KEY_KP_Right: Key.RIGHT,
+    Gdk.KEY_KP_Up: Key.UP,
+    Gdk.KEY_KP_Down: Key.DOWN,
+    Gdk.KEY_KP_Delete: Key.DELETE,
+    Gdk.KEY_KP_Insert: Key.INSERT,
+    Gdk.KEY_KP_Add: Key.NUMPAD_PLUS,
+    Gdk.KEY_KP_Subtract: Key.NUMPAD_MINUS,
+    Gdk.KEY_KP_Multiply: Key.NUMPAD_MULTIPLY,
+    Gdk.KEY_KP_Divide: Key.NUMPAD_DIVIDE,
+    Gdk.KEY_KP_Begin: Key.BEGIN,
+    Gdk.KEY_Pause: Key.PAUSE,
+    Gdk.KEY_ISO_Left_Tab: Key.TAB,
+    Gdk.KEY_Scroll_Lock: Key.SCROLLLOCK,
+    Gdk.KEY_Shift_L: Key.SHIFT,
+    Gdk.KEY_Shift_R: Key.SHIFT,
+    Gdk.KEY_Control_L: Key.MOD_1,
+    Gdk.KEY_Control_R: Key.MOD_1,
+    Gdk.KEY_Alt_L: Key.MOD_2,
+    Gdk.KEY_Alt_R: Key.MOD_2,
+    Gdk.KEY_Hyper_L: Key.MOD_3,
+    Gdk.KEY_Hyper_R: Key.MOD_3,
 }
 
-# TODO: Confirm these codes are all correct - especially the special keys.
-GTK_KEY_CODES = {
-    Key.A: "A",
-    Key.B: "B",
-    Key.C: "C",
-    Key.D: "D",
-    Key.E: "E",
-    Key.F: "F",
-    Key.G: "G",
-    Key.H: "H",
-    Key.I: "I",
-    Key.J: "J",
-    Key.K: "K",
-    Key.L: "L",
-    Key.M: "M",
-    Key.N: "N",
-    Key.O: "O",
-    Key.P: "P",
-    Key.Q: "Q",
-    Key.R: "R",
-    Key.S: "S",
-    Key.T: "T",
-    Key.U: "U",
-    Key.V: "V",
-    Key.W: "W",
-    Key.X: "X",
-    Key.Y: "Y",
-    Key.Z: "Z",
-    Key.ESCAPE: "Escape",
-    Key.TAB: "Tab",
-    Key.BACKSPACE: "Backspace",
-    Key.ENTER: "Enter",
-    Key.F1: "F1",
-    Key.F2: "F2",
-    Key.F3: "F3",
-    Key.F4: "F4",
-    Key.F5: "F5",
-    Key.F6: "F6",
-    Key.F7: "F7",
-    Key.F8: "F8",
-    Key.F9: "F9",
-    Key.F10: "F10",
-    Key.F11: "F11",
-    Key.F12: "F12",
-    Key.F13: "F13",
-    Key.F14: "F14",
-    Key.F15: "F15",
-    Key.F16: "F16",
-    Key.F17: "F17",
-    Key.F18: "F18",
-    Key.F19: "F19",
-    # Key.EJECT: '',
-    Key.HOME: "Home",
-    Key.END: "End",
-    Key.DELETE: "Del",
-    Key.PAGE_UP: "PgUp",
-    Key.PAGE_DOWN: "PgDn",
-    Key.UP: "Up",
-    Key.DOWN: "Down",
-    Key.LEFT: "Left",
-    Key.RIGHT: "Right",
-    Key.NUMPAD_0: "0",
-    Key.NUMPAD_1: "1",
-    Key.NUMPAD_2: "2",
-    Key.NUMPAD_3: "3",
-    Key.NUMPAD_4: "4",
-    Key.NUMPAD_5: "5",
-    Key.NUMPAD_6: "6",
-    Key.NUMPAD_7: "7",
-    Key.NUMPAD_8: "8",
-    Key.NUMPAD_9: "9",
-    # Key.NUMPAD_CLEAR: '',
-    Key.NUMPAD_DECIMAL_POINT: ".",
-    Key.NUMPAD_DIVIDE: "/",
-    Key.NUMPAD_ENTER: "",
-    Key.NUMPAD_EQUAL: "=",
-    Key.NUMPAD_MINUS: "-",
-    Key.NUMPAD_MULTIPLY: "*",
-    Key.NUMPAD_PLUS: "+",
+GTK_KEY_NAMES = {
+    toga_keyval: Gdk.keyval_name(gdk_keyval)
+    for gdk_keyval, toga_keyval in GDK_KEYS.items()
 }
 
 GTK_MODIFIER_CODES = {
@@ -224,7 +189,14 @@ GTK_MODIFIER_CODES = {
 
 def toga_key(event):
     """Convert a GDK Key Event into a Toga key."""
-    key = GDK_KEYS[event.keyval]
+    try:
+        key = GDK_KEYS[event.keyval]
+    except KeyError:  # pragma: no cover
+        # Ignore any key event code we can't map. This can happen for weird key
+        # combination (ctrl-alt-tux), and if the X server has weird key
+        # bindings. If we can't map it, we can't really type it either, so we
+        # need to no-cover this branch.
+        return None
 
     modifiers = set()
 
@@ -262,7 +234,7 @@ def gtk_accel(shortcut):
         modifiers.append("<Shift>")
 
     # Find the canonical definition of the remaining key.
-    for key, code in GTK_KEY_CODES.items():
+    for key, code in GTK_KEY_NAMES.items():
         if key.value == accel:
             accel = accel.replace(key.value, code)
 

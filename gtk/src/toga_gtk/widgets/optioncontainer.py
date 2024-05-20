@@ -14,7 +14,7 @@ class OptionContainer(Widget):
     def gtk_on_switch_page(self, widget, page, page_num):
         self.interface.on_select()
 
-    def add_content(self, index, text, widget, icon):
+    def add_option(self, index, text, widget, icon):
         sub_container = TogaContainer()
         sub_container.content = widget
 
@@ -24,7 +24,7 @@ class OptionContainer(Widget):
         # tell the notebook to show all content.
         self.native.show_all()
 
-    def remove_content(self, index):
+    def remove_option(self, index):
         self.native.remove_page(index)
         self.sub_containers[index].content = None
         del self.sub_containers[index]

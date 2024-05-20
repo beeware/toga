@@ -4,6 +4,7 @@ from PIL import Image, ImageCms
 from rubicon.objc import NSPoint
 
 from toga.colors import TRANSPARENT
+from toga.images import Image as TogaImage
 from toga_cocoa.libs import NSEventType, NSView
 
 from .base import SimpleProbe
@@ -27,7 +28,7 @@ class CanvasProbe(SimpleProbe):
         return reference
 
     def get_image(self):
-        image = Image.open(BytesIO(self.impl.get_image_data()))
+        image = Image.open(BytesIO(TogaImage(self.impl.get_image_data()).data))
 
         try:
             # If the image has an ICC profile, convert it into sRGB colorspace.

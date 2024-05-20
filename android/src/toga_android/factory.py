@@ -1,7 +1,11 @@
+from toga import NotImplementedWarning
+
 from . import dialogs
 from .app import App, MainWindow
 from .command import Command
 from .fonts import Font
+from .hardware.camera import Camera
+from .hardware.location import Location
 from .icons import Icon
 from .images import Image
 from .paths import Paths
@@ -13,8 +17,10 @@ from .widgets.detailedlist import DetailedList
 from .widgets.divider import Divider
 from .widgets.imageview import ImageView
 from .widgets.label import Label
+from .widgets.mapview import MapView
 from .widgets.multilinetextinput import MultilineTextInput
 from .widgets.numberinput import NumberInput
+from .widgets.optioncontainer import OptionContainer
 from .widgets.passwordinput import PasswordInput
 from .widgets.progressbar import ProgressBar
 from .widgets.scrollcontainer import ScrollContainer
@@ -29,7 +35,7 @@ from .window import Window
 
 
 def not_implemented(feature):
-    print(f"[Android] Not implemented: {feature}")  # pragma: nocover
+    NotImplementedWarning.warn("Android", feature)
 
 
 __all__ = [
@@ -43,6 +49,9 @@ __all__ = [
     "Icon",
     "Image",
     "Paths",
+    # Hardware
+    "Camera",
+    "Location",
     # Widgets
     # ActivityIndicator
     "Box",
@@ -53,9 +62,10 @@ __all__ = [
     "Divider",
     "ImageView",
     "Label",
+    "MapView",
     "MultilineTextInput",
     "NumberInput",
-    # "OptionContainer",
+    "OptionContainer",
     "PasswordInput",
     "ProgressBar",
     "ScrollContainer",

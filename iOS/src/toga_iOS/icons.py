@@ -1,4 +1,10 @@
-from toga_iOS.libs import UIImage
+from rubicon.objc import Block, NSMakeRect, NSSize, objc_id
+
+from toga_iOS.libs import (
+    UIGraphicsImageRenderer,
+    UIGraphicsImageRendererContext,
+    UIImage,
+)
 
 
 class Icon:
@@ -7,6 +13,11 @@ class Icon:
 
     def __init__(self, interface, path):
         self.interface = interface
+
+        if path is None:
+            self.native = None
+            raise FileNotFoundError("No runtime app icon")
+
         self.path = path
         self.native = UIImage.imageWithContentsOfFile(str(path))
         if self.native is None:
@@ -19,3 +30,11 @@ class Icon:
     def __del__(self):
         if self.native:
             self.native.release()
+
+    def _as_size(self, size):
+        renderer = UIGraphicsImageRenderer.alloc().initWithSize(NSSize(size, size))
+
+        def _resize(context: UIGraphicsImageRendererContext) -> None:
+            self.native.drawInRect(NSMakeRect(0, 0, size, size))
+
+        return renderer.imageWithActions(Block(_resize, None, objc_id))

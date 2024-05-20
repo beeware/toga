@@ -23,9 +23,11 @@ A container that can display multiple labeled tabs of content.
        :align: center
        :width: 450px
 
-  .. group-tab:: Android |no|
+  .. group-tab:: Android
 
-    Not supported
+    .. figure:: /reference/images/optioncontainer-android.png
+       :align: center
+       :width: 450px
 
   .. group-tab:: iOS
 
@@ -130,6 +132,13 @@ item, you can specify an item using:
       # Delete the pasta tab
       del container.content[pasta_tab]
 
+System requirements
+-------------------
+
+* Using OptionContainer on Android requires the Material package in your project's
+  Gradle dependencies. Ensure your app declares a dependency on
+  ``com.google.android.material:material:1.11.0`` or later.
+
 Notes
 -----
 
@@ -148,11 +157,19 @@ Notes
   the user to select the additional items. While the "More" menu is displayed, the
   current tab will return as ``None``.
 
+* Android can only display 5 tabs. The API will allow you to add more than 5 tabs, and
+  will allow you to programmatically control tabs past the 5-item limit, but any tabs
+  past the limit will not be displayed or be selectable by user interaction. If the
+  OptionContainer has more than 5 tabs, and one of the visible tabs is removed, one of
+  the previously unselectable tabs will become visible and selectable.
+
 * iOS allows the user to rearrange icons on an OptionContainer. When referring to tabs
   by index, user re-ordering is ignored; the logical order as configured in Toga itself
   is used to identify tabs.
 
 * Icons for iOS OptionContainer tabs should be 25x25px alpha masks.
+
+* Icons for Android OptionContainer tabs should be 24x24px alpha masks.
 
 Reference
 ---------

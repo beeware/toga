@@ -32,28 +32,34 @@ class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
         self.app = app
 
         # Set up the Proactor.
-        # The code between the following markers should be exactly the same as
-        # the official CPython implementation, up to the start of the
-        # `while True:` part of run_forever() (see BaseEventLoop.run_forever()
-        # in Lib/ascynio/base_events.py)
-        # === START BaseEventLoop.run_forever() setup ===
-        self._check_closed()
-        if self.is_running():  # pragma: no cover
-            raise RuntimeError("This event loop is already running")
-        if events._get_running_loop() is not None:  # pragma: no cover
-            raise RuntimeError(
-                "Cannot run the event loop while another loop is running"
+        if sys.version_info < (3, 13):
+            # The code between the following markers should be exactly the same
+            # as the official CPython implementation, up to the start of the
+            # `while True:` part of run_forever() (see
+            # BaseEventLoop.run_forever() in Lib/ascynio/base_events.py). In
+            # Python 3.13.0a2, this was refactored into the
+            # `_run_forever_setup()` helper. We run testbed on Py3.10, so the
+            # else branch is marked nocover.
+            # === START BaseEventLoop.run_forever() setup ===
+            self._check_closed()
+            if self.is_running():  # pragma: no cover
+                raise RuntimeError("This event loop is already running")
+            if events._get_running_loop() is not None:  # pragma: no cover
+                raise RuntimeError(
+                    "Cannot run the event loop while another loop is running"
+                )
+            self._set_coroutine_origin_tracking(self._debug)
+            self._thread_id = threading.get_ident()
+            self._old_agen_hooks = sys.get_asyncgen_hooks()
+            sys.set_asyncgen_hooks(
+                firstiter=self._asyncgen_firstiter_hook,
+                finalizer=self._asyncgen_finalizer_hook,
             )
-        self._set_coroutine_origin_tracking(self._debug)
-        self._thread_id = threading.get_ident()
-        self._old_agen_hooks = sys.get_asyncgen_hooks()
-        sys.set_asyncgen_hooks(
-            firstiter=self._asyncgen_firstiter_hook,
-            finalizer=self._asyncgen_finalizer_hook,
-        )
 
-        events._set_running_loop(self)
-        # === END BaseEventLoop.run_forever() setup ===
+            events._set_running_loop(self)
+            # === END BaseEventLoop.run_forever() setup ===
+        else:  # pragma: no cover
+            self._orig_state = self._run_forever_setup()
 
         # Rather than going into a `while True:` loop, we're going to use the
         # Winforms event loop to queue a tick() message that will cause a
@@ -104,15 +110,21 @@ class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
             self._run_once()
 
             if self._stopping:  # pragma: no cover
-                # If we're stopping, we can do the "finally" handling from
-                # the BaseEventLoop run_forever().
-                # === START BaseEventLoop.run_forever() finally handling ===
-                self._stopping = False
-                self._thread_id = None
-                events._set_running_loop(None)
-                self._set_coroutine_origin_tracking(False)
-                sys.set_asyncgen_hooks(*self._old_agen_hooks)
-                # === END BaseEventLoop.run_forever() finally handling ===
+                if sys.version_info < (3, 13):
+                    # If we're stopping, we can do the "finally" handling from
+                    # the BaseEventLoop run_forever(). In Python 3.13.0a2, this
+                    # was refactored into the `_run_forever_cleanup()` helper.
+                    # We run testbed on Py3.10, so the else branch is marked
+                    # nocover.
+                    # === START BaseEventLoop.run_forever() finally handling ===
+                    self._stopping = False
+                    self._thread_id = None
+                    events._set_running_loop(None)
+                    self._set_coroutine_origin_tracking(False)
+                    sys.set_asyncgen_hooks(*self._old_agen_hooks)
+                    # === END BaseEventLoop.run_forever() finally handling ===
+                else:  # pragma: no cover
+                    self._run_forever_cleanup()
             else:
                 # Otherwise, live to tick another day. Enqueue the next tick,
                 # and make sure there will be *something* to be processed.

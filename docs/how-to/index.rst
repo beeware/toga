@@ -10,10 +10,9 @@ already knows than tutorials do, and unlike documents in the tutorial they can
 stand alone.
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
    :glob:
 
-   Get started <get-started>
-   Contribute code to Toga <contribute-code>
-   Contribute documentation to Toga <contribute-docs>
+   topics/index
+   contribute/index
    internal/index
