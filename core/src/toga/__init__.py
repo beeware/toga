@@ -1,47 +1,58 @@
+from __future__ import annotations
+
 import warnings
+import importlib
+import importlib.util
+from types import ModuleType
 
-from .app import App, DocumentApp, DocumentMainWindow, MainWindow
+to_import = {
+    "toga.app": ["App", "DocumentApp", "DocumentMainWindow", "MainWindow"],
+    "toga.colors": ["hsl", "hsla", "rgb", "rgba"],
+    "toga.command": ["Command", "Group"],
+    "toga.commands": ["Command", "Group"],
+    "toga.documents": ["Document"],
+    "toga.fonts": ["Font"],
+    "toga.icons": ["Icon"],
+    "toga.images": ["Image"],
+    "toga.keys": ["Key"],
+    "toga.types": ["LatLng"],
+    "toga.widgets.activityindicator": ["ActivityIndicator"],
+    "toga.widgets.base": ["Widget"],
+    "toga.widgets.box": ["Box"],
+    "toga.widgets.button": ["Button"],
+    "toga.widgets.canvas": ["Canvas"],
+    "toga.widgets.dateinput": ["DateInput", "DatePicker"],
+    "toga.widgets.detailedlist": ["DetailedList"],
+    "toga.widgets.divider": ["Divider"],
+    "toga.widgets.imageview": ["ImageView"],
+    "toga.widgets.label": ["Label"],
+    "toga.widgets.mapview": ["MapPin", "MapView"],
+    "toga.widgets.multilinetextinput": ["MultilineTextInput"],
+    "toga.widgets.numberinput": ["NumberInput"],
+    "toga.widgets.optioncontainer": ["OptionContainer", "OptionItem"],
+    "toga.widgets.passwordinput": ["PasswordInput"],
+    "toga.widgets.progressbar": ["ProgressBar"],
+    "toga.widgets.scrollcontainer": ["ScrollContainer"],
+    "toga.widgets.selection": ["Selection"],
+    "toga.widgets.slider": ["Slider"],
+    "toga.widgets.splitcontainer": ["SplitContainer"],
+    "toga.widgets.switch": ["Switch"],
+    "toga.widgets.table": ["Table"],
+    "toga.widgets.textinput": ["TextInput"],
+    "toga.widgets.timeinput": ["TimeInput", "TimePicker"],
+    "toga.widgets.tree": ["Tree"],
+    "toga.widgets.webview": ["WebView"],
+    "toga.window": ["Window"],
+}
 
-# Resources
-from .colors import hsl, hsla, rgb, rgba
-from .command import Command, Group
-from .documents import Document
-from .fonts import Font
-from .icons import Icon
-from .images import Image
-from .keys import Key
 
-# Types
-from .types import LatLng
+def __getattr__(name):
 
-# Widgets
-from .widgets.activityindicator import ActivityIndicator
-from .widgets.base import Widget
-from .widgets.box import Box
-from .widgets.button import Button
-from .widgets.canvas import Canvas
-from .widgets.dateinput import DateInput, DatePicker
-from .widgets.detailedlist import DetailedList
-from .widgets.divider import Divider
-from .widgets.imageview import ImageView
-from .widgets.label import Label
-from .widgets.mapview import MapPin, MapView
-from .widgets.multilinetextinput import MultilineTextInput
-from .widgets.numberinput import NumberInput
-from .widgets.optioncontainer import OptionContainer, OptionItem
-from .widgets.passwordinput import PasswordInput
-from .widgets.progressbar import ProgressBar
-from .widgets.scrollcontainer import ScrollContainer
-from .widgets.selection import Selection
-from .widgets.slider import Slider
-from .widgets.splitcontainer import SplitContainer
-from .widgets.switch import Switch
-from .widgets.table import Table
-from .widgets.textinput import TextInput
-from .widgets.timeinput import TimeInput, TimePicker
-from .widgets.tree import Tree
-from .widgets.webview import WebView
-from .window import Window
+    for module, names in to_import.items():
+        if name in names:
+            module = importlib.import_module(module)
+            globals()[name] = getattr(module, name)
+            return getattr(module, name)
 
 
 class NotImplementedWarning(RuntimeWarning):
