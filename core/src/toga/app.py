@@ -205,6 +205,7 @@ class MainWindow(Window):
         self,
         id: str | None = None,
         title: str | None = None,
+        content: Widget | None = None,
         position: tuple[int, int] = (100, 100),
         size: tuple[int, int] = (640, 480),
         resizable: bool = True,
@@ -217,6 +218,8 @@ class MainWindow(Window):
         :param id: A unique identifier for the window. If not provided, one will be
             automatically generated.
         :param title: Title for the window. Defaults to the formal name of the app.
+        :param content: Content of the window. On setting, the content is added to the same app as
+            the window.
         :param position: Position of the window, as a tuple of ``(x, y)`` coordinates,
             in :ref:`CSS pixels <css-units>`.
         :param size: Size of the window, as a tuple of ``(width, height)``, in :ref:`CSS
@@ -229,6 +232,7 @@ class MainWindow(Window):
         super().__init__(
             id=id,
             title=title,
+            content=content,
             position=position,
             size=size,
             resizable=resizable,

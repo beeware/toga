@@ -98,6 +98,12 @@ def test_set_app_with_content(window, app):
     window.content = content
     assert content.app == app
 
+def test_set_app_with_content_at_instantiation(app):
+    """A window can be created with content"""
+    content = toga.Box()
+    window = toga.Window(content=content)
+
+    assert window.content == content
 
 @pytest.mark.parametrize(
     "value, expected",

@@ -121,6 +121,7 @@ class Window:
         self,
         id: str | None = None,
         title: str | None = None,
+        content: Widget | None = None,
         position: tuple[int, int] = (100, 100),
         size: tuple[int, int] = (640, 480),
         resizable: bool = True,
@@ -135,6 +136,8 @@ class Window:
         :param id: A unique identifier for the window. If not provided, one will be
             automatically generated.
         :param title: Title for the window. Defaults to "Toga".
+        :param content: Content of the window. On setting, the content is added to the same app as
+            the window.
         :param position: Position of the window, as a tuple of ``(x, y)`` coordinates,
             in :ref:`CSS pixels <css-units>`.
         :param size: Size of the window, as a tuple of ``(width, height)``, in :ref:`CSS
@@ -197,6 +200,9 @@ class Window:
         self._toolbar = CommandSet(on_change=self._impl.create_toolbar, app=self._app)
 
         self.on_close = on_close
+
+        if content is not None:
+            self.content = content
 
     def __lt__(self, other) -> bool:
         return self.id < other.id

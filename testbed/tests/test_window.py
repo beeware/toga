@@ -740,6 +740,11 @@ async def test_open_file_dialog(
     )
     await assert_dialog_result(main_window, dialog_result, on_result_handler, result)
 
+async def test_instantiate_window_with_content(app):
+    content = toga.Box()
+    window = toga.Window(content=content)
+
+    assert window.content == content
 
 @pytest.mark.parametrize(
     "initial_directory, multiple_select, result",
