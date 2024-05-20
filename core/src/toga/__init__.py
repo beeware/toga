@@ -5,55 +5,65 @@ import importlib.util
 import warnings
 
 toga_core_imports = {
-    "toga.app": ["App", "DocumentApp", "DocumentMainWindow", "MainWindow"],
-    "toga.colors": ["hsl", "hsla", "rgb", "rgba"],
-    "toga.command": ["Command", "Group"],
-    "toga.commands": ["Command", "Group"],
-    "toga.documents": ["Document"],
-    "toga.fonts": ["Font"],
-    "toga.icons": ["Icon"],
-    "toga.images": ["Image"],
-    "toga.keys": ["Key"],
-    "toga.types": ["LatLng"],
-    "toga.widgets.activityindicator": ["ActivityIndicator"],
-    "toga.widgets.base": ["Widget"],
-    "toga.widgets.box": ["Box"],
-    "toga.widgets.button": ["Button"],
-    "toga.widgets.canvas": ["Canvas"],
-    "toga.widgets.dateinput": ["DateInput", "DatePicker"],
-    "toga.widgets.detailedlist": ["DetailedList"],
-    "toga.widgets.divider": ["Divider"],
-    "toga.widgets.imageview": ["ImageView"],
-    "toga.widgets.label": ["Label"],
-    "toga.widgets.mapview": ["MapPin", "MapView"],
-    "toga.widgets.multilinetextinput": ["MultilineTextInput"],
-    "toga.widgets.numberinput": ["NumberInput"],
-    "toga.widgets.optioncontainer": ["OptionContainer", "OptionItem"],
-    "toga.widgets.passwordinput": ["PasswordInput"],
-    "toga.widgets.progressbar": ["ProgressBar"],
-    "toga.widgets.scrollcontainer": ["ScrollContainer"],
-    "toga.widgets.selection": ["Selection"],
-    "toga.widgets.slider": ["Slider"],
-    "toga.widgets.splitcontainer": ["SplitContainer"],
-    "toga.widgets.switch": ["Switch"],
-    "toga.widgets.table": ["Table"],
-    "toga.widgets.textinput": ["TextInput"],
-    "toga.widgets.timeinput": ["TimeInput", "TimePicker"],
-    "toga.widgets.tree": ["Tree"],
-    "toga.widgets.webview": ["WebView"],
-    "toga.window": ["Window"],
+    "App": "toga.app",
+    "DocumentApp": "toga.app",
+    "DocumentMainWindow": "toga.app",
+    "MainWindow": "toga.app",
+    "hsl": "toga.colors",
+    "hsla": "toga.colors",
+    "rgb": "toga.colors",
+    "rgba": "toga.colors",
+    "Command": "toga.command",
+    "Group": "toga.command",
+    "Document": "toga.documents",
+    "Font": "toga.fonts",
+    "Icon": "toga.icons",
+    "Image": "toga.images",
+    "Key": "toga.keys",
+    "LatLng": "toga.types",
+    "ActivityIndicator": "toga.widgets.activityindicator",
+    "Widget": "toga.widgets.base",
+    "Box": "toga.widgets.box",
+    "Button": "toga.widgets.button",
+    "Canvas": "toga.widgets.canvas",
+    "DateInput": "toga.widgets.dateinput",
+    "DatePicker": "toga.widgets.dateinput",
+    "DetailedList": "toga.widgets.detailedlist",
+    "Divider": "toga.widgets.divider",
+    "ImageView": "toga.widgets.imageview",
+    "Label": "toga.widgets.label",
+    "MapPin": "toga.widgets.mapview",
+    "MapView": "toga.widgets.mapview",
+    "MultilineTextInput": "toga.widgets.multilinetextinput",
+    "NumberInput": "toga.widgets.numberinput",
+    "OptionContainer": "toga.widgets.optioncontainer",
+    "OptionItem": "toga.widgets.optioncontainer",
+    "PasswordInput": "toga.widgets.passwordinput",
+    "ProgressBar": "toga.widgets.progressbar",
+    "ScrollContainer": "toga.widgets.scrollcontainer",
+    "Selection": "toga.widgets.selection",
+    "Slider": "toga.widgets.slider",
+    "SplitContainer": "toga.widgets.splitcontainer",
+    "Switch": "toga.widgets.switch",
+    "Table": "toga.widgets.table",
+    "TextInput": "toga.widgets.textinput",
+    "TimeInput": "toga.widgets.timeinput",
+    "TimePicker": "toga.widgets.timeinput",
+    "Tree": "toga.widgets.tree",
+    "WebView": "toga.widgets.webview",
+    "Window": "toga.window",
 }
+
 
 __all__ = []
 
 
 def __getattr__(name):
-    for module, names in toga_core_imports.items():
-        if name in names:
-            module = importlib.import_module(module)
-            globals()[name] = getattr(module, name)
-            __all__.append(name)
-            return getattr(module, name)
+    if name in toga_core_imports:
+        module = importlib.import_module(f"{toga_core_imports[name]}")
+        globals()[name] = getattr(module, name)
+        __all__.append(name)
+        return getattr(module, name)
     else:
         raise AttributeError(f"module {__name__} has no attribute {name}")
 
