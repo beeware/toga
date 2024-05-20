@@ -137,10 +137,10 @@ class Window:
         :param id: A unique identifier for the window. If not provided, one will be
             automatically generated.
         :param title: Title for the window. Defaults to "Toga".
-        :param position: Position of the window, as a tuple of ``(x, y)`` coordinates,
-            in :ref:`CSS pixels <css-units>`.
-        :param size: Size of the window, as a tuple of ``(width, height)``, in :ref:`CSS
-            pixels <css-units>`.
+        :param position: Position of the window, as a ``toga.Tuple`` or tuple of
+            ``(x, y)`` coordinates, in :ref:`CSS pixels <css-units>`.
+        :param size: Size of the window, as a ``toga.Size`` or tuple of
+            ``(width, height)``, in :ref:`CSS pixels <css-units>`.
         :param resizable: Can the window be resized by the user?
         :param closable: Can the window be closed by the user?
         :param minimizable: Can the window be minimized by the user?

@@ -1,5 +1,3 @@
-from typing import TYPE_CHECKING
-
 from rubicon.objc import CGSize
 
 from toga.command import Command, Separator
@@ -24,9 +22,6 @@ from toga_cocoa.libs import (
 )
 
 from .screens import Screen as ScreenImpl
-
-if TYPE_CHECKING:
-    from toga.types import PositionT, SizeT
 
 
 def toolbar_identifier(cmd):
@@ -295,7 +290,7 @@ class Window:
         frame = self.native.frame
         return Size(frame.size.width, frame.size.height)
 
-    def set_size(self, size: SizeT):
+    def set_size(self, size):
         frame = self.native.frame
         frame.size = NSSize(size[0], size[1])
         self.native.setFrame(frame, display=True, animate=True)
@@ -320,7 +315,7 @@ class Window:
             - (window_frame.origin.y + window_frame.size.height),
         )
 
-    def set_position(self, position: PositionT):
+    def set_position(self, position):
         # The "primary" screen has index 0 and origin (0, 0).
         primary_screen = NSScreen.screens[0].frame
 

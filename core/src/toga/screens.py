@@ -22,12 +22,12 @@ class Screen:
 
     @property
     def origin(self) -> Position:
-        """The absolute coordinates of the screen's origin, as a ``(x, y)`` tuple."""
+        """The absolute coordinates of the screen's origin, as a ``toga.Position``."""
         return self._impl.get_origin()
 
     @property
     def size(self) -> Size:
-        """The size of the screen, as a ``(width, height)`` tuple."""
+        """The size of the screen, as a ``toga.Size``."""
         return self._impl.get_size()
 
     def as_image(self, format: type[ImageT] = Image) -> ImageT:
