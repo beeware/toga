@@ -1,6 +1,6 @@
 from unittest.mock import Mock
 
-from pytest import fixture
+from pytest import approx, fixture
 
 import toga
 from toga.colors import TRANSPARENT
@@ -44,7 +44,8 @@ async def test_text(widget, probe):
         expected = str(text).split("\n")[0]
         assert widget.text == expected
         assert probe.text == expected
-        assert probe.height == initial_height
+        # approx: Fedora 40 is 1 pixel off for '你好, wørłd!'
+        assert probe.height == approx(initial_height, abs=1)
 
 
 async def test_icon(widget, probe):
