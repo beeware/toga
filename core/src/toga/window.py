@@ -200,10 +200,6 @@ class Window:
 
         self._content = content
 
-    @property
-    def id(self) -> str:
-        """A unique identifier for the window."""
-        return self._id
     def __lt__(self, other) -> bool:
         return self.id < other.id
 
