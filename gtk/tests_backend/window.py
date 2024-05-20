@@ -253,4 +253,5 @@ class WindowProbe(BaseProbe):
         item.emit("clicked")
 
     def is_modal_dialog(self, dialog):
+        print(f"IS MOBIL DIALOG: {dialog}: {dialog.native.get_modal()}")
         return dialog.native.get_modal()

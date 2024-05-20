@@ -551,6 +551,7 @@ async def assert_dialog_result(window, dialog, on_result, expected):
 
 async def test_info_dialog(main_window, main_window_probe):
     """An info dialog can be displayed and acknowledged."""
+    print("HITT")
     on_result_handler = Mock()
     with pytest.warns(
         DeprecationWarning,
@@ -559,9 +560,14 @@ async def test_info_dialog(main_window, main_window_probe):
         dialog_result = main_window.info_dialog(
             "Info", "Some info", on_result=on_result_handler
         )
+    print("Before 1")
     await main_window_probe.redraw("Info dialog displayed")
+    print("Before 2")
+    input()
     assert main_window_probe.is_modal_dialog(dialog_result._impl)
+    print("Before 3")
     await main_window_probe.close_info_dialog(dialog_result._impl)
+    print("Before 4")
     await assert_dialog_result(main_window, dialog_result, on_result_handler, None)
 
 
