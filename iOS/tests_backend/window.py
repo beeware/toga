@@ -78,5 +78,5 @@ class WindowProbe(BaseProbe):
     def has_toolbar(self):
         pytest.skip("Toolbars not implemented on iOS")
 
-    def is_dialog_modal(self, dialog):
+    def is_modal_dialog(self, dialog):
         return True
