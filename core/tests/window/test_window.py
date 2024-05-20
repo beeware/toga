@@ -109,7 +109,7 @@ def test_set_app_with_content_at_instantiation(app):
         window_no_content = None
 
     # Setup the box with something inside it:
-    label1 = toga.Label('Hello World')
+    label1 = toga.Label("Hello World")
     content = toga.Box(children=[label1])
     try:
         window_with_content = toga.Window(content=content)

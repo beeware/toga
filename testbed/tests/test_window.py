@@ -236,7 +236,7 @@ else:
             window_no_content = None
 
         # Setup the box with something inside it:
-        label1 = toga.Label('Hello World')
+        label1 = toga.Label("Hello World")
         content = toga.Box(children=[label1])
         try:
             window_with_content = toga.Window(content=content)
@@ -247,7 +247,6 @@ else:
         finally:
             window_with_content.close()
             window_with_content = None
-
 
     async def test_secondary_window_cleanup(app_probe):
         """Memory for windows is cleaned up when windows are deleted."""
