@@ -9,6 +9,12 @@ on:
       artifact-name:
         description: "Name of the uploaded artifact; use for artifact retrieval."
         value: ${{ jobs.package.outputs.artifact-name }}
+  workflow_dispatch: {}
+    # inputs:
+    #   artifact-name:
+    #     description: "Name of the uploaded artifact; use for artifact retrieval."
+    #     value: "asdf"
+
 
 env:
   min_python_version: "3.8"
