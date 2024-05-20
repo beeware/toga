@@ -41,7 +41,6 @@ toga_factory_imports = {
 
 
 def __getattr__(name):
-
     for module, names in toga_factory_imports.items():
         if name in names:
             module = importlib.import_module(module)

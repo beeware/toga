@@ -48,7 +48,6 @@ __all__ = []
 
 
 def __getattr__(name):
-
     for module, names in toga_core_imports.items():
         if name in names:
             module = importlib.import_module(module)
