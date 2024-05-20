@@ -109,6 +109,7 @@ def test_set_app_with_content_at_instantiation(app):
 
     assert window_with_content.content == content
 
+
 @pytest.mark.parametrize(
     "value, expected",
     [
