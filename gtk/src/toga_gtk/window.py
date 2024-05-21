@@ -7,7 +7,7 @@ from .container import TogaContainer
 from .libs import Gdk, Gtk
 from .screens import Screen as ScreenImpl
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from toga.types import PositionT, SizeT
 
 
