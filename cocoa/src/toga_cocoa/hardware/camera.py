@@ -1,4 +1,5 @@
 from __future__ import annotations
+import warnings
 
 from threading import Thread
 
@@ -22,6 +23,7 @@ from toga_cocoa.libs import (
     AVCaptureVideoPreviewLayer,
     AVLayerVideoGravityResizeAspectFill,
     AVMediaTypeVideo,
+    NSBundle,
 )
 
 
@@ -247,6 +249,18 @@ class TogaCameraWindow(toga.Window):
 class Camera:
     def __init__(self, interface):
         self.interface = interface
+
+        if not NSBundle.mainBundle.objectForInfoDictionaryKey(
+            "NSCameraUsageDescription"
+        ):  # pragma: no cover
+            # The app doesn't have the NSCameraUsageDescription key (e.g., via
+            # `permission.camera` in Briefcase). No-cover because we can't manufacture
+            # this condition in testing.
+            msg = "Application metadata does not declare that the app will use the camera."
+            if not self.interface.app.is_bundled:
+                raise RuntimeError(msg)
+            warnings.warn(msg)
+
         self.preview_windows = []
 
     def has_permission(self, allow_unknown=False):

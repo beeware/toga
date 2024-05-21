@@ -136,11 +136,7 @@ class Icon:
             # icon, and this isn't running as a script, fall back to the application
             # binary
             if path is _APP_ICON:
-                if Path(sys.executable).stem not in {
-                    "python",
-                    f"python{sys.version_info.major}",
-                    f"python{sys.version_info.major}.{sys.version_info.minor}",
-                }:
+                if toga.App.app.is_bundled:
                     try:
                         # Use the application binary's icon
                         self._impl = self.factory.Icon(interface=self, path=None)
