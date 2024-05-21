@@ -674,6 +674,7 @@ class App:
             # This will raise an exception if the platform doesn't implement
             # the Camera API.
             self._camera = Camera(self)
+
         return self._camera
 
     @property
