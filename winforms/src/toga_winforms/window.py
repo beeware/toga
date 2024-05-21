@@ -183,7 +183,7 @@ class Window(Container, Scalable):
             self.scale_out(size.Height - self._decor_height()),
         )
 
-    def set_size(self, size: SizeT):
+    def set_size(self, size: "SizeT"):
         self.native.Size = TogaSize(
             self.scale_in(size.width) + self._decor_width(),
             self.scale_in(size.height) + self._decor_height(),
@@ -200,7 +200,7 @@ class Window(Container, Scalable):
         location = self.native.Location
         return Position(map(self.scale_out, (location.X, location.Y)))
 
-    def set_position(self, position: PositionT):
+    def set_position(self, position: "PositionT"):
         self.native.Location = Point(*map(self.scale_in, position))
 
     ######################################################################
