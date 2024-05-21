@@ -257,7 +257,7 @@ class Camera:
             # `permission.camera` in Briefcase). No-cover because we can't manufacture
             # this condition in testing.
             msg = "Application metadata does not declare that the app will use the camera."
-            if not self.interface.app.is_bundled:
+            if self.interface.app.is_bundled:
                 raise RuntimeError(msg)
             warnings.warn(msg)
 
