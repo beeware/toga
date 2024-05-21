@@ -147,6 +147,12 @@ class Widget(Node):
                 return _ind
         raise ValueError(f"{type(child).__name__} not found")
 
+    def replace(self, old_child: Widget, new_child: Widget) -> None:
+        """Replace an existing child with a new child."""
+        old_child_index = self.index(old_child)
+        self.remove(old_child)
+        self.insert(old_child_index, new_child)
+
     def remove(self, *children: Widget) -> None:
         """Remove the provided widgets as children of this node.
 

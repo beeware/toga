@@ -185,6 +185,25 @@ def test_get_index_of_children(widget):
         widget.index(child3)
 
 
+def test_replace_child_with_non_child(widget):
+    """Remove a child and add new widget in its place."""
+    child1 = ExampleLeafWidget(id="child1_id")
+    child2 = ExampleLeafWidget(id="child2_id")
+    child3 = ExampleLeafWidget(id="child3_id")
+
+    # Add only two children to widget
+    widget.add(child1)
+    widget.add(child2)
+
+    # Verify children have been added
+    assert widget.children == [child1, child2]
+
+    widget.replace(child1, child3)
+
+    # Verify child1 has been removed and child3 has been added
+    assert widget.children == [child3, child2]
+
+
 def test_add_multiple_children(app, widget):
     """Multiple children can be added in one call."""
     # Set the app and window for the widget.
