@@ -163,6 +163,28 @@ def test_add_child(app, widget):
     assert app.widgets["child_id"] == child
 
 
+def test_get_index_of_children(widget):
+    """Populate a widget with children and check the index method."""
+    child1 = ExampleLeafWidget(id="child1_id")
+    child2 = ExampleLeafWidget(id="child2_id")
+    child3 = ExampleLeafWidget(id="child3_id")
+
+    # Add only two children to widget
+    widget.add(child1)
+    widget.add(child2)
+
+    # Verify children have been added
+    assert widget.children == [child1, child2]
+
+    # Get indices of valid children
+    assert widget.index(child1) == 0
+    assert widget.index(child2) == 1
+
+    # Raise error when child not found in children
+    with pytest.raises(ValueError, match=r"ExampleLeafWidget not found"):
+        widget.index(child3)
+
+
 def test_add_multiple_children(app, widget):
     """Multiple children can be added in one call."""
     # Set the app and window for the widget.

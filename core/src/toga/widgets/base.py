@@ -140,6 +140,13 @@ class Widget(Node):
         # Whatever layout we're a part of needs to be refreshed
         self.refresh()
 
+    def index(self, child: Widget) -> int:
+        """Get the index of a child widget."""
+        for _ind, _child in enumerate(self._children):
+            if child == _child:
+                return _ind
+        raise ValueError(f"{type(child).__name__} not found")
+
     def remove(self, *children: Widget) -> None:
         """Remove the provided widgets as children of this node.
 
