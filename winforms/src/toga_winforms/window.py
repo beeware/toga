@@ -13,7 +13,7 @@ from .libs.wrapper import WeakrefCallable
 from .screens import Screen as ScreenImpl
 from .widgets.base import Scalable
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from toga.types import PositionT, SizeT
 
 
