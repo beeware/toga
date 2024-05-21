@@ -163,6 +163,24 @@ def test_add_child(app, widget):
     assert app.widgets["child_id"] == child
 
 
+def test_child_square_bracket_access(widget):
+    """Assign and get individual children via square bracket notation."""
+    child1 = ExampleLeafWidget(id="child1_id")
+    child2 = ExampleLeafWidget(id="child2_id")
+
+    # Add child to widget
+    widget.add(child1)
+
+    # Verify child has been added
+    assert widget.children == [child1]
+
+    # Assign child via __setitem__
+    widget.children[0] = child2
+
+    # Verify new child is in children via __getitem__
+    assert widget.children[0] == child2
+
+
 def test_get_index_of_children(widget):
     """Populate a widget with children and check the index method."""
     child1 = ExampleLeafWidget(id="child1_id")
