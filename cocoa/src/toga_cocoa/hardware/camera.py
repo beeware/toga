@@ -1,6 +1,6 @@
 from __future__ import annotations
-import warnings
 
+import warnings
 from threading import Thread
 
 from rubicon.objc import Block, objc_method
