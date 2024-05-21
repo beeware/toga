@@ -1,4 +1,4 @@
-import toga
+import toga.widgets.slider
 
 from .base import Widget
 
