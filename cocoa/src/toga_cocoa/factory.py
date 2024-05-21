@@ -43,12 +43,17 @@ toga_factory_imports = {
 
 
 def __getattr__(name):
-    if name in toga_factory_imports:
-        module = importlib.import_module(f"{toga_factory_imports[name]}")
-        globals()[name] = getattr(module, name)
-        return getattr(module, name)
+    try:
+        module_name = toga_factory_imports[name]
+    except KeyError:
+        raise NotImplementedError(
+            f"Toga's Cocoa backend doesn't implement '{name}'"
+        ) from None
     else:
-        raise NotImplementedError(f"Toga's Cocoa backend doesn't implement {name}")
+        module = importlib.import_module(module_name)
+        value = getattr(module, name)
+        globals()[name] = value
+        return value
 
 
 def not_implemented(feature):

@@ -4,7 +4,6 @@ import importlib
 import importlib.util
 import warnings
 
-__all__ = []
 toga_core_imports = {
     "App": "toga.app",
     "DocumentApp": "toga.app",
@@ -54,18 +53,20 @@ toga_core_imports = {
     "WebView": "toga.widgets.webview",
     "Window": "toga.window",
 }
-for name in toga_core_imports:
-    __all__.append(name)
+
+__all__ = list(toga_core_imports.keys())
 
 
 def __getattr__(name):
-    if name in toga_core_imports:
-        module = importlib.import_module(f"{toga_core_imports[name]}")
-        globals()[name] = getattr(module, name)
-        # __all__.append(name)
-        return getattr(module, name)
+    try:
+        module_name = toga_core_imports[name]
+    except KeyError:
+        raise AttributeError(f"module '{__name__}' has no attribute '{name}'") from None
     else:
-        raise AttributeError(f"module {__name__} has no attribute {name}")
+        module = importlib.import_module(module_name)
+        value = getattr(module, name)
+        globals()[name] = value
+        return value
 
 
 class NotImplementedWarning(RuntimeWarning):
