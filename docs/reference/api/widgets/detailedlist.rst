@@ -139,6 +139,9 @@ Notes
 * The WinForms implementation currently uses a column layout similar to :any:`Table`,
   and does not support the primary, secondary or refresh actions.
 
+* Using DetailedList on Android requires the AndroidX SwipeRefreshLayout widget in your project's Gradle dependencies. Ensure your app declares a dependency on ``androidx.swiperefreshlayout:swiperefreshlayout:1.1.0`` or later.
+
+
 Reference
 ---------
 
