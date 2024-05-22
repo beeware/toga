@@ -1,1 +1,1 @@
-Remove unnecessary dependencies from Android requirements.
+Android deployments no longer require the SwipeRefreshLayout component unless the app uses the Toga DetailedList widget.
