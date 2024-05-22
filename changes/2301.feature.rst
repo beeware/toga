@@ -1,0 +1,1 @@
+Added a method to replace a child widget with another widget.
