@@ -141,14 +141,22 @@ class Widget(Node):
         self.refresh()
 
     def index(self, child: Widget) -> int:
-        """Get the index of a child widget."""
+        """Get the index of a child widget.
+
+        :param child: The child widget of interest.
+        :raises ValueError: If this widget is not a child widget.
+        """
         for _ind, _child in enumerate(self._children):
             if child == _child:
                 return _ind
         raise ValueError(f"{type(child).__name__} not found")
 
     def replace(self, old_child: Widget, new_child: Widget) -> None:
-        """Replace an existing child with a new child."""
+        """Replace an existing child widget with a new child widget.
+
+        :param old_child: The existing child widget to be replaced.
+        :param new_child: The new child widget to be included.
+        """
         old_child_index = self.index(old_child)
         self.remove(old_child)
         self.insert(old_child_index, new_child)
