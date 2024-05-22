@@ -256,7 +256,11 @@ class Camera:
             # The app doesn't have the NSCameraUsageDescription key (e.g., via
             # `permission.camera` in Briefcase). No-cover because we can't manufacture
             # this condition in testing.
-            msg = "Application metadata does not declare that the app will use the camera."
+            msg = (
+                "Application metadata does not declare that the app will use "
+                "the camera. See "
+                "https://toga.readthedocs.io/en/stable/reference/api/hardware/camera.html"
+            )
             if self.interface.app.is_bundled:
                 raise RuntimeError(msg)
             warnings.warn(msg)
